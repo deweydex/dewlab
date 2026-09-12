@@ -1,0 +1,30 @@
+# Weekly: groups open reports by page and by cell, and opens or updates one
+# `pattern` issue for a page that crosses a threshold (three or more open
+# reports on the page, or two or more on the same cell) within the last
+# fortnight. See dev/report_patterns.py and DECISIONS_LOG.md Phase 8 for
+# the reasoning, and .claude/skills/triage-report/SKILL.md for what to do
+# with a pattern issue once one opens.
+name: report-patterns
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: python3 dev/report_patterns.py
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}

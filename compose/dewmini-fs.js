@@ -1,20 +1,3 @@
-/* dewmini's filesystem (DECISIONS_LOG.md 7.88), routing through the
- * shared assets/pyodide-engine.js (DECISIONS_LOG.md 7.89) rather than
- * talking to `pyodide.FS` directly the way this file's first version
- * did — once dewmini's own Pyodide could run inside a Worker,
- * `pyodide.FS` stopped being something this module (running on the main
- * thread) could touch directly at all.
- *
- * One small interface (init, listDir, readFile, writeFile, deleteFile,
- * mkdir) sitting between a mounted Pyodide filesystem and dewmini's own
- * Settings "Files" section — three backends, tried in order:
- *   1. A real local folder, via the File System Access API. Chromium
- *      only, and only ever entered on an explicit click (chooseFolder()),
- *      never silently.
- *   2. OPFS — persistent, no picker, no permission prompt, broadly
- *      supported. What init() mounts by default.
- *   3. IDBFS — the universal fallback.
- */
 
 import * as engine from "../assets/pyodide-engine.js";
 
@@ -37,13 +20,6 @@ const HANDLE_KEY = "native-dir-handle";
 // operation as far as the engine is concerned, just with a different
 // handle source, so this needs no engine change at all.
 const OPFS_SUBDIR = "dewmini";
-
-/* ------------------------------------------------------------- IndexedDB
- * A FileSystemDirectoryHandle is structured-cloneable, so it can be
- * stored as an IndexedDB value directly — the standard way to persist
- * File System Access API access across reloads. Kept under dewmini's own
- * database name, so no other tool on this origin can silently share or
- * reconnect the choice. */
 
 function idbOpen() {
   return new Promise((resolve, reject) => {
@@ -86,8 +62,6 @@ async function idbDelete(key) {
   });
 }
 
-/* ------------------------------------------------------------- backend */
-
 let backend = null;
 let onBackendChange = () => {};
 
@@ -107,11 +81,6 @@ export function mountPoint() {
   return MOUNT_POINT;
 }
 
-/**
- * @param {Object} [options]
- * @param {(backend: string) => void} [options.onBackendChange] - called
- *   whenever the active backend changes.
- */
 export function configure(options = {}) {
   onBackendChange = options.onBackendChange || (() => {});
 }
@@ -132,15 +101,6 @@ async function mountOpfsIfSupported() {
 
 let initPromise = null;
 
-/**
- * Mounts a filesystem: a previously chosen and still-permitted real
- * folder if one is on file, otherwise OPFS, otherwise IDBFS. Requires
- * Pyodide to already be starting — engine.ensureBooted() drives that —
- * so "Files" in Settings
- * only ever shows real status once Python has actually started, the same
- * lazy-boot rule the rest of dewmini follows. Idempotent: a second call
- * returns the same in-flight/completed mount rather than mounting twice.
- */
 export function init() {
   if (!initPromise) initPromise = doInit();
   return initPromise;
@@ -167,9 +127,6 @@ async function doInit() {
   await engine.setWorkingDirectory(MOUNT_POINT);
 }
 
-/* Picks the best filesystem the browser will give us and mounts it: a
- * folder on the reader's own computer if they have chosen one, then OPFS,
- * then IDBFS. */
 async function mountBestBackend() {
   const storedHandle = await idbGet(HANDLE_KEY).catch(() => null);
   if (storedHandle) {
@@ -191,12 +148,6 @@ async function mountBestBackend() {
   setBackend("idbfs");
 }
 
-/**
- * Forgets that init() ever ran, so the next call re-mounts from scratch —
- * for pairing with engine.restart(), whose fresh interpreter has nothing
- * mounted into it yet. Doesn't touch the stored folder handle (or any
- * file) itself, just this module's own "already initialized" memo.
- */
 export function reset() {
   initPromise = null;
   backend = null;
@@ -208,9 +159,6 @@ export async function hasStoredFolder() {
   return Boolean(await idbGet(HANDLE_KEY).catch(() => null));
 }
 
-/** Lets a student opt into a real local folder. Must be called directly
- * inside a click handler — showDirectoryPicker() throws without a fresh
- * user gesture. */
 export async function chooseFolder() {
   if (typeof window.showDirectoryPicker !== "function") {
     throw new Error("This browser can't grant access to a real folder — try Chrome or Edge.");
@@ -240,17 +188,11 @@ export async function forgetFolder() {
   await idbDelete(HANDLE_KEY).catch(() => {});
 }
 
-/* --------------------------------------------------------- file access */
-
 function resolvePath(relativePath) {
   const clean = String(relativePath || "").replace(/^\/+/, "").replace(/\/+$/, "");
   return clean ? `${MOUNT_POINT}/${clean}` : MOUNT_POINT;
 }
 
-/** Lists one directory's contents, folders before files, alphabetically
- * within each group. dewmini's own Settings "Files" list only ever
- * browses the mount's root (a deliberately small scope — see
- * DECISIONS_LOG.md 7.88) but this itself stays general. */
 export async function listDir(relativePath = "") {
   const entries = await engine.listDir(resolvePath(relativePath));
   return entries.sort((a, b) => {
@@ -278,25 +220,9 @@ export async function mkdir(relativePath) {
   scheduleSync();
 }
 
-/**
- * Syncs the mounted filesystem right now, best-effort — for a caller
- * that already knows something might have changed but didn't go through
- * writeFile()/deleteFile()/mkdir() above, so scheduleSync() below was
- * never triggered. The one real case: a cell's own Python code writing
- * straight to the mount (`open("/mnt/dewmini/x.db", "w")`,
- * `sqlite3.connect(...)`) never touches this module's JS functions at
- * all, so nothing here would otherwise know a write happened — dewmini.js
- * calls this once after every cell finishes running, rather than relying
- * only on the beforeunload/visibilitychange flush further down, which
- * (being an async operation started from a synchronous unload event) a
- * browser makes no promise of actually letting finish before the page
- * goes away.
- */
 export async function sync() {
   if (backend) await engine.syncFs();
 }
-
-/* ------------------------------------------------------------ syncing */
 
 let syncTimer = null;
 

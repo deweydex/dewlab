@@ -49,8 +49,22 @@ from_strand:
   data-structures: programming
   complexity: programming
   programming: programming
+  database-concepts: programming
+  querying: programming
+  data-entry: programming
+  data-import: programming
+  design: programming
+  reporting: programming
+  web-history: programming
+  html-tags: programming
+  css: programming
 
   problem-solving: software-development
+  tooling: software-development
+  design-principles: software-development
+  process: software-development
+  testing: software-development
+  independence: software-development
 
 # Topics that sit somewhere other than their fine strand would put them.
 # `why` is for whoever reads this next.

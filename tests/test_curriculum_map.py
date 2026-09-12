@@ -1,11 +1,6 @@
-"""Tests for the curriculum map generator.
-
-The map's whole value is that it cannot disagree with the tutorials. These tests
-are mostly about the ways it refuses to be built rather than the prose it emits:
-a map that quietly links to a section that does not exist is worse than no map.
-
-    python3 -m pytest tests -q
-"""
+"""Mostly about the ways the curriculum map refuses to be built rather than
+the prose it emits: a map that quietly links to a missing section is worse
+than no map."""
 
 from __future__ import annotations
 
@@ -23,7 +18,6 @@ import curriculum_map as cm  # noqa: E402
 
 @pytest.fixture()
 def repo(tmp_path, monkeypatch):
-    """A small curriculum: two outcomes, one tutorial covering one of them."""
     (tmp_path / "tutorials" / "demo").mkdir(parents=True)
     (tmp_path / "planning" / "curriculum").mkdir(parents=True)
 
@@ -91,19 +85,15 @@ class TestTheAnchors:
         assert cm.anchor_for("What Are the Chances?") == "what-are-the-chances"
 
     def test_every_declared_section_in_the_real_tutorials_exists(self):
-        """The map is only as good as this. Runs against the real repository."""
+        # Runs against the real repository, not a fixture.
         outcomes, _ = cm.load_outcomes()
         cm.load_tutorials(outcomes)  # raises if any anchor is wrong
 
 
 class TestProseExcludesTheBibliography:
-    """A bibliography entry is written as `*Title.*` — genuine emphasis markup,
-    by the same convention that marks a term being introduced. Without an
-    exclusion, every one of a tutorial's further-reading titles shows up in
-    the vocabulary report as a term the tutorial "introduces", burying the
-    real findings the report exists to surface. Found when the matrices
-    strand's own citation, `*Getting Sorted & Big O Notation.*`, appeared in
-    `planning/CURRICULUM_MAP.md`'s "introduced more than once" table."""
+    """A bibliography title like `*Getting Sorted & Big O Notation.*` uses the
+    same emphasis markup as a term being introduced; found when it showed up
+    that way in the map's "introduced more than once" table."""
 
     def test_a_bibliography_title_is_not_read_as_a_term(self, tmp_path, monkeypatch):
         (tmp_path / "mod").mkdir(parents=True)
@@ -142,7 +132,6 @@ class TestStatus:
         assert cm.status_of(self.covered(), "X", scope) == "excluded"
 
     def test_narrowing_something_unwritten_leaves_it_a_gap(self):
-        """Deciding to teach half of something does not teach half of it."""
         scope = {"outcomes": {}, "partial": {"X": {}}}
         assert cm.status_of(self.covered(), "X", scope) == "absent"
 
@@ -158,8 +147,6 @@ class TestBackReferences:
         )
 
     def test_it_finds_an_earlier_tutorial_named_in_the_text(self, repo):
-        """By title now that the numbers are gone — which is also what a
-        tutorial would naturally write."""
         titles = {1: "Counting Carefully", 2: "What Are the Chances"}
         for n in (1, 2):
             (repo / "tutorials" / "demo" / f"t{n}.md").write_text(
@@ -189,7 +176,7 @@ class TestBackReferences:
 
 class TestTheRealMap:
     def test_it_is_committed_current(self):
-        """The same guard CI runs. A stale map is a misleading one."""
+        # The same guard CI runs, against the real committed file.
         assert cm.MAP.read_text() == cm.render()
 
     def test_every_out_of_scope_code_is_a_real_outcome(self):
@@ -205,14 +192,13 @@ class TestTheRealMap:
                 assert code in outcomes, f"{proposal['id']} names {code}"
 
     def test_every_proposal_has_an_outline(self):
-        """A proposal without an outline is a title and a wish."""
         for proposal in cm.load_proposals():
             outline = cm.ROOT / "planning" / "outlines" / f"{proposal['outline']}.md"
             assert outline.is_file(), f"{proposal['id']} points at a missing {outline.name}"
 
     def test_a_proposal_never_claims_something_already_taught(self):
-        """A proposal left in place after its tutorial shipped would make the
-        plan look larger than it is, and make the next survey wrong."""
+        # A proposal left in place after its tutorial ships makes the plan
+        # look bigger than it is, and throws off the next unplanned-gaps survey.
         outcomes, _ = cm.load_outcomes()
         tutorials = cm.load_tutorials(outcomes)
         found = cm.coverage(outcomes, tutorials)
@@ -226,9 +212,8 @@ class TestTheRealMap:
                 )
 
     def test_the_map_says_how_many_gaps_nobody_has_planned(self):
-        """The number worth acting on. "Not covered" is the work outstanding;
-        this is the work nobody has thought about, which is smaller and more
-        urgent — and it is what the first survey of this got wrong."""
+        # "Not covered" is work outstanding; this is work nobody has even
+        # planned — smaller and more urgent, and what an earlier hand-count missed.
         outcomes, _ = cm.load_outcomes()
         tutorials = cm.load_tutorials(outcomes)
         found = cm.coverage(outcomes, tutorials)
@@ -244,9 +229,8 @@ class TestTheRealMap:
         assert "proposal" in line
 
     def test_and_says_so_plainly_when_there_is_nothing_left(self):
-        """The state the course reached on 23 August. A summary that says
-        "every one of the 0 outcomes still to write has a proposal" is a
-        sentence nobody wrote on purpose."""
+        # Guards the zero case: "every one of the 0 outcomes still to write
+        # has a proposal" is a sentence nobody wrote on purpose.
         outcomes, _ = cm.load_outcomes()
         line = cm.unplanned_line({c: "taught" for c in outcomes}, [])
         assert "Everything in both descriptors is written" in line
@@ -268,13 +252,9 @@ class TestTheRealMap:
 
 
 class TestTheTopicGlossary:
-    """`topics.yaml` says, for every learning outcome, what the topic actually
-    is and where it turns up in computing. It is what the knowledge map shows
-    when a node is opened, and it stands on its own as a glossary.
-
-    These tests are about it staying complete and consistent with the outcome
-    list, because a map with a node missing its description is a dead end.
-    """
+    """topics.yaml (not part of curriculum_map.py itself) backs the knowledge
+    map's per-node glossary text; these tests keep it complete and consistent
+    with the outcome list."""
 
     @staticmethod
     def topics() -> dict:
@@ -282,22 +262,14 @@ class TestTheTopicGlossary:
         return yaml.safe_load(path.read_text())["topics"]
 
     def test_every_outcome_is_claimed_by_a_topic(self):
-        """An outcome nothing claims is one the map cannot show as taught, so
-        it would go missing without anybody noticing.
-
-        Several topics may claim one outcome. A descriptor sometimes bundles
-        ideas a student meets weeks apart, and cutting the topic finer is how
-        the map says so; cutting the descriptor is not ours to do."""
+        # Several topics may legitimately claim one outcome (a descriptor can
+        # bundle ideas met weeks apart); only an unclaimed outcome is an error.
         outcomes, _ = cm.load_outcomes()
         served = {o for t in self.topics().values() for o in cm.outcomes_of(t)}
         missing = sorted(set(outcomes) - served)
         assert not missing, f"no topic claims {missing}"
 
     def test_no_topic_invents_an_outcome(self):
-        """An `outcome:` has to name a real one, or it is a typo that silently
-        detaches a topic from the descriptor it claims to come from.
-
-        `PRE-` codes carry no outcome at all — see the next test."""
         outcomes, _ = cm.load_outcomes()
         for code, topic in self.topics().items():
             claimed = cm.outcomes_of(topic)
@@ -311,11 +283,8 @@ class TestTheTopicGlossary:
                 )
 
     def test_groundwork_is_marked_as_groundwork_and_says_as_much(self):
-        """Not everything a student needs is a numbered outcome. Naming the
-        kinds of triangle is nobody's learning outcome and every later rule
-        about triangles assumes it. Those topics carry a `PRE-` code so the map
-        can show the prerequisite without pretending a descriptor asked for
-        it."""
+        # Not everything a student needs is a numbered outcome (e.g. naming
+        # kinds of triangle); such topics carry a PRE- code instead of one.
         outcomes, _ = cm.load_outcomes()
         groundwork = {c for c in self.topics() if c.startswith("PRE-")}
         assert not (groundwork & set(outcomes)), (
@@ -329,7 +298,6 @@ class TestTheTopicGlossary:
             )
 
     def test_every_prerequisite_is_a_real_topic(self):
-        """A `needs` pointing nowhere is an arrow the map cannot draw."""
         topics = self.topics()
         for code, topic in topics.items():
             for need in topic.get("needs") or []:
@@ -365,8 +333,6 @@ class TestTheTopicGlossary:
             assert topic.get("uses"), f"{code} lists no applications"
 
     def test_the_descriptions_avoid_the_jargon_they_are_there_to_replace(self):
-        """A plain-English description that opens with the term itself has not
-        explained anything."""
         for code, topic in self.topics().items():
             first = topic["plain"].strip().split(".")[0].lower()
             assert not first.startswith(topic["name"].lower()), (
@@ -375,20 +341,16 @@ class TestTheTopicGlossary:
 
 
 class TestWhatTheTutorialsSayAboutTheCourse:
-    """Checks against the real tutorials, not a fixture. These are about the
-    course rather than the converter, and there is nowhere else for them."""
+    """Checks against the real tutorials, not a fixture — these are about the
+    course itself, so there is nowhere else for them to live."""
 
     def tutorials(self):
         folder = cm.ROOT / "tutorials"
         return sorted(p for p in folder.rglob("*.md"))
 
     def test_the_sequence_graph_has_no_repeated_node(self):
-        """`order` restarts at 1 in each series. When reflections moved into
-        their own, the mermaid graph came out with two nodes called T1 and an
-        arrow from one of them to itself."""
-        # The map holds several mermaid blocks; the sequence one is whichever
-        # declares T-nodes. Taking "the first block" silently tested the strand
-        # diagram instead, and passed against a map that was visibly broken.
+        # `order` restarts at 1 per series; when reflections moved into their
+        # own series, the graph came out with two T1 nodes and a self-loop.
         blocks = [
             b for b in re.findall(r"```mermaid\n(.*?)```", cm.MAP.read_text(), re.S)
             if re.search(r"^  T\d+\[", b, re.MULTILINE)
@@ -400,11 +362,8 @@ class TestWhatTheTutorialsSayAboutTheCourse:
             assert not re.search(r"^  (T\d+) --> \1$", block, re.MULTILINE)
 
     def test_no_tutorial_mentions_a_skills_demo(self):
-        """The assessments were named throughout the prose — "you are now ready
-        for Skills Demo 1", "the last tutorial before Skills Demo 2B". That ties
-        the tutorials to one institution's assessment schedule, and the schedule
-        is the thing most likely to change. A tutorial can say what a student is
-        ready to build without naming the paperwork."""
+        # Prose used to name assessments directly ("ready for Skills Demo 1"),
+        # tying tutorials to one institution's schedule — the part most likely to change.
         guilty = [
             path.relative_to(cm.ROOT)
             for path in self.tutorials()
@@ -414,12 +373,9 @@ class TestWhatTheTutorialsSayAboutTheCourse:
 
 
 class TestSeveralReleasesOfOneTutorial:
-    """A tutorial with more than one release is a folder of files.
-
-    All of them carry real frontmatter, so reading the folder naively counts one
-    tutorial several times. That is how this was found: re-releasing four
-    tutorials put two nodes called T1 in the sequence graph and turned
-    thirty-one tutorials into thirty-five."""
+    """A tutorial with several releases is a folder of files, all with real
+    frontmatter; reading the folder naively counts it several times — found
+    when re-releasing four tutorials turned thirty-one into thirty-five."""
 
     def release(self, repo, name: str, version: str, status: str = "live",
                 slug: str = "sample", heading: str = "A Real Section") -> Path:
@@ -442,7 +398,6 @@ class TestSeveralReleasesOfOneTutorial:
         assert len(cm.load_tutorials(cm.load_outcomes()[0])) == 1
 
     def test_the_newest_live_release_is_the_one_reported(self, repo):
-        """Not merely one of them — the current one."""
         old = self.release(repo, "v2026.08.23.1.md", "2026.08.23.1")
         old.write_text(old.read_text().replace('title: "Sample"', 'title: "The Old Name"'))
         new = self.release(repo, "sample.md", "2026.08.24.1")
@@ -451,7 +406,7 @@ class TestSeveralReleasesOfOneTutorial:
         assert [t.title for t in found] == ["The New Name"]
 
     def test_a_beta_release_does_not_displace_the_live_one(self, repo):
-        """Same rule build.py uses: newest live, not newest."""
+        # Must match build.py's own rule: newest live, not newest overall.
         live = self.release(repo, "v2026.08.23.1.md", "2026.08.23.1", status="live")
         self.release(repo, "sample.md", "2026.08.24.1", status="beta")
         assert cm.newest_live(sorted(

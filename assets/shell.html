@@ -4,32 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{TITLE}} — dewlab</title>
+<link rel="icon" type="image/svg+xml" href="{{FAVICON_URL}}">
 
-<!-- Cross-origin isolation, as early as this page can ask for it. GitHub
-     Pages will not let this repo set the Cross-Origin-Opener-Policy/
-     Cross-Origin-Embedder-Policy response headers a genuine Stop button
-     needs (OPEN_QUESTIONS.md, "the Web Worker migration"), so this same-
-     origin service worker adds them itself. Registered from its own script
-     tag rather than dynamically, since it reads its own URL off
-     document.currentScript to know where to register with root scope --
-     {{ROOT_BASE}} is the same relative-path-to-root every other site-wide
-     link already uses. A browser's very first visit to any page of this
-     site reloads once, right here, to pick the headers up; every page
-     after that is already covered, tutorials and dewmini alike, since a
-     service worker's scope is the origin path it registered at, not the
-     one page that happened to load this script. -->
 <script src="{{ROOT_BASE}}coi-serviceworker.js"></script>
 
-<!-- Every page boots its own Pyodide instance from the public CDN (no
-     dependency actually carries over between pages — see
-     docs/tutorial-runtime-explained.md), so a reader who lands on some
-     tutorial mid-series pays a fully cold DNS+TLS handshake to
-     cdn.jsdelivr.net before the runtime, numpy/pandas/matplotlib wheels
-     can even start downloading. `crossorigin` matters here: Pyodide's own
-     fetches are CORS requests, and a preconnect without it opens a second,
-     wasted connection instead of the one those fetches reuse. Harmless
-     when DEWLAB_PYODIDE_BASE points at a self-hosted copy instead — the
-     browser just never uses the hint. -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
@@ -41,10 +19,6 @@
 <meta name="tutorial-year" content="{{YEAR}}">
 <meta name="tutorial-series" content="{{SERIES}}">
 
-<!-- Empty except on a page that is one release of a tutorial with several,
-     where it points at the release the plain URL serves. Two versions of one
-     tutorial are near-identical pages, and without this they compete with each
-     other in search results rather than the current one winning. -->
 {{CANONICAL}}
 
 <link rel="stylesheet" href="{{KATEX_CSS_URL}}">
@@ -52,9 +26,6 @@
 <link rel="stylesheet" href="{{STYLE_URL}}">
 
 <script>
-/* Apply saved texture preferences before first paint, so a reader who chose
-   dark doesn't get a white flash on every page of the series. Kept inline and
-   tiny on purpose; the panel itself lives in tutorial-runtime.js. */
 (function () {
   try {
     var s = JSON.parse(localStorage.getItem("dewlab:texture") || "{}");
@@ -65,6 +36,8 @@
     if (s.size) r.style.setProperty("--dl-font-size", s.size + "px");
     if (s.width) r.style.setProperty("--dl-line-width", s.width + "rem");
     if (s.link) r.style.setProperty("--dl-link", s.link);
+    if (s.motion && s.motion !== "normal") r.setAttribute("data-motion", s.motion);
+    if (s.codeLineHeight) r.style.setProperty("--dl-code-line-height", s.codeLineHeight);
   } catch (e) { /* private mode, blocked storage: fall through to defaults */ }
 })();
 </script>
@@ -73,56 +46,37 @@
 <body>
 <div class="dl-page">
 
-  <!-- Masthead and chapter navigation stick together as one group, so the way
-       out of a page and the way to the next one are always on screen, and so
-       there is one height for everything below to measure against. -->
   <div class="dl-chrome" id="dl-chrome">
     <header class="dl-masthead">
       <a class="dl-wordmark" href="{{ROOT_BASE}}index.html">dewlab</a>
       <span class="dl-crumbs">{{CRUMBS}}</span>
 
-      <!-- Every panel's toggle lives here now, not scattered across the
-           page's corners — a sticky action row a reader can reach from
-           anywhere on the page, the same reason the masthead itself
-           sticks. Each of the three opens a genuine docked sidebar
-           (tutorial-style.css), not a floating card, and each panel
-           remembers whether it was left open across page navigation
-           (restoreSidebarState(), tutorial-runtime.js) on anything wider
-           than the phone breakpoint. -->
       <div class="dl-masthead-actions">
-        <!-- Starts hidden; tutorial-runtime.js reveals it only when this
-             page's manifest actually carries a glossary, a note, or a
-             dataset — a tutorial with nothing accumulated yet
-             (planning/REFERENCE_PANEL.md §6) shows no button at all, the
-             same "nothing to show, nothing to click" rule the Settings
-             panel already applies to its own empty sections below. -->
-        <button type="button" class="dl-reference-toggle" id="dl-reference-toggle"
-                aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
-          <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
-        </button>
+        <details class="dl-panels" id="dl-panels">
+          <summary class="dl-panels-toggle">
+            <span class="dl-panels-icon" aria-hidden="true"></span>Panels
+          </summary>
+          <div class="dl-panels-group" id="dl-panels-group">
+            <button type="button" class="dl-reference-toggle" id="dl-reference-toggle"
+                    aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
+              <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
+            </button>
 
-        <!-- This tutorial's whole series, browsable from any point in it,
-             not just the tutorial immediately before and after
-             (planning/SIDEBAR_CONTENT.md §4b — the "where can I go"
-             question, distinct from the reference's "what do I need right
-             now"). Starts hidden; a tutorial with no series position
-             (archived, or a practice page) has nothing to show here —
-             build.py's render_series_nav() returns an empty string, and
-             the runtime hides the button the same way it hides the
-             reference's when there is nothing to show. -->
-        <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
-                aria-expanded="false" aria-controls="dl-seriesnav" aria-label="Series" hidden>
-          <span class="dl-seriesnav-icon" aria-hidden="true"></span><span class="dl-toggle-label">Series</span>
-        </button>
+            <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
+                    aria-expanded="false" aria-controls="dl-seriesnav" aria-label="Series" hidden>
+              <span class="dl-seriesnav-icon" aria-hidden="true"></span><span class="dl-toggle-label">Series</span>
+            </button>
 
-        <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
-                aria-expanded="false" aria-controls="dl-settings" aria-label="Settings">
-          <span class="dl-settings-icon" aria-hidden="true"></span><span class="dl-toggle-label">Settings</span>
-        </button>
+            <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
+                    aria-expanded="false" aria-controls="dl-settings" aria-label="Settings">
+              <span class="dl-settings-icon" aria-hidden="true"></span><span class="dl-toggle-label">Settings</span>
+            </button>
+          </div>
+        </details>
       </div>
     </header>
 
-    <nav class="dl-nav dl-nav-top">{{NAV_PREV_NEXT}}</nav>
+    <nav class="dl-nav dl-nav-top">{{NAV_PREV_NEXT}}{{NAV_SEARCH}}</nav>
   </div>
 
   {{TOC}}
@@ -132,10 +86,6 @@
     <span class="dl-boot-dots" id="dl-boot-dots" aria-hidden="true" hidden><span></span><span></span><span></span></span>
   </div>
 
-  <!-- Announces once a cell finishes running — the ticking "Running… Xs"
-       run-line deliberately isn't itself a live region (tutorial-runtime.js,
-       startRunLineTicker()); this is the one announcement a screen reader
-       gets, the moment there's an actual result to hear about. -->
   <div class="dl-sr-only" id="dl-run-announcer" role="status" aria-live="polite"></div>
 
   <main id="dl-body">
@@ -150,44 +100,37 @@
 
 </div>
 
-<!-- One panel, several sections. Everything a reader can change about the
-     page or do with their work lives here, so there is one place to look
-     rather than a row of small buttons to learn. A section that does not
-     apply to a page is removed at load: the contents page saves no work,
-     and a downloadable copy is already the file you are reading. Progress
-     is the one exception — its toggle also governs the contents page's own
-     badges, so it stays even on a page with no cells of its own. -->
 <div class="dl-settings" id="dl-settings" role="dialog" aria-modal="false"
      aria-labelledby="dl-settings-title" hidden>
-  <div class="dl-settings-head">
-    <h2 id="dl-settings-title">Settings</h2>
-    <button type="button" class="dl-settings-close" id="dl-settings-close"
-            aria-label="Close settings">&times;</button>
+  <div class="dl-panel-sticky-head">
+    <div class="dl-settings-head">
+      <h2 id="dl-settings-title">Settings</h2>
+      <button type="button" class="dl-settings-close" id="dl-settings-close"
+              aria-label="Close settings">&times;</button>
+    </div>
+    <input type="search" class="dl-settings-search-input" id="dl-settings-search"
+           placeholder="Search settings — e.g. font size, dark mode…"
+           aria-label="Search settings" autocomplete="off">
   </div>
+  <p class="dl-panel-note dl-settings-empty" id="dl-settings-empty" hidden>Nothing matches that.</p>
 
   <section class="dl-settings-section" id="dl-settings-work">
     <h3>Your work</h3>
 
-    <!-- A student's own notes (planning/STUDENT_NOTES.md) — not the
-         author-written pedagogical notes in the reference panel, which
-         are part of the tutorial itself and the same for every reader.
-         These are one reader's own, saved in the same record as their
-         cells (notesEl, tutorial-runtime.js) and riding along on the same
-         export button below. -->
     <label class="dl-progress-notes-label" for="dl-progress-notes">Your notes</label>
     <textarea class="dl-progress-notes" id="dl-progress-notes" rows="4"
               placeholder="Anything worth writing down as you go."></textarea>
     <p class="dl-panel-note dl-progress-notes-hint">
-      Notes are saved in this browser only. Download a copy below to keep
-      them anywhere else.
+      Notes are saved in this browser, on this device. Export a copy below
+      to keep them anywhere else.
     </p>
 
     <p class="dl-progress-state" id="dl-progress-state">Saving as you go.</p>
 
     <p class="dl-panel-note">
-      Your work is kept in this browser, on this device. Nothing is sent
-      anywhere and nobody else can see it. Export a copy if you want to carry
-      it to another machine, or keep it after clearing your browser data.
+      Your work is saved in this browser, on this device. It will not
+      follow you to a different computer, and clearing your browser data
+      will clear it. Export a copy if you want to keep it anywhere else.
     </p>
 
     <div class="dl-progress-actions">
@@ -197,12 +140,7 @@
     </div>
     <input type="file" id="dl-progress-file" accept="application/json,.json" hidden>
 
-    <!-- planning/STUDENT_NOTES.md §4's larger proposal: a small marker on
-         "Export a copy" once notes have grown a fair bit since the last
-         export (updateNotesNudge(), tutorial-runtime.js). Opt-out here for
-         the same reason the progress badges toggle below is one: ambient,
-         seen without asking for it, unlike the rest of this panel. -->
-    <div class="dl-texture-row dl-texture-row-wide">
+    <div class="dl-texture-row dl-texture-row-wide" data-keywords="notes reminder export nudge">
       <span id="dl-seg-notes-nudge-label">Remind me to export new notes</span>
       <div class="dl-seg" data-notes-nudge role="radiogroup" aria-labelledby="dl-seg-notes-nudge-label">
         <button type="button" data-value="on" role="radio">on</button>
@@ -211,11 +149,6 @@
     </div>
   </section>
 
-  <!-- The live Python session behind every cell on the page — ported from
-       dewmini's own "Python" settings section (DECISIONS_LOG.md 7.108).
-       Removed at load on a page with no cells at all, same as "Your work"
-       above (initExecutionSection(), tutorial-runtime.js) — there is
-       nothing here to restart on a page that never started anything. -->
   <section class="dl-settings-section" id="dl-settings-execution">
     <h3>Running Python</h3>
     <p class="dl-panel-note" id="dl-execution-status">Not started yet — run a cell to start Python.</p>
@@ -224,26 +157,30 @@
       <button type="button" class="dl-btn" id="dl-restart-run-all"
               title="Throw away everything Python currently holds, then run every cell on this page from the top — the way to prove the page still works from a clean start">Restart &amp; run all</button>
     </div>
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="timing execution stats">
       <span id="dl-seg-run-stats-label">Run time</span>
       <div class="dl-seg" data-run-stats role="radiogroup" aria-labelledby="dl-seg-run-stats-label">
         <button type="button" data-value="on" role="radio">on</button>
         <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
+    <div class="dl-texture-row" data-keywords="staged hints help">
+      <span id="dl-seg-hints-label">Hints as you work</span>
+      <div class="dl-seg" data-staged-hints role="radiogroup" aria-labelledby="dl-seg-hints-label">
+        <button type="button" data-value="on" role="radio">on</button>
+        <button type="button" data-value="off" role="radio">off</button>
+      </div>
+    </div>
+    <div class="dl-texture-row">
+      <span id="dl-seg-hints-restart-label">After a restart</span>
+      <div class="dl-seg" data-staged-hints-restart role="radiogroup" aria-labelledby="dl-seg-hints-restart-label">
+        <button type="button" data-value="keep" role="radio">keep hints</button>
+        <button type="button" data-value="hide" role="radio">hide hints</button>
+      </div>
+    </div>
+    <p class="dl-panel-note">A hint can appear under a cell after you have run it several times without getting there. Nothing is counted against you, and nothing is sent anywhere.</p>
   </section>
 
-  <!-- Cells a reader writes for themselves — planning/PRACTICE.md §3 — kept
-       completely separate from the tutorial's own saved-work record above:
-       not tied to this tutorial's version, and not counted in the Progress
-       section below. Removed at load on a page with no cells at all, same
-       as "Your work" above (initCustomCellsSection(), tutorial-runtime.js).
-       The cells themselves live on the page — right below whichever real
-       cell a reader added one after, or in the "Try something of your
-       own" section at the very end if it wasn't added after any one cell
-       in particular — this panel only holds the actions that don't belong
-       on any single cell: loading one someone else shared, and clearing
-       all of them at once. -->
   <section class="dl-settings-section" id="dl-settings-custom-cells">
     <h3>Your own cells</h3>
 
@@ -262,12 +199,6 @@
     <input type="file" id="dl-custom-cells-file" accept="application/json,.json" hidden>
   </section>
 
-  <!-- Progress: how far a reader has gotten. Not removed on a page with no
-       cells the way "Your work" above is — the toggle here also governs
-       the contents page's own badges, and the contents page itself has no
-       cells at all, so this section has to survive there. The summary line
-       just stays hidden in that case (updateProgressSummary(),
-       tutorial-runtime.js). -->
   <section class="dl-settings-section" id="dl-settings-progress">
     <h3>Progress</h3>
 
@@ -282,9 +213,6 @@
     </div>
   </section>
 
-  <!-- Versions. Removed at load on the tutorials that have only one, which is
-       most of them: a list with a single entry is furniture, and the switch
-       below it would have nothing to switch between. -->
   <section class="dl-settings-section" id="dl-settings-versions">
     <h3>Versions</h3>
 
@@ -303,14 +231,6 @@
 
   <section class="dl-settings-section" id="dl-settings-download">{{DOWNLOAD}}</section>
 
-  <!-- Two more ways to take this page with you, built entirely at runtime
-       (initExportSection(), tutorial-runtime.js) rather than server-rendered
-       like #dl-settings-download above — deliberately its own section
-       rather than folded into that one, since build.py strips that whole
-       section's contents out of the standalone/offline export (its own
-       comment: "the offer to download it is already taken — this is the
-       download"), and these two stay just as useful *inside* an
-       already-downloaded copy. -->
   <section class="dl-settings-section" id="dl-settings-export">
     <h3>Export</h3>
     <p class="dl-panel-note">Two more ways to take this page with you.</p>
@@ -328,7 +248,7 @@
   <section class="dl-settings-section" id="dl-settings-texture">
     <h3>Texture</h3>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="dark mode light mode night mode colour scheme color scheme">
       <span id="dl-seg-theme-label">Theme</span>
       <div class="dl-seg" data-texture="theme" role="radiogroup" aria-labelledby="dl-seg-theme-label">
         <button type="button" data-value="system" role="radio">auto</button>
@@ -337,7 +257,7 @@
       </div>
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="typeface serif sans mono">
       <span id="dl-seg-font-label">Font</span>
       <div class="dl-seg" data-texture="font" role="radiogroup" aria-labelledby="dl-seg-font-label">
         <button type="button" data-value="serif" role="radio">serif</button>
@@ -346,12 +266,7 @@
       </div>
     </div>
 
-    <!-- Same data-texture="font" as the row above — a second .dl-seg
-         group sharing one key works with no JS change (initTexture()'s
-         own sync loop matches every group with this attribute, not one
-         specific element), which is what lets these sit on their own
-         line below the first three rather than crowding a six-wide row. -->
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="dyslexia dyslexic font typeface">
       <span></span>
       <div class="dl-seg" data-texture="font" role="radiogroup" aria-label="Font, further options">
         <button type="button" data-value="lexend" role="radio">Lexend</button>
@@ -359,7 +274,7 @@
       </div>
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="accessibility contrast colour blindness color blindness">
       <span id="dl-seg-contrast-label">High contrast</span>
       <div class="dl-seg" data-texture="contrast" role="radiogroup" aria-labelledby="dl-seg-contrast-label">
         <button type="button" data-value="normal" role="radio">off</button>
@@ -367,12 +282,51 @@
       </div>
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="animation motion accessibility">
+      <span id="dl-seg-motion-label">Reduce motion</span>
+      <div class="dl-seg" data-texture="motion" role="radiogroup" aria-labelledby="dl-seg-motion-label">
+        <button type="button" data-value="normal" role="radio">off</button>
+        <button type="button" data-value="reduced" role="radio">on</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row" data-keywords="icons labels button style run reset duplicate">
+      <span id="dl-seg-buttons-label">Cell buttons</span>
+      <div class="dl-seg" data-texture="buttons" role="radiogroup" aria-labelledby="dl-seg-buttons-label">
+        <button type="button" data-value="icons" role="radio">icons</button>
+        <button type="button" data-value="text" role="radio">text</button>
+        <button type="button" data-value="both" role="radio">both</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row" data-keywords="font size text size bigger smaller larger">
       <span>Size</span>
       <input type="range" id="dl-texture-size" min="16" max="24" step="1" aria-label="Text size">
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="code spacing leading line spacing">
+      <span>Code line height</span>
+      <input type="range" id="dl-texture-code-line-height" min="1.2" max="2.2" step="0.1"
+             aria-label="Space between lines of code">
+    </div>
+
+    <div class="dl-texture-row" data-keywords="tab width spaces indentation">
+      <span id="dl-seg-indent-label">Code indent</span>
+      <div class="dl-seg" data-texture="indent" data-number role="radiogroup" aria-labelledby="dl-seg-indent-label">
+        <button type="button" data-value="2" role="radio">2 spaces</button>
+        <button type="button" data-value="4" role="radio">4 spaces</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row" data-keywords="gutter numbering">
+      <span id="dl-seg-linenumbers-label">Line numbers</span>
+      <div class="dl-seg" data-texture="linenumbers" role="radiogroup" aria-labelledby="dl-seg-linenumbers-label">
+        <button type="button" data-value="off" role="radio">off</button>
+        <button type="button" data-value="on" role="radio">on</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row" data-keywords="line width column width line length narrow wide reading width">
       <span id="dl-seg-width-label">Width</span>
       <div class="dl-seg" data-texture="width" data-number role="radiogroup" aria-labelledby="dl-seg-width-label">
         <button type="button" data-value="34" role="radio">narrow</button>
@@ -381,13 +335,13 @@
       </div>
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="line width column width line length">
       <span></span>
       <input type="range" id="dl-texture-width" min="26" max="60" step="1"
              aria-label="Line width, finer than the three presets">
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="masthead minimal full">
       <span id="dl-seg-header-label">Header</span>
       <div class="dl-seg" data-texture="header" role="radiogroup" aria-labelledby="dl-seg-header-label">
         <button type="button" data-value="full" role="radio">full</button>
@@ -395,7 +349,7 @@
       </div>
     </div>
 
-    <div class="dl-texture-row">
+    <div class="dl-texture-row" data-keywords="link color hyperlink colour">
       <span>Links</span>
       <input type="color" id="dl-texture-link" aria-label="Link colour">
     </div>
@@ -404,51 +358,76 @@
   </section>
 </div>
 
-<!-- The reference: definitions, functions, formulas, notes, and datasets
-     this specific page carries (planning/REFERENCE_PANEL.md,
-     planning/SIDEBAR_CONTENT.md §4), rendered by tutorial-runtime.js from
-     this page's own manifest — there is no server round trip, and a page
-     with nothing to show never reveals the toggle that would open this.
-     A genuine docked sidebar, full height, left edge (tutorial-style.css)
-     — not a floating card — sharing that edge with the navigation panel
-     below, which still genuinely conflicts with it (opening either closes
-     the other, since two docked panels on the same edge would sit on top
-     of one another); Settings docks to the right instead and can stay
-     open alongside this one. -->
 <div class="dl-reference" id="dl-reference" role="dialog" aria-modal="false"
      aria-labelledby="dl-reference-title" hidden>
-  <div class="dl-reference-head">
-    <h2 id="dl-reference-title">Reference</h2>
-    <button type="button" class="dl-reference-close" id="dl-reference-close"
-            aria-label="Close reference">&times;</button>
+  <div class="dl-panel-sticky-head">
+    <div class="dl-reference-head">
+      <h2 id="dl-reference-title">Reference</h2>
+      <button type="button" class="dl-reference-close" id="dl-reference-close"
+              aria-label="Close reference">&times;</button>
+    </div>
+    <input type="search" class="dl-reference-search-input" id="dl-reference-search"
+           placeholder="Search this page's terms…" aria-label="Search this page's reference"
+           autocomplete="off" hidden>
+    <!-- Math Basics and Python Basics are the same on every page
+         (build.py's load_math_basics()/load_python_basics()), so
+         neither tab is ever hidden. -->
+    <div class="dl-reference-tabs" role="tablist" aria-label="Reference sections">
+      <button type="button" class="dl-reference-tab" id="dl-reference-tab-reference"
+              role="tab" aria-selected="true" aria-controls="dl-reference-pane-reference">Reference</button>
+      <button type="button" class="dl-reference-tab" id="dl-reference-tab-basics"
+              role="tab" aria-selected="false" tabindex="-1"
+              aria-controls="dl-reference-pane-basics">Math Basics</button>
+      <button type="button" class="dl-reference-tab" id="dl-reference-tab-python"
+              role="tab" aria-selected="false" tabindex="-1"
+              aria-controls="dl-reference-pane-python">Python Basics</button>
+    </div>
   </div>
-  <p class="dl-panel-note">
-    The glossary below is what this page — and everything before it in the
-    series — has covered so far. Nothing there is something you have not
-    been taught yet. Notes and datasets, where this page has any, belong to
-    this page alone.
-  </p>
-  <input type="search" class="dl-reference-search-input" id="dl-reference-search"
-         placeholder="Search this page's terms…" aria-label="Search this page's reference"
-         autocomplete="off" hidden>
-  <div class="dl-reference-groups" id="dl-reference-groups"></div>
-  <p class="dl-panel-note dl-reference-empty" id="dl-reference-empty" hidden>Nothing matches that.</p>
+  <div class="dl-reference-pane" id="dl-reference-pane-reference" role="tabpanel"
+       aria-labelledby="dl-reference-tab-reference">
+    <p class="dl-panel-note">
+      The glossary below is what this page — and everything before it in the
+      series — has covered so far. Nothing there is something you have not
+      been taught yet. Notes and datasets, where this page has any, belong to
+      this page alone.
+    </p>
+    <div class="dl-reference-groups" id="dl-reference-groups"></div>
+    <p class="dl-panel-note dl-reference-empty" id="dl-reference-empty" hidden>Nothing matches that.</p>
+    <p class="dl-panel-note" id="dl-reference-nothing-yet" hidden>
+      Nothing accumulated here yet — check back once this series has covered
+      some ground.
+    </p>
+  </div>
+  <div class="dl-reference-pane" id="dl-reference-pane-basics" role="tabpanel"
+       aria-labelledby="dl-reference-tab-basics" hidden>
+    <p class="dl-panel-note">
+      Plain definitions for the words and symbols maths uses, on their own —
+      not tied to what this series has covered, since these are about the
+      language itself rather than what it's being used to do.
+    </p>
+    <div class="dl-reference-groups" id="dl-basics-groups"></div>
+    <p class="dl-panel-note dl-reference-empty" id="dl-basics-empty" hidden>Nothing matches that.</p>
+  </div>
+  <div class="dl-reference-pane" id="dl-reference-pane-python" role="tabpanel"
+       aria-labelledby="dl-reference-tab-python" hidden>
+    <p class="dl-panel-note">
+      Plain definitions for Python's own words and punctuation, on their
+      own — not tied to what this series has covered, since these are
+      about the language itself rather than what it's being used to do.
+    </p>
+    <div class="dl-reference-groups" id="dl-python-groups"></div>
+    <p class="dl-panel-note dl-reference-empty" id="dl-python-empty" hidden>Nothing matches that.</p>
+  </div>
 </div>
 
-<!-- The navigation panel: this tutorial's whole series (planning/
-     SIDEBAR_CONTENT.md §4b), rendered server-side by build.py's
-     render_series_nav() — static per page, so unlike the reference there
-     is nothing here for the runtime to assemble from a manifest. Docked to
-     the left, the same edge as the reference, and mutually exclusive with
-     it for exactly that reason: two panels docked to the same edge at once
-     would sit on top of each other. Settings docks to the right and does
-     not conflict with either. -->
 <div class="dl-seriesnav" id="dl-seriesnav" role="dialog" aria-modal="false"
      aria-labelledby="dl-seriesnav-title" hidden>
-  <div class="dl-seriesnav-head">
-    <h2 id="dl-seriesnav-title">This series</h2>
-    <button type="button" class="dl-seriesnav-close" id="dl-seriesnav-close"
-            aria-label="Close series navigation">&times;</button>
+  <div class="dl-panel-sticky-head">
+    <div class="dl-seriesnav-head">
+      <h2 id="dl-seriesnav-title">This series</h2>
+      <button type="button" class="dl-seriesnav-close" id="dl-seriesnav-close"
+              aria-label="Close series navigation">&times;</button>
+    </div>
   </div>
   <nav aria-label="Every tutorial in this series">
     {{SERIES_NAV}}
@@ -459,6 +438,7 @@
      any HTML-significant character survives the round trip untouched. -->
 <script type="application/json" id="dewlab-manifest">{{MANIFEST_JSON}}</script>
 <script type="module" src="{{RUNTIME_URL}}"></script>
+<script type="module" src="{{SEARCH_JS_URL}}"></script>
 {{PAGE_SCRIPT}}
 </body>
 </html>

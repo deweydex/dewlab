@@ -75,6 +75,14 @@ basket.add("mistake", -5)
 print(basket.items)
 ```
 
+```hint
+after: 3 identical errors
+Which of the four moves is the line the error points at doing: storing a
+value, choosing a path, or repeating a step? If Python says it cannot find
+a name, is `self.` in front of that name where the class stores it, and is
+it missing where the error is?
+```
+
 `self.items = []` stores a value, just like `total = 0` did above. This
 time, though, the value lives on the object instead of in a plain
 variable.

@@ -112,6 +112,122 @@ you fix a typo without wiping what students have written.
 `hint` is optional. It appears behind a small **?** on the cell, so it is
 available without being in the way.
 
+### Hints that wait for an attempt
+
+A `hint:` line is there from the start. A `hint` fence is not: it stays
+hidden until the cell above it has been run, and has failed, some number of
+times. Write it straight after the cell, with nothing but the text a stuck
+reader should see:
+
+````markdown
+```python exec
+id: your-add
+# Your add(a, b)
+```
+
+```hint
+What does the last line of the error say Python could not do? Which line
+of your cell is it pointing at, and what did you expect that line to
+produce?
+```
+
+```hint
+after: 12 errors
+title: some steps
+1. The outer loop picks a row index, `i`.
+2. The inner loop picks a column index, `j`.
+3. The result at `[i][j]` is `a[i][j] + b[i][j]`.
+
+**Think about:** why the inner loop's range comes from `a[0]`, not `a`.
+```
+````
+
+The first fold appears after the fifth run that raises an error. The
+second appears after the twelfth. Each arrives closed, in normal flow under
+the cell, with a small dot on the cell's bar until it is opened. Nothing is
+counted on screen, and nothing leaves the browser. The reader can turn the
+hints off in Settings.
+
+Three optional header lines, in the same `key: value` shape as a cell's
+own:
+
+- `for:` names the cell the hint belongs to. Without it, the hint belongs
+  to the exec cell just above it.
+- `after:` says when the hint appears. The default is `5 errors`. The
+  signals the page tracks, and how to write them:
+
+  | Write | Appears once… |
+  |---|---|
+  | `5 errors` | five runs have raised, in total |
+  | `3 identical errors` | three runs in a row have ended in the same error |
+  | `2 unchanged runs` | the reader has run the very same code twice more |
+  | `8 runs` | the cell has run eight times |
+  | `3 failed checks` | a `check()` in the cell has failed on three runs in a row |
+  | `2 minutes` | two minutes have passed since the first run |
+
+  Join several with a comma or `and`: `3 identical errors and 2 minutes`.
+  Every term must hold. The `errors:5` spelling works too, if you prefer
+  it. The build fails on a term it does not know.
+- `title:` is the fold's summary line. The default is *Let's slow down a
+  moment…*.
+
+Inside the fence is markdown: lists, emphasis, inline code and `$…$`
+maths all render. A code block inside a hint is indented four spaces
+rather than fenced.
+
+A cell may also carry an `expect:` line, a Python expression that is true
+once the reader has got where the cell was leading:
+
+````markdown
+```python exec
+id: your-add
+expect: add([[1]], [[2]]) == [[3]]
+# Your add(a, b)
+```
+````
+
+It is evaluated after every run of that cell, in the page's own
+namespace. Once it holds, no further hint appears for the cell. Anything
+that goes wrong evaluating it counts as "not yet", so a name the reader
+has not defined is fine. The reader never sees the expression, and it
+never affects the run itself. A `check()` in the cell does the same job
+for the `failed checks` signal.
+
+A cell may also carry a `name:` line, a short label shown beside its
+identity pill — a handle a reader can point at ("the `filter-evening`
+cell") instead of its number, and what a traceback names the cell in
+place of its own id, once given:
+
+````markdown
+```python exec
+id: filter-evening
+name: filter-evening
+readings[readings["evening"] > 14]
+```
+````
+
+Optional, and most cells don't need one. Keep it short — it sits beside
+a small pill, not in a sentence — and give it no `=` in it: a line at
+the top of a cell shaped like `word: value` is read as a header line,
+the same way `id:`/`hint:`/`expect:` already are, so `name: str = "Ada"`
+as a cell's own first line of code would be misread as a `name:` header
+rather than run. Writing `=` in the label itself is what tells the build
+this was never a header — a cell named `total = value` gets read as
+code, not as a name, so keep the label to a plain phrase or a variable's
+own bare name, the way `filter-evening` is above.
+
+**What each stage is for.** The first fold asks. It is a question about
+what the reader can see and what they expected, not an instruction: *What
+did you expect this line to print? What does the last line of the error
+name?* Its job is the habit, and the habit is asking that question before
+changing anything. The second fold gives steps, in the shape of the
+`dl-hint` fold below. A third, if there is one, gives the shape of the
+code with a gap in it. None of them gives the answer: an answer belongs in
+a `dl-answer` fold the reader opens for themselves, and is never triggered.
+Not every cell earns a staged hint. A page where every cell produces one
+teaches readers to ignore them. The style guide's section 3 has the
+reasoning.
+
 ---
 
 ## Code students only read

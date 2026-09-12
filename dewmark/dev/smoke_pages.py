@@ -67,7 +67,6 @@ def main():
         browser = playwright.chromium.launch(**launch)
         context = browser.new_context(accept_downloads=True)
 
-        # ---- the sitting -------------------------------------------------
         page = context.new_page()
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.goto(student_page.resolve().as_uri())
@@ -117,10 +116,6 @@ def main():
         print("sitting and submission: ok "
               f"({caught.value.suggested_filename})")
 
-        # ---- restoring ---------------------------------------------------
-        # Close the first window before reopening, as a real crash or an
-        # accidental close would; a still-open first window would rightly
-        # trip the second-window guard.
         page.close()
         again = context.new_page()
         again.on("pageerror", lambda e: errors.append(str(e)))
@@ -132,7 +127,6 @@ def main():
             '[data-answer="a3.roots"] input[data-box="1"]') == "4"
         print("restore after reload: ok")
 
-        # ---- marking -----------------------------------------------------
         bench = context.new_page()
         bench.on("pageerror", lambda e: errors.append(str(e)))
         bench.goto((DEWMARK / "workbench" / "index.html")

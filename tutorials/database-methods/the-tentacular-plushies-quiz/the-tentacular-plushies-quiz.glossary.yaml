@@ -1,0 +1,55 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second and last tutorial of "Practice" (series: practice,
+# practice.order.yaml). Checked against sql-practice's own glossary --
+# no overlap; COUNT() is not repeated here even though it appears inside
+# this tutorial's own check() cells, since it is only ever used there,
+# never taught in this tutorial's own prose the way sql-practice taught
+# it. Zero single-asterisk emphasis again (dev/curriculum_map.py's
+# EMPHASIS_RE), so every candidate below came from reading the tasks,
+# hints and check cells directly.
+#
+# New: check() (this module's first use of it -- the opening prose
+# explains what a check cell does and that nothing is graded or
+# recorded, the same job it does everywhere else on this site),
+# PRAGMA table_info (explained in-line in a code comment and then
+# pushed on the reader directly, "Try this: run PRAGMA table_info(...)
+# in the SQL box", as a real debugging tool rather than incidental use),
+# and FOREIGN KEY ... REFERENCES (a-second-table-and-a-join taught the
+# *concept* of a foreign key but never this literal constraint syntax --
+# task 2's hint is the first place the module actually writes it out).
+#
+# Left out: NOT NULL, which appears only inside "One way to do it"'s
+# solution code, never required by a task or explained anywhere in
+# prose -- incidental use in a worked example, not something taught.
+# db.execute(...) and .fetchone() are the same kind of incidental use,
+# internal to the check() cells' own Python and never asked of the
+# reader to write themselves.
+#
+# Same series.yaml note as sql-practice.glossary.yaml: this module has
+# no tutorials/database-methods/series.yaml chaining "practice" after
+# the two teaching series, so build.py's own cumulative reference for
+# this page will only carry sql-practice's COUNT() plus this file's own
+# three entries -- not the WHERE/ORDER BY/JOIN/etc. a reader has
+# actually already met by the time they reach the last page in the
+# module.
+entries:
+  - term: "check()"
+    kind: function
+    definition: "Tells you whether your work meets what a task asks for. Not graded, not recorded anywhere."
+    example: "check(row_count >= 3, True)"
+
+  - term: "PRAGMA table_info"
+    kind: keyword
+    definition: >
+      PRAGMA table_info lists a table's columns, one row for each
+      column. An empty result means the table does not exist yet.
+    example: "PRAGMA table_info(products);"
+
+  - term: "FOREIGN KEY"
+    kind: keyword
+    definition: >
+      FOREIGN KEY marks a column as one that names a row in another
+      table. REFERENCES follows it, naming the table and column the key
+      points to.
+    example: "FOREIGN KEY (product_id) REFERENCES products(id)"

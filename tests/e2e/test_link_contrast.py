@@ -1,19 +1,4 @@
-"""Link colour against its background, measured rather than eyeballed.
-
-The rule this file protects: **body-sized text meets WCAG AA, 4.5:1.**
-
-Links are most of the text on the contents page, and the brand orange
-was 3.5:1 on the light background — under the ordinary AA minimum, for
-the reader planning/PEDAGOGICAL_STYLE_GUIDE.md section 1 describes. The
-High contrast toggle already fixed it there; the default did not.
-
-No single value serves both themes. The brand orange is 4.96:1 on the
-dark background and fails on light; a value dark enough for light drops
-to 3.66:1 on dark. So the stylesheet carries one per theme, and this
-checks both.
-
-    python3 -m pytest tests/e2e/test_link_contrast.py -q
-"""
+"""Regression check: the brand orange link colour was once 3.5:1 on light backgrounds, under the WCAG AA 4.5:1 minimum, so this measures both themes' actual values rather than trusting one shared colour."""
 
 from __future__ import annotations
 
@@ -112,9 +97,6 @@ def base_url(site):
 def test_a_link_meets_aa_against_its_own_background(browser, base_url, scheme):
     page = browser.new_page(color_scheme=scheme)
     try:
-        # A link in the tutorial's own prose, not the first anchor on the
-        # page: that one is the header wordmark, which takes its colour
-        # from --dl-fg and passes whatever --dl-link is doing.
         page.goto(f"{base_url}/tutorials/{MODULE}/contrast.html")
         page.wait_for_selector('a[href="https://example.org"]')
         measured = page.evaluate(

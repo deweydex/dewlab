@@ -1,14 +1,6 @@
-"""The series navigation panel, in a real browser — planning/SIDEBAR_CONTENT.md §4b.
-
-A dedicated, tiny site build rather than the shared rendering-tour fixture:
-this needs its own series order, and no self-hosted Pyodide — every fixture
-tutorial here is prose-only, and tutorial-runtime.js's own boot() skips
-loading Pyodide entirely when a page has no cells
-(CONTENT_AND_FILE_ARCHITECTURE.md) — so unlike most of this directory, this
-file runs without `python3 dev/fetch_pyodide.py` first.
-
-    python3 -m pytest tests/e2e/test_series_nav.py -q
-"""
+"""planning/SIDEBAR_CONTENT.md §4b. Every fixture here is prose-only, so
+tutorial-runtime.js never boots Pyodide for these pages — unlike most of
+tests/e2e/, this file runs without `python3 dev/fetch_pyodide.py` first."""
 
 from __future__ import annotations
 
@@ -51,8 +43,7 @@ def _tutorial(root: Path, slug: str, title: str = "A Title") -> None:
 
 
 def _archive(root: Path, slug: str) -> None:
-    """Take a tutorial out of the reading order without deleting it — the
-    one way a tutorial ends up with nowhere in a series to sit."""
+    """The one way a tutorial ends up with nowhere in a series to sit."""
     path = root / "tutorials" / MODULE / f"{slug}.md"
     path.write_text(path.read_text().replace(
         "version: 2026.08.23.1\n", "version: 2026.08.23.1\nstatus: archived\n"))
@@ -65,10 +56,8 @@ def _set_order(root: Path, slugs: list[str]) -> None:
 
 @pytest.fixture()
 def site(tmp_path, monkeypatch):
-    """A real build, real assets, isolated content — ROOT/TUTORIALS/OUT move
-    to tmp_path; ASSETS/SHELL/SETUP/DATA stay pointed at the real repository,
-    read-only, so the page that loads is running the actual runtime and CSS
-    rather than a stand-in for them."""
+    """Only ROOT/TUTORIALS/OUT move to tmp_path; ASSETS/SHELL/SETUP/DATA stay
+    pointed at the real repo, so the page runs the actual runtime and CSS."""
     (tmp_path / "tutorials" / MODULE).mkdir(parents=True)
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
@@ -104,6 +93,31 @@ def base_url(site):
         thread.join(timeout=5)
 
 
+def _open_panel(actor, selector: str) -> None:
+    """Reference/Series/Settings' toggles now collapse behind one
+    "Panels" control in the masthead (shell.html's
+    <details class="dl-panels">) rather than always showing — expand it
+    first if it isn't already, then click the actual target. Checked via
+    #dl-panels' own `open` property rather than the target's own
+    visibility, so this never mistakes "already open" for "not open" and
+    toggles it shut again right before the click that was supposed to
+    land. Left expanded once opened (no auto-collapse), so this is only
+    needed once per page load, not before every toggle click."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
+
+
+def _toggle_shows(actor, selector: str) -> bool:
+    """Whether a masthead toggle has content to show, via its own
+    `hidden` attribute (tutorial-runtime.js's own content-presence
+    signal) rather than Playwright's is_visible()/is_hidden() — those now
+    also depend on whether "Panels" happens to be expanded, which is a
+    question about the masthead's own UI state, not this page's
+    content."""
+    return actor.get_attribute(selector, "hidden") is None
+
+
 class TestVisibility:
     def test_a_tutorial_outside_any_series_hides_the_toggle(self, site, browser, base_url):
         _tutorial(site, "solo", "Solo")
@@ -114,7 +128,7 @@ class TestVisibility:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/solo.html")
-        assert page.is_hidden("#dl-seriesnav-toggle")
+        assert not _toggle_shows(page, "#dl-seriesnav-toggle")
         context.close()
 
     def test_a_tutorial_in_a_series_shows_the_toggle(self, site, browser, base_url):
@@ -125,7 +139,7 @@ class TestVisibility:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_visible("#dl-seriesnav-toggle")
+        assert _toggle_shows(page, "#dl-seriesnav-toggle")
         context.close()
 
 
@@ -148,48 +162,45 @@ class TestOpeningAndClosing:
 
     def test_clicking_the_toggle_opens_it(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-seriesnav-toggle")
+        _open_panel(page, "#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
         context.close()
 
     def test_escape_closes_it(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-seriesnav-toggle")
+        _open_panel(page, "#dl-seriesnav-toggle")
         page.keyboard.press("Escape")
         assert page.is_hidden("#dl-seriesnav")
         context.close()
 
     def test_the_close_button_closes_it(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-seriesnav-toggle")
+        _open_panel(page, "#dl-seriesnav-toggle")
         page.click("#dl-seriesnav-close")
         assert page.is_hidden("#dl-seriesnav")
         context.close()
 
     def test_clicking_outside_closes_it(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-seriesnav-toggle")
+        _open_panel(page, "#dl-seriesnav-toggle")
         page.click("main#dl-body")
         assert page.is_hidden("#dl-seriesnav")
         context.close()
 
     def test_opening_the_series_nav_does_not_close_settings(self, site, browser, base_url):
-        # Settings is right-anchored; the series nav is left-anchored
-        # (tutorial-style.css) — genuinely different corners, so a reader
-        # can have both open together (see DECISIONS_LOG.md on this).
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         assert page.is_visible("#dl-settings")
-        page.click("#dl-seriesnav-toggle")
+        _open_panel(page, "#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
         assert page.is_visible("#dl-settings")
         context.close()
 
     def test_opening_settings_does_not_close_the_series_nav(self, site, browser, base_url):
         context, page = self.open_page(site, browser, base_url)
-        page.click("#dl-seriesnav-toggle")
+        _open_panel(page, "#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         assert page.is_visible("#dl-settings")
         assert page.is_visible("#dl-seriesnav")
         context.close()
@@ -197,8 +208,7 @@ class TestOpeningAndClosing:
 
 class TestMutualExclusionWithReference:
     """The reference and series nav are the one pair that still conflicts —
-    they share the same left-anchored corner (PR #65 moved the reference
-    there; the series nav panel joined it). Settings anchors to the right
+    they share the same left-anchored corner. Settings anchors to the right
     and no longer force-closes (or gets force-closed by) either one."""
 
     def test_opening_the_series_nav_closes_the_reference(self, site, browser, base_url):
@@ -212,9 +222,9 @@ class TestMutualExclusionWithReference:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
-        page.click("#dl-seriesnav-toggle")
+        _open_panel(page, "#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
         assert page.is_hidden("#dl-reference")
         context.close()
@@ -230,9 +240,9 @@ class TestMutualExclusionWithReference:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-seriesnav-toggle")
+        _open_panel(page, "#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
-        page.click("#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
         assert page.is_hidden("#dl-seriesnav")
         context.close()
@@ -248,7 +258,7 @@ class TestContent:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/two.html")
-        page.click("#dl-seriesnav-toggle")
+        _open_panel(page, "#dl-seriesnav-toggle")
         items = page.eval_on_selector_all(
             "#dl-seriesnav .dl-seriesnav-series li", "els => els.map(e => e.textContent)")
         assert items == ["1. One", "2. Two", "3. Three"]
@@ -262,7 +272,7 @@ class TestContent:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/two.html")
-        page.click("#dl-seriesnav-toggle")
+        _open_panel(page, "#dl-seriesnav-toggle")
         current = page.query_selector("#dl-seriesnav .dl-seriesnav-current")
         assert current is not None
         assert "Two" in current.inner_text()
@@ -277,7 +287,7 @@ class TestContent:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/two.html")
-        page.click("#dl-seriesnav-toggle")
+        _open_panel(page, "#dl-seriesnav-toggle")
         page.click("#dl-seriesnav .dl-seriesnav-series li a")
         page.wait_for_url(f"{base_url}/tutorials/{MODULE}/one.html")
         context.close()
@@ -292,7 +302,7 @@ class TestMobile:
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        assert page.is_visible("#dl-seriesnav-toggle")
+        assert _toggle_shows(page, "#dl-seriesnav-toggle")
         context.close()
 
     def test_opening_it_shows_a_sheet_anchored_to_the_bottom_edge(self, site, browser, base_url):
@@ -303,7 +313,7 @@ class TestMobile:
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-seriesnav-toggle")
+        _open_panel(page, "#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
         style = page.eval_on_selector(
             "#dl-seriesnav",

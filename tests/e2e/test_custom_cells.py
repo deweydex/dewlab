@@ -1,27 +1,4 @@
-"""Browser tests for a reader's own cells (planning/PRACTICE.md §3-5).
-
-Most of what matters here is that this feature stays a separate system
-from the tutorial's own saved-work record — its own storage key, its own
-array, never counted anywhere the real cells are counted. The tests below
-check that directly (reading `dewlab.customCellsKey()`'s own storage,
-never `dewlab.readSaved()`) rather than assuming it from the code.
-
-A second thing worth its own coverage: a custom cell is no longer only
-addable from one button at the bottom of the page — a divider sits after
-every real cell and every custom cell (`.dl-insert`), each offering "+
-Code" and "+ Text", and where a cell was added (its `anchor`) is what a
-reload uses to put it back in the same place. See
-`docs/tutorial-runtime-explained.md`'s "Custom cells" section for the
-full mechanics.
-
-The one thing genuinely worth a self-contained fixture (like
-test_student_notes_prose_only.py's) is confirming the feature is *absent*
-on a page with zero cells — that case never boots Pyodide at all, so it
-would be wasteful to route it through the shared `page` fixture, which
-waits for a real Pyodide boot before it even yields.
-
-    python3 -m pytest tests/e2e/test_custom_cells.py -q
-"""
+"""Browser tests for a reader's own cells (planning/PRACTICE.md §3-5)."""
 
 from __future__ import annotations
 
@@ -73,9 +50,8 @@ def wait_for_saved_count(page, count):
 
 
 def add_via_trailing_divider(page, kind="Code"):
-    """Clicks the trailing section's own divider — the general "add one
-    somewhere, no particular cell in mind" entry point every custom-cells
-    page always has, even with zero cells added yet."""
+    """The trailing divider is the "add one somewhere" entry point every
+    custom-cells page has, even before any custom cell exists."""
     divider = page.locator(f'.dl-insert[data-anchor="{TRAILING_ANCHOR}"]').first
     divider.locator(".dl-insert-btn", has_text=kind).click()
 
@@ -85,6 +61,21 @@ def clean_storage(page):
     page.evaluate("localStorage.clear()")
     yield page
     page.evaluate("localStorage.clear()")
+
+
+def _open_panel(actor, selector: str) -> None:
+    """Reference/Series/Settings' toggles now collapse behind one
+    "Panels" control in the masthead (shell.html's
+    <details class="dl-panels">) rather than always showing — expand it
+    first if it isn't already, then click the actual target. Checked via
+    #dl-panels' own `open` property rather than the target's own
+    visibility, so this never mistakes "already open" for "not open" and
+    toggles it shut again right before the click that was supposed to
+    land. Left expanded once opened (no auto-collapse), so this is only
+    needed once per page load, not before every toggle click."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
 
 
 class TestDividersAppearEverywhere:
@@ -176,10 +167,8 @@ class TestAddingACustomCell:
         assert "<strong>bold</strong>" in rendered
 
     def test_a_rendered_text_cells_chrome_is_invisible_until_touched(self, clean_storage):
-        """DECISIONS_LOG.md 7.115, planning/CELL_IDENTITY.md §4 — a rendered
-        text cell reads like part of the page, not a code widget, until a
-        reader actually touches it. Ported from compose/dewmini-style.css's
-        own .dm-cell-text rule."""
+        """CELL_IDENTITY.md §4: a rendered text cell reads like part of the
+        page, not a code widget, until a reader actually touches it."""
         page = clean_storage
         add_via_trailing_divider(page, "Text")
         page.wait_for_selector(".dl-cell-text", timeout=5_000)
@@ -189,7 +178,7 @@ class TestAddingACustomCell:
 
         page.mouse.move(5, 5)
         page.wait_for_timeout(150)  # let the 0.1s opacity transition settle
-        bar = page.locator(".dl-cell-text .dl-cell-bar")
+        bar = page.locator(".dl-cell-text .dl-cell-head")
         assert bar.evaluate("el => getComputedStyle(el).opacity") == "0"
 
         page.hover(".dl-cell-text")
@@ -197,21 +186,19 @@ class TestAddingACustomCell:
         assert bar.evaluate("el => getComputedStyle(el).opacity") == "1"
 
     def test_the_view_edit_button_toggles_while_the_textarea_is_still_focused(self, clean_storage):
-        """A click on the button, not a blur-then-click, is the case worth
-        covering: clicking straight out of the textarea (rather than
-        tabbing or clicking elsewhere first) used to blur it — which
-        auto-rendered — and then the button's own handler saw the
-        already-flipped state and toggled straight back to editing."""
+        """Clicking straight from the textarea to the button used to blur it
+        first (auto-rendering), so the handler saw the already-flipped state
+        and toggled straight back to editing."""
         page = clean_storage
         add_via_trailing_divider(page, "Text")
         page.wait_for_selector(".dl-cell-text", timeout=5_000)
         page.click(".dl-cell-text .dl-doc-editor")
         page.keyboard.type("Some notes")
         btn = page.locator(".dl-cell-text .dl-btn-preview")
-        assert btn.text_content() == "view"
+        assert btn.locator(".dl-btn-label").text_content() == "View"
         btn.click()
         assert page.eval_on_selector(".dl-cell-text .dl-doc-editor", "el => el.hidden") is True
-        assert btn.text_content() == "edit"
+        assert btn.locator(".dl-btn-label").text_content() == "Edit"
         btn.click()
         assert page.eval_on_selector(".dl-cell-text .dl-doc-editor", "el => el.hidden") is False
 
@@ -234,9 +221,8 @@ class TestAddingACustomCell:
         assert page.locator(".dl-cell-custom").first.get_attribute("data-anchor") == second_id
 
     def test_an_orphaned_anchor_falls_back_to_the_trailing_section(self, clean_storage):
-        """A tutorial update can remove the real cell a custom cell was
-        anchored to — PRACTICE.md §3's "survives a version change
-        untouched" means the cell is never dropped, only repositioned."""
+        """PRACTICE.md §3: a custom cell survives a version change even if
+        the real cell it was anchored to is removed — repositioned, not dropped."""
         page = clean_storage
         key = page.evaluate("globalThis.dewlab.customCellsKey()")
         page.evaluate(
@@ -261,6 +247,16 @@ class TestAddingACustomCell:
         page.keyboard.type("print('from a custom cell')")
         page.click(".dl-cell-custom .dl-btn-run")
         page.wait_for_selector(".dl-cell-custom .dl-output .dl-stdout", timeout=120_000)
+        page.wait_for_function(
+            """([key, text]) => {
+              const raw = localStorage.getItem(key);
+              if (!raw) return false;
+              const saved = JSON.parse(raw);
+              return saved.some((c) => (c.output || "").includes(text));
+            }""",
+            arg=[page.evaluate("globalThis.dewlab.customCellsKey()"), "from a custom cell"],
+            timeout=10_000,
+        )
 
         reload_and_wait(page)
         assert "from a custom cell" in page.inner_text(".dl-cell-custom .dl-output")
@@ -303,7 +299,7 @@ class TestSharingAndLoadingACustomCell:
         shared_file = tmp_path / "shared.json"
         shared_file.write_text(json.dumps({"dewlab-custom-cell": 1, "code": "1 + 1"}))
 
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.wait_for_selector("#dl-settings-custom-cells", timeout=5_000)
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
@@ -323,11 +319,12 @@ class TestSharingAndLoadingACustomCell:
         shared_file.write_text(
             json.dumps({"dewlab-custom-cell": 1, "code": "0", "id": "custom-not-mine"})
         )
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
         fc_info.value.set_files(str(shared_file))
         page.wait_for_selector(".dl-cell-custom", timeout=5_000)
+        wait_for_saved_count(page, 1)
         saved = custom_cells_storage(page)
         assert saved[0]["id"] != "custom-not-mine"
         assert saved[0]["id"].startswith("custom-")
@@ -338,18 +335,19 @@ class TestSharingAndLoadingACustomCell:
         shared_file.write_text(
             json.dumps({"dewlab-custom-cell": 1, "type": "text", "code": "# A note"})
         )
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
         fc_info.value.set_files(str(shared_file))
         page.wait_for_selector(".dl-cell-text", timeout=5_000)
+        wait_for_saved_count(page, 1)
         assert custom_cells_storage(page)[0]["type"] == "text"
 
     def test_a_file_that_is_not_a_shared_cell_is_rejected(self, clean_storage, tmp_path):
         page = clean_storage
         bad_file = tmp_path / "not-a-cell.json"
         bad_file.write_text(json.dumps({"hello": "world"}))
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
         fc_info.value.set_files(str(bad_file))
@@ -363,7 +361,7 @@ class TestClearingAllCustomCells:
         add_via_trailing_divider(page, "Code")
         page.wait_for_selector(".dl-cell-custom", timeout=5_000)
 
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.once("dialog", lambda d: d.dismiss())
         page.click("#dl-custom-cells-clear")
         page.wait_for_timeout(300)
@@ -378,7 +376,7 @@ class TestClearingAllCustomCells:
             "document.querySelectorAll('.dl-cell-custom').length === 2", timeout=5_000
         )
 
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.once("dialog", lambda d: d.accept())
         page.click("#dl-custom-cells-clear")
         page.wait_for_timeout(300)
@@ -391,7 +389,7 @@ class TestExport:
     def test_print_button_calls_window_print(self, clean_storage):
         page = clean_storage
         page.evaluate("window.__printed = false; window.print = () => { window.__printed = true; }")
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.click("#dl-print-pdf")
         assert page.evaluate("window.__printed") is True
 
@@ -402,7 +400,7 @@ class TestExport:
         page.click(".dl-cell-custom .cm-content")
         page.keyboard.type("exported = True")
 
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         with page.expect_download() as dl_info:
             page.click("#dl-export-ipynb")
         nb_path = tmp_path / "exported.ipynb"
@@ -416,9 +414,6 @@ class TestExport:
         )
 
     def test_ipynb_export_with_zero_cells_shows_a_status_message_not_a_download(self, clean_storage):
-        # This tutorial always has at least its own authored cells, so
-        # exercise the guard directly rather than needing a zero-cell
-        # fixture — the same function a real zero-cell page would call.
         page = clean_storage
         page.evaluate(
             """() => {
@@ -431,14 +426,6 @@ class TestExport:
         page.wait_for_selector("#dl-status:not([hidden])", timeout=5_000)
         assert "No cells to export" in page.inner_text("#dl-status")
 
-
-# --------------------------------------------------------- a page with no cells
-#
-# Self-contained, no Pyodide needed — same reasoning
-# test_student_notes_prose_only.py already established: a prose-only
-# tutorial's own boot() never loads Pyodide at all, so there's no reason
-# to route this through the shared `page` fixture, which waits for a real
-# boot before it even yields.
 
 MODULE = "custom-cells-fixtures"
 
@@ -497,6 +484,10 @@ def _serve(out_dir: Path):
 
 
 class TestNoCustomCellsOnAProseOnlyPage:
+    """A zero-cell page never boots Pyodide at all, so this builds its own
+    site rather than going through the shared `page` fixture, which waits
+    for a real boot before it yields."""
+
     def test_neither_the_section_nor_the_settings_entry_appear(self, prose_only_site, browser):
         site = prose_only_site
         _tutorial(site, "one", "One")
@@ -509,7 +500,7 @@ class TestNoCustomCellsOnAProseOnlyPage:
             page.goto(f"{url}/tutorials/{MODULE}/one.html")
             assert page.locator("#dl-custom-cells").count() == 0
             assert page.locator(".dl-insert").count() == 0
-            page.click("#dl-settings-toggle")
+            _open_panel(page, "#dl-settings-toggle")
             assert page.is_hidden("#dl-settings-custom-cells")
             # Print/export still applies to a prose-only page — only the
             # custom-cells machinery is what's gated on cells.length.

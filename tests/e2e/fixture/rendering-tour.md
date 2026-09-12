@@ -66,6 +66,28 @@ df = pd.DataFrame({
 df[df["life_expectancy"] > 75]
 ```
 
+## SQL
+
+A `sql exec` cell's code is SQL text, not Python — it runs against the same
+shared `db` every SQL cell on this page uses, and a `select` renders as a
+table exactly like a DataFrame does.
+
+```sql exec
+id: sql-basics
+CREATE TABLE creatures (name TEXT, legs INTEGER);
+INSERT INTO creatures VALUES ('spider', 8), ('hen', 2), ('dog', 4);
+SELECT * FROM creatures WHERE legs > 2;
+```
+
+A Python cell reads the same `db` a SQL cell just wrote to.
+
+```python exec
+id: sql-read-from-python
+import pandas as pd
+
+pd.read_sql("SELECT COUNT(*) AS n FROM creatures", db)
+```
+
 ## matplotlib
 
 A figure renders as an image.
@@ -104,6 +126,77 @@ id: error-traceback
 total = 0
 for value in [1, 2, "three"]:
     total += value
+```
+
+## A hint that waits for an attempt
+
+Run this cell as it is and it fails. The hint below stays hidden until the
+same error has come up twice; a second one after three errors in all; and
+none of that once `total` is 6.
+
+```python exec
+id: staged-hints
+expect: total == 6
+total = 0
+for value in [1, 2, 3]:
+    total = total + valeu
+```
+
+```hint
+after: 2 identical errors
+What does the last line of the message say Python could not find? Is that
+word spelled the same way on the line above it?
+```
+
+```hint
+after: 3 errors
+title: some steps
+1. Read the name in the error message.
+2. Find that name in your cell, letter by letter.
+
+Then $t = \sum v$ once it runs.
+```
+
+## Site editor
+
+A live HTML/CSS/JS editor: `hero`'s two panes are grouped by their shared
+`site:` name.
+
+```html site
+id: site-hero-html
+site: hero
+<button id="go">Click me</button>
+<p id="out">not yet</p>
+```
+
+```css site
+id: site-hero-css
+site: hero
+#go { font-weight: bold; }
+```
+
+```js site
+id: site-hero-js
+site: hero
+document.getElementById("go").addEventListener("click", () => {
+  document.getElementById("out").textContent = "clicked";
+});
+console.log("script loaded");
+```
+
+An HTML+CSS-only editor gets no JavaScript pane, no Run button, and no
+console.
+
+```html site
+id: site-quiet-html
+site: quiet
+<p>No script here.</p>
+```
+
+```css site
+id: site-quiet-css
+site: quiet
+p { color: teal; }
 ```
 
 ## Checking your own answer

@@ -1,37 +1,22 @@
 # dewmini as a workbench: two rails, tabs, and tools for looking at your own work
 
-Written in response to a direct instruction: tabs, sidebars on both sides
-carrying file imports and "variable inspectors and other pedagogical
-tools", a fuller reference with search and category navigation on the
-left, data import from somewhere like Our World in Data, and a right-hand
-side simplified away from settings and towards notes and pedagogy.
-Widgets — the one real capability gap — were explicitly deferred.
+dewmini gains two docked side panels, tabbed notebooks, a reference with
+search and filters, a variable inspector, and dataset import. Widgets are
+the one capability gap and stay deferred.
 
-This document is the design and the record of what was built to it.
+This document is the design.
 
 ---
 
 ## 1. The tension worth naming first
 
-Every planning document dewmini has says the same thing: it is the small
-one. `MINI_IDE_AND_DEWMINI_NEXT.md` §3's entire finding was "nothing that
-makes it bigger", and the retirement addendum insisted the goal was
-gaining the other workspace's *capability*, not its *weight*.
+dewmini's earlier documents treat smallness as the point — `MINI_IDE_AND_DEWMINI_NEXT.md`
+§3 found "nothing that makes it bigger" — because dewmini used to be the
+small tool next to a larger sibling. That sibling (Mini IDE) is retired.
+dewmini is now the only place a student writes Python outside a tutorial,
+and the only place a project can grow, so it cannot also refuse to grow.
 
-What is asked for here is more surface: two rails, tabs, a reference, an
-inspector. Taken naively, that is the cockpit those documents warned
-against — and it would be the second time this repository talked itself
-into one.
-
-It is also the right call, and the documents themselves say why: this is
-a decision only the person the tool is for gets to make, and the reason
-the smallness rule existed was that dewmini had a larger sibling to be
-small *against*. That sibling is gone. dewmini is now the only place a
-student writes Python outside a tutorial, and the only place a project
-can grow. A tool with no alternative cannot also refuse to grow.
-
-So the rule the smallness discipline becomes, rather than the rule it
-was:
+The rule that replaces the old smallness discipline:
 
 > **Quiet by default, everything one press away.**
 
@@ -41,48 +26,37 @@ who came to check `6 * 7` sees a heading, a toolbar, and a cell — exactly
 what they see today. Someone building a project opens both rails and has
 a workbench. The capability is additive; the weight is opt-in.
 
-Every decision below is checked against that sentence.
-
 ---
 
 ## 2. What goes where, and why
 
-Three panels across two edges, replacing today's two-on-one-edge.
-
-**The division is by subject.** The left-hand panel describes the project
-the student is working on: what files it contains, and what values its
-code has produced. The right-hand panel holds what is outside the
-project: reference material and settings.
+Three panels across two edges, replacing today's two-on-one-edge, divided
+by subject: the left panel describes the project the student is working
+on, the right holds what is outside it.
 
 **Left — Workbench (`#dm-workbench`). The project.**
-Files, variables and notes. A student opens it with a question about the
-work in front of them: what have I got, where did my `.db` file go, what
-was I thinking last time.
+Files, variables and notes — what a student opens with a question about
+the work in front of them.
 
 **Right — Library (`#dm-library`). Everything outside the project.**
-Reference, data and help: everything that is *lookup*. A student opens it
-with a question about the world outside their notebook. What does
-`enumerate` do, what data can I get, what does Shift+Enter do.
+Reference, data and help — what a student opens with a question about the
+world outside their notebook.
 
 **Right — Settings (`#dl-settings`). Configuration, demoted.**
-Still there, still docked right, but no longer the headline. Notes and
-Files moved out of it, which is the substance of the instruction to make
-one side "more into notes and other pedagogical ideas".
+Still docked right, but no longer the headline; Notes and Files moved out
+of it into the Workbench and Library.
 
-The pairing follows the tutorial pages exactly, mirrored: the two
-right-docked panels are mutually exclusive because they occupy the same
+The two right-docked panels are mutually exclusive, since they share an
 edge; the left one is independent, so a reader can have the reference
-open beside their own files. That is not a new mechanism — the shared
-stylesheet has carried `data-dl-panel-left`/`data-dl-panel-right` and
-independent width variables since `DECISIONS_LOG.md` 7.83. dewmini had
-been overriding it with a single-panel simplification (7.84, correct at
-the time, since both its panels docked right). Removing that override is
-most of the two-rail work.
+open beside their own files. The shared stylesheet already supports this
+(`data-dl-panel-left`/`data-dl-panel-right`, independent width variables,
+`DECISIONS_LOG.md` 7.83) — dewmini had overridden it with a single-panel
+simplification (7.84) that no longer applies now both its panels don't
+dock to the same edge.
 
-Help stops being its own panel and becomes a Library section, on
-`SIDEBAR_CONTENT.md` §4's own reasoning: extend a panel rather than add
-one, because panels that mutually close each other are more moving parts
-than they are worth. Three toggles, not four.
+Help is a Library section rather than its own panel, per
+`SIDEBAR_CONTENT.md` §4: extend a panel rather than add one. Three
+toggles, not four.
 
 ---
 
@@ -92,27 +66,21 @@ than they are worth. Three toggles, not four.
 Storage moves from `dewmini:cells:v1` (a bare array) to
 `dewmini:notebooks:v1` (`{active, notebooks: [{id, name, cells}]}`), with
 a one-way migration that folds any existing saved array into a first
-notebook called "Notebook". Nobody loses work; that migration is tested.
+notebook called "Notebook". That migration is tested.
 
-Each notebook carries its own name, which is also its export filename —
-so "Keep a copy" downloads the tab you are looking at, named what the tab
-is called, rather than one global filename for everything.
+Each notebook carries its own name, which is also its export filename, so
+"Keep a copy" downloads the tab you are looking at under its own name.
 
 **One Python session, shared by every tab — deliberately.** Real Jupyter
-gives each notebook its own kernel; dewmini has one interpreter, and
-giving each tab its own namespace would mean threading a namespace
-identifier through every engine call and across the worker boundary — a
-change to the shared engine, which `DECISIONS_LOG.md` 7.97 established is
-a change to every surface that runs Python. That is a poor trade for an
-overnight change made without the person it is for available to weigh it.
-
-The honest alternative is to make the sharing *visible* rather than
-surprising, which the Workbench does for free: the Variables section
-shows one namespace, and says in plain words that every tab shares it. A
+gives each notebook its own kernel; dewmini has one interpreter, and a
+namespace per tab would mean threading a namespace identifier through
+every engine call and across the worker boundary — a change to the
+shared engine, which `DECISIONS_LOG.md` 7.97 established touches every
+surface that runs Python. Instead the sharing is made visible: the
+Variables section shows one namespace and says so in plain words. A
 student who defines `data` in one tab and finds it in another has been
-told, and can see why. Recorded here as a real decision with a real
-alternative, not an oversight — if it turns out to confuse people, the
-per-tab namespace is the fix and this paragraph is the brief for it.
+told, and can see why. If that turns out to confuse people, a per-tab
+namespace is the fix.
 
 ---
 
@@ -120,55 +88,37 @@ per-tab namespace is the fix and this paragraph is the brief for it.
 
 The tutorial pages' Reference panel is assembled per page under one hard
 rule (`REFERENCE_PANEL.md` §1): never show a reader something they have
-not been taught yet. A reference that spoils next week's function names
-is worse than no reference.
+not been taught yet.
 
-dewmini's reference **drops that rule**, and this needs to be a stated
-decision rather than an accident of reuse. The rule exists to protect a
-reader's position in a sequence. A student in an open workspace has no
-position in a sequence — that is what the workspace *is*. Someone who
-opens dewmini to try an idea is already off the rails the curriculum
-lays, and a reference that hid two-thirds of itself on the grounds that
-they had not reached tutorial 31 yet would be actively unhelpful.
+dewmini's reference **drops that rule**. The rule protects a reader's
+position in a curriculum sequence; a student in an open workspace has no
+such position — that is what the workspace *is*. So dewmini shows the
+union of every term from every tutorial's glossary, deduplicated on
+`(term, kind)` — 248 entries today, from 43 glossary files — grouped by
+the five kinds the schema defines (concept, function, operator, formula,
+keyword), with search across both terms and definitions. Category
+navigation and search make 248 entries navigable rather than a wall.
 
-So dewmini gets the union: every term from every tutorial's glossary,
-deduplicated on `(term, kind)` — 248 entries today, from 43 glossary
-files — grouped by the five kinds the schema already defines (concept,
-function, operator, formula, keyword), with search across both terms and
-definitions. Category navigation and search are what make 248 entries
-navigable rather than a wall.
-
-Each entry names the tutorial that introduced it, but does **not** link
-to it. This file ships inside dewmini's offline bundle, which carries no
-tutorials at all, so a link would work on the hosted site and 404 for
-every offline reader — and a reference that sends a student somewhere
-broken is worse than one that tells them where to look.
+Each entry names the tutorial that introduced it but does **not** link to
+it: this file ships inside dewmini's offline bundle, which carries no
+tutorials, so a link would 404 for every offline reader.
 
 Generated at build time into `assets/reference-index.json` by
 `write_reference_index()`, from the same `own_glossary()` the tutorial
-pages use. One source of truth: a glossary edit reaches both surfaces, and
-neither can drift from the other.
+pages use — one source of truth, so a glossary edit reaches both
+surfaces.
 
-**Settled (DECISIONS_LOG.md 7.104), on a better reason than this one.**
-Josh confirmed the union, arguing from the reader rather than from the tool:
-dewmini has no way of knowing what a student has been taught. The spoiler
-rule assumes the page knows where its reader has got to — a tutorial page
-does, from its own place in the series; dewmini cannot, because nothing is
-recorded anywhere. Hiding two thirds of the reference would mean guessing
-that, wrongly, against someone who may have finished the whole course. That
-narrows what would reopen this: not "if dewmini becomes more curriculum
--shaped", but only "if dewmini gains a way to know", which would mean
-tracking readers — refused here on separate grounds.
+**Settled (`DECISIONS_LOG.md` 7.104):** dewmini has no way of knowing
+what a student has been taught, so hiding two-thirds of the reference
+would mean guessing that, wrongly, against someone who may have finished
+the whole course. What would reopen this is not dewmini becoming more
+curriculum-shaped, but dewmini gaining a way to know where a reader is —
+which would mean tracking readers, refused here on separate grounds.
 
 ### 4a. The filters, and why none of them is a field anyone maintains
 
-Added after the first pass, on Josh's ask for subject and level toggles —
-and reshaped by his own suggestion, which is the better idea: *"the layers
-are actually a great proxy for beginner intermediate advanced. That way if
-we change the tree later (which we inevitably will) it automatically
-changes the search."*
-
-So all four facets are read off data that exists for another purpose:
+Four facets, each read off data that exists for another purpose, so none
+needs hand-maintenance and none can drift from the tree it describes:
 
 | Facet | Read from | Consequence |
 |---|---|---|
@@ -177,43 +127,35 @@ So all four facets are read off data that exists for another purpose:
 | Topic | `topic-groups.yaml` | a new group gets a chip without a code change |
 | Kind | the glossary schema | unchanged |
 
-Nothing is tagged by hand, which is the whole point: a hand-kept facet
-drifts from the thing it describes the first time someone edits one and
-not the other. Level uses the **deepest** outcome a tutorial covers, not
-the shallowest — the shallowest rates a tutorial by its easiest moment,
-which put 150 of 222 terms in "beginner" and would tell a student in week
-one that a tutorial needing four layers of groundwork is approachable.
+Level uses the **deepest** outcome a tutorial covers, not the shallowest
+— the shallowest rates a tutorial by its easiest moment, which put 150 of
+222 terms in "beginner" and would tell a student in week one that a
+tutorial needing four layers of groundwork is approachable.
 
 Subject and level sit on the surface; topic and kind fold into a
-`<details>` that expands **in flow**, pushing the results down rather than
-covering them — asked for directly, and measured in a test rather than
-eyeballed. The summary reports what is on inside it, because a folded row
-that is silently filtering is a trap.
+`<details>` that expands **in flow**, pushing the results down rather
+than covering them, and reports what is on inside its summary — a folded
+row that is silently filtering is a trap.
 
-`DECISIONS_LOG.md` 7.101 has the band cut-points and the reasoning.
+`DECISIONS_LOG.md` 7.101 has the band cut-points.
 
 ---
 
 ## 5. Variables, and why an inspector is a teaching tool
 
-The gap this closes is small to describe and large in practice: a student
-runs a cell, something happens, and the only evidence is whatever they
-remembered to print. Variables that exist but were never printed are
-invisible. "Did that actually work?" has no answer short of typing the
-name and running again.
+Without one, a student runs a cell, something happens, and the only
+evidence is whatever they remembered to print — a variable that exists
+but was never printed is invisible.
 
-The Workbench's Variables section lists what is in the session:
-name, type, and a one-line summary — a DataFrame's shape, a list's
-length, a number's value — refreshed after every run. It separates a
-student's own data from the functions and modules that share the
-namespace, so what they made is at the top and the furniture is tucked
-below.
+The Workbench's Variables section lists what is in the session — name,
+type, and a one-line summary (a DataFrame's shape, a list's length, a
+number's value) — refreshed after every run, with a student's own data
+separated from the functions and modules that share the namespace.
 
 The introspection is Python (`describe_globals()` in
-`tutorial_tools.py`), not JavaScript, for three reasons: it is where
-`_page_globals` lives; it returns only strings, so nothing crosses the
-worker boundary as a proxy; and it is unit-testable under plain CPython,
-which the JavaScript half is not.
+`tutorial_tools.py`), not JavaScript: it is where `_page_globals` lives,
+it returns only strings so nothing crosses the worker boundary as a
+proxy, and it is unit-testable under plain CPython.
 
 ---
 
@@ -224,34 +166,29 @@ real source, licence and description, and inserts working starter code
 into the notebook when picked. It covers the three datasets already in
 `data/`, and a curated set of Our World in Data releases.
 
-**The remote half carries a caveat, stated rather than hidden.** A
-browser will only fetch a file from another site if that site permits it
-(the CORS rule). Our World in Data's CSV endpoints are widely used from
-browsers and are expected to permit it — but *this* was built in a
-sandbox whose network policy blocks `ourworldindata.org` outright, so the
-fetch could not be tried even once. Twice now this repository has shipped
-a claim about something it never tested (`DECISIONS_LOG.md` 7.92: two
-offline bundles that could not be opened at all), so the claim is not
-being made a third time.
+**The remote half carries a caveat.** A browser only fetches a file from
+another site if that site permits it (CORS). Our World in Data's CSV
+endpoints are widely used from browsers and are expected to permit it,
+but this was built in a sandbox whose network policy blocks
+`ourworldindata.org` outright, so the fetch could not be tried even once
+— and this repository has twice shipped an untested network claim before
+(`DECISIONS_LOG.md` 7.92), so it isn't happening a third time.
 
-What was built instead assumes nothing: `load_csv()` now accepts a full
-URL as well as a local name, and when a remote fetch fails it raises an
-error that *explains* — that the other site has to allow it, and that the
-reliable route is to download the file and add it through the Workbench's
-Files section. That failure path is itself a lesson about how the web
-works, rather than a dead end. `tests/MANUAL_CHECKLIST.md` carries the
-one check nobody here could run: open dewmini on a real network, pick a
-remote dataset, and see which way it goes.
+`load_csv()` now accepts a full URL as well as a local name; when a
+remote fetch fails it raises an error explaining that the other site has
+to allow it, and that the reliable route is to download the file and add
+it through the Workbench's Files section. `tests/MANUAL_CHECKLIST.md`
+carries the one check nobody here could run: open dewmini on a real
+network, pick a remote dataset, and see which way it goes.
 
 ---
 
 ## 7. Smaller things, from the same review
 
-- **Undo for a destructive import.** Picking an `.ipynb` replaced the
-  whole notebook with no confirmation and no way back, and because saving
-  is immediate, the previous work was gone. Imports now land in a *new
-  tab* rather than over your work — which tabs make possible, and which
-  is better than the confirmation dialog that was the alternative.
+- **Undo for a destructive import.** Picking an `.ipynb` used to replace
+  the whole notebook with no confirmation and no way back. Imports now
+  land in a *new tab* instead — better than a confirmation dialog, and
+  something tabs make possible.
 - **Shift+Enter runs and advances**, matching every notebook tool a
   student will meet later; Ctrl/Cmd+Enter runs in place.
 - **Find and replace** in the editor, which CodeMirror has always
@@ -266,16 +203,13 @@ remote dataset, and see which way it goes.
   raise on the hosted page.
 - **A namespace per tab** — §3.
 - **`micropip` package installation** — the next ceiling a self-directed
-  project hits, and untouched here.
+  project hits.
 - **Notebooks saved into the mounted filesystem** — they remain in
-  browser storage. Tabs make this more attractive, not less; it is the
-  obvious next step.
+  browser storage. Tabs make this more attractive, not less.
 
 ---
 
 ## 9. What was verified, and how
-
-Not asserted — run:
 
 1. **Unit tests.** `describe_globals()` over every type it claims to
    summarise, including a value whose `__repr__` raises; and
@@ -283,70 +217,67 @@ Not asserted — run:
    presence in the offline bundle.
 2. **A real build.** `python3 build.py --clean`, with the index emitted
    (248 entries) and the bundle carrying it.
-3. **A real browser**, which is the part the decision log keeps saying
-   was missing. Twelve new tests in
+3. **A real browser.** Twelve tests in
    `tests/e2e/test_dewmini_workbench.py` drive Chromium against a
-   self-hosted Pyodide: tabs keeping their own cells across a switch,
-   the migration from pre-tabs storage, both rails open at once,
-   same-edge panels excluding each other, a rail surviving a click on
-   your own code, reference search and kind filters, a dataset writing
-   its own cell, and the inspector reading variables out of live Python.
+   self-hosted Pyodide: tabs keeping their own cells across a switch, the
+   migration from pre-tabs storage, both rails open at once, same-edge
+   panels excluding each other, a rail surviving a click on your own
+   code, reference search and kind filters, a dataset writing its own
+   cell, and the inspector reading variables out of live Python.
 4. **The downloaded bundle, served and opened** the way a student would
    — 248 terms, six datasets, no failed requests.
-5. **Two screen widths**, by screenshot: 1440px with both rails open,
-   and 375px, where the rails become bottom sheets and nothing scrolls
+5. **Two screen widths**, by screenshot: 1440px with both rails open, and
+   375px, where the rails become bottom sheets and nothing scrolls
    sideways.
 
-Two things this could not verify, both named where they matter rather
-than buried here: remote dataset fetching (§6, and in
-`tests/MANUAL_CHECKLIST.md`), and the two `test_stop_button.py` failures
-that were already failing on `main` before any of this — an interrupt
-timing out under this sandbox's CPU, not a regression.
+Two things this could not verify: remote dataset fetching (§6, and
+`tests/MANUAL_CHECKLIST.md`), and two pre-existing `test_stop_button.py`
+failures — an interrupt timing out under this sandbox's CPU, not a
+regression.
 
 ---
 
 ## 10. Site: an `.html` file opens as a small website (added later, `DECISIONS_LOG.md` 7.121)
 
-Not part of the original instruction above — added afterward, once the
-notebook's own HTML/CSS/JavaScript cell types existed and raised an
-obvious follow-on question: since dewmini can already run all three, can
-it also *serve* them together, the way a real static site is three real
-files rather than three cells?
+Once the notebook's own HTML/CSS/JavaScript cell types existed, the
+obvious follow-on was serving them together, the way a real static site
+is three real files rather than three cells.
 
-**A tab kind, not a fourth panel.** The first design for this put three
-fixed editors in their own Workbench section. It was built, worked, and
-was thrown away before it was ever committed, because `main` had by then
-already given Files (§2) the thing that section was reinventing in
-miniature: `openWorkspaceFile()` opens a real file into a tab of its own,
-with a debounced write back to the file it came from. A second copy of
-that mechanism next to the one Files already has is duplication, not a
-feature — so Site is instead a third value of `VIEWS`, the same enum
-`.py`'s File view already introduced, alongside `CELLS` and `FILE`.
-Opening an `.html` from Files opens it as a site the same way opening a
-`.py` opens it as a file.
+**A tab kind, not a fourth panel.** The first design put three fixed
+editors in their own Workbench section; it was thrown away before it was
+committed, once Files (§2) already had `openWorkspaceFile()`, which opens
+a real file into a tab of its own with a debounced write back to the file
+it came from — a second copy of that mechanism would be duplication, not
+a feature. Site is instead a third value of `VIEWS`, alongside `CELLS`
+and `FILE`. Opening an `.html` from Files opens it as a site the same way
+opening a `.py` opens it as a file.
 
-**No fixed three files.** An `.html` file pairs with a `.css` and a
-`.js` that share its own base name — not three fixed names — and
-neither has to exist: a site with no styling and no script is still a
-site. Files' own flat
-list (§2's "a compact Settings section is the wrong place for a full
-recursive tree," `DECISIONS_LOG.md` 7.88) shows these as the ordinary
-files they are; nothing about Site hides them from it, unlike the first
-design's now-abandoned `site/` subfolder.
+**No fixed three files.** An `.html` file pairs with a `.css` and a `.js`
+that share its own base name — not three fixed names — and neither has to
+exist. Files' own flat list (§2) shows these as the ordinary files they
+are, unlike the first design's now-abandoned `site/` subfolder.
 
 **Split screen, not a Render button.** Editors on one side, a live
 sandboxed `<iframe sandbox="allow-scripts">` on the other (the same
 isolation the Web cell already uses), updating on every keystroke. A Web
-cell's own Render button suits a notebook cell answering a one-shot
-question inside a wider document; a site is what a reader keeps looking
-at continuously while they build it, closer to an ordinary
-code-and-preview IDE than to a cell — argued for directly, not assumed.
+cell's Render button suits a notebook cell answering a one-shot question;
+a site is what a reader keeps looking at continuously while they build
+it, closer to an ordinary code-and-preview IDE than to a cell.
 
 Verified in a real browser: opening an `.html` from Files renders a
 split-screen tab reflecting its real content; a same-base-name `.css`/
 `.js` pair opens beside it, including a script mutating the DOM the HTML
-half produced; a lone `.html` with no siblings still opens; typing in
-any pane updates the preview without a separate press; the CSS and JS
-halves each write back to their own file, readable from a Python cell in
+half produced; a lone `.html` with no siblings still opens; typing in any
+pane updates the preview without a separate press; the CSS and JS halves
+each write back to their own file, readable from a Python cell in
 another tab; the toolbar's cell-only controls hide for a site tab and
 reappear on a notebook tab; and a site tab survives a full page reload.
+
+**Added later (`DECISIONS_LOG.md` 7.134): a console, and Run for
+JavaScript.** The right-hand column is now the preview with a console
+under it: what the site's script printed, and every uncaught error with
+the pane and line it came from, a Go to line button, and a plain-language
+second line for the common errors. HTML and CSS stay live; the
+JavaScript pane runs on Run or Ctrl/Cmd+Enter, and the preview keeps the
+last-run script until then. Ported in shape from dewstack's site editor,
+where the pair was decided first.

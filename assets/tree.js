@@ -1,18 +1,4 @@
-/* The topic tree: every topic in planning/curriculum/topics.yaml, what
- * needs what, and what each one is for.
- *
- * Nodes and edges are positioned by build.py and arrive as data in the page —
- * there is no layout to do here and nothing to fetch. What this file adds is
- * the three things a static picture cannot do: move around it, look closer, and
- * open a topic to read about it.
- *
- * Deliberately dependency-free. A pan-and-zoom library would be larger than the
- * whole of this and would still need the same forty lines of pointer handling.
- */
 
-/* Low enough that the whole vertical tree fits a phone. The old floor of 0.35
- * was set against a tree 756px tall; this one is 1768, and a floor that stops
- * "fit" from fitting is worse than small text you can zoom into. */
 const MIN_SCALE = 0.2;
 const MAX_SCALE = 2.4;
 
@@ -26,12 +12,7 @@ function readData() {
   }
 }
 
-/* --------------------------------------------------------------- drawing */
-
 function edgePath(from, to, node) {
-  /* Out of the bottom of the earlier topic and into the top of the later one.
-   * Prerequisites always run downwards, so an edge never has to double back and
-   * every curve can use the same shape. */
   const x1 = from.x + node.w / 2;
   const y1 = from.y + node.h;
   const x2 = to.x + node.w / 2;
@@ -101,8 +82,6 @@ function draw(data, canvas) {
   return byCode;
 }
 
-/* ------------------------------------------------------- pan and zoom */
-
 function controlView(frame, canvas, data) {
   const view = { x: 0, y: 0, scale: 1 };
 
@@ -139,11 +118,6 @@ function controlView(frame, canvas, data) {
   }
 
   function fit() {
-    /* Fit the width and go to the top, rather than squeezing the whole tree
-     * into the frame. The tree is deliberately taller than it is wide, so
-     * fitting its height would shrink every label past reading. Starting at
-     * the top also starts where the tree does: nothing up there needs
-     * anything. */
     const box = frame.getBoundingClientRect();
     view.scale = Math.min(1, (box.width - 32) / data.width);
     view.scale = Math.max(MIN_SCALE, view.scale);
@@ -189,13 +163,7 @@ function controlView(frame, canvas, data) {
   return { fit, zoomAt, view, apply, clamp };
 }
 
-/* ------------------------------------------------------------- the panel */
-
 function opensUp(node, byCode) {
-  /* What this topic unlocks. The map's whole reason for existing is a student
-   * asking "where can I go next?", and that question is answered by the edges
-   * pointing away from a topic rather than towards it — which nothing in the
-   * panel said until now. */
   const out = [];
   for (const other of byCode.values()) {
     if (other.needs.includes(node.code)) out.push(other);
@@ -258,8 +226,6 @@ function showDetail(node, byCode, panel) {
     (opens ? `<h3>Opens up</h3><ul class="dl-tree-opens">${opens}</ul>` : "") +
     (state || "");
 }
-
-/* ------------------------------------------------------------------ start */
 
 function start() {
   const data = readData();

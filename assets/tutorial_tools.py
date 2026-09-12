@@ -29,6 +29,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import html
+import json
 import io
 import linecache
 import math
@@ -37,16 +38,8 @@ import sys
 import traceback
 import warnings
 
-# Force matplotlib's non-interactive backend before it is ever imported. dewlab
-# captures figures itself, as PNGs written into the cell's output area, rather
-# than letting a canvas backend draw wherever it likes on the page.
 os.environ.setdefault("MPLBACKEND", "AGG")
 
-# That backend has no window to open, so matplotlib warns when a student calls
-# plt.show(). The figure appears anyway — dewlab renders it — which makes the
-# warning purely alarming: a scarlet block under a plot that worked. dewlab
-# replaces show() with its own (see _patch_pyplot_show); this covers the gap in
-# a cell that imports pyplot and calls show() before that replacement lands.
 warnings.filterwarnings(
     "ignore", message="FigureCanvasAgg is non-interactive", category=UserWarning
 )
@@ -64,9 +57,6 @@ __all__ = [
     "run_query",
 ]
 
-# --------------------------------------------------------------------------
-# Environment
-# --------------------------------------------------------------------------
 
 try:  # pragma: no cover - exercised in the browser, stubbed in unit tests
     import js as _js
@@ -77,16 +67,6 @@ except ImportError:
     _js = None
     _create_proxy = None
     IN_BROWSER = False
-
-
-# --------------------------------------------------------------------------
-# Output sinks
-#
-# A sink is "where this cell's output goes". The browser sink appends real
-# elements to the cell's output div; the recording sink keeps the markup in a
-# list so tests can assert on it. Everything above this line generates markup
-# and does not care which one it is talking to.
-# --------------------------------------------------------------------------
 
 
 """These three sink classes are a small example of "duck typing": they
@@ -109,7 +89,6 @@ class _RecordingSink:
         self._stream_class: str | None = None
         self._stream_text: str = ""
 
-    # -- streaming text (stdout/stderr) ------------------------------------
 
     def stream(self, css_class: str, text: str) -> None:
         if self._stream_class != css_class:
@@ -126,7 +105,6 @@ class _RecordingSink:
             self._stream_class = None
             self._stream_text = ""
 
-    # -- discrete blocks ---------------------------------------------------
 
     def append_html(self, markup: str):
         self.close_stream()
@@ -203,8 +181,7 @@ class _MessageSink:
 
     `append_html()` always returns `None`: there is no live element for a
     widget to find itself again through. That is a real, deliberate gap, not
-    an oversight — see `text_input`/`dropdown`/`button`'s own guard below and
-    DECISIONS_LOG.md 7.77."""
+    an oversight — see `text_input`/`dropdown`/`button`'s own guard below."""
 
     def __init__(self, emit):
         self._emit = emit
@@ -231,33 +208,24 @@ class _MessageSink:
         self._emit("clear", None, None, None)
 
 
-# --------------------------------------------------------------------------
-# Cell state
-# --------------------------------------------------------------------------
-
-
 class _CellContext:
-    def __init__(self, cell_id: str, sink):
+    def __init__(self, cell_id: str, sink, label: str | None = None):
         self.cell_id = cell_id
         self.sink = sink
         self.widget_seq = 0
         self.figures_rendered: set[int] = set()
-        self.filename = cell_filename(cell_id)
+        self.filename = cell_filename(cell_id, label)
         # (emission count, value) of the most recent check(), so a cell ending
         # in a check does not print a bare True/False under its own verdict.
         self.last_check: tuple[int, bool] | None = None
+        self.checks: list[tuple[str | None, bool]] = []
+        self.last_error: tuple[str, str] | None = None
 
 
 _current: _CellContext | None = None
 
-# Every cell on a page shares one namespace, in document order — the notebook
-# model. This does not persist across pages: each tutorial page is its own
-# Pyodide instance, so a setup cell re-executes on every page load.
 _page_globals: dict = {}
 
-# What a student typed into a widget, keyed by (cell_id, widget_id). Re-running
-# a cell rebuilds its widgets from scratch, so without this every re-run would
-# silently discard the reader's input.
 _widget_values: dict[tuple[str, str], object] = {}
 
 # Where this page's shared CSV data lives, relative to the page. Set by the
@@ -305,11 +273,6 @@ class _StreamWriter(io.TextIOBase):
 
     def writable(self) -> bool:  # type: ignore[override]
         return True
-
-
-# --------------------------------------------------------------------------
-# Value rendering
-# --------------------------------------------------------------------------
 
 
 def _pandas():
@@ -361,13 +324,6 @@ def _is_figure(value) -> bool:
     return mpl is not None and isinstance(value, mpl.Figure)
 
 
-# Axis chrome is drawn in one neutral grey rather than the current theme's
-# foreground. A theme-matched ink would look better right up until the reader
-# switches theme, at which point every already-rendered figure would be wrong —
-# the PNG is baked, and keeping every figure open for the life of the page just
-# to repaint it is not worth it. This grey holds about 4.15:1 against both the
-# light and the dark page background, so it is readable either way and never
-# becomes wrong.
 _FIGURE_INK = "#7a7a7a"
 
 
@@ -525,22 +481,28 @@ def _flush_figures() -> None:
     plt.close("all")
 
 
-# --------------------------------------------------------------------------
-# Errors
-# --------------------------------------------------------------------------
-
 _CELL_FILENAME_PREFIX = "<cell "
 
 
-def cell_filename(cell_id: str) -> str:
+def cell_filename(cell_id: str, label: str | None = None) -> str:
     """The pseudo-filename a cell's code is compiled under.
 
     Per cell rather than one shared name, for two reasons: a traceback then
     says which cell it came from, and each cell's source can be registered in
     `linecache` under its own key without a stale entry from another cell
-    surfacing the wrong line.
+    surfacing the wrong line. `label`, when given, replaces `cell_id`
+    entirely, in `linecache`'s own key as well as what a reader sees —
+    unlike an id, a label is not guaranteed unique (a reader can name two
+    dewmini cells the same thing), so two same-named cells do share one
+    `linecache` entry. That's harmless for either cell's own run: this
+    module always re-registers a cell's source immediately before running
+    it and formats its traceback immediately after, before any other cell
+    gets a turn, so the entry a run's own traceback reads back is always
+    its own. It would only surface a wrong line for a traceback formatted
+    well after the fact, from a stored exception object — nothing in this
+    module does that today.
     """
-    return f"{_CELL_FILENAME_PREFIX}{cell_id}>"
+    return f"{_CELL_FILENAME_PREFIX}{label or cell_id}>"
 
 
 def _is_user_frame(filename: str) -> bool:
@@ -616,19 +578,6 @@ def _chained(summary):
         current = nxt
 
 
-# A few failures whose Python error message is true, accurate, and no help
-# whatsoever to the person reading it — because the cause is not in their code
-# at all, but in the fact that this Python runs inside a browser tab.
-#
-# The one that prompted this: pandas reading a URL directly raises
-# "urlopen error unknown url type: https", which says nothing a student can
-# act on. It is also the *first* thing anyone tries, because it is what Our
-# World in Data (and every pandas tutorial ever written) tells them to do.
-#
-# Deliberately a short list, not a general advice engine. Each entry has to
-# earn its place three times over: the failure is common, it is structurally
-# impossible here rather than a bug to fix, and there is a real alternative
-# to point at. Anything else is better served by the traceback alone.
 _ERROR_HINTS = (
     (
         ("unknown url type", "urlopen error", "URLError", "RemoteDisconnected"),
@@ -686,12 +635,7 @@ def render_error(message: str) -> None:
         cell.sink.append_html(f'<pre class="dl-error-hint">{html.escape(hint)}</pre>')
 
 
-# --------------------------------------------------------------------------
-# Cell lifecycle
-# --------------------------------------------------------------------------
-
-
-def _begin(cell_id: str, sink, code: str = "") -> None:
+def _begin(cell_id: str, sink, code: str = "", label: str | None = None) -> None:
     """Everything that has to happen right before a cell's code runs:
     clear its old output, make it the "current" cell (so the module-level
     functions below like `show()` know which cell they belong to), teach
@@ -703,7 +647,7 @@ def _begin(cell_id: str, sink, code: str = "") -> None:
     """
     global _current
     sink.clear()
-    _current = _CellContext(cell_id, sink)
+    _current = _CellContext(cell_id, sink, label)
     _register_source(_current.filename, code)
     _patch_pyplot_show()
     sys.stdout = _StreamWriter("dl-stdout")
@@ -731,24 +675,33 @@ def _end(value) -> None:
         _current = None
 
 
-async def run_cell(cell_id: str, output_target, code: str) -> bool:
+async def run_cell(
+    cell_id: str, output_target, code: str, expect: str | None = None, label: str | None = None,
+) -> bool:
     """Run one cell's code and render everything it produced.
 
-    Returns True if the code completed without raising. The whole lifecycle
+    Returns True if the code completed without raising. `expect`, when
+    given, is evaluated after the run for the report `run_cell_report()`
+    returns — it never affects the run itself. `label`, when given, is
+    what a traceback's file line calls this cell instead of its own id —
+    a tutorial's author-given `name:`, or dewmini's "Cell 3" for a cell
+    nobody has named, rather than either's own internal id showing up in
+    front of a reader (planning/CELL_IDENTITY.md). The whole lifecycle
     lives here, in Python, rather than being split across the JS runtime, so
     output ordering and traceback formatting have exactly one implementation.
 
     `output_target` is either a real `.dl-output` element (the main-thread
-    path the standalone export still uses — DECISIONS_LOG.md 7.77 keeps that
-    export on the pre-Worker runtime) or the `emit` callable
+    path the standalone export still uses, kept on the pre-Worker runtime)
+    or the `emit` callable
     `assets/pyodide-worker.js` passes for a page running Pyodide in a Worker.
     A callable can never be mistaken for an element, so which sink to build
     is exactly that check.
     """
     from pyodide.code import eval_code_async  # pragma: no cover - browser only
 
+    global _last_report
     sink = _MessageSink(output_target) if callable(output_target) else _DomSink(output_target)
-    _begin(cell_id, sink, code)
+    _begin(cell_id, sink, code, label)
     ok = True
     value = None
     try:
@@ -756,30 +709,87 @@ async def run_cell(cell_id: str, output_target, code: str) -> bool:
             code, globals=_page_globals, filename=_current.filename
         )
     except KeyboardInterrupt:
-        # A reader's own Stop click (planning/CELL_CONTROLS.md), not a bug in
-        # their code — a full traceback would say so anyway, but "Stopped."
-        # is the honest, unintimidating version of the same fact.
         ok = False
+        _current.last_error = ("KeyboardInterrupt", "Stopped.")
         _current.sink.close_stream()
         render_error("Stopped.")
     except BaseException as exc:  # noqa: BLE001 - a student's error is normal traffic
         ok = False
+        _current.last_error = _describe_error(exc)
         _current.sink.close_stream()
         render_error(_format_exception(exc))
     finally:
+        _last_report = _report(ok, _current, expect)
         _end(value if ok else None)
     return ok
+
+
+# The report of the most recent run_cell(), kept for run_cell_report() —
+# see there for why the two are separate functions.
+_last_report: dict = {}
+
+
+def _describe_error(exc: BaseException) -> tuple[str, str]:
+    """An exception as (type name, first line of its message): what a staged
+    hint's "identical errors" count compares from one run to the next. The
+    first line only, because a SyntaxError's message runs on for several
+    lines that repeat the offending code, and two runs of the same mistake
+    should read as the same mistake."""
+    message = str(exc).strip().split("\n", 1)[0]
+    return type(exc).__name__, message
+
+
+def holds(expression: str) -> bool:
+    """Whether an author's `expect:` line is true of the page namespace right
+    now (planning/CELL_HINTS.md §3). Anything that goes wrong evaluating it —
+    a name not yet defined, a comparison that raises — is "not yet", not an
+    error to show: the expression is the author's and the reader has never
+    seen it."""
+    try:
+        return bool(eval(expression, _page_globals))  # noqa: S307 - the author's own expression
+    except BaseException:  # noqa: BLE001
+        return False
+
+
+def _report(ok: bool, cell: "_CellContext", expect: str | None) -> dict:
+    """What one run amounted to, for the page's attempt counters: whether it
+    raised and which error, whether its checks passed and which one did not,
+    and whether `expect:` holds. All plain values, so it can cross the
+    Worker's postMessage boundary as JSON."""
+    check = None
+    if cell.checks:
+        failed = [label for label, passed in cell.checks if not passed]
+        check = {"passed": not failed, "label": failed[0] if failed else cell.checks[-1][0]}
+    error = None
+    if cell.last_error:
+        error = {"type": cell.last_error[0], "message": cell.last_error[1]}
+    return {
+        "ok": ok,
+        "error": error,
+        "check": check,
+        "reached": holds(expect) if expect else None,
+    }
+
+
+async def run_cell_report(
+    cell_id: str, output_target, code: str, expect: str | None = None, label: str | None = None,
+) -> str:
+    """run_cell(), plus a JSON report of what the run amounted to — see
+    `_report()`. The tutorial page calls this one; `run_cell()` itself
+    keeps returning a plain boolean because dewmini and the shared engine
+    (compose/dewmini.js, assets/pyodide-engine.js) read it that way. A
+    string rather than a dict so the same value crosses both the main-thread
+    call and the Worker's postMessage unchanged."""
+    global _last_report
+    _last_report = {}
+    await run_cell(cell_id, output_target, code, expect, label)
+    return json.dumps(_last_report)
 
 
 def reset_page_state() -> None:
     """Clear the shared namespace and every remembered widget value."""
     _page_globals.clear()
     _widget_values.clear()
-
-
-# --------------------------------------------------------------------------
-# Public output functions
-# --------------------------------------------------------------------------
 
 
 def show(*values, label: str | None = None) -> None:
@@ -801,11 +811,6 @@ def show_table(frame, max_rows: int = 20, caption: str | None = None) -> None:
     """Render a DataFrame or Series as a table, truncated to `max_rows`."""
     cell = _require_cell()
     cell.sink.append_html(_table_html(frame, max_rows=max_rows, caption=caption))
-
-
-# --------------------------------------------------------------------------
-# check()
-# --------------------------------------------------------------------------
 
 
 def _compare(actual, expected, tolerance: float | None) -> tuple[bool, str]:
@@ -911,12 +916,8 @@ def check(actual, expected, tolerance: float | None = None, label: str | None = 
     passed, detail = _compare(actual, expected, tolerance)
     cell.sink.append_html(_check_html(passed, label, detail))
     cell.last_check = (cell.sink.count, passed)
+    cell.checks.append((label, passed))
     return passed
-
-
-# --------------------------------------------------------------------------
-# Widgets
-# --------------------------------------------------------------------------
 
 
 def _widget_id(explicit: str | None, label: str) -> str:
@@ -954,9 +955,6 @@ class _Widget:
 
     @property
     def value(self):
-        # An `image_input` keeps its picked value out of band in
-        # `_widget_values` (see `image_input` below) rather than in the file
-        # input's own `.value`, which is only ever the filename string.
         if self._kind == "image_input" or self._element is None:
             return _widget_values.get((self._cell_id, self._widget_id))
         control = self._element.querySelector("input, select")
@@ -976,7 +974,7 @@ def _require_dom_sink(kind: str) -> _CellContext:
     """Widgets need a live element to attach a listener to — one
     `_MessageSink` (a Worker-run page) cannot hand back, since there is no
     DOM on that side of the postMessage boundary to hand back a reference
-    into (DECISIONS_LOG.md 7.77). Nothing published uses `text_input`,
+    into. Nothing published uses `text_input`,
     `dropdown`, `button` or `image_input` today, so this is a real gap with
     no live tutorial behind it — and a clear error a reader can see beats
     the silent one this would otherwise be: markup that renders but does
@@ -1196,11 +1194,6 @@ def image_input(label: str = "Choose an image", id: str | None = None) -> _Widge
     return widget
 
 
-# --------------------------------------------------------------------------
-# Shared data
-# --------------------------------------------------------------------------
-
-
 async def load_csv(name: str, **read_csv_kwargs):
     """Fetch a CSV and return a DataFrame.
 
@@ -1390,14 +1383,6 @@ def _run_sql_cell(conn, script: str, max_rows: int = 20):
     return frame
 
 
-# --------------------------------------------------------------------------
-# Describing the namespace
-# --------------------------------------------------------------------------
-
-
-# How much of a value's repr to show before truncating. Long enough for a
-# short string, a small list, or a number; short enough that one runaway
-# value can't push everything else out of the panel.
 _SUMMARY_LIMIT = 80
 
 

@@ -40,17 +40,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# The documents this governs. Tutorials are left out on purpose: their links
-# are `tutorial:slug` references that build.py already resolves and validates,
-# and they are checked far more strictly there than anything here could manage.
 DOC_ROOTS = ("docs", "planning", ".github")
 DOC_FILES = ("README.md", "ARCHITECTURE.md", "CONTRIBUTING.md", "LICENSE.md")
 
-# Records of what was decided *then*, as against descriptions of how things are
-# *now*. A decision-log entry naming `planning/CHEAT_SHEETS.md` is not stale —
-# that was the file's name when the entry was written, and rewriting it to the
-# current name would make the record say something that was never true. Only
-# documents that claim to describe the present are held to the present.
 HISTORY = {
     "DECISIONS_LOG.md",
     "QUESTIONS.md",
@@ -78,17 +70,9 @@ PATH_SUFFIXES = {".md", ".py", ".js", ".css", ".html", ".yaml", ".yml",
 GENERATED = ("site/", "dev/pyodide/", "assets/vendor/pyodide/",
              "node_modules/", "__pycache__/")
 
-# Pages and data files build.py writes rather than files anyone edits. A
-# document naming one is describing the built site, which is exactly where
-# they do exist.
 GENERATED_PAGES = {"index.html", "tree.html", "topics.html", "about.html",
                    "editor.html", "search-index.json", "reference-index.json"}
 
-# Documents whose subject is material in another repository: the notebooks in
-# `deweydex/everlearning` and the worksheets in `deweydex/Mathematics`. They
-# name files by their real names, which are simply not names in this
-# repository. (The QQI module descriptors themselves now live here, under
-# planning/curriculum/descriptors/.)
 ELSEWHERE = ("planning/curriculum/", "planning/outlines/")
 
 # Referred to by name in prose about other projects, or as a shape rather than
@@ -110,9 +94,6 @@ def looks_like_a_path(span: str) -> bool:
     """
     if PLACEHOLDER_RE.search(span) or span.startswith(("http", "#", "-")):
         return False
-    # A naming convention rather than a file: `.order.yaml` and `.glossary.yaml`
-    # describe what a file is called, not one that exists. A real dotted path
-    # (`.github/workflows/tests.yml`) has a separator and is kept.
     if span.startswith(".") and "/" not in span:
         return False
     suffix = Path(span).suffix.lower()
@@ -157,19 +138,9 @@ def resolve(doc: Path, target: str) -> Path | None:
     # `/editor.html`.
     if Path(target).name in GENERATED_PAGES:
         return None
-    # A path into another repository — `deweydex/Mathematics/...`,
-    # `PDP_MIT_2026_2027_Integrated/...` — which `planning/EXERCISES.md` and the
-    # curriculum notes both draw from. Recognised by its first segment naming
-    # nothing at the root of this one, which is what makes it a claim about
-    # somewhere else rather than a stale claim about here.
     first = target.strip("/").split("/")[0]
     if first and not (ROOT / first).exists():
         return None
-    # Repository-relative (`planning/STATUS.md`) or document-relative
-    # (`./STATUS.md`, `../build.py`). Try the document's own directory first,
-    # since that is what a markdown link means, then the repository root,
-    # which is how a backticked path is nearly always written.
-    # Written from the repository root, as a layout diagram does: `/tutorials/`.
     if target.startswith("/"):
         return (ROOT / target.lstrip("/")).resolve()
     if target.startswith(("./", "../")):
@@ -192,9 +163,6 @@ def problems_in(doc: Path) -> list[str]:
     found: list[str] = []
     elsewhere = str(doc.relative_to(ROOT)).startswith(ELSEWHERE)
     for number, line in enumerate(doc.read_text().splitlines(), start=1):
-        # A link target is only checked when it looks like a file or a folder.
-        # `![alt](path)` in a document explaining markdown syntax is an
-        # illustration, not a claim that a file called "path" exists.
         targets = [(t, "link") for t in LINK_RE.findall(line)
                    if "/" in t or Path(t).suffix.lower() in PATH_SUFFIXES]
         targets += [(t, "path") for t in CODE_RE.findall(line)

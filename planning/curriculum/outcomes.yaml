@@ -13,7 +13,23 @@
 #   Programming and Design Principles 5N2927
 #   Computational Methods and Problem Solving 5N0554
 #   Fundamentals of Object Oriented Programming 5N0541
-# All four PDFs live in this repository, under planning/curriculum/descriptors/.
+#   Database Methods 5N0783
+# All five PDFs live in this repository, under planning/curriculum/descriptors/.
+#
+# Database Methods 5N0783's own descriptor is written for a GUI database tool
+# (Microsoft Access — "design view", "pivot chart", "combo box", "Lookup
+# wizard", mail-merge labels). dewlab teaches the same eleven outcomes through
+# real SQL and Python instead, since that is what dewlab teaches everywhere
+# else — DBM-LO3, DBM-LO6 and DBM-LO7 below are the clearest cases of the
+# descriptor's own vocabulary and dewlab's parting ways, not a disagreement
+# about what the outcome means. "A Form That Writes a Row" covers DBM-LO6
+# with the query side of a data-entry form — the `INSERT` a submission would
+# run — and says plainly that reading an HTML form's own fields is Web
+# Authoring's job, not yet joined to this page. "Exporting a Query to a File"
+# and "Charting a Query's Result" cover DBM-LO7's reports as a CSV export and
+# a matplotlib chart. Ten of the eleven are covered. DBM-LO1 (typical uses for
+# databases) has a topics.yaml entry but no page of its own yet — see
+# planning/CURRICULUM_MAP.md for the current state of every code.
 #
 # `strand` groups an outcome for the map's colouring, and is our word rather
 # than the descriptor's: it answers "what kind of thing is this?" in a way a
@@ -49,6 +65,16 @@ modules:
   FOOP:
     title: "Fundamentals of Object Oriented Programming"
     code: "5N0541"
+    sections:
+      LO: "Learning outcomes"
+  DBM:
+    title: "Database Methods"
+    code: "5N0783"
+    sections:
+      LO: "Learning outcomes"
+  WA:
+    title: "Web Authoring"
+    code: "5N1910"
     sections:
       LO: "Learning outcomes"
 
@@ -352,3 +378,96 @@ outcomes:
   - code: CMPS-LO13
     title: "Reflect on the impact of numerical and logical thinking in the real world: accuracy, precision, and decisions made from computational models and simulations"
     strand: reflection
+
+  # ---------------------------------------------------------------- DBM
+  - code: DBM-LO1
+    title: "Typical uses for databases, in everyday life and in business decision-making"
+    strand: database-concepts
+  - code: DBM-LO2
+    title: "Essential database concepts: tables, rows, columns, statements, queries"
+    strand: database-concepts
+  - code: DBM-LO3
+    title: "Explain what a query does, and read and write one in SQL (the descriptor's own list — design view, datasheet view, pivot table, pivot chart — names a GUI tool's views; dewlab teaches the query language directly instead)"
+    strand: querying
+  - code: DBM-LO4
+    title: "Open an existing table and carry out routine operations on it: reading, adding, editing, deleting, sorting and filtering rows"
+    strand: querying
+  - code: DBM-LO5
+    title: "Retrieve chosen data from one or more tables by writing a query, saved as the reader's own work for reuse"
+    strand: querying
+  - code: DBM-LO6
+    title: "Write the query a data-entry submission would run against a table (the descriptor's own form is a GUI data-entry screen; dewlab covers the query side here and the HTML side in Web Authoring)"
+    strand: data-entry
+  - code: DBM-LO7
+    title: "Present selected information from a database in a format suitable for sharing or printing (the descriptor's own GUI report builder; dewlab teaches a CSV export and a chart instead)"
+    strand: reporting
+  - code: DBM-LO8
+    title: "Import external data, such as a CSV file, into a table"
+    strand: data-import
+  - code: DBM-LO9
+    title: "Design a database to a brief: tables, primary keys, and the relationships between tables"
+    strand: design
+  - code: DBM-LO10
+    title: "Build a database to a brief: create its tables, load or enter data, and write the queries it needs"
+    strand: design
+  - code: DBM-LO11
+    title: "Use hints, error messages and self-checks to work through an unfamiliar database problem"
+    strand: reflection
+
+  # ----------------------------------------------------------------- WA
+  # Web Authoring 5N1910. The descriptor assumes a commercial GUI toolchain
+  # throughout — a WYSIWYG editor beside a text editor, desktop publishing
+  # programs, website management systems (Joomla, Drupal, WordPress), FTP
+  # upload, and HTML/CSS code generators. dewlab teaches the same fourteen
+  # outcomes through hand-written HTML, CSS and JavaScript in its own
+  # in-browser site editor instead, published through GitHub Pages rather
+  # than an ISP's own hosting — WA-LO3, WA-LO5, WA-LO12 and WA-LO13 below are
+  # the clearest cases of the descriptor's own vocabulary and dewlab's
+  # parting ways, not a disagreement about what the outcome means. WA-LO12
+  # (HTML/CSS code generators) has no dewlab equivalent yet and is not
+  # claimed as covered by anything, the same way DBM-LO1 is flagged in the
+  # section above. WA-LO10's "browser compatibility" is dev-tools diagnosis
+  # in one browser, not a multi-browser comparison — see
+  # planning/CURRICULUM_MAP.md for the current state of every code.
+  - code: WA-LO1
+    title: "The development of HTML and CSS, through the versions of each standard"
+    strand: web-history
+  - code: WA-LO2
+    title: "The use, purpose and attributes of a range of HTML tags, and how browsers render them"
+    strand: html-tags
+  - code: WA-LO3
+    title: "Explore available HTML and CSS editors and development tools (the descriptor's own contrast is a WYSIWYG editor against a text editor; dewlab explores its own in-browser site editor against a plain-text editor instead)"
+    strand: tooling
+  - code: WA-LO4
+    title: "The principles of good website design: target audience, site objectives, navigation, structure, interface and access speed"
+    strand: design-principles
+  - code: WA-LO5
+    title: "Investigate available web authoring tools, including desktop publishing programs and website management systems (the descriptor's own examples — Dreamweaver, Photoshop, Joomla, WordPress — are commercial GUI tools; dewlab discusses GitHub Pages, WordPress and two modern single-page builders against the hand-written HTML and CSS this course actually teaches)"
+    strand: tooling
+  - code: WA-LO6
+    title: "Keep evidence of a web authoring project: its own research, requirements, and an evaluation of the finished site"
+    strand: process
+  - code: WA-LO7
+    title: "Plan a design and user interface for a specified website, documenting each stage of the process (the descriptor's own outcome also has the learner selecting an authoring tool; dewlab's own tool is a given, not a choice)"
+    strand: design-principles
+  - code: WA-LO8
+    title: "Use HTML tags to build a standards-conformant page or site to a given design"
+    strand: html-tags
+  - code: WA-LO9
+    title: "Use CSS to style a standards-conformant page or site to a given design"
+    strand: css
+  - code: WA-LO10
+    title: "Test a website's functioning and fix any issues found (the descriptor's own outcome also names cross-browser testing; dewlab teaches diagnosis with a single browser's own developer tools instead)"
+    strand: testing
+  - code: WA-LO11
+    title: "Recommend how a website should be upgraded, maintained and tested in future"
+    strand: process
+  - code: WA-LO12
+    title: "Use HTML and CSS code generators and judge how well they work (dewlab teaches HTML and CSS by hand instead of a generator — not yet covered by anything in dewlab)"
+    strand: tooling
+  - code: WA-LO13
+    title: "Work independently to design, build and publish webpages, without needing an ISP's own hosting (dewlab's own equivalent of the descriptor's own phrase is GitHub Pages, free and independent of any commercial host)"
+    strand: independence
+  - code: WA-LO14
+    title: "Apply the principles of good website design when building a real page or site"
+    strand: design-principles

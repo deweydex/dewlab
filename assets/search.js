@@ -1,21 +1,3 @@
-/* Client-side search for the contents page and "Browse by topic" —
- * assets/search.js, loaded by both (build.py's write_index() and
- * write_topics_page(), via {{PAGE_SCRIPT}}) and a no-op anywhere else,
- * since it only ever does anything once it finds #dl-search in the
- * page. No server, no build-time query handling — just this file and
- * assets/search-index.json (one row per live tutorial: title, module,
- * series, and the glossary terms that tutorial specifically introduces
- * — write_search_index() in build.py generates it fresh on every
- * build, so it can never drift from the tutorials actually shipped).
- *
- * Matching is deliberately simple, not a real search engine: normalize
- * every word (lower-case, a light suffix-stripping stemmer, a small
- * synonym table), then score each tutorial by how many of the query's
- * normalized words it shares, weighted by which field they matched in
- * (title counts for more than a glossary term, which counts for more
- * than the module/series name). Good enough for a few dozen to a few
- * hundred tutorials; not attempting to be good enough for the open web.
- */
 
 // Small and common, not exhaustive — dropped from every field before
 // matching so "the" or "of" in a title never counts as a real match.
@@ -49,11 +31,6 @@ const SYNONYMS = {
   matrices: "matrix",
 };
 
-/** A light, rule-based stemmer — not Porter's full algorithm, just the
- * common English suffixes worth stripping so "sorting"/"sorted"/"sorts"
- * all normalize to the same token as "sort". Deliberately conservative
- * (only touches words long enough that stripping a suffix is unlikely
- * to collide two unrelated words) rather than aggressive. */
 function stem(word) {
   if (word.length > 5) {
     if (word.endsWith("ing")) return word.slice(0, -3);
@@ -67,10 +44,6 @@ function stem(word) {
   return word;
 }
 
-/** Lower-case, apply the synonym table, then stem — the one normalizer
- * both the index (built once, at load) and every query (on every
- * keystroke) run every word through, so "Loops" in a query and
- * "iterating" in a tutorial's own glossary land on the same token. */
 function normalizeWord(word) {
   const lower = word.toLowerCase();
   return stem(SYNONYMS[lower] || lower);
@@ -82,12 +55,6 @@ function tokenize(text) {
   return words.map(normalizeWord).filter((w) => w.length > 1 && !STOPWORDS.has(w));
 }
 
-/** Scores one document against a query's already-tokenized words.
- * Three fields, three weights: a hit in the title counts for more than
- * a hit among the terms this tutorial specifically introduces, which
- * counts for more than a hit in its module or series name — a search
- * for "loop" should put a tutorial titled "Loops" ahead of one that
- * merely lives in a module called "Repeating Yourself". */
 function scoreDocument(doc, queryTokens) {
   if (queryTokens.length === 0) return 0;
   let score = 0;
@@ -99,11 +66,22 @@ function scoreDocument(doc, queryTokens) {
   return score;
 }
 
-/** Fetches and prepares the search index once — each document gets its
- * three token sets precomputed here rather than re-tokenized on every
- * keystroke, since the index itself never changes during a page visit. */
+function assetBase() {
+  const el = document.getElementById("dewlab-manifest");
+  if (!el) return "assets/";
+  try {
+    return JSON.parse(el.textContent).assetBase || "assets/";
+  } catch (e) {
+    return "assets/";
+  }
+}
+
+function rootBase() {
+  return assetBase().replace(/assets\/$/, "");
+}
+
 async function loadIndex() {
-  const response = await fetch("assets/search-index.json");
+  const response = await fetch(assetBase() + "search-index.json");
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const documents = await response.json();
   for (const doc of documents) {
@@ -114,10 +92,6 @@ async function loadIndex() {
   return documents;
 }
 
-/** Renders up to `limit` ranked results into the results <ul>. Each
- * result shows which of its own terms actually matched, when any did
- * — the part of a result that explains *why* it's here, not just that
- * it is. */
 function renderResults(listEl, ranked, queryTokens, limit = 12) {
   if (ranked.length === 0) {
     listEl.innerHTML = '<li class="dl-search-empty">No tutorial matches that yet — try a different word.</li>';
@@ -131,7 +105,7 @@ function renderResults(listEl, ranked, queryTokens, limit = 12) {
       ? `<span class="dl-search-match">${matchedTerms.slice(0, 3).map(escapeHtml).join(", ")}</span>`
       : "";
     return (
-      `<li><a href="${doc.url}">` +
+      `<li><a href="${rootBase()}${doc.url}">` +
       `<span class="dl-search-title">${escapeHtml(doc.title)}</span>` +
       `<span class="dl-search-subtitle">${escapeHtml(subtitle)}</span>` +
       matchNote +
@@ -146,21 +120,10 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-async function initSearch() {
-  const root = document.getElementById("dl-search");
-  if (!root) return; // this page has no search box — nothing to do
-
-  const input = document.getElementById("dl-search-input");
-  const list = document.getElementById("dl-search-results");
+function wireSearchBox(root, documents, loadError) {
+  const input = root.querySelector(".dl-search-input");
+  const list = root.querySelector(".dl-search-results");
   if (!input || !list) return;
-
-  let documents = null;
-  let loadError = null;
-  try {
-    documents = await loadIndex();
-  } catch (error) {
-    loadError = error;
-  }
 
   const runSearch = () => {
     const query = input.value.trim();
@@ -206,11 +169,39 @@ async function initSearch() {
 
   // Closing on an outside click matches every other panel on the site
   // (Settings, Help) — a search box left open after a reader has
-  // clicked elsewhere would be the odd one out.
+  // clicked elsewhere would be the odd one out. The nav popover is a
+  // <details> rather than one of those panels, so it gets the same
+  // treatment applied to itself, not just to its results list: native
+  // <details> has no built-in "close on outside click" or Escape of its
+  // own, and leaving those out here would make this the one panel on
+  // the page that does not behave like the rest.
+  const popover = root.closest("details.dl-nav-search");
   document.addEventListener("click", (e) => {
-    if (!root.contains(e.target)) { list.hidden = true; }
+    if (root.contains(e.target)) return;
+    list.hidden = true;
+    if (popover && !popover.contains(e.target)) popover.open = false;
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || !popover || !popover.open) return;
+    popover.open = false;
+    popover.querySelector("summary").focus();
   });
   input.addEventListener("focus", () => { if (input.value.trim()) list.hidden = false; });
+}
+
+async function initSearch() {
+  const roots = document.querySelectorAll(".dl-search");
+  if (roots.length === 0) return;
+
+  let documents = null;
+  let loadError = null;
+  try {
+    documents = await loadIndex();
+  } catch (error) {
+    loadError = error;
+  }
+
+  for (const root of roots) wireSearchBox(root, documents, loadError);
 }
 
 if (document.readyState === "loading") {

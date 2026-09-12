@@ -1,13 +1,4 @@
-"""The in-tutorial "Progress" summary in Settings, in a real browser —
-planning/PROGRESS_INDICATORS.md.
-
-Real cell runs, not seeded state, since the whole point of the `errored`
-capture is that it reads what a real traceback actually rendered
-(tutorial_tools.py's class="dl-error") — a seeded fake risks testing the
-test's own assumption about that shape rather than the real one.
-
-    python3 -m pytest tests/e2e/test_progress_summary.py -q
-"""
+"""Uses real cell runs rather than seeded state, since the `errored` count depends on the real traceback markup a run produces (tutorial_tools.py's class="dl-error")."""
 
 from __future__ import annotations
 
@@ -28,15 +19,30 @@ def run(page, cell_id: str) -> None:
 
 
 def summary_text(page) -> str:
-    page.click("#dl-settings-toggle")
+    _open_panel(page, "#dl-settings-toggle")
     text = page.inner_text("#dl-progress-summary")
     page.click("#dl-settings-close")
     return text
 
 
+def _open_panel(actor, selector: str) -> None:
+    """Reference/Series/Settings' toggles now collapse behind one
+    "Panels" control in the masthead (shell.html's
+    <details class="dl-panels">) rather than always showing — expand it
+    first if it isn't already, then click the actual target. Checked via
+    #dl-panels' own `open` property rather than the target's own
+    visibility, so this never mistakes "already open" for "not open" and
+    toggles it shut again right before the click that was supposed to
+    land. Left expanded once opened (no auto-collapse), so this is only
+    needed once per page load, not before every toggle click."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
+
+
 class TestProgressSummary:
     def test_stays_hidden_with_nothing_run(self, page):
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         assert page.is_hidden("#dl-progress-summary")
         page.click("#dl-settings-close")
 

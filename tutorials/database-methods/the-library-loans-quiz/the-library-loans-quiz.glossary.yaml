@@ -1,0 +1,32 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of "Practice" (series: practice, practice.order.yaml),
+# after sql-practice and the-tentacular-plushies-quiz. Checked both
+# earlier glossary files first: COUNT(), check(), PRAGMA table_info, and
+# FOREIGN KEY ... REFERENCES are all already introduced and are not
+# repeated here, even though check() and PRAGMA table_info appear again
+# in this quiz's own check() cells.
+#
+# New: junction table (single-asterisk emphasis in Task 2's own prose --
+# dev/curriculum_map.py's EMPHASIS_RE) and composite primary key (not
+# emphasised, but genuinely new syntax the reader is asked to write --
+# PRIMARY KEY on its own, one column, was already glossaried on
+# a-table-is-a-list-of-rows; PRIMARY KEY naming two columns together, as
+# a line of its own rather than a column modifier, is a different
+# construct, the same reasoning that gave FOREIGN KEY ... REFERENCES its
+# own entry on the earlier quiz despite "foreign key" the concept
+# already existing).
+entries:
+  - term: junction table
+    kind: concept
+    definition: >
+      A junction table connects two other tables many-to-many. Each row
+      names one row from each side, so either side can point at several
+      rows on the other.
+  - term: composite primary key
+    kind: concept
+    definition: >
+      A composite primary key names two or more columns together as a
+      table's primary key, rather than one column on its own. No
+      combination of values across those columns can repeat.
+    example: "PRIMARY KEY (book_id, author_id)"

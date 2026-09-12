@@ -1,14 +1,4 @@
-"""A cell's own report panel, in a real browser — DECISIONS_LOG.md Phase 8.
-
-The icon and the panel's shell are static, built by build.py's
-render_cell() and covered by tests/test_build.py already. What can only
-be checked in a real browser is the live half: that
-updateCellReportLinks() in tutorial-runtime.js actually reads the cell's
-current code and output at the moment the panel opens, not whatever was
-there at page load.
-
-    python3 -m pytest tests/e2e/test_cell_report.py -q
-"""
+"""The panel's static shell is covered by tests/test_build.py; this covers what only a real browser can show — that updateCellReportLinks() reads the cell's current code and output at open time, not whatever was there at page load."""
 
 from __future__ import annotations
 
@@ -43,8 +33,6 @@ def js_string(value: str) -> str:
 
 
 def run(page, cell_id: str) -> None:
-    """Run a cell and wait for it to actually finish — the same pattern
-    test_phase0_golden_path.py and test_autocomplete.py already use."""
     selector = f".dl-cell[data-cell-id='{cell_id}'] .dl-output"
     page.evaluate(f"dewlab.runCell({js_string(cell_id)})")
     page.wait_for_function(
@@ -115,9 +103,7 @@ class TestCellReportPanel:
         assert "total = 0" in params["code"][0]
 
     def test_reopening_after_a_run_refreshes_the_output(self, page):
-        """Opened once before running (still cached in the DOM from the
-        earlier click), then run, then opened again — the second open has
-        to re-read the output, not show what the first open saw."""
+        """The panel was opened once before, so the DOM already has stale content the second open must overwrite rather than reuse."""
         icon(page, "matplotlib-show").click()
         icon(page, "matplotlib-show").click()  # closed again
         run(page, "matplotlib-show")

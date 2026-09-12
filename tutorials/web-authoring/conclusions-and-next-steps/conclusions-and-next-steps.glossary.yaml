@@ -1,0 +1,32 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Last tutorial of "A site with several pages" (series: several-pages,
+# module: web-authoring), after documenting-what-you-built. No tutorial
+# in web-authoring has a glossary file yet (the 42-page port never wrote
+# one), so there is no cumulative list to check this file's own terms
+# against — judged instead against everything read across the module
+# this session: none of these three terms appear anywhere else in it.
+#
+# WordPress, Carrd and Solo are product names, not glossaried, the same
+# reasoning that keeps "GitHub" itself out of the welcome series'
+# vocabulary — a proper noun, not a concept.
+entries:
+  - term: living standard
+    kind: concept
+    definition: >
+      A living standard is a specification updated in place as the web
+      changes, rather than replaced by a new numbered version. HTML5 is
+      one; there is no HTML6 waiting to succeed it.
+  - term: deprecated
+    kind: concept
+    definition: >
+      A deprecated tag or property is one a browser still understands
+      but no longer recommends using, usually because a newer feature
+      does its job better.
+  - term: website management system
+    kind: concept
+    definition: >
+      A website management system takes files or content and handles
+      publishing them as a real website. GitHub Pages is one; a content
+      management system like WordPress is a more elaborate one, storing
+      content in a database rather than as files.

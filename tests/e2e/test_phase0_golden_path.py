@@ -1,15 +1,6 @@
-"""Phase 0's golden path, in a real browser against a real Pyodide.
-
-BUILD_PLAN.md's Phase 0 asks for one thing to be true before anything else is
-built: that the shell template loads the shared assets, that
-`loadPackage(['numpy', 'pandas', 'matplotlib'])` succeeds with no micropip step,
-and that a plain `exec` cell renders its output underneath itself. That is what
-this file checks, plus the widget bridge that was built on top of it.
-
-Slow by nature — one Pyodide boot for the session — so it is one file of
-end-to-end assertions rather than a suite. The fast tests live next door in
-tests/test_tutorial_tools.py.
-"""
+"""One Pyodide boot per session, so this is one file of e2e assertions
+rather than a suite split across modules; fast tests live in
+tests/test_tutorial_tools.py."""
 
 from __future__ import annotations
 
@@ -24,14 +15,12 @@ def output_selector(cell_id: str) -> str:
 
 
 def js_string(text: str) -> str:
-    """A JavaScript string literal. json.dumps quotes and escapes correctly;
-    Python's repr does not, and a selector containing an apostrophe silently
-    becomes a syntax error inside wait_for_function."""
+    """json.dumps, not repr — a selector with an apostrophe would otherwise
+    become a silent syntax error inside wait_for_function."""
     return json.dumps(text)
 
 
 def run(page, cell_id: str) -> str:
-    """Run one cell and return the HTML its output area ended up with."""
     selector = output_selector(cell_id)
     page.evaluate(f"dewlab.runCell({js_string(cell_id)})")
     page.wait_for_function(
@@ -41,7 +30,12 @@ def run(page, cell_id: str) -> str:
     return page.inner_html(selector)
 
 
-# --------------------------------------------------------------- the shell
+def _open_panel(actor, selector: str) -> None:
+    """Expand the masthead's Panels disclosure first if needed, then
+    click the actual toggle."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
 
 
 def test_the_page_loads_its_shared_assets_rather_than_inlining_them(page):
@@ -54,7 +48,6 @@ def test_the_page_loads_its_shared_assets_rather_than_inlining_them(page):
     assert any("/assets/tutorial-style.css" in h for h in hrefs)
     assert any("/assets/tutorial-runtime.js" in h for h in hrefs)
 
-    # And the stylesheet actually applied, rather than 404ing quietly.
     background = page.eval_on_selector(
         "body", "el => getComputedStyle(el).backgroundColor"
     )
@@ -68,24 +61,20 @@ def test_version_metadata_is_in_the_page(page):
 
 
 def test_every_exec_cell_became_an_editor_with_line_numbers(page):
-    """One editor per exec cell in the fixture, and no editor without a cell.
-
-    Counted against the fixture rather than a fixed number, so adding a cell to
-    rendering-tour.md does not fail a test that is not about counting."""
-    expected = FIXTURE.read_text().count("```python exec")
+    """Counted against the fixture rather than a fixed number, so adding a
+    cell to rendering-tour.md does not fail a test that isn't about counting."""
+    text = FIXTURE.read_text()
+    expected = text.count("```python exec") + text.count("```sql exec")
     cells = page.query_selector_all(".dl-cell")
     assert len(cells) == expected
     assert len(page.query_selector_all(".dl-cell .cm-editor")) == expected
-    # Line numbers are one of the affordances DECISIONS.md calls free.
     assert page.query_selector(".dl-cell .cm-lineNumbers") is not None
 
 
 def test_python_started_with_no_console_errors(page):
-    assert page.inner_text("#dl-status") == ""
+    assert page.is_hidden("#dl-status")
+    assert page.inner_text("#dl-status-text") == ""
     assert page.problems == []
-
-
-# ------------------------------------------------------- the execution path
 
 
 def test_plain_cell_prints_and_shows_its_last_expression(page):
@@ -106,6 +95,108 @@ def test_pandas_dataframe_renders_as_a_table(page):
     assert "<table" in output
     assert "Ireland" in output
     assert "Kenya" not in output, "the filter should have excluded Kenya"
+
+
+def test_a_sql_exec_cell_pill_reads_sql(page):
+    selector = ".dl-cell[data-cell-id='sql-basics'] .dl-cell-pill-type"
+    assert page.inner_text(selector) == "SQL"
+    assert page.get_attribute(selector, "data-type") == "sql"
+
+
+def test_a_sql_cells_select_renders_as_a_table(page):
+    """The editor holds real SQL text; the wrapper tutorial-runtime.js
+    builds around it before it reaches Python is what
+    makes _run_sql_cell() render this table, not anything in the fixture."""
+    output = run(page, "sql-basics")
+    assert "<table" in output
+    assert "spider" in output
+    assert "dog" in output
+    assert "hen" not in output, "the WHERE legs > 2 filter should have excluded it"
+
+
+def test_a_python_cell_can_read_what_a_sql_cell_wrote(page):
+    """The shared db is one connection, seeded once at boot — a SQL cell's
+    CREATE TABLE/INSERT is visible to a Python cell on the same page,
+    the same guarantee dewmini's own SQL cell type already gives."""
+    run(page, "sql-basics")
+    output = run(page, "sql-read-from-python")
+    assert "<table" in output
+    assert ">3<" in output, "3 rows were inserted"
+
+
+def site_editor(page, name: str):
+    return f".dl-site-editor[data-site-name='{name}']"
+
+
+def test_a_site_editors_panes_match_what_the_fixture_declares(page):
+    """Panes are optional; a page with a JS pane gets a Run button and a
+    console, one without does not."""
+    hero = site_editor(page, "hero")
+    quiet = site_editor(page, "quiet")
+    assert len(page.query_selector_all(f"{hero} .dl-site-pane")) == 3
+    assert len(page.query_selector_all(f"{quiet} .dl-site-pane")) == 2
+    assert page.query_selector(f"{hero} .dl-btn-site-run") is not None
+    assert page.query_selector(f"{quiet} .dl-btn-site-run") is None
+    assert page.query_selector(f"{hero} .dl-site-console-output") is not None
+    assert page.query_selector(f"{quiet} .dl-site-console-output") is None
+
+
+def test_html_and_css_panes_are_live_without_pressing_run(page):
+    """The iframe is sandboxed without allow-same-origin, so this reads
+    through Playwright's own frame handle — proving the live rebuild reached
+    the page a reader would actually see, not just the editor's own DOM."""
+    hero = site_editor(page, "hero")
+    css_pane = f"{hero} .dl-site-pane[data-lang='css'] .cm-content"
+    page.click(css_pane)
+    page.keyboard.press("Control+a")
+    page.keyboard.insert_text("#go { background: rgb(1, 2, 3); }")
+    frame = page.query_selector(f"{hero} .dl-site-frame").content_frame()
+    frame.wait_for_selector("#go")
+    frame.wait_for_function(
+        "() => getComputedStyle(document.querySelector('#go')).backgroundColor"
+        " === 'rgb(1, 2, 3)'",
+        timeout=10_000,
+    )
+
+
+def test_javascript_does_not_run_until_the_run_button_is_pressed(page):
+    """HTML/CSS are live, JavaScript is a program
+    that runs when asked, the same rule dewmini's own Site tab follows."""
+    hero = site_editor(page, "hero")
+    frame = page.query_selector(f"{hero} .dl-site-frame").content_frame()
+    frame.wait_for_selector("#out")
+    assert frame.inner_text("#out") == "not yet"
+
+    page.click(f"{hero} .dl-btn-site-run")
+    page.wait_for_function(
+        "(sel) => document.querySelector(sel).textContent.includes('script loaded')",
+        arg=f"{hero} .dl-site-console-output",
+        timeout=10_000,
+    )
+    frame = page.query_selector(f"{hero} .dl-site-frame").content_frame()
+    frame.click("#go")
+    frame.wait_for_function(
+        "() => document.querySelector('#out').textContent === 'clicked'",
+        timeout=10_000,
+    )
+
+
+def test_a_site_editors_js_error_gets_a_friendly_hint(page):
+    hero = site_editor(page, "hero")
+    js_pane = f"{hero} .dl-site-pane[data-lang='js'] .cm-content"
+    page.click(js_pane)
+    page.keyboard.press("Control+a")
+    page.keyboard.insert_text("undefinedThing.explode();")
+    page.click(f"{hero} .dl-btn-site-run")
+    console_selector = f"{hero} .dl-site-console-output"
+    page.wait_for_function(
+        "(sel) => document.querySelector(sel).querySelector('.dl-error') !== null",
+        arg=console_selector,
+        timeout=10_000,
+    )
+    html = page.inner_html(console_selector)
+    assert "dl-error-hint" in html
+    assert "dl-site-goto" in html
 
 
 def test_matplotlib_renders_a_figure_beneath_the_cell(page):
@@ -141,8 +232,6 @@ def test_a_plot_does_not_leak_matplotlib_object_reprs(page):
 
 
 def test_a_cell_ending_in_check_does_not_print_a_bare_bool(page):
-    """The cell's last line is a failing check. Its verdict is the last thing
-    shown — not a bare `False` underneath saying the same in worse words."""
     run(page, "pandas-table")
     output = run(page, "tools-show-check")
     assert "dl-check-fail" in output
@@ -155,8 +244,7 @@ def test_a_cell_ending_in_check_does_not_print_a_bare_bool(page):
 
 
 def test_cells_share_one_namespace_in_document_order(page):
-    """The notebook model: a later cell sees what an earlier one defined."""
-    run(page, "pandas-table")  # defines df
+    run(page, "pandas-table")
     output = run(page, "tools-show-check")
     assert "<table" in output, "the later cell could not see df"
 
@@ -176,9 +264,6 @@ def test_an_error_does_not_stop_the_page(page):
     assert "1024" in output
 
 
-# ------------------------------------------------------- the widget bridge
-
-
 def test_show_and_show_table_and_check_render(page):
     run(page, "pandas-table")
     output = run(page, "tools-show-check")
@@ -190,17 +275,10 @@ def test_show_and_show_table_and_check_render(page):
 
 
 def test_widgets_give_a_clear_error_on_a_hosted_page(page):
-    """Every hosted page now runs Pyodide in a Worker (planning/CELL_CONTROLS.md
-    §2, DECISIONS_LOG.md 7.77), and a Worker has no DOM to hand a widget's
-    live element back through — text_input/dropdown/button raise rather
-    than silently rendering something that does nothing when clicked or
-    typed into. Widget-value persistence itself is still covered at the
-    unit level (tests/test_tutorial_tools.py's TestWidgetMarkup): the
-    _widget_values dict does not care which thread wrote to it, only that
-    a live page can no longer reach it. The standalone/offline export is
-    the one place text_input/dropdown/button still work, since it still
-    runs Pyodide on the main thread — not exercised here, since these e2e
-    fixtures only build hosted pages."""
+    """Hosted pages run Pyodide in a Worker (planning/CELL_CONTROLS.md §2),
+    which has no DOM to hand a widget's element through, so these raise
+    instead of rendering something inert. Standalone export still runs
+    Pyodide on the main thread and keeps working; it isn't built here."""
     run(page, "tools-widgets")
     scope = output_selector("tools-widgets")
     assert page.locator(f"{scope} input[type=text]").count() == 0
@@ -213,9 +291,6 @@ def test_rerunning_a_cell_replaces_its_output_rather_than_appending(page):
     assert first.count("counting: 0") == second.count("counting: 0") == 1
 
 
-# ---------------------------------------------------------- texture panel
-
-
 def keyword_colour(page) -> str:
     return page.eval_on_selector(
         ".dl-cell .cm-keyword, .dl-cell .cm-line span",
@@ -224,7 +299,7 @@ def keyword_colour(page) -> str:
 
 
 def test_the_settings_panel_switches_theme_and_the_editors_follow(page):
-    page.click("#dl-settings-toggle")
+    _open_panel(page, "#dl-settings-toggle")
     page.click("#dl-settings-texture .dl-seg[data-texture=theme] button[data-value=light]")
     light_keyword_colour = keyword_colour(page)
 
@@ -241,7 +316,7 @@ def test_the_settings_panel_switches_theme_and_the_editors_follow(page):
 
 
 def test_the_width_presets_set_the_measure(page):
-    page.click("#dl-settings-toggle")
+    _open_panel(page, "#dl-settings-toggle")
     page.click(
         '#dl-settings-texture .dl-seg[data-texture=width] button[data-value="56"]'
     )
@@ -261,7 +336,7 @@ def test_the_minimal_header_is_shorter_and_keeps_every_link(page):
 
     full_height, full_links = chrome_height(), links()
 
-    page.click("#dl-settings-toggle")
+    _open_panel(page, "#dl-settings-toggle")
     page.click("#dl-settings-texture .dl-seg[data-texture=header] button[data-value=minimal]")
     page.keyboard.press("Escape")
 
@@ -293,8 +368,6 @@ def test_the_contents_list_jumps_to_a_section(page):
 
 
 def test_the_contents_page_never_scrolls_sideways(browser, base_url):
-    """It carries an introduction and a list now, and neither is wide — but the
-    rule is worth holding onto whatever the page contains."""
     for width in (1400, 900, 390):
         context = browser.new_context(viewport={"width": width, "height": 800})
         tab = context.new_page()
@@ -308,7 +381,6 @@ def test_the_contents_page_never_scrolls_sideways(browser, base_url):
 
 
 def test_every_box_on_the_map_is_a_link_to_a_tutorial(browser, base_url):
-    """The tutorial map lives on the tree page now, under the topic tree."""
     context = browser.new_context(viewport={"width": 1400, "height": 900})
     tab = context.new_page()
     tab.goto(f"{base_url}/tree.html")
@@ -324,13 +396,11 @@ def test_every_box_on_the_map_is_a_link_to_a_tutorial(browser, base_url):
 
 
 def test_texture_choices_survive_a_reload(page, base_url):
-    page.click("#dl-settings-toggle")
+    _open_panel(page, "#dl-settings-toggle")
     page.click("#dl-settings-texture .dl-seg[data-texture=theme] button[data-value=dark]")
     page.reload()
     page.wait_for_selector("html[data-theme=dark]", timeout=5_000)
 
-
-# ------------------------------------------------------------- the topic tree
 
 def open_tree(browser, base_url, width=1400):
     context = browser.new_context(viewport={"width": width, "height": 900})
@@ -361,14 +431,6 @@ def test_choosing_a_topic_shows_what_it_is_and_lights_its_path(browser, base_url
     assert "WHERE IT TURNS UP" in panel
     assert "NEEDS FIRST" in panel
     assert tab.eval_on_selector_all(".dl-tree-uses li", "e => e.length") >= 2
-    # What it needs and what needs it. Divide and conquer used to hang off the
-    # topic searching was split out of; it now sits beside it, taught inside
-    # searching and inside sorting rather than before or after either — so only
-    # one edge runs backward, to iterating by index. The second lit edge runs
-    # forward: CMPS-LO5 (algorithmic complexity, not yet taught) names
-    # MIT-6.8a as a prerequisite in topics.yaml, and an arrow into an untaught
-    # topic is exactly what the map is for — see topics.yaml's own docstring
-    # on `needs`.
     assert tab.eval_on_selector_all(".dl-tree-edge.is-lit", "e => e.length") == 2
     context.close()
 
@@ -512,7 +574,6 @@ def test_a_topic_says_what_it_opens_up(browser, base_url):
     assert "OPENS UP" in panel
     opens = tab.eval_on_selector_all(".dl-tree-opens button", "e => e.map(b => b.textContent)")
     assert "Limits" in opens
-    # And choosing one of them moves the selection, same as a prerequisite does.
     tab.click(".dl-tree-opens button")
     assert tab.evaluate("globalThis.dewlabTree.chosen()") != "MIT-3.2"
     context.close()

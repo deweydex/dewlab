@@ -34,7 +34,6 @@ try:
 except ImportError:  # the checks report this when the file needs it
     mathml_converter = None
 
-# ---------------------------------------------------------------- constants
 
 BLOCK_KINDS = {"exam", "section", "question", "answer", "marking",
                "reference"}
@@ -108,8 +107,6 @@ class BuildError(Exception):
         lines = [f"  line {ln}: {msg}" if ln else f"  {msg}" for ln, msg in problems]
         super().__init__("the exam file cannot be built:\n" + "\n".join(lines))
 
-
-# ---------------------------------------------------------------- parsing
 
 def parse_exam_file(text, base_dir):
     """Turn the exam file's text into a checked structure.
@@ -254,8 +251,6 @@ def parse_exam_file(text, base_dir):
     return exam, problems
 
 
-# ---------------------------------------------------------------- checking
-
 def check_exam(exam, problems, base_dir):
     """Run every check from planning/THE_EXAM_BUILDER.md section 2 that
     the draft supports, appending problems as (line, message) pairs."""
@@ -290,9 +285,6 @@ def check_exam(exam, problems, base_dir):
             problems.append((block_line, f"this {what} has no 'name'"))
             return None
         name = str(name)
-        # Section names may be capitals ("Section A"); question and answer
-        # names stay lower-case so they read cleanly in file names and
-        # spreadsheet columns.
         pattern = SECTION_NAME_RE if what == "section" else NAME_RE
         if not pattern.match(name):
             problems.append((block_line, f"the name '{name}' is not allowed; "
@@ -649,8 +641,6 @@ def check_marking(answer, marks, problems):
                              f"space carries {marks}"))
 
 
-# ---------------------------------------------------------------- markdown
-
 MATH_RE = re.compile(r"\$([^$\n]+)\$")
 
 
@@ -725,8 +715,6 @@ def render_markdown(md_text, base_dir=None):
             rendered)
     return rendered
 
-
-# ---------------------------------------------------------------- rendering
 
 def esc(value):
     return html.escape(str(value), quote=True)
@@ -1196,18 +1184,12 @@ def build_page(exam, variant, base_dir):
 """
 
 
-# ---------------------------------------------------------------- outputs
-
 def leak_fragments(exam):
     """Every piece of marking material that must never appear in the
     student or practice pages, normalised for comparison."""
     fragments = []
 
     def add(value, giveaway=False):
-        # giveaway marks short expected words (blank answers, diagram
-        # labels): finding one in the page usually means the question's
-        # own visible text contains its answer, which deserves a message
-        # about question writing rather than about leaked marking files.
         text = re.sub(r"\s+", " ", str(value)).strip().lower()
         if len(text) >= 4:
             fragments.append((text, giveaway))
@@ -1243,10 +1225,6 @@ def leak_fragments(exam):
 def check_for_leaks(page_html, exam, variant):
     """The builder's final safeguard against its own mistakes: no marking
     material may appear in a page students receive."""
-    # Only content a student can read matters here, so the page's own
-    # styles and behaviour are cut out before scanning; and a short
-    # expected word must match as a whole word, so that "break" does not
-    # trip over the stylesheet's "break-inside".
     visible = re.sub(r"<style>.*?</style>|<script[^>]*>.*?</script>", " ",
                      page_html, flags=re.S)
     normalised = re.sub(r"\s+", " ", visible).lower()

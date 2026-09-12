@@ -1,10 +1,4 @@
-"""Browser tests for the merged run line (order, duration, staleness), the
-"⋯" Run above/below menu, and Restart & run all — planning/CELL_IDENTITY.md,
-ported from dewmini.js's own already-shipped versions (DECISIONS_LOG.md
-7.105, 7.106, 7.108, 7.113) onto tutorial pages' `.dl-cell`.
-
-    python3 -m pytest tests/e2e/test_cell_run_menu.py -q
-"""
+"""The merged run line, the "⋯" Run above/below menu, and Restart & run all, ported from dewmini.js's already-shipped versions onto tutorial pages' `.dl-cell`."""
 
 from __future__ import annotations
 
@@ -35,16 +29,13 @@ def run_cell(page, cell_id: str):
     page.click(f".dl-cell[data-cell-id='{cell_id}'] .dl-btn-run")
     page.wait_for_function(
         "sel => document.querySelector(sel).textContent === 'Run'",
-        arg=f".dl-cell[data-cell-id='{cell_id}'] .dl-btn-run",
+        arg=f".dl-cell[data-cell-id='{cell_id}'] .dl-btn-run .dl-btn-label",
         timeout=20_000,
     )
 
 
 def wait_for_run_stats(page, cell_id: str, timeout: int = 20_000):
-    """Waits for a specific cell's own run line to say it ran — a signal
-    tied to that one cell, unlike the shared #dl-status line, which a
-    later step of the same batch could already have overwritten by the
-    time this gets to check it."""
+    """Waits on this cell's own run line, not the shared #dl-status line, which a later step of the same batch could already have overwritten."""
     page.wait_for_function(
         "sel => (document.querySelector(sel)?.textContent || '').startsWith('Ran ')",
         arg=f".dl-cell[data-cell-id='{cell_id}'] .dl-cell-runline",
@@ -58,10 +49,24 @@ def open_run_menu(page, cell_id: str):
 
 @pytest.fixture()
 def clean_storage(page):
-    """Each test starts with nothing saved, and leaves nothing behind."""
     page.evaluate("localStorage.clear()")
     yield page
     page.evaluate("localStorage.clear()")
+
+
+def _open_panel(actor, selector: str) -> None:
+    """Reference/Series/Settings' toggles now collapse behind one
+    "Panels" control in the masthead (shell.html's
+    <details class="dl-panels">) rather than always showing — expand it
+    first if it isn't already, then click the actual target. Checked via
+    #dl-panels' own `open` property rather than the target's own
+    visibility, so this never mistakes "already open" for "not open" and
+    toggles it shut again right before the click that was supposed to
+    land. Left expanded once opened (no auto-collapse), so this is only
+    needed once per page load, not before every toggle click."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
 
 
 class TestRunLine:
@@ -104,6 +109,30 @@ class TestRunLine:
         assert run_line_text(page, "plain-python") == "Not yet run this session"
 
 
+class TestClear:
+    def test_cancelling_the_confirmation_leaves_the_edit_in_place(self, clean_storage):
+        page = clean_storage
+        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\n# a harmless edit")
+
+        page.once("dialog", lambda dialog: dialog.dismiss())
+        page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-clear")
+        assert "# a harmless edit" in cell(page, "plain-python").locator(".cm-content").inner_text()
+
+    def test_confirming_puts_the_starter_code_back_and_clears_the_run_line(self, clean_storage):
+        page = clean_storage
+        run_cell(page, "plain-python")
+        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\n# a harmless edit")
+
+        page.once("dialog", lambda dialog: dialog.accept())
+        page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-clear")
+        assert "# a harmless edit" not in cell(page, "plain-python").locator(".cm-content").inner_text()
+        assert run_line_text(page, "plain-python") == "Not yet run this session"
+
+
 class TestRunMenu:
     def test_run_above_runs_this_cell_and_everything_before_it_only(self, clean_storage):
         page = clean_storage
@@ -119,9 +148,6 @@ class TestRunMenu:
 
     def test_run_below_keeps_earlier_state_and_does_not_reset_the_namespace(self, clean_storage):
         page = clean_storage
-        # Define something only "above" would normally re-seed, then run
-        # "below" from the next cell down — it must still be there
-        # afterwards, since "below" is documented to never reset first.
         page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
         page.keyboard.press("Control+End")
         page.keyboard.insert_text("\nmarker_from_above = 'still here'")
@@ -129,9 +155,6 @@ class TestRunMenu:
 
         open_run_menu(page, "numpy-basics")
         page.click(".dl-cell[data-cell-id='numpy-basics'] [data-run-menu='below']")
-        # "below" runs every cell from numpy-basics to the end of the page —
-        # wait for the very last one, tools-widgets, to know the whole
-        # batch actually finished rather than just its first cell.
         wait_for_run_stats(page, "tools-widgets", timeout=60_000)
         assert "mean:" in output_text(page, "numpy-basics")
 
@@ -145,18 +168,12 @@ class TestRunMenu:
         page = clean_storage
         open_run_menu(page, "plain-python")
         assert page.locator(".dl-cell[data-cell-id='plain-python'] .dl-cell-run-menu").is_visible()
-        # initCellRunMenu() registers its outside-click listener via
-        # setTimeout(fn, 0), deliberately after the click that opened the
-        # menu has finished bubbling — a real click straight afterwards
-        # lands comfortably after that, but this one is scripted right on
-        # its heels, so it needs the same beat to actually be caught.
         page.wait_for_timeout(50)
         page.mouse.click(5, 5)
         assert page.locator(".dl-cell[data-cell-id='plain-python'] .dl-cell-run-menu").is_hidden()
 
     def test_escape_closes_the_menu_and_returns_focus(self, clean_storage):
-        """Same Escape-closes-and-returns-focus pattern as Settings/
-        Reference/SeriesNav — this menu was the one panel missing it."""
+        """Same Escape-closes-and-returns-focus pattern as Settings/Reference/SeriesNav — this menu was the one panel missing it."""
         page = clean_storage
         open_run_menu(page, "plain-python")
         assert page.locator(".dl-cell[data-cell-id='plain-python'] .dl-cell-run-menu").is_visible()
@@ -169,14 +186,9 @@ class TestRunMenu:
 
 
 class TestRunAnnouncer:
-    """DECISIONS_LOG.md 7.131: the ticking run-line is deliberately not a
-    live region, so this is the one thing a screen reader hears once a
-    run actually finishes."""
+    """The ticking run-line is deliberately not a live region, so this is the one thing a screen reader hears once a run finishes."""
 
     def wait_for_announcement(self, page, text: str):
-        # announceCellRun() clears the region then sets the real text on
-        # the next tick (a live region only announces on a genuine change),
-        # so the text can lag a beat behind the Run button's own state.
         page.wait_for_function(
             "text => document.getElementById('dl-run-announcer').textContent === text",
             arg=text,
@@ -197,8 +209,7 @@ class TestRunAnnouncer:
         self.wait_for_announcement(page, "Ran — error")
 
     def test_running_the_same_cell_twice_announces_both_times(self, clean_storage):
-        """A live region only announces on a text change — the same result
-        twice in a row must not go silent the second time."""
+        """A live region only announces on a text change, so the same result twice in a row must not go silent the second time."""
         page = clean_storage
         run_cell(page, "plain-python")
         self.wait_for_announcement(page, "Ran — output below")
@@ -218,7 +229,7 @@ class TestRestartAndRunAll:
         page.keyboard.insert_text("\nonly_the_old_interpreter_has_this = True")
         run_cell(page, "plain-python")
 
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.once("dialog", lambda dialog: dialog.accept())
         page.click("#dl-restart-run-all")
 

@@ -1,12 +1,5 @@
-"""The editor page, driven against a fake GitHub.
-
-Every test here injects its own client, so nothing touches the network and no
-token is needed. That is the reason `start()` takes a client rather than making
-one: a page that could only be tested with real credentials would not be
-tested.
-
-    python3 -m pytest tests/e2e/test_editor.py -q
-"""
+"""start() takes a client rather than building one, so every test here
+injects a fake and nothing touches the network or needs a token."""
 
 from __future__ import annotations
 
@@ -15,8 +8,6 @@ import re
 
 import pytest
 
-# One small repository, shaped like the real one: two tutorials in a series,
-# an order file, and a second series with one tutorial in it.
 REPO = {
     "tutorials/fixtures/maths.order.yaml":
         "series: Maths and programming\norder:\n  - first-steps\n  - next-steps\n",
@@ -63,10 +54,6 @@ def _cell(cell_id: str) -> str:
     return f"```python exec\nid: {cell_id}\nprint(1)\n```\n\n"
 
 
-# The same repository with one tutorial already in a folder of releases, which
-# is what a tutorial becomes the first time anything is released. The editor
-# knew nothing about this shape until step 4 and opened such a tutorial as an
-# empty buffer.
 VERSIONED = {
     "tutorials/fixtures/maths.order.yaml":
         "series: Maths and programming\norder:\n  - first-steps\n  - two-takes\n",
@@ -80,10 +67,6 @@ VERSIONED = {
     "tutorials/fixtures/two-takes/v2026.09.15.1.md":
         _released("two-takes", "2026.09.15.1",
                   _cell("shared-one") + _cell("only-in-september")),
-    # Retired, with two releases, and so on none of the order files. This is
-    # the only shape in which the same tutorial could be listed twice: the
-    # off-the-route list is built by walking every markdown file, and a folder
-    # of releases is several files describing one tutorial.
     "tutorials/fixtures/old-ways/v2026.01.01.1.md":
         _released("old-ways", "2026.01.01.1", _cell("old-one"), status="archived"),
     "tutorials/fixtures/old-ways/v2026.03.01.1.md":
@@ -111,7 +94,6 @@ def _open(browser, base_url, files, factory=FAKE_CLIENT):
 
 @pytest.fixture
 def editor(browser, base_url):
-    """The editor page with a fake GitHub behind it, already loaded."""
     context, tab = _open(browser, base_url, REPO)
     yield tab
     context.close()
@@ -119,7 +101,6 @@ def editor(browser, base_url):
 
 @pytest.fixture
 def versioned(browser, base_url):
-    """The editor over a repository where one tutorial has two releases."""
     context, tab = _open(browser, base_url, VERSIONED)
     yield tab
     context.close()
@@ -137,11 +118,9 @@ def _runtime_url(tab) -> str:
 
 
 def _big_repo(count: int) -> dict:
-    """`count` tutorials in one series, each with distinct, checkable
-    content — enough to cross load()'s READ_CONCURRENCY batch boundary more
-    than once (16 at a time, as of this writing), and titled with its own
-    index so a mixed-up batch (wrong text landing against the wrong path)
-    would actually be caught rather than passing by coincidence."""
+    """40 crosses load()'s READ_CONCURRENCY batch boundary (16, in
+    assets/editor.js) more than once; each tutorial's title carries its own
+    index so a batch mix-up would actually be caught."""
     order = [f"tutorial-{i:03d}" for i in range(count)]
     files = {
         "tutorials/fixtures/big.order.yaml":
@@ -156,10 +135,6 @@ def _big_repo(count: int) -> dict:
     return files
 
 
-# read() resolves after a random short delay rather than instantly, so a
-# batch-index mistake in load() (assets/editor.js) — text from one request
-# landing against a different request's path — would show up as scrambled
-# titles instead of being masked by every request finishing in call order.
 SLOW_CLIENT = """
 (files) => ({
   committed: null,
@@ -174,10 +149,6 @@ SLOW_CLIENT = """
 
 
 class TestLoadingManyTutorialsAtOnce:
-    """load() (assets/editor.js) reads files in concurrent batches rather
-    than one at a time — DECISIONS_LOG.md 7.61 has the why. 40 crosses that
-    batch boundary (16 at a time) more than once."""
-
     def test_every_tutorial_in_a_large_repo_loads_with_the_right_content(self, browser, base_url):
         files = _big_repo(40)
         context, tab = _open(browser, base_url, files)
@@ -246,7 +217,6 @@ class TestInsertingAndCreating:
             "globalThis.dewlabEditor.state.files.get('tutorials/fixtures/halfway-there/halfway-there.md')")
         assert 'title: "Halfway There"' in written
         assert "slug: halfway-there" in written
-        # The template carries the house conventions, which is most of its point.
         assert "```python exec" in written
         assert "## Reflection" in written
 
@@ -261,15 +231,10 @@ class TestInsertingAndCreating:
 
 
 class TestEditingWhatIsInside:
-    """The editor holds a block editor, not a <textarea> — there is no
-    `.value` a script can fill() or read reliably (Crepe/ProseMirror manage
-    that DOM themselves, and a raw content replacement would just desync
-    from it). globalThis.dewlabEditor exposes what these tests need instead:
-    getBody() to read the open document, and editBody() to change it —
-    the same effect typing has on the currently open document, used here
-    rather than setBody() because a couple of these (the rename-orphan
-    warning) specifically test a comparison against what was on screen when
-    the tutorial was opened, which setBody's remount would reset."""
+    """No <textarea> to fill() — globalThis.dewlabEditor exposes getBody()/
+    editBody() instead. editBody(), not setBody(), because a few tests below
+    compare against what was on screen when opened, which setBody's remount
+    would reset."""
 
     def open_first(self, editor):
         editor.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
@@ -301,9 +266,8 @@ class TestEditingWhatIsInside:
         assert "adding-up-1" in warning
 
     def test_and_says_that_releasing_is_the_way_not_to(self, editor):
-        """It used to say the work was thrown away full stop, which stopped
-        being true the day releases arrived — and made this box argue with the
-        proposal underneath it."""
+        """It used to say the work was thrown away full stop, until releases
+        arrived and made this box argue with the proposal underneath it."""
         self.open_first(editor)
         self.edit_body(editor, self.body_of(editor).replace("adding-up-1", "adding-up-2"))
         warning = editor.inner_text(".dl-editor-report")
@@ -328,8 +292,8 @@ class TestEditingWhatIsInside:
         assert "has no id" in editor.inner_text("#dl-editor-report")
 
     def test_an_illustrative_fence_is_not_counted_as_a_cell(self, editor):
-        """`python exec` makes a cell; a plain fence is illustrative code. The
-        editor has to draw that line exactly where build.py draws it."""
+        """The editor has to draw the cell/illustrative-fence line exactly
+        where build.py draws it."""
         self.open_first(editor)
         self.edit_body(editor, "# T\n\n```python\nprint(1)\n```\n")
         assert "0 runnable cells" in editor.inner_text("#dl-editor-report")
@@ -349,9 +313,6 @@ LINKS = {
         '---\ntitle: "Next Steps"\nslug: next-steps\nmodule: other\n'
         'module_title: "Other"\nyear: "2026-2027"\nseries: other\nversion: 2026.08.23.1\n---\n\n'
         "# Next Steps\n\nProse.\n",
-    # Two different modules with the same slug, neither of them "fixtures" —
-    # a link from first-steps naming this slug has to be reported ambiguous
-    # rather than guessed at.
     "tutorials/third/shared-name.order.yaml":
         "series: Third\norder:\n  - shared-name\n",
     "tutorials/third/shared-name/shared-name.md":
@@ -369,20 +330,15 @@ LINKS = {
 
 @pytest.fixture
 def links(browser, base_url):
-    """The editor over a repository shaped for cross-tutorial link checking:
-    one tutorial with a heading and a cell to link to, one tutorial alone in
-    its own module, and a slug that exists in two other modules at once."""
     context, tab = _open(browser, base_url, LINKS)
     yield tab
     context.close()
 
 
 class TestTutorialLinkChecking:
-    """The one thing build.py already refuses that the editor's own report
-    did not catch until now: a dead `tutorial:slug#anchor` link. Everything
-    else problems() checks, the build would also refuse — this closes the
-    same gap for cross-tutorial links, so it surfaces here instead of after
-    a commit fails CI."""
+    """A dead `tutorial:slug#anchor` link is the one thing build.py already
+    refuses that the editor's own report did not catch — this closes that
+    gap so it surfaces here rather than after a commit fails CI."""
 
     def open_first(self, tab):
         tab.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
@@ -409,10 +365,9 @@ class TestTutorialLinkChecking:
         assert "third" in report and "fourth" in report
 
     def test_a_link_to_a_real_heading_anchor_is_not_reported(self, links):
-        """Linking into the tutorial's own heading and cell, alongside them
-        rather than in place of them — replacing the body outright would
-        delete the very anchors this checks against, in the one tutorial
-        that also happens to be the one being edited."""
+        """Appends to the body rather than replacing it outright, since
+        first-steps is both the tutorial being edited and the one supplying
+        the anchor being linked to — replacing it would delete that anchor."""
         self.open_first(links)
         self.edit_body(
             links,
@@ -436,13 +391,9 @@ class TestTutorialLinkChecking:
         assert 'no heading or cell "not-a-real-anchor"' in links.inner_text("#dl-editor-report")
 
     def test_a_python_comment_is_not_mistaken_for_a_heading(self, links):
-        """A single `#` at the start of a line inside a cell is an ordinary
-        Python comment, not a markdown heading — build.py never sees the two
-        confused because it strips fences out before scanning for headings;
-        the editor has to do the same on raw source. The fixture's own body
-        has exactly two real headings (# First Steps, ## A Grid of Numbers);
-        without the fix, `# not a heading` inside its cell reads as a third,
-        phantom one."""
+        """build.py strips fences before scanning for headings, so a `#`
+        comment inside a cell is never confused with one; the editor has to
+        do the same on raw source rather than count it as a third heading."""
         self.open_first(links)
         report = links.inner_text("#dl-editor-report")
         assert "2 headings" in report
@@ -450,14 +401,9 @@ class TestTutorialLinkChecking:
 
 
 class TestLinkPicker:
-    """Search-and-insert a `[title](tutorial:slug#anchor)` link
-    (matchTutorials() in assets/editor.js, insertLink() in
-    vendor-src/milkdown-entry.js) rather than typing a slug from memory and
-    finding out it was wrong only from TestTutorialLinkChecking's report,
-    after the fact. Reuses the `links` fixture: first-steps has both a
-    heading and a cell anchor to offer, next-steps sits in a different
-    module, and the two shared-name tutorials give the "lists everything"
-    test something to tell apart."""
+    """Search-and-insert a `[title](tutorial:slug#anchor)` link, rather than
+    typing a slug from memory and finding out it was wrong only from
+    TestTutorialLinkChecking's report, after the fact."""
 
     def open(self, tab, slug):
         tab.click(f'.dl-editor-card[data-slug="{slug}"] .dl-editor-open')
@@ -525,10 +471,9 @@ class TestLinkPicker:
 
 
 class TestCodeCompletion:
-    """A `python exec` block is Crepe's own CodeMirror
-    (vendor-src/milkdown-entry.js's Feature.CodeMirror config), the same
+    """A `python exec` block is Crepe's own CodeMirror, wired to the same
     static completion sources tutorial-runtime.js gives a student
-    (tests/e2e/test_autocomplete.py) — an author gets the same behaviour
+    (see test_autocomplete.py) — an author gets the same completions
     writing a cell as a student gets running it."""
 
     def open_first(self, editor):
@@ -563,18 +508,9 @@ class TestCodeCompletion:
 
 
 class TestCrepeIsActuallyThemed:
-    """Crepe's own structural stylesheet (imported alone, without one of its
-    skins — see the comment above `.dl-editor-body .milkdown` in
-    tutorial-style.css) reads roughly two dozen --crepe-* custom properties
-    that only a skin would otherwise define. Undefined, a `var()` reference
-    with no fallback is invalid at computed-value time and resolves to the
-    property's own initial value instead of anything Crepe intended — which
-    silently produced two real, live bugs rather than merely wrong colours:
-    a fully transparent slash menu, and no visible text cursor at all
-    (Crepe wires up `prosemirror-virtual-cursor` for a consistent caret
-    across browsers, which hides the native one and draws its own — and
-    that replacement's own colour comes from one of the same undefined
-    variables). DECISIONS_LOG.md 7.63 has the fuller account."""
+    """tutorial-style.css defines Crepe's --crepe-* custom properties itself,
+    without one of Crepe's own skins — undefined, they silently produced two
+    live bugs: a transparent slash menu, and no visible cursor at all."""
 
     def open_first(self, editor):
         editor.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
@@ -591,11 +527,9 @@ class TestCrepeIsActuallyThemed:
         assert background not in ("rgba(0, 0, 0, 0)", "transparent")
 
     def test_a_visible_cursor_is_drawn_in_place_of_the_hidden_native_one(self, editor):
-        """caret-color: transparent on the ProseMirror element itself is
-        correct and expected — prosemirror-virtual-cursor hides the native
-        caret on purpose so it can draw its own, consistently-styled one in
-        its place; this checks that replacement is actually visible, not
-        that the native caret is (it deliberately is not)."""
+        """The native caret is deliberately hidden (prosemirror-virtual-cursor
+        draws its own instead) — this checks that replacement, not the
+        native one."""
         self.open_first(editor)
         editor.click(".dl-editor-body .ProseMirror p:has-text('Prose.')")
         editor.wait_for_selector(".dl-editor-body .prosemirror-virtual-cursor")
@@ -620,7 +554,6 @@ class TestCommitting:
         assert [f["path"] for f in change["files"]] == ["tutorials/fixtures/maths.order.yaml"]
         written = change["files"][0]["text"]
         assert written.index("next-steps") < written.index("first-steps")
-        # The series' own name survives the rewrite; only the list changes.
         assert "series: Maths and programming" in written
 
     def test_the_commit_lands_on_a_new_branch_never_on_main(self, editor):
@@ -656,12 +589,9 @@ class TestCommitting:
 
 
 class TestStatus:
-    """Draft, beta, live, archived — set from the editor rather than by hand.
-
-    The field on its own would be trivial. What makes it worth automating is
-    that only a live tutorial is on the reading order, and the build refuses an
-    order file listing anything else — so the line has to move with the field
-    or the next build stops."""
+    """Only a live tutorial belongs on the reading order, and the build
+    refuses an order file listing anything else — so the order line has to
+    move with the status field or the next build stops."""
 
     def status_of(self, editor, slug: str) -> str:
         return editor.evaluate(
@@ -746,8 +676,8 @@ class TestStatus:
 
 
 class TestVersionArithmetic:
-    """Pure functions, driven directly, because the interesting cases are about
-    dates and a browser test cannot move the clock without lying about it."""
+    """Driven directly rather than through the UI, since the interesting
+    cases are about dates and a browser test cannot move the clock."""
 
     def call(self, editor, expression):
         return editor.evaluate(f"() => {{ const m = globalThis.__editorModule; return {expression}; }}")
@@ -757,8 +687,8 @@ class TestVersionArithmetic:
         assert got == "2026.09.15.1"
 
     def test_the_trailing_number_is_computed_not_typed(self, editor):
-        """Publish, spot something, publish again. Rare, and exactly the case
-        that would otherwise collide."""
+        """Publish, spot something, publish again same day — rare, and
+        exactly the case that would otherwise collide."""
         got = self.call(
             editor,
             'm.nextVersion(["2026.09.15.1", "2026.09.15.2"], new Date(2026, 8, 15))')
@@ -770,7 +700,6 @@ class TestVersionArithmetic:
         assert got == "2026.09.15.1"
 
     def test_releases_sort_by_date_and_not_as_text(self, editor):
-        """2026.09.02.1 comes before 2026.09.15.1. As strings it comes after."""
         assert self.call(editor, 'm.isNewer("2026.09.15.1", "2026.09.02.1")') is True
         assert self.call(editor, 'm.isNewer("2026.09.02.1", "2026.09.15.1")') is False
         assert self.call(editor, 'm.isNewer("2026.09.15.10", "2026.09.15.9")') is True
@@ -792,9 +721,9 @@ class TestVersionArithmetic:
 
 class TestOpeningATutorialWithSeveralReleases:
     def test_it_opens_the_newest_live_one(self, versioned):
-        """It used to open an empty buffer. `pathOf` looked for
-        `tutorials/<module>/<slug>.md` and a tutorial with a second release does
-        not have one — it is a folder of releases."""
+        """It used to open an empty buffer: `pathOf` looked for a single
+        `tutorials/<module>/<slug>.md`, and a tutorial with a second release
+        is a folder of releases instead."""
         versioned.click('.dl-editor-card[data-slug="two-takes"] .dl-editor-open')
         where = versioned.inner_text(".dl-editor-one .dl-editor-where")
         assert where == "tutorials/fixtures/two-takes/v2026.09.15.1.md"
@@ -811,10 +740,9 @@ class TestOpeningATutorialWithSeveralReleases:
         assert "2" in versioned.inner_text(".dl-editor-version")
 
     def test_a_tutorial_off_the_route_is_listed_once_however_many_releases(self, versioned):
-        """The off-the-route list is built by walking every markdown file, and
-        a folder of releases is several files describing one tutorial. Without
-        the guard, a retired tutorial with three releases is three cards, each
-        of which opens the same thing."""
+        """Without a guard, walking every markdown file to build the
+        off-the-route list would turn a tutorial's several release files
+        into that many duplicate cards, all opening the same tutorial."""
         cards = versioned.eval_on_selector_all(
             '.dl-editor-off', "e => e.map(c => c.dataset.slug)")
         assert cards == ["old-ways"]
@@ -834,16 +762,11 @@ class TestReleasing:
         return {f["path"]: f["text"] for f in tab.evaluate("globalThis.__committed.files")}
 
     def release(self, tab):
-        """Click Release and wait for it to actually finish.
-
-        Releasing reads the editor's live markdown, which needs Crepe's async
-        mount to be ready (assets/editor.js) — so unlike the rest of this
-        page, the effects land a beat after the click returns rather than
-        inside it. status() always updates #dl-editor-status directly, on
-        every path release() can take, success or refusal alike, which is
-        what makes waiting for that text to change a reliable "it's done"
-        signal regardless of which one this call hits.
-        """
+        """Waits for #dl-editor-status to change, since release() reads
+        Crepe's live markdown asynchronously and its effects land a beat
+        after the click returns — but status() updates on every path it can
+        take, success or refusal, so that text change is a reliable signal
+        regardless of which one this hits."""
         before = tab.eval_on_selector(
             "#dl-editor-status", "e => e.textContent"
         ) if tab.query_selector("#dl-editor-status") else None
@@ -860,9 +783,6 @@ class TestReleasing:
         tab.wait_for_function("globalThis.__committed !== undefined")
 
     def test_releasing_adds_a_frozen_copy_and_keeps_the_tutorials_own_name(self, versioned):
-        """A tutorial is already a folder, so a second release only adds a file
-        to it: the past release is frozen under its version number, and the
-        current one keeps the tutorial's own name."""
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
         self.release(versioned)
         self.commit(versioned)
@@ -875,8 +795,8 @@ class TestReleasing:
         assert len([p for p in files if p.startswith("tutorials/fixtures/first-steps/")]) == 2
 
     def test_the_frozen_copy_is_what_students_have_not_what_was_typed(self, versioned):
-        """The whole point. Freezing the edits would make the release a copy of
-        the thing it exists to let a reader go back from."""
+        """Freezing the edits instead would make the release a copy of the
+        very thing it exists to let a reader go back from."""
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
         self.release(versioned)
         self.commit(versioned)
@@ -898,7 +818,6 @@ class TestReleasing:
         assert "version: 2026.06.02.1" not in new
 
     def test_the_new_release_records_what_it_replaced(self, versioned):
-        """After two releases nothing else says which one this replaced."""
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
         self.release(versioned)
         self.commit(versioned)
@@ -908,9 +827,8 @@ class TestReleasing:
         assert "supersedes: 2026.06.02.1" in new
 
     def test_releasing_a_folder_writes_only_the_new_release(self, versioned):
-        """Both older files are already frozen at their own versions, so the
-        commit has nothing to say about either. The edits went to the new one
-        and the buffer they came from went back to what students have."""
+        """The older release files are already frozen at their own versions,
+        so the commit has nothing to say about either."""
         self.edit(versioned, "two-takes", "# Two Takes\n\nA third take.\n")
         self.release(versioned)
         self.commit(versioned)
@@ -932,8 +850,8 @@ class TestReleasing:
         assert "only-in-september" in held
 
     def test_the_order_file_is_not_touched_by_a_release(self, versioned):
-        """An order file lists slugs, not releases. A new version of a tutorial
-        is not a new tutorial."""
+        """An order file lists slugs, not releases — a new version of a
+        tutorial is not a new tutorial."""
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
         self.release(versioned)
         self.commit(versioned)
@@ -946,8 +864,8 @@ class TestReleasing:
         assert versioned.get_attribute("#dl-editor-save", "disabled") is not None
 
     def test_a_tutorial_that_is_not_live_is_not_released(self, versioned):
-        """A draft has no page for anybody to go back to, and a beta becomes
-        live with the status control rather than by being released."""
+        """A draft has no page for anybody to go back to; a beta becomes
+        live through the status control, not by being released."""
         versioned.click('.dl-editor-card[data-slug="first-steps"] '
                         '.dl-editor-status-option[data-status="beta"]')
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
@@ -968,18 +886,14 @@ class TestTheProposal:
         assert "usually a release rather than an edit" in report
 
     def test_the_release_you_just_made_does_not_announce_itself(self, versioned):
-        """A file with nothing committed behind it has no last release to
-        compare with. Without the guard, the release made a second ago reports
-        that every cell in it is new."""
+        """Without a guard, a file with nothing committed yet has no last
+        release to compare with, so the release just made reports every
+        cell in it as new."""
         versioned.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
         self.set_body(versioned,
                        "# First Steps\n\n## Adding up\n\n"
                        "```python exec\nid: adding-up-2\nprint(1)\n```\n")
         versioned.click("#dl-editor-release")
-        # Releasing reads the editor's own current markdown, which needs the
-        # freshly (re)mounted Crepe instance to finish loading first — async,
-        # so the report updates a beat after the click returns rather than
-        # inside it. Polled for rather than read immediately.
         versioned.wait_for_function(
             "!document.querySelector('#dl-editor-report').textContent.includes('usually a release')"
         )

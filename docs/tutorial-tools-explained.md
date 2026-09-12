@@ -71,7 +71,8 @@ sense.
     sits `_run_sql_cell` (not in `__all__` — internal plumbing, not
     something a reader calls by name), `run_query`'s multi-statement
     counterpart: dewmini's own SQL cell type (DECISIONS_LOG.md 7.118,
-    `planning/CELL_IDENTITY.md` §8) generates a call to this rather than
+    `planning/CELL_IDENTITY.md` §8) and a tutorial page's `sql exec` cell
+    (DECISIONS_LOG.md 7.140) both generate a call to this rather than
     handing a reader's raw SQL to Pyodide directly. Splits a script on a
     bare `;`, runs every statement but the last, and renders only the
     last one's own result — a table if it returned rows, otherwise how
@@ -116,10 +117,27 @@ more detail; it's worth reading once, since the same shape shows up in
 - **"How does dewlab decide a traceback is 'done'?"** — `_format_exception`
   and `_chained`. Only frames whose filename starts with `"<cell "` (see
   `cell_filename`) are kept; dewlab's own frames are always dropped.
+- **"Why does a traceback sometimes name a cell instead of its id?"** —
+  `cell_filename()`'s optional `label`, threaded through `run_cell()`/
+  `run_cell_report()`/`_begin()`/`_CellContext`. A label, when given,
+  replaces the id everywhere — `linecache`'s own key included, not just
+  what a reader *sees* — which does mean two cells sharing a label share
+  one `linecache` entry; `cell_filename()`'s own docstring explains why
+  that's harmless the way this module actually runs a cell and formats
+  its traceback. A tutorial page passes its author-given `name:`, when a
+  cell has one; dewmini passes a reader's own name or a plain `Cell N`
+  fallback either way (`planning/CELL_IDENTITY.md` §9).
 - **"Why does `check()` need its own comparison function instead of
   `==`?"** — `_compare`, and its own docstring: floats need a tolerance,
   numpy arrays and DataFrames raise on a bare `==`, and `True == 1` in
   Python would let a boolean answer through disguised as a numeric one.
+- **"What does the page learn about a run beyond its output?"** —
+  `run_cell_report()` and `_report()`: the same run as `run_cell()`, plus a
+  JSON report of whether it raised (`_describe_error()`: type and first
+  line), whether its `check()` calls passed and which did not, and whether
+  the cell's `expect:` expression `holds()` in the page namespace. The
+  tutorial page counts attempts for staged hints from this
+  (planning/CELL_HINTS.md); `run_cell()` keeps its boolean for dewmini.
 - **"Why is `image_input()`'s value `None` at first?"** — reading a
   picked file's bytes is asynchronous; see the comment on `on_change`
   inside `image_input()` for how `asyncio.ensure_future` fits in.

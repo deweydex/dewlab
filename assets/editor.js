@@ -1,29 +1,9 @@
-/* The editor: reorder a series, insert a tutorial, create one, and edit what
- * is inside it — against the repository, through the GitHub API, committed to
- * a branch and opened as a pull request.
- *
- * It edits *source*, not the built site. Everything here reads and writes the
- * markdown in tutorials/ and the order file beside it, because that is what a
- * person actually changes; site/ is a derived artefact and editing it would be
- * editing the output of a build.
- *
- * Never linked from a student page. It is for authors and course maintainers.
- */
 
 import { createProseEditor } from "./vendor/milkdown.bundle.js";
 
 const API = "https://api.github.com";
 const TOKEN_KEY = "dewlab:editor:token";
 const REPO = "deweydex/dewlab";
-
-/* ------------------------------------------------------------------ parsing
- *
- * The build decides what a cell is by finding ```python exec fences and
- * reading the `id:` line inside. The editor has to agree with it exactly,
- * because a disagreement here is an editor that shows you something the build
- * will not produce. Kept as pure functions so the tests can drive them without
- * a network or a token.
- */
 
 const FENCE = /^ *```([^\n]*)\n([\s\S]*?)^ *```[ \t]*$/gm;
 
@@ -43,9 +23,6 @@ export function frontmatterField(meta, field) {
 export const STATUSES = ["draft", "beta", "live", "archived"];
 
 export function setFrontmatterField(meta, field, value) {
-  /* Set a field, or add it if it is not there. Added after `version:` rather
-   * than at the end, because the end of the frontmatter is where `covers:`
-   * lives and its indented children would swallow anything put below them. */
   const lines = meta.split("\n");
   const at = lines.findIndex((l) => l.startsWith(field + ":"));
   if (at !== -1) {
@@ -66,14 +43,6 @@ export function versionOf(text) {
   return frontmatterField(splitFrontmatter(text).meta, "version");
 }
 
-/* ------------------------------------------------------------------ releases
- *
- * A version is a release, not a save. It exists when we decide a student
- * should be able to go back to the old one; everything else is an edit
- * (planning/VERSIONS.md). So the editor never bumps a version on its own — it
- * offers, and releasing is a separate gesture from committing an edit.
- */
-
 export const VERSION_RE = /^(\d{4})\.(\d{2})\.(\d{2})\.(\d+)$/;
 
 export function releaseOrder(version) {
@@ -93,13 +62,6 @@ export function isNewer(a, b) {
 }
 
 export function nextVersion(existing, today = new Date()) {
-  /* Today where you are, from the browser's own clock: a release at half past
-   * midnight in Dublin should carry the date the author's local clock reports,
-   * not the date UTC thinks it is.
-   *
-   * The trailing number is computed rather than typed. It earns its place
-   * rarely — you publish, spot something, and publish again — but that is
-   * exactly the case that would otherwise collide. */
   const stem = [
     today.getFullYear(),
     String(today.getMonth() + 1).padStart(2, "0"),
@@ -113,12 +75,6 @@ export function nextVersion(existing, today = new Date()) {
 }
 
 export function cellsChanged(before, after) {
-  /* What tells an edit from a release. Prose moving is an edit; a cell
-   * appearing, disappearing or changing its id is the kind of change a student
-   * might want to go back from.
-   *
-   * A rename shows up here as one gone and one arrived, which is the truth:
-   * to a student's saved work they are two different exercises. */
   const was = parseCells(before).map((cell) => cell.id).filter(Boolean);
   const now = parseCells(after).map((cell) => cell.id).filter(Boolean);
   return {
@@ -128,15 +84,12 @@ export function cellsChanged(before, after) {
 }
 
 export function parseCells(body) {
-  /* Every exec-tagged fence, with the id the build will key saved work on.
-   * An untagged fence is illustrative code and is not a cell, which is the
-   * same rule build.py applies. */
   const cells = [];
   FENCE.lastIndex = 0;
   let match;
   while ((match = FENCE.exec(body)) !== null) {
     const info = match[1].trim();
-    if (!/^python\s+exec\b/.test(info)) continue;
+    if (!/^(python|sql)\s+exec\b/.test(info)) continue;
     const lines = match[2].split("\n");
     let id = "";
     let hint = "";
@@ -158,27 +111,10 @@ export function parseCells(body) {
   return cells;
 }
 
-/* Crepe's code-block feature keeps only the first word of a fence's info
- * string as its "language" — its language picker has no way to select or
- * preserve a second word, so `python exec` round-trips through it as plain
- * `python`, silently turning every runnable cell into inert illustrative
- * code the moment an author saves through this editor. Restored here on the
- * same signal build.py itself treats as what makes a fence a cell: an `id:`
- * line as the very first thing inside it (parse_cell/HEADER_RE in build.py).
- * A plain illustrative example coincidentally opening with a literal `id:`
- * line would be misread as a cell — unlikely enough in practice, and exactly
- * the same convention the source format already leans on, not a new one. */
 export function restoreExecTag(markdown) {
-  return markdown.replace(/^```python\n(?=id:\s*\S)/gm, "```python exec\n");
+  return markdown.replace(/^```(python|sql)\n(?=id:\s*\S)/gm, "```$1 exec\n");
 }
 
-/* A fence's body, blanked to the same number of lines rather than removed —
- * so `headings()` and the anchor scan below never mistake a Python comment
- * (`# a note`, one hash, at the start of a cell's line) for a markdown
- * heading, without disturbing every other line number a caller might care
- * about. build.py never has this problem: it lifts fences out with
- * extract_blocks() before anything scans for headings. The editor scans raw
- * source directly, so it has to do the equivalent itself. */
 function withoutFences(body) {
   return body.replace(FENCE, (match) => match.replace(/[^\n]/g, " "));
 }
@@ -190,16 +126,6 @@ export function headings(body) {
   }));
 }
 
-/* build.py's toc extension (Python-Markdown) assigns every heading an id by
- * Unicode-folding accents away, lowercasing, dropping anything that isn't a
- * letter, digit, space or hyphen, then collapsing whitespace to single
- * hyphens — "Über café & naïve" becomes uber-cafe-naive, "What's Next?"
- * becomes whats-next. Reproduced here rather than guessed at, checked
- * directly against a real `markdown.Markdown(extensions=["toc"])` run.
- * Not reproduced: the `_1`, `_2` suffix the toc extension appends when two
- * headings on the same page slugify identically. That is rare, and the
- * asymmetry is deliberate — this function existing to warn about a broken
- * link, wrongly, is worse than it occasionally missing one. */
 export function slugifyHeading(text) {
   return text
     .normalize("NFKD")
@@ -210,11 +136,6 @@ export function slugifyHeading(text) {
     .replace(/\s+/g, "-");
 }
 
-/* Every anchor a `tutorial:slug#anchor` link could target inside this body:
- * a cell's own id (matching build.py's Cell.id, verbatim, no slugifying —
- * cells are addressed by data-cell-id, not a heading id) or a heading at any
- * level (matching build.py's ID_RE scan of the rendered page, which is not
- * limited to h1–h3 the way headings() above is for the structure count). */
 export function tutorialAnchors(body) {
   const cellIds = parseCells(body).map((cell) => cell.id).filter(Boolean);
   const headingIds = [...withoutFences(body).matchAll(/^#{1,6}\s+(.+?)\s*$/gm)]
@@ -222,21 +143,11 @@ export function tutorialAnchors(body) {
   return new Set([...cellIds, ...headingIds]);
 }
 
-/* Every `[text](tutorial:slug#anchor)` link in a body, in the raw markdown
- * source rather than rendered HTML — the editor never renders the page
- * build.py would, on purpose (planning/EDITOR.md), so this is the only form
- * these links exist in here. The anchor is optional, same as build.py's own
- * TUTORIAL_HREF_RE. */
 export function findTutorialLinks(body) {
   const RE = /\]\(tutorial:([^)#\s]+)(?:#([^)\s]+))?\)/g;
   return [...body.matchAll(RE)].map((m) => ({ slug: m[1], anchor: m[2] || null }));
 }
 
-/* Which tutorial a link resolves to, or why it does not — the same
- * three-way rule build.py's resolve_links() applies: this tutorial's own
- * module first, then exactly one match elsewhere, then either ambiguous
- * (found in more than one other module) or unknown. `all` is every tutorial
- * currently known, as {module, slug, anchors}. */
 export function resolveTutorialLink(slug, ownModule, all) {
   const own = all.find((t) => t.module === ownModule && t.slug === slug);
   if (own) return { target: own };
@@ -248,12 +159,6 @@ export function resolveTutorialLink(slug, ownModule, all) {
   return {};
 }
 
-/* The cross-tutorial-link half of what problems() checks within one page —
- * kept separate rather than folded in, because this needs to know about
- * every other tutorial and problems() deliberately does not (it is a pure
- * function of one body, exercised directly by tests with no editor state
- * behind it). `all` is built once per keystroke from state.files in
- * editorView() below, and passed in here. */
 export function tutorialLinkProblems(body, ownModule, all) {
   const found = [];
   for (const { slug, anchor } of findTutorialLinks(body)) {
@@ -278,13 +183,6 @@ export function tutorialLinkProblems(body, ownModule, all) {
   return found;
 }
 
-/* Which tutorials in `all` a search phrase could mean — the pure half of the
- * link picker in editorView() below, so a test can drive it without opening
- * the picker's DOM. Matches title, slug or module, case-insensitively;
- * ranked so a title match sorts ahead of a slug/module-only one, and a
- * title starting with the phrase ahead of one merely containing it. An
- * empty query matches everything, alphabetically by title — that is the
- * picker's own resting state, meant for browsing rather than only search. */
 export function matchTutorials(query, all) {
   const q = query.trim().toLowerCase();
   const ranked = all
@@ -303,10 +201,6 @@ export function matchTutorials(query, all) {
 }
 
 export function problems(body) {
-  /* What the build would refuse, found before the commit rather than after.
-   * This is the whole justification for not shipping a visual preview: the
-   * mistakes that actually happen are structural, and structure is the part a
-   * browser can check honestly. */
   const found = [];
   const cells = parseCells(body);
   const seen = new Map();
@@ -336,10 +230,6 @@ export function problems(body) {
 }
 
 export function renamedCells(before, after) {
-  /* A cell's id is the key a student's saved work is stored under. Renaming
-   * one does not move their work: it orphans it, and the cell comes back
-   * empty. Nothing in the build can warn about this, because by then the
-   * rename has happened — so the editor has to, while both versions exist. */
   const was = parseCells(before);
   const now = parseCells(after);
   const gone = [];
@@ -349,12 +239,6 @@ export function renamedCells(before, after) {
   }
   return gone;
 }
-
-/* --------------------------------------------------------------- the client
- *
- * Swappable so the browser tests can drive the whole editor without a token
- * or a network. `start()` takes one, and the page passes the real one.
- */
 
 export function githubClient(token) {
   async function call(path, options = {}) {
@@ -390,16 +274,9 @@ export function githubClient(token) {
       return decodeURIComponent(escape(atob(file.content.replace(/\n/g, ""))));
     },
     async commit({ base, branch, message, files }) {
-      /* One commit for the whole change, through the git data API, rather than
-       * one commit per file through the contents API. An insertion touches a
-       * markdown file and an order file, and those two arriving separately
-       * would leave main briefly describing a series that does not exist. */
       const blobs = [];
       for (const file of files) {
         if (file.text === null) {
-          /* A null sha in a tree entry removes the path. This is how a release
-           * moves a single-file tutorial into a folder of releases without the
-           * old path surviving beside the new ones. */
           blobs.push({ path: file.path, mode: "100644", type: "blob", sha: null });
           continue;
         }
@@ -435,8 +312,6 @@ export function githubClient(token) {
     },
   };
 }
-
-/* ------------------------------------------------------------------ the page */
 
 /* What each one does, in the tooltip, because four words on four buttons is
  * not enough to tell draft from beta and the difference matters. */
@@ -497,24 +372,11 @@ export function start(root, client, { onStatus = () => {} } = {}) {
   const state = {
     series: new Map(),
     files: new Map(),
-    /* The same files as fetched, never edited. Releasing needs both: the
-     * frozen copy has to be what students have now, and the buffer is what
-     * they are about to get. Without this the release would freeze the edits
-     * it exists to let them go back from. */
     original: new Map(),
     base: null,
     editing: null,
     dirty: new Set(),
-    /* Paths to delete in the next commit. A release moves a single-file
-     * tutorial into a folder, which is the only thing here that removes a
-     * file rather than writing one. */
     removing: new Set(),
-    /* The prose editor currently mounted, if a tutorial is open. Crepe reads
-     * its document once at construction and has no supported way to swap it
-     * in place (see vendor-src/milkdown-entry.js), so switching tutorials
-     * means destroying this one and creating another — tracked here so
-     * render() can do that teardown itself rather than every caller
-     * remembering to. */
     editor: null,
   };
 
@@ -528,15 +390,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     }
   }
 
-  /* How many files load() reads at once. GitHub's Contents API has no bulk
-   * read, so this is one request per file regardless — the question is only
-   * how many are in flight together. One at a time, fully sequential, is
-   * what this used to be, and against a real tutorials/ tree of 90-odd
-   * files that was 15-25 seconds of real GitHub round-trips before an author
-   * saw anything. All 90-odd at once is the other extreme, and risks
-   * tripping GitHub's secondary rate limit rather than just being slow. This
-   * is the middle: enough concurrency to matter, not enough to look like an
-   * abuse pattern to GitHub's own throttling. */
   const READ_CONCURRENCY = 16;
 
   async function load() {
@@ -566,18 +419,10 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       state.series.set(path, {
         path, module, name, order,
         title: titled ? titled[1].trim() : name,
-        /* Everything belonging to this series, whether or not it is on the
-         * route. Without this, setting a tutorial to draft would drop it out
-         * of the order file and out of the list at once — a one-way trip, with
-         * no way back to it in the editor. */
         off: [],
       });
     }
 
-    /* One entry per tutorial, not per file. A tutorial with more than one
-     * release is a folder of them, and reading each file as its own tutorial
-     * would list the same thing three times and let an edit to one of them
-     * look like an edit to the tutorial. */
     for (const series of state.series.values()) series.off = [];
     const seen = new Set();
     for (const [path, text] of state.files) {
@@ -598,21 +443,10 @@ export function start(root, client, { onStatus = () => {} } = {}) {
   }
 
   function newPathOf(module, slug) {
-    /* Where a tutorial is created: its own folder, holding its markdown. Every
-     * tutorial is a folder from the start, so its practice page, its glossary
-     * and any picture it uses have somewhere to sit together, and a second
-     * release changes nothing about where anything lives. */
     return `tutorials/${module}/${slug}/${slug}.md`;
   }
 
   function releasesOf(module, slug) {
-    /* Every file that is a release of this tutorial, newest first: the current
-     * one at <slug>.md, and a frozen one per past release at v<version>.md.
-     *
-     * Named exactly rather than taken as "every markdown file in the folder",
-     * because the folder holds the tutorial's practice page too — and a
-     * practice page read as a release would be offered as a version students
-     * could be sent back to. */
     const folder = `tutorials/${module}/${slug}/`;
     const paths = [];
     for (const path of state.files.keys()) {
@@ -625,14 +459,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
   }
 
   function pathOf(module, slug) {
-    /* The release the plain URL serves, which is the one to open and the one a
-     * status change applies to: the newest live one, matching what
-     * `versions_of` decides in build.py. Nothing live falls back to the newest
-     * of whatever there is, for the same reason the build does — a tutorial
-     * that is entirely beta or entirely archived still has to open.
-     *
-     * This used to be `tutorials/<module>/<slug>.md` and nothing else, so a
-     * tutorial with a second release opened as an empty buffer. */
     const paths = releasesOf(module, slug);
     if (paths.length <= 1) return paths[0] || newPathOf(module, slug);
     const live = paths.filter((path) => statusOf(state.files.get(path)) === "live");
@@ -645,15 +471,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     return frontmatterField(splitFrontmatter(text).meta, "title") || slug;
   }
 
-  /* Every tutorial as {module, slug, title, anchors}, one entry per (module,
-   * slug) rather than one per file — a tutorial with several releases is
-   * several files, and a link means the current one, matching pathOf(). Used
-   * for cross-tutorial link checking below; `title` is carried on each entry
-   * unused by that, ready for a search-and-insert link picker if one gets
-   * built later, rather than the shape changing again when it does.
-   * Recomputed on demand rather than cached: it is only read while a report
-   * re-renders, already re-running on every keystroke, and caching it would
-   * be one more thing to invalidate on insert/release/rename. */
   function allTutorials() {
     const seen = new Set();
     const out = [];
@@ -675,8 +492,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     }
     return out;
   }
-
-  /* ------------------------------------------------------------ the list view */
 
   function move(series, from, to) {
     if (to < 0 || to >= series.order.length || from === to) return;
@@ -711,11 +526,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
   }
 
   function setStatus(series, slug, status) {
-    /* One gesture, two files. A status change is not just a frontmatter edit:
-     * only a live tutorial is on the reading order, and the build refuses an
-     * order file that lists anything else — so the line has to move with the
-     * field or the next build stops. Doing that by hand is the part worth
-     * automating; the field on its own is trivial. */
     const path = pathOf(series.module, slug);
     const text = state.files.get(path);
     if (!text) return;
@@ -737,17 +547,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     render();
   }
 
-  /* ---------------------------------------------------------------- release
-   *
-   * The one gesture that says "a student should be able to go back to what
-   * they had". Everything else the editor does is an edit.
-   *
-   * It freezes the release students currently have and publishes the buffer as
-   * a new one dated today. Both stay live: the build serves the newest live
-   * release at the plain URL, so the new one becomes what a reader gets and
-   * the old one keeps answering its own link and holding the work saved
-   * against it.
-   */
   function release({ series, slug }) {
     const current = pathOf(series.module, slug);
     const edited = state.files.get(current) || "";
@@ -758,10 +557,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
              + "student to go back to. Commit it first.", "error");
       return;
     }
-    /* Both copies, and for different reasons. The frozen one must be live or
-     * there is nothing students have to go back to; the buffer must be live or
-     * this commit is carrying two intentions at once — taking a tutorial off
-     * the course and publishing a new release of it. */
     if (statusOf(frozen) !== "live" || statusOf(edited) !== "live") {
       status("Only a live tutorial is released. A draft has no page to go back "
              + "to, a beta becomes live with the status control rather than by "
@@ -782,30 +577,11 @@ export function start(root, client, { onStatus = () => {} } = {}) {
 
     const { meta, body } = splitFrontmatter(edited);
     let bumped = setFrontmatterField(meta, "version", next);
-    /* Lineage, for the "what changed" note. Optional to the build and worth
-     * writing, because after two releases nothing else says which one this
-     * replaced. */
     bumped = setFrontmatterField(bumped, "supersedes", was);
 
-    /* Freeze what students have under its own version number, and let the new
-     * release take the tutorial's own name. `<slug>.md` is always the current
-     * release and `v<version>.md` is always a past one, so "open the tutorial"
-     * means the same file forever, however many releases it accumulates.
-     *
-     * Nothing moves and nothing is deleted: a tutorial is a folder from the
-     * moment it is created, so a second release only adds a file to it.
-     *
-     * First, the release that was being edited goes back to exactly what
-     * students have. The edits are the *new* release, not a revision of the old
-     * one — without this the frozen copy would carry the changes it exists to
-     * let a reader go back from. */
     state.files.set(current, frozen);
     state.dirty.delete(current);
 
-    /* Then make sure that release is frozen under its own version number.
-     * Skipped when it already is one: an older tutorial may have been edited
-     * through its v<version>.md directly, and rewriting that file with its own
-     * unchanged contents would commit a file nothing has changed. */
     const frozenPath = `${folder}/v${was}.md`;
     if (frozenPath !== current) {
       state.files.set(frozenPath, frozen);
@@ -870,9 +646,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
         el("button", { type: "button", class: "dl-editor-new",
                        onclick: () => insert(series, series.order.length) }, "new tutorial at the end")),
     );
-    /* Off the route but still here: drafts, betas, and anything archived. They
-     * have no position, so they carry no number and no move arrows — only what
-     * they are, and the way back to live. */
     for (const slug of series.off) {
       list.append(el("li", { class: "dl-editor-card dl-editor-off", "data-slug": slug },
         el("span", { class: "dl-editor-pos" }, "—"),
@@ -889,8 +662,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       list);
   }
 
-  /* ------------------------------------------------------- the tutorial view */
-
   function editorView({ series, slug }) {
     const path = pathOf(series.module, slug);
     const original = state.files.get(path) || "";
@@ -899,15 +670,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     const mount = el("div", { class: "dl-editor-body" });
     const report = el("div", { class: "dl-editor-report", id: "dl-editor-report" });
 
-    /* The link picker: search tutorialAnchors() searched, matchTutorials()
-     * ranked, so an author reaches for a real tutorial and a real anchor
-     * inside it rather than typing `tutorial:some-remembered-slug` from
-     * memory and finding out it was wrong from tutorialLinkProblems() only
-     * after the fact. Inserts through insertLink() (vendor-src/milkdown-
-     * entry.js) at wherever the cursor already is — ProseMirror keeps its
-     * own selection state independent of DOM focus, so it does not matter
-     * that clicking into this search box moved focus away from the prose
-     * editor first. */
     const linkQuery = el("input", {
       type: "text", class: "dl-editor-linkpicker-search",
       placeholder: "Search tutorials to link to…",
@@ -921,11 +683,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     function insertTutorialLink(t, anchor) {
       const href = anchor ? `tutorial:${t.slug}#${anchor}` : `tutorial:${t.slug}`;
       state.editor.insertLink(t.title, href);
-      /* markdownUpdated fires a beat after the dispatch that caused it, the
-       * same gap the release button works around above — reading straight
-       * from the editor rather than waiting for onChange keeps the report
-       * and state.files current the instant the link lands, not on the
-       * next tick. */
       applyEdit(state.editor.getMarkdown());
       linkPicker.hidden = true;
       linkQuery.value = "";
@@ -970,11 +727,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       report.replaceChildren();
       const gone = renamedCells(body, next);
       if (gone.length) {
-        /* This used to say the work was thrown away, which stopped being true
-         * when releases arrived and made it contradict the proposal below it.
-         * Committed as an edit it is still true; released, the old cells are
-         * still there in the release students are working in. Saying both,
-         * once, is what stops the two messages arguing. */
         report.append(el("p", { class: "dl-editor-danger" },
           `A cell id is the key a student's answers are saved under. These ids ` +
           `are no longer here: ${gone.join(", ")}. Committed as an edit, the ` +
@@ -987,18 +739,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       for (const problem of allProblems) {
         report.append(el("p", { class: `dl-editor-${problem.level}` }, problem.text));
       }
-      /* The proposal. The editor knows what changed since the last release and
-       * says so; it does not bump anything on its own, because a version per
-       * save is the thing the whole design rejects. When only prose moved it
-       * stays quiet — that is an edit and it needs no ceremony.
-       *
-       * Two cases have no last release to compare with, and without the guard
-       * each announces that every cell in it is new. A file with nothing
-       * committed behind it is a tutorial just created. A file whose version no
-       * longer matches the committed one is the release just made: the cells
-       * "changed" only in the sense that this is a different release from the
-       * one on disk, which is precisely what a release is and needs no
-       * warning. */
       const committed = state.original.get(path);
       const released = committed !== undefined
         && versionOf(state.files.get(path)) !== versionOf(committed);
@@ -1030,13 +770,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     }
 
     state.editor = createProseEditor(mount, body, { onChange: applyEdit });
-    /* The one thing a fresh render() cannot preserve: `body` above is this
-     * open document's own baseline, captured once, that renamedCells()
-     * compares every further edit against to catch a mid-session rename.
-     * Exposed so a test can drive a plain "the open document changed"
-     * edit — matching the effect of typing, without needing to drive
-     * Crepe's own contenteditable DOM — as distinct from setBody() below,
-     * which opens fresh content and is a new baseline in its own right. */
     state.editBody = applyEdit;
     check(body);
 
@@ -1059,13 +792,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
           title: "Freeze the release students have and publish this as a new "
                + "one, dated today. Their saved answers move with them.",
           onclick: async () => {
-            /* markdownUpdated fires a beat after the keystroke that caused it
-             * (vendor-src/milkdown-entry.js), so releasing a moment after the
-             * last keystroke could otherwise still be looking at the
-             * previous edit. Reading straight from the editor here is the
-             * same fix FAQ's own editor uses for the same gap — and awaiting
-             * `ready` first covers releasing a moment after *opening*, before
-             * Crepe has finished mounting at all. */
             const editor = state.editor;
             await editor.ready;
             if (editor !== state.editor) return; // a different tutorial opened meanwhile
@@ -1081,8 +807,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       mount,
       report);
   }
-
-  /* ------------------------------------------------------------- committing */
 
   function orderText(series) {
     const original = state.files.get(series.path) || "";
@@ -1106,10 +830,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       const series = state.series.get(path);
       files.push({ path, text: series ? orderText(series) : state.files.get(path) });
     }
-    /* A release moves a single-file tutorial into a folder, which is the only
-     * thing here that removes a file. It has to travel in the same commit as
-     * the two files replacing it, or main briefly has a tutorial with no
-     * releases in it. */
     for (const path of state.removing) files.push({ path, text: null });
     status(`Committing ${files.length} file${files.length === 1 ? "" : "s"}…`);
     try {
@@ -1126,14 +846,7 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     }
   }
 
-  /* ------------------------------------------------------------------ render */
-
   function render() {
-    /* Every render rebuilds the DOM from scratch (below), which would
-     * otherwise abandon a mounted Crepe instance with its listeners and
-     * ProseMirror view still alive underneath a subtree about to be thrown
-     * away. Torn down here so every path that calls render() — switching
-     * tutorials, going back to the list, committing — gets this for free. */
     if (state.editor) {
       state.editor.destroy();
       state.editor = null;
@@ -1160,20 +873,6 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     }
   }
 
-  /* The body of whichever tutorial is open, and two ways to replace it. A
-   * block editor cannot be typed into the way a <textarea> could — there is
-   * no `.value` to set — so this is what the browser tests drive instead of
-   * `fill()`ing one; see tests/e2e/test_editor.py.
-   *
-   * setBody opens fresh content as a new document — a full render(), the
-   * same thing switching to a different tutorial does, and a new baseline
-   * for renamedCells() to compare against. editBody instead reuses the
-   * currently mounted editor's own onChange path (state.editBody, set in
-   * editorView()) to simulate the one thing a remount cannot: the same
-   * open document being typed into further, which is what an author
-   * renaming a cell id mid-session actually looks like. Reach for setBody
-   * to load a tutorial's content in one step; editBody to change what is
-   * already open. */
   function getBody() {
     if (!state.editing) return "";
     const path = pathOf(state.editing.series.module, state.editing.slug);

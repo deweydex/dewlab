@@ -1,99 +1,100 @@
 # The plain-language pass
 
-What has been rewritten to `PEDAGOGICAL_STYLE_GUIDE.md` section 4 "Plain
-language", what has not, and what to do next. Written so that a session
-picking this up months later does not have to rediscover the pattern.
+Tracks what has been rewritten to `PEDAGOGICAL_STYLE_GUIDE.md` §4 "Plain
+language", what has not, and what to do next.
 
 ---
 
 ## Why this exists
 
-The student-facing text passed section 4 of the style guide as it stood —
-invitational, warm, prose not bullets, no emoji — and was still hard to read.
-Section 4 governed *stance*, and nothing in it governed sentence architecture,
-while section 1 says a reader may be working in a second language and may not
-have done mathematics since school.
+Section 4 governs *stance* — invitational, warm, prose not bullets — but not
+sentence architecture, and section 1 says a reader may be working in a second
+language and may not have done mathematics since school. Text can pass every
+stance rule and still be hard to read. Nine rules in section 4 close that gap:
 
-Six habits ran through every surface in the same proportions:
+1. Meaning before the em dash, not after it.
+2. Definitions as full sentences, not participles.
+3. What a thing is before what it is not.
+4. A plain statement before any metaphor, not instead of one.
+5. No idiom that assumes Irish or British English.
+6. No more than one aphorism per unit.
+7. Sequences marked — first, then, then — not folded into one clause.
+8. Claims hedged unless genuinely a binary.
+9. (Vocabulary) rare words and idiom common to more than one dialect,
+   pitched at a reader with roughly a two-thousand-word (B1) vocabulary.
 
-1. A short main clause, an em dash, and then the part carrying the meaning.
-2. Definitions written as participles rather than sentences.
-3. Contrast before definition — *not x but y*, before x was ever said.
-4. Metaphor standing in place of the plain statement rather than after it.
-5. Irish and British idiom a native speaker cannot see.
-6. An aphorism closing almost every unit.
+`DECISIONS_LOG.md` 7.111 and 7.112 record the reasoning behind each rule and
+what changing one would cost. Section 3 says what a name is *for* — the
+reason the explore-then-name order matters and not only its ordering.
 
-Two more were named later, after the first pass had been through:
-
-7. Steps folded into one clause with an *and then*, so the sequence is hidden.
-8. Claims stated flat that are not binaries.
-
-Section 4 now has a rule against each of the eight, and section 9 has a
-checklist item for each. `DECISIONS_LOG.md` 7.111 and 7.112 record why, and
-what changing any of it would cost. Section 3 says what a name is *for* — a student
-talking to somebody else about the thing they just did — which is the reason
-the explore-then-name order matters and not only its ordering.
-
-A ninth was added later, in the "Vocabulary" subsection: the first eight
-govern sentence architecture and dialect-specific idiom, and none of them
-catches a rare word or an idiom common to more than one dialect — *having a
-go*, *with the working* — that a B1-level reader still has to stop and guess
-at. The test it sets is a reader with a working vocabulary of about two
-thousand English words. Nothing has been swept against it yet; see "Not done"
-below.
-
-Alongside the plain-language pass, and not tracked by it, prose in a few
-places has started naming struggle and mistakes directly rather than only
-assuming them in the design (no scores, hints before answers, a resettable
-cell). `docs/FOR_STUDENTS.md`'s reset-button and practice-fold paragraphs are
-the first two; both also happened to fix rule 7 idiom violations from before
-the ninth rule existed. This is a second, smaller axis than readability, and
-it has no ledger of its own yet — see "Not done."
-
-A second round added a "structural before verbal" version of the same idea:
-a stuck reader is pointed at a real route (the Reference panel, the topic
-tree, search) rather than told only that it is normal to be stuck. New in
-`docs/FOR_STUDENTS.md` ("If a Page Stops Making Sense") and `docs/FAQ.md`
-(new — orientation and logistics questions that come before a feature
-walkthrough, distinct from `FOR_STUDENTS.md`'s job). The About page
-(`write_about_page()` in `build.py`) gained a short paragraph saying why the
-project exists and why nothing is scored, which it had never said despite
-section 2 saying it at length. dewstack's README, its own new FOR_STUDENTS.md, and its new FAQ page
-(under Reference, in the reference shelf) all picked up the same pattern in
-that separate repository, adapted to a real difference between the two
-projects: dewstack's tutorials are not graded, but the course's two
-projects and its exam are, so the reassurance there is about the exercises
-specifically, not a blanket "nothing is scored."
+Two related threads are folded in below rather than tracked on a ledger of
+their own: naming struggle and mistakes directly rather than only assuming
+them in the design (section 11), and pointing a stuck reader at a real route
+— the Reference panel, the topic tree, search — rather than only reassurance.
 
 ---
 
 ## Done
 
-**The contents page** (`render_index()` in `build.py`). One paragraph and six
-points, in the order a reader meets them: what a cell is, the explore-then-name
-sequence, practice problems and why the answers are visible, that errors cost
-nothing, where the work is saved, and how the list below is organised. 17.7
-words per sentence down to 9.6; longest sentence 37 down to 21; Flesch–Kincaid
-9.4 down to 4.6. It grew from 254 words to 308 because it now covers three
-things it did not cover at all.
+- **Contents page** (`render_index()` in `build.py`). Rewritten to cover what
+  a cell is, the explore-then-name sequence, why answers are visible, that
+  errors cost nothing, and where work is saved. 17.7 words/sentence down to
+  9.6; longest sentence 37 down to 21; Flesch–Kincaid 9.4 down to 4.6.
+- **About page** (`write_about_page()`). Split into three headings, and
+  gained a short paragraph on why nothing is scored. 29.7 words/sentence down
+  to 13.0; longest sentence 61 down to 27; Flesch–Kincaid 14.1 down to 5.8.
+- **`docs/FOR_STUDENTS.md`.** A new "If a Page Stops Making Sense" section
+  pointing a stuck reader at a real route rather than only reassurance, plus
+  its reset-button and practice-fold paragraphs.
+- **`docs/FAQ.md`** — new: orientation and logistics questions that come
+  before a feature walkthrough, distinct from `FOR_STUDENTS.md`'s job.
+- **The topic tree page furniture** — its introduction, colour key, and
+  knowledge-map caption.
+- **25 of 81 topic descriptions** in `planning/curriculum/topics.yaml`, and
+  **64 of 251 glossary definitions** — the ones that broke the
+  sentence-length or metaphor rules. Descriptions already plain were left
+  alone.
+- **35 topic descriptions written fresh**, for the thirteen topics later
+  split into the parts a student meets separately — written to the checks
+  directly rather than cut out of the parent's sentences.
+- **All twelve database-methods tutorials**, across all three of its series
+  (`first-database`, `several-tables`, `practice`). Recurring fixes: a
+  `Term — definition` recap line, on every tutorial's "What you have now"
+  list, rewritten as a full sentence with the term as subject; two double
+  negatives about Reset rewritten as the plain positive claim each one
+  meant; one em-dash mechanism explanation (`a-second-table-and-a-join`)
+  reordered to say the mechanism before the cost; one idiom (*a football
+  squad*) replaced with *a sports team*; a passive relationship definition
+  (`designing-a-table-before-you-build-it`) rewritten to name the id column
+  as the agent; a personifying idiom, a table that "answers to `SELECT`"
+  (`loading-a-real-dataset`), replaced with a plain claim that you can query
+  it.
 
-**The About page** (`write_about_page()` in `build.py`). Three headings rather
-than one run of paragraphs. 29.7 words per sentence down to 13.0; longest
-sentence 61 down to 27; Flesch–Kincaid 14.1 down to 5.8.
+Also picked up in the sibling repository `deweydex/dewstack`: the same
+reset/practice-fold language in its README, its own new `FOR_STUDENTS.md`,
+and a new FAQ page, adapted for a real difference between the two projects —
+dewstack's two projects and exam are graded, so its reassurance is scoped to
+the exercises rather than a blanket "nothing is scored."
 
-**The topic tree page furniture** — its introduction, colour key and
-knowledge-map caption.
-
-**25 of 81 topic descriptions** in `planning/curriculum/topics.yaml`, and
-**64 of 251 glossary definitions**, being the ones that breached the
-sentence-length or metaphor rules. Descriptions already plain were left alone.
-
-**35 topic descriptions written fresh** when thirteen topics were split into
-the parts a student actually meets separately. Each child was written to the
-eight checks rather than cut out of its parent's sentences, so none of them
-carries the fragments or the em-dash definitions the pass exists to remove.
-Fourteen of the older descriptions in the same file are still on the list
-below.
+**Twelve `web-authoring` tutorials ported from dewstack**: the `welcome`
+series (how the pieces fit, a GitHub account, issues and pull requests,
+an editor, your copy of the starter, publish it, the two loops, the
+browser inspector) and the `shelf` series (FAQ, troubleshooting, quick
+reference, project ideas). The prose itself needed little — dewstack
+already writes to this same guide — but the same bold-lead-fragment habit
+the database-methods pass found kept recurring in a different shape: a
+term introduced as "**A username.** This becomes part of…" rather than a
+sentence, the same pattern already fixed once in this module's own recap
+lists. Ten instances across three pages (`a-github-account`'s username,
+email address and password; `project-ideas`'s five project types)
+rewritten into full sentences with the term itself in italics rather
+than bold, matching this guide's own term-introduction convention rather
+than a documentation-style definition list. This port also needed
+platform-fact corrections (dewlab's own repository and PR in place of
+dewstack's, the real save/reset model in place of a special case dewlab
+doesn't have) — a different, adjacent kind of accuracy check to the
+plain-language one, but done in the same pass since both mean actually
+reading the sentence rather than trusting it.
 
 **An idiom and vocabulary sweep across the documentation pages and the
 first tutorial's opening** (`docs/FOR_STUDENTS.md`, `docs/FAQ.md`,
@@ -137,67 +138,72 @@ into".
 
 ## Not done — pick up here
 
-**Verbless fragments, 96 of them.** Sentences with no finite verb at all:
-noun-phrase definitions (*"One horizontal line of a matrix."*, *"Two ways of
-measuring an angle."*) and participial openings (*"Answering a question by
-generating many random cases…"*). They break down as five on the built pages,
-14 in `topics.yaml` descriptions, and 77 in the glossaries.
+**96 verbless fragments.** Noun-phrase definitions (*"One horizontal line of
+a matrix."*) and participial openings (*"Answering a question by generating
+many random cases…"*), across 5 built pages, 14 `topics.yaml` descriptions,
+and 77 glossary entries. Not counted, on purpose: `uses:` bullets in
+`topics.yaml` (correct as noun phrases in a list); verb-initial function and
+operator entries (*"Displays whatever is inside its parentheses."*) — the
+house convention, roughly forty of them, whether the dropped subject should
+also go is still open; and formula or label-value lines, which aren't prose.
 
-Three things are *not* in that count, on purpose:
+**The topic tree's own descriptions and the glossary, in the rules added
+after the first pass.** The first pass fixed sentence length and metaphor
+only — not sequence marking, reversals, "we"/"you", or hedging. Open
+question: 251 short glossary definitions written as "we usually want…" could
+wear on a reader scanning for a fact, so the glossary may want to stay closer
+to plain statement than the tree descriptions do.
 
-- **`uses:` bullets in `topics.yaml`.** They render as `<ul class="dl-tree-uses">`
-  in `assets/tree.js`. A noun-phrase list item is correct in a list.
-- **Verb-initial definitions** — *"Displays whatever is inside its
-  parentheses."* These have a finite verb and an elliptical subject, which is
-  the house convention for function and operator entries. There are roughly
-  forty. Whether the dropped subject should also go is an open question.
-- **Formula lines and label-value pairs** — *"Circle: area = pi*r^2"*,
-  *"Contact: …"*. Not prose.
+**A vocabulary sweep, against rule 9.** No surface has been checked against
+it yet, including the ones already done for sentence architecture. A
+mechanical first pass (flagging words outside a common two-thousand-word
+list) is possible, but still needs a human read afterward.
 
-**The topic tree's own descriptions and the glossary in the new voice.** The
-first pass fixed sentence length and metaphor. It did not apply the rules added
-afterwards: sequence marked with *first / then / then*, no reversals, "we" for
-the learning and "you" for what is the reader's own, hedging what is not a
-binary. An open question worth settling before starting: 251 short definitions
-written as *"we usually want…"* could get wearing where a reader is scanning
-for a fact, and the glossary may want to stay closer to plain statement than
-the tree descriptions do.
+**Tutorial body prose.** The largest remaining surface, and the one where
+flattening would cost the most. The whole database-methods module is done —
+see "Done" above — every other module untouched. Worth doing tutorial by
+tutorial rather than in a sweep.
 
 **A vocabulary sweep, against the ninth rule.** The documentation pages
 (`FOR_STUDENTS.md`, `FAQ.md`), the About page, the contents page and the
 first tutorial's opening have been swept (see above). The remaining surfaces
 — tutorial body prose beyond the opening, topic descriptions, glossary
-definitions — have not. A
-mechanical first pass is possible — a list of the roughly two thousand most
-common English words, flagged the way `tools/measure_sentences.py` (dewstack)
-flags a sentence over the limit — but it still needs reading afterward, the
-same way that script's own docstring says of itself.
+definitions — have not. A mechanical first pass is possible — a list of the
+roughly two thousand most common English words, flagged the way
+`tools/measure_sentences.py` (dewstack) flags a sentence over the limit — but
+it still needs reading afterward, the same way that script's own docstring
+says of itself.
 
-**Tutorial body prose.** The largest surface, untouched by any of this, and the
-one where flattening would cost the most. Worth doing deliberately, tutorial by
-tutorial, rather than in a sweep.
+**A tracked pass for the struggle/self-efficacy framing (section 11), if it
+turns out to need one.** For now it's added opportunistically wherever a
+page is already being touched for another reason.
 
-**A tracked pass for the struggle/self-efficacy framing**, if it turns out to
-need one. For now it is being added opportunistically wherever a page is
-already being touched for another reason, not swept on its own — a larger,
-dedicated set of pages on this was raised and deliberately deferred, to keep
-this addition small until that decision is made.
+**Staged hints.** Written against section 4 already: the default fold
+title, the two Settings rows and their note in `assets/shell.html`, and
+the hint fences in the four tutorials that carry them. Each new hint an
+author writes is a new surface for this pass.
 
-**Bibliographies.** Unrelated to readability but still the largest outstanding
-piece of style work — see section 8 of the style guide.
+**`dewmini web`'s page copy.** One new student-facing surface
+(`compose/dewminiweb.html`'s title, subtitle, and note, plus the homepage
+paragraph linking to it), written against §4 as it was added. Its own
+examples are the model for the next new page's copy.
+
+**Bibliographies.** Unrelated to readability but still the largest
+outstanding piece of style work — see section 8 of the style guide.
 
 ---
 
 ## How to check your own work
 
-There is no linter for this. The checklist in section 9 of the style guide is
-the tool. Two mechanical checks are worth running by hand over anything you
-rewrite:
+There is no linter for this. The checklist in section 9 of the style guide
+is the tool. Two mechanical checks are worth running by hand over anything
+you rewrite:
 
 - **Sentence length.** Anything over twenty-five words wants a reason; past
   thirty it has two ideas in it.
-- **Finite verb.** Read each sentence and find the verb. If there is not one,
-  and the sentence is not a list item, a formula or a label, it is a fragment.
+- **Finite verb.** Read each sentence and find the verb. If there is not
+  one, and the sentence is not a list item, a formula, or a label, it is a
+  fragment.
 
 Both are faster to do by eye on a diff than to automate, and automating the
 second needs a part-of-speech tagger this repository has no reason to depend

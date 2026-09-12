@@ -1572,3 +1572,335 @@ topics:
       - Knowing the difference between a model being wrong and a model being
         usefully approximate.
     needs: [CMPS-LO11]
+
+  # ---------------------------------------------------------------- DBM 5N0783
+  DBM-LO1:
+    name: Where databases show up
+    outcome: DBM-LO1
+    plain: >
+      Every place a list of things needs to be searched, sorted or updated by
+      more than one person, usually already runs on a database, often without
+      anyone calling it that.
+    uses:
+      - A school's own record of students and the classes they take.
+      - A shop's till, checking stock and prices as a sale happens.
+      - The contacts list on a phone, one record per person.
+    needs: []
+
+  DBM-LO2a:
+    name: Tables, rows and columns
+    outcome: DBM-LO2
+    plain: >
+      A table stores many records in one place, and every record is shaped
+      the same way: one row per record, one column per property every record
+      has.
+    uses:
+      - A spreadsheet, which stores data in exactly this shape.
+      - A shopping list, where each line is a record with a name and a
+        quantity.
+    needs: []
+
+  DBM-LO2b:
+    name: Statements and queries
+    outcome: DBM-LO2
+    plain: >
+      An instruction sent to a database, rather than typed by hand into a
+      cell the way a spreadsheet allows. Creating a table, adding a row, and
+      asking what a table already holds are all statements.
+    uses:
+      - A shop's database asked for every order placed this month.
+      - A web page's search results, built from a query behind the scenes.
+    needs: [DBM-LO2a]
+
+  DBM-LO3:
+    name: SQL as a query language
+    outcome: DBM-LO3
+    plain: >
+      The language most databases understand directly. A query written in it
+      says what you want back, not the steps a computer takes to find it.
+    uses:
+      - The same query language behind almost every database engine, from a
+        phone app to a bank.
+      - A report a business runs every week, written once as SQL and reused
+        unchanged.
+    needs: [DBM-LO2b]
+
+  DBM-LO4:
+    name: Editing what a table holds
+    outcome: DBM-LO4
+    plain: >
+      Changing a table's rows only on purpose, through a statement, rather
+      than by typing into a cell the way a spreadsheet allows. Adding a row,
+      changing one, deleting one, sorting and searching are the five ways
+      that happens.
+    uses:
+      - A shop updating its stock level every time something sells.
+      - Correcting a typo in one customer's address without touching any
+        other row.
+    needs: [DBM-LO2a]
+
+  DBM-LO5:
+    name: Retrieving and filtering data
+    outcome: DBM-LO5
+    plain: >
+      Asking a table for only the rows and columns that matter right now,
+      rather than reading through everything by eye.
+    uses:
+      - Finding every order over a certain amount, out of thousands.
+      - A dashboard that shows only this week's figures, filtered from years
+        of records.
+    needs: [DBM-LO2b]
+
+  DBM-LO6:
+    name: The query behind a form
+    outcome: DBM-LO6
+    plain: >
+      What actually happens once someone presses submit on a form: their
+      answers become the values inside one statement, run against a table.
+    uses:
+      - A sign-up form, where each submission becomes one new row.
+      - An order form, where the query records what was bought and by whom.
+    needs: [DBM-LO5]
+
+  DBM-LO7:
+    name: Sharing what a query found
+    outcome: DBM-LO7
+    plain: >
+      Turning a query's result into something meant for a reader outside the
+      database — printed, emailed, or saved as a file of its own.
+    uses:
+      - A weekly sales summary emailed to a manager.
+      - An invoice, built from one customer's own rows.
+    needs: [DBM-LO5]
+
+  DBM-LO8:
+    name: Importing external data
+    outcome: DBM-LO8
+    plain: >
+      Bringing a file that already exists somewhere else — a spreadsheet, a
+      CSV file, another database — into a table this database can query.
+    uses:
+      - Loading a public dataset published as a CSV file.
+      - Bringing a spreadsheet's contents into a real table instead of
+        retyping it by hand.
+    needs: [DBM-LO2a]
+
+  DBM-LO9:
+    name: Designing a database
+    outcome: DBM-LO9
+    plain: >
+      Working out what tables a problem needs, what belongs in each one, and
+      how those tables refer to each other, before writing a single table
+      into existence.
+    uses:
+      - Planning a shop's database as one table of products and one of
+        orders, linked by which product each order names.
+      - Deciding which column uniquely identifies a row, before any data
+        exists yet.
+    needs: [DBM-LO2a]
+
+  DBM-LO10:
+    name: Building a database to a brief
+    outcome: DBM-LO10
+    plain: >
+      Turning a design into a real, working database: creating its tables,
+      loading or entering its data, and writing the queries it needs to
+      answer.
+    uses:
+      - Handing over a finished database that matches exactly what a brief
+        asked for.
+      - A class project marked against a written specification rather than
+        freeform.
+    needs: [DBM-LO9, DBM-LO2b]
+
+  DBM-LO11:
+    name: Working through an unfamiliar database problem
+    outcome: DBM-LO11
+    plain: >
+      Using what is already available — an error message, a hint, a check
+      that says pass or not yet — rather than guessing, when a problem does
+      not match anything seen before.
+    uses:
+      - Reading a SQL error message for the exact line and reason it failed.
+      - A self-check that says what is still missing, one task at a time.
+    needs: []
+
+  # ---------------------------------------------------------------- WA 5N1910
+  WA-LO1:
+    name: The history of HTML and CSS
+    outcome: WA-LO1
+    plain: >
+      How HTML and CSS changed from their first versions to the standards
+      browsers use now, and what a deprecated tag or property is: one a
+      browser still understands, but no longer recommended.
+    uses:
+      - A page still using the `<center>` tag, retired once CSS could align
+        text on its own.
+      - An old tutorial that teaches a way of doing something no browser
+        needs any more.
+    needs: []
+
+  WA-LO2:
+    name: HTML tags and their attributes
+    outcome: WA-LO2
+    plain: >
+      A tag marks what a piece of content is, not how it looks. An
+      attribute adds detail to a tag, written inside its opening angle
+      brackets.
+    uses:
+      - An `<img>` tag's `src` attribute, naming which picture to show.
+      - An `<a>` tag's `href` attribute, naming which page a link goes to.
+    needs: []
+
+  WA-LO3:
+    name: Editors for HTML and CSS
+    outcome: WA-LO3
+    plain: >
+      A code editor for HTML and CSS can run installed on a computer, or
+      directly in a browser with nothing to install. Both write the same
+      plain text; the difference is what has to be set up first.
+    uses:
+      - VS Code, installed once and reused for years.
+      - GitHub's own browser editor, open the moment a repository is open.
+    needs: []
+
+  WA-LO4:
+    name: Principles of website design
+    outcome: WA-LO4
+    plain: >
+      A website's audience, its objectives, its navigation and its
+      structure are all decisions made before any HTML exists. A
+      slow-loading page can lose visitors before they see what it says.
+    uses:
+      - A shop's website, built for customers rather than for the shop's
+        own staff.
+      - A photo gallery kept small enough to load quickly on a phone.
+    needs: [WA-LO2]
+
+  WA-LO5:
+    name: Web authoring tools
+    outcome: WA-LO5
+    plain: >
+      Desktop publishing programs and website management systems are two
+      further kinds of web authoring tool, alongside a code editor.
+    uses:
+      - WordPress, a website management system many blogs and small
+        business sites run on.
+      - A page built entirely inside a desktop publishing program, then
+        exported as HTML.
+    needs: []
+
+  WA-LO6:
+    name: Keeping evidence of a project
+    outcome: WA-LO6
+    plain: >
+      A record of a web authoring project's own research, its
+      requirements, and an honest evaluation of the finished site, kept as
+      the work happens rather than written afterwards from memory.
+    uses:
+      - A short note explaining why a font or a colour was chosen.
+      - A record of what still does not work, alongside what does.
+    needs: [WA-LO4]
+
+  WA-LO7:
+    name: Planning a design and interface
+    outcome: WA-LO7
+    plain: >
+      A site map lists every page a website needs and how they connect. A
+      wireframe sketches what one page's interface will hold, before any
+      CSS exists.
+    uses:
+      - A site map for a five-page portfolio, drawn before writing any
+        HTML.
+      - A wireframe deciding where a photo, a heading and a caption
+        belong.
+    needs: [WA-LO4]
+
+  WA-LO8:
+    name: Building pages with HTML
+    outcome: WA-LO8
+    plain: >
+      Choosing the tag each piece of content actually is, then writing
+      HTML a browser renders correctly and a screen reader can follow.
+    uses:
+      - A recipe's ingredients marked up as a list, rather than as plain
+        paragraphs.
+      - A form built from real form tags, rather than styled to only look
+        like one.
+    needs: [WA-LO2]
+
+  WA-LO9:
+    name: Styling pages with CSS
+    outcome: WA-LO9
+    plain: >
+      Choosing a selector that reaches the right elements, then writing
+      the property and value that changes how they look.
+    uses:
+      - A `.card` class reused on every product on a shop's page.
+      - A media query that rearranges a page's layout on a narrow screen.
+    needs: [WA-LO2]
+
+  WA-LO10:
+    name: Testing a website
+    outcome: WA-LO10
+    plain: >
+      Checking a finished page against what it was meant to do, rather
+      than assuming it works because it looks right on one screen.
+    uses:
+      - A browser's own developer tools, open beside a page to see why one
+        style did not apply.
+      - A form tested by submitting it, not just by reading its code.
+    needs: [WA-LO8, WA-LO9]
+
+  WA-LO11:
+    name: Planning a website's future
+    outcome: WA-LO11
+    plain: >
+      A note for whoever maintains a website next: what to check
+      periodically, and what the site would need if it grew.
+    uses:
+      - A maintenance note listing how to add a new page to an existing
+        site.
+      - A plan for what a five-page site would need to become a
+        fifty-page one.
+    needs: [WA-LO6]
+
+  WA-LO12:
+    name: HTML and CSS code generators
+    outcome: WA-LO12
+    plain: >
+      A tool that writes HTML or CSS from a simpler description, rather
+      than a person typing every tag and property by hand.
+    uses:
+      - A gradient generator, producing the CSS for a colour effect from a
+        few clicks.
+      - A table generator, turning pasted spreadsheet data into an HTML
+        table.
+    needs: []
+
+  WA-LO13:
+    name: Publishing without a host of your own
+    outcome: WA-LO13
+    plain: >
+      A website does not need its own paid host to go online. GitHub
+      Pages publishes a repository's files as a real website, free, at an
+      address GitHub provides.
+    uses:
+      - A student's own portfolio, published this way instead of paying
+        for hosting.
+      - A project's documentation, published straight from the same
+        repository that holds its code.
+    needs: []
+
+  WA-LO14:
+    name: Applying design principles to a real site
+    outcome: WA-LO14
+    plain: >
+      Building an actual website against the principles a design was
+      planned around, rather than treating them as a separate topic from
+      the HTML and CSS that follows.
+    uses:
+      - A portfolio site checked against its own site map once every page
+        exists.
+      - A colour scheme checked for contrast, not just for appearance.
+    needs: [WA-LO7, WA-LO8, WA-LO9]

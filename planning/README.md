@@ -62,6 +62,9 @@ written before the thing it describes was built.
   keep: never show a reader a term they have not met.
 - **[`SIDEBAR_CONTENT.md`](./SIDEBAR_CONTENT.md)** — datasets,
   author-written pedagogical notes, and what earns a panel of its own.
+- **[`DOT_DOCK.md`](./DOT_DOCK.md)** — exploring the masthead's orange dot
+  as a replacement for the Panels disclosure, up to six panels fanning
+  into three zones. Design note; nothing here is built.
 - **[`STUDENT_NOTES.md`](./STUDENT_NOTES.md)** — a reader's own free-text
   notes, and encouraging a copy that outlives the browser. Not the same
   "notes" as the pedagogical ones above; §0 says why.
@@ -72,6 +75,11 @@ written before the thing it describes was built.
   sit, and the Worker migration that made a real Stop button possible.
 - **[`CELL_TOOLTIPS.md`](./CELL_TOOLTIPS.md)** — hover docs and signature
   help, including what Jedi in Pyodide costs and covers.
+- **[`CELL_HINTS.md`](./CELL_HINTS.md)** — hints that appear after a
+  cell has errored or run some number of times: what the page can
+  already observe, the fold-and-attribute authoring surface, the
+  questions Josh answered and how. Built (DECISIONS_LOG.md 7.135); its
+  dewstack half lives beside it in that repository.
 - **[`CELL_IDENTITY.md`](./CELL_IDENTITY.md)** — the settled design for
   execution counters and cell identity (the pill, the run line, what
   differs by cell type), not yet built. A working mockup of every cell
@@ -80,6 +88,14 @@ written before the thing it describes was built.
   new to the project, at
   [`mockups/cell-identity-explained.html`](./mockups/cell-identity-explained.html).
 
+### Bringing in dewstack
+- **[`DEWSTACK_MERGE.md`](./DEWSTACK_MERGE.md)** — the plan for retiring
+  `deweydex/dewstack` as a separately-hosted site: which of its courses
+  move into `database-methods` and a new `web-authoring` module, the
+  staging folder they're ported from, the engine work each needs, and
+  the dewmini/dewminiweb workspace question. In progress; its own ledger
+  tracks phase completion.
+
 ### The edges
 - **[`EDGES_AUDIT.md`](./EDGES_AUDIT.md)** — the phone, screen-reader and
   offline-bundle audit: what was claimed, what testing it found, and what
@@ -87,8 +103,12 @@ written before the thing it describes was built.
 
 ### The documentation itself
 - **[`DOCS_AND_COMMENTS_PASS.md`](./DOCS_AND_COMMENTS_PASS.md)** — the
-  repo-wide pass that gave every substantial code file teaching-oriented
-  comments and a matching `docs/<file>-explained.md`.
+  repo-wide pass that gave every substantial code file a matching
+  `docs/<file>-explained.md`. Its comment-density standard has since been
+  superseded by the lighter policy in `CONTRIBUTING.md`.
+- **[`DOCS_AND_COMMENTS_PLAN.md`](./DOCS_AND_COMMENTS_PLAN.md)** — the
+  follow-up: real drift since that pass closed, and the gaps it knowingly
+  left out of scope.
 
 ### Curriculum
 - **[`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md)** — generated; every

@@ -4,51 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>dewmini — dewlab</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 
-<!-- Cross-origin isolation, as early as this page can ask for it — a
-     genuine Stop button needs the SharedArrayBuffer interrupt path, which
-     needs crossOriginIsolated. Same shim shell.html registers for
-     tutorial pages; dewmini registers it for itself (DECISIONS_LOG.md
-     7.89) — a standalone page a student can reach without ever visiting
-     a tutorial page first, so it can't rely on one of those having
-     registered it already. One
-     level up from this page's own folder: build.py copies the real file
-     to the site's root once for the whole site, not once per page. -->
 <script src="../coi-serviceworker.js"></script>
 
-<!-- Same cold-start problem as shell.html's tutorial pages: this page boots
-     its own Pyodide instance from the public CDN, and a student can land
-     here directly without ever visiting a tutorial page first. See the
-     matching comment in ../assets/shell.html for why `crossorigin` matters
-     and why this is a no-op when DEWLAB_PYODIDE_BASE is overridden. -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
-<!-- Always linked, unlike the KaTeX JS bundle below it (which loads lazily,
-     only once a text cell actually contains maths): the same trade tutorial
-     pages already make in assets/shell.html — 23 KB of CSS is cheap enough
-     to carry unconditionally, where the 266 KB renderer is not
-     (DECISIONS_LOG.md 7.107). A reader who never writes maths never notices
-     it is here; one who does gets it rendering as soon as the JS arrives,
-     with no separate step to wire up first. -->
 <link rel="stylesheet" href="../assets/vendor/katex.min.css">
 
-<!-- Two accessible reading fonts, self-hosted rather than a Google Fonts
-     CDN link — the same reasoning as the KaTeX CSS above: this is exactly
-     the offline copy (write_dewmini_bundle()) a CDN would leave broken.
-     Cheap enough (~500 KB total, four faces each) to carry unconditionally
-     rather than only once a reader actually turns one on in Settings
-     (DECISIONS_LOG.md 7.123). -->
 <link rel="stylesheet" href="../assets/vendor/accessible-fonts.css">
 
 <link rel="stylesheet" href="../assets/tutorial-style.css">
 <link rel="stylesheet" href="dewmini-style.css">
 
-<!-- Apply saved preferences before first paint, so a reader who already set
-     dark mode or a wider measure on the tutorials doesn't get a flash of the
-     defaults here. Shared dewlab:texture keys (theme/font/size/width/link)
-     match every other page; dewmini:editor is this page's own, for the
-     code-specific controls tutorials don't have. -->
 <script>
 (function () {
   var r = document.documentElement;
@@ -78,13 +47,6 @@
     <header class="dl-masthead">
       <a class="dl-wordmark" href="../index.html">dewlab</a>
       <span class="dl-crumbs">compose</span>
-      <!-- Order here is "what you look up, then what you're working on,
-           then how it's configured" — not docking side: Library and
-           Settings are both right-docked, Workbench is the one left-docked
-           panel, and it sits between them. Every label is wrapped in
-           .dl-toggle-label so the shared phone rule can drop them and leave
-           icon-only buttons, with aria-label carrying the name — dewmini
-           previously had bare label text, which that rule could not reach. -->
       <div class="dm-masthead-actions">
         <button type="button" class="dm-library-toggle" id="dm-library-toggle"
                 aria-expanded="false" aria-controls="dm-library" aria-label="Library">
@@ -119,23 +81,6 @@
           <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>New
         </button>
       </div>
-      <!-- Three ways to *start* something, rather than two ways to add a
-           cell. Plain "Python" and "Text" buttons lived here until the
-           insert seams between cells took over that job — a seam adds a
-           cell where you are already looking, which is what a toolbar
-           button at the top of a long notebook cannot do. Two buttons for
-           the same action, one of them worse, is one button. The freed
-           space goes to the two openings that had nowhere else to live
-           once a notebook was no longer empty. -->
-      <!-- Which of the two views is showing has to be visible, not buried
-           in a menu: a tool that behaves differently depending on a
-           setting the reader cannot see is one they get lost in. The tab
-           carries the same word once more than one notebook is open. -->
-      <!-- .dm-cellview-only: meaningless for a Site tab (planning/
-           DEWMINI_WORKBENCH.md §10) — there are no Python cells to show as
-           a file, run, or seed with an example — so updateViewSwitch()
-           hides every group carrying this class whenever the active tab
-           is showing a site rather than a notebook. -->
       <div class="dm-toolbar-group dm-viewswitch dm-cellview-only" role="group" aria-label="How to show this notebook">
         <button id="dm-view-cells" class="dm-tool dm-viewswitch-btn" aria-pressed="true"
                 title="Show this notebook as a list of cells">Cells</button>
@@ -169,32 +114,16 @@
          a row of tabs with one tab in it is chrome that explains nothing. -->
     <div class="dm-tabs" id="dm-tabs" role="tablist" aria-label="Open notebooks" hidden></div>
 
-    <!-- Import compatibility notice — shown after importing a .ipynb
-         that scanPyodideCompatibility() flagged something in. Warns and
-         gets out of the way; it never blocks the import itself. -->
     <div id="import-compat-notice" class="dm-empty dm-import-notice" hidden>
       <p><strong>Heads up.</strong> This notebook uses some things that won't work as-is in dewmini's Python:</p>
       <ul id="import-compat-list"></ul>
       <button type="button" class="dm-tool" id="dismiss-import-compat">Dismiss</button>
     </div>
 
-    <!-- Storage notice — shown while saveState() is having to leave cell
-         outputs out of the saved copy, or cannot save at all. Deliberately
-         not routed through the status line above: that line is transient
-         and the "Ran." message a run posts straight afterwards would wipe
-         it, while this is a standing condition that lasts until the reader
-         frees some room or downloads the notebook. -->
     <div id="storage-notice" class="dm-empty dm-import-notice" role="status" aria-live="polite" hidden>
       <p id="storage-notice-text"></p>
     </div>
 
-    <!-- Shown when a .py file in the workspace has been edited after
-         Python already imported it. Python hands back the module it
-         remembers rather than re-reading the file, so without this the
-         student fixes their file, runs the cell again, and gets the same
-         wrong answer with nothing on screen to explain it. Says what
-         happened rather than hiding it: module caching is behaviour they
-         will meet in every other Python environment. -->
     <div id="stale-imports-notice" class="dm-empty dm-import-notice" role="status" aria-live="polite" hidden>
       <p id="stale-imports-text"></p>
       <div class="dl-progress-actions">
@@ -209,10 +138,6 @@
         Cells share one namespace top to bottom, the way a notebook does —
         write something in the first cell and the next one can use it.
       </p>
-      <!-- No buttons of its own any more: "See an example" and "Start with
-           imports" are in the toolbar directly above this, and repeating
-           them an inch lower would be the same duplication the toolbar
-           just shed. -->
       <p class="dm-panel-note">
         <strong>Python</strong> or <strong>Text</strong> on the seam below adds
         a blank cell — and every seam between cells does the same, so you can
@@ -228,17 +153,6 @@
 
 </div>
 
-<!-- Library: everything you look *up* — the reference, the datasets you can
-     load, and how this page itself works. Docked right, sharing that edge
-     with Settings — wirePanel() (dewmini.js) lists each as the other's
-     conflict, so opening one closes the other. Workbench is the one
-     left-docked panel, so a reader can keep it open beside either
-     (planning/DEWMINI_WORKBENCH.md §2).
-
-     Help used to be a panel of its own; it is these last five sections now,
-     on planning/SIDEBAR_CONTENT.md §4's reasoning — extend a panel rather
-     than add one, since panels that mutually close each other are more
-     moving parts than they are worth. -->
 <div class="dm-panel dm-library" id="dm-library" role="dialog" aria-modal="false"
      aria-labelledby="dm-library-title" hidden>
   <div class="dm-panel-head">
@@ -246,12 +160,6 @@
     <button type="button" class="dm-panel-close" id="dm-library-close" aria-label="Close library">&times;</button>
   </div>
 
-  <!-- Reference: every term every tutorial introduces, not just the ones a
-       reader has reached. Tutorial pages deliberately show only what has
-       been taught so far (planning/REFERENCE_PANEL.md §1); dewmini drops
-       that rule on purpose, because a reader in an open workspace has no
-       position in a series to be protected from — see
-       planning/DEWMINI_WORKBENCH.md §4. Filled by renderReference(). -->
   <section class="dm-panel-section" id="dm-reference-section">
     <h3>Reference</h3>
     <input type="search" class="dm-reference-search" id="dm-reference-search"
@@ -263,12 +171,6 @@
     <div class="dm-filter-row" id="dm-reference-subjects" role="group" aria-label="Filter by subject"></div>
     <div class="dm-filter-row" id="dm-reference-levels" role="group" aria-label="Filter by level"></div>
 
-    <!-- Topics: eleven chips is too many to leave open above a list, and a
-         floating menu would cover the very thing you are filtering. A
-         <details> expands *in flow* instead — the list below moves down, the
-         rail scrolls, and nothing is ever hidden behind anything. The
-         summary reports how many are on, so the state is legible while
-         collapsed. -->
     <details class="dm-filter-more" id="dm-reference-topics-wrap">
       <summary><span id="dm-reference-topics-summary">Topics</span></summary>
       <div class="dm-filter-row" id="dm-reference-topics" role="group" aria-label="Filter by topic"></div>
@@ -279,9 +181,6 @@
     <div class="dm-reference-groups" id="dm-reference-groups"></div>
   </section>
 
-  <!-- Data: what a cell can load, with where it came from and what licence
-       it carries — attribution a student can see rather than one buried in
-       a repository. Filled by renderDataCatalogue(). -->
   <section class="dm-panel-section" id="dm-data-section">
     <h3>Data</h3>
     <p class="dm-panel-note">
@@ -421,13 +320,6 @@
   </section>
 </div>
 
-<!-- Workbench: everything about the work in front of you — what your code
-     made, what you wrote down, and the files it can reach. Docked left, the
-     one panel on that edge, so it can stay open beside Library or Settings
-     rather than close either. Notes and Files used to live inside Settings;
-     they are here now, because they are your work rather than your
-     configuration
-     (planning/DEWMINI_WORKBENCH.md §2). -->
 <div class="dm-panel dm-panel-left dm-workbench" id="dm-workbench" role="dialog" aria-modal="false"
      aria-labelledby="dm-workbench-title" hidden>
   <div class="dm-panel-head">
@@ -435,9 +327,6 @@
     <button type="button" class="dm-panel-close" id="dm-workbench-close" aria-label="Close workbench">&times;</button>
   </div>
 
-  <!-- Variables: what is actually in the Python session right now. Without
-       this, a variable a student never printed is invisible, and "did that
-       work?" has no answer short of typing the name and running again. -->
   <section class="dm-panel-section" id="dm-variables-section">
     <h3>Variables</h3>
     <div class="dm-variables-head">
@@ -461,16 +350,9 @@
               placeholder="What are you working on? What did you try?"></textarea>
   </section>
 
-  <!-- Files: the mounted filesystem a cell can read and write — a real
-       folder, this browser's private storage, or its compatibility
-       fallback, whichever the browser allows (DECISIONS_LOG.md 7.88). -->
   <section class="dm-panel-section" id="dm-files-section">
     <h3>Files</h3>
 
-    <!-- Open notebooks, even though none of them are a file here
-         (renderNotebookList()). A notebook lives in this browser's own
-         storage, not on the mounted filesystem below — listed anyway,
-         so a reader can still see where it is. -->
     <p class="dl-panel-note">
       Your open notebooks live in this browser, not as files below.
       Keep a copy in Settings saves one as a real file.
@@ -490,9 +372,6 @@
   </section>
 </div>
 
-<!-- Settings: the same shape every dewlab page uses, so a reader who has
-     found it once has found it everywhere. Texture is the shared reading
-     preferences; Editor is this page's own, for the code itself. -->
 <div class="dl-settings" id="dl-settings" role="dialog" aria-modal="false"
      aria-labelledby="dl-settings-title" hidden>
   <div class="dl-settings-head">
@@ -516,10 +395,6 @@
       </div>
     </div>
   </section>
-
-  <!-- Notes and Files used to sit here; they are the Workbench's now
-       (planning/DEWMINI_WORKBENCH.md §2) — your work rather than your
-       configuration. -->
 
   <section class="dl-settings-section" id="dl-settings-download">
     <h3>Keep a copy</h3>
@@ -586,11 +461,6 @@
       </div>
     </div>
 
-    <!-- Same data-texture="font" as the row above — a second .dl-seg
-         group sharing one key works with no JS change (initTexture()'s
-         own sync loop matches every group with this attribute, not one
-         specific element), which is what lets these sit on their own
-         line below the first three rather than crowding a six-wide row. -->
     <div class="dl-texture-row">
       <span></span>
       <div class="dl-seg" data-texture="font" role="radiogroup" aria-label="Font, further options">
@@ -604,6 +474,15 @@
       <div class="dl-seg" data-texture="contrast" role="radiogroup" aria-labelledby="dl-seg-contrast-label">
         <button type="button" data-value="normal" role="radio">off</button>
         <button type="button" data-value="high" role="radio">on</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row">
+      <span id="dl-seg-buttons-label">Cell buttons</span>
+      <div class="dl-seg" data-texture="buttons" role="radiogroup" aria-labelledby="dl-seg-buttons-label">
+        <button type="button" data-value="icons" role="radio">icons</button>
+        <button type="button" data-value="text" role="radio">text</button>
+        <button type="button" data-value="both" role="radio">both</button>
       </div>
     </div>
 
@@ -635,8 +514,6 @@
     <button type="button" class="dl-texture-reset" id="dl-texture-reset">reset to defaults</button>
   </section>
 
-  <!-- The section the user specifically asked us to take care over: font,
-       cursor, size and the placement of the code itself. -->
   <section class="dl-settings-section" id="dl-settings-editor">
     <h3>Editor</h3>
 
@@ -682,10 +559,6 @@
     <button type="button" class="dl-texture-reset" id="dm-editor-reset">reset to defaults</button>
   </section>
 
-  <!-- Which cell types offer themselves on the insert seam
-       (initCellTypeSettings(), createInsertDivider()). A cell already in
-       the notebook keeps working even with its own type turned off here
-       — this only changes what a reader can add next. -->
   <section class="dl-settings-section" id="dl-settings-cell-types">
     <h3>Cell types</h3>
     <p class="dl-panel-note">

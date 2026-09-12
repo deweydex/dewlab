@@ -1,26 +1,4 @@
-"""Code completion, hover docs, and signature help inside a cell, in a real
-browser.
-
-Static completion — keywords, builtins, and whatever a student has already
-typed in the cell — comes from `@codemirror/lang-python`'s own
-`globalCompletion`/`localCompletionSource`, wired in
-vendor-src/codemirror-entry.js. It works before Pyodide has finished
-booting, which the first class below checks by never running a cell at all.
-
-Live-namespace completion (`pageNamesCompletion`, assets/tutorial-runtime.js)
-reads whatever names are actually defined in tutorial_tools._page_globals
-right now, and hover docs / signature help (`docFor`/`signatureFor`) read a
-real `inspect.getdoc()`/`inspect.signature()` off a real object — all three
-only meaningfully testable once a cell has actually run.
-
-`docFor`/`signatureFor` also check `__builtins__` now (planning/
-CELL_TOOLTIPS.md option a — TestBuiltinTooltips), and hover docs/signature
-help fall back to Jedi's static analysis for a name that has never been
-executed (option c — TestPreRunTooltips), loaded in the background well
-after boot() finishes (`dewlab.jediReady()`).
-
-    python3 -m pytest tests/e2e/test_autocomplete.py -q
-"""
+"""Static completion (CodeMirror's own) works before Pyodide boots; live-namespace completion, hover docs and signature help all read a real running interpreter, so each needs a cell to have actually run."""
 
 from __future__ import annotations
 
@@ -42,14 +20,7 @@ def js_string(text: str) -> str:
 
 
 def hover_at_text(page, cell_id: str, needle: str, *, last: bool = False) -> None:
-    """Hovers the exact document position of `needle` inside a cell, found
-    through the editor's own `view.coordsAtPos()` rather than a DOM text
-    locator. get_by_text works for a name CodeMirror gives its own
-    highlighting span (a user-defined function name, say) but not for one
-    that renders as bare text beside other tokens — "len" inside "len([1,
-    2, 3])" has no span of its own, so no element's accessible text is
-    ever exactly "len". Going through the editor's own coordinates sidesteps
-    the question of how a token happened to be split into elements."""
+    """Uses the editor's own coordsAtPos() rather than a DOM text locator, since a name like "len" in "len([1, 2, 3])" has no span of its own for get_by_text to find."""
     coords = page.evaluate(f"""
         (() => {{
             const cell = dewlab.cells.find(c => c.id === {js_string(cell_id)});
@@ -67,8 +38,6 @@ def hover_at_text(page, cell_id: str, needle: str, *, last: bool = False) -> Non
 
 
 def run(page, cell_id: str) -> None:
-    """Run a cell and wait for it to actually finish, the same way
-    test_phase0_golden_path.py does."""
     selector = f".dl-cell[data-cell-id='{cell_id}'] .dl-output"
     page.evaluate(f"dewlab.runCell({js_string(cell_id)})")
     page.wait_for_function(
@@ -87,17 +56,7 @@ def test_typing_a_partial_keyword_offers_it(page):
 
 
 def test_accepting_a_completion_inserts_it(page):
-    """closeBrackets already auto-pairs the "(" typed below, so the buffer
-    reads len(list) once the completion replaces "lis" with "list" —
-    checked as one string rather than "list(" for that reason.
-
-    pageNamesCompletion is one of several override sources CodeMirror
-    merges together, and — since (DECISIONS_LOG.md 7.77) it is now a real
-    round trip to the Worker rather than a synchronous local lookup — the
-    merged list can still be settling by the moment "list" first appears
-    in it. Waiting for "list" specifically, not just for some tooltip to
-    exist, is what makes Enter deterministically accept it rather than
-    whatever was highlighted first."""
+    """closeBrackets already auto-pairs the "(" typed below, so the buffer reads len(list) once accepted — checked as one string, not "list(". Waits for "list" itself, not just any tooltip, since the completion list is a real Worker round trip and can still be settling."""
     cell = cell_content(page, "plain-python")
     cell.click()
     page.keyboard.press("Control+End")
@@ -112,8 +71,7 @@ def test_accepting_a_completion_inserts_it(page):
 
 
 def test_a_name_the_student_already_typed_is_offered(page):
-    """localCompletionSource: names defined earlier in the same cell, not
-    only Python's own builtins."""
+    """localCompletionSource offers names defined earlier in the same cell, not just Python's builtins."""
     cell = cell_content(page, "plain-python")
     cell.click()
     page.keyboard.press("Control+End")
@@ -135,9 +93,7 @@ def test_escape_closes_the_completion_without_inserting_it(page):
 
 
 class TestLiveNamespaceCompletion:
-    """pageNamesCompletion reads tutorial_tools._page_globals — the actual
-    dict every cell runs against — so a name only really exists here once a
-    cell defining it has run, not just been typed."""
+    """pageNamesCompletion reads tutorial_tools._page_globals, so a name only exists here once a cell defining it has run, not just been typed."""
 
     def test_a_name_defined_by_running_a_cell_is_offered(self, page):
         cell = cell_content(page, "plain-python")
@@ -152,9 +108,7 @@ class TestLiveNamespaceCompletion:
 
 
 class TestHoverDocs:
-    """docFor (assets/tutorial-runtime.js) reads a real inspect.getdoc() off
-    a real object living in the interpreter actually running the page's
-    cells — there is nothing bundled here to fall out of date."""
+    """docFor reads a real inspect.getdoc() off a live object in the running interpreter — nothing bundled here to fall out of date."""
 
     def test_hovering_a_name_shows_its_own_real_docstring(self, page):
         cell = cell_content(page, "plain-python")
@@ -178,16 +132,7 @@ class TestHoverDocs:
 
 
 class TestBuiltinTooltips:
-    """docFor and signatureFor (assets/tutorial-runtime.js) were widened to
-    also check __builtins__ — planning/CELL_TOOLTIPS.md option (a) — a
-    lookup one step further than tutorial_tools._page_globals, not a
-    redesign. Typed with insert_text() rather than type(): closeBrackets
-    auto-pairs "(" as a student types it, which is exactly what these tests
-    need to watch happen, but it makes type() unreliable for multi-line
-    bodies elsewhere in this class (indentOnInput adds its own indent on
-    top of any typed by hand, and closing a typed triple-quoted string
-    fights the same auto-pairing) — insert_text() bypasses that keystroke
-    handling entirely, the way a paste would."""
+    """docFor/signatureFor were widened to also check __builtins__ (planning/CELL_TOOLTIPS.md option a). Uses insert_text() rather than type(), since type()'s real keystrokes trigger closeBrackets/indentOnInput and fight multi-line bodies elsewhere in this class."""
 
     def test_hovering_a_builtin_shows_its_docstring(self, page):
         cell = cell_content(page, "plain-python")
@@ -218,8 +163,6 @@ class TestBuiltinTooltips:
         page.wait_for_selector(".cm-dewlab-signature-tooltip", state="hidden")
 
     def test_signature_help_bolds_the_argument_the_cursor_is_in(self, page):
-        """Typing past the first comma should move the bolded parameter
-        from "first" to "second"."""
         cell = cell_content(page, "plain-python")
         cell.click()
         page.keyboard.press("Control+End")
@@ -233,10 +176,7 @@ class TestBuiltinTooltips:
 
 
 class TestPreRunTooltips:
-    """planning/CELL_TOOLTIPS.md option (c): Jedi, loaded in the background
-    after boot() (dewlab.jediReady()), answers hover docs and signature help
-    for a name that has never been executed — the one gap docFor/signatureFor
-    cannot structurally close, since they only ever read a live namespace."""
+    """planning/CELL_TOOLTIPS.md option (c): Jedi answers hover docs and signature help for a name that has never run, the one gap docFor/signatureFor can't close since they only read a live namespace."""
 
     SOURCE = (
         "\ndef average(numbers):\n"
@@ -277,11 +217,7 @@ class TestPreRunTooltips:
         assert page.locator(".cm-dewlab-signature-tooltip").count() == 0
 
     def test_live_answer_is_still_used_once_the_cell_has_run(self, page):
-        """Not a case where Jedi and the live interpreter could disagree —
-        both read the same docstring — but this proves the composed
-        dewlab.hoverDoc() a student's editor actually calls keeps working
-        the same way dewlab.docFor() alone already does, rather than the
-        Jedi fallback somehow taking over once a name goes live."""
+        """Confirms hoverDoc() still calls docFor() once a name is live, rather than the Jedi fallback taking over."""
         page.wait_for_function("dewlab.jediReady()", timeout=30_000)
         cell = cell_content(page, "plain-python")
         cell.click()

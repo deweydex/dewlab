@@ -3,10 +3,9 @@
 Six phases, in dependency order. Each rests on the one before it, and nothing
 in a later phase should send you back to reopen an earlier one.
 
-The order is not arbitrary. It puts the thing most likely to be wrong first —
-whether Python actually runs acceptably in a browser — and the thing easiest to
-change last. If the first phase had failed, nothing after it would have been
-worth building.
+The order puts the thing most likely to be wrong first — whether Python
+actually runs acceptably in a browser — and the thing easiest to change
+last.
 
 ---
 
@@ -22,12 +21,11 @@ Prove that the hard part works before building anything on top of it.
   extra package-installation stage.
 - Confirm that a plain cell running code from those libraries renders its
   output underneath itself correctly.
-- Only then build the widget bridge in `tutorial_tools.py`. It is a useful
-  layer, not a precondition — if plain execution does not work, widgets on top
-  of it are worthless.
+- Only then build the widget bridge in `tutorial_tools.py`, a useful layer
+  rather than a precondition.
 
-Worth re-checking whenever the Python runtime version changes: which packages
-are available shifts between releases.
+Worth re-checking whenever the Python runtime version changes: package
+availability shifts between releases.
 
 ## Phase 1 — The build script *(complete)*
 
@@ -40,9 +38,8 @@ Turn markdown into pages.
   on any that do not resolve.
 - Render the result into the page template.
 
-Test it against one hand-written tutorial, start to finish, before pointing it
-at real content. A converter that works on a file you wrote to exercise it is
-not the same as one that works on a file someone wrote to teach with.
+Test against one hand-written tutorial, start to finish, before pointing it
+at real content.
 
 ## Phase 2 — Saved progress
 
@@ -52,11 +49,9 @@ Let a student close the tab and come back.
   `VERSIONING_AND_PROGRESS.md`.
 - Add the version comparison that document describes.
 - Test the mismatch path deliberately — bump a tutorial's version on purpose
-  and confirm the restore still works and the notice appears.
-
-That last point is the whole phase, really. The happy path where nothing has
-changed will work almost by accident; the path where you have edited a tutorial
-under a student's feet is the one that matters and the one nobody tests.
+  and confirm the restore still works and the notice appears. This is the
+  path that matters: the happy path, where nothing has changed, works almost
+  by accident.
 
 ## Phase 3 — Navigation
 
@@ -75,24 +70,22 @@ Make a series navigable as a series.
 ## Phase 5 — Pilot
 
 Convert two or three real tutorials end to end before converting a whole
-series. Put them in front of students, or at the very least run them on a
-machine that is not the one they were built on.
-
-Converting everything first and discovering a problem afterwards is the
-expensive order to do this in.
+series. Put them in front of students, or at least run them on a machine
+that is not the one they were built on — converting everything first and
+discovering a problem afterwards is the expensive order.
 
 ## Phase 6 — Closing the curriculum
 
 Phases 0 to 5 were about the tool. This one is about whether the material it
-carries actually covers the two module descriptors, which is a different
-question and was not answerable until there was something to measure.
+carries covers the two module descriptors — a different question, and not
+answerable until there was something to measure.
 
-The measuring is done. [`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md) is generated
-from the outcome data and each tutorial's own `covers:` frontmatter, so it
-cannot drift from the tutorials, and CI fails if it is out of date. It reports
-**41 of 65 outcomes in place**, with the gaps concentrated almost entirely in the
-mathematics: calculus, trigonometry, function graphing and Boolean logic have no
-coverage at all.
+[`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md) is generated from the outcome data
+and each tutorial's own `covers:` frontmatter, so it cannot drift from the
+tutorials, and CI fails if it is out of date. It reports **41 of 65 outcomes
+in place**, with the gaps concentrated almost entirely in the mathematics:
+calculus, trigonometry, function graphing and Boolean logic have no coverage
+at all.
 
 What is left is writing, and it divides into three kinds of work that cost very
 different amounts.

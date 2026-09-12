@@ -1,13 +1,4 @@
-"""planning/STUDENT_NOTES.md §2's own point: notes work on a prose-only
-tutorial too, not just one with cells — the "Your work" section used to be
-removed entirely wherever cells.length === 0, which included this case.
-
-Self-contained, no Pyodide needed, same reasoning test_reference.py
-already established: a prose-only tutorial's own boot() never loads
-Pyodide at all.
-
-    python3 -m pytest tests/e2e/test_student_notes_prose_only.py -q
-"""
+"""Regression check: the "Your work" section used to be removed entirely whenever cells.length === 0, which also hid notes on a prose-only tutorial."""
 
 from __future__ import annotations
 
@@ -91,6 +82,21 @@ def base_url(site):
         thread.join(timeout=5)
 
 
+def _open_panel(actor, selector: str) -> None:
+    """Reference/Series/Settings' toggles now collapse behind one
+    "Panels" control in the masthead (shell.html's
+    <details class="dl-panels">) rather than always showing — expand it
+    first if it isn't already, then click the actual target. Checked via
+    #dl-panels' own `open` property rather than the target's own
+    visibility, so this never mistakes "already open" for "not open" and
+    toggles it shut again right before the click that was supposed to
+    land. Left expanded once opened (no auto-collapse), so this is only
+    needed once per page load, not before every toggle click."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
+
+
 class TestNotesOnAProseOnlyTutorial:
     def test_the_work_section_and_notes_field_are_not_removed(self, site, browser, base_url):
         _tutorial(site, "one", "One")
@@ -100,7 +106,7 @@ class TestNotesOnAProseOnlyTutorial:
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
         assert page.is_hidden("#dl-settings")
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         assert page.is_visible("#dl-settings-work")
         assert page.is_visible("#dl-progress-notes")
         context.close()
@@ -112,7 +118,7 @@ class TestNotesOnAProseOnlyTutorial:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/tutorials/{MODULE}/one.html")
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", "worth writing down")
         page.wait_for_function(
             "globalThis.dewlab.readSaved() !== null", timeout=10_000
@@ -130,6 +136,6 @@ class TestNotesOnAProseOnlyTutorial:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{base_url}/index.html")
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         assert page.is_hidden("#dl-settings-work")
         context.close()

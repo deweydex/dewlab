@@ -1,0 +1,35 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second tutorial of "A table of your own" (series: first-database).
+# Checked against a-table-is-a-list-of-rows's own glossary -- no overlap.
+# table/row/column/statement/CREATE TABLE/INSERT INTO/SELECT/PRIMARY KEY/
+# the column types are all already covered there.
+#
+# `*` gets its entry here rather than on the first tutorial: tutorial one
+# only ever shows it as part of the fixed phrase "SELECT * FROM
+# dinosaurs"; this is the page that isolates it ("SELECT * shows every
+# column") and then teaches what to write instead, which is the moment a
+# reader is actually taught what the symbol itself means.
+entries:
+  - term: "WHERE"
+    kind: keyword
+    definition: >
+      WHERE keeps only the rows where the condition after it is true.
+      Text in the condition goes in single quotes, and a number needs
+      none.
+    example: "SELECT name FROM dinosaurs WHERE diet = 'Carnivore';"
+
+  - term: "ORDER BY"
+    kind: keyword
+    definition: >
+      ORDER BY sorts a result by one of its columns. DESC puts the
+      largest value first, and ASC puts the smallest value first. Leaving
+      the word out gives you ASC as well.
+    example: "SELECT name, length_meters FROM dinosaurs ORDER BY length_meters DESC;"
+
+  - term: "*"
+    kind: operator
+    definition: >
+      Stands for every column in a table, in place of naming them one at
+      a time.
+    example: "SELECT * FROM dinosaurs;"

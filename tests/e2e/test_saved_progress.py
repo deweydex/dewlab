@@ -42,10 +42,24 @@ def seed(page, record: dict):
 
 @pytest.fixture()
 def clean_storage(page):
-    """Each test starts with nothing saved, and leaves nothing behind."""
     page.evaluate("localStorage.clear()")
     yield page
     page.evaluate("localStorage.clear()")
+
+
+def _open_panel(actor, selector: str) -> None:
+    """Reference/Series/Settings' toggles now collapse behind one
+    "Panels" control in the masthead (shell.html's
+    <details class="dl-panels">) rather than always showing — expand it
+    first if it isn't already, then click the actual target. Checked via
+    #dl-panels' own `open` property rather than the target's own
+    visibility, so this never mistakes "already open" for "not open" and
+    toggles it shut again right before the click that was supposed to
+    land. Left expanded once opened (no auto-collapse), so this is only
+    needed once per page load, not before every toggle click."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
 
 
 class TestAutosave:
@@ -88,12 +102,10 @@ class TestAutosave:
 
 
 class TestOversizedOutputFallback:
-    """DECISIONS_LOG.md 7.133: a large embedded figure (tutorial_tools.py's
-    _figure_html(), a base64 PNG) can be big enough on its own to blow this
-    browser's storage quota — saveNow() must not let that cost a reader
-    their code and notes too. Storage.prototype.setItem is overridden here
-    to throw past a size deterministically, standing in for a browser's own
-    quota rather than trying to actually fill one up."""
+    """A large embedded figure can blow the storage quota; saveNow() must not
+    let that cost a reader their code and notes too. Storage.prototype.setItem
+    is overridden to throw past a size deterministically, standing in for a
+    real quota."""
 
     def fail_past(self, page, limit: int):
         page.evaluate(
@@ -156,13 +168,12 @@ class TestOversizedOutputFallback:
 
 
 class TestStudentNotes:
-    """planning/STUDENT_NOTES.md — a student's own free-text notes, distinct
-    from SIDEBAR_CONTENT.md's author-written pedagogical notes, riding along
-    on the same saved-progress record as cell work."""
+    """A student's own free-text notes (STUDENT_NOTES.md), distinct from
+    SIDEBAR_CONTENT.md's author-written notes, riding on the same record."""
 
     def test_typing_a_note_is_saved_without_being_asked(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", "the ISO date trick only works because...")
         page.wait_for_function(
             "globalThis.dewlab.readSaved() !== null", timeout=10_000
@@ -172,17 +183,17 @@ class TestStudentNotes:
 
     def test_a_note_comes_back_after_a_reload(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", "remember this for later")
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
 
         reload_and_wait(page)
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         assert page.input_value("#dl-progress-notes") == "remember this for later"
 
     def test_start_again_clears_the_note_too(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", "throwaway")
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
 
@@ -192,7 +203,7 @@ class TestStudentNotes:
 
     def test_exporting_downloads_the_note_alongside_the_cells(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", "goes in the export too")
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
         with page.expect_download() as download_info:
@@ -203,10 +214,9 @@ class TestStudentNotes:
 
 
 class TestNotesNudge:
-    """planning/STUDENT_NOTES.md §4's larger proposal: a small marker on
-    "Export a copy" once notes have grown a fair bit since the last export.
-    NOTES_NUDGE_THRESHOLD (tutorial-runtime.js) is 120 characters — every
-    string below uses that directly rather than a magic number of its own."""
+    """A marker on "Export a copy" once notes have grown since the last
+    export. NOTES_NUDGE_THRESHOLD (tutorial-runtime.js) is 120 characters —
+    SHORT/LONG below are sized against that, not an arbitrary guess."""
 
     SHORT = "a few words"
     LONG = "x" * 130
@@ -216,21 +226,21 @@ class TestNotesNudge:
 
     def test_a_short_note_gets_no_marker(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", self.SHORT)
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
         assert "dl-nudge" not in self.export_button_class(page)
 
     def test_a_long_note_gets_a_marker(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", self.LONG)
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
         assert "dl-nudge" in self.export_button_class(page)
 
     def test_exporting_clears_the_marker(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", self.LONG)
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
         assert "dl-nudge" in self.export_button_class(page)
@@ -242,12 +252,12 @@ class TestNotesNudge:
         # And it stays gone across a reload — the baseline is stored, not
         # just the in-memory class.
         reload_and_wait(page)
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         assert "dl-nudge" not in self.export_button_class(page)
 
     def test_writing_more_after_export_marks_it_again(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", self.SHORT)
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
         with page.expect_download():
@@ -260,7 +270,7 @@ class TestNotesNudge:
 
     def test_the_settings_toggle_turns_the_marker_off(self, clean_storage):
         page = clean_storage
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.fill("#dl-progress-notes", self.LONG)
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
         assert "dl-nudge" in self.export_button_class(page)
@@ -268,9 +278,7 @@ class TestNotesNudge:
         page.click('[data-notes-nudge] button[data-value="off"]')
         assert "dl-nudge" not in self.export_button_class(page)
 
-        # Holds across a reload — a real setting, not a one-off toggle.
         reload_and_wait(page)
-        page.click("#dl-settings-toggle")
         assert "dl-nudge" not in self.export_button_class(page)
 
         page.click('[data-notes-nudge] button[data-value="on"]')
@@ -365,7 +373,7 @@ class TestStartingAgain:
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
 
         page.on("dialog", lambda dialog: dialog.accept())
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.click("#dl-progress-clear")
 
         assert "to be cleared" not in editor_text(page, "plain-python")
@@ -373,11 +381,8 @@ class TestStartingAgain:
 
 
 class TestAPageWithNothingToSave:
-    """A prose-only tutorial has no cells at all — but it is still a
-    tutorial, so "Your work" stays for its notes field
-    (planning/STUDENT_NOTES.md, DECISIONS_LOG.md 7.71). The contents page
-    is the one that truly has nothing here at all, since it is not a
-    tutorial in the first place."""
+    """A prose-only tutorial has no cells, but it is still a tutorial, so
+    "Your work" stays for its notes field (STUDENT_NOTES.md)."""
 
     def test_a_prose_only_tutorial_still_offers_the_notes_field(self, browser, base_url):
         context = browser.new_context()
@@ -414,12 +419,8 @@ class TestAPageWithNothingToSave:
 
 def test_saved_work_is_keyed_on_the_module_as_well_as_the_slug(page):
     """A slug is only unique within its module, and both modules have a
-    `first-steps`. Keyed on the slug alone the two shared one record, so a
-    student's answers in one appeared in the other and each overwrote it.
-
-    Checked through the key rather than by building two modules: if the module
-    is in the key, the collision cannot happen, and the e2e fixture is one
-    module by design."""
+    `first-steps`. Keyed on the slug alone, the two shared one record, so a
+    student's answers in one appeared in the other and each overwrote it."""
     key = page.evaluate("globalThis.dewlab.progressKey()")
     assert key.startswith("dewlab:progress:")
     assert "fixtures" in key, key
@@ -432,8 +433,7 @@ def test_saved_work_is_keyed_on_the_module_as_well_as_the_slug(page):
 
 class TestLoadingSomebodyElsesFile:
     """Import used to write the file into this page's key and only then find
-    out the cells did not match — destroying a student's real work to make room
-    for a record that did not belong here."""
+    out it didn't match — destroying a student's real work in the process."""
 
     def test_a_record_from_this_tutorial_fits(self, page):
         slug = page.get_attribute('meta[name="tutorial-slug"]', "content")
@@ -443,8 +443,7 @@ class TestLoadingSomebodyElsesFile:
         ) == ""
 
     def test_a_record_from_the_same_slug_in_another_module_does_not(self, page):
-        """The case that made this necessary: both modules have a
-        `first-steps`, so the slug alone says nothing."""
+        """Both modules have a `first-steps`, so the slug alone says nothing."""
         slug = page.get_attribute('meta[name="tutorial-slug"]', "content")
         message = page.evaluate(
             "(r) => globalThis.dewlab.describeMismatch(r)",
@@ -476,7 +475,6 @@ class TestLoadingSomebodyElsesFile:
                 "(r) => globalThis.dewlab.describeMismatch(r)", junk)
 
     def test_a_mismatched_file_leaves_the_existing_record_alone(self, page):
-        """The point of the whole check."""
         mine = {"tutorial-slug": page.get_attribute('meta[name="tutorial-slug"]', "content"),
                 "tutorial-module": "fixtures", "saved_at": "2026-01-01T00:00:00Z",
                 "cells": []}

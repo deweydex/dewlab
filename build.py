@@ -11,11 +11,11 @@ Maths and illustrative code are lifted out of the source before the markdown
 converter ever sees them, for the same reason cells are: `$a_i$` would otherwise
 come back with the subscript turned into emphasis. Both are marked for the
 runtime to finish — KaTeX for the maths, a read-only CodeMirror for the code —
-rather than rendered here (DECISIONS_LOG 1.8).
+rather than rendered here.
 
 The markup this emits for a cell, and the manifest it writes into the page, are
-the contract the runtime reads (DECISIONS_LOG 0.23), and what the browser tests
-in tests/e2e/ drive.
+the contract the runtime reads, and what the browser tests in tests/e2e/
+drive.
 
     python3 build.py            build into site/
     python3 build.py --clean    remove site/ first
@@ -93,41 +93,42 @@ OUT = ROOT / "site"
 
 REQUIRED_FRONTMATTER = ("title", "slug", "module", "year", "series", "version")
 
-# What a tutorial is for. `live` is the normal state and the default, so nothing
-# already written has to say anything. `archived` means superseded: still built,
-# still reachable, still holding whatever a student saved in it, but out of the
-# reading order and marked as no longer part of the course.
-#
-# This exists because deleting the file was the only way to retire a tutorial,
-# and deleting it strands every student who saved work in it — their work sits
-# in local storage keyed to a page that no longer exists, with no way back and
-# no trace it was ever there (planning/VERSIONS.md).
 STATUSES = ("draft", "beta", "live", "archived")
 
-# A version is a release, not a save: the date a cohort could first see it,
-# plus which release of that day it was. The date is the whole identity — "3"
-# means nothing to a student and "September" means a good deal
-# (planning/VERSIONS.md).
 VERSION_RE = re.compile(r"^(?P<y>\d{4})\.(?P<m>\d{2})\.(?P<d>\d{2})\.(?P<n>\d+)$")
 
-# `order` used to live here. It moved into one file per series, so a tutorial
-# that still carries it is half-migrated — and the half that is not migrated is
-# the half that would be silently ignored.
 MOVED_FRONTMATTER = {
     "order": "the series' .order.yaml file, which lists slugs in reading order",
 }
 
-# ```python exec — the tag that makes a fence a live cell. An untagged fence is
-# ordinary illustrative code and markdown renders it as it always would.
 FENCE_RE = re.compile(r"^(?P<indent> *)```(?P<info>[^\n]*)\n(?P<body>.*?)^ *```[ \t]*$",
                       re.MULTILINE | re.DOTALL)
-HEADER_RE = re.compile(r"^\s*(id|hint)\s*:\s*(.*)$")
+HEADER_RE = re.compile(r"^\s*(id|hint|expect|name)\s*:\s*(.*)$")
+# The only two words that can open an exec fence today. Anything else fails
+# the build with a clear message rather than silently becoming a Python cell.
+CELL_TYPES = {"python", "sql"}
+
+SITE_LANGS = {"html", "css", "js"}
+SITE_HEADER_RE = re.compile(r"^\s*(id|site)\s*:\s*(.*)$")
+HINT_HEADER_RE = re.compile(r"^\s*(for|after|title)\s*:\s*(.*)$")
+TRIGGER_KEYS = {
+    "errors": "errors", "error": "errors",
+    "identical errors": "same-errors", "identical error": "same-errors",
+    "same errors": "same-errors", "same error": "same-errors",
+    "same-error": "same-errors", "same-errors": "same-errors",
+    "identical-errors": "same-errors",
+    "unchanged runs": "unchanged", "unchanged run": "unchanged", "unchanged": "unchanged",
+    "runs": "runs", "run": "runs",
+    "failed checks": "check-fails", "failed check": "check-fails",
+    "check-fails": "check-fails", "failed-checks": "check-fails",
+    "minutes": "minutes", "minute": "minutes",
+}
+TRIGGER_TERM_RE = re.compile(
+    r"^(?:(?P<n1>\d+)\s+(?P<k1>[a-z][a-z -]*[a-z])|(?P<k2>[a-z][a-z-]*)\s*:\s*(?P<n2>\d+))$"
+)
+DEFAULT_HINT_AFTER = "errors:5"
+DEFAULT_HINT_TITLE = "Let\u2019s slow down a moment\u2026"
 INCLUDE_RE = re.compile(r"\{\{\s*include\s*:\s*(?P<path>[^}]+?)\s*\}\}")
-# A list written directly under a line of prose, with no blank line between.
-# Most markdown an author has written before — in a notebook, on GitHub — treats
-# that as a list. This converter does not, and silently runs the items together
-# into the paragraph instead, which is the kind of mistake nobody notices until
-# a student is reading it. The blank line is inserted for them.
 TIGHT_LIST_RE = re.compile(
     r"(?m)^(?P<prose>(?![ \t]*(?:[-*+]|\d+[.)])\s)(?![ \t]*#)(?![ \t]*>)[^\n]*\S[^\n]*)\n"
     r"(?P<item>[ \t]*(?:[-*+]|\d+[.)])\s+\S)"
@@ -137,22 +138,18 @@ ID_RE = re.compile(r'\bid="([^"]+)"')
 IMG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
 ALT_RE = re.compile(r"\balt\s*=", re.IGNORECASE)
 DETAILS_RE = re.compile(r"<details\b[^>]*>", re.IGNORECASE)
-# The two folds a page may use. A hint offers the steps; an answer gives the
-# answer. Both are styled from their class, so a fold without one renders as a
-# bare browser triangle in the middle of the prose.
 FOLD_CLASSES = ("dl-hint", "dl-answer")
-# A pedagogical note (planning/SIDEBAR_CONTENT.md §3): an HTML aside, same
-# trick as a fold, but pulled out of the body entirely rather than staying
-# inline — extract_notes() removes what this matches.
+FOLD_RE = re.compile(
+    r'(?P<open><details class="(?:dl-hint|dl-answer)">\s*<summary>[^<]*</summary>)'
+    r"\s*(?P<body>.*?)\s*"
+    r"(?P<close></details>)",
+    re.DOTALL,
+)
 NOTE_RE = re.compile(
     r'<aside class="dl-note" id="(?P<id>[^"]+)">\s*(?P<html>.*?)\s*</aside>\n?',
     re.DOTALL,
 )
 
-# Maths, matched only against prose — every fence is already out of the way by
-# the time these run. Display first so $$…$$ is never read as two inline spans.
-# Inline maths may not span a line, and may not open or close against a space,
-# which is what keeps "it cost $5 or $6" out of it.
 DISPLAY_MATH_RE = re.compile(r"\$\$(?P<tex>.+?)\$\$", re.DOTALL)
 INLINE_MATH_RE = re.compile(r"\$(?!\s)(?P<tex>[^$\n]+?)(?<!\s)\$")
 ESCAPED_DOLLAR = "\x00dldollar\x00"
@@ -167,6 +164,21 @@ class Cell:
     id: str
     hint: str | None
     code: str
+    expect: str | None = None
+    name: str | None = None
+    type: str = "python"
+
+
+@dataclass
+class StagedHint:
+    """A ```hint fence, before it becomes a fold — see extract_blocks()."""
+
+    cell: str
+    after: str
+    title: str
+    body: str
+    # Which of its cell's hints this is, in source order — the fold's id.
+    index: int = 0
 
 
 @dataclass
@@ -175,6 +187,29 @@ class CodeBlock:
 
     language: str
     code: str
+
+
+@dataclass
+class SitePane:
+    """One `html site`/`css site`/`js site` fence — see extract_blocks()."""
+
+    id: str
+    site: str
+    language: str
+    code: str
+
+
+@dataclass
+class SiteEditor:
+    """The live HTML/CSS/JS editor one or more consecutive `SitePane`s with
+    the same `site:` name become. `panes` is keyed by language rather than
+    a plain list because a page never has two panes of the same language
+    in one editor (extract_blocks() fails the build if it finds one), and
+    a dict makes "does this editor have a JS pane" a lookup rather than a
+    search — render_site_editor() and the manifest both ask that question."""
+
+    name: str
+    panes: dict[str, SitePane]
 
 
 @dataclass
@@ -216,15 +251,16 @@ class Tutorial:
     cells: list[Cell]
     body_html: str
     has_math: bool = False
+    has_sql: bool = False
+    # A page's live HTML/CSS/JS editors, in source order — usually empty;
+    # only the web-authoring module has any yet.
+    site_editors: list[SiteEditor] = field(default_factory=list)
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
     notes: list[Note] = field(default_factory=list)
     # Where this sits in its series. Not from the frontmatter — the order file
     # decides it, and series_of() fills it in once the series is assembled.
     order: int = 0
-    # Whether this is the version the unversioned URL serves. Set by
-    # versions_of() once every version of a tutorial has been read, because it
-    # cannot be known from one file alone.
     is_default: bool = True
 
     @property
@@ -235,9 +271,6 @@ class Tutorial:
     def module(self) -> str:
         return str(self.meta["module"])
 
-    # Whether this is the version the unversioned URL serves. Set by
-    # versions_of() once every version of a tutorial has been read, because it
-    # cannot be known from one file alone.
     @property
     def out_path(self) -> Path:
         """The default sits at the tutorial's own URL; other versions sit under
@@ -357,9 +390,6 @@ def fail(path: Path, message: str) -> None:
     raise BuildError(f"{path.relative_to(ROOT)}: {message}")
 
 
-# ------------------------------------------------------------------ parsing
-
-
 def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
     """Splits one tutorial's raw file into its frontmatter (the YAML
     block between the two `---` lines, holding title/slug/module/version
@@ -415,10 +445,6 @@ def expand_includes(code: str, path: Path) -> str:
     on every page load (CONTENT_AND_FILE_ARCHITECTURE.md).
     """
 
-    # Same re.sub-callback pattern as extract_blocks()'s own `one` — see
-    # its comment for the general shape. Here, each match is one
-    # `{{include: ...}}` directive, and the returned string is the
-    # named file's actual contents, read fresh for every match.
     def one(match: re.Match) -> str:
         rel = match.group("path").strip()
         target = (ROOT / rel).resolve()
@@ -431,46 +457,224 @@ def expand_includes(code: str, path: Path) -> str:
     return INCLUDE_RE.sub(one, code)
 
 
-def parse_cell(body: str, path: Path) -> Cell:
-    """Read `id:` and optional `hint:` off the top of an exec fence."""
+def parse_cell(body: str, path: Path, cell_type: str = "python") -> Cell:
+    """Read `id:` and optional `hint:`/`expect:`/`name:` off the top of an
+    exec fence. `cell_type` is the fence's own language word ("python" or
+    "sql") — the header grammar underneath it is identical either way."""
     lines = body.split("\n")
     header: dict[str, str] = {}
     while lines:
         match = HEADER_RE.match(lines[0])
         if not match or match.group(1) in header:
             break
+        if match.group(1) == "name" and "=" in match.group(2):
+            break
         header[match.group(1)] = match.group(2).strip()
         lines.pop(0)
     if "id" not in header:
         fail(path, "an exec cell has no `id:` line — ids are what saved progress matches on")
     code = expand_includes("\n".join(lines).strip("\n"), path)
-    return Cell(id=header["id"], hint=header.get("hint") or None, code=code)
+    return Cell(
+        id=header["id"],
+        hint=header.get("hint") or None,
+        code=code,
+        expect=header.get("expect") or None,
+        name=header.get("name") or None,
+        type=cell_type,
+    )
 
 
-def extract_blocks(body: str, path: Path) -> tuple[str, list[Cell], list[CodeBlock]]:
+def parse_site_pane(body: str, path: Path, language: str) -> SitePane:
+    """Read `id:`/`site:` off the top of an `html site`/`css site`/`js
+    site` fence. `language` is the fence's own first word; the rest of the
+    fence is the pane's own HTML, CSS or JavaScript, unwrapped — a site
+    pane's code is never Python and never runs through expand_includes(),
+    since {{include: ...}} is a Python-cell convenience (planning/
+    CONTENT_AND_FILE_ARCHITECTURE.md) with nothing to say about a
+    stylesheet."""
+    lines = body.split("\n")
+    header: dict[str, str] = {}
+    while lines:
+        match = SITE_HEADER_RE.match(lines[0])
+        if not match or match.group(1) in header:
+            break
+        header[match.group(1)] = match.group(2).strip()
+        lines.pop(0)
+    if "id" not in header:
+        fail(path, "a site pane has no `id:` line — ids are what saved progress matches on")
+    if "site" not in header:
+        fail(path, "a site pane has no `site:` line naming which editor it belongs to")
+    return SitePane(
+        id=header["id"], site=header["site"], language=language,
+        code="\n".join(lines).strip("\n"),
+    )
+
+
+def parse_trigger(text: str, path: Path) -> str:
+    """Turn an `after:` line into the runtime's `key:number` form.
+
+    `5 errors`, `3 identical errors and 2 minutes`, `errors:5, minutes:2` all
+    parse; the first two become the third. Every term must be one the
+    runtime knows (`TRIGGER_KEYS`), so a typo fails the build here rather
+    than producing a hint that never appears.
+    """
+    terms = []
+    for raw in re.split(r"\s*(?:,|\band\b|&)\s*", text.strip().lower()):
+        if not raw:
+            continue
+        match = TRIGGER_TERM_RE.match(raw)
+        if not match:
+            fail(path, f"a hint's after: line has a term I cannot read: {raw!r} "
+                       f"— write it like `5 errors` or `errors:5`")
+        key = match.group("k1") or match.group("k2")
+        count = int(match.group("n1") or match.group("n2"))
+        canonical = TRIGGER_KEYS.get(key.strip())
+        if canonical is None:
+            fail(path, f"a hint's after: line names a signal the runtime does not "
+                       f"track: {key!r} — one of errors, identical errors, "
+                       f"unchanged runs, runs, failed checks, minutes")
+        if count < 1:
+            fail(path, f"a hint's after: count must be at least 1, not {count}")
+        terms.append(f"{canonical}:{count}")
+    if not terms:
+        fail(path, "a hint's after: line is empty")
+    return " ".join(terms)
+
+
+def parse_hint(body: str, path: Path, previous_cell: str | None) -> StagedHint:
+    """Read `for:`, `after:` and `title:` off the top of a ```hint fence.
+
+    Everything after the header lines is the hint's own markdown. With no
+    `for:` the hint belongs to the exec cell just above it in the source,
+    which is where nearly every hint will sit.
+    """
+    lines = body.split("\n")
+    header: dict[str, str] = {}
+    while lines:
+        match = HINT_HEADER_RE.match(lines[0])
+        if not match or match.group(1) in header:
+            break
+        header[match.group(1)] = match.group(2).strip()
+        lines.pop(0)
+    cell = header.get("for") or previous_cell
+    if not cell:
+        fail(path, "a hint fence has no exec cell above it and no `for:` line "
+                   "naming one")
+    text = "\n".join(lines).strip("\n")
+    if not text.strip():
+        fail(path, f"the hint for cell {cell!r} has no text in it")
+    return StagedHint(
+        cell=cell,
+        after=parse_trigger(header.get("after") or DEFAULT_HINT_AFTER, path),
+        title=header.get("title") or DEFAULT_HINT_TITLE,
+        body=text,
+    )
+
+
+def render_staged_hint(hint: StagedHint, maths: list[Math]) -> str:
+    """The fold a ```hint fence becomes.
+
+    Its body is converted on its own, the same way extract_notes() converts a
+    pedagogical note: Python-Markdown treats a `<details>` block and
+    everything up to its closing tag as raw HTML, so a body left inside the
+    tags in the source would come out as literal text — which is also why the
+    hand-written folds on the practice pages keep to plain sentences. Maths
+    goes through extract_math() first, appending to the *page's* list so its
+    tokens are numbered after the prose's and place_blocks() renders them in
+    the same pass. `hidden` is what the runtime removes when the trigger
+    fires; with JavaScript off the fold stays hidden, as a cell stays
+    unrunnable.
+    """
+    stripped, _ = extract_math(hint.body, maths)
+    body_html, _ = to_html(loosen_tight_lists(stripped))
+    safe_cell = html.escape(hint.cell, quote=True)
+    return (
+        f'<details class="dl-hint dl-hint-staged" '
+        f'id="dl-staged-{safe_cell}-{hint.index}" '
+        f'data-cell="{safe_cell}" data-after="{html.escape(hint.after, quote=True)}" hidden>'
+        f"<summary>{html.escape(hint.title)}</summary>\n"
+        f"{body_html}\n"
+        f"</details>"
+    )
+
+
+def place_hints(page_html: str, hints: list[StagedHint], maths: list[Math]) -> str:
+    """Swap each hint's placeholder comment for its rendered fold — the
+    hint half of place_blocks(), run before it so the maths tokens a hint's
+    body adds to `maths` are still there to be rendered."""
+    for index, hint in enumerate(hints):
+        placeholder = f"<!--dewlab-hint-{index}-->"
+        if placeholder not in page_html:
+            raise BuildError(f"the hint for cell {hint.cell!r} was lost during markdown conversion")
+        page_html = page_html.replace(placeholder, render_staged_hint(hint, maths))
+    return page_html
+
+
+def extract_blocks(
+    body: str, path: Path,
+) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint], list[SiteEditor]]:
     """Pull every fence out, leaving a comment placeholder markdown will keep.
 
-    An `exec` fence becomes a cell; any other fence becomes an illustrative,
-    read-only block. Both leave the source before the markdown converter runs,
-    so nothing inside either can be reinterpreted as markup.
+    An `exec` fence becomes a cell; a `hint` fence becomes a staged hint
+    (planning/CELL_HINTS.md); an `html site`/`css site`/`js site` fence
+    becomes one pane of a `SiteEditor`, grouped with any of the same
+    `site:` name immediately before or after it; any other fence becomes
+    an illustrative, read-only block. All four
+    leave the source before the markdown converter runs, so nothing inside
+    any of them can be reinterpreted as markup.
     """
     cells: list[Cell] = []
     blocks: list[CodeBlock] = []
+    hints: list[StagedHint] = []
+    site_editors: list[SiteEditor] = []
+    hints_per_cell: dict[str, int] = {}
+    used_site_names: set[str] = set()
+    current_site: SiteEditor | None = None
+    last_site_pane_end = -1
 
-    # re.sub's second argument can be a function instead of a plain
-    # replacement string — when it is, that function is called once per
-    # match, with the match object, and whatever string it returns takes
-    # the match's place. `one` is that function here: for every fenced
-    # code block FENCE_RE finds, it either records a new Cell or a new
-    # CodeBlock (appending to the `cells`/`blocks` lists this closure can
-    # see because it's defined right here, inside extract_blocks), and
-    # returns a placeholder comment in its place.
     def one(match: re.Match) -> str:
+        nonlocal current_site, last_site_pane_end
         info = match.group("info").strip().split()
         indent = match.group("indent")
         if "exec" in info:
-            cells.append(parse_cell(match.group("body"), path))
+            cell_type = info[0] if info[0] != "exec" else "python"
+            if cell_type not in CELL_TYPES:
+                fail(path, f"an exec cell's fence starts with {cell_type!r}, "
+                           f"not one of {sorted(CELL_TYPES)}")
+            cells.append(parse_cell(match.group("body"), path, cell_type))
             return f"{indent}<!--dewlab-cell-{len(cells) - 1}-->"
+        if info and info[0] == "hint":
+            hint = parse_hint(match.group("body"), path, cells[-1].id if cells else None)
+            hint.index = hints_per_cell.get(hint.cell, 0)
+            hints_per_cell[hint.cell] = hint.index + 1
+            hints.append(hint)
+            return f"{indent}<!--dewlab-hint-{len(hints) - 1}-->"
+        if len(info) >= 2 and info[1] == "site":
+            language = info[0]
+            if language not in SITE_LANGS:
+                fail(path, f"a site pane's fence starts with {language!r}, "
+                           f"not one of {sorted(SITE_LANGS)}")
+            pane = parse_site_pane(match.group("body"), path, language)
+            adjacent = (
+                current_site is not None
+                and current_site.name == pane.site
+                and not body[last_site_pane_end:match.start()].strip()
+            )
+            last_site_pane_end = match.end()
+            if adjacent:
+                if pane.language in current_site.panes:
+                    fail(path, f"the {pane.site!r} site editor has two "
+                               f"{pane.language} panes")
+                current_site.panes[pane.language] = pane
+                return ""
+            if pane.site in used_site_names:
+                fail(path, f"site editor blocks named {pane.site!r} are not "
+                           "consecutive — keep every html/css/js pane for "
+                           "one site together")
+            used_site_names.add(pane.site)
+            current_site = SiteEditor(name=pane.site, panes={pane.language: pane})
+            site_editors.append(current_site)
+            return f"{indent}<!--dewlab-site-{len(site_editors) - 1}-->"
         language = info[0] if info else ""
         blocks.append(CodeBlock(language=language, code=match.group("body").strip("\n")))
         return f"{indent}<!--dewlab-code-{len(blocks) - 1}-->"
@@ -481,26 +685,32 @@ def extract_blocks(body: str, path: Path) -> tuple[str, list[Cell], list[CodeBlo
         if cell.id in seen:
             fail(path, f"two exec cells share the id {cell.id!r}")
         seen.add(cell.id)
-    return rewritten, cells, blocks
+    for editor in site_editors:
+        for pane in editor.panes.values():
+            if pane.id in seen:
+                fail(path, f"two cells share the id {pane.id!r}")
+            seen.add(pane.id)
+    for hint in hints:
+        if hint.cell not in seen:
+            fail(path, f"a hint names a cell this tutorial does not have: {hint.cell!r}")
+    return rewritten, cells, blocks, hints, site_editors
 
 
-def extract_math(body: str) -> tuple[str, list[Math]]:
+def extract_math(body: str, found: list[Math] | None = None) -> tuple[str, list[Math]]:
     """Lift $…$ and $$…$$ out, leaving a token markdown will not touch.
 
     The placeholder is a bare alphanumeric word on purpose: an HTML comment
     works for a block-level fence but not mid-sentence, where markdown's inline
     pass can reach it.
+
+    `found` lets a second piece of text — a staged hint's body, converted on
+    its own — number its tokens after the page's, so place_blocks() renders
+    both from the one list.
     """
-    found: list[Math] = []
+    if found is None:
+        found = []
     body = body.replace("\\$", ESCAPED_DOLLAR)
 
-    # Same re.sub-callback pattern as extract_blocks()'s own `one` above,
-    # but with an extra wrinkle: this needs *two* near-identical
-    # callbacks (one for $$display$$ maths, one for $inline$ maths), which
-    # only differ in what `display` value they record. `take(display)`
-    # returns a fresh `one` function that already "remembers" its own
-    # `display` value — a small factory, rather than writing the same
-    # callback twice with one boolean hardcoded differently in each copy.
     def take(display: bool):
         def one(match: re.Match) -> str:
             found.append(Math(tex=match.group("tex").strip(), display=display))
@@ -513,40 +723,69 @@ def extract_math(body: str) -> tuple[str, list[Math]]:
     return body.replace(ESCAPED_DOLLAR, "$"), found
 
 
-# ----------------------------------------------------------------- rendering
+def icon_button(css_class: str, icon: str, label: str, **attrs: str) -> str:
+    """A button that can read as icon-only, label-only, or both, at the
+    reader's own choice (Settings → "Cell buttons", `dewlab:button-labels`)
+    — one shared shape for every cell-chrome button on both this page and
+    dewmini's own `iconButton()` (`compose/dewmini.js`), so a setting
+    flipped on one means the same thing on both. `icon` is markup already
+    (an entity or a nested span), never escaped again here; `label` is
+    plain text, escaped once. CSS hides whichever span the setting says
+    not to show; nothing here decides that.
+    """
+    attr_str = "".join(f' {key}="{html.escape(str(value), quote=True)}"' for key, value in attrs.items())
+    return (
+        f'<button type="button" class="dl-btn {css_class}"{attr_str}>'
+        f'<span class="dl-btn-icon" aria-hidden="true">{icon}</span>'
+        f'<span class="dl-btn-label">{html.escape(label)}</span>'
+        "</button>"
+    )
 
 
 def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> str:
     """The markup the runtime binds an editor, a Run button and an output area to.
 
-    The bar sits below the editor and output, not above them — a reader's
-    eye lands on the code first, the controls for it after, the same order
-    a notebook cell is actually used in. The hint, when open, is a normal
-    block after the bar rather than a floating popover: expanding it grows
-    the cell and pushes whatever comes after it down the page, rather than
-    covering the editor or output it might otherwise float over.
+    Three rows, in the order a reader's eye actually uses them: a header
+    (identity — the pill, an optional name, Duplicate) above the code;
+    the code itself, with its collapse triangle; a footer (Run, Reset,
+    the run-line, the "Run above/below" menu) between the code and
+    where its output will land, so Run sits where a reader's hand
+    already is, not back above everything they just wrote. This is
+    dewmini's own shape (`compose/dewmini.js`'s `createCellElement()`),
+    matched here (planning/CELL_IDENTITY.md's parity pass) — a reader
+    moving from one page to the other finds the pill, and Run, in the
+    same place either way.
 
     `number` is the cell's plain 1-based position on the page (its index
     in `place_blocks()`'s own `cells` list, the same order the page reads
     in) — an authored cell's order never changes at runtime the way a
     dewmini cell's can, so unlike `compose/dewmini.js`'s own
     `createCellElement()` this never needs recomputing after the fact.
-    The pill shows it alongside the cell's type — always "Python" here,
-    since an authored `exec` cell has no other kind yet — coloured via
-    the same `--dl-type-python` token dewmini's own pill uses
-    (`planning/CELL_IDENTITY.md` §2, built for this page in 7.113). No
-    drag handle: authored cells aren't reorderable, so there's nothing
-    for one to do.
+    The pill shows it alongside the cell's type — "Python" or "SQL",
+    coloured via the matching `--dl-type-python`/`--dl-type-sql` token
+    dewmini's own pill uses. No drag handle: authored cells aren't
+    reorderable, so there's nothing
+    for one to do. `cell.name`, when an author gives one, sits beside the
+    pill — the word a reader can point at ("the `filter-evening` cell")
+    instead of a number, the same idea dewmini lets a reader give their
+    own cells.
 
     The run-line span and the "Run above/below" menu are empty shells
     here — tutorial-runtime.js fills and wires them the same way it
     already owns everything else about a live cell, the same treatment
-    dewmini gives a Python cell (DECISIONS_LOG.md 7.105, 7.106, 7.110).
+    dewmini gives a Python cell.
+
+    Reset is not Clear: it puts this cell's *starter code* back, throwing
+    away whatever the reader typed, because an authored cell has a fixed
+    starting point to return to — dewmini's own cells have none, so its
+    matching button only clears output and never touches code. Different
+    on purpose, so it gets a different icon, not just a different label
+    that icon-only mode would hide.
 
     The editor sits in a `.dl-cell-body-row`, beside a collapse triangle
     — every cell type gets one in dewmini (`planning/CELL_IDENTITY.md`
-    §4), and there is nothing type-specific here to make that not apply
-    (DECISIONS_LOG.md 7.114). `.dl-cell-collapsed-summary` is the
+    §4), and there is nothing type-specific here to make that not apply.
+    `.dl-cell-collapsed-summary` is the
     one-line stand-in tutorial-runtime.js shows in its place once
     collapsed; both start empty/hidden and are filled in by
     `setCellCollapsed()` there, the same way the run-line is.
@@ -559,19 +798,16 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
     itself is the tutorial's own content and stays fixed; the copy is
     the reader's, free to edit or delete.
 
-    The report icon (DECISIONS_LOG.md Phase 8) is the same toggle
+    The report icon is the same toggle
     pattern as the hint icon right beside it — a small circular button
-    that opens a plain block after the bar, not a floating popover —
-    deliberately not a fourth always-visible text button next to
-    duplicate/reset/run: `.dl-cell-more`'s own comment already explains
-    why this bar avoids crowding itself with one-off actions. `page` and
-    `version` are build-time constants, the same as the footer's; `code`
-    and `output` are not knowable until the reader has actually typed
-    and run something, so those two fields stay blank in this markup and
-    are filled in by `tutorial-runtime.js` at the moment the panel opens
-    — see `updateCellReportLinks()` there. A custom cell (the reader's
-    own, not the tutorial's) gets none of this: there is nothing to
-    report about code nobody but the reader wrote.
+    that opens a plain block after the cell, not a floating popover.
+    `page` and `version` are build-time constants, the same as the
+    footer's; `code` and `output` are not knowable until the reader has
+    actually typed and run something, so those two fields stay blank in
+    this markup and are filled in by `tutorial-runtime.js` at the moment
+    the panel opens — see `updateCellReportLinks()` there. A custom cell
+    (the reader's own, not the tutorial's) gets none of this: there is
+    nothing to report about code nobody but the reader wrote.
     """
     safe_id = html.escape(cell.id, quote=True)
     hint_markup = ""
@@ -601,8 +837,26 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
             f"{report_doors_links(page, version, cell=cell.id)}"
             "</div>"
         )
+    name_markup = ""
+    if cell.name:
+        name_markup = f'<span class="dl-cell-name">{html.escape(cell.name)}</span>'
+    type_label = "SQL" if cell.type == "sql" else "Python"
     return (
         f'<div class="dl-cell" data-cell-id="{safe_id}">'
+        '<div class="dl-cell-head">'
+        '<span class="dl-cell-pill">'
+        f'<span class="dl-cell-pill-num">Cell {number}</span>'
+        f'<span class="dl-cell-pill-type" data-type="{cell.type}">{type_label}</span>'
+        "</span>"
+        f"{name_markup}"
+        '<span class="dl-cell-spacer"></span>'
+        '<div class="dl-cell-header-end">'
+        f"{hint_markup}"
+        f"{report_markup}"
+        + icon_button("dl-btn-duplicate", "&#10697;", "Duplicate",
+                      title="Copy this cell into your own, right below it")
+        + "</div>"
+        "</div>"
         '<div class="dl-cell-body-row">'
         '<div class="dl-cell-collapse-col">'
         '<button type="button" class="dl-collapse-toggle" aria-expanded="true" '
@@ -613,31 +867,29 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
         '<div class="dl-cell-content"><div class="dl-editor"></div></div>'
         '<div class="dl-cell-collapsed-summary" role="button" tabindex="0" hidden></div>'
         "</div>"
-        '<div class="dl-output"></div>'
-        '<div class="dl-cell-bar">'
-        '<span class="dl-cell-pill">'
-        f'<span class="dl-cell-pill-num">Cell {number}</span>'
-        '<span class="dl-cell-pill-type" data-type="python">Python</span>'
-        "</span>"
-        '<span class="dl-cell-runline"></span>'
-        '<span class="dl-cell-spacer"></span>'
-        f"{hint_markup}"
-        f"{report_markup}"
-        '<button type="button" class="dl-btn dl-btn-duplicate" '
-        'title="Copy this cell into your own, right below it">duplicate</button>'
-        '<button type="button" class="dl-btn dl-btn-reset">reset</button>'
-        '<div class="dl-cell-more">'
-        '<button type="button" class="dl-btn dl-btn-more" aria-haspopup="true" '
-        'aria-expanded="false" title="More ways to run this cell">&#8943;</button>'
-        '<div class="dl-cell-run-menu" role="menu" hidden>'
+        '<div class="dl-cell-footbar">'
+        + icon_button("dl-btn-run", "&#9654;", "Loading…", disabled="disabled")
+        + icon_button("dl-btn-reset", "&#8634;", "Reset",
+                      title="Clear this cell's output")
+        + icon_button("dl-btn-clear", "&#8635;", "Clear",
+                      title="Put this cell's starter code back, and clear its output")
+        + '<div class="dl-cell-more">'
+        + icon_button("dl-btn-more", "&#8943;", "More",
+                      **{"aria-haspopup": "true", "aria-expanded": "false",
+                         "title": "More ways to run this cell"})
+        + '<div class="dl-cell-run-menu" role="menu" hidden>'
         '<button type="button" class="dl-cell-run-menu-item" role="menuitem" '
         'data-run-menu="above">Run this cell and all above</button>'
         '<button type="button" class="dl-cell-run-menu-item" role="menuitem" '
         'data-run-menu="below">Run this cell and all below</button>'
         "</div>"
         "</div>"
-        '<button type="button" class="dl-btn dl-btn-run" disabled>…</button>'
+        '<span class="dl-cell-spacer"></span>'
+        '<span class="dl-hint-marker" hidden aria-hidden="true" '
+        'title="A hint has appeared below this cell"></span>'
+        '<span class="dl-cell-runline"></span>'
         "</div>"
+        '<div class="dl-output"></div>'
         f"{hint_text}"
         f"{report_box}"
         "</div>"
@@ -654,6 +906,92 @@ def render_code_block(block: CodeBlock) -> str:
     lang = html.escape(block.language, quote=True)
     attr = f' data-lang="{lang}"' if lang else ""
     return f'<pre class="dl-static"{attr}><code>{html.escape(block.code)}</code></pre>'
+
+
+def render_site_editor(editor: SiteEditor, index: int) -> str:
+    """The markup a live HTML/CSS/JS editor and its preview mount onto.
+
+    Each pane present in `editor.panes` gets an empty `.dl-editor`, the
+    same convention `render_cell()` uses for a Python or SQL cell: the
+    pane's actual starting source travels in the manifest, not the DOM,
+    and `tutorial-runtime.js` fills the editor in and mounts the live
+    preview using `assets/site-relay.js`'s `mountSitePreview()`
+    the moment the page is ready — there is no
+    meaningful no-JavaScript fallback for a live preview the way
+    `render_code_block()`'s escaped `<pre>` is one for a read-only
+    example. A pane absent from `editor.panes` gets no box at all, unlike
+    dewmini's own Site tab, which always shows three regardless — most of
+    dewstack's own web-authoring pages are HTML+CSS only, and an
+    HTML-only page with two permanently empty boxes beside it would look
+    broken rather than minimal.
+
+    `index` is this editor's plain 1-based position among the page's site
+    editors, the same role `render_cell()`'s `number` plays for cells; it
+    also makes the preview-width slider's own `id` unique when a page has
+    more than one editor, so its `<label for=...>` still points at the
+    right control.
+
+    The preview-width slider itself (`.dl-site-preview-controls`, a
+    30%-100% range setting `.dl-site-frame`'s own inline width) is a
+    media-query lesson's actual apparatus, not decoration — a page that
+    asks a reader to "drag the preview narrower" needs a preview that can
+    get narrower, and a fixed-width iframe alone cannot demonstrate that
+    (found porting `media-queries` and three other `web-authoring`
+    tutorials that assume it; `dewminiweb.js` already carries the
+    identical control for its own workspace, wired here the same way).
+    """
+    safe_name = html.escape(editor.name, quote=True)
+    labels = {"html": "HTML", "css": "CSS", "js": "JavaScript"}
+    panes_markup = []
+    for lang in ("html", "css", "js"):
+        if lang not in editor.panes:
+            continue
+        run_markup = (
+            icon_button("dl-btn-site-run", "&#9654;", "Run",
+                        title="Run this script (Ctrl+Enter or Cmd+Enter in the pane)")
+            if lang == "js" else ""
+        )
+        panes_markup.append(
+            f'<div class="dl-site-pane" data-lang="{lang}">'
+            '<div class="dl-site-pane-head">'
+            f'<span class="dl-web-pane-label">{labels[lang]}</span>'
+            f"{run_markup}"
+            "</div>"
+            '<div class="dl-editor"></div>'
+            "</div>"
+        )
+    console_markup = ""
+    if "js" in editor.panes:
+        console_markup = (
+            '<div class="dl-site-console">'
+            '<div class="dl-web-pane-label">Console</div>'
+            '<div class="dl-site-console-output" aria-live="polite"></div>'
+            "</div>"
+        )
+    width_id = f"dl-site-width-{index}"
+    return (
+        f'<div class="dl-site-editor" data-site-name="{safe_name}">'
+        '<div class="dl-site-head">'
+        + icon_button("dl-btn-site-clear", "&#8635;", "Clear",
+                      title="Put this editor's starter code back, in every pane")
+        + "</div>"
+        '<div class="dl-site-split">'
+        f'<div class="dl-site-editors">{"".join(panes_markup)}</div>'
+        '<div class="dl-site-preview">'
+        '<div class="dl-site-preview-controls">'
+        f'<label for="{width_id}">Preview width</label>'
+        f'<input type="range" id="{width_id}" class="dl-site-width" '
+        'min="30" max="100" step="5" value="100" '
+        'aria-label="Preview width, as a percentage">'
+        f'<output for="{width_id}">100%</output>'
+        "</div>"
+        f'<iframe class="dl-site-frame" sandbox="allow-scripts" '
+        f"title=\"{safe_name}'s preview\"></iframe>"
+        f"{console_markup}"
+        "</div>"
+        "</div>"
+        "</div>"
+    )
 
 
 def render_math(item: Math) -> str:
@@ -680,23 +1018,43 @@ def to_html(body: str) -> tuple[str, list]:
     return html_out, list(getattr(converter, "toc_tokens", []))
 
 
+def convert_fold_bodies(page_html: str) -> str:
+    """Convert the markdown inside a hand-written `dl-hint`/`dl-answer` fold.
+
+    Python-Markdown treats a `<details>` block as raw HTML through to its
+    closing tag — the same behaviour extract_notes()'s own comment describes
+    — so a fold's numbered steps and backtick code would otherwise reach the
+    page as literal text rather than a real list and `<code>`. Converting the
+    body on its own, the same way render_staged_hint() already does for a
+    ```hint fence, fixes that without touching the summary line or the class
+    that styles the fold. Run against `page_html` straight out of to_html():
+    a fold's body is still the untouched source text at that point, exactly
+    what to_html() needs to convert it properly.
+    """
+    def one(match: re.Match) -> str:
+        body_html, _ = to_html(match.group("body"))
+        return f'{match.group("open")}\n{body_html}\n{match.group("close")}'
+
+    return FOLD_RE.sub(one, page_html)
+
+
 def place_blocks(
     page_html: str, cells: list[Cell], blocks: list[CodeBlock], maths: list[Math],
-    page: str = "", version: str = "",
+    site_editors: list[SiteEditor] | None = None, page: str = "", version: str = "",
 ) -> str:
-    """Puts cells, illustrative code blocks, and maths back into the page
-    after the Markdown converter has run. `extract_blocks`/`extract_math`
-    earlier in the pipeline replaced each of these with a plain
-    placeholder string before handing the body to the Markdown library —
-    this is the matching second half, swapping each placeholder back out
-    for its real rendered HTML. Doing it this way (rather than rendering
-    cells and maths inline, before Markdown sees them) is what protects
-    their content from Markdown's own text-formatting rules — see
-    `extract_math`'s own comment for a concrete example of what goes
+    """Puts cells, illustrative code blocks, site editors, and maths back
+    into the page after the Markdown converter has run. `extract_blocks`/
+    `extract_math` earlier in the pipeline replaced each of these with a
+    plain placeholder string before handing the body to the Markdown
+    library — this is the matching second half, swapping each placeholder
+    back out for its real rendered HTML. Doing it this way (rather than
+    rendering cells and maths inline, before Markdown sees them) is what
+    protects their content from Markdown's own text-formatting rules —
+    see `extract_math`'s own comment for a concrete example of what goes
     wrong otherwise.
 
     `page` and `version` are only for `render_cell()`'s own report panel
-    (DECISIONS_LOG.md Phase 8) — passed straight through, since this
+    — passed straight through, since this
     function runs from `load()`, before a tutorial's own frontmatter has
     become a `Tutorial` object with a `.slug`/`.module` of its own.
     """
@@ -709,6 +1067,11 @@ def place_blocks(
         )
     for index, block in enumerate(blocks):
         page_html = page_html.replace(f"<!--dewlab-code-{index}-->", render_code_block(block))
+    for index, editor in enumerate(site_editors or []):
+        placeholder = f"<!--dewlab-site-{index}-->"
+        if placeholder not in page_html:
+            raise BuildError(f"site editor {editor.name!r} was lost during markdown conversion")
+        page_html = page_html.replace(placeholder, render_site_editor(editor, index + 1))
     for index, item in enumerate(maths):
         page_html = page_html.replace(f"dlmath{index}z", render_math(item))
     return page_html
@@ -725,28 +1088,16 @@ def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
     notes: list[Note] = []
     seen: set[str] = set()
 
-    # The same re.sub-callback pattern used in extract_blocks()/extract_math()
-    # above — see extract_blocks()'s own comment on `one` for what this
-    # pattern is doing.
     def one(match: re.Match) -> str:
         note_id = match.group("id")
         if note_id in seen:
             fail(path, f"two notes share the id {note_id!r}")
         seen.add(note_id)
-        # Converted on its own, separately from the surrounding document:
-        # a raw HTML block's own contents are not otherwise re-run through
-        # the converter (the same reason a fold's backticks show up
-        # literally rather than as `<code>`), and a note needs real markdown
-        # — an image in particular (planning/SIDEBAR_CONTENT.md §1's "a note
-        # that contains an image is just markdown content").
         note_html, _ = to_html(match.group("html"))
         notes.append(Note(id=note_id, html=note_html))
         return ""
 
     return NOTE_RE.sub(one, body_html), notes
-
-
-# -------------------------------------------------------------- navigation
 
 
 ORDER_SUFFIX = ".order.yaml"
@@ -789,10 +1140,6 @@ def order_files() -> dict[tuple[str, str], list[str]]:
         data = yaml.safe_load(path.read_text()) or {}
         module = path.parent.name
         series = path.name[: -len(ORDER_SUFFIX)]
-        # `order:` with nothing under it is a series whose every tutorial has
-        # been archived. That is a real state and should not force somebody to
-        # delete the file as well — but `order:` missing altogether is still a
-        # broken file, so the two are told apart rather than both allowed.
         if "order" not in data:
             fail(path, "an order file needs `order:` as a list of slugs")
         order = data.get("order") or []
@@ -852,9 +1199,6 @@ def versions_of(tutorials: list[Tutorial]) -> list[Tutorial]:
             (v for v in versions if v.status == "live"), key=lambda v: v.released,
             default=None,
         )
-        # Nothing live: a tutorial that is entirely beta, or entirely archived.
-        # The newest of what there is still answers the unversioned URL, because
-        # a link that 404s is worse than a link to something marked clearly.
         default = newest_live or max(versions, key=lambda v: v.released)
         for version in versions:
             version.is_default = version is default
@@ -987,10 +1331,6 @@ def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]
         # superseded release is still readable; it is not part of the course.
         if tutorial.status != "live" or not tutorial.is_default:
             continue
-        # A practice page hangs off its tutorial rather than sitting between two
-        # others. Putting it on the route would double the length of every
-        # series and put a page of problems between a reader and the next thing
-        # they are meant to learn.
         if tutorial.is_practice:
             continue
         groups.setdefault((tutorial.module, tutorial.series), []).append(tutorial)
@@ -1065,7 +1405,7 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
     parts = []
     if index == -1:
         up = "../" * tutorial.depth
-        return f'<a class="dl-nav-up" href="{up}index.html">All tutorials</a>' 
+        return f'<a class="dl-nav-up" href="{up}all-tutorials.html">All tutorials</a>'
     if index > 0:
         previous = members[index - 1]
         parts.append(
@@ -1073,7 +1413,7 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
             f"{html.escape(previous.title)}</a>"
         )
     up = "../" * tutorial.depth
-    parts.append(f'<a class="dl-nav-up" href="{up}index.html">All tutorials</a>')
+    parts.append(f'<a class="dl-nav-up" href="{up}all-tutorials.html">All tutorials</a>')
     if index < len(members) - 1:
         following = members[index + 1]
         parts.append(
@@ -1109,13 +1449,6 @@ def render_series_nav(tutorial: Tutorial, members: list[Tutorial]) -> str:
             )
     return '<ol class="dl-seriesnav-series">' + "".join(items) + "</ol>"
 
-
-# --------------------------------------------------------------- reference
-#
-# planning/REFERENCE_PANEL.md has the full design. In short: a glossary file says
-# what one specific tutorial introduces; a page's reference is the
-# accumulation of every earlier series member's glossary plus its own, so a
-# tutorial never shows a reader something they have not been taught yet.
 
 GLOSSARY_KINDS = ("concept", "function", "operator", "formula", "keyword")
 
@@ -1267,9 +1600,6 @@ def cumulative_glossary(
             if key in seen:
                 continue
             seen.add(key)
-            # Where a reader met this, for everything inherited from an
-            # earlier tutorial. Not for the tutorial's own entries: "you met
-            # this here" is unhelpful on the page that is teaching it.
             found.append(entry if member is reader_at
                          else {**entry, "origin": origin_of(reader_at, member, entry["term"])})
     return found
@@ -1285,6 +1615,63 @@ def origin_of(reader_at: Tutorial, introduced_by: Tutorial, term: str) -> dict:
         "title": introduced_by.title,
         "href": f"{href}#{anchor}" if anchor else href,
     }
+
+
+MATH_BASICS_DATA = ROOT / "planning" / "curriculum" / "math-basics.yaml"
+PYTHON_BASICS_DATA = ROOT / "planning" / "curriculum" / "python-basics.yaml"
+
+
+def _load_basics(path: Path, kind: str) -> list[dict]:
+    """Shared loader for the Reference panel's own site-wide "Basics"
+    tabs (Math Basics, Python Basics) — same shape, same validation,
+    only the file and its own house rule differ; see load_math_basics()
+    and load_python_basics() for what each promises its own content
+    follows. Returns `[]`, not an error, when the file does not exist
+    yet: the same "not written yet" tolerance `own_glossary()` gives a
+    missing per-tutorial glossary.
+    """
+    if not path.is_file():
+        return []
+    data = load_yaml_no_duplicate_keys(path.read_text()) or {}
+    groups = data.get("groups") or []
+    for group in groups:
+        if not group.get("label"):
+            fail(path, f"a {kind} group is missing a label.")
+        entries = group.get("entries") or []
+        if not entries:
+            fail(path, f'the group {group.get("label")!r} has no entries.')
+        for entry in entries:
+            if not entry.get("term") or not entry.get("definition"):
+                fail(path, f"a {kind} entry is missing a term or a definition.")
+    return groups
+
+
+def load_math_basics() -> list[dict]:
+    """Math Basics: plain definitions for arithmetic notation and
+    vocabulary, independent of any one tutorial or series — see
+    planning/curriculum/math-basics.yaml for the house rule this file is
+    written to (one sentence, no worked example, no leaning on another
+    entry). Unlike a tutorial's own accumulated glossary, this is the
+    same list on every page — re-read on every one of write()'s calls
+    rather than cached, the same choice cumulative_glossary() already
+    makes for the (much larger) per-tutorial glossary files it re-reads
+    per page; a ~100-line YAML file is not worth memoizing against, and
+    not caching it keeps this trivially safe to monkeypatch in tests.
+    """
+    return _load_basics(MATH_BASICS_DATA, "math-basics")
+
+
+def load_python_basics() -> list[dict]:
+    """Python Basics: plain definitions for Python's own vocabulary and
+    punctuation — values, variables, functions and arguments, and the
+    marks that give Python code its shape — independent of any one
+    tutorial or series, the same way load_math_basics() is. See
+    planning/curriculum/python-basics.yaml for the house rule this file
+    is written to; unlike math-basics.yaml, an entry here may carry a
+    short `example`, since Python's own syntax marks are often clearer
+    shown than said.
+    """
+    return _load_basics(PYTHON_BASICS_DATA, "python-basics")
 
 
 def render_toc(tutorial: Tutorial) -> str:
@@ -1319,19 +1706,9 @@ def render_toc(tutorial: Tutorial) -> str:
         # One section, or none. A contents list for a single heading is furniture.
         return ""
 
-    # Sub-headings that repeat cannot be told apart in a list, so they are worse
-    # than useless there: "Your turn" appears five times in some tutorials, and
-    # a contents entry a reader cannot choose between is noise. They keep their
-    # anchors — only the listing drops them.
     names = [str(s.get("name", "")) for s in at_level(tutorial.toc, 3)]
     ambiguous = {name for name in names if names.count(name) > 1}
 
-    # A recursive function: it builds one heading's own <li>...</li>, and
-    # for any sub-headings under it, calls *itself* again (`item(child,
-    # depth + 1)`) to build each of those the same way, one level deeper.
-    # `depth` is what stops it from recursing forever and what limits how
-    # many levels of nesting the contents list actually shows (`depth ==
-    # 0` below only nests one level of children, not the whole tree).
     def item(entry: dict, depth: int) -> list[str]:
         text = html.escape(str(entry.get("name", "")))
         out = [f'<li><a href="#{html.escape(str(entry["id"]), quote=True)}">{text}</a>']
@@ -1390,8 +1767,6 @@ def download_section(tutorial: Tutorial) -> str:
     )
 
 
-# ------------------------------------------------------------ the topic tree
-
 TOPIC_DATA = ROOT / "planning" / "curriculum" / "topics.yaml"
 SCOPE_DATA = ROOT / "planning" / "curriculum" / "out-of-scope.yaml"
 TOPIC_GROUPS_DATA = ROOT / "planning" / "curriculum" / "topic-groups.yaml"
@@ -1445,13 +1820,6 @@ def taught_where(tutorials: list[Tutorial]) -> dict[str, dict]:
     """
     where: dict[str, dict] = {}
     for tutorial in tutorials:
-        # An archived tutorial taught what it taught, but a student picking a
-        # topic today cannot be sent there. Counting it would make the map say
-        # an outcome is covered when nothing on the course covers it — which is
-        # exactly the lie the map exists to prevent.
-        # The current live version only. A superseded release claims the same
-        # coverage as the one that replaced it, and counting both would make
-        # one outcome look taught by four things.
         if tutorial.archived or tutorial.status != "live" or not tutorial.is_default:
             continue
         for anchor, claim in (tutorial.meta.get("covers") or {}).items():
@@ -1472,13 +1840,6 @@ def topic_tiers(topics: dict) -> dict[str, int]:
     """
     tier: dict[str, int] = {}
 
-    # Recursive, with memoization: a topic's tier is 1 + the deepest tier
-    # among the things it needs, computed by calling this same function on
-    # each prerequisite. `if code in tier: return tier[code]` is the
-    # memoization — once a topic's tier has been worked out, it's cached
-    # in `tier` so a topic needed by several others is never recomputed,
-    # which matters since the topic graph can have a lot of shared
-    # prerequisites.
     def depth(code: str) -> int:
         if code in tier:
             return tier[code]
@@ -1585,10 +1946,6 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
     topics = load_topics()
     if not topics:
         return {}
-    # One strand per topic, resolved here so the layout does not have to know
-    # where a strand comes from. A topic may name its own, which is the only
-    # way a topic that is not an outcome can have one at all; otherwise it
-    # takes the strand of the outcome it serves.
     by_outcome = load_strands()
     strands = {
         code: str(topic["strand"]) if topic.get("strand")
@@ -1603,10 +1960,6 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
     for code, topic in sorted(topics.items()):
         at = place[code]
         where = taught.get(outcome_of(topics, code))
-        # Groundwork is not an outcome, so no tutorial can claim it in `covers:`
-        # and it would otherwise sit on the map forever marked "planned". It is
-        # not planned; it is assumed, and picked up in passing wherever it is
-        # first needed.
         if code.startswith("PRE-"):
             state = "groundwork"
         elif outcome_of(topics, code) in excluded:
@@ -1627,9 +1980,6 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
             "where": where,
         })
 
-    # One stripe per tier, labelled by what it means rather than by its number:
-    # a student reading the map should not have to work out that "tier 0" is the
-    # place to start.
     bands = [
         {
             "tier": int(key[5:]),
@@ -1647,8 +1997,6 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
         "node": {"w": TOPIC_W, "h": TOPIC_H},
     }
 
-
-# ------------------------------------------------------- the knowledge map
 
 OUTCOME_DATA = ROOT / "planning" / "curriculum" / "outcomes.yaml"
 
@@ -1747,9 +2095,6 @@ def render_knowledge_map(members: list[Tutorial], strands: dict[str, str]) -> st
         '<path d="M0 0 L8 4 L0 8 z" fill="currentColor"/></marker></defs>',
     ]
 
-    # Edges first so the nodes sit on top of them. A long arrow crossing the
-    # diagram passes behind the boxes it crosses, which is what stops it
-    # reading as though it touched them.
     for tutorial in members:
         for fan, target in enumerate(back_links(tutorial, members)):
             parts.append(
@@ -1855,30 +2200,222 @@ def progress_attrs(tutorial: Tutorial) -> str:
     )
 
 
-def render_search_box(placeholder: str) -> str:
-    """The search box markup shared by the contents page and "Browse by
-    topic" — identical on both, so `assets/search.js` (loaded by
-    `shell.html` on every page, a no-op where the box isn't in the DOM)
-    only has to know one shape to wire up. `data-search-hint` matches
-    the id `aria-describedby` points at, since both are generated
-    together here rather than risking one getting out of step with the
-    other by hand on some future edit.
+def render_search_box(placeholder: str, big: bool = False, id_prefix: str = "dl-search") -> str:
+    """The search box markup shared by every page that carries one — the
+    front page, "All tutorials", "Browse by topic", and (via
+    `nav_search_html()`) the small search popover next to "All
+    tutorials" in every page's own top nav. Identical shape everywhere,
+    so `assets/search.js` (loaded on every page, a no-op wherever it
+    finds no `.dl-search` at all) only ever has to know one shape to
+    wire up — it finds every instance by class and reads each one's own
+    children by class too, not by id, so `id_prefix` only has to keep
+    two instances on the same page (a page's own body search plus the
+    nav popover, on the handful of pages that carry both) from sharing
+    one id — it plays no part in the wiring itself.
+    `big` adds a modifier class for the front page's own copy, the one
+    place this is the primary way in rather than a convenience partway
+    down a long list.
     """
+    classes = "dl-search dl-search-big" if big else "dl-search"
+    input_id = f"{id_prefix}-input"
+    hint_id = f"{id_prefix}-hint"
+    results_id = f"{id_prefix}-results"
     return (
-        '<div class="dl-search" id="dl-search">'
-        '<label for="dl-search-input" class="dl-search-label">Search tutorials</label>'
-        f'<input type="search" id="dl-search-input" class="dl-search-input" '
+        f'<div class="{classes}" id="{id_prefix}">'
+        f'<label for="{input_id}" class="dl-search-label">Search tutorials</label>'
+        f'<input type="search" id="{input_id}" class="dl-search-input" '
         f'placeholder="{html.escape(placeholder, quote=True)}" autocomplete="off" '
-        'aria-describedby="dl-search-hint">'
-        '<p class="dl-panel-note" id="dl-search-hint">Matches titles and the '
+        f'aria-describedby="{hint_id}">'
+        f'<p class="dl-panel-note" id="{hint_id}">Matches titles and the '
         "terms each tutorial actually teaches — close counts too "
         '("loop" also finds "iteration").</p>'
-        '<ul class="dl-search-results" id="dl-search-results" hidden></ul>'
+        f'<ul class="dl-search-results" id="{results_id}" hidden></ul>'
         "</div>"
     )
 
 
-def render_index(
+def nav_search_html() -> str:
+    """The small search popover beside "All tutorials" in every page's own
+    top nav (shell.html's `{{NAV_SEARCH}}`) — a native `<details>` rather
+    than a hand-wired toggle, the same disclosure the front page's own
+    "For teachers"/"For students" already use, so opening and closing it
+    needs no JavaScript of its own at all: the browser already knows how,
+    and a screen reader already knows how to announce it.
+    """
+    return (
+        '<details class="dl-nav-search">'
+        '<summary aria-label="Search">'
+        '<svg class="dl-nav-search-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">'
+        '<circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/>'
+        '<line x1="13.3" y1="13.3" x2="18" y2="18" stroke="currentColor" stroke-width="2" '
+        'stroke-linecap="round"/>'
+        "</svg>"
+        '<span class="dl-toggle-label">Search for a topic</span></summary>'
+        + render_search_box(
+            "Search for a topic, tutorial, practice, series, or module…",
+            id_prefix="dl-nav-search",
+        )
+        + "</details>"
+    )
+
+
+def render_index() -> str:
+    """The front page: the mission, "for teachers", "for students" and its
+    module buttons, and the settings/dewmini invite. Static — everything a
+    reader needs to choose where to go from here is either written here by
+    hand or, for a real module, on that module's own page
+    (`write_module_page()`), so this needs no tutorial data of its own.
+    `render_tutorials_list()` is the separate, actual list of everything,
+    on its own page a reader reaches through "All tutorials" or the search
+    box below rather than by scrolling past it here.
+    """
+    out = [
+        "<h1>dewlab</h1>",
+        '<div class="dl-hero">',
+        "<p>dewlab is a place to learn programming, mathematics, "
+        "databases, web development and more — all in your browser, with "
+        "nothing to install. Work online, or download a module once and "
+        "keep going with no internet at all after that.</p>",
+        '<p>dewlab is a project by two teachers, <strong><a href="https://'
+        'github.com/mcgarry">Sean McGarry</a></strong> and <strong>'
+        '<a href="https://github.com/deweydex">Joshua Aaron</a></strong>, '
+        "at Dublin College — Sean at the "
+        "Blackrock campus, and Joshua at Dundrum. We built it to spare "
+        "students and teachers the install, the permissions and the "
+        "early setup that usually gets in the way before a class even "
+        "begins.</p>",
+        "<p>Right now we have QQI Level 5's programming and mathematics "
+        "modules, in beta. The material should suit anyone learning to "
+        "program or wanting to brush up on their maths, done a little "
+        "differently. See below for our full list of subjects and "
+        "topics — with more on the way. Earlier versions of some of "
+        'this material already live on <a href="https://github.com/'
+        'deweydex/dewstack">dewstack</a>, our sister project, and we '
+        "are bringing the best of it here.</p>",
+        "</div>",
+
+        '<div class="dl-audience">',
+        "<h2>Find a tutorial</h2>",
+        "<p>Already know the topic you want? Search for it directly.</p>",
+        render_search_box(
+            "Search by topic — e.g. loops, probability, sorting…", big=True),
+        "</div>",
+
+        '<details class="dl-audience dl-audience-fold">',
+        "<summary><h2>For teachers</h2></summary>",
+        "<p>dewlab runs in your browser, with nothing to install and no "
+        "permissions to grant. There is no account — your work saves "
+        "itself, right there in the browser you are using. Prefer to "
+        "work offline? Download a tutorial or a series, and once you "
+        "have loaded it, it works with no internet connection after "
+        "that.</p>",
+        "<p>Every tutorial names the QQI learning outcome it teaches, so "
+        "a lesson plan maps straight onto the descriptor.</p>",
+        '<p>We recommend integrating maths and programming, taught side '
+        'by side in the <a href="mit-pdp-maths-prog-integration.html">'
+        "integrated track</a>. In our experience, students feel more "
+        "confident in both subjects — many have overcome struggles "
+        "with maths they have carried for years. Suggested assessments "
+        "and exams for any module are available on "
+        'request; see the <a href="about.html">contact and about '
+        "page</a> for how to reach us.</p>",
+        "<p>dewlab is young, and we would love your help making it "
+        "better. Spotted a mistake, or thought of something that would "
+        "make a page easier to use? Tell us — every idea is welcome, "
+        "whether it is a bug, a new feature, or a change to something "
+        'that already works. If you have a GitHub account, leave us a '
+        'note on our <a href="https://github.com/deweydex/dewlab/issues/'
+        'new">issues page</a>. If you would rather not, or do not have '
+        'one, just <a href="about.html">email us</a> instead.</p>',
+        "</details>",
+
+        '<details class="dl-audience dl-audience-fold" open>',
+        "<summary><h2>For students</h2></summary>",
+        '<p>Feel free to click around. Choose a module below to open it, '
+        'or start with the <a href="mit-pdp-maths-prog-integration.html">'
+        "integrated track</a>, which teaches maths and programming "
+        "together.</p>",
+        '<div class="dl-module-grid">',
+        '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
+        "<h3>Maths and Programming, Integrated"
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
+        "</h3>"
+        '<span class="dl-module-card-meta">5N2927 + 5N18396 · QQI Level 5</span>'
+        "<p>We recommend starting here. One course moves between the two "
+        "subjects, in the order the class needs them.</p></a>",
+        '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
+        "<h3>Programming and Design Principles"
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
+        "</h3>"
+        '<span class="dl-module-card-meta">5N2927 · QQI Level 5</span>'
+        "<p>This module is taught inside the integrated track, alongside "
+        "Mathematics for IT.</p></a>",
+        '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
+        "<h3>Mathematics for Information Technology"
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
+        "</h3>"
+        '<span class="dl-module-card-meta">5N18396 · QQI Level 5</span>'
+        "<p>This module is taught inside the integrated track, alongside "
+        "Programming and Design Principles.</p></a>",
+        '<a class="dl-module-card" href="computational-methods.html">'
+        "<h3>Computational Methods and Problem Solving"
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
+        "</h3>"
+        '<span class="dl-module-card-meta">5N0554 · QQI Level 5</span>'
+        "<p>We work through matrices, simulation, algorithms and "
+        "debugging, in Python.</p></a>",
+        '<a class="dl-module-card" href="fundamentals-of-oop.html">'
+        "<h3>Fundamentals of Object-Oriented Programming"
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
+        "</h3>"
+        '<span class="dl-module-card-meta">5N0541 · QQI Level 5</span>'
+        "<p>We build classes, objects and inheritance, from first "
+        "principles.</p></a>",
+        '<a class="dl-module-card" href="database-methods.html">'
+        "<h3>Database Methods"
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
+        "</h3>"
+        '<span class="dl-module-card-meta">5N0783 · QQI Level 5</span>'
+        "<p>We build a table, then several, with SQL running right beside "
+        "the Python that reads it.</p></a>",
+        '<a class="dl-module-card" data-status="soon" '
+        'href="https://github.com/deweydex/dewstack" target="_blank" rel="noopener">'
+        "<h3>Web Authoring"
+        '<span class="dl-module-card-badge" data-status="soon">Coming soon</span>'
+        "</h3>"
+        '<span class="dl-module-card-meta">5N1910 · QQI Level 5</span>'
+        "<p>Not written here yet — see the earlier version on "
+        "dewstack.</p></a>",
+        '<a class="dl-module-card" data-status="soon" href="about.html">'
+        "<h3>Web Development"
+        '<span class="dl-module-card-badge" data-status="soon">Coming soon</span>'
+        "</h3>"
+        "<p>Contact us if you would like to contribute.</p></a>",
+        '<a class="dl-module-card dl-module-card-wide" href="all-tutorials.html">'
+        "<h3>All tutorials</h3>"
+        "<p>Every module, every series, every practice page — the whole "
+        "course, in one list.</p></a>",
+        "</div>",
+        "</details>",
+
+        '<div class="dl-audience">',
+        "<h2>Make it yours</h2>",
+        "<p>Open <strong>Settings</strong>, in the corner of any page, to "
+        "change how dewlab looks. Switch to dark mode, choose a different "
+        "font, turn on high contrast, or pick your own colour for "
+        "links.</p>",
+        '<p>Want to try Python with no tutorial attached? Open '
+        '<a href="compose/dewmini.html">dewmini</a>, a small workspace '
+        "built for exactly that.</p>",
+        '<p>Want to try HTML, CSS and JavaScript instead? Open '
+        '<a href="compose/dewminiweb.html">dewmini web</a>, a workspace '
+        "for building a small web page.</p>",
+        "</div>",
+    ]
+    return "\n".join(out)
+
+
+def render_tutorials_list(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
     retired: dict[str, list[Tutorial]] | None = None,
@@ -1886,7 +2423,12 @@ def render_index(
     mixed: dict[str, list[Tutorial]] | None = None,
     module_archives: dict[str, Path] | None = None,
 ) -> str:
-    """The contents page: every module, every series, in order.
+    """"All tutorials": every module, every series, in order — the whole
+    course on one page, for a reader who wants to browse rather than
+    search. Its own page (`write_all_tutorials_page()`) rather than part
+    of the front page, so a first-time visitor meets the front page's own
+    pitch first and this only when they choose "All tutorials" or come
+    looking for something the search box on the front page didn't find.
 
     `archives` maps a series to its zip of downloadable copies, when the build
     wrote them. Without it the page simply carries no whole-series link, which
@@ -1907,21 +2449,12 @@ def render_index(
             if member.meta.get("module_title"):
                 names.setdefault(member.module, member.module_title)
 
-    # An introduction rather than a diagram. The map moved to its own page,
-    # where it can have the whole window; this page's job is to say what dewlab
-    # is to somebody who has just arrived, in as few lines as that takes, and
-    # then leave them to the list they came for. One paragraph and six points,
-    # deliberately: PEDAGOGICAL_STYLE_GUIDE.md section 4 asks for prose over
-    # bullets in an *explanation*, and this is not one — it is the separate
-    # things a reader wants answered before they choose a tutorial (what a cell
-    # is, whether they can break it, where their work goes, how the list below
-    # is organised, where to start), and no answer follows from another. Prose
-    # made the reader hunt for their own question.
     out = [
-        "<h1>Tutorials</h1>",
+        "<h1>All tutorials</h1>",
+        '<div class="dl-search-sticky">' + render_search_box(
+            "Search by topic — e.g. loops, probability, sorting…") + "</div>",
         '<div class="dl-intro">',
-        "<p>dewlab is a set of tutorials where we learn maths and programming "
-        "together. Everything runs in your browser, so there is nothing to "
+        "<p>Everything runs in your browser, so there is nothing to "
         "install and no account to make. Open any tutorial and start.</p>",
         '<ul class="dl-intro-points">',
         "<li><strong>Tutorials are made of cells.</strong> A cell is a small "
@@ -1932,17 +2465,18 @@ def render_index(
         "look at the general idea behind it. Then we learn the name "
         "people give it, so that we can talk to other people about the same "
         "idea.</li>",
-        "<li><strong>Practice problems appear throughout.</strong> Most "
-        "tutorials have a page of them as well, linked as <em>practice</em> "
-        "beside the title. The answer usually sits right below each problem. "
-        "We are not trying to hide the right answer. What we are learning is "
-        "the steps that get us there. The first problems are small. Later ones "
-        "take several steps. Later ones again are more open-ended.</li>",
+        "<li><strong>We are not trying to hide the right answer.</strong> Most "
+        "tutorials have a practice page beside them. The answer usually sits "
+        "right below each problem. What we are learning is the steps that get "
+        "us there. If you get stuck, you can open a hint, try a different "
+        "approach, or read the answer and try the problem again.</li>",
         "<li><strong>Getting something wrong costs nothing.</strong> An error "
         "message is usually telling us something useful. Nothing here is "
-        "scored. Nothing you write leaves your browser.</li>",
-        "<li><strong>Your work is saved on this device as you go.</strong> You "
-        "can also download any tutorial as a single file and keep it.</li>",
+        "scored. A wrong answer is information about a method, not a mark "
+        "against you.</li>",
+        "<li><strong>Your work is saved in this browser as you go.</strong> "
+        "It stays on this device. You can also download any tutorial as a "
+        "single file and keep it.</li>",
         "<li><strong>The list below is grouped into modules, and each module "
         "into series.</strong> A series is meant to be read in order, from the "
         'top. If you are not sure where to start, the <a href="tree.html">topic '
@@ -1954,27 +2488,6 @@ def render_index(
         '<a href="about.html">About this project</a> explains how to suggest a '
         "change or report a mistake.</p>",
         "</div>",
-        # A section of its own, not one more paragraph among the intro's —
-        # this is not a tutorial and doesn't belong on the numbered list
-        # below, but it's common enough a reason to visit ("I just want
-        # to try something") that a line buried in prose undersold it.
-        '<div class="dl-workspaces">',
-        # h2, because it is a top-level section of this page like the
-        # modules are. It used to be h3 to keep "every <h2> is a module"
-        # true for readers of this markup, at the cost of an h1 -> h3 jump
-        # that a screen reader navigating by heading level reads as a
-        # missing section (planning/EDGES_AUDIT.md). Module headings carry
-        # .dl-module-heading now, so telling them apart no longer depends
-        # on the level.
-        "<h2>Want to experiment on your own, outside a tutorial?</h2>",
-        '<a class="dl-workspace-card" href="compose/dewmini.html" target="_blank">',
-        "<h3>dewmini</h3>",
-        "<p>An open Python workspace with no tutorial attached. The same "
-        "cells and the same Python, plus files, SQLite and a Stop button. "
-        "Useful when we just want to try something out.</p>",
-        "</a>",
-        "</div>",
-        render_search_box("Search by topic — e.g. loops, probability, sorting…"),
     ]
 
     titles = series_titles()
@@ -1984,106 +2497,120 @@ def render_index(
     # adding a module lands it at the end rather than breaking the page.
     ordered = [m for m in listed if m in everywhere] + sorted(everywhere - set(listed))
     for module in ordered:
-        out.append(
-            f'<h2 class="dl-module-heading">{html.escape(names.get(module, module))}</h2>')
-        module_archive = module_archives.get(module)
-        if module_archive is not None:
-            # Same tally write_module_zip() built the archive from, worked out
-            # again here rather than threaded through — groups, practice and
-            # mixed are already everything it takes.
-            total = sum(
-                len(zip_sequence(members, practice))
-                for (owner, series), members in groups.items() if owner == module
-            ) + len(mixed.get(module, []))
-            out.append(
-                '<p class="dl-series">' + download_link_html(
-                    f"download/{module_archive.name}",
-                    f"Download every tutorial and practice page in this module "
-                    f"({total} files, {readable_size(module_archive)})",
-                ) + "</p>"
-            )
-        for (owner, series), members in sorted(groups.items()):
-            if owner != module:
-                continue
-            if len({s for m, s in groups if m == module}) > 1:
-                name = titles.get((owner, series), series)
-                out.append(f'<h3>{html.escape(name)}</h3>')
-            archive = archives.get((owner, series))
-            if archive is not None:
-                # Right under the series' own title rather than after its
-                # list, matching where the module's own download offer sits
-                # under its heading — a reader deciding "give me the whole
-                # thing" should not have to scroll past every title first.
-                sequence = zip_sequence(members, practice)
-                count = len(sequence)
-                # A series of one real file is a real case now that
-                # reflections live in their own section, and "Download all 1
-                # as single files" is not a sentence anybody wrote on
-                # purpose.
-                what = ("this one as a single file" if count == 1
-                        else f"all {count} as single files")
-                out.append(
-                    '<p class="dl-series">' + download_link_html(
-                        f"download/{archive.name}",
-                        f"Download {what} ({readable_size(archive)})",
-                    ) + "</p>"
-                )
-            out.append('<ol class="dl-contents">')
-            for member in members:
-                href = member.out_path.relative_to(OUT).as_posix()
-                # Beside the tutorial rather than under it as a second numbered
-                # item: a practice page is not the next thing to read, it is the
-                # other half of this one.
-                also = practice.get((member.module, member.slug))
-                extra = ""
-                if also is not None:
-                    where = also.out_path.relative_to(OUT).as_posix()
-                    extra = (f' <a class="dl-contents-practice" href="{where}">'
-                             "practice</a>")
-                out.append(
-                    f'<li><a href="{href}"{progress_attrs(member)}>'
-                    f"{html.escape(member.title)}</a>{extra}</li>"
-                )
-            out.append("</ol>")
-        # After the series and before the archive. A mixed set is part of the
-        # course and belongs to no series in it, so there is nowhere else it
-        # could go — and it is the only kind of page nothing else links to.
-        for member in mixed.get(module, []):
-            if member is mixed[module][0]:
-                out.append('<h3 class="dl-mixed-head">Mixed problems</h3>')
-                out.append(
-                    '<p class="dl-mixed-note">Problems that draw on several '
-                    "tutorials at once. Try them once you have finished the "
-                    "tutorials they name.</p>"
-                )
-                out.append('<ul class="dl-contents dl-mixed">')
-            href = member.out_path.relative_to(OUT).as_posix()
-            out.append(
-                f'<li><a href="{href}"{progress_attrs(member)}>'
-                f"{html.escape(member.title)}</a></li>"
-            )
-            if member is mixed[module][-1]:
-                out.append("</ul>")
-
-        # Last, and marked, because it is not part of the course any more — but
-        # present, because a student who worked in one has to be able to find it.
-        for member in retired.get(module, []):
-            if member is retired[module][0]:
-                out.append('<h3 class="dl-archive-head">Archive</h3>')
-                out.append(
-                    '<p class="dl-archive-note">No longer part of the course. '
-                    "Kept here so that saved work can still be found and old "
-                    "links still work.</p>"
-                )
-                out.append('<ul class="dl-contents dl-archive">')
-            href = member.out_path.relative_to(OUT).as_posix()
-            out.append(f'<li><a href="{href}">{html.escape(member.title)}</a></li>')
-            if member is retired[module][-1]:
-                out.append("</ul>")
+        out.extend(render_module_body(
+            module, names, groups, archives, retired, practice, mixed,
+            module_archives, titles,
+        ))
     return "\n".join(out)
 
 
-# ------------------------------------------------------------------- checks
+def render_module_body(
+    module: str,
+    names: dict[str, str],
+    groups: dict[tuple[str, str], list[Tutorial]],
+    archives: dict[tuple[str, str], Path],
+    retired: dict[str, list[Tutorial]],
+    practice: dict[tuple[str, str], Tutorial],
+    mixed: dict[str, list[Tutorial]],
+    module_archives: dict[str, Path],
+    titles: dict[tuple[str, str], str],
+    heading: bool = True,
+) -> list[str]:
+    """One module's own content: its heading, its whole-module download
+    offer, every series in it (each with its own download offer and its
+    tutorial/practice list), its mixed problems and its archive.
+
+    Shared by `render_index()`, where every module appears one after another
+    on the contents page, and `write_module_page()`, where a module gets a
+    page of its own — `heading=False` there, since the page's own `<h1>`
+    already names it and repeating it as an `<h2>` right underneath would
+    say the same thing twice.
+    """
+    out: list[str] = []
+    if heading:
+        out.append(
+            f'<h2 class="dl-module-heading">{html.escape(names.get(module, module))}</h2>')
+    module_archive = module_archives.get(module)
+    if module_archive is not None:
+        total = sum(
+            len(zip_sequence(members, practice))
+            for (owner, series), members in groups.items() if owner == module
+        ) + len(mixed.get(module, []))
+        out.append(
+            '<p class="dl-series">' + download_link_html(
+                f"download/{module_archive.name}",
+                f"Download every tutorial and practice page in this module "
+                f"({total} files, {readable_size(module_archive)})",
+            ) + "</p>"
+        )
+    present = {series for owner, series in groups if owner == module}
+    fixed = [s for s in module_series_order(module) if s in present]
+    series_order = fixed + sorted(present - set(fixed))
+    for series in series_order:
+        members = groups[(module, series)]
+        if len({s for m, s in groups if m == module}) > 1:
+            name = titles.get((module, series), series)
+            out.append(f'<h3>{html.escape(name)}</h3>')
+        archive = archives.get((module, series))
+        if archive is not None:
+            sequence = zip_sequence(members, practice)
+            count = len(sequence)
+            what = ("this one as a single file" if count == 1
+                    else f"all {count} as single files")
+            out.append(
+                '<p class="dl-series">' + download_link_html(
+                    f"download/{archive.name}",
+                    f"Download {what} ({readable_size(archive)})",
+                ) + "</p>"
+            )
+        out.append('<ol class="dl-contents">')
+        for member in members:
+            href = member.out_path.relative_to(OUT).as_posix()
+            also = practice.get((member.module, member.slug))
+            extra = ""
+            if also is not None:
+                where = also.out_path.relative_to(OUT).as_posix()
+                extra = (f' <a class="dl-contents-practice" href="{where}">'
+                         "Practice</a>")
+            out.append(
+                f'<li><a class="dl-contents-btn" href="{href}"{progress_attrs(member)}>'
+                f'<span class="dl-contents-kicker">Explore</span>'
+                f"{html.escape(member.title)}</a>{extra}</li>"
+            )
+        out.append("</ol>")
+    for member in mixed.get(module, []):
+        if member is mixed[module][0]:
+            out.append('<h3 class="dl-mixed-head">Mixed problems</h3>')
+            out.append(
+                '<p class="dl-mixed-note">Problems that draw on several '
+                "tutorials at once. Try them once you have finished the "
+                "tutorials they name.</p>"
+            )
+            out.append('<ul class="dl-contents dl-mixed">')
+        href = member.out_path.relative_to(OUT).as_posix()
+        out.append(
+            f'<li><a href="{href}"{progress_attrs(member)}>'
+            f"{html.escape(member.title)}</a></li>"
+        )
+        if member is mixed[module][-1]:
+            out.append("</ul>")
+
+    # Last, and marked, because it is not part of the course any more — but
+    # present, because a student who worked in one has to be able to find it.
+    for member in retired.get(module, []):
+        if member is retired[module][0]:
+            out.append('<h3 class="dl-archive-head">Archive</h3>')
+            out.append(
+                '<p class="dl-archive-note">No longer part of the course. '
+                "Kept here so that saved work can still be found and old "
+                "links still work.</p>"
+            )
+            out.append('<ul class="dl-contents dl-archive">')
+        href = member.out_path.relative_to(OUT).as_posix()
+        out.append(f'<li><a href="{href}">{html.escape(member.title)}</a></li>')
+        if member is retired[module][-1]:
+            out.append("</ul>")
+    return out
 
 
 def check_alt_text(tutorial: Tutorial) -> None:
@@ -2164,9 +2691,6 @@ def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial])
     ambiguous and stops the build rather than guessing.
     """
 
-    # Same re.sub-callback pattern as extract_blocks()'s own `one` — each
-    # match is one `tutorial:slug#anchor` reference, and this resolves it
-    # to a real relative link before returning it as the replacement text.
     def one(match: re.Match) -> str:
         slug, anchor = match.group("slug"), match.group("anchor")
         target = registry.get((tutorial.module, slug))
@@ -2195,30 +2719,6 @@ def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial])
     return TUTORIAL_HREF_RE.sub(one, tutorial.body_html)
 
 
-# --------------------------------------------------------- where a term came from
-#
-# A reader meets *stationary distribution* in one tutorial and again, three
-# tutorials later, as though they were expected to remember. The reference
-# panel answers "what does this mean"; this answers the other question a
-# returning learner actually asks — "where did I meet this?" — by giving each
-# borrowed entry a link back to the tutorial that introduced it.
-#
-# planning/ROADMAP.md Phase 5 originally proposed linking every later
-# *occurrence in the prose* instead. That was built, measured and withdrawn:
-# see DECISIONS_LOG.md 7.92. Ordinary English words are also glossary terms —
-# set, shape, limit, function — and matching them in prose linked "set a
-# seed" to set theory and "the shape of that improvement" to a matrix's
-# shape. A majority of the matches for some terms were the wrong sense, and a
-# confidently wrong link is worse for a reader than no link at all. Putting
-# the origin in the panel instead answers the same question with no way to be
-# wrong about it.
-
-
-# The heading every tutorial closes with. A term's name very often appears
-# in a citation title there — "The Monte Carlo Method" is a paper as well as
-# a concept — and a reader sent to the bibliography to find out where
-# something was taught has been sent to the one section that does not teach
-# it.
 BIBLIOGRAPHY_RE = re.compile(r"read more", re.I)
 
 TAG_RE = re.compile(r"<[^>]+>")
@@ -2265,18 +2765,6 @@ def origin_anchor(tutorial: Tutorial, term: str) -> str:
     return ""
 
 
-# ---------------------------------------------------------- tutorial assets
-#
-# A tutorial is a folder, not a lone markdown file: its practice page, its
-# glossary and any pictures or recordings it needs all sit together in it.
-# planning/ROADMAP.md Phase 1 has the reasoning; the short version is that a
-# tutorial's own material should move, freeze and be found as one thing.
-#
-# Everything in that folder which is not itself a page or a data file the
-# build already understands is an *asset* — an image, a recording, a small
-# file a reader downloads — copied to the site beside the tutorial and
-# referred to by its plain name in the markdown.
-
 # The files a tutorial's folder holds that are the build's own business, not
 # assets: the pages themselves and the glossary that describes them.
 NON_ASSET_SUFFIXES = {".md", ".yaml", ".yml"}
@@ -2285,9 +2773,28 @@ NON_ASSET_SUFFIXES = {".md", ".yaml", ".yml"}
 # the same way whatever the medium, so one pattern covers all of them.
 SRC_RE = re.compile(r'src="(?P<url>[^"]*)"')
 
+# href="..." pointing at a downloadable sibling file — a small standalone
+# .html a reader can open or take as a starting point, not a picture and not
+# a link to another page. Deliberately permissive where SRC_RE is strict: by
+# the time this runs, resolve_links() has already turned every authored
+# `tutorial:slug` reference into a real relative href, and some of those
+# come out as a bare filename with no slash too (two tutorials in the same
+# module, `os.path.relpath()` finding no directories between them) — this
+# has to leave those alone rather than mistake them for a local asset.
+HREF_ASSET_RE = re.compile(r'href="(?P<url>[^"]*)"')
+
 # A reference that points somewhere other than this tutorial's own folder:
 # an absolute URL, a root-relative path, a data: URI, or a page anchor.
 EXTERNAL_URL_RE = re.compile(r"^(?:[a-z][a-z0-9+.-]*:|//|/|#)", re.I)
+
+# A tutorial teaching HTML shows `<img src="...">` and `<a href="...">` as
+# text to read, not markup to run — markdown's own code-span handling
+# escapes `<`/`>` there but leaves a literal quote alone, so
+# `src="picture.png"` inside a `<code>` (inline, or a fenced block's
+# `<pre><code>`) still reads, to SRC_RE/HREF_ASSET_RE, exactly like a real
+# attribute. Masking a `<code>`'s contents before those run, then putting
+# them back unchanged, is what keeps a quick-reference table honest.
+CODE_SPAN_RE = re.compile(r"<code[^>]*>.*?</code>", re.S)
 
 
 def tutorial_assets(tutorial: Tutorial) -> list[Path]:
@@ -2306,7 +2813,13 @@ def tutorial_assets(tutorial: Tutorial) -> list[Path]:
 
 def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
     """Point every `src="picture.png"` at the copy this build will write, and
-    fail on one naming a file the tutorial's folder does not hold.
+    fail on one naming a file the tutorial's folder does not hold. Do the
+    same for `href="worksheet.html"` — a downloadable sibling file linked
+    rather than shown — except a name that matches nothing is left exactly
+    as it is rather than failing the build: unlike an image, a page can link
+    to plenty of things that are not a local asset at all, and by this point
+    `resolve_links()` has already turned every `tutorial:slug` reference
+    into a real relative href, some of them a bare filename too.
 
     An author writes the plain file name, the same one they see beside the
     markdown, and it resolves from whichever URL the page ends up at. That
@@ -2326,7 +2839,7 @@ def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
     # into — the same relpath calculation resolve_links() uses for pages.
     prefix = "" if not tutorial.is_default else f"{tutorial.slug}/"
 
-    def one(match: re.Match) -> str:
+    def src(match: re.Match) -> str:
         url = match.group("url")
         if not url or EXTERNAL_URL_RE.match(url):
             return match.group(0)
@@ -2338,7 +2851,23 @@ def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
             )
         return f'src="{prefix}{url}"'
 
-    return SRC_RE.sub(one, body_html)
+    def href(match: re.Match) -> str:
+        url = match.group("url")
+        if not url or EXTERNAL_URL_RE.match(url) or "/" in url or not (folder / url).is_file():
+            return match.group(0)
+        return f'href="{prefix}{url}"'
+
+    # Code spans are masked out before either substitution runs, and put
+    # back untouched afterward — see CODE_SPAN_RE's own comment.
+    code_spans: list[str] = []
+
+    def stash(match: re.Match) -> str:
+        code_spans.append(match.group(0))
+        return f"\x00{len(code_spans) - 1}\x00"
+
+    masked = CODE_SPAN_RE.sub(stash, body_html)
+    resolved = HREF_ASSET_RE.sub(href, SRC_RE.sub(src, masked))
+    return re.sub(r"\x00(\d+)\x00", lambda m: code_spans[int(m.group(1))], resolved)
 
 
 def copy_tutorial_assets(tutorial: Tutorial) -> None:
@@ -2359,9 +2888,6 @@ def copy_tutorial_assets(tutorial: Tutorial) -> None:
         shutil.copy2(asset, target / asset.name)
 
 
-# -------------------------------------------------------------------- build
-
-
 def load(path: Path) -> Tutorial:
     """Turns one tutorial's source file into a fully-parsed `Tutorial`
     object — this is the one function that runs the whole parsing
@@ -2372,27 +2898,34 @@ def load(path: Path) -> Tutorial:
     build.py builds starts here.
     """
     meta, body = split_frontmatter(path.read_text(), path)
-    stripped, cells, blocks = extract_blocks(body, path)
+    stripped, cells, blocks, hints, site_editors = extract_blocks(body, path)
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
+    converted = convert_fold_bodies(converted)
+    converted = place_hints(converted, hints, maths)
     page = f"{meta.get('module', '')}/{meta.get('slug', '')}"
-    body_html = place_blocks(converted, cells, blocks, maths, page, str(meta.get("version", "")))
+    body_html = place_blocks(converted, cells, blocks, maths, site_editors,
+                              page, str(meta.get("version", "")))
     body_html, notes = extract_notes(body_html, path)
-    anchors = set(ID_RE.findall(body_html)) | {c.id for c in cells}
+    anchors = (
+        set(ID_RE.findall(body_html))
+        | {c.id for c in cells}
+        | {pane.id for editor in site_editors for pane in editor.panes.values()}
+    )
     return Tutorial(
         path=path,
         meta=meta,
         cells=cells,
         body_html=body_html,
         has_math=bool(maths),
+        has_sql=any(c.type == "sql" for c in cells),
+        site_editors=site_editors,
         anchors=anchors,
         toc=toc,
         notes=notes,
     )
 
-
-# ------------------------------------------------------------ asset versions
 
 _ASSET_VERSIONS: dict[str, str] = {}
 
@@ -2409,9 +2942,6 @@ def asset_version(name: str) -> str:
     Hashed per file rather than one version for everything, so editing the
     stylesheet does not also force a fresh download of the 266 KB maths bundle.
     """
-    # Keyed by the full path, not the name: the tests build several repositories
-    # in one process, and a cache keyed by "tutorial-style.css" alone would hand
-    # the second one the first one's hash.
     path = ASSETS / name
     key = str(path)
     if key not in _ASSET_VERSIONS:
@@ -2487,10 +3017,6 @@ def version_manifest(tutorial: Tutorial, family: list[Tutorial]) -> list[dict]:
     """
     if len(family) < 2:
         return []
-    # Two releases on one day read as the same option in the picker, because a
-    # reader sees the date and not the sequence number. Found the first time a
-    # tutorial was released twice in an afternoon. The number is added only
-    # where it is needed, so the ordinary case stays a plain date.
     same_day = {
         version.date for version in family
         if sum(1 for other in family if other.date == version.date) > 1
@@ -2610,7 +3136,7 @@ def feedback_enabled() -> bool:
     Missing the file, or the file missing `enabled:`, both mean on. The
     switch exists to turn the link off in a hurry — one line, editable from
     GitHub's own web editor, no code to find — not to make on the fussy
-    path. See DECISIONS_LOG.md, Phase 8.
+    path.
     """
     path = ROOT / "planning" / FEEDBACK_CONFIG_FILE
     if not path.is_file():
@@ -2650,8 +3176,7 @@ def report_doors_links(page: str, version: str, cell: str = "") -> str:
     container for it and for whoever answers it later; the other two open
     the issue form with `kind` already picked. Shared by the footer
     (`report_doors_html()`, no `cell`) and a cell's own report panel
-    (`render_cell()`, `cell` set to that cell's id) — see DECISIONS_LOG.md,
-    Phase 8.
+    (`render_cell()`, `cell` set to that cell's id).
 
     Three links joined by " · " rather than a `<ul>`/`<li>` list — a
     bulleted list is the wrong shape for three short links, and it also
@@ -2718,10 +3243,6 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
         "slug": tutorial.slug,
-        # The module, because a slug is only unique within one. Saved work is
-        # keyed on this pair — without the module, both modules' `first-steps`
-        # would share one key and a student's answers would appear in the wrong
-        # tutorial.
         "module": tutorial.module,
         "version": tutorial.meta["version"],
         "assetBase": f"{up}assets/",
@@ -2729,7 +3250,13 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         # a page can only cache-bust what its own markup names.
         "assetVersions": {"tutorial_tools.py": asset_version("tutorial_tools.py")},
         "dataBase": f"{up}data/",
-        "cells": [{"id": c.id, "hint": c.hint, "code": c.code} for c in tutorial.cells],
+        "cells": [
+            {"id": c.id, "hint": c.hint, "code": c.code}
+            | ({"expect": c.expect} if c.expect else {})
+            | ({"name": c.name} if c.name else {})
+            | ({"type": c.type} if c.type != "python" else {})
+            for c in tutorial.cells
+        ],
     }
     versions = version_manifest(tutorial, family or [tutorial])
     if versions:
@@ -2738,21 +3265,37 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         # The runtime fetches the 266 KB KaTeX bundle only when this is set, so
         # a tutorial with no maths never pays for it.
         manifest["math"] = True
+    if tutorial.has_sql:
+        manifest["needsSqlite"] = True
+    if tutorial.site_editors:
+        manifest["siteEditors"] = [
+            {
+                "name": editor.name,
+                "panes": {
+                    lang: {"id": pane.id, "code": pane.code}
+                    for lang, pane in editor.panes.items()
+                },
+            }
+            for editor in tutorial.site_editors
+        ]
     packages = tutorial.meta.get("packages")
     if packages:
         manifest["packages"] = list(packages)
-    # Absent rather than an empty list when there is nothing accumulated yet —
-    # the runtime hides the reference toggle entirely on that signal, same
-    # as an empty dl-settings-section elsewhere on this page.
     if glossary:
         manifest["glossary"] = glossary
-    # Same "absent, not empty" signal as glossary — neither is cumulative
-    # (planning/SIDEBAR_CONTENT.md §4): a note or a dataset belongs to this
-    # specific tutorial, not to every one after it in the series.
     if notes:
         manifest["notes"] = notes
     if datasets:
         manifest["datasets"] = datasets
+    # Same site-wide content on every page, so write() reads it directly
+    # rather than every one of write()'s many call sites threading it
+    # through as its own parameter.
+    math_basics = load_math_basics()
+    if math_basics:
+        manifest["mathBasics"] = math_basics
+    python_basics = load_python_basics()
+    if python_basics:
+        manifest["pythonBasics"] = python_basics
 
     tokens = {
         "{{TITLE}}": html.escape(str(tutorial.meta["title"])),
@@ -2764,6 +3307,9 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{SERIES}}": html.escape(str(tutorial.meta["series"]), quote=True),
         "{{ASSET_BASE}}": f"{up}assets/",
         "{{STYLE_URL}}": versioned(f"{up}assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned(f"{up}assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned(f"{up}assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned(f"{up}assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned(f"{up}assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned(f"{up}assets/", "tutorial-runtime.js"),
@@ -2798,11 +3344,6 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     return tutorial.out_path
 
 
-# --------------------------------------------------------------- standalone
-
-# A page opened from a file cannot load an ES module, fetch a neighbouring
-# file, or resolve a relative link to a page that is not there. A standalone
-# export therefore carries everything inside it and drops what it cannot honour.
 PYODIDE_CLASSIC = (
     '<script src="https://cdn.jsdelivr.net/pyodide/v0.28.3/full/pyodide.js"></script>'
 )
@@ -2817,10 +3358,6 @@ def inline_katex_css() -> str:
     """
     css = (ASSETS / "vendor" / "katex.min.css").read_text()
 
-    # Same re.sub-callback pattern as extract_blocks()'s own `one` — each
-    # match is one `url(fonts/....woff2)` reference in the stylesheet,
-    # replaced with a base64 data: URL so the standalone export needs no
-    # separate font files alongside it.
     def one(match: re.Match) -> str:
         font = ASSETS / "vendor" / "fonts" / match.group("name")
         if not font.is_file():
@@ -2876,9 +3413,6 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     bundle = (ASSETS / "vendor" / "standalone.bundle.js").read_text()
     tools = (ASSETS / "tutorial_tools.py").read_text()
 
-    # The stylesheets, inlined. KaTeX's only travels with a page that has maths.
-    # Matched on the versioned URLs the page actually carries: a file inlined
-    # into the page has no URL to cache, so the version simply goes with it.
     page = replace_once(
         page,
         f'<link rel="stylesheet" href="{versioned(up, "vendor/katex.min.css")}">',
@@ -2906,12 +3440,13 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
         "the runtime",
     )
 
-    # coi-serviceworker exists to let a Worker's SharedArrayBuffer through
-    # (DECISIONS_LOG.md 7.77) — this export runs Pyodide on the main thread
-    # instead, on purpose, so there is no Worker here for it to serve. Left
-    # in, it would just be a request a file:// page can never satisfy.
     page = replace_once(
         page, f'<script src="{root}coi-serviceworker.js"></script>\n', "", "the isolation shim"
+    )
+
+    page = replace_once(
+        page, f'<script type="module" src="{versioned(up, "search.js")}"></script>\n',
+        "", "the search script",
     )
 
     # The Python tools, which cannot be fetched from a file.
@@ -2921,16 +3456,9 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     manifest = json.loads(page[start:end])
     manifest["toolsSource"] = tools
     manifest["standalone"] = True
-    # Only the default version gets a downloadable copy, and the other releases
-    # are not beside it on disk. A picker offering to move to files that are not
-    # there is worse than no picker, so the whole list goes and the runtime
-    # removes the section that would have shown it.
     manifest.pop("versions", None)
     page = page[:start] + json.dumps(manifest).replace("<", "\\u003c") + page[end:]
 
-    # Navigation points at pages that are not beside this file, and the offer to
-    # download it is already taken — this is the download. Both go rather than
-    # break: the runtime hides the emptied section.
     page = re.sub(r"<nav class=\"dl-nav[^\"]*\">.*?</nav>", "", page, flags=re.DOTALL)
     page = re.sub(
         r'(<section class="dl-settings-section" id="dl-settings-download">).*?(</section>)',
@@ -2938,12 +3466,6 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
         page,
         flags=re.DOTALL,
     )
-    # The series navigation panel is the same case: every link in it points
-    # at a sibling file that is not beside this one, so both the toggle and
-    # the panel go rather than open onto a page of broken links. Matched
-    # through to the end of the panel's own <nav>, not to the first </div>
-    # — the panel has a nested <div> (its head) that would otherwise end
-    # the match early.
     page = re.sub(
         r'<button type="button" class="dl-seriesnav-toggle".*?</button>\n?',
         "", page, flags=re.DOTALL,
@@ -2965,9 +3487,6 @@ def write_standalone(tutorial: Tutorial, page: str) -> Path:
     build-time sanity checks (like the load_csv warning right below) that
     only make sense for this particular kind of output.
     """
-    # A standalone file carries the page but not the /data/ folder beside it, so
-    # a tutorial that loads a dataset at runtime will read fine and fail at that
-    # cell. Better said at build time than discovered by a student.
     if any("load_csv" in cell.code for cell in tutorial.cells):
         print(
             f"note: {tutorial.path.relative_to(ROOT)} loads a dataset, which its "
@@ -2976,10 +3495,6 @@ def write_standalone(tutorial: Tutorial, page: str) -> Path:
             file=sys.stderr,
         )
 
-    # Under the module, like the page it came from. Slugs are unique within a
-    # module and not across the site, so a flat download folder would let two
-    # modules' "first-steps" overwrite each other — silently, since the loser
-    # simply never appears.
     target = OUT / "download" / tutorial.module / f"{tutorial.slug}.html"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(standalone_html(tutorial, page))
@@ -3038,9 +3553,6 @@ def start_here_html(title: str, sections: list[tuple[str | None, list[tuple[str,
     for heading, entries in sections:
         if heading:
             body.append(f"<h2>{html.escape(heading)}</h2>")
-        # start=, not a fresh <ol> per section: the number shown beside a link
-        # is what that file is actually numbered, and a list that restarted at
-        # 1 for every series would say otherwise.
         body.append(f'<ol start="{next_number}">')
         for name, member in entries:
             tag = ' <span class="practice">practice</span>' if member.is_practice else ""
@@ -3157,9 +3669,6 @@ def write_module_zip(
     target.parent.mkdir(parents=True, exist_ok=True)
     show_headings = len(series_in_order) > 1
 
-    # Every section's sequence, worked out before anything is written, so the
-    # whole archive's total (not just whichever section happens to be first)
-    # decides the zero-padding width every section then shares.
     series_sequences = [
         (series_title, zip_sequence(members, practice))
         for _, series_title, members in series_in_order
@@ -3195,22 +3704,6 @@ def zip_directory(source_dir: Path, target_zip: Path) -> Path:
     return target_zip
 
 
-# A downloaded bundle's own JavaScript is split across files that import
-# each other with real `import`/`export` statements, the same way any
-# modern web app is built — and a browser only honours that kind of
-# cross-file import over http:// or https://, never from a file opened
-# directly by double-clicking (a `file://` page has no origin a CORS
-# check can approve, so the browser blocks the import outright, silently
-# leaving the page's own JavaScript never having run at all). The
-# offline bundle needs a real, if tiny and local, server to actually
-# work — this is that server: nothing beyond what Python itself already
-# ships, run with the same command README.md's own "Running it on your
-# own machine" section already asks a contributor to run for the site
-# itself, just aimed at one already-unzipped folder instead. Found by
-# testing an actual downloaded bundle's own file:// experience while
-# building write_dewmini_bundle() below, not assumed from reading the
-# code (an earlier bundle had carried the identical, untested "reopen
-# it — no server needed" claim in its own docstring).
 SERVE_SCRIPT = '''#!/usr/bin/env python3
 """Run this — `python3 serve.py` — to actually open this folder.
 
@@ -3248,24 +3741,6 @@ if __name__ == "__main__":
 '''
 
 
-# The subset of assets/ (plus data/) dewmini's own compose/dewmini.html
-# actually loads, on its own, outside the hosted site — tutorial-runtime.js,
-# every tutorial-only vendor bundle, and the rest of assets/ dewmini never
-# touches would just be dead weight in a download meant to be as small as
-# it can be. Plus assets/examples/*.ipynb: the four worked-example
-# notebooks Settings' "Keep a copy" section offers.
-#
-# vendor/katex.min.css and vendor/katex.bundle.js are here even though
-# dewmini only loads the second of the two lazily, on first sight of maths
-# in a text cell (DECISIONS_LOG.md 7.107): this bundle is exactly the
-# no-connection case that lazy loading cannot help — a classroom with no
-# network at all cannot fetch what it does not already have on disk, so
-# "loads it lazily" and "carries it in the offline copy" are answers to two
-# different questions. The ~590 KB this adds to every offline copy, whether
-# or not that classroom ever does maths, is the trade recorded there; the
-# font files themselves are copied separately below, as a whole directory
-# rather than named one by one, since KaTeX's own stylesheet decides which
-# of them a given formula actually needs.
 DEWMINI_ASSET_FILES = (
     "pyodide-engine.js",
     "pyodide-worker.js",
@@ -3284,17 +3759,13 @@ DEWMINI_ASSET_FILES = (
     "examples/word-frequency.ipynb",
 )
 
-# compose/ files a hosted copy needs anyway (dewmini.html's own <script>/
-# <link> tags), so DEWMINI_ASSET_FILES above only needs to name what compose/
-# does *not* already carry — see write_dewmini_bundle()'s own copytree.
-
 
 def write_dewmini_bundle() -> Path | None:
     """The downloadable dewmini: a folder a student (or a teacher setting a
     classroom up for a day with no reliable connection) can save locally
     and open on the same machine even with no internet — Pyodide
     included, so the first run doesn't need a live connection either,
-    once assets/vendor/pyodide/ exists (DECISIONS_LOG.md 7.92).
+    once assets/vendor/pyodide/ exists.
 
     Needs a local server to actually open, though: dewmini.js imports
     dewmini-fs.js and pyodide-engine.js with real `import` statements,
@@ -3341,16 +3812,9 @@ def write_dewmini_bundle() -> Path | None:
 
     pyodide_vendored = (ASSETS / "vendor" / "pyodide").is_dir()
 
-    # compose/ wholesale first — dewmini.html, dewmini.js, dewmini-fs.js,
-    # dewmini-style.css, practice-bank.json, all exactly as hosted; only
-    # dewmini.html then gets its one Pyodide-base override layered in,
-    # a single targeted rewrite of one HTML file.
     shutil.copytree(COMPOSE, target / "compose")
     html = (target / "compose" / "dewmini.html").read_text()
     if pyodide_vendored:
-        # The override pyodide-engine.js's own pyodideBase() already
-        # honors — one directory up from compose/, matching every other
-        # ../-relative reference this same page already makes.
         html = html.replace(
             "<head>",
             '<head>\n<script>window.DEWLAB_PYODIDE_BASE = "../assets/vendor/pyodide/";</script>',
@@ -3370,9 +3834,6 @@ def write_dewmini_bundle() -> Path | None:
     if DATA.is_dir():
         shutil.copytree(DATA, target / "data")
 
-    # KaTeX's own font files and the two accessible fonts (both live under
-    # vendor/fonts/), whole — see DEWMINI_ASSET_FILES's own comment on why
-    # these are a directory copy rather than dozens of named entries there.
     fonts_dir = ASSETS / "vendor" / "fonts"
     if fonts_dir.is_dir():
         shutil.copytree(fonts_dir, target / "assets" / "vendor" / "fonts")
@@ -3397,17 +3858,6 @@ def write_dewmini_bundle() -> Path | None:
     # serve.py — see SERVE_SCRIPT's own docstring for why a bundle needs it.
     (target / "serve.py").write_text(SERVE_SCRIPT)
 
-    # A single obvious entry point at the folder's own top level: opening
-    # a downloaded folder should mean finding one file, not knowing in
-    # advance that the real page is one level down in compose/. Checks
-    # location.protocol itself rather than assuming a downloader ran
-    # serve.py first — a bare file:// open forwards nowhere and says why,
-    # since compose/dewmini.html would otherwise just come up blank with
-    # no visible explanation (its own JavaScript fails a CORS check that
-    # only exists for http(s):, so nothing about the page can detect or
-    # report the failure from the inside). This check lives here, not in
-    # compose/dewmini.html itself, so the page every hosted visitor also
-    # reaches stays exactly what it already is.
     (target / "index.html").write_text(
         "<!doctype html>\n"
         "<html lang=\"en\">\n"
@@ -3454,43 +3904,43 @@ def readable_size(path: Path) -> str:
     return f"{max(size // 1000, 1)} KB"
 
 
-def write_index(
-    shell: str,
-    groups: dict[tuple[str, str], list[Tutorial]],
-    archives: dict[tuple[str, str], Path] | None = None,
-    retired: dict[str, list[Tutorial]] | None = None,
-    practice: dict[tuple[str, str], Tutorial] | None = None,
-    mixed: dict[str, list[Tutorial]] | None = None,
-    module_archives: dict[str, Path] | None = None,
-) -> Path:
-    """The contents page at the site root, which every page's masthead links to."""
+def write_index(shell: str) -> Path:
+    """The front page at the site root, which every page's masthead links to.
+
+    Static: it needs no tutorial data, since it names its own modules by
+    hand and points each one at that module's own page rather than listing
+    tutorials itself. `write_all_tutorials_page()` is the page that does.
+    """
     manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
     tokens = {
-        "{{TITLE}}": "Tutorials",
+        "{{TITLE}}": "dewlab",
         "{{VERSION}}": "1",
         "{{SLUG}}": "index",
         "{{MODULE}}": "",
         "{{YEAR}}": "",
         "{{SERIES}}": "",
-        "{{CRUMBS}}": "contents",
+        "{{CRUMBS}}": "",
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": "",
-        "{{PAGE_SCRIPT}}": f'<script type="module" src="{versioned("assets/", "search.js")}"></script>',
-        # The contents page is not a tutorial and has nothing to download; the
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
+        "{{PAGE_SCRIPT}}": "",
+        # The front page is not a tutorial and has nothing to download; the
         # runtime hides the empty section rather than showing a bare heading.
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
-        # The contents page is a contents page. It does not need one of its own.
+        # The front page is not a contents list. It does not need one.
         "{{TOC}}": "",
-        # Nor a series to navigate — it is the thing every series links back to.
+        # Nor a series to navigate.
         "{{SERIES_NAV}}": "",
-        "{{BODY}}": render_index(groups, archives, retired, practice, mixed, module_archives),
+        "{{BODY}}": render_index(),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("index", "1"),
     }
@@ -3502,6 +3952,182 @@ def write_index(
         raise BuildError(f"shell template has tokens the index does not fill: {leftover}")
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "index.html"
+    target.write_text(page)
+    return target
+
+
+def write_all_tutorials_page(
+    shell: str,
+    groups: dict[tuple[str, str], list[Tutorial]],
+    archives: dict[tuple[str, str], Path] | None = None,
+    retired: dict[str, list[Tutorial]] | None = None,
+    practice: dict[tuple[str, str], Tutorial] | None = None,
+    mixed: dict[str, list[Tutorial]] | None = None,
+    module_archives: dict[str, Path] | None = None,
+) -> Path:
+    """Every module, every series, every tutorial — the page "All
+    tutorials" on the front page and every other page's own "All
+    tutorials" link point at.
+    """
+    manifest = {"slug": "all-tutorials", "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
+    tokens = {
+        "{{TITLE}}": "All tutorials",
+        "{{VERSION}}": "1",
+        "{{SLUG}}": "all-tutorials",
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": "all tutorials",
+        "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">Home</a>',
+        "{{PAGE_SCRIPT}}": "",
+        # This page is not a tutorial and has nothing to download; the
+        # runtime hides the empty section rather than showing a bare heading.
+        "{{CANONICAL}}": "",
+        "{{DOWNLOAD}}": "",
+        # This page is a contents list. It does not need one of its own.
+        "{{TOC}}": "",
+        # Nor a series to navigate — it is the thing every series links back to.
+        "{{SERIES_NAV}}": "",
+        "{{BODY}}": render_tutorials_list(
+            groups, archives, retired, practice, mixed, module_archives),
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer("all-tutorials", "1"),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(
+            f"shell template has tokens the all-tutorials page does not fill: {leftover}")
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / "all-tutorials.html"
+    target.write_text(page)
+    return target
+
+
+MODULE_INFO: dict[str, dict[str, object]] = {
+    "mit-pdp-maths-prog-integration": {
+        "code": "5N2927 + 5N18396 · QQI Level 5",
+        "description": [
+            "This is dewlab's flagship course. It teaches Programming and "
+            "Design Principles (5N2927) and Mathematics for Information "
+            "Technology (5N18396) together, moving between the two "
+            "subjects in the order the class needs them.",
+            "Five series carry it: programming foundations, discrete "
+            "maths and statistics, algebra and functions, geometry and "
+            "trigonometry, and a capstone project that draws on all "
+            "four.",
+        ],
+    },
+    "computational-methods": {
+        "code": "5N0554 · QQI Level 5",
+        "description": [
+            "This module is Computational Methods and Problem Solving "
+            "(5N0554). We work through matrices, simulation, algorithms "
+            "and debugging, in Python.",
+        ],
+    },
+    "fundamentals-of-oop": {
+        "code": "5N0541 · QQI Level 5",
+        "description": [
+            "This module is Fundamentals of Object-Oriented Programming "
+            "(5N0541). We build classes, objects and inheritance, from "
+            "first principles.",
+        ],
+    },
+}
+
+
+def write_module_page(
+    shell: str,
+    module: str,
+    groups: dict[tuple[str, str], list[Tutorial]],
+    archives: dict[tuple[str, str], Path],
+    retired: dict[str, list[Tutorial]],
+    practice: dict[tuple[str, str], Tutorial],
+    mixed: dict[str, list[Tutorial]],
+    module_archives: dict[str, Path],
+) -> Path:
+    """One module's own page: its description, its QQI code, and only its
+    own tutorials and practice pages — not the other modules' too.
+
+    A reader following a module button from the front page lands here
+    rather than partway down the full contents list. Written at the site
+    root, alongside `index.html`, so it can reuse every href
+    `render_module_body()` builds unchanged — those are relative to the
+    site root already, which is exactly where a module page also lives.
+    """
+    names: dict[str, str] = {}
+    for members in list(groups.values()) + list(retired.values()):
+        for member in members:
+            if member.meta.get("module_title"):
+                names.setdefault(member.module, member.module_title)
+    title = names.get(module, module)
+    titles = series_titles()
+
+    info = MODULE_INFO.get(module, {})
+    body = [
+        f"<h1>{html.escape(title)} "
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span></h1>'
+    ]
+    code = info.get("code")
+    if code:
+        body.append(f'<p class="dl-module-card-meta">{html.escape(str(code))}</p>')
+    for para in info.get("description", []):
+        body.append(f"<p>{para}</p>")
+    body.extend(render_module_body(
+        module, names, groups, archives, retired, practice, mixed,
+        module_archives, titles, heading=False,
+    ))
+
+    manifest = {"slug": module, "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
+    tokens = {
+        "{{TITLE}}": title,
+        "{{VERSION}}": "1",
+        "{{SLUG}}": module,
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": html.escape(title),
+        "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
+        "{{PAGE_SCRIPT}}": "",
+        "{{CANONICAL}}": "",
+        "{{DOWNLOAD}}": "",
+        "{{TOC}}": "",
+        "{{SERIES_NAV}}": "",
+        "{{BODY}}": "\n".join(body),
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer(module, "1"),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(f"shell template has tokens the module page does not fill: {leftover}")
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / f"{module}.html"
     target.write_text(page)
     return target
 
@@ -3555,10 +4181,6 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "where it comes up in computing, and where it is taught.</p>"
         '<div class="dl-tree-layout">'
         '<div class="dl-tree-main">'
-        # Above the frame rather than floating inside it. Floating, they sat on
-        # top of whichever topics happened to land under them and swallowed the
-        # clicks — the tree is taller now, so which topics those were changed
-        # with the layout.
         '<div class="dl-tree-controls">'
         '<button type="button" id="dl-tree-out" aria-label="Zoom out">−</button>'
         '<button type="button" id="dl-tree-fit" aria-label="Fit the width and return to the top">fit</button>'
@@ -3579,10 +4201,6 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "</div>"
     )
 
-    # The tutorial map underneath, because it answers a different question. The
-    # tree says what a topic needs; this says what order the tutorials come in
-    # and which ones lean on which — and that second part is found by reading
-    # the tutorials, so it exists nowhere else.
     strands = load_strands()
     for (_, _), members in sorted(series_of(tutorials).items()):
         svg = render_knowledge_map(members, strands)
@@ -3609,11 +4227,14 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "{{CRUMBS}}": "topic tree",
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
         "{{PAGE_SCRIPT}}": (
             '<script type="application/json" id="dewlab-tree">'
             + json.dumps(data).replace("<", "\\u003c")
@@ -3695,15 +4316,12 @@ def write_topics_page(
             extra = ""
             if also is not None:
                 where = also.out_path.relative_to(OUT).as_posix()
-                extra = f' <a class="dl-contents-practice" href="{where}">practice</a>'
+                extra = f' <a class="dl-contents-practice" href="{where}">Practice</a>'
             items.append(
-                f'<li><a href="{href}"{progress_attrs(member)}>'
+                f'<li><a class="dl-contents-btn" href="{href}"{progress_attrs(member)}>'
+                f'<span class="dl-contents-kicker">Explore</span>'
                 f"{html.escape(member.title)}</a>{extra}</li>"
             )
-        # A group every one of whose tutorials this particular build
-        # doesn't have (a sandboxed test's tiny fixture set, most likely)
-        # gets no heading either — an empty list under a real-sounding
-        # heading would read as a broken page, not a partial build.
         if not items:
             continue
         any_group_rendered = True
@@ -3714,9 +4332,6 @@ def write_topics_page(
         body.extend(items)
         body.append("</ol>")
 
-    # Every group came back empty (a sandboxed build whose tutorials this
-    # file's real refs simply don't match) — nothing here for a reader,
-    # so there's nothing to build a page around either.
     if not any_group_rendered:
         return None
 
@@ -3732,12 +4347,15 @@ def write_topics_page(
         "{{CRUMBS}}": "browse by topic",
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
-        "{{PAGE_SCRIPT}}": f'<script type="module" src="{versioned("assets/", "search.js")}"></script>',
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
+        "{{PAGE_SCRIPT}}": "",
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         "{{TOC}}": "",
@@ -3799,29 +4417,12 @@ def write_search_index(
     return target
 
 
-# Which module a learning-outcome code belongs to, and therefore which
-# subject a term filed under it belongs to. The prefix is the right key here
-# and `strand` is not: PDP-LO2 ("algorithms") carries the same strand as
-# several MIT outcomes, so strands cut across the maths/computing line rather
-# than along it.
 OUTCOME_SUBJECTS = {
     "MIT": "maths",       # Maths for Information Technology, 5N18396
     "PDP": "computing",   # Programming and Design Principles, 5N2927
     "CMPS": "computing",  # Computational Methods and Problem Solving, 5N0554
 }
 
-# Prerequisite depth, banded into three. `topic_tiers()` counts how many
-# layers of prerequisites sit under an outcome, and that is a better proxy
-# for "how far in is this" than any difficulty field anyone would
-# hand-maintain: it is derived from the dependency graph, so editing the
-# graph re-bands every term automatically and the two can never disagree.
-# Nothing here needs revisiting when the tree changes — which it will.
-#
-# Cut points chosen against the real spread rather than by dividing 0-6
-# evenly. With the deepest-outcome rule below, <=2 / <=3 puts 22 tutorials in
-# reach of a beginner, 16 in the middle and 5 at the deep end; the obvious
-# alternative (<=1 / <=3) collapses to 10/28/5, which makes "intermediate"
-# mean almost everything and so means nothing.
 LEVEL_BANDS = ((2, "beginner"), (3, "intermediate"), (99, "advanced"))
 
 
@@ -3938,9 +4539,6 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
                 "definition": entry["definition"],
                 "origin": tutorial.title,
             }
-            # A term inherits what its tutorial can be filtered by. Absent
-            # keys stay absent rather than becoming empty lists: the panel
-            # distinguishes "no subject claimed" from "filtered out".
             if facet.get("subjects"):
                 record["subjects"] = facet["subjects"]
             if facet.get("level"):
@@ -3997,11 +4595,19 @@ def write_about_page(shell: str) -> Path:
         '<a href="https://github.com/deweydex/dewlab/blob/main/docs/FAQ.md">FAQ</a> '
         "answers the questions people ask most.</p>"
         "<h2>Your work</h2>"
-        "<p>A tutorial saves your edits as you go, along with any cells you add "
-        "yourself. Everything stays in this browser, on this device.</p>"
+        "<p>A tutorial saves your edits in this browser as you go, along with "
+        "any cells you add yourself. It stays on this device, so it will not "
+        "follow you to a different computer. Clearing your browser data will "
+        "clear it.</p>"
         "<p>You can also take a copy with you. There are three ways to do it: a "
         "single HTML file, a printed or PDF copy, or your cells saved as a "
         "Jupyter notebook.</p>"
+        "<h2>Who we are</h2>"
+        '<p>dewlab is built by two teachers. <strong><a href="https://'
+        'github.com/deweydex">Joshua Aaron</a></strong> teaches at Dublin '
+        'College, Dundrum. <strong><a href="https://github.com/mcgarry">'
+        "Sean McGarry</a></strong> teaches at Dublin College, "
+        "Blackrock.</p>"
         "<h2>Helping out</h2>"
         "<p>We welcome help with the material. You can open an issue "
         "with an idea, a request or a comment. You can also send a pull request "
@@ -4012,8 +4618,16 @@ def write_about_page(shell: str) -> Path:
         "request and we will review it and merge it.</p>"
         '<p><strong>Project repository:</strong> <a href="https://github.com/deweydex/dewlab">'
         "github.com/deweydex/dewlab</a></p>"
-        '<p><strong>Contact:</strong> <a href="mailto:deweydex@jsaaron.com">'
-        "deweydex@jsaaron.com</a></p>"
+        "<h2>Contact</h2>"
+        "<p>Suggested assessments and exams for any module are available on "
+        "request. Email either of us.</p>"
+        '<p><strong><a href="https://github.com/deweydex">Joshua Aaron</a>'
+        ':</strong> <a href="mailto:jsaaron@jsaaron.com">'
+        'jsaaron@jsaaron.com</a> or <a href="mailto:joshuaaaron@dcfe.ie">'
+        "joshuaaaron@dcfe.ie</a></p>"
+        '<p><strong><a href="https://github.com/mcgarry">Sean McGarry</a>'
+        ':</strong> <a href="mailto:seanmcgarry@bfei.ie">'
+        "seanmcgarry@bfei.ie</a></p>"
     )
     manifest = {"slug": "about", "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
@@ -4027,11 +4641,14 @@ def write_about_page(shell: str) -> Path:
         "{{CRUMBS}}": "about",
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
         "{{PAGE_SCRIPT}}": "",
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
@@ -4085,11 +4702,14 @@ def write_editor_page(shell: str) -> Path:
         "{{CRUMBS}}": "editor",
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">All tutorials</a>',
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
         "{{PAGE_SCRIPT}}": (
             f'<link rel="stylesheet" href="{versioned("assets/", "vendor/milkdown.bundle.css")}">'
             f'<script type="module" src="{versioned("assets/", "editor.js")}"></script>'
@@ -4123,18 +4743,9 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT)
 
     sources = sorted(TUTORIALS.rglob("*.md"))
-    # A draft is in the repository and not on the internet. The site is static
-    # and public, so there is no other way to have one: anything built has a
-    # URL, and a URL is public (planning/VERSIONS.md).
     everything = [load(p) for p in sources]
     tutorials = versions_of([t for t in everything if t.status != "draft"])
 
-    # Unique within a module, not across the whole site. The built path already
-    # carries the module, so two modules may each have a "first-steps" without
-    # any ambiguity about which page is which — and forcing them apart would
-    # mean naming tutorials around a constraint that does not exist.
-    # One entry per tutorial, holding its default version: a `tutorial:` link
-    # means "the current one", the same as the unversioned URL it resolves to.
     registry: dict[tuple[str, str], Tutorial] = {
         (t.module, t.slug): t for t in tutorials if t.is_default
     }
@@ -4189,9 +4800,6 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             )
         written.extend(archives.values())
 
-        # The same module_title fallback render_index() uses for its own
-        # headings, worked out again here rather than threaded through —
-        # groups is all either needs.
         names: dict[str, str] = {}
         for members in groups.values():
             for member in members:
@@ -4211,9 +4819,15 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.extend(module_archives.values())
 
     if tutorials:
-        written.append(
-            write_index(shell, groups, archives, retired, practice, mixed, module_archives)
-        )
+        written.append(write_index(shell))
+        written.append(write_all_tutorials_page(
+            shell, groups, archives, retired, practice, mixed, module_archives
+        ))
+        for module in {m for m, _ in groups} | set(retired):
+            written.append(write_module_page(
+                shell, module, groups, archives, retired, practice, mixed,
+                module_archives,
+            ))
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
             written.append(tree)
@@ -4230,10 +4844,6 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT / "data", ignore_errors=True)
         shutil.copytree(DATA, OUT / "data")
 
-    # Before the dewmini bundle below, which copies this file out of OUT
-    # rather than out of the source assets/ (it is generated, not checked
-    # in — see _reference_index_for_bundle()). After the assets/ copytree
-    # above, whose rmtree would otherwise delete it.
     if tutorials:
         written.append(write_reference_index(tutorials))
 
@@ -4243,19 +4853,10 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT / "compose", ignore_errors=True)
         shutil.copytree(COMPOSE, OUT / "compose")
 
-    # dewmark's marking workbench. One self-contained page with nothing
-    # linked from it, so it copies as it is. It is a teacher's tool rather
-    # than a student's, and nothing on the site links to it: a teacher goes
-    # to /dewmark/ directly.
     if DEWMARK_WORKBENCH.is_dir():
         shutil.rmtree(OUT / "dewmark", ignore_errors=True)
         shutil.copytree(DEWMARK_WORKBENCH, OUT / "dewmark")
 
-    # The topic pair game, the same way: one self-contained page, nothing on
-    # the site linking to it, reached by typing /topic_tree_game/. It is a
-    # tool for whoever is checking the topic graph rather than anything a
-    # student would open. Its README is for a reader of the repository and
-    # has no business on the site.
     if TOPIC_GAME.is_dir():
         shutil.rmtree(OUT / "topic_tree_game", ignore_errors=True)
         shutil.copytree(TOPIC_GAME, OUT / "topic_tree_game",
@@ -4268,32 +4869,16 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.copytree(TOPIC_EDITOR, OUT / "topic_editor",
                         ignore=shutil.ignore_patterns("README.md"))
 
-    # dewmini's own downloadable, offline-capable copy (DECISIONS_LOG.md
-    # 7.92) — after the hosted compose/ copy just above, since
-    # write_dewmini_bundle() reads compose/dewmini.html from disk (the
-    # source tree, not OUT), so ordering relative to that copy doesn't
-    # actually matter, but sitting right after it keeps the two dewmini
-    # steps together for a reader.
     if standalone:
         dewmini_bundle_dir = write_dewmini_bundle()
         if dewmini_bundle_dir is not None:
             written.append(dewmini_bundle_dir)
             written.append(zip_directory(dewmini_bundle_dir, OUT / "download" / "dewmini.zip"))
 
-    # coi-serviceworker.js (vendor-src/build-vendor.mjs) has to be served
-    # from the site root, not assets/vendor/ where every other vendored file
-    # lives: a service worker's scope defaults to the directory it is served
-    # from, and shell.html's {{ROOT_BASE}}coi-serviceworker.js tag registers
-    # it expecting root scope, wide enough to cover every tutorial. The
-    # existence guard means a test's own minimal ASSETS fixture need not
-    # carry every vendored file for its build to succeed.
     coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
     if coi_src.exists():
         shutil.copy2(coi_src, OUT / "coi-serviceworker.js")
 
-    # After the assets/ copytree above, not before — that copytree starts
-    # with an rmtree of OUT / "assets", which would delete this file if it
-    # were written any earlier in this function.
     if tutorials:
         written.append(write_search_index(tutorials, registry, groups))
     return written

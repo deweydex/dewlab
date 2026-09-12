@@ -1,0 +1,25 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Last tutorial of "A database with several tables" (series: several-tables,
+# module: database-methods), after a-form-that-writes-a-row. Checked the
+# cumulative glossary of both database-methods series (first-database,
+# several-tables) before writing this: table, row, column, statement, CREATE
+# TABLE, INSERT INTO, SELECT, PRIMARY KEY, TEXT/REAL/INTEGER, WHERE, ORDER BY,
+# *, UPDATE, DELETE, SET, foreign key, JOIN, table.column, one-to-many, CSV,
+# load_csv(), cleaning, to_sql(), LEFT JOIN, read_sql(), groupby(), to_csv().
+#
+# This tutorial's own JOIN, WHERE, and JOIN-across-more-tables content all
+# reuse vocabulary already introduced earlier in the module, so none of it
+# is repeated here. The domain nouns this page introduces — programme,
+# module, teacher, room, session — are the scenario's own vocabulary, not
+# database concepts, the same reason "dinosaur" and "sighting" were never
+# glossaried on the earlier pages that used them as example data. The one
+# genuinely new technical term is self-join.
+entries:
+  - term: self-join
+    kind: concept
+    definition: >
+      A self-join joins a table to itself, giving each side of the
+      comparison its own name. It lets a query compare one row against
+      another row from the very same table, such as two sessions that
+      might overlap.

@@ -120,8 +120,10 @@ storage while the page is still loading) or long *after* it already has
 `createCustomCellElement()` reads it to decide whether a brand-new
 cell's Run button should start enabled or not, rather than assuming.
 
-**Two cell types, and a seam after every cell on the page.** A custom
-cell can be `"python"` (an editor, an output area, Run) or `"text"` (a
+**Cell types, and a seam after every cell on the page.** A custom cell
+can be `"python"` or `"sql"` (an editor, an output area, Run — `"sql"`
+only ever arrives by duplicating an authored `sql exec` cell, since there
+is no "+SQL" button of its own yet) or `"text"` (a
 textarea that turns into rendered notes — a small, hand-written markdown,
 `renderDocMarkdown()`, ported from `compose/dewmini.js`'s own text cells
 rather than reinvented). Blurring the textarea renders it, and clicking
@@ -294,7 +296,7 @@ same chain. Custom cells got a Duplicate button too, `type` carried
 through so a text cell's own copy stays text.
 
 A rendered custom text cell goes quiet until touched (`.dl-cell-text`,
-`assets/tutorial-style.css`, DECISIONS_LOG.md 7.115): its `.dl-cell-bar`
+`assets/tutorial-style.css`, DECISIONS_LOG.md 7.115): its `.dl-cell-head`
 and `.dl-cell-collapse-col` sit at `opacity: 0; pointer-events: none`
 until a reader hovers or focuses the cell, so a rendered note reads like
 part of the page rather than a code widget sitting open among cells that
@@ -302,6 +304,72 @@ are meant to be run. Pure CSS, ported from `compose/dewmini-style.css`'s
 own `.dm-cell-text` rule — `:focus-within` already covers "actively
 editing" (focusing the textarea puts the whole cell in that state), so
 no JS class-toggling was needed on either side.
+
+## Head, body row, footbar: the last gap with dewmini's own cells
+
+Everything above ported dewmini's *content* (the pill, the run line,
+collapse, Duplicate) onto `build.py`'s existing `.dl-cell-head`/
+`.dl-cell-bar` shape without moving anything — that shape had Run sitting
+*after* both the editor and the output, where dewmini's own footbar sits
+*between* them. A reader who had just learned "Run is under the code" in
+dewmini found it somewhere else entirely on a tutorial page — one of a
+short list of small, real mismatches `planning/CELL_IDENTITY.md` §9
+catalogues and closes. `render_cell()` now emits three rows in the order
+dewmini's own cells already use — `.dl-cell-head` (identity: the pill, an
+optional `.dl-cell-name`, then Duplicate), `.dl-cell-body-row` (the
+collapse triangle and the editor), `.dl-cell-footbar` (Run, Reset, Clear,
+the run menu, the run line) — with `.dl-output` last. `createCustomCellElement()`
+here builds the same three rows by hand for a reader's own cells, since
+nothing in this file generates markup from `render_cell()` directly.
+
+Two things rode along with the move rather than needing one of their own:
+
+- **A cell now has two buttons where it once had one double-duty Reset.**
+  `.dl-btn-reset` clears a cell's *output* only, touching no code — the
+  same action, and the same counterclockwise ↺ icon, as dewmini's own
+  footbar button. `.dl-btn-clear` puts the cell's *code* back to its
+  starter and throws away whatever a reader typed, behind a confirmation
+  dialog; it keeps the clockwise ↻ icon and resting red-ish border
+  (`tutorial-style.css`) the old single button carried, since it is the
+  one still doing something a reader can't undo.
+- **A cell can carry a name.** `name:` is a fourth header line beside
+  `id:`/`hint:`/`expect:` (`HEADER_RE`, `Cell.name`, `build.py`), shown
+  in `.dl-cell-name` next to the pill — "a handle to hold on to" when a
+  reader wants to talk about a specific cell by something more than its
+  number. It also replaces the cell's own id in a traceback's file line
+  once given (`run_cell()`'s new `label` parameter, threaded through
+  `run_cell_report()`/`runCellMainThread()`/`runCellWorker()` here down
+  to `tutorial_tools.cell_filename()`), the same reasoning dewmini's own
+  `executeCell()` uses for its `Cell N` fallback.
+
+Every button built by `icon_button()` (`build.py`) or `iconButtonHtml()`
+(here) now carries a nested `.dl-btn-icon`/`.dl-btn-label` pair rather
+than bare text — not for its own sake, but so Settings' new "Cell
+buttons" row (`data-texture="buttons"`, `TEXTURE_DEFAULTS.buttons`,
+`applyTexture()`) can show icon, label, or both by toggling one
+`[data-button-labels]` attribute on `<html>` (`tutorial-style.css`) with
+no markup rewrite per mode. It rides the same generic `initTexture()`
+machinery every other Texture row already uses, so no new Settings
+wiring function was needed — only the row itself
+(`assets/shell.html#dl-settings-texture`) and the two lines in
+`applyTexture()` that set or clear the attribute. `setBtnLabel()`/
+`getBtnLabel()` here read or write a button's `.dl-btn-label` span
+directly, since setting `.textContent` on the button itself would erase
+its icon along with whatever text was there — every place that used to
+set a Run/Preview button's `.textContent` (`setRunnable()`,
+`setCellRunning()`/`clearCellRunning()`, the text cell's own
+`syncPreviewBtn()`) goes through one of these two now instead. The small,
+fixed-size badge buttons — the hint and report toggles, the collapse
+triangle — deliberately were not given this treatment: they have no
+dewmini counterpart to stay consistent with, and a text label would not
+fit their compact, circular shape.
+
+`compose/dewmini.js` carries the same three changes on its own side —
+`.dm-icon-reset-output` keeps its original counterclockwise icon rather
+than drifting to this file's clockwise one, every `.dm-icon-btn` gained
+the same `.dl-btn-icon`/`.dl-btn-label` pair via a `iconButton()` helper
+there, and a cell gained an editable `.dm-cell-name`/`.dl-cell-name`
+input beside its pill — see `docs/dewmini-js-explained.md` for that half.
 
 ---
 
@@ -345,6 +413,14 @@ two near-identical implementations of the same lookup functions
   `updateNotesNudge()`/`markNotesExported()`: a small, deliberately rough
   heuristic (has enough new text piled up since the last export?) rather
   than anything precise.
+- **"How does a hint decide to appear under a cell?"** — the staged-hints
+  block after `executeCell()`: `noteAttempt()` updates a cell's counters
+  from the run's report, `triggerHolds()` tests a fold's `data-after`
+  terms against them, `maybeRevealHint()` shows at most one fold per run
+  and none once `expect:` holds. The counters and which folds have shown
+  travel in the saved record (`attempts`, `hints_shown`), and two Settings
+  rows (`initStagedHintsToggles()`) decide whether they show at all and
+  whether a restart hides them. planning/CELL_HINTS.md is the design.
 - **"What's actually exposed to the browser console / end-to-end tests?"**
   — the `globalThis.dewlab = {...}` object at the very end of the file.
 - **"Why doesn't a shared custom cell run itself when I load it?"** —

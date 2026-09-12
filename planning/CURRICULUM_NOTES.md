@@ -21,9 +21,7 @@ talking past each other.
 
 ## 2. What the first coverage pass found
 
-Looking at the 65 accredited learning outcomes early on showed a
-lopsided picture — some strands fully covered, others essentially
-untouched:
+Of the 65 accredited learning outcomes:
 
 - **Fully covered**: Algorithms (9 of 9), Probability (8 of 8),
   Statistics (5 of 5), Number sets.
@@ -34,39 +32,38 @@ untouched:
 
 ### Quiet gaps — things used before they were taught
 
-A few ideas kept turning up in code examples before any tutorial had
-actually taught them:
+Four ideas appeared in code examples before any tutorial had taught
+them. Each is fixed by scheduling a tutorial for it:
 
-1. **Truth tables (`MIT-2.4`)** — `and`/`or`/`not` showed up in early
+1. **Truth tables (`MIT-2.4`)** — `and`/`or`/`not` appeared in early
    control-flow tutorials with no truth table or formal evaluation rule
-   behind them. Fixed by scheduling *Logic and Truth*.
-2. **Complex roots (`MIT-1.10`)** — solving a quadratic with a negative
+   behind them. *Logic and Truth* covers it.
+2. **Complex roots (`MIT-1.10`)** — a quadratic with a negative
    discriminant was handled by saying "no real solutions," with the
-   imaginary unit $i$ never introduced. Fixed by scheduling *When There
-   Is No Answer*.
+   imaginary unit $i$ never introduced. *When There Is No Answer*
+   covers it.
 3. **Inverse functions (`MIT-3.1`)** — function mappings were referenced
    without domain/range inversion ever being formally defined.
 4. **Formula transposition (`MIT-1.7`)** — several science-flavoured
    exercises assumed a student could already rearrange an equation.
-   Fixed by scheduling *Rearranging Formulae*.
+   *Rearranging Formulae* covers it.
 
 ---
 
 ## 3. Regrouping and sequencing
 
 ### *Numbers and Their Families*, reconsidered
-Looking at this tutorial again showed it was actually three separate
-ideas wearing one title:
+This tutorial covered three separate ideas under one title:
 - Number domains (`MIT-2.1`) — set theory, $\mathbb{N} \subset \mathbb{Z}
   \subset \mathbb{Q} \subset \mathbb{R}$.
 - Exponents and logarithms (`MIT-1.1`) — algebra and inverse operations.
 - Geometric formulas (`MIT-1.2`, `MIT-1.3`) — mensuration.
 
-Splitting that apart changed where each piece sits:
+Split apart, each piece moved to where it belongs:
 - Number domains line up naturally with `int`/`float`, so they moved
   early.
 - Exponents and logarithms now come before combinatorial counting,
-  standard deviation, and polynomial calculus — all of which lean on
+  standard deviation, and polynomial calculus, all of which lean on
   them.
 - Geometric formulas became a concrete application once function
   definition existed to hang them on.

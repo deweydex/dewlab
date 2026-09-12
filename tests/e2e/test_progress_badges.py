@@ -1,15 +1,4 @@
-"""The contents page's per-tutorial progress badge, in a real browser —
-planning/PROGRESS_INDICATORS.md.
-
-Same shape as test_reference.py: a dedicated, tiny site build, and no
-self-hosted Pyodide needed — every test here only ever navigates to
-index.html, which always has zero cells of its own (write_index()'s own
-manifest) regardless of what the tutorials it links to contain. Progress is
-seeded directly into localStorage rather than by actually running a cell,
-since what the badge reads is the saved record, not a live interpreter.
-
-    python3 -m pytest tests/e2e/test_progress_badges.py -q
-"""
+"""Progress is seeded directly into localStorage rather than by running a cell, since what the badge reads is the saved record, not a live interpreter."""
 
 from __future__ import annotations
 
@@ -103,8 +92,7 @@ def base_url(site):
 
 
 def _seed(page, module: str, slug: str, cells: list[dict]) -> None:
-    """A saved-progress record, written straight into localStorage the way
-    PROGRESS_PREFIX/saveNow() would have — no cell run required."""
+    """A saved-progress record written straight into localStorage, as saveNow() would, without a cell run."""
     record = {
         "tutorial-slug": slug,
         "tutorial-module": module,
@@ -116,6 +104,21 @@ def _seed(page, module: str, slug: str, cells: list[dict]) -> None:
         "([key, value]) => localStorage.setItem(key, value)",
         [f"dewlab:progress:{module}:{slug}", json.dumps(record)],
     )
+
+
+def _open_panel(actor, selector: str) -> None:
+    """Reference/Series/Settings' toggles now collapse behind one
+    "Panels" control in the masthead (shell.html's
+    <details class="dl-panels">) rather than always showing — expand it
+    first if it isn't already, then click the actual target. Checked via
+    #dl-panels' own `open` property rather than the target's own
+    visibility, so this never mistakes "already open" for "not open" and
+    toggles it shut again right before the click that was supposed to
+    land. Left expanded once opened (no auto-collapse), so this is only
+    needed once per page load, not before every toggle click."""
+    if not actor.eval_on_selector("#dl-panels", "el => el.open"):
+        actor.click("#dl-panels summary")
+    actor.click(selector)
 
 
 class TestProgressBadges:
@@ -130,8 +133,7 @@ class TestProgressBadges:
         context.close()
 
     def test_a_saved_record_with_nothing_run_shows_no_badge(self, site, browser, base_url):
-        """A cell that was only edited, never run, has no output_html —
-        seeding an entry with an empty one should count as untouched."""
+        """A cell only edited, never run, has no output_html, so an empty one here must count as untouched."""
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
@@ -192,7 +194,7 @@ class TestProgressBadges:
         page.reload()
         assert page.is_visible(".dl-progress-badge")
 
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.click('[data-progress-badges] button[data-value="off"]')
         page.click("#dl-settings-close")
         assert page.is_hidden(".dl-progress-badge")
@@ -201,7 +203,7 @@ class TestProgressBadges:
         page.reload()
         assert page.is_hidden(".dl-progress-badge")
 
-        page.click("#dl-settings-toggle")
+        _open_panel(page, "#dl-settings-toggle")
         page.click('[data-progress-badges] button[data-value="on"]')
         page.click("#dl-settings-close")
         assert page.is_visible(".dl-progress-badge")

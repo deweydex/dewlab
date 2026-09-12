@@ -1,0 +1,13 @@
+# The reading order of this series. Every tutorial in the series has to be
+# listed here, and every slug listed has to exist, or the build stops.
+
+series: A site with several pages
+order:
+  - planning-a-site
+  - pages-and-navigation
+  - cards-in-a-row
+  - a-grid-gallery
+  - navigation-on-a-phone
+  - a-form
+  - images-and-file-size
+  - documenting-what-you-built
