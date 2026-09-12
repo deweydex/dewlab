@@ -3303,3 +3303,31 @@ earlier check cell in the module already uses.
 new tutorial folders (`a-college-timetable`, `the-library-loans-quiz`)
 with their own glossary files; both `.order.yaml` files and
 `topic-groups.yaml` updated. No engine or build.py change.*
+
+**7.148 — "Conclusions and Next Steps" closes WA-LO1 and WA-LO5, leaving
+WA-LO12 as the module's one real gap.** A new last page in
+`several-pages`, after `documenting-what-you-built`: a short history of
+HTML and CSS (Tim Berners-Lee's original ~18 tags in 1993, HTML2 through
+HTML4.01, the 2004 WHATWG split that produced HTML5, and HTML5's own
+shift to a living standard with no successor number; CSS1 through
+CSS2.1, then CSS3's split into independently-released modules — flexbox
+and grid, both already taught, are two of them), then GitHub Pages named
+plainly as the website management system this course has used the whole
+time, alongside WordPress, Carrd and Solo as three different trade-offs
+against hand-writing HTML and CSS. Every date and product claim checked
+against a live search before writing it, not reconstructed from memory.
+
+Closing WA-LO5 surfaced the same stale-title bug DBM-LO7 had: its own
+`outcomes.yaml` title still said "not yet covered by anything in
+dewlab" after the page covering it existed. Fixed the same way, and
+trimmed WA-LO5 out of the WA module comment's own list of uncovered
+codes, leaving WA-LO12 (code generators) as the only one left — dewlab
+teaches HTML and CSS by hand throughout, and a generator's output has
+nowhere honest to sit next to that without a real decision about what
+it would mean to "employ" one.
+
+*Cost to change: one new tutorial folder with its own glossary file
+(the first in web-authoring — the module's other 42 pages have never
+had one, a pre-existing gap this doesn't close); both `.order.yaml` and
+`topic-groups.yaml` updated; two outcomes.yaml corrections. 115 of 116
+outcomes now in place.*
