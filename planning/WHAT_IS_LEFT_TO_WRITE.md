@@ -7,15 +7,15 @@ written and released. The current sources of truth are
 accounting, regenerated from the outcome files so it can't go stale).
 Nothing here should be trusted over either.
 
-`CURRICULUM_MAP.md` reports **91 of 91** outcomes in place, across all four
-accredited modules — *Mathematics for IT*, *Programming and Design
-Principles*, *Fundamentals of Object Oriented Programming*, and
-*Computational Methods and Problem Solving*. `planning/STATUS.md` §2 has
-the per-outcome detail, including two loose ends that don't block the
-outcome count: the link-graph strand's crawl is still just a worked
-example (a Markov-chain text-generation series was built instead), and
-`load_csv()`/tabular data specifically are still unclaimed by any tutorial
-(closed for text data by the Text Generation series, 2026-09-05).
+`CURRICULUM_MAP.md` reports its own current outcome count, across every
+accredited module — see it there rather than here, since a count copied
+into this file is exactly the kind of drift that retired it in the first
+place. `planning/STATUS.md` §2 has the per-outcome detail, including two
+loose ends that don't block the outcome count: the link-graph strand's
+crawl is still just a worked example (a Markov-chain text-generation
+series was built instead), and `load_csv()`/tabular data specifically are
+still unclaimed by any tutorial (closed for text data by the Text
+Generation series, 2026-09-05).
 
 This file is kept only as a pointer, rather than rewritten to match current
 numbers each time — a hand-kept duplicate of a count `CURRICULUM_MAP.md`
