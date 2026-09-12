@@ -7,6 +7,8 @@ year: "2026-2027"
 series: first-database
 version: 2026.09.10.1
 covers:
+  where-databases-already-show-up:
+    covers: [DBM-LO1]
   three-instructions-one-script:
     covers: [DBM-LO2]
 ---
@@ -18,6 +20,21 @@ same way. A line in a shopping list is a record. It has a name and a
 quantity, even though the values differ from line to line. A database
 table works the same way. Each row is one record, and every row has the
 same columns.
+
+## Where databases already show up
+
+A database is already part of things you use, whether or not anyone ever
+calls it that. The contacts list on a phone is one, one record per
+person. A shop's till checks stock and prices against one as a sale
+happens. A school keeps its students and the classes they take in one.
+Anywhere a list has to be searched, sorted, or updated by more than one
+person, a database is usually already running underneath it.
+
+A college timetable is one of the clearer examples: rooms, teachers,
+programmes and the sessions that tie them together, all changing as a
+term goes on. Later in this module, a page builds exactly that, and asks
+a question a flat list could not easily answer: has anyone been booked
+into the same room twice, at the same time.
 
 This box creates a table of dinosaurs, adds six rows to it, then shows
 every row it holds. Click Run and see what appears.
