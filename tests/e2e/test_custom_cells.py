@@ -1,27 +1,4 @@
-"""Browser tests for a reader's own cells (planning/PRACTICE.md §3-5).
-
-Most of what matters here is that this feature stays a separate system
-from the tutorial's own saved-work record — its own storage key, its own
-array, never counted anywhere the real cells are counted. The tests below
-check that directly (reading `dewlab.customCellsKey()`'s own storage,
-never `dewlab.readSaved()`) rather than assuming it from the code.
-
-A second thing worth its own coverage: a custom cell is no longer only
-addable from one button at the bottom of the page — a divider sits after
-every real cell and every custom cell (`.dl-insert`), each offering "+
-Code" and "+ Text", and where a cell was added (its `anchor`) is what a
-reload uses to put it back in the same place. See
-`docs/tutorial-runtime-explained.md`'s "Custom cells" section for the
-full mechanics.
-
-The one thing genuinely worth a self-contained fixture (like
-test_student_notes_prose_only.py's) is confirming the feature is *absent*
-on a page with zero cells — that case never boots Pyodide at all, so it
-would be wasteful to route it through the shared `page` fixture, which
-waits for a real Pyodide boot before it even yields.
-
-    python3 -m pytest tests/e2e/test_custom_cells.py -q
-"""
+"""Browser tests for a reader's own cells (planning/PRACTICE.md §3-5)."""
 
 from __future__ import annotations
 
@@ -73,9 +50,8 @@ def wait_for_saved_count(page, count):
 
 
 def add_via_trailing_divider(page, kind="Code"):
-    """Clicks the trailing section's own divider — the general "add one
-    somewhere, no particular cell in mind" entry point every custom-cells
-    page always has, even with zero cells added yet."""
+    """The trailing divider is the "add one somewhere" entry point every
+    custom-cells page has, even before any custom cell exists."""
     divider = page.locator(f'.dl-insert[data-anchor="{TRAILING_ANCHOR}"]').first
     divider.locator(".dl-insert-btn", has_text=kind).click()
 
@@ -191,10 +167,8 @@ class TestAddingACustomCell:
         assert "<strong>bold</strong>" in rendered
 
     def test_a_rendered_text_cells_chrome_is_invisible_until_touched(self, clean_storage):
-        """planning/CELL_IDENTITY.md §4 — a rendered
-        text cell reads like part of the page, not a code widget, until a
-        reader actually touches it. Ported from compose/dewmini-style.css's
-        own .dm-cell-text rule."""
+        """CELL_IDENTITY.md §4: a rendered text cell reads like part of the
+        page, not a code widget, until a reader actually touches it."""
         page = clean_storage
         add_via_trailing_divider(page, "Text")
         page.wait_for_selector(".dl-cell-text", timeout=5_000)
@@ -212,11 +186,9 @@ class TestAddingACustomCell:
         assert bar.evaluate("el => getComputedStyle(el).opacity") == "1"
 
     def test_the_view_edit_button_toggles_while_the_textarea_is_still_focused(self, clean_storage):
-        """A click on the button, not a blur-then-click, is the case worth
-        covering: clicking straight out of the textarea (rather than
-        tabbing or clicking elsewhere first) used to blur it — which
-        auto-rendered — and then the button's own handler saw the
-        already-flipped state and toggled straight back to editing."""
+        """Clicking straight from the textarea to the button used to blur it
+        first (auto-rendering), so the handler saw the already-flipped state
+        and toggled straight back to editing."""
         page = clean_storage
         add_via_trailing_divider(page, "Text")
         page.wait_for_selector(".dl-cell-text", timeout=5_000)
@@ -249,9 +221,8 @@ class TestAddingACustomCell:
         assert page.locator(".dl-cell-custom").first.get_attribute("data-anchor") == second_id
 
     def test_an_orphaned_anchor_falls_back_to_the_trailing_section(self, clean_storage):
-        """A tutorial update can remove the real cell a custom cell was
-        anchored to — PRACTICE.md §3's "survives a version change
-        untouched" means the cell is never dropped, only repositioned."""
+        """PRACTICE.md §3: a custom cell survives a version change even if
+        the real cell it was anchored to is removed — repositioned, not dropped."""
         page = clean_storage
         key = page.evaluate("globalThis.dewlab.customCellsKey()")
         page.evaluate(
@@ -513,6 +484,10 @@ def _serve(out_dir: Path):
 
 
 class TestNoCustomCellsOnAProseOnlyPage:
+    """A zero-cell page never boots Pyodide at all, so this builds its own
+    site rather than going through the shared `page` fixture, which waits
+    for a real boot before it yields."""
+
     def test_neither_the_section_nor_the_settings_entry_appear(self, prose_only_site, browser):
         site = prose_only_site
         _tutorial(site, "one", "One")

@@ -1128,6 +1128,7 @@ function buildCells(manifest) {
     const outputEl = host.querySelector(".dl-output");
     const runBtn = host.querySelector(".dl-btn-run");
     const resetBtn = host.querySelector(".dl-btn-reset");
+    const clearBtn = host.querySelector(".dl-btn-clear");
     const runLineEl = host.querySelector(".dl-cell-runline");
     const duplicateBtn = host.querySelector(".dl-btn-duplicate");
     const collapseBtn = host.querySelector(".dl-collapse-toggle");
@@ -1172,6 +1173,16 @@ function buildCells(manifest) {
     runBtn.addEventListener("click", () => runCell(cell));
     if (resetBtn) {
       resetBtn.addEventListener("click", () => {
+        outputEl.replaceChildren();
+        delete cell.lastRunMs;
+        delete cell.ranContent;
+        delete cell.ranOrder;
+        renderCellRunLine(cell);
+      });
+    }
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        if (!confirm("Put this cell's starter code back? Your own changes to it will be lost.")) return;
         editor.setValue(cell.starter);
         outputEl.replaceChildren();
         delete cell.lastRunMs;
@@ -1243,7 +1254,7 @@ function buildSiteEditors(manifest) {
     }
     const iframe = host.querySelector(".dl-site-frame");
     const consoleOut = host.querySelector(".dl-site-console-output");
-    const resetBtn = host.querySelector(".dl-btn-site-reset");
+    const clearBtn = host.querySelector(".dl-btn-site-clear");
     const runBtn = host.querySelector(".dl-btn-site-run");
 
     const panes = {};
@@ -1320,8 +1331,9 @@ function buildSiteEditors(manifest) {
         }
       }, true);
     }
-    if (resetBtn) {
-      resetBtn.addEventListener("click", () => {
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        if (!confirm("Put this editor's starter code back, in every pane? Your own changes will be lost.")) return;
         for (const pane of Object.values(panes)) pane.editor.setValue(pane.starter);
         editorState.ran = false;
         render();

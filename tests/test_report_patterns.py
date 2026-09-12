@@ -1,15 +1,5 @@
-"""Tests for the report-pattern grouping logic in dev/report_patterns.py and
-the labelling logic in dev/label_report.py.
-
-Neither script's actual GitHub API calls are exercised here — that needs a
-live repository, which is exactly what the workflow itself provides when it
-runs. What is worth protecting with a fast test is the part a live run
-cannot easily catch a regression in until reports are already piling up:
-parsing an issue-form body back into fields, and the threshold arithmetic
-that decides whether something is a pattern at all.
-
-    python3 -m pytest tests/test_report_patterns.py -q
-"""
+"""Covers field-parsing and threshold logic only; the GitHub API calls in
+dev/report_patterns.py and dev/label_report.py need a live repository."""
 
 from __future__ import annotations
 
@@ -67,8 +57,7 @@ class TestParseFields:
         assert report_patterns.parse_fields("") == {}
 
     def test_label_report_uses_the_same_parser(self):
-        # Both scripts read the same rendered body; a change to one parser
-        # without the other is exactly the drift worth catching here.
+        # Guards against the two scripts' copies of parse_fields drifting apart.
         assert label_report.parse_fields(ISSUE_BODY) == report_patterns.parse_fields(ISSUE_BODY)
 
 

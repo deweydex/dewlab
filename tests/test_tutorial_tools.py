@@ -1,12 +1,6 @@
-"""Fast unit tests for the parts of tutorial_tools that are pure logic.
-
-tutorial_tools imports and runs under plain CPython, with a recording stub in
-place of the DOM, which is what makes this possible without a browser. Anything
-that genuinely needs Pyodide — running a cell, `load_csv`, widget event
-handlers — is covered by the e2e test instead.
-
-    python3 -m pytest tests -q
-"""
+"""Covers the parts of tutorial_tools that are pure logic, using a recording
+stub in place of the DOM; anything that genuinely needs Pyodide (running a
+cell, `load_csv`, widget event handlers) is covered by the e2e test instead."""
 
 from __future__ import annotations
 
@@ -24,13 +18,9 @@ import tutorial_tools as tt  # noqa: E402
 
 @contextmanager
 def streaming():
-    """Redirect stdout/stderr into the running cell, inside the test body.
-
-    pytest reinstates its own `sys.stdout` at the start of each test phase,
-    which happens *after* fixture setup — so a fixture cannot leave the
-    redirect in place for a test that exercises `print`. Tests that need it
-    re-establish it here, which is the same two lines `_begin` runs.
-    """
+    # pytest reinstates its own sys.stdout after fixture setup runs, so the
+    # `cell` fixture can't leave this redirect in place; tests needing it
+    # (the same two lines `_begin` runs) re-establish it here instead.
     saved = sys.stdout, sys.stderr
     sys.stdout = tt._StreamWriter("dl-stdout")
     sys.stderr = tt._StreamWriter("dl-error")
@@ -42,7 +32,6 @@ def streaming():
 
 @pytest.fixture()
 def cell():
-    """Put the module into the state a running cell would leave it in."""
     sink = tt._RecordingSink()
     tt._begin("test-cell", sink)
     try:
@@ -197,8 +186,6 @@ class TestRenderValue:
 
 
 class TestSuppressedReprs:
-    """Two things a notebook prints that a beginner reads as noise."""
-
     def test_a_cell_ending_in_check_does_not_repeat_the_bool(self, cell):
         result = tt.check(2, 2)
         tt._render_value(result)
@@ -282,9 +269,8 @@ class TestTables:
 
 @needs_pandas
 class TestRunQuery:
-    """run_query — sqlite3 is stdlib so this runs under plain CPython
-    same as everything else here; no Pyodide-only behaviour to defer to
-    the e2e test."""
+    # sqlite3 is stdlib, so run_query has no Pyodide-only behaviour to defer
+    # to the e2e test — it runs under plain CPython like everything else here.
 
     @pytest.fixture()
     def seeded_db(self, tmp_path):
@@ -525,7 +511,6 @@ class TestTracebackTrimming:
         assert filename in text
 
     def test_traceback_shows_the_line_that_failed_not_just_its_number(self):
-        """A line number with no line beside it is close to useless to a learner."""
         filename = tt.cell_filename("demo")
         try:
             self._raise_from_user_code(filename)
@@ -547,10 +532,8 @@ class TestTracebackTrimming:
         raise AssertionError("that source compiled, so there is nothing to format")
 
     def test_a_syntax_error_opens_with_the_students_own_line(self):
-        """It is raised while the code is compiled, so none of the frames are
-        the student's — they are all ours. Showing them put two lines of
-        tutorial_tools.py above the line somebody had actually mistyped, in a
-        tutorial whose subject is reading these messages."""
+        # A syntax error has no frames of the student's — it's raised while
+        # compiling, before any of their code runs — so the frames are all ours.
         filename = tt.cell_filename("demo")
         text = self._syntax_error(filename, "if hours > 10\n    print('long')\n")
         assert "tutorial_tools" not in text
@@ -579,13 +562,9 @@ class TestTracebackTrimming:
 
 
 class TestPltShow:
-    """`plt.show()` is in every textbook, so students write it. Under the
-    non-interactive backend matplotlib's own show() draws nothing and warns.
-
-    matplotlib is not installed for these tests — it does not need to be. The
-    patch only ever looks for `matplotlib.pyplot` in `sys.modules`, so a stub
-    module exercises the whole of it.
-    """
+    # matplotlib is not installed for these tests — it doesn't need to be,
+    # since the patch only ever looks for "matplotlib.pyplot" in sys.modules,
+    # so a stub module exercises the whole of it.
 
     @contextmanager
     def fake_pyplot(self):
@@ -639,17 +618,12 @@ class TestPltShow:
 
 
 class TestDescribeGlobals:
-    """describe_globals() — what dewmini's variable inspector reads.
-
-    Worth unit-testing rather than leaving to the browser precisely because
-    it *can* be: it takes a dict and returns plain data, so every branch is
-    reachable under CPython, and the e2e test can then be about the panel
-    rather than about the summaries.
-    """
+    # describe_globals() takes a dict and returns plain data, so every branch
+    # is reachable under CPython — worth unit-testing here rather than
+    # leaving the summaries themselves to the e2e test.
 
     @pytest.fixture(autouse=True)
     def clean_namespace(self):
-        """Each test gets the shared namespace to itself."""
         tt._page_globals.clear()
         yield
         tt._page_globals.clear()
@@ -665,7 +639,6 @@ class TestDescribeGlobals:
         assert entry["kind"] == "data"
 
     def test_containers_are_counted_rather_than_printed(self):
-        """A thousand-item list should say "1000 items", not print itself."""
         tt._page_globals.update({
             "names": ["ada", "alan"],
             "empty": [],
@@ -685,13 +658,12 @@ class TestDescribeGlobals:
         assert len(summary) <= tt._SUMMARY_LIMIT
 
     def test_a_short_string_keeps_its_quotes(self):
-        """Quoted, so a reader can tell the string "42" from the number 42."""
+        # Quoted, so a reader can tell the string "42" from the number 42.
         tt._page_globals["greeting"] = "hello"
         assert self.described()["greeting"]["summary"] == "'hello'"
 
     def test_private_names_are_left_out(self):
-        """The same convention autocomplete follows — these are bookkeeping,
-        not anything a reader put there."""
+        # The same convention autocomplete follows: bookkeeping, not a reader's own.
         tt._page_globals.update({"_internal": 1, "visible": 2})
         assert "_internal" not in self.described()
         assert "visible" in self.described()
@@ -741,8 +713,7 @@ class TestDescribeGlobals:
 
 @needs_pandas
 class TestDescribeGlobalsWithPandas:
-    """The shape summaries, which are the point of the inspector for anyone
-    working with data: a DataFrame should say how big it is, not print
+    """A DataFrame should say how big it is in the inspector, not print
     itself into a sidebar."""
 
     @pytest.fixture(autouse=True)
@@ -769,11 +740,9 @@ class TestDescribeGlobalsWithPandas:
         assert entry["summary"] == "array(2, 3)"
 
     def test_shape_is_recognised_by_duck_typing_not_module_path(self):
-        """The regression this guards: the first version keyed on
-        `(__module__, __name__)` with `pandas.core.frame` hardcoded, which
-        pandas 3 broke by reporting `__module__ == "pandas"` — a DataFrame
-        then printed its whole self into the sidebar. Nothing here should
-        depend on where a class says it lives."""
+        # Regression guard: the first version hardcoded `pandas.core.frame`
+        # against __module__, which pandas 3 broke by reporting __module__
+        # == "pandas", so a DataFrame fell through and printed its whole self.
         class NotPandas:
             shape = (5, 2)
             columns = ["a", "b"]

@@ -1,9 +1,4 @@
-"""Browser tests for the collapse triangle and Duplicate — the rest of
-dewmini's cell anatomy, ported onto tutorial
-pages' `.dl-cell` in 7.114.
-
-    python3 -m pytest tests/e2e/test_cell_collapse_duplicate.py -q
-"""
+"""Collapse and Duplicate, ported onto tutorial pages' `.dl-cell` from dewmini's cell anatomy (DECISIONS_LOG.md 7.114)."""
 
 from __future__ import annotations
 
@@ -57,8 +52,7 @@ class TestCollapse:
         assert not is_collapsed(page, "plain-python")
 
     def test_the_summary_announces_itself_as_a_button(self, clean_storage):
-        """A screen reader needs role="button" here — it is a <div>, not a
-        real <button>, and the keydown handler alone doesn't say so."""
+        """It is a <div>, not a real <button>, so a screen reader needs role="button" — the keydown handler alone doesn't announce it."""
         page = clean_storage
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-collapse-toggle")
         assert is_collapsed(page, "plain-python")
@@ -68,8 +62,7 @@ class TestCollapse:
         assert summary.get_attribute("role") == "button"
 
     def test_pressing_space_on_the_summary_expands_it(self, clean_storage):
-        """The real .dl-collapse-toggle <button> gets Space for free from the
-        browser; this div-as-button has to handle it itself."""
+        """A real <button> gets Space for free from the browser; this div-as-button has to handle it itself."""
         page = clean_storage
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-collapse-toggle")
         assert is_collapsed(page, "plain-python")
@@ -166,8 +159,7 @@ class TestDuplicate:
         assert "only in the first copy" in second_copy_code
 
     def test_duplicate_inserts_right_after_the_cell_not_at_the_end(self, clean_storage):
-        """A reader's own later cell, added under the same authored cell,
-        must not end up between the original and its own fresh copy."""
+        """A new duplicate must land right after the source cell, ahead of any custom cell already added there."""
         page = clean_storage
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-duplicate")
         page.wait_for_selector(".dl-cell-custom", timeout=5_000)

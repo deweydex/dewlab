@@ -1,12 +1,4 @@
-"""Unit tests for build.py — the markdown-to-HTML converter (Phase 1).
-
-build.py resolves everything against module-level paths derived from its own
-location, so the fixture below repoints those at a temporary directory and
-writes tutorials into it. That keeps the tests independent of whatever real
-content happens to be sitting in tutorials/.
-
-    python3 -m pytest tests/test_build.py -q
-"""
+"""build.py resolves paths from module-level globals; the `repo` fixture below monkeypatches them to a temp directory."""
 
 from __future__ import annotations
 
@@ -42,7 +34,6 @@ version: {version}
 
 @pytest.fixture()
 def repo(tmp_path, monkeypatch):
-    """A throwaway repository laid out the way build.py expects."""
     for name in ("tutorials/computational-methods", "setup", "data", "assets"):
         (tmp_path / name).mkdir(parents=True)
     (tmp_path / "assets" / "shell.html").write_text(SHELL)
@@ -58,7 +49,7 @@ def repo(tmp_path, monkeypatch):
 
 
 def set_order(repo: Path, module: str, series: str, slugs: list[str]) -> Path:
-    """Write a series' order file. Ordering lives here now, not in frontmatter."""
+    # Ordering lives in this file now, not in frontmatter (see TestFrontmatter).
     path = repo / "tutorials" / module / f"{series}.order.yaml"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("order:\n" + "".join(f"  - {slug}\n" for slug in slugs))
@@ -66,8 +57,6 @@ def set_order(repo: Path, module: str, series: str, slugs: list[str]) -> Path:
 
 
 def tutorial_path(repo: Path, slug: str, module: str = "computational-methods") -> Path:
-    """Where a tutorial's markdown lives: a folder per tutorial, named for its
-    slug, holding the tutorial and everything that belongs to it."""
     path = repo / "tutorials" / module / slug / f"{slug}.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     return path
@@ -112,8 +101,6 @@ def built(repo: Path, slug: str = "sample") -> str:
 
 
 def glossary(repo: Path, slug: str, entries: list[dict]) -> Path:
-    """A tutorial's own glossary file — planning/REFERENCE_PANEL.md §3. It sits
-    in the tutorial's own folder, beside the markdown it describes."""
     path = repo / "tutorials" / "computational-methods" / slug / f"{slug}.glossary.yaml"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(yaml.dump({"entries": entries}))
@@ -122,8 +109,6 @@ def glossary(repo: Path, slug: str, entries: list[dict]) -> Path:
 
 def asset(repo: Path, slug: str, name: str, content: bytes = b"x",
           module: str = "computational-methods") -> Path:
-    """A file a tutorial uses — a picture, a recording — in the tutorial's own
-    folder, which is where the markdown's plain reference to it points."""
     path = repo / "tutorials" / module / slug / name
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(content)
@@ -134,9 +119,6 @@ def dataset(repo: Path, name: str, source: str = "Some source",
             license: str = "CC0", description: str = "A dataset.",
             with_csv: bool = True, with_txt: bool = False,
             with_attribution: bool = True) -> None:
-    """A dataset's files — planning/SIDEBAR_CONTENT.md §2: `data/<name>.csv`
-    (or `data/<name>.txt`) plus its beside-the-file attribution,
-    `data/<name>.yaml`."""
     if with_csv:
         (repo / "data" / f"{name}.csv").write_text("a,b\n1,2\n")
     if with_txt:
@@ -148,9 +130,7 @@ def dataset(repo: Path, name: str, source: str = "Some source",
 
 
 def add_frontmatter(path: Path, extra: str) -> None:
-    """Insert extra frontmatter lines (each ending in its own "\\n") into an
-    already-written tutorial — `write()`'s own template has no room for
-    fields most tests never need."""
+    # write()'s frontmatter template has no room for fields most tests never need.
     path.write_text(path.read_text().replace("version:", f"{extra}version:", 1))
 
 
@@ -230,8 +210,6 @@ class TestCells:
         write(repo, '```python exec\nid: c\nhint: Try this.\n1\n```\n')
         b.build()
         page = built(repo)
-        # A block, hidden by default and opened by a click (aria-expanded),
-        # not role="tooltip" hover text.
         assert '<div class="dl-hint-text" id="dl-hint-c" hidden>Try this.</div>' in page
         assert 'aria-controls="dl-hint-c"' in page
         assert 'aria-expanded="false"' in page
@@ -344,9 +322,8 @@ console.log("hi");
 
 
 class TestSqlCells:
-    """A sql exec cell shares python exec's header grammar, markup, and
-    manifest shape entirely; only the fence's own
-    language word and the pill it produces differ."""
+    """A sql exec cell shares python exec's header grammar and manifest shape;
+    only the fence's language word and the pill it produces differ."""
 
     def test_a_sql_exec_fence_becomes_a_cell(self, repo):
         write(repo, SQL_CELL)
@@ -408,12 +385,9 @@ class TestSqlCells:
 
 
 class TestSiteEditors:
-    """A live HTML/CSS/JS editor. Deliberately not dewstack's own
-    `site=name` spelling: identity lives on an `id:`/`site:`
-    header inside the fence, the same place every other exec-family fence
-    puts it, because a name in the info string cannot survive a round trip
-    through the Crepe-based authoring editor (it keeps only a fence's first
-    word)."""
+    """Site identity lives in an id:/site: header, not a `site=name` info
+    string, because the Crepe-based authoring editor's round trip keeps
+    only a fence's first word."""
 
     def test_a_solo_site_pane_becomes_an_editor(self, repo):
         write(repo, SITE_HTML)
@@ -455,7 +429,7 @@ class TestSiteEditors:
         write(repo, SITE_HTML)
         b.build()
         page = built(repo)
-        assert "<button>Hi</button>" not in page  # not embedded as escaped text
+        assert "<button>Hi</button>" not in page
         editors = manifest(page)["siteEditors"]
         assert editors == [{"name": "hero", "panes": {"html": {"id": "hero-html", "code": "<button>Hi</button>"}}}]
 
@@ -668,9 +642,8 @@ class TestCrossLinks:
             b.build()
 
     def test_two_files_claiming_one_slug_and_one_version_fail_the_build(self, repo):
-        """Two files sharing a slug are two *versions* of one tutorial now, so
-        the collision that matters is the version: two releases cannot share a
-        date and a number, because nothing could then say which is which."""
+        # Two files sharing a slug are two *versions* of one tutorial, so the
+        # collision that matters is the version, not the slug itself.
         write(repo, "One.\n", slug="same")
         path = tutorial_path(repo, "second", "computational-methods")
         path.write_text(FRONTMATTER.format(slug="same", version="2026.08.23.1") + "Two.\n")
@@ -679,9 +652,7 @@ class TestCrossLinks:
             b.build()
 
     def test_two_modules_may_each_have_the_same_slug(self, repo):
-        """The built path carries the module, so there is no ambiguity — and
-        forcing them apart would mean naming tutorials around a constraint that
-        does not exist."""
+        # The built path carries the module, so there is no ambiguity.
         write(repo, "One.\n", slug="first-steps")
         other = tutorial_path(repo, "first-steps", "other-module")
         other.parent.mkdir(parents=True, exist_ok=True)
@@ -735,8 +706,8 @@ class TestAltText:
 
 
 class TestTutorialAssets:
-    """A tutorial is a folder, so a picture it uses sits in that folder and is
-    referred to by its plain name — planning/ROADMAP.md Phase 1."""
+    """A tutorial is a folder; an asset it uses sits there and is referenced
+    by its plain name (planning/ROADMAP.md Phase 1)."""
 
     def test_an_asset_is_copied_beside_the_tutorial(self, repo):
         write(repo, '<img src="d.png" alt="A diagram">\n')
@@ -746,16 +717,16 @@ class TestTutorialAssets:
         assert copied.read_bytes() == b"PNG-BYTES"
 
     def test_the_current_release_reaches_into_the_tutorials_folder(self, repo):
-        """The current release is served one level above its own folder, so a
-        plain name has to gain the folder to still resolve."""
+        # Served one level above its own folder, so a plain name needs the
+        # folder added to still resolve.
         write(repo, '<img src="d.png" alt="A diagram">\n')
         asset(repo, "sample", "d.png")
         b.build()
         assert 'src="sample/d.png"' in built(repo)
 
     def test_a_frozen_release_is_already_inside_it(self, repo):
-        """A frozen release sits in the folder, so the plain name is already
-        right and must be left alone."""
+        # A frozen release's page sits inside its own folder, so the plain
+        # name is already right and must be left alone.
         write(repo, '<img src="d.png" alt="A diagram">\n', version="2026.09.01.1")
         old = tutorial_path(repo, "sample").parent / "v2026.08.23.1.md"
         old.write_text(FRONTMATTER.format(slug="sample", version="2026.08.23.1")
@@ -767,8 +738,8 @@ class TestTutorialAssets:
         assert 'src="d.png"' in frozen
 
     def test_an_image_naming_a_file_that_is_not_there_fails_the_build(self, repo):
-        """The same stance the build already takes on a dead tutorial: link —
-        a page that looks finished to everyone but the student who loads it."""
+        # Same stance as a dead tutorial: link — fail loud rather than ship a
+        # page that only looks finished.
         write(repo, '<img src="missing.png" alt="A diagram">\n')
         with pytest.raises(b.BuildError, match="not a file in this tutorial's folder"):
             b.build()
@@ -786,10 +757,8 @@ class TestTutorialAssets:
                     / "sample" / "sample.glossary.yaml").exists()
 
     def test_a_downloadable_sibling_file_is_linked_and_copied(self, repo):
-        """A small standalone .html to take as a starting point, not shown
-        with src= but linked with href= — the same folder, the same
-        one-level-above-itself reach the current release needs for a
-        picture."""
+        # A downloadable starting point, linked with href= rather than shown
+        # with src=; resolves the same one-level-above-itself way a picture does.
         write(repo, '<a href="demo.html">demo.html</a>\n')
         asset(repo, "sample", "demo.html", b"<p>a starter</p>")
         b.build()
@@ -798,11 +767,9 @@ class TestTutorialAssets:
         assert copied.read_bytes() == b"<p>a starter</p>"
 
     def test_an_href_naming_a_file_that_is_not_there_is_left_alone(self, repo):
-        """Unlike a missing src=, this does not fail the build: a page links
-        to plenty of things that are not a local asset at all, and
-        resolve_links() already produces a real, already-correct relative
-        href for another tutorial — this must not mistake one for a
-        missing local file."""
+        # Unlike src=, a missing href doesn't fail the build: a page links to
+        # plenty of non-local things, and this must not mistake an
+        # already-resolved tutorial: link for a missing file.
         write(repo, '<a href="not-a-real-file.html">a link</a>\n')
         b.build()
         assert 'href="not-a-real-file.html"' in built(repo)
@@ -813,11 +780,9 @@ class TestTutorialAssets:
         assert 'href="https://example.org/demo.html"' in built(repo)
 
     def test_a_src_or_href_shown_as_text_in_a_code_span_is_not_resolved(self, repo):
-        """A tutorial teaching HTML shows `<img src="...">` as a string to
-        read, not markup to run — markdown's own code-span handling leaves
-        the quote alone even though it escapes the angle brackets, so this
-        has to be told apart from a real attribute or a quick-reference
-        table breaks the build over its own example."""
+        # Code-span text escapes angle brackets but leaves the quoted src/href
+        # alone, so this must be told apart from a real attribute or a
+        # quick-reference table breaks the build over its own example.
         write(repo, 'Shown as text: `<img src="not-a-real-file.png">` and '
                     '`<a href="not-a-real-file.html">`.\n')
         b.build()
@@ -1042,7 +1007,6 @@ class TestNavigation:
                     in self.page(repo, slug))
 
     def test_the_order_file_decides_the_sequence_not_the_filename(self, repo):
-        """Reordering is moving a line, and nothing else changes."""
         self.series(repo, order=["t3", "t2", "t1"])
         b.build()
         assert '<a class="dl-nav-next" href="t2.html">' in self.page(repo, "t3")
@@ -1061,7 +1025,7 @@ class TestNavigation:
         assert "dl-nav-next" not in self.page(repo, "other")
 
     def test_a_series_with_no_order_file_stops_the_build(self, repo):
-        """Nothing knows the reading order, and guessing one would be worse."""
+        # Nothing knows the reading order, and guessing one would be worse.
         self.series(repo, count=2)
         (repo / "tutorials" / "computational-methods" / "s.order.yaml").unlink()
         with pytest.raises(b.BuildError, match="decides the reading order"):
@@ -1073,8 +1037,8 @@ class TestNavigation:
             b.build()
 
     def test_a_slug_with_no_tutorial_behind_it_stops_the_build(self, repo):
-        """The more dangerous direction: the file looks complete and the series
-        is quietly short."""
+        # The more dangerous direction: the file looks complete and the
+        # series is quietly short.
         self.series(repo, count=2, order=["t1", "t2", "t3"])
         with pytest.raises(b.BuildError, match="no tutorial in this series"):
             b.build()
@@ -1085,8 +1049,8 @@ class TestNavigation:
             b.build()
 
     def test_order_left_in_the_frontmatter_stops_the_build(self, repo):
-        """Half-migrated is worse than either state: the field would be ignored
-        in silence, and it is exactly the field somebody would edit."""
+        # Half-migrated is worse than either state: the field would be
+        # ignored in silence, and it is exactly the field somebody would edit.
         self.series(repo, count=1)
         path = tutorial_path(repo, "t1", "computational-methods")
         path.write_text(path.read_text().replace("version: 2026.08.23.1", "order: 1\nversion: 2026.08.23.1"))
@@ -1095,9 +1059,7 @@ class TestNavigation:
 
 
 class TestSeriesNav:
-    """render_series_nav() — the left-anchored series navigation panel
-    (planning/SIDEBAR_CONTENT.md §4b), listing every tutorial in the
-    current series in reading order."""
+    """render_series_nav() — planning/SIDEBAR_CONTENT.md §4b."""
 
     def series(self, repo, count: int = 3, series: str = "s", module: str = "computational-methods",
                order: list[str] | None = None):
@@ -1143,9 +1105,8 @@ class TestSeriesNav:
         assert '<li><a href="t1.html">3. Tutorial 1</a></li>' in page
 
     def test_a_tutorial_with_nowhere_in_a_series_to_sit_gets_no_panel_content(self, repo):
-        """An archived tutorial: the same honest empty shape nav_for() already
-        gives it, for the same reason — there is nowhere in the series to
-        place it."""
+        # An archived tutorial: the same honest empty shape nav_for() already
+        # gives it, since there is nowhere in the series to place it.
         write(repo, "Prose.\n")
         write(repo, "More prose.\n", slug="second")
         path = tutorial_path(repo, "sample", "computational-methods")
@@ -1158,8 +1119,7 @@ class TestSeriesNav:
 
 class TestTheFrontPage:
     """index.html: the landing page, static and tutorial-data-free — the
-    module listing itself lives on all-tutorials.html now
-    (TestAllTutorialsPage), which is what most of this used to test."""
+    module listing itself now lives on all-tutorials.html (TestAllTutorialsPage)."""
 
     def test_it_is_written_at_the_site_root(self, repo):
         write(repo, "Prose.\n")
@@ -1228,8 +1188,8 @@ class TestAllTutorialsPage:
         assert manifest((repo / "site" / "all-tutorials.html").read_text())["cells"] == []
 
     def test_a_tutorial_with_cells_carries_its_progress_data_attributes(self, repo):
-        """tutorial-runtime.js's contents-page progress indicator
-        (planning/PROGRESS_INDICATORS.md) reads these with no fetch."""
+        # tutorial-runtime.js's progress indicator (planning/PROGRESS_INDICATORS.md)
+        # reads these with no fetch.
         write(repo, CELL, slug="one")
         b.build()
         index = (repo / "site" / "all-tutorials.html").read_text()
@@ -1244,16 +1204,14 @@ class TestAllTutorialsPage:
         assert "data-cells" not in index
 
     def module_headings(self, repo) -> list[str]:
-        """The module headings in page order.
-
-        By the heading rather than by substring: the slug also appears in every
-        href below it, so a plain `index()` finds the link, not the heading."""
+        # By the heading rather than by substring: the slug also appears in
+        # every href below it, so a plain `index()` finds the link, not the heading.
         page = (repo / "site" / "all-tutorials.html").read_text()
         return re.findall(r'<h2 class="dl-module-heading">(.*?)</h2>', page)
 
     def test_modules_appear_in_the_order_the_module_file_gives(self, repo):
-        """Alphabetical by folder name is not an order anybody chose — it is the
-        same invisible accident the series order files were introduced to end."""
+        # Alphabetical by folder name is not an order anybody chose — the same
+        # invisible accident the series order files were introduced to end.
         write(repo, "Prose.\n")
         other = repo / "tutorials" / "zz-later-module"
         other.mkdir(parents=True)
@@ -1273,9 +1231,8 @@ class TestAllTutorialsPage:
         assert self.module_headings(repo) == ["Later Module", "computational-methods"]
 
     def test_an_unlisted_module_lands_last_rather_than_breaking_the_page(self, repo):
-        """Lenient where the series files are strict: a tutorial missing from
-        its order file vanishes, so that must stop the build. A module missing
-        from here is still on the page, and that is not worth refusing over."""
+        # Lenient where the series files are strict: a missing series entry
+        # stops the build, but a missing module is not worth refusing over.
         write(repo, "Prose.\n")
         other = repo / "tutorials" / "zz-later-module"
         other.mkdir(parents=True)
@@ -1295,8 +1252,8 @@ class TestAllTutorialsPage:
         assert "computational-methods" in (repo / "site" / "all-tutorials.html").read_text()
 
     def test_a_series_is_headed_by_its_name_not_its_filename(self, repo):
-        """A module with two series shows a heading per series, and until one
-        had two nobody saw that the heading was the slug."""
+        # A module with two series shows a heading per series, and until one
+        # had two nobody saw that the heading was the slug.
         write(repo, "Prose.\n")
         second = tutorial_path(repo, "looking-back", "computational-methods")
         second.write_text(
@@ -1316,7 +1273,7 @@ class TestAllTutorialsPage:
         assert "<h3>reflections-and-review</h3>" not in index
 
     def test_a_series_without_a_name_falls_back_to_its_filename(self, repo):
-        """Optional, because a heading nobody sees is not worth a build error."""
+        # Optional, because a heading nobody sees is not worth a build error.
         write(repo, "Prose.\n")
         second = tutorial_path(repo, "looking-back", "computational-methods")
         second.write_text(
@@ -1351,12 +1308,8 @@ class TestAllTutorialsPage:
 
 @pytest.fixture()
 def repo_with_assets(repo):
-    """A repository carrying the real assets, which the standalone export needs.
-
-    Separate from `repo` because copying the vendor bundles costs a moment, and
-    only these tests care. It is the same reason build() does not write the
-    downloadable copies unless asked.
-    """
+    # Separate from `repo`: copying the vendor bundles costs a moment, and
+    # only the standalone-export tests below need the real assets.
     import shutil
 
     real = Path(__file__).resolve().parent.parent / "assets"
@@ -1401,8 +1354,8 @@ class TestTheDownloadableCopy:
         write(repo_with_assets, "Some prose.\n")
         b.build(standalone=True)
         page = self.standalone(repo_with_assets)
-        assert "pyodide.js" in page  # the classic loader, not the module
-        assert len(page) > 300_000  # the bundle really is in there
+        assert "pyodide.js" in page
+        assert len(page) > 300_000  # confirms the bundle itself is embedded, not a stub
 
     def test_the_python_tools_travel_inside_it(self, repo_with_assets):
         write(repo_with_assets, "```python exec\nid: c\n1 + 1\n```\n")
@@ -1441,9 +1394,9 @@ class TestTheDownloadableCopy:
         assert "<nav" not in page
 
     def test_the_version_list_does_not_travel_with_it(self, repo_with_assets):
-        """Only the default gets a downloadable copy, so the other releases are
-        not on the reader's disk. A picker offering to move to files that are
-        not there would be worse than no picker."""
+        # Only the default gets a downloadable copy, so the other releases
+        # are not on the reader's disk; a picker offering them would be
+        # worse than no picker.
         for version in ("2026.06.02.1", "2026.09.15.1"):
             folder = repo_with_assets / "tutorials" / "computational-methods" / "sample"
             folder.mkdir(parents=True, exist_ok=True)
@@ -1543,9 +1496,8 @@ class TestTheSeriesArchive:
         assert "Download all 2" in index
 
     def test_the_count_includes_practice_pages(self, repo_with_assets):
-        """The archive holds a tutorial's practice right after it
-        (zip_sequence()) — the count beside the download link has to say so
-        too, or "Download all 2" undersells a zip that actually holds 3."""
+        # zip_sequence() places practice pages right after their tutorial, so
+        # the download count must include them too, or it undersells the zip.
         self.two_tutorials(repo_with_assets)
         practice_path = tutorial_path(repo_with_assets, "t1-practice", "computational-methods")
         practice_path.write_text(
@@ -1578,8 +1530,8 @@ class TestTheSeriesArchive:
         )
 
     def test_a_series_of_one_is_offered_in_the_singular(self, repo_with_assets):
-        """"Download all 1 as single files" is not a sentence, and a series of
-        one stopped being hypothetical when reflections moved to their own."""
+        # "Download all 1" reads oddly in the plural, and a series of one
+        # stopped being hypothetical once reflections got its own.
         path = repo_with_assets / "tutorials" / "computational-methods" / "t1.md"
         path.write_text(
             '---\ntitle: "One"\nslug: t1\nmodule: computational-methods\n'
@@ -1611,9 +1563,8 @@ class TestTheSeriesArchive:
 
 
 class TestTheModuleArchive:
-    """One archive for a whole module — every series in it, numbered as one
-    sequence rather than restarting per series, plus whatever mixed problem
-    sets belong to the module rather than to one tutorial in it."""
+    """One archive per module: every series numbered as a single sequence,
+    plus module-wide mixed problem sets."""
 
     def practice(self, repo, slug: str, **frontmatter) -> Path:
         path = tutorial_path(repo, slug, "computational-methods")
@@ -1878,7 +1829,7 @@ class TestTheKnowledgeMap:
                   [f"t{n}" for n in range(1, count + 1)])
 
     def svg(self, repo) -> str:
-        """The tutorial map lives on the tree page, under the topic tree."""
+        # The tutorial map lives on the tree page, under the topic tree.
         page = repo / "site" / "tree.html"
         match = re.search(r'<svg class="dl-map".*?</svg>',
                           page.read_text() if page.is_file() else "", re.DOTALL)
@@ -1910,8 +1861,8 @@ class TestTheKnowledgeMap:
         assert ">algorithms</text>" in svg
 
     def test_it_still_builds_without_the_curriculum_data(self, repo):
-        """The site has to build from the tutorials alone. Without the outcome
-        data there is no topic tree — but the tutorial map does not need it."""
+        # Without outcome data there is no topic tree — but the tutorial map
+        # does not need it.
         self.series(repo, covers=False)
         (repo / "planning" / "curriculum" / "outcomes.yaml").unlink()
         b.build()
@@ -1934,7 +1885,6 @@ class TestTheKnowledgeMap:
 
     def test_a_long_title_is_shortened_rather_than_overflowing(self):
         assert b.shorten("Short") == "Short"
-        # Cut at the limit, then back to the last whole word.
         assert b.shorten("A very considerably longer tutorial title") == (
             "A very considerably…"
         )
@@ -1947,16 +1897,10 @@ class TestTheKnowledgeMap:
 
 
 class TestAssetVersions:
-    """A page that has been visited before must not be served an old stylesheet.
-
-    Without a version in the URL, a browser keeps the copy it downloaded the
-    first time however many times the site is published — and the result does
-    not look like a caching problem, it looks like the page is broken, only for
-    people who have been here before.
-
-    Against the real assets, because a version of a file that is not there
-    proves nothing.
-    """
+    """Cache-busting: without a version in the URL a browser keeps an old
+    stylesheet forever, and the bug looks like page breakage rather than
+    caching. Tested against the real assets, since a version of a file that
+    is not there proves nothing."""
 
     def urls(self, repo) -> str:
         return built(repo) + (repo / "site" / "index.html").read_text()
@@ -2021,12 +1965,10 @@ class TestTheExportFailsLoudly:
 
 
 class TestVersionsOfATutorial:
-    """A version is a release, not a save: the version students could first see
-    it, and one they can go back to. `planning/VERSIONS.md`."""
+    """A version is a release, not a save (planning/VERSIONS.md)."""
 
     def release(self, repo, slug: str, version: str, status: str = "live",
                 body: str = "Prose.\n") -> Path:
-        """One release of a tutorial, in the folder its versions share."""
         folder = repo / "tutorials" / "computational-methods" / slug
         folder.mkdir(parents=True, exist_ok=True)
         path = folder / f"v{version}.md"
@@ -2049,8 +1991,8 @@ class TestVersionsOfATutorial:
         return repo.joinpath("site", "tutorials", "computational-methods", *parts)
 
     def test_the_newest_live_version_answers_the_tutorial_url(self, repo):
-        """Every link written before versions existed keeps working and keeps
-        meaning "the current one"."""
+        # Every link written before versions existed keeps working and keeps
+        # meaning "the current one".
         self.release(repo, "thing", "2026.06.02.1", body="Old.\n")
         self.release(repo, "thing", "2026.09.15.1", body="New.\n")
         b.build()
@@ -2074,8 +2016,8 @@ class TestVersionsOfATutorial:
         assert "../thing.html" in page
 
     def test_dates_sort_by_date_and_not_as_text(self, repo):
-        """2026.09.02.1 comes before 2026.09.15.1. Compared as strings it would
-        come after, because "2" sorts after "1"."""
+        # 2026.09.02.1 comes before 2026.09.15.1; compared as strings it would
+        # come after, because "2" sorts after "1".
         self.release(repo, "thing", "2026.09.02.1", body="Earlier.\n")
         self.release(repo, "thing", "2026.09.15.1", body="Later.\n")
         b.build()
@@ -2088,8 +2030,8 @@ class TestVersionsOfATutorial:
         assert "Afternoon." in self.out(repo, "thing.html").read_text()
 
     def test_a_draft_is_not_built_at_all(self, repo):
-        """The site is static and public: anything built has a URL, and a URL is
-        public. So the only honest draft is one with no page."""
+        # The site is static and public: anything built has a URL, so the
+        # only honest draft is one with no page.
         write(repo, "Prose.\n")
         self.release(repo, "thing", "2026.09.15.1", status="draft", body="Secret.\n")
         b.build()
@@ -2097,8 +2039,8 @@ class TestVersionsOfATutorial:
         assert not self.out(repo, "thing").exists()
 
     def test_a_beta_is_built_but_is_never_the_default(self, repo):
-        """Freeze the live release, mark the working copy beta, and students
-        keep getting the live one until the beta is promoted."""
+        # Freeze the live release, mark the working copy beta, and students
+        # keep getting the live one until the beta is promoted.
         self.release(repo, "thing", "2026.06.02.1", body="Live.\n")
         self.release(repo, "thing", "2026.09.15.1", status="beta", body="Trying.\n")
         b.build()
@@ -2116,14 +2058,14 @@ class TestVersionsOfATutorial:
         b.build()
         page = self.out(repo, "thing.html").read_text()
         route = "".join(re.findall(r"<nav class=\"dl-nav.*?</nav>", page, re.DOTALL))
-        assert "other.html" in route          # next, in the series
-        assert "v2026.09.15.1" not in route   # the beta is nowhere in the route
+        assert "other.html" in route
+        assert "v2026.09.15.1" not in route
         assert "v2026.09.15.1" not in re.sub(
             r'<script type="application/json".*?</script>', "", page, flags=re.DOTALL)
 
     def test_only_the_default_teaches_an_outcome(self, repo):
-        """A superseded release claims the same coverage as the one that
-        replaced it. Counting both would make one outcome look taught twice."""
+        # A superseded release claims the same coverage as the one that
+        # replaced it; counting both would make one outcome look taught twice.
         covers = "covers:\n  a-section:\n    covers: [MIT-1.4]\n"
         for version in ("2026.06.02.1", "2026.09.15.1"):
             path = self.release(repo, "thing", version, body="## A section\n\nProse.\n")
@@ -2138,9 +2080,8 @@ class TestVersionsOfATutorial:
         assert "/thing.html#" in node["where"]["href"]
 
     def test_an_older_release_points_search_at_the_current_one(self, repo):
-        """Two releases of one tutorial are near-identical pages. Without a
-        canonical link they compete with each other in search results, and the
-        one that wins is whichever the crawler happened to like."""
+        # Two releases of one tutorial are near-identical pages; without a
+        # canonical link they compete with each other in search results.
         self.release(repo, "thing", "2026.06.02.1")
         self.release(repo, "thing", "2026.09.15.1")
         b.build()
@@ -2162,12 +2103,9 @@ class TestVersionsOfATutorial:
 
 
 class TestTheVersionListInTheManifest:
-    """What the page needs to offer a reader another release, and to say what
-    moving there will do to their work before they do it.
-
-    Saved answers are matched back on cell id, so which of them survive a move
-    is knowable rather than a matter of hope — but only if the page knows which
-    cells each release has. `planning/VERSIONS.md`."""
+    """Saved answers are matched back on cell id, so which survive a move to
+    another release is knowable only if the page knows which cells that
+    release has (planning/VERSIONS.md)."""
 
     release = TestVersionsOfATutorial.release
     out = TestVersionsOfATutorial.out
@@ -2178,8 +2116,8 @@ class TestTheVersionListInTheManifest:
     )
 
     def test_one_release_carries_no_list(self, repo):
-        """A picker with a single entry is furniture, and every tutorial would
-        pay for it in bytes and in clutter."""
+        # A picker with a single entry is furniture, and every tutorial would
+        # pay for it in bytes and in clutter.
         write(repo, "Prose.\n")
         b.build()
         assert "versions" not in manifest(built(repo))
@@ -2192,8 +2130,7 @@ class TestTheVersionListInTheManifest:
         assert [v["version"] for v in listed] == ["2026.09.15.1", "2026.06.02.1"]
 
     def test_each_entry_carries_the_date_a_reader_would_read(self, repo):
-        """"15 September 2026", not "2026.09.15.1" and not "version 2". The
-        dotted form is for the file and the URL; a person gets a date."""
+        # The dotted form is for the file and the URL; a person gets a date.
         self.release(repo, "thing", "2026.06.02.1")
         self.release(repo, "thing", "2026.09.15.1")
         b.build()
@@ -2208,8 +2145,8 @@ class TestTheVersionListInTheManifest:
         assert [v["isDefault"] for v in listed] == [True, False]
 
     def test_a_beta_is_listed_as_a_beta(self, repo):
-        """It is reachable, so it belongs in the list. It is not the course, so
-        the list has to say which one it is."""
+        # It is reachable, so it belongs in the list; it is not the course,
+        # so the list has to say which one it is.
         self.release(repo, "thing", "2026.06.02.1")
         self.release(repo, "thing", "2026.09.15.1", status="beta")
         b.build()
@@ -2219,8 +2156,8 @@ class TestTheVersionListInTheManifest:
         }
 
     def test_each_url_is_relative_to_the_page_that_carries_it(self, repo):
-        """The default sits one folder up from its own older releases, so the
-        same list is written twice with different paths in it."""
+        # The default sits one folder up from its own older releases, so the
+        # same list is written twice with different paths in it.
         self.release(repo, "thing", "2026.06.02.1")
         self.release(repo, "thing", "2026.09.15.1")
         b.build()
@@ -2239,8 +2176,8 @@ class TestTheVersionListInTheManifest:
         }
 
     def test_each_entry_carries_that_release_s_cell_ids(self, repo):
-        """The whole point of the list. Without these the page can only warn a
-        reader that their work "may not line up"; with them it can count."""
+        # Without these the page can only warn a reader that their work "may
+        # not line up"; with them it can count.
         self.release(repo, "thing", "2026.06.02.1", body=self.CELLS)
         self.release(repo, "thing", "2026.09.15.1",
                      body=self.CELLS.replace("id: two", "id: three"))
@@ -2254,9 +2191,8 @@ class TestTheVersionListInTheManifest:
 
 class TestTheManifestIdentifiesThePage:
     def test_it_carries_the_module_as_well_as_the_slug(self, repo):
-        """Saved work is keyed on the pair. A slug is only unique within its
-        module — both modules have a `first-steps` — so the slug alone put both
-        tutorials' answers in one record, each overwriting the other."""
+        # Saved work is keyed on the pair: a slug alone is only unique within
+        # its module, so both modules' `first-steps` would share one record.
         write(repo, "Prose.\n")
         b.build()
         page = (repo / "site" / "tutorials" / "computational-methods"
@@ -2266,14 +2202,11 @@ class TestTheManifestIdentifiesThePage:
 
 
 class TestArchivedTutorials:
-    """Retiring a tutorial without deleting it.
-
-    Deleting the file was the only way to retire one, and deleting it strands
-    every student who saved work in it — the work sits in local storage keyed to
-    a page that no longer exists. Archiving keeps the page."""
+    """Archiving retires a tutorial without deleting the page — deleting it
+    would strand any student whose saved work is keyed to a URL that no
+    longer exists."""
 
     def archive(self, repo, slug: str = "sample") -> Path:
-        """Mark a tutorial archived and take it out of the reading order."""
         path = tutorial_path(repo, f"{slug}", "computational-methods")
         path.write_text(path.read_text().replace(
             "version: 2026.08.23.1\n", "version: 2026.08.23.1\nstatus: archived\n"))
@@ -2304,7 +2237,6 @@ class TestArchivedTutorials:
         assert page.index("dl-archived") < page.index("The body of it.")
 
     def test_it_is_not_in_the_reading_order(self, repo):
-        """No previous, no next: there is nowhere in the series it sits."""
         write(repo, "Prose.\n")
         write(repo, "More prose.\n", slug="second")
         self.archive(repo)
@@ -2316,8 +2248,7 @@ class TestArchivedTutorials:
         assert "dl-nav-up" in page
 
     def test_the_live_tutorials_close_up_behind_it(self, repo):
-        """The tutorial after an archived one moves up rather than leaving a
-        gap, because the order file no longer lists the archived one."""
+        # No gap, because the order file no longer lists the archived one.
         for slug in ("one", "two", "three"):
             write(repo, "Prose.\n", slug=slug)
         self.archive(repo, "two")
@@ -2339,8 +2270,8 @@ class TestArchivedTutorials:
         assert index.index("second.html") < index.index("sample.html")
 
     def test_listing_an_archived_tutorial_in_the_order_file_is_an_error(self, repo):
-        """The contradictory case. Silently ignoring the line would leave the
-        order file saying one thing and the site doing another."""
+        # Silently ignoring the line would leave the order file saying one
+        # thing and the site doing another.
         write(repo, "Prose.\n")
         write(repo, "More prose.\n", slug="second")
         path = tutorial_path(repo, "sample", "computational-methods")
@@ -2358,9 +2289,8 @@ class TestArchivedTutorials:
             b.build()
 
     def test_it_teaches_nothing_the_map_can_point_at(self, repo):
-        """It taught what it taught, but a student picking a topic today cannot
-        be sent there. Counting it would make the map claim an outcome is
-        covered when nothing on the course covers it."""
+        # A student picking a topic today cannot be sent there, so counting
+        # it would make the map claim coverage nothing on the course provides.
         path = write(repo, "## A section\n\nProse.\n")
         path.write_text(path.read_text().replace(
             "version: 2026.08.23.1\n", "version: 2026.08.23.1\ncovers:\n  a-section:\n    covers: [MIT-1.4]\n"))
@@ -2380,9 +2310,6 @@ class TestArchivedTutorials:
 
 
 class TestTheTopicTree:
-    """The tree page: every topic in both descriptors, positioned by what has
-    to come first, with what each one is and where it is used."""
-
     def tree(self, repo) -> str:
         page = repo / "site" / "tree.html"
         return page.read_text() if page.is_file() else ""
@@ -2419,14 +2346,9 @@ class TestTheTopicTree:
     def test_a_topic_takes_its_strand_and_coverage_from_the_outcome_it_serves(
         self, repo, monkeypatch
     ):
-        """A topic code and an outcome code used to be the same string.
-
-        They are not any more: a descriptor sometimes bundles ideas a student
-        meets weeks apart, so several topics may serve one outcome. Everything
-        keyed by outcome — the strand, whether a tutorial teaches it, whether
-        it is out of scope — has to follow the `outcome:` field rather than the
-        topic's own code, or a split topic silently shows as untaught.
-        """
+        # Topic codes and outcome codes used to be identical; now several
+        # topics can share one outcome, so strand/coverage must follow the
+        # `outcome:` field or a split topic silently looks untaught.
         real = b.load_topics()
         split = {
             "SPLIT-A": {
@@ -2451,8 +2373,8 @@ class TestTheTopicTree:
         )
 
     def test_nothing_needs_something_below_it(self, repo):
-        """The whole layout rests on this: top to bottom is dependency, so an
-        arrow that pointed upwards would be a lie about the tree."""
+        # Top to bottom is dependency, so an arrow pointing upwards would be
+        # a lie about the tree.
         write(repo, "Some prose.\n")
         b.build()
         data = self.data(repo)
@@ -2462,9 +2384,9 @@ class TestTheTopicTree:
                 assert tier[need] < node["tier"], f"{node['code']} needs {need}"
 
     def test_the_tree_is_drawn_vertically(self, repo):
-        """Tier is an abstraction; y is what a student actually sees. The two
-        agreeing is the difference between a vertical tree and a horizontal one
-        with vertical labels."""
+        # Tier is an abstraction; y is what a student actually sees. The two
+        # agreeing is what makes this a vertical tree, not a horizontal one
+        # with vertical labels.
         write(repo, "Some prose.\n")
         b.build()
         data = self.data(repo)
@@ -2474,9 +2396,8 @@ class TestTheTopicTree:
                 assert place[need]["y"] < node["y"], f"{node['code']} needs {need}"
 
     def test_each_tier_is_a_row_of_its_own(self, repo):
-        """A tier is a stripe across the tree, and the stripes stack without
-        overlapping. Two tiers sharing vertical space would say two different
-        depths are the same depth."""
+        # Two tiers sharing vertical space would say two different depths
+        # are the same depth.
         write(repo, "Some prose.\n")
         b.build()
         bands = self.data(repo)["bands"]
@@ -2485,9 +2406,8 @@ class TestTheTopicTree:
             assert earlier["y"] + earlier["height"] <= later["y"]
 
     def test_the_tree_is_taller_than_it_is_wide(self, repo):
-        """The reason for the vertical layout in the first place. Giving each
-        subject its own column produced 5854px wide against 756px tall — a
-        horizontal tree in disguise, and unusable on a phone."""
+        # Giving each subject its own column once produced 5854px wide
+        # against 756px tall — a horizontal tree in disguise, unusable on a phone.
         write(repo, "Some prose.\n")
         b.build()
         data = self.data(repo)
@@ -2528,18 +2448,16 @@ class TestTheTopicTree:
         assert states["MIT-3.6"] == "planned"
 
     def test_groundwork_is_not_reported_as_a_missing_tutorial(self, repo):
-        """A `PRE-` topic is nobody's learning outcome, so no tutorial can claim
-        it in `covers:`. Left alone it would sit on the map forever marked
-        "planned", which reads as a gap in the course rather than as something
-        picked up in passing."""
+        # A `PRE-` topic is nobody's learning outcome, so no tutorial can
+        # claim it in `covers:` — left as "planned" it would read as a gap.
         write(repo, "Some prose.\n")
         b.build()
         node = next(n for n in self.data(repo)["nodes"] if n["code"] == "PRE-1")
         assert node["state"] == "groundwork"
 
     def test_a_topic_may_name_its_own_strand(self, repo):
-        """Strands come from outcomes.yaml, so a topic that is deliberately not
-        an outcome has none — and lands in "other", which is not a subject."""
+        # Strands come from outcomes.yaml, so a topic deliberately not an
+        # outcome has none — and would otherwise land in "other".
         write(repo, "Some prose.\n")
         b.build()
         node = next(n for n in self.data(repo)["nodes"] if n["code"] == "PRE-1")
@@ -2556,9 +2474,9 @@ class TestTheTopicTree:
         assert "What the colours mean" in page
 
     def test_a_topic_we_ruled_out_says_so(self, repo):
-        """Read from the file rather than named here. This test used to assert
-        on MIT-2.3 by name and broke the day Venn diagrams came back into
-        scope — which is a decision changing, not the tree breaking."""
+        # Read from the file rather than named here: this test used to assert
+        # on MIT-2.3 by name and broke the day Venn diagrams came back into
+        # scope — a decision changing, not the tree breaking.
         write(repo, "Some prose.\n")
         b.build()
         scope = yaml.safe_load(
@@ -2595,28 +2513,14 @@ class TestTheTopicTree:
 
 
 class TestTopicGroupsMatchRealTutorials:
-    """planning/curriculum/topic-groups.yaml, checked directly against the
-    real tutorials on disk — the same reason TestTheTopicTree's own tests
-    read topics.yaml directly rather than trusting a sandboxed build() to
-    exercise it: dewlab's actual tutorials only exist outside any test's
-    own throwaway repo, so a direct comparison is the one place this file's
-    accuracy is actually held to account (write_topics_page() in build.py
-    itself only warns and skips a mismatch, precisely so a sandboxed
-    build's tiny fixture set never fails a build for not being dewlab's
-    real course)."""
+    """Checked directly against real tutorials on disk, since a sandboxed
+    build's tiny fixture set can't hold topic-groups.yaml to account —
+    write_topics_page() itself only warns on a mismatch for exactly that reason."""
 
     def real_tutorial_keys(self) -> set[tuple[str, str]]:
-        """Every real, non-practice tutorial's own (module, slug) — a
-        practice page is reached from its parent via the "practice" link
-        (practice_pairs(), reused here from build.py), not listed as a
-        topic-group entry of its own, the same as the contents page.
-
-        A companion practice page is identified by its own `practice_for:`
-        frontmatter key (the same field `Tutorial.practice_for` reads in
-        build.py itself) rather than by a `-practice` filename suffix — a
-        real, standalone tutorial can legitimately have that suffix in its
-        own slug (`sql-practice`, dewlab/database-methods) without being
-        one tutorial's companion page."""
+        # A practice page is identified by its `practice_for:` field, not a
+        # `-practice` suffix — `sql-practice` is itself a real, standalone
+        # tutorial (dewlab/database-methods).
         seen = set()
         for path in (DEWLAB / "tutorials").rglob("*.md"):
             front = path.read_text().split("---", 2)[1]
@@ -2660,33 +2564,22 @@ class TestTopicGroupsMatchRealTutorials:
 
 
 class TestBrowseByTopicPage:
-    """"Browse by topic" itself — write_topics_page() in build.py — built
-    against a small, sandboxed set of tutorials (like every other test in
-    this file), which is exactly why a mismatch against the real
-    topic-groups.yaml is expected here and not a failure: see
-    TestTopicGroupsMatchRealTutorials above for what actually holds that
-    file to account, and write_topics_page()'s own comment for why."""
+    """Built against the sandboxed fixture set like every other test here, so
+    a mismatch against the real topic-groups.yaml is expected — see
+    TestTopicGroupsMatchRealTutorials for what actually checks that file."""
 
     def page(self, repo) -> str:
         path = repo / "site" / "topics.html"
         return path.read_text() if path.is_file() else ""
 
     def test_no_topics_page_when_nothing_in_it_matches_this_build(self, repo):
-        """The common case for every other test in this file: a throwaway
-        tutorial or two, none of which topic-groups.yaml has ever heard
-        of. A page that's just a heading and an intro paragraph, with
-        nothing underneath, is worse than no page."""
         write(repo, "Some prose.\n")
         b.build()
         assert self.page(repo) == ""
 
     def test_a_group_appears_once_its_own_tutorial_is_in_this_build(self, repo):
-        """Point one real topic-groups.yaml entry at a fixture tutorial
-        with a matching slug, and that group's heading, intro, and link
-        should all show up — everything else in the real file still
-        won't match, and stays absent. write() only writes into the
-        `repo` fixture's own computational-methods module, so this needs
-        a real group entry that's actually in that module."""
+        # Needs a real group entry whose module is computational-methods,
+        # since write() only writes tutorials into that module.
         groups = yaml.safe_load(
             (DEWLAB / "planning" / "curriculum" / "topic-groups.yaml").read_text()
         )["groups"]
@@ -2704,13 +2597,10 @@ class TestBrowseByTopicPage:
 
 
 class TestDownloadsDoNotCollide:
-    """Slugs are unique within a module, not across the site — so a flat
-    download folder would let two modules' `first-steps` overwrite each other.
-    Silently, because the loser simply never appears.
-
-    The publish workflow's guard caught this on main once. This catches it
-    before that.
-    """
+    """Slugs are unique within a module, not site-wide, so a flat download
+    folder would let two modules' `first-steps` silently overwrite each
+    other. The publish workflow's guard caught this on main once; this
+    catches it earlier."""
 
     def two_modules(self, repo):
         write(repo, "One.\n", slug="first-steps")
@@ -2759,14 +2649,11 @@ class TestDownloadsDoNotCollide:
 
 
 class TestPagesOfProblems:
-    """A practice page belongs to a tutorial, or draws on several.
-
-    Both shapes are the same mechanically — built, reachable, off the reading
-    order, no coverage of their own. What differs is what they point at, and
-    whether anything points back."""
+    """A practice page belongs to a tutorial, or draws on several. Both
+    shapes are the same mechanically; what differs is what they point at,
+    and whether anything points back."""
 
     def practice(self, repo, slug: str, **frontmatter) -> Path:
-        """Write a page of problems, and keep it out of the order file."""
         path = tutorial_path(repo, f"{slug}", "computational-methods")
         extra = "".join(
             f"{key}: {value}\n" if not isinstance(value, list)
@@ -2792,9 +2679,9 @@ class TestPagesOfProblems:
         self.practice(repo, "one-practice", practice_for="one")
         b.build()
         page = built(repo, "one")
-        assert "two.html" in page          # next is the next tutorial
+        assert "two.html" in page
         assert "dl-nav-next" in page
-        assert "one-practice.html" in page  # linked, but not as next
+        assert "one-practice.html" in page
 
     def test_the_tutorial_links_to_its_problems_and_back(self, repo):
         write(repo, "One.\n", slug="one")
@@ -2831,11 +2718,9 @@ class TestPagesOfProblems:
         assert "one.html" in text and "two.html" in text
 
     def test_a_mixed_set_is_off_the_reading_order(self, repo):
-        """Two tutorials, and the mixed set is not between them.
-
-        Asserted on the navigation rather than on the whole page: the tutorial
-        does link to a mixed set that names it, from the practice box at the
-        end. What it must not do is offer one as the next thing to read."""
+        # Asserted on the navigation rather than the whole page: the tutorial
+        # does link to a mixed set that names it, from the practice box at
+        # the end. It must not offer that as the next thing to read.
         write(repo, "One.\n", slug="one")
         write(repo, "Two.\n", slug="two")
         self.practice(repo, "mixed", practice_across=["one", "two"])
@@ -2847,12 +2732,8 @@ class TestPagesOfProblems:
         assert not any("mixed.html" in bar for bar in nav)
 
     def test_a_mixed_set_is_not_offered_as_this_tutorial_own_practice(self, repo):
-        """The two links are distinguishable.
-
-        Tutorials did not link back to mixed sets at all until Josh asked for
-        them to. What still has to hold is that a reader
-        can tell the difference: one page is answerable from this tutorial and
-        the other is not."""
+        # Mixed-set links were added after tutorials already linked to their
+        # own practice; a reader still has to be able to tell the two apart.
         write(repo, "One.\n", slug="one")
         write(repo, "Two.\n", slug="two")
         self.practice(repo, "mixed", practice_across=["one", "two"])
@@ -2915,14 +2796,11 @@ class TestPagesOfProblems:
 
 
 class TestTheReference:
-    """planning/REFERENCE_PANEL.md's cumulative glossary: a tutorial's manifest
-    carries its own glossary entries plus every earlier series member's, so
-    the reader-facing panel never shows a term this specific reader has not
-    been taught yet."""
+    """planning/REFERENCE_PANEL.md's cumulative glossary: a tutorial's
+    manifest carries its own entries plus every earlier series member's, so
+    the panel never shows a term this reader has not been taught yet."""
 
     def practice(self, repo, slug: str, **frontmatter) -> Path:
-        """Same shape as TestPagesOfProblems' own helper — a page of
-        problems, kept out of the order file."""
         path = tutorial_path(repo, f"{slug}", "computational-methods")
         extra = "".join(
             f"{key}: {value}\n" if not isinstance(value, list)
@@ -2967,8 +2845,8 @@ class TestTheReference:
         assert [e["term"] for e in manifest(built(repo, "two"))["glossary"]] == ["x", "y"]
 
     def test_an_earlier_tutorial_never_shows_a_later_ones_terms(self, repo):
-        """The one guarantee that matters more than any other in this
-        feature (planning/REFERENCE_PANEL.md §1): nothing forward-looking."""
+        # The guarantee that matters most in this feature
+        # (planning/REFERENCE_PANEL.md §1): nothing forward-looking.
         write(repo, "One.\n", slug="one")
         write(repo, "Two.\n", slug="two")
         set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
@@ -3009,9 +2887,8 @@ class TestTheReference:
         assert "origin" not in manifest(built(repo, "one"))["glossary"][0]
 
     def test_the_origin_points_at_the_section_the_term_is_taught_in(self, repo):
-        """A whole-page link makes a reader hunt. The emphasised first use is
-        where PEDAGOGICAL_STYLE_GUIDE.md §4 puts the introduction, so that is
-        the section to land on."""
+        # A whole-page link makes a reader hunt; the emphasised first use is
+        # where PEDAGOGICAL_STYLE_GUIDE.md §4 puts the introduction.
         write(repo, "Intro.\n\n## Later On\n\nHere we meet *x* properly.\n", slug="one")
         write(repo, "Two.\n", slug="two")
         set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
@@ -3097,9 +2974,8 @@ class TestTheReference:
 
 
 class TestCrossSeriesGlossary:
-    """A module's series.yaml lets one series' reference inherit an
-    earlier series' too — planning/REFERENCE_PANEL.md's "cross series, not
-    modules" scope, settled in QUESTIONS.md."""
+    """series.yaml lets one series' reference inherit an earlier series'
+    too — planning/REFERENCE_PANEL.md's "cross series, not modules" scope."""
 
     def test_a_later_series_inherits_an_earlier_ones_glossary(self, repo):
         write(repo, "One.\n", slug="one")
@@ -3121,9 +2997,8 @@ class TestCrossSeriesGlossary:
         assert [e["term"] for e in manifest(built(repo, "two"))["glossary"]] == ["y"]
 
     def test_a_series_left_off_series_yaml_stays_series_only(self, repo):
-        """The reflections-and-review case: series.yaml exists (for other
-        series in the module) but this one is deliberately not on it,
-        because it has no fixed position to inherit into."""
+        # series.yaml exists for other series in the module, but this one is
+        # deliberately not on it: it has no fixed position to inherit into.
         write(repo, "One.\n", slug="one")
         glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "First."}])
         write_in_series(repo, "Two.\n", slug="two", series="matrices")
@@ -3141,12 +3016,9 @@ class TestCrossSeriesGlossary:
 
 
 class TestMathBasics:
-    """Math Basics: plain definitions for arithmetic notation and
-    vocabulary, independent of any one tutorial or series — build.py's
-    load_math_basics(), planning/curriculum/math-basics.yaml. Not
-    cumulative and not per-tutorial, so every test here monkeypatches
-    MATH_BASICS_DATA directly rather than going through the `repo`
-    fixture's own tutorials/data/assets layout."""
+    """Independent of any tutorial or series, unlike the cumulative reference
+    glossary, so tests monkeypatch MATH_BASICS_DATA directly rather than
+    using the `repo` fixture's tutorial layout."""
 
     def _write(self, repo: Path, monkeypatch, text: str) -> Path:
         path = repo / "planning" / "curriculum" / "math-basics.yaml"
@@ -3216,19 +3088,14 @@ groups:
         ]
 
     def test_the_shipped_file_is_itself_well_formed(self):
-        """Not monkeypatched — loads the real file this repo ships, as a
-        guard against a malformed hand-edit of it ever reaching main."""
+        # Not monkeypatched: loads the real file this repo ships, guarding
+        # against a malformed hand-edit reaching main.
         assert b.load_math_basics()
 
 
 class TestPythonBasics:
-    """Python Basics: plain definitions for Python's own vocabulary and
-    punctuation, independent of any one tutorial or series — build.py's
-    load_python_basics(), planning/curriculum/python-basics.yaml. Same
-    shape and same shared validation (_load_basics()) as Math Basics
-    above, so every test here mirrors TestMathBasics, monkeypatching
-    PYTHON_BASICS_DATA directly rather than going through the `repo`
-    fixture's own tutorials/data/assets layout."""
+    """Same shape and shared validation (_load_basics()) as Math Basics;
+    tests mirror TestMathBasics, monkeypatching PYTHON_BASICS_DATA directly."""
 
     def _write(self, repo: Path, monkeypatch, text: str) -> Path:
         path = repo / "planning" / "curriculum" / "python-basics.yaml"
@@ -3314,16 +3181,14 @@ groups:
         ]
 
     def test_the_shipped_file_is_itself_well_formed(self):
-        """Not monkeypatched — loads the real file this repo ships, as a
-        guard against a malformed hand-edit of it ever reaching main."""
+        # Not monkeypatched: loads the real file this repo ships, guarding
+        # against a malformed hand-edit reaching main.
         assert b.load_python_basics()
 
 
 class TestNotes:
-    """Pedagogical notes — planning/SIDEBAR_CONTENT.md §3/§4: an HTML aside
-    in the body, pulled out and surfaced in the reference panel instead
-    of staying inline, and never cumulative across a series — a note
-    belongs to the specific tutorial that wrote it."""
+    """planning/SIDEBAR_CONTENT.md §3/§4: unlike the glossary, a note is
+    never cumulative across a series — it belongs to the tutorial that wrote it."""
 
     def test_a_note_appears_in_the_manifest(self, repo):
         write(repo, '<aside class="dl-note" id="why-it-works">\n\n'
@@ -3334,10 +3199,8 @@ class TestNotes:
         ]
 
     def test_a_notes_content_is_markdown_not_raw_text(self, repo):
-        """Converted on its own, separately from the surrounding raw HTML
-        block — an image inside a note is real markdown
-        (planning/SIDEBAR_CONTENT.md §1), not literal, unconverted source
-        text the way a fold's own contents are."""
+        # Converted on its own, separately from the surrounding raw HTML
+        # block, unlike a fold's own contents (planning/SIDEBAR_CONTENT.md §1).
         write(repo, '<aside class="dl-note" id="pic">\n\n'
                     '![a chart](chart.png)\n\n</aside>\n', slug="one")
         b.build()
@@ -3381,11 +3244,6 @@ class TestNotes:
 
 
 class TestDatasets:
-    """Dataset attribution — planning/SIDEBAR_CONTENT.md §2: a `datasets:`
-    frontmatter list, cross-referenced against `data/<name>.csv` or
-    `data/<name>.txt` and its beside-the-file `data/<name>.yaml`
-    attribution."""
-
     def test_a_declared_dataset_appears_in_the_manifest(self, repo):
         path = write(repo, "Prose.\n", slug="one")
         add_frontmatter(path, "datasets:\n  - life-expectancy\n")
@@ -3451,11 +3309,9 @@ class TestDatasets:
 
 
 class TestFolds:
-    """A `<details>` in a tutorial has to name a fold this project styles.
-
-    Writing a bare `<details><summary>` is what a plain HTML document looks
-    like, and an earlier draft of the style guide showed exactly that. Without
-    the class it renders as a browser-default triangle sitting in the prose."""
+    """A `<details>` must name a fold class; an earlier style-guide draft
+    showed a bare one, which renders as a plain browser triangle with none
+    of this project's styling."""
 
     def test_an_answer_fold_is_fine(self, repo):
         write(repo, '<details class="dl-answer"><summary>answer</summary>\n\n'
@@ -3488,11 +3344,9 @@ class TestFolds:
 
 
 class TestPracticeIsReachable:
-    """A tutorial links to every page of problems that names it.
-
-    Its own practice page first, then any mixed set that draws on it — described
-    as being for later, since a mixed set assumes tutorials this reader may not
-    have met yet."""
+    """A tutorial links to every page of problems that names it: its own
+    practice page first, then any mixed set that draws on it, described as
+    for later since a mixed set may assume tutorials this reader hasn't met yet."""
 
     def practice(self, repo, slug: str, **frontmatter) -> Path:
         return TestPagesOfProblems().practice(repo, slug, **frontmatter)
@@ -3536,10 +3390,8 @@ class TestPracticeIsReachable:
 
 
 class TestTwoReleasesOnOneDay:
-    """The picker shows a date. Two releases on one day show the same date.
-
-    Found by releasing four tutorials on the afternoon they were first written:
-    a reader choosing between them saw two identical options."""
+    """Found by releasing four tutorials on the afternoon they were first
+    written: a reader choosing between them saw two identical dates."""
 
     def release(self, repo, slug: str, version: str, status: str = "live") -> Path:
         folder = repo / "tutorials" / "computational-methods" / slug
@@ -3577,7 +3429,6 @@ class TestTwoReleasesOnOneDay:
         assert shown == ["15 September 2026", "23 August 2026"]
 
     def test_only_the_crowded_day_is_numbered(self, repo):
-        """Three releases, two of them on one day."""
         self.release(repo, "sample", "2026.08.23.1")
         self.release(repo, "sample", "2026.08.23.2")
         self.release(repo, "sample", "2026.09.15.1")
@@ -3587,24 +3438,19 @@ class TestTwoReleasesOnOneDay:
 
 
 class TestNoDuplicateKeysInCurriculumData:
-    """A repeated mapping key in curriculum YAML is a bug, not a style choice.
-
-    Found in the wild: a bundle's insertion of the CMPS outcomes was spliced
-    into the middle of the pre-existing PDP-LO12 entry in topics.yaml, giving
-    CMPS-LO13 a second `needs:` key. Plain `yaml.safe_load` kept the last one
-    and silently dropped the real prerequisite — no error, and every existing
-    test still passed, because both the right and wrong values happened to be
-    real topic codes with no cycle. These tests guard against that class of
-    corruption reappearing unnoticed.
-    """
+    """Found in the wild: a bundle's insertion spliced CMPS outcomes into the
+    middle of an existing entry in topics.yaml, giving it a second `needs:`
+    key. Plain `yaml.safe_load` kept the last one and silently dropped the
+    real prerequisite, with no test noticing since both values were valid
+    topic codes."""
 
     def test_a_repeated_top_level_key_is_rejected(self):
         with pytest.raises(yaml.YAMLError, match="duplicate key"):
             b.load_yaml_no_duplicate_keys("one: 1\ntwo: 2\none: 3\n")
 
     def test_a_repeated_key_inside_a_nested_mapping_is_rejected(self):
-        """The actual shape of the bug: the duplicate was not at the top
-        level, it was a second `needs:` inside one topic's own entry."""
+        # The actual shape of the bug: the duplicate was not at the top
+        # level, it was a second `needs:` inside one topic's own entry.
         text = (
             "topics:\n"
             "  T1:\n"
@@ -3636,22 +3482,16 @@ class TestNoDuplicateKeysInCurriculumData:
 
 
 class TestTheCrossTutorialReference:
-    """`write_reference_index()` — the union of every tutorial's glossary,
-    for dewmini's Library rail.
-
-    The interesting property is the one it *breaks*: `TestTheReference`
-    above protects the rule that a reader is never shown a term they have
-    not reached yet, and this deliberately drops it, because dewmini has no
-    position in a series to protect (planning/DEWMINI_WORKBENCH.md §4).
-    Both behaviours are tested, so neither can be changed by accident.
-    """
+    """`write_reference_index()` deliberately breaks the rule TestTheReference
+    protects — a reader is never shown a term not yet reached — because
+    dewmini has no position in a series to protect (planning/DEWMINI_WORKBENCH.md §4)."""
 
     def index(self, repo: Path):
         return json.loads((repo / "site" / "assets" / "reference-index.json").read_text())
 
     def test_it_carries_terms_from_every_tutorial_at_once(self, repo):
-        """The union — including a term from a *later* tutorial, which is
-        exactly what a tutorial page's own panel would hide."""
+        # Including a term from a *later* tutorial, which is exactly what a
+        # tutorial page's own panel would hide.
         write(repo, "One.\n", slug="one")
         write(repo, "Two.\n", slug="two")
         set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
@@ -3677,9 +3517,8 @@ class TestTheCrossTutorialReference:
         assert entry["origin"] == "A Title"
 
     def test_it_carries_no_link_to_that_tutorial(self, repo):
-        """A title, not an href, on purpose: this file ships inside
-        dewmini's offline bundle, which has no tutorials in it, so a link
-        would 404 for every offline reader."""
+        # This file ships inside dewmini's offline bundle, which has no
+        # tutorials in it, so a link would 404 for every offline reader.
         write(repo, "One.\n", slug="one")
         glossary(repo, "one", [
             {"term": "x", "kind": "concept", "definition": "A thing."},
@@ -3741,9 +3580,8 @@ class TestTheCrossTutorialReference:
         assert [e["term"] for e in self.index(repo)] == ["apple", "zebra"]
 
     def test_the_offline_bundle_carries_the_index(self, repo_with_assets):
-        """Generated rather than checked in, so it needs its own copy step
-        (_reference_index_for_bundle) — without which dewmini's Library
-        would be empty in every downloaded copy."""
+        # Generated rather than checked in, so it needs its own copy step
+        # (_reference_index_for_bundle), or dewmini's Library is empty offline.
         write(repo_with_assets, "One.\n", slug="one")
         glossary(repo_with_assets, "one", [
             {"term": "x", "kind": "concept", "definition": "A thing."},
@@ -3757,26 +3595,19 @@ class TestTheCrossTutorialReference:
 
 
 class TestWhatTheReferenceCanBeFilteredBy:
-    """`tutorial_facets()` — the subject and level each term carries into
-    dewmini's Library rail.
-
-    The point of both facets is that neither is a field anyone maintains.
-    Subject is read off the learning-outcome codes a tutorial already claims
-    in `covers:`; level is read off the prerequisite depth of the topic tree.
-    So the tests below are mostly about the *derivation* holding: rearrange
-    the tree and the search re-files itself on the next build, with nobody
-    having retagged anything.
-    """
+    """`tutorial_facets()`: neither facet is a field anyone maintains.
+    Subject is read off the learning-outcome codes a tutorial claims in
+    `covers:`; level is read off the prerequisite depth of the topic tree —
+    so these tests are mostly about the *derivation* holding under change."""
 
     def covers(self, path: Path, codes: list[str]) -> None:
-        """Give an already-written tutorial a `covers:` block."""
         claim = "covers:\n  a-section:\n    covers: [" + ", ".join(codes) + "]\n"
         path.write_text(path.read_text().replace(
             "version: 2026.08.23.1\n", "version: 2026.08.23.1\n" + claim))
 
     def tree(self, monkeypatch, tmp_path: Path, topics: str) -> None:
-        """A throwaway topic tree, since `repo` does not stub this one out and
-        the real `planning/curriculum/topics.yaml` would otherwise be read."""
+        # `repo` does not stub TOPIC_DATA, so without this the real
+        # planning/curriculum/topics.yaml would be read instead.
         path = tmp_path / "topics.yaml"
         path.write_text(topics)
         monkeypatch.setattr(b, "TOPIC_DATA", path)
@@ -3785,10 +3616,9 @@ class TestWhatTheReferenceCanBeFilteredBy:
         return json.loads((repo / "site" / "assets" / "reference-index.json").read_text())
 
     def test_the_outcome_prefix_decides_the_subject(self, repo):
-        """MIT is the maths module; PDP and CMPS are the computing ones. The
-        prefix is the key and `strand` is not — PDP-LO2 shares a strand with
-        several MIT outcomes, so strands cut across the maths/computing line
-        rather than along it."""
+        # The outcome prefix is the key, not `strand` — PDP-LO2 shares a
+        # strand with several MIT outcomes, so strands cut across the
+        # maths/computing line rather than along it.
         maths = write(repo, "## A section\n\nProse.\n", slug="one")
         self.covers(maths, ["MIT-1.4"])
         computing = write(repo, "## A section\n\nProse.\n", slug="two")
@@ -3802,9 +3632,8 @@ class TestWhatTheReferenceCanBeFilteredBy:
         assert by_term["loop"]["subjects"] == ["computing"]
 
     def test_a_tutorial_covering_both_files_its_terms_under_both(self, repo):
-        """Not a fudge to avoid choosing: seven real tutorials genuinely claim
-        an outcome from each side, and a term introduced there belongs to
-        both."""
+        # Not a fudge to avoid choosing: seven real tutorials genuinely claim
+        # an outcome from each side.
         path = write(repo, "## A section\n\nProse.\n", slug="one")
         self.covers(path, ["MIT-1.4", "PDP-LO9"])
         glossary(repo, "one", [{"term": "plot", "kind": "function", "definition": "Draws."}])
@@ -3813,9 +3642,8 @@ class TestWhatTheReferenceCanBeFilteredBy:
         assert self.index(repo)[0]["subjects"] == ["computing", "maths"]
 
     def test_a_tutorial_claiming_nothing_is_left_unfiled(self, repo):
-        """Absence, not a guess. Two real tutorials claim no outcomes at all,
-        and the panel offers them as "unfiled" rather than hiding them or
-        inventing a subject they never claimed."""
+        # Absence, not a guess: two real tutorials claim no outcomes at all,
+        # so the panel offers "unfiled" rather than inventing a subject.
         write(repo, "Prose.\n", slug="one")
         glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "A thing."}])
         b.build()
@@ -3826,11 +3654,8 @@ class TestWhatTheReferenceCanBeFilteredBy:
 
     def test_the_level_comes_from_the_deepest_outcome_not_the_shallowest(
             self, repo, monkeypatch, tmp_path):
-        """The decision this test exists to hold. Rating a tutorial by its
-        easiest moment put 150 of 222 terms in "beginner" — and would tell
-        someone at the start of the course that a tutorial needing four
-        layers of groundwork is approachable. Erring deep is the kinder
-        error, so `max()`, not `min()`."""
+        # Rating by the easiest moment once put 150 of 222 terms in
+        # "beginner"; erring deep is the kinder error, so `max()`, not `min()`.
         self.tree(monkeypatch, tmp_path,
                   "topics:\n"
                   "  MIT-1.4:\n    name: Shallow\n    plain: A stub.\n"
@@ -3846,9 +3671,8 @@ class TestWhatTheReferenceCanBeFilteredBy:
         assert self.index(repo)[0]["level"] == "intermediate"
 
     def test_rearranging_the_tree_refiles_the_terms(self, repo, monkeypatch, tmp_path):
-        """The property the whole scheme is for: nothing is hand-tagged, so
-        adding a prerequisite to the tree moves every term that depends on it
-        on the next build, with nobody having touched the tutorial."""
+        # Nothing is hand-tagged, so adding a prerequisite to the tree moves
+        # every term that depends on it on the next build, untouched by anyone.
         path = write(repo, "## A section\n\nProse.\n", slug="one")
         self.covers(path, ["MIT-2.1"])
         glossary(repo, "one", [{"term": "x", "kind": "concept", "definition": "A thing."}])
@@ -3860,8 +3684,6 @@ class TestWhatTheReferenceCanBeFilteredBy:
         b.build()
         assert self.index(repo)[0]["level"] == "beginner"
 
-        # Three more layers of groundwork slide underneath it. The tutorial is
-        # untouched; only the tree moved.
         self.tree(monkeypatch, tmp_path,
                   "topics:\n"
                   "  MIT-0.1:\n    name: New root\n    plain: A stub.\n"
@@ -3873,9 +3695,9 @@ class TestWhatTheReferenceCanBeFilteredBy:
         assert self.index(repo)[0]["level"] == "advanced"
 
     def test_the_bands_are_the_ones_chosen_against_the_real_spread(self):
-        """Cut points, not an even three-way split of 0-6. The obvious
-        alternative (<=1 / <=3) collapses the real corpus to 10/28/5, which
-        makes "intermediate" mean almost everything and so mean nothing."""
+        # Not an even three-way split of 0-6: the obvious alternative
+        # (<=1 / <=3) collapses the real corpus to 10/28/5, making
+        # "intermediate" mean almost everything.
         assert [b.level_for_tier(n) for n in range(7)] == [
             "beginner", "beginner", "beginner",
             "intermediate",
@@ -3884,11 +3706,8 @@ class TestWhatTheReferenceCanBeFilteredBy:
 
 
 def test_the_marking_workbench_is_published(repo, monkeypatch):
-    """dewmark's workbench reaches the site at /dewmark/.
-
-    Nothing on the site links to it, so a broken copy step would go
-    unnoticed until somebody typed the address.
-    """
+    # Nothing on the site links to /dewmark/, so a broken copy step would go
+    # unnoticed until somebody typed the address.
     workbench = repo / "dewmark" / "workbench"
     workbench.mkdir(parents=True)
     (workbench / "index.html").write_text("<h1>dewmark marking workbench</h1>")
@@ -3902,11 +3721,7 @@ def test_the_marking_workbench_is_published(repo, monkeypatch):
 
 
 def test_the_topic_pair_game_is_published_without_its_readme(repo, monkeypatch):
-    """The pair game reaches the site at /topic_tree_game/.
-
-    Nothing on the site links to it either, and its README is written for
-    somebody reading the repository rather than for a visitor.
-    """
+    # Its README is written for somebody reading the repository, not a visitor.
     game = repo / "topic_tree_game"
     game.mkdir(parents=True)
     (game / "index.html").write_text("<h1>topic pairs</h1>")
@@ -3922,7 +3737,6 @@ def test_the_topic_pair_game_is_published_without_its_readme(repo, monkeypatch):
 
 
 def test_no_topic_game_folder_is_not_an_error(repo, monkeypatch):
-    """A checkout without topic_tree_game/ still builds."""
     monkeypatch.setattr(b, "TOPIC_GAME", repo / "topic_tree_game")
 
     b.build()
@@ -3931,8 +3745,7 @@ def test_no_topic_game_folder_is_not_an_error(repo, monkeypatch):
 
 
 def test_the_topic_editor_is_published_beside_the_game(repo, monkeypatch):
-    """The topic editor reaches the site at /topic_editor/, on the same terms
-    as the pair game: one page, nothing linking to it."""
+    # Same terms as the pair game: one page, nothing linking to it.
     editor = repo / "topic_editor"
     editor.mkdir(parents=True)
     (editor / "index.html").write_text("<h1>topic editor</h1>")
@@ -3948,7 +3761,6 @@ def test_the_topic_editor_is_published_beside_the_game(repo, monkeypatch):
 
 
 def test_no_topic_editor_folder_is_not_an_error(repo, monkeypatch):
-    """A checkout without topic_editor/ still builds."""
     monkeypatch.setattr(b, "TOPIC_EDITOR", repo / "topic_editor")
 
     b.build()
@@ -3957,7 +3769,6 @@ def test_no_topic_editor_folder_is_not_an_error(repo, monkeypatch):
 
 
 def test_no_workbench_folder_is_not_an_error(repo, monkeypatch):
-    """A checkout without dewmark/ still builds."""
     monkeypatch.setattr(b, "DEWMARK_WORKBENCH", repo / "dewmark" / "workbench")
     b.build()
     assert not (b.OUT / "dewmark").exists()
@@ -4039,10 +3850,8 @@ class TestFeedbackFooter:
 
 
 class TestCellReportPanel:
-    """The report icon and its panel on an authored cell — the deferred
-    half of the plan built once the footer doors were live. code/output
-    are filled in by tutorial-runtime.js at open time, not at build
-    time — see updateCellReportLinks() there."""
+    """code/output are filled in by tutorial-runtime.js at open time, not
+    build time — see updateCellReportLinks() there."""
 
     def test_report_icon_and_panel_on_a_cell_by_default(self, repo, monkeypatch):
         write(repo, "```python exec\nid: greet\nprint('hi')\n```\n", slug="sample")
@@ -4082,12 +3891,8 @@ class TestCellReportPanel:
 
 
 class TestStagedHints:
-    """A ```hint fence becomes a hidden fold bound to a cell — planning/CELL_HINTS.md.
-
-    The fold is written back into the markdown rather than into the finished
-    HTML, so its body is converted like any other prose; the runtime removes
-    `hidden` when the cell has been run and failed enough times.
-    """
+    """planning/CELL_HINTS.md. The fold is written back into the markdown
+    rather than the finished HTML, so its body converts like any other prose."""
 
     CELL = "```python exec\nid: stub\n# Your add(a, b)\n```\n\n"
 

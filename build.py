@@ -971,7 +971,9 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
         "</div>"
         '<div class="dl-cell-footbar">'
         + icon_button("dl-btn-run", "&#9654;", "Loading…", disabled="disabled")
-        + icon_button("dl-btn-reset", "&#8635;", "Reset to starter",
+        + icon_button("dl-btn-reset", "&#8634;", "Reset",
+                      title="Clear this cell's output")
+        + icon_button("dl-btn-clear", "&#8635;", "Clear",
                       title="Put this cell's starter code back, and clear its output")
         + '<div class="dl-cell-more">'
         + icon_button("dl-btn-more", "&#8943;", "More",
@@ -1072,7 +1074,7 @@ def render_site_editor(editor: SiteEditor, index: int) -> str:
     return (
         f'<div class="dl-site-editor" data-site-name="{safe_name}">'
         '<div class="dl-site-head">'
-        + icon_button("dl-btn-site-reset", "&#8635;", "Reset to starter",
+        + icon_button("dl-btn-site-clear", "&#8635;", "Clear",
                       title="Put this editor's starter code back, in every pane")
         + "</div>"
         '<div class="dl-site-split">'

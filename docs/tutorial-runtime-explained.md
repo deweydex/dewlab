@@ -317,22 +317,21 @@ short list of small, real mismatches `planning/CELL_IDENTITY.md` §9
 catalogues and closes. `render_cell()` now emits three rows in the order
 dewmini's own cells already use — `.dl-cell-head` (identity: the pill, an
 optional `.dl-cell-name`, then Duplicate), `.dl-cell-body-row` (the
-collapse triangle and the editor), `.dl-cell-footbar` (Run, Reset, the
-run menu, the run line) — with `.dl-output` last. `createCustomCellElement()`
+collapse triangle and the editor), `.dl-cell-footbar` (Run, Reset, Clear,
+the run menu, the run line) — with `.dl-output` last. `createCustomCellElement()`
 here builds the same three rows by hand for a reader's own cells, since
 nothing in this file generates markup from `render_cell()` directly.
 
 Two things rode along with the move rather than needing one of their own:
 
-- **Reset and dewmini's Clear are now visibly different buttons, not just
-  differently-behaved ones behind the same look.** Reset here still puts
-  a cell's *code* back to its starter and throws away whatever a reader
-  typed; dewmini's own footbar button only clears a cell's *output*,
-  touching no code at all. They already did different things — what
-  changed is that `.dl-btn-reset` now carries its own icon (a clockwise
-  ↻) and a resting red-ish border (`tutorial-style.css`), deliberately
-  not dewmini's own counterclockwise ↺, so the two are never one glance
-  away from being confused for each other.
+- **A cell now has two buttons where it once had one double-duty Reset.**
+  `.dl-btn-reset` clears a cell's *output* only, touching no code — the
+  same action, and the same counterclockwise ↺ icon, as dewmini's own
+  footbar button. `.dl-btn-clear` puts the cell's *code* back to its
+  starter and throws away whatever a reader typed, behind a confirmation
+  dialog; it keeps the clockwise ↻ icon and resting red-ish border
+  (`tutorial-style.css`) the old single button carried, since it is the
+  one still doing something a reader can't undo.
 - **A cell can carry a name.** `name:` is a fourth header line beside
   `id:`/`hint:`/`expect:` (`HEADER_RE`, `Cell.name`, `build.py`), shown
   in `.dl-cell-name` next to the pill — "a handle to hold on to" when a

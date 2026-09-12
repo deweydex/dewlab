@@ -1,11 +1,5 @@
-"""Tests for the pair-judgement report.
-
-The report's job is to say what a pile of judgements implies without touching
-`topics.yaml`. These tests are about the findings that would cost real work if
-they were missed: a loop, a disagreement, and an arrow nobody kept.
-
-    python3 -m pytest tests -q
-"""
+"""Tests for the pair-judgement report: a loop, a disagreement, and an arrow
+nobody kept are the findings that would cost real work if missed."""
 
 from __future__ import annotations
 
@@ -34,7 +28,6 @@ TOPICS = {
 
 @pytest.fixture()
 def pairs(tmp_path, monkeypatch):
-    """An empty batch directory, wired into the module."""
     d = tmp_path / "pairs"
     d.mkdir()
     monkeypatch.setattr(pr, "PAIRS", d)
@@ -79,9 +72,6 @@ def test_one_judge_seeing_an_arrow_the_other_does_not_is_reported(pairs):
 
 
 def test_two_topics_that_need_each_other_are_a_level_not_a_fault(pairs):
-    """`B` already needs `A`. Judging `B` to come first makes the arrow run
-    both ways, which says the two sit at one level rather than that something
-    is broken."""
     batch(pairs, "1.json", "josh",
           [{"pair": ["A", "B"], "verdict": "needs", "first": "B"}])
     out = pr.build_report(TOPICS, pr.load_batches())
@@ -102,8 +92,6 @@ def test_two_judges_pointing_opposite_ways_are_a_level_not_a_disagreement(pairs)
 
 
 def test_a_longer_loop_is_still_reported_as_one_to_break(pairs):
-    """Three topics in a ring cannot be taught in any order, and teaching
-    them together does not help."""
     topics = {"A": {"name": "Alpha", "needs": ["C"]},
               "B": {"name": "Beta", "needs": ["A"]},
               "C": {"name": "Gamma", "needs": ["B"]}}
@@ -121,15 +109,8 @@ def test_an_unreadable_batch_is_skipped_rather_than_fatal(pairs, capsys):
 
 
 def test_the_same_judgements_give_the_same_report_across_runs(tmp_path):
-    """A set of edges iterates in whatever order the hash gives, and the loop
-    walk follows that order, so two runs over one pile of judgements reported
-    different loops. A generated file that cannot be reproduced cannot be
-    checked into CI, which is the whole point of generating it.
-
-    In one process that order is fixed, so the fault only shows across
-    processes: this runs the report several times with a different hash seed
-    each time, which is what two people on two machines get.
-    """
+    # A generated file that varies with PYTHONHASHSEED can't be checked into
+    # CI; this runs the build under several seeds and requires one output.
     rng = random.Random(7)
     codes = list("abcdefghij")
     edges = [(a, b) for a in codes
@@ -164,9 +145,6 @@ def test_a_pair_with_the_wrong_shape_is_ignored(pairs):
 
 
 def test_a_group_written_as_an_object_still_counts(pairs):
-    """A judge wrote each new group as an object carrying a name and the
-    topics it covers. That is more thought than a bare string, not less, so
-    the name is taken rather than the batch lost."""
     batch(pairs, "1.json", "tom", [{"pair": ["A", "C"], "verdict": "unrelated"}],
           new_groups=[{"key": "approach", "name": "How to approach a problem",
                        "topics": ["A", "C"]}])
@@ -197,8 +175,6 @@ def test_a_pair_of_non_strings_is_skipped(pairs):
 
 
 def test_an_arrow_a_chain_already_gives_you_is_listed_apart(pairs):
-    """`B` needs `A` and `C` needs `B`, so the graph already runs A to C.
-    A judge saying so is right and changes nothing."""
     topics = {"A": {"name": "Alpha", "needs": []},
               "B": {"name": "Beta", "needs": ["A"]},
               "C": {"name": "Gamma", "needs": ["B"]}}
@@ -221,8 +197,8 @@ def test_an_arrow_no_chain_gives_you_is_a_real_addition(pairs):
 
 
 def test_reachability_survives_a_graph_that_already_loops(pairs):
-    """The report exists partly to find loops, so working out what a chain
-    reaches must not hang on one."""
+    # reachable_from's memoized walk must terminate on a self-referencing
+    # graph rather than hang.
     topics = {"A": {"name": "Alpha", "needs": ["B"]},
               "B": {"name": "Beta", "needs": ["A"]},
               "C": {"name": "Gamma", "needs": []}}

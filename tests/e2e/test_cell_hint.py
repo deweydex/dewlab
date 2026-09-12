@@ -1,14 +1,4 @@
-"""A cell's own hint, in a real browser.
-
-Click-to-open, not hover — the previous hover popover was replaced.
-Wired in buildCells(), which runs
-before Pyodide's boot is even attempted, so none of this needs a cell to
-have run or Pyodide to have finished loading — the same reasoning
-test_autocomplete.py's first class already relies on for static
-completion.
-
-    python3 -m pytest tests/e2e/test_cell_hint.py -q
-"""
+"""Hint icons are wired in buildCells(), before Pyodide's boot even starts, so these need no cell run and no Pyodide load."""
 
 from __future__ import annotations
 
