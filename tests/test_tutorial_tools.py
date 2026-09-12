@@ -368,6 +368,23 @@ class TestRunSqlCell:
             tt._run_sql_cell(conn, "select * from a_table_that_does_not_exist")
         assert cell.html == ""
 
+    def test_a_select_with_no_matching_rows_marks_the_cell_empty(self, cell, conn):
+        tt._run_sql_cell(conn, "create table t (a)")
+        tt._run_sql_cell(conn, "insert into t values (1)")
+        result = tt._run_sql_cell(conn, "select * from t where a = 2")
+        assert len(result) == 0
+        assert tt._current.last_result_empty is True
+
+    def test_a_select_with_matching_rows_is_not_marked_empty(self, cell, conn):
+        tt._run_sql_cell(conn, "create table t (a)")
+        tt._run_sql_cell(conn, "insert into t values (1)")
+        tt._run_sql_cell(conn, "select * from t")
+        assert tt._current.last_result_empty is False
+
+    def test_a_non_select_last_statement_leaves_empty_unset(self, cell, conn):
+        tt._run_sql_cell(conn, "create table t (a); insert into t values (1)")
+        assert tt._current.last_result_empty is None
+
 
 try:
     import numpy as np
@@ -706,7 +723,9 @@ class TestRunReport:
 
     def test_a_clean_run_with_no_checks_and_no_expect(self, cell):
         report = tt._report(True, tt._current, None)
-        assert report == {"ok": True, "error": None, "check": None, "reached": None}
+        assert report == {
+            "ok": True, "error": None, "check": None, "empty": None, "reached": None,
+        }
 
     def test_an_error_is_its_type_and_first_line(self, cell):
         try:
@@ -737,5 +756,9 @@ class TestRunReport:
 
     def test_expect_that_raises_is_not_yet_not_an_error(self, cell):
         assert tt.holds("undefined_name == 1") is False
+
+    def test_a_sql_cells_empty_result_is_reported(self, cell):
+        tt._current.last_result_empty = True
+        assert tt._report(True, tt._current, None)["empty"] is True
         assert tt.holds("1 / 0") is False
         assert tt.holds("this is not python") is False

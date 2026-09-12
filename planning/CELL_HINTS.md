@@ -721,8 +721,31 @@ through `to_html()` on its own, the same way, right after the page's
 main markdown conversion and before `place_hints()` sees it —
 DECISIONS_LOG.md 7.139.
 
-**dewstack** stays as designed in its own note, not yet built.
+**dewstack** built its own version for `sql-check` blocks (its
+DECISIONS_LOG.md, this session), then dewstack itself was folded into
+dewlab as `database-methods` (DECISIONS_LOG.md 7.140/7.141): a `sql
+exec` fence, not a port of dewstack's `sql cell=`/`sql-check` grammar,
+sharing this same staged-hints system rather than a second one — a `for:`
+naming a `sql exec` cell's id needs nothing extra, since it wraps
+`_run_sql_cell()` and reports through the same `run_cell_report()` every
+`python exec` cell uses.
 
 **What §13 asked about the run report** was decided (a):
 `run_cell_report()` returns a JSON report; `run_cell()` keeps its
 boolean for dewmini.
+
+**A query that comes back empty is now a trigger too, DECISIONS_LOG.md
+7.148.** Raised while thinking through what a SQL-aware hint could
+catch that a raw sqlite3 message can't: the most common real mistakes
+— a missing comma read as a column alias, a `WHERE` that compares
+against the wrong case — never raise at all, so no error-keyed hint
+could ever see them. `after: 2 empty results` fires the same way
+`check-fails` does, from a new `empty` field `_report()` reads off
+`_CellContext.last_result_empty`, set by `_run_sql_cell()` whenever its
+last statement was a query and came back with zero rows. It says only
+that the result was empty, not why — an author's own hint still does
+the diagnosing, the same split between "when" and "what" every other
+trigger in this file keeps. The harder version — the runtime itself
+re-running a relaxed variant of the query to guess *why* it came back
+empty — is a different, bigger idea from the same conversation, not
+attempted here.

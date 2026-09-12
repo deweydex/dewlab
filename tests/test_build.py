@@ -3795,6 +3795,15 @@ class TestStagedHints:
         assert page.count('data-after="same-errors:3 minutes:2"') == 2
         assert 'data-after="unchanged:2 runs:8 check-fails:1"' in page
 
+    def test_empty_results_reads_both_grammars(self, repo):
+        write(repo, self.CELL
+              + "```hint\nafter: 2 empty results\nA.\n```\n\n"
+              + "```hint\nafter: empty-result:3\nB.\n```\n")
+        b.build()
+        page = built(repo)
+        assert 'data-after="empty-results:2"' in page
+        assert 'data-after="empty-results:3"' in page
+
     def test_a_second_hint_on_the_same_cell_gets_its_own_id(self, repo):
         write(repo, self.CELL + "```hint\nA.\n```\n\n```hint\nafter: 12 errors\nB.\n```\n")
         b.build()

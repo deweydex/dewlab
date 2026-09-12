@@ -3303,3 +3303,49 @@ earlier check cell in the module already uses.
 new tutorial folders (`a-college-timetable`, `the-library-loans-quiz`)
 with their own glossary files; both `.order.yaml` files and
 `topic-groups.yaml` updated. No engine or build.py change.*
+
+**7.148 — A staged hint can now wait for a SQL query that comes back
+empty.** Josh, thinking through what a hint system could do for
+`database-methods` beyond translating a raw sqlite3 message: "maybe we
+can really look at code and help a student when the output is
+unexpectedly empty" — the failure a raw error message can't help with
+at all, since nothing raises. A missing comma between two `SELECT`
+columns doesn't error, it silently becomes an alias; a case-mismatched
+`WHERE` doesn't error, it silently matches nothing. `check_*`-style
+authored checks already catch this on a page that has one; most `sql
+exec` cells don't.
+
+`after: 2 empty results` (also `empty-result:2`) is a new trigger key,
+same shape as `check-fails` and everything else in the grammar
+(`TRIGGER_KEYS`, `build.py`). `_run_sql_cell()`
+(`assets/tutorial_tools.py`) already builds a DataFrame from a `SELECT`
+statement's rows before this — the only new work is recording whether
+that frame came out empty, on the `_CellContext` the same way
+`last_check`/`last_error` already are, and reporting it as `"empty"`
+in `_report()`'s JSON. `assets/tutorial-runtime.js`'s `freshAttempts()`/
+`noteAttempt()`/`triggerHolds()` — the exact machinery `errors`/
+`same-errors`/`checkFails` already use — gained one more counter,
+`emptyResults`, reset on any non-empty result and left untouched by a
+run whose last statement wasn't a query at all (a `CREATE`/`INSERT`
+cell reports `empty: None`, which the counter treats as "no signal
+either way," not as an empty result).
+
+Nothing here inspects *why* a result was empty — that stays the harder,
+not-yet-built idea from the same conversation (relaxed re-runs of a
+`WHERE` clause to spot a case mismatch or a missing row). This is only
+the cheap half: the fact that it came back empty, for an author's own
+hint to react to, the same division of labour every other trigger in
+this system already keeps between "when" (the infrastructure decides)
+and "what" (the author writes).
+
+*Cost to change: one field on `_CellContext`, one line in
+`_run_sql_cell()`, one field in `_report()` (`assets/tutorial_tools.py`);
+one counter in three functions (`assets/tutorial-runtime.js`); two
+entries in `TRIGGER_KEYS` plus the error message they extend
+(`build.py`). Three new tests in `tests/test_tutorial_tools.py`
+(`TestRunSqlCell`, `TestRunReport`), one in `tests/test_build.py`
+(`TestStagedHints`). Full unit suite green; a fresh full-site build
+confirmed clean. No browser end-to-end test yet — the existing
+`tests/e2e/test_cell_hints_staged.py` only exercises a Python exec
+cell; worth extending once a second staged-hints signal needs the same
+proof.*

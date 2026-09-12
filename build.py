@@ -121,6 +121,8 @@ TRIGGER_KEYS = {
     "runs": "runs", "run": "runs",
     "failed checks": "check-fails", "failed check": "check-fails",
     "check-fails": "check-fails", "failed-checks": "check-fails",
+    "empty results": "empty-results", "empty result": "empty-results",
+    "empty-results": "empty-results", "empty-result": "empty-results",
     "minutes": "minutes", "minute": "minutes",
 }
 TRIGGER_TERM_RE = re.compile(
@@ -532,7 +534,7 @@ def parse_trigger(text: str, path: Path) -> str:
         if canonical is None:
             fail(path, f"a hint's after: line names a signal the runtime does not "
                        f"track: {key!r} — one of errors, identical errors, "
-                       f"unchanged runs, runs, failed checks, minutes")
+                       f"unchanged runs, runs, failed checks, empty results, minutes")
         if count < 1:
             fail(path, f"a hint's after: count must be at least 1, not {count}")
         terms.append(f"{canonical}:{count}")

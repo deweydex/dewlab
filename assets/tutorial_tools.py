@@ -220,6 +220,11 @@ class _CellContext:
         self.last_check: tuple[int, bool] | None = None
         self.checks: list[tuple[str | None, bool]] = []
         self.last_error: tuple[str, str] | None = None
+        # Whether this run's SQL query came back with zero rows — a `sql
+        # exec` cell's own "did it raise" (planning/CELL_HINTS.md), set by
+        # `_run_sql_cell()`. None when the cell isn't SQL, or its last
+        # statement wasn't a query with a result to be empty.
+        self.last_result_empty: bool | None = None
 
 
 _current: _CellContext | None = None
@@ -754,8 +759,9 @@ def holds(expression: str) -> bool:
 def _report(ok: bool, cell: "_CellContext", expect: str | None) -> dict:
     """What one run amounted to, for the page's attempt counters: whether it
     raised and which error, whether its checks passed and which one did not,
-    and whether `expect:` holds. All plain values, so it can cross the
-    Worker's postMessage boundary as JSON."""
+    whether a SQL query came back empty, and whether `expect:` holds. All
+    plain values, so it can cross the Worker's postMessage boundary as
+    JSON."""
     check = None
     if cell.checks:
         failed = [label for label, passed in cell.checks if not passed]
@@ -767,6 +773,7 @@ def _report(ok: bool, cell: "_CellContext", expect: str | None) -> dict:
         "ok": ok,
         "error": error,
         "check": check,
+        "empty": cell.last_result_empty,
         "reached": holds(expect) if expect else None,
     }
 
@@ -1376,6 +1383,7 @@ def _run_sql_cell(conn, script: str, max_rows: int = 20):
     if columns:
         frame = pd.DataFrame(cursor.fetchall(), columns=columns)
         cell.sink.append_html(_table_html(frame, max_rows=max_rows))
+        cell.last_result_empty = len(frame) == 0
     elif cursor.rowcount >= 0:
         noun = "row" if cursor.rowcount == 1 else "rows"
         cell.sink.append_html(f'<pre class="dl-repr">{cursor.rowcount} {noun} affected.</pre>')
