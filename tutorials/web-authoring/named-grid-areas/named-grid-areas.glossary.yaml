@@ -3,13 +3,11 @@
 # Twentieth tutorial of first-site. Checked against the cumulative
 # glossary so far -- no overlap.
 #
-# Flagging, not fixing: this tutorial's own prose says `auto-fill` sits
-# "alongside the auto-fit already shown on a grid gallery" -- but
-# a-grid-gallery is in several-pages, the series after first-site in
-# series.yaml's order, so a reader reaches this page before that one,
-# not after. That looks like a real forward reference left over from
-# however these pages were first sequenced; worth a look, not touched
-# here since fixing a tutorial's prose isn't this file's job.
+# This tutorial's prose used to say `auto-fill` sits "alongside the
+# auto-fit already shown on a grid gallery" -- but a-grid-gallery is in
+# several-pages, the series after first-site in series.yaml's order, so
+# a reader reaches this page before that one, not after. Fixed to point
+# forward instead of claiming auto-fit was already covered.
 entries:
   - term: grid-template-areas
     kind: keyword

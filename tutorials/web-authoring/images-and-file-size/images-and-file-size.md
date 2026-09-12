@@ -19,7 +19,7 @@ covers:
 
 # Images and file size
 
-A photo straight off a phone can be five megabytes. A version resized
+A photo taken directly on a phone can be five megabytes. A version resized
 for a web page, doing the same visual job, is usually under two hundred
 kilobytes. That is twenty-five times smaller, for a difference a visitor
 never notices.

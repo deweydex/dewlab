@@ -35,8 +35,8 @@ useful.
 > Resources — further links, linked from About and Home.
 
 The second one names what each page is for and how a visitor reaches it.
-That is a site map: not a list of files, but a list of jobs and
-connections.
+That is a site map: a list of jobs and connections, not a list of
+files.
 
 ## Why this happens
 
@@ -51,7 +51,7 @@ Three questions do most of the work.
 **Who is this for?** A visitor arriving with no context, deciding in a
 few seconds whether to stay.
 
-**What is each page for?** Not its topic alone, but its job. What should
+**What is each page for?** Its job, not only its topic. What should
 a visitor do or learn there, and where should they go next?
 
 **How do the pages connect?** Which pages link to which, and why. A page
