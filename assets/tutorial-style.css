@@ -322,6 +322,9 @@ body {
   gap: 0.5rem;
   flex-wrap: wrap;
 }
+.dl-panels:not([open]) > .dl-panels-group {
+  display: none;
+}
 
 h1, h2, h3, h4 {
   color: var(--dl-heading);
