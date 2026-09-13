@@ -286,7 +286,7 @@ class TestSharingAndLoadingACustomCell:
         shared_file = tmp_path / "shared.json"
         shared_file.write_text(json.dumps({"dewlab-custom-cell": 1, "code": "1 + 1"}))
 
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-importsexports-toggle")
         page.wait_for_selector("#dl-settings-custom-cells", timeout=5_000)
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
@@ -306,7 +306,7 @@ class TestSharingAndLoadingACustomCell:
         shared_file.write_text(
             json.dumps({"dewlab-custom-cell": 1, "code": "0", "id": "custom-not-mine"})
         )
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-importsexports-toggle")
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
         fc_info.value.set_files(str(shared_file))
@@ -322,7 +322,7 @@ class TestSharingAndLoadingACustomCell:
         shared_file.write_text(
             json.dumps({"dewlab-custom-cell": 1, "type": "text", "code": "# A note"})
         )
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-importsexports-toggle")
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
         fc_info.value.set_files(str(shared_file))
@@ -334,7 +334,7 @@ class TestSharingAndLoadingACustomCell:
         page = clean_storage
         bad_file = tmp_path / "not-a-cell.json"
         bad_file.write_text(json.dumps({"hello": "world"}))
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-importsexports-toggle")
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
         fc_info.value.set_files(str(bad_file))
@@ -348,7 +348,7 @@ class TestClearingAllCustomCells:
         add_via_trailing_divider(page, "Code")
         page.wait_for_selector(".dl-cell-custom", timeout=5_000)
 
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-importsexports-toggle")
         page.once("dialog", lambda d: d.dismiss())
         page.click("#dl-custom-cells-clear")
         page.wait_for_timeout(300)
@@ -363,7 +363,7 @@ class TestClearingAllCustomCells:
             "document.querySelectorAll('.dl-cell-custom').length === 2", timeout=5_000
         )
 
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-importsexports-toggle")
         page.once("dialog", lambda d: d.accept())
         page.click("#dl-custom-cells-clear")
         page.wait_for_timeout(300)
@@ -376,7 +376,7 @@ class TestExport:
     def test_print_button_calls_window_print(self, clean_storage):
         page = clean_storage
         page.evaluate("window.__printed = false; window.print = () => { window.__printed = true; }")
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-importsexports-toggle")
         page.click("#dl-print-pdf")
         assert page.evaluate("window.__printed") is True
 
@@ -387,7 +387,7 @@ class TestExport:
         page.click(".dl-cell-custom .cm-content")
         page.keyboard.type("exported = True")
 
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-importsexports-toggle")
         with page.expect_download() as dl_info:
             page.click("#dl-export-ipynb")
         nb_path = tmp_path / "exported.ipynb"
@@ -487,7 +487,7 @@ class TestNoCustomCellsOnAProseOnlyPage:
             page.goto(f"{url}/tutorials/{MODULE}/one.html")
             assert page.locator("#dl-custom-cells").count() == 0
             assert page.locator(".dl-insert").count() == 0
-            _open_panel(page, "#dl-settings-toggle")
+            _open_panel(page, "#dl-importsexports-toggle")
             assert page.is_hidden("#dl-settings-custom-cells")
             # Print/export still applies to a prose-only page — only the
             # custom-cells machinery is what's gated on cells.length.

@@ -1758,14 +1758,19 @@ class TestTheSettingsPanel:
         )
 
     def test_one_control_opens_it(self, repo):
+        """Settings now lives behind two corner-dock toggles rather than
+        one — Appearance and Imports & Exports, each opening the same
+        #dl-appearance panel to a different pane — not the two separate
+        texture/progress toggles this panel originally replaced."""
         write(repo, "Some prose.\n")
         b.build()
         page = built(repo)
-        assert 'id="dl-settings-toggle"' in page
-        assert 'aria-controls="dl-settings"' in page
-        # The two separate toggles it replaced.
+        assert 'id="dl-appearance-toggle"' in page
+        assert 'id="dl-importsexports-toggle"' in page
+        assert 'aria-controls="dl-appearance"' in page
         assert "dl-texture-toggle" not in page
         assert "dl-progress-toggle" not in page
+        assert "dl-settings-toggle" not in page
 
     def test_a_downloadable_copy_does_not_offer_its_own_download(self, repo_with_assets):
         write(repo_with_assets, "Some prose.\n")
@@ -1781,7 +1786,7 @@ class TestTheSettingsPanel:
         write(repo_with_assets, "```python exec\nid: c\n1 + 1\n```\n")
         b.build(standalone=True)
         page = (repo_with_assets / "site" / "download" / "computational-methods" / "sample.html").read_text()
-        assert 'id="dl-settings-toggle"' in page
+        assert 'id="dl-appearance-toggle"' in page
         assert 'id="dl-settings-work"' in page
         assert 'id="dl-settings-texture"' in page
 
