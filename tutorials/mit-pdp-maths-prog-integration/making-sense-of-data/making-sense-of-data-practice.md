@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Making Sense of Data — Practice
 
-Answers are folded. Compute the statistics by hand on the small sets — five numbers is quick, and doing it once is what makes the formulae stop being formulae.
+Answers are hidden. Compute the statistics by hand on the small sets — five numbers is quick, and doing it once is what makes the formulae stop being formulae.
 
 Adapted in part from the statistics and probability worksheet in the Mathematics repository.
 
@@ -117,7 +117,7 @@ Squaring makes everything positive, and it also weights large deviations much mo
 
 The first class is uniform; the second has both strong and struggling students in it.
 
-Same mean, completely different teaching problem. This is the argument for never reporting an average alone — a centre without a spread describes almost nothing.
+Same mean, completely different teaching problem. This is the argument for never reporting an average alone — a center without a spread describes almost nothing.
 
 </details>
 
@@ -141,7 +141,7 @@ For n = 100 the difference is half a percent. For n = 5 it is over 10%, which is
 
 The mean and median both go up by 10. The range and standard deviation do not change at all.
 
-Measures of centre shift with the data; measures of spread do not, because every deviation from the mean is the same as it was.
+Measures of center shift with the data; measures of spread do not, because every deviation from the mean is the same as it was.
 
 Multiply everything by 3 instead and all four triple — the spread measures scale even though they do not shift.
 
@@ -151,7 +151,7 @@ Multiply everything by 3 instead and all four triple — the spread measures sca
 
 **11.** Classify each as nominal, ordinal, interval or ratio.
 
-- (a) Eye colour
+- (a) Eye color
 - (b) Exam grade (Pass, Merit, Distinction)
 - (c) Temperature in Celsius
 - (d) Height in centimetres
@@ -161,7 +161,7 @@ Multiply everything by 3 instead and all four triple — the spread measures sca
 
 (a) Nominal. (b) Ordinal. (c) Interval. (d) Ratio. (e) Nominal, despite being a number.
 
-(c) and (d) differ over whether zero means "none". 20 °C is not twice as hot as 10 °C, because 0 °C is a chosen point rather than an absence of heat. 20 cm genuinely is twice 10 cm.
+(c) and (d) differ over whether zero means "none". 20 °C is not twice as hot as 10 °C, because 0 °C is a chosen point rather than an absence of heat. 20 cm is twice 10 cm.
 
 (e) is the trap. Averaging shirt numbers is arithmetically possible and meaningless, and a program will do it without complaint.
 
@@ -173,7 +173,7 @@ Multiply everything by 3 instead and all four triple — the spread measures sca
 
 Nominal: mode only. Ordinal: mode and median — you can put them in order, so a middle exists. Interval and ratio: all three.
 
-The measure has to respect what the numbers actually mean, and there is nothing in the data itself that will stop you.
+The measure has to respect what the numbers mean, and there is nothing in the data itself that will stop you.
 
 </details>
 

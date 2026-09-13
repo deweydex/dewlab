@@ -197,7 +197,7 @@ id: your-turn-1
 
 ## Roots from the Same Form
 
-The completed form also hands you the roots, and it hands them over more honestly than the formula does.
+The completed form also hands you the roots, and it hands them over more clearly than the formula does.
 
 A root is where the function is zero. So set the completed form to zero and unwrap it:
 
@@ -239,7 +239,7 @@ The same answers, both ways.
 
 They are the same answers because **the quadratic formula is completing the square, done once in general so nobody has to do it again.** Somebody worked through the steps above with letters instead of numbers, and what fell out was the formula you have been using.
 
-That is worth knowing for its own sake. A formula that arrives from nowhere is a thing to memorise; a formula you have seen derived is a thing you could rebuild if you forgot it.
+That is worth knowing for its own sake. A formula that arrives from nowhere is a thing to memorize; a formula you have seen derived is a thing you could rebuild if you forgot it.
 
 ### The ± is not decoration
 

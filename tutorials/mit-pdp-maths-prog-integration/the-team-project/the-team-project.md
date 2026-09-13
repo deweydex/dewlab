@@ -21,7 +21,7 @@ covers:
 
 **Programming Design Principles**
 
-This one is not a tutorial. There is no code to run and nothing to work through in an hour — it is a brief for a piece of work you will do over several weeks, in a group of three to five, and it is here so that the shape of it is written down somewhere you can go back to.
+This one is a brief for a piece of work you will do over several weeks, in a group of three to five, not a tutorial: there is no code to run and nothing to work through in an hour. It is here so that the shape of it is written down somewhere you can go back to.
 
 The learning outcome behind it asks you to design, develop, release and review software **over time, in a team**. Every word of that matters, and the two that people underestimate are *over time* and *review*.
 
@@ -29,12 +29,12 @@ The learning outcome behind it asks you to design, develop, release and review s
 
 Build something small, in a group of three to five, and release it three times.
 
-Small is important. A project that is too ambitious does not fail at the end; it fails in week two, when nobody can see how the pieces fit and everyone quietly stops. Something you could reasonably finish alone in a weekend is about right for a team over several weeks — because most of what you are learning here is not how to write the code.
+Small is important. A project that is too ambitious fails in week two, when nobody can see how the pieces fit and everyone quietly stops — not at the end. Something you could reasonably finish alone in a weekend is about right for a team over several weeks, because most of what you are learning here is not how to write the code.
 
 Things that have worked:
 
-- **A tool that does something you actually do by hand.** A timetable checker, a marks calculator, something that renames files the way you keep renaming them.
-- **A small game.** Guessing, quizzes, noughts and crosses. The rules are known so the arguments are about the building.
+- **A tool that does something you do by hand.** A timetable checker, a marks calculator, something that renames files the way you keep renaming them.
+- **A small game.** Guessing, quizzes, tic-tac-toe. The rules are known so the arguments are about the building.
 - **Something with data in it.** Take a dataset you can get hold of and answer three questions about it, with plots.
 
 Things that go wrong: anything needing an account with somebody else's service, anything with a login, and anything where the interesting part is a library you have not used yet.
@@ -43,7 +43,7 @@ Things that go wrong: anything needing an account with somebody else's service, 
 
 This is the part that makes it a project rather than an assignment.
 
-**You will release three times.** Each release is a version somebody outside the team could use, at the point you release it. Not a plan for one, not most of one — a working thing, however little it does.
+**You will release three times.** Each release is a version somebody outside the team could use, at the point you release it — a working thing, however little it does, not a plan for one and not most of one.
 
 | | What it is | The question it answers |
 |---|---|---|
@@ -71,7 +71,7 @@ That agreement is worth more than any amount of planning about features. It is t
 
 The outcome says *review*, and this is the half most teams skip.
 
-**Before each release, read each other's code.** Not to find fault — to find out whether it can be read. If you cannot follow what a function does, that is information about the function rather than about you, and it is much cheaper to find out now.
+**Before each release, read each other's code** — to find out whether it can be read, not to find fault. If you cannot follow what a function does, that is information about the function rather than about you, and it is much cheaper to find out now.
 
 Three questions that make a review useful rather than polite:
 
@@ -88,11 +88,11 @@ Three questions that make a review useful rather than polite:
 The review that matters most is the one at the end, and it is about the process rather than the product.
 
 - What went differently from what you expected?
-- Where did the time actually go, against where you thought it would?
+- Where did the time go, against where you thought it would?
 - What would you do differently with the same brief and a fresh start?
 - What did somebody else in the team do that you would like to be able to do?
 
-That last one is worth taking seriously. Three to five people building something together is the closest this course comes to how software is actually made, and most of what people take away from it is something they watched somebody else do.
+That last one is worth taking seriously. Three to five people building something together is the closest this course comes to how software is made, and most of what people take away from it is something they watched somebody else do.
 
 ## What Gets Handed In
 
@@ -100,13 +100,13 @@ Per release: the working code, a short note on what changed, and who did what.
 
 At the end: the three releases, and a reflection of a page or so per person, answering the questions above in your own words.
 
-The reflection is not a summary of the project. It is what you learned, including the parts that did not go well — and a project where nothing went wrong is either very small or not being described honestly.
+The reflection is what you learned, including the parts that did not go well, not a summary of the project — and a project where nothing went wrong is either very small or not being described accurately.
 
 ## A Last Thing
 
-The hardest problem in a team project is almost never technical.
+The hardest problem in a team project is almost always somebody being stuck and not saying so, for two weeks, because they think everybody else understands it — almost never something technical.
 
-It is somebody being stuck and not saying so, for a fortnight, because they think everybody else understands it. This happens in professional teams constantly and it is the single most expensive thing that goes wrong.
+This happens in professional teams constantly and it is the single most expensive thing that goes wrong.
 
 If you are stuck, say so on the day. If somebody has gone quiet, ask them. Neither of those is a small kindness — they are the actual skill this outcome is about.
 

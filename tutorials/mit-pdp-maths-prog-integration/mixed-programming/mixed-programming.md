@@ -21,7 +21,7 @@ version: 2026.08.23.1
 
 Every problem here needs more than one tutorial. None of them says which, and that is the point: knowing that a problem wants a loop with a condition inside it, or a sort followed by a search, is a different skill from being able to write either.
 
-Answers are folded, and most have more than one good one. Where a problem has a decision in it, the answer says what was decided and why rather than pretending there was only one route.
+Answers are hidden, and most have more than one good one. Where a problem has a decision in it, the answer says what was decided and why rather than pretending there was only one route.
 
 ## Tools
 
@@ -160,7 +160,7 @@ print(len(hits), sum(hits))
 
 Worth doing a second way, without a loop: the multiples of 3 sum to $3 \times \frac{333 \times 334}{2}$, the multiples of 5 to $5 \times \frac{199 \times 200}{2}$, and the multiples of 15 have been counted twice and come off once. That gives 233,168 as well, in no time at all for any limit you like.
 
-Inclusion–exclusion turning up in a programming exercise is not a coincidence — it is the same idea as the union of two sets.
+Inclusion–exclusion turning up in a programming exercise is the same idea as the union of two sets, not a coincidence.
 
 </details>
 
@@ -260,7 +260,7 @@ def pair_summing_to(numbers, target):
     return None
 ```
 
-The second is not cleverer arithmetic — it is the same question asked differently. Instead of "do any two of these add up", it asks "have I already seen the number that would complete this one", which is a lookup rather than a search.
+The second is the same question asked differently, not cleverer arithmetic. Instead of "do any two of these add up", it asks "have I already seen the number that would complete this one", which is a lookup rather than a search.
 
 </details>
 
@@ -296,7 +296,7 @@ def merge(a, b):
 
 The same merge walk as the set operations, and it is the heart of merge sort: split the list until every piece has one item, then merge back up. That is how you get n log n instead of n².
 
-`<=` rather than `<` keeps it stable — equal items keep the order they came in.
+`<=` rather than `<` keeps it stable: equal items keep the order they came in.
 
 </details>
 
@@ -367,7 +367,7 @@ def guess(secret):
 print(max(guess(n) for n in range(1, 101)))
 ```
 
-Seven, at worst — and binary search is the strategy, applied to a number nobody wrote down. Run it over all hundred numbers and the average comes out at about 5.8.
+Seven, at worst. Binary search is the strategy, applied to a number nobody wrote down. Run it over all hundred numbers and the average comes out at about 5.8.
 
 </details>
 

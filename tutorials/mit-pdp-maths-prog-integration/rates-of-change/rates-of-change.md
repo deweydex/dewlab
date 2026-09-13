@@ -124,7 +124,7 @@ for x in [-2, -0.5, 0, 1, 3]:
 
 Look at that column of answers against the x values beside them. Every one is exactly double the x.
 
-**The derivative of `x²` is `2x`.** Not a number — a function, one that tells you the slope wherever you ask.
+**The derivative of `x²` is `2x`** — a function, not a number, one that tells you the slope wherever you ask.
 
 The rate-of-change description is the one that leaves the graph. The falling ball from the last tutorial fell `4.9t²` metres, and its speed is the derivative:
 
@@ -376,7 +376,7 @@ The slope of a curve at a single point, which is a limit, which is what made the
 
 **Three descriptions, one number.** A limit of chords, the slope of the tangent, and a rate of change. Which one you reach for depends on what you are doing.
 
-**The derivative is a function.** Not a number — a rule that gives the slope wherever you ask.
+**The derivative is a function** — a rule that gives the slope wherever you ask, not a number.
 
 **Zero slope is a turning point.** The most useful fact here, and it agrees with what completing the square told you in *Parabolas*.
 

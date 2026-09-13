@@ -20,7 +20,7 @@ version: 2026.08.23.1
 
 Each of these needs at least two of the algebra tutorials, and several want a picture as well as a calculation. Nothing here is harder than what those tutorials covered; what is harder is that nobody is telling you which one to use.
 
-Answers are folded. Where a problem can be done algebraically and graphically, do it both ways — the second is the check.
+Answers are hidden. Where a problem can be done algebraically and graphically, do it both ways — the second is the check.
 
 ## Tools
 
@@ -56,9 +56,9 @@ draw(lambda x: x ** 2 - 3 * x - 4, label="x^2 - 3x - 4")
 print(roots(1, -3, -4))
 ```
 
-## Expand, Factorise, Solve
+## Expand, Factorize, Solve
 
-**1.** Expand $(2x - 3)(x + 5)$, then solve the result equal to zero, then check the roots by factorising back.
+**1.** Expand $(2x - 3)(x + 5)$, then solve the result equal to zero, then check the roots by factorizing back.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -96,10 +96,10 @@ The sum of the roots is $-b/a$ and their product is $c/a$, which is a quick way 
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Knowing the roots tells you the shape. Start by writing the quadratic that has roots 1 and 3, in factorised form, without worrying about the scale.
-2. Multiply that out, or leave it factorised — either works for the next step.
+1. Knowing the roots tells you the shape. Start by writing the quadratic that has roots 1 and 3, in factorized form, without worrying about the scale.
+2. Multiply that out, or leave it factorized — either works for the next step.
 3. Now use the third fact. What does "passes through $(0, 6)$" let you substitute?
-4. Whatever number your factorised form gives at $x = 0$, you need it to be 6.
+4. Whatever number your factorized form gives at $x = 0$, you need it to be 6.
 
 **Think about:** two roots fixed the shape and one point fixed the size. Three facts, three coefficients — count them and see that it had to work.
 
@@ -200,7 +200,7 @@ Then plot it and check. Everything you predicted should be visible, and if the p
 
 At $(-1, -3)$ and $(4, 12)$.
 
-$x^2 - 3x - 4 = 0$, factorising as $(x-4)(x+1)$.
+$x^2 - 3x - 4 = 0$, factorizing as $(x-4)(x+1)$.
 
 Every "where do these meet" question is a "solve this equation" question, and the graph is how you check you got them all.
 
@@ -368,6 +368,6 @@ For the first few years the two are nearly identical, which is why simple intere
 
 (e) No exact form, and provably so — no formula in radicals exists for the general fifth-degree equation. About 1.1673.
 
-That last fact is worth knowing. Quadratics have a formula, cubics and quartics have horrible ones, and from degree five there is none — not because nobody has found it, but because Abel proved in 1824 that there is not one to find.
+That last fact is worth knowing. Quadratics have a formula, cubics and quartics have horrible ones, and from degree five there is none, because Abel proved in 1824 that there is not one to find — not because nobody has looked.
 
 </details>

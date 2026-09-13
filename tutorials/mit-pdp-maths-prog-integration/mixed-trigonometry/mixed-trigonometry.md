@@ -17,7 +17,7 @@ version: 2026.08.23.1
 
 Coordinates, angles, triangles and waves are four views of the same circle. These problems move between them, usually without saying so.
 
-Answers are folded. Draw the situation before you calculate — in this topic more than any other, the picture is where the mistakes become visible.
+Answers are hidden. Draw the situation before you calculate — in this topic more than any other, the picture is where the mistakes become visible.
 
 ## Tools
 
@@ -84,7 +84,7 @@ $\frac{4}{3}$ and $\frac{-4}{-3}$ are the same number, so `atan` cannot tell $(3
 
 About 67.38°, and 13 units.
 
-The gaps are 5 across and 12 up — a 5-12-13 triangle, which is worth recognising alongside 3-4-5.
+The gaps are 5 across and 12 up — a 5-12-13 triangle, which is worth recognizing alongside 3-4-5.
 
 </details>
 
@@ -146,7 +146,7 @@ There are two answers: about 9.93 and about 3.93.
 
 $\sin \theta = \frac{8 \sin 30°}{5} = 0.8$, so the angle opposite the 8 is either 53.13° or 126.87° — both have a sine of 0.8.
 
-This is the ambiguous case, and it is genuinely ambiguous: two different triangles satisfy everything you were told. Drawing it shows why — swinging the 5 from the end of the 8 crosses the base twice.
+This is the ambiguous case, and it is ambiguous: two different triangles satisfy everything you were told. Drawing it shows why — swinging the 5 from the end of the 8 crosses the base twice.
 
 The unit circle explains it in one line: sine is symmetric about 90°, so $\sin\theta$ never says which side of it you are on.
 
@@ -239,7 +239,7 @@ for d in [0, 17, 45, 90, 137, 250, 359]:
 
 All 1.0.
 
-It is Pythagoras on the unit circle. The point is at distance 1 from the centre, and its two coordinates are the two short sides of a right triangle with hypotenuse 1.
+It is Pythagoras on the unit circle. The point is at distance 1 from the center, and its two coordinates are the two short sides of a right triangle with hypotenuse 1.
 
 Every trigonometric identity is a fact about that circle written in a different notation, and this is the one the rest are built from.
 
@@ -256,7 +256,7 @@ Every trigonometric identity is a fact about that circle written in a different 
 3. That line is where the two circles cross. Substitute back into either circle to find the two points on it.
 4. Now use the third mast: compute the distance from each candidate to $(4, 8)$.
 
-**Think about:** two measurements always leave two candidates, and no amount of accuracy fixes that. The third measurement is not about precision, it is about which side you are on.
+**Think about:** two measurements always leave two candidates, and no amount of accuracy fixes that. The third measurement is about which side you are on, not about precision.
 
 **Try this next:** what if the third mast were at $(4, 0)$ instead — on the line between the other two? Would it still settle the question?
 
@@ -296,7 +296,7 @@ Rolling without slipping means the rim speed and the ground speed are the same, 
 
 </details>
 
-**17.** Two points on a circle of radius 5 are 6 apart in a straight line. What is the angle between them at the centre, and how far apart are they along the arc?
+**17.** Two points on a circle of radius 5 are 6 apart in a straight line. What is the angle between them at the center, and how far apart are they along the arc?
 
 <details class="dl-answer"><summary>answer</summary>
 

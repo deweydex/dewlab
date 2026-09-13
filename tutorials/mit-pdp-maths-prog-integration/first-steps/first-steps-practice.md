@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # First Steps — Practice
 
-Answers are folded. Most of these are short — the point is repetition on the operators until they stop needing thought.
+Answers are hidden. Most of these are short — the point is repetition on the operators until they stop needing thought.
 
 Several ask you to predict before running. Predicting wrongly and finding out why is worth more than getting it right by executing the cell first, so resist.
 
@@ -59,7 +59,7 @@ print(7 * 24 * 60 * 60)
 print(143 // 60, "hours and", 143 % 60, "minutes")
 ```
 
-2 hours and 23 minutes. This pairing — `//` for how many whole ones, `%` for what is left over — comes up constantly.
+2 hours and 23 minutes. This pairing of `//` for how many whole ones and `%` for what is left over comes up constantly.
 
 </details>
 
@@ -74,7 +74,7 @@ print(143 // 60, "hours and", 143 % 60, "minutes")
 
 (a) 3. (b) 2. (c) 0. (d) 5.
 
-The last two catch people out. Seventeen does not go into five at all, so the whole part is 0 and *all* of the 5 is left over.
+The last two surprise people. Seventeen does not go into five at all, so the whole part is 0 and *all* of the 5 is left over.
 
 </details>
 
@@ -173,7 +173,7 @@ Also missing: turning the toaster on.
 4. The largest so far is the answer
 ```
 
-The constraint — one number at a time — is what forces you to carry something with you as you go. That "largest so far" is a variable, and this algorithm is what `max()` does internally.
+The one-number-at-a-time constraint is what forces you to carry something with you as you go. That "largest so far" is a variable, and this algorithm is what `max()` does internally.
 
 </details>
 

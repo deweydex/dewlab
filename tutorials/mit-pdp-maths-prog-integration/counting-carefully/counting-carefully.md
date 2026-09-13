@@ -35,7 +35,7 @@ So $5! = 5 \times 4 \times 3 \times 2 \times 1 = 120$.
 
 What does this count? It counts the number of different orderings (or *arrangements*) of n distinct objects. If you have 5 books, you can arrange them on a shelf in 120 different ways: 5 choices for the first position, then 4 for the second, then 3, then 2, then 1.
 
-By convention, $0! = 1$. This seems strange but is mathematically consistent -- there is exactly one way to arrange zero objects (do nothing).
+By convention, $0! = 1$. This seems strange but is mathematically consistent: there is exactly one way to arrange zero objects (do nothing).
 
 ### Your turn
 
@@ -156,7 +156,7 @@ id: applying-the-counting-tools-1
 # 5. Three toppings from 15
 ```
 
-Questions 2 and 3 are interesting because they involve *repetition* -- the same letter or digit can appear more than once. These are not permutations or combinations in the standard sense; they use the *multiplication principle*: if there are $k$ choices at each of $r$ steps, the total is $k^r$. For 4-letter sequences from 26 letters: $26^4 = 456,976$.
+Questions 2 and 3 are interesting because they involve *repetition*: the same letter or digit can appear more than once. These are not permutations or combinations in the standard sense; they use the *multiplication principle*: if there are $k$ choices at each of $r$ steps, the total is $k^r$. For 4-letter sequences from 26 letters: $26^4 = 456,976$.
 
 ### Your turn
 
@@ -224,5 +224,5 @@ first principles.
 
 Mike Pound (Computerphile) (2016). *Password Cracking.*
 <https://www.youtube.com/watch?v=7U-RbOKanYs>. What the numbers this page
-computes actually mean in practice — how fast a real machine gets through
+computes mean in practice — how fast a real machine gets through
 them.

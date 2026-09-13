@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Logic and Truth — Practice
 
-Answers are folded. Several of these ask you to predict a table before generating it — the prediction is the exercise.
+Answers are hidden. Several of these ask you to predict a table before generating it — the prediction is the exercise.
 
 ## Tools
 
@@ -55,7 +55,7 @@ Each input doubles the number of cases, which is why exhaustive checking stops b
 
 Three and one.
 
-`or` is the generous one — it only fails when both fail. `and` is the strict one.
+`or` is the generous one: it only fails when both fail. `and` is the strict one.
 
 </details>
 
@@ -87,7 +87,7 @@ Or equivalently `(a and not b) or (b and not a)`, which lists the two true rows 
 
 Because "exactly one is true" and "they are different" are the same condition when there are only two possible values.
 
-That is not a coincidence — it is one idea named twice by people who came at it from different directions.
+It is one idea named twice by people who came at it from different directions, not a coincidence.
 
 </details>
 
@@ -147,7 +147,7 @@ Apply De Morgan to the inside: `not(not a or not b)` is `not(not a) and not(not 
 
 Push the outer `not` in: `not a and not(b and not c)`. Then push the inner one: `not b or c`.
 
-Two steps, working outwards in. Check it by looping over all eight combinations.
+That is two steps, working outwards in. Check it by looping over all eight combinations.
 
 </details>
 
@@ -203,7 +203,7 @@ Note that `not (age >= 18)` becomes `age < 18` rather than `age <= 18`. Getting 
 
 `complement(A) = {5,6,7,8}` and `complement(B) = {1,2,7,8}`, and their intersection is `{7,8}`.
 
-The same, which is De Morgan on sets.
+They are the same, which is De Morgan on sets.
 
 </details>
 
@@ -221,7 +221,7 @@ An item being in a set and a statement being true are the same question asked ab
 
 <details class="dl-answer"><summary>answer</summary>
 
-Symmetric difference — everything in exactly one of the two sets. Python spells it `A ^ B`, using the same operator as for booleans, and for the same reason.
+Symmetric difference: everything in exactly one of the two sets. Python spells it `A ^ B`, using the same operator as for booleans, and for the same reason.
 
 </details>
 

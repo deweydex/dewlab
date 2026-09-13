@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Repeating Yourself — Practice
 
-Answers are folded. For every loop here, ask the same three questions before you write it: what am I accumulating, what does it start at, and what makes it stop.
+Answers are hidden. For every loop here, ask the same three questions before you write it: what am I accumulating, what does it start at, and what makes it stop.
 
 ## Range
 
@@ -184,7 +184,7 @@ It stops after seven halvings. If you write `x = x // 2` instead it also stops, 
 
 When you do not know how many times in advance.
 
-`for` is for a known count — every item of a list, every number in a range. `while` is for a condition — until the user types "quit", until the guess is right, until the answer stops changing. Written the other way round, both are awkward: a `for` loop faking a `while` needs a `break`, and a `while` counting to ten needs its own counter.
+`for` is for a known count: every item of a list, every number in a range. `while` is for a condition: until the user types "quit", until the guess is right, until the answer stops changing. Written the other way round, both are awkward: a `for` loop faking a `while` needs a `break`, and a `while` counting to ten needs its own counter.
 
 </details>
 
@@ -318,7 +318,7 @@ while found < 500:
 print(total)
 ```
 
-Two things worth noticing. The outer loop is a `while` because you do not know in advance which number the 500th prime is. And `d * d <= n` rather than `d <= n` is what makes it fast enough to finish — a factor larger than the square root always has a partner smaller than it, so there is nothing above there to find.
+Two things worth noticing. The outer loop is a `while` because you do not know in advance which number the 500th prime is. And a factor larger than the square root always has a partner smaller than it, so there is nothing above there to find, which is why `d * d <= n` rather than `d <= n` is what makes it fast enough to finish.
 
 </details>
 
@@ -354,6 +354,6 @@ while n != 1:
 print(steps, highest)
 ```
 
-Nobody has proved that this reaches 1 for every starting number, and nobody has found one that does not. So this is a `while` loop that is known to stop for every value anyone has tried and not known to stop in general — which is a genuinely unusual thing for a five-line program to be.
+Nobody has proved that this reaches 1 for every starting number, and nobody has found one that does not. So this is a `while` loop that is known to stop for every value anyone has tried and not known to stop in general — which is an unusual thing for a five-line program to be.
 
 </details>

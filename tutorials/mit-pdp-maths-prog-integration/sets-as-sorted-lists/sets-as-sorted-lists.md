@@ -33,9 +33,9 @@ This connects beautifully to our earlier work: the sort algorithms from *Putting
 
 Python has a built-in `set` type, but we are going to implement sets as sorted lists with no duplicates. There are two reasons for this.
 
-First, it lets us practise the algorithms we have already learned. Finding an element in a sorted list is a binary search. Combining two sorted lists is a merge operation. These are fundamental patterns.
+First, it lets us practice the algorithms we have already learned. Finding an element in a sorted list is a binary search. Combining two sorted lists is a merge operation. These are fundamental patterns.
 
-Second, it demystifies what the built-in `set` does. When you understand how set operations work at the algorithmic level, the built-in version is not magic -- it is just a faster implementation of the same ideas.
+Second, it demystifies what the built-in `set` does. When you understand how set operations work at the algorithmic level, the built-in version is just a faster implementation of the same ideas, not magic.
 
 ## Making a Set
 
@@ -143,9 +143,9 @@ print("union:", union(a, b))
 
 Using the same merge-walk pattern as a guide, how might you write the remaining set operations?
 
-1. `intersection(a, b)` -- elements that are in *both* a and b
-2. `difference(a, b)` -- elements that are in a but *not* in b
-3. `symmetric_difference(a, b)` -- elements that are in a or b but *not* both
+1. `intersection(a, b)`: elements that are in *both* a and b
+2. `difference(a, b)`: elements that are in a but *not* in b
+3. `symmetric_difference(a, b)`: elements that are in a or b but *not* both
 
 What changes in the merge-walk logic for each operation? Which elements do we keep when `a[i] == b[j]`? When `a[i] < b[j]`?
 

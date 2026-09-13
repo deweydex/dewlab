@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Parabolas — Practice
 
-Answers are folded. Do the algebra before you unfold it.
+Answers are hidden. Do the algebra before you unfold it.
 
 ## Tools
 
@@ -189,7 +189,7 @@ If the width (the two sides at right angles to the wall) is `w`, the remaining s
 
 Roots at w = 0 and w = 20, so the peak is at w = 10, giving an area of 200 m². The pen is 10 m deep and 20 m along the wall.
 
-This is the standard shape of an optimisation problem, and the parabola does all the work.
+This is the standard shape of an optimization problem, and the parabola does all the work.
 
 </details>
 

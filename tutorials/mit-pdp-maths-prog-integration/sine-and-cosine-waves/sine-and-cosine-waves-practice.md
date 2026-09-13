@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Sine and Cosine Waves — Practice
 
-Answers are folded. Several of these are about reading a picture, so plot first and check afterwards.
+Answers are hidden. Several of these are about reading a picture, so plot first and check afterwards.
 
 ## Tools
 
@@ -135,7 +135,7 @@ Cosine's second solution is 360 minus the first, not 180 minus — because cosin
 
 Because it is a point going round a circle, drawn against how far it has gone. After a full turn the point is back where it started, so its height is what it was, so the curve must do the same thing again.
 
-The repetition is not a property the curve happens to have; it is what circling looks like drawn flat.
+The repetition is what circling looks like drawn flat, not a property the curve happens to have.
 
 </details>
 
@@ -159,7 +159,7 @@ draw(wave(amplitude=2, lift=1), label="2 sin(x) + 1")
 
 Middle = (5.2 + 1.4)/2 = 3.3. Amplitude = (5.2 − 1.4)/2 = 1.9. Period = 12.4 hours.
 
-`depth(t) = 1.9 sin(2π(t − shift)/12.4) + 3.3`, with the shift chosen so the peak lands at whatever time high tide actually is.
+`depth(t) = 1.9 sin(2π(t − shift)/12.4) + 3.3`, with the shift chosen so the peak lands at whatever time high tide occurs.
 
 </details>
 
@@ -215,7 +215,7 @@ Geometrically it is the vertical line that has no slope — the same fact as in 
 
 ## One Longer One
 
-**17.** A Ferris wheel has a radius of 20 m, its centre is 22 m above the ground, and it takes 4 minutes to go round.
+**17.** A Ferris wheel has a radius of 20 m, its center is 22 m above the ground, and it takes 4 minutes to go round.
 
 - (a) Write your height above the ground as a function of time, starting at the bottom.
 - (b) How high are you after 1 minute? After 3?
@@ -225,7 +225,7 @@ Geometrically it is the vertical line that has no slope — the same fact as in 
 
 (a) Starting at the bottom means starting at the minimum, which a negative cosine does: `h(t) = −20 cos(2πt/4) + 22`.
 
-(b) After 1 minute you are a quarter of the way round, at the height of the centre: 22 m. After 3 minutes you are three quarters round, also 22 m — the other side.
+(b) After 1 minute you are a quarter of the way round, at the height of the center: 22 m. After 3 minutes you are three quarters round, also 22 m — the other side.
 
 (c) Solve `−20 cos(2πt/4) + 22 = 30`, giving `cos(2πt/4) = −0.4`, so `2πt/4 ≈ ±1.982`, so `t ≈ 1.26` and `t ≈ 2.74`. You are above 30 m for about 1.48 minutes of each 4 — a bit over a third of the ride.
 
@@ -237,6 +237,6 @@ Geometrically it is the vertical line that has no slope — the same fact as in 
 
 They cancel completely — the sum is flat zero.
 
-A shift of π is half a period, so wherever one is up the other is exactly as far down. This is destructive interference, and it is how noise-cancelling headphones work: they generate the opposite wave.
+A shift of π is half a period, so wherever one is up the other is exactly as far down. This is destructive interference, and it is how noise-canceling headphones work: they generate the opposite wave.
 
 </details>

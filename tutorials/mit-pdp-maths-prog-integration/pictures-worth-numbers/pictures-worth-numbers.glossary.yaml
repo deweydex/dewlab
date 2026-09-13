@@ -30,7 +30,7 @@ entries:
       Four datasets with nearly identical statistics, sharing a mean, a
       standard deviation and a correlation, that look completely different
       when plotted. It is the classic argument for why data has to be drawn,
-      not only summarised.
+      not only summarized.
   - term: chart junk
     kind: concept
     definition: Decorative elements on a chart that do not convey information — worth avoiding, since simplicity aids understanding.

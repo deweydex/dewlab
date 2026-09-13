@@ -92,7 +92,7 @@ print(square_root(9))
 # print(square_root(-1))
 ```
 
-A domain is not a technicality. It is the answer to "what am I allowed to put in?", and the error you get from putting in something else is the function telling you so.
+A domain is the answer to "what am I allowed to put in?", not a technicality, and the error you get from putting in something else is the function telling you so.
 
 ## A Machine Has a Picture
 
@@ -131,7 +131,7 @@ draw(square, label="x squared")
 
 Look at what `draw` does, because there is no magic in it. It makes a list of x values, calls your function on each one, and plots the pairs. **The list of (x, y) pairs and the curve are the same thing** — the curve is just what a very long list of pairs looks like from a distance.
 
-That is worth saying because a graph can feel like a separate object that a function somehow has. It is not. It is the function's output, written down in a different medium.
+That is worth saying because a graph can feel like a separate object that a function somehow has. It is the function's output, written down in a different medium, not a separate object the function has.
 
 ### Your turn
 
@@ -345,11 +345,11 @@ id: your-turn-4
 
 A function is a rule with exactly one output per input, and that rule has a shape.
 
-What to take from this.
+Here is what to take from this.
 
 **A graph is output, not decoration.** It is a long list of (x, y) pairs seen from a distance, and everything you can compute you can also draw.
 
-**One coefficient, one visible change.** Lines have two numbers, quadratics have three, and each of them does a separate thing to the picture. That pattern comes back in every family of curves in the rest of the course.
+**One coefficient makes one visible change.** Lines have two numbers, quadratics have three, and each of them does a separate thing to the picture. That pattern comes back in every family of curves in the rest of the course.
 
 **Crossing the axis is solving the equation.** Once you believe that, a picture becomes a way of answering questions, including questions with no tidy algebraic route.
 

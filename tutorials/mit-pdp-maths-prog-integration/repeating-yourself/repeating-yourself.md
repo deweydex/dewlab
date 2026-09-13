@@ -71,7 +71,7 @@ print(total)
 # Final total: ?
 ```
 
-That program computes 1 + 2 + 3 + 4. This pattern -- starting with zero and repeatedly adding -- is called the *accumulator pattern*, and it is one of the most common structures in programming.
+That program computes 1 + 2 + 3 + 4. This pattern of starting with zero and repeatedly adding is called the *accumulator pattern*, and it is one of the most common structures in programming.
 
 ## For Loops: When You Know How Many Times
 
@@ -136,7 +136,7 @@ for i in range(1, 6):     # 1 through 5
 print("Sum:", total)       # should be 15
 ```
 
-We can generalise this. $\sum_{i=1}^{n} i^2$ means "add up the squares of all integers from 1 to n":
+We can generalize this. $\sum_{i=1}^{n} i^2$ means "add up the squares of all integers from 1 to n":
 
 ```python exec
 id: sigma-notation-mathematics-meets-loops-2
@@ -208,7 +208,7 @@ for row in range(1, 4):
 
 ### Your turn
 
-Let's modify the code above to produce a full 10x10 multiplication table. Then think about how many total multiplications it computes. If the outer loop runs n times and the inner loop runs n times, the total number of operations is n x n, or $n^2$. This idea -- counting how many operations an algorithm performs -- will be very important when we study search and sort algorithms.
+Let's modify the code above to produce a full 10x10 multiplication table. Then think about how many total multiplications it computes. If the outer loop runs n times and the inner loop runs n times, the total number of operations is n x n, or $n^2$. Counting how many operations an algorithm performs will be very important when we study search and sort algorithms.
 
 ```python exec
 id: your-turn-6

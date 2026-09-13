@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Building Reusable Tools — Practice
 
-Answers are folded. Most of these ask you to write a function and then say what it does with input it was not designed for. That second half is the exercise.
+Answers are hidden. Most of these ask you to write a function and then say what it does with input it was not designed for. That second half is the exercise.
 
 ## Docstrings and Contracts
 
@@ -164,7 +164,7 @@ Raise when the call was a mistake and continuing would hide it. `mean([])` is al
 
 Return `None` when "no answer" is a legitimate outcome the caller should handle — searching for something that might not be there.
 
-Return a default only when the default is genuinely correct, not merely convenient. `sum([])` being 0 is right; `mean([])` being 0 is a lie that will end up in a report.
+Return a default only when the default is correct, not merely convenient. `sum([])` being 0 is right; `mean([])` being 0 is a lie that will end up in a report.
 
 </details>
 
@@ -183,7 +183,7 @@ def mean(numbers):
     return sum(numbers) / len(numbers)
 ```
 
-Worth asking whether it is worth it. Without the check, a string in the list raises a `TypeError` from `sum` anyway — the difference is that this one names the offending value. That is usually the whole benefit of a check: not catching the error, but saying which item caused it.
+It is worth asking whether it is worth it. Without the check, a string in the list raises a `TypeError` from `sum` anyway — the difference is that this one names the offending value. That is usually the whole benefit of a check: saying which item caused the error, not merely catching it.
 
 </details>
 
@@ -286,7 +286,7 @@ def remove_character(text, position):
 
 Slicing rather than deleting, because strings cannot be changed in place.
 
-An out-of-range position does not fail — it returns the string unchanged, because slices clamp. If that is wrong for your purpose, the check has to be explicit.
+An out-of-range position returns the string unchanged, because slices clamp, rather than failing. If that is wrong for your purpose, the check has to be explicit.
 
 </details>
 
@@ -374,6 +374,6 @@ def summary(numbers):
 
 Six small functions, each testable alone, and one that arranges them. Every one of them handles the empty list the same way, which is not an accident — a toolkit whose pieces disagree about edge cases is harder to use than one that is uniformly strict or uniformly forgiving.
 
-`mode` is the one worth arguing about. A list with two equally common values has two modes, and returning one of them silently is a decision. Saying so in the docstring is the minimum; returning a list of them is the honest version.
+`mode` is the one worth arguing about. A list with two equally common values has two modes, and returning one of them silently is a decision. Saying so in the docstring is the minimum; returning a list of them is the more accurate version.
 
 </details>

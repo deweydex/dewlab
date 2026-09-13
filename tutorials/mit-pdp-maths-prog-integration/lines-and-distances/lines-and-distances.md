@@ -29,7 +29,7 @@ Two questions, and the whole tutorial is about them: **how do you describe a lin
 
 Both sound like they should be easy, and the first one has three different answers, each better than the others at something. The second one turns out to be a theorem you have heard of, arriving from a direction that makes it obvious.
 
-This is not called "coordinate geometry", though that is the name in the syllabus. Geometry is a word that, for a lot of people, means a thing they did at fifteen with a compass and did not enjoy. There is no compass here. There is a pair of axes, which you have been using since *Pictures Worth Numbers*, and there are two questions somebody might actually have.
+This is not called "coordinate geometry", though that is the name in the syllabus. Geometry is a word that, for a lot of people, means a thing they did at fifteen with a compass and did not enjoy. There is no compass here. There is a pair of axes, which you have been using since *Pictures Worth Numbers*, and there are two questions somebody might have.
 
 ## A Line You Have Already Written
 
@@ -214,7 +214,7 @@ id: your-turn-2
 
 Now try to draw the vertical line through `x = 3`.
 
-Not a line that is very steep. A line that goes straight up.
+This is a line that goes straight up, not merely one that is very steep.
 
 ```python exec
 id: the-line-that-breaks-the-formula-1
@@ -246,7 +246,7 @@ This is why the third way of writing a line exists:
 
 **`ax + by + c = 0`**
 
-It looks worse than `y = mx + c`, and for most lines it is worse. It earns its place on exactly one case.
+It looks worse than `y = mx + c`, and for most lines it is worse. It is worth having for exactly one case.
 
 ```python exec
 id: the-line-that-breaks-the-formula-3
@@ -270,7 +270,7 @@ ax.set_title("One form, both lines")
 
 The vertical line is `1x + 0y − 3 = 0`. The `b` is zero, which is allowed, and it is what makes the whole thing possible: **`y = mx + c` has y on its own, so y must depend on x. The general form does not, so it does not have to.**
 
-That is the entire reason this form is in the syllabus. Not tidiness, not tradition — it describes one more line than the other two can.
+That is the entire reason this form is in the syllabus: it describes one more line than the other two can, not tidiness and not tradition.
 
 ```python exec
 id: the-line-that-breaks-the-formula-4
@@ -444,7 +444,7 @@ ax = axes(2)
 points = [(math.cos(t / 60 * 2 * math.pi), math.sin(t / 60 * 2 * math.pi))
           for t in range(61)]
 ax.plot([p[0] for p in points], [p[1] for p in points], linewidth=2)
-ax.set_title("Every point on this is distance 1 from the centre")
+ax.set_title("Every point on this is distance 1 from the center")
 ```
 
 ```python exec
@@ -457,7 +457,7 @@ for t in [0, 7, 15, 33, 48]:
 
 Exactly 1, every time, by the formula you just wrote.
 
-That circle is where [The Unit Circle](tutorial:the-unit-circle) starts, and the fact that every point on it is distance 1 from the centre is the only rule that whole tutorial rests on.
+That circle is where [The Unit Circle](tutorial:the-unit-circle) starts, and the fact that every point on it is distance 1 from the center is the only rule that whole tutorial rests on.
 
 ## Reflection
 

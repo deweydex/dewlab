@@ -63,7 +63,7 @@ print("Time taken:", time_taken(v, 5, 2))
 
 Every one of those four is the same fact about the world. Writing the four functions *is* transposing the formula -- you have done the algebra already, in a language where you can check it.
 
-That is worth saying plainly, because textbooks tend to present the original form as the real one and the rearrangements as derived. They are all equally real. `v = u + at` and `t = (v − u)/a` are the same sentence with a different word emphasised.
+That is worth saying plainly, because textbooks tend to present the original form as the real one and the rearrangements as derived. They are all equally real. `v = u + at` and `t = (v − u)/a` are the same sentence with a different word emphasized.
 
 ### Your turn
 
@@ -169,7 +169,7 @@ Two things worth noticing in those answers.
 
 Two equal resistors in parallel give exactly half of one of them. And a small one beside a large one gives *slightly less than the small one* -- the 1 dominates completely and the 100 barely matters.
 
-Both of those are readable straight off the formula once it is the right way round, and neither is obvious from `1/R = 1/a + 1/b`. **That is what rearranging is for.** It is not tidying; it is putting the thing you want to understand where you can see it.
+Both of those are readable straight off the formula once it is the right way round, and neither is obvious from `1/R = 1/a + 1/b`. **That is what rearranging is for.** It is putting the thing you want to understand where you can see it, not tidying.
 
 ### The denominator that is not allowed
 
@@ -259,7 +259,7 @@ Three things worth taking away.
 
 **Rearranging is for seeing.** `R = 1/(1/a + 1/b)` tells you things that `1/R = 1/a + 1/b` hides, and the reason to do the work is to get to the version where the answer is visible.
 
-**You can check.** Not by re-reading your algebra and hoping, but by putting numbers through both versions and comparing. That habit will outlast every formula in this tutorial.
+**You can check.** Put numbers through both versions and compare, rather than re-reading your algebra and hoping. That habit will outlast every formula in this tutorial.
 
 In a few sentences, which of the rearrangements above did you find hardest, and what specifically made it harder than the others?
 

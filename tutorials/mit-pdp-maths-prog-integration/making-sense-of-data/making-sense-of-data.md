@@ -15,7 +15,7 @@ covers:
     covers: [MIT-5.9]
   frequency-distributions:
     covers: [MIT-5.11]
-  visualisation-with-matplotlib:
+  visualization-with-matplotlib:
     covers: [MIT-5.10]
   a-note-on-limitations:
     covers: [MIT-5.13]
@@ -25,7 +25,7 @@ covers:
 
 **Programming Design Principles / Maths for IT**
 
-We have learned to count possibilities and calculate probabilities. Now we turn to actual data: numbers that have been collected, measured, or observed. Statistics gives us tools to summarise, describe, and interpret data -- and every one of those tools translates into a function we can write.
+We have learned to count possibilities and calculate probabilities. Now we turn to actual data: numbers that have been collected, measured, or observed. Statistics gives us tools to summarize, describe, and interpret data -- and every one of those tools translates into a function we can write.
 
 ## A Dataset to Work With
 
@@ -41,11 +41,11 @@ print("Number of students:", len(scores))
 print("First few scores:", scores[:5])
 ```
 
-Looking at a raw list of 30 numbers does not tell us very much. We need to summarise. The most fundamental question is: what is a "typical" value?
+Looking at a raw list of 30 numbers does not tell us very much. We need to summarize. The most fundamental question is: what is a "typical" value?
 
 ## Measures of Central Tendency
 
-There are three classic ways to define the "centre" of a dataset.
+There are three classic ways to define the "center" of a dataset.
 
 **Mean** (arithmetic average): add everything up and divide by the count.
 
@@ -113,7 +113,7 @@ What's your interpretation?
 
 Consider this dataset of salaries (in thousands): [30, 32, 33, 35, 35, 36, 38, 40, 250].
 
-The mean will be pulled up dramatically by the outlier (250). The median will barely notice it. This is why the median is often preferred for skewed data like income distributions -- it is *robust* to outliers.
+The mean will be pulled up dramatically by the outlier (250). The median will barely notice it. This is why the median is often preferred for skewed data like income distributions: it is *robust* to outliers.
 
 ```python exec
 id: when-measures-disagree-1
@@ -127,9 +127,9 @@ print("Mode:", mode(salaries))
 
 ## Measures of Spread
 
-Knowing the centre is only half the story. Two datasets can have the same mean but very different shapes: one might be tightly clustered, the other wildly spread out.
+Knowing the center is only half the story. Two datasets can have the same mean but very different shapes: one might be tightly clustered, the other wildly spread out.
 
-**Range**: the simplest measure of spread. Maximum minus minimum.
+**Range**: the simplest measure of spread. It is the maximum minus the minimum.
 
 **Standard deviation**: measures how far, on average, each data point is from the mean.
 
@@ -183,7 +183,7 @@ id: your-turn-9
 
 Not all data is the same. Before applying statistical tools, we need to know what kind of data we are working with:
 
-**Categorical (nominal)**: labels with no inherent order. Favourite programming language, colour of car, type of pet. You can count the mode but the mean is meaningless.
+**Categorical (nominal)**: labels with no inherent order. Favourite programming language, color of car, type of pet. You can count the mode but the mean is meaningless.
 
 **Ordinal**: categories with a natural order but no consistent spacing. Skill level (beginner, intermediate, advanced), satisfaction rating (1-5 stars). The median makes sense but the mean is debatable.
 
@@ -244,7 +244,7 @@ for bin_range, count in table:
     print(bin_range, ":", count)
 ```
 
-## Visualisation with matplotlib
+## Visualization with matplotlib
 
 Numbers are good but pictures can reveal patterns that are hard to see otherwise. Let's make a histogram of our scores:
 
@@ -282,7 +282,7 @@ What do you observe about the score distribution?
 
 ## A note on limitations
 
-Statistical summaries are powerful but they can also mislead. The mean of [0, 0, 0, 0, 100] is 20, but 20 is not "typical" of anything in that dataset. A histogram can look very different depending on the bin width. Always look at the data from multiple angles, and be honest about what the numbers do and do not tell you.
+Statistical summaries are powerful but they can also mislead. The mean of [0, 0, 0, 0, 100] is 20, but 20 is not "typical" of anything in that dataset. A histogram can look very different depending on the bin width. Always look at the data from multiple angles, and be clear about what the numbers do and do not tell you.
 
 This critical awareness -- knowing when a statistical tool is appropriate and when it might mislead -- is as important as knowing how to compute the statistic in the first place.
 

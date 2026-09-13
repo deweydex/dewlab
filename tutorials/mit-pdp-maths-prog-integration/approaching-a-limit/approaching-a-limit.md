@@ -41,7 +41,7 @@ for value in [0, 0.5, 2, 3, 10]:
     print(f"f({value}) = {f(value)}")
 ```
 
-Every answer is `x + 1`. And that makes sense: `x² − 1` factorises into `(x − 1)(x + 1)`, and the `(x − 1)` on top cancels the one underneath.
+Every answer is `x + 1`. And that makes sense: `x² − 1` factorizes into `(x − 1)(x + 1)`, and the `(x − 1)` on top cancels the one underneath.
 
 Except at one place.
 
@@ -50,7 +50,7 @@ id: a-hole-in-a-line-2
 print(f(1))
 ```
 
-At `x = 1` the bottom is zero, so the cancelling is not allowed and the function has no value there at all. The domain of `f` is every number except 1.
+At `x = 1` the bottom is zero, so the canceling is not allowed and the function has no value there at all. The domain of `f` is every number except 1.
 
 ```python exec
 id: a-hole-in-a-line-3
@@ -97,7 +97,7 @@ From below the answers march up towards 2. From above they march down towards 2.
 
 And the sentence it stands for is: *you can get the output as close to 2 as you like, by getting the input close enough to 1.*
 
-Notice what that sentence does not say. It does not say the function equals 2 at 1 — it does not, it has no value there. **A limit is a statement about the neighbourhood, not about the point.** That distinction is the whole idea, and it is why limits can talk about places a function cannot go.
+Notice what that sentence does not say. It does not say the function equals 2 at 1 — it does not, it has no value there. **A limit is a statement about the neighborhood, not about the point.** That distinction is the whole idea, and it is why limits can talk about places a function cannot go.
 
 ### Both sides have to agree
 
@@ -118,11 +118,11 @@ for step in [0.1, 0.01, 0.001]:
 
 Approaching zero from the left, the answers sit at −1. From the right, at 1. They do not agree, and there is no single number the function is heading for.
 
-So **this limit does not exist** — not because the calculation is hard, but because the question has two different answers depending on which way you come at it.
+So **this limit does not exist**, because the question has two different answers depending on which way you come at it, not because the calculation is hard.
 
 ### Your turn
 
-What is the limit of `(x² − 4)/(x − 2)` as `x` approaches 2? Try values from both sides, then factorise the top and see whether the answer makes sense.
+What is the limit of `(x² − 4)/(x − 2)` as `x` approaches 2? Try values from both sides, then factorize the top and see whether the answer makes sense.
 
 ```python exec
 id: your-turn-1
@@ -163,7 +163,7 @@ ax.grid(alpha=0.3)
 ax.set_title("No limit at zero, in either direction")
 ```
 
-You have met this shape twice already. It is the tangent function's behaviour at 90 degrees, and it is the vertical line that has no slope, and it is the same underlying fact each time: dividing by something that is shrinking to nothing.
+You have met this shape twice already. It is the tangent function's behavior at 90 degrees, and it is the vertical line that has no slope, and it is the same underlying fact each time: dividing by something that is shrinking to nothing.
 
 ### A limit that exists at infinity
 
@@ -196,7 +196,7 @@ Now the reason this tutorial exists, which is a question you cannot ask without 
 
 **How fast is something changing at one instant?**
 
-Speed is distance over time — but that needs two moments to work with. "Distance travelled in no time at all, divided by no time at all" is `0/0`, which is not a number.
+Speed is distance over time — but that needs two moments to work with. "Distance traveled in no time at all, divided by no time at all" is `0/0`, which is not a number.
 
 Here is a ball dropped from a height. Distance fallen after `t` seconds is about `4.9t²` metres.
 
@@ -248,7 +248,7 @@ ax.set_title("Closing in on the speed at one instant")
 
 ### Your turn
 
-What speed is the ball travelling at three seconds in? Try the same approach at `t = 3`.
+What speed is the ball traveling at three seconds in? Try the same approach at `t = 3`.
 
 Then try `t = 0` — does the answer make sense for a ball that has just been let go?
 
@@ -285,13 +285,13 @@ Notice what did *not* happen. The answers did not drift or degrade gracefully; t
 
 You met the same floor in *Storing and Computing*, where two floats that should have been equal were not.
 
-So use the numbers to see what the answer is, and use algebra to know it. In the very first example, cancelling `(x − 1)` tells you the answer is `x + 1` and therefore 2 — with no approximation anywhere.
+So use the numbers to see what the answer is, and use algebra to know it. In the very first example, canceling `(x − 1)` tells you the answer is `x + 1` and therefore 2 — with no approximation anywhere.
 
 ## Reflection
 
 A limit is what a function is heading towards, whether or not it ever gets there.
 
-**It is a statement about the neighbourhood, not the point.** The function need not have a value where you are asking, and often the interesting cases are exactly the ones where it does not.
+**It is a statement about the neighborhood, not the point.** The function need not have a value where you are asking, and often the interesting cases are exactly the ones where it does not.
 
 **Both sides have to agree**, or there is no limit.
 

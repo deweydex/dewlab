@@ -114,7 +114,7 @@ This is trickier than it looks. We need to handle:
 
 How might you write a function `poly_to_string(coeffs)` that returns a human-readable string? Start with a simple version that works for basic cases, then refine it to handle the edge cases above.
 
-Do not worry about making it perfect on the first try -- string formatting with many special cases is genuinely tricky. Get the basic version working first, then improve.
+Do not worry about making it perfect on the first try -- string formatting with many special cases is tricky. Get the basic version working first, then improve.
 
 ```python exec
 id: your-turn-3

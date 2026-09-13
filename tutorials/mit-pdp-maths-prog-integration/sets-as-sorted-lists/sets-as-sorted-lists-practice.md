@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Sets as Sorted Lists — Practice
 
-Answers are folded. Half of these are set arithmetic to do on paper and half are the merge-walk to implement — do the paper ones first, because the code is much easier to write once you know what it should produce.
+Answers are hidden. Half of these are set arithmetic to do on paper and half are the merge-walk to implement — do the paper ones first, because the code is much easier to write once you know what it should produce.
 
 ## Set Arithmetic
 
@@ -72,7 +72,7 @@ $|A \cup B| = |A| + |B| - |A \cap B|$: 5 + 4 − 2. The two shared elements were
 
 (a) True. (b) True — a set is a subset of itself. (c) True — the empty set is a subset of everything, because there is no element of it to be missing. (d) False.
 
-(d) is the one worth dwelling on. $\in$ asks about membership and $\subset$ about containment. $\{1, 2\}$ is not one of the three elements of $\{1, 2, 3\}$; it is a collection of two of them.
+(d) is the one worth dwelling on. $\in$ asks about membership and $\subset$ about containment. $\{1, 2\}$ is a collection of two of the elements of $\{1, 2, 3\}$, not one of the three elements itself.
 
 </details>
 
@@ -82,7 +82,7 @@ $|A \cup B| = |A| + |B| - |A \cap B|$: 5 + 4 − 2. The two shared elements were
 
 16, and $2^n$.
 
-Each element is either in or out, independently — n binary choices. That includes the empty set and the whole set, both of which are genuine subsets.
+Each element is either in or out, independently — n binary choices. That includes the empty set and the whole set, both of which are valid subsets.
 
 This is why a set of 20 elements has over a million subsets, and why "just check all the subsets" stops being a plan very quickly.
 
@@ -126,7 +126,7 @@ Sorting first means duplicates are adjacent, so checking against the last one ke
 
 <details class="dl-answer"><summary>answer</summary>
 
-Binary search — the same function as in *Finding Things*, returning a yes or no rather than a position.
+Binary search: the same function as in *Finding Things*, returning a yes or no rather than a position.
 
 ```python
 def is_member(items, target):
@@ -183,7 +183,7 @@ def intersection(a, b):
     return result
 ```
 
-Identical skeleton, three different bodies. And no leftover step at the end — when one list runs out there is nothing left that could be in both.
+The skeleton is identical; the three bodies are different. There is also no leftover step at the end, because when one list runs out there is nothing left that could be in both.
 
 </details>
 
@@ -221,7 +221,7 @@ def symmetric_difference(a, b):
 
 By merge walk, it is the union body with the equal case appending nothing.
 
-The combined version walks the lists four times and is obviously correct. The merge version walks them once and takes a minute to verify. Which one to write depends entirely on whether anything is measurably slow, and the honest default is the readable one.
+The combined version walks the lists four times and is obviously correct. The merge version walks them once and takes a minute to verify. Which one to write depends entirely on whether anything is measurably slow, and the sensible default is the readable one.
 
 </details>
 
@@ -258,7 +258,7 @@ A direct merge walk is faster — it can stop the moment it finds an element of 
 
 For sorted sets it is just `a == b`.
 
-Definitionally, two sets are equal when each is a subset of the other: `is_subset(a, b) and is_subset(b, a)`. That is the version that still works when the representation is not sorted, and it is how the equality is actually defined in mathematics.
+Definitionally, two sets are equal when each is a subset of the other: `is_subset(a, b) and is_subset(b, a)`. That is the version that still works when the representation is not sorted, and it is how the equality is defined in mathematics.
 
 </details>
 
@@ -289,7 +289,7 @@ print(len(ann | ben))          # distinct in total
 common = {e.lower() for e in first} & {e.lower() for e in second}
 ```
 
-Normalising before comparing is the whole job. Email addresses are case-insensitive in their domain part and technically case-sensitive before the @, which almost no provider honours — so lowercasing is right in practice and wrong in the standard, and that is worth knowing before you deduplicate anybody's mailing list.
+Normalising before comparing is the whole job. Email addresses are case-insensitive in their domain part and technically case-sensitive before the @, which almost no provider honors — so lowercasing is right in practice and wrong in the standard, and that is worth knowing before you deduplicate anybody's mailing list.
 
 </details>
 
@@ -323,7 +323,7 @@ for pattern in range(2 ** len(items)):
     print([items[i] for i in range(len(items)) if pattern >> i & 1])
 ```
 
-Each subset is a binary number: bit i says whether item i is in. That correspondence is why the count is exactly $2^n$, and it is a genuinely useful trick when you need to enumerate possibilities.
+Each subset is a binary number: bit i says whether item i is in. That correspondence is why the count is exactly $2^n$, and it is a useful trick when you need to enumerate possibilities.
 
 </details>
 

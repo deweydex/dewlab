@@ -3,7 +3,7 @@ entries:
   - term: "P(A), basic probability"
     kind: formula
     definition: >
-      Number of favourable outcomes divided by total outcomes, when every
+      Number of favorable outcomes divided by total outcomes, when every
       outcome is equally likely. A number between 0 (impossible) and 1
       (certain).
     example: "P(heads) = 1 / 2"

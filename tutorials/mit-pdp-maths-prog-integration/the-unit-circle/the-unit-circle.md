@@ -25,7 +25,7 @@ covers:
 
 A circle of radius one, centred on the origin. That is the whole subject of this tutorial, and three separate-looking pieces of trigonometry turn out to be three things you can read off it.
 
-At the end of *Lines and Distances* you drew this circle and checked that every point on it really was distance 1 from the centre. That check is the only rule everything here rests on.
+At the end of *Lines and Distances* you drew this circle and checked that every point on it really was distance 1 from the center. That check is the only rule everything here rests on.
 
 Sine, cosine, radians and the exact values are usually taught as four things to learn. They are one drawing, described four ways.
 
@@ -82,7 +82,7 @@ def distance(p, q):
 
 for step in range(8):
     p = unit_point(step / 8)
-    print(f"({p[0]:>7.3f}, {p[1]:>7.3f})   distance from centre: {distance((0, 0), p):.10f}")
+    print(f"({p[0]:>7.3f}, {p[1]:>7.3f})   distance from center: {distance((0, 0), p):.10f}")
 ```
 
 Exactly 1, every time. **That is the whole of it.** Everything below is a consequence of those two columns coming from a point that stays 1 away from the middle.
@@ -91,7 +91,7 @@ Exactly 1, every time. **That is the whole of it.** Everything below is a conseq
 
 The across column is called **cosine**. The up column is called **sine**.
 
-That is all those two words mean. Not a formula, not an operation on a triangle — the two coordinates of a point on a circle of radius one.
+That is all those two words mean: the two coordinates of a point on a circle of radius one, not a formula and not an operation on a triangle.
 
 ```python exec
 id: the-names-for-those-two-columns-1
@@ -112,7 +112,7 @@ There is a fact about sine and cosine that gets written on classroom walls:
 
 `sin²θ + cos²θ = 1`
 
-You already have it. Every point is distance 1 from the centre, and distance is Pythagoras, so `x² + y² = 1` for every point on this circle. Substitute the names in and there it is.
+You already have it. Every point is distance 1 from the center, and distance is Pythagoras, so `x² + y² = 1` for every point on this circle. Substitute the names in and there it is.
 
 ```python exec
 id: the-names-for-those-two-columns-2
@@ -140,7 +140,7 @@ id: your-turn-1
 
 ## Measuring the Walk
 
-So far angles have been fractions of a turn, which is honest but not how anyone writes them. There are two standard ways, and one of them will look strange.
+So far angles have been fractions of a turn, which is accurate but not how anyone writes them. There are two standard ways, and one of them will look strange.
 
 Start with the strangeness, because it is the reason the second one exists.
 
@@ -151,7 +151,7 @@ print("math.sin(90) =", math.sin(90))
 
 Ninety degrees is a quarter turn, and the up value there is exactly 1. Python said 0.894.
 
-Python is not wrong. It is answering a different question, because `math.sin` does not take degrees.
+Python is answering a different question, because `math.sin` does not take degrees — it is not wrong.
 
 ### What a radian is
 
@@ -193,7 +193,7 @@ print("sin of a quarter turn:", math.sin(math.pi / 2))
 
 There is the 1 that was missing.
 
-`2π` is not a magic constant that appears in trigonometry for mysterious reasons. It is the distance round the circle, and the circle has radius 1, so it is also the number of radians in a turn.
+`2π` is the distance round the circle, and the circle has radius 1, so it is also the number of radians in a turn — not a magic constant that appears in trigonometry for mysterious reasons.
 
 ### Converting
 
@@ -376,11 +376,11 @@ One circle, and everything else was a description of it.
 
 **Cosine and sine are coordinates.** Across and up, for a point on a circle of radius one. They are not operations to perform on a triangle; the triangle comes later and inherits them.
 
-**`sin²θ + cos²θ = 1` is Pythagoras.** Every point on the circle is 1 from the centre, and the distance formula says what that means about the coordinates.
+**`sin²θ + cos²θ = 1` is Pythagoras.** Every point on the circle is 1 from the center, and the distance formula says what that means about the coordinates.
 
 **A radian is a distance walked.** Which is why a full turn is `2π` of them — that is how far it is round a circle of radius 1.
 
-**The exact values are places, not numbers to memorise.** √2⁄2 is where the 45° line crosses, and the reason it is √2⁄2 is one line of Pythagoras.
+**The exact values are places, not numbers to memorize.** √2⁄2 is where the 45° line crosses, and the reason it is √2⁄2 is one line of Pythagoras.
 
 **Tangent is a slope**, and it has no value at 90 degrees for the same reason a vertical line has no slope.
 

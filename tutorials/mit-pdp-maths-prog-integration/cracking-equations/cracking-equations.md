@@ -159,7 +159,7 @@ id: your-turn-8
 
 ### Verification by expansion
 
-We can verify a factorisation by multiplying the factors back together and checking that we get the original polynomial. This is where `multiply_poly` from *Expressions Come Alive* pays off:
+We can verify a factorization by multiplying the factors back together and checking that we get the original polynomial. This is where `multiply_poly` from *Expressions Come Alive* pays off:
 
 ```python exec
 id: verification-by-expansion-1
@@ -232,7 +232,7 @@ id: your-turn-12
 
 ## Reflection
 
-We have built equation-solving machinery from scratch: linear equations, quadratic equations (with the discriminant determining the number of solutions), factorisation, inequalities, and simultaneous equations. Each solution method is a function that takes coefficients and returns results.
+We have built equation-solving machinery from scratch: linear equations, quadratic equations (with the discriminant determining the number of solutions), factorization, inequalities, and simultaneous equations. Each solution method is a function that takes coefficients and returns results.
 
 The power of this approach is that we can verify everything computationally. Find a root, then evaluate the polynomial at that root to confirm it is zero. Factor a quadratic, then multiply the factors to confirm we get the original. Solve a system, then substitute back to confirm both equations hold.
 
@@ -244,5 +244,5 @@ Which type of equation did you find most satisfying to solve programmatically?
 
 Khan Academy. *Quadratic Formula (Proof).*
 <https://www.youtube.com/watch?v=mDmRYfma9C0>. Where the formula this page
-turns into `solve_quadratic` actually comes from — completing the square,
+turns into `solve_quadratic` comes from — completing the square,
 step by step.

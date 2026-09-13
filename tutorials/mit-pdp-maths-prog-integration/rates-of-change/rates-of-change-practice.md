@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Rates of Change — Practice
 
-Answers are folded. Differentiate by hand first, then check numerically — the check is what tells you whether the rule was applied correctly.
+Answers are hidden. Differentiate by hand first, then check numerically — the check is what tells you whether the rule was applied correctly.
 
 ## Tools
 
@@ -267,6 +267,6 @@ x = 10 is the useless end of the range, so the answer is **x = 10/3 ≈ 3.33 cm*
 
 (d) `V(10/3) = (10/3)(20 − 20/3)² ≈ 592.6 cm³`.
 
-Two things worth noticing: the derivative gave two candidates and the situation ruled one out, and this is the standard shape of an optimisation problem — write the quantity, differentiate, set to zero, and then think about which answer is real.
+Two things worth noticing: the derivative gave two candidates and the situation ruled one out, and this is the standard shape of an optimization problem — write the quantity, differentiate, set to zero, and then think about which answer is real.
 
 </details>

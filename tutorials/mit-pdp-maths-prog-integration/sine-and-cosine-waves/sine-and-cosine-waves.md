@@ -105,7 +105,7 @@ ax.set_title("Three turns forward, one turn back")
 
 The curve repeats exactly, every turn, forever, in both directions.
 
-That is not a property the curve happens to have. **It is what going round in a circle looks like when you draw it flat.** After a full turn you are back at the same point, so you must be at the same height, so the curve must do the same thing again.
+**It is what going round in a circle looks like when you draw it flat, not a property the curve happens to have.** After a full turn you are back at the same point, so you must be at the same height, so the curve must do the same thing again.
 
 The proper word is **periodic**, and the length of one repeat is the **period**. For sine and cosine as we have drawn them, that is one turn — or `2π` radians, or 360 degrees, depending on which units you are counting in.
 
@@ -293,7 +293,7 @@ id: your-turn-4
 # ax.grid(alpha=0.3)
 ```
 
-Doing this by eye is the honest version of what a fitting algorithm does automatically, and it is worth doing once by hand so that the automatic version is not magic.
+Doing this by eye is the manual version of what a fitting algorithm does automatically, and it is worth doing once by hand so that the automatic version is not magic.
 
 ## Tangent, Briefly
 

@@ -23,15 +23,15 @@ covers:
 
 The next few tutorials are about algebra, equations, and sets -- the classical mathematical tools, built as programs.
 
-Today we start with the raw material: numbers themselves. Mathematicians organise numbers into a hierarchy of families, and understanding these families helps us understand what operations are possible and what results to expect.
+Today we start with the raw material: numbers themselves. Mathematicians organize numbers into a hierarchy of families, and understanding these families helps us understand what operations are possible and what results to expect.
 
 ## The Number Domains
 
 Numbers live in nested families, each one extending the one before:
 
-**N** (Natural numbers): 0, 1, 2, 3, ... The counting numbers. You can always add two natural numbers and get another natural number, but you cannot always subtract (3 - 5 is not natural).
+**N** (Natural numbers): 0, 1, 2, 3, ... These are the counting numbers. You can always add two natural numbers and get another natural number, but you cannot always subtract (3 - 5 is not natural).
 
-**Z** (Integers): ..., -2, -1, 0, 1, 2, ... Now subtraction always works. Named from *Zahlen*, the German word for numbers.
+**Z** (Integers): ..., -2, -1, 0, 1, 2, ... Now subtraction always works. It is named from *Zahlen*, the German word for numbers.
 
 **Q** (Rationals): any number that can be written as $\frac{p}{q}$ where p and q are integers and $q \neq 0$. Now division (almost) always works -- except dividing by zero.
 
@@ -91,9 +91,9 @@ print("a^0      =", a**0)
 print("a^(-2)   =", a**(-2), "  1/a^2 =", 1/a**2)
 ```
 
-One note on names. The syllabus, and any exam paper you sit, calls these
+One note on names: the syllabus, and any exam paper you sit, calls these
 **indices** and calls the rules above the *laws of indices*. That is the same
-thing as powers -- recognise the word if you meet it. This course says *power*
+thing as powers -- recognize the word if you meet it. This course says *power*
 and *exponent*, because *index* already means something else here: the position
 of an item in a list.
 
@@ -167,7 +167,7 @@ id: your-turn-6
 
 Area, perimeter, volume, and surface area formulas are really just functions: they take measurements as input and return computed values. Let's build a small geometry toolkit.
 
-The arithmetic is the easy half. The habit worth building is the other one — clean functions, meaningful parameter names, a docstring saying what goes in and what comes back. That is what separates a formula you typed once from a tool you can still use in March.
+The arithmetic is the easy half. The habit worth building is the other one: clean functions, meaningful parameter names, a docstring saying what goes in and what comes back. That is what separates a formula you typed once from a tool you can still use in March.
 
 ### Your turn
 

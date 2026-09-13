@@ -31,7 +31,7 @@ entries:
   - term: categorical, ordinal, discrete, continuous
     kind: concept
     definition: >
-      Four kinds of data. Categorical has no order, like favourite colour.
+      Four kinds of data. Categorical has no order, like favorite color.
       Ordinal has an order but no consistent spacing, like star ratings.
       Discrete is countable, like bugs in a program. Continuous can take any
       value in a range, like temperature. Which kind a value is decides

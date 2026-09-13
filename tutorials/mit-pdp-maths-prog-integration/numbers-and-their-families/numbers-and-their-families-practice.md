@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Numbers and Their Families — Practice
 
-Answers are folded. The index laws reward being *used* rather than memorised, so do the manipulations by hand and let the cells settle the arguments.
+Answers are hidden. The index laws reward being *used* rather than memorized, so do the manipulations by hand and let the cells settle the arguments.
 
 Some of these are adapted from the fractions and exponents worksheets in the Mathematics repository.
 
@@ -87,7 +87,7 @@ and everything cancels except the first and last, leaving $1 - \frac{1}{5}$. Sum
 
 ## Number Domains
 
-**6.** Which families does each belong to — natural, integer, rational, real?
+**6.** Which families does each belong to: natural, integer, rational, real?
 
 `7`, `-3`, `0`, `2/3`, `√2`, `-1.5`, `π`
 
@@ -107,7 +107,7 @@ Suppose it were, written as $\frac{a}{b}$ in lowest terms. Then $a^2 = 2b^2$, so
 
 But we said lowest terms, and both being even contradicts that. So no such fraction exists.
 
-This is one of the oldest proofs there is, and it is short enough to reconstruct rather than remember. What it does *not* give you is any way to compute √2 — it only says no fraction is it.
+This is one of the oldest proofs there is, and it is short enough to reconstruct rather than remember. It only says no fraction is it — it does not give you any way to compute √2.
 
 </details>
 
@@ -155,9 +155,9 @@ Same base multiplied means add the exponents; a power of a power means multiply 
 
 Because $\frac{a^n}{a^n} = a^{n-n} = a^0$, and any number divided by itself is 1.
 
-It is not a special rule bolted on. It is the only value that keeps the subtraction rule working, which is the same reason $a^{-n}$ has to be $\frac{1}{a^n}$: continue the pattern downwards and each step divides by $a$.
+It is the only value that keeps the subtraction rule working, not a special rule bolted on. That is the same reason $a^{-n}$ has to be $\frac{1}{a^n}$: continue the pattern downwards and each step divides by $a$.
 
-$0^0$ is the genuinely unsettled case, and different fields answer it differently. Python says 1.
+$0^0$ is the unsettled case, and different fields answer it differently. Python says 1.
 
 </details>
 
@@ -343,7 +343,7 @@ def factorise(n):
     return factors
 ```
 
-`factorise(360)` gives `[2, 2, 2, 3, 3, 5]`, and `factorise(97)` gives `[97]` — a number is prime exactly when its factorisation is itself.
+A number is prime exactly when its factorization is itself: `factorize(360)` gives `[2, 2, 2, 3, 3, 5]`, and `factorize(97)` gives `[97]`.
 
 The `if n > 1` at the end catches the last prime factor, which is larger than the square root and so never reached by the loop. Leaving it out silently drops a factor from every number with a large prime in it, which is a bug that passes most casual testing.
 

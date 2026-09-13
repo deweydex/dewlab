@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Counting Carefully — Practice
 
-Answers are folded. For each problem, decide first whether order matters and whether repeats are allowed — those two questions pick the formula, and getting them wrong is the only real difficulty here.
+Answers are hidden. For each problem, decide first whether order matters and whether repeats are allowed — those two questions pick the formula, and getting them wrong is the only real difficulty here.
 
 ## Tools
 
@@ -230,7 +230,7 @@ Doubling the alphabet multiplied the count by 256 — that is $2^8$, one doublin
 
 About 3.5 minutes, about 15 hours, and about 8 days.
 
-None of those is safe. The lesson is not that symbols are useless but that eight characters is short — the same alphabet at 12 characters takes about 600,000 years.
+None of those is safe. The lesson is that eight characters is short, not that symbols are useless — the same alphabet at 12 characters takes about 600,000 years.
 
 **Length beats complexity**, because length is the exponent.
 
@@ -244,7 +244,7 @@ The words, if the list is large enough.
 
 $72^{10} \approx 3.7 \times 10^{18}$. Four words drawn from a list of 10,000 gives $10^{16}$ — slightly fewer. Drawn from 50,000 it is $6.25 \times 10^{18}$, slightly more.
 
-The real argument is that people actually remember the words and do not actually use ten random symbols. A strong password nobody can remember gets written on a note, and its strength then depends on the note.
+The real argument is that people remember the words and do not use ten random symbols. A strong password nobody can remember gets written on a note, and its strength then depends on the note.
 
 </details>
 

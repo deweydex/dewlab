@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # When There Is No Answer — Practice
 
-Answers are folded. The checking cell will confirm a root by substituting it back — which is the argument, not just a convenience.
+Answers are hidden. The checking cell will confirm a root by substituting it back — which is the argument, not just a convenience.
 
 ## Tools
 
@@ -164,7 +164,7 @@ For a quadratic with real coefficients, the only place an `i` can enter is the s
 
 The parabola misses the horizontal axis entirely — it sits wholly above it, or wholly below.
 
-The roots have not disappeared; they are not on the real line. "No real solutions" is a statement about which numbers you are willing to consider.
+The roots still exist; they are just not on the real line. "No real solutions" is a statement about which numbers you are willing to consider.
 
 </details>
 
@@ -215,7 +215,7 @@ A polynomial of degree n has exactly n roots in ℂ, counting repeats. No such s
 
 ## In Use
 
-**17.** Where do complex numbers turn up outside a maths class?
+**17.** Where do complex numbers turn up outside a math class?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -225,7 +225,7 @@ In every one of those the complex number is doing real work — it is not decora
 
 </details>
 
-**18.** A circuit's behaviour is governed by `x² + 2x + 5 = 0`, where a root with a negative real part means it settles down. Does this one?
+**18.** A circuit's behavior is governed by `x² + 2x + 5 = 0`, where a root with a negative real part means it settles down. Does this one?
 
 <details class="dl-answer"><summary>answer</summary>
 

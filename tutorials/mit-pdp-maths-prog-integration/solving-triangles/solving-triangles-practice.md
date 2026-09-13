@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Solving Triangles — Practice
 
-Answers are folded. Draw the triangle before you compute anything — most of the mistakes in this topic are about which side is opposite which angle.
+Answers are hidden. Draw the triangle before you compute anything — most of the mistakes in this topic are about which side is opposite which angle.
 
 ## Tools
 
@@ -53,7 +53,7 @@ Hypotenuse 13, by Pythagoras.
 
 The angle opposite the 5 is arctan(5/12) ≈ 22.62°, and the other is 90 − 22.62 = 67.38°.
 
-5-12-13 is one of the standard whole-number triangles, along with 3-4-5 and 8-15-17. Worth recognising.
+5-12-13 is one of the standard whole-number triangles, along with 3-4-5 and 8-15-17. Worth recognizing.
 
 </details>
 

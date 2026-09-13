@@ -20,7 +20,7 @@ version: 2026.08.23.1
 
 Counting, probability, sets and logic keep turning out to be the same subject seen from four sides. These problems move between them on purpose.
 
-Answers are folded. Where a problem can be simulated, simulate it — and where the simulation and the calculation disagree, work out which one is answering the wrong question.
+Answers are hidden. Where a problem can be simulated, simulate it — and where the simulation and the calculation disagree, work out which one is answering the wrong question.
 
 ## Tools
 
@@ -46,7 +46,7 @@ print(math.comb(52, 5), simulate(lambda: random.randrange(6) == 0))
 
 $\dfrac{C(5,3)}{C(9,3)} = \dfrac{10}{84} \approx 0.119$.
 
-Counting the favourable arrangements and dividing by all of them is the bridge between the two tutorials. Every probability on this page is a counting problem underneath.
+Counting the favorable arrangements and dividing by all of them is the bridge between the two tutorials. Every probability on this page is a counting problem underneath.
 
 </details>
 
@@ -99,7 +99,7 @@ The probability is about 0.0399. Multiplying the choices for independent parts o
 
 ## Sets and Logic
 
-**5.** In a class of 30, 18 take maths, 15 take physics, and 8 take both. How many take neither?
+**5.** In a class of 30, 18 take math, 15 take physics, and 8 take both. How many take neither?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -107,11 +107,11 @@ The probability is about 0.0399. Multiplying the choices for independent parts o
 
 $|M \cup P| = 18 + 15 - 8 = 25$, so 5 are outside both.
 
-Draw it: 10 in maths only, 8 in both, 7 in physics only, 5 outside. The four regions have to add to 30, and that is the check.
+Draw it: 10 in math only, 8 in both, 7 in physics only, 5 outside. The four regions have to add to 30, and that is the check.
 
 </details>
 
-**6.** From the same class, one student is picked at random. What is the probability they take maths but not physics?
+**6.** From the same class, one student is picked at random. What is the probability they take math but not physics?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -121,11 +121,11 @@ The Venn diagram region is the answer, divided by the total. Probability on a fi
 
 </details>
 
-**7.** Are "takes maths" and "takes physics" independent in that class?
+**7.** Are "takes math" and "takes physics" independent in that class?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Independence is not a feeling about whether two things are connected. It is an arithmetic test.
+1. Independence is an arithmetic test, not a feeling about whether two things are connected.
 2. Work out $P(M)$ and $P(P)$ from the class of 30.
 3. Multiply them. That is what $P(M \cap P)$ would be if the two were independent.
 4. Compare with the actual overlap of 8 out of 30.
@@ -140,7 +140,7 @@ The Venn diagram region is the answer, divided by the total. Probability on a fi
 
 Not quite. $P(M) = 0.6$, $P(P) = 0.5$, and their product is 0.30. But $P(M \cap P) = \frac{8}{30} \approx 0.267$.
 
-So taking maths makes physics slightly *less* likely than chance — a mild negative association, probably a timetable clash rather than anything about the students.
+So taking math makes physics slightly *less* likely than chance — a mild negative association, probably a timetable clash rather than anything about the students.
 
 Independence is a numerical coincidence, and the interesting cases are the ones where it nearly holds and does not.
 
@@ -198,7 +198,7 @@ Note both flips: `and` became `or`, `or` became `and`, and every comparison inve
 
 ## Data
 
-**10.** Ten response times in milliseconds: `[12, 14, 13, 15, 14, 13, 12, 98, 14, 13]`. Summarise them, and say what you would report.
+**10.** Ten response times in milliseconds: `[12, 14, 13, 15, 14, 13, 12, 98, 14, 13]`. Summarize them, and say what you would report.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -206,7 +206,7 @@ Mean 21.8, median 13.5, mode 13 and 14 jointly, standard deviation about 25.4.
 
 The median. One request took 98 ms and the other nine took about 13, and a reported "average response time of 22 ms" describes nothing that happened.
 
-What you would actually report for a service is the median *and* a high percentile — the 95th here is 98, and that outlier is not noise to be discarded. It is somebody's slow request, and it is usually the number that matters.
+What you would report for a service is the median *and* a high percentile — the 95th here is 98, and that outlier is somebody's slow request, not noise to be discarded, and it is usually the number that matters.
 
 </details>
 
@@ -260,7 +260,7 @@ With 10,000 rolls the agreement is usually to about three decimal places. With 1
 1. Do not start with the formula. Take a thousand messages and count what happens to them.
 2. How many are spam, and how many of those get flagged?
 3. How many are real, and how many of *those* get flagged anyway?
-4. Of everything flagged, what fraction was actually spam?
+4. Of everything flagged, what fraction was spam?
 
 **Think about:** compare this with the disease example, where the same-sounding accuracy gave 1%. The test did not change; the base rate did.
 
@@ -339,7 +339,7 @@ mailing = {e.strip().lower() for e in everyone} - {e.strip().lower() for e in un
 
 A set difference, which is the operation the problem is describing.
 
-What could go wrong: an address with different capitalisation or trailing whitespace on one list and not the other survives the subtraction and gets mailed. So does one written `name+tag@example.com` on one list and `name@example.com` on the other, and one on a domain that has since been renamed.
+What could go wrong: an address with different capitalization or trailing whitespace on one list and not the other survives the subtraction and gets mailed. So does one written `name+tag@example.com` on one list and `name@example.com` on the other, and one on a domain that has since been renamed.
 
 Normalising before comparing is the whole job, and the failure is silent — the code runs, the count looks right, and somebody who asked to be left alone gets an email.
 
@@ -353,8 +353,8 @@ The shape of the answer matters more than the numbers.
 
 With n flips, the count of heads has a standard deviation of about $\frac{\sqrt{n}}{2}$. For 100 flips that is 5, so anything from 40 to 60 heads is unremarkable — a coin has to be badly wrong for 100 flips to reveal it.
 
-For 10,000 flips the standard deviation is 50, so a genuine 51% bias would show up as about 5,100 heads, two standard deviations from fair. That is suggestive rather than conclusive.
+For 10,000 flips the standard deviation is 50, so a real 51% bias would show up as about 5,100 heads, two standard deviations from fair. That is suggestive rather than conclusive.
 
-The honest conclusion is that detecting a small bias takes far more trials than anyone expects, and that a result inside the noise is not evidence of fairness either. "No difference found" and "no difference exists" are not the same sentence.
+The fair conclusion is that detecting a small bias takes far more trials than anyone expects, and that a result inside the noise is not evidence of fairness either. "No difference found" and "no difference exists" are not the same sentence.
 
 </details>

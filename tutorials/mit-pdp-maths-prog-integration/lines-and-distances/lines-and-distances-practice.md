@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Lines and Distances — Practice
 
-Answers are folded. Write something down before you unfold.
+Answers are hidden. Write something down before you unfold.
 
 ## Tools
 
@@ -227,7 +227,7 @@ Yes. The base is 6, and both sloping sides are √(9 + 16) = 5.
 
 </details>
 
-**17.** Two servers in a data centre are at grid positions `(12, 30)` and `(45, 74)`, in metres. A cable runs directly between them. How long does it need to be?
+**17.** Two servers in a data center are at grid positions `(12, 30)` and `(45, 74)`, in metres. A cable runs directly between them. How long does it need to be?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -279,13 +279,13 @@ The point is `(2, 0)`, and it is 2√5 from each.
 
 </details>
 
-**22.** A circle has centre `(3, 1)` and passes through `(7, 4)`. What is its radius, and is `(0, 5)` inside or outside it?
+**22.** A circle has center `(3, 1)` and passes through `(7, 4)`. What is its radius, and is `(0, 5)` inside or outside it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The radius is the distance from centre to the known point: √(16 + 9) = 5.
+The radius is the distance from center to the known point: √(16 + 9) = 5.
 
-`(0, 5)` is √(9 + 16) = 5 from the centre — exactly on the circle, neither inside nor out.
+`(0, 5)` is √(9 + 16) = 5 from the center — exactly on the circle, neither inside nor out.
 
 </details>
 
