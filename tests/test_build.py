@@ -20,6 +20,7 @@ import build as b  # noqa: E402
 
 SHELL = (DEWLAB / "assets" / "shell.html").read_text()
 ABOUT_PAGE = (DEWLAB / "pages" / "about.md").read_text()
+HOME_PAGE = (DEWLAB / "pages" / "home.md").read_text()
 
 FRONTMATTER = """---
 title: "A Title"
@@ -39,6 +40,7 @@ def repo(tmp_path, monkeypatch):
         (tmp_path / name).mkdir(parents=True)
     (tmp_path / "assets" / "shell.html").write_text(SHELL)
     (tmp_path / "pages" / "about.md").write_text(ABOUT_PAGE)
+    (tmp_path / "pages" / "home.md").write_text(HOME_PAGE)
 
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
@@ -1000,20 +1002,201 @@ class TestTheFrontPage:
         b.build()
         assert (repo / "site" / "index.html").is_file()
 
-    def test_the_about_page_is_written_at_the_site_root(self, repo):
-        write(repo, "Prose.\n")
-        b.build()
-        assert (repo / "site" / "about.html").is_file()
-
     def test_it_needs_no_python_runtime(self, repo):
         write(repo, "Prose.\n")
         b.build()
         assert manifest((repo / "site" / "index.html").read_text())["cells"] == []
 
+    def test_it_ends_with_the_short_attribution(self, repo):
+        # Whitespace-normalized: pages/home.md's own line wrapping is real
+        # markdown source, not a single-line string, and the markdown
+        # converter keeps a paragraph's own internal line breaks rather
+        # than collapsing them.
+        write(repo, "Prose.\n")
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        match = re.search(r'<div class="dl-attribution">\s*(<p>.*?</p>)\s*</div>', index, re.DOTALL)
+        assert match, "no dl-attribution paragraph found"
+        assert " ".join(match.group(1).split()) == (
+            "<p>This site is being actively developed by "
+            '<strong><a href="https://github.com/deweydex">Joshua Aaron</a></strong> '
+            "(Dublin College Dundrum), with contributions from "
+            '<strong><a href="https://github.com/mcgarry">Sean McGarry</a></strong> '
+            "(Dublin College Blackrock).</p>"
+        )
+
+    def test_it_links_to_current_courses_and_the_detail_pages(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        assert 'href="computational-methods.html"' in index
+        assert 'href="web-authoring.html"' in index
+        assert 'href="all-tutorials.html"' in index
+        assert 'href="features.html"' in index
+        assert "dewstack" not in index
+
+    def test_the_features_page_is_written_at_the_site_root(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        features = repo / "site" / "features.html"
+        assert features.is_file()
+        page = features.read_text()
+        assert "What dewlab can do" in page
+        assert "Use dewmini without a tutorial" in page
+        assert 'href="compose/dewmini.html"' in page
+        assert manifest(page)["cells"] == []
+
+    def test_no_tutorials_means_no_front_page(self, repo):
+        assert b.build() == []
+        assert not (repo / "site" / "index.html").exists()
+        assert not (repo / "site" / "features.html").exists()
+        assert not (repo / "site" / "all-tutorials.html").exists()
+
+
+class TestPageCardsAndSections:
+    """```card fences and [[name]] generated-block markers — the two
+    pieces pages/home.md needed that pages/about.md never has. See
+    parse_card()/render_card()/place_page_cards() and
+    extract_generated_blocks()/place_generated_blocks() in build.py."""
+
+    def home(self, repo, body: str) -> None:
+        (repo / "pages" / "home.md").write_text(f"---\ntitle: dewlab\n---\n\n{body}")
+
+    def test_a_card_fence_renders_as_a_module_card(self, repo):
+        self.home(repo, (
+            "```card\n"
+            "url: features.html\n"
+            "### What dewlab can do\n"
+            "The tools built into every page.\n"
+            "```\n"
+        ))
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "index.html").read_text()
+        assert (
+            '<a class="dl-module-card" href="features.html">'
+            "<h3>What dewlab can do</h3>"
+            "<p>The tools built into every page.</p></a>"
+        ) in page
+
+    def test_a_wide_card_gets_the_wide_class_and_no_meta_or_badge(self, repo):
+        self.home(repo, (
+            "```card\n"
+            "url: features.html\n"
+            "wide: true\n"
+            "### What dewlab can do\n"
+            "```\n"
+        ))
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "index.html").read_text()
+        assert '<a class="dl-module-card dl-module-card-wide" href="features.html">' in page
+        assert "dl-module-card-badge" not in page
+        assert "dl-module-card-meta" not in page
+
+    def test_status_and_meta_render_as_badge_and_meta_span(self, repo):
+        self.home(repo, (
+            "```card\n"
+            "url: computational-methods.html\n"
+            "status: beta\n"
+            "meta: 5N0554 · QQI Level 5\n"
+            "### Computational Methods\n"
+            "```\n"
+        ))
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "index.html").read_text()
+        assert '<span class="dl-module-card-badge" data-status="beta">Beta</span>' in page
+        assert '<span class="dl-module-card-meta">5N0554 · QQI Level 5</span>' in page
+
+    def test_adjacent_cards_share_one_module_grid(self, repo):
+        self.home(repo, (
+            "```card\n"
+            "url: a.html\n"
+            "### A\n"
+            "```\n\n"
+            "```card\n"
+            "url: b.html\n"
+            "### B\n"
+            "```\n"
+        ))
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "index.html").read_text()
+        assert page.count('<div class="dl-module-grid">') == 1
+        assert page.count("dl-module-card\" href") == 2
+
+    def test_cards_separated_by_other_content_get_separate_grids(self, repo):
+        self.home(repo, (
+            "```card\n"
+            "url: a.html\n"
+            "### A\n"
+            "```\n\n"
+            "Some prose in between.\n\n"
+            "```card\n"
+            "url: b.html\n"
+            "### B\n"
+            "```\n"
+        ))
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "index.html").read_text()
+        assert page.count('<div class="dl-module-grid">') == 2
+
+    def test_a_card_with_no_url_fails_the_build(self, repo):
+        self.home(repo, "```card\n### A\n```\n")
+        write(repo, "Prose.\n")
+        with pytest.raises(b.BuildError, match="url"):
+            b.build()
+
+    def test_a_card_with_no_heading_fails_the_build(self, repo):
+        self.home(repo, "```card\nurl: a.html\nJust prose, no heading.\n```\n")
+        write(repo, "Prose.\n")
+        with pytest.raises(b.BuildError, match="heading"):
+            b.build()
+
+    def test_the_search_box_marker_is_replaced(self, repo):
+        self.home(repo, "[[search-box]]\n")
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "index.html").read_text()
+        assert 'id="dl-search-input"' in page
+        assert "[[search-box]]" not in page
+
+    def test_an_unknown_generated_block_fails_the_build(self, repo):
+        self.home(repo, "[[not-a-real-block]]\n")
+        write(repo, "Prose.\n")
+        with pytest.raises(b.BuildError, match="not-a-real-block"):
+            b.build()
+
+    def test_a_dl_audience_section_s_markdown_converts_properly(self, repo):
+        # Regression test: Python-Markdown treats a raw <div> block as
+        # opaque HTML through to its closing tag, so a heading or paragraph
+        # written inside one would otherwise reach the page as literal,
+        # unconverted markdown — see convert_page_div_bodies().
+        self.home(repo, (
+            '<div class="dl-audience">\n\n'
+            "## A Section\n\n"
+            "Some **bold** text and a [link](features.html).\n\n"
+            "</div>\n"
+        ))
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "index.html").read_text()
+        assert "<h2" in page and ">A Section</h2>" in page
+        assert "<strong>bold</strong>" in page
+        assert '<a href="features.html">link</a>' in page
+        assert "## A Section" not in page
+
 
 class TestTheAboutPage:
     """about.html: hand-written content, from pages/about.md rather than a
     hardcoded string in build.py — see read_page()."""
+
+    def test_the_about_page_is_written_at_the_site_root(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        assert (repo / "site" / "about.html").is_file()
 
     def test_content_comes_from_pages_about_md(self, repo):
         (repo / "pages" / "about.md").write_text(
@@ -1055,47 +1238,6 @@ class TestTheAboutPage:
         write(repo, "Prose.\n")
         with pytest.raises(b.BuildError, match="title"):
             b.build()
-
-    def test_it_ends_with_the_short_attribution(self, repo):
-        write(repo, "Prose.\n")
-        b.build()
-        index = (repo / "site" / "index.html").read_text()
-        attribution = (
-            "This site is being actively developed by "
-            '<strong><a href="https://github.com/deweydex">Joshua Aaron</a></strong> '
-            "(Dublin College Dundrum), with contributions from "
-            '<strong><a href="https://github.com/mcgarry">Sean McGarry</a></strong> '
-            "(Dublin College Blackrock).</p>"
-        )
-        assert attribution in index
-        assert b.render_index().endswith(attribution)
-
-    def test_it_links_to_current_courses_and_the_detail_pages(self, repo):
-        write(repo, "Prose.\n")
-        b.build()
-        index = (repo / "site" / "index.html").read_text()
-        assert 'href="computational-methods.html"' in index
-        assert 'href="web-authoring.html"' in index
-        assert 'href="all-tutorials.html"' in index
-        assert 'href="features.html"' in index
-        assert "dewstack" not in index
-
-    def test_the_features_page_is_written_at_the_site_root(self, repo):
-        write(repo, "Prose.\n")
-        b.build()
-        features = repo / "site" / "features.html"
-        assert features.is_file()
-        page = features.read_text()
-        assert "What dewlab can do" in page
-        assert "Use dewmini without a tutorial" in page
-        assert 'href="compose/dewmini.html"' in page
-        assert manifest(page)["cells"] == []
-
-    def test_no_tutorials_means_no_front_page(self, repo):
-        assert b.build() == []
-        assert not (repo / "site" / "index.html").exists()
-        assert not (repo / "site" / "features.html").exists()
-        assert not (repo / "site" / "all-tutorials.html").exists()
 
 
 class TestAllTutorialsPage:
