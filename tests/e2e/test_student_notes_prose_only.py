@@ -92,8 +92,8 @@ class TestNotesOnAProseOnlyTutorial:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
-        assert page.is_hidden("#dl-settings")
-        _open_panel(page, "#dl-settings-toggle")
+        assert page.is_hidden("#dl-yourwork")
+        _open_panel(page, "#dl-yourwork-toggle")
         assert page.is_visible("#dl-settings-work")
         assert page.is_visible("#dl-progress-notes")
         context.close()
@@ -105,7 +105,7 @@ class TestNotesOnAProseOnlyTutorial:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-yourwork-toggle")
         page.fill("#dl-progress-notes", "worth writing down")
         page.wait_for_function(
             "globalThis.dewlab.readSaved() !== null", timeout=10_000
@@ -123,6 +123,6 @@ class TestNotesOnAProseOnlyTutorial:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{site_url}/index.html")
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-yourwork-toggle")
         assert page.is_hidden("#dl-settings-work")
         context.close()

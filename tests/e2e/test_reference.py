@@ -224,14 +224,16 @@ class TestPanelsDisclosure:
         ) == 0
 
         page.click("#dl-panels summary")
-        assert page.is_visible("#dl-reference-toggle")
         assert page.is_visible("#dl-seriesnav-toggle")
-        assert page.is_visible("#dl-settings-toggle")
         context.close()
 
     @pytest.mark.parametrize("path", ["index.html", f"{MODULE}.html"])
-    def test_settings_is_direct_on_home_and_module_pages(
+    def test_appearance_is_direct_on_home_and_module_pages(
             self, site, browser, site_url, path):
+        """Appearance (and the rest of what used to be Settings) lives in
+        its own corner dock now, never behind the Panels disclosure — so
+        this is direct everywhere, not only on pages with no series to
+        make the disclosure collapse."""
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
@@ -240,9 +242,9 @@ class TestPanelsDisclosure:
         page.goto(f"{site_url}/{path}")
 
         assert page.is_hidden("#dl-panels summary")
-        assert page.is_visible("#dl-settings-toggle")
-        page.click("#dl-settings-toggle")
-        assert page.is_visible("#dl-settings")
+        assert page.is_visible("#dl-appearance-toggle")
+        page.click("#dl-appearance-toggle")
+        assert page.is_visible("#dl-appearance")
         context.close()
 
 class TestOpeningAndClosing:
@@ -290,21 +292,21 @@ class TestOpeningAndClosing:
         assert page.is_hidden("#dl-reference")
         context.close()
 
-    def test_opening_the_reference_does_not_close_settings(self, site, browser, site_url):
+    def test_opening_the_reference_does_not_close_appearance(self, site, browser, site_url):
         context, page = self.open_page(site, browser, site_url)
-        _open_panel(page, "#dl-settings-toggle")
-        assert page.is_visible("#dl-settings")
+        _open_panel(page, "#dl-appearance-toggle")
+        assert page.is_visible("#dl-appearance")
         _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
-        assert page.is_visible("#dl-settings")
+        assert page.is_visible("#dl-appearance")
         context.close()
 
-    def test_opening_settings_does_not_close_the_reference(self, site, browser, site_url):
+    def test_opening_appearance_does_not_close_the_reference(self, site, browser, site_url):
         context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
-        _open_panel(page, "#dl-settings-toggle")
-        assert page.is_visible("#dl-settings")
+        _open_panel(page, "#dl-appearance-toggle")
+        assert page.is_visible("#dl-appearance")
         assert page.is_visible("#dl-reference")
         context.close()
 

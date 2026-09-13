@@ -1909,6 +1909,29 @@ def load_python_basics() -> list[dict]:
     return _load_basics(PYTHON_BASICS_DATA, "python-basics")
 
 
+DOCS_LINKS_DATA = ROOT / "planning" / "curriculum" / "docs-links.yaml"
+
+
+def load_docs_links() -> list[dict]:
+    """The Documentation panel's own source: a small, hand-maintained table
+    of term -> an official docs page. write() filters this down to whatever
+    matches a page's own cumulative glossary, the same "nothing not yet
+    taught" rule the Reference panel already follows — see
+    planning/curriculum/docs-links.yaml. Returns `[]`, not an error, when
+    the file does not exist yet, the same tolerance load_math_basics()
+    gives a missing file; re-read on every write() call rather than
+    cached, for the same reason.
+    """
+    if not DOCS_LINKS_DATA.is_file():
+        return []
+    data = load_yaml_no_duplicate_keys(DOCS_LINKS_DATA.read_text()) or {}
+    links = data.get("links") or []
+    for link in links:
+        if not link.get("term") or not link.get("url"):
+            fail(DOCS_LINKS_DATA, "a docs-links entry is missing a term or a url.")
+    return links
+
+
 def render_toc(tutorial: Tutorial) -> str:
     """A contents list for one page, nested one level.
 
@@ -3285,6 +3308,27 @@ def report_doors_html(page: str, version: str) -> str:
     )
 
 
+def report_doors_panel_html(page: str, version: str) -> str:
+    """The Report tab's own content, in the top-right corner dock — the
+    same three doors as the footer's disclosure (report_doors_html()),
+    without the <details> wrapper, since the tab it lives in is already
+    the thing a reader opens on purpose. This is a second way to the same
+    doors, not a replacement: the footer's own version stays, since it
+    needs no JavaScript and this panel does. Respects feedback_enabled()
+    the same way site_footer() does, for the same reason.
+    """
+    if not page or not feedback_enabled():
+        return ""
+    return (
+        '<p class="dl-panel-note">'
+        "Is something wrong with this page, or is a cell not behaving? "
+        "A report tells us the page and the version you're on, so it's "
+        "easy to check."
+        "</p>"
+        + report_doors_links(page, version)
+    )
+
+
 def site_footer(page: str = "", version: str = "") -> str:
     """Copyright line and licence line, stamped with the current year, plus
     a "three doors" disclosure for reporting something about this page,
@@ -3362,6 +3406,10 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         manifest["packages"] = list(packages)
     if glossary:
         manifest["glossary"] = glossary
+        met_terms = {entry["term"] for entry in glossary}
+        docs_links = [link for link in load_docs_links() if link["term"] in met_terms]
+        if docs_links:
+            manifest["docsLinks"] = docs_links
     if notes:
         manifest["notes"] = notes
     if datasets:
@@ -3410,6 +3458,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer(f"{tutorial.module}/{tutorial.slug}", tutorial.meta["version"]),
+        "{{REPORT_DOORS}}": report_doors_panel_html(f"{tutorial.module}/{tutorial.slug}", tutorial.meta["version"]),
     }
     page = shell
     for token, value in tokens.items():
@@ -4028,6 +4077,7 @@ def write_index(shell: str) -> Path:
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("index", "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html("index", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -4087,6 +4137,7 @@ def write_all_tutorials_page(
             groups, archives, retired, practice, mixed, module_archives),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("all-tutorials", "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html("all-tutorials", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -4204,6 +4255,7 @@ def write_module_page(
         "{{BODY}}": "\n".join(body),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer(module, "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html(module, "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -4333,6 +4385,7 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("tree", "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html("tree", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -4448,6 +4501,7 @@ def write_topics_page(
         "{{BODY}}": "".join(body),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("topics", "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html("topics", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -4683,6 +4737,7 @@ def write_about_page(shell: str) -> Path:
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("about", "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html("about", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -4734,6 +4789,7 @@ def write_features_page(shell: str) -> Path:
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("features", "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html("features", "1"),
     }
     page = shell
     for token, value in tokens.items():
@@ -4798,6 +4854,7 @@ def write_editor_page(shell: str) -> Path:
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("editor", "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html("editor", "1"),
     }
     page = shell
     for token, value in tokens.items():

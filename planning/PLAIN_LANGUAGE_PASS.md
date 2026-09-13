@@ -77,6 +77,14 @@ them in the design (section 11), and pointing a stuck reader at a real route
   (`loading-a-real-dataset`), replaced with a plain claim that you can query
   it.
 
+**The corner-dock rebuild's new copy** (`assets/shell.html`'s Documentation
+panel intro and empty state, `build.py`'s `report_doors_panel_html()` for
+the Report tab). Written against §4 directly rather than retrofitted; the
+Documentation intro's first draft was a genuine verbless-subject fragment
+("Official Python documentation for terms this page ... has covered so
+far.") caught and rewritten to a real sentence ("These are official Python
+pages for terms this page ... has already covered.") before it shipped.
+
 Also picked up in the sibling repository `deweydex/dewstack`: the same
 reset/practice-fold language in its README, its own new `FOR_STUDENTS.md`,
 and a new FAQ page, adapted for a real difference between the two projects —
