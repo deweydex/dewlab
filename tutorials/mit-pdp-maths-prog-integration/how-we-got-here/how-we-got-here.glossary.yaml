@@ -30,7 +30,7 @@ entries:
   - term: paradigm
     kind: concept
     definition: >
-      A way of organising a program — a set of habits about where the
+      A way of organizing a program — a set of habits about where the
       logic goes and what the pieces are. A language tends to encourage
       one, though some let you use several.
   - term: procedural, functional, object-oriented

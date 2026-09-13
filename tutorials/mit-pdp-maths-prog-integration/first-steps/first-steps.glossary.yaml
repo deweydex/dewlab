@@ -3,7 +3,7 @@
 # .claude/skills/tutorial-glossary/SKILL.md before trusting the skill to run
 # unattended over the rest of the curriculum. See planning/REFERENCE_PANEL.md.
 #
-# "variables" is emphasised in this tutorial's own closing paragraph
+# "variables" is emphasized in this tutorial's own closing paragraph
 # ("In the next tutorial we will learn about *variables*") but is left out
 # here on purpose: that sentence describes what storing-and-computing.md
 # teaches, not something this tutorial itself defines. A term only belongs to

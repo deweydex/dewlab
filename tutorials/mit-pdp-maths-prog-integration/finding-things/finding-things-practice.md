@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Finding Things — Practice
 
-Answers are folded. Several of these are about counting comparisons rather than writing code, and those are the ones worth doing on paper first.
+Answers are hidden. Several of these are about counting comparisons rather than writing code, and those are the ones worth doing on paper first.
 
 ## Scope
 
@@ -72,7 +72,7 @@ A pure function depends only on its arguments and changes nothing outside itself
 
 (a) and (d) are pure. (b) changes something outside. (c) gives a different answer each time.
 
-Pure functions are the ones you can test easily, reason about safely, and cache. Both of the impure ones here are useful and necessary — the point is knowing which kind you are writing.
+Pure functions are the ones you can test easily, reason about safely, and cache. The point is knowing which kind you are writing: both of the impure ones here are useful and necessary too.
 
 </details>
 
@@ -98,7 +98,7 @@ The `return -1` has to be outside the loop. Inside, it would return −1 after c
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because 0 is a real index — it means "found at the start". A not-found marker has to be something that could never be a genuine answer, and no list has an item at index −1 in the "found here" sense.
+Because 0 is a real index: it means "found at the start". A not-found marker has to be something that could never be a valid answer, and no list has an item at index −1 in the "found here" sense.
 
 Returning `None` is the more Pythonic choice, and it has the advantage that using it by accident fails loudly rather than pointing at the last element.
 
@@ -126,7 +126,7 @@ def last_index(items, target):
     return -1
 ```
 
-Searching backwards returns on the first match found, which is the last one in the list. The alternative — searching forwards and remembering the most recent match — always looks at every item, even when the match is at the end.
+Searching backwards returns on the first match found, which is the last one in the list. The alternative, searching forwards and remembering the most recent match, always looks at every item, even when the match is at the end.
 
 </details>
 
@@ -157,7 +157,7 @@ print(binary_search(data, 751))
 
 <details class="dl-answer"><summary>answer</summary>
 
-Indices 0–14, so mid is 7 — which is 31. Found in one comparison.
+Indices 0–14, so mid is 7, which is 31. Found in one comparison.
 
 That is the best case, and it happens because 31 sits exactly in the middle. Try 89 instead: mid 7 (31), then 11 (55), then 13 (72), then 14 (89). Four comparisons.
 
@@ -252,7 +252,7 @@ Using `data = list(range(0, 1000, 3))`, which has 334 items:
 | Target | Linear | Binary |
 |---|---:|---:|
 | 0 (first) | 1 | 8 |
-| 498 (dead centre) | 167 | 1 |
+| 498 (dead center) | 167 | 1 |
 | 999 (last) | 334 | 9 |
 | 751 (absent) | 334 | 8 |
 

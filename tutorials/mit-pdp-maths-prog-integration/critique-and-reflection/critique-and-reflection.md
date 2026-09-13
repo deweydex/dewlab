@@ -23,16 +23,16 @@ This tutorial has no single right moment. Come back to it whenever you have fini
 
 ## Part 1: Reading Your Own Code
 
-Try opening your own work alongside this page — whatever you built most recently — and reading through it as if you were seeing it for the first time. Then answer these questions honestly in the cells below.
+Try opening your own work alongside this page — whatever you built most recently — and reading through it as if you were seeing it for the first time. Then answer these questions truthfully in the cells below.
 
-What would you change if you were starting over? Not "what did I get wrong" but "what would I do differently now that I have been through the process?"
+What would you change if you were starting over? Ask "what would I do differently now that I have been through the process?" rather than "what did I get wrong?"
 
 ```python exec
 id: part-1-reading-your-own-code-1
 # Your thoughts on what you would change
 ```
 
-Were there places where you got stuck? What did the stuck-ness feel like, and what eventually helped you move forward? Getting stuck is not a sign of failure -- it is where the real learning happens. Understanding your own patterns of getting stuck helps you get unstuck faster next time.
+Were there places where you got stuck? What did the stuck-ness feel like, and what eventually helped you move forward? Getting stuck is where the real learning happens, not a sign of failure. Understanding your own patterns of getting stuck helps you get unstuck faster next time.
 
 ```python exec
 id: part-1-reading-your-own-code-2
@@ -48,7 +48,7 @@ id: part-1-reading-your-own-code-3
 
 ## Part 2: Reading Someone Else's Code
 
-Pair up with another student -- your teacher may arrange this, or you may just ask someone. Read through what they built and answer the following. The goal is not to judge or grade -- it is to practise reading code, which is at least as important as writing it.
+Pair up with another student -- your teacher may arrange this, or you may just ask someone. Read through what they built and answer the following. The goal is to practice reading code, which is at least as important as writing it, not to judge or grade.
 
 What is the first thing you notice about how they structured their code? Is it similar to yours or different?
 
@@ -64,7 +64,7 @@ id: part-2-reading-someone-elses-code-2
 # Something that works well in their code
 ```
 
-Where were you confused, or did you have to read twice? Describe what was confusing — not to criticise, but to help them see it through fresh eyes.
+Where were you confused, or did you have to read twice? Describe what was confusing — not to criticize, but to help them see it through fresh eyes.
 
 ```python exec
 id: part-2-reading-someone-elses-code-3
@@ -88,5 +88,5 @@ id: part-3-looking-ahead-1
 
 Google. *How to Do a Code Review.*
 <https://google.github.io/eng-practices/review/reviewer/>. The professional
-version of Part 2 of this page — what a reviewer is actually looking for,
+version of Part 2 of this page — what a reviewer is looking for,
 and how to say it usefully.

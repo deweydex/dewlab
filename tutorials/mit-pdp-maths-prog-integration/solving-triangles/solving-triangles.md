@@ -27,7 +27,7 @@ Given some of a triangle, find the rest. That is the whole tutorial.
 
 "Solving a triangle" is a strange phrase the first time you hear it, because until now solving has meant finding an unknown in an equation. Here it means filling in the missing measurements: you are told three things about a triangle and asked for the other three.
 
-There are three cases and they come in the order a person would actually try them.
+There are three cases and they come in the order a person would try them.
 
 1. **Is there a right angle?** Then you need nothing new.
 2. **No right angle, but you know two sides and the angle between them, or all three sides?** The Cosine Rule.
@@ -164,7 +164,7 @@ print()
 print("a right angle:", area(6, 4, 90), "and half base times height:", 0.5 * 6 * 4)
 ```
 
-**`½ab sin C` is not a new fact.** It is half base times height, with the height worked out for you from the information you were actually given.
+**`½ab sin C` is half base times height, not a new fact.** The height is worked out for you from the information you were given.
 
 ### Your turn
 
@@ -360,7 +360,7 @@ ax.axis("off")
 ax.set_title("Two triangles, both fitting the same three facts")
 ```
 
-Both triangles genuinely have a side of 8, a side of 6, and a 40-degree angle opposite the 6. Neither is wrong.
+Both triangles have a side of 8, a side of 6, and a 40-degree angle opposite the 6. Neither is wrong.
 
 The cause is that **sine gives the same value for an angle and for 180 minus that angle** — which you can see on the wave from the last tutorial, where every height between 0 and 1 is reached twice on the way up and over.
 
@@ -370,7 +370,7 @@ for angle in [30, 150, 50, 130]:
     print(f"sin({angle:>4}) = {math.sin(math.radians(angle)):.6f}")
 ```
 
-**A correct calculation with two correct answers is not a failure of the method.** Deciding which one you meant is your job, and it usually comes from something you know about the situation that the three numbers did not capture.
+**Two correct answers from one correct calculation is a feature of the method, not a failure.** Deciding which one you meant is your job, and it usually comes from something you know about the situation that the three numbers did not capture.
 
 This does not happen with the Cosine Rule, because cosine is negative for obtuse angles and positive for acute ones — so it can tell them apart and sine cannot.
 
@@ -448,7 +448,7 @@ In a few sentences, of the three situations at the top of this tutorial, which d
 
 Khan Academy. *Proof of the Law of Cosines.*
 <https://www.youtube.com/watch?v=pGaDcOMdw48>. Where `c² = a² + b² − 2ab
-cos C` actually comes from — the same correction-to-Pythagoras idea this
+cos C` comes from — the same correction-to-Pythagoras idea this
 page arrives at by comparing gaps.
 
 Khan Academy. *Proof: Law of Sines.*

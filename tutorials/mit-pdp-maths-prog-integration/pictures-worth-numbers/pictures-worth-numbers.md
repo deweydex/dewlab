@@ -7,15 +7,15 @@ year: "2026-2027"
 series: data-chance-and-logic
 version: 2026.08.23.1
 covers:
-  why-visualise:
+  why-visualize:
     covers: [MIT-5.10]
   choosing-the-right-chart:
     covers: [MIT-5.10]
   writing-reusable-plotting-functions:
     covers: [PDP-LO8]
-  combining-statistics-and-visualisation:
+  combining-statistics-and-visualization:
     covers: [MIT-5.12]
-  good-practices-for-visualisation:
+  good-practices-for-visualization:
     covers: [MIT-5.10]
 ---
 
@@ -23,11 +23,11 @@ covers:
 
 **Programming Design Principles / Maths for IT**
 
-In the last tutorial we built statistical tools and made our first histogram. Today we go deeper into data visualisation: how to choose the right type of chart, how to make charts that communicate clearly, and how to use visualisation as a tool for understanding rather than just decoration.
+In the last tutorial we built statistical tools and made our first histogram. Today we go deeper into data visualization: how to choose the right type of chart, how to make charts that communicate clearly, and how to use visualization as a tool for understanding rather than just decoration.
 
-This is also an opportunity to practise writing clean, modular code -- wrapping common plotting tasks into reusable functions.
+This is also an opportunity to practice writing clean, modular code -- wrapping common plotting tasks into reusable functions.
 
-## Why Visualise?
+## Why Visualize?
 
 Consider Anscombe's Quartet: four datasets that have nearly identical statistical properties (same mean, same standard deviation, same correlation) but look completely different when plotted. The statistics alone cannot distinguish them. The plots make the differences obvious.
 
@@ -59,7 +59,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-Same statistics, wildly different stories. This is why visualisation matters: it shows you what numbers cannot.
+The statistics are the same; the stories are wildly different. This is why visualization matters: it shows you what numbers cannot.
 
 ## Choosing the Right Chart
 
@@ -77,7 +77,7 @@ Different types of data call for different types of charts:
 
 ### Making a bar chart
 
-Let's say we surveyed students about their favourite programming language:
+Let's say we surveyed students about their favorite programming language:
 
 ```python exec
 id: making-a-bar-chart-1
@@ -187,7 +187,7 @@ id: your-turn-4
 # Test them
 ```
 
-## Combining Statistics and Visualisation
+## Combining Statistics and Visualization
 
 The most informative approach is to combine numerical summaries with visual displays. Let's write a function that gives us the full picture:
 
@@ -223,11 +223,11 @@ id: your-turn-6
 # Apply it
 ```
 
-## Good Practices for Visualisation
+## Good Practices for Visualization
 
 A few principles that will serve you well:
 
-Every chart should have a clear title and labelled axes. If someone sees the chart without any surrounding text, they should understand what it shows. Colours should be chosen for clarity, not decoration. If you are showing categories, use distinct colours; if you are showing a continuous variable, use a gradient. Avoid chart junk -- decorative elements that do not convey information. Simplicity aids understanding. When comparing groups, use the same scales so differences are not exaggerated or hidden.
+Every chart should have a clear title and labeled axes. If someone sees the chart without any surrounding text, they should understand what it shows. Colours should be chosen for clarity, not decoration. If you are showing categories, use distinct colours; if you are showing a continuous variable, use a gradient. Avoid chart junk: decorative elements that do not convey information. Simplicity aids understanding. When comparing groups, use the same scales so differences are not exaggerated or hidden.
 
 ### Your turn
 
@@ -235,9 +235,9 @@ Can you find a chart online (in a news article, a textbook, or a website) that c
 
 ## Reflection
 
-Visualisation is not a separate skill from statistics -- it is part of the same process of understanding data. A good analyst moves fluidly between numbers and pictures, using each to check and complement the other.
+Visualization is part of the same process of understanding data as statistics, not a separate skill. A good analyst moves fluidly between numbers and pictures, using each to check and complement the other.
 
-We now have a complete toolkit for exploratory data analysis: counting, probability, summary statistics, and visualisation. From here on they get used together rather than one at a time.
+We now have a complete toolkit for exploratory data analysis: counting, probability, summary statistics, and visualization. From here on they get used together rather than one at a time.
 
 What is the most important thing you have learned about presenting data?
 

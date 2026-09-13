@@ -72,7 +72,7 @@ ax.set_title("Crossing the axis twice, once, and never")
 
 The third curve never comes down to the axis. That is what "no real solutions" looks like, and it is a completely accurate description of the situation -- as long as the only numbers you are willing to consider are the ones on that horizontal line.
 
-**"No real solutions" is a true statement about the real numbers, and it is a smaller claim than it sounds.** It does not say there is no answer. It says there is no answer *on this line*.
+**"No real solutions" is a true statement about the real numbers, and it is a smaller claim than it sounds.** It says there is no answer *on this line*, not that there is no answer at all.
 
 ## Inventing a Number
 
@@ -88,7 +88,7 @@ In *Numbers and Their Families* you took a tour of the number systems: the natur
 
 Each step is somebody refusing to accept "there is no answer" and inventing the number that makes it one. Every one of those inventions was resisted, and every one of them is now taught to children.
 
-So the next step is not a special trick. It is the same move, one more time.
+So the next step is the same move, one more time, not a special trick.
 
 ```python exec
 id: inventing-a-number-1
@@ -143,7 +143,7 @@ Look at what happened to the code, not just to the output. **The `if` is gone.**
 
 That is a real thing about mathematics and not a fact about Python. Extending the number system removed a special case rather than adding one. The three separate situations -- two roots, one root, no roots -- turn out to be one situation looked at from a place where you can see all of it.
 
-### Does it actually work?
+### Does it work?
 
 A definition is only worth having if the answers it produces survive being checked. So check.
 
@@ -210,7 +210,7 @@ id: your-turn-2
 
 ## Reflection
 
-The stopping point in *Cracking Equations* was honest and it was not the end. "No real solutions" is a statement about which numbers you are willing to use, and there is a larger set where the answer has been waiting.
+The stopping point in *Cracking Equations* was accurate and it was not the end. "No real solutions" is a statement about which numbers you are willing to use, and there is a larger set where the answer has been waiting.
 
 Three things to take.
 

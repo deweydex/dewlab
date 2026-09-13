@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Lists and Sequences — Practice
 
-Answers are folded. Indexing and slicing reward being tried rather than reasoned about, so run the tools cell and poke at it before answering from memory.
+Answers are hidden. Indexing and slicing reward being tried rather than reasoned about, so run the tools cell and poke at it before answering from memory.
 
 ## Indexing and Slicing
 
@@ -51,7 +51,7 @@ The last valid index is always `len(xs) - 1`, and that off-by-one is worth sayin
 
 (a) `[20, 30]`. (b) `[10, 20]`. (c) `[40, 50]`. (d) the whole list. (e) `[10, 30, 50]`. (f) `[50, 40, 30, 20, 10]`.
 
-A slice excludes its end, exactly like `range`. And `xs[:]` is not pointless — it makes a copy, which matters in the next question.
+A slice excludes its end, exactly like `range`. And `xs[:]` makes a copy, which matters in the next question, so it is not pointless.
 
 </details>
 
@@ -70,7 +70,7 @@ print(a)
 
 `b = a` did not copy the list. Both names refer to the same list, so changing it through one name changes what the other sees. `b = a[:]` or `b = list(a)` makes an actual copy.
 
-This is the single most common source of baffling behaviour in a first year of Python, and it comes from lists being changeable in a way that numbers and strings are not.
+This is the single most common source of baffling behavior in a first year of Python, and it comes from lists being changeable in a way that numbers and strings are not.
 
 </details>
 
@@ -80,7 +80,7 @@ This is the single most common source of baffling behaviour in a first year of P
 
 `[10, 99, 30, 40, 50]`.
 
-`s[1] = "x"` on a string raises a `TypeError`. Strings are immutable — you build a new one instead, with slicing or `replace`. Lists are mutable, and that difference is why a list can be quietly changed underneath you and a string cannot.
+`s[1] = "x"` on a string raises a `TypeError`. Strings are immutable, so you build a new one instead, with slicing or `replace`. Lists are mutable, and that difference is why a list can be quietly changed underneath you and a string cannot.
 
 </details>
 
@@ -216,7 +216,7 @@ def dot_product(a, b):
 
 `[1, 2, 3] · [4, 5, 6]` is 32.
 
-Raising is better than returning `None` or silently using the shorter list, because the dot product of two different-length vectors is not a smaller dot product — it is a question that does not make sense. An error says so at the point where the mistake was made, rather than a few functions later.
+Raising is better than returning `None` or silently using the shorter list, because the dot product of two different-length vectors is a question that does not make sense, not a smaller dot product. An error says so at the point where the mistake was made, rather than a few functions later.
 
 </details>
 
@@ -318,7 +318,7 @@ def most_frequent(numbers):
 
 `numbers.count(n)` walks the whole list, and it is inside a loop over the whole list, so this does n² work. For a few hundred numbers that is invisible; for a few hundred thousand it is a coffee break. A `Counter` from the standard library does it in one pass.
 
-Ties are unresolved here — the first one found wins. Whether that is right depends on a question the problem did not answer.
+The first tie found wins here, and ties are otherwise unresolved. Whether that is right depends on a question the problem did not answer.
 
 </details>
 
@@ -348,7 +348,7 @@ def four_of_the_last_four(text):
 
 `"Python"` gives `"thonthonthonthon"`.
 
-For a string shorter than four characters, `text[-4:]` quietly returns the whole thing rather than failing — slices clamp, indexes do not. Whether that is the desired behaviour is again a question the problem left open.
+For a string shorter than four characters, `text[-4:]` quietly returns the whole thing rather than failing — slices clamp, indexes do not. Whether that is the desired behavior is again a question the problem left open.
 
 </details>
 

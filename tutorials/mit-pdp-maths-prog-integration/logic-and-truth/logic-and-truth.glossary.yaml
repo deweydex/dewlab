@@ -4,7 +4,7 @@ entries:
     kind: concept
     definition: >
       Every possible combination of True/False inputs to a logical operator,
-      and what it outputs for each. It is not a fact to memorise; it is what
+      and what it outputs for each. It is not a fact to memorize; it is what
       a loop over every case produces.
   - term: exclusive or, XOR
     kind: concept

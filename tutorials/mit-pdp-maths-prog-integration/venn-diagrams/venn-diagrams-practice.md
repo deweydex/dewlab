@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Drawing Sets — Practice
 
-Answers are folded. Where a question asks about three sets, sketch the diagram before you reason about it — that is what the diagram is for.
+Answers are hidden. Where a question asks about three sets, sketch the diagram before you reason about it — that is what the diagram is for.
 
 ## Tools
 
@@ -49,7 +49,7 @@ print("python ^ sql :", sorted(python ^ sql))
 
 `python ^ sql` = Aoife, Ben, Fiona, Gearoid, Hannah.
 
-That is symmetric difference, which is XOR for sets — in one or the other but not both.
+That is symmetric difference, which is XOR for sets: in one or the other but not both.
 
 </details>
 
@@ -153,7 +153,7 @@ In words: in A only.
 
 Add the singles, subtract the pairs, add the triple back. The last step is there because the ten who use all three were added three times and then subtracted three times, leaving them at zero.
 
-Doing this without a diagram is genuinely hard, which is the argument for the diagram.
+Doing this without a diagram is hard, which is the argument for the diagram.
 
 </details>
 
@@ -195,7 +195,7 @@ Neither is better. They are the same claim in two notations, which is why the pa
 
 <details class="dl-answer"><summary>answer</summary>
 
-Fifteen, plus the outside. And no — no arrangement of four circles in a plane gives all sixteen regions.
+Fifteen, plus the outside. And no: no arrangement of four circles in a plane gives all sixteen regions.
 
 Diagrams for four sets exist, using ellipses or stranger shapes, and they stop being readable, which rather defeats the point.
 
@@ -205,7 +205,7 @@ Diagrams for four sets exist, using ellipses or stranger shapes, and they stop b
 
 <details class="dl-answer"><summary>answer</summary>
 
-The set operations. `A & B & C & D` is no harder to compute than `A & B`, and inclusion-exclusion generalises to any number of sets.
+The set operations. `A & B & C & D` is no harder to compute than `A & B`, and inclusion-exclusion generalizes to any number of sets.
 
 Every representation runs out somewhere, and knowing where is part of knowing it. A picture that helps enormously at three and not at all at four is still a good tool.
 
@@ -227,6 +227,6 @@ Every representation runs out somewhere, and knowing where is part of knowing it
 
 (c) Start with 120, remove those also in software (30) and those also in network (25) — but that removed the ten in all three twice, so add ten back: 120 − 30 − 25 + 10 = 75.
 
-Part (c) is where a diagram earns its place. The all-three region being subtracted twice is nearly impossible to keep track of without one, and nearly obvious with one.
+Part (c) is where a diagram becomes useful. The all-three region being subtracted twice is nearly impossible to keep track of without one, and nearly obvious with one.
 
 </details>

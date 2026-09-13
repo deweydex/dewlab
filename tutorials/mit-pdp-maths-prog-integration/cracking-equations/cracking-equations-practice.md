@@ -11,9 +11,9 @@ version: 2026.08.23.1
 
 # Cracking Equations — Practice
 
-Answers are folded. Every root you find can be checked by substituting it back, and there is no excuse for a wrong answer surviving on this page — put it back in and see whether you get zero.
+Answers are hidden. Every root you find can be checked by substituting it back, and there is no excuse for a wrong answer surviving on this page — put it back in and see whether you get zero.
 
-The factorising and quadratic problems are adapted from the Mathematics repository's factoring worksheet.
+The factorizing and quadratic problems are adapted from the Mathematics repository's factoring worksheet.
 
 ## Linear Equations
 
@@ -66,7 +66,7 @@ Both cases arrive as $0x = $ something, which is why `solve_linear` has to check
 
 ## Quadratics by Factorising
 
-**4.** Factorise.
+**4.** Factorize.
 
 - (a) $x^2 + 7x + 12$
 - (b) $x^2 + 9x + 20$
@@ -81,7 +81,7 @@ Two numbers that multiply to the constant and add to the middle coefficient. Whe
 
 </details>
 
-**5.** Factorise the special patterns.
+**5.** Factorize the special patterns.
 
 - (a) $x^2 - 49$
 - (b) $x^2 - 100$
@@ -93,21 +93,21 @@ Two numbers that multiply to the constant and add to the middle coefficient. Whe
 
 (a) $(x - 7)(x + 7)$. (b) $(x - 10)(x + 10)$. (c) $(x + 3)^2$. (d) $(x - 7)^2$. (e) $(2x - 5)(2x + 5)$.
 
-The difference of two squares and the perfect square are worth recognising on sight, because they turn up constantly and they are the two cases where hunting for factor pairs is a waste of time.
+The difference of two squares and the perfect square are worth recognizing on sight, because they turn up constantly and they are the two cases where hunting for factor pairs is a waste of time.
 
 </details>
 
-**6.** Factorise $x^2 + 4$.
+**6.** Factorize $x^2 + 4$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-It does not factorise over the real numbers.
+It does not factorize over the real numbers.
 
-A *sum* of squares has no real factorisation, unlike a difference. Over the complex numbers it is $(x - 2i)(x + 2i)$, which is what *When There Is No Answer* is about.
+A *sum* of squares has no real factorization, unlike a difference. Over the complex numbers it is $(x - 2i)(x + 2i)$, which is what *When There Is No Answer* is about.
 
 </details>
 
-**7.** Take the common factor out first, then factorise.
+**7.** Take the common factor out first, then factorize.
 
 - (a) $2x^2 + 10x + 12$
 - (b) $3x^2 - 27$
@@ -121,7 +121,7 @@ Taking the common factor out first makes each of these an easy case. Attacking (
 
 </details>
 
-**8.** Factorise $2x^2 + 7x + 3$, where the leading coefficient is not 1.
+**8.** Factorize $2x^2 + 7x + 3$, where the leading coefficient is not 1.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -312,7 +312,7 @@ Infinitely many solutions means they are the same line drawn twice. One solution
 
 At $(-2, 4)$ and $(3, 9)$.
 
-Setting them equal gives $x^2 - x - 6 = 0$, which factorises as $(x - 3)(x + 2)$.
+Setting them equal gives $x^2 - x - 6 = 0$, which factorizes as $(x - 3)(x + 2)$.
 
 A line and a parabola meet at two points, one point, or none — and which of those it is, is the discriminant again.
 
@@ -326,7 +326,7 @@ A line and a parabola meet at two points, one point, or none — and which of th
 
 12 m by 5 m.
 
-The perimeter gives $l + w = 17$ and the area gives $lw = 60$. Substituting $w = 17 - l$ turns the second into $l^2 - 17l + 60 = 0$, which factorises as $(l - 12)(l - 5)$.
+The perimeter gives $l + w = 17$ and the area gives $lw = 60$. Substituting $w = 17 - l$ turns the second into $l^2 - 17l + 60 = 0$, which factorizes as $(l - 12)(l - 5)$.
 
 Check both conditions: $2(12 + 5) = 34$ and $12 \times 5 = 60$.
 

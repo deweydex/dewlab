@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Storing and Computing — Practice
 
-Answers are folded. The type questions are the ones worth slowing down on — nearly every confusing error in your first term will turn out to be a type you did not expect.
+Answers are hidden. The type questions are the ones worth slowing down on — nearly every confusing error in your first term will turn out to be a type you did not expect.
 
 ## Variables
 
@@ -33,7 +33,7 @@ Legal: `total`, `_hidden`, `Total`, `total_2`.
 
 Illegal: `2nd_place` (cannot start with a digit), `first name` (no spaces — Python reads it as two things), `class` (a reserved word Python needs for itself), `my-name` (the hyphen is a minus sign, so Python reads `my - name`).
 
-`Total` is legal and is a different variable from `total`, which is a good way to lose an afternoon.
+`Total` is legal and is a different variable from `total`, which is an easy way to waste time debugging.
 
 </details>
 
@@ -49,7 +49,7 @@ x = 10
 
 `x` is 10, and `y` is 5.
 
-The line `y = x` copied the value 5 into `y`. It did not tie `y` to `x` — assignment happens once, at the moment it runs. This is the difference between `=` in Python and `=` in mathematics: in an equation, `y = x` stays true; here it was a one-off instruction.
+The line `y = x` copied the value 5 into `y`. Assignment happens once, at the moment it runs, so it did not tie `y` to `x`. This is the difference between `=` in Python and `=` in mathematics: in an equation, `y = x` stays true; here it was a one-off instruction.
 
 </details>
 
@@ -61,7 +61,7 @@ The line `y = x` copied the value 5 into `y`. It did not tie `y` to `x` — assi
 a, b = b, a
 ```
 
-Python can do it in one line. Every other language needs a third variable, and it is worth knowing that version too because it shows what is actually happening:
+Python can do it in one line. Every other language needs a third variable, and it is worth knowing that version too because it shows what is happening:
 
 ```python
 temp = a
@@ -127,7 +127,7 @@ for value in [7, 7.0, "7", True, 7 + 0.5]:
 
 (a) `53`. (b) `8`. (c) `555`. (d) `333`. (e) a `TypeError`.
 
-`+` joins strings and adds numbers. `*` with a string and a whole number repeats it. `+` with one of each has no sensible meaning, so Python refuses rather than guessing — which is the behaviour you want, because guessing wrong silently is much worse than stopping.
+`+` joins strings and adds numbers. `*` with a string and a whole number repeats it. `+` with one of each has no sensible meaning, so Python refuses rather than guessing — which is the behavior you want, because guessing wrong silently is much worse than stopping.
 
 </details>
 
@@ -147,7 +147,7 @@ for value in [7, 7.0, "7", True, 7 + 0.5]:
 
 −3, and no, it is not rounding.
 
-`int()` truncates — it cuts towards zero. Rounding would give −4. `round(-3.7)` does give −4. Two different operations that agree on positive numbers and part company on negative ones, which is exactly the kind of thing that hides in code for months.
+`int()` truncates: it cuts towards zero. Rounding would give −4. `round(-3.7)` does give −4. Two different operations that agree on positive numbers and part company on negative ones, which is exactly the kind of thing that hides in code for months.
 
 </details>
 
@@ -253,7 +253,7 @@ Each hex digit is exactly four binary digits, so FF is eight bits — one byte. 
 
 </details>
 
-**17.** A colour on the web is written `#1E90FF`. What are its red, green and blue values in decimal?
+**17.** A color on the web is written `#1E90FF`. What are its red, green and blue values in decimal?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -286,7 +286,7 @@ print(total)
 
 ## Putting It Together
 
-**19.** Write a converter that turns a number of minutes into hours and minutes, with clear names and a labelled output.
+**19.** Write a converter that turns a number of minutes into hours and minutes, with clear names and a labeled output.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -301,7 +301,7 @@ print(f"{total_minutes} minutes is {hours} hours and {minutes} minutes")
 
 </details>
 
-**20.** A shop's till stores prices in euro as floats. Adding fifty items at €0.10 gives €4.999999999999998. What should it store instead?
+**20.** A shop's register stores prices in euro as floats. Adding fifty items at €0.10 gives €4.999999999999998. What should it store instead?
 
 <details class="dl-answer"><summary>answer</summary>
 

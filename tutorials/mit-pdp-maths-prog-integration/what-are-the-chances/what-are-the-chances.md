@@ -27,15 +27,15 @@ Probability is the mathematics of uncertainty. It gives us a precise language fo
 
 The probability of an event is a number between 0 (impossible) and 1 (certain). When all outcomes are equally likely, the probability of an event A is:
 
-$$P(A) = \frac{\text{number of favourable outcomes}}{\text{total number of outcomes}}$$
+$$P(A) = \frac{\text{number of favorable outcomes}}{\text{total number of outcomes}}$$
 
-Flip a fair coin: there are 2 equally likely outcomes and 1 favourable outcome (heads), so $P(\text{heads}) = \frac{1}{2} = 0.5$.
+Flip a fair coin: there are 2 equally likely outcomes and 1 favorable outcome (heads), so $P(\text{heads}) = \frac{1}{2} = 0.5$.
 
 Roll a fair die: $P(\text{rolling a 4}) = \frac{1}{6}$. $P(\text{rolling an even number}) = \frac{3}{6} = \frac{1}{2}$.
 
 ### Your turn
 
-Let's try a function `probability(favourable, total)` for a basic probability, with a docstring. Two edge cases are worth deciding about before writing it: what should happen when the total is 0, and what should happen when the favourable count is larger than the total?
+Let's try a function `probability(favorable, total)` for a basic probability, with a docstring. Two edge cases are worth deciding about before writing it: what should happen when the total is 0, and what should happen when the favorable count is larger than the total?
 
 ```python exec
 id: your-turn-1
@@ -217,7 +217,7 @@ id: a-more-complex-simulation-2
 
 Sometimes the probability of an event depends on what has already happened. The probability of drawing a heart *given that* we already drew a heart (without replacement) is $\frac{12}{51}$, not $\frac{13}{52}$.
 
-This is called *conditional probability* and is written $P(B|A)$ -- "the probability of B given A":
+This is called *conditional probability*, written $P(B|A)$ and read as "the probability of B given A":
 
 $$P(B|A) = \frac{P(A \text{ and } B)}{P(A)}$$
 
@@ -234,7 +234,7 @@ id: your-turn-8
 
 ## Reflection
 
-We have covered the fundamental rules of probability — complement, addition, multiplication — and used simulation to check the calculations. Simulation is not only a teaching device here. When a problem gets too tangled for an exact answer, running it a million times is what people actually do, and the method has a name: Monte Carlo.
+We have covered the fundamental rules of probability — complement, addition, multiplication — and used simulation to check the calculations. Simulation is not only a teaching device here. When a problem gets too tangled for an exact answer, running it a million times is what people do, and the method has a name: Monte Carlo.
 
 The combination of mathematical reasoning and computational verification is powerful: we calculate an expected probability, then simulate to check. If they agree, we have confidence in both. If they disagree, we have a bug to find -- and finding bugs is learning.
 

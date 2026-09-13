@@ -23,11 +23,11 @@ covers:
 
 **Programming Design Principles**
 
-By now you have written code that did not work. Everyone has, constantly, and it does not stop happening with experience -- what changes is how long it takes to find out why.
+By now you have written code that did not work. Everyone has, constantly, and it never stops happening. What changes with experience is how long it takes to find out why.
 
-That is what this tutorial is about, and it is possibly the most useful hour in the whole series. Not because errors are interesting in themselves, but because **an error message is your computer trying to help you**, and most people never learn to read one. They see a wall of red text, feel a small drop in the stomach, and start changing things at random.
+That is what this tutorial is about, and it is possibly the most useful hour in the whole series. **An error message is your computer trying to help you**, and most people never learn to read one. They see a wall of red text, feel a small drop in the stomach, and start changing things at random.
 
-The red text is a description of what happened and where. It is written in an unfamiliar register, it puts the most useful line at the bottom, and it is often pointing slightly to the side of the real problem. All three of those are learnable.
+The red text is a description of what happened and where. It is written in an unfamiliar style, it puts the most useful line at the bottom, and it is often pointing slightly to the side of the real problem. All three of those are learnable.
 
 So we are going to break things on purpose. Every cell below is meant to fail, and reading its failure is the exercise.
 
@@ -70,7 +70,7 @@ Now the awkward part. **The marker frequently points after the real error, not a
 
 ### Your turn
 
-Four broken lines below. See if you can fix them one at a time — run, read, repair, run again — in order, paying attention to how the message differs each time.
+Four broken lines follow. See if you can fix them one at a time — run, read, repair, run again — in order, paying attention to how the message differs each time.
 
 ```python exec
 id: your-turn-1
@@ -100,7 +100,7 @@ result = (5 + 3
 print(result)
 ```
 
-The fourth one is worth a moment, because Python is being cleverer than it looks. An unclosed bracket is not discovered where it opened -- Python keeps reading, expecting the closing one, and only gives up further along. Older versions reported the error wherever they gave up, which was often a line that looked entirely innocent.
+The fourth one is worth a moment, because Python is being cleverer than it looks. Python keeps reading past an unclosed bracket, expecting the closing one, and only gives up further along, so the error shows up well after where the bracket was opened. Older versions reported the error wherever they gave up, which was often a line that looked entirely innocent.
 
 Modern Python tracks the bracket back to where it was opened and says so: *'(' was never closed*, pointing at the opening one. That is a large improvement, and it is worth knowing that older error messages, and other languages, will not always do it for you.
 
@@ -119,19 +119,19 @@ The first `print` worked. The second did not. That is the shape of every runtime
 
 Here are the ones you will meet most, and what each one is telling you.
 
-**`ZeroDivisionError`** -- you divided by zero. Almost always this means a count came out empty when you assumed it would not.
+**`ZeroDivisionError`**: you divided by zero. Almost always this means a count came out empty when you assumed it would not.
 
-**`TypeError`** -- you did something to a value that its type does not support. Adding a number to a string is the classic.
+**`TypeError`**: you did something to a value that its type does not support. Adding a number to a string is the classic.
 
-**`ValueError`** -- the right type, the wrong content. `int("hello")` is a string, which is what `int` wants, but not one that means anything as a number.
+**`ValueError`**: the type is right but the content is wrong. `int("hello")` is a string, which is what `int` wants, but not one that means anything as a number.
 
-**`IndexError`** -- a position that does not exist in a list.
+**`IndexError`**: you asked for a position that does not exist in a list.
 
-**`KeyError`** -- a name that does not exist in a dictionary.
+**`KeyError`**: you asked for a name that does not exist in a dictionary.
 
-**`NameError`** -- a variable you never created, or created somewhere the code cannot see, or misspelled.
+**`NameError`**: you used a variable that was never created, or that was created somewhere the code cannot see, or that was misspelled.
 
-**`AttributeError`** -- you asked a value for something it does not have. Often this means the value is not the type you thought it was.
+**`AttributeError`**: you asked a value for something it does not have. Often this means the value is not the type you thought it was.
 
 ### Your turn
 
@@ -178,7 +178,7 @@ The first call worked. The second produced several lines of traceback, and they 
 
 **Read it from the bottom.** The last line names the error and describes it -- that is what went wrong. Above it, the lines run from the outermost call downwards, so the *innermost* frame, the place the error happened, is nearest the bottom.
 
-That ordering catches people out constantly. The top of a traceback is where your program started; the bottom is where it broke. When someone sends you an error and asks what it means, the last line is where you look.
+That ordering confuses people constantly. The top of a traceback is where your program started; the bottom is where it broke. When someone sends you an error and asks what it means, the last line is where you look.
 
 But notice something about this one. The error is in `average`, on the division -- and `average` is not wrong. It divides by the length of the list, which is the correct thing to do. **The mistake is in the empty list handed to it, which came from the line at the top of the traceback.**
 
@@ -221,7 +221,7 @@ scores = [80, 90, 70]
 print("Average:", average(scores))
 ```
 
-No red text. No traceback. A number came out, and it looks reasonable.
+There is no red text. There is no traceback. A number came out, and it looks reasonable.
 
 It is wrong. The average of 80, 90 and 70 is 80, and that says 81, because `+ 1` is outside the division and should not be there at all. Nothing in the world will tell you this except knowing what the answer should be.
 
@@ -250,7 +250,7 @@ print("Predicted mark:", prediction)
 
 The first uses `>` where it means `>=`, so a student on exactly the pass mark fails. The second never uses `attendance` at all -- it multiplies `hours` twice -- and produces a confident number that means nothing.
 
-**This is why you check answers you already know.** Before you trust a function on data you cannot verify, give it data you can. The average of 80, 90 and 70 is 80; if your function says 81, you have found something. That habit is worth more than any debugging tool, and it is what *Building Reusable Tools* takes further into testing properly.
+**This is why you check answers you already know.** Before you trust a function on data you cannot verify, give it data you can. The average of 80, 90 and 70 is 80; if your function says 81, you have found something. That habit is often worth more than any debugging tool, and it is what *Building Reusable Tools* takes further into testing properly.
 
 ### Your turn
 
@@ -280,7 +280,7 @@ print(percentage(45, 60))
 print(percentage(60, 45))
 ```
 
-The first works on the numbers you would try first and fails on a set nobody thinks to test. The second is not obviously wrong at all -- it depends entirely on which argument you meant to go where, which is a question the code cannot answer for you.
+The first works on the numbers you would try first and fails on a set nobody thinks to test. The second depends entirely on which argument you meant to go where, a question the code cannot answer for you, so it is not obviously wrong at all.
 
 ## Reflection
 
@@ -292,7 +292,7 @@ Three kinds of wrong, and each is found a different way.
 
 **Logical errors** do not stop it at all. Nothing will find these for you except checking against an answer you already know -- which is a habit rather than a technique.
 
-There is one more thing worth saying, and it is about the feeling rather than the technique. An error message is not a rebuke. It is the most specific, most patient help you will get from anything all day: an exact location, an exact category, and usually a description of the fix. Learning to read one calmly is a real skill, and it is one you can practise deliberately by doing exactly what this tutorial did -- breaking things on purpose, when nothing is at stake.
+There is one more thing worth saying, and it is about the feeling rather than the technique. An error message is the most specific, most patient help you will get from anything all day: an exact location, an exact category, and usually a description of the fix. It is not a rebuke. Learning to read one calmly is a real skill, and it is one you can practice deliberately by doing exactly what this tutorial did -- breaking things on purpose, when nothing is at stake.
 
 In a few sentences, which of the three kinds do you expect to give you the most trouble, and what could you do while writing code to catch it earlier?
 

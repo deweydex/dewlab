@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Drawing Functions — Practice
 
-Answers are folded. Several of these ask you to predict before plotting — the prediction is the exercise, and the plot is the marking.
+Answers are hidden. The prediction is the exercise and the plot is the marking, so several of these ask you to predict before plotting.
 
 ## Tools
 
@@ -50,7 +50,7 @@ draw(lambda x: x ** 2, label="x^2")
 
 (b) is not — the same input gives different answers.
 
-(d) is not a function to a *person*, because a date has many people. It is a perfectly good function to a *set* of people, which is the usual fix: change what the output is allowed to be.
+(d) is a perfectly good function to a *set* of people, which is the usual fix: change what the output is allowed to be. It is not a function to a *person*, because a date has many.
 
 </details>
 
@@ -111,7 +111,7 @@ They cross at `(2, 5)`.
 
 By algebra: `2x + 1 = −x + 7`, so `3x = 6` and `x = 2`, and then `y = 5`.
 
-The two methods agreeing is the point — the picture is trustworthy, so it can be used where the algebra is harder.
+The picture is trustworthy, because the two methods agree, so it can be used where the algebra is harder.
 
 </details>
 
@@ -188,7 +188,7 @@ More precisely: −1, −0.618 and 1.618. The exact answers involve the golden r
 
 At `(-1, 1)` and `(2, 4)`.
 
-Setting them equal: `x² = x + 2`, so `x² − x − 2 = 0`, which factorises as `(x − 2)(x + 1)`.
+Setting them equal: `x² = x + 2`, so `x² − x − 2 = 0`, which factorizes as `(x − 2)(x + 1)`.
 
 </details>
 

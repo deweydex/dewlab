@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # What Are the Chances — Practice
 
-Answers are folded. Calculate first, then simulate — and when the two disagree, one of them is wrong and it is usually not the simulation.
+Answers are hidden. Calculate first, then simulate — and when the two disagree, one of them is wrong and it is usually not the simulation.
 
 Several of these are adapted from the statistics and probability worksheet in the Mathematics repository.
 
@@ -51,7 +51,7 @@ Every probability is between 0 and 1, and an impossible event is exactly 0 rathe
 
 </details>
 
-**2.** A bag holds 5 red, 3 blue and 2 green counters. Find the probability of drawing each colour, and check they sum to 1.
+**2.** A bag holds 5 red, 3 blue and 2 green counters. Find the probability of drawing each color, and check they sum to 1.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -166,9 +166,9 @@ The thing that *is* unlikely is five heads in a row *before you start*: 1/32. On
 
 (a) and (d) are independent. (b) and (c) are not.
 
-(d) surprises people: $P(\text{red}) = \frac12$, $P(\text{face}) = \frac{12}{52}$, and $P(\text{both}) = \frac{6}{52}$, which is exactly the product. Half the face cards are red, so knowing the colour tells you nothing about whether it is a face card.
+(d) surprises people: $P(\text{red}) = \frac12$, $P(\text{face}) = \frac{12}{52}$, and $P(\text{both}) = \frac{6}{52}$, which is exactly the product. Half the face cards are red, so knowing the color tells you nothing about whether it is a face card.
 
-That is what independence means — and it is a numerical fact to be checked rather than a feeling about whether things are related.
+That is what independence means: a numerical fact to be checked rather than a feeling about whether things are related.
 
 </details>
 
@@ -225,7 +225,7 @@ for _ in range(100000):
 print(hits / 100000, 1 / 17)
 ```
 
-About 0.0588. `random.sample` draws without replacement, which is exactly the condition being modelled — using `random.choice` twice would silently simulate the wrong problem.
+About 0.0588. `random.sample` draws without replacement, which is exactly the condition being modeled — using `random.choice` twice would silently simulate the wrong problem.
 
 </details>
 
@@ -248,7 +248,7 @@ print(wins / 100000)
 
 The simulation is shorter than the argument, which is why it is worth writing. The whole problem reduces to one line: you switch into a win exactly when your first guess was wrong, and your first guess is wrong two times in three.
 
-The host's behaviour matters enormously. If they opened a door at random and it happened to be empty, switching would be an even bet. The puzzle only works because they know where the prize is and never open it.
+The host's behavior matters enormously. If they opened a door at random and it happened to be empty, switching would be an even bet. The puzzle only works because they know where the prize is and never open it.
 
 </details>
 
@@ -288,7 +288,7 @@ The false positives swamp the true ones because the disease is rare. This is Bay
 
 There are 11 outcomes with at least one six, and one of them is the double six.
 
-Compare: if you are told *the first die* is a six, the answer is 1/6. Same-sounding information, different conditioning, different answer — and this is where most probability arguments actually go wrong.
+Compare: if you are told *the first die* is a six, the answer is 1/6. Same-sounding information, different conditioning, different answer — and this is where most probability arguments go wrong.
 
 </details>
 
@@ -300,6 +300,6 @@ Compare: if you are told *the first die* is a six, the answer is 1/6. Same-sound
 
 The four equally likely combinations are GG, GB, BG, BB. Ruling out BB leaves three, one of which is GG.
 
-The same trap as the dice. And as with the dice, "the elder is a girl" gives 1/2 instead — the answer depends on precisely what you were told, not on what is true.
+This is the same trap as the dice. And as with the dice, "the elder is a girl" gives 1/2 instead — the answer depends on precisely what you were told, not on what is true.
 
 </details>

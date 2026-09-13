@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Expressions Come Alive — Practice
 
-Answers are folded. Expand by hand first and use the cell to check — the point of the checking cell is to settle disputes, not to do the work.
+Answers are hidden. Expand by hand first and use the cell to check — the point of the checking cell is to settle disputes, not to do the work.
 
 The expansion problems are adapted from the FOIL worksheet in the Mathematics repository.
 
@@ -43,7 +43,7 @@ print(multiply_poly([3, 1], [2, 1]))
 
 (a) $t^2 + 7t + 10$. (b) $p^2 + 9p + 18$. (c) $m^2 + 11m + 28$. (d) $k^2 + 10k + 16$.
 
-In every one, the middle number is the sum of the two constants and the last is their product. That is not a coincidence and it is what makes factorising possible.
+In every one, the middle number is the sum of the two constants and the last is their product. That is not a coincidence and it is what makes factorizing possible.
 
 </details>
 
@@ -80,7 +80,7 @@ Squaring does not distribute over addition. Neither does the square root: $\sqrt
 
 (a) $x^2 + 2x - 15$. (b) $x^2 - 10x + 24$. (c) $x^2 - 49$. (d) $x^2 - 10x + 25$.
 
-(c) is the difference of two squares — the middle terms cancel exactly, and it is worth recognising instantly in both directions.
+(c) is the difference of two squares — the middle terms cancel exactly, and it is worth recognizing instantly in both directions.
 
 </details>
 
@@ -102,7 +102,7 @@ Squaring does not distribute over addition. Neither does the square root: $\sqrt
 
 $x^2 + 2x + 1$, then $x^3 + 3x^2 + 3x + 1$, then $x^4 + 4x^3 + 6x^2 + 4x + 1$.
 
-1 2 1, then 1 3 3 1, then 1 4 6 4 1 — Pascal's triangle. Each row is built by adding neighbouring pairs from the row above, and the same numbers count how many ways there are to choose k things from n, which is why *Counting Carefully* meets them again.
+1 2 1, then 1 3 3 1, then 1 4 6 4 1 — Pascal's triangle. Each row is built by adding neighboring pairs from the row above, and the same numbers count how many ways there are to choose k things from n, which is why *Counting Carefully* meets them again.
 
 </details>
 
@@ -112,7 +112,7 @@ $x^2 + 2x + 1$, then $x^3 + 3x^2 + 3x + 1$, then $x^4 + 4x^3 + 6x^2 + 4x + 1$.
 
 $x^3 + 5x^2 + 7x + 2$.
 
-FOIL only names the four products of two binomials. The actual rule is that every term multiplies every term — six products here — and that generalises where FOIL does not.
+FOIL only names the four products of two binomials. The actual rule is that every term multiplies every term — six products here — and that generalizes where FOIL does not.
 
 </details>
 
@@ -129,7 +129,7 @@ FOIL only names the four products of two binomials. The actual rule is that ever
 
 (a) `[-2, 5, 3]`. (b) `[1, 0, -3, 2]`. (c) `[7]`. (d) `[0, 0, 0, 0, 0, 1]`.
 
-The zeros in (b) and (d) are not padding — index i holds the coefficient of x^i, so a missing power is a zero coefficient and the position has to be kept.
+Index i holds the coefficient of x^i, so a missing power is a zero coefficient, and the position has to be kept in (b) and (d). The zeros there are not padding.
 
 </details>
 
@@ -257,7 +257,7 @@ for x in [-3, -1, 0, 0.5, 2, 7]:
                - evaluate_poly(a, x) * evaluate_poly(b, x)) < 1e-9
 ```
 
-Two polynomials of degree n that agree at n + 1 points are the same polynomial, so a handful of test values is not a spot check — it is a proof, as long as you use enough of them.
+Two polynomials of degree n that agree at n + 1 points are the same polynomial, so a handful of test values is a proof, not a spot check, as long as you use enough of them.
 
 </details>
 
@@ -281,7 +281,7 @@ Evaluating at 10 has a pleasant side effect: the coefficients appear as the digi
 
 Area $x^2 + 8x + 15$, perimeter $4x + 16$.
 
-Area multiplies and grows quadratically; perimeter adds and grows linearly. That difference is why doubling a room's dimensions doubles the skirting board and quadruples the carpet.
+Area multiplies and grows quadratically; perimeter adds and grows linearly. That difference is why doubling a room's dimensions doubles the baseboard and quadruples the carpet.
 
 </details>
 

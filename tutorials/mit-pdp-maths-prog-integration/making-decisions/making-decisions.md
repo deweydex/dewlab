@@ -62,7 +62,7 @@ print(1 == 1.0)       # prediction:
 print(0 == False)     # prediction: 
 ```
 
-That last one is interesting. In Python, `False` is actually equivalent to `0` and `True` is equivalent to `1`. This connection between logic and arithmetic goes all the way back to George Boole's work in the 1850s.
+That last one is interesting. In Python, `False` is equivalent to `0` and `True` is equivalent to `1`. This connection between logic and arithmetic goes all the way back to George Boole's work in the 1850s.
 
 ## If Statements: Choosing a Path
 
@@ -79,9 +79,9 @@ if temperature > 30:
 print("This line always runs, regardless of the temperature.")
 ```
 
-Notice the structure: the `if` keyword, followed by a condition, followed by a colon. The indented lines below are the *body* of the if statement -- they only run when the condition is True. The unindented line after is back to the normal flow and runs no matter what.
+Notice the structure: the `if` keyword, followed by a condition, followed by a colon. The indented lines below are the *body* of the if statement: they only run when the condition is True. The unindented line after is back to the normal flow and runs no matter what.
 
-Indentation is not optional in Python -- it is how Python knows which code belongs inside the if statement. Use four spaces for each level of indentation (most editors will do this automatically when you press Tab).
+Indentation is how Python knows which code belongs inside the if statement, so it is not optional in Python. Use four spaces for each level of indentation (most editors will do this automatically when you press Tab).
 
 ### What happens when the condition is False?
 
@@ -223,7 +223,7 @@ id: your-turn-5
 
 ## Classifying Numbers: A Mathematical Application
 
-Let's use our new tools for something that connects to mathematics: classifying numbers into families. Mathematicians organise numbers into nested domains -- natural numbers (N), integers (Z), rationals (Q), and reals (R) -- each one extending the one before.
+Let's use our new tools for something that connects to mathematics: classifying numbers into families. Mathematicians organize numbers into nested domains -- natural numbers (N), integers (Z), rationals (Q), and reals (R) -- each one extending the one before.
 
 We can write a program that examines a number and tells us which domains it belongs to. Every natural number is also an integer, which is also a rational, which is also a real -- they are nested like Russian dolls.
 

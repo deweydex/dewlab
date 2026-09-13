@@ -41,7 +41,7 @@ def square(n):
     return n ** 2
 ```
 
-we are defining a rule that maps each input to exactly one output. This is a genuine mathematical function implemented in code.
+we are defining a rule that maps each input to exactly one output. This is a mathematical function implemented in code.
 
 Not every Python function is a mathematical function (some depend on external state, or use randomness), but the ones that are -- where the output depends only on the inputs -- are the easiest to understand, test, and trust. We call these *pure functions*, and they are worth striving for.
 
@@ -63,9 +63,9 @@ print(result)
 # print(area)    # 'area' does not exist outside the function
 ```
 
-This is actually a feature, not a limitation. It means functions are self-contained -- you do not need to worry about a variable inside one function accidentally interfering with a variable in another. Each function has its own workspace.
+This is a feature, not a limitation. It means functions are self-contained -- you do not need to worry about a variable inside one function accidentally interfering with a variable in another. Each function has its own workspace.
 
-Variables defined outside any function have *global scope* -- they can be read from anywhere. But it is good practice to pass values into functions as parameters rather than relying on global variables. This makes your functions portable and testable.
+Variables defined outside any function have *global scope*: they can be read from anywhere. But it is good practice to pass values into functions as parameters rather than relying on global variables. This makes your functions portable and testable.
 
 ### Your turn
 
@@ -181,7 +181,7 @@ Each step halves the search space. Starting with 1,000,000 items:
 
 So binary search on a million items needs at most about 20 comparisons. Linear search might need a million. That is the difference between $O(\log n)$ and $O(n)$.
 
-The catch: the data must be sorted first. Sorting takes time, so binary search only wins when we search the same data many times (which is actually very common).
+The catch: the data must be sorted first. Sorting takes time, so binary search only wins when we search the same data many times (which is very common).
 
 ## Divide and Conquer
 
@@ -250,7 +250,7 @@ id: your-turn-7
 
 ## Reflection
 
-Today we explored functions more deeply (scope, return values, pure functions as mathematical functions), and we implemented two fundamental search algorithms. The key takeaway is that *how we organise data affects how efficiently we can work with it*. Sorted data enables binary search, which is dramatically faster than linear search for large collections.
+Today we explored functions more deeply (scope, return values, pure functions as mathematical functions), and we implemented two fundamental search algorithms. The key takeaway is that *how we organize data affects how efficiently we can work with it*. Sorted data enables binary search, which is dramatically faster than linear search for large collections.
 
 Next time, we will tackle the other side of this coin: how do we sort data in the first place?
 

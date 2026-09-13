@@ -19,7 +19,7 @@ covers:
 
 **Programming Design Principles / Maths for IT**
 
-Welcome. Over the coming weeks we are going to learn to program and to think about maths, and we are going to find that these two things are much closer together than most people expect. A program is a set of clear steps, written precisely enough for a computer to follow. A formula is much the same thing, written for a person instead. Same idea, different audience.
+Welcome. Over the coming weeks we are going to learn to program and to think about math, and we are going to find that these two things are much closer together than most people expect. A program is a set of clear steps, written precisely enough for a computer to follow. A formula is much the same thing, written for a person instead. Same idea, different audience.
 
 This first tutorial is about getting comfortable with the tools and the way of thinking. We will take it a step at a time. Everyone starts here.
 
@@ -82,9 +82,9 @@ An *algorithm* is a sequence of clear, unambiguous steps that accomplish a task.
 5. Wait a few minutes
 6. Remove the tea bag
 
-This example shows what makes a good algorithm: it starts from a known state (you have a kettle, water, a cup, and a tea bag), the steps are in a clear order, and it finishes (you end up with tea). It even has a *loop* in step 3 -- "while the water has not boiled, wait" repeats the waiting until a condition is met.
+This example shows what makes a good algorithm: it starts from a known state (you have a kettle, water, a cup, and a tea bag), the steps are in a clear order, and it finishes (you end up with tea). It even has a *loop* in step 3: "while the water has not boiled, wait" repeats the waiting until a condition is met.
 
-Programming is the art of writing algorithms precisely enough that a computer can follow them. The computer is very fast but not very smart -- it will do exactly what you tell it, and only that. This means we need to be precise about our instructions.
+Programming is the art of writing algorithms precisely enough that a computer can follow them. The computer is very fast but not very smart: it will do exactly what you tell it, and only that. This means we need to be precise about our instructions.
 
 ### Your turn
 
@@ -157,7 +157,7 @@ That last operator, `%` (called modulo), gives us the remainder after division. 
 
 ### Your turn
 
-Let's try predicting what each line will print before we run the cell. Write a prediction next to each comment, then run the cell and compare. Getting a prediction wrong is the useful case — that is the moment you find out what Python is actually doing rather than what you assumed. If you would rather run it first and then work out why, that works too.
+Let's try predicting what each line will print before we run the cell. Write a prediction next to each comment, then run the cell and compare. Getting a prediction wrong is the useful case — that is the moment you find out what Python is doing rather than what you assumed. If you would rather run it first and then work out why, that works too.
 
 ```python exec
 id: your-turn-3
@@ -181,7 +181,7 @@ In this first tutorial we have covered:
 - The idea of an algorithm as a sequence of clear steps
 - Pseudocode as a planning tool before writing code
 
-That is a solid foundation. In the next tutorial we will learn about *variables* -- how to store information and work with different types of data -- and we will start exploring the different number systems that computers use.
+That is a solid foundation. In the next tutorial we will learn about *variables*: how to store information and work with different types of data. We will also start exploring the different number systems that computers use.
 
 ### Reflection
 
@@ -199,7 +199,7 @@ written for exactly this audience.
 
 Python Software Foundation. *The Python Tutorial*, sections 3.1 and 3.1.1.
 <https://docs.python.org/3/tutorial/introduction.html>. The official reference
-for the arithmetic operators, including the exact behaviour of `//` and `%`.
+for the arithmetic operators, including the exact behavior of `//` and `%`.
 
 Computerphile (2017). *What on Earth is an Algorithm?*
 <https://www.youtube.com/watch?v=X0HHUlAiA4E>. Nine minutes on what does and

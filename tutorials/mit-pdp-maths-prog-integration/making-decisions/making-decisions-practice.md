@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Making Decisions — Practice
 
-Answers are folded. Work out what each condition is true for *before* you write the `if` — most broken conditionals are broken in the condition, not in the branches.
+Answers are hidden. Work out what each condition is true for *before* you write the `if` — most broken conditionals are broken in the condition, not in the branches.
 
 ## Comparisons
 
@@ -259,7 +259,7 @@ def opposite_signs(a, b):
 
 Comparing the two truth values for inequality is the neat version — they differ exactly when the signs differ.
 
-The longhand is `(a < 0 and b > 0) or (a > 0 and b < 0)`, and the two disagree about zero. The neat version sorts every number into "negative" or "not negative", so `0` and `-5` come out `True`. The longhand asks for one strictly negative and one strictly positive, so the same pair comes out `False`. Neither is wrong; the question did not say, and that is the actual lesson — a specification with a gap in it gets filled in by whoever writes the code.
+The longhand is `(a < 0 and b > 0) or (a > 0 and b < 0)`, and the two disagree about zero. The neat version sorts every number into "negative" or "not negative", so `0` and `-5` come out `True`. The longhand asks for one strictly negative and one strictly positive, so the same pair comes out `False`. Neither is wrong; the question did not say. A specification with a gap in it gets filled in by whoever writes the code, and that is the actual lesson.
 
 </details>
 
@@ -331,7 +331,7 @@ The nesting is the whole structure: each family contains the ones before it, so 
 
 Of every float that exists, yes — a float is a whole number times a power of two, which is a fraction.
 
-Of the numbers it is *standing for*, no. `math.pi` is a float, and π is irrational; the float is a rational approximation of it. So the honest statement is that irrational numbers cannot be stored exactly, and every stored number is rational whether or not the thing it represents is.
+Of the numbers it is *standing for*, no. `math.pi` is a float, and π is irrational; the float is a rational approximation of it. So the accurate statement is that irrational numbers cannot be stored exactly, and every stored number is rational whether or not the thing it represents is.
 
 </details>
 

@@ -27,7 +27,7 @@ covers:
 
 Last time you taught a computer to store things, and near the end of it you met binary and hexadecimal -- two ways of writing numbers that seemed to come out of nowhere. This tutorial is where they came from.
 
-It is also a short history of the thing you are learning to do. Not because history is decorative, but because almost everything that seems arbitrary about programming turns out to be a decision somebody made for a reason, and the reasons are still there.
+It is also a short history of the thing you are learning to do. Almost everything that seems arbitrary about programming turns out to be a decision somebody made for a reason, and the reasons are still there.
 
 We will travel forwards: from a program written before there was a machine to run it, through the raw patterns of on and off that early computers consumed, to the languages you are using now. At each stop there is a message left behind in the notation of its era, and the only way to read it is to write the code that translates it.
 
@@ -39,7 +39,7 @@ In 1843, Charles Babbage had designed a machine called the Analytical Engine. It
 
 By most historians' account that makes her the first computer programmer, more than a century before there was an electronic computer to run her program on.
 
-There is an idea worth taking from this, and it is not a fact to memorise. **A program does not need a working machine, or electricity, to exist.** It is a sequence of precise instructions. Everything in the rest of this tutorial is about how those instructions get carried out -- which turns out to be a story about making them easier for people to write, over and over again, for a hundred and eighty years.
+There is an idea worth taking from this, and it is not a fact to memorize. **A program does not need a working machine, or electricity, to exist.** It is a sequence of precise instructions. Everything in the rest of this tutorial is about how those instructions get carried out -- which turns out to be a story about making them easier for people to write, over and over again, for a hundred and eighty years.
 
 ## The Only Language the Machine Understands
 
@@ -133,7 +133,7 @@ Look at that last line beside the first message in the previous section. `48` in
 
 ### Your turn
 
-A memory dump from 1958, in hex this time. The idea is the same as before -- `int(group, 16)` converts a hex string to a number, and `chr` turns a number into a character.
+A memory dump from 1958, in hex this time. As before, `int(group, 16)` converts a hex string to a number, and `chr` turns a number into a character.
 
 ```python exec
 id: your-turn-2
@@ -167,11 +167,11 @@ A **compiler** translates the whole program into machine code *before* it runs, 
 
 An **interpreter** reads and runs the program line by line *as it goes*, with no separate translation step. Python works this way -- strictly it compiles to an intermediate form called bytecode first and then interprets that, which is a hybrid, but from where you are sitting it behaves like an interpreted language.
 
-Here is a question worth sitting down with before reading on. A compiled program usually runs faster than an interpreted one, and an interpreted language is usually quicker to test and debug while you are writing it. Both of those follow from the difference above. **How might each one follow from it?**
+Here is a question worth thinking about before reading on. A compiled program usually runs faster than an interpreted one, and an interpreted language is usually quicker to test and debug while you are writing it. Both of those follow from the difference above. **How might each one follow from it?**
 
 ## The Same Problem, Four Ways
 
-A **paradigm** is a way of organising a program -- a set of habits about where the logic goes and what the pieces are. Languages tend to encourage one, and some, Python among them, will let you use several.
+A **paradigm** is a way of organizing a program: a set of habits about where the logic goes and what the pieces are. Languages tend to encourage one, and some, Python among them, will let you use several.
 
 The four below all do exactly the same thing: double every number in a list. Run the cell and read them against each other, because the differences are the point.
 
@@ -212,7 +212,7 @@ None of them is correct and the others wrong. They are habits of thought, and wh
 
 ### Your turn
 
-Three snippets below, all adding up a shopping basket. For each one, which paradigm is it closest to — and, this is the part that matters, *what specific feature of the code told you*?
+Here are three snippets, all adding up a shopping basket. For each one, which paradigm is it closest to — and, this is the part that matters, *what specific feature of the code told you*?
 
 ```python exec
 id: your-turn-3
@@ -283,13 +283,13 @@ If it comes out right, it describes somebody from the first section of this tuto
 
 ## Reflection
 
-You have travelled from a program written on paper in 1843, through the on-and-off patterns a 1945 machine consumed, past the shorthand invented so that people could stand to read them, into languages that let you say what you mean, and out into four different opinions about how a program should be organised.
+You have traveled from a program written on paper in 1843, through the on-and-off patterns a 1945 machine consumed, past the shorthand invented so that people could stand to read them, into languages that let you say what you mean, and out into four different opinions about how a program should be organized.
 
 Two threads run through all of it and are worth naming.
 
 **Every step was about making things easier for people.** The hardware never needed assembly, or hexadecimal, or Python. It needs binary and it always has. Everything above binary exists because a person had to write it, read it, or fix it at three in the morning.
 
-**Notation is a tool with a purpose.** Hexadecimal is not a fact about computers, it is a decision about legibility -- and knowing why it was made is more useful than knowing the conversion table.
+**Notation is a tool with a purpose.** Hexadecimal is a decision about legibility, not a fact about computers, and knowing why it was made is more useful than knowing the conversion table.
 
 In a few sentences, which of the steps in this tutorial do you think made the biggest difference to what a person could build, and why?
 

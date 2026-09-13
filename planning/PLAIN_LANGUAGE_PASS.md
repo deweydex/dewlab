@@ -203,6 +203,29 @@ fix in one-parent-many-children.md where "one field and method short of
 it" was ambiguous and read as the opposite of the true relationship —
 corrected to "with one extra field and one extra method."
 
+**All mit-pdp-maths-prog-integration tutorial body prose** — both
+tutorial and practice pages across all three series
+(programming-foundations, data-chance-and-logic,
+trigonometry-and-calculus) plus the mixed-exercise, critique, and
+team-project pages. Recurring fixes: British spellings normalized to
+American (behaviour → behavior, organise → organize, recognise →
+recognize, memorise → memorize, colour → color, favourite → favorite,
+optimise → optimize, factorise → factorize, centre → center,
+visualisation → visualization, summarise → summarize, generalise →
+generalize, labelled → labeled, modelled → modeled, emphasise →
+emphasize, neighbouring → neighboring, capitalisation →
+capitalization, practise → practice); rule 9 vocabulary and dialect
+(anticlockwise → counterclockwise, fortnight → two weeks, noughts and
+crosses → tic-tac-toe, jumper → sweater, skirting board → baseboard,
+earns its place → becomes useful / is worth having, folded → hidden);
+banned words removed (actually, genuinely, honestly, genuine, honest,
+simply — replaced with accurate, clear, fair, manual, sensible, valid,
+real, or dropped where redundant); rule 3 em-dash restructuring; rule 4
+positive-before-negative reordering; rule 1 fragment fixes; "maths" →
+"math" in body prose (not in YAML identifiers or subtitle lines).
+Glossary YAML files included in the spelling pass. Version-snapshot
+files (v2026.08.23.1.md) left untouched.
+
 ---
 
 ## Not done — pick up here
@@ -229,16 +252,15 @@ mechanical first pass (flagging words outside a common two-thousand-word
 list) is possible, but still needs a human read afterward.
 
 **Tutorial body prose.** `database-methods`, `web-authoring`,
-`computational-methods` and `fundamentals-of-oop` are all done — see
-"Done" above. `mit-pdp-maths-prog-integration` is still untouched.
-Worth doing tutorial by tutorial rather than in a sweep.
+`computational-methods`, `fundamentals-of-oop` and
+`mit-pdp-maths-prog-integration` are all done — see "Done" above.
 
 **A vocabulary sweep, against the ninth rule.** The documentation pages,
 the contents and About pages, the first tutorial's opening, and the full
-tutorial body prose for web-authoring, computational-methods and
-fundamentals-of-oop have been swept (see above). The remaining surfaces
-— topic descriptions, glossary definitions, and tutorial prose in other
-modules — have not. A mechanical first pass is possible — a list of the
+tutorial body prose for web-authoring, computational-methods,
+fundamentals-of-oop and mit-pdp-maths-prog-integration have been swept
+(see above). The remaining surfaces — topic descriptions, glossary
+definitions — have not. A mechanical first pass is possible — a list of the
 roughly two thousand most common English words, flagged the way
 `tools/measure_sentences.py` (dewstack) flags a sentence over the limit — but
 it still needs reading afterward, the same way that script's own docstring

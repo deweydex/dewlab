@@ -25,7 +25,7 @@ Two overlapping circles with numbers in them. You have almost certainly seen one
 
 This tutorial is short, and it is not really about the diagram. It is about the point at which a set expression stops fitting in your head, and about having something to reach for when that happens.
 
-In *Sets as Sorted Lists* you built union, intersection and difference and used them on real data. Everything here is drawn from those. **No new operations, and nothing new to define** — a Venn diagram is a plot of things you already computed.
+In *Sets as Sorted Lists* you built union, intersection and difference and used them on real data. Everything here is drawn from those. **A Venn diagram is a plot of things you already computed** — no new operations, and nothing new to define.
 
 ## Two Circles, from Real Sets
 
@@ -84,7 +84,7 @@ The picture changed; the code did not. The middle number going to zero, or one o
 
 ## The Regions Have Names You Already Know
 
-Three regions, three operations you wrote a fortnight ago.
+Three regions, three operations you wrote two weeks ago.
 
 | Region | Operation | Python |
 |---|---|---|
@@ -171,7 +171,7 @@ draw_three(python, sql, javascript, ["Python", "SQL", "JavaScript"])
 
 Seven regions now, and each one is a different combination of in and out. Try holding all seven in your head at once -- most people cannot, and there is no reason they should.
 
-Here is a question that is genuinely awkward in symbols and easy on the picture: **who knows Python or SQL, but not JavaScript?**
+Here is a question that is awkward in symbols and easy on the picture: **who knows Python or SQL, but not JavaScript?**
 
 ```python exec
 id: three-sets-which-is-where-it-earns-its-place-2
@@ -234,7 +234,7 @@ for n in (2, 3, 4, 5):
     print(f"{n} sets need {2 ** n - 1} regions")
 ```
 
-That is not a limitation of the drawing code. It is a fact about circles in a plane: no arrangement of four of them produces all fifteen regions. Diagrams for four sets exist, but they use ellipses or stranger shapes and stop being readable, which rather defeats the purpose.
+That is a fact about circles in a plane, not a limitation of the drawing code: no arrangement of four of them produces all fifteen regions. Diagrams for four sets exist, but they use ellipses or stranger shapes and stop being readable, which rather defeats the purpose.
 
 Meanwhile the set operations keep working perfectly for four sets, or forty.
 
@@ -242,15 +242,15 @@ Meanwhile the set operations keep working perfectly for four sets, or forty.
 
 ## Reflection
 
-The diagram is not a notation to learn. It is a plot of set operations you already had, and its job is to take over at the point where the expressions stop fitting in your head.
+The diagram is a plot of set operations you already had, not a notation to learn, and its job is to take over at the point where the expressions stop fitting in your head.
 
-Three things.
+Three things:
 
 **It is drawn from the data**, so it cannot lie about the data. Change the sets and the picture changes.
 
-**Two sets rarely need it; three often do.** That is the size at which it earns its place.
+**Two sets rarely need it; three often do.** That is the size at which it becomes useful.
 
-**It runs out at four.** Not because the drawing is bad, but because of a fact about circles — and the operations carry on regardless.
+**It runs out at four**, because of a fact about circles, not because the drawing is bad — and the operations carry on regardless.
 
 In a few sentences, think of three overlapping groups you belong to. Which regions of that diagram have people in them, and which are empty?
 

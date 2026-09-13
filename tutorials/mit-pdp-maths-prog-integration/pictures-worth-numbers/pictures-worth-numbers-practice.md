@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Pictures Worth Numbers — Practice
 
-Answers are folded. Most of these ask you to choose a chart and defend the choice — the plotting is a few lines, and the choosing is the skill.
+Answers are hidden. Most of these ask you to choose a chart and defend the choice — the plotting is a few lines, and the choosing is the skill.
 
 ## Tools
 
@@ -84,7 +84,7 @@ Three lines on one pair of axes, with a legend.
 
 Three separate charts would be readable individually and useless for comparison, which is what the question is really about. Putting the lines together is what lets a reader see one product overtaking another.
 
-If the three are on wildly different scales, that breaks down — and the fix is to plot the percentage change rather than adding a second y axis, which is nearly always harder to read than it looks.
+If the three are on wildly different scales, that breaks down, and the fix is to plot the percentage change rather than adding a second y axis, which is nearly always harder to read than it looks.
 
 </details>
 
@@ -126,7 +126,7 @@ Points on a symmetric parabola have a correlation of essentially zero and a perf
 
 ## Making Them
 
-**8.** Plot support tickets per day for a week as a bar chart, labelled and titled.
+**8.** Plot support tickets per day for a week as a bar chart, labeled and titled.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -143,7 +143,7 @@ ax.set_ylabel("tickets")
 ax.grid(axis="y", alpha=0.3)
 ```
 
-The grid on the y axis only. Gridlines behind bars help read heights; gridlines between the categories add nothing.
+The grid is on the y axis only. Gridlines behind bars help read heights; gridlines between the categories add nothing.
 
 </details>
 
@@ -250,7 +250,7 @@ x4 = [8, 8, 8, 8, 8, 8, 8, 19, 8, 8, 8]
 y4 = [6.58, 5.76, 7.71, 8.84, 8.47, 7.04, 5.25, 12.50, 5.56, 7.91, 6.89]
 ```
 
-The first is a genuine noisy linear relationship. The second is a clean parabola. The third is a perfect line with one outlier dragging the fit. The fourth is a vertical stack at x = 8 plus one distant point, which alone creates the entire apparent relationship.
+The first is a noisy linear relationship. The second is a clean parabola. The third is a perfect line with one outlier dragging the fit. The fourth is a vertical stack at x = 8 plus one distant point, which alone creates the entire apparent relationship.
 
 All four have a mean x of 9, a mean y of 7.5, and a correlation of 0.816. Any summary you compute will agree; nothing about them is the same.
 
@@ -284,10 +284,10 @@ And the axis range makes an unknown-sized variation fill the whole frame. Withou
 
 <details class="dl-answer"><summary>answer</summary>
 
-Say what the difference actually is, and ask whether it is worth presenting.
+Say what the difference is, and ask whether it is worth presenting.
 
 Every technique that makes a small difference look big — truncating the axis, using area or volume for a linear quantity, choosing a lucky date range — works by misleading, and works on the presenter too. The chart ends up in a decision.
 
-If the difference genuinely matters and looks small, the fix is usually to plot the right thing: the change rather than the level, the rate rather than the total, or the per-person figure rather than the raw one. That is not distortion, and it often makes a real effect visible for the first time.
+If the difference matters and looks small, the fix is usually to plot the right thing: the change rather than the level, the rate rather than the total, or the per-person figure rather than the raw one. That is not distortion, and it often makes a real effect visible for the first time.
 
 </details>

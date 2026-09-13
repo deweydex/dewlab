@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Putting Things in Order — Practice
 
-Answers are folded. Trace the short ones by hand before running anything — a sort you have traced once is a sort you can debug, and one you have only run is not.
+Answers are hidden. Trace the short ones by hand before running anything — a sort you have traced once is a sort you can debug, and one you have only run is not.
 
 ## Tracing
 
@@ -36,9 +36,9 @@ bubble_pass([5, 1, 4, 2, 8])
 
 `[1, 4, 2, 5, 8]`.
 
-Compare 5 and 1 — swap. Compare 5 and 4 — swap. Compare 5 and 2 — swap. Compare 5 and 8 — leave.
+Compare 5 and 1: swap. Compare 5 and 4: swap. Compare 5 and 2: swap. Compare 5 and 8: leave.
 
-The 5 travelled all the way to its place in one pass, which is what "bubbling" describes. The largest value always reaches the end after the first pass, which is why each subsequent pass can be one shorter.
+The 5 traveled all the way to its place in one pass, which is what "bubbling" describes. The largest value always reaches the end after the first pass, which is why each subsequent pass can be one shorter.
 
 </details>
 
@@ -60,7 +60,7 @@ Start: `[3]` is trivially sorted.
 
 Insert 1: `[1, 3]`. Insert 4: `[1, 3, 4]`. Insert 1: `[1, 1, 3, 4]`. Insert 5: `[1, 1, 3, 4, 5]`.
 
-The second 1 landed *after* the first. That is what makes insertion sort stable — equal items keep their original order — and stability matters as soon as you sort the same data twice by different keys.
+The second 1 landed *after* the first. Equal items keep their original order, which is what makes insertion sort stable, and stability matters as soon as you sort the same data twice by different keys.
 
 </details>
 
@@ -289,7 +289,7 @@ def shell_sort(items):
 
 It is insertion sort with every `1` replaced by `gap`. The large gaps move far-out-of-place items most of the way home cheaply; by the time the gap is 1, the list is nearly sorted and insertion sort's best case takes over.
 
-Its actual performance depends on the sequence of gaps, and finding good ones is a genuinely open problem — one of the few places in a first course where the honest answer is that nobody knows the best method.
+Its actual performance depends on the sequence of gaps, and finding good ones is an open problem — one of the few places in a first course where nobody yet knows the best method.
 
 </details>
 
@@ -325,7 +325,7 @@ Inserting into the middle of a Python list still shifts everything after it, so 
 
 No — it is correct and slower, which are different judgements.
 
-Worth asking before optimising: is ten items the real size? If it is, the difference is microseconds and readability wins. If ten was the test and the real input is ten million, the difference is the whole assignment.
+Worth asking before optimizing: is ten items the real size? If it is, the difference is microseconds and readability wins. If ten was the test and the real input is ten million, the difference is the whole assignment.
 
 Correctness first, then measure, then improve the part the measurement pointed at. Guessing which part is slow is famously unreliable, including among people who have been doing it for years.
 

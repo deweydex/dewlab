@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Approaching a Limit — Practice
 
-Answers are folded. Where a question asks you to find a limit, try it with numbers *and* say what the algebra gives — the two together are what makes the answer trustworthy.
+Answers are hidden. Where a question asks you to find a limit, try it with numbers *and* say what the algebra gives — the two together are what makes the answer trustworthy.
 
 ## Tools
 
@@ -42,9 +42,9 @@ approach(f, 1, from_below=False)
 
 4.
 
-The top factorises as `(x − 2)(x + 2)`, so away from x = 2 the function is just `x + 2` — and at 2 that would be 4.
+The top factorizes as `(x − 2)(x + 2)`, so away from x = 2 the function is just `x + 2` — and at 2 that would be 4.
 
-The function itself has no value at 2: the bottom is zero there and the cancelling is not allowed. The limit says what it would be, and that is a different statement.
+The function itself has no value at 2: the bottom is zero there and the canceling is not allowed. The limit says what it would be, and that is a different statement.
 
 </details>
 
@@ -52,7 +52,7 @@ The function itself has no value at 2: the bottom is zero there and the cancelli
 
 <details class="dl-answer"><summary>answer</summary>
 
-6, by the same factorising: `(x − 3)(x + 3)` over `(x − 3)` leaves `x + 3`.
+6, by the same factorizing: `(x − 3)(x + 3)` over `(x − 3)` leaves `x + 3`.
 
 </details>
 
@@ -62,7 +62,7 @@ The function itself has no value at 2: the bottom is zero there and the cancelli
 
 3.
 
-`x³ − 1` factorises as `(x − 1)(x² + x + 1)`, and at x = 1 that second bracket is 1 + 1 + 1 = 3.
+`x³ − 1` factorizes as `(x − 1)(x² + x + 1)`, and at x = 1 that second bracket is 1 + 1 + 1 = 3.
 
 </details>
 
@@ -170,9 +170,9 @@ Its *acceleration* is not zero — it is 9.8 m/s² throughout — which is why t
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because that gives `0/0`. The distance travelled in no time is zero, divided by no time.
+Because that gives `0/0`. The distance traveled in no time is zero, divided by no time.
 
-`0/0` is not a number and not a shorthand for one — it is the arithmetic saying the question needs a different method. The limit is that method.
+`0/0` is the arithmetic saying the question needs a different method — not a number, and not a shorthand for one. The limit is that method.
 
 </details>
 
@@ -232,7 +232,7 @@ The circularity is worth noticing — using `math.pi` to compute π proves nothi
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first is a statement about the function *at* 2. The second is a statement about its behaviour *near* 2, and it does not require the function to have a value there at all.
+The first is a statement about the function *at* 2. The second is a statement about its behavior *near* 2, and it does not require the function to have a value there at all.
 
 The interesting cases are precisely the ones where the first is untrue and the second is — which is every derivative you will ever compute.
 

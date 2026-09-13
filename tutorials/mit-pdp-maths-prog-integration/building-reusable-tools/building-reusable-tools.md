@@ -23,7 +23,7 @@ covers:
 
 **Programming Design Principles / Maths for IT**
 
-In the first seven tutorials, we learned to write functions, and then used them to build algorithms. Now we are going to think more carefully about how to *design* functions -- not just to solve a specific problem, but to create tools we can reuse and combine.
+In the first seven tutorials, we learned to write functions, and then used them to build algorithms. Now we are going to think more carefully about how to *design* functions, so they become tools we can reuse and combine, not just solutions to one specific problem.
 
 This tutorial is about the craft of writing good functions. It connects to a professional practice called *modular design*, where complex programs are built from small, independent, well-tested pieces.
 
@@ -52,7 +52,7 @@ print(mean([10, 20, 30]))        # should be 20.0
 print(mean([1, 2, 3, 4, 5]))     # should be 3.0
 ```
 
-That triple-quoted string at the top of the function is called a *docstring*. It describes what the function does, what it expects as input, and what it returns. This is not just decoration -- it is how professional programmers communicate the *contract* of a function. Anyone who wants to use `mean()` can read the docstring and know exactly what to pass in and what they will get back.
+That triple-quoted string at the top of the function is called a *docstring*. It describes what the function does, what it expects as input, and what it returns. This is how professional programmers communicate the *contract* of a function, not just decoration. Anyone who wants to use `mean()` can read the docstring and know exactly what to pass in and what they will get back.
 
 From now on, every function we write should have a docstring. It does not need to be elaborate -- a single clear sentence is often enough -- but it should be there.
 
@@ -205,7 +205,7 @@ def test_mean():
 test_mean()
 ```
 
-Writing tests like this before or alongside your functions is one of the most valuable habits you can develop. It forces you to think clearly about what the function should do, and it gives you confidence that the function actually does it.
+Writing tests like this before or alongside your functions is one of the most valuable habits you can develop. It forces you to think clearly about what the function should do, and it gives you confidence that the function does it.
 
 ### Your turn
 

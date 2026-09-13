@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # The Unit Circle — Practice
 
-Work through these with the tutorial open beside you if you want it. Every answer is on this page, folded — click to see it, and try not to click until you have written something down.
+Work through these with the tutorial open beside you if you want it. Every answer is on this page, hidden — click to see it, and try not to click until you have written something down.
 
 There is a checking cell at the top of each section. You do not need one problem per cell; you need one tool per section, and then you can test anything.
 
@@ -86,7 +86,7 @@ Positive. Two radians is about 115°, which is in the top-left quarter of the ci
 
 ## Arc Length, and What a Radian Is For
 
-The reason radians are worth the trouble: for a circle of radius `r`, the distance along the edge through an angle of `θ` radians is simply `s = rθ`. No conversion factor anywhere.
+The reason radians are worth the trouble: for a circle of radius `r`, the distance along the edge through an angle of `θ` radians is `s = rθ`. No conversion factor anywhere.
 
 ```python exec
 id: arc-length-and-what-a-radian-is-for-1
@@ -218,7 +218,7 @@ Each is the mirror of the first-quarter value at 180 minus the angle, with the a
 
 sin 30° = 1⁄2, so sin² = 1⁄4. cos 30° = √3⁄2, so cos² = 3⁄4. And 1⁄4 + 3⁄4 = 1.
 
-Which is Pythagoras: the point is 1 from the centre, so its two coordinates squared add to 1.
+Which is Pythagoras: the point is 1 from the center, so its two coordinates squared add to 1.
 
 </details>
 
@@ -314,7 +314,7 @@ The beam bends towards the vertical on entering a denser medium. This is Snell's
 
 ## Putting It Together
 
-**23.** A wheel of radius 35 cm turns through 4 radians. How far has a point on its rim travelled, and how far has the wheel rolled along the ground?
+**23.** A wheel of radius 35 cm turns through 4 radians. How far has a point on its rim traveled, and how far has the wheel rolled along the ground?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -324,7 +324,7 @@ They are the same because rolling without slipping means the arc that touches th
 
 </details>
 
-**24.** A point starts at (1, 0) on the unit circle and moves anticlockwise by 7π/6 radians. Where does it end up, exactly?
+**24.** A point starts at (1, 0) on the unit circle and moves counterclockwise by 7π/6 radians. Where does it end up, exactly?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -338,6 +338,6 @@ They are the same because rolling without slipping means the arc that touches th
 
 A radian is the angle you turn through when you walk a distance equal to the radius along the edge. The whole way round a circle is 2π radii — that is what π means. So a full turn is 2π radians.
 
-It is not a conversion factor anybody chose. It is a measurement of the circle.
+It is a measurement of the circle, not a conversion factor anybody chose.
 
 </details>

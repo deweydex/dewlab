@@ -21,7 +21,7 @@ covers:
 
 **Programming Design Principles / Maths for IT**
 
-This tutorial introduces no new material. Today we practise combining the tools we have built across the last four tutorials into something cohesive. We will work through a few problems that require multiple tools, and we will think about how all these mathematical concepts connect to each other and to programming.
+This tutorial introduces no new material. Today we practice combining the tools we have built across the last four tutorials into something cohesive. We will work through a few problems that require multiple tools, and we will think about how all these mathematical concepts connect to each other and to programming.
 
 ## The Toolkit So Far
 
@@ -163,7 +163,7 @@ id: problem-5-self-assessment-1
 
 The real test of this material is building an algebra engine from nothing: polynomial representation and operations, equation solving, and set operations, written fresh rather than copied from these tutorials. The ideas and patterns are the same; only the typing is new.
 
-The key is not to memorise code but to understand the ideas well enough to reconstruct them. If you understand that polynomial multiplication works by combining every term in the first with every term in the second, you can write the nested loop. If you understand that set intersection keeps elements that appear in both sorted lists, you can write the merge-walk. Understanding beats memorisation every time.
+The key is not to memorize code but to understand the ideas well enough to reconstruct them. If you understand that polynomial multiplication works by combining every term in the first with every term in the second, you can write the nested loop. If you understand that set intersection keeps elements that appear in both sorted lists, you can write the merge-walk. Understanding beats memorization every time.
 
 What are the three most important ideas from Tutorials 13-16 — the ones you would want to remember even if you forgot everything else? Take a few minutes to write them down:
 

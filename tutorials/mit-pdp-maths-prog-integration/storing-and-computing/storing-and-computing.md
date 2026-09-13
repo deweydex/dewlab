@@ -47,7 +47,7 @@ print(temperature)
 
 We now have four variables, each holding a different kind of data. Notice that we did not have to declare what kind of data each variable would hold -- Python figures that out from the value we assign. This is one of the things that makes Python pleasant to work with.
 
-Variable names should describe what they contain. `temperature` is a good name; `t` is not, because someone reading your code (including future you) would not know what `t` refers to. This is not just a style preference -- it is a professional practice that makes code maintainable.
+Variable names should describe what they contain. `temperature` is a good name; `t` is not, because someone reading your code (including future you) would not know what `t` refers to. This is a professional practice that makes code maintainable, not just a style preference.
 
 Names must start with a letter or underscore, can contain letters, numbers, and underscores, and are case-sensitive (`Age` and `age` are different variables). By convention in Python, we use `snake_case` for variable names: lowercase words separated by underscores.
 

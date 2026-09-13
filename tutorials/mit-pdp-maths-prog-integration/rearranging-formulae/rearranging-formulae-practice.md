@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # Rearranging Formulae — Practice
 
-Answers are folded. Rearrange by hand first — the checking cell will tell you whether you got it right, but only after you have committed to something.
+Answers are hidden. Rearrange by hand first — the checking cell will tell you whether you got it right, but only after you have committed to something.
 
 ## Tools
 
@@ -96,7 +96,7 @@ With u not zero it is a quadratic in t and needs the formula — which is worth 
 
 To evaluate `u + at` you multiply first and add last. To undo it you have to remove the last thing that was done first — so subtract, then divide.
 
-It is the same order you would take off a coat and a jumper: last on, first off.
+It is the same order you would take off a coat and a sweater: last on, first off.
 
 </details>
 
@@ -212,7 +212,7 @@ Here the space of inputs is infinite, so a check can only fail to find a problem
 
 For r: `(1 + r)ⁿ = A/P`, so `1 + r = (A/P)^(1/n)`, so `r = (A/P)^(1/n) − 1`.
 
-The second one needs an nth root, which is a fractional power — the same move as taking a square root, generalised.
+The second one needs an nth root, which is a fractional power — the same move as taking a square root, generalized.
 
 </details>
 

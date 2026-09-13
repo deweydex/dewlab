@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # How We Got Here — Practice
 
-Answers are folded. The conversion questions are worth doing by hand before you reach for the checking cell — the point is to be able to read the notation, not to have Python read it for you.
+Answers are hidden. The conversion questions are worth doing by hand before you reach for the checking cell — the point is to be able to read the notation, not to have Python read it for you.
 
 ## Tools
 
@@ -167,7 +167,7 @@ C is traditionally compiled; Python is traditionally interpreted, though strictl
 
 <details class="dl-answer"><summary>answer</summary>
 
-A compiled program has done its translating already, so at run time nothing is spent on it, and the compiler had the whole program in view and could optimise across it.
+A compiled program has done its translating already, so at run time nothing is spent on it, and the compiler had the whole program in view and could optimize across it.
 
 An interpreted program is translated as it runs, which costs time — but there is no compile step between writing a line and seeing what it does. You change something and run it, which for finding a bug is worth a great deal.
 

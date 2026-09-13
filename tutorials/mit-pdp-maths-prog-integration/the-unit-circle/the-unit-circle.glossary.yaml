@@ -2,7 +2,7 @@
 entries:
   - term: unit circle
     kind: concept
-    definition: A circle of radius 1 centred on the origin. Every point on it is distance 1 from the centre — the one fact everything about sine and cosine rests on.
+    definition: A circle of radius 1 centred on the origin. Every point on it is distance 1 from the center — the one fact everything about sine and cosine rests on.
   - term: cosine, sine
     kind: concept
     definition: >
@@ -15,7 +15,7 @@ entries:
     kind: formula
     definition: >
       Follows directly from the unit circle being distance 1 from the
-      centre and the Pythagorean theorem (x^2 + y^2 = 1) — not a separate
+      center and the Pythagorean theorem (x^2 + y^2 = 1) — not a separate
       fact to learn.
   - term: radian
     kind: concept

@@ -23,7 +23,7 @@ covers:
 
 **Programming Design Principles / Maths for IT**
 
-Binary search is wonderful, but it needs sorted data. So how do we sort? This turns out to be one of the most studied problems in computer science -- not because sorting is hard to do, but because there are so many different ways to do it, and the differences in efficiency become dramatic as the data grows.
+Binary search is wonderful, but it needs sorted data. So how do we sort? This turns out to be one of the most studied problems in computer science, because there are so many different ways to do it, and the differences in efficiency become dramatic as the data grows, not because sorting itself is hard to do.
 
 Today we implement three classic sorting algorithms. Each one reflects a different way of thinking about the problem, and each teaches us something about algorithm design.
 
@@ -195,7 +195,7 @@ for size in [10, 50, 100, 200]:
 
 Notice a pattern? When the size doubles, the number of comparisons roughly quadruples. This is because each of our three algorithms makes approximately $\frac{n(n-1)}{2}$ comparisons in the worst case, which grows proportionally to $n^2$.
 
-For 10 items, that is about 45 comparisons -- instant. For 1,000 items, about 500,000 -- still fast. For 1,000,000 items, about 500,000,000,000 -- that is going to take a while.
+For 10 items, that is about 45 comparisons: instant. For 1,000 items, about 500,000: still fast. For 1,000,000 items, about 500,000,000,000: that is going to take a while.
 
 Faster algorithms exist — merge sort and quicksort reach $O(n \log n)$ — and the three built today are still the ones worth building first. They are short enough to hold in your head at once, which is what makes the cost of an algorithm visible rather than asserted.
 
@@ -214,7 +214,7 @@ id: your-turn-7
 
 If you have time, here are two extensions worth exploring.
 
-**Shell sort** is a clever improvement on insertion sort. Instead of comparing adjacent elements, it compares elements a fixed distance apart — the *gap* — and then reduces the gap gradually. When the gap reaches 1 it has become an ordinary insertion sort, but by then the list is nearly in order and insertion sort's best case takes over. It is a satisfying one to build.
+**Shell sort** is a clever improvement on insertion sort. Instead of comparing adjacent elements, it compares elements a fixed distance apart, called the *gap*, and then reduces the gap gradually. When the gap reaches 1 it has become an ordinary insertion sort, but by then the list is nearly in order and insertion sort's best case takes over. It is a satisfying one to build.
 
 **Recursive binary search**: In *Finding Things* we wrote binary search with a while loop. Can you rewrite it so the function calls itself with a smaller range instead? This is called *recursion*, and it is an elegant way to express divide-and-conquer algorithms.
 
@@ -243,9 +243,9 @@ id: optional-challenges-2
 
 ## Reflection
 
-We have now built three sorting algorithms from scratch, and we understand how to compare their efficiency by counting operations. Combined with the search algorithms from *Finding Things*, we have a solid toolkit for organising and finding data.
+We have now built three sorting algorithms from scratch, and we understand how to compare their efficiency by counting operations. Combined with the search algorithms from *Finding Things*, we have a solid toolkit for organizing and finding data.
 
-More importantly, we have practised the full cycle of algorithm development: understand the problem, write pseudocode, implement, test, and analyse. This cycle is the same whether the problem is sorting numbers or building a machine learning system.
+More importantly, we have practiced the full cycle of algorithm development: understand the problem, write pseudocode, implement, test, and analyze. This cycle is the same whether the problem is sorting numbers or building a machine learning system.
 
 You are now ready to build these tools fresh, from nothing but the ideas -- which is the only real way to find out whether the algorithms and the programming behind them have landed.
 

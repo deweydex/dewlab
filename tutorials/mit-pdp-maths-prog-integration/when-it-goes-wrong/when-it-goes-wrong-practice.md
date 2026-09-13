@@ -11,7 +11,7 @@ version: 2026.08.23.1
 
 # When It Goes Wrong — Practice
 
-Answers are folded. Most of these ask you to predict an error before running the code — the prediction is the exercise, and running it is the marking.
+Answers are hidden. The prediction is the exercise, and running the code is the marking. For most of these, predict the error before you run it.
 
 ## Tools
 
@@ -77,7 +77,7 @@ Runtime — `IndexError`. There are two items, at positions 0 and 1, so position
 
 Runtime — `ZeroDivisionError`. The length is zero.
 
-This is the most common cause of that error in practice: not somebody typing `/0`, but a collection turning out empty when the code assumed it would not be.
+This is the most common cause of that error in practice: a collection turning out empty when the code assumed it would not, far more often than somebody typing `/0`.
 
 </details>
 
@@ -142,7 +142,7 @@ print(name.lenght())
 
 <details class="dl-answer"><summary>answer</summary>
 
-`AttributeError`. It is misspelled — and even spelled correctly, a string has no `.length()` method. The answer is `len(name)`.
+`AttributeError`. It is misspelled, and even spelled correctly, a string has no `.length()` method. The answer is `len(name)`.
 
 `AttributeError` frequently means the value is not the type you thought it was, so it is worth printing the value before assuming the method name is wrong.
 
@@ -168,7 +168,7 @@ Also raised when a variable exists but not where the code can see it — created
 
 ## Reading a Traceback
 
-**12.** In a traceback, where is the error that actually stopped the program?
+**12.** In a traceback, where is the error that stopped the program?
 
 <details class="dl-answer"><summary>answer</summary>
 
