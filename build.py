@@ -2262,38 +2262,21 @@ def nav_search_html() -> str:
 
 
 def render_index() -> str:
-    """The front page: the mission, "for teachers", "for students" and its
-    module buttons, and the settings/dewmini invite. Static — everything a
-    reader needs to choose where to go from here is either written here by
-    hand or, for a real module, on that module's own page
-    (`write_module_page()`), so this needs no tutorial data of its own.
-    `render_tutorials_list()` is the separate, actual list of everything,
-    on its own page a reader reaches through "All tutorials" or the search
-    box below rather than by scrolling past it here.
+    """The front page: one short explanation and the clearest ways in.
+
+    Detail about the tools belongs on ``features.html`` and project detail on
+    ``about.html``. Keeping both off this page lets a first-time visitor answer
+    the only immediate questions: what is dewlab, and where do I start?
     """
     out = [
         "<h1>dewlab</h1>",
         '<div class="dl-hero">',
-        "<p>dewlab is a place to learn programming, mathematics, "
-        "databases, web development and more — all in your browser, with "
-        "nothing to install. Work online, or download a module once and "
-        "keep going with no internet at all after that.</p>",
-        '<p>dewlab is led and maintained by <strong><a href="https://'
-        'github.com/deweydex">Joshua Aaron</a></strong>, who teaches at '
-        "Dublin College, Dundrum. <strong><a href=\"https://github.com/"
-        'mcgarry">Sean McGarry</a></strong>, a teacher at Dublin College, '
-        "Blackrock, collaborates on the project and contributes ideas and "
-        "feedback. The project is designed to spare students and teachers "
-        "the install, the permissions and the early setup that usually gets "
-        "in the way before a class even begins.</p>",
-        "<p>Right now we have QQI Level 5's programming and mathematics "
-        "modules, in beta. The material should suit anyone learning to "
-        "program or wanting to brush up on their maths, done a little "
-        "differently. See below for our full list of subjects and "
-        "topics — with more on the way. Earlier versions of some of "
-        'this material already live on <a href="https://github.com/'
-        'deweydex/dewstack">dewstack</a>, our sister project, and we '
-        "are bringing the best of it here.</p>",
+        "<p>Learn programming, mathematics, databases and web development "
+        "in your browser. There is nothing to install and no account to "
+        "create.</p>",
+        "<p>Read an explanation, edit and run the code beside it, and "
+        "practise what you have learned. Your work is saved on this "
+        "device.</p>",
         "</div>",
 
         '<div class="dl-audience">',
@@ -2303,40 +2286,10 @@ def render_index() -> str:
             "Search by topic — e.g. loops, probability, sorting…", big=True),
         "</div>",
 
-        '<details class="dl-audience dl-audience-fold">',
-        "<summary><h2>For teachers</h2></summary>",
-        "<p>dewlab runs in your browser, with nothing to install and no "
-        "permissions to grant. There is no account — your work saves "
-        "itself, right there in the browser you are using. Prefer to "
-        "work offline? Download a tutorial or a series, and once you "
-        "have loaded it, it works with no internet connection after "
-        "that.</p>",
-        "<p>Every tutorial names the QQI learning outcome it teaches, so "
-        "a lesson plan maps straight onto the descriptor.</p>",
-        '<p>We recommend integrating maths and programming, taught side '
-        'by side in the <a href="mit-pdp-maths-prog-integration.html">'
-        "integrated track</a>. In our experience, students feel more "
-        "confident in both subjects — many have overcome struggles "
-        "with maths they have carried for years. Suggested assessments "
-        "and exams for any module are available on "
-        'request; see the <a href="about.html">contact and about '
-        "page</a> for how to reach us.</p>",
-        "<p>dewlab is young, and we would love your help making it "
-        "better. Spotted a mistake, or thought of something that would "
-        "make a page easier to use? Tell us — every idea is welcome, "
-        "whether it is a bug, a new feature, or a change to something "
-        'that already works. If you have a GitHub account, leave us a '
-        'note on our <a href="https://github.com/deweydex/dewlab/issues/'
-        'new">issues page</a>. If you would rather not, or do not have '
-        'one, just <a href="about.html">email us</a> instead.</p>',
-        "</details>",
-
-        '<details class="dl-audience dl-audience-fold" open>',
-        "<summary><h2>For students</h2></summary>",
-        '<p>Feel free to click around. Choose a module below to open it, '
-        'or start with the <a href="mit-pdp-maths-prog-integration.html">'
-        "integrated track</a>, which teaches maths and programming "
-        "together.</p>",
+        '<div class="dl-audience">',
+        "<h2>Choose a course</h2>",
+        '<p>Not sure where to begin? Start with <a href="mit-pdp-maths-prog-integration.html">'
+        "Maths and Programming, Integrated</a>.</p>",
         '<div class="dl-module-grid">',
         '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
         "<h3>Maths and Programming, Integrated"
@@ -2345,20 +2298,6 @@ def render_index() -> str:
         '<span class="dl-module-card-meta">5N2927 + 5N18396 · QQI Level 5</span>'
         "<p>We recommend starting here. One course moves between the two "
         "subjects, in the order the class needs them.</p></a>",
-        '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
-        "<h3>Programming and Design Principles"
-        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
-        "</h3>"
-        '<span class="dl-module-card-meta">5N2927 · QQI Level 5</span>'
-        "<p>This module is taught inside the integrated track, alongside "
-        "Mathematics for IT.</p></a>",
-        '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
-        "<h3>Mathematics for Information Technology"
-        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
-        "</h3>"
-        '<span class="dl-module-card-meta">5N18396 · QQI Level 5</span>'
-        "<p>This module is taught inside the integrated track, alongside "
-        "Programming and Design Principles.</p></a>",
         '<a class="dl-module-card" href="computational-methods.html">'
         "<h3>Computational Methods and Problem Solving"
         '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
@@ -2380,39 +2319,31 @@ def render_index() -> str:
         '<span class="dl-module-card-meta">5N0783 · QQI Level 5</span>'
         "<p>We build a table, then several, with SQL running right beside "
         "the Python that reads it.</p></a>",
-        '<a class="dl-module-card" data-status="soon" '
-        'href="https://github.com/deweydex/dewstack" target="_blank" rel="noopener">'
+        '<a class="dl-module-card" href="web-authoring.html">'
         "<h3>Web Authoring"
-        '<span class="dl-module-card-badge" data-status="soon">Coming soon</span>'
+        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
         "</h3>"
         '<span class="dl-module-card-meta">5N1910 · QQI Level 5</span>'
-        "<p>Not written here yet — see the earlier version on "
-        "dewstack.</p></a>",
-        '<a class="dl-module-card" data-status="soon" href="about.html">'
-        "<h3>Web Development"
-        '<span class="dl-module-card-badge" data-status="soon">Coming soon</span>'
-        "</h3>"
-        "<p>Contact us if you would like to contribute.</p></a>",
+        "<p>Build pages with HTML and CSS, then publish a small site.</p></a>",
         '<a class="dl-module-card dl-module-card-wide" href="all-tutorials.html">'
         "<h3>All tutorials</h3>"
         "<p>Every module, every series, every practice page — the whole "
         "course, in one list.</p></a>",
         "</div>",
-        "</details>",
+        "</div>",
 
         '<div class="dl-audience">',
-        "<h2>Make it yours</h2>",
-        "<p>Open <strong>Settings</strong>, in the corner of any page, to "
-        "change how dewlab looks. Switch to dark mode, choose a different "
-        "font, turn on high contrast, or pick your own colour for "
-        "links.</p>",
-        '<p>Want to try Python with no tutorial attached? Open '
-        '<a href="compose/dewmini.html">dewmini</a>, a small workspace '
-        "built for exactly that.</p>",
-        '<p>Want to try HTML, CSS and JavaScript instead? Open '
-        '<a href="compose/dewminiweb.html">dewmini web</a>, a workspace '
-        "for building a small web page.</p>",
+        "<h2>What else can it do?</h2>",
+        '<p><a href="features.html">See dewlab\'s features and benefits</a>, '
+        "including offline use, downloads, accessibility settings and "
+        "dewmini.</p>",
         "</div>",
+
+        '<p class="dl-attribution">This site is being actively developed by '
+        '<strong><a href="https://github.com/deweydex">Joshua Aaron</a></strong> '
+        "(Dublin College Dundrum), with contributions from "
+        '<strong><a href="https://github.com/mcgarry">Sean McGarry</a></strong> '
+        "(Dublin College Blackrock).</p>",
     ]
     return "\n".join(out)
 
@@ -4670,6 +4601,113 @@ def write_about_page(shell: str) -> Path:
     return target
 
 
+def write_features_page(shell: str) -> Path:
+    """A short, scannable account of what dewlab offers and why it helps."""
+    body = (
+        "<h1>What dewlab can do</h1>"
+        "<p>dewlab keeps the tools for reading, trying and practising a subject "
+        "in one place. Choose the list that is relevant to you.</p>"
+        "<h2>For students</h2>"
+        '<ul class="dl-feature-list">'
+        "<li><strong>Start without setup.</strong> Open a page in the browser. "
+        "There is nothing to install and no account to create.</li>"
+        "<li><strong>Read, edit and run.</strong> Explanations sit beside "
+        "editable code, with results shown on the same page.</li>"
+        "<li><strong>Practise with support.</strong> Practice pages provide "
+        "more problems, with hints and answers available when needed.</li>"
+        "<li><strong>Come back to your work.</strong> Edits and results are saved in "
+        "this browser and are not submitted or scored.</li>"
+        "<li><strong>Work online or offline.</strong> Download a tutorial, a "
+        "series or a complete module and continue without an internet "
+        "connection.</li>"
+        "<li><strong>Take work elsewhere.</strong> Save a standalone HTML copy, "
+        "print or save a PDF, or export cells as a Jupyter notebook.</li>"
+        "<li><strong>Choose how you read.</strong> Settings include themes, "
+        "typefaces, text size, line width, contrast and link colour.</li>"
+        "<li><strong>Find the right material.</strong> Search directly, follow "
+        "a course in order, browse by topic or use the topic tree.</li>"
+        '<li><strong>Use dewmini without a tutorial.</strong> '
+        '<a href="compose/dewmini.html">dewmini</a> is a small workspace for '
+        "Python, notebooks, files, uploads, SQLite and web pages. "
+        '<a href="compose/dewminiweb.html">dewmini web</a> provides a focused '
+        "HTML, CSS and JavaScript workspace.</li>"
+        "</ul>"
+        "<h2>For teachers</h2>"
+        '<ul class="dl-feature-list">'
+        "<li><strong>Teach in a clear sequence.</strong> Courses and series put "
+        "tutorials in the order they are intended to be taught.</li>"
+        "<li><strong>Connect lessons to the curriculum.</strong> Tutorial "
+        "sections identify the QQI learning outcomes they cover.</li>"
+        "<li><strong>Keep explanation and activity together.</strong> Students "
+        "can read, run an example and try a related problem on one page.</li>"
+        "<li><strong>Support different routes through the material.</strong> "
+        "Search, browse by topic or use the topic tree when course order is "
+        "not the right route.</li>"
+        "<li><strong>Teach when the connection is unreliable.</strong> Download "
+        "a tutorial, series or complete module before class.</li>"
+        '<li><strong>Demonstrate freely in dewmini.</strong> Use '
+        '<a href="compose/dewmini.html">the blank workspace</a> for examples, '
+        "files, notebooks, SQLite and small web pages without attaching them "
+        "to a tutorial.</li>"
+        "</ul>"
+        "<h2>For administrators</h2>"
+        '<ul class="dl-feature-list">'
+        "<li><strong>Reduce classroom setup.</strong> Learners need a modern "
+        "browser rather than a local programming environment.</li>"
+        "<li><strong>Avoid learner accounts.</strong> dewlab does not require "
+        "registration or sign-in.</li>"
+        "<li><strong>Keep learner work local.</strong> Code and results stay in "
+        "the browser on the device being used.</li>"
+        "<li><strong>Use a static site.</strong> The published learning pages "
+        "need no application server or database.</li>"
+        "<li><strong>Plan for limited connectivity.</strong> Downloadable "
+        "tutorials and course bundles can be prepared in advance.</li>"
+        "</ul>"
+        '<p><a href="all-tutorials.html">Browse all tutorials</a> or return to '
+        '<a href="index.html">the homepage</a>.</p>'
+    )
+    manifest = {"slug": "features", "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
+    tokens = {
+        "{{TITLE}}": "What dewlab can do",
+        "{{VERSION}}": "1",
+        "{{SLUG}}": "features",
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": "features",
+        "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">Home</a>',
+        "{{PAGE_SCRIPT}}": "",
+        "{{CANONICAL}}": "",
+        "{{DOWNLOAD}}": "",
+        "{{TOC}}": "",
+        "{{SERIES_NAV}}": "",
+        "{{BODY}}": body,
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer("features", "1"),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(
+            f"shell template has tokens the features page does not fill: {leftover}")
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / "features.html"
+    target.write_text(page)
+    return target
+
+
 def write_editor_page(shell: str) -> Path:
     """The editor: reorder a series, insert a tutorial, and edit what is in one.
 
@@ -4819,6 +4857,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
 
     if tutorials:
         written.append(write_index(shell))
+        written.append(write_features_page(shell))
         written.append(write_all_tutorials_page(
             shell, groups, archives, retired, practice, mixed, module_archives
         ))

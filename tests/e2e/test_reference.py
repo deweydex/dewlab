@@ -229,14 +229,15 @@ class TestPanelsDisclosure:
         assert page.is_visible("#dl-settings-toggle")
         context.close()
 
-    def test_settings_is_direct_when_it_is_the_only_panel(
-            self, site, browser, site_url):
+    @pytest.mark.parametrize("path", ["index.html", f"{MODULE}.html"])
+    def test_settings_is_direct_on_home_and_module_pages(
+            self, site, browser, site_url, path):
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/index.html")
+        page.goto(f"{site_url}/{path}")
 
         assert page.is_hidden("#dl-panels summary")
         assert page.is_visible("#dl-settings-toggle")
