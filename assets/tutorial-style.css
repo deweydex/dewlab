@@ -34,6 +34,7 @@
   --dl-pass-bg: #edf7f0;
   --dl-panel-bg: #ffffff;
   --dl-shadow: rgba(27, 42, 74, 0.14);
+  --dl-highlight-bg: #fbe8a6;
 
   --dl-mono: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
 
@@ -60,6 +61,7 @@
   --dl-type-html: #c4b5fd;
   --dl-type-css: #93c5fd;
   --dl-type-js: #f0a8db;
+  --dl-highlight-bg: #4a3a12;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -83,6 +85,7 @@
     --dl-type-html: #c4b5fd;
     --dl-type-css: #93c5fd;
     --dl-type-js: #f0a8db;
+    --dl-highlight-bg: #4a3a12;
   }
 }
 
@@ -339,6 +342,17 @@ p, ul, ol, blockquote { margin: 0 0 1.15rem; }
 li { margin-bottom: 0.3rem; }
 
 a { color: var(--dl-link); text-underline-offset: 0.15em; }
+
+/* A reader's own marked passage (HIGHLIGHTS_AND_NOTES.md §9). Background
+ * only -- text colour stays whatever the surrounding prose already uses,
+ * so this never fights a reader's own theme, font, or high-contrast
+ * choice; --dl-highlight-bg is picked per theme to keep --dl-fg at or
+ * above the WCAG AA 4.5:1 minimum against it. */
+mark.dl-highlight {
+  background: var(--dl-highlight-bg);
+  color: inherit;
+  border-radius: 0.15em;
+}
 
 blockquote {
   border-left: 3px solid var(--dl-orange);

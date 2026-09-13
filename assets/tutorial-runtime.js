@@ -807,6 +807,98 @@ function locateHighlightAnchor(anchor, root = document.getElementById("dl-body")
   return null;
 }
 
+// The other direction: [start, end) character offsets into a block's own
+// flattened `textContent` -- exactly what locateHighlightAnchor() and
+// describeQuote() already work in -- to the DOM Range spanning that text,
+// however many text nodes it crosses. This is what makes a *restored*
+// highlight showable at all: locateHighlightAnchor() only ever hands back
+// a number, and wrapRange() below only ever accepts a live Range.
+function rangeForOffsets(block, start, end) {
+  const doc = block.ownerDocument || document;
+  const walker = doc.createTreeWalker(block, NodeFilter.SHOW_TEXT);
+  const range = doc.createRange();
+  let pos = 0;
+  let started = false;
+  let node = walker.nextNode();
+  while (node) {
+    const nodeEnd = pos + node.length;
+    if (!started && nodeEnd >= start) {
+      range.setStart(node, start - pos);
+      started = true;
+    }
+    if (started && nodeEnd >= end) {
+      range.setEnd(node, end - pos);
+      return range;
+    }
+    pos = nodeEnd;
+    node = walker.nextNode();
+  }
+  return null; // the offsets don't fit this block's current text
+}
+
+// Rollout step 4 (HIGHLIGHTS_AND_NOTES.md §6): showing a highlight, once
+// one exists. A selection rarely sits inside a single text node — it can
+// span an <em>, a <code>, or just a sentence break — and
+// `Range.surroundContents()` throws in exactly that case, on any node it
+// can't safely wrap whole. The fix used here is the standard one: walk the
+// range's own text nodes and wrap each one's selected portion in its own
+// <mark>, rather than asking for one <mark> around the whole range.
+// Several <mark>s sharing one `data-highlight-id` is normal, not a bug.
+function wrapRange(range, highlightId) {
+  const doc = range.startContainer.ownerDocument || document;
+  const root = range.commonAncestorContainer;
+  const walker = doc.createTreeWalker(
+    root.nodeType === Node.TEXT_NODE ? root.parentNode : root,
+    NodeFilter.SHOW_TEXT,
+  );
+
+  const marks = [];
+  let node = walker.nextNode();
+  while (node) {
+    // Taken before any splitText() below, since splitting inserts a new
+    // sibling text node the walker would otherwise visit next — one this
+    // range's own end offset has already excluded from it.
+    const next = walker.nextNode();
+    if (range.intersectsNode(node)) {
+      const start = node === range.startContainer ? range.startOffset : 0;
+      const end = node === range.endContainer ? range.endOffset : node.length;
+      if (start < end) {
+        let target = node;
+        if (end < target.length) target.splitText(end);
+        if (start > 0) target = target.splitText(start);
+        const mark = doc.createElement("mark");
+        mark.className = "dl-highlight";
+        mark.dataset.highlightId = highlightId;
+        target.parentNode.insertBefore(mark, target);
+        mark.appendChild(target);
+        marks.push(mark);
+      }
+    }
+    node = next;
+  }
+  return marks;
+}
+
+// The other half: strip a highlight back out, restoring plain text nodes
+// (never the surrounding prose itself — only the <mark> wrapper). Adjacent
+// text nodes left behind by an earlier wrapRange() split are merged back
+// with normalize(), so repeated highlight/unhighlight cycles on the same
+// passage don't leave the DOM more fragmented each time.
+function unwrapHighlight(highlightId, root = document.getElementById("dl-body")) {
+  const marks = root ? Array.from(
+    root.querySelectorAll(`mark.dl-highlight[data-highlight-id="${CSS.escape(highlightId)}"]`),
+  ) : [];
+  const parents = new Set();
+  for (const mark of marks) {
+    const parent = mark.parentNode;
+    while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+    parent.removeChild(mark);
+    parents.add(parent);
+  }
+  for (const parent of parents) parent.normalize();
+  return marks.length;
+}
+
 function initReferenceLookup(manifest) {
   const body = document.getElementById("dl-body");
   const panel = document.getElementById("dl-reference");
@@ -3182,8 +3274,13 @@ function restoreSaved() {
       // later tries to render it — a highlight that can't be found is
       // dropped and reported here the same way a cell whose id disappeared
       // already is above, not discovered as a mystery gap later.
-      if (locateHighlightAnchor(anchor)) {
+      const located = locateHighlightAnchor(anchor);
+      if (located) {
         highlights.push({ ...saved });
+        const range = rangeForOffsets(
+          located.block, located.index, located.index + saved.quote.length,
+        );
+        if (range) wrapRange(range, saved.id);
       } else {
         droppedHighlights.push(saved.id);
       }
@@ -3941,11 +4038,15 @@ globalThis.dewlab = {
   hoverDoc,
   signatureHelp,
   canStop: () => !currentManifest.standalone && interruptBuffer !== null,
-  // Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §3-4):
-  // the anchoring lookup and the in-memory/save-schema state, exposed for
-  // their own tests — nothing in the page calls any of this yet.
+  // Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §3-6):
+  // the anchoring lookup, the in-memory/save-schema state, and the DOM
+  // wrap/unwrap pair, exposed for their own tests — nothing in the page
+  // calls any of this yet.
   proseBlocks,
   describeQuote,
   locateHighlightAnchor,
   highlights,
+  rangeForOffsets,
+  wrapRange,
+  unwrapHighlight,
 };
