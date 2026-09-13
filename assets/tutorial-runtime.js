@@ -950,31 +950,123 @@ function unwrapHighlight(highlightId, root = document.getElementById("dl-body"))
   return marks.length;
 }
 
+// Rollout step 5 (HIGHLIGHTS_AND_NOTES.md §5): actually making one. A
+// highlight anchors to exactly one prose block (§3) — the same block a
+// reader's selection has to sit inside, checked here rather than assumed,
+// since a selection can freely cross into a heading or a second paragraph
+// and this is where that gets caught, silently, the same way Look Up
+// already stays silent for a selection that isn't a term.
+function blockFor(node) {
+  const el = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+  return el ? el.closest(PROSE_BLOCK_SELECTOR) : null;
+}
+
+// The [start, end) offsets rangeForOffsets() would need to rebuild this
+// exact range later, read off a *live* selection instead of computed by
+// hand — a range from the start of `block` to the selection's own start
+// is, stringified, exactly the text before it; the standard trick for
+// "where is this selection, as plain character offsets."
+function offsetsForRange(block, range) {
+  const pre = document.createRange();
+  pre.selectNodeContents(block);
+  pre.setEnd(range.startContainer, range.startOffset);
+  const start = pre.toString().length;
+  return { start, end: start + range.toString().length };
+}
+
+function generateHighlightId() {
+  return `h-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+// Ties (2), (3) and (4) together: anchor the live selection, save it, show
+// it. `range` is still the reader's own selection Range, not yet a
+// reconstructed one — wrapRange() needs exactly that, and reconstructing
+// it from offsets first would be reading back something already in hand.
+function createHighlight(range, block, note = "") {
+  const { start, end } = offsetsForRange(block, range);
+  const highlight = {
+    id: generateHighlightId(),
+    block_index: proseBlocks().indexOf(block),
+    ...describeQuote(block, start, end),
+    note,
+    created_at: new Date().toISOString(),
+  };
+  highlights.push(highlight);
+  wrapRange(range, highlight.id);
+  scheduleSave();
+  return highlight;
+}
+
 function initReferenceLookup(manifest) {
   const body = document.getElementById("dl-body");
   const panel = document.getElementById("dl-reference");
   const toggle = document.getElementById("dl-reference-toggle");
-  if (!body || !panel || !toggle) return;
+  if (!body) return;
 
   // manifest.glossary is a flat list of entries, the same one
-  // renderReference() groups by kind for display.
+  // renderReference() groups by kind for display. A tutorial with none —
+  // termFor() below then never matches anything — still gets the
+  // Highlight button; HIGHLIGHTS_AND_NOTES.md §5 is not the same feature
+  // as REFERENCE_PANEL.md §6b's Look Up, and needs no glossary to work.
   const terms = (manifest.glossary || [])
     .map((entry) => String(entry.term || "").toLowerCase())
     .filter(Boolean);
-  if (!terms.length) return;
 
   // A selection worth offering a lookup for: long enough not to be a stray
   // character, short enough to be a term rather than a dragged paragraph.
+  // Highlighting only needs the lower bound — a whole sentence, even a
+  // whole paragraph, is an ordinary thing to mark, so there's no upper
+  // one; the one-block constraint below is what actually limits it.
   const SHORTEST = 2;
   const LONGEST = 40;
 
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "dl-lookup";
-  button.hidden = true;
-  document.body.append(button);
+  const lookupButton = document.createElement("button");
+  lookupButton.type = "button";
+  lookupButton.className = "dl-lookup";
+  lookupButton.hidden = true;
+  document.body.append(lookupButton);
 
-  function hide() { button.hidden = true; }
+  // Rollout step 5 (HIGHLIGHTS_AND_NOTES.md §5) — "Add a note" joins this
+  // once step 6's edit/remove popover exists to open (§7); for now,
+  // Highlight is the only new button, and a note is added afterward by
+  // clicking the highlight it made.
+  const highlightButton = document.createElement("button");
+  highlightButton.type = "button";
+  // Its own class, not shared with .dl-lookup: test_reference.py already
+  // asserts against `.dl-lookup` specifically, and two buttons answering
+  // to the same selector would make those assertions ambiguous. The CSS
+  // rule below still styles both the same way, by listing both selectors.
+  highlightButton.className = "dl-highlight-btn";
+  highlightButton.textContent = "Highlight";
+  highlightButton.hidden = true;
+  document.body.append(highlightButton);
+
+  function hide() {
+    lookupButton.hidden = true;
+    highlightButton.hidden = true;
+  }
+
+  // Both buttons are independently `position: fixed`, not one toolbar with
+  // a shared hidden wrapper — test_reference.py already asserts `.dl-lookup`
+  // itself carries `hidden`, and a wrapper would mean that attribute alone
+  // no longer says whether the button is actually visible.
+  function layout(rect, buttons) {
+    const margin = 8;
+    const gap = 6;
+    const width = buttons.reduce((sum, b) => sum + b.offsetWidth, 0) + gap * (buttons.length - 1);
+    const height = Math.max(...buttons.map((b) => b.offsetHeight));
+    const left = Math.max(margin, Math.min(rect.left, window.innerWidth - width - margin));
+    const below = rect.bottom + 6;
+    const top = below + height + margin > window.innerHeight
+      ? Math.max(margin, rect.top - height - 6)   // above the selection instead
+      : below;
+    let x = left;
+    for (const b of buttons) {
+      b.style.left = `${x}px`;
+      b.style.top = `${top}px`;
+      x += b.offsetWidth + gap;
+    }
+  }
 
   function whole(word) {
     // A word-boundary test, built from a selection, so the selection has to
@@ -1016,11 +1108,21 @@ function initReferenceLookup(manifest) {
       return;
     }
 
+    const range = selection.getRangeAt(0);
     const text = selection.toString();
     const term = termFor(text);
-    if (!term) { hide(); return; }
 
-    const rect = selection.getRangeAt(0).getBoundingClientRect();
+    // A highlight anchors to one prose block (§3) — checked here against
+    // the selection's own two ends, not assumed, since a drag can freely
+    // leave the block it started in.
+    const startBlock = blockFor(range.startContainer);
+    const endBlock = blockFor(range.endContainer);
+    const highlightable = text.trim().length >= SHORTEST
+      && startBlock && startBlock === endBlock ? startBlock : null;
+
+    if (!term && !highlightable) { hide(); return; }
+
+    const rect = range.getBoundingClientRect();
     if (!rect.width && !rect.height) { hide(); return; }
 
     // A selection can be off-screen — restored by the browser on load, or
@@ -1030,37 +1132,31 @@ function initReferenceLookup(manifest) {
     const withinViewport = rect.bottom > 0 && rect.top < window.innerHeight;
     if (!withinViewport) { hide(); return; }
 
-    button.textContent = `Look up "${term}"`;
-    button.dataset.term = term;
-    button.hidden = false;
-    // Positioned against the viewport, so the button is fixed rather than
-    // absolutely placed — no need to account for the page's own scroll, and
-    // a scroll simply dismisses it.
-    //
-    // Measured after unhiding, because a hidden element has no width to
-    // clamp against. Both edges are kept inside the viewport so a selection
-    // near the right margin or the last line of the page still gets a
-    // button a reader can actually reach.
-    const margin = 8;
-    const width = button.offsetWidth;
-    const height = button.offsetHeight;
-    const left = Math.min(Math.max(margin, rect.left),
-                          window.innerWidth - width - margin);
-    const below = rect.bottom + 6;
-    const top = below + height + margin > window.innerHeight
-      ? Math.max(margin, rect.top - height - 6)   // above the selection instead
-      : below;
-    button.style.left = `${Math.max(margin, left)}px`;
-    button.style.top = `${top}px`;
+    lookupButton.hidden = !term;
+    if (term) {
+      lookupButton.textContent = `Look up "${term}"`;
+      lookupButton.dataset.term = term;
+    }
+    // The block itself isn't stashed anywhere -- highlightButton's own
+    // click handler re-reads the live selection, the same way this
+    // handler just did, rather than trusting a reference that could be
+    // stale by the time a click actually lands.
+    highlightButton.hidden = !highlightable;
+
+    // Positioned against the viewport, so both buttons are fixed rather
+    // than absolutely placed — no need to account for the page's own
+    // scroll, and a scroll simply dismisses them. Measured after
+    // unhiding, since a hidden element has no width to clamp against.
+    layout(rect, [lookupButton, highlightButton].filter((b) => !b.hidden));
   });
 
-  button.addEventListener("mousedown", (ev) => {
+  lookupButton.addEventListener("mousedown", (ev) => {
     // Before the click, or the selection is gone by the time we read it.
     ev.preventDefault();
   });
 
-  button.addEventListener("click", () => {
-    const term = button.dataset.term || "";
+  lookupButton.addEventListener("click", () => {
+    const term = lookupButton.dataset.term || "";
     // Let the selection go. The reader has what they asked for, and keeping
     // it would leave this button offering the same lookup a second time —
     // the mousedown above deliberately preserved the selection long enough
@@ -1079,6 +1175,25 @@ function initReferenceLookup(manifest) {
     const searchInput = document.getElementById("dl-reference-search");
     if (searchInput) searchInput.value = term;
     filterReferenceContent(term);
+  });
+
+  highlightButton.addEventListener("mousedown", (ev) => {
+    // Before the click, same reason as lookupButton's own — the selection
+    // (and the block/range it sits in) has to survive long enough to act on.
+    ev.preventDefault();
+  });
+
+  highlightButton.addEventListener("click", () => {
+    const selection = document.getSelection();
+    if (!selection || selection.isCollapsed) { hide(); return; }
+    const range = selection.getRangeAt(0);
+    const startBlock = blockFor(range.startContainer);
+    const endBlock = blockFor(range.endContainer);
+    if (!startBlock || startBlock !== endBlock) { hide(); return; }
+
+    createHighlight(range, startBlock);
+    selection.removeAllRanges();
+    hide();
   });
 
   document.addEventListener("scroll", hide, { passive: true });
@@ -4090,9 +4205,10 @@ globalThis.dewlab = {
   signatureHelp,
   canStop: () => !currentManifest.standalone && interruptBuffer !== null,
   // Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §3-6):
-  // the anchoring lookup, the in-memory/save-schema state, and the DOM
-  // wrap/unwrap pair, exposed for their own tests — nothing in the page
-  // calls any of this yet.
+  // the anchoring lookup, the in-memory/save-schema state, the DOM
+  // wrap/unwrap pair, and the highlight-creation helpers the selection
+  // toolbar's Highlight button now calls, exposed here for their own
+  // tests too.
   proseBlocks,
   describeQuote,
   locateHighlightAnchor,
@@ -4100,4 +4216,6 @@ globalThis.dewlab = {
   rangeForOffsets,
   wrapRange,
   unwrapHighlight,
+  blockFor,
+  createHighlight,
 };
