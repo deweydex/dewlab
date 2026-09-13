@@ -75,80 +75,31 @@ covered, versus moving straight to Phase 3, is an open question of its own.
 
 ---
 
-## Phase 3 — Practice that regenerates
+## Phase 3 — Highlights and margin notes
 
-One authored problem template becomes as much practice as a student wants.
-The generator and the checker are both Python, running in the Pyodide the
-student already has — nothing leaves the browser, and there is no answer
-key to leak.
+*(This slot held "Practice that regenerates" — seeded problem generators
+with a "try another" control. Retired unbuilt, 2026-09-13, before any of
+its open questions were settled — `DECISIONS_LOG.md` 7.155. The original
+plan is still readable in git history at the commit that replaced this
+section.)*
 
-**The work:**
+A reader marks a passage of prose, durably, with an optional note tied to
+that specific passage — the persistent-highlighting idea Phase 5 raised
+and set aside as needing real anchoring work. `HIGHLIGHTS_AND_NOTES.md`
+has the full design: the anchoring scheme (quote-and-position, computed at
+read time, no build.py change), the schema addition to the existing
+saved-progress record, the selection toolbar, and a dozen-plus rollout
+steps. Not started; that document is the plan.
 
-1. A cell convention for seeded problems: the fence carries generator code
-   that produces the problem text and numbers from a seed, plus a
-   `check()` that computes the expected answer from the same seed.
-2. A "try another like this" control on such cells, re-seeding and
-   regenerating in place.
-3. Retrofit two or three existing practice pages to prove the shape before
-   any new page is written with it.
+## Phase 4 — retired
 
-**Open questions:**
-
-- **Where does the seed live, and what does a reopened page show?**
-  Assumed: in the saved-progress record, so a student who closes the tab
-  returns to the same problem, and "try another" writes a new seed. Cost
-  to change: high once shipped — this touches the saved-work schema, which
-  `WINDOW_AUDIT.md` treats as a frozen contract. Settle this one first.
-- **Does a regenerated problem replace the old attempt or accumulate?**
-  Assumed: replace, matching the existing one-cell-one-slot schema; a
-  student who wants to keep an attempt exports it. Accumulating is a
-  schema change (same cost as above).
-- **How is the generator authored?** In the fence, hidden from the reader,
-  or as a sidecar file? Assumed: in the fence, under a new tag on the
-  existing `python exec` convention — a sidecar would add a file per
-  problem. Cost: moderate; the editor's `restoreExecTag()` and the build's
-  fence parsing both learn one more tag.
-- **Is `check()` enough as it stands?** It compares a value; a generated
-  problem may want tolerance, multiple accepted forms, or a worked solution
-  behind a fold. Assumed: start with what `check()` does and let real
-  problems argue for extensions one at a time.
-
-## Phase 4 — The portfolio export
-
-QQI Level 5 assessment leans on collections of work. A student's dewlab
-record — code, outputs, notes, their own added cells — already is one,
-trapped in `localStorage`. One button turns the no-tracking stance into an
-asset: the student owns the evidence and chooses to hand it over. Nothing
-is scored; everything is theirs.
-
-**The work:**
-
-1. "Compile my work": a standalone HTML document assembling a tutorial's
-   exercises with the student's answers, notes, reader-added cells, and
-   dates, built from the standalone-export machinery and the saved-progress
-   record — both already exist.
-2. A student-facing paragraph in `docs/FOR_STUDENTS.md` explaining what it
-   is for.
-
-**Open questions:**
-
-- **Per tutorial, per series, or per module?** Assumed: per series, with
-  per-tutorial as the degenerate case. Cost: small.
-- **Do reflection sections gain an answer box?** Reflections are currently
-  open questions in prose with nowhere to write — the notes field is
-  per-tutorial, not per-question, so a portfolio showing reflections
-  unanswered undersells exactly the part where the learning lands. Assumed:
-  not in the first version; the per-tutorial notes field appears in the
-  export beside the reflection section. This is the question most worth
-  answering properly rather than by default, since an answer box changes
-  the tutorial format itself.
-- **What would an assessor need to trust it?** Dates and version ids are
-  already in the record; whether QQI verification wants more (a
-  declaration of own work, a tutor countersignature line) is a question
-  for a colleague or external examiner, not this repository. Blocks
-  nothing — build the export, then ask with the artifact in hand.
-- **Where does the button live?** Assumed: Settings, under "Your work,"
-  beside the existing export. Cost: nil.
+*(This slot held "The portfolio export" — a "Compile my work" button
+producing a standalone document from a student's saved progress. Retired
+unbuilt, 2026-09-13, in favour of Phase 3 above — `DECISIONS_LOG.md`
+7.155. `HIGHLIGHTS_AND_NOTES.md` §11 explains why a highlight-with-a-note
+makes a future portfolio export cheaper without building one now. The
+original plan is still readable in git history at the commit that
+replaced this section.)*
 
 ## Phase 5 — The reference grows up
 
