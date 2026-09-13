@@ -1,0 +1,27 @@
+# The Documentation panel's own source: a small, hand-maintained table of
+# term -> an official Python docs page. Only terms that also appear in a
+# page's own cumulative glossary (build.py's write(), matching on `term`)
+# ever show up there — this file is free to grow ahead of what any one page
+# needs, and a term with no entry here simply shows nothing extra, the same
+# tolerance load_math_basics()/load_python_basics() give a missing file.
+#
+# Not every glossary term needs a line here. Add one when a reader who has
+# just met the term would genuinely want the fuller, official page — not as
+# a matter of course.
+links:
+  - term: "append()"
+    url: "https://docs.python.org/3/tutorial/datastructures.html#more-on-lists"
+  - term: "len()"
+    url: "https://docs.python.org/3/library/functions.html#len"
+  - term: "range()"
+    url: "https://docs.python.org/3/library/stdtypes.html#range"
+  - term: "print()"
+    url: "https://docs.python.org/3/library/functions.html#print"
+  - term: "for"
+    url: "https://docs.python.org/3/tutorial/controlflow.html#for-statements"
+  - term: "index"
+    url: "https://docs.python.org/3/tutorial/introduction.html#lists"
+  - term: "list"
+    url: "https://docs.python.org/3/tutorial/datastructures.html"
+  - term: "dictionary"
+    url: "https://docs.python.org/3/tutorial/datastructures.html#dictionaries"

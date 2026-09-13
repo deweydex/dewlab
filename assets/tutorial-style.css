@@ -1106,7 +1106,11 @@ p code, li code {
   border-top: 2px solid currentColor;
 }
 
-.dl-settings {
+/* .dl-settings itself is dead in assets/shell.html since the corner-dock
+   rebuild split it into .dl-yourwork and .dl-appearance — kept here only
+   because compose/dewmini.html still ships its own, unrelated Settings
+   panel under that same class name, sharing this stylesheet. */
+.dl-yourwork, .dl-appearance, .dl-settings {
   position: fixed;
   right: 0;
   top: 0;
@@ -1123,7 +1127,7 @@ p code, li code {
   font-family: var(--dl-font-family);
   font-size: 0.85rem;
 }
-.dl-settings[hidden] { display: none; }
+.dl-yourwork[hidden], .dl-appearance[hidden], .dl-settings[hidden] { display: none; }
 
 .dl-panel-resize-handle {
   position: absolute;
@@ -1151,7 +1155,7 @@ p code, li code {
   gap: 1rem;
   margin-bottom: 0.9rem;
 }
-.dl-settings h2 {
+.dl-yourwork h2, .dl-appearance h2, .dl-settings h2 {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -1177,7 +1181,7 @@ p code, li code {
   border-top: 1px solid var(--dl-rule);
 }
 .dl-settings-section[hidden] { display: none; }
-.dl-settings h3 {
+.dl-yourwork h3, .dl-appearance h3, .dl-settings h3 {
   font-size: 0.8rem;
   letter-spacing: 0.02em;
   color: var(--dl-heading);
@@ -1190,6 +1194,73 @@ p code, li code {
   line-height: 1.5;
   color: var(--dl-muted);
 }
+
+/* The four corner docks: a fixed strip of one or two tabs at each of the
+   page's own corners, anchored below the masthead (--dl-chrome-h, already
+   tracked by trackChromeHeight()) or just above the bottom edge. Above the
+   panels' own z-index so a tab stays reachable even while its own side's
+   panel covers that part of the screen. */
+.dl-corner-dock {
+  position: fixed;
+  z-index: 51;
+  display: flex;
+}
+.dl-corner-dock-tl, .dl-corner-dock-bl { left: 0; }
+.dl-corner-dock-tr, .dl-corner-dock-br { right: 0; }
+.dl-corner-dock-tl, .dl-corner-dock-tr { top: var(--dl-chrome-h); }
+.dl-corner-dock-bl, .dl-corner-dock-br { bottom: 1rem; }
+
+.dl-corner-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: none;
+  font-family: var(--dl-mono);
+  font-size: 0.78rem;
+  background: none;
+  border: 1px solid var(--dl-navy);
+  color: var(--dl-heading);
+  padding: 0.38rem 0.7rem;
+  cursor: pointer;
+  min-height: 2rem;
+}
+.dl-corner-tab:hover, .dl-corner-tab:focus-visible {
+  border-color: var(--dl-orange);
+  color: var(--dl-orange);
+}
+.dl-corner-tab[aria-expanded="true"], .dl-corner-tab[aria-pressed="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+.dl-corner-dock-tl .dl-corner-tab, .dl-corner-dock-bl .dl-corner-tab {
+  border-radius: 0 6px 6px 0;
+}
+.dl-corner-dock-tr .dl-corner-tab, .dl-corner-dock-br .dl-corner-tab {
+  border-radius: 6px 0 0 6px;
+}
+.dl-corner-dock-tr .dl-corner-tab + .dl-corner-tab,
+.dl-corner-dock-br .dl-corner-tab + .dl-corner-tab {
+  border-left: none;
+}
+
+/* The Documentation panel's own rows — an external link per term, an
+   outbound arrow standing in for target="_blank" the way an icon usually
+   would. Generic enough that the corner-docks.html mockup this shipped
+   from used the same class for its own stub links. */
+.dl-corner-link {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--dl-rule);
+  font-family: var(--dl-mono);
+  font-size: 0.8rem;
+  color: var(--dl-fg);
+  text-decoration: none;
+}
+.dl-corner-link:hover { color: var(--dl-orange); }
+.dl-corner-link:last-child { border-bottom: none; }
 
 .dl-reference-toggle[hidden] { display: none; }
 .dl-reference-toggle {
@@ -1233,7 +1304,7 @@ p code, li code {
   border-top: 1px solid currentColor;
 }
 
-.dl-reference {
+.dl-reference, .dl-documentation {
   position: fixed;
   left: 0;
   top: 0;
@@ -1250,7 +1321,7 @@ p code, li code {
   font-family: var(--dl-font-family);
   font-size: 0.85rem;
 }
-.dl-reference[hidden] { display: none; }
+.dl-reference[hidden], .dl-documentation[hidden] { display: none; }
 .dl-reference-head {
   display: flex;
   align-items: center;
@@ -1258,7 +1329,7 @@ p code, li code {
   gap: 1rem;
   margin-bottom: 0.6rem;
 }
-.dl-reference h2 {
+.dl-reference h2, .dl-documentation h2 {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -1330,7 +1401,7 @@ p code, li code {
   background: var(--dl-panel-bg);
   border-bottom: 1px solid var(--dl-cell-border);
 }
-.dl-settings, .dl-reference, .dl-seriesnav {
+.dl-yourwork, .dl-appearance, .dl-reference, .dl-seriesnav, .dl-documentation, .dl-settings {
   scroll-padding-top: 9rem;
 }
 .dl-reference-empty { font-style: italic; }
@@ -1653,6 +1724,7 @@ p code, li code {
 
 :root[data-header="minimal"] .dl-masthead { padding: 0.35rem 0 0.3rem; }
 :root[data-header="minimal"] .dl-crumbs { display: none; }
+:root[data-header="minimal"] .dl-corner-tab,
 :root[data-header="minimal"] .dl-settings-toggle,
 :root[data-header="minimal"] .dl-panels-toggle {
   font-size: 0.72rem;
@@ -2127,8 +2199,10 @@ p code, li code {
   .dl-cell-head { flex-wrap: wrap; row-gap: 0.35rem; }
   .dl-cell-header-end { flex-wrap: wrap; }
 
-  .dl-settings,
+  .dl-yourwork,
+  .dl-appearance,
   .dl-reference,
+  .dl-documentation,
   .dl-seriesnav {
     top: auto;
     bottom: 0;
@@ -2195,9 +2269,9 @@ p code, li code {
 
   .dl-masthead-actions { gap: 0.35rem; }
   .dl-toggle-label { display: none; }
-  .dl-reference-toggle,
   .dl-seriesnav-toggle,
-  .dl-settings-toggle {
+  .dl-settings-toggle,
+  .dl-corner-tab {
     padding: 0.38rem 0.55rem;
   }
 
@@ -2939,8 +3013,9 @@ p code, li code {
 .dl-report-doors a:hover { color: var(--dl-fg); }
 
 @media print {
-  .dl-chrome, .dl-reference-toggle, .dl-seriesnav-toggle,
-  .dl-settings, .dl-reference, .dl-seriesnav, .dl-status, .dl-nav,
+  .dl-chrome, .dl-corner-dock, .dl-seriesnav-toggle, .dl-settings-toggle,
+  .dl-yourwork, .dl-appearance, .dl-reference, .dl-documentation,
+  .dl-seriesnav, .dl-settings, .dl-status, .dl-nav,
   .dl-insert, .dl-hint-icon, .dl-report-icon, .dl-cell-report-doors,
   .dl-cell-head .dl-btn, .dl-cell-footbar .dl-btn, .dl-report-doors {
     display: none !important;

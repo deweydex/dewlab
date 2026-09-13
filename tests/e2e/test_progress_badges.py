@@ -181,17 +181,17 @@ class TestProgressBadges:
         page.reload()
         assert page.is_visible(".dl-progress-badge")
 
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-appearance-toggle")
         page.click('[data-progress-badges] button[data-value="off"]')
-        page.click("#dl-settings-close")
+        page.click("#dl-appearance-close")
         assert page.is_hidden(".dl-progress-badge")
 
         # And it holds across a reload — a real setting, not a one-off toggle.
         page.reload()
         assert page.is_hidden(".dl-progress-badge")
 
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-appearance-toggle")
         page.click('[data-progress-badges] button[data-value="on"]')
-        page.click("#dl-settings-close")
+        page.click("#dl-appearance-close")
         assert page.is_visible(".dl-progress-badge")
         context.close()

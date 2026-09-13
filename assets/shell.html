@@ -57,19 +57,9 @@
             <span class="dl-panels-icon" aria-hidden="true"></span>Panels
           </summary>
           <div class="dl-panels-group" id="dl-panels-group">
-            <button type="button" class="dl-reference-toggle" id="dl-reference-toggle"
-                    aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
-              <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
-            </button>
-
             <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
                     aria-expanded="false" aria-controls="dl-seriesnav" aria-label="Series" hidden>
               <span class="dl-seriesnav-icon" aria-hidden="true"></span><span class="dl-toggle-label">Series</span>
-            </button>
-
-            <button type="button" class="dl-settings-toggle" id="dl-settings-toggle"
-                    aria-expanded="false" aria-controls="dl-settings" aria-label="Settings">
-              <span class="dl-settings-icon" aria-hidden="true"></span><span class="dl-toggle-label">Settings</span>
             </button>
           </div>
         </details>
@@ -77,6 +67,42 @@
     </header>
 
     <nav class="dl-nav dl-nav-top">{{NAV_PREV_NEXT}}{{NAV_SEARCH}}</nav>
+  </div>
+
+  <div class="dl-corner-dock dl-corner-dock-tl">
+    <button type="button" class="dl-reference-toggle dl-corner-tab" id="dl-reference-toggle"
+            aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
+      <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
+    </button>
+  </div>
+
+  <div class="dl-corner-dock dl-corner-dock-bl">
+    <button type="button" class="dl-documentation-toggle dl-corner-tab" id="dl-documentation-toggle"
+            aria-expanded="false" aria-controls="dl-documentation" aria-label="Documentation" hidden>
+      <span class="dl-toggle-label">Documentation</span>
+    </button>
+  </div>
+
+  <div class="dl-corner-dock dl-corner-dock-tr">
+    <button type="button" class="dl-corner-tab" id="dl-yourwork-toggle"
+            aria-pressed="false" aria-controls="dl-yourwork" aria-label="Notes">
+      <span class="dl-toggle-label">Notes</span>
+    </button>
+    <button type="button" class="dl-corner-tab" id="dl-report-toggle"
+            aria-pressed="false" aria-controls="dl-yourwork" aria-label="Report a problem">
+      <span class="dl-toggle-label">Report</span>
+    </button>
+  </div>
+
+  <div class="dl-corner-dock dl-corner-dock-br">
+    <button type="button" class="dl-corner-tab" id="dl-appearance-toggle"
+            aria-pressed="false" aria-controls="dl-appearance" aria-label="Appearance">
+      <span class="dl-toggle-label">Appearance</span>
+    </button>
+    <button type="button" class="dl-corner-tab" id="dl-importsexports-toggle"
+            aria-pressed="false" aria-controls="dl-appearance" aria-label="Imports and exports">
+      <span class="dl-toggle-label">Imports &amp; Exports</span>
+    </button>
   </div>
 
   {{TOC}}
@@ -100,23 +126,26 @@
 
 </div>
 
-<div class="dl-settings" id="dl-settings" role="dialog" aria-modal="false"
-     aria-labelledby="dl-settings-title" hidden>
+<div class="dl-yourwork" id="dl-yourwork" role="dialog" aria-modal="false"
+     aria-labelledby="dl-yourwork-title" hidden>
   <div class="dl-panel-sticky-head">
     <div class="dl-settings-head">
-      <h2 id="dl-settings-title">Settings</h2>
-      <button type="button" class="dl-settings-close" id="dl-settings-close"
-              aria-label="Close settings">&times;</button>
+      <h2 id="dl-yourwork-title">Notes</h2>
+      <button type="button" class="dl-settings-close" id="dl-yourwork-close"
+              aria-label="Close">&times;</button>
     </div>
-    <input type="search" class="dl-settings-search-input" id="dl-settings-search"
-           placeholder="Search settings — e.g. font size, dark mode…"
-           aria-label="Search settings" autocomplete="off">
+    <div class="dl-reference-tabs" role="tablist" aria-label="Notes and report">
+      <button type="button" class="dl-reference-tab" id="dl-yourwork-tab-notes"
+              role="tab" aria-selected="true" aria-controls="dl-yourwork-pane-notes">Notes</button>
+      <button type="button" class="dl-reference-tab" id="dl-yourwork-tab-report"
+              role="tab" aria-selected="false" tabindex="-1"
+              aria-controls="dl-yourwork-pane-report">Report</button>
+    </div>
   </div>
-  <p class="dl-panel-note dl-settings-empty" id="dl-settings-empty" hidden>Nothing matches that.</p>
 
+  <div class="dl-reference-pane" id="dl-yourwork-pane-notes" role="tabpanel"
+       aria-labelledby="dl-yourwork-tab-notes">
   <section class="dl-settings-section" id="dl-settings-work">
-    <h3>Your work</h3>
-
     <label class="dl-progress-notes-label" for="dl-progress-notes">Your notes</label>
     <textarea class="dl-progress-notes" id="dl-progress-notes" rows="4"
               placeholder="Anything worth writing down as you go."></textarea>
@@ -148,7 +177,37 @@
       </div>
     </div>
   </section>
+  </div>
 
+  <div class="dl-reference-pane" id="dl-yourwork-pane-report" role="tabpanel"
+       aria-labelledby="dl-yourwork-tab-report" hidden>
+    {{REPORT_DOORS}}
+  </div>
+</div>
+
+<div class="dl-appearance" id="dl-appearance" role="dialog" aria-modal="false"
+     aria-labelledby="dl-appearance-title" hidden>
+  <div class="dl-panel-sticky-head">
+    <div class="dl-settings-head">
+      <h2 id="dl-appearance-title">Appearance</h2>
+      <button type="button" class="dl-settings-close" id="dl-appearance-close"
+              aria-label="Close">&times;</button>
+    </div>
+    <input type="search" class="dl-settings-search-input" id="dl-appearance-search"
+           placeholder="Search settings — e.g. font size, dark mode…"
+           aria-label="Search settings" autocomplete="off">
+    <div class="dl-reference-tabs" role="tablist" aria-label="Appearance and imports &amp; exports">
+      <button type="button" class="dl-reference-tab" id="dl-appearance-tab-appearance"
+              role="tab" aria-selected="true" aria-controls="dl-appearance-pane-appearance">Appearance</button>
+      <button type="button" class="dl-reference-tab" id="dl-appearance-tab-importsexports"
+              role="tab" aria-selected="false" tabindex="-1"
+              aria-controls="dl-appearance-pane-importsexports">Imports &amp; Exports</button>
+    </div>
+  </div>
+  <p class="dl-panel-note dl-settings-empty" id="dl-appearance-empty" hidden>Nothing matches that.</p>
+
+  <div class="dl-reference-pane" id="dl-appearance-pane-appearance" role="tabpanel"
+       aria-labelledby="dl-appearance-tab-appearance">
   <section class="dl-settings-section" id="dl-settings-execution">
     <h3>Running Python</h3>
     <p class="dl-panel-note" id="dl-execution-status">Not started yet — run a cell to start Python.</p>
@@ -181,24 +240,6 @@
     <p class="dl-panel-note">A hint can appear under a cell after you have run it several times without getting there. Nothing is counted against you, and nothing is sent anywhere.</p>
   </section>
 
-  <section class="dl-settings-section" id="dl-settings-custom-cells">
-    <h3>Your own cells</h3>
-
-    <p class="dl-panel-note">
-      Cells you add yourself are separate from the tutorial above — they
-      stay even if the tutorial is later updated, and they are not part of
-      what gets saved and restored with the tutorial's own answers. A cell
-      you load from someone else's file runs like any other code on this
-      page, so it's worth reading before you press Run.
-    </p>
-
-    <div class="dl-progress-actions">
-      <button type="button" class="dl-btn" id="dl-custom-cells-import">Load a shared cell</button>
-      <button type="button" class="dl-btn dl-progress-clear" id="dl-custom-cells-clear">Remove all of mine</button>
-    </div>
-    <input type="file" id="dl-custom-cells-file" accept="application/json,.json" hidden>
-  </section>
-
   <section class="dl-settings-section" id="dl-settings-progress">
     <h3>Progress</h3>
 
@@ -211,38 +252,6 @@
         <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
-  </section>
-
-  <section class="dl-settings-section" id="dl-settings-versions">
-    <h3>Versions</h3>
-
-    <p class="dl-panel-note" id="dl-versions-note"></p>
-
-    <div class="dl-texture-row">
-      <span id="dl-seg-versions-follow-label">Show me</span>
-      <div class="dl-seg" data-versions-follow role="radiogroup" aria-labelledby="dl-seg-versions-follow-label">
-        <button type="button" data-value="started" role="radio">where I left off</button>
-        <button type="button" data-value="newest" role="radio">the newest</button>
-      </div>
-    </div>
-
-    <ul class="dl-versions-list" id="dl-versions-settings"></ul>
-  </section>
-
-  <section class="dl-settings-section" id="dl-settings-download">{{DOWNLOAD}}</section>
-
-  <section class="dl-settings-section" id="dl-settings-export">
-    <h3>Export</h3>
-    <p class="dl-panel-note">Two more ways to take this page with you.</p>
-    <div class="dl-progress-actions">
-      <button type="button" class="dl-btn" id="dl-print-pdf">Print — or save as PDF</button>
-      <button type="button" class="dl-btn" id="dl-export-ipynb">Save as a Jupyter notebook</button>
-    </div>
-    <p class="dl-panel-note">
-      The notebook file holds this page's code — the tutorial's own cells
-      and anything you've added yourself — not the reading. Print (or
-      "Download to keep" above) for the whole page.
-    </p>
   </section>
 
   <section class="dl-settings-section" id="dl-settings-texture">
@@ -356,6 +365,80 @@
 
     <button type="button" class="dl-texture-reset" id="dl-texture-reset">reset to defaults</button>
   </section>
+  </div>
+
+  <div class="dl-reference-pane" id="dl-appearance-pane-importsexports" role="tabpanel"
+       aria-labelledby="dl-appearance-tab-importsexports" hidden>
+  <section class="dl-settings-section" id="dl-settings-custom-cells">
+    <h3>Your own cells</h3>
+
+    <p class="dl-panel-note">
+      Cells you add yourself are separate from the tutorial above — they
+      stay even if the tutorial is later updated, and they are not part of
+      what gets saved and restored with the tutorial's own answers. A cell
+      you load from someone else's file runs like any other code on this
+      page, so it's worth reading before you press Run.
+    </p>
+
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="dl-custom-cells-import">Load a shared cell</button>
+      <button type="button" class="dl-btn dl-progress-clear" id="dl-custom-cells-clear">Remove all of mine</button>
+    </div>
+    <input type="file" id="dl-custom-cells-file" accept="application/json,.json" hidden>
+  </section>
+
+  <section class="dl-settings-section" id="dl-settings-versions">
+    <h3>Versions</h3>
+
+    <p class="dl-panel-note" id="dl-versions-note"></p>
+
+    <div class="dl-texture-row">
+      <span id="dl-seg-versions-follow-label">Show me</span>
+      <div class="dl-seg" data-versions-follow role="radiogroup" aria-labelledby="dl-seg-versions-follow-label">
+        <button type="button" data-value="started" role="radio">where I left off</button>
+        <button type="button" data-value="newest" role="radio">the newest</button>
+      </div>
+    </div>
+
+    <ul class="dl-versions-list" id="dl-versions-settings"></ul>
+  </section>
+
+  <section class="dl-settings-section" id="dl-settings-download">{{DOWNLOAD}}</section>
+
+  <section class="dl-settings-section" id="dl-settings-export">
+    <h3>Export</h3>
+    <p class="dl-panel-note">Two more ways to take this page with you.</p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="dl-print-pdf">Print — or save as PDF</button>
+      <button type="button" class="dl-btn" id="dl-export-ipynb">Save as a Jupyter notebook</button>
+    </div>
+    <p class="dl-panel-note">
+      The notebook file holds this page's code — the tutorial's own cells
+      and anything you've added yourself — not the reading. Print (or
+      "Download to keep" above) for the whole page.
+    </p>
+  </section>
+  </div>
+</div>
+
+<div class="dl-documentation" id="dl-documentation" role="dialog" aria-modal="false"
+     aria-labelledby="dl-documentation-title" hidden>
+  <div class="dl-panel-sticky-head">
+    <div class="dl-reference-head">
+      <h2 id="dl-documentation-title">Documentation</h2>
+      <button type="button" class="dl-reference-close" id="dl-documentation-close"
+              aria-label="Close documentation">&times;</button>
+    </div>
+  </div>
+  <p class="dl-panel-note">
+    These are official Python pages for terms this page — and everything
+    before it in the series — has already covered. Not every term has a
+    page here yet; the list grows over time.
+  </p>
+  <div id="dl-documentation-links"></div>
+  <p class="dl-panel-note" id="dl-documentation-empty" hidden>
+    Nothing here yet for this page — check back later.
+  </p>
 </div>
 
 <div class="dl-reference" id="dl-reference" role="dialog" aria-modal="false"

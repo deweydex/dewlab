@@ -174,21 +174,21 @@ class TestOpeningAndClosing:
         assert page.is_hidden("#dl-seriesnav")
         context.close()
 
-    def test_opening_the_series_nav_does_not_close_settings(self, site, browser, site_url):
+    def test_opening_the_series_nav_does_not_close_appearance(self, site, browser, site_url):
         context, page = self.open_page(site, browser, site_url)
-        _open_panel(page, "#dl-settings-toggle")
-        assert page.is_visible("#dl-settings")
+        _open_panel(page, "#dl-appearance-toggle")
+        assert page.is_visible("#dl-appearance")
         _open_panel(page, "#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
-        assert page.is_visible("#dl-settings")
+        assert page.is_visible("#dl-appearance")
         context.close()
 
-    def test_opening_settings_does_not_close_the_series_nav(self, site, browser, site_url):
+    def test_opening_appearance_does_not_close_the_series_nav(self, site, browser, site_url):
         context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-seriesnav-toggle")
         assert page.is_visible("#dl-seriesnav")
-        _open_panel(page, "#dl-settings-toggle")
-        assert page.is_visible("#dl-settings")
+        _open_panel(page, "#dl-appearance-toggle")
+        assert page.is_visible("#dl-appearance")
         assert page.is_visible("#dl-seriesnav")
         context.close()
 

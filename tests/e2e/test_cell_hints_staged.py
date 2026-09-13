@@ -121,7 +121,7 @@ class TestStagedHints:
         run(page)
         run(page)
         assert fold(page, 0).is_visible()
-        _open_panel(page, "#dl-settings-toggle")
+        _open_panel(page, "#dl-appearance-toggle")
         page.click("[data-staged-hints] button[data-value='off']")
         assert fold(page, 0).is_hidden()
         page.click("[data-staged-hints] button[data-value='on']")
