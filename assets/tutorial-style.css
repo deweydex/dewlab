@@ -191,23 +191,21 @@ body {
   }
 }
 @media (min-width: 85rem) {
-  :root { --dl-panel-gutter: 25rem; }
+  /* Same shape as the 34rem tier above — no separate gutter floor. A fixed
+   * --dl-panel-gutter here once forced a 25rem reservation per side even
+   * once the real (smaller) panel width was known, which capped the
+   * column well below both the reader's chosen Width and the panel's own
+   * size, and made the Width control look dead while a panel was open. */
   html[data-dl-panel-left]:not([data-dl-panel-right]) .dl-page {
-    max-width: min(
-      var(--dl-line-width),
-      calc(100vw - 2 * max(var(--dl-panel-gutter), var(--dl-panel-left-w, 25rem)) - 1rem)
-    );
+    max-width: min(var(--dl-line-width), calc(100vw - 2 * var(--dl-panel-left-w, 25rem) - 1rem));
   }
   html[data-dl-panel-right]:not([data-dl-panel-left]) .dl-page {
-    max-width: min(
-      var(--dl-line-width),
-      calc(100vw - 2 * max(var(--dl-panel-gutter), var(--dl-panel-right-w, 25rem)) - 1rem)
-    );
+    max-width: min(var(--dl-line-width), calc(100vw - 2 * var(--dl-panel-right-w, 25rem) - 1rem));
   }
   html[data-dl-panel-left][data-dl-panel-right] .dl-page {
     max-width: min(
       var(--dl-line-width),
-      calc(100vw - 2 * max(var(--dl-panel-gutter), var(--dl-panel-left-w, 25rem), var(--dl-panel-right-w, 25rem)) - 1rem)
+      calc(100vw - 2 * max(var(--dl-panel-left-w, 25rem), var(--dl-panel-right-w, 25rem)) - 1rem)
     );
   }
 }
