@@ -2958,7 +2958,13 @@ p code, li code {
   a { color: #1b2a4a !important; text-decoration: underline; }
 }
 
-.dl-lookup {
+/* .dl-highlight-btn (HIGHLIGHTS_AND_NOTES.md §5) shares this look but not
+   this selector -- test_reference.py asserts against `.dl-lookup`
+   specifically, and it and the highlight button are independently
+   positioned/hidden `position: fixed` elements, not one toolbar with a
+   shared wrapper (initReferenceLookup()'s own comment says why). */
+.dl-lookup,
+.dl-highlight-btn {
   position: fixed;
   z-index: 45;
   font: inherit;
@@ -2978,7 +2984,9 @@ p code, li code {
 }
 
 .dl-lookup:hover,
-.dl-lookup:focus-visible {
+.dl-lookup:focus-visible,
+.dl-highlight-btn:hover,
+.dl-highlight-btn:focus-visible {
   color: var(--dl-orange);
   border-color: var(--dl-orange);
 }
@@ -2986,7 +2994,7 @@ p code, li code {
 /* Printing a page should not print a transient button, and a reader who
    has turned motion or chrome down does not need it either. */
 @media print {
-  .dl-lookup { display: none !important; }
+  .dl-lookup, .dl-highlight-btn { display: none !important; }
 }
 
 .dl-term-origin {
