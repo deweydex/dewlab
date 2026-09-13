@@ -68,6 +68,9 @@ written before the thing it describes was built.
 - **[`STUDENT_NOTES.md`](./STUDENT_NOTES.md)** — a reader's own free-text
   notes, and encouraging a copy that outlives the browser. Not the same
   "notes" as the pedagogical ones above; §0 says why.
+- **[`HIGHLIGHTS_AND_NOTES.md`](./HIGHLIGHTS_AND_NOTES.md)** — marking a
+  specific passage of prose, durably, with an optional note tied to that
+  passage. Replaces `ROADMAP.md` Phases 3 and 4; not yet built.
 - **[`PROGRESS_INDICATORS.md`](./PROGRESS_INDICATORS.md)** — completion
   badges on the contents page and a summary in Settings, both read from
   saved work that was already there.

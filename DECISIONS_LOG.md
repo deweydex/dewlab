@@ -2192,6 +2192,16 @@ Worth recording: the obstacle for anyone revisiting prose-linking is sense disam
 
 **Found while removing: the deploy guard never excluded dewmini's own bundle.** `.github/workflows/deploy.yml` excluded `site/download/mini-ide/` from its built-page count but not `site/download/dewmini/`, shipped since 7.92. Fixed to name the bundle that actually exists.
 
+---
+
+**7.155 — `ROADMAP.md` Phases 3 and 4 retired unbuilt, in favour of persistent highlights and margin notes.** Neither "practice that regenerates" nor "the portfolio export" had been started, and both still carried unsettled open questions of their own. Rather than let either sit half-decided, both were dropped by direct choice and replaced with a single new design: a reader marks a passage of prose and, optionally, attaches a note to it — the persistent-highlighting idea Phase 5 had already raised and set aside as needing real anchoring work.
+
+**The anchoring answer, not previously worked out, turned out cheap.** Phase 5 worried that prose has no id the way a cell has a `task_id`, and that building one means a build-time scheme `WINDOW_AUDIT.md` would have to freeze. `HIGHLIGHTS_AND_NOTES.md` §3 answers it without a build.py change at all: a highlight records its selected text, a little surrounding context, and its ordinal position among the page's prose blocks, all computed at read time; restoring one searches nearby blocks for the same text before giving up. A highlight that can't be relocated is dropped and reported, the same "a notice, never a block" posture `VERSIONING_AND_PROGRESS.md` already uses for a cell whose id disappeared — so nothing about this needs to be perfect, only honest when it fails.
+
+**Both retired phases stay in `ROADMAP.md`**, marked and pointing at this entry and at git history, rather than deleted — the same treatment past retirements in this log get. Phase 3's slot became the new design's home, since something was going to be built there; Phase 4 became a one-line pointer to it, since one feature does not need two phase numbers. Phase 5's own numbering, and every place that cites it by number, is untouched.
+
+*Cost to change: nil, so far — nothing described in `HIGHLIGHTS_AND_NOTES.md` has been built yet. The document itself is the plan to build against; changing the anchoring approach before any code exists costs a rewrite of one section, not a migration.*
+
 *Cost to change: low — the deletions are the easy half; the care was in the sweep, since nearly forty files mentioned the old workspace, and in deciding which mentions were history (kept) and which were description of the present (reworded). Nothing removed here was ever in anyone's hands.*
 
 ---
