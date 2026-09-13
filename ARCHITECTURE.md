@@ -86,7 +86,12 @@ The pipeline, in order:
    placeholders filled. A token the template doesn't fill, or a page that
    leaves one unfilled, fails the build. `write_editor_page()` assembles
    `editor.html` specifically, wiring on its `<script type="module"
-   src="editor.js">` tag and the vendored Milkdown stylesheet.
+   src="editor.js">` tag and the vendored Milkdown stylesheet. A hand-written
+   page with no curriculum data of its own — the About page today — has its
+   content in `pages/<name>.md`, not a string in `build.py`: `read_page()`
+   reads its minimal `title`-only frontmatter and converts the body with the
+   same `to_html()` a tutorial's own prose uses, and `write_about_page()`
+   only assembles the shell around what it returns.
 
 7. **Write the manifest.** Every page carries a `<script
    type="application/json" id="dewlab-manifest">` with what the runtime

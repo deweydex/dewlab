@@ -19,6 +19,7 @@ sys.path.insert(0, str(DEWLAB))
 import build as b  # noqa: E402
 
 SHELL = (DEWLAB / "assets" / "shell.html").read_text()
+ABOUT_PAGE = (DEWLAB / "pages" / "about.md").read_text()
 
 FRONTMATTER = """---
 title: "A Title"
@@ -34,9 +35,10 @@ version: {version}
 
 @pytest.fixture()
 def repo(tmp_path, monkeypatch):
-    for name in ("tutorials/computational-methods", "setup", "data", "assets"):
+    for name in ("tutorials/computational-methods", "setup", "data", "assets", "pages"):
         (tmp_path / name).mkdir(parents=True)
     (tmp_path / "assets" / "shell.html").write_text(SHELL)
+    (tmp_path / "pages" / "about.md").write_text(ABOUT_PAGE)
 
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
@@ -45,6 +47,7 @@ def repo(tmp_path, monkeypatch):
     monkeypatch.setattr(b, "ASSETS", tmp_path / "assets")
     monkeypatch.setattr(b, "SHELL", tmp_path / "assets" / "shell.html")
     monkeypatch.setattr(b, "OUT", tmp_path / "site")
+    monkeypatch.setattr(b, "PAGES", tmp_path / "pages")
     return tmp_path
 
 
@@ -1006,6 +1009,52 @@ class TestTheFrontPage:
         write(repo, "Prose.\n")
         b.build()
         assert manifest((repo / "site" / "index.html").read_text())["cells"] == []
+
+
+class TestTheAboutPage:
+    """about.html: hand-written content, from pages/about.md rather than a
+    hardcoded string in build.py — see read_page()."""
+
+    def test_content_comes_from_pages_about_md(self, repo):
+        (repo / "pages" / "about.md").write_text(
+            "---\ntitle: About this project\n---\n\n"
+            "# About this project\n\nSomething only this test wrote.\n"
+        )
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "about.html").read_text()
+        assert "Something only this test wrote." in page
+
+    def test_the_title_comes_from_the_pages_frontmatter(self, repo):
+        (repo / "pages" / "about.md").write_text(
+            "---\ntitle: A Different Title\n---\n\nBody.\n"
+        )
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "about.html").read_text()
+        assert "<title>A Different Title" in page
+
+    def test_a_markdown_link_renders_as_a_real_link(self, repo):
+        (repo / "pages" / "about.md").write_text(
+            "---\ntitle: About this project\n---\n\n"
+            "See the [topic tree](tree.html) for more.\n"
+        )
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "about.html").read_text()
+        assert '<a href="tree.html">topic tree</a>' in page
+
+    def test_a_missing_pages_about_md_fails_the_build(self, repo):
+        (repo / "pages" / "about.md").unlink()
+        write(repo, "Prose.\n")
+        with pytest.raises(b.BuildError, match="pages/about.md"):
+            b.build()
+
+    def test_frontmatter_with_no_title_fails_the_build(self, repo):
+        (repo / "pages" / "about.md").write_text("---\nnot_title: x\n---\n\nBody.\n")
+        write(repo, "Prose.\n")
+        with pytest.raises(b.BuildError, match="title"):
+            b.build()
 
     def test_it_ends_with_the_short_attribution(self, repo):
         write(repo, "Prose.\n")

@@ -90,6 +90,7 @@ TOPIC_GAME = ROOT / "topic_tree_game"
 TOPIC_EDITOR = ROOT / "topic_editor"
 SHELL = ASSETS / "shell.html"
 OUT = ROOT / "site"
+PAGES = ROOT / "pages"
 
 REQUIRED_FRONTMATTER = ("title", "slug", "module", "year", "series", "version")
 
@@ -1018,6 +1019,38 @@ def to_html(body: str) -> tuple[str, list]:
     converter = markdown.Markdown(extensions=["extra", "sane_lists", "toc"])
     html_out = converter.convert(body)
     return html_out, list(getattr(converter, "toc_tokens", []))
+
+
+def read_page(name: str) -> tuple[dict, str]:
+    """Reads `pages/<name>.md`: a hand-written site page, not a tutorial.
+
+    A page has no module, series, or version — it isn't part of the
+    curriculum, so `split_frontmatter()`'s validation (which demands all
+    of those) doesn't apply. Frontmatter here is only ever `title`, and the
+    body converts through the same `to_html()` every tutorial's prose does,
+    so a page reads like the rest of the site rather than needing its own
+    rendering rules. Returns the frontmatter mapping and the rendered body
+    — never the raw markdown — since a page has no cells or maths to place
+    back in afterward the way `place_blocks()` does for a tutorial.
+    """
+    path = PAGES / f"{name}.md"
+    if not path.is_file():
+        fail(path, "does not exist — every page under pages/ needs a file")
+    text = path.read_text()
+    if not text.startswith("---"):
+        fail(path, "no YAML frontmatter — the file must open with a --- line")
+    end = text.find("\n---", 3)
+    if end == -1:
+        fail(path, "frontmatter is never closed with a --- line")
+    raw, body = text[3:end], text[end + 4 :]
+    try:
+        meta = yaml.safe_load(raw) or {}
+    except yaml.YAMLError as exc:
+        fail(path, f"frontmatter is not valid YAML: {exc}")
+    if not isinstance(meta, dict) or "title" not in meta:
+        fail(path, "frontmatter is missing title")
+    body_html, _ = to_html(body.lstrip("\n"))
+    return meta, body_html
 
 
 def convert_fold_bodies(page_html: str) -> str:
@@ -4495,77 +4528,21 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
 def write_about_page(shell: str) -> Path:
     """A short guide to what the project is and how to contribute to it.
 
+    The content itself lives in `pages/about.md`, a hand-written markdown
+    file with no module, series, or version — read through `read_page()`,
+    which converts it the same way any tutorial's prose converts. This
+    function only ever assembles the page shell around it.
+
     Written to PEDAGOGICAL_STYLE_GUIDE.md section 4 "Plain language": short
     sentences in the order things happen, "we" for the work and "you" for what
     is the reader's own, and a heading over each question rather than one run
     of paragraphs a reader has to search.
     """
-    body = (
-        "<h1>About this project</h1>"
-        "<p>dewlab is an open educational project. We put writing, maths and "
-        "runnable Python on the same page, so that you can read about an idea "
-        "and try it out in the same place.</p>"
-        "<p>It began for one classroom, and it is free for anyone who wants to "
-        "use it. There is no account, and nothing is scored. What you write "
-        "stays on your own device, and a wrong answer here is information "
-        "about a method, not about you.</p>"
-        "<h2>What's here</h2>"
-        "<p>The tutorials are listed in the order the course teaches them. That "
-        "is the main way in, and a series is meant to be read from the top.</p>"
-        "<p>Two other pages help when the course order is not the one you "
-        'need. The <a href="tree.html">topic tree</a> shows what a tutorial '
-        'usually expects you to know already. <a href="topics.html">Browse by '
-        "topic</a> gathers everything on one subject — trigonometry, say — in "
-        "one place. That one is useful when you are practising a single topic "
-        "rather than working through in order.</p>"
-        "<p>Most tutorials come with a practice page. It holds more problems on "
-        "the same idea, and the answer usually sits right below each one. We "
-        "are not trying to hide the right answer. What we are learning is the "
-        "steps that get us there.</p>"
-        '<p><a href="compose/dewmini.html">dewmini</a> is an open Python '
-        "workspace with no tutorial attached. Open it when you just want to try "
-        "something out.</p>"
-        '<p>New here, or stuck on something? '
-        '<a href="https://github.com/deweydex/dewlab/blob/main/docs/FOR_STUDENTS.md">'
-        "Using dewlab</a> walks through the reading page, and the "
-        '<a href="https://github.com/deweydex/dewlab/blob/main/docs/FAQ.md">FAQ</a> '
-        "answers the questions people ask most.</p>"
-        "<h2>Your work</h2>"
-        "<p>A tutorial saves your edits in this browser as you go, along with "
-        "any cells you add yourself. It stays on this device, so it will not "
-        "follow you to a different computer. Clearing your browser data will "
-        "clear it.</p>"
-        "<p>You can also take a copy with you. There are three ways to do it: a "
-        "single HTML file, a printed or PDF copy, or your cells saved as a "
-        "Jupyter notebook.</p>"
-        "<h2>Who we are</h2>"
-        '<p>dewlab is created and maintained by <strong><a href="https://'
-        'github.com/deweydex">Joshua Aaron</a></strong>, who teaches at '
-        'Dublin College, Dundrum. <strong><a href="https://github.com/mcgarry">'
-        "Sean McGarry</a></strong>, a teacher at Dublin College, Blackrock, "
-        "collaborates on the project and contributes ideas and feedback.</p>"
-        "<h2>Helping out</h2>"
-        "<p>We welcome help with the material. You can open an issue "
-        "with an idea, a request or a comment. You can also send a pull request "
-        "with a change of your own.</p>"
-        "<p>If you have found a mistake, the quickest way is the link at the "
-        "bottom of the page it is on. Without that, opening a GitHub issue "
-        "works too. If you would rather fix it yourself, send a pull "
-        "request and we will review it and merge it.</p>"
-        '<p><strong>Project repository:</strong> <a href="https://github.com/deweydex/dewlab">'
-        "github.com/deweydex/dewlab</a></p>"
-        "<h2>Contact</h2>"
-        "<p>Suggested assessments and exams for any module are available on "
-        "request. For project questions, email Joshua Aaron.</p>"
-        '<p><strong><a href="https://github.com/deweydex">Joshua Aaron</a>'
-        ':</strong> <a href="mailto:jsaaron@jsaaron.com">'
-        'jsaaron@jsaaron.com</a> or <a href="mailto:joshuaaaron@dcfe.ie">'
-        "joshuaaaron@dcfe.ie</a></p>"
-    )
+    meta, body = read_page("about")
     manifest = {"slug": "about", "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
     tokens = {
-        "{{TITLE}}": "About this project",
+        "{{TITLE}}": meta["title"],
         "{{VERSION}}": "1",
         "{{SLUG}}": "about",
         "{{MODULE}}": "",
