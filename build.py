@@ -2287,6 +2287,16 @@ def render_index() -> str:
         "</div>",
 
         '<div class="dl-audience">',
+        "<h2>What can dewlab do?</h2>",
+        '<div class="dl-module-grid">',
+        '<a class="dl-module-card dl-module-card-wide" href="features.html">'
+        "<h3>What dewlab can do</h3>"
+        "<p>The technologies you can learn, the tools built into every page, "
+        "and how it works offline.</p></a>",
+        "</div>",
+        "</div>",
+
+        '<div class="dl-audience">',
         "<h2>Choose a course</h2>",
         '<p>Not sure where to begin? Start with <a href="mit-pdp-maths-prog-integration.html">'
         "Maths and Programming, Integrated</a>.</p>",
@@ -2330,13 +2340,6 @@ def render_index() -> str:
         "<p>Every module, every series, every practice page — the whole "
         "course, in one list.</p></a>",
         "</div>",
-        "</div>",
-
-        '<div class="dl-audience">',
-        "<h2>What else can it do?</h2>",
-        '<p><a href="features.html">See dewlab\'s features and benefits</a>, '
-        "including offline use, downloads, accessibility settings and "
-        "dewmini.</p>",
         "</div>",
 
         '<p class="dl-attribution">This site is being actively developed by '
@@ -4606,7 +4609,32 @@ def write_features_page(shell: str) -> Path:
     body = (
         "<h1>What dewlab can do</h1>"
         "<p>dewlab keeps the tools for reading, trying and practising a subject "
-        "in one place. Choose the list that is relevant to you.</p>"
+        "in one place.</p>"
+        "<h2>What you can learn</h2>"
+        '<ul class="dl-feature-list">'
+        "<li><strong>Every cell runs Python.</strong> A real Python, called "
+        "Pyodide, runs right inside the page, in your own browser. No server "
+        "executes your code, and nothing you write is sent anywhere.</li>"
+        "<li><strong>Learn HTML and CSS.</strong> Web Authoring teaches you to "
+        "build a page and publish a small site.</li>"
+        "<li><strong>Learn SQL.</strong> Database Methods runs SQL queries "
+        "beside the Python that reads their results.</li>"
+        "</ul>"
+        "<h2>Tools on every page</h2>"
+        '<ul class="dl-feature-list">'
+        "<li><strong>Look up what you have learned.</strong> The Reference "
+        "panel holds a glossary of every term and function this page and "
+        "earlier ones have covered.</li>"
+        "<li><strong>Keep your own notes.</strong> Write down anything worth "
+        "remembering as you read. Notes are saved in this browser.</li>"
+        "<li><strong>Take your saved work with you.</strong> Export your "
+        "answers and notes as a file, then load that file back on another "
+        "device.</li>"
+        "<li><strong>Export what you build.</strong> Save a standalone page, "
+        "print or save a PDF, or save your code as a Jupyter notebook.</li>"
+        "</ul>"
+        "<p>The lists below are grouped by who you are. Choose the one that "
+        "fits you.</p>"
         "<h2>For students</h2>"
         '<ul class="dl-feature-list">'
         "<li><strong>Start without setup.</strong> Open a page in the browser. "
