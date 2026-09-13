@@ -43,6 +43,13 @@ them in the design (section 11), and pointing a stuck reader at a real route
 - **About page** (`write_about_page()`). Split into three headings, and
   gained a short paragraph on why nothing is scored. 29.7 words/sentence down
   to 13.0; longest sentence 61 down to 27; Flesch–Kincaid 14.1 down to 5.8.
+- **Features page** (`write_features_page()`), the new "What you can learn"
+  and "Tools on every page" sections. Written to the guide directly rather
+  than retrofitted: bold-lead-fragment-then-sentence bullets matching the
+  page's existing house pattern, the platform fact (Python runs in the
+  browser, nothing sent anywhere) named before Pyodide, no "not X but Y"
+  reversals. The existing three audience lists below them are unchanged and
+  not yet checked against this pass.
 - **`docs/FOR_STUDENTS.md`.** A new "If a Page Stops Making Sense" section
   pointing a stuck reader at a real route rather than only reassurance, plus
   its reset-button and practice-fold paragraphs.
