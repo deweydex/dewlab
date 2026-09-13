@@ -21,6 +21,7 @@ const NOTES_NUDGE_THRESHOLD = 120;
 const RUN_STATS_KEY = "dewlab:run-stats";
 const STAGED_HINTS_KEY = "dewlab:staged-hints";
 const STAGED_HINTS_RESTART_KEY = "dewlab:staged-hints-restart";
+const PANEL_WIDTH_KEY = "dewlab:panel-width";
 const AUTOSAVE_DELAY = 500;
 const SAVED_OUTPUT_STRIP_THRESHOLD = 100_000;
 const NON_TUTORIAL_PAGES = new Set(["index", "tree", "about", "topics"]);
@@ -207,6 +208,27 @@ function clickIsInsidePanels(target, ids) {
   });
 }
 
+function loadPanelWidth(id) {
+  try {
+    const all = JSON.parse(localStorage.getItem(PANEL_WIDTH_KEY) || "{}");
+    return all[id];
+  } catch (err) {
+    return undefined;
+  }
+}
+
+function savePanelWidth(id, width) {
+  try {
+    const all = JSON.parse(localStorage.getItem(PANEL_WIDTH_KEY) || "{}");
+    all[id] = width;
+    localStorage.setItem(PANEL_WIDTH_KEY, JSON.stringify(all));
+  } catch (err) {
+    /* Private mode or blocked storage. A resized panel just falls back to
+     * its default width next time, the same graceful loss saveTexture()
+     * already accepts for the reader's other preferences. */
+  }
+}
+
 function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null) {
   if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
   const handle = document.createElement("div");
@@ -215,18 +237,47 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
   handle.setAttribute("aria-hidden", "true");
   panel.prepend(handle);
 
+  const saved = panel.id ? loadPanelWidth(panel.id) : undefined;
+  if (saved) panel.style.width = `${Math.max(min, Math.min(saved, max))}px`;
+
   let startX = 0;
   let startWidth = 0;
 
+  // The reading column keeps at least 26rem — dewlab's own narrowest Width
+  // preset — no matter how far a panel gets dragged. .dl-page's own
+  // max-width formula reserves TWICE whichever side's panel is wider (so
+  // the centered column doesn't skew toward one edge) plus a flat 1rem —
+  // this mirrors that same arithmetic to find the widest this panel can
+  // get before it would push the column below the floor. Nothing did this
+  // before, so a drag could ask for more room than the column had left to
+  // give, and crush it toward zero.
+  function floorCapPx() {
+    const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    return (window.innerWidth - 26 * rootPx - rootPx) / 2;
+  }
+  function otherSideWidthPx() {
+    const varName = side === "left" ? "--dl-panel-right-w" : "--dl-panel-left-w";
+    const value = getComputedStyle(document.documentElement).getPropertyValue(varName);
+    return parseFloat(value) || 0;
+  }
+
   function onMove(ev) {
     const dx = side === "left" ? ev.clientX - startX : startX - ev.clientX;
-    const next = Math.max(min, Math.min(startWidth + dx, Math.min(max, window.innerWidth)));
+    const floorCap = floorCapPx();
+    // If the other side is already wider than the floor allows, .dl-page's
+    // own max() has already picked it as the reservation — this side can
+    // grow freely without making the column any narrower than it already
+    // is. Otherwise this side is the one about to become that reservation,
+    // so it gets capped the same way.
+    const cap = otherSideWidthPx() >= floorCap ? max : Math.min(max, floorCap);
+    const next = Math.max(min, Math.min(startWidth + dx, cap));
     panel.style.width = `${next}px`;
   }
   function onUp() {
     handle.classList.remove("dl-panel-resize-active");
     document.removeEventListener("pointermove", onMove);
     document.removeEventListener("pointerup", onUp);
+    if (panel.id) savePanelWidth(panel.id, panel.getBoundingClientRect().width);
     if (onResize) onResize();
   }
   handle.addEventListener("pointerdown", (ev) => {
