@@ -296,6 +296,7 @@ body {
   list-style: none;
 }
 .dl-panels-toggle::-webkit-details-marker { display: none; }
+.dl-panels-toggle[hidden] { display: none; }
 .dl-panels-toggle:hover {
   border-color: var(--dl-orange);
   color: var(--dl-orange);
