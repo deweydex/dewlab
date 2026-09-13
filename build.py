@@ -37,6 +37,7 @@ import urllib.parse
 import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Callable
 
 import markdown
 import yaml
@@ -112,6 +113,12 @@ CELL_TYPES = {"python", "sql"}
 SITE_LANGS = {"html", "css", "js"}
 SITE_HEADER_RE = re.compile(r"^\s*(id|site)\s*:\s*(.*)$")
 HINT_HEADER_RE = re.compile(r"^\s*(for|after|title)\s*:\s*(.*)$")
+CARD_HEADER_RE = re.compile(r"^\s*(url|status|meta|wide)\s*:\s*(.*)$")
+# A page's own way to point at infrastructure it can never author directly —
+# the site-wide search box, say. A bracketed marker rather than an HTML
+# comment, so a future markdown editor renders it as a real, visible line
+# rather than an invisible comment node.
+GENERATED_BLOCK_RE = re.compile(r"^\[\[(?P<name>[a-z-]+)\]\]\s*$", re.MULTILINE)
 TRIGGER_KEYS = {
     "errors": "errors", "error": "errors",
     "identical errors": "same-errors", "identical error": "same-errors",
@@ -157,6 +164,16 @@ DISPLAY_MATH_RE = re.compile(r"\$\$(?P<tex>.+?)\$\$", re.DOTALL)
 INLINE_MATH_RE = re.compile(r"\$(?!\s)(?P<tex>[^$\n]+?)(?<!\s)\$")
 ESCAPED_DOLLAR = "\x00dldollar\x00"
 
+# A page's own section wrapper — see convert_page_div_bodies(). Scoped to
+# these known class names, the same way FOLD_RE is scoped to
+# dl-hint/dl-answer, rather than matching any <div> a page happens to write.
+PAGE_DIV_RE = re.compile(
+    r'(?P<open><div class="(?:dl-hero|dl-audience|dl-attribution)">)\s*(?P<body>.*?)\s*(?P<close></div>)',
+    re.DOTALL,
+)
+# A run of one or more adjacent card placeholders — see place_page_cards().
+CARD_RUN_RE = re.compile(r"<!--dewlab-page-card-\d+-->(?:\n\n<!--dewlab-page-card-\d+-->)*")
+
 
 class BuildError(Exception):
     """Something in the source is wrong. The build stops and says where."""
@@ -190,6 +207,20 @@ class CodeBlock:
 
     language: str
     code: str
+
+
+@dataclass
+class PageCard:
+    """A ```card fence — see extract_page_cards(). Not a tutorial cell: a
+    hand-written page's own way to write a clickable tile, the markup
+    render_index() used to hardcode six times over for the home page."""
+
+    url: str
+    heading: str
+    body_html: str
+    status: str | None = None
+    meta: str | None = None
+    wide: bool = False
 
 
 @dataclass
@@ -1021,6 +1052,148 @@ def to_html(body: str) -> tuple[str, list]:
     return html_out, list(getattr(converter, "toc_tokens", []))
 
 
+def parse_card(fence_body: str, path: Path) -> PageCard:
+    """A ```card fence's body: `url:`/`status:`/`meta:`/`wide:` header lines
+    (dewlab's own header-line idiom — see HEADER_RE, SITE_HEADER_RE,
+    HINT_HEADER_RE — applied to a fourth fence kind), then a markdown
+    heading and, optionally, a paragraph or two underneath it.
+    """
+    lines = fence_body.split("\n")
+    header: dict[str, str] = {}
+    index = 0
+    while index < len(lines):
+        match = CARD_HEADER_RE.match(lines[index])
+        if not match:
+            break
+        header[match.group(1)] = match.group(2).strip()
+        index += 1
+    rest = "\n".join(lines[index:]).strip("\n")
+    if "url" not in header:
+        fail(path, "a card fence has no url: header line")
+    first_line, _, remainder = rest.partition("\n")
+    heading_match = re.match(r"^#{1,6}\s*(?P<heading>.+?)\s*#*$", first_line)
+    if not heading_match:
+        fail(path, "a card fence's body must open with a markdown heading")
+    body_html, _ = to_html(remainder.strip("\n")) if remainder.strip() else ("", [])
+    return PageCard(
+        url=header["url"],
+        heading=heading_match.group("heading"),
+        body_html=body_html,
+        status=header.get("status") or None,
+        meta=header.get("meta") or None,
+        wide=header.get("wide", "").lower() in ("true", "yes"),
+    )
+
+
+def render_card(card: PageCard) -> str:
+    """The exact `.dl-module-card` markup `render_index()` used to hand-write
+    six times over — now built once, from a `PageCard` either dialect of
+    fence parsing hands it.
+    """
+    classes = "dl-module-card dl-module-card-wide" if card.wide else "dl-module-card"
+    badge = (
+        f'<span class="dl-module-card-badge" data-status="{html.escape(card.status, quote=True)}">'
+        f"{html.escape(card.status.capitalize())}</span>"
+        if card.status else ""
+    )
+    meta = (
+        f'<span class="dl-module-card-meta">{html.escape(card.meta)}</span>'
+        if card.meta else ""
+    )
+    return (
+        f'<a class="{classes}" href="{html.escape(card.url, quote=True)}">'
+        f"<h3>{html.escape(card.heading)}{badge}</h3>{meta}{card.body_html}</a>"
+    )
+
+
+def extract_page_cards(body: str, path: Path) -> tuple[str, list[PageCard]]:
+    """Pulls every ```card fence out of a page's markdown, leaving an HTML
+    comment placeholder — the same fence-to-placeholder convention
+    `extract_blocks()` uses for a tutorial's own cells, so a card's contents
+    never gets a chance to be reinterpreted as prose. A fence tagged
+    anything else is left exactly as it was.
+    """
+    cards: list[PageCard] = []
+
+    def one(match: re.Match) -> str:
+        if match.group("info").strip() != "card":
+            return match.group(0)
+        cards.append(parse_card(match.group("body"), path))
+        return f"{match.group('indent')}<!--dewlab-page-card-{len(cards) - 1}-->"
+
+    return FENCE_RE.sub(one, body), cards
+
+
+def place_page_cards(page_html: str, cards: list[PageCard]) -> str:
+    """Replaces each card placeholder with its rendered `.dl-module-card`
+    tile, first wrapping every run of one or more adjacent placeholders in
+    a single `.dl-module-grid` — the same "adjacent fences of a kind become
+    one enclosing structure" rule `extract_blocks()` already applies to a
+    site editor's consecutive html/css/js panes, so a page's own markdown
+    never has to spell the grid wrapper out by hand.
+    """
+    page_html = CARD_RUN_RE.sub(lambda m: f'<div class="dl-module-grid">{m.group(0)}</div>', page_html)
+    for index, card in enumerate(cards):
+        placeholder = f"<!--dewlab-page-card-{index}-->"
+        if placeholder not in page_html:
+            raise BuildError(f"a card linking to {card.url!r} was lost during markdown conversion")
+        page_html = page_html.replace(placeholder, render_card(card))
+    return page_html
+
+
+def convert_page_div_bodies(page_html: str) -> str:
+    """Converts the markdown inside a page's own `<div class="dl-hero">`/
+    `<div class="dl-audience">` section wrapper.
+
+    The same problem `convert_fold_bodies()` already solves for a
+    `<details>` fold: Python-Markdown treats a raw HTML block as opaque
+    through to its closing tag, so a heading or a paragraph written inside
+    one of these section wrappers would otherwise reach the page as
+    literal, unconverted text. Run before `place_page_cards()`/
+    `place_generated_blocks()`, so a card or generated-block placeholder
+    sitting inside a section is still a bare HTML comment at this point —
+    passed through untouched by this second conversion, the same way it
+    was by the first.
+    """
+    def one(match: re.Match) -> str:
+        body_html, _ = to_html(match.group("body"))
+        return f'{match.group("open")}\n{body_html}\n{match.group("close")}'
+
+    return PAGE_DIV_RE.sub(one, page_html)
+
+
+# Infrastructure a page's markdown can point at with a [[name]] marker but
+# never author directly — each a page-independent, no-argument HTML
+# renderer already defined elsewhere in this file. A lambda, not the
+# function itself, since GENERATED_BLOCKS is built before render_search_box
+# exists in this module's namespace, and only needs to by the time a page
+# actually asks for one.
+GENERATED_BLOCKS: dict[str, Callable[[], str]] = {
+    "search-box": lambda: render_search_box(
+        "Search by topic — e.g. loops, probability, sorting…", big=True),
+}
+
+
+def extract_generated_blocks(body: str, path: Path) -> tuple[str, list[str]]:
+    names: list[str] = []
+
+    def one(match: re.Match) -> str:
+        name = match.group("name")
+        if name not in GENERATED_BLOCKS:
+            fail(path, f"[[{name}]] is not a generated block dewlab knows — "
+                       f"one of {sorted(GENERATED_BLOCKS)}")
+        names.append(name)
+        return f"<!--dewlab-generated-{len(names) - 1}-->"
+
+    return GENERATED_BLOCK_RE.sub(one, body), names
+
+
+def place_generated_blocks(page_html: str, names: list[str]) -> str:
+    for index, name in enumerate(names):
+        page_html = page_html.replace(f"<!--dewlab-generated-{index}-->", GENERATED_BLOCKS[name]())
+    return page_html
+
+
 def read_page(name: str) -> tuple[dict, str]:
     """Reads `pages/<name>.md`: a hand-written site page, not a tutorial.
 
@@ -1029,9 +1202,14 @@ def read_page(name: str) -> tuple[dict, str]:
     of those) doesn't apply. Frontmatter here is only ever `title`, and the
     body converts through the same `to_html()` every tutorial's prose does,
     so a page reads like the rest of the site rather than needing its own
-    rendering rules. Returns the frontmatter mapping and the rendered body
-    — never the raw markdown — since a page has no cells or maths to place
-    back in afterward the way `place_blocks()` does for a tutorial.
+    rendering rules. A ```card fence, a `[[name]]` generated-block marker,
+    and a `<div class="dl-hero">`/`<div class="dl-audience">` section
+    wrapper are the three things a page can have that ordinary prose
+    doesn't — the first two extracted before conversion and placed back
+    after, the same extract-then-place shape `place_blocks()` uses for a
+    tutorial's cells; the third converted a second time, the way
+    `convert_fold_bodies()` already does for a `<details>` fold. Returns
+    the frontmatter mapping and the rendered body — never the raw markdown.
     """
     path = PAGES / f"{name}.md"
     if not path.is_file():
@@ -1049,7 +1227,13 @@ def read_page(name: str) -> tuple[dict, str]:
         fail(path, f"frontmatter is not valid YAML: {exc}")
     if not isinstance(meta, dict) or "title" not in meta:
         fail(path, "frontmatter is missing title")
-    body_html, _ = to_html(body.lstrip("\n"))
+    body = body.lstrip("\n")
+    body, cards = extract_page_cards(body, path)
+    body, generated = extract_generated_blocks(body, path)
+    body_html, _ = to_html(body)
+    body_html = convert_page_div_bodies(body_html)
+    body_html = place_page_cards(body_html, cards)
+    body_html = place_generated_blocks(body_html, generated)
     return meta, body_html
 
 
@@ -2294,96 +2478,6 @@ def nav_search_html() -> str:
     )
 
 
-def render_index() -> str:
-    """The front page: one short explanation and the clearest ways in.
-
-    Detail about the tools belongs on ``features.html`` and project detail on
-    ``about.html``. Keeping both off this page lets a first-time visitor answer
-    the only immediate questions: what is dewlab, and where do I start?
-    """
-    out = [
-        "<h1>dewlab</h1>",
-        '<div class="dl-hero">',
-        "<p>Learn programming, mathematics, databases and web development "
-        "in your browser. There is nothing to install and no account to "
-        "create.</p>",
-        "<p>Read an explanation, edit and run the code beside it, and "
-        "practise what you have learned. Your work is saved on this "
-        "device.</p>",
-        "</div>",
-
-        '<div class="dl-audience">',
-        "<h2>Find a tutorial</h2>",
-        "<p>Already know the topic you want? Search for it directly.</p>",
-        render_search_box(
-            "Search by topic — e.g. loops, probability, sorting…", big=True),
-        "</div>",
-
-        '<div class="dl-audience">',
-        "<h2>What can dewlab do?</h2>",
-        '<div class="dl-module-grid">',
-        '<a class="dl-module-card dl-module-card-wide" href="features.html">'
-        "<h3>What dewlab can do</h3>"
-        "<p>The technologies you can learn, the tools built into every page, "
-        "and how it works offline.</p></a>",
-        "</div>",
-        "</div>",
-
-        '<div class="dl-audience">',
-        "<h2>Choose a course</h2>",
-        '<p>Not sure where to begin? Start with <a href="mit-pdp-maths-prog-integration.html">'
-        "Maths and Programming, Integrated</a>.</p>",
-        '<div class="dl-module-grid">',
-        '<a class="dl-module-card" href="mit-pdp-maths-prog-integration.html">'
-        "<h3>Maths and Programming, Integrated"
-        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
-        "</h3>"
-        '<span class="dl-module-card-meta">5N2927 + 5N18396 · QQI Level 5</span>'
-        "<p>We recommend starting here. One course moves between the two "
-        "subjects, in the order the class needs them.</p></a>",
-        '<a class="dl-module-card" href="computational-methods.html">'
-        "<h3>Computational Methods and Problem Solving"
-        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
-        "</h3>"
-        '<span class="dl-module-card-meta">5N0554 · QQI Level 5</span>'
-        "<p>We work through matrices, simulation, algorithms and "
-        "debugging, in Python.</p></a>",
-        '<a class="dl-module-card" href="fundamentals-of-oop.html">'
-        "<h3>Fundamentals of Object-Oriented Programming"
-        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
-        "</h3>"
-        '<span class="dl-module-card-meta">5N0541 · QQI Level 5</span>'
-        "<p>We build classes, objects and inheritance, from first "
-        "principles.</p></a>",
-        '<a class="dl-module-card" href="database-methods.html">'
-        "<h3>Database Methods"
-        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
-        "</h3>"
-        '<span class="dl-module-card-meta">5N0783 · QQI Level 5</span>'
-        "<p>We build a table, then several, with SQL running right beside "
-        "the Python that reads it.</p></a>",
-        '<a class="dl-module-card" href="web-authoring.html">'
-        "<h3>Web Authoring"
-        '<span class="dl-module-card-badge" data-status="beta">Beta</span>'
-        "</h3>"
-        '<span class="dl-module-card-meta">5N1910 · QQI Level 5</span>'
-        "<p>Build pages with HTML and CSS, then publish a small site.</p></a>",
-        '<a class="dl-module-card dl-module-card-wide" href="all-tutorials.html">'
-        "<h3>All tutorials</h3>"
-        "<p>Every module, every series, every practice page — the whole "
-        "course, in one list.</p></a>",
-        "</div>",
-        "</div>",
-
-        '<p class="dl-attribution">This site is being actively developed by '
-        '<strong><a href="https://github.com/deweydex">Joshua Aaron</a></strong> '
-        "(Dublin College Dundrum), with contributions from "
-        '<strong><a href="https://github.com/mcgarry">Sean McGarry</a></strong> '
-        "(Dublin College Blackrock).</p>",
-    ]
-    return "\n".join(out)
-
-
 def render_tutorials_list(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
@@ -2489,8 +2583,8 @@ def render_module_body(
     offer, every series in it (each with its own download offer and its
     tutorial/practice list), its mixed problems and its archive.
 
-    Shared by `render_index()`, where every module appears one after another
-    on the contents page, and `write_module_page()`, where a module gets a
+    Shared by `render_tutorials_list()`, where every module appears one after
+    another on the all-tutorials page, and `write_module_page()`, where a module gets a
     page of its own — `heading=False` there, since the page's own `<h1>`
     already names it and repeating it as an `<h2>` right underneath would
     say the same thing twice.
@@ -3876,14 +3970,20 @@ def readable_size(path: Path) -> str:
 def write_index(shell: str) -> Path:
     """The front page at the site root, which every page's masthead links to.
 
-    Static: it needs no tutorial data, since it names its own modules by
-    hand and points each one at that module's own page rather than listing
-    tutorials itself. `write_all_tutorials_page()` is the page that does.
+    Its content lives in `pages/home.md`, read through `read_page()` the
+    same way `write_about_page()` reads `pages/about.md` — a `[[search-box]]`
+    marker stands in for the live search widget, and each module tile is a
+    ```card fence (see `parse_card()`/`render_card()`). Static in the sense
+    that matters: it needs no tutorial data at build time, since it names its
+    own modules by hand and points each one at that module's own page rather
+    than listing tutorials itself. `write_all_tutorials_page()` is the page
+    that does.
     """
+    meta, body = read_page("home")
     manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
     tokens = {
-        "{{TITLE}}": "dewlab",
+        "{{TITLE}}": meta["title"],
         "{{VERSION}}": "1",
         "{{SLUG}}": "index",
         "{{MODULE}}": "",
@@ -3909,7 +4009,7 @@ def write_index(shell: str) -> Path:
         "{{TOC}}": "",
         # Nor a series to navigate.
         "{{SERIES_NAV}}": "",
-        "{{BODY}}": render_index(),
+        "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("index", "1"),
     }
