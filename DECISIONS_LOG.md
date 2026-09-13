@@ -2192,16 +2192,6 @@ Worth recording: the obstacle for anyone revisiting prose-linking is sense disam
 
 **Found while removing: the deploy guard never excluded dewmini's own bundle.** `.github/workflows/deploy.yml` excluded `site/download/mini-ide/` from its built-page count but not `site/download/dewmini/`, shipped since 7.92. Fixed to name the bundle that actually exists.
 
----
-
-**7.155 — `ROADMAP.md` Phases 3 and 4 retired unbuilt, in favour of persistent highlights and margin notes.** Neither "practice that regenerates" nor "the portfolio export" had been started, and both still carried unsettled open questions of their own. Rather than let either sit half-decided, both were dropped by direct choice and replaced with a single new design: a reader marks a passage of prose and, optionally, attaches a note to it — the persistent-highlighting idea Phase 5 had already raised and set aside as needing real anchoring work.
-
-**The anchoring answer, not previously worked out, turned out cheap.** Phase 5 worried that prose has no id the way a cell has a `task_id`, and that building one means a build-time scheme `WINDOW_AUDIT.md` would have to freeze. `HIGHLIGHTS_AND_NOTES.md` §3 answers it without a build.py change at all: a highlight records its selected text, a little surrounding context, and its ordinal position among the page's prose blocks, all computed at read time; restoring one searches nearby blocks for the same text before giving up. A highlight that can't be relocated is dropped and reported, the same "a notice, never a block" posture `VERSIONING_AND_PROGRESS.md` already uses for a cell whose id disappeared — so nothing about this needs to be perfect, only honest when it fails.
-
-**Both retired phases stay in `ROADMAP.md`**, marked and pointing at this entry and at git history, rather than deleted — the same treatment past retirements in this log get. Phase 3's slot became the new design's home, since something was going to be built there; Phase 4 became a one-line pointer to it, since one feature does not need two phase numbers. Phase 5's own numbering, and every place that cites it by number, is untouched.
-
-*Cost to change: nil, so far — nothing described in `HIGHLIGHTS_AND_NOTES.md` has been built yet. The document itself is the plan to build against; changing the anchoring approach before any code exists costs a rewrite of one section, not a migration.*
-
 *Cost to change: low — the deletions are the easy half; the care was in the sweep, since nearly forty files mentioned the old workspace, and in deciding which mentions were history (kept) and which were description of the present (reworded). Nothing removed here was ever in anyone's hands.*
 
 ---
@@ -3572,3 +3562,25 @@ files, no cell id renamed, no frontmatter or `covers:` touched, no
 `version:` bump since no cell's own code changed. Full unit suite
 green; a fresh full-site build confirmed clean; manual Chromium
 verification above, not yet a committed e2e test.*
+
+---
+
+**7.155 — `ROADMAP.md` Phases 3 and 4 retired unbuilt, in favour of persistent highlights and margin notes.** Neither "practice that regenerates" nor "the portfolio export" had been started, and both still carried unsettled open questions of their own. Rather than let either sit half-decided, both were dropped by direct choice and replaced with a single new design: a reader marks a passage of prose and, optionally, attaches a note to it — the persistent-highlighting idea Phase 5 had already raised and set aside as needing real anchoring work.
+
+**The anchoring answer, not previously worked out, turned out cheap.** Phase 5 worried that prose has no id the way a cell has a `task_id`, and that building one means a build-time scheme `WINDOW_AUDIT.md` would have to freeze. `HIGHLIGHTS_AND_NOTES.md` §3 answers it without a build.py change at all: a highlight records its selected text, a little surrounding context, and its ordinal position among the page's prose blocks, all computed at read time; restoring one searches nearby blocks for the same text before giving up. A highlight that can't be relocated is dropped and reported, the same "a notice, never a block" posture `VERSIONING_AND_PROGRESS.md` already uses for a cell whose id disappeared — so nothing about this needs to be perfect, only honest when it fails.
+
+**Both retired phases stay in `ROADMAP.md`**, marked and pointing at this entry and at git history, rather than deleted — the same treatment past retirements in this log get. Phase 3's slot became the new design's home, since something was going to be built there; Phase 4 became a one-line pointer to it, since one feature does not need two phase numbers. Phase 5's own numbering, and every place that cites it by number, is untouched.
+
+*Cost to change: nil, so far — nothing described in `HIGHLIGHTS_AND_NOTES.md` has been built yet. The document itself is the plan to build against; changing the anchoring approach before any code exists costs a rewrite of one section, not a migration.*
+
+---
+
+**7.156 — The highlight anchoring lookup, built and tested on its own before anything calls it.** `HIGHLIGHTS_AND_NOTES.md` §3/§14 planned this as its own step, isolated from the selection toolbar and the save schema, on the reasoning that a mistake in the one genuinely new algorithm here is worth catching before UI gets built on top of it. `assets/tutorial-runtime.js` gains `proseBlocks()` (every anchorable passage in reading order, a block nested inside another matching block skipped in favour of the inner one), `describeQuote()` (a block plus offsets to the `{quote, prefix, suffix}` triple an anchor stores), and `locateHighlightAnchor()` (rebuilding `{block, index}` from a saved anchor: the exact block first, then a search of five blocks either side before giving up). Nothing in the page calls any of these yet — exposed on `globalThis.dewlab` for their own tests only.
+
+**Ambiguity is resolved by exact context, not guessed at.** A block with the same short phrase twice ("the pivot" appearing twice in one paragraph, in the test fixture) can't be told apart by the quote text alone; `findQuoteInBlockText()` requires an exact match on the surrounding `prefix`/`suffix` text in that case, and treats failing to disambiguate the same as not finding the quote at all rather than picking one.
+
+**Found while writing the test fixture: adding a single cell to a page adds three more anchorable blocks, not zero.** A page with a cell — any cell — gains the (hidden) report-a-problem paragraph (`planning/feedback.yaml` `enabled: true` since 7.14x's era) and PRACTICE.md's "Try something of your own" heading and paragraph below the last cell. Both are real, readable prose and are correctly not excluded — only a cell's own `.dl-editor`/`.dl-output` are — but the fixture's own expected block count was wrong until this was noticed, a reminder that "prose" here means "matches the selector and isn't inside a cell's own chrome," not "written by the tutorial's author."
+
+Tested in `tests/e2e/test_highlight_anchoring.py`, against a purpose-built fixture tutorial rather than the shared e2e fixture, since the repeated phrase and the deliberate paragraph count needed to be exact: the three outcomes `HIGHLIGHTS_AND_NOTES.md` §13 named (same block, moved-but-findable block, genuinely gone) plus the disambiguation case, all driven directly against `dewlab.proseBlocks()`/`describeQuote()`/`locateHighlightAnchor()` rather than through real selection or DOM wrapping, which are the next rollout step.
+
+*Cost to change: low — nothing in the running page depends on this yet, so the algorithm can still change shape freely. `vendor-src/`'s `standalone.bundle.js` was rebuilt, since this touches `assets/tutorial-runtime.js` directly.*

@@ -711,6 +711,102 @@ function initReference(manifest) {
   }
 }
 
+/* Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §3): a
+ * reader marks a passage of prose, durably, with an optional note tied to
+ * it. Anchoring a highlight needs no build-time id — a highlight instead
+ * records where it was (an ordinal position among the page's prose
+ * blocks) and what it was (the selected text, plus a little context to
+ * tell two identical sentences apart), all computed from the live DOM.
+ * Restoring one after a later edit searches nearby blocks before giving
+ * up, the same "a notice, never a block" posture the version-mismatch
+ * banner already uses for a cell whose id disappeared.
+ *
+ * Only the anchoring lookup lives here so far — nothing yet calls it. */
+
+const PROSE_BLOCK_SELECTOR = "p, li, td, th, blockquote, dt, dd, h1, h2, h3, h4, h5, h6";
+
+// Every anchorable passage in `root`, in reading order. A block nested
+// inside another matching block (a loose list's `<li><p>` being the
+// common case) is skipped in favour of the inner one, which is the more
+// precise anchor; a cell's own code and output are excluded outright,
+// the same exclusion the selection toolbar below already applies, since
+// neither is prose.
+function proseBlocks(root = document.getElementById("dl-body")) {
+  if (!root) return [];
+  return Array.from(root.querySelectorAll(PROSE_BLOCK_SELECTOR)).filter((el) => (
+    !el.closest(".dl-editor, .dl-output") && !el.querySelector(PROSE_BLOCK_SELECTOR)
+  ));
+}
+
+// How much text either side of a quote to keep, for telling apart two
+// identical sentences in the same block. Not "context" in a reading
+// sense — just enough characters to disambiguate.
+const ANCHOR_CONTEXT = 24;
+
+// The other half of locateHighlightAnchor() below: given a block and the
+// [start, end) character offsets of a selection inside its own
+// `textContent`, the {quote, prefix, suffix} triple a highlight's anchor
+// stores.
+function describeQuote(block, start, end) {
+  const text = block.textContent;
+  return {
+    quote: text.slice(start, end),
+    prefix: text.slice(Math.max(0, start - ANCHOR_CONTEXT), start),
+    suffix: text.slice(end, end + ANCHOR_CONTEXT),
+  };
+}
+
+// Where a quote sits inside one block's own text. A block with the quote
+// appearing exactly once needs no prefix/suffix at all — the common
+// case, and the one this returns quickly without looking at either.
+// A block with it appearing more than once (the same short phrase used
+// twice in one paragraph) is resolved by requiring an exact match on the
+// surrounding text instead; failing to disambiguate is treated the same
+// as not finding the quote at all, rather than guessing.
+function findQuoteInBlockText(text, quote, prefix, suffix) {
+  if (!quote) return -1;
+  const positions = [];
+  for (let i = text.indexOf(quote); i !== -1; i = text.indexOf(quote, i + 1)) {
+    positions.push(i);
+  }
+  if (positions.length <= 1) return positions.length ? positions[0] : -1;
+  const match = positions.find((pos) => (
+    text.slice(Math.max(0, pos - ANCHOR_CONTEXT), pos) === prefix
+      && text.slice(pos + quote.length, pos + quote.length + ANCHOR_CONTEXT) === suffix
+  ));
+  return match === undefined ? -1 : match;
+}
+
+// How many blocks either side of the saved position are worth searching
+// before a highlight counts as gone. An edit usually moves a passage a
+// little rather than relocating it across the page, so a small window
+// catches the ordinary case (a paragraph inserted or removed above it)
+// without turning a genuinely deleted passage into a false match found
+// by coincidence somewhere far down the page.
+const ANCHOR_SEARCH_WINDOW = 5;
+
+// Rebuilds {block, index} for a saved highlight anchor
+// ({block_index, quote, prefix, suffix}), tolerating the page having
+// drifted a little since the highlight was made. `null` means genuinely
+// gone — HIGHLIGHTS_AND_NOTES.md §3 says what the caller does with that
+// (drop it, and say so, rather than guess).
+function locateHighlightAnchor(anchor, root = document.getElementById("dl-body")) {
+  const blocks = proseBlocks(root);
+  if (!blocks.length) return null;
+
+  const { block_index: blockIndex, quote, prefix, suffix } = anchor;
+  const order = [blockIndex];
+  for (let d = 1; d <= ANCHOR_SEARCH_WINDOW; d++) order.push(blockIndex - d, blockIndex + d);
+
+  for (const i of order) {
+    const block = blocks[i];
+    if (!block) continue;
+    const index = findQuoteInBlockText(block.textContent, quote, prefix, suffix);
+    if (index !== -1) return { block, index };
+  }
+  return null;
+}
+
 function initReferenceLookup(manifest) {
   const body = document.getElementById("dl-body");
   const panel = document.getElementById("dl-reference");
@@ -3797,4 +3893,10 @@ globalThis.dewlab = {
   hoverDoc,
   signatureHelp,
   canStop: () => !currentManifest.standalone && interruptBuffer !== null,
+  // Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §3):
+  // the anchoring lookup, exposed for its own tests — nothing in the
+  // page calls these yet.
+  proseBlocks,
+  describeQuote,
+  locateHighlightAnchor,
 };
