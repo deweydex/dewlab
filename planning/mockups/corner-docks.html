@@ -1,0 +1,342 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Corner docks — a playable mockup</title>
+<link rel="stylesheet" href="../../assets/tutorial-style.css">
+<style>
+  /* Everything above this line is the real, unmodified site stylesheet —
+     .dl-page's width formula, .dl-panel-resize-handle, .dl-reference-tabs,
+     .dl-seg, .dl-btn, .dl-progress-notes, all exactly as shipped. Only the
+     corner-dock shell itself is new; nothing here overrides a real rule. */
+
+  body { margin: 0; padding: 2rem 0 6rem; }
+  .proto-note {
+    max-width: 34rem; margin: 0 auto 2rem; padding: 0.8rem 1rem;
+    border: 1px solid var(--dl-cell-border); border-left: 3px solid var(--dl-orange);
+    font-size: 0.85rem; color: var(--dl-muted); line-height: 1.5;
+  }
+  .proto-note code { font-family: var(--dl-mono); font-size: 0.82em; }
+
+  .dl-corner-dock { position: fixed; z-index: 40; }
+  .dl-corner-dock.tl { left: 0; top: 4.5rem; }
+  .dl-corner-dock.bl { left: 0; bottom: 1rem; }
+  .dl-corner-dock.tr { right: 0; top: 4.5rem; }
+  .dl-corner-dock.br { right: 0; bottom: 1rem; }
+
+  .dl-corner-strip { display: flex; box-shadow: 0 4px 12px var(--dl-shadow, rgba(27,42,74,0.14)); }
+  .dl-corner-dock.tl .dl-corner-strip, .dl-corner-dock.bl .dl-corner-strip { border-radius: 0 8px 8px 0; }
+  .dl-corner-dock.tr .dl-corner-strip, .dl-corner-dock.br .dl-corner-strip { border-radius: 8px 0 0 8px; }
+  .dl-corner-tab {
+    font-family: var(--dl-mono); font-size: 0.72rem; font-weight: 700;
+    padding: 0.55rem 0.8rem; border: none; cursor: pointer;
+    background: #fff; color: var(--dl-heading); border: 1px solid var(--dl-navy);
+  }
+  .dl-corner-tab + .dl-corner-tab { border-left: none; }
+  .dl-corner-tab[aria-pressed="true"] { background: var(--dl-navy); color: #fff; }
+  .dl-corner-tab.pale { border-color: var(--dl-navy); }
+
+  .dl-corner-panel {
+    position: absolute; width: 320px; min-width: 240px; max-width: 480px;
+    background: var(--dl-panel-bg, #fff); border: 1px solid var(--dl-cell-border);
+    box-shadow: 0 8px 24px var(--dl-shadow, rgba(27,42,74,0.18));
+    font-size: 0.85rem;
+  }
+  .dl-corner-dock.tl .dl-corner-panel, .dl-corner-dock.bl .dl-corner-panel { left: 0; }
+  .dl-corner-dock.tr .dl-corner-panel, .dl-corner-dock.br .dl-corner-panel { right: 0; }
+  .dl-corner-dock.tl .dl-corner-panel, .dl-corner-dock.tr .dl-corner-panel { top: 0; }
+  .dl-corner-dock.bl .dl-corner-panel, .dl-corner-dock.br .dl-corner-panel { bottom: 0; }
+  .dl-corner-panel[hidden] { display: none; }
+
+  .dl-corner-panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--dl-cell-border);
+  }
+  .dl-corner-panel-close {
+    border: none; background: none; font-size: 1.1rem; line-height: 1;
+    cursor: pointer; color: var(--dl-muted);
+  }
+  .dl-corner-panel-close:hover { color: var(--dl-orange); }
+  .dl-corner-panel-body { padding: 0.8rem; max-height: 60vh; overflow-y: auto; }
+  .dl-corner-pane[hidden] { display: none; }
+
+  .dl-corner-term { padding: 0.5rem 0; border-bottom: 1px solid var(--dl-cell-border); }
+  .dl-corner-term:last-child { border-bottom: none; }
+  .dl-corner-term b { font-family: var(--dl-mono); font-size: 0.82rem; color: var(--dl-heading); }
+  .dl-corner-term div { font-size: 0.8rem; color: var(--dl-muted); margin-top: 0.15rem; }
+  .dl-corner-link { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--dl-cell-border); font-family: var(--dl-mono); font-size: 0.8rem; }
+
+  .dl-empty-corner {
+    padding: 0.6rem 0.9rem; border: 1px dashed var(--dl-cell-border); border-radius: 0 8px 8px 0;
+    font-family: var(--dl-mono); font-size: 0.68rem; color: var(--dl-muted); max-width: 11rem; line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="proto-note">
+  Playable mockup, not a finished design — drag any open panel's own left
+  or right edge to resize it, and watch <code>.dl-page</code> (below) react
+  live. It's the real <code>assets/tutorial-style.css</code>, unmodified,
+  loaded directly. Try it at different window widths.
+</div>
+
+<div class="dl-page">
+  <p style="font-family: var(--dl-mono); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--dl-muted);">Working with Lists</p>
+  <h1>Lists you can change</h1>
+  <p>A list holds many values in one place, in the order you put them.</p>
+  <p>You can add to a list, take from it, or change one of its values. Try it below, then read on to see what each of those actions is called.</p>
+  <div class="dl-cell">
+    <pre style="margin:0; padding: 1rem; font-family: var(--dl-mono); font-size: 0.85rem;">fruits = ["apple", "pear", "plum"]
+fruits.append("fig")
+print(fruits)</pre>
+  </div>
+  <p>Notice that <code>append()</code> always adds to the end — if you want to change a value that's already there, you name its position instead.</p>
+  <div class="dl-cell">
+    <pre style="margin:0; padding: 1rem; font-family: var(--dl-mono); font-size: 0.85rem;">fruits[1] = "mango"
+print(fruits)</pre>
+  </div>
+  <p>A position like that is called an index, and counting starts at zero — so <code>fruits[1]</code> is the <em>second</em> item, not the first.</p>
+</div>
+
+<!-- Top-left: orientation + Reference/Documentation -->
+<div class="dl-corner-dock tl" data-side="left">
+  <div style="padding: 0 0.8rem 0.5rem;">
+    <a href="../../index.html" style="font-family: Georgia, serif; font-weight: 700; font-size: 0.9rem; color: var(--dl-navy); text-decoration: none;">dewlab</a>
+    <div style="display:flex; align-items:center; gap: 0.4rem; margin-top: 0.3rem;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="var(--dl-navy)" stroke-width="1.7"/><path d="M12 12L16 8M12 12L9 15" stroke="var(--dl-navy)" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span style="font-weight:700; font-size:0.85rem; color: var(--dl-navy); border-bottom: 1px dotted var(--dl-muted);">Web Authoring</span>
+    </div>
+  </div>
+  <div class="dl-corner-strip">
+    <button class="dl-corner-tab" data-open="reference">Reference</button>
+    <button class="dl-corner-tab" data-open="documentation">Documentation</button>
+  </div>
+  <div class="dl-corner-panel" id="panel-tl" hidden>
+    <div class="dl-panel-resize-handle dl-panel-resize-handle-right"></div>
+    <div class="dl-corner-panel-head">
+      <div class="dl-reference-tabs" style="margin:0;">
+        <button class="dl-reference-tab" data-pane="reference" role="tab">Reference</button>
+        <button class="dl-reference-tab" data-pane="documentation" role="tab">Documentation</button>
+      </div>
+      <button class="dl-corner-panel-close" data-close="panel-tl" aria-label="Close">&times;</button>
+    </div>
+    <div class="dl-corner-panel-body">
+      <div class="dl-corner-pane" data-pane="reference">
+        <div class="dl-corner-term"><b>list</b><div>Holds many values in one place, in the order you put them.</div></div>
+        <div class="dl-corner-term"><b>append()</b><div>Adds one value to the end of a list.</div></div>
+        <div class="dl-corner-term"><b>index</b><div>A value's position, counting from zero.</div></div>
+      </div>
+      <div class="dl-corner-pane" data-pane="documentation" hidden>
+        <div class="dl-corner-link"><span>list.append()</span><span>&#8599;</span></div>
+        <div class="dl-corner-link"><span>list methods</span><span>&#8599;</span></div>
+        <div class="dl-corner-link"><span>Common Sequence Operations</span><span>&#8599;</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom-left: open, no candidate yet -->
+<div class="dl-corner-dock bl">
+  <div class="dl-empty-corner">bottom-left — nothing lives here yet</div>
+</div>
+
+<!-- Top-right: Notes + Report -->
+<div class="dl-corner-dock tr" data-side="right">
+  <div class="dl-corner-strip">
+    <button class="dl-corner-tab pale" data-open="notes">Notes</button>
+    <button class="dl-corner-tab pale" data-open="report">Report</button>
+  </div>
+  <div class="dl-corner-panel" id="panel-tr" hidden>
+    <div class="dl-panel-resize-handle"></div>
+    <div class="dl-corner-panel-head">
+      <div class="dl-reference-tabs" style="margin:0;">
+        <button class="dl-reference-tab" data-pane="notes" role="tab">Notes</button>
+        <button class="dl-reference-tab" data-pane="report" role="tab">Report</button>
+      </div>
+      <button class="dl-corner-panel-close" data-close="panel-tr" aria-label="Close">&times;</button>
+    </div>
+    <div class="dl-corner-panel-body">
+      <div class="dl-corner-pane" data-pane="notes">
+        <label class="dl-progress-notes-label" for="proto-notes">Your notes</label>
+        <textarea class="dl-progress-notes" id="proto-notes" rows="6" placeholder="Anything worth writing down as you go."></textarea>
+        <p class="dl-panel-note">Saved in this browser, on this device.</p>
+      </div>
+      <div class="dl-corner-pane" data-pane="report" hidden>
+        <p class="dl-panel-note">Something wrong with this page, or a cell that isn't behaving? A report tells us the page and the version you're on, so it's easy to check.</p>
+        <button type="button" class="dl-btn">Report a problem with this page</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom-right: Appearance + Imports & Exports -->
+<div class="dl-corner-dock br" data-side="right">
+  <div class="dl-corner-strip">
+    <button class="dl-corner-tab pale" data-open="appearance">Appearance</button>
+    <button class="dl-corner-tab pale" data-open="importsexports">Imports &amp; Exports</button>
+  </div>
+  <div class="dl-corner-panel" id="panel-br" hidden>
+    <div class="dl-panel-resize-handle"></div>
+    <div class="dl-corner-panel-head">
+      <div class="dl-reference-tabs" style="margin:0;">
+        <button class="dl-reference-tab" data-pane="appearance" role="tab">Appearance</button>
+        <button class="dl-reference-tab" data-pane="importsexports" role="tab">Imports &amp; Exports</button>
+      </div>
+      <button class="dl-corner-panel-close" data-close="panel-br" aria-label="Close">&times;</button>
+    </div>
+    <div class="dl-corner-panel-body">
+      <div class="dl-corner-pane" data-pane="appearance">
+        <div class="dl-texture-row">
+          <span id="proto-seg-theme-label">Theme</span>
+          <div class="dl-seg" role="radiogroup" aria-labelledby="proto-seg-theme-label">
+            <button type="button" role="radio" aria-checked="true">system</button>
+            <button type="button" role="radio" aria-checked="false">light</button>
+            <button type="button" role="radio" aria-checked="false">dark</button>
+          </div>
+        </div>
+        <div class="dl-texture-row">
+          <span>Text size</span>
+          <input type="range" min="16" max="24" step="1" value="18" aria-label="Text size">
+        </div>
+        <div class="dl-texture-row">
+          <span id="proto-seg-width-label">Reading width</span>
+          <div class="dl-seg" role="radiogroup" aria-labelledby="proto-seg-width-label">
+            <button type="button" role="radio" aria-checked="true">narrow</button>
+            <button type="button" role="radio" aria-checked="false">medium</button>
+            <button type="button" role="radio" aria-checked="false">wide</button>
+          </div>
+        </div>
+        <p class="dl-panel-note" style="margin-top:0.8rem;">Running Python: hints as you work, restart controls — kept here too, not shown in this mockup.</p>
+      </div>
+      <div class="dl-corner-pane" data-pane="importsexports" hidden>
+        <div class="dl-progress-actions" style="margin-bottom: 0.8rem;">
+          <button type="button" class="dl-btn">Export a copy</button>
+          <button type="button" class="dl-btn">Load a copy</button>
+        </div>
+        <div class="dl-progress-actions" style="margin-bottom: 0.8rem;">
+          <button type="button" class="dl-btn">Download for offline</button>
+        </div>
+        <div class="dl-progress-actions" style="margin-bottom: 0.8rem;">
+          <button type="button" class="dl-btn">Print — or save as PDF</button>
+          <button type="button" class="dl-btn">Save as a Jupyter notebook</button>
+        </div>
+        <div class="dl-progress-actions">
+          <button type="button" class="dl-btn">Load a shared cell</button>
+        </div>
+        <p class="dl-panel-note" style="margin-top:0.8rem;">Versions sits here too, tentatively — the least confident placement of the lot.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const SIDES = { left: [], right: [] };
+
+  function updateSide(side) {
+    const open = SIDES[side].filter((p) => !p.hidden);
+    const root = document.documentElement;
+    if (open.length === 0) {
+      root.removeAttribute(`data-dl-panel-${side}`);
+      root.style.removeProperty(`--dl-panel-${side}-w`);
+      return;
+    }
+    root.setAttribute(`data-dl-panel-${side}`, "");
+    const w = Math.max(...open.map((p) => p.offsetWidth)) + 16;
+    root.style.setProperty(`--dl-panel-${side}-w`, `${w}px`);
+  }
+
+  function makeResizable(panel, side, min, max) {
+    const handle = panel.querySelector(".dl-panel-resize-handle");
+    if (!handle) return;
+    let startX = 0, startWidth = 0;
+    function floorCapPx() {
+      const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      return (window.innerWidth - 26 * rootPx - rootPx) / 2;
+    }
+    function otherSideWidthPx() {
+      const varName = side === "left" ? "--dl-panel-right-w" : "--dl-panel-left-w";
+      return parseFloat(getComputedStyle(document.documentElement).getPropertyValue(varName)) || 0;
+    }
+    function onMove(ev) {
+      const dx = side === "left" ? ev.clientX - startX : startX - ev.clientX;
+      const floorCap = floorCapPx();
+      const cap = otherSideWidthPx() >= floorCap ? max : Math.min(max, floorCap);
+      panel.style.width = `${Math.max(min, Math.min(startWidth + dx, cap))}px`;
+    }
+    function onUp() {
+      handle.classList.remove("dl-panel-resize-active");
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", onUp);
+    }
+    handle.addEventListener("pointerdown", (ev) => {
+      startX = ev.clientX;
+      startWidth = panel.getBoundingClientRect().width;
+      handle.classList.add("dl-panel-resize-active");
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+      ev.preventDefault();
+    });
+  }
+
+  document.querySelectorAll(".dl-corner-dock[data-side]").forEach((dock) => {
+    const side = dock.dataset.side;
+    const panel = dock.querySelector(".dl-corner-panel");
+    if (!panel) return;
+    SIDES[side].push(panel);
+    new ResizeObserver(() => updateSide(side)).observe(panel);
+    new MutationObserver(() => updateSide(side)).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
+    makeResizable(panel, side, 240, 480);
+
+    const panes = panel.querySelectorAll(".dl-corner-pane");
+    const paneTabs = panel.querySelectorAll(".dl-reference-tab");
+
+    function showPane(name) {
+      panes.forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      paneTabs.forEach((b) => b.setAttribute("aria-selected", String(b.dataset.pane === name)));
+    }
+    function currentPane() {
+      const shown = [...panes].find((p) => !p.hidden);
+      return shown ? shown.dataset.pane : null;
+    }
+
+    dock.querySelectorAll(".dl-corner-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const name = tab.dataset.open;
+        if (!panel.hidden && currentPane() === name) {
+          panel.hidden = true;
+          dock.querySelectorAll(".dl-corner-tab").forEach((t) => t.setAttribute("aria-pressed", "false"));
+          return;
+        }
+        panel.hidden = false;
+        showPane(name);
+        dock.querySelectorAll(".dl-corner-tab").forEach((t) => t.setAttribute("aria-pressed", String(t === tab)));
+      });
+    });
+    paneTabs.forEach((b) => b.addEventListener("click", () => {
+      showPane(b.dataset.pane);
+      dock.querySelectorAll(".dl-corner-tab").forEach((t) => t.setAttribute("aria-pressed", String(t.dataset.open === b.dataset.pane)));
+    }));
+    panel.querySelectorAll("[data-close]").forEach((btn) => btn.addEventListener("click", () => {
+      panel.hidden = true;
+      dock.querySelectorAll(".dl-corner-tab").forEach((t) => t.setAttribute("aria-pressed", "false"));
+    }));
+
+    showPane(panes[0] ? panes[0].dataset.pane : null);
+  });
+
+  // Segmented-control click styling only — no real preference is wired up
+  // in this mockup, since Appearance's actual behaviour already exists
+  // and isn't what's being explored here.
+  document.querySelectorAll(".dl-seg").forEach((group) => {
+    group.querySelectorAll("button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        group.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b === btn)));
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
