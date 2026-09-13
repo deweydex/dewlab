@@ -164,11 +164,12 @@ DISPLAY_MATH_RE = re.compile(r"\$\$(?P<tex>.+?)\$\$", re.DOTALL)
 INLINE_MATH_RE = re.compile(r"\$(?!\s)(?P<tex>[^$\n]+?)(?<!\s)\$")
 ESCAPED_DOLLAR = "\x00dldollar\x00"
 
-# A page's own section wrapper — see convert_page_div_bodies(). Scoped to
-# these known class names, the same way FOLD_RE is scoped to
-# dl-hint/dl-answer, rather than matching any <div> a page happens to write.
-PAGE_DIV_RE = re.compile(
-    r'(?P<open><div class="(?:dl-hero|dl-audience|dl-attribution)">)\s*(?P<body>.*?)\s*(?P<close></div>)',
+# A page's own section or list wrapper — see convert_page_wrapper_bodies().
+# Scoped to these known tag/class pairs, the same way FOLD_RE is scoped to
+# dl-hint/dl-answer, rather than matching any element a page happens to write.
+PAGE_WRAPPER_RE = re.compile(
+    r'(?P<open><(?P<tag>div|ul) class="(?:dl-hero|dl-audience|dl-attribution|dl-feature-list)">)'
+    r"\s*(?P<body>.*?)\s*(?P<close></(?P=tag)>)",
     re.DOTALL,
 )
 # A run of one or more adjacent card placeholders — see place_page_cards().
@@ -1141,25 +1142,39 @@ def place_page_cards(page_html: str, cards: list[PageCard]) -> str:
     return page_html
 
 
-def convert_page_div_bodies(page_html: str) -> str:
+def convert_page_wrapper_bodies(page_html: str) -> str:
     """Converts the markdown inside a page's own `<div class="dl-hero">`/
-    `<div class="dl-audience">` section wrapper.
+    `<div class="dl-audience">` section wrapper, or `<ul class=
+    "dl-feature-list">` list wrapper. Named `*_div_bodies` before a `<ul>`
+    joined the two `<div>` classes it started with — decision 7.161's own
+    name, corrected here rather than kept for its own sake.
 
     The same problem `convert_fold_bodies()` already solves for a
     `<details>` fold: Python-Markdown treats a raw HTML block as opaque
-    through to its closing tag, so a heading or a paragraph written inside
-    one of these section wrappers would otherwise reach the page as
+    through to its closing tag, so a heading, paragraph, or list item
+    written inside one of these wrappers would otherwise reach the page as
     literal, unconverted text. Run before `place_page_cards()`/
     `place_generated_blocks()`, so a card or generated-block placeholder
-    sitting inside a section is still a bare HTML comment at this point —
+    sitting inside a wrapper is still a bare HTML comment at this point —
     passed through untouched by this second conversion, the same way it
     was by the first.
+
+    A markdown bullet list converts to its own `<ul>…</ul>`, which would
+    double up inside a `<ul class="dl-feature-list">` wrapper that already
+    supplies the real opening tag — invalid HTML besides, since a `<ul>`
+    can only directly hold `<li>` children. The redundant inner `<ul>` is
+    stripped, keeping only its `<li>` items, whenever the wrapper tag
+    itself is `ul`.
     """
     def one(match: re.Match) -> str:
         body_html, _ = to_html(match.group("body"))
+        if match.group("tag") == "ul":
+            inner = re.match(r"^<ul>\s*(?P<items>.*?)\s*</ul>$", body_html, re.DOTALL)
+            if inner:
+                body_html = inner.group("items")
         return f'{match.group("open")}\n{body_html}\n{match.group("close")}'
 
-    return PAGE_DIV_RE.sub(one, page_html)
+    return PAGE_WRAPPER_RE.sub(one, page_html)
 
 
 # Infrastructure a page's markdown can point at with a [[name]] marker but
@@ -1203,13 +1218,14 @@ def read_page(name: str) -> tuple[dict, str]:
     body converts through the same `to_html()` every tutorial's prose does,
     so a page reads like the rest of the site rather than needing its own
     rendering rules. A ```card fence, a `[[name]]` generated-block marker,
-    and a `<div class="dl-hero">`/`<div class="dl-audience">` section
-    wrapper are the three things a page can have that ordinary prose
-    doesn't — the first two extracted before conversion and placed back
-    after, the same extract-then-place shape `place_blocks()` uses for a
-    tutorial's cells; the third converted a second time, the way
-    `convert_fold_bodies()` already does for a `<details>` fold. Returns
-    the frontmatter mapping and the rendered body — never the raw markdown.
+    and a `<div class="dl-hero">`/`<div class="dl-audience">`/`<ul
+    class="dl-feature-list">` section or list wrapper are the three things
+    a page can have that ordinary prose doesn't — the first two extracted
+    before conversion and placed back after, the same extract-then-place
+    shape `place_blocks()` uses for a tutorial's cells; the third converted
+    a second time, the way `convert_fold_bodies()` already does for a
+    `<details>` fold. Returns the frontmatter mapping and the rendered body
+    — never the raw markdown.
     """
     path = PAGES / f"{name}.md"
     if not path.is_file():
@@ -1231,7 +1247,7 @@ def read_page(name: str) -> tuple[dict, str]:
     body, cards = extract_page_cards(body, path)
     body, generated = extract_generated_blocks(body, path)
     body_html, _ = to_html(body)
-    body_html = convert_page_div_bodies(body_html)
+    body_html = convert_page_wrapper_bodies(body_html)
     body_html = place_page_cards(body_html, cards)
     body_html = place_generated_blocks(body_html, generated)
     return meta, body_html
@@ -4682,99 +4698,18 @@ def write_about_page(shell: str) -> Path:
 
 
 def write_features_page(shell: str) -> Path:
-    """A short, scannable account of what dewlab offers and why it helps."""
-    body = (
-        "<h1>What dewlab can do</h1>"
-        "<p>dewlab keeps the tools for reading, trying and practising a subject "
-        "in one place.</p>"
-        "<h2>What you can learn</h2>"
-        '<ul class="dl-feature-list">'
-        "<li><strong>Every cell runs Python.</strong> A real Python, called "
-        "Pyodide, runs right inside the page, in your own browser. No server "
-        "executes your code, and nothing you write is sent anywhere.</li>"
-        "<li><strong>Learn HTML and CSS.</strong> Web Authoring teaches you to "
-        "build a page and publish a small site.</li>"
-        "<li><strong>Learn SQL.</strong> Database Methods runs SQL queries "
-        "beside the Python that reads their results.</li>"
-        "</ul>"
-        "<h2>Tools on every page</h2>"
-        '<ul class="dl-feature-list">'
-        "<li><strong>Look up what you have learned.</strong> The Reference "
-        "panel holds a glossary of every term and function this page and "
-        "earlier ones have covered.</li>"
-        "<li><strong>Keep your own notes.</strong> Write down anything worth "
-        "remembering as you read. Notes are saved in this browser.</li>"
-        "<li><strong>Take your saved work with you.</strong> Export your "
-        "answers and notes as a file, then load that file back on another "
-        "device.</li>"
-        "<li><strong>Export what you build.</strong> Save a standalone page, "
-        "print or save a PDF, or save your code as a Jupyter notebook.</li>"
-        "</ul>"
-        "<p>The lists below are grouped by who you are. Choose the one that "
-        "fits you.</p>"
-        "<h2>For students</h2>"
-        '<ul class="dl-feature-list">'
-        "<li><strong>Start without setup.</strong> Open a page in the browser. "
-        "There is nothing to install and no account to create.</li>"
-        "<li><strong>Read, edit and run.</strong> Explanations sit beside "
-        "editable code, with results shown on the same page.</li>"
-        "<li><strong>Practise with support.</strong> Practice pages provide "
-        "more problems, with hints and answers available when needed.</li>"
-        "<li><strong>Come back to your work.</strong> Edits and results are saved in "
-        "this browser and are not submitted or scored.</li>"
-        "<li><strong>Work online or offline.</strong> Download a tutorial, a "
-        "series or a complete module and continue without an internet "
-        "connection.</li>"
-        "<li><strong>Take work elsewhere.</strong> Save a standalone HTML copy, "
-        "print or save a PDF, or export cells as a Jupyter notebook.</li>"
-        "<li><strong>Choose how you read.</strong> Settings include themes, "
-        "typefaces, text size, line width, contrast and link colour.</li>"
-        "<li><strong>Find the right material.</strong> Search directly, follow "
-        "a course in order, browse by topic or use the topic tree.</li>"
-        '<li><strong>Use dewmini without a tutorial.</strong> '
-        '<a href="compose/dewmini.html">dewmini</a> is a small workspace for '
-        "Python, notebooks, files, uploads, SQLite and web pages. "
-        '<a href="compose/dewminiweb.html">dewmini web</a> provides a focused '
-        "HTML, CSS and JavaScript workspace.</li>"
-        "</ul>"
-        "<h2>For teachers</h2>"
-        '<ul class="dl-feature-list">'
-        "<li><strong>Teach in a clear sequence.</strong> Courses and series put "
-        "tutorials in the order they are intended to be taught.</li>"
-        "<li><strong>Connect lessons to the curriculum.</strong> Tutorial "
-        "sections identify the QQI learning outcomes they cover.</li>"
-        "<li><strong>Keep explanation and activity together.</strong> Students "
-        "can read, run an example and try a related problem on one page.</li>"
-        "<li><strong>Support different routes through the material.</strong> "
-        "Search, browse by topic or use the topic tree when course order is "
-        "not the right route.</li>"
-        "<li><strong>Teach when the connection is unreliable.</strong> Download "
-        "a tutorial, series or complete module before class.</li>"
-        '<li><strong>Demonstrate freely in dewmini.</strong> Use '
-        '<a href="compose/dewmini.html">the blank workspace</a> for examples, '
-        "files, notebooks, SQLite and small web pages without attaching them "
-        "to a tutorial.</li>"
-        "</ul>"
-        "<h2>For administrators</h2>"
-        '<ul class="dl-feature-list">'
-        "<li><strong>Reduce classroom setup.</strong> Learners need a modern "
-        "browser rather than a local programming environment.</li>"
-        "<li><strong>Avoid learner accounts.</strong> dewlab does not require "
-        "registration or sign-in.</li>"
-        "<li><strong>Keep learner work local.</strong> Code and results stay in "
-        "the browser on the device being used.</li>"
-        "<li><strong>Use a static site.</strong> The published learning pages "
-        "need no application server or database.</li>"
-        "<li><strong>Plan for limited connectivity.</strong> Downloadable "
-        "tutorials and course bundles can be prepared in advance.</li>"
-        "</ul>"
-        '<p><a href="all-tutorials.html">Browse all tutorials</a> or return to '
-        '<a href="index.html">the homepage</a>.</p>'
-    )
+    """A short, scannable account of what dewlab offers and why it helps.
+
+    Its content lives in `pages/features.md`, read through `read_page()`
+    the same way `write_about_page()`/`write_index()` read theirs. Every
+    list on this page is a `<ul class="dl-feature-list">` wrapper around
+    a plain markdown bullet list — see `convert_page_wrapper_bodies()`.
+    """
+    meta, body = read_page("features")
     manifest = {"slug": "features", "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
     tokens = {
-        "{{TITLE}}": "What dewlab can do",
+        "{{TITLE}}": meta["title"],
         "{{VERSION}}": "1",
         "{{SLUG}}": "features",
         "{{MODULE}}": "",
