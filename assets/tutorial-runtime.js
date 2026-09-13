@@ -869,6 +869,11 @@ function wrapRange(range, highlightId) {
         const mark = doc.createElement("mark");
         mark.className = "dl-highlight";
         mark.dataset.highlightId = highlightId;
+        // Only the first fragment is a tab stop — several <mark>s can share
+        // one highlight id, and a reader tabbing through the page should
+        // meet that highlight once, not once per fragment it happens to be
+        // split across.
+        mark.tabIndex = marks.length === 0 ? 0 : -1;
         target.parentNode.insertBefore(mark, target);
         mark.appendChild(target);
         marks.push(mark);
@@ -1146,6 +1151,133 @@ function initReferenceLookup(manifest) {
   });
 
   document.addEventListener("scroll", hide, { passive: true });
+}
+
+// Rollout step 6 (HIGHLIGHTS_AND_NOTES.md §7): editing or removing a
+// highlight that already exists — clicking anywhere on it (or reaching it
+// with Tab, per wrapRange()'s first-fragment tab stop) opens a small
+// popover: the note, if any, plus Save and Remove. One shared popover
+// element, not one per highlight, the same "reused, not per-item" shape
+// initReferenceLookup()'s own button already uses.
+function initHighlightPopover() {
+  const body = document.getElementById("dl-body");
+  if (!body) return;
+
+  const popover = document.createElement("div");
+  popover.className = "dl-highlight-popover";
+  popover.hidden = true;
+  popover.setAttribute("role", "dialog");
+  popover.setAttribute("aria-label", "Highlight");
+
+  const note = document.createElement("textarea");
+  note.className = "dl-highlight-popover-note";
+  note.placeholder = "Add a note (optional)";
+  note.rows = 3;
+
+  const actions = document.createElement("div");
+  actions.className = "dl-highlight-popover-actions";
+
+  const saveButton = document.createElement("button");
+  saveButton.type = "button";
+  saveButton.className = "dl-highlight-popover-save";
+  saveButton.textContent = "Save";
+
+  const removeButton = document.createElement("button");
+  removeButton.type = "button";
+  removeButton.className = "dl-highlight-popover-remove";
+  removeButton.textContent = "Remove highlight";
+
+  actions.append(saveButton, removeButton);
+  popover.append(note, actions);
+  document.body.append(popover);
+
+  let openId = null;
+
+  function close() {
+    popover.hidden = true;
+    openId = null;
+  }
+
+  function open(id, rect) {
+    const highlight = highlights.find((h) => h.id === id);
+    if (!highlight) return;
+    openId = id;
+    note.value = highlight.note || "";
+    popover.hidden = false;
+
+    // Same fixed-position, viewport-clamped placement initReferenceLookup()'s
+    // own buttons already use, against the clicked mark's rect instead of a
+    // selection's.
+    const margin = 8;
+    const width = popover.offsetWidth;
+    const height = popover.offsetHeight;
+    const left = Math.max(margin, Math.min(rect.left, window.innerWidth - width - margin));
+    const below = rect.bottom + 6;
+    const top = below + height + margin > window.innerHeight
+      ? Math.max(margin, rect.top - height - 6)
+      : below;
+    popover.style.left = `${left}px`;
+    popover.style.top = `${top}px`;
+    note.focus();
+  }
+
+  function markFor(target) {
+    return target.closest && target.closest("mark.dl-highlight");
+  }
+
+  body.addEventListener("click", (ev) => {
+    const mark = markFor(ev.target);
+    if (mark) open(mark.dataset.highlightId, mark.getBoundingClientRect());
+  });
+
+  body.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Enter" && ev.key !== " ") return;
+    const mark = markFor(ev.target);
+    if (!mark) return;
+    ev.preventDefault();
+    open(mark.dataset.highlightId, mark.getBoundingClientRect());
+  });
+
+  saveButton.addEventListener("click", () => {
+    const highlight = highlights.find((h) => h.id === openId);
+    if (highlight) {
+      highlight.note = note.value;
+      scheduleSave();
+    }
+    close();
+  });
+
+  removeButton.addEventListener("click", () => {
+    const highlight = highlights.find((h) => h.id === openId);
+    // A plain highlight costs nothing to remake — select the text again.
+    // One with a note is asking to lose something a reader actually wrote,
+    // the same reasoning that put a confirmation on Clear rather than
+    // Reset for a cell's own code.
+    if (highlight && highlight.note && !confirm("Remove this highlight and its note?")) {
+      return;
+    }
+    unwrapHighlight(openId, body);
+    const index = highlights.findIndex((h) => h.id === openId);
+    if (index !== -1) highlights.splice(index, 1);
+    scheduleSave();
+    close();
+  });
+
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Escape" || popover.hidden) return;
+    close();
+  });
+
+  document.addEventListener("click", (ev) => {
+    // The click that opened the popover also reaches here, bubbled up from
+    // `body`'s own listener above — closing on it would undo the open this
+    // same click just caused, so a click landing on a highlight (opening
+    // this one, or switching to a different one) is not an "outside" click.
+    if (popover.hidden || popover.contains(ev.target) || markFor(ev.target)) return;
+    close();
+  });
+
+  document.addEventListener("scroll", close, { passive: true });
 }
 
 function initSeriesNav() {
@@ -4097,6 +4229,7 @@ initVersionMarker();
 initSettingsPanel();
 initReference(currentManifest);
 initReferenceLookup(currentManifest);
+initHighlightPopover();
 initSeriesNav();
 initPanelsDisclosure();
 watchPanelOverlap();

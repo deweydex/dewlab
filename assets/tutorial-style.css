@@ -352,6 +352,12 @@ mark.dl-highlight {
   background: var(--dl-highlight-bg);
   color: inherit;
   border-radius: 0.15em;
+  cursor: pointer;
+}
+
+mark.dl-highlight:focus-visible {
+  outline: 2px solid var(--dl-orange);
+  outline-offset: 1px;
 }
 
 blockquote {
@@ -2994,7 +3000,67 @@ p code, li code {
 /* Printing a page should not print a transient button, and a reader who
    has turned motion or chrome down does not need it either. */
 @media print {
-  .dl-lookup, .dl-highlight-btn { display: none !important; }
+  .dl-lookup, .dl-highlight-btn, .dl-highlight-popover { display: none !important; }
+}
+
+/* The edit/remove popover on an existing highlight (HIGHLIGHTS_AND_NOTES.md
+   §7) -- fixed and viewport-clamped the same way the two buttons above are,
+   just larger, since it holds a textarea rather than one line of label. */
+.dl-highlight-popover {
+  position: fixed;
+  z-index: 46;
+  width: min(18rem, calc(100vw - 1rem));
+  padding: 0.6rem;
+  border: 1px solid var(--dl-panel-border, var(--dl-muted));
+  border-radius: 0.5rem;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  box-shadow: 0 2px 8px var(--dl-shadow);
+  font-family: var(--dl-font-family);
+}
+
+.dl-highlight-popover-note {
+  box-sizing: border-box;
+  width: 100%;
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.4rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 0.35rem;
+  background: var(--dl-bg);
+  color: var(--dl-fg);
+  resize: vertical;
+}
+
+.dl-highlight-popover-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.dl-highlight-popover-save,
+.dl-highlight-popover-remove {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--dl-panel-border, var(--dl-muted));
+  border-radius: 0.35rem;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  cursor: pointer;
+}
+
+.dl-highlight-popover-save:hover,
+.dl-highlight-popover-save:focus-visible {
+  color: var(--dl-orange);
+  border-color: var(--dl-orange);
+}
+
+.dl-highlight-popover-remove {
+  color: var(--dl-error-fg);
+  border-color: var(--dl-error-fg);
 }
 
 .dl-term-origin {
