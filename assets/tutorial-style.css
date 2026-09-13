@@ -2063,7 +2063,7 @@ p code, li code {
   font: inherit;
   font-size: 0.88rem;
   line-height: 1.5;
-  resize: vertical;
+  overflow-y: hidden;
 }
 .dl-progress-notes-hint { margin-top: 0.35rem; }
 

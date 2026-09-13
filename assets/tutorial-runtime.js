@@ -304,6 +304,11 @@ function initSettingsPanel() {
     // the left corner instead (see .dl-reference/.dl-seriesnav in
     // tutorial-style.css), so only those two actually conflict with
     // each other — Settings can stay open alongside either.
+    // The notes textarea may have grown (or been given a value) while
+    // this panel was hidden, and a hidden element's scrollHeight reads
+    // as 0 — re-measure now that it's actually laid out, rather than
+    // trust whatever a measurement taken while hidden came up with.
+    if (open && notesEl) autoGrowTextarea(notesEl);
   }
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
@@ -3525,7 +3530,10 @@ function restoreSaved() {
   const record = readSaved();
   if (!record || !Array.isArray(record.cells)) return null;
 
-  if (notesEl && typeof record.notes === "string") notesEl.value = record.notes;
+  if (notesEl && typeof record.notes === "string") {
+    notesEl.value = record.notes;
+    autoGrowTextarea(notesEl);
+  }
 
   const byId = new Map(cells.map((cell) => [cell.id, cell]));
   const restored = [];
@@ -3751,6 +3759,17 @@ function markNotesExported() {
   }
 }
 
+// Grows (or shrinks) a textarea to fit whatever it holds, rather than
+// leaving a reader to scroll inside a box sized for four lines. The
+// offsetHeight/clientHeight gap is the border alone (clientHeight already
+// counts padding on a border-box element), so adding it back keeps this
+// exact regardless of how wide that border is.
+function autoGrowTextarea(el) {
+  el.style.height = "auto";
+  const border = el.offsetHeight - el.clientHeight;
+  el.style.height = `${el.scrollHeight + border}px`;
+}
+
 function initProgressSection() {
   const section = document.getElementById("dl-settings-work");
   if (!section) return;
@@ -3761,7 +3780,16 @@ function initProgressSection() {
   }
 
   notesEl = document.getElementById("dl-progress-notes");
-  if (notesEl) notesEl.addEventListener("input", () => { scheduleSave(); updateNotesNudge(); });
+  // Not grown here: the settings panel is normally still hidden at this
+  // point, and a hidden element's scrollHeight reads as 0. initSettingsPanel()
+  // re-measures whenever the panel actually opens instead.
+  if (notesEl) {
+    notesEl.addEventListener("input", () => {
+      autoGrowTextarea(notesEl);
+      scheduleSave();
+      updateNotesNudge();
+    });
+  }
 
   document.getElementById("dl-progress-export").addEventListener("click", () => {
     saveNow();
@@ -3814,7 +3842,10 @@ function initProgressSection() {
       cell.editor.setValue(cell.starter);
       cell.outputEl.replaceChildren();
     }
-    if (notesEl) notesEl.value = "";
+    if (notesEl) {
+      notesEl.value = "";
+      autoGrowTextarea(notesEl);
+    }
     for (const box of document.querySelectorAll(".dl-restored")) box.remove();
     showSaveState(null);
     updateProgressSummary();
