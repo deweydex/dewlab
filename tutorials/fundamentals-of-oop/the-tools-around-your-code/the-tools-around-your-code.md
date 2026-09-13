@@ -22,10 +22,10 @@ covers:
 **Fundamentals of Object Oriented Programming**
 
 Writing a class is one skill. Running it and finding out why it broke
-is another. Both depend on the tools sitting around your code, not on
+is another. Both depend on the tools around your code, not on
 the code itself. This tutorial is about those tools: what a
 *development environment* actually gives you. dewlab's own pages are a
-small one already. dewmini is the bigger sibling, for a real project.
+small one already. dewmini is the larger version, for a real project.
 
 ## An Environment You Are Already In
 
@@ -33,7 +33,7 @@ Every cell you have run so far, in every tutorial, already sits inside a
 development environment. It edits your code, runs it, and shows you what
 happened, all on this page. That is small on purpose: one script, one
 job. `compose/dewmini.html` is the same editor and the same Python,
-grown into several cells, several files, and work that is still there
+expanded to several cells, several files, and work that is still there
 when you come back. Learning what a page like this one already offers is
 learning dewmini too, since the tool underneath is the same one.
 
@@ -60,8 +60,8 @@ skimming past. It names the line and the mistake: `Basket` objects have
 no method called `appendd`, and it usually names something close to
 what you meant. A development environment's whole job, in this moment,
 is to get you to that sentence as fast as possible. What is on screen is
-trimmed down to your own code, not buried in everything Python did to
-get there.
+trimmed down to your own code, not hidden inside everything Python did
+to reach that line.
 
 Now try changing `appendd` back to `append` and running the cell again.
 The empty list was never the problem. One misspelled word was the

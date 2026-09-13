@@ -134,6 +134,68 @@ nothing less" → "and only that"; "follow along?" → removed trailing idiom;
 "valuable" → "useful"; "core loop" → "main pattern"; "translate" → "turn it
 into".
 
+**The remaining 30 `web-authoring` tutorials** (`first-site`'s 22 and
+`several-pages`' 9, `conclusions-and-next-steps` included), plus a
+re-check of the 12 already covered above — `web-authoring` is now the
+second fully-passed module, after `database-methods`. Far fewer fixes
+than that first pass needed, since this content was written or ported
+against the guide already; eight genuine violations across seven files,
+not the systemic patterns the earlier passes found:
+
+Two "not X but Y" reversals in `planning-a-site.md` ("not a list of
+files, but a list of jobs and connections" → "a list of jobs and
+connections, not a list of files"; "Not its topic alone, but its job"
+→ "Its job, not only its topic"). One em dash holding a term's whole
+definition in `conclusions-and-next-steps.md` ("a *living standard* —
+a document updated..." → a comma, no dash). One meaning-after-the-dash
+sentence in `issues-and-pull-requests.md`, reordered so the reason
+(the issues are public) comes first and the conclusion (no permission
+needed) follows. One verbless opening fragment in `project-ideas.md`
+("Ideas for something to build..." → "These are ideas for..."). Two
+idioms — "know your way around a terminal" → "already know how to use
+a terminal" (`your-copy-of-the-starter.md`); "straight off a phone" →
+"taken directly on a phone" (`images-and-file-size.md`). One stray
+authorial reference to "this part of the older course" in
+`named-grid-areas.md`, meaningless to a student who never read
+dewstack, cut rather than reworded.
+
+**All computational-methods tutorial body prose** — both tutorial and
+practice pages across all six series (python-fundamentals, matrices,
+text-generation, simulation, algorithms, problem-solving). Recurring
+fixes: British spellings normalised to American (licence → license,
+modelling → modeling, memorise → memorize, practised → used,
+recognisably → recognizably, maths → math); rule 9 vocabulary and idiom
+(at a till → at a checkout, shows up → appears, hand over → use,
+catches people out → surprises people, run out of road → no longer
+worked, arithmetic slip → arithmetic mistake, has a second life → has a
+second use, trades away → gives up, landing on → finding, genuinely →
+removed where banned or redundant, folded → hidden, field drops → number
+drops, grown into → expanded to, buried in → hidden inside, sitting with
+→ thinking about/noticing, uninvertible → singular, merely → just);
+rule 6 metaphor (sat still on the page → was, blueprint → description,
+keeping in step → updating together, pin π down → find π more exactly);
+rule 3 em-dash restructuring (gradient descent claim, matrix-inverse
+definition); rule 7 British idiom (at the foot of → at the bottom of,
+beyond repair → and cannot fix it, run out of road → no longer worked);
+rule 2 trimmed clauses. Two factual fixes caught during the read:
+determinant described as "exactly the factor" corrected to "signed
+factor" with orientation-flip note; a 5×5 grid described as "nine
+numbers" corrected to "five rows of numbers."
+
+**All fundamentals-of-oop tutorial body prose** — both tutorial and
+practice pages across all seven tutorials (objects-and-classes,
+one-class-many-methods, one-parent-many-children, documenting-a-class,
+testing-what-a-class-does, the-tools-around-your-code,
+a-front-end-for-a-class). Recurring fixes: rule 9 (falls back to →
+uses instead, has no such luck → cannot do that, handed to it →
+given to it, bigger sibling → larger version, gracefully → without
+breaking, left nothing behind but → produced only); rule 6 metaphor
+(sitting around → around, grown into → expanded to, buried in → hidden
+inside); rule 7 idiom (keeping one honest → updating one); a factual
+fix in one-parent-many-children.md where "one field and method short of
+it" was ambiguous and read as the opposite of the true relationship —
+corrected to "with one extra field and one extra method."
+
 ---
 
 ## Not done — pick up here
@@ -159,16 +221,17 @@ it yet, including the ones already done for sentence architecture. A
 mechanical first pass (flagging words outside a common two-thousand-word
 list) is possible, but still needs a human read afterward.
 
-**Tutorial body prose.** The largest remaining surface, and the one where
-flattening would cost the most. The whole database-methods module is done —
-see "Done" above — every other module untouched. Worth doing tutorial by
-tutorial rather than in a sweep.
+**Tutorial body prose.** `database-methods`, `web-authoring`,
+`computational-methods` and `fundamentals-of-oop` are all done — see
+"Done" above. `mit-pdp-maths-prog-integration` is still untouched.
+Worth doing tutorial by tutorial rather than in a sweep.
 
-**A vocabulary sweep, against the ninth rule.** The documentation pages
-(`FOR_STUDENTS.md`, `FAQ.md`), the About page, the contents page and the
-first tutorial's opening have been swept (see above). The remaining surfaces
-— tutorial body prose beyond the opening, topic descriptions, glossary
-definitions — have not. A mechanical first pass is possible — a list of the
+**A vocabulary sweep, against the ninth rule.** The documentation pages,
+the contents and About pages, the first tutorial's opening, and the full
+tutorial body prose for web-authoring, computational-methods and
+fundamentals-of-oop have been swept (see above). The remaining surfaces
+— topic descriptions, glossary definitions, and tutorial prose in other
+modules — have not. A mechanical first pass is possible — a list of the
 roughly two thousand most common English words, flagged the way
 `tools/measure_sentences.py` (dewstack) flags a sentence over the limit — but
 it still needs reading afterward, the same way that script's own docstring

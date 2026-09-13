@@ -105,7 +105,7 @@ hint: Average arrivals = 3 * 0.3. Compare that to 1 — and notice how close the
 
 <details class="dl-answer"><summary>answer</summary>
 
-Stable, but only just. Average arrivals are `3 * 0.3 = 0.9`, a hair
+Stable, but barely. Average arrivals are `3 * 0.3 = 0.9`, a hair
 below the service capacity of `1`. The rule still calls it stable, and
 over a long run it is: the queue never runs away for good. But a queue
 this close to its own boundary swings much wider than the confidently

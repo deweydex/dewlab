@@ -133,7 +133,7 @@ words that also appears, in the same order, somewhere in `book`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no single correct output, since the chain is genuinely random,
+There is no single correct output, since the chain chooses at random,
 but the `order2` line should contain the longer verbatim run more often
 than not, across repeated tries. That is the whole trade-off this
 tutorial names: more context makes the chain lean more heavily on

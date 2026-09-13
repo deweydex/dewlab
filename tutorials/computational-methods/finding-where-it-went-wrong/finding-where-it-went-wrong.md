@@ -248,7 +248,7 @@ first place. Nobody required writing one, and it would have been easy to
 run the pipeline once, see a plausible-looking number, and stop there.
 *Persistence* is what stops the pragmatic patch from being the last step
 taken, once it makes the one visible test pass. None of these five
-habits are separate techniques to memorise. This tutorial's own
+habits are separate techniques to memorize. This tutorial's own
 walk-through already showed every one of them in action.
 
 ### Your turn

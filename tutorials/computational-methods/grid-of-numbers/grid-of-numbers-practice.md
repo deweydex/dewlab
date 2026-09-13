@@ -11,7 +11,7 @@ version: 2026.08.24.1
 
 # A Grid of Numbers — Practice
 
-Answers are folded. Work each one out by hand first — even the arithmetic
+Answers are hidden. Work each one out by hand first — even the arithmetic
 ones — and use the cells only to check.
 
 ## Reading a Matrix
@@ -37,7 +37,7 @@ print(A)
 $a_{12} = 7$ (row 1, column 2). $a_{23} = 6$ (row 2, column 3). $a_{32} = 5$
 (row 3, column 2).
 
-In Python that is `A[0][1]`, `A[1][2]`, `A[2][1]` — the maths notation counts
+In Python that is `A[0][1]`, `A[1][2]`, `A[2][1]` — the math notation counts
 rows and columns from 1, Python counts from 0, and mixing the two up is the
 single most common mistake in this section.
 
@@ -122,8 +122,8 @@ $\begin{bmatrix} 0.46 & -0.28 \\ 1.14 & 0.70 \end{bmatrix}$
 
 $\alpha G = \begin{bmatrix} 0.04 & -0.02 \\ 0.06 & 0.10 \end{bmatrix}$ first,
 then subtract that from $W_{\text{old}}$. The weights move a small step in
-the direction that shrinks $G$ — this is the entire update rule behind
-training a neural network, one `scale` and one subtraction, repeated
+the direction that shrinks $G$. This is the entire update rule behind
+training a neural network: one `scale` and one subtraction, repeated
 millions of times.
 
 </details>
@@ -147,7 +147,7 @@ No — `P` is 3×2 and `Q` is 2×3. Addition needs identical shapes, and these a
 not even the same shape turned sideways in a way addition would care about.
 
 For `P + Q` to work, `Q` would need to be 3×2 as well — the exact same number
-of rows and the exact same number of columns as `P`, not merely the same
+of rows and the exact same number of columns as `P`, not just the same
 total count of entries.
 
 </details>

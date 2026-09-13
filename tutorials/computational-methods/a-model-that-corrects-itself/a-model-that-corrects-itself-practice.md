@@ -86,8 +86,7 @@ both `0.0`; reversed, `top-right` ends at `-0.5` and `mid-right` at
 `+0.5`, with `bottom-right` now `0.0` instead.
 
 There is no single correct set of weights here, only sets that happen to
-get every training example right. Which one training lands on depends on
-which mistakes happened to come first.
+get every training example right. Which one the training finds depends on which mistakes happened first.
 
 </details>
 

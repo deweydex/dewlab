@@ -1007,24 +1007,45 @@ class TestTheFrontPage:
         b.build()
         assert manifest((repo / "site" / "index.html").read_text())["cells"] == []
 
-    def test_it_names_the_authors_and_the_qqi_modules(self, repo):
+    def test_it_ends_with_the_short_attribution(self, repo):
         write(repo, "Prose.\n")
         b.build()
         index = (repo / "site" / "index.html").read_text()
-        assert "Sean McGarry" in index
-        assert "Joshua Aaron" in index
-        assert "5N2927" in index
+        attribution = (
+            "This site is being actively developed by "
+            '<strong><a href="https://github.com/deweydex">Joshua Aaron</a></strong> '
+            "(Dublin College Dundrum), with contributions from "
+            '<strong><a href="https://github.com/mcgarry">Sean McGarry</a></strong> '
+            "(Dublin College Blackrock).</p>"
+        )
+        assert attribution in index
+        assert b.render_index().endswith(attribution)
 
-    def test_it_offers_a_way_to_every_module_and_to_all_tutorials(self, repo):
+    def test_it_links_to_current_courses_and_the_detail_pages(self, repo):
         write(repo, "Prose.\n")
         b.build()
         index = (repo / "site" / "index.html").read_text()
         assert 'href="computational-methods.html"' in index
+        assert 'href="web-authoring.html"' in index
         assert 'href="all-tutorials.html"' in index
+        assert 'href="features.html"' in index
+        assert "dewstack" not in index
+
+    def test_the_features_page_is_written_at_the_site_root(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        features = repo / "site" / "features.html"
+        assert features.is_file()
+        page = features.read_text()
+        assert "What dewlab can do" in page
+        assert "Use dewmini without a tutorial" in page
+        assert 'href="compose/dewmini.html"' in page
+        assert manifest(page)["cells"] == []
 
     def test_no_tutorials_means_no_front_page(self, repo):
         assert b.build() == []
         assert not (repo / "site" / "index.html").exists()
+        assert not (repo / "site" / "features.html").exists()
         assert not (repo / "site" / "all-tutorials.html").exists()
 
 

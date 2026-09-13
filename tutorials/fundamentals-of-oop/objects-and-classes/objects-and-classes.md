@@ -98,10 +98,9 @@ account now carries its own balance and its own owner inside itself. So
 name to get wrong.
 
 Now we can name what just happened. `BankAccount` is a *class*:
-a blueprint that says what a bank account has (an owner, a balance) and
-what it can do (accept a deposit). `alice` and `bob` are *objects*: two
-separate things built from that one blueprint, each with its own values for
-the fields the blueprint describes. `owner` and `balance` are the object's
+a description of what a bank account has (an owner, a balance) and what it
+can do (accept a deposit). `alice` and `bob` are *objects*: two separate things built from that one
+class, each with its own values for the fields the class describes. `owner` and `balance` are the object's
 *fields*: the data it carries around with it. `deposit()` is a *method*: a
 function that belongs to the class and acts on one particular object's own
 fields. `__init__()` is the *constructor*, the method Python runs
@@ -216,8 +215,8 @@ print(account.balance)   # should still be 100.0 if the guard works
 
 A savings account is a bank account that also earns interest. Writing it
 from scratch would mean copying `__init__`, `deposit` and `withdraw` all
-over again. Both copies would then need keeping in step by hand, every
-time one of them changed. *Inheritance* avoids the copy: a new class can
+over again. Both copies would then need updating together by hand, every time one of
+them changed. *Inheritance* avoids the copy: a new class can
 be built on an existing one, keeping everything the original does and
 adding only what is different.
 

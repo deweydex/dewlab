@@ -69,7 +69,7 @@ print(len(order2[("the", "Morlocks")]), "different words have ever followed 'the
 `order1["Morlocks"]` has 24 different words that have ever followed the
 bare word `"Morlocks"`: sometimes the sentence is about what they did,
 sometimes about where they live, sometimes just `"and"` or `"were"`.
-Narrow the question to `"the Morlocks"` specifically and the field drops
+Narrow the question to `"the Morlocks"` specifically and the number drops
 to 17. The extra word of context does more than add memory: it removes
 some of the choices that only made sense after a different word than
 `"the"`.
@@ -139,7 +139,7 @@ really choosing at all. "the Morlocks their mechanical servants: but that"
 is not a coincidence: that exact phrase appears in the book, word for
 word. The more context an `order2` chain remembers, the more often it ends
 up reciting a piece of the book it has already seen, rather than
-genuinely recombining it.
+combining pieces of it in new ways.
 
 ### Your turn
 
@@ -156,8 +156,8 @@ id: comparing-what-each-one-writes-2
 
 More context makes a chain sound more faithful to what it was trained on,
 at the cost of sounding less new. Less context makes it sound less
-faithful, and more genuinely its own. Neither is simply *better* — a chain
-built to write something recognisably in an author's own voice wants more
+faithful, and more its own. Neither is simply *better* — a chain
+built to write something recognizably in an author's own voice wants more
 context; a chain built to surprise wants less. *Whose Voice Is This*, next
 in this series, asks how far that faithfulness can go: whether a chain
 trained on one writer actually sounds different from a chain trained on

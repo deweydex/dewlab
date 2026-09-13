@@ -27,8 +27,8 @@ different from a chain trained on the other's?
 
 ## Cleaning Two Different Books
 
-These two files are scans of real printed books, not clean digital
-editions like *Pride and Prejudice* was. Neither has Project Gutenberg's
+These two files come from scans of real printed books, not clean digital
+editions like *Pride and Prejudice*. Neither has Project Gutenberg's
 handy `*** START OF... ***` marker, and each needs a slightly different
 cleaning approach — real data rarely arrives in exactly one shape.
 
@@ -147,8 +147,8 @@ Dewey's most common word after `"education"` is `"is"`, used 57 times.
 Montessori's is `"of"`, used 68 times. This is a real, repeatable
 difference in how each writer uses the word, not a coincidence between two
 random samples: Dewey keeps returning to what education *is*, a
-philosophical, definitional habit; Montessori keeps returning to education
-*of* something or someone, a practical, applied one. `"education"` has 92
+philosophical habit; Montessori keeps returning to education
+*of* something or someone, a practical one. `"education"` has 92
 different words that have ever followed it somewhere in Dewey's book,
 against 36 in Montessori's — Dewey's use of the word ranges more widely.
 

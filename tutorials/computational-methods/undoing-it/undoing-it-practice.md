@@ -64,7 +64,7 @@ $5(-2) - (-1)(10) = -10 + 10 = 0$.
 Row 2 is exactly row 1 doubled: $[10, -2] = 2 \times [5, -1]$. Whenever one
 row of a 2×2 matrix is a multiple of the other, the determinant is zero —
 which makes sense once you remember the determinant measures area, and two
-proportional rows describe a "square" that has already been squashed flat
+proportional rows describe a "square" that has already been flattened
 before you even multiply anything by it.
 
 </details>
@@ -143,7 +143,7 @@ $\det(AB)$?
 $15$. Determinants multiply: $\det(AB) = \det(A)\det(B)$, always, for square
 matrices of the same size.
 
-This is worth sitting with for a moment: it says the *area-scaling factor*
+This is worth thinking about: it says the *area-scaling factor*
 of doing two transformations one after another is the product of their
 individual factors — which is exactly what you would want "scale by 5, then
 scale by 3" to mean, and it turns out to be true even when the two
@@ -211,8 +211,8 @@ very small number produces very large numbers — small errors already present
 in the data get multiplied up enormously by that division.
 
 This is called being *ill-conditioned*: technically invertible, but close
-enough to singular that ordinary floating-point rounding can swing the
-answer by more than the answer is worth trusting. It shows up constantly in
+enough to singular that ordinary floating-point rounding can move the
+answer by more than the answer is worth trusting. It comes up often in
 practice — fitting a model to data that is nearly, but not quite, repeating
 itself in two different measurements.
 

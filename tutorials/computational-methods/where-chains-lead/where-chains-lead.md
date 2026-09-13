@@ -25,7 +25,7 @@ Every matrix so far has done something once — added, transformed, solved.
 This tutorial is about a matrix that gets multiplied by itself, or by a
 changing state, over and over — and about the strange fact that doing this
 enough times settles down to an answer that no longer depends on where you
-started. That single idea turns out to predict tomorrow's weather, rank
+started. That single idea turns out to be able to predict tomorrow's weather, rank
 every page on the web, and write sentences a machine has never seen.
 
 ## A Weather Machine
@@ -229,7 +229,7 @@ id: ranking-a-small-web-2
 This is a deliberately small version of *PageRank*, the algorithm Google was
 founded on: the stationary distribution of a random-surfer Markov chain over
 the entire link graph of the web, with a page's rank being nothing more than
-how much of a random surfer's long-run time it accumulates.
+how much of a random surfer's long-run time it receives.
 
 ## Reflection
 
@@ -237,8 +237,8 @@ Three settings — weather, sentences, web pages — and one mechanism
 underneath all of them: multiply a state by a matrix of probabilities, do it
 again, and again, and watch the answer stop depending on where you started.
 That convergence is not a coincidence specific to any one of these examples;
-it is a property of the matrix, discovered the same way in all three, well
-before this tutorial ever wrote the words "stationary distribution."
+it is a property of the matrix, found the same way in all three, well
+before this tutorial ever used the words "stationary distribution."
 
 Which of the three applications felt the most surprising — that weather
 forecasting, sentence generation, and ranking a search engine are, at the
@@ -259,8 +259,8 @@ example in this tutorial is the same mathematics at a readable scale.
 
 Dickens, C. (1859). *A Tale of Two Cities.* The opening sentence, sourced for
 the word-transition matrix here, is public domain and among the most
-recognisable in English literature — worth reading the rest of, well beyond
-what a Markov chain can imitate.
+recognisable in English literature — worth reading in full, well beyond
+what a Markov chain can copy.
 
 Shannon, C. E. (1948). *A Mathematical Theory of Communication.* Bell System
 Technical Journal, 27(3), 379–423. Section 2 builds English text from letter

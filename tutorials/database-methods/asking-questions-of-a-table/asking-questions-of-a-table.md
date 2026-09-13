@@ -64,6 +64,39 @@ Text in a condition goes in single quotes, like `'Carnivore'` above. A
 number needs no quotes: try changing the box to `WHERE length_meters >
 10` and run it again.
 
+```hint
+for: query-carnivores
+after: 2 empty results
+
+Two runs in a row came back with no rows. Sometimes that means the
+table has nothing that matches yet, and sometimes it means the text
+after `=` is not written the way the table itself has it.
+
+Look at the value after `WHERE diet =`. Does it match a value in the
+`diet` column, letter for letter, including which letters are capital?
+SQLite treats `'carnivore'` and `'Carnivore'` as two different pieces
+of text, not the same word spelled two ways.
+```
+
+```hint
+for: query-carnivores
+after: 5 empty results
+title: some steps
+
+1. Run `SELECT DISTINCT diet FROM dinosaurs;` on its own, to see the
+   exact spellings the table holds.
+2. Compare that spelling, letter by letter, with the value after
+   `WHERE diet =` in the box above.
+3. Copy the spelling from that result into your query, rather than
+   typing it again from memory.
+
+**Think about:** why `'Carnivore'` and `'carnivore'` are different
+pieces of text to SQLite, even though they read the same to you.
+
+**Try this next:** change the condition to `WHERE length_meters > 10`
+instead, and check whether that one brings back rows.
+```
+
 ## ORDER BY: choosing an order
 
 ```sql exec

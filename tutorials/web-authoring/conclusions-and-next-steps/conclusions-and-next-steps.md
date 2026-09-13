@@ -33,8 +33,8 @@ a real standard. HTML 3.2 came in 1997, then HTML 4.01 in 1999. After
 that, HTML's development stalled for years, until a group of browser
 makers broke away in 2004 to keep improving it on their own. Their
 work became HTML5: a public draft in 2008, an official standard in
-2014, and now a *living standard* — a document updated as the web
-changes, rather than a numbered version released every few years.
+2014, and now a *living standard*, a document updated as the web
+changes rather than replaced by a numbered version every few years.
 There is no HTML6 waiting to happen; HTML5 keeps growing instead.
 
 CSS has a shorter, steadier history. CSS1 arrived in 1996, with colours,

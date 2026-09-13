@@ -3476,3 +3476,89 @@ new tests in `tests/test_tutorial_tools.py`. No change to `build.py`,
 `tutorial-runtime.js`, or the trigger grammar — this is what a SQL cell
 itself shows, not a new signal for a staged hint to wait on. Full unit
 suite green; a fresh full-site build confirmed clean.*
+
+**7.152 — the `named-grid-areas.md` forward reference from 7.149 is
+fixed; `quick-reference.md`'s scope is still open.** Of the two things
+7.149 surfaced, one was a plain bug: the page's own prose claimed
+`auto-fit` was "already shown" on `a-grid-gallery`, a page the
+corrected series order actually places later. Reworded to point
+forward — "`a-grid-gallery`, later in this course, covers `auto-fit`
+itself" — instead of claiming a reader has seen something they have
+not yet.
+
+The other, `quick-reference.md` naming syntax no tutorial teaches
+directly, is not a bug in the same sense. Its own page says it is not
+meant to be read start to finish, which argues for a cheat sheet
+reaching past exactly what was taught; nothing else in the repository
+settles whether that is the intended scope or an oversight. Left as is
+until that is decided.
+
+*Cost to change: one sentence in one tutorial, and its glossary file's
+own note updated to match. No frontmatter, no covers:, no test
+affected.*
+
+**7.153 — `web-authoring` is the second module through the full
+plain-language pass.** `planning/PLAIN_LANGUAGE_PASS.md` records
+`database-methods` as fully checked against
+`PEDAGOGICAL_STYLE_GUIDE.md` §4; every other module, `web-authoring`
+included, had only had the sentence-length and metaphor rules run over
+it, if that. Ran the complete nine-point check over all 43 tutorials
+(welcome's 8, first-site's 22, several-pages' 9, shelf's 4), series by
+series in `series.yaml`'s reading order.
+
+Eight genuine violations across seven files, not the systemic patterns
+`database-methods`'s own pass found — this content was written or
+ported against the guide already, so the pass mostly confirmed rather
+than rewrote. Two "not X but Y" reversals, one em dash holding a
+term's whole definition, one meaning-after-the-dash sentence
+reordered, one verbless opening fragment, two idioms, and one stray
+reference to "the older course" a student reading only dewlab would
+have no way to parse. `planning/PLAIN_LANGUAGE_PASS.md`'s own "Done"
+section has the full list, sentence by sentence.
+
+*Cost to change: eight one- or two-sentence edits across seven
+tutorial files; no cell code, no frontmatter, no covers: touched.
+`dev/curriculum_map.py`'s vocabulary section is unaffected — none of
+the eight edits touched an italicised term. Full unit suite green; a
+fresh full-site build confirmed clean.*
+
+**7.154 — Two `database-methods` pages carry the first live `empty
+results` staged hints.** 7.150 and 7.151 built the machinery and the
+on-page facts; nothing had actually used either in front of a student.
+`asking-questions-of-a-table`'s WHERE section, right where the prose
+already invites a reader to try their own condition, now carries two
+folds on `query-carnivores`: the first, at `2 empty results`, asks
+whether the text after `WHERE diet =` matches the table's own spelling
+letter for letter; the second, at `5 empty results`, gives the steps —
+`SELECT DISTINCT diet FROM dinosaurs;`, then compare. A case mismatch
+there is also exactly what 7.151's own case-insensitive fact already
+names on the page, so the fold and the fact now point at the same
+thing from two directions.
+
+**The tentacular plushies quiz** binds its pair to `quiz-workspace`,
+the one `sql exec` cell every task reuses, rather than to a dedicated
+query cell — Task 5 is where a filter is most likely to come back
+empty, but the counter tracks the whole box across all five tasks, so
+the fold's own wording had to stay true regardless of which task is
+open: it points the reader at the row-count note 7.151 already prints
+under the empty result, rather than re-describing what might be wrong,
+since by Task 5 an empty result is exactly as likely to mean "the
+table still has no matching data" as "the filter is wrong."
+
+Checked in a real Chromium against the self-hosted Pyodide build,
+scripted rather than by hand — the fixture harness `test_cell_hint.py`
+and `test_cell_hints_staged.py` use only drives one `python exec`
+cell, so this ran the actual built pages instead: two empty-result
+runs on `query-carnivores` (`WHERE diet = 'carnivore'` against a table
+storing `'Carnivore'`) surfaced both 7.151 facts and the first fold;
+two on `quiz-workspace` against a real one-row `products` table did
+the same. No end-to-end test committed yet for a `sql exec` cell's
+staged hints — `test_cell_hints_staged.py` still only exercises the
+Python path — so this is still checked by hand each time rather than
+in CI.
+
+*Cost to change: prose and two `hint` fences in each of two tutorial
+files, no cell id renamed, no frontmatter or `covers:` touched, no
+`version:` bump since no cell's own code changed. Full unit suite
+green; a fresh full-site build confirmed clean; manual Chromium
+verification above, not yet a committed e2e test.*

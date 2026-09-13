@@ -27,10 +27,10 @@ happens if you turn one sideways? Those questions are what this tutorial and
 the four after it are about.
 
 A grid of numbers, arranged in rows and columns, is called a *matrix*. We are
-going to build one out of nothing but a plain Python list of lists, and do
-every operation on it ourselves before any library does it for us. That is
-slower than importing NumPy on the first line, and it is also the only way to
-actually watch the arithmetic happen rather than trust that it did.
+going to build one using only a plain Python list of lists, and do every
+operation on it ourselves before any library does it for us. That is slower
+than importing NumPy on the first line, and it is the only way to watch the
+arithmetic happen rather than trust that it did.
 
 ## Nine Numbers That Draw a Picture
 
@@ -52,9 +52,8 @@ for row in pixels:
     print("".join(ramp[value] for value in row))
 ```
 
-Nine numbers, five rows of them, and a diamond appears. Each number stands for
-how dark one square is — 0 is blank, 9 is solid — and `ramp` is just a string
-being used as a lookup table from a number to a character. This is the same
+Five rows of numbers, and a diamond appears. Each number stands for
+how dark one square is — 0 is blank, 9 is solid — and `ramp` is a string used as a lookup table from a number to a character. This is the same
 idea behind every image on a screen: a grid of numbers, and a rule for turning
 each number into something you can see.
 
@@ -145,8 +144,7 @@ id: two-grids-added-together-3
 ```
 
 Is `add(A, B)` the same as `add(B, A)`? Try it and see — addition of ordinary
-numbers does not care about order, and it is worth checking whether matrices
-inherit that.
+numbers does not care about order, and it is worth checking whether matrices behave the same way.
 
 ```python exec
 id: two-grids-added-together-4
