@@ -3014,6 +3014,15 @@ let saveTimer = null;
  * and restoreSaved() the same way `cells` already is. */
 let notesEl = null;
 
+/* Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §4): one
+ * entry per marked passage — {id, block_index, quote, prefix, suffix,
+ * note, created_at}. `const`, like `cells` above, and mutated in place
+ * rather than reassigned, so a reference to it (globalThis.dewlab's own
+ * included) stays valid across a restoreSaved() call. Nothing populates
+ * it yet; the selection toolbar that will (rollout step 5) has the same
+ * shape to fill in as any other caller, including a test. */
+const highlights = [];
+
 function progressKey() {
   const manifest = currentManifest || {};
   return `${PROGRESS_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
@@ -3054,6 +3063,7 @@ function saveNow() {
     "tutorial-version": currentManifest.version,
     saved_at: new Date().toISOString(),
     notes: notesEl ? notesEl.value : "",
+    highlights: highlights.map((h) => ({ ...h })),
     cells: cells.map((cell) => ({
       task_id: cell.id,
       student_code: cell.getCode(),
@@ -3160,6 +3170,26 @@ function restoreSaved() {
     restored.push(cell.id);
   }
 
+  const droppedHighlights = [];
+  if (Array.isArray(record.highlights)) {
+    highlights.length = 0;
+    for (const saved of record.highlights) {
+      const anchor = {
+        block_index: saved.block_index, quote: saved.quote,
+        prefix: saved.prefix, suffix: saved.suffix,
+      };
+      // Relocated now, at restore time, rather than lazily when something
+      // later tries to render it — a highlight that can't be found is
+      // dropped and reported here the same way a cell whose id disappeared
+      // already is above, not discovered as a mystery gap later.
+      if (locateHighlightAnchor(anchor)) {
+        highlights.push({ ...saved });
+      } else {
+        droppedHighlights.push(saved.id);
+      }
+    }
+  }
+
   if (Array.isArray(record.siteEditors)) {
     const byName = new Map(siteEditors.map((editor) => [editor.name, editor]));
     for (const saved of record.siteEditors) {
@@ -3178,6 +3208,7 @@ function restoreSaved() {
   return {
     restored,
     dropped,
+    droppedHighlights,
     widgets,
     savedAt: record.saved_at,
     savedVersion: String(record["tutorial-version"]),
@@ -3186,7 +3217,10 @@ function restoreSaved() {
 }
 
 function announceRestore(summary) {
-  if (!summary || (summary.restored.length === 0 && summary.dropped.length === 0)) return;
+  if (!summary || (
+    summary.restored.length === 0 && summary.dropped.length === 0
+      && summary.droppedHighlights.length === 0
+  )) return;
 
   const box = document.createElement("div");
   box.className = "dl-restored";
@@ -3222,6 +3256,20 @@ function announceRestore(summary) {
               + "has the cell.")
         : `${summary.dropped.length} saved ${many ? "cells are" : "cell is"} `
           + "not in this tutorial any more, so there was nowhere to put it back."
+    );
+  }
+  if (summary.droppedHighlights.length) {
+    // Unlike a dropped cell, this can happen with no version change at all —
+    // a prose-only edit never bumps `tutorial-version` (VERSIONING_AND_PROGRESS.md),
+    // so the wording here can't lean on "this version does not have" the way
+    // the cell message above does.
+    const many = summary.droppedHighlights.length !== 1;
+    lines.push(
+      many
+        ? `${summary.droppedHighlights.length} of your highlights were on text `
+          + "that has since changed, so they could not be put back."
+        : "One of your highlights was on text that has since changed, so it "
+          + "could not be put back."
     );
   }
   if (summary.widgets) {
@@ -3893,10 +3941,11 @@ globalThis.dewlab = {
   hoverDoc,
   signatureHelp,
   canStop: () => !currentManifest.standalone && interruptBuffer !== null,
-  // Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §3):
-  // the anchoring lookup, exposed for its own tests — nothing in the
-  // page calls these yet.
+  // Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §3-4):
+  // the anchoring lookup and the in-memory/save-schema state, exposed for
+  // their own tests — nothing in the page calls any of this yet.
   proseBlocks,
   describeQuote,
   locateHighlightAnchor,
+  highlights,
 };
