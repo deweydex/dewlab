@@ -3620,3 +3620,17 @@ Tested in `tests/e2e/test_highlight_wrapping.py`: wrapping a selection that span
 Tested in `tests/e2e/test_highlight_creation.py`: a tutorial with no glossary at all still offers to highlight; a known glossary term offers both buttons together; a selection crossing two paragraphs offers neither the highlight (nor, separately, is expected to match a term); clicking Highlight produces a real `<mark>`, saves it, and both buttons disappear afterward; and a highlight made this way — not seeded into storage by a test, the actual button — survives a real reload. `test_reference.py`'s existing 28 tests all still pass unchanged.
 
 *Cost to change: low. `vendor-src/`'s `standalone.bundle.js` rebuilt, since this touches `assets/tutorial-runtime.js` directly.*
+
+---
+
+**7.160 — A highlight can be edited or removed now: the popover on an existing `<mark>`.** `HIGHLIGHTS_AND_NOTES.md` §7, rollout step 6. One shared `.dl-highlight-popover`, not one per highlight — clicking any `<mark class="dl-highlight">`, or reaching it by Tab and pressing Enter or Space, opens it against that mark's own note (`highlights.find(h => h.id === id)`), positioned the same fixed, viewport-clamped way `initReferenceLookup()`'s own buttons already are. Save writes the textarea back into the highlight's `note` field and calls `scheduleSave()`; Remove calls `unwrapHighlight()` (step 4) and drops the record from the in-memory array, then also saves.
+
+**Only the first fragment of a multi-`<mark>` highlight is a tab stop.** `wrapRange()` (step 4) already produces several `<mark>`s sharing one `data-highlight-id` when a selection crosses a child element; giving every fragment its own `tabindex="0"` would have made one highlight into several identical tab stops. `marks.length === 0` inside that same function's own loop is the only change needed — it already builds every fragment of one highlight in a single call, so "first" is unambiguous.
+
+**A highlight with a note gets a confirmation before Remove; a bare one doesn't — the same reasoning that split Reset from Clear on a cell.** Losing a plain highlight costs nothing (select the text again); losing one with a note loses a sentence a reader actually wrote, so `confirm("Remove this highlight and its note?")` guards only that case. Declining leaves both the highlight and its note exactly as they were.
+
+**Click-outside had to explicitly exempt a click that lands on a highlight, not just the popover itself** — otherwise the very click that opens the popover (or switches it to a different highlight) also bubbles to the document-level "close on outside click" listener and immediately undoes what it just did. The same shape `initReference()`'s own click-outside handling already has for the highlight-to-look-up button's click (`DECISIONS_LOG.md` around 7.93).
+
+Tested in `tests/e2e/test_highlight_popover.py`: opening by click and by keyboard, Escape and click-outside both closing it, a note round-tripping through save and a reopen, a bare highlight removed with no dialog at all (asserted by failing the test if one appears, not by auto-accepting it), a noted highlight's removal asking first, and declining that confirmation leaving the highlight and its note untouched. `test_reference.py` and the earlier highlight test files stay green — 63 tests total across all six highlight test files plus `test_reference.py`.
+
+*Cost to change: low. `vendor-src/`'s `standalone.bundle.js` rebuilt.*
