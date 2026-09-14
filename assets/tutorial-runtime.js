@@ -27,7 +27,7 @@ const SAVED_OUTPUT_STRIP_THRESHOLD = 100_000;
 const NON_TUTORIAL_PAGES = new Set(["index", "tree", "about", "topics"]);
 const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34,
-  link: "#d4692a", header: "full", contrast: "normal",
+  link: "#d4692a", contrast: "normal",
   buttons: "both",
   // Cuts CSS transitions/animations site-wide when "reduced" — a plain
   // accessibility toggle, not tied to the system prefers-reduced-motion
@@ -1566,8 +1566,6 @@ function applyTexture(state) {
   else root.setAttribute("data-theme", state.theme);
   if (state.font === "serif") root.removeAttribute("data-font");
   else root.setAttribute("data-font", state.font);
-  if (state.header === "full") root.removeAttribute("data-header");
-  else root.setAttribute("data-header", state.header);
   if (state.contrast === "normal") root.removeAttribute("data-contrast");
   else root.setAttribute("data-contrast", state.contrast);
   if (state.buttons === "both") root.removeAttribute("data-button-labels");

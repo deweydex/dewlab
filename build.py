@@ -2556,23 +2556,30 @@ def render_search_box(placeholder: str, big: bool = False, id_prefix: str = "dl-
 
 
 def nav_search_html() -> str:
-    """The search bar in every page's top-left dock (shell.html's
-    `{{NAV_SEARCH}}`): the same `render_search_box()` widget the front
-    page carries, so `assets/search.js` wires it the way it wires every
-    other one, with the input itself as the bar — a reader types straight
-    into what they see. It used to be a `<details>` whose summary looked
-    like a field and opened a popover holding the real input, which read
-    as a search bar that did nothing when typed into.
+    """The search line under the wordmark in every page's top-left dock
+    (shell.html's `{{NAV_SEARCH}}`): one line of text with a magnifier —
+    "Search for a topic" — that opens into a real field on a click. The
+    field is the same `render_search_box()` widget the front page carries,
+    so `assets/search.js` wires it the way it wires every other one, and
+    it is the input itself, not something that looks like one: 7.166
+    records what a summary styled as a field did to a reader.
+
+    A `<details>` for the fold, like the tree's rungs: the line reads as
+    one more line of the block — search everything, then where you are —
+    rather than a field sitting apart from it, and it costs nothing when
+    closed. `search.js` focuses the input when the fold opens.
     """
     return (
-        '<div class="dl-nav-search">'
+        '<details class="dl-nav-search">'
+        "<summary>"
         '<svg class="dl-nav-search-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">'
         '<circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/>'
         '<line x1="13.3" y1="13.3" x2="18" y2="18" stroke="currentColor" stroke-width="2" '
         'stroke-linecap="round"/>'
         "</svg>"
-        + render_search_box("Search for a topic…", id_prefix="dl-nav-search")
-        + "</div>"
+        "Search for a topic</summary>"
+        + render_search_box("Type a topic…", id_prefix="dl-nav-search")
+        + "</details>"
     )
 
 

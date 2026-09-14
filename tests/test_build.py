@@ -1954,19 +1954,24 @@ class TestTheStickyChrome:
         assert "dl-corner-dock-bl" not in page
         assert "dl-corner-dock-br" not in page
 
-    def test_the_search_bar_is_a_real_input_not_a_button_that_opens_one(self, repo):
-        """nav_search_html() — typing into what looks like a search field
-        has to search. It used to be a <details> summary styled as a field,
-        with the actual input inside the popover it opened."""
+    def test_the_search_is_a_line_under_the_wordmark_that_opens_a_real_input(self, repo):
+        """nav_search_html() — one line of text with a magnifier, between
+        the wordmark and the tree, folding open onto the search widget's
+        own input. What opens must be the input itself: a summary styled
+        to look like a field, with the input behind it, read as a search
+        bar that did nothing when typed into (7.166)."""
         write(repo, "Some prose.\n")
         b.build()
         page = built(repo)
         start = page.index('<div class="dl-corner-dock dl-corner-dock-tl"')
         end = page.index('<div class="dl-corner-dock dl-corner-dock-tr"', start)
         corner = page[start:end]
+        fold = corner.index('<details class="dl-nav-search"><summary>')
+        assert corner.index("dl-wordmark") < fold < corner.index('<nav class="dl-crumbtrail"')
+        assert "Search for a topic</summary>" in corner
         assert '<input type="search" id="dl-nav-search-input" class="dl-search-input"' in corner
-        assert "<details class=\"dl-nav-search\"" not in corner
-        assert "<summary" not in corner.split('<nav class="dl-crumbtrail"')[0]
+        assert corner.index("</details>", fold) > corner.index('id="dl-nav-search-input"')
+        assert 'class="dl-search-input dl-search-summary"' not in corner
 
     def test_a_downloadable_copy_keeps_the_docks_without_the_navigation(
         self, repo_with_assets

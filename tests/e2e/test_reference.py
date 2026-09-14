@@ -240,6 +240,10 @@ class TestIdentityCornerControlsAreDirect:
         context = browser.new_context(viewport={"width": 1200, "height": 800})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.click(".dl-nav-search > summary")
+        page.wait_for_selector("#dl-nav-search-input", state="visible")
+        assert page.evaluate("document.activeElement?.id") == "dl-nav-search-input", (
+            "opening the fold should put the cursor in the field")
         page.fill("#dl-nav-search-input", "second")
         page.wait_for_selector("#dl-nav-search-results a")
         titles = page.eval_on_selector_all(
