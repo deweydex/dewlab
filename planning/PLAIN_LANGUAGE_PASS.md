@@ -101,10 +101,11 @@ A practice page is listed under its tutorial by its own title ("First Steps
 front: the title already says what it is, and a prefix would have made the
 line say it twice.
 
-**The search line** (`DECISIONS_LOG.md` 7.168): "Search for a topic" is the
-line under the wordmark that opens the field, and "Type a topic…" is the
-field's placeholder — both plain, neither an idiom. The "Header: full /
-minimal" row in Appearance is gone, so its label no longer needs a pass.
+**The search line** (`DECISIONS_LOG.md` 7.168, then 7.169): "Search for a
+topic" is the line under the wordmark, and since 7.169 it is the field
+itself — the words are its placeholder, and there is no second label.
+Plain words, not an idiom. The "Header: full / minimal" row in Appearance
+is gone, so its label no longer needs a pass.
 
 Also picked up in the sibling repository `deweydex/dewstack`: the same
 reset/practice-fold language in its README, its own new `FOR_STUDENTS.md`,

@@ -2557,29 +2557,28 @@ def render_search_box(placeholder: str, big: bool = False, id_prefix: str = "dl-
 
 def nav_search_html() -> str:
     """The search line under the wordmark in every page's top-left dock
-    (shell.html's `{{NAV_SEARCH}}`): one line of text with a magnifier —
-    "Search for a topic" — that opens into a real field on a click. The
-    field is the same `render_search_box()` widget the front page carries,
-    so `assets/search.js` wires it the way it wires every other one, and
-    it is the input itself, not something that looks like one: 7.166
-    records what a summary styled as a field did to a reader.
-
-    A `<details>` for the fold, like the tree's rungs: the line reads as
-    one more line of the block — search everything, then where you are —
-    rather than a field sitting apart from it, and it costs nothing when
-    closed. `search.js` focuses the input when the fold opens.
+    (shell.html's `{{NAV_SEARCH}}`): a magnifier and the words "Search
+    for a topic", set like the tree's lines beneath it. The line *is* the
+    field — `render_search_box()`'s own input, the same widget the front
+    page carries, so `assets/search.js` wires it the way it wires every
+    other one, drawn with no border or background and those words as its
+    placeholder. A click on the words or the magnifier puts the cursor in
+    front of them; typing replaces them; the results drop beneath. There
+    is no second bar to open, on any width (7.169 — Josh: "a tap or click
+    on the icon or text puts a cursor in front of the text and then as
+    the user types the text goes away and the results just appear
+    below"). The magnifier sits over the input's left padding and lets
+    clicks through to it.
     """
     return (
-        '<details class="dl-nav-search">'
-        "<summary>"
+        '<div class="dl-nav-search">'
         '<svg class="dl-nav-search-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">'
         '<circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/>'
         '<line x1="13.3" y1="13.3" x2="18" y2="18" stroke="currentColor" stroke-width="2" '
         'stroke-linecap="round"/>'
         "</svg>"
-        "Search for a topic</summary>"
-        + render_search_box("Type a topic…", id_prefix="dl-nav-search")
-        + "</details>"
+        + render_search_box("Search for a topic", id_prefix="dl-nav-search")
+        + "</div>"
     )
 
 

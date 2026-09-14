@@ -156,25 +156,11 @@ function wireSearchBox(root, documents, loadError) {
 
   // Enter jumps straight to the top result, the same shortcut a reader
   // would expect from any other search box.
-  // The corner dock's search (nav_search_html(), build.py) is folded into
-  // a <details> whose summary is one line of text: opening it should put
-  // the cursor in the field, or the reader clicks once and then has to
-  // click again. Escape on an empty field folds it back up.
-  const fold = root.closest("details.dl-nav-search");
-  if (fold) {
-    fold.addEventListener("toggle", () => { if (fold.open) input.focus(); });
-  }
-
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       const firstLink = list.querySelector("a");
       if (firstLink) { e.preventDefault(); firstLink.click(); }
     } else if (e.key === "Escape") {
-      if (fold && !input.value.trim()) {
-        fold.open = false;
-        fold.querySelector("summary")?.focus();
-        return;
-      }
       input.value = "";
       list.hidden = true;
       list.innerHTML = "";

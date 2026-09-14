@@ -1954,24 +1954,25 @@ class TestTheStickyChrome:
         assert "dl-corner-dock-bl" not in page
         assert "dl-corner-dock-br" not in page
 
-    def test_the_search_is_a_line_under_the_wordmark_that_opens_a_real_input(self, repo):
-        """nav_search_html() — one line of text with a magnifier, between
-        the wordmark and the tree, folding open onto the search widget's
-        own input. What opens must be the input itself: a summary styled
-        to look like a field, with the input behind it, read as a search
-        bar that did nothing when typed into (7.166)."""
+    def test_the_search_line_under_the_wordmark_is_the_input_itself(self, repo):
+        """nav_search_html() — a magnifier and "Search for a topic" between
+        the wordmark and the tree, and the line is the search widget's own
+        input with those words as its placeholder: nothing to open first,
+        no second bar (7.169). It has to be the input itself: a summary
+        styled to look like a field read as a search bar that did nothing
+        when typed into (7.166)."""
         write(repo, "Some prose.\n")
         b.build()
         page = built(repo)
         start = page.index('<div class="dl-corner-dock dl-corner-dock-tl"')
         end = page.index('<div class="dl-corner-dock dl-corner-dock-tr"', start)
         corner = page[start:end]
-        fold = corner.index('<details class="dl-nav-search"><summary>')
-        assert corner.index("dl-wordmark") < fold < corner.index('<nav class="dl-crumbtrail"')
-        assert "Search for a topic</summary>" in corner
-        assert '<input type="search" id="dl-nav-search-input" class="dl-search-input"' in corner
-        assert corner.index("</details>", fold) > corner.index('id="dl-nav-search-input"')
-        assert 'class="dl-search-input dl-search-summary"' not in corner
+        line = corner.index('<div class="dl-nav-search">')
+        assert corner.index("dl-wordmark") < line < corner.index('<nav class="dl-crumbtrail"')
+        field = re.search(r'<input type="search" id="dl-nav-search-input" class="dl-search-input"[^>]*>', corner)
+        assert field and 'placeholder="Search for a topic"' in field.group(0)
+        assert "<details" not in corner[line:corner.index('<nav class="dl-crumbtrail"')]
+        assert "<summary" not in corner[line:corner.index('<nav class="dl-crumbtrail"')]
 
     def test_a_downloadable_copy_keeps_the_docks_without_the_navigation(
         self, repo_with_assets
