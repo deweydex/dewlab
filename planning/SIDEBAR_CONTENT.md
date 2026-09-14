@@ -157,6 +157,14 @@ note as if it were a taught, examinable term.
 
 ## 4b. A second panel after all — but for navigation, not notes
 
+**Superseded — see `DECISIONS_LOG.md` 7.165.** The series-navigation
+panel this section describes shipped (7.73, below), then gave way to the
+where-you-are tree in the page's top-left corner, whose series rung lists
+the same siblings and whose innermost rung is the page's own contents.
+There is no series panel, no series button and no inline contents list
+any more; `render_series_nav()` and `render_toc()` are gone. What follows
+is kept as the record of how the panel was reasoned about.
+
 **Shipped, in a narrower form than sketched below — see `DECISIONS_LOG.md`
 7.73.** Two things changed between this being written and being built:
 

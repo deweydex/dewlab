@@ -77,7 +77,14 @@ function assetUrl(manifest, name) {
 
 function trackChromeHeight() {
   const chrome = document.getElementById("dl-chrome");
-  if (!chrome) return;
+  if (!chrome) {
+    // No bar above the page at all (assets/shell.html) — everything that
+    // measured from the bar's height measures from the top edge instead.
+    // The stylesheet's own default still serves compose/dewmini.html,
+    // which keeps a real #dl-chrome of its own.
+    document.documentElement.style.setProperty("--dl-chrome-h", "0px");
+    return;
+  }
 
   const publish = () => {
     document.documentElement.style.setProperty(
@@ -94,21 +101,19 @@ function trackChromeHeight() {
   }
 }
 
-// Every panel spans the full height of its own edge (top: 0 or bottom: 0),
-// but that edge's corner docks — the identity block and Reference tab at
-// top-left, Documentation at bottom-left, Notes+Report at top-right,
-// Appearance+Imports&Exports at bottom-right — sit above the panel in
-// z-index and stay reachable while it's open. Left unaccounted for, a
-// panel's own header or scrolled-down content renders right underneath,
-// and the two visually collide. Tracking each dock's real height (the
-// same way trackChromeHeight() already tracks --dl-chrome-h) lets the
-// panel's CSS carve out exactly the room each corner needs.
+// Every panel runs from below its own dock to the bottom of the screen,
+// and the dock — the identity block and its stack at top-left, the four
+// tabs at top-right — sits above the panel in z-index so it stays
+// reachable while the panel is open. Left unaccounted for, a panel's own
+// header renders right underneath the dock and the two visually collide;
+// and the top-left dock's height changes whenever a rung of the tree
+// opens or closes. Tracking each dock's real height (the same way
+// trackChromeHeight() already tracks --dl-chrome-h) lets the panel's CSS
+// start exactly where its dock ends.
 function trackCornerDockHeights() {
   const docks = [
     { el: document.querySelector(".dl-corner-dock-tl"), prop: "--dl-corner-tl-h" },
     { el: document.querySelector(".dl-corner-dock-tr"), prop: "--dl-corner-tr-h" },
-    { el: document.querySelector(".dl-corner-dock-bl"), prop: "--dl-corner-bl-h" },
-    { el: document.querySelector(".dl-corner-dock-br"), prop: "--dl-corner-br-h" },
   ];
   for (const { el, prop } of docks) {
     if (!el) continue;
@@ -124,25 +129,48 @@ function trackCornerDockHeights() {
   }
 }
 
+/* On a phone the identity row has no room for the where-you-are tree, so
+ * the tree moves — the one real .dl-crumbtrail node, not a copy — into a
+ * bottom sheet the launcher opens, and moves back into the dock when the
+ * viewport widens again. Moving the node rather than rendering it twice
+ * keeps one source of truth for which rungs are open. */
+function initWhereYouAre() {
+  const sheet = document.getElementById("dl-whereyouare");
+  const body = document.getElementById("dl-whereyouare-body");
+  const tree = document.querySelector(".dl-crumbtrail");
+  const identity = document.querySelector(".dl-corner-identity");
+  if (!sheet || !body || !tree || !identity) return;
+
+  const narrow = window.matchMedia("(max-width: 34rem)");
+  function place() {
+    if (narrow.matches) {
+      if (tree.parentElement !== body) body.append(tree);
+    } else {
+      sheet.setAttribute("hidden", "");
+      if (tree.parentElement !== identity) identity.append(tree);
+    }
+  }
+  place();
+  narrow.addEventListener("change", place);
+
+  function close() { sheet.setAttribute("hidden", ""); }
+  const closeButton = document.getElementById("dl-whereyouare-close");
+  if (closeButton) closeButton.addEventListener("click", close);
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape" && !sheet.hasAttribute("hidden")) close();
+  });
+  document.addEventListener("click", (ev) => {
+    if (sheet.hasAttribute("hidden") || sheet.contains(ev.target)) return;
+    close();
+  });
+  // Following a link in the tree is a jump within this page or away from
+  // it; either way the sheet has done its job.
+  tree.addEventListener("click", (ev) => { if (ev.target.closest("a")) close(); });
+}
+
 function closeReference() {
   const toggle = document.getElementById("dl-reference-toggle");
   const panel = document.getElementById("dl-reference");
-  if (!panel || panel.hasAttribute("hidden")) return;
-  panel.setAttribute("hidden", "");
-  if (toggle) toggle.setAttribute("aria-expanded", "false");
-}
-
-function closeSeriesNav() {
-  const toggle = document.getElementById("dl-seriesnav-toggle");
-  const panel = document.getElementById("dl-seriesnav");
-  if (!panel || panel.hasAttribute("hidden")) return;
-  panel.setAttribute("hidden", "");
-  if (toggle) toggle.setAttribute("aria-expanded", "false");
-}
-
-function closeDocumentation() {
-  const toggle = document.getElementById("dl-documentation-toggle");
-  const panel = document.getElementById("dl-documentation");
   if (!panel || panel.hasAttribute("hidden")) return;
   panel.setAttribute("hidden", "");
   if (toggle) toggle.setAttribute("aria-expanded", "false");
@@ -176,20 +204,19 @@ function closeAppearance() {
 // treat as "still inside a panel", one array per side — every toggle and
 // every panel sharing that edge, so opening or clicking into any one of
 // them never reads as a click outside another.
+// The dock itself is in each list too: opening a rung of the tree, or
+// typing into the search bar, happens inside the left dock and must not
+// read as a click outside the Reference panel beneath it.
 const LEFT_DOCK_IDS = [
-  "dl-reference-toggle", "dl-reference",
-  "dl-seriesnav-toggle", "dl-seriesnav",
-  "dl-documentation-toggle", "dl-documentation",
+  "dl-dock-left", "dl-reference-toggle", "dl-reference",
 ];
 const RIGHT_DOCK_IDS = [
-  "dl-yourwork-toggle", "dl-report-toggle", "dl-yourwork",
+  "dl-dock-right", "dl-yourwork-toggle", "dl-report-toggle", "dl-yourwork",
   "dl-appearance-toggle", "dl-importsexports-toggle", "dl-appearance",
 ];
 
 function saveSidebarState() {
   const left = !document.getElementById("dl-reference")?.hasAttribute("hidden") ? "reference"
-    : !document.getElementById("dl-seriesnav")?.hasAttribute("hidden") ? "seriesnav"
-    : !document.getElementById("dl-documentation")?.hasAttribute("hidden") ? "documentation"
     : null;
   const right = !document.getElementById("dl-yourwork")?.hasAttribute("hidden") ? "notesreport"
     : !document.getElementById("dl-appearance")?.hasAttribute("hidden") ? "appearance"
@@ -208,10 +235,10 @@ function restoreSidebarState() {
     return;
   }
 
-  const leftToggleId = state.left === "reference" ? "dl-reference-toggle"
-    : state.left === "seriesnav" ? "dl-seriesnav-toggle"
-    : state.left === "documentation" ? "dl-documentation-toggle"
-    : null;
+  // A record saved while Series or Documentation still existed as panels
+  // names one of those here — no toggle matches, so it restores nothing,
+  // the same graceful loss the right side already accepts below.
+  const leftToggleId = state.left === "reference" ? "dl-reference-toggle" : null;
   if (leftToggleId) {
     const toggle = document.getElementById(leftToggleId);
     if (toggle && !toggle.hidden) toggle.click();
@@ -231,14 +258,14 @@ function restoreSidebarState() {
 
 function watchPanelOverlap() {
   const rightPanels = [document.getElementById("dl-yourwork"), document.getElementById("dl-appearance")].filter(Boolean);
-  const leftPanels = [document.getElementById("dl-reference"), document.getElementById("dl-seriesnav"), document.getElementById("dl-documentation")].filter(Boolean);
+  const leftPanels = [document.getElementById("dl-reference")].filter(Boolean);
   // The corner docks themselves — unlike a panel, always on screen, never
   // hidden as a whole (the top-left one always carries the wordmark, the
-  // other three always carry at least one tab) — so the reading column
-  // needs to clear them permanently, not only while a panel happens to be
-  // open over them.
-  const leftDocks = [...document.querySelectorAll(".dl-corner-dock-tl, .dl-corner-dock-bl")];
-  const rightDocks = [...document.querySelectorAll(".dl-corner-dock-tr, .dl-corner-dock-br")];
+  // top-right always its four tabs) — so the reading column needs to
+  // clear them permanently, not only while a panel happens to be open
+  // over them.
+  const leftDocks = [...document.querySelectorAll(".dl-corner-dock-tl")];
+  const rightDocks = [...document.querySelectorAll(".dl-corner-dock-tr")];
   const root = document.documentElement;
 
   // Both sides always have something resting in their corners, so both
@@ -580,90 +607,30 @@ function initAppearanceDock() {
   if (searchInput) searchInput.addEventListener("input", runFilter);
 }
 
-/* Same open/close mechanics as closeReference()'s own toggle — a single
- * corner tab, no internal tab bar — sharing the left dock's three-way
- * exclusion with Reference and Series. Only shown once this page has a
- * glossary of its own to potentially link out from; empty otherwise
- * rather than hidden, since the lookup table (planning/curriculum/
- * docs-links.yaml) is expected to grow slowly rather than cover
- * everything from the start. */
-function initDocumentationDock(manifest) {
-  const toggle = document.getElementById("dl-documentation-toggle");
-  const panel = document.getElementById("dl-documentation");
-  const hasGlossary = manifest.glossary && manifest.glossary.length;
-  if (!toggle || !panel || !hasGlossary) return;
-
-  renderDocumentation(manifest);
-  toggle.hidden = false;
-  makeEdgeResizable(panel, "left", 256, 640);
-
-  function setOpen(open) {
-    panel.toggleAttribute("hidden", !open);
-    toggle.setAttribute("aria-expanded", String(open));
-    if (open) { closeReference(); closeSeriesNav(); }
-  }
-
-  toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
-
-  const close = document.getElementById("dl-documentation-close");
-  if (close) close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
-
-  document.addEventListener("keydown", (ev) => {
-    if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
-    setOpen(false);
-    toggle.focus();
-  });
-
-  document.addEventListener("click", (ev) => {
-    if (panel.hasAttribute("hidden")) return;
-    if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
-    if (clickIsInsidePanels(ev.target, RIGHT_DOCK_IDS)) return;
-    setOpen(false);
-  });
-}
-
-function renderDocumentation(manifest) {
-  const container = document.getElementById("dl-documentation-links");
-  const empty = document.getElementById("dl-documentation-empty");
-  if (!container) return;
-  container.replaceChildren();
-  const links = manifest.docsLinks || [];
-  for (const { term, url } of links) {
-    const row = document.createElement("a");
-    row.className = "dl-corner-link";
-    row.href = url;
-    row.target = "_blank";
-    row.rel = "noopener";
-    const label = document.createElement("span");
-    label.textContent = term;
-    const arrow = document.createElement("span");
-    arrow.setAttribute("aria-hidden", "true");
-    arrow.textContent = "↗";
-    row.append(label, arrow);
-    container.append(row);
-  }
-  if (empty) empty.hidden = links.length > 0;
-}
-
 /* The phone-only "one launcher instead of six tabs" menu — see the CSS
  * media query and shell.html's own comment for why. Every row forwards
  * to a real corner toggle (still in the page, just hidden by the same
  * media query) rather than re-implementing open/close/exclusivity here;
  * a hidden element's own .click() still fires its listeners normally,
- * only real user interaction with it is blocked. */
+ * only real user interaction with it is blocked. The one row with no
+ * toggle to forward to, "Where you are", opens the sheet
+ * initWhereYouAre() keeps the tree in on a phone. */
 function initMobileLauncher() {
   const fab = document.getElementById("dl-mobile-fab");
   const menu = document.getElementById("dl-mobile-menu");
   if (!fab || !menu) return;
 
-  // Series, Reference and Documentation only exist on some pages, decided
-  // once at load and never toggled again afterward — mirroring that
-  // decision once here, rather than watching for a change that can't happen.
-  for (const name of ["seriesnav", "reference", "documentation"]) {
+  // Reference only exists on some pages, decided once at load and never
+  // toggled again afterward — mirroring that decision once here, rather
+  // than watching for a change that can't happen. Where-you-are exists
+  // wherever there is a tree to show, which is every tutorial page.
+  for (const name of ["reference"]) {
     const real = document.getElementById(`dl-${name}-toggle`);
     const item = document.getElementById(`dl-mobile-item-${name}`);
     if (real && item) item.hidden = real.hidden;
   }
+  const whereItem = document.getElementById("dl-mobile-item-whereyouare");
+  if (whereItem) whereItem.hidden = !document.querySelector(".dl-crumbtrail");
 
   function setOpen(open) {
     menu.toggleAttribute("hidden", !open);
@@ -681,6 +648,11 @@ function initMobileLauncher() {
       // what the click below just opened.
       ev.stopPropagation();
       setOpen(false);
+      if (item.dataset.sheet) {
+        const sheet = document.getElementById(item.dataset.sheet);
+        if (sheet) { closeReference(); closeNotesReport(); closeAppearance(); sheet.removeAttribute("hidden"); }
+        return;
+      }
       const real = document.getElementById(item.dataset.forward);
       if (real) real.click();
     });
@@ -981,12 +953,6 @@ function initReference(manifest) {
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);
     toggle.setAttribute("aria-expanded", String(open));
-    // Reference, Series and Documentation share the same left-anchored
-    // corner (LEFT_DOCK_IDS above) and would sit directly on top of each
-    // other if more than one opened — that conflict is real, so opening
-    // this one closes the other two. The right-anchored docks do not
-    // conflict with any of these.
-    if (open) { closeSeriesNav(); closeDocumentation(); }
   }
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
@@ -1003,6 +969,9 @@ function initReference(manifest) {
   document.addEventListener("click", (ev) => {
     if (panel.hasAttribute("hidden")) return;
     if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
+    // Its own dock too: opening a rung of the tree above this panel, or
+    // the search bar, is not a click away from it.
+    if (clickIsInsidePanels(ev.target, LEFT_DOCK_IDS)) return;
     if (clickIsInsidePanels(ev.target, RIGHT_DOCK_IDS)) return;
     // The highlight-to-look-up button (initReferenceLookup()) opens this
     // panel, so it is a way in rather than a click outside — without this it
@@ -1510,7 +1479,6 @@ function initReferenceLookup(manifest) {
     hide();
     panel.removeAttribute("hidden");
     toggle.setAttribute("aria-expanded", "true");
-    closeSeriesNav();
     // The value goes in whether or not the box is visible. renderReference()
     // hides it on a page with only a handful of entries, and the observer in
     // initReference() clears the filter on close by reading this value — so
@@ -1668,42 +1636,6 @@ function initHighlightPopover() {
   });
 
   document.addEventListener("scroll", close, { passive: true });
-}
-
-function initSeriesNav() {
-  const toggle = document.getElementById("dl-seriesnav-toggle");
-  const panel = document.getElementById("dl-seriesnav");
-  if (!toggle || !panel) return;
-  if (!panel.querySelector(".dl-seriesnav-series")) return;
-
-  toggle.hidden = false;
-
-  function setOpen(open) {
-    panel.toggleAttribute("hidden", !open);
-    toggle.setAttribute("aria-expanded", String(open));
-    // Shares its corner with Reference and Documentation (see
-    // initReference()'s own comment) — that conflict is real. The
-    // right-anchored docks do not conflict with this one either.
-    if (open) { closeReference(); closeDocumentation(); }
-  }
-
-  toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
-
-  const close = document.getElementById("dl-seriesnav-close");
-  if (close) close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
-
-  document.addEventListener("keydown", (ev) => {
-    if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
-    setOpen(false);
-    toggle.focus();
-  });
-
-  document.addEventListener("click", (ev) => {
-    if (panel.hasAttribute("hidden")) return;
-    if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
-    if (clickIsInsidePanels(ev.target, RIGHT_DOCK_IDS)) return;
-    setOpen(false);
-  });
 }
 
 function setSegChecked(btn, checked) {
@@ -4627,13 +4559,12 @@ initVersionMarker();
 initNotesReportDock();
 initAppearanceDock();
 initReference(currentManifest);
-initDocumentationDock(currentManifest);
 initReferenceLookup(currentManifest);
 initHighlightPopover();
-initSeriesNav();
-// After every toggle it mirrors has settled its own hidden state — Series
-// only unhides itself in initSeriesNav() above.
+// After every toggle it mirrors has settled its own hidden state —
+// Reference only unhides itself in initReference() above.
 initMobileLauncher();
+initWhereYouAre();
 watchPanelOverlap();
 restoreSidebarState();
 initProgressBadgesToggle();

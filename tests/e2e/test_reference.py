@@ -215,8 +215,25 @@ class TestIdentityCornerControlsAreDirect:
     button in the identity block, exactly like Reference and Appearance
     are direct everywhere."""
 
-    def test_series_is_a_plain_visible_button_not_a_disclosure(
+    def test_reference_is_a_plain_visible_button_not_a_disclosure(
             self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1200, "height": 800})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+
+        assert page.locator("#dl-panels").count() == 0
+        assert page.is_visible("#dl-reference-toggle")
+        page.click("#dl-reference-toggle")
+        assert page.is_visible("#dl-reference")
+        context.close()
+
+    def test_the_series_is_a_rung_of_the_tree_not_a_panel(self, site, browser, site_url):
+        """The Series button and its panel are gone: the tree's series rung
+        already lists every sibling with this page marked, which is all the
+        panel ever showed."""
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _set_order(site, ["one", "two"])
@@ -224,11 +241,10 @@ class TestIdentityCornerControlsAreDirect:
         context = browser.new_context(viewport={"width": 1200, "height": 800})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
-
-        assert page.locator("#dl-panels").count() == 0
-        assert page.is_visible("#dl-seriesnav-toggle")
-        page.click("#dl-seriesnav-toggle")
-        assert page.is_visible("#dl-seriesnav")
+        assert page.locator("#dl-seriesnav-toggle").count() == 0
+        siblings = page.eval_on_selector_all(
+            ".dl-crumb-level-3 [role=listitem]", "els => els.map(e => e.textContent.trim())")
+        assert siblings == ["One", "Two"]
         context.close()
 
     @pytest.mark.parametrize("path", ["index.html", f"{MODULE}.html"])
@@ -485,20 +501,27 @@ class TestPanelClearsTheCornerDocks:
         assert panel_top >= dock_bottom - 1
         context.close()
 
-    def test_the_reference_panel_ends_above_the_bottom_left_dock(self, site, browser, site_url):
+    def test_the_reference_panel_moves_down_when_a_rung_of_the_tree_opens(
+            self, site, browser, site_url):
+        """The dock's height changes whenever a rung opens; the panel top
+        has to follow it, not the height measured once at load."""
         _tutorial(site, "one", "One")
+        _tutorial(site, "two", "Two")
         _glossary(site, "one", [CONCEPT])
-        _set_order(site, ["one"])
+        _set_order(site, ["one", "two"])
         b.build()
         context = browser.new_context(viewport={"width": 1400, "height": 900})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         _open_panel(page, "#dl-reference-toggle")
-        dock_top = page.eval_on_selector(
-            ".dl-corner-dock-bl", "el => el.getBoundingClientRect().top")
-        panel_bottom = page.eval_on_selector(
-            "#dl-reference", "el => el.getBoundingClientRect().bottom")
-        assert panel_bottom <= dock_top + 1
+        before = page.eval_on_selector("#dl-reference", "el => el.getBoundingClientRect().top")
+        page.click(".dl-crumb-level-2 > summary")
+        page.wait_for_timeout(100)
+        dock_bottom = page.eval_on_selector(
+            ".dl-corner-dock-tl", "el => el.getBoundingClientRect().bottom")
+        after = page.eval_on_selector("#dl-reference", "el => el.getBoundingClientRect().top")
+        assert after > before
+        assert after >= dock_bottom - 1
         context.close()
 
     def test_the_notes_panel_starts_below_the_top_right_strip(self, site, browser, site_url):
@@ -516,7 +539,7 @@ class TestPanelClearsTheCornerDocks:
         assert panel_top >= dock_bottom - 1
         context.close()
 
-    def test_the_appearance_panel_ends_above_the_bottom_right_strip(self, site, browser, site_url):
+    def test_the_appearance_panel_starts_below_the_top_right_strip(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
@@ -524,11 +547,30 @@ class TestPanelClearsTheCornerDocks:
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
         _open_panel(page, "#dl-appearance-toggle")
-        dock_top = page.eval_on_selector(
-            ".dl-corner-dock-br", "el => el.getBoundingClientRect().top")
-        panel_bottom = page.eval_on_selector(
-            "#dl-appearance", "el => el.getBoundingClientRect().bottom")
-        assert panel_bottom <= dock_top + 1
+        dock_bottom = page.eval_on_selector(
+            ".dl-corner-dock-tr", "el => el.getBoundingClientRect().bottom")
+        panel_top = page.eval_on_selector(
+            "#dl-appearance", "el => el.getBoundingClientRect().top")
+        assert panel_top >= dock_bottom - 1
+        context.close()
+
+    def test_nothing_sits_above_the_page_and_the_column_clears_both_docks(
+            self, site, browser, site_url):
+        """No top bar at all now; what it held is in the tree. The reading
+        column still has to clear the resting docks on both sides."""
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1400, "height": 900})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        assert page.locator("#dl-chrome").count() == 0
+        assert page.locator(".dl-nav-top").count() == 0
+        left = page.eval_on_selector(".dl-corner-dock-tl", "el => el.getBoundingClientRect().right")
+        right = page.eval_on_selector(".dl-corner-dock-tr", "el => el.getBoundingClientRect().left")
+        col = page.eval_on_selector(".dl-page", "el => el.getBoundingClientRect()")
+        assert col["x"] >= left
+        assert col["x"] + col["width"] <= right
         context.close()
 
 
@@ -632,12 +674,11 @@ class TestMobileLauncher:
         assert page.is_visible("#dl-reference")
         context.close()
 
-    def test_series_is_reachable_from_the_launcher(self, site, browser, site_url):
-        """Series left the identity row on phones (it had shrunk to an
-        icon-only square floating over the page) for the launcher. The
-        launcher mirrors the toggle's own hidden state once at load, so
-        this also pins the init order: initSeriesNav() has to have
-        unhidden the toggle before initMobileLauncher() looks."""
+    def test_where_you_are_opens_the_tree_in_a_sheet(self, site, browser, site_url):
+        """The identity row has no room for the tree on a phone, so the one
+        real .dl-crumbtrail node moves into a sheet the launcher opens
+        (initWhereYouAre(), tutorial-runtime.js) — and following one of its
+        links closes the sheet, since the jump is the point."""
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _set_order(site, ["one", "two"])
@@ -645,10 +686,31 @@ class TestMobileLauncher:
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        assert page.locator(".dl-crumbtrail").count() == 1
         page.click("#dl-mobile-fab")
-        assert page.is_visible("#dl-mobile-item-seriesnav")
-        page.click("#dl-mobile-item-seriesnav")
-        assert page.is_visible("#dl-seriesnav")
+        assert page.is_visible("#dl-mobile-item-whereyouare")
+        page.click("#dl-mobile-item-whereyouare")
+        assert page.is_visible("#dl-whereyouare")
+        assert page.is_visible("#dl-whereyouare .dl-crumbtrail")
+        page.click("#dl-whereyouare .dl-crumb-level-3 a")
+        page.wait_for_url(f"{site_url}/tutorials/{MODULE}/two.html")
+        context.close()
+
+    def test_the_launcher_menu_is_full_width_with_thumb_sized_rows(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 375, "height": 700})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.click("#dl-mobile-fab")
+        menu = page.eval_on_selector("#dl-mobile-menu", "el => el.getBoundingClientRect()")
+        assert menu["x"] <= 1 and menu["width"] >= 373
+        rows = page.eval_on_selector_all(
+            ".dl-mobile-menu-item:not([hidden])", "els => els.map(e => e.getBoundingClientRect().height)")
+        assert rows and min(rows) >= 44
+        fab = page.eval_on_selector("#dl-mobile-fab", "el => el.getBoundingClientRect()")
+        assert abs((fab["x"] + fab["width"] / 2) - 375 / 2) <= 2
         context.close()
 
     def test_the_identity_row_sits_in_flow_above_the_page_not_over_it(
@@ -671,19 +733,19 @@ class TestMobileLauncher:
         assert body_top >= row_bottom
         context.close()
 
-    def test_a_button_with_nothing_to_forward_to_is_absent_from_the_menu(
+    def test_a_row_with_nothing_to_open_is_absent_from_the_menu(
             self, site, browser, site_url):
-        """One tutorial with no glossary at all has nothing for
-        Documentation to show — the same content-presence rule the
-        desktop toggle already follows, mirrored here."""
+        """The home page has no tree to show — the same content-presence
+        rule the desktop toggles already follow, mirrored here."""
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/index.html")
         page.click("#dl-mobile-fab")
-        assert page.is_hidden("#dl-mobile-item-documentation")
+        assert page.is_hidden("#dl-mobile-item-whereyouare")
+        assert page.is_hidden("#dl-mobile-item-reference")
         context.close()
 
 
