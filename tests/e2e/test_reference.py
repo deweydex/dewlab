@@ -751,8 +751,10 @@ class TestMobileLauncher:
             ".dl-corner-dock-tl", "el => el.getBoundingClientRect().bottom")
         body_top = page.eval_on_selector(
             "main#dl-body", "el => el.getBoundingClientRect().top")
+        # In flow: static or relative (relative only anchors the search
+        # results that drop below the row), never fixed or absolute.
         assert page.eval_on_selector(
-            ".dl-corner-dock-tl", "el => getComputedStyle(el).position") == "static"
+            ".dl-corner-dock-tl", "el => getComputedStyle(el).position") in ("static", "relative")
         assert body_top >= row_bottom
         context.close()
 
