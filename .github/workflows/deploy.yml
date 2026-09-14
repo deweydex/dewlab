@@ -57,15 +57,17 @@ jobs:
           # Every *current* page offers a download, so every current page
           # needs one to exist. Without this the site publishes happily with
           # dead download links, which a student finds before anybody else
-          # does. A current release always sits directly under its module
-          # folder (tutorials/<module>/<slug>.html); anything one level
-          # deeper is not a current page — a frozen versioned release
-          # (<slug>/v<version>.html), which by design gets no downloadable
-          # copy since only the live default-serving release does, or a
-          # downloadable asset a tutorial links as a sibling file rather
-          # than showing inline (resolve_assets() in build.py) — so both
-          # are excluded from this count by depth, not by guessing at names.
-          current=$(find site/tutorials -mindepth 2 -maxdepth 2 -name '*.html' | wc -l)
+          # does. A current page sits directly under site/tutorials/
+          # (tutorials/<id>.html — a tutorial or its practice page); anything
+          # one level deeper is not a current page: a frozen versioned
+          # release (<id>/v<version>.html), which by design gets no
+          # downloadable copy since only the live default-serving release
+          # does; a redirect stub at an old address (tutorials/<module>/…,
+          # write_redirects() in build.py); or a downloadable asset a
+          # tutorial links as a sibling file rather than showing inline
+          # (resolve_assets()). All three are excluded from this count by
+          # depth, not by guessing at names.
+          current=$(find site/tutorials -mindepth 1 -maxdepth 1 -name '*.html' | wc -l)
           echo "of which $current are current releases"
           # site/download/dewmini/ is dewmini's own offline-capable app
           # bundle (write_dewmini_bundle() in build.py) — a standalone tool,
