@@ -230,6 +230,29 @@ class TestIdentityCornerControlsAreDirect:
         assert page.is_visible("#dl-reference")
         context.close()
 
+    def test_typing_into_the_search_bar_searches(self, site, browser, site_url):
+        """The bar is the search widget's own input, so a reader types
+        straight into what they see and the results hang beneath it."""
+        _tutorial(site, "one", "One")
+        _tutorial(site, "two", "Second One")
+        _set_order(site, ["one", "two"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1200, "height": 800})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.click(".dl-nav-search > summary")
+        page.wait_for_selector("#dl-nav-search-input", state="visible")
+        assert page.evaluate("document.activeElement?.id") == "dl-nav-search-input", (
+            "opening the fold should put the cursor in the field")
+        page.fill("#dl-nav-search-input", "second")
+        page.wait_for_selector("#dl-nav-search-results a")
+        titles = page.eval_on_selector_all(
+            "#dl-nav-search-results .dl-search-title", "els => els.map(e => e.textContent)")
+        assert titles == ["Second One"]
+        page.click("main#dl-body")
+        assert page.is_hidden("#dl-nav-search-results")
+        context.close()
+
     def test_the_series_is_a_rung_of_the_tree_not_a_panel(self, site, browser, site_url):
         """The Series button and its panel are gone: the tree's series rung
         already lists every sibling with this page marked, which is all the
@@ -728,8 +751,10 @@ class TestMobileLauncher:
             ".dl-corner-dock-tl", "el => el.getBoundingClientRect().bottom")
         body_top = page.eval_on_selector(
             "main#dl-body", "el => el.getBoundingClientRect().top")
+        # In flow: static or relative (relative only anchors the search
+        # results that drop below the row), never fixed or absolute.
         assert page.eval_on_selector(
-            ".dl-corner-dock-tl", "el => getComputedStyle(el).position") == "static"
+            ".dl-corner-dock-tl", "el => getComputedStyle(el).position") in ("static", "relative")
         assert body_top >= row_bottom
         context.close()
 

@@ -156,11 +156,25 @@ function wireSearchBox(root, documents, loadError) {
 
   // Enter jumps straight to the top result, the same shortcut a reader
   // would expect from any other search box.
+  // The corner dock's search (nav_search_html(), build.py) is folded into
+  // a <details> whose summary is one line of text: opening it should put
+  // the cursor in the field, or the reader clicks once and then has to
+  // click again. Escape on an empty field folds it back up.
+  const fold = root.closest("details.dl-nav-search");
+  if (fold) {
+    fold.addEventListener("toggle", () => { if (fold.open) input.focus(); });
+  }
+
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       const firstLink = list.querySelector("a");
       if (firstLink) { e.preventDefault(); firstLink.click(); }
     } else if (e.key === "Escape") {
+      if (fold && !input.value.trim()) {
+        fold.open = false;
+        fold.querySelector("summary")?.focus();
+        return;
+      }
       input.value = "";
       list.hidden = true;
       list.innerHTML = "";
@@ -168,23 +182,11 @@ function wireSearchBox(root, documents, loadError) {
   });
 
   // Closing on an outside click matches every other panel on the site
-  // (Settings, Help) — a search box left open after a reader has
-  // clicked elsewhere would be the odd one out. The nav popover is a
-  // <details> rather than one of those panels, so it gets the same
-  // treatment applied to itself, not just to its results list: native
-  // <details> has no built-in "close on outside click" or Escape of its
-  // own, and leaving those out here would make this the one panel on
-  // the page that does not behave like the rest.
-  const popover = root.closest("details.dl-nav-search");
+  // (Settings, Help) — a results list left open after a reader has
+  // clicked elsewhere would be the odd one out.
   document.addEventListener("click", (e) => {
     if (root.contains(e.target)) return;
     list.hidden = true;
-    if (popover && !popover.contains(e.target)) popover.open = false;
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape" || !popover || !popover.open) return;
-    popover.open = false;
-    popover.querySelector("summary").focus();
   });
   input.addEventListener("focus", () => { if (input.value.trim()) list.hidden = false; });
 }

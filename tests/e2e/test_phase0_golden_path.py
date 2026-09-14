@@ -321,27 +321,6 @@ def test_the_width_presets_set_the_measure(page):
     assert page.input_value("#dl-texture-width") == "56"
 
 
-def test_the_minimal_header_is_shorter_and_keeps_every_link(page):
-    """There is no header bar to shorten any more; "minimal" now folds the
-    tree away and shrinks the tabs, and every link the tree held is still
-    in the page's own bottom navigation."""
-    def dock_height():
-        return page.eval_on_selector(".dl-corner-dock-tl", "el => el.getBoundingClientRect().height")
-
-    def links():
-        return page.eval_on_selector_all(".dl-nav-bottom a", "els => els.map(e => e.href)")
-
-    full_height, full_links = dock_height(), links()
-
-    _open_panel(page, "#dl-appearance-toggle")
-    page.click("#dl-settings-texture .dl-seg[data-texture=header] button[data-value=minimal]")
-    page.keyboard.press("Escape")
-
-    assert page.get_attribute("html", "data-header") == "minimal"
-    assert dock_height() < full_height, "minimal should be shorter, that is the point"
-    assert links() == full_links, "minimal hides nothing — it only takes less room"
-
-
 def test_no_chrome_height_is_published_when_nothing_sits_above_the_page(page):
     """The status line and anchored jumps measure from this. With no bar
     above the page it has to read as zero, not the stylesheet's default —
@@ -353,10 +332,10 @@ def test_no_chrome_height_is_published_when_nothing_sits_above_the_page(page):
     assert published == "0px"
 
 
-def test_the_contents_rung_of_the_tree_jumps_to_a_section(page):
-    page.click(".dl-crumb-level-5 > summary")
-    first = page.get_attribute(".dl-crumb-level-5 a", "href")
-    page.click(".dl-crumb-level-5 a")
+def test_the_pages_own_rung_of_the_tree_jumps_to_a_section(page):
+    page.click(".dl-crumb-level-4 > summary")
+    first = page.get_attribute(".dl-crumb-level-4 a", "href")
+    page.click(".dl-crumb-level-4 a")
     assert page.evaluate("location.hash") == first
     # Nothing sticky sits above the page now, so the heading lands at the top.
     top = page.eval_on_selector(first.lstrip("#") and f"[id='{first[1:]}']",

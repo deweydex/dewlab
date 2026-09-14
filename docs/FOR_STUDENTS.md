@@ -103,8 +103,6 @@ mono (plus two fonts built for easier reading, Lexend and OpenDyslexic),
 text size, how wide the lines run, and the colour of links.
 **High contrast** switches to black text on white, or white on black in dark
 mode. It turns on Lexend too, whatever font you had chosen.
-There is also **Header: full or minimal**, which tightens the bar at the top
-and is worth knowing about if you are reading on a phone.
 
 These choices follow you from page to page and from visit to visit. If the
 default is uncomfortable to read, change it — that is what it is for.
