@@ -12,22 +12,6 @@ browser. There is nothing to install and no account to create.
 Read an explanation, edit and run the code beside it, and practise what you
 have learned. Your work is saved on this device.
 
-</div>
-
-<div class="dl-audience">
-
-## Find a tutorial
-
-Already know the topic you want? Search for it directly.
-
-[[search-box]]
-
-</div>
-
-<div class="dl-audience">
-
-## What can dewlab do?
-
 ```card
 url: features.html
 wide: true
@@ -40,19 +24,18 @@ works offline.
 
 <div class="dl-audience">
 
-## Choose a course
+## What do you want to learn?
 
-Not sure where to begin? Start with [Maths and Programming, Integrated](mit-pdp-maths-prog-integration.html).
+Already know the topic you want? Search for it directly.
+
+[[search-box]]
+
+Or choose one of the courses below and start there.
+
+Not sure where to begin? We recommend
+[Programming and Maths, Integrated](mit-pdp-maths-prog-integration.html).
 
 [[course-cards]]
-
-```card
-url: all-tutorials.html
-wide: true
-### All tutorials
-Every module, every series, every practice page — the whole course, in one
-list.
-```
 
 </div>
 
@@ -61,6 +44,8 @@ list.
 This site is being actively developed by
 **[Joshua Aaron](https://github.com/deweydex)** (Dublin College Dundrum),
 with contributions from **[Sean McGarry](https://github.com/mcgarry)**
-(Dublin College Blackrock).
+(Dublin College Blackrock). To find out more, read
+[About this project](about.html) or visit
+[the project on GitHub](https://github.com/deweydex/dewlab).
 
 </div>

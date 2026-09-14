@@ -49,8 +49,29 @@ class TestTheFrontPage:
             '<strong><a href="https://github.com/deweydex">Joshua Aaron</a></strong> '
             "(Dublin College Dundrum), with contributions from "
             '<strong><a href="https://github.com/mcgarry">Sean McGarry</a></strong> '
-            "(Dublin College Blackrock).</p>"
+            "(Dublin College Blackrock). To find out more, read "
+            '<a href="about.html">About this project</a> or visit '
+            '<a href="https://github.com/deweydex/dewlab">the project on GitHub</a>.</p>'
         )
+
+    def test_its_search_box_has_no_hint_line_but_every_other_one_does(self, repo):
+        # The sentence above the front page's box already says what a
+        # search matches; the all-tutorials page has no such sentence.
+        write(repo, "Prose.\n")
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        front = index[index.index('id="dl-search"'):index.index("dl-search-results")]
+        assert "dl-search-hint" not in front and "aria-describedby" not in front
+        listing = (repo / "site" / "all-tutorials.html").read_text()
+        assert 'id="dl-search-hint"' in listing and 'aria-describedby="dl-search-hint"' in listing
+
+    def test_the_tile_for_the_features_page_sits_under_the_opening(self, repo):
+        write(repo, "Prose.\n")
+        b.build()
+        index = (repo / "site" / "index.html").read_text()
+        hero = index[index.index('<div class="dl-hero">'):index.index('<div class="dl-audience">')]
+        assert 'href="features.html"' in hero
+        assert index.index("What do you want to learn?") < index.index('href="computational-methods.html"')
 
     def test_the_course_cards_come_from_the_course_files(self, repo):
         # There is nothing hand-written left to disagree with a course page.
@@ -59,7 +80,7 @@ class TestTheFrontPage:
                code="5N1355 · QQI Level 5", status="live")
         b.build()
         index = (repo / "site" / "index.html").read_text()
-        cards = index[index.index("Choose a course"):]
+        cards = index[index.index("What do you want to learn?"):]
         assert cards.index('href="computational-methods.html"') < cards.index('href="web-authoring.html"')
         assert "<h3>Web Authoring" in cards and "Pages, styled." in cards
         assert "5N1355 · QQI Level 5" in cards
@@ -524,7 +545,10 @@ class TestTheStickyChrome:
         b.build(standalone=True)
         page = (repo_with_assets / "site" / "download" / "sample.html").read_text()
         assert "dl-corner-dock" in page
-        assert "dl-nav" not in page.split("<style>")[0] + page.split("</style>")[-1]
+        # The inlined stylesheet and runtime both name .dl-nav in their own
+        # text (the runtime redraws previous/next for a chosen course), so
+        # only the markup outside both is checked.
+        assert "dl-nav" not in outside_style_and_script(page)
 
 
 class TestWhatTheRuntimeReads:
