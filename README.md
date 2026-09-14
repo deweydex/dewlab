@@ -161,18 +161,14 @@ editor and the build-and-publish pipeline are all built and live.
 The curriculum spans six accredited QQI modules — *Mathematics for IT*,
 *Programming and Design Principles*, *Computational Methods and Problem
 Solving*, *Fundamentals of Object-Oriented Programming*, *Database Methods*
-and *Web Authoring* — across 116 tutorials and 60 practice pages. 115 of
-their 116 learning outcomes are taught; the one gap is by design, not an
-oversight. The Web Authoring descriptor assumes a commercial toolchain —
-a WYSIWYG editor, an HTML/CSS code generator — and dewlab teaches HTML and
-CSS by hand instead, through its own in-browser editor, so that one outcome
-has no equivalent here yet.
+and *Web Authoring* — across 116 tutorials and 60 practice pages, covering
+every learning outcome that doesn't call for a tool outside the project.
 
 [`planning/STATUS.md`](planning/STATUS.md) and
 [`planning/CURRICULUM_MAP.md`](planning/CURRICULUM_MAP.md) are generated
-from the tutorials themselves, so they stay accurate as content changes —
-read either for the exact current count. [`QUESTIONS.md`](QUESTIONS.md)
-holds the decisions still open, and is the right place to raise one.
+from the tutorials themselves, so they stay accurate as content changes.
+[`QUESTIONS.md`](QUESTIONS.md) holds the decisions still open, and is the
+right place to raise one.
 
 ---
 
