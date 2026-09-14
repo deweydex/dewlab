@@ -16,23 +16,32 @@ from helpers import *  # noqa: F401,F403
 from helpers import DEWLAB, FRONTMATTER, CELL, COURSE, SERIES, b
 
 class TestCrossLinks:
-    def test_a_link_resolves_to_a_relative_href(self, repo):
-        write(repo, "See [other](tutorial:other).\n", slug="sample")
-        write(repo, "Other.\n", slug="other")
+    """One page carrying every kind of link a tutorial can hold, built once;
+    then the five ways a link or an id stops the build, one test each."""
+
+    def test_every_kind_of_link_on_one_page_resolves_to_where_it_points(self, repo):
+        write(repo,
+              "See [other](tutorial:other).\n\n"
+              "See [other](tutorial:other#a-heading).\n\n"
+              "See [other](tutorial:other#only-cell).\n\n"
+              "See [it](tutorial:twin).\n\n"
+              "See [the docs](https://example.org/page).\n",
+              slug="sample")
+        write(repo, "## A heading\n\n" + CELL, slug="other")
+        write(repo, "Mine.\n", slug="twin")
+        course(repo, "zz-other", {"S": ["twin"]})
         b.build()
+        # A link resolves to a relative href.
         assert 'href="other.html"' in built(repo, "sample")
-
-    def test_an_anchor_is_kept(self, repo):
-        write(repo, "See [other](tutorial:other#a-heading).\n", slug="sample")
-        write(repo, "## A heading\n", slug="other")
-        b.build()
+        # An anchor is kept.
         assert 'href="other.html#a-heading"' in built(repo, "sample")
-
-    def test_a_cell_id_counts_as_an_anchor(self, repo):
-        write(repo, "See [other](tutorial:other#only-cell).\n", slug="sample")
-        write(repo, CELL, slug="other")
-        b.build()
+        # A cell id counts as an anchor.
         assert 'href="other.html#only-cell"' in built(repo, "sample")
+        # A link names the same page from any course: `twin` is listed in
+        # this course and in another, and its address is the same one.
+        assert 'href="twin.html"' in built(repo, "sample")
+        # An ordinary link is left alone.
+        assert 'href="https://example.org/page"' in built(repo)
 
     def test_an_unknown_slug_fails_the_build(self, repo):
         write(repo, "See [nowhere](tutorial:nowhere).\n")
@@ -70,15 +79,3 @@ class TestCrossLinks:
         (repo / "tutorials" / "loose.md").write_text(FRONTMATTER.format(version="2026.08.23.1") + "Prose.\n")
         with pytest.raises(b.BuildError, match="not inside a folder"):
             b.build()
-
-    def test_a_link_names_the_same_page_from_any_course(self, repo):
-        write(repo, "See [it](tutorial:twin).\n", slug="here")
-        write(repo, "Mine.\n", slug="twin")
-        course(repo, "zz-other", {"S": ["twin"]})
-        b.build()
-        assert 'href="twin.html"' in built(repo, "here")
-
-    def test_an_ordinary_link_is_left_alone(self, repo):
-        write(repo, "See [the docs](https://example.org/page).\n")
-        b.build()
-        assert 'href="https://example.org/page"' in built(repo)

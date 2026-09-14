@@ -23,7 +23,7 @@ sys.path.insert(0, str(DEWLAB))
 import build as b  # noqa: E402
 from layout import write_course, write_tutorial  # noqa: E402
 
-MODULE = "anchor-fixtures"
+COURSE = "anchor-fixtures"
 SLUG = "one"
 
 FRONTMATTER = """---
@@ -71,7 +71,7 @@ REPEATED_BLOCK = 2  # "PARA-ONE mentions the pivot..." (twice)
 def site(tmp_path, monkeypatch):
     (tmp_path / "tutorials").mkdir(parents=True)
     write_tutorial(tmp_path, SLUG, FRONTMATTER)
-    write_course(tmp_path, MODULE, "Sample Series", ["one"])
+    write_course(tmp_path, COURSE, "Sample Series", ["one"])
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
     monkeypatch.setattr(b, "COURSES", tmp_path / "courses")

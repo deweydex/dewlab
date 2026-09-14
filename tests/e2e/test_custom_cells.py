@@ -415,7 +415,7 @@ class TestExport:
         assert "No cells to export" in page.inner_text("#dl-status")
 
 
-MODULE = "custom-cells-fixtures"
+COURSE = "custom-cells-fixtures"
 
 FRONTMATTER = """---
 title: "{title}"
@@ -436,7 +436,7 @@ def _tutorial(root: Path, slug: str, title: str = "A Title") -> None:
 
 
 def _set_order(root: Path, slugs: list[str]) -> None:
-    write_course(root, MODULE, "Sample Series", slugs)
+    write_course(root, COURSE, "Sample Series", slugs)
 
 
 @pytest.fixture()

@@ -18,7 +18,13 @@ from helpers import DEWLAB, FRONTMATTER, CELL, COURSE, SERIES, b
 class TestPagesOfProblems:
     """A practice page belongs to a tutorial, or draws on several. Both
     shapes are the same mechanically; what differs is what they point at,
-    and whether anything points back."""
+    and whether anything points back. A tutorial links to every page of
+    problems that names it: its own practice page first, then any mixed set
+    that draws on it, described as for later since a mixed set may assume
+    tutorials this reader hasn't met yet. Two scenarios build the pages
+    and check everything about them: a mixed set alone, on one course, and
+    a tutorial with both kinds of page, on two courses. The rest are the
+    ways a page can be wrong, one build error each."""
 
     def practice(self, repo, slug: str, **frontmatter) -> Path:
         path = tutorial_path(repo, f"{slug}")
@@ -40,22 +46,77 @@ class TestPagesOfProblems:
         set_order(repo, "computational-methods", "python-fundamentals", listed)
         return path
 
-    def test_a_page_of_problems_is_off_the_reading_order(self, repo):
+    def test_a_mixed_set_draws_on_two_of_three_tutorials_and_sits_off_their_reading_order(self, repo):
         write(repo, "One.\n", slug="one")
         write(repo, "Two.\n", slug="two")
-        self.practice(repo, "one-practice", practice_for="one")
+        write(repo, "Zed.\n", slug="zed")  # sorts after "two", so it is not one's next
+        self.practice(repo, "mixed", practice_across=["one", "two"])
+        b.build()
+        # The mixed set points back at every tutorial it draws on.
+        text = (repo / "site" / "tutorials" / "mixed.html").read_text()
+        assert "dl-practice-back" in text
+        assert "one.html" in text and "two.html" in text
+        # It is off the reading order. Asserted on the navigation rather
+        # than the whole page: the tutorial does link to a mixed set that
+        # names it, from the practice box at the end. It must not offer
+        # that as the next thing to read.
+        page = built(repo, "one")
+        nav = re.findall(r"<nav class=\"dl-nav[^\"]*\">.*?</nav>", page, re.S)
+        assert nav, "the tutorial has no navigation at all"
+        assert any("two.html" in bar for bar in nav)
+        assert not any("mixed.html" in bar for bar in nav)
+        # It is not offered as this tutorial's own practice. Mixed-set links
+        # were added after tutorials already linked to their own practice;
+        # a reader still has to be able to tell the two apart.
+        assert "dl-practice-mixed" in page
+        assert "Practice problems for this tutorial" not in page
+        assert "once more of the course is behind you" in page
+        # The tutorial links to the mixed set that names it.
+        assert "mixed.html" in page
+        # It names the other tutorials the set draws on, so a reader can
+        # tell whether it is for them yet.
+        assert "It also draws on A Title" in page
+        # A tutorial no mixed set names gets no such link.
+        assert "dl-practice-mixed" not in built(repo, "zed")
+        # The contents page lists mixed sets.
+        index = (repo / "site" / "all-tutorials.html").read_text()
+        assert "Mixed problems" in index
+        assert "dl-mixed" in index
+        assert "mixed.html" in index
+        # No course file lists it under `mixed:`, so it goes with its first
+        # tutorial's course.
+        assert 'href="tutorials/mixed.html"' in (repo / "site" / "computational-methods.html").read_text()
+
+    def test_a_tutorial_with_its_own_practice_and_a_mixed_set_links_both_and_follows_the_course_files(self, repo):
+        # Two courses; the second lists both tutorials and puts the mixed
+        # set under `mixed:`.
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        practice(repo, "one")
+        practice(repo, "mixed", practice_across=["one", "two"])
+        course(repo, "zz-other", {"S": ["one", "two"]}, mixed=["mixed"])
         b.build()
         page = built(repo, "one")
-        assert "two.html" in page
-        assert "dl-nav-next" in page
+        # A page of problems is off the reading order: the next page after
+        # `one` is `two`, not its own problems, which are linked another way.
+        assert '<a class="dl-nav-next" href="two.html">' in page
         assert "one-practice.html" in page
-
-    def test_the_tutorial_links_to_its_problems_and_back(self, repo):
-        write(repo, "One.\n", slug="one")
-        self.practice(repo, "one-practice", practice_for="one")
-        b.build()
-        assert "dl-practice-link" in built(repo, "one")
+        # The tutorial links to its problems, and they link back.
+        assert "dl-practice-link" in page
         assert "dl-practice-back" in built(repo, "one-practice")
+        # Both kinds of link appear together.
+        assert "one-practice.html" in page and "mixed.html" in page
+        # Its own practice page comes first: it is the one for now.
+        assert page.index("one-practice.html") < page.index("mixed.html")
+        # A practice page follows its tutorial onto every course: both
+        # course pages link it, and its manifest says both.
+        for course_page in ("computational-methods.html", "zz-other.html"):
+            assert 'href="tutorials/one-practice.html"' in (repo / "site" / course_page).read_text()
+        assert manifest(built(repo, "one-practice"))["courses"] == ["computational-methods", "zz-other"]
+        # A mixed set is listed where the course file says, under `mixed:`.
+        other = (repo / "site" / "zz-other.html").read_text()
+        assert "Mixed problems" in other and 'href="tutorials/mixed.html"' in other
+        assert 'href="tutorials/mixed.html"' not in (repo / "site" / "computational-methods.html").read_text()
 
     def test_two_pages_cannot_claim_the_same_tutorial(self, repo):
         write(repo, "One.\n", slug="one")
@@ -73,85 +134,11 @@ class TestPagesOfProblems:
         with pytest.raises(b.BuildError, match="declares `covers:`"):
             b.build()
 
-    def test_a_mixed_set_draws_on_several_tutorials(self, repo):
-        write(repo, "One.\n", slug="one")
-        write(repo, "Two.\n", slug="two")
-        self.practice(repo, "mixed", practice_across=["one", "two"])
-        page = (repo / "site" / "tutorials" / "mixed.html")
-        b.build()
-        text = page.read_text()
-        assert "dl-practice-back" in text
-        assert "one.html" in text and "two.html" in text
-
-    def test_a_mixed_set_is_off_the_reading_order(self, repo):
-        # Asserted on the navigation rather than the whole page: the tutorial
-        # does link to a mixed set that names it, from the practice box at
-        # the end. It must not offer that as the next thing to read.
-        write(repo, "One.\n", slug="one")
-        write(repo, "Two.\n", slug="two")
-        self.practice(repo, "mixed", practice_across=["one", "two"])
-        b.build()
-        page = built(repo, "one")
-        nav = re.findall(r"<nav class=\"dl-nav[^\"]*\">.*?</nav>", page, re.S)
-        assert nav, "the tutorial has no navigation at all"
-        assert any("two.html" in bar for bar in nav)
-        assert not any("mixed.html" in bar for bar in nav)
-
-    def test_a_mixed_set_is_not_offered_as_this_tutorial_own_practice(self, repo):
-        # Mixed-set links were added after tutorials already linked to their
-        # own practice; a reader still has to be able to tell the two apart.
-        write(repo, "One.\n", slug="one")
-        write(repo, "Two.\n", slug="two")
-        self.practice(repo, "mixed", practice_across=["one", "two"])
-        b.build()
-        page = built(repo, "one")
-        assert "dl-practice-mixed" in page
-        assert "Practice problems for this tutorial" not in page
-        assert "once more of the course is behind you" in page
-
-    def test_the_contents_page_lists_mixed_sets(self, repo):
-        write(repo, "One.\n", slug="one")
-        write(repo, "Two.\n", slug="two")
-        self.practice(repo, "mixed", practice_across=["one", "two"])
-        b.build()
-        index = (repo / "site" / "all-tutorials.html").read_text()
-        assert "Mixed problems" in index
-        assert "dl-mixed" in index
-        assert "mixed.html" in index
-
     def test_a_mixed_set_naming_one_tutorial_is_an_error(self, repo):
         write(repo, "One.\n", slug="one")
         self.practice(repo, "mixed", practice_across=["one"])
         with pytest.raises(b.BuildError, match="practice_for is for"):
             b.build()
-
-    def test_a_practice_page_follows_its_tutorial_onto_every_course(self, repo):
-        # Two courses, one tutorial, one practice page: both course pages
-        # link it, and its manifest says both.
-        write(repo, "One.\n", slug="one")
-        practice(repo, "one")
-        course(repo, "zz-other", {"S": ["one"]})
-        b.build()
-        for page in ("computational-methods.html", "zz-other.html"):
-            assert 'href="tutorials/one-practice.html"' in (repo / "site" / page).read_text()
-        assert manifest(built(repo, "one-practice"))["courses"] == ["computational-methods", "zz-other"]
-
-    def test_a_mixed_set_is_listed_where_the_course_file_says_under_mixed(self, repo):
-        write(repo, "One.\n", slug="one")
-        write(repo, "Two.\n", slug="two")
-        practice(repo, "mixed", practice_across=["one", "two"])
-        course(repo, "zz-other", {"S": ["one", "two"]}, mixed=["mixed"])
-        b.build()
-        other = (repo / "site" / "zz-other.html").read_text()
-        assert "Mixed problems" in other and 'href="tutorials/mixed.html"' in other
-        assert 'href="tutorials/mixed.html"' not in (repo / "site" / "computational-methods.html").read_text()
-
-    def test_a_mixed_set_no_course_lists_goes_with_its_first_tutorials_course(self, repo):
-        write(repo, "One.\n", slug="one")
-        write(repo, "Two.\n", slug="two")
-        practice(repo, "mixed", practice_across=["one", "two"])
-        b.build()
-        assert 'href="tutorials/mixed.html"' in (repo / "site" / "computational-methods.html").read_text()
 
     def test_mixed_naming_a_page_that_is_not_a_mixed_set_is_an_error(self, repo):
         write(repo, "One.\n", slug="one")
@@ -193,49 +180,3 @@ class TestPagesOfProblems:
                       practice_across=["one", "two"])
         with pytest.raises(b.BuildError, match="cannot do both"):
             b.build()
-
-
-class TestPracticeIsReachable:
-    """A tutorial links to every page of problems that names it: its own
-    practice page first, then any mixed set that draws on it, described as
-    for later since a mixed set may assume tutorials this reader hasn't met yet."""
-
-    def practice(self, repo, slug: str, **frontmatter) -> Path:
-        return TestPagesOfProblems().practice(repo, slug, **frontmatter)
-
-    def test_a_tutorial_links_to_a_mixed_set_that_names_it(self, repo):
-        write(repo, "One.\n", slug="one")
-        write(repo, "Two.\n", slug="two")
-        self.practice(repo, "mixed", practice_across=["one", "two"])
-        b.build()
-        page = built(repo, "one")
-        assert "dl-practice-mixed" in page
-        assert "mixed.html" in page
-
-    def test_it_names_the_other_tutorials_the_set_draws_on(self, repo):
-        """So a reader can tell whether it is for them yet."""
-        write(repo, "One.\n", slug="one")
-        write(repo, "Two.\n", slug="two")
-        self.practice(repo, "mixed", practice_across=["one", "two"])
-        b.build()
-        page = built(repo, "one")
-        assert "It also draws on A Title" in page
-
-    def test_a_tutorial_no_mixed_set_names_gets_no_such_link(self, repo):
-        write(repo, "One.\n", slug="one")
-        write(repo, "Two.\n", slug="two")
-        write(repo, "Three.\n", slug="three")
-        self.practice(repo, "mixed", practice_across=["one", "two"])
-        b.build()
-        assert "dl-practice-mixed" not in built(repo, "three")
-
-    def test_both_kinds_of_link_appear_together(self, repo):
-        write(repo, "One.\n", slug="one")
-        write(repo, "Two.\n", slug="two")
-        self.practice(repo, "one-practice", practice_for="one")
-        self.practice(repo, "mixed", practice_across=["one", "two"])
-        b.build()
-        page = built(repo, "one")
-        assert "one-practice.html" in page and "mixed.html" in page
-        # Its own practice page comes first: it is the one for now.
-        assert page.index("one-practice.html") < page.index("mixed.html")

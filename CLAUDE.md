@@ -11,7 +11,7 @@ API. `ARCHITECTURE.md` has the map; `DECISIONS_LOG.md` has the reasoning.
 ```bash
 pip install -r requirements-build.txt   # first time only
 python3 build.py --clean                # writes site/ from scratch
-python3 -m pytest                        # ~650 tests, under a minute
+python3 -m pytest                        # ~400 tests, about a minute
 ```
 
 `site/` is gitignored and rebuilt every time. Never edit it. If you change
