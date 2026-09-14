@@ -433,22 +433,28 @@ class TestLoadingSomebodyElsesFile:
 
     def test_a_record_from_before_courses_fits_where_the_page_had_that_address(self, page, base_url):
         """A file saved when pages were addressed by module and slug names
-        them both; it fits the page whose manifest says that was its old
-        address, and no other."""
+        them both. On a page whose manifest records that old address, it
+        fits when both halves match and not otherwise; on a page that never
+        had one, the slug alone decides, as it always did."""
         slug = page.get_attribute('meta[name="tutorial-slug"]', "content")
-        message = page.evaluate(
+        assert page.evaluate(
             "(r) => globalThis.dewlab.describeMismatch(r)",
             {"tutorial-slug": slug, "tutorial-module": "fixtures", "cells": []},
-        )
-        assert "not this tutorial" in message
+        ) == ""
         tab = page.context.new_page()
         try:
             tab.goto(f"{base_url}/tutorials/prose-only.html")
-            tab.wait_for_selector("#dl-notes")
+            tab.wait_for_selector("#dl-body")
             assert tab.evaluate(
                 "(r) => globalThis.dewlab.describeMismatch(r)",
                 {"tutorial-slug": "prose-only", "tutorial-module": "fixtures", "cells": []},
             ) == ""
+            message = tab.evaluate(
+                "(r) => globalThis.dewlab.describeMismatch(r)",
+                {"tutorial-slug": "prose-only", "tutorial-module": "somewhere-else", "cells": []},
+            )
+            assert "not this tutorial" in message
+            assert "somewhere-else" in message
         finally:
             tab.close()
 

@@ -81,10 +81,12 @@ export function parseCourse(text) {
 /* The course file with each series' list replaced by `orders[key]`
  * (an array of ids), everything else untouched. */
 export function writeCourse(text, orders) {
+  const lines = text.split("\n");
   const out = [];
   let current = null;
   let skipping = false;
-  for (const line of text.split("\n")) {
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i];
     const heading = /^\s*-\s*title:\s*(.+?)\s*$/.exec(line);
     if (heading) {
       const key = seriesKey(unquote(heading[1]));
@@ -94,9 +96,15 @@ export function writeCourse(text, orders) {
       continue;
     }
     if (current && /^\s*tutorials:\s*(\[.*\])?\s*$/.test(line)) {
+      // The items keep the indentation the file already uses for them
+      // (YAML allows the list at the key's own indent or deeper); a list
+      // that was empty or inline gets two spaces more than its key.
       const pad = /^\s*/.exec(line)[0];
+      const next = lines[i + 1] || "";
+      const item = /^(\s*)-\s*\S+\s*$/.exec(next);
+      const itemPad = item ? item[1] : `${pad}  `;
       out.push(`${pad}tutorials:`);
-      for (const id of current) out.push(`${pad}- ${id}`);
+      for (const id of current) out.push(`${itemPad}- ${id}`);
       skipping = true;
       current = null;
       continue;

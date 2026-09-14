@@ -182,11 +182,11 @@ class TestTheListView:
             ".dl-editor-open", "e => e.map(b => b.textContent)")
         assert titles == ["First Steps", "Next Steps", "Looking Back"]
 
-    def test_a_series_is_headed_by_its_name_from_the_order_file(self, editor):
+    def test_a_series_is_headed_by_its_course_and_its_name_from_the_course_file(self, editor):
         heads = editor.eval_on_selector_all(
             ".dl-editor-series h2", "e => e.map(h => h.textContent)")
-        assert "Maths and programming" in heads
-        assert "Reflections and review" in heads
+        assert "Fixtures — Maths and programming" in heads
+        assert "Fixtures — Reflections and review" in heads
 
     def test_moving_a_tutorial_reorders_it(self, editor):
         editor.click('.dl-editor-card[data-slug="next-steps"] .dl-editor-up')
@@ -323,7 +323,7 @@ LINKS = {
         '---\ntitle: "First Steps"\n'
         'year: "2026-2027"\nversion: 2026.08.23.1\n---\n\n'
         "# First Steps\n\n## A Grid of Numbers\n\n"
-        "```python exec\nid: adding-up-1\n# not a heading\nprint(1)\n```\n",
+        "```python exec\nid: adding-up-1\n# not a heading\nprint(1)\n```\n\nProse after the cell.\n",
     "courses/other.yaml":
         "title: Other\ncontents:\n"
         "  - title: Other\n    tutorials:\n"
@@ -423,8 +423,10 @@ class TestLinkPicker:
         self.open_picker(links)
         rows = links.inner_text(".dl-editor-linkpicker-results")
         assert "Next Steps" in rows
-        assert "Shared Name (Third)" in rows
-        assert "Shared Name (Fourth)" in rows
+        # The id and the course beside each title, since two tutorials may
+        # share a title.
+        assert "next-steps · Other" in rows
+        assert "first-steps · Fixtures" in rows
 
     def test_searching_narrows_to_matching_tutorials(self, links):
         self.open(links, "first-steps")
