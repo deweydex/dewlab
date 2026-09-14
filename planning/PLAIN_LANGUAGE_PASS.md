@@ -101,6 +101,12 @@ A practice page is listed under its tutorial by its own title ("First Steps
 front: the title already says what it is, and a prefix would have made the
 line say it twice.
 
+**The Programming and Design Principles module's own copy** (`DECISIONS_LOG.md`
+7.171): its front-page card, its module-page description and the series title
+"Working in a Team". Written to the nine checks directly; the card's first
+draft was a verbless fragment ("The programming half of the integrated
+course, on its own: …") and became two sentences before it shipped.
+
 **The search line** (`DECISIONS_LOG.md` 7.168, then 7.169): "Search for a
 topic" is the line under the wordmark, and since 7.169 it is the field
 itself — the words are its placeholder, and there is no second label.

@@ -87,6 +87,15 @@ Build pages with HTML and CSS, then publish a small site.
 ```
 
 ```card
+url: programming-design-principles.html
+status: beta
+meta: 5N2927 · QQI Level 5
+### Programming and Design Principles
+This is the programming half of the integrated course, on its own. It runs
+from a first cell to reusable tools, then a project built in a team.
+```
+
+```card
 url: all-tutorials.html
 wide: true
 ### All tutorials

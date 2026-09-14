@@ -1369,6 +1369,13 @@ def order_files() -> dict[tuple[str, str], list[str]]:
     per series, moving a tutorial is moving a line and inserting one is adding
     a line — which is what makes reordering something an editor can do, and
     something a person can still do by hand in the GitHub web editor.
+    An entry may also name a tutorial that lives in another module, as
+    `other-module/slug`. That is how a module lists a route through
+    tutorials it does not own — Programming and Design Principles is the
+    programming half of the integrated module, read on its own — without
+    a second copy of any file: the tutorial keeps its one page, its one
+    URL and its one home module, and simply appears in this series too.
+    `series_of()` resolves these.
     """
     found: dict[tuple[str, str], list[str]] = {}
     for path in sorted(TUTORIALS.rglob(f"*{ORDER_SUFFIX}")):
@@ -1561,6 +1568,7 @@ def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]
     """
     orders = order_files()
     groups: dict[tuple[str, str], list[Tutorial]] = {}
+    on_route: dict[tuple[str, str], Tutorial] = {}
     for tutorial in tutorials:
         # Only the current, live version of each tutorial is on the route. A
         # superseded release is still readable; it is not part of the course.
@@ -1569,6 +1577,35 @@ def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]
         if tutorial.is_practice:
             continue
         groups.setdefault((tutorial.module, tutorial.series), []).append(tutorial)
+        on_route[(tutorial.module, tutorial.slug)] = tutorial
+
+    # A series may list tutorials from another module, as `module/slug`
+    # (order_files() says why). Those members are borrowed: they appear in
+    # this series' list and its downloads, but their page, their tree and
+    # their previous/next stay with the module that owns them, and their
+    # `order` — their place in their own series — is left alone below.
+    borrowed: set[tuple[tuple[str, str], str]] = set()
+    for key, listed in orders.items():
+        module, series = key
+        for entry in listed:
+            if "/" not in entry:
+                continue
+            owner_module, slug = entry.split("/", 1)
+            if owner_module == module:
+                fail(
+                    TUTORIALS / module / f"{series}{ORDER_SUFFIX}",
+                    f"lists {entry}, which is in this module already — write "
+                    f"it as {slug}",
+                )
+            member = on_route.get((owner_module, slug))
+            if member is None:
+                fail(
+                    TUTORIALS / module / f"{series}{ORDER_SUFFIX}",
+                    f"lists {entry}, which no live tutorial in {owner_module} "
+                    "has as its slug",
+                )
+            groups.setdefault(key, []).append(member)
+            borrowed.add((key, slug))
 
     # The contradictory case, caught by name so the message can say which.
     for tutorial in tutorials:
@@ -1594,9 +1631,12 @@ def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]
                 "the reading order.",
             )
 
-        position = {slug: index for index, slug in enumerate(listed)}
+        def listed_as(member: Tutorial) -> str:
+            return member.slug if member.module == module else f"{member.module}/{member.slug}"
+
+        position = {entry: index for index, entry in enumerate(listed)}
         for member in members:
-            if member.slug not in position:
+            if listed_as(member) not in position:
                 fail(
                     member.path,
                     f"is not listed in {series}{ORDER_SUFFIX}, so nothing knows "
@@ -1604,17 +1644,40 @@ def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]
                 )
         # A slug listed with no tutorial behind it is the more dangerous
         # direction: the order file looks complete and the series is short.
-        missing = [slug for slug in listed if slug not in {m.slug for m in members}]
+        present = {listed_as(m) for m in members}
+        missing = [entry for entry in listed if entry not in present]
         if missing:
             fail(
                 TUTORIALS / module / f"{series}{ORDER_SUFFIX}",
                 f"lists {', '.join(missing)}, which no tutorial in this series "
                 "has as its slug",
             )
-        members.sort(key=lambda t: position[t.slug])
+        members.sort(key=lambda t: position[listed_as(t)])
         for index, member in enumerate(members, start=1):
+            if (key, member.slug) in borrowed:
+                continue
             member.order = index
     return groups
+
+
+def module_titles(
+    groups: dict[tuple[str, str], list[Tutorial]],
+    retired: dict[str, list[Tutorial]] | None = None,
+) -> dict[str, str]:
+    """What each module is called: the `module_title` its own tutorials
+    carry, or failing that the title in MODULE_INFO. The second is what
+    names a module that owns no tutorial at all — one whose series only
+    list tutorials borrowed from elsewhere (order_files()) — since there
+    is no frontmatter of its own to read it from."""
+    names: dict[str, str] = {}
+    for members in list(groups.values()) + list((retired or {}).values()):
+        for member in members:
+            if member.meta.get("module_title"):
+                names.setdefault(member.module, member.module_title)
+    for module, info in MODULE_INFO.items():
+        if isinstance(info.get("title"), str):
+            names.setdefault(module, str(info["title"]))
+    return names
 
 
 def link_between(here: Tutorial, there: Tutorial) -> str:
@@ -1742,11 +1805,7 @@ def crumb_trail_html(
             members = groups.get((owner.module, owner.series), members)
     else:
         owner = None
-    module_names: dict[str, str] = {}
-    for members_of in groups.values():
-        for member in members_of:
-            if member.meta.get("module_title"):
-                module_names.setdefault(member.module, member.module_title)
+    module_names = module_titles(groups)
 
     order = module_order()
     present_modules = {m for m, s in groups}
@@ -2626,11 +2685,7 @@ def render_tutorials_list(
     if not groups:
         return "<p>No tutorials have been written yet.</p>"
 
-    names = {}
-    for members in list(groups.values()) + list(retired.values()):
-        for member in members:
-            if member.meta.get("module_title"):
-                names.setdefault(member.module, member.module_title)
+    names = module_titles(groups, retired)
 
     out = [
         "<h1>All tutorials</h1>",
@@ -4266,6 +4321,22 @@ MODULE_INFO: dict[str, dict[str, object]] = {
             "first principles.",
         ],
     },
+    # Owns no tutorial of its own: its series list the programming half of
+    # the integrated module (order_files() explains the `module/slug`
+    # form), so its title has to live here rather than in frontmatter.
+    "programming-design-principles": {
+        "title": "Programming and Design Principles",
+        "code": "5N2927 · QQI Level 5",
+        "description": [
+            "This module is Programming and Design Principles (5N2927) on "
+            "its own, without the maths. The tutorials are the same pages "
+            "the integrated course uses, in the same order, so a class "
+            "taking only this module can start here.",
+            "Two series carry it: programming foundations, from a first "
+            "cell to reusable tools, and working in a team, which is how "
+            "the module is assessed.",
+        ],
+    },
 }
 
 
@@ -4288,11 +4359,7 @@ def write_module_page(
     `render_module_body()` builds unchanged — those are relative to the
     site root already, which is exactly where a module page also lives.
     """
-    names: dict[str, str] = {}
-    for members in list(groups.values()) + list(retired.values()):
-        for member in members:
-            if member.meta.get("module_title"):
-                names.setdefault(member.module, member.module_title)
+    names = module_titles(groups, retired)
     title = names.get(module, module)
     titles = series_titles()
 
@@ -5007,11 +5074,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             )
         written.extend(archives.values())
 
-        names: dict[str, str] = {}
-        for members in groups.values():
-            for member in members:
-                if member.meta.get("module_title"):
-                    names.setdefault(member.module, member.module_title)
+        names = module_titles(groups)
 
         by_module: dict[str, list[tuple[str, str, list[Tutorial]]]] = {}
         for (module, series), members in sorted(groups.items()):

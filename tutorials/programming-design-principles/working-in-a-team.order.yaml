@@ -1,0 +1,10 @@
+# The reading order of this series.
+#
+# Borrowed from the integrated module, like programming-foundations.order.yaml
+# beside this file. These two are how the module is assessed — a project
+# built, released and reviewed in a team — so they close the route.
+
+series: Working in a Team
+order:
+  - mit-pdp-maths-prog-integration/critique-and-reflection
+  - mit-pdp-maths-prog-integration/the-team-project
