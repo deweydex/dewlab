@@ -656,10 +656,10 @@ function initMobileLauncher() {
   const menu = document.getElementById("dl-mobile-menu");
   if (!fab || !menu) return;
 
-  // Reference and Documentation only exist on some pages, decided once
-  // at load and never toggled again afterward — mirroring that decision
-  // once here, rather than watching for a change that can't happen.
-  for (const name of ["reference", "documentation"]) {
+  // Series, Reference and Documentation only exist on some pages, decided
+  // once at load and never toggled again afterward — mirroring that
+  // decision once here, rather than watching for a change that can't happen.
+  for (const name of ["seriesnav", "reference", "documentation"]) {
     const real = document.getElementById(`dl-${name}-toggle`);
     const item = document.getElementById(`dl-mobile-item-${name}`);
     if (real && item) item.hidden = real.hidden;
@@ -4628,10 +4628,12 @@ initNotesReportDock();
 initAppearanceDock();
 initReference(currentManifest);
 initDocumentationDock(currentManifest);
-initMobileLauncher();
 initReferenceLookup(currentManifest);
 initHighlightPopover();
 initSeriesNav();
+// After every toggle it mirrors has settled its own hidden state — Series
+// only unhides itself in initSeriesNav() above.
+initMobileLauncher();
 watchPanelOverlap();
 restoreSidebarState();
 initProgressBadgesToggle();

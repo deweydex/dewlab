@@ -55,15 +55,17 @@
       <a class="dl-wordmark" href="{{ROOT_BASE}}index.html">dewlab</a>
       {{CRUMBS}}
       {{NAV_SEARCH}}
-      <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
+    </div>
+    <div class="dl-corner-strip">
+      <button type="button" class="dl-seriesnav-toggle dl-corner-tab" id="dl-seriesnav-toggle"
               aria-expanded="false" aria-controls="dl-seriesnav" aria-label="Series" hidden>
         <span class="dl-seriesnav-icon" aria-hidden="true"></span><span class="dl-toggle-label">Series</span>
       </button>
+      <button type="button" class="dl-reference-toggle dl-corner-tab" id="dl-reference-toggle"
+              aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
+        <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
+      </button>
     </div>
-    <button type="button" class="dl-reference-toggle dl-corner-tab" id="dl-reference-toggle"
-            aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
-      <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
-    </button>
   </div>
 
   <div class="dl-corner-dock dl-corner-dock-bl">
@@ -99,8 +101,8 @@
     </div>
   </div>
 
-  <!-- Phone-only: the six corner tabs above collapse into one launcher —
-       a thumb has room for one button, not six. Each row forwards to the
+  <!-- Phone-only: the seven corner tabs above collapse into one launcher —
+       a thumb has room for one button, not seven. Each row forwards to the
        real corner toggle above rather than duplicating its open/close
        logic; those toggles stay in the page (just hidden) purely so this
        has something real to click. -->
@@ -110,6 +112,8 @@
       <span class="dl-mobile-fab-dot" aria-hidden="true"></span>
     </button>
     <div class="dl-mobile-menu" id="dl-mobile-menu" hidden>
+      <button type="button" class="dl-mobile-menu-item" id="dl-mobile-item-seriesnav"
+              data-forward="dl-seriesnav-toggle" hidden>This series</button>
       <button type="button" class="dl-mobile-menu-item" id="dl-mobile-item-reference"
               data-forward="dl-reference-toggle" hidden>Reference</button>
       <button type="button" class="dl-mobile-menu-item" id="dl-mobile-item-documentation"

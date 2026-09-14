@@ -632,6 +632,45 @@ class TestMobileLauncher:
         assert page.is_visible("#dl-reference")
         context.close()
 
+    def test_series_is_reachable_from_the_launcher(self, site, browser, site_url):
+        """Series left the identity row on phones (it had shrunk to an
+        icon-only square floating over the page) for the launcher. The
+        launcher mirrors the toggle's own hidden state once at load, so
+        this also pins the init order: initSeriesNav() has to have
+        unhidden the toggle before initMobileLauncher() looks."""
+        _tutorial(site, "one", "One")
+        _tutorial(site, "two", "Two")
+        _set_order(site, ["one", "two"])
+        b.build()
+        context = browser.new_context(viewport={"width": 375, "height": 700})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.click("#dl-mobile-fab")
+        assert page.is_visible("#dl-mobile-item-seriesnav")
+        page.click("#dl-mobile-item-seriesnav")
+        assert page.is_visible("#dl-seriesnav")
+        context.close()
+
+    def test_the_identity_row_sits_in_flow_above_the_page_not_over_it(
+            self, site, browser, site_url):
+        """Fixed at the top-left, the wordmark and search sat over the
+        first lines of every page on a phone — there is no spare column
+        to reserve for them there. In flow, the page starts below them."""
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 375, "height": 700})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        row_bottom = page.eval_on_selector(
+            ".dl-corner-dock-tl", "el => el.getBoundingClientRect().bottom")
+        body_top = page.eval_on_selector(
+            "main#dl-body", "el => el.getBoundingClientRect().top")
+        assert page.eval_on_selector(
+            ".dl-corner-dock-tl", "el => getComputedStyle(el).position") == "static"
+        assert body_top >= row_bottom
+        context.close()
+
     def test_a_button_with_nothing_to_forward_to_is_absent_from_the_menu(
             self, site, browser, site_url):
         """One tutorial with no glossary at all has nothing for

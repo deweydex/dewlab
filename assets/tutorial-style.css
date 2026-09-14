@@ -1164,20 +1164,23 @@ p code, li code {
 .dl-corner-dock-tr, .dl-corner-dock-br { right: 0; }
 .dl-corner-dock-tl, .dl-corner-dock-tr { top: var(--dl-chrome-h); }
 .dl-corner-dock-bl, .dl-corner-dock-br { bottom: 1rem; }
-/* Only the top-left dock's own content (the breadcrumb tree) can grow
-   past what a shorter screen has room for — a module or series with many
-   members otherwise pushes the Reference tab below it clean off the
-   bottom of the viewport, with no way to scroll a fixed element back
-   into view. Capped and made to scroll internally instead. */
-.dl-corner-dock-tl {
-  max-height: calc(100vh - var(--dl-chrome-h) - 1rem);
+/* Only the breadcrumb tree can grow past what a shorter screen has room
+   for — a module or series with many members otherwise pushes the strip
+   below it clean off the bottom of the viewport, with no way to scroll a
+   fixed element back into view. Capped and made to scroll internally —
+   on the tree itself, never on the whole dock: a scroll box clips
+   anything positioned outside it, and the search popover sharing this
+   dock is exactly that. 12rem leaves room for the wordmark, the search
+   and the strip beneath. */
+.dl-crumbtrail {
+  max-height: calc(100vh - var(--dl-chrome-h) - 12rem);
   overflow-y: auto;
 }
 
-/* The two-button rows (Notes+Report, Appearance+Imports & Exports) — a
-   plain flex row, wrapped separately from .dl-corner-dock itself so the
-   top-left dock's own single-column stack (identity block, then the
-   Reference tab) can use ordinary block flow instead. */
+/* The two-button rows (Series+Reference, Notes+Report, Appearance+Imports
+   & Exports) — a plain flex row, wrapped separately from .dl-corner-dock
+   itself so the top-left dock's own stack (identity block, then its
+   strip) can use ordinary block flow instead. */
 .dl-corner-strip { display: flex; }
 
 /* What the masthead used to hold — wordmark, orientation, search, the
@@ -1250,6 +1253,10 @@ p code, li code {
    on and hides the six corner tabs they replace. */
 .dl-mobile-fab, .dl-mobile-menu { display: none; }
 
+/* Filled and lifted, not outlined: a transparent tab over the page's own
+   background reads as a stray border, where the mockup's white fill and
+   drop shadow read as a control docked to the screen's edge, in front of
+   whatever scrolls past behind it. */
 .dl-corner-tab {
   display: inline-flex;
   align-items: center;
@@ -1257,12 +1264,13 @@ p code, li code {
   flex: none;
   font-family: var(--dl-mono);
   font-size: 0.78rem;
-  background: none;
+  background: var(--dl-panel-bg);
   border: 1px solid var(--dl-navy);
   color: var(--dl-heading);
   padding: 0.38rem 0.7rem;
   cursor: pointer;
   min-height: 2rem;
+  box-shadow: 0 2px 8px var(--dl-shadow);
 }
 /* An author rule with the same specificity as the browser's own
    [hidden] { display: none } always wins the tie — without this,
@@ -1289,6 +1297,12 @@ p code, li code {
 .dl-corner-dock-br .dl-corner-tab + .dl-corner-tab {
   border-left: none;
 }
+/* The left-edge strip joins the same way, with only its last tab keeping
+   the rounded outer corners. Series is hidden on a page with no series,
+   so the join skips a hidden tab rather than dropping the border of the
+   first visible one. */
+.dl-corner-dock-tl .dl-corner-strip .dl-corner-tab:not(:last-child) { border-radius: 0; }
+.dl-corner-dock-tl .dl-corner-tab:not([hidden]) + .dl-corner-tab { border-left: none; }
 
 /* The Documentation panel's own rows — an external link per term, an
    outbound arrow standing in for target="_blank" the way an icon usually
@@ -1507,32 +1521,8 @@ p code, li code {
 .dl-note > :first-child { margin-top: 0; }
 .dl-note > :last-child { margin-bottom: 0; }
 
-.dl-seriesnav-toggle[hidden] { display: none; }
-.dl-seriesnav-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex: none;
-  font-family: var(--dl-mono);
-  font-size: 0.78rem;
-  background: none;
-  border: 1px solid var(--dl-navy);
-  border-radius: 4px;
-  color: var(--dl-heading);
-  padding: 0.38rem 0.7rem;
-  cursor: pointer;
-  min-height: 2rem;
-}
-.dl-seriesnav-toggle:hover,
-.dl-seriesnav-toggle:focus-visible {
-  border-color: var(--dl-orange);
-  color: var(--dl-orange);
-}
-.dl-seriesnav-toggle[aria-expanded="true"] {
-  background: var(--dl-navy);
-  border-color: var(--dl-navy);
-  color: #fff;
-}
+/* The Series toggle is a .dl-corner-tab now (assets/shell.html), sharing
+   the top-left strip with Reference; only its icon is its own. */
 /* Three rungs, drawn rather than typed for the same reason the reference's own icon is — a small ladder reads as "steps in a sequence"
    without depending on a glyph the reader's font may not carry. */
 .dl-seriesnav-icon {
@@ -2257,16 +2247,40 @@ p code, li code {
   .dl-cell-head { flex-wrap: wrap; row-gap: 0.35rem; }
   .dl-cell-header-end { flex-wrap: wrap; }
 
-  /* One launcher instead of six floating tabs — a thumb has room for one
-     button, not six. The identity corner (wordmark, search, series)
-     keeps its own place; every panel a tab used to open now opens from
-     the launcher instead (initMobileLauncher(), tutorial-runtime.js). */
+  /* One launcher instead of seven floating tabs — a thumb has room for
+     one button, not seven. Every panel a tab used to open, Series
+     included, opens from the launcher instead (initMobileLauncher(),
+     tutorial-runtime.js). */
   .dl-corner-dock-bl,
   .dl-corner-dock-tr,
   .dl-corner-dock-br,
-  .dl-corner-dock-tl .dl-reference-toggle {
+  .dl-corner-dock-tl .dl-corner-strip {
     display: none;
   }
+
+  /* The identity corner can't float on a phone: there is no spare column
+     to reserve for it, so fixed at the top-left it sat over the first
+     lines of every page. Back in flow instead, as one slim row under the
+     nav — wordmark at one end, search at the other — that scrolls away
+     with the page the way the old masthead did. */
+  .dl-corner-dock-tl {
+    position: static;
+    margin: 0 -1rem;
+    padding: 0.35rem 1rem;
+    border-bottom: 1px solid var(--dl-rule);
+  }
+  .dl-corner-identity {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    width: 100%;
+    max-width: none;
+    padding: 0;
+  }
+  /* Anchored to the search's own right edge now that it sits at the row's
+     end — 90vw hung off the left edge would run past the screen. */
+  .dl-nav-search[open] > .dl-search { left: auto; right: 0; }
 
   .dl-mobile-fab {
     display: flex;
