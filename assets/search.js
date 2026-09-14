@@ -55,13 +55,31 @@ function tokenize(text) {
   return words.map(normalizeWord).filter((w) => w.length > 1 && !STOPWORDS.has(w));
 }
 
+// A query token counts as a hit against a document token if it matches
+// exactly, or if it's a prefix of at least MIN_PREFIX_LENGTH characters —
+// long enough to type in a hurry ("poly", "fun") without turning every
+// one- or two-letter fragment into a blunt substring search.
+const MIN_PREFIX_LENGTH = 3;
+
+function tokenHits(docToken, queryToken) {
+  return docToken === queryToken
+    || (queryToken.length >= MIN_PREFIX_LENGTH && docToken.startsWith(queryToken));
+}
+
+function fieldHasHit(docTokens, queryToken) {
+  for (const docToken of docTokens) {
+    if (tokenHits(docToken, queryToken)) return true;
+  }
+  return false;
+}
+
 function scoreDocument(doc, queryTokens) {
   if (queryTokens.length === 0) return 0;
   let score = 0;
   for (const token of queryTokens) {
-    if (doc._titleTokens.has(token)) score += 3;
-    if (doc._termTokens.has(token)) score += 2;
-    if (doc._contextTokens.has(token)) score += 1;
+    if (fieldHasHit(doc._titleTokens, token)) score += 3;
+    if (fieldHasHit(doc._termTokens, token)) score += 2;
+    if (fieldHasHit(doc._contextTokens, token)) score += 1;
   }
   return score;
 }
@@ -99,7 +117,8 @@ function renderResults(listEl, ranked, queryTokens, limit = 12) {
     return;
   }
   const rows = ranked.slice(0, limit).map(({ doc }) => {
-    const matchedTerms = doc.terms.filter((term) => tokenize(term).some((t) => queryTokens.includes(t)));
+    const matchedTerms = doc.terms.filter((term) =>
+      tokenize(term).some((t) => queryTokens.some((q) => tokenHits(t, q))));
     const subtitle = [doc.moduleTitle, doc.series].filter(Boolean).join(" — ");
     const matchNote = matchedTerms.length
       ? `<span class="dl-search-match">${matchedTerms.slice(0, 3).map(escapeHtml).join(", ")}</span>`
