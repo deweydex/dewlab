@@ -548,6 +548,12 @@ class TestMobile:
         context.close()
 
     def test_opening_it_shows_a_sheet_anchored_to_the_bottom_edge(self, site, browser, site_url):
+        """The raw toggle is CSS-hidden on a phone-sized viewport now — a
+        thumb reaches Reference through the mobile launcher instead
+        (initMobileLauncher(), tutorial-runtime.js), which forwards a real
+        click to this same button. Opened that way here, matching what a
+        phone actually does, rather than clicking the (invisible) toggle
+        directly."""
         _tutorial(site, "one", "One")
         _glossary(site, "one", [CONCEPT])
         _set_order(site, ["one"])
@@ -555,7 +561,8 @@ class TestMobile:
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
-        _open_panel(page, "#dl-reference-toggle")
+        page.click("#dl-mobile-fab")
+        page.click("#dl-mobile-item-reference")
         assert page.is_visible("#dl-reference")
         style = page.eval_on_selector(
             "#dl-reference",
@@ -566,6 +573,78 @@ class TestMobile:
         assert style["bottom"] == "0px"
         assert style["left"] == "0px"
         assert style["right"] == "0px"
+        context.close()
+
+
+class TestMobileLauncher:
+    """A thumb has room for one button, not six — every corner-tab toggle
+    collapses into one launcher on a phone (initMobileLauncher(),
+    tutorial-runtime.js), forwarding a real click to the actual toggle
+    rather than duplicating its open/close logic a second time."""
+
+    def open_page(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _glossary(site, "one", [CONCEPT])
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 375, "height": 700})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        return context, page
+
+    def test_the_fab_is_hidden_on_desktop(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1200, "height": 800})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        assert page.eval_on_selector(
+            "#dl-mobile-fab", "el => getComputedStyle(el).display") == "none"
+        context.close()
+
+    def test_clicking_the_fab_opens_the_menu(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
+        assert page.is_hidden("#dl-mobile-menu")
+        page.click("#dl-mobile-fab")
+        assert page.is_visible("#dl-mobile-menu")
+        context.close()
+
+    def test_forwarding_opens_the_real_panel_and_closes_the_menu(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
+        page.click("#dl-mobile-fab")
+        page.click("#dl-mobile-item-reference")
+        assert page.is_visible("#dl-reference")
+        assert page.is_hidden("#dl-mobile-menu")
+        context.close()
+
+    def test_the_forwarded_click_does_not_reopen_and_reclose_itself(
+            self, site, browser, site_url):
+        """A regression test for a real bug: the forwarded click's own
+        original event kept bubbling to the same document-level
+        outside-click listener that had just reacted to it opening the
+        panel, reading the (still-bubbling) original click as "outside"
+        and closing the panel right back — all within the one click.
+        Fixed with stopPropagation() on the menu item's own handler."""
+        context, page = self.open_page(site, browser, site_url)
+        page.click("#dl-mobile-fab")
+        page.click("#dl-mobile-item-reference")
+        assert page.is_visible("#dl-reference")
+        context.close()
+
+    def test_a_button_with_nothing_to_forward_to_is_absent_from_the_menu(
+            self, site, browser, site_url):
+        """One tutorial with no glossary at all has nothing for
+        Documentation to show — the same content-presence rule the
+        desktop toggle already follows, mirrored here."""
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 375, "height": 700})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.click("#dl-mobile-fab")
+        assert page.is_hidden("#dl-mobile-item-documentation")
         context.close()
 
 
