@@ -1,7 +1,8 @@
 # dewlab
 
 Markdown in, a static site out. A tutorial is prose with editable Python cells
-set into it; `build.py` turns `tutorials/**/*.md` into `site/`, and the Python
+set into it; `build.py` turns `tutorials/*/*.md` and `courses/*.yaml` into
+`site/`, and the Python
 runs in the student's own browser tab. There is no backend, no database and no
 API. `ARCHITECTURE.md` has the map; `DECISIONS_LOG.md` has the reasoning.
 
@@ -101,9 +102,10 @@ behaviour. A stale comment is worse than no comment.
 skills above, several planning documents, and `DECISIONS_LOG.md` all cite it as
 "§4", "section 5" and so on. Add a subsection rather than renumbering.
 
-**Cell ids are a contract.** Once a tutorial has been in front of a class, a
-cell id is the key somebody's saved work lives under. Renaming one throws that
-work away.
+**Cell ids are a contract, and so is a tutorial's id.** Once a tutorial has
+been in front of a class, a cell id is the key somebody's saved work lives
+under, and the tutorial's id — its folder name — is the address of the page
+and the other half of that key. Renaming either throws that work away.
 
 **Editing `assets/tutorial-runtime.js` without rebuilding the vendor bundle
 looks harmless until CI catches it.** `standalone-bundle-is-current` rebuilds

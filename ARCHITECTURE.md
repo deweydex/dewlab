@@ -27,14 +27,15 @@ None of the three needs the others running.
 
 ## 1. The build: markdown in, static site out
 
-`build.py` is a single script that reads `tutorials/**/*.md` and writes
+`build.py` is a single script that reads `tutorials/*/*.md` and `courses/*.yaml`
+and writes
 `site/`. It runs locally for a preview and again in
 `.github/workflows/deploy.yml` on every push to `main`. `site/` is gitignored
 and rebuilt from scratch each time, so a published page never drifts from the
 markdown that describes it.
 
-A tutorial is a folder, `tutorials/<module>/<slug>/`, holding its markdown at
-`<slug>.md`, its practice page, its glossary, any frozen past releases as
+A tutorial is a folder, `tutorials/<id>/`, holding its markdown at
+`<id>.md`, its practice page, its glossary, any frozen past releases as
 `v<version>.md`, its images/recordings, and any downloadable sibling file
 linked with `href=` rather than shown with `src=` (a standalone `.html` a
 reader can take as a starting point, say). Both are found by reading the
@@ -75,11 +76,11 @@ The pipeline, in order:
    the same checks client-side, before a commit rather than after CI.
 
 5. **Assemble navigation.** `series_of()`, `versions_of()`, `practice_pairs()`,
-   `archived_of()` read the `.order.yaml` files and each tutorial's
-   frontmatter to work out reading order, the current release, which
-   tutorial a practice page belongs to, and what's retired. A slug listed in
-   an order file with no tutorial behind it, or a series with no order file,
-   fails the build here rather than surfacing as a broken "next" link.
+   `archived_of()` read `courses/*.yaml` and each tutorial's frontmatter to
+   work out reading order, the current release, which tutorial a practice
+   page belongs to, and what's retired. An id listed in a course file with
+   no tutorial behind it fails the build here rather than surfacing as a
+   broken "next" link; a tutorial on no course builds, and is noted.
 
 6. **Render into `assets/shell.html`.** Every page — tutorial, contents
    page, topic tree, `editor.html` — is the same template with `{{TOKEN}}`
@@ -164,7 +165,7 @@ What happens on load:
   cells never fetches Pyodide — a prose-and-maths page loads instantly.
 - Each cell gets a CodeMirror instance mounted over its `.dl-editor`
   placeholder, seeded from the manifest's starter code or from whatever the
-  student saved last (`localStorage`, keyed `dewlab:progress:<module>:<slug>`,
+  student saved last (`localStorage`, keyed `dewlab:progress:<id>`,
   scoped per cell by its stable `id`).
 - Pyodide boots lazily, on the first Run click (`ensureBooted()`), not on
   page load. `pyodide.loadPackage(manifest.packages)` pulls in `numpy`,
@@ -226,11 +227,10 @@ sibling — same floating-card positioning and open/close mechanics, mutually
 exclusive with it since both anchor to the same corner. Its content isn't
 hand-written: `build.py`'s `cumulative_glossary()` assembles it per tutorial
 from `<slug>.glossary.yaml` files (produced by
-`.claude/skills/tutorial-glossary/SKILL.md`), walking each series in
-`<series>.order.yaml` order and, where a module's `series.yaml` says so
-(`series_chain()`), every earlier series in that module too — so a
-tutorial's manifest only ever carries what it and everything before it
-actually taught.
+`.claude/skills/tutorial-glossary/SKILL.md`), walking the series of the
+course the reader is following in the course file's order, and every
+earlier series of that course — so a tutorial's manifest only ever
+carries what it and everything before it on that course actually taught.
 
 ---
 

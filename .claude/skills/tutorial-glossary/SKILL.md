@@ -18,8 +18,7 @@ step-by-step for running that design on one tutorial.
 
 ## What you need before you start
 
-1. **The tutorial itself** — `tutorials/<module>/<slug>.md`, or
-   `tutorials/<module>/<slug>/<slug>.md` if it has releases (read the
+1. **The tutorial itself** — `tutorials/<id>/<id>.md` (read the
    `.md` file directly under the tutorial's own name, not a `vX.md`
    release file — coverage does not change release to release the way
    prose might, so there is one glossary per tutorial regardless of how
@@ -90,7 +89,7 @@ For each candidate from either source:
 
 ## Writing the entries
 
-`tutorials/<module>/<slug>.glossary.yaml`:
+`tutorials/<id>/<id>.glossary.yaml`:
 
 ```yaml
 entries:

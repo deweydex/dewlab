@@ -83,7 +83,7 @@ that, and its central design choice is worth stating plainly: **a custom
 cell is never added to `cells`, and never touches `saveNow()`,
 `restoreSaved()`, or the progress summary.** It gets its own array
 (`customCells`), its own `localStorage` key
-(`dewlab:custom-cells:<module>:<slug>`), and its own save/restore
+(`dewlab:custom-cells:<id>`), and its own save/restore
 functions (`loadCustomCells()`/`saveCustomCells()`/
 `scheduleCustomSave()`) that mirror the real ones in shape but never call
 them or get called by them.

@@ -1,0 +1,26 @@
+title: Database Methods
+code: 5N0783 · QQI Level 5
+status: beta
+card: We build a table, then several, with SQL running right beside the Python that
+  reads it.
+contents:
+- title: A table of your own
+  tutorials:
+  - a-table-is-a-list-of-rows
+  - asking-questions-of-a-table
+  - changing-what-is-in-it
+  - a-second-table-and-a-join
+- title: Practice
+  tutorials:
+  - sql-practice
+  - the-tentacular-plushies-quiz
+  - the-library-loans-quiz
+- title: A database with several tables
+  tutorials:
+  - designing-a-table-before-you-build-it
+  - loading-a-real-dataset
+  - joining-two-real-tables
+  - charting-a-querys-result
+  - exporting-a-query-to-a-file
+  - a-form-that-writes-a-row
+  - a-college-timetable

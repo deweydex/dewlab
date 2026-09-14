@@ -20,7 +20,7 @@ reason nothing changes yet — never a silently closed issue.
    real doors — if you see it, the report was filed by hand rather than
    through a door, and the checklist below still applies, just without a
    cell to reproduce against.
-2. **The page it names, at the version it names** — `tutorials/<module>/<slug>/<slug>.md`
+2. **The page it names, at the version it names** — `tutorials/<id>/<id>.md`
    for the current release, or `v<version>.md` beside it for an older one.
    A report against a frozen version is still real, but a fix belongs on
    the current release unless the report is specifically about the

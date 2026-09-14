@@ -14,11 +14,13 @@ it is written.
 
 ## The file and its frontmatter
 
-A tutorial is a folder, at `tutorials/<module>/<slug>/`, holding everything
-that belongs to it:
+A tutorial is a folder, at `tutorials/<id>/`, holding everything that
+belongs to it. The folder name is the tutorial's id: the address of its
+page, how other tutorials link to it, and the key its readers' saved work
+lives under. It is unique across the whole site and it never changes.
 
 ```text
-tutorials/computational-methods/working-with-tables/
+tutorials/working-with-tables/
     working-with-tables.md              the tutorial
     working-with-tables-practice.md     its page of problems
     working-with-tables.glossary.yaml   what it teaches, for the reference
@@ -26,8 +28,9 @@ tutorials/computational-methods/working-with-tables/
     a-sorted-table.png                  any picture or recording it uses
 ```
 
-The tutorial itself is `<slug>.md`, and it opens with frontmatter, then
-ordinary prose and code.
+The tutorial itself is `<id>.md`, and it opens with frontmatter, then
+ordinary prose and code. Nothing in the file says which course or series
+it is in — that is written in `courses/`, described in the next section.
 
 Only the first of those is required. A tutorial with no practice page, no
 glossary, one release and no pictures is a folder with a single file in it,
@@ -37,11 +40,7 @@ never has to be rearranged later to make room for its own material.
 ```markdown
 ---
 title: "Working With a Table"
-slug: working-with-tables
-module: computational-methods
-module_title: "Computational Methods"
 year: "2026-2027"
-series: python-fundamentals
 version: 2026.08.24.1
 ---
 ```
@@ -49,11 +48,7 @@ version: 2026.08.24.1
 | Field | What it does |
 |---|---|
 | `title` | Shown in the browser tab and at the top of the page. |
-| `slug` | The filename of the built page, and how other tutorials link to this one. |
-| `module` | Which subject this belongs to. It is also the folder name. Any value you like — a new module is a new folder, not a code change. |
-| `module_title` | The readable name for the module, shown on the contents page. |
 | `year` | An academic year like `2026-2027`, since the programme is scoped a year at a time. |
-| `series` | Groups tutorials that are meant to be worked through in order. |
 | `version` | A dated version like `2026.08.24.1`. Bump it when you change the code in a cell, so a student's saved progress knows the page moved on. Prose fixes do not need it. See [Releasing a new version](#releasing-a-new-version) for when a bump needs a full versioned release instead. |
 | `status` | Optional. `live` (the default) or `archived`. An archived tutorial keeps its built page, so old links still resolve, but drops out of the reading order and the contents page. |
 
@@ -64,50 +59,46 @@ is described under [Curriculum coverage](#curriculum-coverage).
 
 ---
 
-## Where a tutorial sits in its series
+## Where a tutorial sits: courses and series
 
-Not in the frontmatter. Each series has one file beside its tutorials listing
-them in reading order:
-
-```yaml
-# tutorials/computational-methods/python-fundamentals.order.yaml
-series: Python fundamentals
-order:
-  - first-steps
-  - working-with-tables
-```
-
-Moving a tutorial is moving a line, and inserting one is adding a line. Nothing
-else changes: no renumbering, no editing every file after it. That is the whole
-reason reading order is not a field on each tutorial.
-
-The build checks it both ways. A tutorial the file forgets stops the build, and
-so does a slug with no tutorial behind it. The second check is the one worth
-having, because a file that looks complete beside a series that is quietly short
-is a mistake nobody notices.
-
-Slugs are unique within a module, not across the site — the built path already
-carries the module, so two modules may each have a `first-steps`. A `tutorial:`
-link looks in its own module first.
-
-A series may also list a tutorial that lives in another module, written as
-`module/slug`:
+Not in the tutorial. A course (what the site calls a module) is one file under
+`courses/`, and a series is a heading in it with the tutorials listed in
+reading order:
 
 ```yaml
-# tutorials/programming-design-principles/programming-foundations.order.yaml
-series: Programming Foundations
-order:
-  - mit-pdp-maths-prog-integration/first-steps
-  - mit-pdp-maths-prog-integration/storing-and-computing
+# courses/computational-methods.yaml
+title: Computational Methods and Problem Solving
+code: 5N0554 · QQI Level 5
+status: beta
+card: |
+  We work through matrices, simulation, algorithms and debugging, in Python.
+description: |
+  This module is Computational Methods and Problem Solving (5N0554). …
+contents:
+  - title: Python fundamentals
+    tutorials: [first-steps-cm, working-with-tables]
+  - title: Matrices
+    tutorials: [grid-of-numbers, multiplying-grids, what-a-matrix-does-to-a-picture]
 ```
 
-That is how one module offers a route through tutorials another module owns —
-Programming and Design Principles is the programming half of the integrated
-course, read on its own — without a second copy of any file. The tutorial keeps
-its one page, its one URL, its own module in the tree and its own previous and
-next; it simply appears in this series' list and downloads as well. A module
-made only of borrowed tutorials has no frontmatter to take its title from, so
-its title lives in `MODULE_INFO` in `build.py`, with its code and description.
+To put a tutorial on a course, add its id to a list. To move it, move the
+line. To take it off, remove the line; the tutorial still builds at its own
+address, and the build notes that nothing lists it. The same tutorial may be
+listed in as many courses as want it — Programming and Design Principles is
+the programming half of the integrated course, read on its own, and its
+course file simply lists the same ids. The tutorial keeps its one page and
+its one address; a reader following either course sees that course's tree
+and previous and next.
+
+The build refuses an id it cannot find, naming the course file and the line,
+and refuses a second folder with an id that already exists, naming the
+tutorial that has it. It warns, without stopping, when two tutorials share a
+title, and when two tutorials cover much the same outcomes — both are worth
+a look, neither is necessarily wrong.
+
+`courses/index.yaml` lists the courses in the order they appear on the front
+page and the contents page. A course's card on the front page is generated
+from its `card:` text; nothing is written by hand in `pages/home.md`.
 
 ---
 
@@ -358,21 +349,21 @@ with `practice_for:` in its frontmatter:
 
 ```yaml
 title: "A Grid of Numbers — Practice"
-slug: grid-of-numbers-practice
 practice_for: grid-of-numbers
-module: computational-methods
-module_title: "Computational Methods"
 year: "2026-2027"
-series: matrices
 version: 2026.08.24.1
 ```
+
+A practice page is never listed in a course file: it follows its tutorial onto
+every course that lists it.
 
 The contents page links a tutorial to its own practice page, and the tutorial
 links forward to it too, so practice is always one click from the material it is
 practising.
 
 A **mixed problem set** draws on several tutorials at once, declared with
-`practice_across:` instead:
+`practice_across:` instead, and listed in the course file under `mixed:` so
+the course page knows to show it:
 
 ```yaml
 title: "Mixed Problems — Algebra and Functions"
@@ -558,7 +549,7 @@ editor's **Release** button does exactly these two steps.
 
 The build serves the newest release under the tutorial's plain, unversioned
 address, and every past release stays reachable at its own
-`<slug>/v<version>.html`, frozen as it was. A reader sees a small version picker
+`<id>/v<version>.html`, frozen as it was. A reader sees a small version picker
 wherever more than one release exists, and the contents page, the topic tree and
 every `tutorial:` link always resolve to the current one. Frozen releases get no
 downloadable copy of their own, since a downloadable snapshot of superseded
@@ -571,9 +562,12 @@ material is not worth shipping.
 
 ## Adding a new module
 
-Make a folder under `tutorials/` and put tutorials in it whose `module` field
-matches the folder name. That is the whole procedure. Nothing keeps a list of
-modules that needs updating.
+A module is a course file. Create `courses/<id>.yaml` with a `title`, a
+`code`, a `status`, the `card` text for the front page, a `description` for
+the course's own page, and `contents` — its series, each with its tutorials
+in order — then add the id to `courses/index.yaml` where it should appear.
+That is the whole procedure: nothing in `build.py`, nothing in any tutorial.
+The tutorials it lists may already be on another course.
 
 ---
 
@@ -590,7 +584,7 @@ checkout and an ordinary text editor is still the more comfortable tool.
 The editor reports a `tutorial:slug#anchor` link that does not resolve, checked
 against every other tutorial's real slugs and headings, before you commit rather
 than after. A "Link to another tutorial" toggle above the prose editor searches
-every tutorial by title, slug or module and inserts a real link at the cursor,
+every tutorial by title, id or course and inserts a real link at the cursor,
 so you reach for a tutorial that exists rather than typing a slug from memory.
 Its code cells offer keyword and locally-typed-name completion as you write. Open
 the same tutorial as a student and their cell offers the same completion plus a

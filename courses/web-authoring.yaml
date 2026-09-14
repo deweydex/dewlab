@@ -1,0 +1,56 @@
+title: Web Authoring
+code: 5N1910 · QQI Level 5
+status: beta
+card: Build pages with HTML and CSS, then publish a small site.
+contents:
+- title: Welcome
+  tutorials:
+  - how-the-pieces-fit
+  - a-github-account
+  - issues-and-pull-requests
+  - an-editor
+  - your-copy-of-the-starter
+  - publish-it
+  - the-two-loops
+  - the-inspector
+- title: Your first site
+  tutorials:
+  - a-page-is-files
+  - the-skeleton
+  - headings-and-emphasis
+  - sections-that-mean-something
+  - images-and-alt-text
+  - three-kinds-of-link
+  - navigation
+  - a-rule-and-where-it-lives
+  - variables-and-colour
+  - the-box
+  - text-and-units
+  - selectors-and-classes
+  - the-container
+  - position-and-the-sticky-header
+  - hover-and-focus
+  - transitions-and-transforms
+  - media-queries
+  - flexible-images
+  - flexbox-first-steps
+  - named-grid-areas
+  - css-variables-and-bem
+  - keyframes-and-the-checkbox-hack
+- title: A site with several pages
+  tutorials:
+  - planning-a-site
+  - pages-and-navigation
+  - cards-in-a-row
+  - a-grid-gallery
+  - navigation-on-a-phone
+  - a-form
+  - images-and-file-size
+  - documenting-what-you-built
+  - conclusions-and-next-steps
+- title: Reference shelf
+  tutorials:
+  - faq
+  - troubleshooting
+  - quick-reference
+  - project-ideas
