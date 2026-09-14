@@ -36,6 +36,11 @@ them in the design (section 11), and pointing a stuck reader at a real route
 
 ## Done
 
+- **The line under a tutorial's heading when it is on more than one course**
+  (`also_part_of()` in `build.py`, redrawn by `drawCourseChrome()` in the
+  runtime): *This page is also part of Programming and Design Principles.*
+  One sentence, one verb, the course named as a link. The course chooser
+  beside it on the tree is labelled *Course:*.
 - **Contents page** (`render_index()` in `build.py`). Rewritten to cover what
   a cell is, the explore-then-name sequence, why answers are visible, that
   errors cost nothing, and where work is saved. 17.7 words/sentence down to

@@ -1,0 +1,3 @@
+# An address the fixture site used to have, so the redirect stub and the
+# saved-work migration can be driven in a browser.
+tutorials/fixtures/prose-only.html: tutorials/prose-only.html

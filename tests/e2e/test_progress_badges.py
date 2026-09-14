@@ -18,16 +18,13 @@ DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
+from layout import write_course, write_tutorial  # noqa: E402
 
 MODULE = "progress-fixtures"
 
 FRONTMATTER = """---
 title: "{title}"
-slug: {slug}
-module: progress-fixtures
-module_title: "Progress Fixtures"
 year: "2026-2027"
-series: sample-series
 version: 2026.08.23.1
 ---
 
@@ -46,21 +43,21 @@ print("world")
 
 
 def _tutorial(root: Path, slug: str, title: str = "A Title") -> None:
-    path = root / "tutorials" / MODULE / f"{slug}.md"
+    path = root / "tutorials" / slug / f"{slug}.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(FRONTMATTER.format(title=title, slug=slug))
 
 
 def _set_order(root: Path, slugs: list[str]) -> None:
-    path = root / "tutorials" / MODULE / "sample-series.order.yaml"
-    path.write_text("series: Sample Series\norder:\n" + "".join(f"  - {s}\n" for s in slugs))
+    write_course(root, MODULE, "Sample Series", slugs)
 
 
 @pytest.fixture()
 def site(tmp_path, monkeypatch):
-    (tmp_path / "tutorials" / MODULE).mkdir(parents=True)
+    (tmp_path / "tutorials").mkdir(parents=True)
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
+    monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
     monkeypatch.setattr(b, "OUT", tmp_path / "site")
     monkeypatch.setattr(b, "SETUP", DEWLAB / "setup")
     monkeypatch.setattr(b, "DATA", DEWLAB / "data")
@@ -93,18 +90,17 @@ def site_url(site):
         thread.join(timeout=5)
 
 
-def _seed(page, module: str, slug: str, cells: list[dict]) -> None:
+def _seed(page, slug: str, cells: list[dict]) -> None:
     """A saved-progress record written straight into localStorage, as saveNow() would, without a cell run."""
     record = {
-        "tutorial-slug": slug,
-        "tutorial-module": module,
+        "tutorial-id": slug,
         "tutorial-version": "2026.08.23.1",
         "saved_at": "2026-08-28T00:00:00.000Z",
         "cells": cells,
     }
     page.evaluate(
         "([key, value]) => localStorage.setItem(key, value)",
-        [f"dewlab:progress:{module}:{slug}", json.dumps(record)],
+        [f"dewlab:progress:{slug}", json.dumps(record)],
     )
 
 
@@ -127,7 +123,7 @@ class TestProgressBadges:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{site_url}/all-tutorials.html")
-        _seed(page, MODULE, "one", [
+        _seed(page, "one", [
             {"task_id": "one-1", "student_code": "x = 1", "output_html": "", "errored": False},
         ])
         page.reload()
@@ -141,7 +137,7 @@ class TestProgressBadges:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{site_url}/all-tutorials.html")
-        _seed(page, MODULE, "one", [
+        _seed(page, "one", [
             {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
             {"task_id": "one-2", "student_code": "", "output_html": "", "errored": False},
         ])
@@ -158,7 +154,7 @@ class TestProgressBadges:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{site_url}/all-tutorials.html")
-        _seed(page, MODULE, "one", [
+        _seed(page, "one", [
             {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
             {"task_id": "one-2", "student_code": "", "output_html": '<pre class="dl-error">boom</pre>', "errored": True},
         ])
@@ -175,7 +171,7 @@ class TestProgressBadges:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{site_url}/all-tutorials.html")
-        _seed(page, MODULE, "one", [
+        _seed(page, "one", [
             {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
         ])
         page.reload()

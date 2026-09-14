@@ -4,6 +4,11 @@ A dewlab tutorial is one markdown file. The build turns it into a web page with
 runnable Python in it. This document covers the format: what goes in the file,
 what the build checks, and what to run before you open a pull request.
 
+If you only want to add or change one tutorial, `python3 check.py
+tutorials/<id>` checks it in a second and says in plain words what to fix.
+[`CHECK_YOUR_WORK.md`](CHECK_YOUR_WORK.md) explains that tool, and how it can
+open the pull request for you.
+
 Two other documents go with this one. Read
 [`../planning/PEDAGOGICAL_STYLE_GUIDE.md`](../planning/PEDAGOGICAL_STYLE_GUIDE.md)
 before you write prose — it is short, and it settles questions that are easy to
@@ -594,6 +599,10 @@ student has defined so far.
 ---
 
 ## Before you open a pull request
+
+Run `python3 check.py tutorials/<id>` (or `courses/<course>.yaml`) and fix
+every line that starts with *Problem*. When it reports none, it offers to
+open the pull request for you — [`CHECK_YOUR_WORK.md`](CHECK_YOUR_WORK.md).
 
 Run `python3 build.py` and fix anything it fails on — a dead link, a missing
 `alt`, an unstyled fold, a `covers:` section that does not exist.

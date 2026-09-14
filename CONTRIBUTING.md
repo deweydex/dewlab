@@ -180,6 +180,9 @@ information for the sake of a friendlier tone. Its job is precision.
 
 ## Before you open a pull request
 
+- If you touched a tutorial or a course file, run `python3 check.py` on it
+  first — [`docs/CHECK_YOUR_WORK.md`](docs/CHECK_YOUR_WORK.md) explains what
+  it reports, and it can open the pull request for you.
 - Run `python3 -m pytest` (skip `tests/e2e` unless you are testing browser
   behaviour directly), `ruff check` on any Python you touched, and
   `python3 build.py` to confirm the site still builds.

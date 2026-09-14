@@ -18,6 +18,7 @@ DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
+from layout import write_course, write_tutorial  # noqa: E402
 
 TRAILING_ANCHOR = "__trailing__"
 
@@ -418,11 +419,7 @@ MODULE = "custom-cells-fixtures"
 
 FRONTMATTER = """---
 title: "{title}"
-slug: {slug}
-module: custom-cells-fixtures
-module_title: "Custom Cells Fixtures"
 year: "2026-2027"
-series: sample-series
 version: 2026.08.23.1
 ---
 
@@ -433,21 +430,21 @@ Some prose. Nothing here is a cell, on purpose.
 
 
 def _tutorial(root: Path, slug: str, title: str = "A Title") -> None:
-    path = root / "tutorials" / MODULE / f"{slug}.md"
+    path = root / "tutorials" / slug / f"{slug}.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(FRONTMATTER.format(title=title, slug=slug))
 
 
 def _set_order(root: Path, slugs: list[str]) -> None:
-    path = root / "tutorials" / MODULE / "sample-series.order.yaml"
-    path.write_text("series: Sample Series\norder:\n" + "".join(f"  - {s}\n" for s in slugs))
+    write_course(root, MODULE, "Sample Series", slugs)
 
 
 @pytest.fixture()
 def prose_only_site(tmp_path, monkeypatch):
-    (tmp_path / "tutorials" / MODULE).mkdir(parents=True)
+    (tmp_path / "tutorials").mkdir(parents=True)
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
+    monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
     monkeypatch.setattr(b, "OUT", tmp_path / "site")
     monkeypatch.setattr(b, "SETUP", DEWLAB / "setup")
     monkeypatch.setattr(b, "DATA", DEWLAB / "data")
@@ -484,7 +481,7 @@ class TestNoCustomCellsOnAProseOnlyPage:
         try:
             context = browser.new_context()
             page = context.new_page()
-            page.goto(f"{url}/tutorials/{MODULE}/one.html")
+            page.goto(f"{url}/tutorials/one.html")
             assert page.locator("#dl-custom-cells").count() == 0
             assert page.locator(".dl-insert").count() == 0
             _open_panel(page, "#dl-importsexports-toggle")

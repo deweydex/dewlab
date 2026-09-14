@@ -20,17 +20,14 @@ DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
+from layout import write_course, write_tutorial  # noqa: E402
 
 MODULE = "highlight-wrap-fixtures"
 SLUG = "one"
 
 FRONTMATTER = """---
 title: "Highlight Wrap Fixture"
-slug: one
-module: highlight-wrap-fixtures
-module_title: "Highlight Wrap Fixtures"
 year: "2026-2027"
-series: sample-series
 version: 2026.08.23.1
 ---
 
@@ -44,13 +41,12 @@ PLAIN-PARAGRAPH holds a passage worth marking on reload, nothing fancy in it.
 
 @pytest.fixture()
 def site(tmp_path, monkeypatch):
-    (tmp_path / "tutorials" / MODULE).mkdir(parents=True)
-    (tmp_path / "tutorials" / MODULE / f"{SLUG}.md").write_text(FRONTMATTER)
-    (tmp_path / "tutorials" / MODULE / "sample-series.order.yaml").write_text(
-        "series: Sample Series\norder:\n  - one\n"
-    )
+    (tmp_path / "tutorials").mkdir(parents=True)
+    write_tutorial(tmp_path, SLUG, FRONTMATTER)
+    write_course(tmp_path, MODULE, "Sample Series", ["one"])
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
+    monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
     monkeypatch.setattr(b, "OUT", tmp_path / "site")
     monkeypatch.setattr(b, "SETUP", DEWLAB / "setup")
     monkeypatch.setattr(b, "DATA", DEWLAB / "data")
@@ -88,7 +84,7 @@ def site_url(site):
 def page(browser, site_url):
     context = browser.new_context()
     dl_page = context.new_page()
-    dl_page.goto(f"{site_url}/tutorials/{MODULE}/{SLUG}.html")
+    dl_page.goto(f"{site_url}/tutorials/{SLUG}.html")
     dl_page.wait_for_function("() => !!globalThis.dewlab")
     yield dl_page
     context.close()
@@ -100,8 +96,7 @@ def _seed(page, highlight: dict):
         [
             page.evaluate("dewlab.progressKey()"),
             json.dumps({
-                "tutorial-slug": SLUG,
-                "tutorial-module": MODULE,
+                "tutorial-id": SLUG,
                 "tutorial-version": "2026.08.23.1",
                 "saved_at": "2026-01-01T00:00:00.000Z",
                 "notes": "",
@@ -230,7 +225,7 @@ class TestRestoredHighlightsRenderVisibly:
 def test_a_highlight_meets_aa_against_its_own_background(browser, site_url, scheme):
     page = browser.new_page(color_scheme=scheme)
     try:
-        page.goto(f"{site_url}/tutorials/{MODULE}/{SLUG}.html")
+        page.goto(f"{site_url}/tutorials/{SLUG}.html")
         page.wait_for_function("() => !!globalThis.dewlab")
         anchor = page.evaluate(
             """() => {

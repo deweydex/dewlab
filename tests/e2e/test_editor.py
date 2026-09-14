@@ -9,22 +9,25 @@ import re
 import pytest
 
 REPO = {
-    "tutorials/fixtures/maths.order.yaml":
-        "series: Maths and programming\norder:\n  - first-steps\n  - next-steps\n",
-    "tutorials/fixtures/first-steps/first-steps.md":
-        '---\ntitle: "First Steps"\nslug: first-steps\nmodule: fixtures\n'
-        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\nversion: 2026.08.23.1\n---\n\n'
+    "courses/fixtures.yaml":
+        "title: Fixtures\ncontents:\n"
+        "  - title: Maths and programming\n    tutorials:\n"
+        "      - first-steps\n"
+        "      - next-steps\n"
+        "  - title: Reflections and review\n    tutorials:\n"
+        "      - looking-back\n",
+    "tutorials/first-steps/first-steps.md":
+        '---\ntitle: "First Steps"\n'
+        'year: "2026-2027"\nversion: 2026.08.23.1\n---\n\n'
         "# First Steps\n\nProse.\n\n## Adding up\n\n```python exec\nid: adding-up-1\n"
         "print(1 + 1)\n```\n",
-    "tutorials/fixtures/next-steps/next-steps.md":
-        '---\ntitle: "Next Steps"\nslug: next-steps\nmodule: fixtures\n'
-        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\nversion: 2026.08.23.1\n---\n\n'
+    "tutorials/next-steps/next-steps.md":
+        '---\ntitle: "Next Steps"\n'
+        'year: "2026-2027"\nversion: 2026.08.23.1\n---\n\n'
         "# Next Steps\n\nMore prose.\n",
-    "tutorials/fixtures/looking-back.order.yaml":
-        "series: Reflections and review\norder:\n  - looking-back\n",
-    "tutorials/fixtures/looking-back/looking-back.md":
-        '---\ntitle: "Looking Back"\nslug: looking-back\nmodule: fixtures\n'
-        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: looking-back\nversion: 2026.08.23.1\n---\n\n'
+    "tutorials/looking-back/looking-back.md":
+        '---\ntitle: "Looking Back"\n'
+        'year: "2026-2027"\nversion: 2026.08.23.1\n---\n\n'
         "# Looking Back\n\nProse.\n",
 }
 
@@ -43,8 +46,7 @@ FAKE_CLIENT = """
 
 def _released(slug: str, version: str, cells: str, status: str = "live") -> str:
     return (
-        f'---\ntitle: "Two Takes"\nslug: {slug}\nmodule: fixtures\n'
-        f'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\n'
+        f'---\ntitle: "Two Takes"\nyear: "2026-2027"\n'
         f"version: {version}\nstatus: {status}\n---\n\n# Two Takes\n\nProse.\n\n"
         "## A section\n\n" + cells
     )
@@ -55,21 +57,23 @@ def _cell(cell_id: str) -> str:
 
 
 VERSIONED = {
-    "tutorials/fixtures/maths.order.yaml":
-        "series: Maths and programming\norder:\n  - first-steps\n  - two-takes\n",
-    "tutorials/fixtures/first-steps/first-steps.md":
-        '---\ntitle: "First Steps"\nslug: first-steps\nmodule: fixtures\n'
-        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\n'
+    "courses/fixtures.yaml":
+        "title: Fixtures\ncontents:\n"
+        "  - title: Maths and programming\n    tutorials:\n"
+        "      - first-steps\n"
+        "      - two-takes\n",
+    "tutorials/first-steps/first-steps.md":
+        '---\ntitle: "First Steps"\nyear: "2026-2027"\n'
         "version: 2026.06.02.1\nstatus: live\n---\n\n# First Steps\n\nProse.\n\n"
         "## Adding up\n\n" + _cell("adding-up-1"),
-    "tutorials/fixtures/two-takes/v2026.06.02.1.md":
+    "tutorials/two-takes/v2026.06.02.1.md":
         _released("two-takes", "2026.06.02.1", _cell("shared-one") + _cell("only-in-june")),
-    "tutorials/fixtures/two-takes/v2026.09.15.1.md":
+    "tutorials/two-takes/v2026.09.15.1.md":
         _released("two-takes", "2026.09.15.1",
                   _cell("shared-one") + _cell("only-in-september")),
-    "tutorials/fixtures/old-ways/v2026.01.01.1.md":
+    "tutorials/old-ways/v2026.01.01.1.md":
         _released("old-ways", "2026.01.01.1", _cell("old-one"), status="archived"),
-    "tutorials/fixtures/old-ways/v2026.03.01.1.md":
+    "tutorials/old-ways/v2026.03.01.1.md":
         _released("old-ways", "2026.03.01.1", _cell("old-two"), status="archived"),
 }
 
@@ -123,13 +127,13 @@ def _big_repo(count: int) -> dict:
     index so a batch mix-up would actually be caught."""
     order = [f"tutorial-{i:03d}" for i in range(count)]
     files = {
-        "tutorials/fixtures/big.order.yaml":
-            "series: Big\norder:\n" + "".join(f"  - {slug}\n" for slug in order),
+        "courses/fixtures.yaml":
+            "title: Fixtures\ncontents:\n  - title: Big\n    tutorials:\n"
+            + "".join(f"      - {slug}\n" for slug in order),
     }
     for i, slug in enumerate(order):
-        files[f"tutorials/fixtures/{slug}/{slug}.md"] = (
-            f'---\ntitle: "Tutorial number {i}"\nslug: {slug}\nmodule: fixtures\n'
-            f'module_title: "Fixtures"\nyear: "2026-2027"\nseries: big\n'
+        files[f"tutorials/{slug}/{slug}.md"] = (
+            f'---\ntitle: "Tutorial number {i}"\nyear: "2026-2027"\n'
             f"version: 2026.08.23.1\n---\n\n# Tutorial number {i}\n\nProse.\n"
         )
     return files
@@ -214,20 +218,31 @@ class TestInsertingAndCreating:
         editor.once("dialog", lambda d: d.accept("Halfway There"))
         editor.click(".dl-editor-series:first-of-type .dl-editor-new")
         written = editor.evaluate(
-            "globalThis.dewlabEditor.state.files.get('tutorials/fixtures/halfway-there/halfway-there.md')")
+            "globalThis.dewlabEditor.state.files.get('tutorials/halfway-there/halfway-there.md')")
         assert 'title: "Halfway There"' in written
-        assert "slug: halfway-there" in written
         assert "```python exec" in written
         assert "## Reflection" in written
 
-    def test_a_new_tutorial_inherits_the_module_details_of_its_neighbours(self, editor):
+    def test_a_new_tutorial_carries_only_what_is_its_own(self, editor):
+        """Where it sits is a line in the course file, added alongside."""
         editor.once("dialog", lambda d: d.accept("Halfway There"))
         editor.click(".dl-editor-series:first-of-type .dl-editor-new")
         written = editor.evaluate(
-            "globalThis.dewlabEditor.state.files.get('tutorials/fixtures/halfway-there/halfway-there.md')")
-        assert 'module_title: "Fixtures"' in written
+            "globalThis.dewlabEditor.state.files.get('tutorials/halfway-there/halfway-there.md')")
         assert 'year: "2026-2027"' in written
-        assert "series: maths" in written
+        for field in ("slug:", "module:", "module_title:", "series:"):
+            assert field not in written
+        listed = editor.evaluate(
+            """() => [...globalThis.dewlabEditor.state.series.values()]
+                 .find((s) => s.name === "maths-and-programming").order""")
+        assert listed == ["first-steps", "next-steps", "halfway-there"]
+
+    def test_an_id_that_is_taken_is_refused_and_says_where_it_is(self, editor):
+        editor.once("dialog", lambda d: d.accept("Looking Back"))
+        editor.click(".dl-editor-series:first-of-type .dl-editor-new")
+        assert "The id looking-back is taken" in editor.inner_text("#dl-editor-status")
+        assert "Fixtures" in editor.inner_text("#dl-editor-status")
+        assert editor.get_attribute("#dl-editor-save", "disabled") is not None
 
 
 class TestEditingWhatIsInside:
@@ -300,31 +315,23 @@ class TestEditingWhatIsInside:
 
 
 LINKS = {
-    "tutorials/fixtures/maths.order.yaml":
-        "series: Maths and programming\norder:\n  - first-steps\n",
-    "tutorials/fixtures/first-steps/first-steps.md":
-        '---\ntitle: "First Steps"\nslug: first-steps\nmodule: fixtures\n'
-        'module_title: "Fixtures"\nyear: "2026-2027"\nseries: maths\nversion: 2026.08.23.1\n---\n\n'
+    "courses/fixtures.yaml":
+        "title: Fixtures\ncontents:\n"
+        "  - title: Maths and programming\n    tutorials:\n"
+        "      - first-steps\n",
+    "tutorials/first-steps/first-steps.md":
+        '---\ntitle: "First Steps"\n'
+        'year: "2026-2027"\nversion: 2026.08.23.1\n---\n\n'
         "# First Steps\n\n## A Grid of Numbers\n\n"
         "```python exec\nid: adding-up-1\n# not a heading\nprint(1)\n```\n",
-    "tutorials/other/next-steps.order.yaml":
-        "series: Other\norder:\n  - next-steps\n",
-    "tutorials/other/next-steps/next-steps.md":
-        '---\ntitle: "Next Steps"\nslug: next-steps\nmodule: other\n'
-        'module_title: "Other"\nyear: "2026-2027"\nseries: other\nversion: 2026.08.23.1\n---\n\n'
+    "courses/other.yaml":
+        "title: Other\ncontents:\n"
+        "  - title: Other\n    tutorials:\n"
+        "      - next-steps\n",
+    "tutorials/next-steps/next-steps.md":
+        '---\ntitle: "Next Steps"\n'
+        'year: "2026-2027"\nversion: 2026.08.23.1\n---\n\n'
         "# Next Steps\n\nProse.\n",
-    "tutorials/third/shared-name.order.yaml":
-        "series: Third\norder:\n  - shared-name\n",
-    "tutorials/third/shared-name/shared-name.md":
-        '---\ntitle: "Shared Name (Third)"\nslug: shared-name\nmodule: third\n'
-        'module_title: "Third"\nyear: "2026-2027"\nseries: third\nversion: 2026.08.23.1\n---\n\n'
-        "# Shared Name\n\nProse.\n",
-    "tutorials/fourth/shared-name.order.yaml":
-        "series: Fourth\norder:\n  - shared-name\n",
-    "tutorials/fourth/shared-name/shared-name.md":
-        '---\ntitle: "Shared Name (Fourth)"\nslug: shared-name\nmodule: fourth\n'
-        'module_title: "Fourth"\nyear: "2026-2027"\nseries: fourth\nversion: 2026.08.23.1\n---\n\n'
-        "# Shared Name\n\nProse.\n",
 }
 
 
@@ -352,17 +359,10 @@ class TestTutorialLinkChecking:
         self.edit_body(links, "# T\n\nSee [it](tutorial:nope-not-real).\n")
         assert "does not match any tutorial" in links.inner_text("#dl-editor-report")
 
-    def test_a_link_to_a_real_tutorial_in_another_module_is_not_reported(self, links):
+    def test_a_link_to_a_real_tutorial_on_another_course_is_not_reported(self, links):
         self.open_first(links)
         self.edit_body(links, "# T\n\nSee [it](tutorial:next-steps).\n")
         assert "does not match" not in links.inner_text("#dl-editor-report")
-
-    def test_a_slug_ambiguous_across_two_other_modules_is_reported(self, links):
-        self.open_first(links)
-        self.edit_body(links, "# T\n\nSee [it](tutorial:shared-name).\n")
-        report = links.inner_text("#dl-editor-report")
-        assert "ambiguous" in report
-        assert "third" in report and "fourth" in report
 
     def test_a_link_to_a_real_heading_anchor_is_not_reported(self, links):
         """Appends to the body rather than replacing it outright, since
@@ -543,7 +543,7 @@ class TestCrepeIsActuallyThemed:
 
 
 class TestCommitting:
-    def test_a_reorder_commits_the_order_file_and_opens_a_pull_request(self, editor):
+    def test_a_reorder_commits_the_course_file_and_opens_a_pull_request(self, editor):
         editor.click('.dl-editor-card[data-slug="next-steps"] .dl-editor-up')
         editor.once("dialog", lambda d: d.accept("Put next steps first"))
         editor.click("#dl-editor-save")
@@ -551,10 +551,12 @@ class TestCommitting:
         change = editor.evaluate("globalThis.__committed")
         assert change["message"] == "Put next steps first"
         assert change["base"] == "basesha"
-        assert [f["path"] for f in change["files"]] == ["tutorials/fixtures/maths.order.yaml"]
+        assert [f["path"] for f in change["files"]] == ["courses/fixtures.yaml"]
         written = change["files"][0]["text"]
         assert written.index("next-steps") < written.index("first-steps")
-        assert "series: Maths and programming" in written
+        # The rest of the file — the title, the other series — is as it was.
+        assert "title: Fixtures" in written
+        assert "  - title: Reflections and review\n    tutorials:\n      - looking-back\n" in written
 
     def test_the_commit_lands_on_a_new_branch_never_on_main(self, editor):
         editor.click('.dl-editor-card[data-slug="next-steps"] .dl-editor-up')
@@ -565,9 +567,9 @@ class TestCommitting:
         assert branch.startswith("editor/")
         assert branch != "main"
 
-    def test_an_insertion_commits_both_the_tutorial_and_the_order_file(self, editor):
+    def test_an_insertion_commits_both_the_tutorial_and_the_course_file(self, editor):
         """Two files in one commit, because either alone leaves the repository
-        describing a series that does not exist."""
+        describing a course that does not exist."""
         editor.once("dialog", lambda d: d.accept("Halfway There"))
         editor.click(".dl-editor-series:first-of-type .dl-editor-new")
         editor.once("dialog", lambda d: d.accept("Add halfway there"))
@@ -575,8 +577,8 @@ class TestCommitting:
         editor.wait_for_function("globalThis.__committed !== undefined")
         paths = sorted(f["path"] for f in editor.evaluate("globalThis.__committed.files"))
         assert paths == [
-            "tutorials/fixtures/halfway-there/halfway-there.md",
-            "tutorials/fixtures/maths.order.yaml",
+            "courses/fixtures.yaml",
+            "tutorials/halfway-there/halfway-there.md",
         ]
 
     def test_the_save_button_goes_quiet_again_afterwards(self, editor):
@@ -589,15 +591,16 @@ class TestCommitting:
 
 
 class TestStatus:
-    """Only a live tutorial belongs on the reading order, and the build
-    refuses an order file listing anything else — so the order line has to
-    move with the status field or the next build stops."""
+    """A tutorial keeps its line in the course file whatever its status —
+    the build reads the status and puts a draft, a beta or an archived
+    tutorial off the reading order itself — so a status change is one
+    field in one file."""
 
     def status_of(self, editor, slug: str) -> str:
         return editor.evaluate(
             """(slug) => {
                  const text = globalThis.dewlabEditor.state.files.get(
-                   `tutorials/fixtures/${slug}/${slug}.md`);
+                   `tutorials/${slug}/${slug}.md`);
                  const m = /^status:\\s*(\\S+)/m.exec(text);
                  return m ? m[1] : "live";
                }""", slug)
@@ -605,7 +608,7 @@ class TestStatus:
     def order_of(self, editor) -> list:
         return editor.evaluate(
             """() => [...globalThis.dewlabEditor.state.series.values()]
-                 .find((s) => s.name === "maths").order""")
+                 .find((s) => s.name === "maths-and-programming").order""")
 
     def test_every_tutorial_shows_its_status(self, editor):
         assert editor.eval_on_selector_all(
@@ -622,43 +625,35 @@ class TestStatus:
                      '.dl-editor-status-option[data-status="beta"]')
         assert self.status_of(editor, "first-steps") == "beta"
 
-    def test_leaving_live_takes_it_out_of_the_reading_order(self, editor):
+    def test_leaving_live_keeps_its_line_in_the_course_file(self, editor):
         assert "first-steps" in self.order_of(editor)
         editor.click('.dl-editor-card[data-slug="first-steps"] '
                      '.dl-editor-status-option[data-status="archived"]')
-        assert "first-steps" not in self.order_of(editor)
-
-    def test_returning_to_live_puts_it_back(self, editor):
-        editor.click('.dl-editor-card[data-slug="first-steps"] '
-                     '.dl-editor-status-option[data-status="draft"]')
-        assert "first-steps" not in self.order_of(editor)
-        editor.click('.dl-editor-off[data-slug="first-steps"] '
-                     '.dl-editor-status-option[data-status="live"]')
         assert "first-steps" in self.order_of(editor)
+        assert editor.query_selector('.dl-editor-card[data-slug="first-steps"]')
 
-    def test_a_tutorial_off_the_route_is_still_listed(self, editor):
-        """Otherwise setting something to draft is a one-way trip: it drops out
-        of the order file and out of the list at once, with no way back to it."""
-        editor.click('.dl-editor-card[data-slug="first-steps"] '
-                     '.dl-editor-status-option[data-status="draft"]')
-        assert editor.query_selector('.dl-editor-off[data-slug="first-steps"]')
-        titles = editor.eval_on_selector_all(
-            ".dl-editor-open", "e => e.map(b => b.textContent)")
-        assert "First Steps" in titles
+    def test_a_tutorial_no_course_lists_is_still_shown(self, browser, base_url):
+        """Otherwise a tutorial written before it is placed is invisible
+        here, with no way to reach it."""
+        files = dict(REPO)
+        files["tutorials/unlisted/unlisted.md"] = (
+            '---\ntitle: "Unlisted"\nyear: "2026-2027"\nversion: 2026.08.23.1\n---\n\n# Unlisted\n')
+        context, tab = _open(browser, base_url, files)
+        try:
+            assert tab.query_selector('.dl-editor-off[data-slug="unlisted"]')
+            heading = tab.inner_text('.dl-editor-series[data-course=""] h2')
+            assert heading == "On no course yet"
+        finally:
+            context.close()
 
-    def test_the_status_change_commits_both_files_together(self, editor):
-        """Either file alone leaves the repository contradicting itself, and
-        the build stops on exactly that."""
+    def test_the_status_change_commits_the_tutorial_alone(self, editor):
         editor.click('.dl-editor-card[data-slug="first-steps"] '
                      '.dl-editor-status-option[data-status="archived"]')
         editor.once("dialog", lambda d: d.accept("Retire first steps"))
         editor.click("#dl-editor-save")
         editor.wait_for_function("globalThis.__committed !== undefined")
         paths = sorted(f["path"] for f in editor.evaluate("globalThis.__committed.files"))
-        assert paths == [
-            "tutorials/fixtures/first-steps/first-steps.md",
-            "tutorials/fixtures/maths.order.yaml",
-        ]
+        assert paths == ["tutorials/first-steps/first-steps.md"]
         written = next(f for f in editor.evaluate("globalThis.__committed.files")
                        if f["path"].endswith(".md"))["text"]
         assert "status: archived" in written
@@ -722,11 +717,11 @@ class TestVersionArithmetic:
 class TestOpeningATutorialWithSeveralReleases:
     def test_it_opens_the_newest_live_one(self, versioned):
         """It used to open an empty buffer: `pathOf` looked for a single
-        `tutorials/<module>/<slug>.md`, and a tutorial with a second release
+        `tutorials/<id>.md`, and a tutorial with a second release
         is a folder of releases instead."""
         versioned.click('.dl-editor-card[data-slug="two-takes"] .dl-editor-open')
         where = versioned.inner_text(".dl-editor-one .dl-editor-where")
-        assert where == "tutorials/fixtures/two-takes/v2026.09.15.1.md"
+        assert where == "tutorials/two-takes/v2026.09.15.1.md"
 
     def test_the_body_is_the_one_students_are_reading(self, versioned):
         versioned.click('.dl-editor-card[data-slug="two-takes"] .dl-editor-open')
@@ -750,7 +745,7 @@ class TestOpeningATutorialWithSeveralReleases:
     def test_and_the_one_card_opens_its_newest_release(self, versioned):
         versioned.click('.dl-editor-off[data-slug="old-ways"] .dl-editor-open')
         where = versioned.inner_text(".dl-editor-one .dl-editor-where")
-        assert where == "tutorials/fixtures/old-ways/v2026.03.01.1.md"
+        assert where == "tutorials/old-ways/v2026.03.01.1.md"
 
 
 class TestReleasing:
@@ -788,11 +783,11 @@ class TestReleasing:
         self.commit(versioned)
         files = self.files(versioned)
 
-        current = "tutorials/fixtures/first-steps/first-steps.md"
-        frozen = "tutorials/fixtures/first-steps/v2026.06.02.1.md"
+        current = "tutorials/first-steps/first-steps.md"
+        frozen = "tutorials/first-steps/v2026.06.02.1.md"
         assert files[current] is not None
         assert frozen in files
-        assert len([p for p in files if p.startswith("tutorials/fixtures/first-steps/")]) == 2
+        assert len([p for p in files if p.startswith("tutorials/first-steps/")]) == 2
 
     def test_the_frozen_copy_is_what_students_have_not_what_was_typed(self, versioned):
         """Freezing the edits instead would make the release a copy of the
@@ -800,7 +795,7 @@ class TestReleasing:
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
         self.release(versioned)
         self.commit(versioned)
-        frozen = self.files(versioned)["tutorials/fixtures/first-steps/v2026.06.02.1.md"]
+        frozen = self.files(versioned)["tutorials/first-steps/v2026.06.02.1.md"]
         assert "Rewritten." not in frozen
         assert "adding-up-1" in frozen
         assert "version: 2026.06.02.1" in frozen
@@ -811,7 +806,7 @@ class TestReleasing:
         self.commit(versioned)
         files = self.files(versioned)
         new = next(text for path, text in files.items()
-                   if path.startswith("tutorials/fixtures/first-steps/")
+                   if path.startswith("tutorials/first-steps/")
                    and "v2026.06.02.1" not in path)
         assert "Rewritten." in new
         assert re.search(r"^version: \d{4}\.\d{2}\.\d{2}\.\d+$", new, re.M)
@@ -822,7 +817,7 @@ class TestReleasing:
         self.release(versioned)
         self.commit(versioned)
         new = next(text for path, text in self.files(versioned).items()
-                   if path.startswith("tutorials/fixtures/first-steps/")
+                   if path.startswith("tutorials/first-steps/")
                    and "v2026.06.02.1" not in path)
         assert "supersedes: 2026.06.02.1" in new
 
@@ -833,9 +828,9 @@ class TestReleasing:
         self.release(versioned)
         self.commit(versioned)
         files = self.files(versioned)
-        assert "tutorials/fixtures/two-takes/v2026.06.02.1.md" not in files
-        assert "tutorials/fixtures/two-takes/v2026.09.15.1.md" not in files
-        written = [p for p in files if p.startswith("tutorials/fixtures/two-takes/")]
+        assert "tutorials/two-takes/v2026.06.02.1.md" not in files
+        assert "tutorials/two-takes/v2026.09.15.1.md" not in files
+        written = [p for p in files if p.startswith("tutorials/two-takes/")]
         assert len(written) == 1
         assert "A third take." in files[written[0]]
         assert "supersedes: 2026.09.15.1" in files[written[0]]
@@ -845,17 +840,17 @@ class TestReleasing:
         self.release(versioned)
         held = versioned.evaluate(
             "() => globalThis.dewlabEditor.state.files"
-            ".get('tutorials/fixtures/two-takes/v2026.09.15.1.md')")
+            ".get('tutorials/two-takes/v2026.09.15.1.md')")
         assert "A third take." not in held
         assert "only-in-september" in held
 
-    def test_the_order_file_is_not_touched_by_a_release(self, versioned):
-        """An order file lists slugs, not releases — a new version of a
+    def test_the_course_file_is_not_touched_by_a_release(self, versioned):
+        """A course file lists ids, not releases — a new version of a
         tutorial is not a new tutorial."""
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
         self.release(versioned)
         self.commit(versioned)
-        assert "tutorials/fixtures/maths.order.yaml" not in self.files(versioned)
+        assert "courses/fixtures.yaml" not in self.files(versioned)
 
     def test_releasing_with_nothing_changed_is_refused(self, versioned):
         versioned.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')

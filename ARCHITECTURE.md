@@ -80,7 +80,13 @@ The pipeline, in order:
    work out reading order, the current release, which tutorial a practice
    page belongs to, and what's retired. An id listed in a course file with
    no tutorial behind it fails the build here rather than surfacing as a
-   broken "next" link; a tutorial on no course builds, and is noted.
+   broken "next" link; a tutorial on no course builds, and is noted. A
+   tutorial listed on two courses builds once, with the tree and
+   previous/next of the first course that lists it and a line under its
+   heading naming the other; `write_routes()` writes every course's
+   contents to `assets/routes.json` for the runtime to redraw that chrome
+   per course (§2), and `write_redirects()` writes a small page at every
+   old address `courses/redirects.yaml` lists.
 
 6. **Render into `assets/shell.html`.** Every page — tutorial, contents
    page, topic tree, `editor.html` — is the same template with `{{TOKEN}}`
@@ -166,7 +172,13 @@ What happens on load:
 - Each cell gets a CodeMirror instance mounted over its `.dl-editor`
   placeholder, seeded from the manifest's starter code or from whatever the
   student saved last (`localStorage`, keyed `dewlab:progress:<id>`,
-  scoped per cell by its stable `id`).
+  scoped per cell by its stable `id`). Before that, `migrateStorage()`
+  renames the page's keys from the older `<module>:<slug>` form the
+  manifest's `legacy` names, once; and `initCourse()` reads which course
+  the reader is following (`dewlab:course`, set by a course page on
+  arrival or by the chooser on the tree) and, on a page listed by more
+  than one course, redraws the tree, previous/next and the "also part
+  of" line from `assets/routes.json` (`drawCourseChrome()`).
 - Pyodide boots lazily, on the first Run click (`ensureBooted()`), not on
   page load. `pyodide.loadPackage(manifest.packages)` pulls in `numpy`,
   `pandas`, `matplotlib` by default, or whatever a tutorial's `packages:`

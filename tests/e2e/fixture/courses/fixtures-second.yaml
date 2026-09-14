@@ -1,0 +1,11 @@
+# A second course that lists one fixture page, so the course chooser on
+# the tree and the "also part of" line have something to show.
+title: Second Course
+code: E2E · Second
+status: beta
+card: One page, listed again.
+description: A second course that lists third-page.
+contents:
+  - title: Also
+    tutorials:
+      - third-page

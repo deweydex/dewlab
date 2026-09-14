@@ -67,7 +67,7 @@ class TestCellReportPanel:
     def test_links_carry_page_version_and_this_cell(self, page):
         icon(page, "numpy-basics").click()
         params = issue_link_params(page, "numpy-basics", "error")
-        assert params["page"] == ["fixtures/rendering-tour"]
+        assert params["page"] == ["rendering-tour"]
         assert params["cell"] == ["numpy-basics"]
         assert params["template"] == ["report.yml"]
         assert "version" in params

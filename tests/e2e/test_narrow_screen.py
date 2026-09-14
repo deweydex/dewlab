@@ -15,6 +15,7 @@ DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
+from layout import write_course, write_tutorial  # noqa: E402
 
 MODULE = "narrow-fixtures"
 
@@ -23,11 +24,7 @@ PHONE = {"width": 375, "height": 667}
 
 TUTORIAL = """---
 title: "Narrow"
-slug: narrow
-module: narrow-fixtures
-module_title: "Narrow Fixtures"
 year: "2026-2027"
-series: narrow-series
 version: 2026.08.30.1
 ---
 
@@ -46,9 +43,10 @@ space anywhere in it, which is the whole point of this fixture.
 
 @pytest.fixture()
 def site(tmp_path, monkeypatch):
-    (tmp_path / "tutorials" / MODULE).mkdir(parents=True)
+    (tmp_path / "tutorials").mkdir(parents=True)
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
+    monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
     monkeypatch.setattr(b, "OUT", tmp_path / "site")
     monkeypatch.setattr(b, "SETUP", DEWLAB / "setup")
     monkeypatch.setattr(b, "DATA", DEWLAB / "data")
@@ -76,9 +74,8 @@ def site_url(site):
 
 
 def _build(site: Path) -> None:
-    (site / "tutorials" / MODULE / "narrow.md").write_text(TUTORIAL)
-    (site / "tutorials" / MODULE / "narrow-series.order.yaml").write_text(
-        "series: Narrow Series\norder:\n  - narrow\n")
+    write_tutorial(site, "narrow", TUTORIAL)
+    write_course(site, MODULE, "Narrow Series", ["narrow"])
     b.build()
 
 
@@ -91,7 +88,7 @@ class TestNothingScrollsSideways:
         _build(site)
         context = _phone(browser)
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/narrow.html")
+        page.goto(f"{site_url}/tutorials/narrow.html")
         page.wait_for_selector("#dl-body")
         widths = page.evaluate("""() => ({
           scroll: document.documentElement.scrollWidth,
@@ -119,7 +116,7 @@ class TestNothingScrollsSideways:
         _build(site)
         context = _phone(browser)
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/narrow.html")
+        page.goto(f"{site_url}/tutorials/narrow.html")
         page.wait_for_selector("#dl-body")
         overflow = page.evaluate("""() => {
           const status = document.getElementById('dl-status');

@@ -22,10 +22,10 @@ sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
 
-MODULE = "fixtures"
+COURSE = "fixtures"
 SLUG = "rendering-tour"
-PAGE = f"tutorials/{MODULE}/{SLUG}.html"
-UP = "../../"  # from the built page back to the site root
+PAGE = f"tutorials/{SLUG}.html"
+UP = "../"  # from the built page back to the site root
 
 
 def _open_panel(actor, selector: str) -> None:
@@ -48,17 +48,21 @@ def site_dir(tmp_path_factory) -> Path:
         )
 
     root = tmp_path_factory.mktemp("dewlab-e2e")
-    (root / "tutorials" / MODULE).mkdir(parents=True)
-    # rglob rather than glob: a tutorial with more than one release lives in a
-    # folder of its own, and the picker only exists on one of those.
+    (root / "tutorials").mkdir(parents=True)
+    # A page at the top of fixture/ is `tutorials/<id>/<id>.md`; a folder of
+    # releases (two-takes/, prose-only/) is copied as it is, since that is
+    # already the layout — a release sits beside the tutorial it is a
+    # version of; a glossary goes beside its tutorial.
     for source in sorted(FIXTURE_DIR.rglob("*.md")):
-        into = root / "tutorials" / MODULE / source.relative_to(FIXTURE_DIR)
+        relative = source.relative_to(FIXTURE_DIR)
+        into = (root / "tutorials" / relative.stem / source.name if len(relative.parts) == 1
+                else root / "tutorials" / relative)
         into.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(source, into)
-    for source in sorted(FIXTURE_DIR.glob("*.order.yaml")):
-        shutil.copy(source, root / "tutorials" / MODULE / source.name)
     for source in sorted(FIXTURE_DIR.glob("*.glossary.yaml")):
-        shutil.copy(source, root / "tutorials" / MODULE / source.name)
+        ident = source.name[: -len(".glossary.yaml")]
+        shutil.copy(source, root / "tutorials" / ident / source.name)
+    shutil.copytree(FIXTURE_DIR / "courses", root / "courses")
     shutil.copytree(DEWLAB / "assets", root / "assets")
     shutil.copytree(DEWLAB / "data", root / "data")
     # The topic tree is built from the curriculum data, and its behaviour —
@@ -71,13 +75,14 @@ def site_dir(tmp_path_factory) -> Path:
           "    name: Fixtures\n"
           "    intro: The e2e fixture's own pages, so the topic filter has a group.\n"
           "    tutorials:\n"
-          f"      - {{ module: {MODULE}, slug: third-page }}\n"
+          "      - third-page\n"
     )
 
     out = root / "site"
     for name, value in {
         "ROOT": root,
         "TUTORIALS": root / "tutorials",
+        "COURSES": root / "courses",
         "SETUP": root / "setup",
         "DATA": root / "data",
         "ASSETS": root / "assets",

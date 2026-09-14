@@ -21,17 +21,14 @@ DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
+from layout import write_course, write_tutorial  # noqa: E402
 
 MODULE = "anchor-fixtures"
 SLUG = "one"
 
 FRONTMATTER = """---
 title: "Anchor Fixture"
-slug: one
-module: anchor-fixtures
-module_title: "Anchor Fixtures"
 year: "2026-2027"
-series: sample-series
 version: 2026.08.23.1
 ---
 
@@ -72,13 +69,12 @@ REPEATED_BLOCK = 2  # "PARA-ONE mentions the pivot..." (twice)
 
 @pytest.fixture()
 def site(tmp_path, monkeypatch):
-    (tmp_path / "tutorials" / MODULE).mkdir(parents=True)
-    (tmp_path / "tutorials" / MODULE / f"{SLUG}.md").write_text(FRONTMATTER)
-    (tmp_path / "tutorials" / MODULE / "sample-series.order.yaml").write_text(
-        "series: Sample Series\norder:\n  - one\n"
-    )
+    (tmp_path / "tutorials").mkdir(parents=True)
+    write_tutorial(tmp_path, SLUG, FRONTMATTER)
+    write_course(tmp_path, MODULE, "Sample Series", ["one"])
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
+    monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
     monkeypatch.setattr(b, "OUT", tmp_path / "site")
     monkeypatch.setattr(b, "SETUP", DEWLAB / "setup")
     monkeypatch.setattr(b, "DATA", DEWLAB / "data")
@@ -116,7 +112,7 @@ def site_url(site):
 def page(browser, site_url):
     context = browser.new_context()
     dl_page = context.new_page()
-    dl_page.goto(f"{site_url}/tutorials/{MODULE}/{SLUG}.html")
+    dl_page.goto(f"{site_url}/tutorials/{SLUG}.html")
     dl_page.wait_for_function("() => !!globalThis.dewlab")
     yield dl_page
     context.close()
