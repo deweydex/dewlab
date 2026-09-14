@@ -90,6 +90,25 @@ Slugs are unique within a module, not across the site — the built path already
 carries the module, so two modules may each have a `first-steps`. A `tutorial:`
 link looks in its own module first.
 
+A series may also list a tutorial that lives in another module, written as
+`module/slug`:
+
+```yaml
+# tutorials/programming-design-principles/programming-foundations.order.yaml
+series: Programming Foundations
+order:
+  - mit-pdp-maths-prog-integration/first-steps
+  - mit-pdp-maths-prog-integration/storing-and-computing
+```
+
+That is how one module offers a route through tutorials another module owns —
+Programming and Design Principles is the programming half of the integrated
+course, read on its own — without a second copy of any file. The tutorial keeps
+its one page, its one URL, its own module in the tree and its own previous and
+next; it simply appears in this series' list and downloads as well. A module
+made only of borrowed tutorials has no frontmatter to take its title from, so
+its title lives in `MODULE_INFO` in `build.py`, with its code and description.
+
 ---
 
 ## Cells students can run

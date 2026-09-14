@@ -1341,6 +1341,46 @@ class TestAllTutorialsPage:
         b.build()
         assert self.module_headings(repo) == ["Later Module", "computational-methods"]
 
+    def test_a_series_may_borrow_a_tutorial_from_another_module(self, repo, monkeypatch):
+        """`module/slug` in an order file lists a tutorial another module
+        owns — one page, one URL, one home module, listed on a second
+        route. Programming and Design Principles is the programming half
+        of the integrated module, read on its own, and is made only of
+        these."""
+        write(repo, "Prose.\n")
+        listing = repo / "tutorials" / "zz-listing"
+        listing.mkdir(parents=True)
+        (listing / "route.order.yaml").write_text(
+            "series: A Route\norder:\n  - computational-methods/sample\n")
+        monkeypatch.setitem(b.MODULE_INFO, "zz-listing", {"title": "A Listing Module"})
+        b.build()
+        page = (repo / "site" / "all-tutorials.html").read_text()
+        assert self.module_headings(repo)[-1] == "A Listing Module"
+        listed = page[page.index("A Listing Module"):]
+        assert 'href="tutorials/computational-methods/sample.html"' in listed
+        assert (repo / "site" / "zz-listing.html").is_file()
+        # The tutorial's own page still belongs to its own module: its
+        # tree names computational-methods, never the listing.
+        own = built(repo)
+        trail = own[own.index('<nav class="dl-crumbtrail"'):own.index("</nav>")]
+        assert "computational-methods" in trail
+        assert "A Listing Module" not in trail.split("</details>", 1)[1]
+
+    def test_a_borrowed_slug_with_no_tutorial_behind_it_stops_the_build(self, repo):
+        write(repo, "Prose.\n")
+        listing = repo / "tutorials" / "zz-listing"
+        listing.mkdir(parents=True)
+        (listing / "route.order.yaml").write_text(
+            "series: A Route\norder:\n  - computational-methods/no-such-page\n")
+        with pytest.raises(b.BuildError, match="no live tutorial in computational-methods"):
+            b.build()
+
+    def test_a_module_may_not_borrow_from_itself(self, repo):
+        write(repo, "Prose.\n")
+        set_order(repo, "computational-methods", "python-fundamentals", ["computational-methods/sample"])
+        with pytest.raises(b.BuildError, match="in this module already"):
+            b.build()
+
     def test_no_module_file_falls_back_to_alphabetical(self, repo):
         write(repo, "Prose.\n")
         b.build()
