@@ -3790,4 +3790,6 @@ Now each side reserves its own dock or open panel plus a gutter, the column take
 
 The two things wider than the column — the knowledge map and the tree page's layout — centred themselves on the column with a 50% margin and a -50% translate; with the column off-centre that pushed the tree page 34px past the right edge of a 900px window (its own never-scrolls-sideways e2e test caught it). They centre on the viewport now, stepping back over the column's offset, which the column rule publishes as `--dl-col-left`.
 
+**And the column starts level with the docks.** Josh, reviewing: "the top of the text… I think they are now on 3 different levels?" They were: the docks sit 1rem down, the column started at 0, so the Python status line (and the heading, once that line has gone) sat above the wordmark and the first tab. Measured: wordmark line box at 25px, the Notes label at 28px, the status box at 0 and the heading at 112px. The column takes `padding-top: 1rem` in the same desktop rule, which puts the status box's top edge on the docks' top edge, its text level with the wordmark and the tab label, and the heading's cap height level with both once the line hides. The phone row is in flow and unaffected.
+
 *Cost to change: trivial — two CSS rules and one function, and an e2e test that pins both the live control and the floor.*

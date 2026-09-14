@@ -201,6 +201,11 @@ body {
     max-width: var(--dl-col);
     margin-left: var(--dl-col-left);
     margin-right: 0;
+    /* The column starts level with the docks, which sit 1rem down: the
+       first thing in it — the Python status line, or the heading once
+       that has gone — lines up with the wordmark and the first tab
+       rather than sitting above them. */
+    padding-top: 1rem;
   }
   /* The two things wider than the column (the knowledge map and the tree)
      centre themselves on the column with a 50% margin and a -50%
