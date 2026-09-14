@@ -4491,7 +4491,9 @@ def write_course_page(
         course, groups, archives, retired, practice, mixed, course_archives, heading=False,
     ))
 
-    manifest = {"slug": course.id, "version": 1, "assetBase": "assets/",
+    # `course` is what the runtime remembers: opening a tutorial from here
+    # is following this course (tutorial-runtime.js, initCourse()).
+    manifest = {"slug": course.id, "course": course.id, "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
     tokens = {
         "{{TITLE}}": html.escape(course.title),

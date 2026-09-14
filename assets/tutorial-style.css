@@ -2997,6 +2997,22 @@ p code, li code {
 
 /* "This page is also part of …": one line under the heading on a page
    that more than one course lists (build.py's also_part_of()). */
+.dl-course-switch {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--dl-muted);
+  margin-bottom: 0.25rem;
+}
+.dl-course-switch select {
+  font: inherit;
+  color: inherit;
+  max-width: 100%;
+  background: transparent;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 4px;
+  padding: 0.1rem 0.3rem;
+}
+
 .dl-also-part-of {
   max-width: var(--dl-line-width);
   margin: -0.4rem 0 1.4rem;
