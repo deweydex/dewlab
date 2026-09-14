@@ -47,29 +47,26 @@
 <div class="dl-page">
 
   <div class="dl-chrome" id="dl-chrome">
-    <header class="dl-masthead">
-      <a class="dl-wordmark" href="{{ROOT_BASE}}index.html">dewlab</a>
-      <span class="dl-crumbs">{{CRUMBS}}</span>
-
-      <div class="dl-masthead-actions">
-        <details class="dl-panels" id="dl-panels">
-          <summary class="dl-panels-toggle">
-            <span class="dl-panels-icon" aria-hidden="true"></span>Panels
-          </summary>
-          <div class="dl-panels-group" id="dl-panels-group">
-            <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
-                    aria-expanded="false" aria-controls="dl-seriesnav" aria-label="Series" hidden>
-              <span class="dl-seriesnav-icon" aria-hidden="true"></span><span class="dl-toggle-label">Series</span>
-            </button>
-          </div>
-        </details>
-      </div>
-    </header>
-
-    <nav class="dl-nav dl-nav-top">{{NAV_PREV_NEXT}}{{NAV_SEARCH}}</nav>
+    <nav class="dl-nav dl-nav-top">{{NAV_PREV_NEXT}}</nav>
   </div>
 
   <div class="dl-corner-dock dl-corner-dock-tl">
+    <div class="dl-corner-identity">
+      <a class="dl-wordmark" href="{{ROOT_BASE}}index.html">dewlab</a>
+      {{CRUMBS}}
+      {{NAV_SEARCH}}
+      <details class="dl-panels" id="dl-panels">
+        <summary class="dl-panels-toggle">
+          <span class="dl-panels-icon" aria-hidden="true"></span>Panels
+        </summary>
+        <div class="dl-panels-group" id="dl-panels-group">
+          <button type="button" class="dl-seriesnav-toggle" id="dl-seriesnav-toggle"
+                  aria-expanded="false" aria-controls="dl-seriesnav" aria-label="Series" hidden>
+            <span class="dl-seriesnav-icon" aria-hidden="true"></span><span class="dl-toggle-label">Series</span>
+          </button>
+        </div>
+      </details>
+    </div>
     <button type="button" class="dl-reference-toggle dl-corner-tab" id="dl-reference-toggle"
             aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
       <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
@@ -84,25 +81,51 @@
   </div>
 
   <div class="dl-corner-dock dl-corner-dock-tr">
-    <button type="button" class="dl-corner-tab" id="dl-yourwork-toggle"
-            aria-pressed="false" aria-controls="dl-yourwork" aria-label="Notes">
-      <span class="dl-toggle-label">Notes</span>
-    </button>
-    <button type="button" class="dl-corner-tab" id="dl-report-toggle"
-            aria-pressed="false" aria-controls="dl-yourwork" aria-label="Report a problem">
-      <span class="dl-toggle-label">Report</span>
-    </button>
+    <div class="dl-corner-strip">
+      <button type="button" class="dl-corner-tab" id="dl-yourwork-toggle"
+              aria-pressed="false" aria-controls="dl-yourwork" aria-label="Notes">
+        <span class="dl-toggle-label">Notes</span>
+      </button>
+      <button type="button" class="dl-corner-tab" id="dl-report-toggle"
+              aria-pressed="false" aria-controls="dl-yourwork" aria-label="Report a problem">
+        <span class="dl-toggle-label">Report</span>
+      </button>
+    </div>
   </div>
 
   <div class="dl-corner-dock dl-corner-dock-br">
-    <button type="button" class="dl-corner-tab" id="dl-appearance-toggle"
-            aria-pressed="false" aria-controls="dl-appearance" aria-label="Appearance">
-      <span class="dl-toggle-label">Appearance</span>
+    <div class="dl-corner-strip">
+      <button type="button" class="dl-corner-tab" id="dl-appearance-toggle"
+              aria-pressed="false" aria-controls="dl-appearance" aria-label="Appearance">
+        <span class="dl-toggle-label">Appearance</span>
+      </button>
+      <button type="button" class="dl-corner-tab" id="dl-importsexports-toggle"
+              aria-pressed="false" aria-controls="dl-appearance" aria-label="Imports and exports">
+        <span class="dl-toggle-label">Imports &amp; Exports</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Phone-only: the six corner tabs above collapse into one launcher —
+       a thumb has room for one button, not six. Each row forwards to the
+       real corner toggle above rather than duplicating its open/close
+       logic; those toggles stay in the page (just hidden) purely so this
+       has something real to click. -->
+  <div class="dl-mobile-launcher">
+    <button type="button" class="dl-mobile-fab" id="dl-mobile-fab"
+            aria-expanded="false" aria-controls="dl-mobile-menu" aria-label="Open menu">
+      <span class="dl-mobile-fab-dot" aria-hidden="true"></span>
     </button>
-    <button type="button" class="dl-corner-tab" id="dl-importsexports-toggle"
-            aria-pressed="false" aria-controls="dl-appearance" aria-label="Imports and exports">
-      <span class="dl-toggle-label">Imports &amp; Exports</span>
-    </button>
+    <div class="dl-mobile-menu" id="dl-mobile-menu" hidden>
+      <button type="button" class="dl-mobile-menu-item" id="dl-mobile-item-reference"
+              data-forward="dl-reference-toggle" hidden>Reference</button>
+      <button type="button" class="dl-mobile-menu-item" id="dl-mobile-item-documentation"
+              data-forward="dl-documentation-toggle" hidden>Documentation</button>
+      <button type="button" class="dl-mobile-menu-item" data-forward="dl-yourwork-toggle">Notes</button>
+      <button type="button" class="dl-mobile-menu-item" data-forward="dl-report-toggle">Report</button>
+      <button type="button" class="dl-mobile-menu-item" data-forward="dl-appearance-toggle">Appearance</button>
+      <button type="button" class="dl-mobile-menu-item" data-forward="dl-importsexports-toggle">Imports &amp; Exports</button>
+    </div>
   </div>
 
   {{TOC}}

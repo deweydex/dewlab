@@ -202,13 +202,39 @@ function restoreSidebarState() {
 function watchPanelOverlap() {
   const rightPanels = [document.getElementById("dl-yourwork"), document.getElementById("dl-appearance")].filter(Boolean);
   const leftPanels = [document.getElementById("dl-reference"), document.getElementById("dl-seriesnav"), document.getElementById("dl-documentation")].filter(Boolean);
+  // The corner docks themselves — unlike a panel, always on screen, never
+  // hidden as a whole (the top-left one always carries the wordmark, the
+  // other three always carry at least one tab) — so the reading column
+  // needs to clear them permanently, not only while a panel happens to be
+  // open over them.
+  const leftDocks = [...document.querySelectorAll(".dl-corner-dock-tl, .dl-corner-dock-bl")];
+  const rightDocks = [...document.querySelectorAll(".dl-corner-dock-tr, .dl-corner-dock-br")];
   const root = document.documentElement;
 
-  const updateAttrs = () => {
-    root.toggleAttribute("data-dl-panel-right", rightPanels.some(p => !p.hasAttribute("hidden")));
-    root.toggleAttribute("data-dl-panel-left", leftPanels.some(p => !p.hasAttribute("hidden")));
+  // Both sides always have something resting in their corners, so both
+  // attributes are permanent now — only the reserved *width* changes,
+  // between a corner's own resting size and a panel opened over it.
+  root.setAttribute("data-dl-panel-left", "");
+  root.setAttribute("data-dl-panel-right", "");
+
+  function widestVisible(elements) {
+    let widest = 0;
+    for (const el of elements) {
+      if (el.hasAttribute("hidden")) continue;
+      // offsetWidth, not an observer's own contentRect, since the margin
+      // needs to clear the element's full border box (border and padding
+      // both), plus a small gutter so text doesn't sit flush against it.
+      if (el.offsetWidth > widest) widest = el.offsetWidth;
+    }
+    return widest;
+  }
+
+  const syncWidths = () => {
+    root.style.setProperty("--dl-panel-left-w", `${widestVisible([...leftDocks, ...leftPanels]) + 16}px`);
+    root.style.setProperty("--dl-panel-right-w", `${widestVisible([...rightDocks, ...rightPanels]) + 16}px`);
   };
-  // Persisting is split from updateAttrs() rather than done unconditionally
+
+  // Persisting is split from syncWidths() rather than done unconditionally
   // on every sync: this function runs once synchronously below, before
   // restoreSidebarState() (tutorial-runtime.js's own init sequence) has had
   // a chance to reopen whatever was saved last time — every panel is still
@@ -217,11 +243,11 @@ function watchPanelOverlap() {
   // restoreSidebarState()'s own toggle.click() re-triggers this same
   // MutationObserver-driven path, which does persist, so the saved state
   // ends up correct once the actual open/closed panels are known.
-  const sync = () => { updateAttrs(); saveSidebarState(); };
+  const sync = () => { syncWidths(); saveSidebarState(); };
   for (const panel of [...rightPanels, ...leftPanels]) {
     new MutationObserver(sync).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
   }
-  updateAttrs();
+  syncWidths();
 
   // The same drag strip on both edges. These two panels relied on native
   // `resize: horizontal` until now, which works but is a corner triangle
@@ -231,19 +257,8 @@ function watchPanelOverlap() {
   // knows which edge each panel is docked to.
   for (const panel of leftPanels) makeEdgeResizable(panel, "left", 256, 640);
 
-  const widthObserver = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      const panel = entry.target;
-      if (panel.hasAttribute("hidden")) continue;
-      const varName = rightPanels.includes(panel) ? "--dl-panel-right-w" : "--dl-panel-left-w";
-      // offsetWidth, not the observer's own contentRect, since the
-      // margin needs to clear the panel's full border box (it has both
-      // a border and padding), plus a small gutter so text doesn't sit
-      // flush against the panel's edge.
-      root.style.setProperty(varName, `${panel.offsetWidth + 16}px`);
-    }
-  });
-  for (const panel of [...rightPanels, ...leftPanels]) widthObserver.observe(panel);
+  const widthObserver = new ResizeObserver(sync);
+  for (const el of [...rightPanels, ...leftPanels, ...rightDocks, ...leftDocks]) widthObserver.observe(el);
 }
 
 function clickIsInsidePanels(target, ids) {
@@ -598,6 +613,60 @@ function renderDocumentation(manifest) {
     container.append(row);
   }
   if (empty) empty.hidden = links.length > 0;
+}
+
+/* The phone-only "one launcher instead of six tabs" menu — see the CSS
+ * media query and shell.html's own comment for why. Every row forwards
+ * to a real corner toggle (still in the page, just hidden by the same
+ * media query) rather than re-implementing open/close/exclusivity here;
+ * a hidden element's own .click() still fires its listeners normally,
+ * only real user interaction with it is blocked. */
+function initMobileLauncher() {
+  const fab = document.getElementById("dl-mobile-fab");
+  const menu = document.getElementById("dl-mobile-menu");
+  if (!fab || !menu) return;
+
+  // Reference and Documentation only exist on some pages, decided once
+  // at load and never toggled again afterward — mirroring that decision
+  // once here, rather than watching for a change that can't happen.
+  for (const name of ["reference", "documentation"]) {
+    const real = document.getElementById(`dl-${name}-toggle`);
+    const item = document.getElementById(`dl-mobile-item-${name}`);
+    if (real && item) item.hidden = real.hidden;
+  }
+
+  function setOpen(open) {
+    menu.toggleAttribute("hidden", !open);
+    fab.setAttribute("aria-expanded", String(open));
+  }
+
+  fab.addEventListener("click", () => setOpen(menu.hasAttribute("hidden")));
+
+  for (const item of menu.querySelectorAll(".dl-mobile-menu-item")) {
+    item.addEventListener("click", (ev) => {
+      // Without this, the real toggle's own click below opens its panel,
+      // then this original event keeps bubbling to document afterward —
+      // where every panel's own outside-click listener sees a click that
+      // landed on neither its panel nor its toggle, and closes right back
+      // what the click below just opened.
+      ev.stopPropagation();
+      setOpen(false);
+      const real = document.getElementById(item.dataset.forward);
+      if (real) real.click();
+    });
+  }
+
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Escape" || menu.hasAttribute("hidden")) return;
+    setOpen(false);
+    fab.focus();
+  });
+
+  document.addEventListener("click", (ev) => {
+    if (menu.hasAttribute("hidden")) return;
+    if (menu.contains(ev.target) || fab.contains(ev.target)) return;
+    setOpen(false);
+  });
 }
 
 /* build.py's own kind list — GLOSSARY_KINDS — in the order a reader would
@@ -4547,6 +4616,7 @@ initNotesReportDock();
 initAppearanceDock();
 initReference(currentManifest);
 initDocumentationDock(currentManifest);
+initMobileLauncher();
 initReferenceLookup(currentManifest);
 initHighlightPopover();
 initSeriesNav();
