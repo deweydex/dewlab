@@ -28,19 +28,6 @@ only have to read the one that matches what you are here to do.
 | Use the standalone Python workspace | [`docs/DEWMINI.md`](docs/DEWMINI.md) |
 | Decide whether to teach with dewlab | keep reading here |
 
-Three more documents sit behind those.
-[`planning/PEDAGOGICAL_STYLE_GUIDE.md`](planning/PEDAGOGICAL_STYLE_GUIDE.md)
-settles how a tutorial is written and why — anyone writing prose for the site
-should read it, and section 4's "Plain language" rules govern every word a
-learner sees. [`planning/PLAIN_LANGUAGE_PASS.md`](planning/PLAIN_LANGUAGE_PASS.md)
-says which parts of the site have been through those rules and which have not.
-[`planning/README.md`](planning/README.md) indexes the design notes and
-decision records for the rest.
-
-[`CLAUDE.md`](CLAUDE.md) is the short version of all of it, written for an
-assistant working in this repository rather than for a person, and kept to what
-is easy to get wrong here.
-
 ---
 
 ## What dewlab does
@@ -58,12 +45,13 @@ next week, and the code and its last output are still there. Nothing is scored
 and nothing leaves the machine. The work stays on that device — it will not
 follow them to a different computer, and clearing browser data will clear it.
 
-**A reading surface a learner can adjust.** Three buttons in every page's
-top bar open resizable sidebars: Reference, the whole series, and
-Settings — theme, typeface, text size, line width and link colour, plus the
-buttons to export or reload work. A sidebar is meant to be left open and worked
-beside, and stays open while a reader moves through a series. The choices
-follow them from page to page.
+**A reading surface a learner can adjust.** A dock in each top corner holds
+the page's controls. The left holds Reference and Where You Are, a trail
+from every tutorial down to this page's own sections. The right holds five
+panels — Notes, Report, Python, Appearance, and Imports & Exports — where
+theme, typeface, text size, line width and link colour live. Panels are
+resizable and stay open while a reader moves through a series; on a phone,
+everything collapses into one launcher at the bottom of the screen.
 
 **Practice beside every tutorial.** Each tutorial has a practice page of
 problems, with hints and answers behind folds so a stuck learner gets a route
@@ -163,12 +151,6 @@ The curriculum spans six accredited QQI modules — *Mathematics for IT*,
 Solving*, *Fundamentals of Object-Oriented Programming*, *Database Methods*
 and *Web Authoring* — across 116 tutorials and 60 practice pages, covering
 every learning outcome that doesn't call for a tool outside the project.
-
-[`planning/STATUS.md`](planning/STATUS.md) and
-[`planning/CURRICULUM_MAP.md`](planning/CURRICULUM_MAP.md) are generated
-from the tutorials themselves, so they stay accurate as content changes.
-[`QUESTIONS.md`](QUESTIONS.md) holds the decisions still open, and is the
-right place to raise one.
 
 ---
 
