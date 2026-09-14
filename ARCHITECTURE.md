@@ -98,15 +98,17 @@ The pipeline, in order:
    features page today — has its content in `pages/<name>.md`, not a string
    in `build.py`: `read_page()` reads its minimal `title`-only frontmatter
    and converts the body with the same `to_html()` a tutorial's own prose
-   uses, and `write_about_page()`/`write_index()`/`write_features_page()`
-   only assemble the shell around what it returns. Two things a page can
+   uses, and one `write_page(name)` (`SITE_PAGES` holds what differs: the
+   file name, the crumb, the bottom-nav link) assembles the shell around
+   what it returns. Two things a page can
    have that ordinary prose can't: a ` ```card ` fence (`url:`/`status:`/
    `meta:`/`wide:` header lines, then a heading and a paragraph —
    `parse_card()`/`render_card()`), the markup a module tile on the home
    page used to be hand-written six times over, with adjacent cards sharing
    one `.dl-module-grid` wrapper automatically; and a `[[name]]` marker for
-   infrastructure a page can point at but never author directly — the home
-   page's own live search box is the one example today (`GENERATED_BLOCKS`).
+   infrastructure a page can point at but never author directly
+   (`GENERATED_BLOCKS`): `[[search-box]]`, the live search, and
+   `[[course-cards]]`, one tile per course from the course files.
    A `<div class="dl-hero">`/`<div class="dl-audience">`/`<div
    class="dl-attribution">`/`<ul class="dl-feature-list">` section or list
    wrapper is converted a second time (`convert_page_wrapper_bodies()`), the

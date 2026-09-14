@@ -3841,3 +3841,15 @@ Wording, structure, and every link are unchanged — checked directly by rebuild
 Not done, and named so it is not mistaken for forgotten: the pre-run tooltips are jedi's, over Python's own names, and the highlight-to-look-up offer matches a glossary term exactly on purpose (a reader has selected a word, not typed a guess). Neither is a search box.
 
 *Cost to change: trivial. One module, five one-line imports; the synonym list is the part that will grow, and it grows in one place now.*
+
+---
+
+**7.175 — The site's own pages: one writer, a section in the writing guide, and the home page reordered.** Josh: "what is the story with pages? Are there documentation things about that?" — and then a new order for the home page.
+
+`pages/home.md`, `about.md` and `features.md` were described in one paragraph of ARCHITECTURE.md written for whoever changes the build, and nowhere for the person who wants to reword the About page; that paragraph also still called the search box the one `[[name]]` marker, a day after `[[course-cards]]` joined it. `docs/WRITING_TUTORIALS.md` gains "The site's own pages": the three files, the one frontmatter field, the card fence, the two markers, the four wrappers, and where the built page lands. `write_index()`, `write_about_page()` and `write_features_page()` — three copies of one function differing in a file name, a crumb and a bottom-nav link — become `write_page(name)` over a `SITE_PAGES` table, the tidy the refactor's document review named and did not require.
+
+The home page, in Josh's order: the two opening paragraphs, then the "What dewlab can do" tile inside that first section, then one section — *What do you want to learn?* — holding the sentence about searching, the search box, a sentence pointing at the courses, the recommendation, and the course tiles; then the attribution, now ending with where to find out more (the About page and the repository). Gone: the separate "Find a tutorial" and "Choose a course" sections, the "All tutorials" tile (every page's bottom nav carries that link), and the line under the search box saying what a search matches — on this page only (`render_search_box(hint=False)`), since the sentence above the box already says it; the all-tutorials and topics pages keep theirs. Josh's draft lines went through the nine checks and `planning/PLAIN_LANGUAGE_PASS.md` records what changed and why.
+
+One test fixed in passing: the check that a downloaded copy carries no navigation looked at everything after the last `</style>`, which since 7.173 includes the inlined runtime, whose course-chrome code names `.dl-nav-bottom`; it now checks the markup outside style and script, which is what it meant.
+
+*Cost to change: trivial. Prose in one file; `write_page()` is a table entry per page.*

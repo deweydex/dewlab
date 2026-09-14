@@ -576,6 +576,36 @@ The tutorials it lists may already be on another course.
 
 ---
 
+## The site's own pages
+
+Three pages are written by hand rather than built from tutorials: the home
+page, the About page and the features page. Each is one markdown file under
+`pages/` — `home.md`, `about.md`, `features.md` — with a frontmatter of one
+field, `title:`, and nothing else. The body is ordinary markdown, converted
+the way a tutorial's prose is, and every word on it is student-facing, so
+the plain-language rules in the style guide apply and
+`planning/PLAIN_LANGUAGE_PASS.md` records each pass over it.
+
+A page can hold three things ordinary prose cannot:
+
+- A tile linking somewhere, as a ```card fence: header lines `url:` (the
+  link), and optionally `status:` (a badge), `meta:` (small text under the
+  heading) and `wide: true` (two columns wide), then a markdown heading and
+  a paragraph. Tiles next to each other share one grid.
+- `[[search-box]]`, the live search, and `[[course-cards]]`, one tile per
+  course from the course files in `courses/index.yaml` order. Write the
+  marker on a line of its own; the build fills it.
+- A `<div class="dl-hero">`, `<div class="dl-audience">`,
+  `<div class="dl-attribution">` or `<ul class="dl-feature-list">` wrapper,
+  with a blank line after the opening tag and before the closing one, so
+  the markdown inside it still converts.
+
+To change what a page says, edit the file and run `python3 build.py`; the
+page is `site/<name>.html` (`site/index.html` for the home page). Adding a
+fourth page is one file plus one line in `SITE_PAGES` in `build.py`.
+
+---
+
 ## The authoring editor
 
 A browser-based editor at `/editor.html` reads and writes tutorials through the

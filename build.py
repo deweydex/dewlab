@@ -1240,7 +1240,7 @@ def convert_page_wrapper_bodies(page_html: str) -> str:
 # actually asks for one.
 GENERATED_BLOCKS: dict[str, Callable[[], str]] = {
     "search-box": lambda: render_search_box(
-        "Search by topic — e.g. loops, probability, sorting…", big=True),
+        "Search by topic — e.g. loops, probability, sorting…", big=True, hint=False),
     "course-cards": lambda: render_course_cards(),
 }
 
@@ -2741,7 +2741,8 @@ def progress_attrs(tutorial: Tutorial) -> str:
     )
 
 
-def render_search_box(placeholder: str, big: bool = False, id_prefix: str = "dl-search") -> str:
+def render_search_box(placeholder: str, big: bool = False, id_prefix: str = "dl-search",
+                      hint: bool = True) -> str:
     """The search box markup shared by every page that carries one — the
     front page, "All tutorials", "Browse by topic", and (via
     `nav_search_html()`) the small search popover next to "All
@@ -2755,21 +2756,26 @@ def render_search_box(placeholder: str, big: bool = False, id_prefix: str = "dl-
     one id — it plays no part in the wiring itself.
     `big` adds a modifier class for the front page's own copy, the one
     place this is the primary way in rather than a convenience partway
-    down a long list.
+    down a long list. `hint=False` leaves out the line under the field
+    saying what a search matches — the front page's own sentence above
+    its box already says it (7.175).
     """
     classes = "dl-search dl-search-big" if big else "dl-search"
     input_id = f"{id_prefix}-input"
     hint_id = f"{id_prefix}-hint"
     results_id = f"{id_prefix}-results"
+    described = f' aria-describedby="{hint_id}"' if hint else ""
+    note = (
+        f'<p class="dl-panel-note" id="{hint_id}">Matches titles and the '
+        "terms each tutorial actually teaches — close counts too "
+        '("loop" also finds "iteration").</p>'
+    ) if hint else ""
     return (
         f'<div class="{classes}" id="{id_prefix}">'
         f'<label for="{input_id}" class="dl-search-label">Search tutorials</label>'
         f'<input type="search" id="{input_id}" class="dl-search-input" '
-        f'placeholder="{html.escape(placeholder, quote=True)}" autocomplete="off" '
-        f'aria-describedby="{hint_id}">'
-        f'<p class="dl-panel-note" id="{hint_id}">Matches titles and the '
-        "terms each tutorial actually teaches — close counts too "
-        '("loop" also finds "iteration").</p>'
+        f'placeholder="{html.escape(placeholder, quote=True)}" autocomplete="off"{described}>'
+        f"{note}"
         f'<ul class="dl-search-results" id="{results_id}" hidden></ul>'
         "</div>"
     )
@@ -4327,29 +4333,48 @@ def readable_size(path: Path) -> str:
     return f"{max(size // 1000, 1)} KB"
 
 
-def write_index(shell: str) -> Path:
-    """The front page at the site root, which every page's masthead links to.
+# The site's own hand-written pages: each is `pages/<name>.md`, written
+# to `<file>.html` at the site root, with the crumb the corner shows and
+# the one link the bottom nav offers. The home page is the one every other
+# page's masthead links to, so its crumb is empty and its file is index.html.
+SITE_PAGES: dict[str, tuple[str, str, str]] = {
+    # name: (output file stem, crumb text, bottom-nav link)
+    "home": ("index", "", '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>'),
+    "about": ("about", "about", '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>'),
+    "features": ("features", "features", '<a class="dl-nav-up" href="index.html">Home</a>'),
+}
 
-    Its content lives in `pages/home.md`, read through `read_page()` the
-    same way `write_about_page()` reads `pages/about.md` — a `[[search-box]]`
-    marker stands in for the live search widget, `[[course-cards]]` for one
-    tile per course (`render_course_cards()`, from the course files), and
-    any other tile is a ```card fence (see `parse_card()`/`render_card()`).
-    It needs no tutorial data at build time: each course tile points at
-    that course's own page rather than listing tutorials itself.
-    `write_all_tutorials_page()` is the page that does.
+
+def write_page(shell: str, name: str) -> Path:
+    """One of the site's own pages — the home page, About, or the features
+    page — from `pages/<name>.md`, read through `read_page()`.
+
+    A page is a hand-written markdown file with a `title` and nothing else
+    in its frontmatter: no course, no version, no cells. `read_page()`
+    converts its body the way a tutorial's prose converts, fills any
+    `[[name]]` marker (`GENERATED_BLOCKS` — the live search box, the
+    course cards) and any ```card fence, and this function only assembles
+    the shell around what it returns. The three pages differ in their
+    file name, the crumb in the corner and the one link the bottom nav
+    offers, which is what `SITE_PAGES` holds; everything else is the same,
+    and was written out three times before this function existed.
+
+    Every word on these pages is student-facing: the plain-language rules
+    in PEDAGOGICAL_STYLE_GUIDE.md section 4 apply, and
+    planning/PLAIN_LANGUAGE_PASS.md records each pass.
     """
-    meta, body = read_page("home")
-    manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
+    stem, crumb, nav = SITE_PAGES[name]
+    meta, body = read_page(name)
+    manifest = {"slug": stem, "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
     tokens = {
         "{{TITLE}}": meta["title"],
         "{{VERSION}}": "1",
-        "{{SLUG}}": "index",
+        "{{SLUG}}": stem,
         "{{MODULE}}": "",
         "{{YEAR}}": "",
         "{{SERIES}}": "",
-        "{{CRUMBS}}": "",
+        "{{CRUMBS}}": f'<span class="dl-crumbs">{html.escape(crumb)}</span>' if crumb else "",
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
@@ -4359,27 +4384,26 @@ def write_index(shell: str) -> Path:
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
+        "{{NAV_PREV_NEXT}}": nav,
         "{{PAGE_SCRIPT}}": "",
-        # The front page is not a tutorial and has nothing to download; the
-        # runtime hides the empty section rather than showing a bare heading.
+        # None of these is a tutorial: nothing to download, no canonical
+        # release; the runtime hides the empty section rather than showing
+        # a bare heading.
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
-        # The front page is not a contents list. It does not need one.
-        # Nor a series to navigate.
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer("index", "1"),
-        "{{REPORT_DOORS}}": report_doors_panel_html("index", "1"),
+        "{{FOOTER}}": site_footer(stem, "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html(stem, "1"),
     }
     page = shell
     for token, value in tokens.items():
         page = page.replace(token, value)
     if "{{" in page:
         leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(f"shell template has tokens the index does not fill: {leftover}")
+        raise BuildError(f"shell template has tokens the {name} page does not fill: {leftover}")
     OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / "index.html"
+    target = OUT / f"{stem}.html"
     target.write_text(page)
     return target
 
@@ -5096,111 +5120,6 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
     return target
 
 
-def write_about_page(shell: str) -> Path:
-    """A short guide to what the project is and how to contribute to it.
-
-    The content itself lives in `pages/about.md`, a hand-written markdown
-    file with no module, series, or version — read through `read_page()`,
-    which converts it the same way any tutorial's prose converts. This
-    function only ever assembles the page shell around it.
-
-    Written to PEDAGOGICAL_STYLE_GUIDE.md section 4 "Plain language": short
-    sentences in the order things happen, "we" for the work and "you" for what
-    is the reader's own, and a heading over each question rather than one run
-    of paragraphs a reader has to search.
-    """
-    meta, body = read_page("about")
-    manifest = {"slug": "about", "version": 1, "assetBase": "assets/",
-                "dataBase": "data/", "cells": [], "assetVersions": {}}
-    tokens = {
-        "{{TITLE}}": meta["title"],
-        "{{VERSION}}": "1",
-        "{{SLUG}}": "about",
-        "{{MODULE}}": "",
-        "{{YEAR}}": "",
-        "{{SERIES}}": "",
-        "{{CRUMBS}}": '<span class="dl-crumbs">about</span>',
-        "{{ASSET_BASE}}": "assets/",
-        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
-        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
-        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
-        "{{NAV_SEARCH}}": nav_search_html(),
-        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
-        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
-        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
-        "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
-        "{{PAGE_SCRIPT}}": "",
-        "{{CANONICAL}}": "",
-        "{{DOWNLOAD}}": "",
-        "{{BODY}}": body,
-        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer("about", "1"),
-        "{{REPORT_DOORS}}": report_doors_panel_html("about", "1"),
-    }
-    page = shell
-    for token, value in tokens.items():
-        page = page.replace(token, value)
-    if "{{" in page:
-        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(f"shell template has tokens the about page does not fill: {leftover}")
-
-    OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / "about.html"
-    target.write_text(page)
-    return target
-
-
-def write_features_page(shell: str) -> Path:
-    """A short, scannable account of what dewlab offers and why it helps.
-
-    Its content lives in `pages/features.md`, read through `read_page()`
-    the same way `write_about_page()`/`write_index()` read theirs. Every
-    list on this page is a `<ul class="dl-feature-list">` wrapper around
-    a plain markdown bullet list — see `convert_page_wrapper_bodies()`.
-    """
-    meta, body = read_page("features")
-    manifest = {"slug": "features", "version": 1, "assetBase": "assets/",
-                "dataBase": "data/", "cells": [], "assetVersions": {}}
-    tokens = {
-        "{{TITLE}}": meta["title"],
-        "{{VERSION}}": "1",
-        "{{SLUG}}": "features",
-        "{{MODULE}}": "",
-        "{{YEAR}}": "",
-        "{{SERIES}}": "",
-        "{{CRUMBS}}": '<span class="dl-crumbs">features</span>',
-        "{{ASSET_BASE}}": "assets/",
-        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
-        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
-        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
-        "{{NAV_SEARCH}}": nav_search_html(),
-        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
-        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
-        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
-        "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="index.html">Home</a>',
-        "{{PAGE_SCRIPT}}": "",
-        "{{CANONICAL}}": "",
-        "{{DOWNLOAD}}": "",
-        "{{BODY}}": body,
-        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer("features", "1"),
-        "{{REPORT_DOORS}}": report_doors_panel_html("features", "1"),
-    }
-    page = shell
-    for token, value in tokens.items():
-        page = page.replace(token, value)
-    if "{{" in page:
-        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(
-            f"shell template has tokens the features page does not fill: {leftover}")
-    OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / "features.html"
-    target.write_text(page)
-    return target
-
-
 def write_editor_page(shell: str) -> Path:
     """The editor: reorder a series, insert a tutorial, and edit what is in one.
 
@@ -5379,8 +5298,8 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.extend(course_archives.values())
 
     if tutorials:
-        written.append(write_index(shell))
-        written.append(write_features_page(shell))
+        written.append(write_page(shell, "home"))
+        written.append(write_page(shell, "features"))
         written.append(write_all_tutorials_page(
             shell, groups, archives, retired, practice, mixed, course_archives
         ))
@@ -5395,7 +5314,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         topics_page = write_topics_page(shell, registry, practice)
         if topics_page is not None:
             written.append(topics_page)
-        written.append(write_about_page(shell))
+        written.append(write_page(shell, "about"))
         written.append(write_editor_page(shell))
         written.extend(write_redirects())
 

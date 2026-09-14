@@ -36,6 +36,18 @@ them in the design (section 11), and pointing a stuck reader at a real route
 
 ## Done
 
+- **Home page, second pass** (`pages/home.md`, 2026-09-14). Josh's new
+  order: the two opening paragraphs, then the "What dewlab can do" tile,
+  then one section, *What do you want to learn?*, holding the search box
+  and the course tiles, then the attribution with a line pointing at the
+  About page and the repository. His draft lines were put through the
+  nine checks: *Go ahead and jump into one of the modules below!* became
+  *Or choose one of the courses below and start there* (two idioms, and
+  the tiles are courses); *We recommend the integrated Maths and
+  Programming track!* became *We recommend Programming and Maths,
+  Integrated*, the course's own name, as a link. The line under the
+  search box saying what a search matches is gone from this page only:
+  the sentence above the box already says it.
 - **The line under a tutorial's heading when it is on more than one course**
   (`also_part_of()` in `build.py`, redrawn by `drawCourseChrome()` in the
   runtime): *This page is also part of Programming and Design Principles.*
@@ -45,10 +57,10 @@ them in the design (section 11), and pointing a stuck reader at a real route
   a cell is, the explore-then-name sequence, why answers are visible, that
   errors cost nothing, and where work is saved. 17.7 words/sentence down to
   9.6; longest sentence 37 down to 21; Flesch–Kincaid 9.4 down to 4.6.
-- **About page** (`write_about_page()`). Split into three headings, and
+- **About page** (`pages/about.md`, `write_page()`). Split into three headings, and
   gained a short paragraph on why nothing is scored. 29.7 words/sentence down
   to 13.0; longest sentence 61 down to 27; Flesch–Kincaid 14.1 down to 5.8.
-- **Features page** (`write_features_page()`), the new "What you can learn"
+- **Features page** (`pages/features.md`, `write_page()`), the new "What you can learn"
   and "Tools on every page" sections. Written to the guide directly rather
   than retrofitted: bold-lead-fragment-then-sentence bullets matching the
   page's existing house pattern, the platform fact (Python runs in the
