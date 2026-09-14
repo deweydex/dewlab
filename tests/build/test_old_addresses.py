@@ -46,3 +46,18 @@ def test_no_redirects_file_writes_no_stubs(repo):
     write(repo, "Prose.\n")
     b.build()
     assert not (repo / "site" / "tutorials" / "old-module").exists()
+
+
+def test_a_page_left_by_an_earlier_build_is_not_a_real_page(repo):
+    """A build without --clean keeps whatever an earlier build wrote. A
+    file at an old address is then the page the address used to be, not
+    a page this build wrote, and the line retiring it must not be
+    refused: the stub replaces the file."""
+    write(repo, "Prose.\n")
+    stale = repo / "site" / "tutorials" / "old-module" / "sample.html"
+    stale.parent.mkdir(parents=True)
+    stale.write_text("<p>the page as it was before the address moved</p>")
+    redirects(repo, "tutorials/old-module/sample.html: tutorials/sample.html\n")
+    written = b.build()
+    assert stale in written
+    assert 'url=../sample.html' in stale.read_text()

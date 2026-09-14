@@ -3853,3 +3853,13 @@ The home page, in Josh's order: the two opening paragraphs, then the "What dewla
 One test fixed in passing: the check that a downloaded copy carries no navigation looked at everything after the last `</style>`, which since 7.173 includes the inlined runtime, whose course-chrome code names `.dl-nav-bottom`; it now checks the markup outside style and script, which is what it meant.
 
 *Cost to change: trivial. Prose in one file; `write_page()` is a table entry per page.*
+
+---
+
+**7.176 — A line off the home page, and what taking it off turned up: the build suite CI was not running.** Josh: "Can we remove the horizontal line?" — the rule between the home page's opening and *What do you want to learn?*, which was `.dl-audience`'s top border and padding in `tutorial-style.css`. Gone; only the home page uses that wrapper.
+
+Rebuilding to check it, without `--clean`, stopped on `courses/redirects.yaml`: a page from before 7.173 was still under `site/tutorials/computational-methods/`, and `write_redirects()` read "a file is here" as "this build wrote a page here" and told the contributor to delete the line — the wrong advice, for anyone who built before the addresses moved and builds again. It now takes the list of pages the build wrote and consults only that; a stale file at an old address is overwritten by the stub, which is what the address is for. CLAUDE.md said a plain build writes `site/` from scratch, which only `--clean` does; it says `--clean` now.
+
+Then the build tests: two failed, on `main`, with CI green. `pytest tests --ignore=tests/e2e` collected 208 tests here and in CI, and `tests/build/` alone holds 446, because pytest's default `norecursedirs` skips any folder named `build` — so from the moment 7.173 moved the build tests into that folder, neither CI nor the documented `python3 -m pytest` ran them, and 7.175's "one test fixed in passing" fixed a test nobody ran and left it failing. `pytest.ini` sets `norecursedirs` to pytest's own list minus `build` (plus `site` and `vendor-src`), and the same command collects 654. The two failures: the practice test for a `mixed:` id that is not a mixed set listed the id under a series too, so the build's earlier check ("under `mixed:` and under a series") fired first — the test now lists it under `mixed:` only; and the downloadable copy carried the search line (7.169), which fetches the site's index to find other pages, neither of which is on a student's disk — `standalone_html()` strips it with the rest of the cross-file navigation.
+
+*Cost to change: trivial each. The lesson is the collection count: a green job that ran 208 tests looked the same as one that ran 654, and the number in CLAUDE.md is now the one to compare against.*

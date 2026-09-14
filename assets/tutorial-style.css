@@ -1691,11 +1691,7 @@ p code, li code {
 
 .dl-hero { margin: 0 0 2.5rem; }
 .dl-hero p { margin: 0 0 0.9rem; }
-.dl-audience {
-  margin: 0 0 2.5rem;
-  padding-top: 0.8rem;
-  border-top: 1px solid var(--dl-rule);
-}
+.dl-audience { margin: 0 0 2.5rem; }
 .dl-audience p { margin: 0 0 0.9rem; }
 
 .dl-audience-fold > summary {
