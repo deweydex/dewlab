@@ -9,6 +9,8 @@ It exists to remove the first-week cost of teaching programming. Instead of an
 hour spent installing an interpreter, an editor and a package or two across
 four operating systems, a learner opens a link and starts writing Python.
 
+The live site is at **[deweydex.github.io/dewlab](https://deweydex.github.io/dewlab)**.
+
 ---
 
 ## Where to go next
@@ -156,15 +158,39 @@ The reading and running experience, practice pages, versioned releases,
 curriculum coverage, the topic tree, both Python workspaces, the authoring
 editor and the build-and-publish pipeline are all built and live.
 
-Content is still being written. There are 83 published pages — 41 tutorials, 38
-practice pages and 4 mixed sets. *Mathematics for IT* and *Programming and
-Design Principles* are complete. *Computational Methods and Problem Solving*
-has its linear algebra strand finished; Monte Carlo methods, algorithmic
-complexity and systems modelling are not written yet.
+The curriculum spans six accredited QQI modules — *Mathematics for IT*,
+*Programming and Design Principles*, *Computational Methods and Problem
+Solving*, *Fundamentals of Object-Oriented Programming*, *Database Methods*
+and *Web Authoring* — across 116 tutorials and 60 practice pages, covering
+every learning outcome that doesn't call for a tool outside the project.
 
-[`planning/STATUS.md`](planning/STATUS.md) has the current detail.
-[`QUESTIONS.md`](QUESTIONS.md) holds the decisions still open, and is the right
-place to raise one.
+[`planning/STATUS.md`](planning/STATUS.md) and
+[`planning/CURRICULUM_MAP.md`](planning/CURRICULUM_MAP.md) are generated
+from the tutorials themselves, so they stay accurate as content changes.
+[`QUESTIONS.md`](QUESTIONS.md) holds the decisions still open, and is the
+right place to raise one.
+
+---
+
+## Get involved
+
+dewlab is open to anyone who wants to learn from it, teach with it, or help
+build it.
+
+- **[Try a tutorial](https://deweydex.github.io/dewlab)** — no install, no
+  account, just a browser.
+- **Teach a class with it** — welcome; [`LICENSE.md`](LICENSE.md) has the one
+  thing to do first.
+- **Found a mistake, or something that doesn't work?**
+  [`docs/REPORTING_A_PROBLEM.md`](docs/REPORTING_A_PROBLEM.md) covers the
+  fastest way to flag it — every page has a link at the foot for exactly
+  this.
+- **Want to write or improve a tutorial?** Start with
+  [`docs/WRITING_TUTORIALS.md`](docs/WRITING_TUTORIALS.md).
+- **Want to work on the code?** [`CONTRIBUTING.md`](CONTRIBUTING.md) has the
+  setup, then [`ARCHITECTURE.md`](ARCHITECTURE.md) for how it fits together.
+- **Have a question, or a decision you'd make differently?** Raise it in
+  [`QUESTIONS.md`](QUESTIONS.md), or open a GitHub Discussion.
 
 ---
 
