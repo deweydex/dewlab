@@ -4,6 +4,7 @@ import * as dfs from "./dewmini-fs.js";
 import * as engine from "../assets/pyodide-engine.js";
 import * as jsEngine from "./js-cell-engine.js";
 import { mountSitePreview } from "../assets/site-relay.js";
+import { textMatches } from "../assets/search-words.js";
 
 const PYODIDE_VERSION = "0.28.3";
 // The pre-tabs key: one notebook, stored as a bare array of cells. Still read
@@ -2758,11 +2759,13 @@ function renderReference() {
   if (!groupsEl || !referenceEntries) return;
   groupsEl.replaceChildren();
 
-  const needle = (document.getElementById("dm-reference-search")?.value || "").trim().toLowerCase();
+  // The same word matching every other search box on the site uses
+  // (assets/search-words.js): a stem, a synonym or a prefix finds the
+  // term, and a bare fragment still narrows as a substring.
+  const needle = (document.getElementById("dm-reference-search")?.value || "").trim();
   const matches = referenceEntries.filter((entry) => {
     if (!referenceEntryMatches(entry)) return false;
-    if (!needle) return true;
-    return `${entry.term} ${entry.definition}`.toLowerCase().includes(needle);
+    return textMatches(`${entry.term} ${entry.definition}`, needle);
   });
 
   if (statusEl) {

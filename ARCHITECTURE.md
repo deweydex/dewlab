@@ -487,6 +487,7 @@ PR that touches the runtime or the editor.
 | Code completion or hover docs, either surface | `vendor-src/codemirror-entry.js` (both surfaces' static sources, plus the extension points); `assets/tutorial-runtime.js` (the runtime's live sources) |
 | The curated names the editor's future hover docs would cover | `dev/generate_doc_snippets.py`, then re-run it |
 | The tutorial link picker (search-and-insert `tutorial:` links) | `matchTutorials()`/the picker UI in `assets/editor.js`; `insertLink()` in `vendor-src/milkdown-entry.js` |
+| What a search box counts as a match — stems, synonyms, prefixes | `assets/search-words.js`, imported by `search.js`, the Reference panel filters in `tutorial-runtime.js`, dewmini's Library and the editor's picker (DECISIONS_LOG 7.174) |
 | House styling, both reading pages and the editor | `assets/tutorial-style.css` |
 | The reference's assembly logic (what counts as "already covered") | `cumulative_glossary()`/`own_glossary()` in `build.py` |
 | What one tutorial's reference actually says | `<slug>.glossary.yaml` beside it, or run `.claude/skills/tutorial-glossary/SKILL.md` on it |

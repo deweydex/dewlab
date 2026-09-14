@@ -405,6 +405,11 @@ two near-identical implementations of the same lookup functions
   so the standalone export always uses the main-thread path — see the
   module's own top comment and `DECISIONS_LOG.md` 7.77 for the full
   reasoning.
+- **"Why does the Reference panel's search find `loop` when I type
+  `loops`?"** — `filterReferenceContent()`/`filterBasicsContent()` match
+  through `textMatches()` in `assets/search-words.js`, the same stems,
+  synonyms and prefixes every other search box on the site uses, with a
+  raw substring still accepted so a fragment narrows the list.
 - **"Where does a page's saved work live, and what happened to the old
   `module:slug` keys?"** — `pageKey()`: every key is `dewlab:<kind>:<id>`,
   the id being the tutorial's folder name. `migrateStorage()`, run before

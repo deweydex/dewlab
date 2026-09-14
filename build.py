@@ -4167,6 +4167,9 @@ DEWMINI_ASSET_FILES = (
     # Imported by both of the two above, so a bundle without it has an
     # engine that cannot start.
     "module-watch.js",
+    # Imported by dewmini.js for its Library search — the one idea of
+    # word matching every search box shares.
+    "search-words.js",
     "tutorial_tools.py",
     "tutorial-style.css",
     "vendor/codemirror.bundle.js",
