@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Upper docks — a playable mockup</title>
+<link rel="stylesheet" href="../../assets/tutorial-style.css">
+<style>
+  /* Everything above this line is the real, unmodified site stylesheet —
+     .dl-page's width formula, .dl-crumbtrail and its levels, .dl-nav,
+     .dl-reference-tabs, .dl-seg, .dl-btn, .dl-progress-notes, all exactly
+     as shipped. Only the shell itself is new, under mk- class names so
+     nothing here collides with the corner-dock rules the stylesheet
+     already carries. */
+
+  /* No top chrome any more, so nothing sits below a 6rem bar. */
+  :root { --dl-chrome-h: 0px; }
+  body { margin: 0; padding: 1rem 0 6rem; }
+
+  .proto-note {
+    max-width: 34rem; margin: 0 auto 1rem; padding: 0.8rem 1rem;
+    border: 1px solid var(--dl-cell-border); border-left: 3px solid var(--dl-orange);
+    font-size: 0.85rem; color: var(--dl-muted); line-height: 1.5;
+  }
+  .proto-note code { font-family: var(--dl-mono); font-size: 0.82em; }
+  .proto-scenes {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem;
+    max-width: 34rem; margin: 0 auto 2.5rem;
+  }
+  .proto-scenes button {
+    font-family: var(--dl-mono); font-size: 0.72rem; padding: 0.3rem 0.6rem;
+    border: 1px solid var(--dl-cell-border); border-radius: 4px;
+    background: var(--dl-cell-bg); color: var(--dl-fg); cursor: pointer;
+  }
+  .proto-scenes button:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+
+  /* ---- the two upper docks ------------------------------------------ */
+  .mk-dock { position: fixed; top: 1rem; z-index: 51; }
+  .mk-dock-left { left: 0; }
+  .mk-dock-right { right: 0; }
+
+  /* As wide as the panel that opens beneath it, so a line of the tree is
+     never cut short — "Programming and Maths, Integrated" reads whole. */
+  :root { --mk-side: 22rem; }
+  .mk-identity {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 0.45rem;
+    width: var(--mk-side); padding: 0.4rem 0.7rem 0.6rem;
+  }
+  .mk-identity .dl-wordmark { font-size: 1.05rem; }
+  /* Two more rungs under the real three: this tutorial, then its contents. */
+  .mk-level-4 { margin-left: 2.1rem; }
+  .mk-level-5 { margin-left: 0.7rem; }
+  .mk-level-4 > summary, .mk-level-5 > summary { text-transform: none; letter-spacing: 0; }
+  .mk-level-4 > summary { color: var(--dl-heading); font-weight: 700; }
+
+  /* The stack: a search bar, then a tab, both flush to the screen edge. */
+  .mk-stack { display: flex; flex-direction: column; gap: 0.4rem; width: var(--mk-side); }
+  .mk-dock-right .mk-stack { width: 11.5rem; gap: 0; align-items: stretch; }
+
+  .mk-tab {
+    display: flex; align-items: center; gap: 0.45rem;
+    font-family: var(--dl-mono); font-size: 0.78rem; text-align: left;
+    padding: 0.45rem 0.8rem; min-height: 2.1rem; cursor: pointer;
+    background: var(--dl-panel-bg); color: var(--dl-heading);
+    border: 1px solid var(--dl-navy); box-shadow: 0 2px 8px var(--dl-shadow);
+  }
+  .mk-tab:hover, .mk-tab:focus-visible { border-color: var(--dl-orange); color: var(--dl-orange); }
+  .mk-tab[aria-expanded="true"], .mk-tab[aria-pressed="true"] {
+    background: var(--dl-navy); border-color: var(--dl-navy); color: #fff;
+  }
+  .mk-dock-left .mk-tab { border-left: none; border-radius: 0 6px 6px 0; }
+  .mk-dock-right .mk-tab { border-right: none; border-radius: 0; justify-content: flex-end; }
+  .mk-dock-right .mk-tab:first-child { border-radius: 6px 0 0 0; }
+  .mk-dock-right .mk-tab:last-child { border-radius: 0 0 0 6px; }
+  .mk-dock-right .mk-tab + .mk-tab { border-top: none; }
+
+  /* The search bar — a field-shaped summary that opens the real search. */
+  .mk-search { position: relative; }
+  .mk-search > summary {
+    display: flex; align-items: center; gap: 0.5rem; list-style: none; cursor: text;
+    font-family: var(--dl-mono); font-size: 0.78rem; color: var(--dl-muted);
+    padding: 0.45rem 0.8rem; min-height: 2.1rem;
+    background: var(--dl-cell-bg); border: 1px solid var(--dl-cell-border); border-left: none;
+    border-radius: 0 6px 6px 0; box-shadow: 0 2px 8px var(--dl-shadow);
+  }
+  .mk-search > summary::-webkit-details-marker { display: none; }
+  .mk-search[open] > summary { border-color: var(--dl-orange); color: var(--dl-heading); }
+  .mk-search-icon { width: 0.85em; height: 0.85em; flex: none; }
+  .mk-search > .dl-search {
+    position: absolute; top: calc(100% + 0.4rem); left: 0.7rem; z-index: 30; width: 24rem; margin: 0;
+    padding: 0.8rem 0.9rem; background: var(--dl-panel-bg);
+    border: 1px solid var(--dl-cell-border); border-radius: 6px; box-shadow: 0 8px 24px var(--dl-shadow);
+  }
+  .mk-search:not([open]) > .dl-search { display: none; }
+  .mk-search .dl-search-results { position: static; margin-top: 0.6rem; }
+  .mk-scope { display: flex; gap: 0.25rem; margin: 0 0 0.6rem; }
+
+  /* ---- panels: full height below their own dock, one per side --------- */
+  .mk-panel {
+    position: fixed; bottom: 0; z-index: 50; width: var(--mk-side);
+    overflow-y: auto; padding: 1rem 1.1rem 1.1rem;
+    background: var(--dl-panel-bg); font-size: 0.85rem;
+  }
+  .mk-panel[hidden] { display: none; }
+  .mk-panel-left { left: 0; top: var(--mk-left-top, 20rem); border-right: 1px solid var(--dl-cell-border); }
+  .mk-panel-right { right: 0; top: var(--mk-right-top, 12rem); border-left: 1px solid var(--dl-cell-border); }
+  .mk-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.6rem; }
+  .mk-panel-head h2 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dl-muted); margin: 0; }
+  .mk-close { font-size: 1.3rem; line-height: 1; background: none; border: none; color: var(--dl-muted); cursor: pointer; padding: 0 0.2rem; }
+  .mk-close:hover { color: var(--dl-orange); }
+  .mk-pane[hidden] { display: none; }
+  .mk-term { padding: 0.55rem 0; border-bottom: 1px solid var(--dl-rule); }
+  .mk-term b { font-family: var(--dl-mono); font-size: 0.82rem; color: var(--dl-heading); display: block; }
+  .mk-term p { margin: 0.15rem 0 0; }
+  .mk-term small { color: var(--dl-muted); }
+  .mk-panel h3 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dl-muted); margin: 1rem 0 0.2rem; }
+  .mk-doors { display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; margin: 0 0 0.8rem; }
+
+  /* The page itself: no bar above it now. */
+  .dl-page > h1 { margin-top: 0.4rem; }
+  .mk-under { font-weight: 700; color: var(--dl-heading); margin: -0.4rem 0 1.4rem; }
+  .mk-cell { border: 1px solid var(--dl-cell-border); border-radius: 6px; background: var(--dl-cell-bg); margin: 1.2rem 0 1.6rem; }
+  .mk-cell-head { display: flex; justify-content: space-between; padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--dl-cell-border); font-family: var(--dl-mono); font-size: 0.72rem; color: var(--dl-muted); }
+  .mk-cell pre { margin: 0; padding: 0.9rem 1rem; font-family: var(--dl-mono); font-size: 0.85rem; line-height: 1.5; background: var(--dl-panel-bg); }
+  .mk-cell-foot { display: flex; gap: 0.4rem; padding: 0.45rem 0.8rem; font-family: var(--dl-mono); font-size: 0.72rem; color: var(--dl-muted); }
+  .mk-cell-foot span { padding: 0.2rem 0.6rem; border: 1px solid var(--dl-cell-border); border-radius: 4px; background: var(--dl-panel-bg); }
+  .mk-footer { margin-top: 3rem; text-align: center; font-size: 0.82rem; color: var(--dl-muted); }
+</style>
+</head>
+<body>
+
+<div class="proto-note">
+  Playable mockup, not a finished design. The real <code>assets/tutorial-style.css</code>, unmodified, loaded directly — only the shell is new. Click any tab, the search bar, or a caret in the tree; drag the window narrower to watch the reading column react. Compared with the branch as built: no top bar at all (its All tutorials, previous/next, search and Contents all live in the upper-left block now); no Series button, since the tree's series level already lists the siblings; the block is as wide as the panel beneath it so no line of the tree is cut short; Documentation dropped; nothing in the bottom corners; the right side is one vertical stack of the four remaining panels, mirroring the left. One trade-off to weigh: a panel opens <em>below</em> its block, so with Contents fully expanded the Reference panel gets short — the alternative is a panel that covers the tree while it is open.
+</div>
+<div class="proto-scenes" aria-label="Scenes">
+  <button type="button" data-scene="closed">Everything closed</button>
+  <button type="button" data-scene="reference">Reference open</button>
+  <button type="button" data-scene="notes">Notes open</button>
+  <button type="button" data-scene="both">Both open</button>
+  <button type="button" data-scene="contents">Contents expanded</button>
+  <button type="button" data-scene="search">Search open</button>
+</div>
+
+<div class="dl-page">
+  <div class="dl-status">Starting Python… <span class="dl-boot-dots"><span></span><span></span><span></span></span></div>
+
+  <h1>Lists and Sequences</h1>
+  <p class="mk-under">Programming Design Principles / Maths for IT</p>
+
+  <p>Until now we have been working with individual values: a single number, a single string. But most interesting problems involve <em>collections</em> of data: a set of test scores, a sequence of temperatures, a list of student names. Today we learn how Python handles collections, and we will write our first <em>functions</em> — reusable blocks of code that we can call whenever we need them.</p>
+
+  <h2 id="lists-ordered-collections">Lists: Ordered Collections</h2>
+  <p>A list is an ordered sequence of values, enclosed in square brackets:</p>
+  <div class="mk-cell">
+    <div class="mk-cell-head"><span>Cell 1 <b style="color:var(--dl-orange)">PYTHON</b></span><span>⧉ Duplicate</span></div>
+<pre>scores = [42, 38, 35, 47, 29, 41, 44, 33, 39, 48]
+print(scores)
+print("Number of scores:", len(scores))</pre>
+    <div class="mk-cell-foot"><span>▶ Run</span><span>↺ Reset</span><span>↻ Clear</span><span>⋯ More</span></div>
+  </div>
+  <p>Each element in a list has a position called its <em>index</em>. Python uses zero-based indexing, meaning the first element is at index 0.</p>
+
+  <h2 id="building-lists-with-loops">Building Lists with Loops</h2>
+  <p>You can start with an empty list and add to it as you go. <code>append()</code> always adds to the end — the list grows in the order you fill it.</p>
+  <div class="mk-cell">
+    <div class="mk-cell-head"><span>Cell 2 <b style="color:var(--dl-orange)">PYTHON</b></span><span>⧉ Duplicate</span></div>
+<pre>squares = []
+for n in range(1, 6):
+    squares.append(n * n)
+print(squares)</pre>
+    <div class="mk-cell-foot"><span>▶ Run</span><span>↺ Reset</span><span>↻ Clear</span><span>⋯ More</span></div>
+  </div>
+
+  <h2 id="looping-over-lists">Looping Over Lists</h2>
+  <p>A <code>for</code> loop visits each element in turn. The variable you name takes each value, one after another, in the list's own order.</p>
+
+  <nav class="dl-nav dl-nav-bottom">
+    <a class="dl-nav-prev" href="#">Repeating Yourself</a>
+    <a class="dl-nav-up" href="#">All tutorials</a>
+    <a class="dl-nav-next" href="#">Finding Things</a>
+  </nav>
+  <p class="mk-footer">© 2026 J. S. Aaron · Licence · ▸ Something wrong with this page? Tell us.</p>
+</div>
+
+<!-- Upper-left: identity, the where-we-are tree, then search and Reference -->
+<aside class="mk-dock mk-dock-left" data-side="left">
+  <div class="mk-head" id="mk-left-head">
+    <div class="mk-identity">
+      <a class="dl-wordmark" href="#">dewlab</a>
+      <nav class="dl-crumbtrail" aria-label="Where you are">
+        <details class="dl-crumb-level dl-crumb-level-1">
+          <summary>All tutorials</summary>
+          <div role="list">
+            <div role="listitem"><span class="dl-crumb-current">Programming and Maths, Integrated</span></div>
+            <div role="listitem"><a href="#">Computational Methods</a></div>
+            <div role="listitem"><a href="#">Database Methods</a></div>
+            <div role="listitem"><a href="#">Web Authoring</a></div>
+            <div role="listitem"><a href="#">Fundamentals of OOP</a></div>
+          </div>
+        </details>
+        <details class="dl-crumb-level dl-crumb-level-2">
+          <summary>Programming and Maths, Integrated</summary>
+          <div role="list">
+            <div role="listitem"><span class="dl-crumb-current">Programming Foundations</span></div>
+            <div role="listitem"><a href="#">Data, Chance and Logic</a></div>
+            <div role="listitem"><a href="#">Algebra and Functions</a></div>
+            <div role="listitem"><a href="#">Trigonometry and Calculus</a></div>
+            <div role="listitem"><a href="#">Capstone Project</a></div>
+            <div role="listitem"><a href="#">Reflections and review</a></div>
+          </div>
+        </details>
+        <details class="dl-crumb-level dl-crumb-level-3" open>
+          <summary>Programming Foundations</summary>
+          <div role="list">
+            <div role="listitem"><a href="#">First Steps</a></div>
+            <div role="listitem"><a href="#">Storing and Computing</a></div>
+            <div role="listitem"><a href="#">How We Got Here</a></div>
+            <div role="listitem"><a href="#">Making Decisions</a></div>
+            <div role="listitem"><a href="#">When It Goes Wrong</a></div>
+            <div role="listitem"><a href="#">Repeating Yourself</a></div>
+            <div role="listitem"><span class="dl-crumb-current">Lists and Sequences</span></div>
+            <div role="listitem"><a href="#">Finding Things</a></div>
+            <div role="listitem"><a href="#">Putting Things in Order</a></div>
+            <div role="listitem"><a href="#">Building Reusable Tools</a></div>
+          </div>
+        </details>
+        <details class="dl-crumb-level mk-level-4" open>
+          <summary>Lists and Sequences</summary>
+          <details class="dl-crumb-level mk-level-5" id="mk-contents">
+            <summary>Contents · 8 sections</summary>
+            <div role="list">
+              <div role="listitem"><a href="#lists-ordered-collections">Lists: Ordered Collections</a></div>
+              <div role="listitem"><a href="#building-lists-with-loops">Building Lists with Loops</a></div>
+              <div role="listitem"><a href="#looping-over-lists">Looping Over Lists</a></div>
+              <div role="listitem"><a href="#">Functions: Reusable Algorithms</a></div>
+              <div role="listitem"><a href="#">Mathematical Sequences as Functions</a></div>
+              <div role="listitem"><a href="#">The Dot Product: Lists Meet Arithmetic</a></div>
+              <div role="listitem"><a href="#">Reflection</a></div>
+              <div role="listitem"><a href="#">Where to Read More</a></div>
+            </div>
+          </details>
+        </details>
+      </nav>
+    </div>
+    <div class="mk-stack">
+      <details class="mk-search" id="mk-search">
+        <summary>
+          <svg class="mk-search-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><line x1="13.3" y1="13.3" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Search this tutorial…
+        </summary>
+        <div class="dl-search">
+          <div class="dl-reference-tabs mk-scope" role="tablist" aria-label="Where to search">
+            <button type="button" class="dl-reference-tab" role="tab" aria-selected="true">This tutorial</button>
+            <button type="button" class="dl-reference-tab" role="tab" aria-selected="false">All tutorials</button>
+          </div>
+          <input type="search" class="dl-reference-search-input" value="append" aria-label="Search">
+          <div class="dl-search-results">
+            <a href="#building-lists-with-loops"><span class="dl-search-title">Building Lists with Loops</span><span class="dl-search-subtitle">§2 · "append() always adds to the end"</span></a>
+            <a href="#"><span class="dl-search-title">append()</span><span class="dl-search-subtitle">Reference · Functions · adds one value to the end of a list</span></a>
+          </div>
+        </div>
+      </details>
+      <button type="button" class="mk-tab" data-open="reference" aria-expanded="false" aria-controls="mk-panel-reference">
+        <span class="dl-reference-icon" aria-hidden="true"></span>Reference
+      </button>
+    </div>
+  </div>
+  <div class="mk-panel mk-panel-left" id="mk-panel-reference" hidden>
+    <div class="mk-panel-head"><h2>Reference</h2><button type="button" class="mk-close" data-close="reference" aria-label="Close">&times;</button></div>
+    <input type="search" class="dl-reference-search-input" placeholder="Search this page's terms…" aria-label="Search this page's reference">
+    <div class="dl-reference-tabs" role="tablist" aria-label="Reference sections">
+      <button type="button" class="dl-reference-tab" role="tab" aria-selected="true">Reference</button>
+      <button type="button" class="dl-reference-tab" role="tab" aria-selected="false">Math Basics</button>
+      <button type="button" class="dl-reference-tab" role="tab" aria-selected="false">Python Basics</button>
+    </div>
+    <p class="dl-panel-note" style="margin-top:0.8rem">The glossary below is what this page — and everything before it in the series — has covered so far.</p>
+    <h3>Concepts</h3>
+    <div class="mk-term"><b>cell</b><p>A small, runnable box of Python inside a tutorial page. You can edit it and run it, and the result appears underneath.</p><small>Introduced in First Steps</small></div>
+    <div class="mk-term"><b>function</b><p>A named, reusable piece of code you call by writing its name followed by parentheses, like print().</p><small>Introduced in First Steps</small></div>
+    <div class="mk-term"><b>algorithm</b><p>A sequence of clear, unambiguous steps that accomplish a task.</p><small>Introduced in First Steps</small></div>
+    <div class="mk-term"><b>loop</b><p>A step, or group of steps, repeated until some condition is met.</p><small>Introduced in Repeating Yourself</small></div>
+    <h3>Functions</h3>
+    <div class="mk-term"><b>print()</b><p>Displays whatever is inside its parentheses.</p><small>print("Hello, world!")</small></div>
+    <div class="mk-term"><b>len()</b><p>Counts how many items a list holds.</p><small>len(scores)</small></div>
+  </div>
+</aside>
+
+<!-- Upper-right: one vertical stack, mirroring the left -->
+<aside class="mk-dock mk-dock-right" data-side="right">
+  <div class="mk-head" id="mk-right-head">
+    <div class="mk-stack">
+      <button type="button" class="mk-tab" data-pane="notes" aria-pressed="false">Notes</button>
+      <button type="button" class="mk-tab" data-pane="report" aria-pressed="false">Report</button>
+      <button type="button" class="mk-tab" data-pane="appearance" aria-pressed="false">Appearance</button>
+      <button type="button" class="mk-tab" data-pane="importsexports" aria-pressed="false">Imports &amp; Exports</button>
+    </div>
+  </div>
+  <div class="mk-panel mk-panel-right" id="mk-panel-right" hidden>
+    <div class="mk-panel-head"><h2 id="mk-right-title">Notes</h2><button type="button" class="mk-close" data-close="right" aria-label="Close">&times;</button></div>
+
+    <div class="mk-pane" data-pane="notes">
+      <label class="dl-progress-notes-label" for="mk-notes">Your notes</label>
+      <textarea class="dl-progress-notes" id="mk-notes" rows="6" placeholder="Anything worth writing down as you go."></textarea>
+      <p class="dl-panel-note">Notes are saved in this browser, on this device. Export a copy below to keep them anywhere else.</p>
+      <p class="dl-progress-state">Saving as you go.</p>
+      <div class="dl-progress-actions">
+        <button type="button" class="dl-btn">Export a copy</button>
+        <button type="button" class="dl-btn">Load a copy</button>
+        <button type="button" class="dl-btn dl-progress-clear">Start again</button>
+      </div>
+    </div>
+
+    <div class="mk-pane" data-pane="report" hidden>
+      <p class="dl-panel-note">Is something wrong with this page, or is a cell not behaving? A report tells us the page and the version you're on, so it's easy to check.</p>
+      <p class="mk-doors"><a href="#">I have a question</a> · <a href="#">It gives an error</a> · <a href="#">The page is wrong, or I could not follow it</a></p>
+    </div>
+
+    <div class="mk-pane" data-pane="appearance" hidden>
+      <input type="search" class="dl-settings-search-input" placeholder="Search settings — e.g. font size, dark mode…" aria-label="Search settings">
+      <h3>Texture</h3>
+      <div class="dl-texture-row"><span id="mk-seg-theme">Theme</span>
+        <div class="dl-seg" role="radiogroup" aria-labelledby="mk-seg-theme"><button type="button" role="radio" aria-checked="true">auto</button><button type="button" role="radio" aria-checked="false">light</button><button type="button" role="radio" aria-checked="false">dark</button></div></div>
+      <div class="dl-texture-row"><span id="mk-seg-font">Font</span>
+        <div class="dl-seg" role="radiogroup" aria-labelledby="mk-seg-font"><button type="button" role="radio" aria-checked="true">serif</button><button type="button" role="radio" aria-checked="false">sans</button><button type="button" role="radio" aria-checked="false">mono</button></div></div>
+      <div class="dl-texture-row"><span>Size</span><input type="range" min="16" max="24" step="1" value="18" aria-label="Text size"></div>
+      <h3>Running Python</h3>
+      <div class="dl-progress-actions"><button type="button" class="dl-btn">Restart Python</button><button type="button" class="dl-btn">Restart &amp; run all</button></div>
+    </div>
+
+    <div class="mk-pane" data-pane="importsexports" hidden>
+      <h3>Your own cells</h3>
+      <div class="dl-progress-actions"><button type="button" class="dl-btn">Load a shared cell</button></div>
+      <h3>This page</h3>
+      <div class="dl-progress-actions"><button type="button" class="dl-btn">Download to keep</button><button type="button" class="dl-btn">Print — or save as PDF</button><button type="button" class="dl-btn">Save as a Jupyter notebook</button></div>
+      <h3>Versions</h3>
+      <p class="dl-panel-note">You are on the version you started with. A newer one exists.</p>
+    </div>
+  </div>
+</aside>
+
+<script>
+(function () {
+  const root = document.documentElement;
+  const left = { head: document.getElementById("mk-left-head"), panel: document.getElementById("mk-panel-reference"), tab: document.querySelector('[data-open="reference"]') };
+  const right = { head: document.getElementById("mk-right-head"), panel: document.getElementById("mk-panel-right"), tabs: [...document.querySelectorAll(".mk-dock-right .mk-tab")] };
+  const RIGHT_TITLES = { notes: "Notes", report: "Report", appearance: "Appearance", importsexports: "Imports & Exports" };
+
+  // The reading column always clears both docks' resting width, and an open
+  // panel's width instead when that is wider — the same rule the build
+  // uses (watchPanelOverlap(), tutorial-runtime.js).
+  function sync() {
+    root.setAttribute("data-dl-panel-left", "");
+    root.setAttribute("data-dl-panel-right", "");
+    const lw = Math.max(left.head.offsetWidth, left.panel.hidden ? 0 : left.panel.offsetWidth) + 16;
+    const rw = Math.max(right.head.offsetWidth, right.panel.hidden ? 0 : right.panel.offsetWidth) + 16;
+    root.style.setProperty("--dl-panel-left-w", `${lw}px`);
+    root.style.setProperty("--dl-panel-right-w", `${rw}px`);
+    // Each panel starts just below its own dock, whatever the tree is showing.
+    root.style.setProperty("--mk-left-top", `${Math.round(left.head.getBoundingClientRect().bottom) + 8}px`);
+    root.style.setProperty("--mk-right-top", `${Math.round(right.head.getBoundingClientRect().bottom) + 8}px`);
+  }
+  new ResizeObserver(sync).observe(left.head);
+  new ResizeObserver(sync).observe(right.head);
+  new ResizeObserver(sync).observe(left.panel);
+  new ResizeObserver(sync).observe(right.panel);
+  document.querySelectorAll(".dl-crumb-level").forEach((d) => d.addEventListener("toggle", sync));
+  sync();
+
+  function setLeft(open) {
+    left.panel.hidden = !open;
+    left.tab.setAttribute("aria-expanded", String(open));
+    sync();
+  }
+  function setRight(pane) {
+    right.panel.hidden = !pane;
+    right.tabs.forEach((t) => t.setAttribute("aria-pressed", String(t.dataset.pane === pane)));
+    if (pane) {
+      right.panel.querySelectorAll(".mk-pane").forEach((p) => { p.hidden = p.dataset.pane !== pane; });
+      document.getElementById("mk-right-title").textContent = RIGHT_TITLES[pane];
+    }
+    sync();
+  }
+  left.tab.addEventListener("click", () => setLeft(left.panel.hidden));
+  right.tabs.forEach((t) => t.addEventListener("click", () => {
+    const already = !right.panel.hidden && t.getAttribute("aria-pressed") === "true";
+    setRight(already ? null : t.dataset.pane);
+  }));
+  document.querySelector('[data-close="reference"]').addEventListener("click", () => setLeft(false));
+  document.querySelector('[data-close="right"]').addEventListener("click", () => setRight(null));
+  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") { setLeft(false); setRight(null); document.getElementById("mk-search").open = false; } });
+
+  const contents = document.getElementById("mk-contents");
+  const search = document.getElementById("mk-search");
+  const SCENES = {
+    closed:    () => { setLeft(false); setRight(null); contents.open = false; search.open = false; },
+    reference: () => { setLeft(true);  setRight(null); search.open = false; },
+    notes:     () => { setLeft(false); setRight("notes"); search.open = false; },
+    both:      () => { setLeft(true);  setRight("notes"); search.open = false; },
+    contents:  () => { contents.open = true; search.open = false; },
+    search:    () => { search.open = true; },
+  };
+  document.querySelectorAll("[data-scene]").forEach((b) => b.addEventListener("click", () => { SCENES[b.dataset.scene](); sync(); }));
+
+  // Segmented-control click styling only — nothing is wired to a real preference here.
+  document.querySelectorAll(".dl-seg, .mk-scope").forEach((group) => {
+    group.querySelectorAll("button").forEach((btn) => btn.addEventListener("click", () => {
+      group.querySelectorAll("button").forEach((b) => { b.setAttribute("aria-checked", String(b === btn)); b.setAttribute("aria-selected", String(b === btn)); });
+    }));
+  });
+})();
+</script>
+</body>
+</html>
