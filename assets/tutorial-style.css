@@ -193,13 +193,24 @@ body {
       var(--dl-line-width),
       calc(100vw - var(--dl-panel-left-w, 0px) - var(--dl-panel-right-w, 0px) - 1rem)
     ));
-    max-width: var(--dl-col);
-    margin-left: clamp(
+    --dl-col-left: clamp(
       calc(var(--dl-panel-left-w, 0px) + 0.5rem),
       calc((100vw - var(--dl-col)) / 2),
       calc(100vw - var(--dl-panel-right-w, 0px) - 0.5rem - var(--dl-col))
     );
+    max-width: var(--dl-col);
+    margin-left: var(--dl-col-left);
     margin-right: 0;
+  }
+  /* The two things wider than the column (the knowledge map and the tree)
+     centre themselves on the column with a 50% margin and a -50%
+     translate. With the column no longer centred on the screen, that
+     would push them off its right edge: centre them on the viewport
+     instead, stepping back over the column's offset and its own 1.25rem
+     of padding. */
+  html[data-dl-panel-left] .dl-page .dl-map-figure,
+  html[data-dl-panel-left] .dl-page .dl-tree-layout {
+    margin-left: calc(50vw - var(--dl-col-left) - 1.25rem);
   }
 }
 
