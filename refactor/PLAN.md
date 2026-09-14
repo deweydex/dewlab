@@ -209,6 +209,9 @@ new `courses/` folder. `build.py` will not build yet — that is step 2.
 11. `dev/curriculum_map.py`, `dev/draw_topic_graph.py`,
     `dev/from_notebook.py` — the three dev scripts that build URLs or paths
     from a module.
+12. `refactor/check.py` moves to the repository root as `check.py`, and
+    `refactor/docs/CHECK_YOUR_WORK.md` to `docs/`; `docs/WRITING_TUTORIALS.md`
+    and `CONTRIBUTING.md` each gain one line pointing at it (`TESTS.md` §4).
 
 Done when: `python3 build.py --clean` writes the site; `site/tutorials/`
 has one page per id; every old address in `courses/redirects.yaml` exists
@@ -263,16 +266,18 @@ fork, since the editor talks to GitHub.
 
 ### Step 5 — tests
 
-`tests/test_build.py` and `tests/e2e/` — see `TOUCHPOINTS.md` §4. The
-fixtures write `tutorials/<module>/<slug>/` today; they write
-`tutorials/<slug>/` plus a course file after. Most tests change only in
-their fixture setup; the ones that assert on module folders, order files,
-`module_title` or the borrowed form are rewritten to assert the same thing
-about course files.
+`TESTS.md` is this step. In short: `tests/test_build.py` is re-cut into
+`tests/build/`, one file per object, with three fixture helpers that speak
+the new layout; the browser fixture gains a course file; the tests that
+asserted on module folders, order files, `module_title` or the borrowed
+form are rewritten or deleted (`TESTS.md` §2.3 says which and why); the
+charter in `TESTS.md` §3 names the new tests, each against a foreseen
+mistake; `tests/build/test_check.py` proves `check.py`; and CI gains a
+browser job for the prose-only e2e files.
 
-Done when: the unit suite is green and the e2e files that passed before the
-branch pass again (the two failures already present on `main` in this
-sandbox excepted).
+Done when: the unit suite is green, every row of the charter has its test,
+and the e2e files that passed before the branch pass again (the two
+failures already present on `main` in this sandbox excepted).
 
 ### Step 6 — documents
 

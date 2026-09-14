@@ -248,10 +248,18 @@ def apply(found: Found, planned: dict) -> None:
             front, body = split_frontmatter(text)
             if front:
                 text = "---\n" + strip_placement(front) + "\n---\n" + body
-            # tutorial: links inside this module that named a renamed slug
+            # Anything in this module that named a renamed slug: tutorial:
+            # links in the body, and practice_for / practice_across in the
+            # frontmatter (a renamed tutorial's own practice page, or a mixed
+            # set in the same module that draws on it). Without this the
+            # practice page of the renamed tutorial points at the *other*
+            # tutorial of that name — found by check.py on the first dry run.
             for (m, s), new in planned["new_id"].items():
                 if m == module and new != s:
                     text = re.sub(rf"\(tutorial:{re.escape(s)}([)#])", rf"(tutorial:{new}\1", text)
+                    text = re.sub(rf"^(practice_for:\s*){re.escape(s)}\s*$", rf"\g<1>{new}", text, flags=re.M)
+                    text = re.sub(rf"^(\s*-\s*){re.escape(s)}\s*$", rf"\g<1>{new}", text, flags=re.M) \
+                        if re.search(r"^practice_across:", text, re.M) else text
             md.write_text(text)
     # 2. moves
     for (module, slug), folder in found.tutorials.items():
@@ -277,9 +285,18 @@ def apply(found: Found, planned: dict) -> None:
         git("rm", "-q", str(path))
     if (TUTORIALS / "modules.yaml").is_file():
         git("rm", "-q", str(TUTORIALS / "modules.yaml"))
+    # The old module folders: a .gitkeep is the one thing left in some of
+    # them; anything else is a surprise and is left for a person to look at.
     for module_dir in [p for p in TUTORIALS.iterdir() if p.is_dir() and not any(p.glob("*.md"))]:
+        keep = module_dir / ".gitkeep"
+        if keep.is_file():
+            git("rm", "-q", str(keep))  # git also drops the folder once it is empty
+        if not module_dir.exists():
+            continue
         if not any(module_dir.iterdir()):
             module_dir.rmdir()
+        else:
+            print(f"note: {module_dir.relative_to(ROOT)} still holds files that are not tutorials; left in place")
 
 
 def main() -> None:

@@ -23,5 +23,11 @@ Read in this order:
    migration, in the same commit.
 7. `storage_migration.js` — the browser-side key migration the runtime gains
    in step 3, kept here so it can be read on its own.
+8. `TESTS.md` — the test suite re-cut around the new objects, and a charter:
+   each thing we foresee going wrong, the one test that proves it cannot,
+   and why that test is the right proof.
+9. `check.py` and `docs/CHECK_YOUR_WORK.md` — the contributor's own check,
+   one command in plain words, and its page. Both move out of this folder
+   in step 2 (to the repository root and to `docs/`).
 
 Nothing in this folder is imported by `build.py` or shipped in `site/`.
