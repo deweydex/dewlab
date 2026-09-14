@@ -90,7 +90,7 @@ class TestSavedWorkAndOldAddresses:
         assert tab.evaluate("localStorage.getItem('dewlab:progress:fixtures:prose-only')") is None
         saved = json.loads(tab.evaluate("localStorage.getItem('dewlab:progress:prose-only')"))
         assert saved["notes"] == "kept across the rename"
-        assert tab.input_value("#dl-notes") == "kept across the rename"
+        assert tab.evaluate("globalThis.dewlab.readSaved().notes") == "kept across the rename"
 
     def test_an_old_address_lands_on_the_new_page(self, tab, base_url):
         tab.goto(f"{base_url}/tutorials/fixtures/prose-only.html")
