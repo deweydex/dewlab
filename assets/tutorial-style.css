@@ -271,61 +271,6 @@ body {
   flex: none;
 }
 
-.dl-panels[open] {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-.dl-panels-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex: none;
-  font-family: var(--dl-mono);
-  font-size: 0.78rem;
-  background: none;
-  border: 1px solid var(--dl-navy);
-  border-radius: 4px;
-  color: var(--dl-heading);
-  padding: 0.38rem 0.7rem;
-  cursor: pointer;
-  min-height: 2rem;
-  list-style: none;
-}
-.dl-panels-toggle::-webkit-details-marker { display: none; }
-.dl-panels-toggle[hidden] { display: none; }
-.dl-panels-toggle:hover {
-  border-color: var(--dl-orange);
-  color: var(--dl-orange);
-}
-.dl-panels[open] > .dl-panels-toggle {
-  background: var(--dl-navy);
-  border-color: var(--dl-navy);
-  color: #fff;
-}
-
-.dl-panels-icon {
-  width: 0.82em;
-  height: 0.82em;
-  flex: none;
-  background:
-    linear-gradient(currentColor 0 0) 0 0 / 0.32em 0.32em no-repeat,
-    linear-gradient(currentColor 0 0) 100% 0 / 0.32em 0.32em no-repeat,
-    linear-gradient(currentColor 0 0) 0 100% / 0.32em 0.32em no-repeat,
-    linear-gradient(currentColor 0 0) 100% 100% / 0.32em 0.32em no-repeat;
-}
-
-.dl-panels-group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-.dl-panels:not([open]) > .dl-panels-group {
-  display: none;
-}
-
 h1, h2, h3, h4 {
   color: var(--dl-heading);
   line-height: 1.25;
@@ -1129,6 +1074,17 @@ p code, li code {
 }
 .dl-yourwork[hidden], .dl-appearance[hidden], .dl-settings[hidden] { display: none; }
 
+/* Notes+Report and Appearance+Imports&Exports each span the whole right
+   edge, but both the top-right strip and the bottom-right strip stay on
+   top of either panel in z-index. Carving out each one's tracked real
+   height (trackCornerDockHeights(), tutorial-runtime.js — the same way
+   trackChromeHeight() already tracks --dl-chrome-h) keeps a panel's own
+   header and its scrolled-to-the-bottom content clear of both. */
+.dl-yourwork, .dl-appearance {
+  top: calc(var(--dl-chrome-h) + var(--dl-corner-tr-h, 0px));
+  bottom: calc(1rem + var(--dl-corner-br-h, 0px));
+}
+
 .dl-panel-resize-handle {
   position: absolute;
   left: 0;
@@ -1239,7 +1195,6 @@ p code, li code {
   padding: 0.6rem 0.7rem 0.7rem;
 }
 .dl-corner-identity .dl-crumbs { max-width: 100%; }
-.dl-corner-identity .dl-panels[open] { display: block; }
 
 /* The breadcrumb tree — all tutorials, then this tutorial's own module,
    series, and finally itself — three independently collapsible levels
@@ -1309,6 +1264,12 @@ p code, li code {
   cursor: pointer;
   min-height: 2rem;
 }
+/* An author rule with the same specificity as the browser's own
+   [hidden] { display: none } always wins the tie — without this,
+   Reference and Documentation's own hidden attribute (set when a page
+   has no glossary) does nothing, since .dl-corner-tab's unconditional
+   display: inline-flex above already matches at the same weight. */
+.dl-corner-tab[hidden] { display: none; }
 .dl-corner-tab:hover, .dl-corner-tab:focus-visible {
   border-color: var(--dl-orange);
   color: var(--dl-orange);
@@ -1407,6 +1368,17 @@ p code, li code {
   font-size: 0.85rem;
 }
 .dl-reference[hidden], .dl-documentation[hidden] { display: none; }
+/* Reference and Documentation span the whole left edge, but the top-left
+   dock (wordmark, breadcrumb tree, search, the Series toggle — taller the
+   deeper a page's breadcrumb runs) and the bottom-left dock (Documentation's
+   own tab) both stay on top of the panel in z-index. Carving out each
+   one's tracked real height (see trackCornerDockHeights() in
+   tutorial-runtime.js) keeps the panel's own header and its
+   scrolled-to-the-bottom content clear of both, on every page. */
+.dl-reference, .dl-documentation {
+  top: calc(var(--dl-chrome-h) + var(--dl-corner-tl-h, 0px));
+  bottom: calc(1rem + var(--dl-corner-bl-h, 0px));
+}
 .dl-reference-head {
   display: flex;
   align-items: center;
@@ -1598,6 +1570,12 @@ p code, li code {
   font-size: 0.85rem;
 }
 .dl-seriesnav[hidden] { display: none; }
+/* Same reasoning as .dl-reference/.dl-documentation above — the Series
+   toggle now lives inside the top-left dock's own identity block. */
+.dl-seriesnav {
+  top: calc(var(--dl-chrome-h) + var(--dl-corner-tl-h, 0px));
+  bottom: calc(1rem + var(--dl-corner-bl-h, 0px));
+}
 .dl-seriesnav-head {
   display: flex;
   align-items: center;
@@ -1806,7 +1784,7 @@ p code, li code {
 :root[data-header="minimal"] .dl-crumbs, :root[data-header="minimal"] .dl-crumbtrail { display: none; }
 :root[data-header="minimal"] .dl-corner-tab,
 :root[data-header="minimal"] .dl-settings-toggle,
-:root[data-header="minimal"] .dl-panels-toggle {
+:root[data-header="minimal"] .dl-seriesnav-toggle {
   font-size: 0.72rem;
   padding: 0.25rem 0.5rem;
   min-height: 1.7rem;

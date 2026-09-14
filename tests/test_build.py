@@ -1902,7 +1902,7 @@ class TestTheStickyChrome:
         assert "dl-wordmark" in corner
         assert "dl-crumbtrail" in corner
         assert "dl-nav-search" in corner
-        assert 'id="dl-panels"' in corner
+        assert 'id="dl-seriesnav-toggle"' in corner
 
     def test_a_downloadable_copy_keeps_the_chrome_without_the_navigation(
         self, repo_with_assets

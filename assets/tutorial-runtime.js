@@ -94,6 +94,36 @@ function trackChromeHeight() {
   }
 }
 
+// Every panel spans the full height of its own edge (top: 0 or bottom: 0),
+// but that edge's corner docks — the identity block and Reference tab at
+// top-left, Documentation at bottom-left, Notes+Report at top-right,
+// Appearance+Imports&Exports at bottom-right — sit above the panel in
+// z-index and stay reachable while it's open. Left unaccounted for, a
+// panel's own header or scrolled-down content renders right underneath,
+// and the two visually collide. Tracking each dock's real height (the
+// same way trackChromeHeight() already tracks --dl-chrome-h) lets the
+// panel's CSS carve out exactly the room each corner needs.
+function trackCornerDockHeights() {
+  const docks = [
+    { el: document.querySelector(".dl-corner-dock-tl"), prop: "--dl-corner-tl-h" },
+    { el: document.querySelector(".dl-corner-dock-tr"), prop: "--dl-corner-tr-h" },
+    { el: document.querySelector(".dl-corner-dock-bl"), prop: "--dl-corner-bl-h" },
+    { el: document.querySelector(".dl-corner-dock-br"), prop: "--dl-corner-br-h" },
+  ];
+  for (const { el, prop } of docks) {
+    if (!el) continue;
+    const publish = () => {
+      document.documentElement.style.setProperty(prop, `${Math.round(el.getBoundingClientRect().height)}px`);
+    };
+    publish();
+    if (typeof ResizeObserver === "function") {
+      new ResizeObserver(publish).observe(el);
+    } else {
+      window.addEventListener("resize", publish);
+    }
+  }
+}
+
 function closeReference() {
   const toggle = document.getElementById("dl-reference-toggle");
   const panel = document.getElementById("dl-reference");
@@ -1674,24 +1704,6 @@ function initSeriesNav() {
     if (clickIsInsidePanels(ev.target, RIGHT_DOCK_IDS)) return;
     setOpen(false);
   });
-}
-
-function initPanelsDisclosure() {
-  const panels = document.getElementById("dl-panels");
-  const summary = panels && panels.querySelector(".dl-panels-toggle");
-  const group = panels && panels.querySelector("#dl-panels-group");
-  if (!panels || !summary || !group) return;
-
-  // A disclosure earns the extra click only when it has a choice to disclose.
-  // Root-level pages usually have Settings alone; leave the details open and
-  // hide its summary there so Settings is the direct control it was before the
-  // three panel buttons were grouped. Tutorial pages have Reference and/or
-  // Series as well, so they keep the compact Panels disclosure.
-  const available = [...group.querySelectorAll("button")]
-    .filter((button) => !button.hidden);
-  const hasChoice = available.length > 1;
-  panels.open = !hasChoice;
-  summary.hidden = !hasChoice;
 }
 
 function setSegChecked(btn, checked) {
@@ -4620,13 +4632,13 @@ initMobileLauncher();
 initReferenceLookup(currentManifest);
 initHighlightPopover();
 initSeriesNav();
-initPanelsDisclosure();
 watchPanelOverlap();
 restoreSidebarState();
 initProgressBadgesToggle();
 initNotesNudgeToggle();
 initContentsProgress();
 trackChromeHeight();
+trackCornerDockHeights();
 announceRestore(restoreSaved());
 updateProgressSummary();
 updateNotesNudge();

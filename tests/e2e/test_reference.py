@@ -207,33 +207,36 @@ class TestVisibility:
         context.close()
 
 
-class TestPanelsDisclosure:
-    def test_a_closed_disclosure_does_not_reserve_its_hidden_buttons(
+class TestIdentityCornerControlsAreDirect:
+    """Series used to live behind a "Panels" disclosure shared with
+    Reference; once Reference got its own corner-tab button, the group
+    that disclosure gated could only ever hold Series alone, so the extra
+    click it asked for stopped earning its keep — Series is now a plain
+    button in the identity block, exactly like Reference and Appearance
+    are direct everywhere."""
+
+    def test_series_is_a_plain_visible_button_not_a_disclosure(
             self, site, browser, site_url):
         _tutorial(site, "one", "One")
-        _set_order(site, ["one"])
+        _tutorial(site, "two", "Two")
+        _set_order(site, ["one", "two"])
         b.build()
         context = browser.new_context(viewport={"width": 1200, "height": 800})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
 
-        assert not page.eval_on_selector("#dl-panels", "el => el.open")
-        assert page.is_hidden("#dl-panels-group")
-        assert page.eval_on_selector(
-            "#dl-panels-group", "el => el.getBoundingClientRect().width"
-        ) == 0
-
-        page.click("#dl-panels summary")
+        assert page.locator("#dl-panels").count() == 0
         assert page.is_visible("#dl-seriesnav-toggle")
+        page.click("#dl-seriesnav-toggle")
+        assert page.is_visible("#dl-seriesnav")
         context.close()
 
     @pytest.mark.parametrize("path", ["index.html", f"{MODULE}.html"])
     def test_appearance_is_direct_on_home_and_module_pages(
             self, site, browser, site_url, path):
         """Appearance (and the rest of what used to be Settings) lives in
-        its own corner dock now, never behind the Panels disclosure — so
-        this is direct everywhere, not only on pages with no series to
-        make the disclosure collapse."""
+        its own corner dock now, never behind a disclosure — so this is
+        direct everywhere, not only on pages with no series."""
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
@@ -241,7 +244,6 @@ class TestPanelsDisclosure:
         page = context.new_page()
         page.goto(f"{site_url}/{path}")
 
-        assert page.is_hidden("#dl-panels summary")
         assert page.is_visible("#dl-appearance-toggle")
         page.click("#dl-appearance-toggle")
         assert page.is_visible("#dl-appearance")
@@ -455,6 +457,78 @@ class TestDatasets:
         assert "World Bank" in text
         assert "CC-BY-4.0" in text
         assert "Life expectancy by country." in text
+        context.close()
+
+
+class TestPanelClearsTheCornerDocks:
+    """The top-left dock (wordmark, breadcrumb tree, search, the Series
+    toggle) and the bottom-left dock (Documentation's own tab) both stay
+    above a left-side panel in z-index so their toggle stays reachable
+    while the panel is open — see trackCornerDockHeights() in
+    tutorial-runtime.js. Without the panel carving out room for both, its
+    own header (or its content once scrolled to the bottom) renders right
+    underneath them."""
+
+    def test_the_reference_panel_starts_below_the_top_left_dock(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _glossary(site, "one", [CONCEPT])
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1400, "height": 900})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        _open_panel(page, "#dl-reference-toggle")
+        dock_bottom = page.eval_on_selector(
+            ".dl-corner-dock-tl", "el => el.getBoundingClientRect().bottom")
+        panel_top = page.eval_on_selector(
+            "#dl-reference", "el => el.getBoundingClientRect().top")
+        assert panel_top >= dock_bottom - 1
+        context.close()
+
+    def test_the_reference_panel_ends_above_the_bottom_left_dock(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _glossary(site, "one", [CONCEPT])
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1400, "height": 900})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        _open_panel(page, "#dl-reference-toggle")
+        dock_top = page.eval_on_selector(
+            ".dl-corner-dock-bl", "el => el.getBoundingClientRect().top")
+        panel_bottom = page.eval_on_selector(
+            "#dl-reference", "el => el.getBoundingClientRect().bottom")
+        assert panel_bottom <= dock_top + 1
+        context.close()
+
+    def test_the_notes_panel_starts_below_the_top_right_strip(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1400, "height": 900})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        _open_panel(page, "#dl-yourwork-toggle")
+        dock_bottom = page.eval_on_selector(
+            ".dl-corner-dock-tr", "el => el.getBoundingClientRect().bottom")
+        panel_top = page.eval_on_selector(
+            "#dl-yourwork", "el => el.getBoundingClientRect().top")
+        assert panel_top >= dock_bottom - 1
+        context.close()
+
+    def test_the_appearance_panel_ends_above_the_bottom_right_strip(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1400, "height": 900})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        _open_panel(page, "#dl-appearance-toggle")
+        dock_top = page.eval_on_selector(
+            ".dl-corner-dock-br", "el => el.getBoundingClientRect().top")
+        panel_bottom = page.eval_on_selector(
+            "#dl-appearance", "el => el.getBoundingClientRect().bottom")
+        assert panel_bottom <= dock_top + 1
         context.close()
 
 
