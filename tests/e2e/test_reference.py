@@ -901,3 +901,55 @@ class TestHighlightToLookUp:
         page.wait_for_selector("#dl-reference:not([hidden])")
         assert page.is_hidden(".dl-lookup")
         context.close()
+
+
+class TestSearchWordsAreTheSameEverywhere:
+    """One idea of word matching for every search box (assets/search-words.js):
+    a stem, a synonym or a prefix of a word finds it, and a bare fragment
+    still narrows as a substring. Proven here on the Reference panel's own
+    search and on the search line in the page's corner, since both are
+    prose-only and run in CI's browser job."""
+
+    def open_page(self, site, browser, site_url):
+        _tutorial(site, "loops-and-lists", "Loops and Lists")
+        _glossary(site, "loops-and-lists", [
+            {"term": "loop", "kind": "concept", "definition": "Repeats a block of code."},
+            {"term": "probability", "kind": "concept", "definition": "How likely a thing is."},
+            {"term": "polynomial", "kind": "concept", "definition": "A sum of powers of x."},
+        ])
+        _tutorial(site, "other", "Something Else")
+        _set_order(site, ["loops-and-lists", "other"])
+        b.build()
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/loops-and-lists.html")
+        return context, page
+
+    def shown(self, page) -> list[str]:
+        return page.eval_on_selector_all(
+            "#dl-reference-groups dt:not([hidden])", "els => els.map(e => e.textContent)")
+
+    def test_the_reference_search_takes_a_stem_a_synonym_a_prefix_and_a_fragment(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
+        _open_panel(page, "#dl-reference-toggle")
+        page.wait_for_selector("#dl-reference-groups dt")
+        for query, expected in (
+            ("loops", ["loop"]),          # a stem
+            ("chance", ["probability"]),  # a synonym
+            ("poly", ["polynomial"]),     # a prefix
+            ("ba", ["probability"]),      # a fragment, as a substring
+            ("zebra", []),
+        ):
+            page.fill("#dl-reference-search", query)
+            assert self.shown(page) == expected, query
+        context.close()
+
+    def test_the_search_line_takes_a_synonym_and_a_stem(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
+        for query in ("iteration", "looping"):
+            page.fill("#dl-nav-search-input", query)
+            page.wait_for_selector("#dl-nav-search-results a")
+            titles = page.eval_on_selector_all(
+                "#dl-nav-search-results .dl-search-title", "els => els.map(e => e.textContent)")
+            assert titles == ["Loops and Lists"], query
+        context.close()

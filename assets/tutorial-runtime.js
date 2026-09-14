@@ -2,6 +2,7 @@
 import { createCodeEditor, createReadOnlyCode, setEditorTheme,
          setLineNumbers, setIndentWidth } from "./vendor/codemirror.bundle.js";
 import { mountSitePreview } from "./site-relay.js";
+import { textMatches } from "./search-words.js";
 
 const PYODIDE_VERSION = "0.28.3";
 const PYODIDE_BASE = new URL(
@@ -725,25 +726,29 @@ function renderPythonBasics(manifest) {
   }
 }
 
+/* The panel's own search box narrows the list with the same word
+ * matching every other search box on the site uses (search-words.js):
+ * "loops" finds loop, "chance" finds probability, "poly" finds
+ * polynomial, and a bare fragment still narrows as a substring. */
 function filterReferenceContent(query) {
   const container = document.getElementById("dl-reference-groups");
   const emptyMessage = document.getElementById("dl-reference-empty");
   if (!container) return;
-  const needle = query.trim().toLowerCase();
+  const needle = query.trim();
   let anyGroupVisible = false;
 
   for (const group of container.querySelectorAll(".dl-reference-group")) {
     let groupHasMatch = false;
     for (const dt of group.querySelectorAll(":scope > dl > dt")) {
       const dd = dt.nextElementSibling;
-      const text = `${dt.textContent} ${dd ? dd.textContent : ""}`.toLowerCase();
-      const matches = !needle || text.includes(needle);
+      const text = `${dt.textContent} ${dd ? dd.textContent : ""}`;
+      const matches = textMatches(text, needle);
       dt.hidden = !matches;
       if (dd) dd.hidden = !matches;
       if (matches) groupHasMatch = true;
     }
     for (const note of group.querySelectorAll(":scope > .dl-note")) {
-      const matches = !needle || note.textContent.toLowerCase().includes(needle);
+      const matches = textMatches(note.textContent, needle);
       note.hidden = !matches;
       if (matches) groupHasMatch = true;
     }
@@ -762,15 +767,15 @@ function filterBasicsContent(groupsId, emptyId, query) {
   const container = document.getElementById(groupsId);
   const emptyMessage = document.getElementById(emptyId);
   if (!container) return;
-  const needle = query.trim().toLowerCase();
+  const needle = query.trim();
   let anyGroupVisible = false;
 
   for (const group of container.querySelectorAll(".dl-reference-group")) {
     let groupHasMatch = false;
     for (const dt of group.querySelectorAll(":scope > dl > dt")) {
       const dd = dt.nextElementSibling;
-      const text = `${dt.textContent} ${dd ? dd.textContent : ""}`.toLowerCase();
-      const matches = !needle || text.includes(needle);
+      const text = `${dt.textContent} ${dd ? dd.textContent : ""}`;
+      const matches = textMatches(text, needle);
       dt.hidden = !matches;
       if (dd) dd.hidden = !matches;
       if (matches) groupHasMatch = true;

@@ -1,5 +1,6 @@
 
 import { createProseEditor } from "./vendor/milkdown.bundle.js";
+import { textMatches } from "./search-words.js";
 
 const API = "https://api.github.com";
 const TOKEN_KEY = "dewlab:editor:token";
@@ -255,15 +256,20 @@ export function tutorialLinkProblems(body, all) {
   return found;
 }
 
+/* By title first, then by id or course, with the same word matching
+ * every other search box on the site uses (search-words.js): a stem, a
+ * synonym or a prefix of the title all count, and a bare fragment still
+ * matches as a substring. */
 export function matchTutorials(query, all) {
   const q = query.trim().toLowerCase();
   const ranked = all
     .map((t) => {
       if (!q) return { t, score: 0 };
       const title = t.title.toLowerCase();
-      if (title.includes(q)) return { t, score: title.startsWith(q) ? 0 : 1 };
-      const where = `${t.slug} ${(t.courses || []).join(" ")}`.toLowerCase();
-      if (where.includes(q)) return { t, score: 2 };
+      if (title.startsWith(q)) return { t, score: 0 };
+      if (textMatches(title, q)) return { t, score: 1 };
+      const where = `${t.slug} ${(t.courses || []).join(" ")}`;
+      if (textMatches(where, q)) return { t, score: 2 };
       return null;
     })
     .filter(Boolean);
