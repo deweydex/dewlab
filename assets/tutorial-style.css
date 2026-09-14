@@ -1887,31 +1887,61 @@ p code, li code {
 }
 .dl-search-empty { padding: 0.5rem 0.6rem; color: var(--dl-muted); font-size: 0.85rem; }
 
-/* The top-left dock's search is one line of text under the wordmark —
-   a magnifier and "Search for a topic" — that opens into render_search_box()'s
-   own widget on a click (nav_search_html(), build.py): search everything,
-   then where you are, as lines of one block rather than a field sitting
-   apart from it. The field is the input itself, not something styled to
-   look like one (7.166). Its label stays for screen readers only and its
-   hint paragraph is dropped — the field has a placeholder and no room for
-   a sentence. Results hang beneath it as a floating list, wider than the
-   field so a title reads whole. */
-.dl-nav-search { width: 100%; }
-.dl-nav-search > summary {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  cursor: pointer;
-  list-style: none;
+/* The top-left dock's search is one line under the wordmark — a magnifier
+   and "Search for a topic" — and the line is the field: render_search_box()'s
+   own input (nav_search_html(), build.py) with no border or background,
+   set like the tree's lines beneath it, those words as its placeholder.
+   A click on the words or the magnifier puts the cursor in front of them,
+   typing replaces them, and the results drop beneath; there is no second
+   bar to open (7.169). The placeholder alone is set in the tree's small
+   capitals — text-transform on the input itself would capitalise what a
+   reader types. Its label stays for screen readers only and its hint
+   paragraph is dropped. The magnifier sits over the input's left padding
+   and lets clicks through to it. No focus ring: Chromium counts any
+   focused text input as :focus-visible, so a ring would box the line on
+   every click — the "border button" Josh asked to be rid of. The caret,
+   and the magnifier and words turning orange, are the focus state. */
+.dl-nav-search { position: relative; width: 100%; }
+.dl-nav-search .dl-search { margin: 0; }
+.dl-nav-search-icon {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.72rem;
+  height: 0.72rem;
+  color: var(--dl-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+.dl-nav-search .dl-search-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0.15rem 0 0.15rem 1.1rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  color: var(--dl-heading);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.dl-nav-search .dl-search-input::placeholder {
   font-size: 0.72rem;
   color: var(--dl-muted);
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  opacity: 1;
 }
-.dl-nav-search > summary::-webkit-details-marker { display: none; }
-.dl-nav-search > summary:hover, .dl-nav-search[open] > summary { color: var(--dl-orange); }
-.dl-nav-search-icon { flex: none; width: 1em; height: 1em; }
-.dl-nav-search .dl-search { margin: 0.4rem 0 0.15rem; }
+.dl-nav-search .dl-search-input:hover::placeholder,
+.dl-nav-search .dl-search-input:focus::placeholder { color: var(--dl-orange); }
+.dl-nav-search:hover .dl-nav-search-icon,
+.dl-nav-search:focus-within .dl-nav-search-icon { color: var(--dl-orange); }
+.dl-nav-search .dl-search-input:focus,
+.dl-nav-search .dl-search-input:focus-visible { outline: none; border: 0; }
+.dl-nav-search .dl-search-input::-webkit-search-cancel-button { cursor: pointer; }
 .dl-nav-search .dl-search-label {
   position: absolute;
   width: 1px;
@@ -1924,15 +1954,6 @@ p code, li code {
   border: 0;
 }
 .dl-nav-search #dl-nav-search-hint { display: none; }
-.dl-nav-search .dl-search-input {
-  box-sizing: border-box;
-  min-height: 2rem;
-  padding: 0.4rem 0.7rem;
-  font-family: var(--dl-mono);
-  font-size: 0.78rem;
-  border-radius: 6px;
-}
-.dl-nav-search .dl-search-input::placeholder { color: var(--dl-muted); }
 .dl-nav-search .dl-search-results {
   left: 0;
   right: auto;
@@ -2177,36 +2198,24 @@ p code, li code {
     width: auto;
     padding: 0;
   }
-  /* The search line sits at the other end of the row from the wordmark;
-     opened, its field drops below the row at the full width of the
-     screen, with the results in flow beneath it inside the same sheet. */
+  /* The search line takes the rest of the row beside the wordmark, its
+     words at a size a thumb can hit and no box around them; the results
+     drop below the whole row at the full width of the screen. */
   .dl-corner-dock-tl { position: relative; }
   .dl-corner-dock-tl .dl-corner-stack { display: none; } /* only the hidden Reference tab */
-  .dl-corner-identity { flex: 1; justify-content: space-between; }
-  .dl-nav-search { position: static; width: auto; }
-  .dl-nav-search > summary { font-size: 0.85rem; min-height: 2.6rem; white-space: nowrap; }
-  .dl-nav-search .dl-search {
-    position: absolute;
+  .dl-corner-identity { flex: 1; }
+  .dl-nav-search { position: static; flex: 1; min-width: 0; }
+  .dl-nav-search .dl-search { position: static; } /* so the results anchor to the row */
+  .dl-nav-search-icon { left: auto; width: 0.9rem; height: 0.9rem; }
+  .dl-nav-search .dl-search-input { min-height: 2.6rem; padding-left: 1.4rem; font-size: 0.95rem; }
+  .dl-nav-search .dl-search-input::placeholder { font-size: 0.85rem; }
+  .dl-nav-search .dl-search-results {
     left: 0;
     right: 0;
-    top: 100%;
-    z-index: 30;
-    margin: 0;
-    padding: 0.6rem 1rem 0.8rem;
+    width: auto;
     max-height: 70vh;
     overflow-y: auto;
-    background: var(--dl-panel-bg);
-    border-bottom: 1px solid var(--dl-rule);
-    box-shadow: 0 8px 24px var(--dl-shadow);
-  }
-  .dl-nav-search .dl-search-input { min-height: 2.6rem; font-size: 0.9rem; }
-  .dl-nav-search .dl-search-results {
-    position: static;
-    width: auto;
-    margin-top: 0.5rem;
-    padding: 0;
-    border: 0;
-    box-shadow: none;
+    border-radius: 0 0 8px 8px;
   }
 
   /* The launcher: the wordmark's orange dot, grown up, at the bottom

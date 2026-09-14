@@ -3769,3 +3769,15 @@ The pass is published as a contact sheet (every screenshot, the mockup checklist
 **One panel with tabs, or five tabs each with a panel — the same thing, and the dock already is the tab strip.** Josh asked whether all settings would be better in one panel with tabs between them. The five right-hand tabs are mutually exclusive and open in the same place, so switching between them is switching tabs; a second tab strip inside the panel would be the same control twice. What the question points at is visual: the open tab and its panel do not yet read as one object, since the panel starts below the whole stack. That is a styling pass (join the pressed tab to the panel's top edge), left for a later decision rather than folded into this one.
 
 *Cost to change: trivial for the search (one function, two CSS blocks, a dozen lines of `search.js`); trivial for the icon (one path); the header setting is cheap to restore from history but there is nothing for it to act on. `vendor-src/`'s `standalone.bundle.js` rebuilt.*
+
+---
+
+**7.169 — The search line is the field: no fold, no second bar, on any width.** Josh, on 7.168: "a tap or click on the icon or text puts a cursor in front of the text and then as the user types the text 'search for a topic' goes away and the results just appear below without another search bar … I don't think we need our border button on mobile with this behavior."
+
+7.168 had the right line and the wrong mechanism: a `<details>` whose summary was the words and whose body was the field, so a reader saw one bar, clicked, and got a second. The line is now `render_search_box()`'s own input, drawn with no border or background, "Search for a topic" as its placeholder set in the tree's small capitals (on `::placeholder` only — `text-transform` on the input would capitalise what a reader types), the magnifier over its left padding with `pointer-events: none` so a click on it lands in the input. Native placeholder behaviour does the rest: the words vanish at the first character and the results drop beneath. `search.js` loses the fold code it had gained a day earlier; `nav_search_html()` is back to one `<div>`.
+
+**No focus ring, deliberately.** Chromium treats every focused text input as `:focus-visible`, so a ring "for keyboard users only" boxed the line on every mouse click — the bordered control Josh was asking to be rid of. The caret is a text field's own focus indicator; the magnifier and the words turn orange on focus and hover as well.
+
+**On a phone the row is the wordmark and the words, and the results drop below the whole row.** `.dl-search` (the widget's own wrapper) is `position: relative` by default, which made the results hang from the field rather than the row; on a phone it is static, the row is the positioned ancestor, and the list runs edge to edge beneath it. The identity-row e2e test, which had pinned `position: static` on the row as its "in flow" check, now accepts relative too — relative is in flow — and the fold's summary-focus e2e check is replaced by a click on the magnifier landing in the input.
+
+*Cost to change: trivial — the same three files as 7.168, with less in each.*

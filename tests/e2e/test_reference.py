@@ -240,10 +240,11 @@ class TestIdentityCornerControlsAreDirect:
         context = browser.new_context(viewport={"width": 1200, "height": 800})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
-        page.click(".dl-nav-search > summary")
-        page.wait_for_selector("#dl-nav-search-input", state="visible")
-        assert page.evaluate("document.activeElement?.id") == "dl-nav-search-input", (
-            "opening the fold should put the cursor in the field")
+        # A click on the magnifier lands in the input beneath it — the
+        # icon lets clicks through — so the cursor sits in front of the
+        # words with nothing to open first.
+        page.click(".dl-nav-search-icon", force=True)
+        assert page.evaluate("document.activeElement?.id") == "dl-nav-search-input"
         page.fill("#dl-nav-search-input", "second")
         page.wait_for_selector("#dl-nav-search-results a")
         titles = page.eval_on_selector_all(
@@ -751,8 +752,10 @@ class TestMobileLauncher:
             ".dl-corner-dock-tl", "el => el.getBoundingClientRect().bottom")
         body_top = page.eval_on_selector(
             "main#dl-body", "el => el.getBoundingClientRect().top")
+        # In flow: static or relative (relative only anchors the search
+        # results that drop below the row), never fixed or absolute.
         assert page.eval_on_selector(
-            ".dl-corner-dock-tl", "el => getComputedStyle(el).position") == "static"
+            ".dl-corner-dock-tl", "el => getComputedStyle(el).position") in ("static", "relative")
         assert body_top >= row_bottom
         context.close()
 
