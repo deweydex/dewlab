@@ -918,8 +918,8 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
         report_markup = (
             f'<button type="button" class="dl-report-icon" aria-expanded="false" '
             f'aria-controls="dl-report-{safe_id}" '
-            f'aria-label="Report a problem with Cell {number}" '
-            f'title="Report a problem with this cell">&#9873;</button>'
+            f'aria-label="Give feedback on Cell {number}" '
+            f'title="Give feedback on this cell">&#9873;</button>'
         )
         report_box = (
             f'<div class="dl-report-doors dl-cell-report-doors" '
@@ -3570,7 +3570,7 @@ def report_doors_html(page: str, version: str) -> str:
 
 
 def report_doors_panel_html(page: str, version: str) -> str:
-    """The Report tab's own content, in the top-right corner dock — the
+    """The Give Feedback tab's own content, in the top-right corner dock — the
     same three doors as the footer's disclosure (report_doors_html()),
     without the <details> wrapper, since the tab it lives in is already
     the thing a reader opens on purpose. This is a second way to the same
