@@ -21,6 +21,7 @@ import build as b  # noqa: E402
 SHELL = (DEWLAB / "assets" / "shell.html").read_text()
 ABOUT_PAGE = (DEWLAB / "pages" / "about.md").read_text()
 HOME_PAGE = (DEWLAB / "pages" / "home.md").read_text()
+FEATURES_PAGE = (DEWLAB / "pages" / "features.md").read_text()
 
 FRONTMATTER = """---
 title: "A Title"
@@ -41,6 +42,7 @@ def repo(tmp_path, monkeypatch):
     (tmp_path / "assets" / "shell.html").write_text(SHELL)
     (tmp_path / "pages" / "about.md").write_text(ABOUT_PAGE)
     (tmp_path / "pages" / "home.md").write_text(HOME_PAGE)
+    (tmp_path / "pages" / "features.md").write_text(FEATURES_PAGE)
 
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
@@ -1185,7 +1187,7 @@ class TestPageCardsAndSections:
         # Regression test: Python-Markdown treats a raw <div> block as
         # opaque HTML through to its closing tag, so a heading or paragraph
         # written inside one would otherwise reach the page as literal,
-        # unconverted markdown — see convert_page_div_bodies().
+        # unconverted markdown — see convert_page_wrapper_bodies().
         self.home(repo, (
             '<div class="dl-audience">\n\n'
             "## A Section\n\n"
@@ -1199,6 +1201,32 @@ class TestPageCardsAndSections:
         assert "<strong>bold</strong>" in page
         assert '<a href="features.html">link</a>' in page
         assert "## A Section" not in page
+
+    def features(self, repo, body: str) -> None:
+        (repo / "pages" / "features.md").write_text(f"---\ntitle: What dewlab can do\n---\n\n{body}")
+
+    def test_a_dl_feature_list_s_markdown_converts_to_real_list_items(self, repo):
+        # The same raw-HTML-block problem, met on a <ul> rather than a
+        # <div>: a markdown bullet list converts to its own <ul>...</ul>,
+        # which would double up inside a wrapper that already supplies the
+        # real one — convert_page_wrapper_bodies() strips the redundant
+        # inner tag for a `ul` wrapper specifically.
+        self.features(repo, (
+            '<ul class="dl-feature-list">\n\n'
+            "- **First.** One thing.\n"
+            "- **Second.** Another thing.\n\n"
+            "</ul>\n"
+        ))
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "features.html").read_text()
+        assert (
+            '<ul class="dl-feature-list">\n'
+            "<li><strong>First.</strong> One thing.</li>\n"
+            "<li><strong>Second.</strong> Another thing.</li>\n"
+            "</ul>"
+        ) in page
+        assert "- **First.**" not in page
 
 
 class TestTheAboutPage:

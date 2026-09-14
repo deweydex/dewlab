@@ -87,25 +87,29 @@ The pipeline, in order:
    leaves one unfilled, fails the build. `write_editor_page()` assembles
    `editor.html` specifically, wiring on its `<script type="module"
    src="editor.js">` tag and the vendored Milkdown stylesheet. A hand-written
-   page with no curriculum data of its own — About and the home page today —
-   has its content in `pages/<name>.md`, not a string in `build.py`:
-   `read_page()` reads its minimal `title`-only frontmatter and converts the
-   body with the same `to_html()` a tutorial's own prose uses, and
-   `write_about_page()`/`write_index()` only assemble the shell around what
-   it returns. Two things a page can have that ordinary prose can't: a
-   ` ```card ` fence (`url:`/`status:`/`meta:`/`wide:` header lines, then a
-   heading and a paragraph — `parse_card()`/`render_card()`), the markup a
-   module tile on the home page used to be hand-written six times over, with
-   adjacent cards sharing one `.dl-module-grid` wrapper automatically; and a
-   `[[name]]` marker for infrastructure a page can point at but never author
-   directly — the home page's own live search box is the one example today
-   (`GENERATED_BLOCKS`). A `<div class="dl-hero">`/`<div
-   class="dl-audience">`/`<div class="dl-attribution">` section wrapper is
-   converted a second time (`convert_page_div_bodies()`), the same fix
-   `convert_fold_bodies()` already applies to a `<details>` fold — Python-
-   Markdown treats a raw HTML block as opaque through to its closing tag, so
-   a heading or paragraph written inside one would otherwise reach the page
-   as literal, unconverted text.
+   page with no curriculum data of its own — About, the home page, and the
+   features page today — has its content in `pages/<name>.md`, not a string
+   in `build.py`: `read_page()` reads its minimal `title`-only frontmatter
+   and converts the body with the same `to_html()` a tutorial's own prose
+   uses, and `write_about_page()`/`write_index()`/`write_features_page()`
+   only assemble the shell around what it returns. Two things a page can
+   have that ordinary prose can't: a ` ```card ` fence (`url:`/`status:`/
+   `meta:`/`wide:` header lines, then a heading and a paragraph —
+   `parse_card()`/`render_card()`), the markup a module tile on the home
+   page used to be hand-written six times over, with adjacent cards sharing
+   one `.dl-module-grid` wrapper automatically; and a `[[name]]` marker for
+   infrastructure a page can point at but never author directly — the home
+   page's own live search box is the one example today (`GENERATED_BLOCKS`).
+   A `<div class="dl-hero">`/`<div class="dl-audience">`/`<div
+   class="dl-attribution">`/`<ul class="dl-feature-list">` section or list
+   wrapper is converted a second time (`convert_page_wrapper_bodies()`), the
+   same fix `convert_fold_bodies()` already applies to a `<details>` fold —
+   Python-Markdown treats a raw HTML block as opaque through to its closing
+   tag, so a heading, paragraph, or list item written inside one would
+   otherwise reach the page as literal, unconverted text (a `<ul>` wrapper's
+   own re-converted markdown list is spliced in with its redundant inner
+   `<ul>`/`</ul>` stripped, since the wrapper itself already supplies that
+   tag).
 
 7. **Write the manifest.** Every page carries a `<script
    type="application/json" id="dewlab-manifest">` with what the runtime
