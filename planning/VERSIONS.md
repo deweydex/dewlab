@@ -77,9 +77,9 @@ tutorials/mit-pdp-maths-prog-integration/
 past one, so "open the tutorial" means the same file however many releases
 it accumulates.
 
-- **The plain URL** (`tutorials/<module>/<slug>.html`) always serves the
+- **The plain URL** (`tutorials/<id>.html`) always serves the
   newest `live` release.
-- **Past releases** build to `tutorials/<module>/<slug>/v<version>.html`.
+- **Past releases** build to `tutorials/<id>/v<version>.html`.
 - **Search engines** are pointed at the canonical page: every archived
   release carries `<link rel="canonical" href=".../<slug>.html">` back
   to the current one.

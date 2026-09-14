@@ -1,7 +1,8 @@
-# Unit tests only. The e2e suite needs a 30 MB Pyodide download and a browser
-# (DECISIONS_LOG 0.17, 0.20); running it here would dominate the workflow for a
-# suite that mostly guards the runtime, so it stays a local and manual step
-# until Phase 4 sets up hosting and there is a reason to pay for it.
+# Unit tests, plus the handful of browser files the `browser` job at the end
+# names. The rest of the e2e suite needs a 30 MB Pyodide download and a
+# browser for every cell it runs (DECISIONS_LOG 0.17, 0.20); running all of
+# it here would dominate the workflow for a suite that mostly guards the
+# runtime, so it stays a local and manual step.
 name: tests
 
 on:
@@ -128,3 +129,47 @@ jobs:
             echo "commit the updated package-lock.json alongside the rebuilt bundles."
             exit 1
           fi
+
+  # A few browser files, not the whole e2e suite (which still stays a local
+  # step, per the note at the top): the ones that prove the page's chrome
+  # and the layout, and never run a cell — the reference panel, the phone
+  # layout, link contrast, and the course chooser, the remembered course,
+  # the saved-work key migration and an old address. The phone identity-row
+  # regression in #230 reached main with CI green because none of these ran
+  # here (DECISIONS_LOG 7.173). Pyodide is fetched once and cached: the
+  # fixture site serves it, and a page with cells boots it even when no
+  # test presses Run.
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest playwright
+          python -m pip install -r requirements-build.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Cache the self-hosted Pyodide
+        id: pyodide
+        uses: actions/cache@v4
+        with:
+          path: dev/pyodide
+          key: pyodide-${{ hashFiles('dev/fetch_pyodide.py') }}
+
+      - name: Fetch the self-hosted Pyodide
+        if: steps.pyodide.outputs.cache-hit != 'true'
+        run: python3 dev/fetch_pyodide.py
+
+      - name: Run the browser tests that never run a cell
+        run: |
+          python -m pytest \
+            tests/e2e/test_reference.py \
+            tests/e2e/test_narrow_screen.py \
+            tests/e2e/test_link_contrast.py \
+            tests/e2e/test_courses.py

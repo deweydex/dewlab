@@ -1,0 +1,64 @@
+title: Programming and Maths, Integrated
+code: 5N2927 + 5N18396 · QQI Level 5
+status: beta
+card: We recommend starting here. One course moves between the two subjects, in
+  the order the class needs them.
+description: 'This is dewlab''s flagship course. It teaches Programming and Design
+  Principles (5N2927) and Mathematics for Information Technology (5N18396) together,
+  moving between the two subjects in the order the class needs them.
+
+
+  Five series carry it: programming foundations, discrete maths and statistics,
+  algebra and functions, geometry and trigonometry, and a capstone project that
+  draws on all four.'
+contents:
+- title: Programming Foundations
+  tutorials:
+  - first-steps
+  - storing-and-computing
+  - how-we-got-here
+  - making-decisions
+  - when-it-goes-wrong
+  - repeating-yourself
+  - lists-and-sequences
+  - finding-things
+  - putting-things-in-order
+  - building-reusable-tools
+- title: Data, Chance and Logic
+  tutorials:
+  - counting-carefully
+  - what-are-the-chances
+  - making-sense-of-data
+  - pictures-worth-numbers
+  - sets-as-sorted-lists
+  - logic-and-truth
+  - venn-diagrams
+- title: Algebra and Functions
+  tutorials:
+  - numbers-and-their-families
+  - expressions-come-alive
+  - rearranging-formulae
+  - cracking-equations
+  - complex-roots
+  - drawing-functions
+  - parabolas
+- title: Trigonometry and Calculus
+  tutorials:
+  - lines-and-distances
+  - the-unit-circle
+  - sine-and-cosine-waves
+  - solving-triangles
+  - approaching-a-limit
+  - rates-of-change
+- title: Capstone Project
+  tutorials:
+  - bringing-it-all-together
+- title: Reflections and review
+  tutorials:
+  - critique-and-reflection
+  - the-team-project
+mixed:
+- mixed-algebra
+- mixed-data
+- mixed-programming
+- mixed-trigonometry

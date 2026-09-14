@@ -20,16 +20,13 @@ DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
+from layout import write_course, write_tutorial  # noqa: E402
 
 MODULE = "reference-fixtures"
 
 FRONTMATTER = """---
 title: "{title}"
-slug: {slug}
-module: reference-fixtures
-module_title: "Reference Fixtures"
 year: "2026-2027"
-series: sample-series
 version: 2026.08.23.1
 ---
 
@@ -41,23 +38,20 @@ never boot Pyodide.
 
 
 def _tutorial(root: Path, slug: str, title: str = "A Title") -> None:
-    path = root / "tutorials" / MODULE / f"{slug}.md"
+    path = root / "tutorials" / slug / f"{slug}.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(FRONTMATTER.format(title=title, slug=slug))
 
 
 def _glossary(root: Path, slug: str, entries: list[dict]) -> None:
-    path = root / "tutorials" / MODULE / f"{slug}.glossary.yaml"
+    path = root / "tutorials" / slug / f"{slug}.glossary.yaml"
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(yaml.dump({"entries": entries}))
 
 
 NOTE_FRONTMATTER = """---
 title: "{title}"
-slug: {slug}
-module: reference-fixtures
-module_title: "Reference Fixtures"
 year: "2026-2027"
-series: sample-series
 version: 2026.08.23.1
 ---
 
@@ -75,7 +69,7 @@ Some prose after the note.
 
 def _tutorial_with_note(root: Path, slug: str, note_id: str, note_body: str,
                          title: str = "A Title") -> None:
-    path = root / "tutorials" / MODULE / f"{slug}.md"
+    path = root / "tutorials" / slug / f"{slug}.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(NOTE_FRONTMATTER.format(
         title=title, slug=slug, note_id=note_id, note_body=note_body))
@@ -83,11 +77,7 @@ def _tutorial_with_note(root: Path, slug: str, note_id: str, note_body: str,
 
 DATASET_FRONTMATTER = """---
 title: "{title}"
-slug: {slug}
-module: reference-fixtures
-module_title: "Reference Fixtures"
 year: "2026-2027"
-series: sample-series
 version: 2026.08.23.1
 datasets:
   - {dataset_name}
@@ -101,7 +91,7 @@ Some prose. Nothing here is a cell, on purpose.
 
 def _tutorial_with_dataset(root: Path, slug: str, dataset_name: str,
                             title: str = "A Title") -> None:
-    path = root / "tutorials" / MODULE / f"{slug}.md"
+    path = root / "tutorials" / slug / f"{slug}.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(DATASET_FRONTMATTER.format(
         title=title, slug=slug, dataset_name=dataset_name))
@@ -117,17 +107,17 @@ def _dataset_files(data_dir: Path, name: str, source: str = "Some source",
 
 
 def _set_order(root: Path, slugs: list[str]) -> None:
-    path = root / "tutorials" / MODULE / "sample-series.order.yaml"
-    path.write_text("series: Sample Series\norder:\n" + "".join(f"  - {s}\n" for s in slugs))
+    write_course(root, MODULE, "Sample Series", slugs)
 
 
 @pytest.fixture()
 def site(tmp_path, monkeypatch):
     """Only ROOT/TUTORIALS/OUT move to tmp_path; ASSETS/SHELL/SETUP/DATA stay
     pointed at the real repo, so the page runs the actual runtime and CSS."""
-    (tmp_path / "tutorials" / MODULE).mkdir(parents=True)
+    (tmp_path / "tutorials").mkdir(parents=True)
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
+    monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
     monkeypatch.setattr(b, "OUT", tmp_path / "site")
     monkeypatch.setattr(b, "SETUP", DEWLAB / "setup")
     monkeypatch.setattr(b, "DATA", DEWLAB / "data")
@@ -185,7 +175,7 @@ class TestVisibility:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         assert _toggle_shows(page, "#dl-reference-toggle")
         _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference-nothing-yet")
@@ -202,7 +192,7 @@ class TestVisibility:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         assert _toggle_shows(page, "#dl-reference-toggle")
         context.close()
 
@@ -222,7 +212,7 @@ class TestIdentityCornerControlsAreDirect:
         b.build()
         context = browser.new_context(viewport={"width": 1200, "height": 800})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
 
         assert page.locator("#dl-panels").count() == 0
         assert page.is_visible("#dl-reference-toggle")
@@ -239,7 +229,7 @@ class TestIdentityCornerControlsAreDirect:
         b.build()
         context = browser.new_context(viewport={"width": 1200, "height": 800})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         # A click on the magnifier lands in the input beneath it — the
         # icon lets clicks through — so the cursor sits in front of the
         # words with nothing to open first.
@@ -264,7 +254,7 @@ class TestIdentityCornerControlsAreDirect:
         b.build()
         context = browser.new_context(viewport={"width": 1200, "height": 800})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         assert page.locator("#dl-seriesnav-toggle").count() == 0
         siblings = page.eval_on_selector_all(
             ".dl-crumb-level-3 [role=listitem]", "els => els.map(e => e.textContent.trim())")
@@ -299,7 +289,7 @@ class TestOpeningAndClosing:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/{slug}.html")
+        page.goto(f"{site_url}/tutorials/{slug}.html")
         return context, page
 
     def test_the_panel_is_closed_by_default(self, site, browser, site_url):
@@ -363,7 +353,7 @@ class TestContent:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/two.html")
+        page.goto(f"{site_url}/tutorials/two.html")
         _open_panel(page, "#dl-reference-toggle")
         text = page.inner_text("#dl-reference-groups")
         assert "x" in text and "The first thing." in text
@@ -382,7 +372,7 @@ class TestContent:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         _open_panel(page, "#dl-reference-toggle")
         text = page.inner_text("#dl-reference-groups")
         assert "x" in text
@@ -396,7 +386,7 @@ class TestContent:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
@@ -414,7 +404,7 @@ class TestNotes:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         assert _toggle_shows(page, "#dl-reference-toggle")
         context.close()
 
@@ -424,7 +414,7 @@ class TestNotes:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
@@ -440,7 +430,7 @@ class TestNotes:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         assert "Because reasons." not in page.inner_text("main#dl-body")
         context.close()
 
@@ -451,7 +441,7 @@ class TestNotes:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
@@ -472,7 +462,7 @@ class TestDatasets:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         assert _toggle_shows(page, "#dl-reference-toggle")
         context.close()
 
@@ -487,7 +477,7 @@ class TestDatasets:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
@@ -516,7 +506,7 @@ class TestPanelClearsTheCornerDocks:
         b.build()
         context = browser.new_context(viewport={"width": 1400, "height": 900})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         _open_panel(page, "#dl-reference-toggle")
         dock_bottom = page.eval_on_selector(
             ".dl-corner-dock-tl", "el => el.getBoundingClientRect().bottom")
@@ -536,7 +526,7 @@ class TestPanelClearsTheCornerDocks:
         b.build()
         context = browser.new_context(viewport={"width": 1400, "height": 900})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         _open_panel(page, "#dl-reference-toggle")
         before = page.eval_on_selector("#dl-reference", "el => el.getBoundingClientRect().top")
         page.click(".dl-crumb-level-2 > summary")
@@ -554,7 +544,7 @@ class TestPanelClearsTheCornerDocks:
         b.build()
         context = browser.new_context(viewport={"width": 1400, "height": 900})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         _open_panel(page, "#dl-yourwork-toggle")
         dock_bottom = page.eval_on_selector(
             ".dl-corner-dock-tr", "el => el.getBoundingClientRect().bottom")
@@ -569,7 +559,7 @@ class TestPanelClearsTheCornerDocks:
         b.build()
         context = browser.new_context(viewport={"width": 1400, "height": 900})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         _open_panel(page, "#dl-appearance-toggle")
         dock_bottom = page.eval_on_selector(
             ".dl-corner-dock-tr", "el => el.getBoundingClientRect().bottom")
@@ -587,7 +577,7 @@ class TestPanelClearsTheCornerDocks:
         b.build()
         context = browser.new_context(viewport={"width": 1400, "height": 900})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         assert page.locator("#dl-chrome").count() == 0
         assert page.locator(".dl-nav-top").count() == 0
         left = page.eval_on_selector(".dl-corner-dock-tl", "el => el.getBoundingClientRect().right")
@@ -617,7 +607,7 @@ class TestPanelClearsTheCornerDocks:
 
         context = browser.new_context(viewport={"width": 1440, "height": 900})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         # Measured with the panel closed again: on a 1440px screen the left
         # dock and an open Appearance panel together leave about 32rem,
         # so the setting shows once the panel is out of the way.
@@ -637,7 +627,7 @@ class TestPanelClearsTheCornerDocks:
 
         context = browser.new_context(viewport={"width": 1024, "height": 800})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         _open_panel(page, "#dl-appearance-toggle")
         rem = page.evaluate("parseFloat(getComputedStyle(document.documentElement).fontSize)")
         assert column(page) >= 26 * rem - 1, "the column keeps its 26rem floor even with a panel open"
@@ -655,7 +645,7 @@ class TestMobile:
         b.build()
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         assert _toggle_shows(page, "#dl-reference-toggle")
         context.close()
 
@@ -672,7 +662,7 @@ class TestMobile:
         b.build()
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         page.click("#dl-mobile-fab")
         page.click("#dl-mobile-item-reference")
         assert page.is_visible("#dl-reference")
@@ -701,7 +691,7 @@ class TestMobileLauncher:
         b.build()
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         return context, page
 
     def test_the_fab_is_hidden_on_desktop(self, site, browser, site_url):
@@ -710,7 +700,7 @@ class TestMobileLauncher:
         b.build()
         context = browser.new_context(viewport={"width": 1200, "height": 800})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         assert page.eval_on_selector(
             "#dl-mobile-fab", "el => getComputedStyle(el).display") == "none"
         context.close()
@@ -755,7 +745,7 @@ class TestMobileLauncher:
         b.build()
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         assert page.locator(".dl-crumbtrail").count() == 1
         page.click("#dl-mobile-fab")
         assert page.is_visible("#dl-mobile-item-whereyouare")
@@ -763,7 +753,7 @@ class TestMobileLauncher:
         assert page.is_visible("#dl-whereyouare")
         assert page.is_visible("#dl-whereyouare .dl-crumbtrail")
         page.click("#dl-whereyouare .dl-crumb-level-3 a")
-        page.wait_for_url(f"{site_url}/tutorials/{MODULE}/two.html")
+        page.wait_for_url(f"{site_url}/tutorials/two.html")
         context.close()
 
     def test_the_launcher_menu_is_full_width_with_thumb_sized_rows(self, site, browser, site_url):
@@ -772,7 +762,7 @@ class TestMobileLauncher:
         b.build()
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         page.click("#dl-mobile-fab")
         menu = page.eval_on_selector("#dl-mobile-menu", "el => el.getBoundingClientRect()")
         assert menu["x"] <= 1 and menu["width"] >= 373
@@ -793,7 +783,7 @@ class TestMobileLauncher:
         b.build()
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         row_bottom = page.eval_on_selector(
             ".dl-corner-dock-tl", "el => el.getBoundingClientRect().bottom")
         body_top = page.eval_on_selector(
@@ -826,11 +816,7 @@ LOOKUP_TERM = {"term": "gradient", "kind": "concept",
 
 LOOKUP_PROSE = """---
 title: "Lookup"
-slug: lookup
-module: reference-fixtures
-module_title: "Reference Fixtures"
 year: "2026-2027"
-series: sample-series
 version: 2026.08.23.1
 ---
 
@@ -864,15 +850,13 @@ class TestHighlightToLookUp:
     it stays away for every selection that isn't a term — most of them."""
 
     def open_page(self, site, browser, site_url):
-        path = site / "tutorials" / MODULE / "lookup.md"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(LOOKUP_PROSE)
+        write_tutorial(site, "lookup", LOOKUP_PROSE)
         _glossary(site, "lookup", [LOOKUP_TERM])
         _set_order(site, ["lookup"])
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/lookup.html")
+        page.goto(f"{site_url}/tutorials/lookup.html")
         page.wait_for_selector("#dl-body")
         return context, page
 

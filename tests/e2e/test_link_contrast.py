@@ -15,16 +15,13 @@ DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
+from layout import write_course, write_tutorial  # noqa: E402
 
 MODULE = "contrast-fixtures"
 
 TUTORIAL = """---
 title: "Contrast"
-slug: contrast
-module: contrast-fixtures
-module_title: "Contrast Fixtures"
 year: "2026-2027"
-series: contrast-series
 version: 2026.08.30.1
 ---
 
@@ -56,21 +53,18 @@ def parse_rgb(value):
 
 @pytest.fixture()
 def site(tmp_path, monkeypatch):
-    (tmp_path / "tutorials" / MODULE).mkdir(parents=True)
+    (tmp_path / "tutorials").mkdir(parents=True)
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
+    monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
     monkeypatch.setattr(b, "OUT", tmp_path / "site")
     monkeypatch.setattr(b, "SETUP", DEWLAB / "setup")
     monkeypatch.setattr(b, "DATA", DEWLAB / "data")
     monkeypatch.setattr(b, "ASSETS", DEWLAB / "assets")
     monkeypatch.setattr(b, "SHELL", DEWLAB / "assets" / "shell.html")
-    folder = tmp_path / "tutorials" / MODULE / "contrast"
-    folder.mkdir(parents=True)
-    (folder / "contrast.md").write_text(TUTORIAL)
-    # The reading order lives beside the series, not in frontmatter.
-    (tmp_path / "tutorials" / MODULE / "contrast-series.order.yaml").write_text(
-        "order:\n  - contrast\n"
-    )
+    write_tutorial(tmp_path, "contrast", TUTORIAL)
+    # The reading order lives in the course file, not in frontmatter.
+    write_course(tmp_path, MODULE, "Contrast Series", ["contrast"])
     b.build()
     return tmp_path
 
@@ -97,7 +91,7 @@ def site_url(site):
 def test_a_link_meets_aa_against_its_own_background(browser, site_url, scheme):
     page = browser.new_page(color_scheme=scheme)
     try:
-        page.goto(f"{site_url}/tutorials/{MODULE}/contrast.html")
+        page.goto(f"{site_url}/tutorials/contrast.html")
         page.wait_for_selector('a[href="https://example.org"]')
         measured = page.evaluate(
             """() => {

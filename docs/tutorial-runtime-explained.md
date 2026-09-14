@@ -83,7 +83,7 @@ that, and its central design choice is worth stating plainly: **a custom
 cell is never added to `cells`, and never touches `saveNow()`,
 `restoreSaved()`, or the progress summary.** It gets its own array
 (`customCells`), its own `localStorage` key
-(`dewlab:custom-cells:<module>:<slug>`), and its own save/restore
+(`dewlab:custom-cells:<id>`), and its own save/restore
 functions (`loadCustomCells()`/`saveCustomCells()`/
 `scheduleCustomSave()`) that mirror the real ones in shape but never call
 them or get called by them.
@@ -405,6 +405,19 @@ two near-identical implementations of the same lookup functions
   so the standalone export always uses the main-thread path — see the
   module's own top comment and `DECISIONS_LOG.md` 7.77 for the full
   reasoning.
+- **"Where does a page's saved work live, and what happened to the old
+  `module:slug` keys?"** — `pageKey()`: every key is `dewlab:<kind>:<id>`,
+  the id being the tutorial's folder name. `migrateStorage()`, run before
+  anything reads a key, renames the keys a page's manifest `legacy` names
+  (its address before `courses/` existed) and never overwrites work saved
+  under the new key since. `describeMismatch()` accepts an exported file
+  that names the page by id, or by the module and slug `legacy` says.
+- **"How does the tree know which course I am on?"** — `initCourse()`:
+  a course page remembers itself in `dewlab:course`; a tutorial listed on
+  more than one course fetches `assets/routes.json`, adds a chooser to the
+  tree's course rung (`addCourseChooser()`), and `drawCourseChrome()`
+  redraws the course and series rungs, previous/next and the "also part
+  of" line for the chosen course. A page on one course does none of this.
 - **"How does a reader's saved work survive a tutorial being updated?"**
   — the Versions section, especially `carryOver()`/`describeCarry()`:
   saved work is keyed by tutorial, not by release, and restoring matches

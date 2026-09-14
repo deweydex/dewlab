@@ -25,8 +25,8 @@ follow from that:
 2. Something has to say what order tutorials are met in, so "introduces" can
    be turned into "has introduced, up to and including this one."
 
-(2) already exists: `<series>.order.yaml`'s `order:` list, the same one `nav_for()`
-uses for previous/next navigation. (1) does not, and is most of this spec.
+(2) already exists: the course file's series lists under `courses/`, the same
+ones `nav_for()` uses for previous/next navigation. (1) does not, and is most of this spec.
 
 ## 2. Scope: series order, not the topic dependency graph
 
@@ -37,42 +37,39 @@ week. That's the right model for the topic tree; it's the wrong model for
 "what has this specific reader already seen," which needs an actual
 sequence.
 
-`<series>.order.yaml` gives exactly that, but only within one series. Series
-within a module have no defined order relative to each other by default
-(`write_index` lists them `sorted()` by name — alphabetical, not curricular,
-and unrelated to this ordering) — but a module may add
-`tutorials/<module>/series.yaml` (`order:`, a list of series slugs) to state
-its own curricular order, purely for reference purposes.
+A course file gives exactly that: its series in curricular order, and each
+series' tutorials in reading order.
 
 **A reference draws from the current series, up to and including the
-current tutorial's own position, plus every earlier series `series.yaml`
-lists before this one** (`series_chain()`, `DECISIONS_LOG.md` 7.66) — never
-from another module. `tutorials/computational-methods/series.yaml` lists
-`python-fundamentals` before `matrices`, so matrices' reference does
-include what fundamentals introduced. A series left off the list — or a
-module with no `series.yaml` at all — gets series-only accumulation. That's
-what a series with no fixed curricular position needs: `reflections-and-review`,
-in `mit-pdp-maths-prog-integration`, is revisited whenever a reader wants
-rather than sitting at one point in the course (that series' own
-`.order.yaml` says so), so it is never listed anywhere.
+current tutorial's own position, plus every earlier series of the course the
+reader is following** (`DECISIONS_LOG.md` 7.66, then 7.172) — never from a
+course they are not on. `courses/computational-methods.yaml` lists Python
+fundamentals before Matrices, so a matrices tutorial's reference includes
+what fundamentals introduced. A tutorial on two courses accumulates along
+whichever course the reader has chosen (the tree's course rung is the
+switch), and the page is built with the first course's accumulation so it is
+right before any script runs. `reflections-and-review`, in the integrated
+course, is revisited whenever a reader wants rather than sitting at one point
+in the course; it is listed last in that course file, which gives it the
+whole course's vocabulary and disturbs nothing before it.
 
 A **practice page** does not have its own coverage — `practice_for`/
 `practice_across` name the tutorial(s) it tests instead of appearing in
-`<series>.order.yaml`'s narrative position. Its reference is therefore not computed
+a course file's series list. Its reference is therefore not computed
 from its own series position at all: it is the union of the named
 tutorial(s)' own cumulative references, unpacked through the same
 `practice_for`/`practice_across` build.py already validates.
 
 ## 3. The glossary file: one per (module, slug), not per release
 
-A new sibling file, `tutorials/<module>/<slug>.glossary.yaml` — beside the
+A new sibling file, `tutorials/<id>/<id>.glossary.yaml` — beside the
 `.md` (or beside the release folder, for a tutorial with several releases;
 keyed the same way `assets/editor.js`'s `allTutorials()` already keys a
 tutorial, by module+slug rather than by path, since what a tutorial teaches
 does not change release to release the way its prose might).
 
 ```yaml
-# tutorials/computational-methods/what-a-matrix-does-to-a-picture.glossary.yaml
+# tutorials/what-a-matrix-does-to-a-picture/what-a-matrix-does-to-a-picture.glossary.yaml
 entries:
   - term: "transformation matrix"
     kind: concept
@@ -140,7 +137,7 @@ skill never has to re-derive "what came before," only receive it.
 
 ## 5. Build integration
 
-`build.py`, per series, in `<series>.order.yaml` order:
+`build.py`, per course, series by series in the course file's order:
 
 1. Load each member's glossary file (if any).
 2. Accumulate: `cumulative[i] = cumulative[i-1] + member[i].own_entries`.

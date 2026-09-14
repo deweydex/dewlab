@@ -16,13 +16,14 @@ each one does and why.
 
 Run `python3 build.py`, and here's roughly what happens, in order:
 
-1. Every `.md` file under `tutorials/` is **loaded** (`load()`): its
+1. Every `.md` file under `tutorials/*/` is **loaded** (`load()`): its
    frontmatter is parsed and validated, code fences and maths are pulled
    out before Markdown can mangle them, the rest is converted to HTML,
    and everything is put back together into a `Tutorial` object.
-2. Tutorials are grouped into **series** and **modules**, checked against
-   each series' own ordering file, and cross-tutorial links (written as
-   `tutorial:slug#anchor` in the source) are resolved to real relative
+2. Tutorials are placed on **courses** and their **series** from the
+   course files under `courses/` (`place_tutorials()`), every id a course
+   lists is checked, and cross-tutorial links (written as
+   `tutorial:id#anchor` in the source) are resolved to real relative
    URLs — or the build fails, naming exactly which link is broken.
 3. Extra pages are built from that same data: the **topic tree**, the
    **knowledge map**, the **contents page**, the **about page**, and
@@ -50,9 +51,9 @@ table of contents; this groups them into a few bigger phases:
    `extract_math`, `to_html`, `place_blocks`, `extract_notes`. This is the
    "one Markdown file becomes one `Tutorial`" pipeline, tied together by
    `load()` near the bottom of this phase.
-3. **Navigation** — `module_order`, `order_files`, `versions_of`,
+3. **Navigation** — `courses`, `place_tutorials`, `versions_of`,
    `series_of`, `nav_for`, `crumb_trail_html`, `contents_items_html`. How
-   tutorials relate to each other: which series they're in, which version
+   tutorials relate to each other: which courses and series they're on, which version
    is current, what comes before and after — and the where-you-are tree
    in the page's top-left corner that shows all of it, down to the page's
    own sections.

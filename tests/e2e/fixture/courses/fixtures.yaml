@@ -1,0 +1,13 @@
+# The fixture course. conftest.py copies this folder to courses/.
+title: End to end
+code: E2E · Fixtures
+status: beta
+card: The fixture pages, in reading order.
+description: The pages the browser tests drive.
+contents:
+  - title: End to end
+    tutorials:
+      - rendering-tour
+      - prose-only
+      - third-page
+      - two-takes

@@ -2207,9 +2207,17 @@ function renderDocMarkdown(text) {
   return out.join("\n") || '<p class="dl-doc-empty">Empty note.</p>';
 }
 
-function customCellsKey() {
+/* Every key this page saves under: `dewlab:<kind>:<id>`. The id is the
+ * tutorial's folder name, site-wide, so nothing else is needed to tell two
+ * pages apart. (Before courses/ existed the keys carried module:slug —
+ * migrateStorage() renames those on the first visit after the change.) */
+function pageKey(prefix) {
   const manifest = currentManifest || {};
-  return `${CUSTOM_CELLS_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
+  return `${prefix}${manifest.id || manifest.slug || "unknown"}`;
+}
+
+function customCellsKey() {
+  return pageKey(CUSTOM_CELLS_PREFIX);
 }
 
 function generateCustomCellId() {
@@ -2523,7 +2531,7 @@ function exportCustomCell(cell) {
   const payload = { "dewlab-custom-cell": 1, type: cell.type, code: cell.getCode() };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const manifest = currentManifest || {};
-  const from = [manifest.module, manifest.slug].filter(Boolean).join("-");
+  const from = manifest.id || manifest.slug || "";
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = `${from || "dewlab"}-custom-cell.json`;
@@ -2662,7 +2670,7 @@ function downloadAsIpynb() {
     cells: notebookCells,
   };
   const manifest = currentManifest || {};
-  const from = [manifest.module, manifest.slug].filter(Boolean).join("-");
+  const from = manifest.id || manifest.slug || "";
   const blob = new Blob([JSON.stringify(notebook, null, 2)], { type: "application/json" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
@@ -3527,8 +3535,7 @@ let notesEl = null;
 const highlights = [];
 
 function progressKey() {
-  const manifest = currentManifest || {};
-  return `${PROGRESS_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
+  return pageKey(PROGRESS_PREFIX);
 }
 
 function readSaved() {
@@ -3545,12 +3552,17 @@ function describeMismatch(record) {
   if (!record || typeof record !== "object" || !Array.isArray(record.cells)) {
     return "That file could not be read as saved dewlab work.";
   }
-  const slug = record["tutorial-slug"];
+  // A record names its page by id. One written before courses/ existed
+  // names it by module and slug instead, and the manifest's `legacy` is
+  // that pair for this page, so such a file still fits.
+  const ident = record["tutorial-id"] || record["tutorial-slug"];
   const module = record["tutorial-module"];
-  const here = slug === currentManifest.slug
-    && (!module || module === currentManifest.module);
+  const legacy = module ? `${module}:${record["tutorial-slug"]}` : "";
+  const here = (!module && ident === currentManifest.id)
+    || (!!currentManifest.legacy && legacy === currentManifest.legacy)
+    || (!currentManifest.legacy && ident === currentManifest.id);
   if (here) return "";
-  const name = [module, slug].filter(Boolean).join(" / ") || "another tutorial";
+  const name = [module, ident].filter(Boolean).join(" / ") || "another tutorial";
   return `That file is saved work from ${name}, not this tutorial. `
     + "Nothing has been changed.";
 }
@@ -3561,8 +3573,8 @@ function saveNow() {
   saveTimer = null;
   if (NON_TUTORIAL_PAGES.has(currentManifest.slug)) return;
   const record = {
+    "tutorial-id": currentManifest.id,
     "tutorial-slug": currentManifest.slug,
-    "tutorial-module": currentManifest.module,
     "tutorial-version": currentManifest.version,
     saved_at: new Date().toISOString(),
     notes: notesEl ? notesEl.value : "",
@@ -3821,8 +3833,7 @@ function showSaveState(savedAt, problem) {
 }
 
 function notesExportKey() {
-  const manifest = currentManifest || {};
-  return `${NOTES_EXPORT_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
+  return pageKey(NOTES_EXPORT_PREFIX);
 }
 
 function readNotesNudge() {
@@ -4023,7 +4034,7 @@ function renderContentsProgress() {
     if (!total) continue;
     let record;
     try {
-      const key = `${PROGRESS_PREFIX}${link.dataset.module}:${link.dataset.slug}`;
+      const key = `${PROGRESS_PREFIX}${link.dataset.id}`;
       record = JSON.parse(localStorage.getItem(key) || "null");
     } catch (err) {
       record = null;
@@ -4103,8 +4114,7 @@ function versionList() {
 }
 
 function versionPinKey() {
-  const manifest = currentManifest || {};
-  return `${VERSION_PIN_PREFIX}${manifest.module || "unknown"}:${manifest.slug || "unknown"}`;
+  return pageKey(VERSION_PIN_PREFIX);
 }
 
 function readPin() {
@@ -4393,7 +4403,218 @@ function initVersionsSection() {
   sync();
 }
 
+/* The runtime's saved-work keys were `dewlab:<kind>:<module>:<slug>`; they
+ * are `dewlab:<kind>:<id>` now. This runs once per page load, before
+ * anything reads a key, and renames the keys that belong to this page's
+ * old address. `manifest.legacy` is the old `module:slug` the build writes
+ * for every page that had one (and, for the one renamed id, the old slug
+ * too); a tutorial written after the change has no `legacy` and this does
+ * nothing. */
+function migrateStorage(manifest) {
+  if (!manifest || !manifest.legacy || !manifest.id) return;
+  let store;
+  try { store = window.localStorage; } catch (err) { return; }
+  const oldSuffix = ":" + manifest.legacy;      // e.g. ":computational-methods:first-steps"
+  const newSuffix = ":" + manifest.id;          // e.g. ":first-steps-cm"
+  const renames = [];
+  for (let i = 0; i < store.length; i += 1) {
+    const key = store.key(i);
+    if (key && key.startsWith("dewlab:") && key.endsWith(oldSuffix)) {
+      renames.push(key);
+    }
+  }
+  for (const key of renames) {
+    const next = key.slice(0, -oldSuffix.length) + newSuffix;
+    if (store.getItem(next) === null) {
+      // Never overwrite work saved under the new key already: a reader who
+      // has used the new address since the change keeps that.
+      store.setItem(next, store.getItem(key));
+    }
+    store.removeItem(key);
+  }
+}
+
+/* Which course the reader is following. A page is built with the chrome
+ * — tree, previous and next, "also part of" — of the first course that
+ * lists it (build.py, crumb_trail_html()). A reader on another course
+ * that lists it arrived from that course's page, which remembered the
+ * course here, or chose it on the tree's course rung; then
+ * drawCourseChrome() redraws those parts from assets/routes.json. */
+const COURSE_KEY = "dewlab:course";
+
+function rememberCourse(course) {
+  try { localStorage.setItem(COURSE_KEY, course); } catch (err) { /* private mode */ }
+}
+
+function currentCourse(manifest) {
+  const listed = Array.isArray(manifest.courses) ? manifest.courses : [];
+  if (!listed.length) return "";
+  let wanted = "";
+  try {
+    wanted = new URLSearchParams(location.search).get("course") || localStorage.getItem(COURSE_KEY) || "";
+  } catch (err) { wanted = ""; }
+  return listed.includes(wanted) ? wanted : listed[0];
+}
+
+function initCourse(manifest) {
+  // A course page remembers itself: opening a tutorial from it is
+  // following that course.
+  if (manifest.course) rememberCourse(manifest.course);
+  const listed = Array.isArray(manifest.courses) ? manifest.courses : [];
+  if (listed.length < 2) return;
+  const chosen = currentCourse(manifest);
+  const root = (manifest.assetBase || "").replace(/assets\/$/, "");
+  fetch(`${manifest.assetBase}routes.json`)
+    .then((response) => (response.ok ? response.json() : null))
+    .then((routes) => {
+      if (!routes || !Array.isArray(routes.courses)) return;
+      const mine = routes.courses.filter((course) => listed.includes(course.id));
+      addCourseChooser(manifest, mine, chosen, root);
+      if (chosen !== listed[0]) drawCourseChrome(manifest, mine, chosen, root);
+    })
+    .catch(() => {});
+}
+
+function courseLink(root, course) {
+  const a = document.createElement("a");
+  a.href = `${root}${course.url}`;
+  a.textContent = course.title;
+  return a;
+}
+
+function listItem(children) {
+  const item = document.createElement("div");
+  item.setAttribute("role", "listitem");
+  for (const child of children) item.append(child);
+  return item;
+}
+
+/* The course rung of the tree becomes the switch on a page that sits in
+ * more than one course: a select at the top of its list. */
+function addCourseChooser(manifest, courses, chosen, root) {
+  const rung = document.querySelector(".dl-crumb-level-2");
+  const list = rung ? rung.querySelector('[role="list"]') : null;
+  if (!list || rung.querySelector(".dl-course-switch")) return;
+  const label = document.createElement("label");
+  label.className = "dl-course-switch";
+  label.append("Course: ");
+  const select = document.createElement("select");
+  for (const course of courses) {
+    const option = document.createElement("option");
+    option.value = course.id;
+    option.textContent = course.title;
+    option.selected = course.id === chosen;
+    select.append(option);
+  }
+  select.addEventListener("change", () => {
+    rememberCourse(select.value);
+    drawCourseChrome(manifest, courses, select.value, root);
+  });
+  label.append(select);
+  list.prepend(listItem([label]));
+}
+
+function drawCourseChrome(manifest, courses, chosen, root) {
+  const course = courses.find((c) => c.id === chosen);
+  if (!course) return;
+  const ident = manifest.id;
+  // Where this page sits on the chosen course: the series, its members,
+  // and which member is this page or (for a page of problems) its owner.
+  let series = null;
+  let owner = null;
+  let isPractice = false;
+  for (const candidate of course.series || []) {
+    for (const entry of candidate.tutorials || []) {
+      if (entry.id === ident) { series = candidate; owner = entry; }
+      else if (entry.practice && entry.practice.id === ident) {
+        series = candidate; owner = entry; isPractice = true;
+      }
+    }
+  }
+
+  const courseRung = document.querySelector(".dl-crumb-level-2");
+  if (courseRung) {
+    courseRung.querySelector("summary").textContent = course.title;
+    const list = courseRung.querySelector('[role="list"]');
+    const chooser = list.querySelector(".dl-course-switch");
+    list.replaceChildren();
+    if (chooser) list.append(listItem([chooser]));
+    for (const s of course.series || []) {
+      const first = (s.tutorials || [])[0];
+      if (!first) continue;
+      const a = document.createElement("a");
+      a.href = `${root}${first.url}`;
+      a.textContent = s.title;
+      list.append(listItem([a]));
+    }
+  }
+
+  const seriesRung = document.querySelector(".dl-crumb-level-3");
+  const own = document.querySelector(".dl-crumb-level-4");
+  if (seriesRung && own && series) {
+    seriesRung.querySelector("summary").textContent = series.title;
+    const list = seriesRung.querySelector('[role="list"]');
+    list.replaceChildren();
+    for (const entry of series.tutorials || []) {
+      if (entry === owner && !isPractice) {
+        list.append(own.parentElement && own.parentElement.getAttribute("role") === "listitem"
+          ? own.parentElement : listItem([own]));
+        continue;
+      }
+      const a = document.createElement("a");
+      a.href = `${root}${entry.url}`;
+      a.textContent = entry.title;
+      if (entry === owner && isPractice) {
+        const under = document.createElement("div");
+        under.setAttribute("role", "list");
+        under.append(own.parentElement && own.parentElement.getAttribute("role") === "listitem"
+          ? own.parentElement : listItem([own]));
+        list.append(listItem([a, under]));
+        continue;
+      }
+      list.append(listItem([a]));
+    }
+  }
+
+  // Previous and next, for a tutorial on the route (a page of problems
+  // has none, as the build gives it none).
+  const nav = document.querySelector(".dl-nav-bottom");
+  if (nav && series && !isPractice) {
+    const members = series.tutorials || [];
+    const index = members.indexOf(owner);
+    for (const old of nav.querySelectorAll(".dl-nav-prev, .dl-nav-next")) old.remove();
+    const up = nav.querySelector(".dl-nav-up");
+    if (index > 0) {
+      const a = document.createElement("a");
+      a.className = "dl-nav-prev";
+      a.href = `${root}${members[index - 1].url}`;
+      a.textContent = members[index - 1].title;
+      nav.prepend(a);
+    }
+    if (index >= 0 && index < members.length - 1) {
+      const a = document.createElement("a");
+      a.className = "dl-nav-next";
+      a.href = `${root}${members[index + 1].url}`;
+      a.textContent = members[index + 1].title;
+      if (up) up.after(a); else nav.append(a);
+    }
+  }
+
+  // "This page is also part of …": every course but the one being followed.
+  const line = document.querySelector(".dl-also-part-of");
+  if (line) {
+    const others = courses.filter((c) => c.id !== chosen);
+    line.replaceChildren("This page is also part of ");
+    others.forEach((other, i) => {
+      if (i > 0) line.append(i === others.length - 1 ? " and " : ", ");
+      line.append(courseLink(root, other));
+    });
+    line.append(".");
+  }
+}
+
 const currentManifest = readManifest();
+migrateStorage(currentManifest);
 
 const leaving = followTheVersionYouLeftOff();
 
@@ -4433,6 +4654,7 @@ initHighlightPopover();
 // Reference only unhides itself in initReference() above.
 initMobileLauncher();
 initWhereYouAre();
+initCourse(currentManifest);
 watchPanelOverlap();
 restoreSidebarState();
 initProgressBadgesToggle();

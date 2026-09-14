@@ -12,9 +12,9 @@ from conftest import _open_panel
 
 MODULE = "fixtures"
 SLUG = "two-takes"
-DEFAULT_PAGE = f"tutorials/{MODULE}/{SLUG}.html"
-JUNE_PAGE = f"tutorials/{MODULE}/{SLUG}/v2026.06.02.1.html"
-ONE_VERSION_PAGE = f"tutorials/{MODULE}/rendering-tour.html"
+DEFAULT_PAGE = f"tutorials/{SLUG}.html"
+JUNE_PAGE = f"tutorials/{SLUG}/v2026.06.02.1.html"
+ONE_VERSION_PAGE = f"tutorials/rendering-tour.html"
 
 
 def opened(tab, base_url, path):
@@ -39,8 +39,7 @@ def seed(tab, answers: dict[str, str], version: str = "2026.09.15.1"):
     """Written straight into storage rather than by typing, because what the
     counting reads is the record, not the keystrokes that made it."""
     record = {
-        "tutorial-slug": SLUG,
-        "tutorial-module": MODULE,
+        "tutorial-id": SLUG,
         "tutorial-version": version,
         "saved_at": "2026-09-20T10:00:00.000Z",
         "cells": [
@@ -50,7 +49,7 @@ def seed(tab, answers: dict[str, str], version: str = "2026.09.15.1"):
     }
     tab.evaluate(
         "([key, value]) => localStorage.setItem(key, value)",
-        [f"dewlab:progress:{MODULE}:{SLUG}", json.dumps(record)],
+        [f"dewlab:progress:{SLUG}", json.dumps(record)],
     )
 
 
@@ -114,7 +113,7 @@ class TestATutorialWithoutATitleHeading:
     """`prose-only` opens straight into a section and has no cells — both
     awkward for a marker that wants to sit under a title and count answers."""
 
-    PAGE = f"tutorials/{MODULE}/prose-only.html"
+    PAGE = f"tutorials/prose-only.html"
 
     def test_the_marker_is_still_there(self, tab, base_url):
         opened(tab, base_url, self.PAGE)

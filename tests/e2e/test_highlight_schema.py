@@ -20,17 +20,14 @@ DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
+from layout import write_course, write_tutorial  # noqa: E402
 
 MODULE = "highlight-schema-fixtures"
 SLUG = "one"
 
 FRONTMATTER = """---
 title: "Highlight Schema Fixture"
-slug: one
-module: highlight-schema-fixtures
-module_title: "Highlight Schema Fixtures"
 year: "2026-2027"
-series: sample-series
 version: 2026.08.23.1
 ---
 
@@ -44,13 +41,12 @@ FILLER-PARAGRAPH pads the page out a little.
 
 @pytest.fixture()
 def site(tmp_path, monkeypatch):
-    (tmp_path / "tutorials" / MODULE).mkdir(parents=True)
-    (tmp_path / "tutorials" / MODULE / f"{SLUG}.md").write_text(FRONTMATTER)
-    (tmp_path / "tutorials" / MODULE / "sample-series.order.yaml").write_text(
-        "series: Sample Series\norder:\n  - one\n"
-    )
+    (tmp_path / "tutorials").mkdir(parents=True)
+    write_tutorial(tmp_path, SLUG, FRONTMATTER)
+    write_course(tmp_path, MODULE, "Sample Series", ["one"])
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
+    monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
     monkeypatch.setattr(b, "OUT", tmp_path / "site")
     monkeypatch.setattr(b, "SETUP", DEWLAB / "setup")
     monkeypatch.setattr(b, "DATA", DEWLAB / "data")
@@ -88,7 +84,7 @@ def site_url(site):
 def page(browser, site_url):
     context = browser.new_context()
     dl_page = context.new_page()
-    dl_page.goto(f"{site_url}/tutorials/{MODULE}/{SLUG}.html")
+    dl_page.goto(f"{site_url}/tutorials/{SLUG}.html")
     dl_page.wait_for_function("() => !!globalThis.dewlab")
     yield dl_page
     context.close()
@@ -156,8 +152,7 @@ class TestHighlightSchema:
         # is dropped from the live page, in case a future version's prose
         # brings the same passage back (or a student exports the file).
         _seed(page, {
-            "tutorial-slug": SLUG,
-            "tutorial-module": MODULE,
+            "tutorial-id": SLUG,
             "tutorial-version": "2026.08.23.1",
             "saved_at": "2026-01-01T00:00:00.000Z",
             "notes": "",
@@ -182,8 +177,7 @@ class TestHighlightSchema:
 
     def test_a_dropped_highlight_is_reported_in_the_restore_summary(self, page):
         _seed(page, {
-            "tutorial-slug": SLUG,
-            "tutorial-module": MODULE,
+            "tutorial-id": SLUG,
             "tutorial-version": "2026.08.23.1",
             "saved_at": "2026-01-01T00:00:00.000Z",
             "notes": "",
@@ -207,8 +201,7 @@ class TestHighlightSchema:
 
     def test_two_dropped_highlights_use_the_plural_wording(self, page):
         _seed(page, {
-            "tutorial-slug": SLUG,
-            "tutorial-module": MODULE,
+            "tutorial-id": SLUG,
             "tutorial-version": "2026.08.23.1",
             "saved_at": "2026-01-01T00:00:00.000Z",
             "notes": "",

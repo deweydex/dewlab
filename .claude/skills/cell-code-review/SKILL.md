@@ -22,8 +22,7 @@ asked.
 
 ## What you need before you start
 
-1. **The tutorial itself**, read whole — `tutorials/<module>/<slug>.md` or
-   `tutorials/<module>/<slug>/<slug>.md` for a tutorial with releases. Not
+1. **The tutorial itself**, read whole — `tutorials/<id>/<id>.md`. Not
    just the cells: the prose is what tells a mathy `a`/`b`/`c` apart from a
    `t` that should be `elapsed_time`.
 2. **Every cell in it, in document order** — both `exec` cells (parsed the

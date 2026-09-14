@@ -82,6 +82,7 @@ def load_yaml_no_duplicate_keys(text: str):
 
 ROOT = Path(__file__).resolve().parent
 TUTORIALS = ROOT / "tutorials"
+COURSES = ROOT / "courses"
 SETUP = ROOT / "setup"
 DATA = ROOT / "data"
 ASSETS = ROOT / "assets"
@@ -93,15 +94,25 @@ SHELL = ASSETS / "shell.html"
 OUT = ROOT / "site"
 PAGES = ROOT / "pages"
 
-REQUIRED_FRONTMATTER = ("title", "slug", "module", "year", "series", "version")
+REQUIRED_FRONTMATTER = ("title", "year", "version")
 
 STATUSES = ("draft", "beta", "live", "archived")
 
 VERSION_RE = re.compile(r"^(?P<y>\d{4})\.(?P<m>\d{2})\.(?P<d>\d{2})\.(?P<n>\d+)$")
 
+# Fields a tutorial used to carry and no longer may. Where a tutorial sits is
+# not the tutorial's own business any more: a course file under courses/
+# lists it, and the folder name is its id (DECISIONS_LOG 7.172).
 MOVED_FRONTMATTER = {
-    "order": "the series' .order.yaml file, which lists slugs in reading order",
+    "order": "the course file under courses/ lists ids in reading order",
+    "slug": "the folder name is the tutorial's id",
+    "module": "the course file under courses/ that lists this tutorial says which course it is on",
+    "module_title": "the course file's own title: line names the course",
+    "series": "a series is a heading in the course file under courses/",
 }
+
+# A frozen release, `v2026.09.15.1.md`, beside the tutorial's own file.
+VERSION_FILE_RE = re.compile(r"^v\d{4}\.\d{2}\.\d{2}\.\d+$")
 
 FENCE_RE = re.compile(r"^(?P<indent> *)```(?P<info>[^\n]*)\n(?P<body>.*?)^ *```[ \t]*$",
                       re.MULTILINE | re.DOTALL)
@@ -264,6 +275,34 @@ class Note:
     html: str
 
 
+@dataclass(frozen=True)
+class Placement:
+    """One place a page is listed: a course, a series in it (by key — see
+    series_key()), and a 1-based position in that series. A mixed problem
+    set listed under a course's `mixed:` has series "" and position 0."""
+
+    course: str
+    series: str
+    position: int
+
+
+def id_of(path: Path) -> str:
+    """A page's id, from where its file is and nothing else.
+
+    A tutorial is `tutorials/<id>/<id>.md`, so the id is the file's stem —
+    which is also the folder name. A practice page is `<id>-practice.md` in
+    the same folder, and its id is `<id>-practice`. A frozen release,
+    `v<version>.md`, is a version of the folder's tutorial, so it takes the
+    folder's name. Nothing is read from the frontmatter: the id is the
+    address of the page and the key every reader's saved work lives under,
+    and a field that could disagree with the folder would be a way to
+    break both.
+    """
+    if VERSION_FILE_RE.match(path.stem):
+        return path.parent.name
+    return path.stem
+
+
 @dataclass
 class Tutorial:
     """One tutorial page, fully parsed and ready to render — everything
@@ -293,18 +332,48 @@ class Tutorial:
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
     notes: list[Note] = field(default_factory=list)
-    # Where this sits in its series. Not from the frontmatter — the order file
-    # decides it, and series_of() fills it in once the series is assembled.
+    # Where this page sits: every course that lists it, in courses/index.yaml
+    # order, each with the series and the position. Not from the frontmatter —
+    # the course files decide it, and place_tutorials() fills it in once
+    # every tutorial is loaded. Empty for a page no course lists.
+    placements: list[Placement] = field(default_factory=list)
+    # Its position in the series of its default course — the first placement
+    # — or 0 off the reading order (archived, practice, unplaced).
     order: int = 0
     is_default: bool = True
 
     @property
     def slug(self) -> str:
-        return str(self.meta["slug"])
+        """The tutorial's id, which is its folder name — see id_of()."""
+        return id_of(self.path)
 
     @property
-    def module(self) -> str:
-        return str(self.meta["module"])
+    def folder(self) -> str:
+        """The folder this page's file sits in, which is where its assets
+        are: the tutorial's id, for a practice page too."""
+        return self.path.parent.name
+
+    @property
+    def course(self) -> str:
+        """The course this page is drawn in by default: the first course in
+        courses/index.yaml order that lists it, or "" when none does. The
+        page carries this course's tree and previous/next; a reader on
+        another course that lists it gets that course's from the runtime."""
+        return self.placements[0].course if self.placements else ""
+
+    @property
+    def series(self) -> str:
+        """The series key of the default placement, or ""."""
+        return self.placements[0].series if self.placements else ""
+
+    @property
+    def courses(self) -> list[str]:
+        """Every course that lists this page, default first, each once."""
+        seen: list[str] = []
+        for placement in self.placements:
+            if placement.course not in seen:
+                seen.append(placement.course)
+        return seen
 
     @property
     def out_path(self) -> Path:
@@ -312,24 +381,10 @@ class Tutorial:
         it. So every link written before versions existed — in a tutorial, on
         the topic tree, in a student's bookmarks — keeps working and keeps
         meaning "the current one"."""
-        here = OUT / "tutorials" / self.module
+        here = OUT / "tutorials"
         if self.is_default:
             return here / f"{self.slug}.html"
         return here / self.slug / f"v{self.version}.html"
-
-    @property
-    def module_title(self) -> str:
-        """What a student sees. The slug is a folder name, not a course name.
-
-        Optional, and any tutorial in the module may carry it — the first one
-        that does, wins. Without it the slug is shown, which is honest but
-        rarely what you would put in front of a class.
-        """
-        return str(self.meta.get("module_title") or self.module)
-
-    @property
-    def series(self) -> str:
-        return str(self.meta["series"])
 
     @property
     def status(self) -> str:
@@ -450,10 +505,10 @@ def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
     missing = [f for f in REQUIRED_FRONTMATTER if f not in meta]
     if missing:
         fail(path, f"frontmatter is missing {', '.join(missing)}")
-    for field_name, moved_to in MOVED_FRONTMATTER.items():
+    for field_name, where_now in MOVED_FRONTMATTER.items():
         if field_name in meta:
-            fail(path, f"{field_name} no longer belongs in frontmatter — it moved "
-                       f"to {moved_to}")
+            fail(path, f"{field_name} no longer belongs in frontmatter — "
+                       f"{where_now}. Delete the line.")
     status = meta.get("status", "live")
     if status not in STATUSES:
         fail(path, f"status {status!r} is not one of {', '.join(STATUSES)}")
@@ -1186,6 +1241,7 @@ def convert_page_wrapper_bodies(page_html: str) -> str:
 GENERATED_BLOCKS: dict[str, Callable[[], str]] = {
     "search-box": lambda: render_search_box(
         "Search by topic — e.g. loops, probability, sorting…", big=True),
+    "course-cards": lambda: render_course_cards(),
 }
 
 
@@ -1290,8 +1346,8 @@ def place_blocks(
 
     `page` and `version` are only for `render_cell()`'s own report panel
     — passed straight through, since this
-    function runs from `load()`, before a tutorial's own frontmatter has
-    become a `Tutorial` object with a `.slug`/`.module` of its own.
+    function runs from `load()`, before the file has become a `Tutorial`
+    object with a `.slug` of its own (`page` is `id_of(path)`).
     """
     for index, cell in enumerate(cells):
         placeholder = f"<!--dewlab-cell-{index}-->"
@@ -1335,79 +1391,262 @@ def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
     return NOTE_RE.sub(one, body_html), notes
 
 
-ORDER_SUFFIX = ".order.yaml"
+
+COURSE_INDEX_FILE = "index.yaml"
+REDIRECTS_FILE = "redirects.yaml"
+COURSE_STATUSES = ("draft", "beta", "live")
 
 
-MODULE_ORDER_FILE = "modules.yaml"
+@dataclass
+class Series:
+    """One heading in a course file, and the ids under it in reading order.
+    `key` is the heading as a filename (series_key()); it is what a zip
+    is named after and what the page's series meta carries."""
+
+    key: str
+    title: str
+    ids: list[str]
 
 
-def module_order() -> list[str]:
-    """The order modules appear in, from `tutorials/modules.yaml`.
+@dataclass
+class Course:
+    """One file under courses/: everything a course page, a front-page card
+    and a tree's course rung need, and the reading order of every series."""
 
-    Optional: without it the contents page falls back to alphabetical, which is
-    what it did before and is at least stable.
+    id: str
+    path: Path
+    title: str
+    code: str
+    status: str
+    card: str
+    description: list[str]
+    contents: list[Series]
+    mixed: list[str]
 
-    The path is worked out here rather than held in a constant beside TUTORIALS,
-    because the tests point TUTORIALS at a temporary directory and a constant
-    computed at import time would still be looking at the real one.
+    @property
+    def keys(self) -> list[str]:
+        return [series.key for series in self.contents]
+
+    def series_title(self, key: str) -> str:
+        for series in self.contents:
+            if series.key == key:
+                return series.title
+        return key
+
+
+SERIES_KEY_RE = re.compile(r"[^a-z0-9]+")
+
+
+def series_key(title: str) -> str:
+    """A heading, as something that can name a file and sit in a URL:
+    "Python fundamentals" becomes python-fundamentals. Two headings in one
+    course that come out the same are refused (courses())."""
+    return SERIES_KEY_RE.sub("-", title.lower()).strip("-")
+
+
+def paragraphs(text: str) -> list[str]:
+    """A YAML string's blank-line-separated paragraphs, each on one line."""
+    return [" ".join(part.split()) for part in re.split(r"\n\s*\n", text or "") if part.strip()]
+
+
+_COURSES_CACHE: tuple[tuple, dict[str, Course]] | None = None
+
+
+def _courses_stamp() -> tuple:
+    if not COURSES.is_dir():
+        return (str(COURSES),)
+    return tuple(
+        (str(path), path.stat().st_mtime_ns, path.stat().st_size)
+        for path in sorted(COURSES.glob("*.yaml"))
+    )
+
+
+def courses() -> dict[str, Course]:
+    """Every course, in `courses/index.yaml` order, from `courses/*.yaml`.
+
+    This is the one place placement is read from. A course file says what
+    the course is called, which QQI code it carries, what its front-page
+    card says, and — under `contents:` — its series, each a heading with
+    the ids of its tutorials in reading order. A tutorial's own file says
+    nothing about any of this, which is what lets one tutorial sit on two
+    courses without a second copy of anything.
+
+    Read fresh whenever the files change and cached otherwise, because
+    most of the rendering below asks for it once per page: the cache is
+    keyed on the files' own timestamps and sizes, so a test that writes a
+    course file and calls straight in sees its own file rather than the
+    last build's. The path is worked out on each call rather than held in
+    a constant, for the reason module-level globals are monkeypatched in
+    tests: a constant computed at import time would still point at the
+    real folder.
+
+    Optional as a whole: with no `courses/` at all, every tutorial builds
+    at its address and none is on a reading order, which is what a quick
+    fixture build wants.
     """
-    path = TUTORIALS / MODULE_ORDER_FILE
-    if not path.is_file():
-        return []
-    data = yaml.safe_load(path.read_text()) or {}
-    listed = data.get("order") or []
-    if not isinstance(listed, list) or not all(isinstance(m, str) for m in listed):
-        fail(path, "a module order file needs `order:` as a list of module names")
-    return listed
+    global _COURSES_CACHE
+    stamp = _courses_stamp()
+    if _COURSES_CACHE is not None and _COURSES_CACHE[0] == stamp:
+        return _COURSES_CACHE[1]
 
+    found: dict[str, Course] = {}
+    if COURSES.is_dir():
+        for path in sorted(COURSES.glob("*.yaml")):
+            if path.name in (COURSE_INDEX_FILE, REDIRECTS_FILE):
+                continue
+            found[path.stem] = read_course(path)
 
-def order_files() -> dict[tuple[str, str], list[str]]:
-    """The reading order of each series, read from one file per series.
-
-    Order used to live in every tutorial's own frontmatter, which meant
-    inserting one in the middle was an edit to every file after it. In one list
-    per series, moving a tutorial is moving a line and inserting one is adding
-    a line — which is what makes reordering something an editor can do, and
-    something a person can still do by hand in the GitHub web editor.
-    An entry may also name a tutorial that lives in another module, as
-    `other-module/slug`. That is how a module lists a route through
-    tutorials it does not own — Programming and Design Principles is the
-    programming half of the integrated module, read on its own — without
-    a second copy of any file: the tutorial keeps its one page, its one
-    URL and its one home module, and simply appears in this series too.
-    `series_of()` resolves these.
-    """
-    found: dict[tuple[str, str], list[str]] = {}
-    for path in sorted(TUTORIALS.rglob(f"*{ORDER_SUFFIX}")):
-        data = yaml.safe_load(path.read_text()) or {}
-        module = path.parent.name
-        series = path.name[: -len(ORDER_SUFFIX)]
-        if "order" not in data:
-            fail(path, "an order file needs `order:` as a list of slugs")
+    order: list[str] = []
+    index = COURSES / COURSE_INDEX_FILE
+    if index.is_file():
+        data = yaml.safe_load(index.read_text()) or {}
         order = data.get("order") or []
-        if not isinstance(order, list) or not all(isinstance(s, str) for s in order):
-            fail(path, "an order file needs `order:` as a list of slugs")
-        if len(set(order)) != len(order):
-            duplicates = sorted({s for s in order if order.count(s) > 1})
-            fail(path, f"lists {', '.join(duplicates)} more than once")
-        found[(module, series)] = order
-    return found
+        if not isinstance(order, list) or not all(isinstance(c, str) for c in order):
+            fail(index, "needs `order:` as a list of course ids, one per line")
+        for name in order:
+            if name not in found:
+                fail(index, f"lists {name}, and there is no courses/{name}.yaml")
+    # Listed courses in the order given, then any other alphabetically, so a
+    # new course file lands at the end rather than breaking the page.
+    ordered = [c for c in order if c in found] + sorted(c for c in found if c not in order)
+    result = {name: found[name] for name in ordered}
+    _COURSES_CACHE = (stamp, result)
+    return result
 
 
-def series_titles() -> dict[tuple[str, str], str]:
-    """What each series is called, from the `series:` line in its order file.
+def read_course(path: Path) -> Course:
+    """One course file, checked for shape. What the ids it lists refer to is
+    checked later, by place_tutorials(), once every tutorial is loaded."""
+    data = load_yaml_no_duplicate_keys(path.read_text()) or {}
+    if not isinstance(data, dict):
+        fail(path, "a course file is a mapping: title, code, status, card, description, contents")
+    title = data.get("title")
+    if not isinstance(title, str) or not title.strip():
+        fail(path, "needs a `title:` line — what the course is called on the site")
+    status = str(data.get("status", "live"))
+    if status not in COURSE_STATUSES:
+        fail(path, f"status {status!r} is not one of {', '.join(COURSE_STATUSES)}")
+    contents = data.get("contents")
+    if contents is None:
+        contents = []
+    if not isinstance(contents, list):
+        fail(path, "`contents:` is a list of series, each with a title and its tutorials")
+    series: list[Series] = []
+    listed: dict[str, str] = {}
+    for entry in contents:
+        if not isinstance(entry, dict) or not isinstance(entry.get("title"), str):
+            fail(path, "each series under `contents:` needs a `title:` line")
+        ids = entry.get("tutorials")
+        if ids is None:
+            ids = []
+        if not isinstance(ids, list) or not all(isinstance(i, str) for i in ids):
+            fail(path, f'the series "{entry["title"]}" needs `tutorials:` as a list of ids')
+        key = series_key(entry["title"])
+        if not key:
+            fail(path, f'the series title {entry["title"]!r} has no letters or digits in it')
+        if key in {s.key for s in series}:
+            fail(path, f'two series are both called "{entry["title"]}" (or differ only in '
+                       "punctuation). Give one of them another title.")
+        for ident in ids:
+            if ident in listed:
+                fail(path, f'lists {ident} twice — under "{listed[ident]}" and under '
+                           f'"{entry["title"]}". A tutorial sits in one place on a course.')
+            listed[ident] = entry["title"]
+        series.append(Series(key=key, title=entry["title"].strip(), ids=list(ids)))
+    mixed = data.get("mixed")
+    if mixed is None:
+        mixed = []
+    if not isinstance(mixed, list) or not all(isinstance(i, str) for i in mixed):
+        fail(path, "`mixed:` is a list of ids of mixed problem sets")
+    for ident in mixed:
+        if ident in listed:
+            fail(path, f'lists {ident} under `mixed:` and under "{listed[ident]}"')
+    return Course(
+        id=path.stem,
+        path=path,
+        title=title.strip(),
+        code=str(data.get("code") or "").strip(),
+        status=status,
+        card=str(data.get("card") or "").strip(),
+        description=paragraphs(str(data.get("description") or "")),
+        contents=series,
+        mixed=list(mixed),
+    )
 
-    The slug is a filename. "reflections-and-review" is fine in a path and
-    wrong in a heading, and until a module had two series nobody saw the
-    heading at all.
+
+def course_title(course: str) -> str:
+    """What a course is called, or its id when there is no file for it —
+    honest, if rarely what you would put in front of a class."""
+    found = courses().get(course)
+    return found.title if found else course
+
+
+def legacy_ids() -> dict[str, str]:
+    """For every page that had an address before courses/ existed, its old
+    `module:slug` — the key its readers' saved work was stored under, which
+    the runtime renames on the first visit (migrateStorage() in
+    tutorial-runtime.js). Read from `courses/redirects.yaml`, since the old
+    address already says both halves; a tutorial written after the change
+    has no line there and no legacy id."""
+    path = COURSES / REDIRECTS_FILE
+    if not path.is_file():
+        return {}
+    data = yaml.safe_load(path.read_text()) or {}
+    legacy: dict[str, str] = {}
+    old_re = re.compile(r"^tutorials/(?P<module>[^/]+)/(?P<slug>[^/]+)\.html$")
+    new_re = re.compile(r"^tutorials/(?P<id>[^/]+)\.html$")
+    for old, new in data.items():
+        was, now = old_re.match(str(old)), new_re.match(str(new))
+        if was and now:
+            legacy.setdefault(now.group("id"), f"{was.group('module')}:{was.group('slug')}")
+    return legacy
+
+
+def place_tutorials(tutorials: list[Tutorial], registry: dict[str, Tutorial]) -> None:
+    """Fill in every page's `placements` from the course files, and check
+    every id a course file names.
+
+    An id with no tutorial behind it stops the build: the course file looks
+    complete and the course is short, which nothing else would ever say. A
+    draft is the one exception, skipped with a note, so a course can list
+    next week's tutorial before it is finished. A practice page cannot be
+    listed at all — it is reached from its tutorial — and an archived one
+    may be, but sits in the course's Archive rather than on the route.
+
+    Practice pages are placed afterwards, by practice_pairs() and
+    mixed_practice(), from the tutorial they belong to.
     """
-    titles: dict[tuple[str, str], str] = {}
-    for path in sorted(TUTORIALS.rglob(f"*{ORDER_SUFFIX}")):
-        data = yaml.safe_load(path.read_text()) or {}
-        name = data.get("series")
-        if isinstance(name, str) and name.strip():
-            titles[(path.parent.name, path.name[: -len(ORDER_SUFFIX)])] = name.strip()
-    return titles
+    for course in courses().values():
+        for series in course.contents:
+            for position, ident in enumerate(series.ids, start=1):
+                member = registry.get(ident)
+                if member is None:
+                    if (TUTORIALS / ident / f"{ident}.md").is_file():
+                        print(f"note: {course.path.relative_to(ROOT)} lists {ident}, "
+                              "which is a draft, so it is not on the course yet",
+                              file=sys.stderr)
+                        continue
+                    fail(course.path, f'the series "{series.title}" lists {ident}, but '
+                                      f"there is no folder tutorials/{ident}/")
+                if member.is_practice:
+                    fail(course.path, f'the series "{series.title}" lists {ident}, which is '
+                                      "a page of problems. A practice page is reached from "
+                                      "its tutorial; list the tutorial instead.")
+                member.placements.append(Placement(course.id, series.key, position))
+        for ident in course.mixed:
+            member = registry.get(ident)
+            if member is None:
+                fail(course.path, f"lists {ident} under `mixed:`, but there is no folder "
+                                  f"tutorials/{ident}/")
+            if not member.practice_across:
+                fail(course.path, f"lists {ident} under `mixed:`, and it is not a mixed "
+                                  "problem set (it has no practice_across line)")
+            member.placements.append(Placement(course.id, "", 0))
+    # The route position: where the page sits in the series of its default
+    # course. A page on no route keeps 0 (nav_for() reads that honestly).
+    for tutorial in tutorials:
+        if tutorial.placements and tutorial.status == "live" and tutorial.is_default:
+            tutorial.order = tutorial.placements[0].position
 
 
 def versions_of(tutorials: list[Tutorial]) -> list[Tutorial]:
@@ -1423,12 +1662,12 @@ def versions_of(tutorials: list[Tutorial]) -> list[Tutorial]:
     Returns everything that gets built, with `is_default` set. Drafts are gone
     by the time this runs — see `load_all`.
     """
-    families: dict[tuple[str, str], list[Tutorial]] = {}
+    families: dict[str, list[Tutorial]] = {}
     for tutorial in tutorials:
-        families.setdefault((tutorial.module, tutorial.slug), []).append(tutorial)
+        families.setdefault(tutorial.slug, []).append(tutorial)
 
     built: list[Tutorial] = []
-    for (module, slug), versions in sorted(families.items()):
+    for slug, versions in sorted(families.items()):
         seen = {}
         for version in versions:
             if version.version in seen:
@@ -1449,27 +1688,29 @@ def versions_of(tutorials: list[Tutorial]) -> list[Tutorial]:
 
 
 def practice_pairs(
-    tutorials: list[Tutorial], registry: dict[tuple[str, str], Tutorial]
-) -> dict[tuple[str, str], Tutorial]:
-    """Each tutorial's page of problems, by the tutorial it belongs to.
+    tutorials: list[Tutorial], registry: dict[str, Tutorial]
+) -> dict[str, Tutorial]:
+    """Each tutorial's page of problems, by the id of the tutorial it belongs to.
 
     A practice page names its tutorial with `practice_for:`. Both directions are
     checked here rather than being discovered by a reader following a link that
-    goes nowhere: the tutorial has to exist, it has to be in the same module,
-    and no two practice pages may claim the same one.
+    goes nowhere: the tutorial has to exist, and no two practice pages may
+    claim the same one. The page then sits wherever its tutorial sits — it
+    takes the tutorial's placements, so its tree and its course are the
+    tutorial's own.
 
     A practice page also declares no coverage. It sets problems on what its
     tutorial taught, and counting it would report the same outcome as taught
     twice — see `planning/EXERCISES.md`.
     """
-    pairs: dict[tuple[str, str], Tutorial] = {}
+    pairs: dict[str, Tutorial] = {}
     for page in tutorials:
         target = page.practice_for
         if target and page.practice_across:
             fail(page.path, "sets both practice_for and practice_across. A page "
                             "of problems either belongs to one tutorial or "
                             "draws on several; it cannot do both.")
-        if not target or not page.is_default:
+        if not target:
             continue
         if page.meta.get("covers"):
             fail(page.path, "is a practice page and declares `covers:`. It sets "
@@ -1478,38 +1719,45 @@ def practice_pairs(
                             "pages.")
         if target == page.slug:
             fail(page.path, f"has practice_for: {target}, which is itself.")
-        owner = registry.get((page.module, target))
+        owner = registry.get(target)
         if owner is None:
-            fail(page.path, f"has practice_for: {target}, and no tutorial in "
-                            f"{page.module} has that slug.")
+            fail(page.path, f"has practice_for: {target}, and there is no folder "
+                            f"tutorials/{target}/.")
         if owner.practice_for:
             fail(page.path, f"has practice_for: {target}, which is itself a "
                             "practice page. Problems about problems is not a "
                             "shape this supports.")
-        key = (page.module, target)
-        if key in pairs:
+        page.placements = list(owner.placements)
+        if not page.is_default:
+            continue
+        if target in pairs:
             fail(page.path, f"has practice_for: {target}, and so does "
-                            f"{pairs[key].path.relative_to(ROOT)}. A tutorial "
+                            f"{pairs[target].path.relative_to(ROOT)}. A tutorial "
                             "has one page of problems.")
-        pairs[key] = page
+        pairs[target] = page
     return pairs
 
 
 def mixed_practice(
-    tutorials: list[Tutorial], registry: dict[tuple[str, str], Tutorial]
+    tutorials: list[Tutorial], registry: dict[str, Tutorial]
 ) -> dict[str, list[Tutorial]]:
-    """Problem sets that draw on several tutorials, per module, in title order.
+    """Problem sets that draw on several tutorials, per course, in title order.
 
-    Checked the same way as `practice_for`: every slug it names has to exist, be
-    in the same module, and be a tutorial rather than another page of problems.
-    A set naming one tutorial is an error rather than an eccentricity — that is
-    what `practice_for` is, and having two ways to say it would mean a tutorial
+    Checked the same way as `practice_for`: every id it names has to exist and
+    be a tutorial rather than another page of problems. A set naming one
+    tutorial is an error rather than an eccentricity — that is what
+    `practice_for` is, and having two ways to say it would mean a tutorial
     could quietly acquire a second companion page.
+
+    Which course lists a set is the course file's business, under `mixed:`
+    (place_tutorials() reads that). A set no course file mentions goes with
+    the default course of the first tutorial it names, so that writing one
+    needs no more than the page itself.
     """
     out: dict[str, list[Tutorial]] = {}
     for page in tutorials:
         across = page.practice_across
-        if not across or not page.is_default:
+        if not across:
             continue
         if page.meta.get("covers"):
             fail(page.path, "is a practice page and declares `covers:`. It sets "
@@ -1527,157 +1775,83 @@ def mixed_practice(
             if slug == page.slug:
                 fail(page.path, f"has practice_across naming {slug}, which is "
                                 "itself.")
-            owner = registry.get((page.module, slug))
+            owner = registry.get(slug)
             if owner is None:
-                fail(page.path, f"has practice_across naming {slug}, and no "
-                                f"tutorial in {page.module} has that slug.")
+                fail(page.path, f"has practice_across naming {slug}, and there "
+                                f"is no folder tutorials/{slug}/.")
             if owner.is_practice:
                 fail(page.path, f"has practice_across naming {slug}, which is "
                                 "itself a page of problems.")
-        out.setdefault(page.module, []).append(page)
+        if not page.placements:
+            first = registry[across[0]]
+            if first.course:
+                page.placements = [Placement(first.course, "", 0)]
+        if not page.is_default:
+            continue
+        for course in page.courses:
+            out.setdefault(course, []).append(page)
     for members in out.values():
         members.sort(key=lambda t: t.title)
     return out
 
 
 def archived_of(tutorials: list[Tutorial]) -> dict[str, list[Tutorial]]:
-    """Retired tutorials, per module, newest title order.
+    """Retired tutorials, per course, in title order.
 
     Kept apart from the series rather than filtered out of it, because they are
     still built and still reachable — a student who saved work in one can still
-    get to it. They simply are not part of the course any more.
+    get to it. They simply are not part of the course any more: a course file
+    may still list one, and it lands here rather than on the route.
     """
     out: dict[str, list[Tutorial]] = {}
     for tutorial in tutorials:
-        if tutorial.archived and tutorial.is_default:
-            out.setdefault(tutorial.module, []).append(tutorial)
+        if not (tutorial.archived and tutorial.is_default):
+            continue
+        for course in tutorial.courses:
+            out.setdefault(course, []).append(tutorial)
     for members in out.values():
         members.sort(key=lambda t: t.title)
     return out
 
 
 def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]]:
-    """Group the live tutorials into the series a student works through.
+    """Group the live tutorials into the series a student works through,
+    keyed by (course, series key), each in the course file's order.
 
-    A series is per module: two modules may both have a series called
-    `fundamentals` without being the same sequence.
+    A series is per course: two courses may both have a series called
+    "Fundamentals" without being the same sequence — and one tutorial may
+    be in both, since a placement is a line in a course file rather than
+    anything the tutorial owns.
 
-    Archived tutorials are not here. A reading order is a route through the
-    course, and a retired tutorial is not on the route — so it is not listed in
-    the order file, and listing it is an error rather than a no-op.
+    Only the current, live version of each tutorial is on a route. A
+    superseded release is still readable; an archived tutorial is still
+    built; a practice page hangs off its tutorial. None of them is here.
     """
-    orders = order_files()
     groups: dict[tuple[str, str], list[Tutorial]] = {}
-    on_route: dict[tuple[str, str], Tutorial] = {}
     for tutorial in tutorials:
-        # Only the current, live version of each tutorial is on the route. A
-        # superseded release is still readable; it is not part of the course.
-        if tutorial.status != "live" or not tutorial.is_default:
+        if tutorial.status != "live" or not tutorial.is_default or tutorial.is_practice:
             continue
-        if tutorial.is_practice:
-            continue
-        groups.setdefault((tutorial.module, tutorial.series), []).append(tutorial)
-        on_route[(tutorial.module, tutorial.slug)] = tutorial
-
-    # A series may list tutorials from another module, as `module/slug`
-    # (order_files() says why). Those members are borrowed: they appear in
-    # this series' list and its downloads, but their page, their tree and
-    # their previous/next stay with the module that owns them, and their
-    # `order` — their place in their own series — is left alone below.
-    borrowed: set[tuple[tuple[str, str], str]] = set()
-    for key, listed in orders.items():
-        module, series = key
-        for entry in listed:
-            if "/" not in entry:
-                continue
-            owner_module, slug = entry.split("/", 1)
-            if owner_module == module:
-                fail(
-                    TUTORIALS / module / f"{series}{ORDER_SUFFIX}",
-                    f"lists {entry}, which is in this module already — write "
-                    f"it as {slug}",
-                )
-            member = on_route.get((owner_module, slug))
-            if member is None:
-                fail(
-                    TUTORIALS / module / f"{series}{ORDER_SUFFIX}",
-                    f"lists {entry}, which no live tutorial in {owner_module} "
-                    "has as its slug",
-                )
-            groups.setdefault(key, []).append(member)
-            borrowed.add((key, slug))
-
-    # The contradictory case, caught by name so the message can say which.
-    for tutorial in tutorials:
-        if not tutorial.archived or not tutorial.is_default:
-            continue
-        listed = orders.get((tutorial.module, tutorial.series)) or []
-        if tutorial.slug in listed:
-            fail(
-                TUTORIALS / tutorial.module / f"{tutorial.series}{ORDER_SUFFIX}",
-                f"lists {tutorial.slug}, which is archived. An archived tutorial "
-                "is not part of the reading order — remove the line, or take "
-                "`status: archived` out of the tutorial.",
-            )
-
-    for key, members in groups.items():
-        module, series = key
-        listed = orders.get(key)
-        if listed is None:
-            fail(
-                members[0].path,
-                f"series {series!r} in {module} has no "
-                f"{series}{ORDER_SUFFIX} beside it. That file is what decides "
-                "the reading order.",
-            )
-
-        def listed_as(member: Tutorial) -> str:
-            return member.slug if member.module == module else f"{member.module}/{member.slug}"
-
-        position = {entry: index for index, entry in enumerate(listed)}
-        for member in members:
-            if listed_as(member) not in position:
-                fail(
-                    member.path,
-                    f"is not listed in {series}{ORDER_SUFFIX}, so nothing knows "
-                    "where it goes. Add its slug to that file.",
-                )
-        # A slug listed with no tutorial behind it is the more dangerous
-        # direction: the order file looks complete and the series is short.
-        present = {listed_as(m) for m in members}
-        missing = [entry for entry in listed if entry not in present]
-        if missing:
-            fail(
-                TUTORIALS / module / f"{series}{ORDER_SUFFIX}",
-                f"lists {', '.join(missing)}, which no tutorial in this series "
-                "has as its slug",
-            )
-        members.sort(key=lambda t: position[listed_as(t)])
-        for index, member in enumerate(members, start=1):
-            if (key, member.slug) in borrowed:
-                continue
-            member.order = index
+        for placement in tutorial.placements:
+            groups.setdefault((placement.course, placement.series), []).append(tutorial)
+    for (course, series), members in groups.items():
+        def position(member: Tutorial) -> int:
+            for placement in member.placements:
+                if placement.course == course and placement.series == series:
+                    return placement.position
+            return 0
+        members.sort(key=position)
     return groups
 
 
-def module_titles(
+def courses_present(
     groups: dict[tuple[str, str], list[Tutorial]],
-    retired: dict[str, list[Tutorial]] | None = None,
-) -> dict[str, str]:
-    """What each module is called: the `module_title` its own tutorials
-    carry, or failing that the title in MODULE_INFO. The second is what
-    names a module that owns no tutorial at all — one whose series only
-    list tutorials borrowed from elsewhere (order_files()) — since there
-    is no frontmatter of its own to read it from."""
-    names: dict[str, str] = {}
-    for members in list(groups.values()) + list((retired or {}).values()):
-        for member in members:
-            if member.meta.get("module_title"):
-                names.setdefault(member.module, member.module_title)
-    for module, info in MODULE_INFO.items():
-        if isinstance(info.get("title"), str):
-            names.setdefault(module, str(info["title"]))
-    return names
+    *more: dict[str, list[Tutorial]],
+) -> list[str]:
+    """Every course with something to show, in courses/index.yaml order."""
+    everywhere = {course for course, _ in groups}
+    for mapping in more:
+        everywhere |= set(mapping)
+    return [course for course in courses() if course in everywhere]
 
 
 def link_between(here: Tutorial, there: Tutorial) -> str:
@@ -1780,17 +1954,17 @@ def crumb_trail_html(
     members: list[Tutorial],
     up: str,
     practice: Tutorial | None = None,
-    registry: dict[tuple[str, str], Tutorial] | None = None,
+    registry: dict[str, Tutorial] | None = None,
     also: list[Tutorial] | None = None,
 ) -> str:
     """Where this page sits — all tutorials, then this tutorial's own
-    module, then its series, then the page itself, opening onto its own
+    course, then its series, then the page itself, opening onto its own
     sections — as stacked, independently collapsible levels rather than
     one line of plain text. Each level is a native `<details>`, the same
     reasoning `nav_search_html()` already gives for its own popover: the
     caret and the expand/collapse behaviour need no JavaScript at all.
 
-    `groups` is `series_of(tutorials)` — already keyed by (module, series)
+    `groups` is `series_of(tutorials)` — already keyed by (course, series)
     with everything this needs already grouped — so a sibling list at any
     level is just filtering or indexing into it, not a second pass over
     the site. `practice`, `registry` and `also` are what `write()` already
@@ -1798,39 +1972,39 @@ def crumb_trail_html(
     at the end of its own rung, since the problems are part of it), and
     the way back from a page of problems to the tutorial it belongs to
     (in whose series rung this page then sits, one level under it).
+
+    The course and series rungs are the default course's — the first that
+    lists this page. A page on more than one course says so on the nav
+    (`data-courses`), and the runtime redraws these two rungs for the
+    course the reader is following (tutorial-runtime.js, drawCourseChrome).
+    A page no course lists has only the first rung and its own.
     """
     if tutorial.is_practice and tutorial.practice_for and registry:
-        owner = registry.get((tutorial.module, tutorial.practice_for))
+        owner = registry.get(tutorial.practice_for)
         if owner is not None:
-            members = groups.get((owner.module, owner.series), members)
+            members = groups.get((owner.course, owner.series), members)
     else:
         owner = None
-    module_names = module_titles(groups)
+    catalog = courses()
+    course = catalog.get(tutorial.course)
 
-    order = module_order()
-    present_modules = {m for m, s in groups}
-    modules_in_order = [m for m in order if m in present_modules] + sorted(
-        present_modules - set(order)
-    )
     # Plain divs with list/listitem roles, not <ul>/<li> — the same choice
     # report_doors_links() already made and explains why: this markup
     # reaches every tutorial page, and a real <li> here silently inflates
     # any test elsewhere that counts a page's own list items.
-    modules_items = "".join(
-        f'<div role="listitem"><a href="{up}{html.escape(m, quote=True)}.html">'
-        f"{html.escape(module_names.get(m, m))}</a></div>"
-        for m in modules_in_order
+    courses_items = "".join(
+        f'<div role="listitem"><a href="{up}{html.escape(c, quote=True)}.html">'
+        f"{html.escape(catalog[c].title)}</a></div>"
+        for c in courses_present(groups)
     )
 
-    titles = series_titles()
-    present_series = {s for m, s in groups if m == tutorial.module}
-    fixed = [s for s in module_series_order(tutorial.module) if s in present_series]
-    series_in_order = fixed + sorted(present_series - set(fixed))
-    series_items = "".join(
-        f'<div role="listitem"><a href="{link_between(tutorial, groups[(tutorial.module, s)][0])}">'
-        f"{html.escape(titles.get((tutorial.module, s), s))}</a></div>"
-        for s in series_in_order
-    )
+    series_items = ""
+    if course is not None:
+        series_items = "".join(
+            f'<div role="listitem"><a href="{link_between(tutorial, groups[(course.id, key)][0])}">'
+            f"{html.escape(course.series_title(key))}</a></div>"
+            for key in course.keys if (course.id, key) in groups
+        )
 
     # The page's own line in the series list is the rung that opens onto its
     # sections and its practice — the title itself carries the caret, so
@@ -1887,24 +2061,37 @@ def crumb_trail_html(
             tutorial_items.append(f'<div role="listitem">{link}</div>')
 
     # Only the series level opens by default, showing exactly where this
-    # page sits. All tutorials and the module start collapsed: every level
+    # page sits. All tutorials and the course start collapsed: every level
     # open at once made the tree tall enough to push the stack below it off
     # the bottom of a shorter screen.
-    return (
-        '<nav class="dl-crumbtrail" aria-label="Where this page sits">'
+    on_courses = html.escape(" ".join(tutorial.courses), quote=True)
+    levels = [
         '<details class="dl-crumb-level">'
         "<summary>All tutorials</summary>"
-        f'<div role="list">{modules_items}</div>'
+        f'<div role="list">{courses_items}</div>'
         "</details>"
-        '<details class="dl-crumb-level dl-crumb-level-2">'
-        f"<summary>{html.escape(module_names.get(tutorial.module, tutorial.module))}</summary>"
-        f'<div role="list">{series_items}</div>'
-        "</details>"
-        '<details class="dl-crumb-level dl-crumb-level-3" open>'
-        f"<summary>{html.escape(titles.get((tutorial.module, tutorial.series), tutorial.series))}</summary>"
-        f'<div role="list">{"".join(tutorial_items)}</div>'
-        "</details>"
-        "</nav>"
+    ]
+    if course is not None:
+        levels.append(
+            '<details class="dl-crumb-level dl-crumb-level-2">'
+            f"<summary>{html.escape(course.title)}</summary>"
+            f'<div role="list">{series_items}</div>'
+            "</details>"
+        )
+    if course is not None and tutorial.series:
+        levels.append(
+            '<details class="dl-crumb-level dl-crumb-level-3" open>'
+            f"<summary>{html.escape(course.series_title(tutorial.series))}</summary>"
+            f'<div role="list">{"".join(tutorial_items)}</div>'
+            "</details>"
+        )
+    else:
+        # No series to open onto: the page's own rung stands on its own.
+        levels.append(f'<div role="list">{"".join(tutorial_items)}</div>')
+    return (
+        f'<nav class="dl-crumbtrail" aria-label="Where this page sits" data-courses="{on_courses}">'
+        + "".join(levels)
+        + "</nav>"
     )
 
 
@@ -1916,7 +2103,7 @@ def glossary_path(tutorial: Tutorial) -> Path:
     markdown, in the tutorial's folder.
 
     Derived from the source file's own location rather than rebuilt from
-    (module, slug), which is what makes it right for every version of a
+    the id, which is what makes it right for every version of a
     tutorial at once: each release sits in the same folder, so each finds the
     one glossary. What a tutorial teaches does not change release to release
     the way its prose might, and one file per tutorial is what says so.
@@ -1943,78 +2130,37 @@ def own_glossary(tutorial: Tutorial) -> list[dict]:
     return entries
 
 
-SERIES_ORDER_FILE = "series.yaml"
-
-
-def module_series_order(module: str) -> list[str]:
-    """The order this module's series accumulate a reference in, from
-    `tutorials/<module>/series.yaml`.
-
-    Optional, and deliberately so: a series with no fixed position in its
-    module — `reflections-and-review`, revisited whenever a reader wants
-    rather than sitting at one point in the course — simply is not listed,
-    and keeps series-only accumulation. A module with no file at all
-    inherits nothing across series, the same as before this existed.
-    """
-    path = TUTORIALS / module / SERIES_ORDER_FILE
-    if not path.is_file():
-        return []
-    data = yaml.safe_load(path.read_text()) or {}
-    listed = data.get("order") or []
-    if not isinstance(listed, list) or not all(isinstance(s, str) for s in listed):
-        fail(path, "a series order file needs `order:` as a list of series names")
-    return listed
-
-
-def check_series_order(groups: dict[tuple[str, str], list[Tutorial]]) -> None:
-    """A module's series.yaml, if it has one, may only list series that
-    actually exist in that module — a typo here would otherwise silently
-    exclude a series from cross-series accumulation, with nothing else ever
-    saying why a reference was missing content."""
-    modules = {module for module, _ in groups}
-    for module in modules:
-        real = {series for m, series in groups if m == module}
-        for series in module_series_order(module):
-            if series not in real:
-                fail(
-                    TUTORIALS / module / SERIES_ORDER_FILE,
-                    f"lists {series!r}, which is not a series in {module}",
-                )
-
-
 def series_chain(
-    module: str, series: str, groups: dict[tuple[str, str], list[Tutorial]]
+    course: str, series: str, groups: dict[tuple[str, str], list[Tutorial]]
 ) -> list[Tutorial]:
-    """Every tutorial one series' reference accumulates from: every
-    earlier series `series.yaml` lists before this one, each in its own
-    `order.yaml` order, followed by this series' own members in theirs. A
-    series `series.yaml` does not mention — or a module with no
-    `series.yaml` at all — accumulates only from itself, unchanged from
-    how this feature originally shipped.
+    """Every tutorial one series' reference accumulates from: every earlier
+    series of the course, in the course file's order, followed by this
+    series' own members in theirs. A reference accumulates through the
+    course the reader is following, and a series the course file leaves
+    unlisted is simply not on that course — so "Reflections and review",
+    listed last, inherits everything before it, and a reader reaches it
+    whenever they like.
     """
-    own = groups.get((module, series), [])
-    listed = module_series_order(module)
-    if series not in listed:
-        return own
+    found = courses().get(course)
+    if found is None:
+        return groups.get((course, series), [])
     chain: list[Tutorial] = []
-    for earlier in listed:
-        if earlier == series:
+    for key in found.keys:
+        chain.extend(groups.get((course, key), []))
+        if key == series:
             break
-        chain.extend(groups.get((module, earlier), []))
-    chain.extend(own)
     return chain
 
 
 def cumulative_glossary(
     tutorial: Tutorial,
-    registry: dict[tuple[str, str], Tutorial],
+    registry: dict[str, Tutorial],
     groups: dict[tuple[str, str], list[Tutorial]],
     reader_at: Tutorial | None = None,
 ) -> list[dict]:
     """Everything a reader has met by this point: this tutorial's own
-    glossary, everything earlier in its own series, and — where
-    `series.yaml` says this series follows another — everything from each
-    earlier series too (`series_chain()`). Whichever entry came first wins
+    glossary, everything earlier in its own series, and everything from
+    each earlier series of its course (`series_chain()`). Whichever entry came first wins
     on a term repeated later, so a definition never contradicts an earlier
     one on the same page.
 
@@ -2033,7 +2179,7 @@ def cumulative_glossary(
         seen: set[tuple[str, str]] = set()
         found: list[dict] = []
         for slug in targets:
-            target = registry.get((tutorial.module, slug))
+            target = registry.get(slug)
             if target is None:
                 continue
             for entry in cumulative_glossary(target, registry, groups, reader_at):
@@ -2044,7 +2190,7 @@ def cumulative_glossary(
                 found.append(entry)
         return found
 
-    chain = series_chain(tutorial.module, tutorial.series, groups)
+    chain = series_chain(tutorial.course, tutorial.series, groups)
     if tutorial not in chain:
         # Archived, same as nav_for()'s own "nowhere in the series it comes
         # before or after" — only its own entries, nothing inherited.
@@ -2153,7 +2299,7 @@ def download_section(tutorial: Tutorial) -> str:
     shares the shell — has no single tutorial to offer.
     """
     up = "../" * tutorial.depth
-    href = f"{up}download/{tutorial.module}/{tutorial.slug}.html"
+    href = f"{up}download/{tutorial.slug}.html"
     return (
         "<h3>This tutorial</h3>"
         f"{download_link_html(href, 'Download to keep')}"
@@ -2222,7 +2368,7 @@ def taught_where(tutorials: list[Tutorial]) -> dict[str, dict]:
             for code in claim.get("covers") or []:
                 where.setdefault(code, {
                     "title": tutorial.title,
-                    "href": f"tutorials/{tutorial.module}/{tutorial.slug}.html#{anchor}",
+                    "href": f"tutorials/{tutorial.slug}.html#{anchor}",
                 })
     return where
 
@@ -2582,7 +2728,7 @@ def arrow_between(place: dict, a: str, b: str, css: str, fan: int = 0) -> str:
 
 
 def progress_attrs(tutorial: Tutorial) -> str:
-    """`data-module`/`data-slug`/`data-cells` for a contents-page link, so
+    """`data-id`/`data-cells` for a contents-page link, so
     tutorial-runtime.js's progress indicator (planning/PROGRESS_INDICATORS.md)
     can read a reader's saved-progress record for it with no fetch. A
     prose-only tutorial has nothing to show progress for, so it gets no
@@ -2590,8 +2736,7 @@ def progress_attrs(tutorial: Tutorial) -> str:
     if not tutorial.cells:
         return ""
     return (
-        f' data-module="{html.escape(tutorial.module, quote=True)}"'
-        f' data-slug="{html.escape(tutorial.slug, quote=True)}"'
+        f' data-id="{html.escape(tutorial.slug, quote=True)}"'
         f' data-cells="{len(tutorial.cells)}"'
     )
 
@@ -2661,12 +2806,12 @@ def render_tutorials_list(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
     retired: dict[str, list[Tutorial]] | None = None,
-    practice: dict[tuple[str, str], Tutorial] | None = None,
+    practice: dict[str, Tutorial] | None = None,
     mixed: dict[str, list[Tutorial]] | None = None,
-    module_archives: dict[str, Path] | None = None,
+    course_archives: dict[str, Path] | None = None,
 ) -> str:
-    """"All tutorials": every module, every series, in order — the whole
-    course on one page, for a reader who wants to browse rather than
+    """"All tutorials": every course, every series, in order — the whole
+    site on one page, for a reader who wants to browse rather than
     search. Its own page (`write_all_tutorials_page()`) rather than part
     of the front page, so a first-time visitor meets the front page's own
     pitch first and this only when they choose "All tutorials" or come
@@ -2674,18 +2819,16 @@ def render_tutorials_list(
 
     `archives` maps a series to its zip of downloadable copies, when the build
     wrote them. Without it the page simply carries no whole-series link, which
-    is what a quick local build wants. `module_archives` is the same idea one
-    level up: a module's every series and every practice page, combined.
+    is what a quick local build wants. `course_archives` is the same idea one
+    level up: a course's every series and every practice page, combined.
     """
     archives = archives or {}
     retired = retired or {}
     practice = practice or {}
     mixed = mixed or {}
-    module_archives = module_archives or {}
+    course_archives = course_archives or {}
     if not groups:
         return "<p>No tutorials have been written yet.</p>"
-
-    names = module_titles(groups, retired)
 
     out = [
         "<h1>All tutorials</h1>",
@@ -2728,68 +2871,56 @@ def render_tutorials_list(
         "</div>",
     ]
 
-    titles = series_titles()
-    listed = module_order()
-    everywhere = {module for module, _ in groups} | set(retired)
-    # Listed modules in the order given, then anything else alphabetically, so
-    # adding a module lands it at the end rather than breaking the page.
-    ordered = [m for m in listed if m in everywhere] + sorted(everywhere - set(listed))
-    for module in ordered:
-        out.extend(render_module_body(
-            module, names, groups, archives, retired, practice, mixed,
-            module_archives, titles,
+    catalog = courses()
+    for course in courses_present(groups, retired, mixed):
+        out.extend(render_course_body(
+            catalog[course], groups, archives, retired, practice, mixed, course_archives,
         ))
     return "\n".join(out)
 
 
-def render_module_body(
-    module: str,
-    names: dict[str, str],
+def render_course_body(
+    course: Course,
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path],
     retired: dict[str, list[Tutorial]],
-    practice: dict[tuple[str, str], Tutorial],
+    practice: dict[str, Tutorial],
     mixed: dict[str, list[Tutorial]],
-    module_archives: dict[str, Path],
-    titles: dict[tuple[str, str], str],
+    course_archives: dict[str, Path],
     heading: bool = True,
 ) -> list[str]:
-    """One module's own content: its heading, its whole-module download
+    """One course's own content: its heading, its whole-course download
     offer, every series in it (each with its own download offer and its
     tutorial/practice list), its mixed problems and its archive.
 
-    Shared by `render_tutorials_list()`, where every module appears one after
-    another on the all-tutorials page, and `write_module_page()`, where a module gets a
-    page of its own — `heading=False` there, since the page's own `<h1>`
-    already names it and repeating it as an `<h2>` right underneath would
-    say the same thing twice.
+    Shared by `render_tutorials_list()`, where every course appears one after
+    another on the all-tutorials page, and `write_course_page()`, where a
+    course gets a page of its own — `heading=False` there, since the page's
+    own `<h1>` already names it and repeating it as an `<h2>` right
+    underneath would say the same thing twice.
     """
     out: list[str] = []
     if heading:
-        out.append(
-            f'<h2 class="dl-module-heading">{html.escape(names.get(module, module))}</h2>')
-    module_archive = module_archives.get(module)
-    if module_archive is not None:
+        out.append(f'<h2 class="dl-module-heading">{html.escape(course.title)}</h2>')
+    course_archive = course_archives.get(course.id)
+    if course_archive is not None:
         total = sum(
             len(zip_sequence(members, practice))
-            for (owner, series), members in groups.items() if owner == module
-        ) + len(mixed.get(module, []))
+            for (owner, _), members in groups.items() if owner == course.id
+        ) + len(mixed.get(course.id, []))
         out.append(
             '<p class="dl-series">' + download_link_html(
-                f"download/{module_archive.name}",
+                f"download/{course_archive.name}",
                 f"Download every tutorial and practice page in this module "
-                f"({total} files, {readable_size(module_archive)})",
+                f"({total} files, {readable_size(course_archive)})",
             ) + "</p>"
         )
-    present = {series for owner, series in groups if owner == module}
-    fixed = [s for s in module_series_order(module) if s in present]
-    series_order = fixed + sorted(present - set(fixed))
-    for series in series_order:
-        members = groups[(module, series)]
-        if len({s for m, s in groups if m == module}) > 1:
-            name = titles.get((module, series), series)
-            out.append(f'<h3>{html.escape(name)}</h3>')
-        archive = archives.get((module, series))
+    present = [key for key in course.keys if (course.id, key) in groups]
+    for key in present:
+        members = groups[(course.id, key)]
+        if len(present) > 1:
+            out.append(f'<h3>{html.escape(course.series_title(key))}</h3>')
+        archive = archives.get((course.id, key))
         if archive is not None:
             sequence = zip_sequence(members, practice)
             count = len(sequence)
@@ -2804,7 +2935,7 @@ def render_module_body(
         out.append('<ol class="dl-contents">')
         for member in members:
             href = member.out_path.relative_to(OUT).as_posix()
-            also = practice.get((member.module, member.slug))
+            also = practice.get(member.slug)
             extra = ""
             if also is not None:
                 where = also.out_path.relative_to(OUT).as_posix()
@@ -2816,8 +2947,8 @@ def render_module_body(
                 f"{html.escape(member.title)}</a>{extra}</li>"
             )
         out.append("</ol>")
-    for member in mixed.get(module, []):
-        if member is mixed[module][0]:
+    for member in mixed.get(course.id, []):
+        if member is mixed[course.id][0]:
             out.append('<h3 class="dl-mixed-head">Mixed problems</h3>')
             out.append(
                 '<p class="dl-mixed-note">Problems that draw on several '
@@ -2830,13 +2961,13 @@ def render_module_body(
             f'<li><a href="{href}"{progress_attrs(member)}>'
             f"{html.escape(member.title)}</a></li>"
         )
-        if member is mixed[module][-1]:
+        if member is mixed[course.id][-1]:
             out.append("</ul>")
 
     # Last, and marked, because it is not part of the course any more — but
     # present, because a student who worked in one has to be able to find it.
-    for member in retired.get(module, []):
-        if member is retired[module][0]:
+    for member in retired.get(course.id, []):
+        if member is retired[course.id][0]:
             out.append('<h3 class="dl-archive-head">Archive</h3>')
             out.append(
                 '<p class="dl-archive-note">No longer part of the course. '
@@ -2846,7 +2977,7 @@ def render_module_body(
             out.append('<ul class="dl-contents dl-archive">')
         href = member.out_path.relative_to(OUT).as_posix()
         out.append(f'<li><a href="{href}">{html.escape(member.title)}</a></li>')
-        if member is retired[module][-1]:
+        if member is retired[course.id][-1]:
             out.append("</ul>")
     return out
 
@@ -2919,32 +3050,21 @@ def check_datasets(tutorial: Tutorial) -> list[dict]:
     return [dataset_attribution(tutorial, name) for name in tutorial.datasets]
 
 
-def resolve_links(tutorial: Tutorial, registry: dict[tuple[str, str], Tutorial]) -> str:
-    """Rewrite tutorial:slug#anchor into a real relative href, or fail.
+def resolve_links(tutorial: Tutorial, registry: dict[str, Tutorial]) -> str:
+    """Rewrite tutorial:id#anchor into a real relative href, or fail.
 
-    A slug is looked for in this tutorial's own module first, which is what
-    makes a cross-module name clash harmless: `tutorial:first-steps` in a
-    maths tutorial means the maths one. Outside the module it still resolves,
-    but only when exactly one other module has that slug — anything else is
-    ambiguous and stops the build rather than guessing.
+    An id is site-wide (id_of()), so a link names one page and nothing has
+    to be guessed: `tutorial:first-steps` is the same tutorial from any
+    course. A link to an id this build has no page for stops the build
+    rather than shipping a page that looks finished to everyone except the
+    student who follows it.
     """
 
     def one(match: re.Match) -> str:
         slug, anchor = match.group("slug"), match.group("anchor")
-        target = registry.get((tutorial.module, slug))
+        target = registry.get(slug)
         if target is None:
-            elsewhere = [t for (module, s), t in registry.items() if s == slug]
-            if len(elsewhere) == 1:
-                target = elsewhere[0]
-            elif len(elsewhere) > 1:
-                modules = ", ".join(sorted(t.module for t in elsewhere))
-                fail(
-                    tutorial.path,
-                    f"link to {slug!r} is ambiguous — it exists in {modules}, "
-                    "and not in this module",
-                )
-        if target is None:
-            known = ", ".join(sorted(s for _, s in registry)) or "none"
+            known = ", ".join(sorted(registry)) or "none"
             fail(tutorial.path, f"link to unknown tutorial {slug!r} (built: {known})")
         if anchor and anchor not in target.anchors:
             fail(
@@ -3062,11 +3182,11 @@ def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
     An author writes the plain file name, the same one they see beside the
     markdown, and it resolves from whichever URL the page ends up at. That
     matters because the two are not the same shape: the current release is
-    served at `tutorials/<module>/<slug>.html`, one level *above* its own
-    folder, while a frozen release sits at
-    `tutorials/<module>/<slug>/v<version>.html`, inside it. So the reference
-    a reader's browser needs differs by version, and neither is what the
-    author typed.
+    served at `tutorials/<id>.html`, one level *above* its own folder (a
+    practice page, `tutorials/<id>-practice.html`, beside it), while a
+    frozen release sits at `tutorials/<id>/v<version>.html`, inside it. So
+    the reference a reader's browser needs differs by version, and neither
+    is what the author typed.
 
     A missing file stops the build for the same reason a dead
     `tutorial:` link does: the alternative is a page that looks finished to
@@ -3075,7 +3195,7 @@ def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
     folder = tutorial.path.parent
     # Where the page will sit, relative to the folder its assets are copied
     # into — the same relpath calculation resolve_links() uses for pages.
-    prefix = "" if not tutorial.is_default else f"{tutorial.slug}/"
+    prefix = "" if not tutorial.is_default else f"{tutorial.folder}/"
 
     def src(match: re.Match) -> str:
         url = match.group("url")
@@ -3120,7 +3240,7 @@ def copy_tutorial_assets(tutorial: Tutorial) -> None:
     assets = tutorial_assets(tutorial)
     if not assets:
         return
-    target = OUT / "tutorials" / tutorial.module / tutorial.slug
+    target = OUT / "tutorials" / tutorial.folder
     target.mkdir(parents=True, exist_ok=True)
     for asset in assets:
         shutil.copy2(asset, target / asset.name)
@@ -3142,9 +3262,8 @@ def load(path: Path) -> Tutorial:
     converted, toc = to_html(stripped)
     converted = convert_fold_bodies(converted)
     converted = place_hints(converted, hints, maths)
-    page = f"{meta.get('module', '')}/{meta.get('slug', '')}"
     body_html = place_blocks(converted, cells, blocks, maths, site_editors,
-                              page, str(meta.get("version", "")))
+                              id_of(path), str(meta.get("version", "")))
     body_html, notes = extract_notes(body_html, path)
     anchors = (
         set(ID_RE.findall(body_html))
@@ -3288,7 +3407,7 @@ def canonical_link(tutorial: Tutorial, default: Tutorial | None) -> str:
 
 
 def practice_link(tutorial: Tutorial, practice: Tutorial | None,
-                  registry: dict[tuple[str, str], Tutorial] | None = None,
+                  registry: dict[str, Tutorial] | None = None,
                   also: list[Tutorial] | None = None) -> str:
     """The link between a tutorial and its problems, in both directions.
 
@@ -3304,7 +3423,7 @@ def practice_link(tutorial: Tutorial, practice: Tutorial | None,
     if tutorial.practice_across:
         links = []
         for slug in tutorial.practice_across:
-            owner = (registry or {}).get((tutorial.module, slug))
+            owner = (registry or {}).get(slug)
             if owner is None:
                 continue
             where = os.path.relpath(owner.out_path, tutorial.out_path.parent)
@@ -3318,7 +3437,7 @@ def practice_link(tutorial: Tutorial, practice: Tutorial | None,
             "cover, and every answer is on this page behind a fold.</p>"
         )
     if tutorial.practice_for:
-        owner = (registry or {}).get((tutorial.module, tutorial.practice_for))
+        owner = (registry or {}).get(tutorial.practice_for)
         if owner is None:
             return ""
         where = os.path.relpath(owner.out_path, tutorial.out_path.parent)
@@ -3342,9 +3461,9 @@ def practice_link(tutorial: Tutorial, practice: Tutorial | None,
     for page in also:
         where = os.path.relpath(page.out_path, tutorial.out_path.parent)
         others = [
-            registry[(page.module, slug)].title
+            registry[slug].title
             for slug in page.practice_across
-            if slug != tutorial.slug and (page.module, slug) in (registry or {})
+            if slug != tutorial.slug and slug in (registry or {})
         ]
         with_what = ""
         if others:
@@ -3368,7 +3487,7 @@ FEEDBACK_CONFIG_FILE = "feedback.yaml"
 def feedback_enabled() -> bool:
     """Whether the "report something about this page" link appears anywhere
     on the site, read fresh from `planning/feedback.yaml` on every call —
-    the same reasoning as `module_order()`: a constant computed at import
+    the same reasoning as `courses()`: a constant computed at import
     time would not see a test's temporary ROOT.
 
     Missing the file, or the file missing `enabled:`, both mean on. The
@@ -3481,10 +3600,33 @@ def site_footer(page: str = "", version: str = "") -> str:
     return footer
 
 
+def also_part_of(tutorial: Tutorial, body_html: str, up: str) -> str:
+    """The page body, with one line under its heading when more than one
+    course lists the page: which other courses it is part of, each a link
+    to that course's page. Nothing at all on a page with one course or
+    none, which is most pages — the line is there for the reader who came
+    from the other course and wonders whether they are in the right place.
+    """
+    others = tutorial.courses[1:]
+    if not others:
+        return body_html
+    links = [
+        f'<a href="{up}{html.escape(c, quote=True)}.html">{html.escape(course_title(c))}</a>'
+        for c in others
+    ]
+    named = links[0] if len(links) == 1 else ", ".join(links[:-1]) + " and " + links[-1]
+    line = f'<p class="dl-also-part-of">This page is also part of {named}.</p>'
+    end = body_html.find("</h1>")
+    if end == -1:
+        return line + body_html
+    end += len("</h1>")
+    return body_html[:end] + line + body_html[end:]
+
+
 def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           default: Tutorial | None = None, family: list[Tutorial] | None = None,
           practice: Tutorial | None = None,
-          registry: dict[tuple[str, str], Tutorial] | None = None,
+          registry: dict[str, Tutorial] | None = None,
           also: list[Tutorial] | None = None,
           glossary: list[dict] | None = None,
           notes: list[dict] | None = None,
@@ -3502,8 +3644,15 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     """
     up = "../" * tutorial.depth
     manifest: dict[str, object] = {
+        # `id` is the page's key for everything the runtime saves; `slug`
+        # is the same string under the name the runtime's older readers
+        # used. `courses` is every course that lists the page, default
+        # first, so the runtime can draw the chrome for whichever one the
+        # reader is following; `legacy` (legacy_ids()) is the key the
+        # page's saved work lived under before courses/ existed.
+        "id": tutorial.slug,
         "slug": tutorial.slug,
-        "module": tutorial.module,
+        "courses": tutorial.courses,
         "version": tutorial.meta["version"],
         "assetBase": f"{up}assets/",
         # The runtime fetches these itself, so they need their own versions —
@@ -3518,6 +3667,9 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
             for c in tutorial.cells
         ],
     }
+    legacy = legacy_ids().get(tutorial.slug)
+    if legacy:
+        manifest["legacy"] = legacy
     versions = version_manifest(tutorial, family or [tutorial])
     if versions:
         manifest["versions"] = versions
@@ -3562,9 +3714,9 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{CANONICAL}}": canonical_link(tutorial, default),
         "{{VERSION}}": html.escape(str(tutorial.meta["version"]), quote=True),
         "{{SLUG}}": html.escape(tutorial.slug, quote=True),
-        "{{MODULE}}": html.escape(tutorial.module, quote=True),
+        "{{MODULE}}": html.escape(tutorial.course, quote=True),
         "{{YEAR}}": html.escape(str(tutorial.meta["year"]), quote=True),
-        "{{SERIES}}": html.escape(str(tutorial.meta["series"]), quote=True),
+        "{{SERIES}}": html.escape(tutorial.series, quote=True),
         "{{ASSET_BASE}}": f"{up}assets/",
         "{{STYLE_URL}}": versioned(f"{up}assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned(f"{up}assets/", "favicon.svg"),
@@ -3577,7 +3729,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{CRUMBS}}": (
             crumb_trail_html(tutorial, groups, members, up, practice, registry, also)
             if groups is not None
-            else html.escape(f"{tutorial.module_title} · {tutorial.meta['year']}")
+            else html.escape(f"{course_title(tutorial.course) or 'dewlab'} · {tutorial.meta['year']}")
         ),
         "{{NAV_PREV_NEXT}}": nav,
         "{{PAGE_SCRIPT}}": "",
@@ -3586,14 +3738,14 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
             page_notice(tutorial, default)
             + (practice_link(tutorial, practice, registry, also)
                if tutorial.is_practice else "")
-            + body_html
+            + also_part_of(tutorial, body_html, up)
             + (practice_link(tutorial, practice, registry, also)
                if not tutorial.is_practice else "")
         ),
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(f"{tutorial.module}/{tutorial.slug}", tutorial.meta["version"]),
-        "{{REPORT_DOORS}}": report_doors_panel_html(f"{tutorial.module}/{tutorial.slug}", tutorial.meta["version"]),
+        "{{FOOTER}}": site_footer(tutorial.slug, tutorial.meta["version"]),
+        "{{REPORT_DOORS}}": report_doors_panel_html(tutorial.slug, tutorial.meta["version"]),
     }
     page = shell
     for token, value in tokens.items():
@@ -3766,7 +3918,7 @@ def write_standalone(tutorial: Tutorial, page: str) -> Path:
             file=sys.stderr,
         )
 
-    target = OUT / "download" / tutorial.module / f"{tutorial.slug}.html"
+    target = OUT / "download" / f"{tutorial.slug}.html"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(standalone_html(tutorial, page))
     return target
@@ -3775,14 +3927,14 @@ def write_standalone(tutorial: Tutorial, page: str) -> Path:
 SERIES_SLUG_RE = re.compile(r"[^a-z0-9]+")
 
 
-def series_slug(module: str, series: str) -> str:
-    """A filename for a whole series, out of names that were written for people."""
-    slug = SERIES_SLUG_RE.sub("-", f"{module}-{series}".lower()).strip("-")
+def series_slug(course: str, series: str) -> str:
+    """A filename for a whole series: the course id and the series key."""
+    slug = SERIES_SLUG_RE.sub("-", f"{course}-{series}".lower()).strip("-")
     return slug or "tutorials"
 
 
 def zip_sequence(
-    members: list[Tutorial], practice: dict[tuple[str, str], Tutorial]
+    members: list[Tutorial], practice: dict[str, Tutorial]
 ) -> list[Tutorial]:
     """Reading order, with each tutorial's own practice page right after it.
 
@@ -3795,7 +3947,7 @@ def zip_sequence(
     sequence: list[Tutorial] = []
     for tutorial in members:
         sequence.append(tutorial)
-        page = practice.get((tutorial.module, tutorial.slug))
+        page = practice.get(tutorial.slug)
         if page is not None:
             sequence.append(page)
     return sequence
@@ -3883,19 +4035,16 @@ def write_zip_entries(
     entries = []
     for offset, member in enumerate(sequence):
         name = zip_entry_name(start + offset, width, member.slug)
-        archive.write(
-            OUT / "download" / member.module / f"{member.slug}.html",
-            f"{folder}/{name}",
-        )
+        archive.write(OUT / "download" / f"{member.slug}.html", f"{folder}/{name}")
         entries.append((name, member))
     return entries
 
 
 def write_series_zip(
-    module: str,
+    course: str,
     series: str,
     members: list[Tutorial],
-    practice: dict[tuple[str, str], Tutorial],
+    practice: dict[str, Tutorial],
     series_title: str,
 ) -> Path:
     """Every downloadable copy in one series, gathered into one archive,
@@ -3907,7 +4056,7 @@ def write_series_zip(
     archive holds the very files the download links point at, so there is no
     second copy to keep in step with anything.
     """
-    folder = series_slug(module, series)
+    folder = series_slug(course, series)
     target = OUT / "download" / f"{folder}.zip"
     target.parent.mkdir(parents=True, exist_ok=True)
     sequence = zip_sequence(members, practice)
@@ -3920,23 +4069,23 @@ def write_series_zip(
     return target
 
 
-def write_module_zip(
-    module: str,
-    module_title: str,
+def write_course_zip(
+    course: str,
+    title: str,
     series_in_order: list[tuple[str, str, list[Tutorial]]],
-    practice: dict[tuple[str, str], Tutorial],
+    practice: dict[str, Tutorial],
     mixed_pages: list[Tutorial],
 ) -> Path:
-    """Every series in a module, and its mixed problem sets, in one archive —
-    the whole module a room or a memory stick wants, not one series of it.
+    """Every series in a course, and its mixed problem sets, in one archive —
+    the whole course a room or a memory stick wants, not one series of it.
 
     `series_in_order` is `(series, series_title, members)`, in the same order
-    the contents page already lists that module's series in. Numbering runs
+    the contents page already lists that course's series in. Numbering runs
     once across the whole archive, not restarting per series, so the folder
     reads as one sequence top to bottom rather than several that happen to
     share a listing.
     """
-    target = OUT / "download" / f"{module}-all.zip"
+    target = OUT / "download" / f"{course}-all.zip"
     target.parent.mkdir(parents=True, exist_ok=True)
     show_headings = len(series_in_order) > 1
 
@@ -3951,14 +4100,14 @@ def write_module_zip(
         sections: list[tuple[str | None, list[tuple[str, Tutorial]]]] = []
         next_index = 1
         for series_title, sequence in series_sequences:
-            entries = write_zip_entries(archive, module, sequence, width, start=next_index)
+            entries = write_zip_entries(archive, course, sequence, width, start=next_index)
             next_index += len(sequence)
             sections.append((series_title if show_headings else None, entries))
         if mixed_pages:
-            entries = write_zip_entries(archive, module, mixed_pages, width, start=next_index)
+            entries = write_zip_entries(archive, course, mixed_pages, width, start=next_index)
             sections.append(("Mixed problems", entries))
         archive.writestr(
-            f"{module}/0-start-here.html", start_here_html(module_title, sections)
+            f"{course}/0-start-here.html", start_here_html(title, sections)
         )
     return target
 
@@ -4180,12 +4329,12 @@ def write_index(shell: str) -> Path:
 
     Its content lives in `pages/home.md`, read through `read_page()` the
     same way `write_about_page()` reads `pages/about.md` — a `[[search-box]]`
-    marker stands in for the live search widget, and each module tile is a
-    ```card fence (see `parse_card()`/`render_card()`). Static in the sense
-    that matters: it needs no tutorial data at build time, since it names its
-    own modules by hand and points each one at that module's own page rather
-    than listing tutorials itself. `write_all_tutorials_page()` is the page
-    that does.
+    marker stands in for the live search widget, `[[course-cards]]` for one
+    tile per course (`render_course_cards()`, from the course files), and
+    any other tile is a ```card fence (see `parse_card()`/`render_card()`).
+    It needs no tutorial data at build time: each course tile points at
+    that course's own page rather than listing tutorials itself.
+    `write_all_tutorials_page()` is the page that does.
     """
     meta, body = read_page("home")
     manifest = {"slug": "index", "version": 1, "assetBase": "assets/",
@@ -4237,11 +4386,11 @@ def write_all_tutorials_page(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
     retired: dict[str, list[Tutorial]] | None = None,
-    practice: dict[tuple[str, str], Tutorial] | None = None,
+    practice: dict[str, Tutorial] | None = None,
     mixed: dict[str, list[Tutorial]] | None = None,
-    module_archives: dict[str, Path] | None = None,
+    course_archives: dict[str, Path] | None = None,
 ) -> Path:
-    """Every module, every series, every tutorial — the page "All
+    """Every course, every series, every tutorial — the page "All
     tutorials" on the front page and every other page's own "All
     tutorials" link point at.
     """
@@ -4273,7 +4422,7 @@ def write_all_tutorials_page(
         # This page is a contents list. It does not need one of its own.
         # Nor a series to navigate — it is the thing every series links back to.
         "{{BODY}}": render_tutorials_list(
-            groups, archives, retired, practice, mixed, module_archives),
+            groups, archives, retired, practice, mixed, course_archives),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("all-tutorials", "1"),
         "{{REPORT_DOORS}}": report_doors_panel_html("all-tutorials", "1"),
@@ -4291,103 +4440,69 @@ def write_all_tutorials_page(
     return target
 
 
-MODULE_INFO: dict[str, dict[str, object]] = {
-    "mit-pdp-maths-prog-integration": {
-        "code": "5N2927 + 5N18396 · QQI Level 5",
-        "description": [
-            "This is dewlab's flagship course. It teaches Programming and "
-            "Design Principles (5N2927) and Mathematics for Information "
-            "Technology (5N18396) together, moving between the two "
-            "subjects in the order the class needs them.",
-            "Five series carry it: programming foundations, discrete "
-            "maths and statistics, algebra and functions, geometry and "
-            "trigonometry, and a capstone project that draws on all "
-            "four.",
-        ],
-    },
-    "computational-methods": {
-        "code": "5N0554 · QQI Level 5",
-        "description": [
-            "This module is Computational Methods and Problem Solving "
-            "(5N0554). We work through matrices, simulation, algorithms "
-            "and debugging, in Python.",
-        ],
-    },
-    "fundamentals-of-oop": {
-        "code": "5N0541 · QQI Level 5",
-        "description": [
-            "This module is Fundamentals of Object-Oriented Programming "
-            "(5N0541). We build classes, objects and inheritance, from "
-            "first principles.",
-        ],
-    },
-    # Owns no tutorial of its own: its series list the programming half of
-    # the integrated module (order_files() explains the `module/slug`
-    # form), so its title has to live here rather than in frontmatter.
-    "programming-design-principles": {
-        "title": "Programming and Design Principles",
-        "code": "5N2927 · QQI Level 5",
-        "description": [
-            "This module is Programming and Design Principles (5N2927) on "
-            "its own, without the maths. The tutorials are the same pages "
-            "the integrated course uses, in the same order, so a class "
-            "taking only this module can start here.",
-            "Two series carry it: programming foundations, from a first "
-            "cell to reusable tools, and working in a team, which is how "
-            "the module is assessed.",
-        ],
-    },
-}
+def render_course_cards() -> str:
+    """One front-page tile per course, in courses/index.yaml order, from
+    the course files: the title, the status badge, the QQI code, and the
+    `card:` text. What `pages/home.md` used to hand-write six times over,
+    now the `[[course-cards]]` generated block — so adding a course is a
+    course file and one line in the index, and the front page follows."""
+    return "".join(
+        render_card(PageCard(
+            url=f"{course.id}.html",
+            heading=course.title,
+            body_html=f"<p>{html.escape(course.card)}</p>" if course.card else "",
+            status=course.status,
+            meta=course.code or None,
+            wide=False,
+        ))
+        for course in courses().values()
+    )
 
 
-def write_module_page(
+def write_course_page(
     shell: str,
-    module: str,
+    course: Course,
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path],
     retired: dict[str, list[Tutorial]],
-    practice: dict[tuple[str, str], Tutorial],
+    practice: dict[str, Tutorial],
     mixed: dict[str, list[Tutorial]],
-    module_archives: dict[str, Path],
+    course_archives: dict[str, Path],
 ) -> Path:
-    """One module's own page: its description, its QQI code, and only its
-    own tutorials and practice pages — not the other modules' too.
+    """One course's own page: its description, its QQI code, and only its
+    own tutorials and practice pages — not the other courses' too.
 
-    A reader following a module button from the front page lands here
+    A reader following a course tile from the front page lands here
     rather than partway down the full contents list. Written at the site
     root, alongside `index.html`, so it can reuse every href
-    `render_module_body()` builds unchanged — those are relative to the
-    site root already, which is exactly where a module page also lives.
+    `render_course_body()` builds unchanged — those are relative to the
+    site root already, which is exactly where a course page also lives.
     """
-    names = module_titles(groups, retired)
-    title = names.get(module, module)
-    titles = series_titles()
-
-    info = MODULE_INFO.get(module, {})
     body = [
-        f"<h1>{html.escape(title)} "
-        '<span class="dl-module-card-badge" data-status="beta">Beta</span></h1>'
+        f"<h1>{html.escape(course.title)} "
+        f'<span class="dl-module-card-badge" data-status="{html.escape(course.status, quote=True)}">'
+        f"{html.escape(course.status.capitalize())}</span></h1>"
     ]
-    code = info.get("code")
-    if code:
-        body.append(f'<p class="dl-module-card-meta">{html.escape(str(code))}</p>')
-    for para in info.get("description", []):
-        body.append(f"<p>{para}</p>")
-    body.extend(render_module_body(
-        module, names, groups, archives, retired, practice, mixed,
-        module_archives, titles, heading=False,
+    if course.code:
+        body.append(f'<p class="dl-module-card-meta">{html.escape(course.code)}</p>')
+    for para in course.description:
+        body.append(f"<p>{html.escape(para)}</p>")
+    body.extend(render_course_body(
+        course, groups, archives, retired, practice, mixed, course_archives, heading=False,
     ))
 
-    manifest = {"slug": module, "version": 1, "assetBase": "assets/",
+    # `course` is what the runtime remembers: opening a tutorial from here
+    # is following this course (tutorial-runtime.js, initCourse()).
+    manifest = {"slug": course.id, "course": course.id, "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
     tokens = {
-        "{{TITLE}}": title,
+        "{{TITLE}}": html.escape(course.title),
         "{{VERSION}}": "1",
-        "{{SLUG}}": module,
+        "{{SLUG}}": html.escape(course.id, quote=True),
         "{{MODULE}}": "",
         "{{YEAR}}": "",
         "{{SERIES}}": "",
-        "{{CRUMBS}}": f'<span class="dl-crumbs">{html.escape(title)}</span>',
+        "{{CRUMBS}}": f'<span class="dl-crumbs">{html.escape(course.title)}</span>',
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
@@ -4403,19 +4518,154 @@ def write_module_page(
         "{{DOWNLOAD}}": "",
         "{{BODY}}": "\n".join(body),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer(module, "1"),
-        "{{REPORT_DOORS}}": report_doors_panel_html(module, "1"),
+        "{{FOOTER}}": site_footer(course.id, "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html(course.id, "1"),
     }
     page = shell
     for token, value in tokens.items():
         page = page.replace(token, value)
     if "{{" in page:
         leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(f"shell template has tokens the module page does not fill: {leftover}")
+        raise BuildError(f"shell template has tokens the course page does not fill: {leftover}")
     OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / f"{module}.html"
+    target = OUT / f"{course.id}.html"
     target.write_text(page)
     return target
+
+
+REDIRECT_PAGE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0; url={href}">
+<link rel="canonical" href="{href}">
+<title>This page has moved</title>
+</head>
+<body>
+<p>This page has a new address. If it does not open on its own,
+<a href="{href}">open it here</a>.</p>
+</body>
+</html>
+"""
+
+
+def write_redirects() -> list[Path]:
+    """A small page at every address the site used to have, sending the
+    browser on to the new one — read from `courses/redirects.yaml`, one
+    `old: new` line per page. Written after every real page, and refusing
+    to overwrite one: an old address that is also a current address is a
+    mistake in the file, not a page to replace. A new address the build
+    wrote nothing at is refused too, so the file cannot quietly point a
+    bookmark at nothing.
+    """
+    path = COURSES / REDIRECTS_FILE
+    if not path.is_file():
+        return []
+    data = yaml.safe_load(path.read_text()) or {}
+    if not isinstance(data, dict):
+        fail(path, "is a mapping of old address to new address, one per line")
+    written: list[Path] = []
+    for old, new in data.items():
+        old, new = str(old), str(new)
+        source, target = OUT / old, OUT / new
+        if not target.is_file():
+            fail(path, f"sends {old} to {new}, and this build wrote no page at {new}")
+        if source.exists():
+            fail(path, f"sends {old} somewhere, but the build writes a page at {old}. "
+                       "Delete the line.")
+        href = os.path.relpath(target, source.parent).replace(os.sep, "/")
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_text(REDIRECT_PAGE.format(href=html.escape(href, quote=True)))
+        written.append(source)
+    return written
+
+
+def write_routes(
+    groups: dict[tuple[str, str], list[Tutorial]],
+    practice: dict[str, Tutorial],
+    mixed: dict[str, list[Tutorial]],
+) -> Path:
+    """`assets/routes.json`: every course's contents, by id, with each
+    page's title and address — what tutorial-runtime.js reads to draw a
+    page's tree and previous/next for a course other than the one the
+    build wrote in (a tutorial on two courses; see crumb_trail_html()).
+    Written under `site/assets/` after the assets are copied, since that
+    copy starts from an empty folder."""
+    routes = []
+    for course in courses().values():
+        series = []
+        for key in course.keys:
+            members = groups.get((course.id, key), [])
+            if not members:
+                continue
+            entries = []
+            for member in members:
+                entry = {
+                    "id": member.slug,
+                    "title": member.title,
+                    "url": member.out_path.relative_to(OUT).as_posix(),
+                }
+                problems = practice.get(member.slug)
+                if problems is not None:
+                    entry["practice"] = {
+                        "id": problems.slug,
+                        "title": problems.title,
+                        "url": problems.out_path.relative_to(OUT).as_posix(),
+                    }
+                entries.append(entry)
+            series.append({"key": key, "title": course.series_title(key), "tutorials": entries})
+        routes.append({
+            "id": course.id,
+            "title": course.title,
+            "url": f"{course.id}.html",
+            "series": series,
+            "mixed": [
+                {"id": page.slug, "title": page.title,
+                 "url": page.out_path.relative_to(OUT).as_posix()}
+                for page in mixed.get(course.id, [])
+            ],
+        })
+    target = OUT / "assets" / "routes.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps({"courses": routes}, ensure_ascii=False))
+    return target
+
+
+def warn_about_titles_and_overlap(tutorials: list[Tutorial]) -> None:
+    """Two things the build lets through and says so: two pages with one
+    title, and two tutorials teaching mostly the same outcomes. Neither is
+    wrong — two courses may each have a "Joins" — but each is worth a
+    second look, and nothing else would ever mention it (refactor
+    decisions: DECISIONS_LOG 7.172).
+    """
+    pages = [t for t in tutorials if t.is_default and not t.is_practice]
+    by_title: dict[str, list[Tutorial]] = {}
+    for page in pages:
+        by_title.setdefault(page.title.strip().lower(), []).append(page)
+    for members in by_title.values():
+        if len(members) > 1:
+            named = ", ".join(
+                f"{m.path.relative_to(ROOT)} (on {', '.join(m.courses) or 'no course'})"
+                for m in members
+            )
+            print(f'note: two pages share the title "{members[0].title}": {named}',
+                  file=sys.stderr)
+
+    def outcomes(page: Tutorial) -> set[str]:
+        return {
+            code
+            for claim in (page.meta.get("covers") or {}).values()
+            for code in (claim.get("covers") or [])
+        }
+
+    covered = [(page, outcomes(page)) for page in pages if page.status == "live"]
+    for index, (page, codes) in enumerate(covered):
+        for other, other_codes in covered[index + 1:]:
+            shared = sorted(codes & other_codes)
+            if len(shared) >= 3:
+                print(f"note: {page.path.relative_to(ROOT)} and "
+                      f"{other.path.relative_to(ROOT)} both cover "
+                      f"{', '.join(shared)}", file=sys.stderr)
 
 
 def strand_key(data: dict) -> str:
@@ -4549,8 +4799,8 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
 
 def write_topics_page(
     shell: str,
-    registry: dict[tuple[str, str], Tutorial],
-    practice: dict[tuple[str, str], Tutorial],
+    registry: dict[str, Tutorial],
+    practice: dict[str, Tutorial],
 ) -> Path | None:
     """"Browse by topic" — the topic tree's sibling, and a genuinely
     different question. The tree says what a topic needs before it, for
@@ -4586,18 +4836,17 @@ def write_topics_page(
     any_group_rendered = False
     for group in groups:
         items = []
-        for ref in group["tutorials"]:
-            key = (ref["module"], ref["slug"])
-            member = registry.get(key)
+        for ident in group["tutorials"]:
+            member = registry.get(str(ident))
             if member is None:
                 print(
                     f'note: topic-groups.yaml group "{group["key"]}" names '
-                    f"{key[0]}/{key[1]}, which this build has no tutorial for",
+                    f"{ident}, which this build has no tutorial for",
                     file=sys.stderr,
                 )
                 continue
             href = member.out_path.relative_to(OUT).as_posix()
-            also = practice.get(key)
+            also = practice.get(member.slug)
             extra = ""
             if also is not None:
                 where = also.out_path.relative_to(OUT).as_posix()
@@ -4663,12 +4912,12 @@ def write_topics_page(
 
 def write_search_index(
     tutorials: list[Tutorial],
-    registry: dict[tuple[str, str], Tutorial],
+    registry: dict[str, Tutorial],
     groups: dict[tuple[str, str], list[Tutorial]],
 ) -> Path:
     """One JSON file, `assets/search-index.json`, listing every live
     tutorial with what a reader might actually search for: its title,
-    which module and series it belongs to, and — this is the part that
+    which course and series it belongs to, and — this is the part that
     makes it more than a title search — the terms its own glossary
     entry says it *introduces* (`own_glossary()`, not the cumulative
     one: a later tutorial in the same series has already inherited an
@@ -4687,12 +4936,17 @@ def write_search_index(
         if tutorial.archived or not tutorial.is_default or tutorial.is_practice:
             continue
         terms = sorted({entry["term"] for entry in own_glossary(tutorial) if entry.get("term")})
+        course = courses().get(tutorial.course)
         documents.append({
+            "id": tutorial.slug,
             "title": tutorial.title,
-            "module": tutorial.module,
-            "moduleTitle": tutorial.module_title,
-            "series": tutorial.series,
-            "url": "tutorials/" + str(tutorial.out_path.relative_to(OUT / "tutorials")).replace("\\", "/"),
+            # The default course, under the names search.js reads; every
+            # course, by id, for whoever needs the whole picture.
+            "module": tutorial.course,
+            "moduleTitle": course.title if course else "",
+            "series": course.series_title(tutorial.series) if course and tutorial.series else "",
+            "courses": tutorial.courses,
+            "url": tutorial.out_path.relative_to(OUT).as_posix(),
             "terms": terms,
         })
     target = OUT / "assets" / "search-index.json"
@@ -4719,8 +4973,8 @@ def level_for_tier(tier: int) -> str:
 
 def tutorial_facets(
     tutorials: list[Tutorial],
-) -> dict[tuple[str, str], dict]:
-    """What each tutorial can be filtered by, keyed by (module, slug).
+) -> dict[str, dict]:
+    """What each tutorial can be filtered by, keyed by id.
 
     Three facets, none of them invented here — each is read from data that
     already exists for another purpose, so none can drift from the thing it
@@ -4747,13 +5001,12 @@ def tutorial_facets(
     topics = load_topics()
     tiers = topic_tiers(topics) if topics else {}
 
-    groups_by_tutorial: dict[tuple[str, str], list[str]] = {}
+    groups_by_tutorial: dict[str, list[str]] = {}
     for group in load_topic_groups():
         for member in group.get("tutorials") or []:
-            key = (member.get("module"), member.get("slug"))
-            groups_by_tutorial.setdefault(key, []).append(group["key"])
+            groups_by_tutorial.setdefault(str(member), []).append(group["key"])
 
-    facets: dict[tuple[str, str], dict] = {}
+    facets: dict[str, dict] = {}
     for tutorial in tutorials:
         codes = [
             code
@@ -4769,10 +5022,10 @@ def tutorial_facets(
         facet = {"subjects": subjects}
         if depths:
             facet["level"] = level_for_tier(max(depths))
-        groups = groups_by_tutorial.get((tutorial.module, tutorial.slug))
+        groups = groups_by_tutorial.get(tutorial.slug)
         if groups:
             facet["groups"] = sorted(set(groups))
-        facets[(tutorial.module, tutorial.slug)] = facet
+        facets[tutorial.slug] = facet
     return facets
 
 
@@ -4809,10 +5062,10 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
     """
     facets = tutorial_facets(tutorials)
     seen: dict[tuple[str, str], dict] = {}
-    for tutorial in sorted(tutorials, key=lambda t: (t.module, t.slug)):
+    for tutorial in sorted(tutorials, key=lambda t: t.slug):
         if tutorial.archived or not tutorial.is_default or tutorial.is_practice:
             continue
-        facet = facets.get((tutorial.module, tutorial.slug), {})
+        facet = facets.get(tutorial.slug, {})
         for entry in own_glossary(tutorial):
             key = (entry["term"], entry["kind"])
             if key in seen:
@@ -5007,6 +5260,33 @@ def write_editor_page(shell: str) -> Path:
     return target
 
 
+def load_all() -> list[Tutorial]:
+    """Every page under `tutorials/`, drafts included: one folder per
+    tutorial, holding `<id>.md`, its practice page and any frozen release.
+
+    Two files claiming one id stop the build here, naming both — the
+    filesystem already refuses a second folder with the same name, and
+    this catches the other way it can happen, a practice file beside a
+    folder of the same name. A markdown file loose under `tutorials/`,
+    outside any folder, is refused too: it has no id.
+    """
+    loose = sorted(TUTORIALS.glob("*.md"))
+    if loose:
+        fail(loose[0], "is not inside a folder. A tutorial is tutorials/<id>/<id>.md.")
+    everything = [load(p) for p in sorted(TUTORIALS.glob("*/*.md"))]
+    claimed: dict[str, Tutorial] = {}
+    for tutorial in everything:
+        if VERSION_FILE_RE.match(tutorial.path.stem):
+            continue
+        other = claimed.get(tutorial.slug)
+        if other is not None:
+            fail(tutorial.path, f"has the id {tutorial.slug}, and so does "
+                                f"{other.path.relative_to(ROOT)}. An id is site-wide; "
+                                "rename one folder.")
+        claimed[tutorial.slug] = tutorial
+    return everything
+
+
 def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     """Build the site. `standalone` also writes the downloadable single files,
     which need the real assets on disk and are the slow part of a build."""
@@ -5015,40 +5295,50 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     if clean and OUT.exists():
         shutil.rmtree(OUT)
 
-    sources = sorted(TUTORIALS.rglob("*.md"))
-    everything = [load(p) for p in sources]
+    everything = load_all()
     tutorials = versions_of([t for t in everything if t.status != "draft"])
 
-    registry: dict[tuple[str, str], Tutorial] = {
-        (t.module, t.slug): t for t in tutorials if t.is_default
-    }
+    registry: dict[str, Tutorial] = {t.slug: t for t in tutorials if t.is_default}
 
-    families: dict[tuple[str, str], list[Tutorial]] = {}
+    families: dict[str, list[Tutorial]] = {}
     for tutorial in tutorials:
-        families.setdefault((tutorial.module, tutorial.slug), []).append(tutorial)
+        families.setdefault(tutorial.slug, []).append(tutorial)
 
+    catalog = courses()
+    place_tutorials(tutorials, registry)
     practice = practice_pairs(tutorials, registry)
     mixed = mixed_practice(tutorials, registry)
+    # A frozen release sits where its current one does.
+    for tutorial in tutorials:
+        if not tutorial.is_default and tutorial.slug in registry:
+            tutorial.placements = list(registry[tutorial.slug].placements)
 
     shell = SHELL.read_text()
     groups = series_of(tutorials)
-    check_series_order(groups)
     retired = archived_of(tutorials)
+    warn_about_titles_and_overlap(tutorials)
+    for tutorial in tutorials:
+        if (tutorial.is_default and not tutorial.is_practice and not tutorial.placements
+                and catalog and tutorial.status == "live"):
+            print(f"note: no course lists {tutorial.slug}. It builds at "
+                  f"tutorials/{tutorial.slug}.html, and nothing links to it — add "
+                  "its id to a course file under courses/ when it is ready.",
+                  file=sys.stderr)
     written: list[Path] = []
     for tutorial in tutorials:
         check_alt_text(tutorial)
         check_folds(tutorial)
         # An archived tutorial belongs to no reading order, so there is no
         # previous and no next — only the way back.
-        members = groups.get((tutorial.module, tutorial.series), [])
+        members = groups.get((tutorial.course, tutorial.series), [])
         body_html = resolve_assets(tutorial, resolve_links(tutorial, registry))
         copy_tutorial_assets(tutorial)
         page_path = write(
             tutorial, shell, body_html, nav_for(tutorial, members),
-            default=registry.get((tutorial.module, tutorial.slug)),
-            family=families.get((tutorial.module, tutorial.slug)),
-            practice=practice.get((tutorial.module, tutorial.slug)),
-            also=[page for page in mixed.get(tutorial.module, [])
+            default=registry.get(tutorial.slug),
+            family=families.get(tutorial.slug),
+            practice=practice.get(tutorial.slug),
+            also=[page for pages in mixed.values() for page in pages
                   if tutorial.slug in page.practice_across],
             registry=registry,
             glossary=cumulative_glossary(tutorial, registry, groups),
@@ -5064,40 +5354,37 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             written.append(write_standalone(tutorial, page_path.read_text()))
 
     archives: dict[tuple[str, str], Path] = {}
-    module_archives: dict[str, Path] = {}
+    course_archives: dict[str, Path] = {}
     if standalone:
-        titles = series_titles()
-        for key, members in groups.items():
-            module, series = key
-            archives[key] = write_series_zip(
-                module, series, members, practice, titles.get(key, series)
-            )
+        for course in catalog.values():
+            series_in_order: list[tuple[str, str, list[Tutorial]]] = []
+            for key in course.keys:
+                members = groups.get((course.id, key))
+                if not members:
+                    continue
+                title = course.series_title(key)
+                archives[(course.id, key)] = write_series_zip(
+                    course.id, key, members, practice, title
+                )
+                series_in_order.append((key, title, members))
+            if series_in_order or mixed.get(course.id):
+                course_archives[course.id] = write_course_zip(
+                    course.id, course.title, series_in_order, practice,
+                    mixed.get(course.id, []),
+                )
         written.extend(archives.values())
-
-        names = module_titles(groups)
-
-        by_module: dict[str, list[tuple[str, str, list[Tutorial]]]] = {}
-        for (module, series), members in sorted(groups.items()):
-            by_module.setdefault(module, []).append(
-                (series, titles.get((module, series), series), members)
-            )
-        for module, series_in_order in by_module.items():
-            module_archives[module] = write_module_zip(
-                module, names.get(module, module), series_in_order,
-                practice, mixed.get(module, []),
-            )
-        written.extend(module_archives.values())
+        written.extend(course_archives.values())
 
     if tutorials:
         written.append(write_index(shell))
         written.append(write_features_page(shell))
         written.append(write_all_tutorials_page(
-            shell, groups, archives, retired, practice, mixed, module_archives
+            shell, groups, archives, retired, practice, mixed, course_archives
         ))
-        for module in {m for m, _ in groups} | set(retired):
-            written.append(write_module_page(
-                shell, module, groups, archives, retired, practice, mixed,
-                module_archives,
+        for course in catalog.values():
+            written.append(write_course_page(
+                shell, course, groups, archives, retired, practice, mixed,
+                course_archives,
             ))
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
@@ -5107,6 +5394,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             written.append(topics_page)
         written.append(write_about_page(shell))
         written.append(write_editor_page(shell))
+        written.extend(write_redirects())
 
     OUT.mkdir(parents=True, exist_ok=True)
     shutil.rmtree(OUT / "assets", ignore_errors=True)
@@ -5117,6 +5405,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
 
     if tutorials:
         written.append(write_reference_index(tutorials))
+        written.append(write_routes(groups, practice, mixed))
 
     # dewmini (compose/) is its own small folder rather than more root-level
     # files, so it copies wholesale like assets/ does.

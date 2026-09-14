@@ -17,16 +17,13 @@ DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
+from layout import write_course, write_tutorial  # noqa: E402
 
 MODULE = "notes-fixtures"
 
 FRONTMATTER = """---
 title: "{title}"
-slug: {slug}
-module: notes-fixtures
-module_title: "Notes Fixtures"
 year: "2026-2027"
-series: sample-series
 version: 2026.08.23.1
 ---
 
@@ -37,21 +34,21 @@ Some prose. Nothing here is a cell, on purpose.
 
 
 def _tutorial(root: Path, slug: str, title: str = "A Title") -> None:
-    path = root / "tutorials" / MODULE / f"{slug}.md"
+    path = root / "tutorials" / slug / f"{slug}.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(FRONTMATTER.format(title=title, slug=slug))
 
 
 def _set_order(root: Path, slugs: list[str]) -> None:
-    path = root / "tutorials" / MODULE / "sample-series.order.yaml"
-    path.write_text("series: Sample Series\norder:\n" + "".join(f"  - {s}\n" for s in slugs))
+    write_course(root, MODULE, "Sample Series", slugs)
 
 
 @pytest.fixture()
 def site(tmp_path, monkeypatch):
-    (tmp_path / "tutorials" / MODULE).mkdir(parents=True)
+    (tmp_path / "tutorials").mkdir(parents=True)
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
+    monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
     monkeypatch.setattr(b, "OUT", tmp_path / "site")
     monkeypatch.setattr(b, "SETUP", DEWLAB / "setup")
     monkeypatch.setattr(b, "DATA", DEWLAB / "data")
@@ -91,7 +88,7 @@ class TestNotesOnAProseOnlyTutorial:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         assert page.is_hidden("#dl-yourwork")
         _open_panel(page, "#dl-yourwork-toggle")
         assert page.is_visible("#dl-settings-work")
@@ -104,7 +101,7 @@ class TestNotesOnAProseOnlyTutorial:
         b.build()
         context = browser.new_context()
         page = context.new_page()
-        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.goto(f"{site_url}/tutorials/one.html")
         _open_panel(page, "#dl-yourwork-toggle")
         page.fill("#dl-progress-notes", "worth writing down")
         page.wait_for_function(

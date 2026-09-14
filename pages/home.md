@@ -44,56 +44,7 @@ works offline.
 
 Not sure where to begin? Start with [Maths and Programming, Integrated](mit-pdp-maths-prog-integration.html).
 
-```card
-url: mit-pdp-maths-prog-integration.html
-status: beta
-meta: 5N2927 + 5N18396 · QQI Level 5
-### Maths and Programming, Integrated
-We recommend starting here. One course moves between the two subjects, in
-the order the class needs them.
-```
-
-```card
-url: computational-methods.html
-status: beta
-meta: 5N0554 · QQI Level 5
-### Computational Methods and Problem Solving
-We work through matrices, simulation, algorithms and debugging, in Python.
-```
-
-```card
-url: fundamentals-of-oop.html
-status: beta
-meta: 5N0541 · QQI Level 5
-### Fundamentals of Object-Oriented Programming
-We build classes, objects and inheritance, from first principles.
-```
-
-```card
-url: database-methods.html
-status: beta
-meta: 5N0783 · QQI Level 5
-### Database Methods
-We build a table, then several, with SQL running right beside the Python
-that reads it.
-```
-
-```card
-url: web-authoring.html
-status: beta
-meta: 5N1910 · QQI Level 5
-### Web Authoring
-Build pages with HTML and CSS, then publish a small site.
-```
-
-```card
-url: programming-design-principles.html
-status: beta
-meta: 5N2927 · QQI Level 5
-### Programming and Design Principles
-This is the programming half of the integrated course, on its own. It runs
-from a first cell to reusable tools, then a project built in a team.
-```
+[[course-cards]]
 
 ```card
 url: all-tutorials.html

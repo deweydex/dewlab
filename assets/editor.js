@@ -35,6 +35,89 @@ export function setFrontmatterField(meta, field, value) {
   return lines.join("\n");
 }
 
+/* A course file (courses/<id>.yaml) is read and written here without a
+ * YAML library: its shape is fixed — title, then contents, a list of
+ * series each with a title and a list of ids — and the lists are all this
+ * editor changes. Everything else in the file is left byte for byte. */
+export function seriesKey(title) {
+  return String(title).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+function unquote(value) {
+  return String(value).trim().replace(/^(["'])(.*)\1$/, "$2");
+}
+
+export function parseCourse(text) {
+  const title = unquote((/^title:\s*(.+)$/m.exec(text) || ["", ""])[1]);
+  const series = [];
+  let inContents = false;
+  let current = null;
+  let inList = false;
+  for (const line of text.split("\n")) {
+    if (/^contents:\s*$/.test(line)) { inContents = true; continue; }
+    if (inContents && /^[A-Za-z_]/.test(line)) { inContents = false; current = null; }
+    if (!inContents) continue;
+    const heading = /^\s*-\s*title:\s*(.+?)\s*$/.exec(line);
+    if (heading) {
+      current = { title: unquote(heading[1]), key: seriesKey(unquote(heading[1])), ids: [] };
+      series.push(current);
+      inList = false;
+      continue;
+    }
+    const inline = /^\s*tutorials:\s*\[(.*)\]\s*$/.exec(line);
+    if (inline && current) {
+      current.ids = inline[1].split(",").map((s) => s.trim()).filter(Boolean);
+      inList = false;
+      continue;
+    }
+    if (/^\s*tutorials:\s*$/.test(line)) { inList = true; continue; }
+    const item = /^\s*-\s*(\S+)\s*$/.exec(line);
+    if (inList && current && item) current.ids.push(item[1]);
+    else if (inList && line.trim() && !item) inList = false;
+  }
+  return { title, series };
+}
+
+/* The course file with each series' list replaced by `orders[key]`
+ * (an array of ids), everything else untouched. */
+export function writeCourse(text, orders) {
+  const lines = text.split("\n");
+  const out = [];
+  let current = null;
+  let skipping = false;
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i];
+    const heading = /^\s*-\s*title:\s*(.+?)\s*$/.exec(line);
+    if (heading) {
+      const key = seriesKey(unquote(heading[1]));
+      current = Object.prototype.hasOwnProperty.call(orders, key) ? orders[key] : null;
+      skipping = false;
+      out.push(line);
+      continue;
+    }
+    if (current && /^\s*tutorials:\s*(\[.*\])?\s*$/.test(line)) {
+      // The items keep the indentation the file already uses for them
+      // (YAML allows the list at the key's own indent or deeper); a list
+      // that was empty or inline gets two spaces more than its key.
+      const pad = /^\s*/.exec(line)[0];
+      const next = lines[i + 1] || "";
+      const item = /^(\s*)-\s*\S+\s*$/.exec(next);
+      const itemPad = item ? item[1] : `${pad}  `;
+      out.push(`${pad}tutorials:`);
+      for (const id of current) out.push(`${itemPad}- ${id}`);
+      skipping = true;
+      current = null;
+      continue;
+    }
+    if (skipping) {
+      if (/^\s*-\s*\S+\s*$/.test(line)) continue;
+      skipping = false;
+    }
+    out.push(line);
+  }
+  return out.join("\n");
+}
+
 export function statusOf(text) {
   return frontmatterField(splitFrontmatter(text).meta, "status") || "live";
 }
@@ -148,27 +231,16 @@ export function findTutorialLinks(body) {
   return [...body.matchAll(RE)].map((m) => ({ slug: m[1], anchor: m[2] || null }));
 }
 
-export function resolveTutorialLink(slug, ownModule, all) {
-  const own = all.find((t) => t.module === ownModule && t.slug === slug);
-  if (own) return { target: own };
-  const elsewhere = all.filter((t) => t.slug === slug);
-  if (elsewhere.length === 1) return { target: elsewhere[0] };
-  if (elsewhere.length > 1) {
-    return { ambiguous: [...new Set(elsewhere.map((t) => t.module))].sort() };
-  }
-  return {};
+/* An id is site-wide (the folder name), so a link names one page or none. */
+export function resolveTutorialLink(slug, all) {
+  const target = all.find((t) => t.slug === slug);
+  return target ? { target } : {};
 }
 
-export function tutorialLinkProblems(body, ownModule, all) {
+export function tutorialLinkProblems(body, all) {
   const found = [];
   for (const { slug, anchor } of findTutorialLinks(body)) {
-    const resolved = resolveTutorialLink(slug, ownModule, all);
-    if (resolved.ambiguous) {
-      found.push({ level: "error",
-        text: `Link to "${slug}" is ambiguous — it exists in ${resolved.ambiguous.join(", ")}, `
-            + "and not in this module. The build will fail on this." });
-      continue;
-    }
+    const resolved = resolveTutorialLink(slug, all);
     if (!resolved.target) {
       found.push({ level: "error",
         text: `Link to "${slug}" does not match any tutorial. The build will fail on this.` });
@@ -190,9 +262,8 @@ export function matchTutorials(query, all) {
       if (!q) return { t, score: 0 };
       const title = t.title.toLowerCase();
       if (title.includes(q)) return { t, score: title.startsWith(q) ? 0 : 1 };
-      if (t.slug.toLowerCase().includes(q) || t.module.toLowerCase().includes(q)) {
-        return { t, score: 2 };
-      }
+      const where = `${t.slug} ${(t.courses || []).join(" ")}`.toLowerCase();
+      if (where.includes(q)) return { t, score: 2 };
       return null;
     })
     .filter(Boolean);
@@ -265,7 +336,8 @@ export function githubClient(token) {
       return {
         base: head.object.sha,
         paths: tree.tree
-          .filter((e) => e.type === "blob" && e.path.startsWith("tutorials/"))
+          .filter((e) => e.type === "blob"
+            && (e.path.startsWith("tutorials/") || e.path.startsWith("courses/")))
           .map((e) => e.path),
       };
     },
@@ -317,19 +389,17 @@ export function githubClient(token) {
  * not enough to tell draft from beta and the difference matters. */
 const STATUS_MEANS = {
   draft: "Not published at all. No page is built, so nobody can reach it.",
-  beta: "Published but not on the course. Anyone with the link can read it; "
-      + "students are not sent to it.",
-  live: "On the course, in the reading order.",
+  beta: "Published but kept off the reading order. Anyone with the link can "
+      + "read it; students are not sent to it.",
+  live: "On the course: in the reading order of every course that lists it.",
   archived: "Was on the course, is not now. Stays readable, keeps saved work.",
 };
 
+/* A new tutorial carries only what is its own. Where it sits is a line in
+ * a course file, which insert() adds in the same commit. */
 const TEMPLATE = `---
 title: "{title}"
-slug: {slug}
-module: {module}
-module_title: "{module_title}"
 year: "{year}"
-series: {series}
 version: 1
 ---
 
@@ -370,6 +440,7 @@ function slugify(title) {
 
 export function start(root, client, { onStatus = () => {} } = {}) {
   const state = {
+    courses: new Map(),
     series: new Map(),
     files: new Map(),
     original: new Map(),
@@ -398,6 +469,7 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     state.base = base;
     state.files.clear();
     state.original.clear();
+    state.courses.clear();
     state.series.clear();
     state.dirty.clear();
     state.removing.clear();
@@ -410,83 +482,110 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       });
       status(`Reading the repository… (${Math.min(i + READ_CONCURRENCY, paths.length)}/${paths.length})`);
     }
+    /* Placement comes from the course files: one series per heading, in
+     * the file's order, keyed by course path and series key. */
     for (const [path, text] of state.files) {
-      if (!path.endsWith(".order.yaml")) continue;
-      const module = path.split("/")[1];
-      const name = path.split("/").pop().replace(".order.yaml", "");
-      const order = [...text.matchAll(/^ *- +(\S+)\s*$/gm)].map((m) => m[1]);
-      const titled = /^series:\s*(.+)$/m.exec(text);
-      state.series.set(path, {
-        path, module, name, order,
-        title: titled ? titled[1].trim() : name,
-        off: [],
-      });
+      const match = /^courses\/([^/]+)\.yaml$/.exec(path);
+      if (!match || match[1] === "index" || match[1] === "redirects") continue;
+      const course = parseCourse(text);
+      const id = match[1];
+      state.courses.set(path, { path, id, title: course.title || id });
+      for (const series of course.series) {
+        state.series.set(`${path}#${series.key}`, {
+          path, course: id, courseTitle: course.title || id,
+          name: series.key, title: series.title, order: series.ids, off: [],
+        });
+      }
     }
 
-    for (const series of state.series.values()) series.off = [];
-    const seen = new Set();
-    for (const [path, text] of state.files) {
-      if (path.endsWith(".order.yaml") || !path.endsWith(".md")) continue;
-      const meta = splitFrontmatter(text).meta;
-      const module = frontmatterField(meta, "module");
-      const slug = frontmatterField(meta, "slug");
-      if (seen.has(`${module}/${slug}`)) continue;
-      seen.add(`${module}/${slug}`);
-      const series = [...state.series.values()].find(
-        (s) => s.module === module && !s.order.includes(slug)
-          && frontmatterField(meta, "series") === s.name
-      );
-      if (series) series.off.push(slug);
+    /* A tutorial no course lists still builds, at its address, and is
+     * shown here in a list of its own so it is not forgotten. */
+    const listed = new Set();
+    for (const series of state.series.values()) for (const id of series.order) listed.add(id);
+    const unplaced = allTutorials()
+      .filter((t) => !listed.has(t.slug) && !t.practice)
+      .map((t) => t.slug)
+      .sort();
+    if (unplaced.length) {
+      state.series.set("(none)", {
+        path: null, course: "", courseTitle: "", name: "none",
+        title: "On no course yet", order: [], off: unplaced,
+      });
     }
     status("");
     render();
   }
 
-  function newPathOf(module, slug) {
-    return `tutorials/${module}/${slug}/${slug}.md`;
+  function newPathOf(slug) {
+    return `tutorials/${slug}/${slug}.md`;
   }
 
-  function releasesOf(module, slug) {
-    const folder = `tutorials/${module}/${slug}/`;
+  /* Every release of a tutorial: `tutorials/<id>/<id>.md` and any
+   * `v<version>.md` beside it. A practice page (`<id>-practice.md`) is a
+   * page of its own, with its own id and no releases. */
+  function releasesOf(slug) {
     const paths = [];
     for (const path of state.files.keys()) {
-      if (!path.endsWith(".md") || !path.startsWith(folder)) continue;
-      const name = path.slice(folder.length);
-      if (name === `${slug}.md` || /^v\d[^/]*\.md$/.test(name)) paths.push(path);
+      if (!path.endsWith(".md")) continue;
+      const parts = path.split("/");
+      if (parts.length !== 3 || parts[0] !== "tutorials") continue;
+      const [, folder, name] = parts;
+      if (name === `${slug}.md` && (folder === slug || !/^v\d[^/]*\.md$/.test(name))) {
+        paths.push(path);
+      } else if (folder === slug && /^v\d[^/]*\.md$/.test(name)) {
+        paths.push(path);
+      }
     }
     return paths.sort((a, b) =>
       isNewer(versionOf(state.files.get(b)), versionOf(state.files.get(a))) ? 1 : -1);
   }
 
-  function pathOf(module, slug) {
-    const paths = releasesOf(module, slug);
-    if (paths.length <= 1) return paths[0] || newPathOf(module, slug);
+  function pathOf(slug) {
+    const paths = releasesOf(slug);
+    if (paths.length <= 1) return paths[0] || newPathOf(slug);
     const live = paths.filter((path) => statusOf(state.files.get(path)) === "live");
     return (live.length ? live : paths)[0];
   }
 
-  function titleOf(module, slug) {
-    const text = state.files.get(pathOf(module, slug));
+  function titleOf(slug) {
+    const text = state.files.get(pathOf(slug));
     if (!text) return slug;
     return frontmatterField(splitFrontmatter(text).meta, "title") || slug;
   }
 
+  function coursesOf(slug) {
+    const names = [];
+    for (const series of state.series.values()) {
+      if (series.course && series.order.includes(slug) && !names.includes(series.courseTitle)) {
+        names.push(series.courseTitle);
+      }
+    }
+    return names;
+  }
+
+  /* Every page under tutorials/, by id — the folder name for a tutorial,
+   * the file name for a practice page beside it. A frozen release
+   * (`v<version>.md`) is not a page of its own. */
   function allTutorials() {
     const seen = new Set();
     const out = [];
     for (const path of state.files.keys()) {
-      if (path.endsWith(".order.yaml") || !path.endsWith(".md")) continue;
-      const meta = splitFrontmatter(state.files.get(path)).meta;
-      const module = frontmatterField(meta, "module");
-      const slug = frontmatterField(meta, "slug");
-      const key = `${module}/${slug}`;
-      if (!module || !slug || seen.has(key)) continue;
-      seen.add(key);
-      const current = state.files.get(pathOf(module, slug)) || "";
+      const parts = path.split("/");
+      if (parts.length !== 3 || parts[0] !== "tutorials" || !parts[2].endsWith(".md")) continue;
+      const name = parts[2].slice(0, -3);
+      // A release file belongs to its folder's tutorial, whether or not
+      // the folder also holds `<id>.md`.
+      const slug = /^v\d[^/]*$/.test(name) ? parts[1] : name;
+      if (seen.has(slug)) continue;
+      seen.add(slug);
+      const current = state.files.get(pathOf(slug)) || "";
       const { meta: currentMeta, body } = splitFrontmatter(current);
       out.push({
-        module, slug,
+        slug,
         title: frontmatterField(currentMeta, "title") || slug,
+        practice: !!(frontmatterField(currentMeta, "practice_for")
+                     || /^practice_across:/m.test(currentMeta)),
+        courses: coursesOf(slug),
         anchors: tutorialAnchors(body),
       });
     }
@@ -502,53 +601,56 @@ export function start(root, client, { onStatus = () => {} } = {}) {
   }
 
   function insert(series, at) {
+    if (!series.path) {
+      status("Choose a course and a series to put the new tutorial in.", "error");
+      return;
+    }
     const title = prompt("What is the new tutorial called?");
     if (!title) return;
     const slug = slugify(title);
-    if (series.order.includes(slug)) {
-      status(`This series already has a ${slug}.`, "error");
+    /* An id is site-wide: the folder name. A second folder with the same
+     * name is refused here for the reason the build refuses it. */
+    const taken = [...state.files.keys()].some((path) => path.startsWith(`tutorials/${slug}/`));
+    if (taken) {
+      const where = coursesOf(slug);
+      status(`The id ${slug} is taken — "${titleOf(slug)}"`
+             + (where.length ? ` on ${where.join(", ")}` : "")
+             + ". Choose another title, or list that tutorial here instead.", "error");
       return;
     }
-    const sibling = state.files.get(pathOf(series.module, series.order[0])) || "";
+    const same = allTutorials().filter((t) => t.title.toLowerCase() === title.toLowerCase());
+    const sibling = state.files.get(pathOf(series.order[0])) || "";
     const meta = splitFrontmatter(sibling).meta;
     const body = TEMPLATE
       .replaceAll("{title}", title)
-      .replaceAll("{slug}", slug)
-      .replaceAll("{module}", series.module)
-      .replaceAll("{module_title}", frontmatterField(meta, "module_title") || series.module)
-      .replaceAll("{year}", frontmatterField(meta, "year") || "2026-2027")
-      .replaceAll("{series}", frontmatterField(meta, "series") || series.name);
-    state.files.set(newPathOf(series.module, slug), body);
+      .replaceAll("{year}", frontmatterField(meta, "year") || "2026-2027");
+    state.files.set(newPathOf(slug), body);
     series.order.splice(at, 0, slug);
     state.dirty.add(series.path);
-    state.dirty.add(newPathOf(series.module, slug));
+    state.dirty.add(newPathOf(slug));
     render();
+    if (same.length) {
+      status(`Another tutorial is also called "${title}" (${same.map((t) => t.slug).join(", ")}). `
+             + "That is allowed; the lists show the course beside the title.", "note");
+    }
   }
 
+  /* Only the frontmatter changes: a tutorial keeps its line in the course
+   * file whatever its status, and the build reads the status — a draft is
+   * skipped, a beta is off the reading order, an archived one is listed
+   * under Archive. */
   function setStatus(series, slug, status) {
-    const path = pathOf(series.module, slug);
+    const path = pathOf(slug);
     const text = state.files.get(path);
     if (!text) return;
     const { meta, body } = splitFrontmatter(text);
     state.files.set(path, `---\n${setFrontmatterField(meta, "status", status)}\n---\n\n${body}`);
     state.dirty.add(path);
-
-    const at = series.order.indexOf(slug);
-    const off = series.off.indexOf(slug);
-    if (status === "live" && at === -1) {
-      series.order.push(slug);
-      if (off !== -1) series.off.splice(off, 1);
-      state.dirty.add(series.path);
-    } else if (status !== "live" && at !== -1) {
-      series.order.splice(at, 1);
-      if (off === -1) series.off.push(slug);
-      state.dirty.add(series.path);
-    }
     render();
   }
 
   function release({ series, slug }) {
-    const current = pathOf(series.module, slug);
+    const current = pathOf(slug);
     const edited = state.files.get(current) || "";
     const frozen = state.original.get(current);
 
@@ -570,10 +672,10 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       return;
     }
 
-    const family = releasesOf(series.module, slug);
+    const family = releasesOf(slug);
     const next = nextVersion(family.map((path) => versionOf(state.files.get(path))));
     const was = versionOf(frozen);
-    const folder = `tutorials/${series.module}/${slug}`;
+    const folder = `tutorials/${slug}`;
 
     const { meta, body } = splitFrontmatter(edited);
     let bumped = setFrontmatterField(meta, "version", next);
@@ -598,7 +700,7 @@ export function start(root, client, { onStatus = () => {} } = {}) {
   }
 
   function statusControl(series, slug) {
-    const now = statusOf(state.files.get(pathOf(series.module, slug)) || "");
+    const now = statusOf(state.files.get(pathOf(slug)) || "");
     return el("span", { class: "dl-editor-status", "data-status": now },
       ...STATUSES.map((status) => el("button", {
         type: "button",
@@ -626,7 +728,7 @@ export function start(root, client, { onStatus = () => {} } = {}) {
         el("button", {
           class: "dl-editor-open", type: "button",
           onclick: () => { state.editing = { series, slug }; render(); },
-        }, titleOf(series.module, slug)),
+        }, titleOf(slug)),
         statusControl(series, slug),
         el("span", { class: "dl-editor-moves" },
           el("button", { type: "button", class: "dl-editor-up", "aria-label": `Move ${slug} earlier`,
@@ -641,29 +743,32 @@ export function start(root, client, { onStatus = () => {} } = {}) {
         card,
       );
     });
-    list.append(
-      el("li", { class: "dl-editor-gap" },
-        el("button", { type: "button", class: "dl-editor-new",
-                       onclick: () => insert(series, series.order.length) }, "new tutorial at the end")),
-    );
+    if (series.path) {
+      list.append(
+        el("li", { class: "dl-editor-gap" },
+          el("button", { type: "button", class: "dl-editor-new",
+                         onclick: () => insert(series, series.order.length) }, "new tutorial at the end")),
+      );
+    }
     for (const slug of series.off) {
       list.append(el("li", { class: "dl-editor-card dl-editor-off", "data-slug": slug },
         el("span", { class: "dl-editor-pos" }, "—"),
         el("button", {
           class: "dl-editor-open", type: "button",
           onclick: () => { state.editing = { series, slug }; render(); },
-        }, titleOf(series.module, slug)),
+        }, titleOf(slug)),
         statusControl(series, slug),
       ));
     }
-    return el("section", { class: "dl-editor-series" },
-      el("h2", {}, series.title),
-      el("p", { class: "dl-editor-where" }, series.path),
+    return el("section", { class: "dl-editor-series", "data-course": series.course },
+      el("h2", {}, series.course ? `${series.courseTitle} — ${series.title}` : series.title),
+      el("p", { class: "dl-editor-where" },
+         series.path || "Add the id to a course file under courses/ to list it."),
       list);
   }
 
   function editorView({ series, slug }) {
-    const path = pathOf(series.module, slug);
+    const path = pathOf(slug);
     const original = state.files.get(path) || "";
     const { meta, body } = splitFrontmatter(original);
 
@@ -704,7 +809,8 @@ export function start(root, client, { onStatus = () => {} } = {}) {
             type: "button", class: "dl-editor-linkpicker-pick",
             title: `Insert a link to ${t.title}`,
             onclick: () => insertTutorialLink(t),
-          }, t.title, " ", el("span", { class: "dl-editor-linkpicker-where" }, `${t.module}/${t.slug}`)),
+          }, t.title, " ", el("span", { class: "dl-editor-linkpicker-where" },
+            t.courses.length ? `${t.slug} · ${t.courses.join(", ")}` : t.slug)),
           anchors.length ? el("span", { class: "dl-editor-linkpicker-anchors" },
             ...anchors.map((a) => el("button", {
               type: "button", class: "dl-editor-linkpicker-anchor",
@@ -735,7 +841,7 @@ export function start(root, client, { onStatus = () => {} } = {}) {
           `Released instead, nothing is orphaned: the ids stay in the release ` +
           `students are working in, and they stay there until they choose to move.`));
       }
-      const allProblems = [...problems(next), ...tutorialLinkProblems(next, series.module, allTutorials())];
+      const allProblems = [...problems(next), ...tutorialLinkProblems(next, allTutorials())];
       for (const problem of allProblems) {
         report.append(el("p", { class: `dl-editor-${problem.level}` }, problem.text));
       }
@@ -773,7 +879,7 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     state.editBody = applyEdit;
     check(body);
 
-    const releases = releasesOf(series.module, slug);
+    const releases = releasesOf(slug);
     const version = versionOf(original);
 
     return el("section", { class: "dl-editor-one" },
@@ -808,10 +914,14 @@ export function start(root, client, { onStatus = () => {} } = {}) {
       report);
   }
 
-  function orderText(series) {
-    const original = state.files.get(series.path) || "";
-    const head = original.split(/^order:/m)[0];
-    return `${head}order:\n${series.order.map((s) => `  - ${s}\n`).join("")}`;
+  /* The course file as it will be committed: every series' list as the
+   * editor now has it, the rest of the file as it was. */
+  function courseText(path) {
+    const orders = {};
+    for (const series of state.series.values()) {
+      if (series.path === path) orders[series.name] = series.order;
+    }
+    return writeCourse(state.files.get(path) || "", orders);
   }
 
   function pending() {
@@ -827,8 +937,7 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     if (!message) return;
     const files = [];
     for (const path of state.dirty) {
-      const series = state.series.get(path);
-      files.push({ path, text: series ? orderText(series) : state.files.get(path) });
+      files.push({ path, text: state.courses.has(path) ? courseText(path) : state.files.get(path) });
     }
     for (const path of state.removing) files.push({ path, text: null });
     status(`Committing ${files.length} file${files.length === 1 ? "" : "s"}…`);
@@ -868,20 +977,26 @@ export function start(root, client, { onStatus = () => {} } = {}) {
     if (state.editing) root.append(editorView(state.editing));
     /* By the name shown, not the filename behind it. Sorting a visible list on
      * an invisible key puts things in an order nobody can predict. */
-    else for (const series of [...state.series.values()].sort((a, b) => a.title.localeCompare(b.title))) {
-      root.append(seriesView(series));
+    else {
+      /* Course by course, in the order the course files came, each
+       * course's series in the file's order — the order a reader meets
+       * them in — with the unplaced list last. */
+      const ordered = [...state.series.values()].filter((s) => s.path);
+      for (const series of ordered) root.append(seriesView(series));
+      const none = state.series.get("(none)");
+      if (none) root.append(seriesView(none));
     }
   }
 
   function getBody() {
     if (!state.editing) return "";
-    const path = pathOf(state.editing.series.module, state.editing.slug);
+    const path = pathOf(state.editing.slug);
     return splitFrontmatter(state.files.get(path) || "").body;
   }
 
   function setBody(markdown) {
     if (!state.editing) return;
-    const path = pathOf(state.editing.series.module, state.editing.slug);
+    const path = pathOf(state.editing.slug);
     const { meta } = splitFrontmatter(state.files.get(path) || "");
     state.files.set(path, `---\n${meta}\n---\n\n${markdown}`);
     state.dirty.add(path);
@@ -894,7 +1009,7 @@ export function start(root, client, { onStatus = () => {} } = {}) {
 
   globalThis.dewlabEditor = {
     state, load, save, render, move, insert, setStatus, setFrontmatterField,
-    release, pathOf, releasesOf, getBody, setBody, editBody,
+    release, pathOf, releasesOf, getBody, setBody, editBody, courseText, allTutorials,
   };
   return load();
 }

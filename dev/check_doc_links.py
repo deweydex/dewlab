@@ -71,7 +71,8 @@ GENERATED = ("site/", "dev/pyodide/", "assets/vendor/pyodide/",
              "node_modules/", "__pycache__/")
 
 GENERATED_PAGES = {"index.html", "tree.html", "topics.html", "about.html",
-                   "editor.html", "search-index.json", "reference-index.json"}
+                   "editor.html", "search-index.json", "reference-index.json",
+                   "routes.json"}
 
 ELSEWHERE = ("planning/curriculum/", "planning/outlines/")
 

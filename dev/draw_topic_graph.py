@@ -366,25 +366,28 @@ def lessons() -> dict:
 
     A tutorial's frontmatter claims outcomes section by section, so the first
     section claiming one is the place to send somebody who wants to learn it.
-    Practice sits beside the tutorial under the same slug, which is a build
-    convention rather than anything the frontmatter says, so the link is only
-    offered where that file is really there.
+    A tutorial is `tutorials/<id>/<id>.md`; its practice page sits beside
+    it as `<id>-practice.md`, so the link is only offered where that file
+    is really there.
     """
     found: dict[str, dict] = {}
-    for path in sorted(TUTORIALS.rglob("*.md")):
+    for path in sorted(TUTORIALS.glob("*/*.md")):
+        ident = path.parent.name
+        if path.stem != ident:
+            continue  # a practice page or a frozen release
         text = path.read_text()
         if not text.startswith("---"):
             continue
         meta = yaml.safe_load(text.split("---", 2)[1])
-        if not isinstance(meta, dict) or "slug" not in meta:
+        if not isinstance(meta, dict):
             continue
-        drill = path.parent / f"{meta['slug']}-practice.md"
+        drill = path.parent / f"{ident}-practice.md"
         for anchor, claim in (meta.get("covers") or {}).items():
             for code in (claim or {}).get("covers") or []:
                 found.setdefault(code, {
-                    "title": meta.get("title") or meta["slug"],
-                    "read": f"tutorials/{meta['module']}/{meta['slug']}.html#{anchor}",
-                    "drill": (f"tutorials/{meta['module']}/{meta['slug']}-practice.html"
+                    "title": meta.get("title") or ident,
+                    "read": f"tutorials/{ident}.html#{anchor}",
+                    "drill": (f"tutorials/{ident}-practice.html"
                               if drill.exists() else None),
                 })
     return found
