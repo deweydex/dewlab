@@ -115,6 +115,9 @@ does not rely on, which is what makes it the right one.
 | The renamed tutorial's practice page still names the old id, and so points at the *other* First Steps. | `refactor/test_migrate.py::test_a_rename_carries_practice_for_and_links_with_it` | Found by `check.py` on the first real dry run of the migration, before any test existed for it — which is the argument for running the tool over the migrated tree as a step in itself. |
 | `check.py` calls a picture inside a code example a missing image. | `test_check.py::test_an_image_inside_a_code_example_is_not_a_missing_image` | Three web-authoring tutorials teach `<img src="does-not-exist.jpg">` on purpose; the first run flagged all three. |
 | `check.py` calls a tutorial whose id ends in `-practice` a practice page. | `test_check.py::test_a_practice_page_is_known_by_its_frontmatter_not_its_name` | `sql-practice` is a real tutorial; the first run refused it. A page is what its frontmatter says. |
+| A contributor on `main` says yes to the pull request and the tool commits there. | `test_check.py::test_on_main_it_says_to_make_a_branch_and_touches_nothing` | Asserts no `git add`, `commit` or `push` ran, not only that a message printed. |
+| The pull request's title says "Add" for a tutorial that already existed, or the address points at the wrong branch. | `test_check.py::test_an_existing_file_makes_it_an_update` and `::test_the_address_carries_the_title_and_body_and_the_branch` | Both read git through one seam (`git()`), so the tests substitute answers and prove the words and the address without a network. |
+| A whole-site check offers to send 121 tutorials as one pull request. | `test_check.py::test_a_whole_site_check_never_offers` | One pull request is one change. |
 | `check.py` says "No problems" about a tutorial the build then refuses. | `test_check.py::test_everything_check_calls_a_problem_the_build_also_refuses` | Runs both on the same fixtures: every Problem is a build failure and every build failure of the kinds `check.py` covers is a Problem. The tool's promise, proven. |
 | `check.py` is run from the wrong folder, or on a file it doesn't know. | `test_check.py::test_an_unknown_path_gets_a_plain_sentence_not_a_traceback` | The audience is somebody's first day. |
 | dewnote opens a migrated tutorial and treats it as plain markdown. | dewnote's `full-corpus.test.ts` (other repository) | Round-trip is byte-level and passes; dialect detection keys on `year`, which stays. Listed here so nobody deletes `year:` without checking. |
@@ -146,6 +149,19 @@ What it checks, and where the same rule lives in the build:
 What it only notes: no practice page; no cells; a title another tutorial
 also has; a tutorial no course lists; a course missing card, code or
 description; a course absent from `index.yaml`.
+
+**The pull request.** When a check of one thing has no problems, the tool
+offers to open a pull request: it lists the changed files under the checked
+tutorials and courses, asks, commits and pushes them, and opens GitHub's own
+new-pull-request page with the title and description filled in from what
+was checked ("Add tutorial: First Steps"; a body naming the tutorial, the
+check, and the files). `--pr` skips the question; `--no-pr` never asks; a
+whole-site check never offers; on `main` it says the one command that makes
+a branch and does nothing else. It sends nothing but `git push`; the pull
+request is created by the person, on GitHub, when they press the button —
+no token, no API, nothing to install. Declining is not a dead end: the
+message says to run again when ready, and the description is written from
+whatever has changed by then.
 
 Where it lives: repository root, next to `build.py`, so `python3 check.py`
 works from a fresh clone with no path to remember. Its page is

@@ -15,11 +15,21 @@ The program ends with 1 when there is at least one Problem, and 0 otherwise.
 It needs only Python and PyYAML, and it does not build the site, so it runs
 in a second. Moved to the repository root in refactor/PLAN.md step 2 and
 described for contributors in docs/CHECK_YOUR_WORK.md.
+
+When there are no problems it offers to open a pull request: it commits
+and pushes the files it checked (after asking), then opens GitHub's own
+"new pull request" page with the title and description already written
+from what was checked. `--pr` does that without asking; `--no-pr` never
+asks. Nothing is sent anywhere except by `git push`, and the pull request
+itself is created by the person, on GitHub, when they press the button.
 """
 from __future__ import annotations
 
 import re
+import subprocess
 import sys
+import urllib.parse
+import webbrowser
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -46,6 +56,8 @@ OLD_FIELDS = ("module", "module_title", "series", "slug")
 class Report:
     def __init__(self) -> None:
         self.lines: list[tuple[str, str]] = []
+        self.checked: list[tuple[str, str, str]] = []  # (kind, id, title) — for the pull request
+
 
     def ok(self, text: str) -> None:
         self.lines.append(("OK", text))
@@ -150,6 +162,7 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
         report.problem(f"`{ident}.md`: {error}.")
         return
     assert fields is not None
+    report.checked.append(("practice" if "practice_for" in fields else "tutorial", ident, str(fields.get("title") or ident)))
     for key in ("title", "year", "version"):
         if not fields.get(key):
             report.problem(f"`{ident}.md`: the frontmatter needs `{key}:`.")
@@ -256,6 +269,7 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
     if "_error" in course:
         report.problem(f"The file is not valid YAML ({course['_error']}).")
         return
+    report.checked.append(("course", course_id, str(course.get("title") or course_id)))
     if not ID_RE.match(course_id):
         report.problem(f"The file name `{course_id}` is not a valid id. Use small letters, digits and hyphens.")
     for key in ("title", "contents"):
@@ -304,6 +318,144 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
         report.note("There is no `courses/index.yaml`, so courses appear in alphabetical order.")
 
 
+# ------------------------------------------------------------ pull request
+
+def git(*args: str) -> str | None:
+    """stdout of a git command, or None when git says no."""
+    try:
+        done = subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True)
+    except FileNotFoundError:
+        return None
+    return done.stdout.strip() if done.returncode == 0 else None
+
+
+def repository_slug() -> str | None:
+    """`owner/name` from the origin remote, for https or ssh addresses."""
+    url = git("remote", "get-url", "origin")
+    if not url:
+        return None
+    match = re.search(r"github\.com[:/]([^/]+)/([^/]+?)(?:\.git)?/?$", url)
+    return f"{match.group(1)}/{match.group(2)}" if match else None
+
+
+def changed_paths(items: list[tuple[str, str, str]]) -> list[str]:
+    """Every file under the checked tutorials and courses that git sees as
+    new or changed — what the pull request should carry."""
+    wanted = []
+    for kind, ident, _ in items:
+        wanted.append(f"tutorials/{ident}/" if kind != "course" else f"courses/{ident}.yaml")
+    if any(kind == "course" for kind, _, _ in items):
+        wanted.append("courses/index.yaml")
+    status = git("status", "--porcelain", "--", *wanted) or ""
+    paths = []
+    for line in status.splitlines():
+        # `XY path`; git() has trimmed the output, so a modified file's
+        # leading space is gone — split on the first run of spaces instead
+        # of counting columns. A rename reads `old -> new`; keep `new`.
+        parts = line.strip().split(None, 1)
+        if len(parts) == 2:
+            paths.append(parts[1].split(" -> ")[-1].strip())
+    return sorted(set(paths))
+
+
+def describe(items: list[tuple[str, str, str]], paths: list[str]) -> tuple[str, str]:
+    """A title and a description for the pull request, from what was
+    checked. Short, in plain words, and true to the context: one tutorial,
+    a practice page, a course, or several things at once."""
+    tutorials = [(i, t) for k, i, t in items if k == "tutorial"]
+    practice = [(i, t) for k, i, t in items if k == "practice"]
+    courses = [(i, t) for k, i, t in items if k == "course"]
+    new = {p for p in paths if git("ls-files", "--error-unmatch", p) is None}
+    if len(tutorials) == 1 and not courses:
+        ident, title = tutorials[0]
+        verb = "Add" if f"tutorials/{ident}/{ident}.md" in new else "Update"
+        head = f"{verb} tutorial: {title}"
+    elif len(courses) == 1 and not tutorials:
+        ident, title = courses[0]
+        verb = "Add" if f"courses/{ident}.yaml" in new else "Update"
+        head = f"{verb} course: {title}"
+    elif practice and not tutorials and not courses:
+        head = "Add practice: " + ", ".join(t for _, t in practice)
+    else:
+        head = "Add tutorials and courses" if new else "Update tutorials and courses"
+    lines = ["## What this changes", ""]
+    for ident, title in tutorials:
+        lines.append(f"- Tutorial **{title}** (`tutorials/{ident}/`)" + (" — new" if f"tutorials/{ident}/{ident}.md" in new else ""))
+    for ident, title in practice:
+        lines.append(f"- Practice page **{title}** (`tutorials/{ident}/`)")
+    for ident, title in courses:
+        lines.append(f"- Course **{title}** (`courses/{ident}.yaml`)" + (" — new" if f"courses/{ident}.yaml" in new else ""))
+    lines += ["", "## Checks", "", "`python3 check.py` reported no problems.", "", "## Files", ""]
+    lines += [f"- `{p}`" for p in paths]
+    lines += ["", "Opened from `check.py`."]
+    return head, "\n".join(lines)
+
+
+def ask(question: str) -> bool:
+    if not sys.stdin.isatty():
+        return False
+    try:
+        answer = input(f"{question} [y/N] ").strip().lower()
+    except EOFError:
+        return False
+    return answer in ("y", "yes")
+
+
+def offer_pull_request(report: Report, mode: str) -> None:
+    """mode: "ask", "yes" or "no"."""
+    if mode == "no" or not report.checked:
+        return
+    slug = repository_slug()
+    branch = git("rev-parse", "--abbrev-ref", "HEAD")
+    if not slug or not branch:
+        print("To open a pull request, this folder needs to be a git clone of the GitHub repository.")
+        return
+    if branch in ("main", "master"):
+        print(f"You are on the `{branch}` branch. Make a branch for your change first:")
+        print("    git switch -c my-change")
+        print("Then run this command again, and I will help you open the pull request.")
+        return
+    paths = changed_paths(report.checked)
+    what = ", ".join(t for _, _, t in report.checked)
+    if mode == "ask":
+        print()
+        if not ask(f"Open a pull request for {what}?"):
+            print("No problem. When you are ready, run this command again — or add `--pr` — and I will")
+            print("write the pull request from whatever you have changed by then.")
+            return
+    if paths:
+        print("These files will go in the commit:")
+        for p in paths:
+            print(f"    {p}")
+        if mode == "ask" and not ask("Commit and push them now?"):
+            print("Nothing committed. Run again with `--pr` when you are ready.")
+            return
+        title, _ = describe(report.checked, paths)
+        if git("add", "--", *paths) is None or git("commit", "-q", "-m", title) is None:
+            print("Problem  git could not commit. Run `git status` to see why, then try again.")
+            return
+    upstream = git("rev-parse", "--abbrev-ref", "@{u}")
+    if not upstream or git("log", "--oneline", "@{u}..HEAD"):
+        if git("push", "-u", "origin", branch) is None:
+            print(f"Problem  git could not push. Try:  git push -u origin {branch}")
+            return
+    all_paths = paths or (git("diff", "--name-only", "origin/main...HEAD") or "").splitlines()
+    title, body = describe(report.checked, all_paths)
+    base = git("symbolic-ref", "--short", "refs/remotes/origin/HEAD") or "origin/main"
+    base = base.split("/", 1)[-1]
+    query = urllib.parse.urlencode({"quick_pull": "1", "title": title, "body": body})
+    url = f"https://github.com/{slug}/compare/{base}...{branch}?{query}"
+    print()
+    print("Your pull request page is ready. The title and description are filled in;")
+    print("read them, change anything you like, and press the green button.")
+    print(f"    {url}")
+    if mode == "ask" or sys.stdin.isatty():
+        try:
+            webbrowser.open(url)
+        except Exception:  # pragma: no cover — a browser is a convenience
+            pass
+
+
 # -------------------------------------------------------------- everything
 
 def check_everything(report: Report) -> None:
@@ -327,8 +479,15 @@ def check_everything(report: Report) -> None:
 
 def main(argv: list[str]) -> int:
     report = Report()
+    mode = "ask"
+    if "--pr" in argv:
+        mode = "yes"
+    if "--no-pr" in argv:
+        mode = "no"
+    argv = [a for a in argv if a not in ("--pr", "--no-pr")]
     if len(argv) <= 1:
         check_everything(report)
+        mode = "no"  # a whole-site check is not one change to send
     else:
         courses = read_courses()
         ids = all_tutorial_ids()
@@ -353,6 +512,7 @@ def main(argv: list[str]) -> int:
         print(f"{report.problems} problem{'s' if report.problems != 1 else ''} to fix.")
         return 1
     print("No problems. You can open a pull request.")
+    offer_pull_request(report, mode)
     return 0
 
 

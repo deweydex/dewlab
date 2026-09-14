@@ -162,6 +162,40 @@ Checklist:
 
 You do not change any tutorial and you do not change `build.py`.
 
+## Opening a pull request
+
+When your check has no problems, the program asks:
+
+```
+Open a pull request for First Steps? [y/N]
+```
+
+If you type `y`, it shows the files it will send, asks once more, then
+commits them, pushes your branch, and opens the GitHub page for a new pull
+request in your browser. The title and the description are already written
+from what you checked. Read them, change anything you like, and press the
+green button. The pull request is made by you, on GitHub — the program only
+takes you to the page.
+
+If you type `n` (or just press Enter), nothing is sent. Run the same
+command again when you are ready, or add `--pr` to skip the question:
+
+```bash
+python3 check.py tutorials/first-steps --pr
+```
+
+The description is written from what you have changed at that moment, so it
+is always up to date.
+
+Two things to know:
+
+- You must be on a branch, not on `main`. If you are on `main`, the program
+  tells you the one command that makes a branch, and stops.
+- `python3 check.py` with no folder checks the whole site and never offers a
+  pull request. One pull request is for one change.
+
+If you never want the question, add `--no-pr`.
+
 ## Words on this page
 
 - **id** — the name of a tutorial's folder, or of a course's file. Small
@@ -171,6 +205,10 @@ You do not change any tutorial and you do not change `build.py`.
 - **series** — a list of tutorials read in order.
 - **course** — a file in `courses/` that gathers series. The site calls a
   course a *module*.
+- **branch** — your own copy of the files, where you make a change before
+  it joins the main copy.
+- **pull request** — asking for your branch to join the main copy. Somebody
+  reads it first.
 
 ## If something is still wrong
 
