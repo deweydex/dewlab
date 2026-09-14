@@ -2518,27 +2518,23 @@ def render_search_box(placeholder: str, big: bool = False, id_prefix: str = "dl-
 
 
 def nav_search_html() -> str:
-    """The small search popover beside "All tutorials" in every page's own
-    top nav (shell.html's `{{NAV_SEARCH}}`) — a native `<details>` rather
-    than a hand-wired toggle, the same disclosure the front page's own
-    "For teachers"/"For students" already use, so opening and closing it
-    needs no JavaScript of its own at all: the browser already knows how,
-    and a screen reader already knows how to announce it.
+    """The search bar in every page's top-left dock (shell.html's
+    `{{NAV_SEARCH}}`): the same `render_search_box()` widget the front
+    page carries, so `assets/search.js` wires it the way it wires every
+    other one, with the input itself as the bar — a reader types straight
+    into what they see. It used to be a `<details>` whose summary looked
+    like a field and opened a popover holding the real input, which read
+    as a search bar that did nothing when typed into.
     """
     return (
-        '<details class="dl-nav-search">'
-        '<summary aria-label="Search">'
+        '<div class="dl-nav-search">'
         '<svg class="dl-nav-search-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">'
         '<circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/>'
         '<line x1="13.3" y1="13.3" x2="18" y2="18" stroke="currentColor" stroke-width="2" '
         'stroke-linecap="round"/>'
         "</svg>"
-        '<span class="dl-toggle-label">Search for a topic</span></summary>'
-        + render_search_box(
-            "Search for a topic, tutorial, practice, series, or module…",
-            id_prefix="dl-nav-search",
-        )
-        + "</details>"
+        + render_search_box("Search for a topic…", id_prefix="dl-nav-search")
+        + "</div>"
     )
 
 

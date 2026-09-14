@@ -3733,3 +3733,9 @@ The pass is published as a contact sheet (every screenshot, the mockup checklist
 **Icons on every tab**, Josh's ask, as inline SVG in `currentColor` — the same choice `nav_search_html()`'s magnifier already made, so they follow the palette in both themes. Reference keeps the CSS-drawn book it had.
 
 *Cost to change: medium, for the same reason 7.162 rated the corner-anchor decision so — the tree now carries navigation the page has nowhere else on desktop, so putting a bar back is a design reversal rather than a restore. The deletions are cheap to undo from history if either panel is wanted again. `vendor-src/`'s `standalone.bundle.js` rebuilt.*
+
+---
+
+**7.166 — The search bar is the search field.** Josh, clicking through #228: "the search isn't happening in the search field." It wasn't: `nav_search_html()` had been a `<details>` since the masthead days, and 7.164 styled its summary to look like a field — so a reader saw a bar, typed, and nothing happened until they noticed the popover with the real input inside. A control that looks like a field has to be one. `nav_search_html()` now returns `render_search_box()`'s own widget directly — the same `.dl-search` markup the front page and "All tutorials" carry, which `assets/search.js` already finds by class and wires without knowing where it sits — with the input styled as the bar, the label kept for screen readers only, the hint paragraph hidden (a placeholder does its job in a bar), and the results list floating beneath as a wider dropdown. `search.js` lost its `<details>`-specific outside-click and Escape handling, since no popover exists to close any more; the results list still closes on an outside click, as every panel does. On a phone the input takes the rest of the row beside the wordmark and its results hang the full width of the screen.
+
+*Cost to change: trivial. One function, one block of CSS, and the widget underneath is the one every other search on the site already uses.*

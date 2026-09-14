@@ -168,23 +168,11 @@ function wireSearchBox(root, documents, loadError) {
   });
 
   // Closing on an outside click matches every other panel on the site
-  // (Settings, Help) — a search box left open after a reader has
-  // clicked elsewhere would be the odd one out. The nav popover is a
-  // <details> rather than one of those panels, so it gets the same
-  // treatment applied to itself, not just to its results list: native
-  // <details> has no built-in "close on outside click" or Escape of its
-  // own, and leaving those out here would make this the one panel on
-  // the page that does not behave like the rest.
-  const popover = root.closest("details.dl-nav-search");
+  // (Settings, Help) — a results list left open after a reader has
+  // clicked elsewhere would be the odd one out.
   document.addEventListener("click", (e) => {
     if (root.contains(e.target)) return;
     list.hidden = true;
-    if (popover && !popover.contains(e.target)) popover.open = false;
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape" || !popover || !popover.open) return;
-    popover.open = false;
-    popover.querySelector("summary").focus();
   });
   input.addEventListener("focus", () => { if (input.value.trim()) list.hidden = false; });
 }

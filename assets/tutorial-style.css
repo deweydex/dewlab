@@ -1893,75 +1893,59 @@ p code, li code {
 }
 .dl-search-empty { padding: 0.5rem 0.6rem; color: var(--dl-muted); font-size: 0.85rem; }
 
-.dl-nav-search > summary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  list-style: none;
-  font-family: var(--dl-mono);
-  font-size: 0.78rem;
-  color: var(--dl-heading);
-  border: 1px solid var(--dl-navy);
-  border-radius: 4px;
-  padding: 0.3rem 0.6rem;
+/* The top-left dock's search bar is render_search_box()'s own widget with
+   the input itself as the bar (nav_search_html(), build.py): field-shaped,
+   the full width of the block, flush to the screen's edge like the
+   Reference tab beneath it. Its label stays for screen readers only and
+   its hint paragraph is dropped — the bar has a placeholder and no room
+   for a sentence. Results hang beneath it as a floating list, wider than
+   the bar so a title reads whole. */
+.dl-nav-search { width: 100%; }
+.dl-nav-search .dl-search { margin: 0; }
+.dl-nav-search .dl-search-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
-.dl-nav-search > summary::-webkit-details-marker { display: none; }
-.dl-nav-search > summary:hover,
-.dl-nav-search[open] > summary {
-  border-color: var(--dl-orange);
-  color: var(--dl-orange);
-}
-.dl-nav-search[open] > summary {
-  background: var(--dl-navy);
-  border-color: var(--dl-navy);
-  color: #fff;
-}
+.dl-nav-search #dl-nav-search-hint { display: none; }
 .dl-nav-search-icon {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
   width: 0.85em;
   height: 0.85em;
-  flex: none;
-}
-.dl-nav-search:not([open]) > .dl-search { display: none; }
-
-/* In the top-left stack the search is a bar, not a button: field-shaped,
-   the full width of the block, flush to the screen's edge like the
-   Reference tab beneath it, with a placeholder-coloured label. It stays a
-   <details> summary underneath, so nothing about how it opens changed. */
-.dl-corner-stack .dl-nav-search { width: 100%; }
-.dl-corner-stack .dl-nav-search > summary {
-  display: flex;
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 2.1rem;
-  padding: 0.45rem 0.8rem;
   color: var(--dl-muted);
-  cursor: text;
-  background: var(--dl-cell-bg);
-  border: 1px solid var(--dl-cell-border);
+  pointer-events: none;
+  z-index: 1;
+}
+.dl-nav-search .dl-search-input {
+  box-sizing: border-box;
+  min-height: 2.1rem;
+  padding: 0.45rem 0.8rem 0.45rem 2.1rem;
+  font-family: var(--dl-mono);
+  font-size: 0.78rem;
   border-left: none;
   border-radius: 0 6px 6px 0;
   box-shadow: 0 2px 8px var(--dl-shadow);
 }
-.dl-corner-stack .dl-nav-search > summary:hover,
-.dl-corner-stack .dl-nav-search[open] > summary {
-  background: var(--dl-cell-bg);
-  border-color: var(--dl-orange);
-  color: var(--dl-heading);
-}
-.dl-corner-stack .dl-nav-search[open] > .dl-search { left: 0.7rem; }
-
-.dl-nav-search[open] > .dl-search {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  left: 0;
-  z-index: 30;
+.dl-nav-search .dl-search-input::placeholder { color: var(--dl-muted); }
+.dl-nav-search .dl-search-results {
+  left: 0.7rem;
+  right: auto;
   width: min(26rem, 90vw);
-  margin: 0;
-  padding: 0.9rem;
+  z-index: 30;
+  margin-top: 0.4rem;
+  padding: 0.5rem;
+  background: var(--dl-panel-bg);
   border: 1px solid var(--dl-cell-border);
   border-radius: 8px;
-  background: var(--dl-panel-bg);
   box-shadow: 0 8px 24px var(--dl-shadow);
 }
 
@@ -2196,18 +2180,16 @@ p code, li code {
     width: auto;
     padding: 0;
   }
-  .dl-corner-dock-tl .dl-corner-stack { width: auto; }
-  .dl-corner-stack .dl-nav-search > summary {
-    width: auto;
+  /* The bar takes the rest of the row beside the wordmark, its results
+     hanging the full width of the screen beneath it. */
+  .dl-corner-dock-tl .dl-corner-stack { width: auto; flex: 1; min-width: 0; }
+  .dl-nav-search .dl-search-input {
     min-height: 2.6rem;
-    padding: 0.5rem 0.7rem;
+    font-size: 0.9rem;
     border-left: 1px solid var(--dl-cell-border);
     border-radius: 6px;
   }
-  /* Anchored to the search's own right edge now that it sits at the row's
-     end — 90vw hung off the left edge would run past the screen. */
-  .dl-nav-search[open] > .dl-search,
-  .dl-corner-stack .dl-nav-search[open] > .dl-search { left: auto; right: 0; }
+  .dl-nav-search .dl-search-results { left: 0; right: 0; width: auto; }
 
   /* The launcher: the wordmark's orange dot, grown up, at the bottom
      centre of the screen — the one place nothing else lives — and above
