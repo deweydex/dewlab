@@ -556,7 +556,7 @@ downloadable copy of their own, since a downloadable snapshot of superseded
 material is not worth shipping.
 
 `TestVersionsOfATutorial` and `TestTheVersionListInTheManifest` in
-`tests/test_build.py` pin down the exact behaviour.
+`tests/build/test_releases.py` pin down the exact behaviour.
 
 ---
 

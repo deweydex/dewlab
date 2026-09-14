@@ -33,12 +33,14 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 TUTORIALS = ROOT / "tutorials"
+COURSES = ROOT / "courses"
 OUTCOMES = ROOT / "planning" / "curriculum" / "outcomes.yaml"
 OUT_OF_SCOPE = ROOT / "planning" / "curriculum" / "out-of-scope.yaml"
 MAP = ROOT / "planning" / "CURRICULUM_MAP.md"
 SITE = "https://deweydex.github.io/dewlab"
 
-MAIN_MODULE = "mit-pdp-maths-prog-integration"
+MAIN_COURSE = "mit-pdp-maths-prog-integration"
+# Series keys — each course-file heading as build.py's series_key() writes it.
 MAIN_SERIES = (
     "programming-foundations",
     "data-chance-and-logic",
@@ -50,16 +52,16 @@ MAIN_SERIES = (
 
 def in_the_main_series(tutorial) -> bool:
     """Whether a tutorial belongs on the main sequence diagram — the
-    module and series this whole report is really about (see
-    `MAIN_MODULE`/`MAIN_SERIES` above), and has a real position in it
-    (`tutorial.order` is 0, falsy, for anything a series' `.order.yaml`
-    file doesn't list). Used to filter out reflections, practice pages,
-    and anything from a different module before drawing the sequence
-    graph, so it only ever shows the main sequence it's meant to describe.
+    course and series this whole report is really about (see
+    `MAIN_COURSE`/`MAIN_SERIES` above), and has a real position in it
+    (`tutorial.order` is 0, falsy, for anything no course file lists).
+    Used to filter out reflections, practice pages, and anything from a
+    different course before drawing the sequence graph, so it only ever
+    shows the main sequence it's meant to describe.
     """
     return bool(
         tutorial.order
-        and tutorial.module == MAIN_MODULE
+        and tutorial.course == MAIN_COURSE
         and tutorial.series in MAIN_SERIES
     )
 
@@ -97,7 +99,10 @@ class Section:
 class Tutorial:
     slug: str
     title: str
-    module: str
+    # The course the map places it on (the main course where that lists
+    # it, else the first course file that does, else ""), the key of its
+    # series there, and its position in that series (0 when unplaced).
+    course: str
     series: str
     order: int
     sections: list[Section]
@@ -108,7 +113,7 @@ class Tutorial:
         this script generates (in a table, in a diagram node) points
         here, which is what makes the curriculum map into a real way of
         finding where something is taught, not just a report about it."""
-        return f"{SITE}/tutorials/{self.module}/{self.slug}.html"
+        return f"{SITE}/tutorials/{self.slug}.html"
 
 
 @dataclass
@@ -161,25 +166,59 @@ def newest_live(paths: list[Path]) -> set[Path]:
     The rule matches build.py's: the newest `live` release answers for the
     tutorial, and where none is live the newest of what there is does.
     """
-    families: dict[tuple[str, str], list[tuple[tuple, Path]]] = {}
+    families: dict[str, list[tuple[tuple, Path]]] = {}
     for path in paths:
         text = path.read_text()
         if not text.startswith("---\n"):
             continue
         meta = yaml.safe_load(text[4:text.index("\n---\n", 4)])
-        if not meta or "slug" not in meta or "version" not in meta:
+        if not meta or "version" not in meta:
             continue
         match = re.fullmatch(r"(\d{4})\.(\d{2})\.(\d{2})\.(\d+)",
                              str(meta["version"]))
         released = tuple(int(g) for g in match.groups()) if match else (0, 0, 0, 0)
         live = str(meta.get("status", "live")) == "live"
-        key = (str(meta.get("module", "")), str(meta["slug"]))
-        families.setdefault(key, []).append(((live, released), path))
+        families.setdefault(id_of(path), []).append(((live, released), path))
 
     keep = set()
     for versions in families.values():
         keep.add(max(versions, key=lambda pair: pair[0])[1])
     return keep
+
+
+VERSION_FILE_RE = re.compile(r"^v\d{4}\.\d{2}\.\d{2}\.\d+$")
+
+
+def id_of(path: Path) -> str:
+    """A page's id, the way build.py reads it: the file's stem, except that
+    a frozen release (`v<version>.md`) is a version of its folder's tutorial."""
+    return path.parent.name if VERSION_FILE_RE.match(path.stem) else path.stem
+
+
+def placements() -> dict[str, tuple[str, str, int]]:
+    """Where the course files put each id: (course, series key, position),
+    the main course winning where it lists the id, else the first course
+    in `courses/index.yaml` order that does. Read here rather than from
+    build.py so this script stays a plain reader of the same files."""
+    found: dict[str, tuple[str, str, int]] = {}
+    if not COURSES.is_dir():
+        return found
+    order: list[str] = []
+    index = COURSES / "index.yaml"
+    if index.is_file():
+        order = (yaml.safe_load(index.read_text()) or {}).get("order") or []
+    files = {p.stem: p for p in COURSES.glob("*.yaml") if p.stem not in ("index", "redirects")}
+    ordered = [c for c in order if c in files] + sorted(c for c in files if c not in order)
+    if MAIN_COURSE in ordered:
+        ordered.remove(MAIN_COURSE)
+        ordered.insert(0, MAIN_COURSE)
+    for course in ordered:
+        data = yaml.safe_load(files[course].read_text()) or {}
+        for series in data.get("contents") or []:
+            key = re.sub(r"[^a-z0-9]+", "-", str(series.get("title", "")).lower()).strip("-")
+            for position, ident in enumerate(series.get("tutorials") or [], start=1):
+                found.setdefault(str(ident), (course, key, position))
+    return found
 
 
 def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
@@ -194,8 +233,9 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
     of those should appear as "where this outcome is taught."
     """
     tutorials = []
-    sources = sorted(TUTORIALS.rglob("*.md"))
+    sources = sorted(TUTORIALS.glob("*/*.md"))
     current = newest_live(sources)
+    placed = placements()
     for path in sources:
         if path not in current:
             # A frozen release. Still built and still readable; not the answer
@@ -236,29 +276,22 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
             # cannot be the answer to "where is this taught?".
             continue
 
+        course, series, order = placed.get(id_of(path), ("", "", 0))
         tutorials.append(
             Tutorial(
-                slug=str(meta["slug"]),
+                slug=id_of(path),
                 title=str(meta["title"]),
-                module=str(meta["module"]),
-                series=str(meta["series"]),
-                order=0,  # filled in below, from the series' order file
+                course=course,
+                series=series,
+                order=order,
                 sections=sections,
             )
         )
 
-    for path in sorted(TUTORIALS.rglob("*.order.yaml")):
-        listed = (yaml.safe_load(path.read_text()) or {}).get("order") or []
-        position = {slug: index for index, slug in enumerate(listed, start=1)}
-        module = path.parent.name
-        for tutorial in tutorials:
-            if tutorial.module == module and tutorial.slug in position:
-                tutorial.order = position[tutorial.slug]
-
     main = sorted(
         (
             t for t in tutorials
-            if t.module == MAIN_MODULE and t.series in MAIN_SERIES and t.order
+            if t.course == MAIN_COURSE and t.series in MAIN_SERIES and t.order
         ),
         key=lambda t: (MAIN_SERIES.index(t.series), t.order),
     )
@@ -298,7 +331,7 @@ def back_references(tutorials: list[Tutorial]) -> dict[str, set[int]]:
         refs[tutorial.slug] = {
             earlier.order
             for earlier in tutorials
-            if earlier.module == tutorial.module
+            if earlier.course == tutorial.course
             and (
                 (earlier.series in MAIN_SERIES and tutorial.series in MAIN_SERIES)
                 or earlier.series == tutorial.series

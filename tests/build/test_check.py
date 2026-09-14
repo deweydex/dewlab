@@ -1,8 +1,8 @@
-"""Proof for refactor/check.py — the contributor's tool — on small trees.
-Moves to tests/build/test_check.py in refactor/PLAN.md step 5 (with the
-import path fixed); the tests themselves are the ones TESTS.md §3 names.
+"""Proof for check.py — the contributor's tool — on small trees: each
+Problem against a fixture the build also refuses, each Note against one it
+accepts, and the pull-request offer's promises.
 
-    python3 -m pytest refactor/test_check.py -q
+    python3 -m pytest tests/build/test_check.py -q
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-HERE = Path(__file__).resolve().parent
+DEWLAB = Path(__file__).resolve().parent.parent.parent
 
 
 @pytest.fixture()
@@ -24,7 +24,7 @@ def site(tmp_path: Path, monkeypatch):
     root = tmp_path / "repo"
     (root / "tutorials").mkdir(parents=True)
     (root / "courses").mkdir()
-    sys.path.insert(0, str(HERE))
+    sys.path.insert(0, str(DEWLAB))
     check = importlib.import_module("check")
     importlib.reload(check)
     monkeypatch.setattr(check, "ROOT", root)

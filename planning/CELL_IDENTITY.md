@@ -592,7 +592,7 @@ dewmini's cells did.
 new Settings row, shared verbatim by both pages' existing Texture
 machinery; a `label` parameter through five functions across
 `tutorial_tools.py`, `pyodide-engine.js`, `pyodide-worker.js`; a
-`name`/`nameEl` field on both cell models. `tests/test_build.py`'s
+`name`/`nameEl` field on both cell models. `tests/build/test_tutorial.py`'s
 `test_the_footbar_sits_between_the_editor_and_output` (renamed from an
 assertion the old layout made permanently false) and five e2e tests'
 button-label selectors, updated to read `.dl-btn-label` where they used

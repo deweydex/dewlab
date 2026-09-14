@@ -13,8 +13,7 @@ Every line of output says one thing, in plain words:
 
 The program ends with 1 when there is at least one Problem, and 0 otherwise.
 It needs only Python and PyYAML, and it does not build the site, so it runs
-in a second. Moved to the repository root in refactor/PLAN.md step 2 and
-described for contributors in docs/CHECK_YOUR_WORK.md.
+in a second. docs/CHECK_YOUR_WORK.md describes it for contributors.
 
 When there are no problems it offers to open a pull request: it commits
 and pushes the files it checked (after asking), then opens GitHub's own
@@ -40,8 +39,6 @@ except ImportError:  # pragma: no cover
     sys.exit(1)
 
 ROOT = Path(__file__).resolve().parent
-if ROOT.name == "refactor":  # while this file still lives in refactor/
-    ROOT = ROOT.parent
 TUTORIALS = ROOT / "tutorials"
 COURSES = ROOT / "courses"
 

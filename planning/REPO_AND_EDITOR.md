@@ -24,7 +24,7 @@ build.py
 
 Folders under `/tutorials/` are one per module, named by the same slug that goes in a tutorial's `module` frontmatter field (see CONTENT_AND_FILE_ARCHITECTURE.md). A new module is a new folder — nothing in `build.py` needs to know the set of modules in advance.
 
-Inside a module, each tutorial is a folder of its own, holding its markdown, its practice page, its glossary, any frozen past releases and any pictures it uses. A module's order files and `series.yaml` stay at module level, because they describe a series rather than any one tutorial.
+Each tutorial is a folder of its own under `tutorials/`, holding its markdown, its practice page, its glossary, any frozen past releases and any pictures it uses. Where it sits is written in a course file under `courses/`, because that describes a course rather than any one tutorial. (This page predates that change — DECISIONS_LOG 7.172 — and its tree above shows the older layout.)
 
 The original plan had four modules; `mathematics-for-it` and `programming-design-principles` are now taught together, and their tutorials live in `mit-pdp-maths-prog-integration/`. `database-methods` has no outcomes written yet. `planning/STATUS.md` has the current picture.
 

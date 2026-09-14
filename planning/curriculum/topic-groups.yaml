@@ -36,12 +36,12 @@ groups:
       rearrange one without changing what it means, and what to do when
       an equation has no ordinary answer at all.
     tutorials:
-      - { module: mit-pdp-maths-prog-integration, slug: numbers-and-their-families }
-      - { module: mit-pdp-maths-prog-integration, slug: expressions-come-alive }
-      - { module: mit-pdp-maths-prog-integration, slug: rearranging-formulae }
-      - { module: mit-pdp-maths-prog-integration, slug: cracking-equations }
-      - { module: mit-pdp-maths-prog-integration, slug: complex-roots }
-      - { module: mit-pdp-maths-prog-integration, slug: mixed-algebra }
+      - numbers-and-their-families
+      - expressions-come-alive
+      - rearranging-formulae
+      - cracking-equations
+      - complex-roots
+      - mixed-algebra
 
   - key: polynomials-and-graphs
     name: Quadratics, polynomials, and graphing functions
@@ -52,11 +52,11 @@ groups:
       the graph says, and the one shape (the parabola) worth knowing by
       sight.
     tutorials:
-      - { module: mit-pdp-maths-prog-integration, slug: expressions-come-alive }
-      - { module: mit-pdp-maths-prog-integration, slug: drawing-functions }
-      - { module: mit-pdp-maths-prog-integration, slug: parabolas }
-      - { module: mit-pdp-maths-prog-integration, slug: cracking-equations }
-      - { module: mit-pdp-maths-prog-integration, slug: lines-and-distances }
+      - expressions-come-alive
+      - drawing-functions
+      - parabolas
+      - cracking-equations
+      - lines-and-distances
 
   - key: trigonometry
     name: Trigonometry — triangles, circles, and waves
@@ -66,10 +66,10 @@ groups:
       turning. The same handful of numbers describe a rooftop's pitch, a
       game character's aim, and a sound wave.
     tutorials:
-      - { module: mit-pdp-maths-prog-integration, slug: the-unit-circle }
-      - { module: mit-pdp-maths-prog-integration, slug: solving-triangles }
-      - { module: mit-pdp-maths-prog-integration, slug: sine-and-cosine-waves }
-      - { module: mit-pdp-maths-prog-integration, slug: mixed-trigonometry }
+      - the-unit-circle
+      - solving-triangles
+      - sine-and-cosine-waves
+      - mixed-trigonometry
 
   - key: rates-of-change
     name: Rates of change and limits
@@ -78,8 +78,8 @@ groups:
       question that started calculus. What it means to get closer and
       closer to a value without ever quite naming it.
     tutorials:
-      - { module: mit-pdp-maths-prog-integration, slug: rates-of-change }
-      - { module: mit-pdp-maths-prog-integration, slug: approaching-a-limit }
+      - rates-of-change
+      - approaching-a-limit
 
   - key: counting-and-chance
     name: Counting, probability, and chance
@@ -88,8 +88,8 @@ groups:
       arithmetic behind everything from a shuffled deck to a spam
       filter's confidence score.
     tutorials:
-      - { module: mit-pdp-maths-prog-integration, slug: counting-carefully }
-      - { module: mit-pdp-maths-prog-integration, slug: what-are-the-chances }
+      - counting-carefully
+      - what-are-the-chances
 
   - key: logic-and-sets
     name: Logic, sets, and decisions
@@ -99,10 +99,10 @@ groups:
       object, and how both turn into a program that actually chooses
       between paths.
     tutorials:
-      - { module: mit-pdp-maths-prog-integration, slug: logic-and-truth }
-      - { module: mit-pdp-maths-prog-integration, slug: venn-diagrams }
-      - { module: mit-pdp-maths-prog-integration, slug: sets-as-sorted-lists }
-      - { module: mit-pdp-maths-prog-integration, slug: making-decisions }
+      - logic-and-truth
+      - venn-diagrams
+      - sets-as-sorted-lists
+      - making-decisions
 
   - key: data-and-pictures
     name: Working with data, and picturing it
@@ -111,10 +111,10 @@ groups:
       choosing a chart that tells the truth about it rather than just
       looking impressive, are their own skill.
     tutorials:
-      - { module: computational-methods, slug: working-with-tables }
-      - { module: mit-pdp-maths-prog-integration, slug: making-sense-of-data }
-      - { module: mit-pdp-maths-prog-integration, slug: pictures-worth-numbers }
-      - { module: mit-pdp-maths-prog-integration, slug: mixed-data }
+      - working-with-tables
+      - making-sense-of-data
+      - pictures-worth-numbers
+      - mixed-data
 
   - key: matrices
     name: Matrices and linear algebra
@@ -124,12 +124,12 @@ groups:
       photo filter, and a system of equations solved all at once instead
       of one at a time.
     tutorials:
-      - { module: computational-methods, slug: grid-of-numbers }
-      - { module: computational-methods, slug: multiplying-grids }
-      - { module: computational-methods, slug: what-a-matrix-does-to-a-picture }
-      - { module: computational-methods, slug: solving-systems }
-      - { module: computational-methods, slug: undoing-it }
-      - { module: computational-methods, slug: where-chains-lead }
+      - grid-of-numbers
+      - multiplying-grids
+      - what-a-matrix-does-to-a-picture
+      - solving-systems
+      - undoing-it
+      - where-chains-lead
 
   - key: text-generation
     name: Generating text with Markov chains
@@ -139,9 +139,9 @@ groups:
       real book — closely enough to write sentences no one has read
       before.
     tutorials:
-      - { module: computational-methods, slug: a-chain-reads-a-book }
-      - { module: computational-methods, slug: how-much-it-remembers }
-      - { module: computational-methods, slug: whose-voice-is-this }
+      - a-chain-reads-a-book
+      - how-much-it-remembers
+      - whose-voice-is-this
 
   - key: programming-foundations
     name: Programming foundations
@@ -151,19 +151,19 @@ groups:
       handful of ideas every program is built from, whatever language
       it's written in.
     tutorials:
-      - { module: mit-pdp-maths-prog-integration, slug: first-steps }
-      - { module: computational-methods, slug: first-steps }
-      - { module: mit-pdp-maths-prog-integration, slug: storing-and-computing }
-      - { module: mit-pdp-maths-prog-integration, slug: lists-and-sequences }
-      - { module: mit-pdp-maths-prog-integration, slug: repeating-yourself }
-      - { module: mit-pdp-maths-prog-integration, slug: making-decisions }
-      - { module: mit-pdp-maths-prog-integration, slug: finding-things }
-      - { module: mit-pdp-maths-prog-integration, slug: putting-things-in-order }
-      - { module: computational-methods, slug: three-ways-to-make-change }
-      - { module: computational-methods, slug: finding-everything-inside-a-folder }
-      - { module: mit-pdp-maths-prog-integration, slug: building-reusable-tools }
-      - { module: mit-pdp-maths-prog-integration, slug: when-it-goes-wrong }
-      - { module: mit-pdp-maths-prog-integration, slug: mixed-programming }
+      - first-steps
+      - first-steps-cm
+      - storing-and-computing
+      - lists-and-sequences
+      - repeating-yourself
+      - making-decisions
+      - finding-things
+      - putting-things-in-order
+      - three-ways-to-make-change
+      - finding-everything-inside-a-folder
+      - building-reusable-tools
+      - when-it-goes-wrong
+      - mixed-programming
 
   - key: object-oriented-programming
     name: Objects, classes, and building bigger programs
@@ -173,15 +173,15 @@ groups:
       characters — without a separate variable name for every one of
       them.
     tutorials:
-      - { module: fundamentals-of-oop, slug: the-moves-you-already-know }
-      - { module: fundamentals-of-oop, slug: objects-and-classes }
-      - { module: fundamentals-of-oop, slug: the-tools-around-your-code }
-      - { module: fundamentals-of-oop, slug: one-class-many-methods }
-      - { module: fundamentals-of-oop, slug: one-parent-many-children }
-      - { module: fundamentals-of-oop, slug: testing-what-a-class-does }
-      - { module: fundamentals-of-oop, slug: documenting-a-class }
-      - { module: fundamentals-of-oop, slug: a-front-end-for-a-class }
-      - { module: fundamentals-of-oop, slug: mixed-programming-with-objects }
+      - the-moves-you-already-know
+      - objects-and-classes
+      - the-tools-around-your-code
+      - one-class-many-methods
+      - one-parent-many-children
+      - testing-what-a-class-does
+      - documenting-a-class
+      - a-front-end-for-a-class
+      - mixed-programming-with-objects
 
   - key: big-picture
     name: How it all fits together
@@ -190,10 +190,10 @@ groups:
       one project that asks for maths and programming at the same time
       rather than one after the other.
     tutorials:
-      - { module: mit-pdp-maths-prog-integration, slug: how-we-got-here }
-      - { module: mit-pdp-maths-prog-integration, slug: bringing-it-all-together }
-      - { module: mit-pdp-maths-prog-integration, slug: the-team-project }
-      - { module: mit-pdp-maths-prog-integration, slug: critique-and-reflection }
+      - how-we-got-here
+      - bringing-it-all-together
+      - the-team-project
+      - critique-and-reflection
 
   - key: chance-and-simulation
     name: Chance and simulation
@@ -202,11 +202,11 @@ groups:
       possible once you can: answering a question by running something
       thousands of times and counting, rather than by solving it.
     tutorials:
-      - { module: mit-pdp-maths-prog-integration, slug: what-are-the-chances }
-      - { module: computational-methods, slug: leaving-it-to-chance }
-      - { module: computational-methods, slug: counting-darts }
-      - { module: computational-methods, slug: a-model-that-corrects-itself }
-      - { module: computational-methods, slug: when-a-queue-never-clears }
+      - what-are-the-chances
+      - leaving-it-to-chance
+      - counting-darts
+      - a-model-that-corrects-itself
+      - when-a-queue-never-clears
 
   - key: problem-solving-and-debugging
     name: Solving problems and finding faults
@@ -215,7 +215,7 @@ groups:
       program runs but still gives the wrong answer — the habits and
       strategies behind fixing something, not any one language or tool.
     tutorials:
-      - { module: computational-methods, slug: finding-where-it-went-wrong }
+      - finding-where-it-went-wrong
 
   - key: tables-and-queries
     name: Tables, rows, and simple queries
@@ -224,10 +224,10 @@ groups:
       both ideas start — one worked example built up, changed, and joined
       to a second table, alongside a table you build and query yourself.
     tutorials:
-      - { module: database-methods, slug: a-table-is-a-list-of-rows }
-      - { module: database-methods, slug: asking-questions-of-a-table }
-      - { module: database-methods, slug: changing-what-is-in-it }
-      - { module: database-methods, slug: a-second-table-and-a-join }
+      - a-table-is-a-list-of-rows
+      - asking-questions-of-a-table
+      - changing-what-is-in-it
+      - a-second-table-and-a-join
 
   - key: real-data-and-several-tables
     name: Real data across several tables
@@ -238,13 +238,13 @@ groups:
       design of its own — a college timetable, and the query that finds a
       double-booked room or teacher.
     tutorials:
-      - { module: database-methods, slug: designing-a-table-before-you-build-it }
-      - { module: database-methods, slug: loading-a-real-dataset }
-      - { module: database-methods, slug: joining-two-real-tables }
-      - { module: database-methods, slug: charting-a-querys-result }
-      - { module: database-methods, slug: exporting-a-query-to-a-file }
-      - { module: database-methods, slug: a-form-that-writes-a-row }
-      - { module: database-methods, slug: a-college-timetable }
+      - designing-a-table-before-you-build-it
+      - loading-a-real-dataset
+      - joining-two-real-tables
+      - charting-a-querys-result
+      - exporting-a-query-to-a-file
+      - a-form-that-writes-a-row
+      - a-college-timetable
 
   - key: database-practice
     name: Database practice and self-checks
@@ -253,9 +253,9 @@ groups:
       database task by task, with a hint if you get stuck. The second one
       adds a many-to-many table of its own, with a different kind of key.
     tutorials:
-      - { module: database-methods, slug: sql-practice }
-      - { module: database-methods, slug: the-tentacular-plushies-quiz }
-      - { module: database-methods, slug: the-library-loans-quiz }
+      - sql-practice
+      - the-tentacular-plushies-quiz
+      - the-library-loans-quiz
 
   - key: web-authoring-orientation
     name: A GitHub account, an editor, and a published page
@@ -264,14 +264,14 @@ groups:
       you use every time you change something: saving a file on your own
       computer, and publishing a change through GitHub.
     tutorials:
-      - { module: web-authoring, slug: how-the-pieces-fit }
-      - { module: web-authoring, slug: a-github-account }
-      - { module: web-authoring, slug: issues-and-pull-requests }
-      - { module: web-authoring, slug: an-editor }
-      - { module: web-authoring, slug: your-copy-of-the-starter }
-      - { module: web-authoring, slug: publish-it }
-      - { module: web-authoring, slug: the-two-loops }
-      - { module: web-authoring, slug: the-inspector }
+      - how-the-pieces-fit
+      - a-github-account
+      - issues-and-pull-requests
+      - an-editor
+      - your-copy-of-the-starter
+      - publish-it
+      - the-two-loops
+      - the-inspector
 
   - key: web-authoring-reference
     name: Web authoring reference shelf
@@ -281,10 +281,10 @@ groups:
       will not run, HTML/CSS/SQL syntax to look up, and project ideas
       once you have a skill and want to practise it.
     tutorials:
-      - { module: web-authoring, slug: faq }
-      - { module: web-authoring, slug: troubleshooting }
-      - { module: web-authoring, slug: quick-reference }
-      - { module: web-authoring, slug: project-ideas }
+      - faq
+      - troubleshooting
+      - quick-reference
+      - project-ideas
 
   - key: web-first-page
     name: "Your first page: HTML basics"
@@ -294,13 +294,13 @@ groups:
       that still make sense when they fail to load; and three kinds of
       link.
     tutorials:
-      - { module: web-authoring, slug: a-page-is-files }
-      - { module: web-authoring, slug: the-skeleton }
-      - { module: web-authoring, slug: headings-and-emphasis }
-      - { module: web-authoring, slug: sections-that-mean-something }
-      - { module: web-authoring, slug: images-and-alt-text }
-      - { module: web-authoring, slug: three-kinds-of-link }
-      - { module: web-authoring, slug: navigation }
+      - a-page-is-files
+      - the-skeleton
+      - headings-and-emphasis
+      - sections-that-mean-something
+      - images-and-alt-text
+      - three-kinds-of-link
+      - navigation
 
   - key: web-css-basics
     name: "CSS basics: rules, boxes and selectors"
@@ -309,12 +309,12 @@ groups:
       every element's content, units that hold their ground differently,
       and picking out exactly the elements you mean.
     tutorials:
-      - { module: web-authoring, slug: a-rule-and-where-it-lives }
-      - { module: web-authoring, slug: variables-and-colour }
-      - { module: web-authoring, slug: the-box }
-      - { module: web-authoring, slug: text-and-units }
-      - { module: web-authoring, slug: selectors-and-classes }
-      - { module: web-authoring, slug: the-container }
+      - a-rule-and-where-it-lives
+      - variables-and-colour
+      - the-box
+      - text-and-units
+      - selectors-and-classes
+      - the-container
 
   - key: web-interactive-css
     name: Interactive and responsive CSS
@@ -323,10 +323,10 @@ groups:
       a reader triggers with a pointer or a keyboard, smooth transitions,
       and CSS that only applies below a chosen screen width.
     tutorials:
-      - { module: web-authoring, slug: position-and-the-sticky-header }
-      - { module: web-authoring, slug: hover-and-focus }
-      - { module: web-authoring, slug: transitions-and-transforms }
-      - { module: web-authoring, slug: media-queries }
+      - position-and-the-sticky-header
+      - hover-and-focus
+      - transitions-and-transforms
+      - media-queries
 
   - key: web-layout-and-naming
     name: Flexbox, grid, and naming your CSS
@@ -336,11 +336,11 @@ groups:
       a naming pattern that says what a class is for, and CSS that moves
       on its own or answers a click.
     tutorials:
-      - { module: web-authoring, slug: flexible-images }
-      - { module: web-authoring, slug: flexbox-first-steps }
-      - { module: web-authoring, slug: named-grid-areas }
-      - { module: web-authoring, slug: css-variables-and-bem }
-      - { module: web-authoring, slug: keyframes-and-the-checkbox-hack }
+      - flexible-images
+      - flexbox-first-steps
+      - named-grid-areas
+      - css-variables-and-bem
+      - keyframes-and-the-checkbox-hack
 
   - key: web-several-pages
     name: A site with several pages
@@ -352,12 +352,12 @@ groups:
       where HTML, CSS and tools like WordPress or Carrd fit next to what
       you just did by hand.
     tutorials:
-      - { module: web-authoring, slug: planning-a-site }
-      - { module: web-authoring, slug: pages-and-navigation }
-      - { module: web-authoring, slug: cards-in-a-row }
-      - { module: web-authoring, slug: a-grid-gallery }
-      - { module: web-authoring, slug: navigation-on-a-phone }
-      - { module: web-authoring, slug: a-form }
-      - { module: web-authoring, slug: images-and-file-size }
-      - { module: web-authoring, slug: documenting-what-you-built }
-      - { module: web-authoring, slug: conclusions-and-next-steps }
+      - planning-a-site
+      - pages-and-navigation
+      - cards-in-a-row
+      - a-grid-gallery
+      - navigation-on-a-phone
+      - a-form
+      - images-and-file-size
+      - documenting-what-you-built
+      - conclusions-and-next-steps

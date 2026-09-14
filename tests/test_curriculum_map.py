@@ -18,7 +18,8 @@ import curriculum_map as cm  # noqa: E402
 
 @pytest.fixture()
 def repo(tmp_path, monkeypatch):
-    (tmp_path / "tutorials" / "demo").mkdir(parents=True)
+    (tmp_path / "tutorials").mkdir(parents=True)
+    (tmp_path / "courses").mkdir(parents=True)
     (tmp_path / "planning" / "curriculum").mkdir(parents=True)
 
     (tmp_path / "planning" / "curriculum" / "outcomes.yaml").write_text(
@@ -34,6 +35,7 @@ def repo(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(cm, "ROOT", tmp_path)
     monkeypatch.setattr(cm, "TUTORIALS", tmp_path / "tutorials")
+    monkeypatch.setattr(cm, "COURSES", tmp_path / "courses")
     monkeypatch.setattr(cm, "OUTCOMES", tmp_path / "planning" / "curriculum" / "outcomes.yaml")
     monkeypatch.setattr(cm, "OUT_OF_SCOPE", tmp_path / "planning" / "curriculum" / "out-of-scope.yaml")
     monkeypatch.setattr(cm, "PROPOSED", tmp_path / "planning" / "curriculum" / "proposed.yaml")
@@ -41,13 +43,24 @@ def repo(tmp_path, monkeypatch):
     return tmp_path
 
 
+def course_file(repo, ids: list[str], course: str = "demo", series: str = "S") -> None:
+    """`courses/<course>.yaml` with one series listing `ids` in order."""
+    (repo / "courses" / f"{course}.yaml").write_text(
+        f"title: Demo\ncontents:\n  - title: {series}\n    tutorials:\n"
+        + "".join(f"      - {i}\n" for i in ids)
+    )
+
+
 def write_tutorial(repo, covers: str = "", heading: str = "A Real Section"):
-    (repo / "tutorials" / "demo" / "sample.md").write_text(
-        '---\ntitle: "Sample"\nslug: sample\nmodule: demo\n'
-        'year: "2026-2027"\nseries: s\norder: 1\nversion: 2026.08.23.1\n'
+    folder = repo / "tutorials" / "sample"
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / "sample.md").write_text(
+        '---\ntitle: "Sample"\n'
+        'year: "2026-2027"\nversion: 2026.08.23.1\n'
         + covers
         + f"---\n\n# Sample\n\n## {heading}\n\nProse.\n"
     )
+    course_file(repo, ["sample"])
 
 
 class TestWhatItRefusesToBuild:
@@ -106,7 +119,7 @@ class TestProseExcludesTheBibliography:
         )
         monkeypatch.setattr(cm, "TUTORIALS", tmp_path)
         tutorial = cm.Tutorial(
-            slug="sample", title="Sample", module="mod", series="s", order=1,
+            slug="sample", title="Sample", course="mod", series="s", order=1,
             sections=[],
         )
         prose = cm.prose_of(tutorial)
@@ -142,16 +155,15 @@ class TestStatus:
 
 class TestBackReferences:
     def order_file(self, repo, slugs):
-        (repo / "tutorials" / "demo" / "s.order.yaml").write_text(
-            "order:\n" + "".join(f"  - {s}\n" for s in slugs)
-        )
+        course_file(repo, slugs)
 
     def test_it_finds_an_earlier_tutorial_named_in_the_text(self, repo):
         titles = {1: "Counting Carefully", 2: "What Are the Chances"}
         for n in (1, 2):
-            (repo / "tutorials" / "demo" / f"t{n}.md").write_text(
-                f'---\ntitle: "{titles[n]}"\nslug: t{n}\nmodule: demo\n'
-                f'year: "2026-2027"\nseries: s\nversion: 2026.08.23.1\n---\n\n# {titles[n]}\n\n'
+            (repo / "tutorials" / f"t{n}").mkdir()
+            (repo / "tutorials" / f"t{n}" / f"t{n}.md").write_text(
+                f'---\ntitle: "{titles[n]}"\n'
+                f'year: "2026-2027"\nversion: 2026.08.23.1\n---\n\n# {titles[n]}\n\n'
                 + ("Recall your work from Counting Carefully.\n" if n == 2 else "Prose.\n")
             )
         self.order_file(repo, ["t1", "t2"])
@@ -163,9 +175,10 @@ class TestBackReferences:
     def test_it_ignores_a_tutorial_naming_itself_or_a_later_one(self, repo):
         titles = {1: "Counting Carefully", 2: "What Are the Chances"}
         for n in (1, 2):
-            (repo / "tutorials" / "demo" / f"t{n}.md").write_text(
-                f'---\ntitle: "{titles[n]}"\nslug: t{n}\nmodule: demo\n'
-                f'year: "2026-2027"\nseries: s\nversion: 2026.08.23.1\n---\n\n# {titles[n]}\n\n'
+            (repo / "tutorials" / f"t{n}").mkdir()
+            (repo / "tutorials" / f"t{n}" / f"t{n}.md").write_text(
+                f'---\ntitle: "{titles[n]}"\n'
+                f'year: "2026-2027"\nversion: 2026.08.23.1\n---\n\n# {titles[n]}\n\n'
                 "Covered in Counting Carefully and later in What Are the Chances.\n"
             )
         self.order_file(repo, ["t1", "t2"])
@@ -379,16 +392,15 @@ class TestSeveralReleasesOfOneTutorial:
 
     def release(self, repo, name: str, version: str, status: str = "live",
                 slug: str = "sample", heading: str = "A Real Section") -> Path:
-        folder = repo / "tutorials" / "demo" / slug
+        folder = repo / "tutorials" / slug
         folder.mkdir(parents=True, exist_ok=True)
         path = folder / name
         path.write_text(
-            f'---\ntitle: "Sample"\nslug: {slug}\nmodule: demo\n'
-            f'year: "2026-2027"\nseries: s\nversion: {version}\n'
+            f'---\ntitle: "Sample"\n'
+            f'year: "2026-2027"\nversion: {version}\n'
             f"status: {status}\n---\n\n# Sample\n\n## {heading}\n\nProse.\n"
         )
-        (repo / "tutorials" / "demo" / "s.order.yaml").write_text(
-            f"order:\n  - {slug}\n")
+        course_file(repo, [slug])
         return path
 
     def test_one_tutorial_however_many_releases(self, repo):
@@ -421,6 +433,5 @@ class TestSeveralReleasesOfOneTutorial:
     def test_two_different_tutorials_are_still_two(self, repo):
         self.release(repo, "sample.md", "2026.08.24.1", slug="sample")
         self.release(repo, "other.md", "2026.08.24.1", slug="other")
-        (repo / "tutorials" / "demo" / "s.order.yaml").write_text(
-            "order:\n  - sample\n  - other\n")
+        course_file(repo, ["sample", "other"])
         assert len(cm.load_tutorials(cm.load_outcomes()[0])) == 2

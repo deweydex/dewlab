@@ -2995,6 +2995,15 @@ p code, li code {
 }
 .dl-practice-back { margin-top: 0; }
 
+/* "This page is also part of …": one line under the heading on a page
+   that more than one course lists (build.py's also_part_of()). */
+.dl-also-part-of {
+  max-width: var(--dl-line-width);
+  margin: -0.4rem 0 1.4rem;
+  font-size: 0.92rem;
+  color: var(--dl-muted);
+}
+
 .dl-practice-link > p { margin: 0; }
 .dl-practice-link > p + p { margin-top: 0.55rem; }
 .dl-practice-mixed { color: var(--dl-muted); }

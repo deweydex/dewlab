@@ -421,7 +421,7 @@ the quiz. The web track waits.
   after two errors, visible and closed after the third, not re-revealed
   by a fourth, hidden again after Reset, never revealed once `expect`
   holds.
-- `tests/test_build.py`: `data-cell` naming a missing cell fails the
+- `tests/build/test_tutorial.py`: `data-cell` naming a missing cell fails the
   build; `data-after` with an unknown term fails; a fold without
   `data-cell` is unchanged.
 - `tests/test_tutorial_tools.py`: `holds()` under CPython, including the
@@ -510,7 +510,7 @@ Ordered so each step is useful on its own and none needs the one after.
 
 1. **Build side.** `data-cell`/`data-after` on the `dl-hint` fold,
    validated; `expect:` parsed off the header if adopted; both carried in
-   the manifest. Tests in `test_build.py`. Docs: `WRITING_TUTORIALS.md`
+   the manifest. Tests in `tests/build/test_tutorial.py`. Docs: `WRITING_TUTORIALS.md`
    gains a "Hints that appear as a reader works" section beside the two
    folds; the style guide gains a subsection on the stages.
 2. **Runtime side.** Counters, trigger evaluation, reveal, reset, the

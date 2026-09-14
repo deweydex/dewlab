@@ -3,7 +3,7 @@
 Written 2026-09-10, at Josh's request, as the plan for retiring `dewstack`
 as a separately-hosted site and making Database Methods (5N0783) and Web
 Authoring (5N1910) dewlab modules instead. The two module folders this
-work fills are not new: `tutorials/database-methods/` has sat empty since
+work fills are not new: the `database-methods` module has sat empty since
 the FOOP module shipped (`planning/ROADMAP.md`), and the homepage already
 carries "Coming soon — see the earlier version on dewstack" cards for
 both (`build.py`, the module-card list, ~line 2270). This document is
@@ -249,8 +249,8 @@ hash it was taken from and what it's for, so nobody mistakes it for a
 live copy or tries to build from it directly.
 
 What it isn't: a place to edit. Every file in it gets read from while the
-real port happens directly in `tutorials/database-methods/`, a new
-`tutorials/web-authoring/` folder, and new `assets/` files — never edited
+real port happens directly in the `database-methods` module, a new
+`web-authoring` module, and new `assets/` files — never edited
 in place inside staging, and never the thing a pull request ships. Once a
 module's port is done and running in front of a class, its slice of
 staging is deleted. dewstack's own copy stays untouched in its own
@@ -281,7 +281,7 @@ The same bar dewstack already used, since it's dewlab's own bar too:
    student-visible. Reversible by deleting a folder.
 2. **Data engine + module — done.** A `sql exec` fence in `build.py` and
    `tutorial-runtime.js`, calling the existing `_run_sql_cell()`; the 12
-   pages ported into `tutorials/database-methods/` through §6's
+   pages ported into the `database-methods` module through §6's
    checklist, preserving dewstack's slugs, with the QQI outcome
    descriptors 5N0783 needs added to `planning/curriculum/outcomes.yaml`;
    the homepage card flipped and live. See the ledger (§9).

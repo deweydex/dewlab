@@ -1,9 +1,4 @@
 # old address -> new address, one per line; build.py writes a stub page at each old one.
-computational-methods.html: courses/computational-methods.html
-database-methods.html: courses/database-methods.html
-fundamentals-of-oop.html: courses/fundamentals-of-oop.html
-mit-pdp-maths-prog-integration.html: courses/mit-pdp-maths-prog-integration.html
-programming-design-principles.html: courses/programming-design-principles.html
 tutorials/computational-methods/a-chain-reads-a-book-practice.html: tutorials/a-chain-reads-a-book-practice.html
 tutorials/computational-methods/a-chain-reads-a-book.html: tutorials/a-chain-reads-a-book.html
 tutorials/computational-methods/a-model-that-corrects-itself-practice.html: tutorials/a-model-that-corrects-itself-practice.html
@@ -135,7 +130,7 @@ tutorials/mit-pdp-maths-prog-integration/the-team-project.html: tutorials/the-te
 tutorials/mit-pdp-maths-prog-integration/the-unit-circle-practice.html: tutorials/the-unit-circle-practice.html
 tutorials/mit-pdp-maths-prog-integration/the-unit-circle.html: tutorials/the-unit-circle.html
 tutorials/mit-pdp-maths-prog-integration/venn-diagrams.html: tutorials/venn-diagrams.html
-tutorials/mit-pdp-maths-prog-integration/venn-diagrams/venn-diagrams-practice.html: tutorials/venn-diagrams/venn-diagrams-practice.html
+tutorials/mit-pdp-maths-prog-integration/venn-diagrams-practice.html: tutorials/venn-diagrams-practice.html
 tutorials/mit-pdp-maths-prog-integration/what-are-the-chances-practice.html: tutorials/what-are-the-chances-practice.html
 tutorials/mit-pdp-maths-prog-integration/what-are-the-chances.html: tutorials/what-are-the-chances.html
 tutorials/mit-pdp-maths-prog-integration/what-are-the-chances/v2026.08.23.1.html: tutorials/what-are-the-chances/v2026.08.23.1.html
@@ -184,4 +179,3 @@ tutorials/web-authoring/transitions-and-transforms.html: tutorials/transitions-a
 tutorials/web-authoring/troubleshooting.html: tutorials/troubleshooting.html
 tutorials/web-authoring/variables-and-colour.html: tutorials/variables-and-colour.html
 tutorials/web-authoring/your-copy-of-the-starter.html: tutorials/your-copy-of-the-starter.html
-web-authoring.html: courses/web-authoring.html

@@ -40,8 +40,8 @@ as things change — not a pitch.
 - **The reading surface**: serif prose, generous margins, and reader
   controls for theme, font, size, and line width.
 - **Contents and navigation**: an auto-built table of contents (with
-  repeated sub-headings filtered out), a sticky masthead, module order
-  from `tutorials/modules.yaml`.
+  repeated sub-headings filtered out), a sticky masthead, course order
+  from `courses/index.yaml`.
 - **The topic tree**: a visual map of outcomes, their prerequisites, and
   which tutorial teaches each one, with pan/zoom (`assets/tree.js`).
 - **Browse by topic** (`topics.html`): the tree's sibling for a different

@@ -13,16 +13,14 @@ that a student runs. The differences are what this script handles.
     `%matplotlib inline` and `!pip install …` are notebook-server instructions;
     in dewlab the first is unnecessary and the second cannot work.
 
-What it will not do is invent frontmatter it cannot know. `module`, `series`
-and `year` are yours to supply; `title` comes from the notebook's first
-heading, and `order` from the number in its filename where there is one.
+What it will not do is invent what it cannot know. `year` is yours to
+supply; `title` comes from the notebook's first heading; the id is the
+notebook's filename, slugified. Where the tutorial sits on a course is not in
+the file at all — add the id to a course file under courses/ afterwards.
 
-    python3 dev/from_notebook.py notebooks/*.ipynb \\
-        --module mit-pdp-maths-prog-integration \\
-        --series programming-foundations \\
-        --year 2026-2027
+    python3 dev/from_notebook.py notebooks/*.ipynb --year 2026-2027
 
-Writes into tutorials/<module>/ unless --out says otherwise. Existing files are
+Writes tutorials/<id>/<id>.md unless --out says otherwise. Existing files are
 left alone unless --force.
 """
 
@@ -146,8 +144,6 @@ def cell_id(heading: str | None, used: dict[str, int]) -> str:
 def convert(
     notebook: Path,
     *,
-    module: str,
-    series: str,
     year: str,
     default_order: int = 1,
 ) -> tuple[str, Result]:
@@ -223,10 +219,7 @@ def convert(
         [
             "---",
             f'title: "{title.replace(chr(34), chr(39))}"',
-            f"slug: {slug}",
-            f"module: {module}",
             f'year: "{year}"',
-            f"series: {series}",
             f"version: {today_release()}",
             "---",
         ]
@@ -261,39 +254,32 @@ def shown(path: Path) -> str:
 def main() -> int:
     """The command-line entry point: parses arguments, converts every
     notebook given on the command line (via `convert()` above), and
-    writes each result to a `.md` file under `tutorials/<module>/` — one
-    tutorial per notebook — printing a short report of what was written,
+    writes each result to `tutorials/<id>/<id>.md` — one tutorial per
+    notebook — printing a short report of what was written,
     what was skipped, and why. A notebook that fails to convert doesn't
     stop the whole run; it's reported and the rest continue, so one bad
     file in a batch of many doesn't block all the others.
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("notebooks", nargs="+", type=Path)
-    parser.add_argument("--module", required=True, help="module slug, and the folder name")
-    parser.add_argument("--series", required=True)
     parser.add_argument("--year", default="2026-2027")
     parser.add_argument("--out", type=Path, default=None)
     parser.add_argument("--force", action="store_true", help="overwrite existing files")
     args = parser.parse_args()
 
-    out_dir = args.out or (ROOT / "tutorials" / args.module)
+    out_dir = args.out or (ROOT / "tutorials")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     written = 0
     for index, notebook in enumerate(sorted(args.notebooks), start=1):
         try:
-            text, result = convert(
-                notebook,
-                module=args.module,
-                series=args.series,
-                year=args.year,
-                default_order=index,
-            )
+            text, result = convert(notebook, year=args.year, default_order=index)
         except ConversionError as exc:
             print(f"skipped — {exc}", file=sys.stderr)
             continue
 
-        target = out_dir / f"{result.slug}.md"
+        target = out_dir / result.slug / f"{result.slug}.md"
+        target.parent.mkdir(parents=True, exist_ok=True)
         if target.exists() and not args.force:
             print(f"exists, left alone: {shown(target)}")
             continue

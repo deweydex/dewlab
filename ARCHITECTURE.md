@@ -44,8 +44,8 @@ file name rewritten to survive the current release sitting one level above
 its own folder (`resolve_assets()`) — a missing `src=` target fails the
 build like a dead `tutorial:` link; a missing `href=` target is left alone,
 since plenty of links aren't a local asset at all. Where a page ends up is
-decided by its frontmatter's `module` and `slug`, never by the source
-file's location.
+decided by its id — its folder name — and nothing in its frontmatter:
+`tutorials/<id>.html`.
 
 The pipeline, in order:
 
@@ -299,7 +299,7 @@ static sources as §2, minus the live layer — the editor has no interpreter
 to read from).
 
 The link picker (`matchTutorials()`, the toggle above the prose editor)
-searches every tutorial by title, slug or module and inserts
+searches every tutorial by title, id or course and inserts
 `[title](tutorial:slug#anchor)` at the cursor. Insertion is
 `insertLink(title, href)` (`vendor-src/milkdown-entry.js`), which builds the
 text node and its link mark directly against the schema rather than going
@@ -432,7 +432,8 @@ python3 -m pytest tests --ignore=tests/e2e   the fast ones, no browser
 ```
 
 - **`tests/test_*.py`** — unit tests, no browser, no Pyodide. Mostly
-  `build.py`'s own logic (`test_build.py`) and `tutorial_tools.py`'s
+  `build.py`'s own logic (`tests/build/`, one file per thing the build
+  reads or writes) and `tutorial_tools.py`'s
   rendering rules under plain CPython (`test_tutorial_tools.py`). This is
   what CI's `tests` job runs on every push and PR.
 - **`tests/e2e/test_editor.py`** — the authoring editor, driven with

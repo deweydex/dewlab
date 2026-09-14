@@ -42,7 +42,7 @@ def write(tmp_path: Path, name: str, data: dict) -> Path:
 
 
 def convert(path: Path, **kwargs):
-    options = {"module": "a-module", "series": "a-series", "year": "2026-2027"}
+    options = {"year": "2026-2027"}
     options.update(kwargs)
     return fn.convert(path, **options)
 
@@ -78,10 +78,10 @@ class TestFrontmatter:
 
     def test_the_supplied_fields_are_written_through(self, tmp_path):
         path = write(tmp_path, "T.ipynb", notebook(("markdown", "# T")))
-        text, _ = convert(path, module="mit-pdp", series="maths", year="2027-2028")
-        assert "module: mit-pdp" in text
-        assert "series: maths" in text
+        text, _ = convert(path, year="2027-2028")
         assert 'year: "2027-2028"' in text
+        # Where the tutorial sits is not the file's to say.
+        assert "module:" not in text and "series:" not in text and "slug:" not in text
         assert f"version: {fn.today_release()}" in text
 
     def test_a_quote_in_the_title_does_not_break_the_frontmatter(self, tmp_path):
@@ -208,24 +208,24 @@ class TestTheOutputActuallyBuilds:
             ("markdown", "## A second section"),
             ("code", "print('done')"),
         ))
-        text, result = fn.convert(
-            source, module="fixtures", series="s", year="2026-2027"
-        )
+        text, result = fn.convert(source, year="2026-2027")
 
         repo = tmp_path / "repo"
-        (repo / "tutorials" / "fixtures").mkdir(parents=True)
-        (repo / "tutorials" / "fixtures" / f"{result.slug}.md").write_text(text)
-        # Ordering lives in one file per series now, not in the frontmatter, so
-        # a converted notebook has to be listed before the build will place it.
-        (repo / "tutorials" / "fixtures" / "s.order.yaml").write_text(
-            f"order:\n  - {result.slug}\n"
+        (repo / "tutorials" / result.slug).mkdir(parents=True)
+        (repo / "tutorials" / result.slug / f"{result.slug}.md").write_text(text)
+        # Where a tutorial sits is a course file's business, so a converted
+        # notebook has to be listed before the build will place it.
+        (repo / "courses").mkdir()
+        (repo / "courses" / "fixtures.yaml").write_text(
+            f"title: Fixtures\ncontents:\n  - title: S\n    tutorials: [{result.slug}]\n"
         )
         (repo / "assets").mkdir()
         (repo / "assets" / "shell.html").write_text(
             (Path(__file__).resolve().parent.parent / "assets" / "shell.html").read_text()
         )
         for name, value in {
-            "ROOT": repo, "TUTORIALS": repo / "tutorials", "SETUP": repo / "setup",
+            "ROOT": repo, "TUTORIALS": repo / "tutorials", "COURSES": repo / "courses",
+            "SETUP": repo / "setup",
             "DATA": repo / "data", "ASSETS": repo / "assets",
             "SHELL": repo / "assets" / "shell.html", "OUT": repo / "site",
         }.items():
@@ -236,7 +236,7 @@ class TestTheOutputActuallyBuilds:
         # all) the build always writes alongside it.
         alongside = {"index.html", "features.html", "all-tutorials.html",
                      "tree.html", "about.html", "editor.html", "fixtures.html",
-                     "search-index.json",
+                     "search-index.json", "routes.json",
                      "reference-index.json"}
         pages = [path for path in written if path.name not in alongside]
         assert len(pages) == 1, [path.name for path in pages]
