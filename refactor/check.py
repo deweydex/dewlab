@@ -512,7 +512,8 @@ def main(argv: list[str]) -> int:
         print(f"{report.problems} problem{'s' if report.problems != 1 else ''} to fix.")
         return 1
     print("No problems. You can open a pull request.")
-    offer_pull_request(report, mode)
+    if mode != "no":
+        offer_pull_request(report, mode)
     return 0
 
 
