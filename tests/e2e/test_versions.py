@@ -291,7 +291,6 @@ class TestWhichNoticeComesFirst:
 class TestTheSwitchInSettings:
     def test_it_starts_on_where_i_left_off(self, tab, base_url):
         opened(tab, base_url, DEFAULT_PAGE)
-        _open_panel(tab, "#dl-importsexports-toggle")
         pressed = tab.eval_on_selector_all(
             "#dl-settings-versions [data-versions-follow] button",
             "els => els.filter(e => e.getAttribute('aria-pressed') === 'true')"
@@ -301,7 +300,6 @@ class TestTheSwitchInSettings:
 
     def test_it_lists_the_releases_too(self, tab, base_url):
         opened(tab, base_url, DEFAULT_PAGE)
-        _open_panel(tab, "#dl-importsexports-toggle")
         names = tab.eval_on_selector_all(
             "#dl-versions-settings .dl-version-name",
             "els => els.map(e => e.textContent)",
@@ -316,7 +314,6 @@ class TestTheSwitchInSettings:
         opened(tab, base_url, DEFAULT_PAGE)
         assert tab.url.endswith("v2026.06.02.1.html")
 
-        _open_panel(tab, "#dl-importsexports-toggle")
         tab.click("#dl-settings-versions [data-versions-follow] button[data-value=newest]")
         tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
         assert tab.url.endswith(f"{SLUG}.html")
@@ -325,7 +322,6 @@ class TestTheSwitchInSettings:
         opened(tab, base_url, DEFAULT_PAGE)
         seed(tab, {"shared-one": "print('mine')"}, version="2026.06.02.1")
         opened(tab, base_url, DEFAULT_PAGE)
-        _open_panel(tab, "#dl-importsexports-toggle")
         tab.click("#dl-settings-versions [data-versions-follow] button[data-value=newest]")
         tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
 

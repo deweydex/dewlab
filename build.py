@@ -1658,31 +1658,57 @@ def nav_for(tutorial: Tutorial, members: list[Tutorial]) -> str:
     return "".join(parts)
 
 
-def render_series_nav(tutorial: Tutorial, members: list[Tutorial]) -> str:
-    """The whole series, in reading order, for the left-anchored navigation
-    panel (planning/SIDEBAR_CONTENT.md). `nav_for()` already gives a reader
-    the tutorial immediately before and after this one; this is what lets
-    them jump to any point in the series, not just the one next to them.
+def contents_items_html(tutorial: Tutorial) -> tuple[str, int]:
+    """This page's own sections, as the list behind the tree's own-page rung
+    (crumb_trail_html()) — what the in-page "Contents" list used to be
+    before the tree absorbed it, so a reader finds every level of "where am
+    I" in one place, down to the section. Returns the list markup and how
+    many sections it holds.
 
-    A tutorial with no series position — archived, or a practice page —
-    gets nothing here, the same honest shape `nav_for()` already uses for
-    that case: there is nowhere in the series to place it.
+    Sub-headings nest under the section they belong to rather than sitting
+    in one flat list, because the flat version of an eight-section tutorial
+    with "Your turn" under half of them is unreadable — and a sub-heading
+    that repeats ("Your turn" five times) is left out, since five entries
+    reading the same is a list nobody can choose from. Empty for a page
+    with fewer than two sections: a contents list for a single heading is
+    furniture.
     """
-    if tutorial not in members:
-        return ""
-    items = []
-    for index, member in enumerate(members, start=1):
-        if member is tutorial:
-            items.append(
-                f'<li class="dl-seriesnav-current" aria-current="page">'
-                f"{index}. {html.escape(member.title)}</li>"
-            )
-        else:
-            href = link_between(tutorial, member)
-            items.append(
-                f'<li><a href="{href}">{index}. {html.escape(member.title)}</a></li>'
-            )
-    return '<ol class="dl-seriesnav-series">' + "".join(items) + "</ol>"
+    def at_level(entries: list, level: int) -> list:
+        # The `toc` extension hangs everything under the page's single `#`
+        # heading, so sections are grandchildren rather than children;
+        # searching by level rather than depth means a tutorial's heading
+        # shape cannot break this.
+        found = []
+        for entry in entries:
+            if entry.get("level") == level:
+                found.append(entry)
+            else:
+                found.extend(at_level(entry.get("children") or [], level))
+        return found
+
+    sections = at_level(tutorial.toc, 2)
+    if len(sections) < 2:
+        return "", 0
+    names = [str(s.get("name", "")) for s in at_level(tutorial.toc, 3)]
+    ambiguous = {name for name in names if names.count(name) > 1}
+
+    def item(entry: dict) -> str:
+        text = html.escape(str(entry.get("name", "")))
+        href = html.escape(str(entry["id"]), quote=True)
+        children = [
+            child for child in entry.get("children") or []
+            if child.get("level") == 3 and str(child.get("name", "")) not in ambiguous
+        ]
+        nested = ""
+        if children:
+            nested = '<div role="list">' + "".join(
+                f'<div role="listitem"><a href="#{html.escape(str(c["id"]), quote=True)}">'
+                f'{html.escape(str(c.get("name", "")))}</a></div>'
+                for c in children
+            ) + "</div>"
+        return f'<div role="listitem"><a href="#{href}">{text}</a>{nested}</div>'
+
+    return "".join(item(s) for s in sections), len(sections)
 
 
 def crumb_trail_html(
@@ -1690,19 +1716,32 @@ def crumb_trail_html(
     groups: dict[tuple[str, str], list[Tutorial]],
     members: list[Tutorial],
     up: str,
+    practice: Tutorial | None = None,
+    registry: dict[tuple[str, str], Tutorial] | None = None,
+    also: list[Tutorial] | None = None,
 ) -> str:
     """Where this page sits — all tutorials, then this tutorial's own
-    module, then its series, then the tutorial itself — as three stacked,
-    independently collapsible levels rather than one line of plain text.
-    Each level is a native `<details>`, the same reasoning
-    `nav_search_html()` already gives for its own popover: the caret and
-    the expand/collapse behaviour need no JavaScript of their own at all.
+    module, then its series, then the page itself, opening onto its own
+    sections — as stacked, independently collapsible levels rather than
+    one line of plain text. Each level is a native `<details>`, the same
+    reasoning `nav_search_html()` already gives for its own popover: the
+    caret and the expand/collapse behaviour need no JavaScript at all.
 
     `groups` is `series_of(tutorials)` — already keyed by (module, series)
     with everything this needs already grouped — so a sibling list at any
     level is just filtering or indexing into it, not a second pass over
-    the site.
+    the site. `practice`, `registry` and `also` are what `write()` already
+    holds for `practice_link()`: a tutorial's own page of problems (listed
+    at the end of its own rung, since the problems are part of it), and
+    the way back from a page of problems to the tutorial it belongs to
+    (in whose series rung this page then sits, one level under it).
     """
+    if tutorial.is_practice and tutorial.practice_for and registry:
+        owner = registry.get((tutorial.module, tutorial.practice_for))
+        if owner is not None:
+            members = groups.get((owner.module, owner.series), members)
+    else:
+        owner = None
     module_names: dict[str, str] = {}
     for members_of in groups.values():
         for member in members_of:
@@ -1734,23 +1773,64 @@ def crumb_trail_html(
         for s in series_in_order
     )
 
-    # An archived tutorial or a practice page has no reading-order position
-    # (render_series_nav()'s own comment covers the same case) — members
-    # will not include it, so it gets a list of just itself rather than an
-    # empty series level with no current page marked at all.
-    tutorial_items = []
-    for member in (members if tutorial in members else [tutorial]):
-        title = html.escape(member.title)
-        if member is tutorial:
-            tutorial_items.append(f'<div class="dl-crumb-current" role="listitem" aria-current="page">{title}</div>')
-        else:
-            tutorial_items.append(f'<div role="listitem"><a href="{link_between(tutorial, member)}">{title}</a></div>')
+    # The page's own line in the series list is the rung that opens onto its
+    # sections and its practice — the title itself carries the caret, so
+    # the name is not printed twice (once bold in the list, once as a rung
+    # of its own beneath). It starts closed: a reader arriving at a
+    # tutorial should meet the tutorial, not a list of its parts. A page
+    # with nothing behind its own name — too few sections for a contents
+    # list (contents_items_html()), no practice — gets a plain bold line
+    # rather than a caret with nothing behind it.
+    contents, count = contents_items_html(tutorial)
+    # A practice page's own title already says what it is ("First Steps —
+    # Practice", "Mixed Problems — Programming"), so the line is the title
+    # and nothing more; the colour marks it as a different kind of page.
+    extra = [
+        f'<div role="listitem" class="dl-crumb-practice">'
+        f'<a href="{link_between(tutorial, problems)}">{html.escape(problems.title)}</a></div>'
+        for problems in ([practice] if practice is not None else []) + list(also or [])
+    ]
+    own = html.escape(tutorial.title)
+    if contents or extra:
+        count_html = f'<span class="dl-crumb-count">{count} sections</span>' if count else ""
+        own_rung = (
+            '<div role="listitem">'
+            '<details class="dl-crumb-level dl-crumb-level-4">'
+            f'<summary aria-current="page">{own}{count_html}</summary>'
+            f'<div role="list">{contents}{"".join(extra)}</div>'
+            "</details></div>"
+        )
+    else:
+        own_rung = (
+            '<div class="dl-crumb-current dl-crumb-level-4" role="listitem" '
+            f'aria-current="page">{own}</div>'
+        )
 
-    # Only the innermost level opens by default — this tutorial's own
-    # series, showing exactly where it sits. All tutorials and the module
-    # level start collapsed: a module with many series, or a series with
-    # many tutorials, made every level open at once tall enough to push
-    # the Reference tab below it off the bottom of a shorter screen.
+    # An archived tutorial or a practice page has no reading-order position
+    # (nav_for() uses the same honest shape for that case) — members will
+    # not include it, so it gets a list of just itself rather than an empty
+    # series level with no current page marked at all.
+    here = owner or tutorial
+    tutorial_items = []
+    for member in (members if here in members else [tutorial]):
+        title = html.escape(member.title)
+        link = f'<a href="{link_between(tutorial, member)}">{title}</a>'
+        if member is tutorial:
+            tutorial_items.append(own_rung)
+        elif member is owner:
+            # A page of problems belongs to its tutorial, so it sits one
+            # level under it — the tutorial stays a plain link back to
+            # itself, and the page of problems is the bold line beneath.
+            tutorial_items.append(
+                f'<div role="listitem">{link}<div role="list">{own_rung}</div></div>'
+            )
+        else:
+            tutorial_items.append(f'<div role="listitem">{link}</div>')
+
+    # Only the series level opens by default, showing exactly where this
+    # page sits. All tutorials and the module start collapsed: every level
+    # open at once made the tree tall enough to push the stack below it off
+    # the bottom of a shorter screen.
     return (
         '<nav class="dl-crumbtrail" aria-label="Where this page sits">'
         '<details class="dl-crumb-level">'
@@ -1991,91 +2071,6 @@ def load_python_basics() -> list[dict]:
     shown than said.
     """
     return _load_basics(PYTHON_BASICS_DATA, "python-basics")
-
-
-DOCS_LINKS_DATA = ROOT / "planning" / "curriculum" / "docs-links.yaml"
-
-
-def load_docs_links() -> list[dict]:
-    """The Documentation panel's own source: a small, hand-maintained table
-    of term -> an official docs page. write() filters this down to whatever
-    matches a page's own cumulative glossary, the same "nothing not yet
-    taught" rule the Reference panel already follows — see
-    planning/curriculum/docs-links.yaml. Returns `[]`, not an error, when
-    the file does not exist yet, the same tolerance load_math_basics()
-    gives a missing file; re-read on every write() call rather than
-    cached, for the same reason.
-    """
-    if not DOCS_LINKS_DATA.is_file():
-        return []
-    data = load_yaml_no_duplicate_keys(DOCS_LINKS_DATA.read_text()) or {}
-    links = data.get("links") or []
-    for link in links:
-        if not link.get("term") or not link.get("url"):
-            fail(DOCS_LINKS_DATA, "a docs-links entry is missing a term or a url.")
-    return links
-
-
-def render_toc(tutorial: Tutorial) -> str:
-    """A contents list for one page, nested one level.
-
-    Closed by default: a reader arriving at a tutorial should meet the tutorial,
-    not a list of its parts. Open, it is the fastest way back to a section they
-    half-remember, which on a long page is the thing that is otherwise hard.
-
-    Sub-headings nest under the section they belong to rather than sitting in
-    one flat list, because the flat version of an eight-section tutorial with
-    "Your turn" under half of them is unreadable.
-    """
-    def at_level(entries: list, level: int) -> list:
-        """The headings at one level, wherever the tree happens to nest them.
-
-        The `toc` extension hangs everything under the page's single `#`
-        heading, so the sections are grandchildren rather than children.
-        Searching by level rather than by depth means the shape of a tutorial's
-        headings cannot break this.
-        """
-        found = []
-        for entry in entries:
-            if entry.get("level") == level:
-                found.append(entry)
-            else:
-                found.extend(at_level(entry.get("children") or [], level))
-        return found
-
-    sections = at_level(tutorial.toc, 2)
-    if len(sections) < 2:
-        # One section, or none. A contents list for a single heading is furniture.
-        return ""
-
-    names = [str(s.get("name", "")) for s in at_level(tutorial.toc, 3)]
-    ambiguous = {name for name in names if names.count(name) > 1}
-
-    def item(entry: dict, depth: int) -> list[str]:
-        text = html.escape(str(entry.get("name", "")))
-        out = [f'<li><a href="#{html.escape(str(entry["id"]), quote=True)}">{text}</a>']
-        children = [
-            child for child in entry.get("children") or []
-            if child.get("level") == 3 and str(child.get("name", "")) not in ambiguous
-        ]
-        if children and depth == 0:
-            out.append("<ul>")
-            for child in children:
-                out.extend(item(child, depth + 1))
-            out.append("</ul>")
-        out.append("</li>")
-        return out
-
-    parts = [
-        '<details class="dl-toc">',
-        f"<summary>Contents<span class=\"dl-toc-count\">"
-        f"{len(sections)} sections</span></summary>",
-        '<nav aria-label="Sections of this tutorial"><ul>',
-    ]
-    for section in sections:
-        parts.extend(item(section, 0))
-    parts += ["</ul></nav>", "</details>"]
-    return "".join(parts)
 
 
 def download_link_html(href: str, label: str) -> str:
@@ -2577,27 +2572,29 @@ def render_search_box(placeholder: str, big: bool = False, id_prefix: str = "dl-
 
 
 def nav_search_html() -> str:
-    """The small search popover beside "All tutorials" in every page's own
-    top nav (shell.html's `{{NAV_SEARCH}}`) — a native `<details>` rather
-    than a hand-wired toggle, the same disclosure the front page's own
-    "For teachers"/"For students" already use, so opening and closing it
-    needs no JavaScript of its own at all: the browser already knows how,
-    and a screen reader already knows how to announce it.
+    """The search line under the wordmark in every page's top-left dock
+    (shell.html's `{{NAV_SEARCH}}`): a magnifier and the words "Search
+    for a topic", set like the tree's lines beneath it. The line *is* the
+    field — `render_search_box()`'s own input, the same widget the front
+    page carries, so `assets/search.js` wires it the way it wires every
+    other one, drawn with no border or background and those words as its
+    placeholder. A click on the words or the magnifier puts the cursor in
+    front of them; typing replaces them; the results drop beneath. There
+    is no second bar to open, on any width (7.169 — Josh: "a tap or click
+    on the icon or text puts a cursor in front of the text and then as
+    the user types the text goes away and the results just appear
+    below"). The magnifier sits over the input's left padding and lets
+    clicks through to it.
     """
     return (
-        '<details class="dl-nav-search">'
-        '<summary aria-label="Search">'
+        '<div class="dl-nav-search">'
         '<svg class="dl-nav-search-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">'
         '<circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/>'
         '<line x1="13.3" y1="13.3" x2="18" y2="18" stroke="currentColor" stroke-width="2" '
         'stroke-linecap="round"/>'
         "</svg>"
-        '<span class="dl-toggle-label">Search for a topic</span></summary>'
-        + render_search_box(
-            "Search for a topic, tutorial, practice, series, or module…",
-            id_prefix="dl-nav-search",
-        )
-        + "</details>"
+        + render_search_box("Search for a topic", id_prefix="dl-nav-search")
+        + "</div>"
     )
 
 
@@ -3435,7 +3432,6 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           registry: dict[tuple[str, str], Tutorial] | None = None,
           also: list[Tutorial] | None = None,
           glossary: list[dict] | None = None,
-          series_nav: str = "",
           notes: list[dict] | None = None,
           datasets: list[dict] | None = None,
           groups: dict[tuple[str, str], list[Tutorial]] | None = None,
@@ -3492,10 +3488,6 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         manifest["packages"] = list(packages)
     if glossary:
         manifest["glossary"] = glossary
-        met_terms = {entry["term"] for entry in glossary}
-        docs_links = [link for link in load_docs_links() if link["term"] in met_terms]
-        if docs_links:
-            manifest["docsLinks"] = docs_links
     if notes:
         manifest["notes"] = notes
     if datasets:
@@ -3528,14 +3520,13 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{RUNTIME_URL}}": versioned(f"{up}assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": up,
         "{{CRUMBS}}": (
-            crumb_trail_html(tutorial, groups, members, up) if groups is not None
+            crumb_trail_html(tutorial, groups, members, up, practice, registry, also)
+            if groups is not None
             else html.escape(f"{tutorial.module_title} · {tutorial.meta['year']}")
         ),
         "{{NAV_PREV_NEXT}}": nav,
         "{{PAGE_SCRIPT}}": "",
         "{{DOWNLOAD}}": download_section(tutorial),
-        "{{TOC}}": render_toc(tutorial),
-        "{{SERIES_NAV}}": series_nav,
         "{{BODY}}": (
             page_notice(tutorial, default)
             + (practice_link(tutorial, practice, registry, also)
@@ -3677,23 +3668,27 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     page = page[:start] + json.dumps(manifest).replace("<", "\\u003c") + page[end:]
 
     page = re.sub(r"<nav class=\"dl-nav[^\"]*\">.*?</nav>", "", page, flags=re.DOTALL)
-    # The breadcrumb tree links to other modules, series, and tutorials —
+    # The where-you-are tree links to other modules, series and tutorials —
     # exactly the cross-file navigation this function already strips above,
-    # just built by crumb_trail_html() instead of nav_for().
-    page = re.sub(r"<nav class=\"dl-crumbtrail\".*?</nav>", "", page, flags=re.DOTALL)
+    # just built by crumb_trail_html() instead of nav_for(). The page's own
+    # rung is its contents, whose links point inside this file and work
+    # from a student's disk, so that one rung stays — minus its practice
+    # lines, which point at other files.
+    def keep_contents(match: re.Match) -> str:
+        contents = re.search(
+            r'<details class="dl-crumb-level dl-crumb-level-4">.*?</details>',
+            match.group(0), re.DOTALL,
+        )
+        if not contents:
+            return ""
+        own = re.sub(r'<div role="listitem" class="dl-crumb-practice">.*?</div>', "", contents.group(0), flags=re.DOTALL)
+        return f'<nav class="dl-crumbtrail" aria-label="Contents">{own}</nav>'
+    page = re.sub(r"<nav class=\"dl-crumbtrail\".*?</nav>", keep_contents, page, flags=re.DOTALL)
     page = re.sub(
         r'(<section class="dl-settings-section" id="dl-settings-download">).*?(</section>)',
         r"\1\2",
         page,
         flags=re.DOTALL,
-    )
-    page = re.sub(
-        r'<button type="button" class="dl-seriesnav-toggle".*?</button>\n?',
-        "", page, flags=re.DOTALL,
-    )
-    page = re.sub(
-        r'<div class="dl-seriesnav" id="dl-seriesnav".*?</nav>\s*</div>\n?',
-        "", page, flags=re.DOTALL,
     )
     page = page.replace(f'href="{root}index.html"', 'href="#" onclick="return false"')
     return page
@@ -3762,7 +3757,7 @@ def zip_entry_name(index: int, width: int, slug: str) -> str:
 def start_here_html(title: str, sections: list[tuple[str | None, list[tuple[str, Tutorial]]]]) -> str:
     """The one file every downloaded folder needs and no individual
     standalone copy can provide for another: standalone_html() deliberately
-    strips each page's cross-file navigation (prev/next, the series panel),
+    strips each page's cross-file navigation (prev/next, the where-you-are tree),
     since a single tutorial downloaded on its own has no siblings to point
     at (see its own docstring). Bundled into a zip, those siblings exist —
     this page is what tells a reader they are there, and in what order.
@@ -4164,9 +4159,7 @@ def write_index(shell: str) -> Path:
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         # The front page is not a contents list. It does not need one.
-        "{{TOC}}": "",
         # Nor a series to navigate.
-        "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("index", "1"),
@@ -4223,9 +4216,7 @@ def write_all_tutorials_page(
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
         # This page is a contents list. It does not need one of its own.
-        "{{TOC}}": "",
         # Nor a series to navigate — it is the thing every series links back to.
-        "{{SERIES_NAV}}": "",
         "{{BODY}}": render_tutorials_list(
             groups, archives, retired, practice, mixed, module_archives),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
@@ -4343,8 +4334,6 @@ def write_module_page(
         "{{PAGE_SCRIPT}}": "",
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
-        "{{TOC}}": "",
-        "{{SERIES_NAV}}": "",
         "{{BODY}}": "\n".join(body),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer(module, "1"),
@@ -4473,8 +4462,6 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         ),
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
-        "{{TOC}}": "",
-        "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("tree", "1"),
@@ -4589,8 +4576,6 @@ def write_topics_page(
         "{{PAGE_SCRIPT}}": "",
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
-        "{{TOC}}": "",
-        "{{SERIES_NAV}}": "",
         "{{BODY}}": "".join(body),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("topics", "1"),
@@ -4825,8 +4810,6 @@ def write_about_page(shell: str) -> Path:
         "{{PAGE_SCRIPT}}": "",
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
-        "{{TOC}}": "",
-        "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("about", "1"),
@@ -4877,8 +4860,6 @@ def write_features_page(shell: str) -> Path:
         "{{PAGE_SCRIPT}}": "",
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
-        "{{TOC}}": "",
-        "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("features", "1"),
@@ -4942,8 +4923,6 @@ def write_editor_page(shell: str) -> Path:
         ),
         "{{CANONICAL}}": "",
         "{{DOWNLOAD}}": "",
-        "{{TOC}}": "",
-        "{{SERIES_NAV}}": "",
         "{{BODY}}": body,
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("editor", "1"),
@@ -5006,7 +4985,6 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
                   if tutorial.slug in page.practice_across],
             registry=registry,
             glossary=cumulative_glossary(tutorial, registry, groups),
-            series_nav=render_series_nav(tutorial, members),
             notes=[{"id": n.id, "html": n.html} for n in tutorial.notes],
             datasets=check_datasets(tutorial),
             groups=groups,

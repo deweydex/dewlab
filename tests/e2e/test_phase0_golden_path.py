@@ -321,44 +321,26 @@ def test_the_width_presets_set_the_measure(page):
     assert page.input_value("#dl-texture-width") == "56"
 
 
-def test_the_minimal_header_is_shorter_and_keeps_every_link(page):
-    def chrome_height():
-        return page.eval_on_selector(".dl-chrome", "el => el.getBoundingClientRect().height")
-
-    def links():
-        return page.eval_on_selector_all(".dl-nav-top a", "els => els.map(e => e.href)")
-
-    full_height, full_links = chrome_height(), links()
-
-    _open_panel(page, "#dl-appearance-toggle")
-    page.click("#dl-settings-texture .dl-seg[data-texture=header] button[data-value=minimal]")
-    page.keyboard.press("Escape")
-
-    assert page.get_attribute("html", "data-header") == "minimal"
-    assert chrome_height() < full_height, "minimal should be shorter, that is the point"
-    assert links() == full_links, "minimal hides nothing — it only takes less room"
-
-
-def test_the_chrome_height_is_published_for_everything_below_it(page):
-    """The status line, the settings panel and anchored jumps all measure from
-    this. A wrong value puts a heading underneath the header."""
+def test_no_chrome_height_is_published_when_nothing_sits_above_the_page(page):
+    """The status line and anchored jumps measure from this. With no bar
+    above the page it has to read as zero, not the stylesheet's default —
+    otherwise a jump lands a heading 6rem too low."""
+    assert page.locator("#dl-chrome").count() == 0
     published = page.eval_on_selector(
         ":root", "el => getComputedStyle(el).getPropertyValue('--dl-chrome-h').trim()"
     )
-    measured = page.eval_on_selector(".dl-chrome", "el => el.getBoundingClientRect().height")
-    assert abs(float(published.replace("px", "")) - measured) <= 1
+    assert published == "0px"
 
 
-def test_the_contents_list_jumps_to_a_section(page):
-    page.click(".dl-toc > summary")
-    first = page.get_attribute(".dl-toc nav a", "href")
-    page.click(".dl-toc nav a")
+def test_the_pages_own_rung_of_the_tree_jumps_to_a_section(page):
+    page.click(".dl-crumb-level-4 > summary")
+    first = page.get_attribute(".dl-crumb-level-4 a", "href")
+    page.click(".dl-crumb-level-4 a")
     assert page.evaluate("location.hash") == first
-    # The sticky chrome must not be sitting on top of the heading it landed on.
+    # Nothing sticky sits above the page now, so the heading lands at the top.
     top = page.eval_on_selector(first.lstrip("#") and f"[id='{first[1:]}']",
                                 "el => el.getBoundingClientRect().top")
-    chrome = page.eval_on_selector(".dl-chrome", "el => el.getBoundingClientRect().bottom")
-    assert top >= chrome - 1, "the heading landed underneath the sticky header"
+    assert top >= -1, "the heading landed above the top of the viewport"
 
 
 def test_the_contents_page_never_scrolls_sideways(browser, base_url):

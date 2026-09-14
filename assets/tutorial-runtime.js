@@ -27,7 +27,7 @@ const SAVED_OUTPUT_STRIP_THRESHOLD = 100_000;
 const NON_TUTORIAL_PAGES = new Set(["index", "tree", "about", "topics"]);
 const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34,
-  link: "#d4692a", header: "full", contrast: "normal",
+  link: "#d4692a", contrast: "normal",
   buttons: "both",
   // Cuts CSS transitions/animations site-wide when "reduced" — a plain
   // accessibility toggle, not tied to the system prefers-reduced-motion
@@ -77,7 +77,14 @@ function assetUrl(manifest, name) {
 
 function trackChromeHeight() {
   const chrome = document.getElementById("dl-chrome");
-  if (!chrome) return;
+  if (!chrome) {
+    // No bar above the page at all (assets/shell.html) — everything that
+    // measured from the bar's height measures from the top edge instead.
+    // The stylesheet's own default still serves compose/dewmini.html,
+    // which keeps a real #dl-chrome of its own.
+    document.documentElement.style.setProperty("--dl-chrome-h", "0px");
+    return;
+  }
 
   const publish = () => {
     document.documentElement.style.setProperty(
@@ -94,21 +101,19 @@ function trackChromeHeight() {
   }
 }
 
-// Every panel spans the full height of its own edge (top: 0 or bottom: 0),
-// but that edge's corner docks — the identity block and Reference tab at
-// top-left, Documentation at bottom-left, Notes+Report at top-right,
-// Appearance+Imports&Exports at bottom-right — sit above the panel in
-// z-index and stay reachable while it's open. Left unaccounted for, a
-// panel's own header or scrolled-down content renders right underneath,
-// and the two visually collide. Tracking each dock's real height (the
-// same way trackChromeHeight() already tracks --dl-chrome-h) lets the
-// panel's CSS carve out exactly the room each corner needs.
+// Every panel runs from below its own dock to the bottom of the screen,
+// and the dock — the identity block and its stack at top-left, the four
+// tabs at top-right — sits above the panel in z-index so it stays
+// reachable while the panel is open. Left unaccounted for, a panel's own
+// header renders right underneath the dock and the two visually collide;
+// and the top-left dock's height changes whenever a rung of the tree
+// opens or closes. Tracking each dock's real height (the same way
+// trackChromeHeight() already tracks --dl-chrome-h) lets the panel's CSS
+// start exactly where its dock ends.
 function trackCornerDockHeights() {
   const docks = [
     { el: document.querySelector(".dl-corner-dock-tl"), prop: "--dl-corner-tl-h" },
     { el: document.querySelector(".dl-corner-dock-tr"), prop: "--dl-corner-tr-h" },
-    { el: document.querySelector(".dl-corner-dock-bl"), prop: "--dl-corner-bl-h" },
-    { el: document.querySelector(".dl-corner-dock-br"), prop: "--dl-corner-br-h" },
   ];
   for (const { el, prop } of docks) {
     if (!el) continue;
@@ -124,6 +129,45 @@ function trackCornerDockHeights() {
   }
 }
 
+/* On a phone the identity row has no room for the where-you-are tree, so
+ * the tree moves — the one real .dl-crumbtrail node, not a copy — into a
+ * bottom sheet the launcher opens, and moves back into the dock when the
+ * viewport widens again. Moving the node rather than rendering it twice
+ * keeps one source of truth for which rungs are open. */
+function initWhereYouAre() {
+  const sheet = document.getElementById("dl-whereyouare");
+  const body = document.getElementById("dl-whereyouare-body");
+  const tree = document.querySelector(".dl-crumbtrail");
+  const identity = document.querySelector(".dl-corner-identity");
+  if (!sheet || !body || !tree || !identity) return;
+
+  const narrow = window.matchMedia("(max-width: 34rem)");
+  function place() {
+    if (narrow.matches) {
+      if (tree.parentElement !== body) body.append(tree);
+    } else {
+      sheet.setAttribute("hidden", "");
+      if (tree.parentElement !== identity) identity.append(tree);
+    }
+  }
+  place();
+  narrow.addEventListener("change", place);
+
+  function close() { sheet.setAttribute("hidden", ""); }
+  const closeButton = document.getElementById("dl-whereyouare-close");
+  if (closeButton) closeButton.addEventListener("click", close);
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape" && !sheet.hasAttribute("hidden")) close();
+  });
+  document.addEventListener("click", (ev) => {
+    if (sheet.hasAttribute("hidden") || sheet.contains(ev.target)) return;
+    close();
+  });
+  // Following a link in the tree is a jump within this page or away from
+  // it; either way the sheet has done its job.
+  tree.addEventListener("click", (ev) => { if (ev.target.closest("a")) close(); });
+}
+
 function closeReference() {
   const toggle = document.getElementById("dl-reference-toggle");
   const panel = document.getElementById("dl-reference");
@@ -132,42 +176,18 @@ function closeReference() {
   if (toggle) toggle.setAttribute("aria-expanded", "false");
 }
 
-function closeSeriesNav() {
-  const toggle = document.getElementById("dl-seriesnav-toggle");
-  const panel = document.getElementById("dl-seriesnav");
-  if (!panel || panel.hasAttribute("hidden")) return;
-  panel.setAttribute("hidden", "");
-  if (toggle) toggle.setAttribute("aria-expanded", "false");
-}
+// Every right-hand panel is its own; opening one closes the rest, and a
+// tab clicked while its own panel is showing closes that panel. Closing
+// from outside (the mobile launcher opening a sheet, say) goes through
+// here so every tab's aria-pressed is put back too.
+const RIGHT_PANELS = ["yourwork", "report", "python", "appearance", "importsexports"];
 
-function closeDocumentation() {
-  const toggle = document.getElementById("dl-documentation-toggle");
-  const panel = document.getElementById("dl-documentation");
-  if (!panel || panel.hasAttribute("hidden")) return;
-  panel.setAttribute("hidden", "");
-  if (toggle) toggle.setAttribute("aria-expanded", "false");
-}
-
-// Notes+Report and Appearance+Imports&Exports each open from two corner
-// tabs sharing one panel (see initTwoTabDock()) — closing either sets
-// both tabs' aria-pressed back to false, since neither is "the" toggle
-// the way a single-button dock's is.
-function closeNotesReport() {
-  const panel = document.getElementById("dl-yourwork");
-  if (!panel || panel.hasAttribute("hidden")) return;
-  panel.setAttribute("hidden", "");
-  for (const id of ["dl-yourwork-toggle", "dl-report-toggle"]) {
-    const toggle = document.getElementById(id);
-    if (toggle) toggle.setAttribute("aria-pressed", "false");
-  }
-}
-
-function closeAppearance() {
-  const panel = document.getElementById("dl-appearance");
-  if (!panel || panel.hasAttribute("hidden")) return;
-  panel.setAttribute("hidden", "");
-  for (const id of ["dl-appearance-toggle", "dl-importsexports-toggle"]) {
-    const toggle = document.getElementById(id);
+function closeRightPanels(except = null) {
+  for (const name of RIGHT_PANELS) {
+    if (name === except) continue;
+    const panel = document.getElementById(`dl-${name}`);
+    const toggle = document.getElementById(`dl-${name}-toggle`);
+    if (panel && !panel.hasAttribute("hidden")) panel.setAttribute("hidden", "");
     if (toggle) toggle.setAttribute("aria-pressed", "false");
   }
 }
@@ -176,24 +196,22 @@ function closeAppearance() {
 // treat as "still inside a panel", one array per side — every toggle and
 // every panel sharing that edge, so opening or clicking into any one of
 // them never reads as a click outside another.
+// The dock itself is in each list too: opening a rung of the tree, or
+// typing into the search bar, happens inside the left dock and must not
+// read as a click outside the Reference panel beneath it.
 const LEFT_DOCK_IDS = [
-  "dl-reference-toggle", "dl-reference",
-  "dl-seriesnav-toggle", "dl-seriesnav",
-  "dl-documentation-toggle", "dl-documentation",
+  "dl-dock-left", "dl-reference-toggle", "dl-reference",
 ];
 const RIGHT_DOCK_IDS = [
-  "dl-yourwork-toggle", "dl-report-toggle", "dl-yourwork",
-  "dl-appearance-toggle", "dl-importsexports-toggle", "dl-appearance",
+  "dl-dock-right",
+  ...RIGHT_PANELS.map((name) => `dl-${name}-toggle`),
+  ...RIGHT_PANELS.map((name) => `dl-${name}`),
 ];
 
 function saveSidebarState() {
   const left = !document.getElementById("dl-reference")?.hasAttribute("hidden") ? "reference"
-    : !document.getElementById("dl-seriesnav")?.hasAttribute("hidden") ? "seriesnav"
-    : !document.getElementById("dl-documentation")?.hasAttribute("hidden") ? "documentation"
     : null;
-  const right = !document.getElementById("dl-yourwork")?.hasAttribute("hidden") ? "notesreport"
-    : !document.getElementById("dl-appearance")?.hasAttribute("hidden") ? "appearance"
-    : null;
+  const right = RIGHT_PANELS.find((name) => !document.getElementById(`dl-${name}`)?.hasAttribute("hidden")) || null;
   try {
     localStorage.setItem("dewlab:sidebars", JSON.stringify({ left, right }));
   } catch (e) { /* private mode, blocked storage: nothing to remember */ }
@@ -208,37 +226,34 @@ function restoreSidebarState() {
     return;
   }
 
-  const leftToggleId = state.left === "reference" ? "dl-reference-toggle"
-    : state.left === "seriesnav" ? "dl-seriesnav-toggle"
-    : state.left === "documentation" ? "dl-documentation-toggle"
-    : null;
+  // A record saved while Series or Documentation still existed as panels
+  // names one of those here — no toggle matches, so it restores nothing,
+  // the same graceful loss the right side already accepts below.
+  const leftToggleId = state.left === "reference" ? "dl-reference-toggle" : null;
   if (leftToggleId) {
     const toggle = document.getElementById(leftToggleId);
     if (toggle && !toggle.hidden) toggle.click();
   }
 
-  // A record saved before the corner-dock rebuild has `right: true` — no
-  // toggle id matches that, so this simply restores nothing on the right,
-  // the same graceful loss a storage failure gets elsewhere.
-  const rightToggleId = state.right === "notesreport" ? "dl-yourwork-toggle"
-    : state.right === "appearance" ? "dl-appearance-toggle"
-    : null;
-  if (rightToggleId) {
-    const toggle = document.getElementById(rightToggleId);
-    if (toggle) toggle.click();
-  }
+  // A record saved before the corner-dock rebuild has `right: true`, and
+  // one saved before the panels split has `right: "notesreport"` — no
+  // toggle id matches either, so this simply restores nothing on the
+  // right, the same graceful loss a storage failure gets elsewhere.
+  const rightToggle = RIGHT_PANELS.includes(state.right)
+    ? document.getElementById(`dl-${state.right}-toggle`) : null;
+  if (rightToggle) rightToggle.click();
 }
 
 function watchPanelOverlap() {
-  const rightPanels = [document.getElementById("dl-yourwork"), document.getElementById("dl-appearance")].filter(Boolean);
-  const leftPanels = [document.getElementById("dl-reference"), document.getElementById("dl-seriesnav"), document.getElementById("dl-documentation")].filter(Boolean);
+  const rightPanels = RIGHT_PANELS.map((name) => document.getElementById(`dl-${name}`)).filter(Boolean);
+  const leftPanels = [document.getElementById("dl-reference")].filter(Boolean);
   // The corner docks themselves — unlike a panel, always on screen, never
   // hidden as a whole (the top-left one always carries the wordmark, the
-  // other three always carry at least one tab) — so the reading column
-  // needs to clear them permanently, not only while a panel happens to be
-  // open over them.
-  const leftDocks = [...document.querySelectorAll(".dl-corner-dock-tl, .dl-corner-dock-bl")];
-  const rightDocks = [...document.querySelectorAll(".dl-corner-dock-tr, .dl-corner-dock-br")];
+  // top-right always its four tabs) — so the reading column needs to
+  // clear them permanently, not only while a panel happens to be open
+  // over them.
+  const leftDocks = [...document.querySelectorAll(".dl-corner-dock-tl")];
+  const rightDocks = [...document.querySelectorAll(".dl-corner-dock-tr")];
   const root = document.documentElement;
 
   // Both sides always have something resting in their corners, so both
@@ -380,95 +395,72 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
   });
 }
 
-// Notes and Report share one panel, opened from two corner tabs (see
-// LEFT_DOCK_IDS/RIGHT_DOCK_IDS above) — each tab both opens-to-its-pane
-// and, clicked again while already showing, closes the panel. The same
-// shape as initAppearanceDock() below; kept separate rather than one
-// shared function, since the two differ enough (search, section-hiding)
-// that a shared abstraction would need its own branching to cover both.
-function initNotesReportDock() {
-  const panel = document.getElementById("dl-yourwork");
-  if (!panel) return;
+// One right-hand panel per corner tab (RIGHT_PANELS above), each opened
+// by its own tab and closed by that tab again, its close button, Escape,
+// or a click outside — with the left dock's panel and tree never counting
+// as outside, so the two sides can be used together. Appearance alone
+// carries a search box, filtering its own rows.
+function initRightPanels() {
+  const panels = RIGHT_PANELS.map((name) => ({
+    name,
+    panel: document.getElementById(`dl-${name}`),
+    toggle: document.getElementById(`dl-${name}-toggle`),
+    close: document.getElementById(`dl-${name}-close`),
+  })).filter((p) => p.panel && p.toggle);
+  if (!panels.length) return;
 
-  makeEdgeResizable(panel, "right", 256, 640);
-
-  const tabs = [
-    { name: "notes", toggle: document.getElementById("dl-yourwork-toggle"),
-      tab: document.getElementById("dl-yourwork-tab-notes"),
-      pane: document.getElementById("dl-yourwork-pane-notes") },
-    { name: "report", toggle: document.getElementById("dl-report-toggle"),
-      tab: document.getElementById("dl-yourwork-tab-report"),
-      pane: document.getElementById("dl-yourwork-pane-report") },
-  ].filter((t) => t.toggle && t.tab && t.pane);
-  if (!tabs.length) return;
-
-  function activeName() {
-    const shown = tabs.find((t) => !t.pane.hidden);
-    return shown ? shown.name : tabs[0].name;
+  const searchInput = document.getElementById("dl-appearance-search");
+  const emptyMessage = document.getElementById("dl-appearance-empty");
+  const appearance = document.getElementById("dl-appearance");
+  function runFilter() {
+    if (!searchInput || !appearance) return;
+    const anyRowVisible = filterTextureRows(appearance, searchInput.value);
+    if (emptyMessage) emptyMessage.hidden = anyRowVisible || !searchInput.value.trim();
   }
+  if (searchInput) searchInput.addEventListener("input", runFilter);
 
-  function showPane(name) {
-    for (const t of tabs) {
-      const on = t.name === name;
-      t.pane.hidden = !on;
-      t.tab.setAttribute("aria-selected", String(on));
-      t.tab.tabIndex = on ? 0 : -1;
-      t.toggle.setAttribute("aria-pressed", String(on));
+  for (const p of panels) {
+    for (const section of p.panel.querySelectorAll(".dl-settings-section")) {
+      if (!section.textContent.trim()) section.hidden = true;
     }
-  }
+    makeEdgeResizable(p.panel, "right", 256, 640);
 
-  function setOpen(open, name) {
-    panel.toggleAttribute("hidden", !open);
-    if (!open) {
-      for (const t of tabs) t.toggle.setAttribute("aria-pressed", "false");
-      return;
+    function setOpen(open) {
+      p.panel.toggleAttribute("hidden", !open);
+      p.toggle.setAttribute("aria-pressed", String(open));
+      if (!open) {
+        if (p.name === "appearance" && searchInput && searchInput.value) {
+          searchInput.value = "";
+          runFilter();
+        }
+        return;
+      }
+      closeRightPanels(p.name);
+      // The notes textarea may have grown (or been given a value) while
+      // its panel was hidden, and a hidden element's scrollHeight reads as
+      // 0 — re-measure now that it's actually laid out.
+      if (p.name === "yourwork" && notesEl) autoGrowTextarea(notesEl);
     }
-    showPane(name || activeName());
-    closeAppearance();
-    // The notes textarea may have grown (or been given a value) while this
-    // panel was hidden, and a hidden element's scrollHeight reads as 0 —
-    // re-measure now that it's actually laid out, rather than trust
-    // whatever a measurement taken while hidden came up with.
-    if (notesEl) autoGrowTextarea(notesEl);
-  }
 
-  for (const t of tabs) {
-    t.toggle.addEventListener("click", () => {
-      const isOpen = !panel.hasAttribute("hidden");
-      if (isOpen && activeName() === t.name) { setOpen(false); return; }
-      setOpen(true, t.name);
+    p.toggle.addEventListener("click", () => setOpen(p.panel.hasAttribute("hidden")));
+    if (p.close) p.close.addEventListener("click", () => { setOpen(false); p.toggle.focus(); });
+
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key !== "Escape" || p.panel.hasAttribute("hidden")) return;
+      setOpen(false);
     });
-    t.tab.addEventListener("click", () => showPane(t.name));
-    t.tab.addEventListener("keydown", (ev) => {
-      if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") return;
-      ev.preventDefault();
-      const i = tabs.indexOf(t);
-      const step = ev.key === "ArrowRight" ? 1 : -1;
-      const next = tabs[(i + step + tabs.length) % tabs.length];
-      next.tab.focus();
-      showPane(next.name);
+
+    document.addEventListener("click", (ev) => {
+      if (p.panel.hasAttribute("hidden")) return;
+      if (p.panel.contains(ev.target) || p.toggle.contains(ev.target)) return;
+      if (clickIsInsidePanels(ev.target, LEFT_DOCK_IDS)) return;
+      setOpen(false);
     });
   }
-
-  const close = document.getElementById("dl-yourwork-close");
-  if (close) close.addEventListener("click", () => { setOpen(false); tabs[0].toggle.focus(); });
-
-  document.addEventListener("keydown", (ev) => {
-    if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
-    setOpen(false);
-  });
-
-  document.addEventListener("click", (ev) => {
-    if (panel.hasAttribute("hidden")) return;
-    if (panel.contains(ev.target) || tabs.some((t) => t.toggle.contains(ev.target))) return;
-    if (clickIsInsidePanels(ev.target, LEFT_DOCK_IDS)) return;
-    setOpen(false);
-  });
 }
 
-/* Shared by both of initAppearanceDock()'s panes — filters whichever one
- * is active, the same "search follows the open tab" rule initReference()
- * already uses for its own three tabs. */
+/* Filters Appearance's rows by their own text and keywords — the same
+ * "search follows what's shown" rule initReference() already uses. */
 function filterTextureRows(pane, query) {
   const needle = query.trim().toLowerCase();
   let anyRowVisible = false;
@@ -481,189 +473,30 @@ function filterTextureRows(pane, query) {
   return anyRowVisible;
 }
 
-function initAppearanceDock() {
-  const panel = document.getElementById("dl-appearance");
-  if (!panel) return;
-
-  makeEdgeResizable(panel, "right", 256, 640);
-
-  for (const section of panel.querySelectorAll(".dl-settings-section")) {
-    if (!section.textContent.trim()) section.hidden = true;
-  }
-
-  const tabs = [
-    { name: "appearance", toggle: document.getElementById("dl-appearance-toggle"),
-      tab: document.getElementById("dl-appearance-tab-appearance"),
-      pane: document.getElementById("dl-appearance-pane-appearance") },
-    { name: "importsexports", toggle: document.getElementById("dl-importsexports-toggle"),
-      tab: document.getElementById("dl-appearance-tab-importsexports"),
-      pane: document.getElementById("dl-appearance-pane-importsexports") },
-  ].filter((t) => t.toggle && t.tab && t.pane);
-  if (!tabs.length) return;
-
-  const searchInput = document.getElementById("dl-appearance-search");
-  const emptyMessage = document.getElementById("dl-appearance-empty");
-
-  function activeTab() {
-    return tabs.find((t) => !t.pane.hidden) || tabs[0];
-  }
-
-  function runFilter() {
-    if (!searchInput) return;
-    const anyRowVisible = filterTextureRows(activeTab().pane, searchInput.value);
-    if (emptyMessage) emptyMessage.hidden = anyRowVisible || !searchInput.value.trim();
-  }
-
-  function showPane(name) {
-    for (const t of tabs) {
-      const on = t.name === name;
-      t.pane.hidden = !on;
-      t.tab.setAttribute("aria-selected", String(on));
-      t.tab.tabIndex = on ? 0 : -1;
-      t.toggle.setAttribute("aria-pressed", String(on));
-    }
-    if (searchInput) {
-      searchInput.placeholder = name === "appearance"
-        ? "Search settings — e.g. font size, dark mode…"
-        : "Search — e.g. versions, download…";
-    }
-    runFilter();
-  }
-
-  function setOpen(open, name) {
-    panel.toggleAttribute("hidden", !open);
-    if (!open) {
-      for (const t of tabs) t.toggle.setAttribute("aria-pressed", "false");
-      if (searchInput && searchInput.value) {
-        searchInput.value = "";
-        runFilter();
-      }
-      return;
-    }
-    showPane(name || activeTab().name);
-    closeNotesReport();
-  }
-
-  for (const t of tabs) {
-    t.toggle.addEventListener("click", () => {
-      const isOpen = !panel.hasAttribute("hidden");
-      if (isOpen && activeTab().name === t.name) { setOpen(false); return; }
-      setOpen(true, t.name);
-    });
-    t.tab.addEventListener("click", () => showPane(t.name));
-    t.tab.addEventListener("keydown", (ev) => {
-      if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") return;
-      ev.preventDefault();
-      const i = tabs.indexOf(t);
-      const step = ev.key === "ArrowRight" ? 1 : -1;
-      const next = tabs[(i + step + tabs.length) % tabs.length];
-      next.tab.focus();
-      showPane(next.name);
-    });
-  }
-
-  const close = document.getElementById("dl-appearance-close");
-  if (close) close.addEventListener("click", () => { setOpen(false); tabs[0].toggle.focus(); });
-
-  document.addEventListener("keydown", (ev) => {
-    if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
-    setOpen(false);
-  });
-
-  document.addEventListener("click", (ev) => {
-    if (panel.hasAttribute("hidden")) return;
-    if (panel.contains(ev.target) || tabs.some((t) => t.toggle.contains(ev.target))) return;
-    if (clickIsInsidePanels(ev.target, LEFT_DOCK_IDS)) return;
-    setOpen(false);
-  });
-
-  if (searchInput) searchInput.addEventListener("input", runFilter);
-}
-
-/* Same open/close mechanics as closeReference()'s own toggle — a single
- * corner tab, no internal tab bar — sharing the left dock's three-way
- * exclusion with Reference and Series. Only shown once this page has a
- * glossary of its own to potentially link out from; empty otherwise
- * rather than hidden, since the lookup table (planning/curriculum/
- * docs-links.yaml) is expected to grow slowly rather than cover
- * everything from the start. */
-function initDocumentationDock(manifest) {
-  const toggle = document.getElementById("dl-documentation-toggle");
-  const panel = document.getElementById("dl-documentation");
-  const hasGlossary = manifest.glossary && manifest.glossary.length;
-  if (!toggle || !panel || !hasGlossary) return;
-
-  renderDocumentation(manifest);
-  toggle.hidden = false;
-  makeEdgeResizable(panel, "left", 256, 640);
-
-  function setOpen(open) {
-    panel.toggleAttribute("hidden", !open);
-    toggle.setAttribute("aria-expanded", String(open));
-    if (open) { closeReference(); closeSeriesNav(); }
-  }
-
-  toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
-
-  const close = document.getElementById("dl-documentation-close");
-  if (close) close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
-
-  document.addEventListener("keydown", (ev) => {
-    if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
-    setOpen(false);
-    toggle.focus();
-  });
-
-  document.addEventListener("click", (ev) => {
-    if (panel.hasAttribute("hidden")) return;
-    if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
-    if (clickIsInsidePanels(ev.target, RIGHT_DOCK_IDS)) return;
-    setOpen(false);
-  });
-}
-
-function renderDocumentation(manifest) {
-  const container = document.getElementById("dl-documentation-links");
-  const empty = document.getElementById("dl-documentation-empty");
-  if (!container) return;
-  container.replaceChildren();
-  const links = manifest.docsLinks || [];
-  for (const { term, url } of links) {
-    const row = document.createElement("a");
-    row.className = "dl-corner-link";
-    row.href = url;
-    row.target = "_blank";
-    row.rel = "noopener";
-    const label = document.createElement("span");
-    label.textContent = term;
-    const arrow = document.createElement("span");
-    arrow.setAttribute("aria-hidden", "true");
-    arrow.textContent = "↗";
-    row.append(label, arrow);
-    container.append(row);
-  }
-  if (empty) empty.hidden = links.length > 0;
-}
-
 /* The phone-only "one launcher instead of six tabs" menu — see the CSS
  * media query and shell.html's own comment for why. Every row forwards
  * to a real corner toggle (still in the page, just hidden by the same
  * media query) rather than re-implementing open/close/exclusivity here;
  * a hidden element's own .click() still fires its listeners normally,
- * only real user interaction with it is blocked. */
+ * only real user interaction with it is blocked. The one row with no
+ * toggle to forward to, "Where you are", opens the sheet
+ * initWhereYouAre() keeps the tree in on a phone. */
 function initMobileLauncher() {
   const fab = document.getElementById("dl-mobile-fab");
   const menu = document.getElementById("dl-mobile-menu");
   if (!fab || !menu) return;
 
-  // Series, Reference and Documentation only exist on some pages, decided
-  // once at load and never toggled again afterward — mirroring that
-  // decision once here, rather than watching for a change that can't happen.
-  for (const name of ["seriesnav", "reference", "documentation"]) {
+  // Reference only exists on some pages, decided once at load and never
+  // toggled again afterward — mirroring that decision once here, rather
+  // than watching for a change that can't happen. Where-you-are exists
+  // wherever there is a tree to show, which is every tutorial page.
+  for (const name of ["reference"]) {
     const real = document.getElementById(`dl-${name}-toggle`);
     const item = document.getElementById(`dl-mobile-item-${name}`);
     if (real && item) item.hidden = real.hidden;
   }
+  const whereItem = document.getElementById("dl-mobile-item-whereyouare");
+  if (whereItem) whereItem.hidden = !document.querySelector(".dl-crumbtrail");
 
   function setOpen(open) {
     menu.toggleAttribute("hidden", !open);
@@ -681,6 +514,11 @@ function initMobileLauncher() {
       // what the click below just opened.
       ev.stopPropagation();
       setOpen(false);
+      if (item.dataset.sheet) {
+        const sheet = document.getElementById(item.dataset.sheet);
+        if (sheet) { closeReference(); closeRightPanels(); sheet.removeAttribute("hidden"); }
+        return;
+      }
       const real = document.getElementById(item.dataset.forward);
       if (real) real.click();
     });
@@ -981,12 +819,6 @@ function initReference(manifest) {
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);
     toggle.setAttribute("aria-expanded", String(open));
-    // Reference, Series and Documentation share the same left-anchored
-    // corner (LEFT_DOCK_IDS above) and would sit directly on top of each
-    // other if more than one opened — that conflict is real, so opening
-    // this one closes the other two. The right-anchored docks do not
-    // conflict with any of these.
-    if (open) { closeSeriesNav(); closeDocumentation(); }
   }
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
@@ -1003,6 +835,9 @@ function initReference(manifest) {
   document.addEventListener("click", (ev) => {
     if (panel.hasAttribute("hidden")) return;
     if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
+    // Its own dock too: opening a rung of the tree above this panel, or
+    // the search bar, is not a click away from it.
+    if (clickIsInsidePanels(ev.target, LEFT_DOCK_IDS)) return;
     if (clickIsInsidePanels(ev.target, RIGHT_DOCK_IDS)) return;
     // The highlight-to-look-up button (initReferenceLookup()) opens this
     // panel, so it is a way in rather than a click outside — without this it
@@ -1510,7 +1345,6 @@ function initReferenceLookup(manifest) {
     hide();
     panel.removeAttribute("hidden");
     toggle.setAttribute("aria-expanded", "true");
-    closeSeriesNav();
     // The value goes in whether or not the box is visible. renderReference()
     // hides it on a page with only a handful of entries, and the observer in
     // initReference() clears the filter on close by reading this value — so
@@ -1670,42 +1504,6 @@ function initHighlightPopover() {
   document.addEventListener("scroll", close, { passive: true });
 }
 
-function initSeriesNav() {
-  const toggle = document.getElementById("dl-seriesnav-toggle");
-  const panel = document.getElementById("dl-seriesnav");
-  if (!toggle || !panel) return;
-  if (!panel.querySelector(".dl-seriesnav-series")) return;
-
-  toggle.hidden = false;
-
-  function setOpen(open) {
-    panel.toggleAttribute("hidden", !open);
-    toggle.setAttribute("aria-expanded", String(open));
-    // Shares its corner with Reference and Documentation (see
-    // initReference()'s own comment) — that conflict is real. The
-    // right-anchored docks do not conflict with this one either.
-    if (open) { closeReference(); closeDocumentation(); }
-  }
-
-  toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
-
-  const close = document.getElementById("dl-seriesnav-close");
-  if (close) close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
-
-  document.addEventListener("keydown", (ev) => {
-    if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
-    setOpen(false);
-    toggle.focus();
-  });
-
-  document.addEventListener("click", (ev) => {
-    if (panel.hasAttribute("hidden")) return;
-    if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
-    if (clickIsInsidePanels(ev.target, RIGHT_DOCK_IDS)) return;
-    setOpen(false);
-  });
-}
-
 function setSegChecked(btn, checked) {
   btn.setAttribute("aria-checked", String(checked));
 }
@@ -1768,8 +1566,6 @@ function applyTexture(state) {
   else root.setAttribute("data-theme", state.theme);
   if (state.font === "serif") root.removeAttribute("data-font");
   else root.setAttribute("data-font", state.font);
-  if (state.header === "full") root.removeAttribute("data-header");
-  else root.setAttribute("data-header", state.header);
   if (state.contrast === "normal") root.removeAttribute("data-contrast");
   else root.setAttribute("data-contrast", state.contrast);
   if (state.buttons === "both") root.removeAttribute("data-button-labels");
@@ -4096,9 +3892,9 @@ function initProgressSection() {
   }
 
   notesEl = document.getElementById("dl-progress-notes");
-  // Not grown here: the Notes+Report panel is normally still hidden at
-  // this point, and a hidden element's scrollHeight reads as 0.
-  // initNotesReportDock() re-measures whenever the panel actually opens.
+  // Not grown here: the Notes panel is normally still hidden at this
+  // point, and a hidden element's scrollHeight reads as 0.
+  // initRightPanels() re-measures whenever the panel actually opens.
   if (notesEl) {
     notesEl.addEventListener("input", () => {
       autoGrowTextarea(notesEl);
@@ -4555,6 +4351,15 @@ function initVersionsSection() {
     return;
   }
 
+  // Which release you are on is a where-you-are question: the section
+  // lives under this tutorial's own rung of the tree, not in a panel.
+  // Marked up in the Imports & Exports panel only because the tree is
+  // built per page and the shell is not.
+  const own = document.querySelector(".dl-crumb-level-4");
+  if (own) {
+    if (own.tagName === "DETAILS") own.append(section); else own.after(section);
+  }
+
   const note = document.getElementById("dl-versions-note");
   if (note) {
     note.textContent =
@@ -4624,16 +4429,14 @@ initStagedHintsToggles();
 initExportSection();
 initVersionsSection();
 initVersionMarker();
-initNotesReportDock();
-initAppearanceDock();
+initRightPanels();
 initReference(currentManifest);
-initDocumentationDock(currentManifest);
 initReferenceLookup(currentManifest);
 initHighlightPopover();
-initSeriesNav();
-// After every toggle it mirrors has settled its own hidden state — Series
-// only unhides itself in initSeriesNav() above.
+// After every toggle it mirrors has settled its own hidden state —
+// Reference only unhides itself in initReference() above.
 initMobileLauncher();
+initWhereYouAre();
 watchPanelOverlap();
 restoreSidebarState();
 initProgressBadgesToggle();

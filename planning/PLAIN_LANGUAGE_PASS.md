@@ -84,6 +84,28 @@ Documentation intro's first draft was a genuine verbless-subject fragment
 ("Official Python documentation for terms this page ... has covered so
 far.") caught and rewritten to a real sentence ("These are official Python
 pages for terms this page ... has already covered.") before it shipped.
+The Documentation panel was later removed (`DECISIONS_LOG.md` 7.165).
+
+**The upper docks' labels** (`DECISIONS_LOG.md` 7.165): "Where you are" —
+the phone launcher's row for the tree, and the sheet's own title — and the
+tree's "Contents · N sections" rung, carried over from the old in-page list.
+Both plain words in any dialect; neither is a sentence, since a label on a
+control is the one place §4 does not ask for one.
+
+**The five right-hand tabs and the tree's own line** (`DECISIONS_LOG.md`
+7.167): "Python" is the new tab label (the panel that used to be the
+"Execution" section of Appearance); the "Contents" rung is gone, and the
+tree's own line now reads as the page's title with "N sections" after it.
+A practice page is listed under its tutorial by its own title ("First Steps
+— Practice", "Mixed Problems — Programming"), with no "Practice:" prefix in
+front: the title already says what it is, and a prefix would have made the
+line say it twice.
+
+**The search line** (`DECISIONS_LOG.md` 7.168, then 7.169): "Search for a
+topic" is the line under the wordmark, and since 7.169 it is the field
+itself — the words are its placeholder, and there is no second label.
+Plain words, not an idiom. The "Header: full / minimal" row in Appearance
+is gone, so its label no longer needs a pass.
 
 Also picked up in the sibling repository `deweydex/dewstack`: the same
 reset/practice-fold language in its README, its own new `FOR_STUDENTS.md`,

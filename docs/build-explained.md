@@ -51,12 +51,13 @@ table of contents; this groups them into a few bigger phases:
    "one Markdown file becomes one `Tutorial`" pipeline, tied together by
    `load()` near the bottom of this phase.
 3. **Navigation** — `module_order`, `order_files`, `versions_of`,
-   `series_of`, `nav_for`, `render_series_nav`. How tutorials relate to
-   each other: which series they're in, which version is current, what
-   comes before and after.
-4. **Reference** — `cumulative_glossary`, `render_toc`,
-   `download_section`. The per-tutorial glossary/table-of-contents/
-   download panel.
+   `series_of`, `nav_for`, `crumb_trail_html`, `contents_items_html`. How
+   tutorials relate to each other: which series they're in, which version
+   is current, what comes before and after — and the where-you-are tree
+   in the page's top-left corner that shows all of it, down to the page's
+   own sections.
+4. **Reference** — `cumulative_glossary`, `download_section`. The
+   per-tutorial glossary and download panel.
 5. **Topic tree and knowledge map** — `topic_tiers`, `topic_layout`,
    `render_knowledge_map`, `tree_data`, and friends. These build the two
    visual "here's how everything connects" pages; `topic_tiers` in

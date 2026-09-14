@@ -375,13 +375,14 @@ input beside its pill — see `docs/dewmini-js-explained.md` for that half.
 
 ## Two patterns worth understanding on their own
 
-**Three panels, one rule.** Settings, the reference, and the series
-navigation panel are three separate, independent UI components — but
-opening any one of them always closes the other two. There's no shared
+**Five panels, one rule.** The five right-hand panels (Notes, Report,
+Python, Appearance, Imports & Exports — `RIGHT_PANELS`) are separate,
+independent UI components — but opening any one of them always closes the
+other four, since they share one edge of the screen. There's no shared
 "panel manager" object making that happen; each panel's own `setOpen(true)`
-just calls the other two panels' close functions directly. It's a small
-enough amount of coordination that three plain function calls handles it
-without needing anything more structured.
+just calls `closeRightPanels(itsOwnName)` directly. The Reference panel on
+the left is not in that group: it has its own edge, so it can stay open
+alongside any of the five.
 
 **Live-then-static code intelligence, worker-or-main-thread.** Hover docs
 and autocomplete work by trying two different techniques and taking
