@@ -155,7 +155,7 @@ class TestPagesOfProblems:
 
     def test_mixed_naming_a_page_that_is_not_a_mixed_set_is_an_error(self, repo):
         write(repo, "One.\n", slug="one")
-        course(repo, "zz-other", {"S": ["one"]}, mixed=["one"])
+        course(repo, "zz-other", {}, mixed=["one"])
         with pytest.raises(b.BuildError, match="lists one under `mixed:`, and it is not a mixed problem set"):
             b.build()
 

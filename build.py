@@ -3881,6 +3881,11 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     page = page[:start] + json.dumps(manifest).replace("<", "\\u003c") + page[end:]
 
     page = re.sub(r"<nav class=\"dl-nav[^\"]*\">.*?</nav>", "", page, flags=re.DOTALL)
+    # The search line (nav_search_html()) finds other pages by fetching the
+    # site's index, and neither the index nor those pages are on a student's
+    # disk, so it goes with the rest of the cross-file navigation. Its own
+    # widget is the one nested div, so the first </div></div> closes it.
+    page = re.sub(r'<div class="dl-nav-search">.*?</div></div>', "", page, flags=re.DOTALL)
     # The where-you-are tree links to other modules, series and tutorials —
     # exactly the cross-file navigation this function already strips above,
     # just built by crumb_trail_html() instead of nav_for(). The page's own
@@ -4576,7 +4581,7 @@ REDIRECT_PAGE = """<!doctype html>
 """
 
 
-def write_redirects() -> list[Path]:
+def write_redirects(pages: list[Path]) -> list[Path]:
     """A small page at every address the site used to have, sending the
     browser on to the new one — read from `courses/redirects.yaml`, one
     `old: new` line per page. Written after every real page, and refusing
@@ -4584,6 +4589,12 @@ def write_redirects() -> list[Path]:
     mistake in the file, not a page to replace. A new address the build
     wrote nothing at is refused too, so the file cannot quietly point a
     bookmark at nothing.
+
+    `pages` is what this build wrote, and is the only thing consulted: a
+    file left in `site/` by an earlier build (before an address moved,
+    say) is not a page at that address, and a build without `--clean`
+    would otherwise refuse the very line that retires it. The stub
+    overwrites it.
     """
     path = COURSES / REDIRECTS_FILE
     if not path.is_file():
@@ -4592,12 +4603,13 @@ def write_redirects() -> list[Path]:
     if not isinstance(data, dict):
         fail(path, "is a mapping of old address to new address, one per line")
     written: list[Path] = []
+    current = {page.resolve() for page in pages}
     for old, new in data.items():
         old, new = str(old), str(new)
         source, target = OUT / old, OUT / new
-        if not target.is_file():
+        if target.resolve() not in current:
             fail(path, f"sends {old} to {new}, and this build wrote no page at {new}")
-        if source.exists():
+        if source.resolve() in current:
             fail(path, f"sends {old} somewhere, but the build writes a page at {old}. "
                        "Delete the line.")
         href = os.path.relpath(target, source.parent).replace(os.sep, "/")
@@ -5316,7 +5328,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             written.append(topics_page)
         written.append(write_page(shell, "about"))
         written.append(write_editor_page(shell))
-        written.extend(write_redirects())
+        written.extend(write_redirects(written))
 
     OUT.mkdir(parents=True, exist_ok=True)
     shutil.rmtree(OUT / "assets", ignore_errors=True)
