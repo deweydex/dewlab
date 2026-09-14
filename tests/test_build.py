@@ -1895,7 +1895,10 @@ class TestTheContentsOfAPage:
 
 
 class TestTheStickyChrome:
-    def test_the_masthead_and_navigation_are_one_group(self, repo):
+    def test_the_sticky_chrome_holds_just_the_top_nav(self, repo):
+        """The wordmark, crumbs, search and Series toggle moved into the
+        top-left corner dock (the corner-dock rebuild) — .dl-chrome, the
+        sticky bar, now holds only the prev/next/all-tutorials row."""
         write(repo, "Some prose.\n")
         b.build()
         page = built(repo)
@@ -1908,8 +1911,26 @@ class TestTheStickyChrome:
                 end = start + tag.end()
                 break
         chrome = page[start:end]
-        assert "dl-masthead" in chrome
+        assert "dl-masthead" not in chrome
         assert "dl-nav-top" in chrome
+
+    def test_the_identity_lives_in_the_top_left_corner_dock(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        page = built(repo)
+        start = page.index('<div class="dl-corner-dock dl-corner-dock-tl"')
+        depth = 0
+        end = start
+        for tag in re.finditer(r"<div\b|</div>", page[start:]):
+            depth += 1 if tag.group(0) == "<div" else -1
+            if depth == 0:
+                end = start + tag.end()
+                break
+        corner = page[start:end]
+        assert "dl-wordmark" in corner
+        assert "dl-crumbtrail" in corner
+        assert "dl-nav-search" in corner
+        assert 'id="dl-seriesnav-toggle"' in corner
 
     def test_a_downloadable_copy_keeps_the_chrome_without_the_navigation(
         self, repo_with_assets
@@ -1919,6 +1940,62 @@ class TestTheStickyChrome:
         page = (repo_with_assets / "site" / "download" / "computational-methods" / "sample.html").read_text()
         assert "dl-chrome" in page
         assert "dl-nav" not in page.split("<style>")[0] + page.split("</style>")[-1]
+
+
+class TestTheCrumbTrail:
+    """crumb_trail_html() — the corner dock's expandable "all tutorials /
+    module / series / tutorial" tree, replacing the old plain-text crumbs
+    for a real tutorial page."""
+
+    def test_it_is_three_levels_deep(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        page = built(repo)
+        assert page.count('<details class="dl-crumb-level') == 3
+
+    def test_the_series_level_lists_its_siblings_and_marks_the_current_one(self, repo_with_assets):
+        for slug, title in [("t1", "First One"), ("t2", "Second One")]:
+            path = repo_with_assets / "tutorials" / "computational-methods" / f"{slug}.md"
+            path.write_text(
+                f'---\ntitle: "{title}"\nslug: {slug}\nmodule: computational-methods\n'
+                f'year: "2026-2027"\nseries: s\nversion: 2026.08.23.1\n---\n\nProse.\n'
+            )
+        set_order(repo_with_assets, "computational-methods", "s", ["t1", "t2"])
+        b.build()
+        page = (repo_with_assets / "site" / "tutorials" / "computational-methods" / "t2.html").read_text()
+        assert "First One" in page
+        assert '<div class="dl-crumb-current" role="listitem" aria-current="page">Second One</div>' in page
+
+    def test_no_ul_or_li_reaches_the_page(self, repo):
+        """The same trap report_doors_links() already avoided: a real <li>
+        here would silently inflate any test elsewhere that counts a
+        page's own list items, since this markup reaches every tutorial
+        page. role="list"/"listitem" on plain divs instead. (The page has
+        other, unrelated <ul>s of its own — the search results box, the
+        contents fold — so this checks only the crumb trail's own markup.)
+        """
+        write(repo, "Some prose.\n")
+        b.build()
+        page = built(repo)
+        start = page.index('<nav class="dl-crumbtrail"')
+        end = page.index("</nav>", start) + len("</nav>")
+        trail = page[start:end]
+        assert "<ul" not in trail
+        assert "<li" not in trail
+        assert 'role="list"' in trail
+
+    def test_a_downloadable_copy_drops_it_along_with_the_rest_of_the_navigation(
+        self, repo_with_assets
+    ):
+        write(repo_with_assets, "Some prose.\n")
+        b.build(standalone=True)
+        page = (repo_with_assets / "site" / "download" / "computational-methods" / "sample.html").read_text()
+        # The standalone build inlines the whole stylesheet, which names
+        # the class in its own selectors — checked outside that <style>
+        # block, the same way test_a_downloadable_copy_keeps_the_chrome_
+        # without_the_navigation already does for "dl-nav".
+        outside_style = page.split("<style>")[0] + page.split("</style>")[-1]
+        assert "dl-crumbtrail" not in outside_style
 
 
 class TestTheKnowledgeMap:

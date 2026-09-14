@@ -1685,6 +1685,90 @@ def render_series_nav(tutorial: Tutorial, members: list[Tutorial]) -> str:
     return '<ol class="dl-seriesnav-series">' + "".join(items) + "</ol>"
 
 
+def crumb_trail_html(
+    tutorial: Tutorial,
+    groups: dict[tuple[str, str], list[Tutorial]],
+    members: list[Tutorial],
+    up: str,
+) -> str:
+    """Where this page sits — all tutorials, then this tutorial's own
+    module, then its series, then the tutorial itself — as three stacked,
+    independently collapsible levels rather than one line of plain text.
+    Each level is a native `<details>`, the same reasoning
+    `nav_search_html()` already gives for its own popover: the caret and
+    the expand/collapse behaviour need no JavaScript of their own at all.
+
+    `groups` is `series_of(tutorials)` — already keyed by (module, series)
+    with everything this needs already grouped — so a sibling list at any
+    level is just filtering or indexing into it, not a second pass over
+    the site.
+    """
+    module_names: dict[str, str] = {}
+    for members_of in groups.values():
+        for member in members_of:
+            if member.meta.get("module_title"):
+                module_names.setdefault(member.module, member.module_title)
+
+    order = module_order()
+    present_modules = {m for m, s in groups}
+    modules_in_order = [m for m in order if m in present_modules] + sorted(
+        present_modules - set(order)
+    )
+    # Plain divs with list/listitem roles, not <ul>/<li> — the same choice
+    # report_doors_links() already made and explains why: this markup
+    # reaches every tutorial page, and a real <li> here silently inflates
+    # any test elsewhere that counts a page's own list items.
+    modules_items = "".join(
+        f'<div role="listitem"><a href="{up}{html.escape(m, quote=True)}.html">'
+        f"{html.escape(module_names.get(m, m))}</a></div>"
+        for m in modules_in_order
+    )
+
+    titles = series_titles()
+    present_series = {s for m, s in groups if m == tutorial.module}
+    fixed = [s for s in module_series_order(tutorial.module) if s in present_series]
+    series_in_order = fixed + sorted(present_series - set(fixed))
+    series_items = "".join(
+        f'<div role="listitem"><a href="{link_between(tutorial, groups[(tutorial.module, s)][0])}">'
+        f"{html.escape(titles.get((tutorial.module, s), s))}</a></div>"
+        for s in series_in_order
+    )
+
+    # An archived tutorial or a practice page has no reading-order position
+    # (render_series_nav()'s own comment covers the same case) — members
+    # will not include it, so it gets a list of just itself rather than an
+    # empty series level with no current page marked at all.
+    tutorial_items = []
+    for member in (members if tutorial in members else [tutorial]):
+        title = html.escape(member.title)
+        if member is tutorial:
+            tutorial_items.append(f'<div class="dl-crumb-current" role="listitem" aria-current="page">{title}</div>')
+        else:
+            tutorial_items.append(f'<div role="listitem"><a href="{link_between(tutorial, member)}">{title}</a></div>')
+
+    # Only the innermost level opens by default — this tutorial's own
+    # series, showing exactly where it sits. All tutorials and the module
+    # level start collapsed: a module with many series, or a series with
+    # many tutorials, made every level open at once tall enough to push
+    # the Reference tab below it off the bottom of a shorter screen.
+    return (
+        '<nav class="dl-crumbtrail" aria-label="Where this page sits">'
+        '<details class="dl-crumb-level">'
+        "<summary>All tutorials</summary>"
+        f'<div role="list">{modules_items}</div>'
+        "</details>"
+        '<details class="dl-crumb-level dl-crumb-level-2">'
+        f"<summary>{html.escape(module_names.get(tutorial.module, tutorial.module))}</summary>"
+        f'<div role="list">{series_items}</div>'
+        "</details>"
+        '<details class="dl-crumb-level dl-crumb-level-3" open>'
+        f"<summary>{html.escape(titles.get((tutorial.module, tutorial.series), tutorial.series))}</summary>"
+        f'<div role="list">{"".join(tutorial_items)}</div>'
+        "</details>"
+        "</nav>"
+    )
+
+
 GLOSSARY_KINDS = ("concept", "function", "operator", "formula", "keyword")
 
 
@@ -3353,7 +3437,9 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           glossary: list[dict] | None = None,
           series_nav: str = "",
           notes: list[dict] | None = None,
-          datasets: list[dict] | None = None) -> Path:
+          datasets: list[dict] | None = None,
+          groups: dict[tuple[str, str], list[Tutorial]] | None = None,
+          members: list[Tutorial] | None = None) -> Path:
     """Assembles and writes one finished tutorial page to disk: builds
     the JSON manifest that `assets/tutorial-runtime.js` reads on the
     page (`docs/tutorial-runtime-explained.md` covers what that file
@@ -3441,7 +3527,10 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned(f"{up}assets/", "vendor/accessible-fonts.css"),
         "{{RUNTIME_URL}}": versioned(f"{up}assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": up,
-        "{{CRUMBS}}": html.escape(f"{tutorial.module_title} · {tutorial.meta['year']}"),
+        "{{CRUMBS}}": (
+            crumb_trail_html(tutorial, groups, members, up) if groups is not None
+            else html.escape(f"{tutorial.module_title} · {tutorial.meta['year']}")
+        ),
         "{{NAV_PREV_NEXT}}": nav,
         "{{PAGE_SCRIPT}}": "",
         "{{DOWNLOAD}}": download_section(tutorial),
@@ -3588,6 +3677,10 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     page = page[:start] + json.dumps(manifest).replace("<", "\\u003c") + page[end:]
 
     page = re.sub(r"<nav class=\"dl-nav[^\"]*\">.*?</nav>", "", page, flags=re.DOTALL)
+    # The breadcrumb tree links to other modules, series, and tutorials —
+    # exactly the cross-file navigation this function already strips above,
+    # just built by crumb_trail_html() instead of nav_for().
+    page = re.sub(r"<nav class=\"dl-crumbtrail\".*?</nav>", "", page, flags=re.DOTALL)
     page = re.sub(
         r'(<section class="dl-settings-section" id="dl-settings-download">).*?(</section>)',
         r"\1\2",
@@ -4113,7 +4206,7 @@ def write_all_tutorials_page(
         "{{MODULE}}": "",
         "{{YEAR}}": "",
         "{{SERIES}}": "",
-        "{{CRUMBS}}": "all tutorials",
+        "{{CRUMBS}}": '<span class="dl-crumbs">all tutorials</span>',
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
@@ -4236,7 +4329,7 @@ def write_module_page(
         "{{MODULE}}": "",
         "{{YEAR}}": "",
         "{{SERIES}}": "",
-        "{{CRUMBS}}": html.escape(title),
+        "{{CRUMBS}}": f'<span class="dl-crumbs">{html.escape(title)}</span>',
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
@@ -4361,7 +4454,7 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "{{MODULE}}": "",
         "{{YEAR}}": "",
         "{{SERIES}}": "",
-        "{{CRUMBS}}": "topic tree",
+        "{{CRUMBS}}": '<span class="dl-crumbs">topic tree</span>',
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
@@ -4482,7 +4575,7 @@ def write_topics_page(
         "{{MODULE}}": "",
         "{{YEAR}}": "",
         "{{SERIES}}": "",
-        "{{CRUMBS}}": "browse by topic",
+        "{{CRUMBS}}": '<span class="dl-crumbs">browse by topic</span>',
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
@@ -4718,7 +4811,7 @@ def write_about_page(shell: str) -> Path:
         "{{MODULE}}": "",
         "{{YEAR}}": "",
         "{{SERIES}}": "",
-        "{{CRUMBS}}": "about",
+        "{{CRUMBS}}": '<span class="dl-crumbs">about</span>',
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
@@ -4770,7 +4863,7 @@ def write_features_page(shell: str) -> Path:
         "{{MODULE}}": "",
         "{{YEAR}}": "",
         "{{SERIES}}": "",
-        "{{CRUMBS}}": "features",
+        "{{CRUMBS}}": '<span class="dl-crumbs">features</span>',
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
@@ -4832,7 +4925,7 @@ def write_editor_page(shell: str) -> Path:
         "{{MODULE}}": "",
         "{{YEAR}}": "",
         "{{SERIES}}": "",
-        "{{CRUMBS}}": "editor",
+        "{{CRUMBS}}": '<span class="dl-crumbs">editor</span>',
         "{{ASSET_BASE}}": "assets/",
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
@@ -4916,6 +5009,8 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             series_nav=render_series_nav(tutorial, members),
             notes=[{"id": n.id, "html": n.html} for n in tutorial.notes],
             datasets=check_datasets(tutorial),
+            groups=groups,
+            members=members,
         )
         written.append(page_path)
         # 0.7MB against 19KB for the hosted page, so only the version students
