@@ -446,8 +446,10 @@ class Tutorial:
 
     @property
     def released(self) -> tuple[int, int, int, int]:
-        """The version as something sortable. Numbers, not the string, so
-        2026.09.02.1 sorts before 2026.09.15.1 rather than after it."""
+        """The version as something sortable. Numbers, not the string: the
+        date parts are zero-padded, so text order agrees with them, but the
+        release number is not, and as text 2026.09.15.10 would sort before
+        2026.09.15.9."""
         m = VERSION_RE.match(self.version)
         return tuple(int(m.group(g)) for g in ("y", "m", "d", "n"))
 

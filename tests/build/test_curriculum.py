@@ -45,30 +45,10 @@ class TestTheKnowledgeMap:
                           page.read_text() if page.is_file() else "", re.DOTALL)
         return match.group(0) if match else ""
 
-    def test_a_series_gets_a_map(self, repo):
-        self.series(repo)
-        b.build()
-        svg = self.svg(repo)
-        assert svg.count('class="dl-map-node"') == 4
-        assert svg.count('class="dl-map-next"') == 3
-
     def test_a_series_too_short_to_have_a_shape_gets_none(self, repo):
         self.series(repo, count=2)
         b.build()
         assert self.svg(repo) == ""
-
-    def test_every_node_links_to_a_page_that_exists(self, repo):
-        self.series(repo)
-        b.build()
-        for href in re.findall(r'<a class="dl-map-node" href="([^"]+)"', self.svg(repo)):
-            assert (repo / "site" / href).is_file(), href
-
-    def test_lanes_come_from_the_curriculum_data(self, repo):
-        self.series(repo)
-        b.build()
-        svg = self.svg(repo)
-        assert ">programming</text>" in svg
-        assert ">algorithms</text>" in svg
 
     def test_it_still_builds_without_the_curriculum_data(self, repo):
         # Without outcome data there is no topic tree — but the tutorial map
@@ -78,12 +58,26 @@ class TestTheKnowledgeMap:
         b.build()
         assert (repo / "site" / "index.html").is_file()
 
-    def test_naming_an_earlier_tutorial_draws_an_arrow_back_to_it(self, repo):
+    def test_a_series_of_four_gets_a_map_and_naming_an_earlier_tutorial_draws_an_arrow_back(self, repo):
+        """Four tutorials in one series, the last naming the first: a map of
+        linked nodes in lanes from the curriculum data, plus one arrow back."""
         self.series(repo)
         path = tutorial_path(repo, "t4")
         path.write_text(path.read_text() + "\nWe used this in Tutorial 1.\n")
         b.build()
-        assert 'class="dl-map-back"' in self.svg(repo)
+        svg = self.svg(repo)
+        # A series gets a map: one node per tutorial, one reading-order arrow
+        # between each pair of neighbours.
+        assert svg.count('class="dl-map-node"') == 4
+        assert svg.count('class="dl-map-next"') == 3
+        # Every node links to a page that exists.
+        for href in re.findall(r'<a class="dl-map-node" href="([^"]+)"', svg):
+            assert (repo / "site" / href).is_file(), href
+        # The lanes come from the curriculum data (outcomes.yaml's strands).
+        assert ">programming</text>" in svg
+        assert ">algorithms</text>" in svg
+        # Naming an earlier tutorial draws an arrow back to it.
+        assert 'class="dl-map-back"' in svg
 
     def test_the_tutorial_just_before_does_not_get_a_second_arrow(self, repo):
         """The reading-order arrow already says that one."""
@@ -93,14 +87,14 @@ class TestTheKnowledgeMap:
         b.build()
         assert 'class="dl-map-back"' not in self.svg(repo)
 
-    def test_a_long_title_is_shortened_rather_than_overflowing(self):
+    def test_a_long_title_is_shortened_and_a_tutorial_is_placed_by_what_it_mostly_covers(self):
+        # A long title is shortened rather than overflowing.
         assert b.shorten("Short") == "Short"
         assert b.shorten("A very considerably longer tutorial title") == (
             "A very considerably…"
         )
         assert len(b.shorten("A" * 60)) <= 23
-
-    def test_a_tutorial_is_placed_by_what_it_mostly_covers(self):
+        # A tutorial is placed by what it mostly covers.
         strands = {"A": "algebra", "B": "algebra", "C": "sets"}
         assert b.strand_of(["A", "B", "C"], strands) == "algebra"
         assert b.strand_of([], strands) == "other"
@@ -118,26 +112,112 @@ class TestTheTopicTree:
         )
         return json.loads(match.group(1)) if match else {}
 
-    def test_the_page_is_built(self, repo):
+    def test_a_tutorial_claiming_nothing_gives_a_vertical_tree_of_every_topic_with_none_taught(self, repo):
+        """One plain tutorial, no `covers:`: the tree page is built with every
+        topic on it, laid out top to bottom by dependency, with the tiers
+        labelled and the colours explained, nothing marked taught, and the
+        contents page pointing here."""
         write(repo, "Some prose.\n")
         b.build()
-        assert "The topic tree" in self.tree(repo)
+        page = self.tree(repo)
+        data = self.data(repo)
+        nodes = data["nodes"]
 
-    def test_every_topic_in_the_glossary_becomes_a_node(self, repo):
-        write(repo, "Some prose.\n")
-        b.build()
+        # The page is built.
+        assert "The topic tree" in page
+
+        # Every topic in the glossary becomes a node.
         topics = yaml.safe_load(
             (DEWLAB / "planning" / "curriculum" / "topics.yaml").read_text()
         )["topics"]
-        assert len(self.data(repo)["nodes"]) == len(topics)
+        assert len(nodes) == len(topics)
 
-    def test_a_topic_carries_what_it_is_and_where_it_is_used(self, repo):
-        write(repo, "Some prose.\n")
-        b.build()
-        node = next(n for n in self.data(repo)["nodes"] if n["code"] == "MIT-1.4")
+        # A topic carries what it is and where it is used.
+        node = next(n for n in nodes if n["code"] == "MIT-1.4")
         assert "two digits" in node["plain"]
         assert node["uses"]
         assert node["strand"] == "number"
+
+        # Nothing needs something below it: top to bottom is dependency, so
+        # an arrow pointing upwards would be a lie about the tree.
+        tier = {n["code"]: n["tier"] for n in nodes}
+        for node in nodes:
+            for need in node["needs"]:
+                assert tier[need] < node["tier"], f"{node['code']} needs {need}"
+
+        # The tree is drawn vertically. Tier is an abstraction; y is what a
+        # student actually sees. The two agreeing is what makes this a
+        # vertical tree, not a horizontal one with vertical labels.
+        place = {n["code"]: n for n in nodes}
+        for node in nodes:
+            for need in node["needs"]:
+                assert place[need]["y"] < node["y"], f"{node['code']} needs {need}"
+
+        # Each tier is a row of its own: two tiers sharing vertical space
+        # would say two different depths are the same depth.
+        bands = data["bands"]
+        assert [band["tier"] for band in bands] == sorted(band["tier"] for band in bands)
+        for earlier, later in zip(bands, bands[1:]):
+            assert earlier["y"] + earlier["height"] <= later["y"]
+
+        # The tree is taller than it is wide. Giving each subject its own
+        # column once produced 5854px wide against 756px tall — a horizontal
+        # tree in disguise, unusable on a phone.
+        assert data["height"] > data["width"]
+
+        # The top row says you can start there: the stripe labels are the
+        # only place the map explains itself.
+        labels = {band["tier"]: band["label"] for band in bands}
+        assert labels[0] == "start anywhere here"
+        assert labels[1] == "one layer down"
+        assert labels[2] == "two layers down"
+
+        # A topic no tutorial claims is not marked taught.
+        assert all(n["state"] != "taught" for n in nodes)
+
+        # A topic nobody teaches is marked planned.
+        states = {n["code"]: n["state"] for n in nodes}
+        assert states["MIT-3.6"] == "planned"
+
+        # Groundwork is not reported as a missing tutorial: a `PRE-` topic is
+        # nobody's learning outcome, so no tutorial can claim it in
+        # `covers:` — left as "planned" it would read as a gap.
+        node = next(n for n in nodes if n["code"] == "PRE-1")
+        assert node["state"] == "groundwork"
+
+        # A topic may name its own strand. Strands come from outcomes.yaml,
+        # so a topic deliberately not an outcome has none — and would
+        # otherwise land in "other".
+        assert node["strand"] == "geometry"
+
+        # The colour key lists every strand on the tree and no others. The
+        # colours are on every node and were explained nowhere except the
+        # panel you only see after choosing something.
+        listed = set(re.findall(r'<span class="dl-tree-hue" data-strand="([^"]+)"', page))
+        assert listed == {n["strand"] for n in nodes}
+        assert "What the colours mean" in page
+
+        # A topic we ruled out says so. Read from the file rather than named
+        # here: this once named MIT-2.3 outright and broke the day
+        # Venn diagrams came back into scope — a decision changing, not the
+        # tree breaking. When nothing is ruled out at the moment there is
+        # nothing for the tree to say so about, and the loop checks nothing.
+        scope = yaml.safe_load(
+            (DEWLAB / "planning" / "curriculum" / "out-of-scope.yaml").read_text()
+        )
+        ruled_out = [entry["code"] for entry in scope["outcomes"] or []]
+        for code in ruled_out:
+            assert states[code] == "excluded", f"{code} is out of scope and the tree does not say so"
+
+        # The contents page introduces the place instead of carrying the map.
+        index = (repo / "site" / "all-tutorials.html").read_text()
+        assert "Open any tutorial and start" in index
+        assert 'href="tree.html"' in index
+
+        # No topics page when nothing in topic-groups.yaml matches this build
+        # (TestBrowseByTopicPage has the page that does appear).
+        topics_page = repo / "site" / "topics.html"
+        assert (topics_page.read_text() if topics_page.is_file() else "") == ""
 
     def test_a_topic_takes_its_strand_and_coverage_from_the_outcome_it_serves(
         self, repo, monkeypatch
@@ -168,159 +248,39 @@ class TestTheTopicTree:
             "a split topic lost the coverage of the outcome it serves"
         )
 
-    def test_nothing_needs_something_below_it(self, repo):
-        # Top to bottom is dependency, so an arrow pointing upwards would be
-        # a lie about the tree.
-        write(repo, "Some prose.\n")
-        b.build()
-        data = self.data(repo)
-        tier = {n["code"]: n["tier"] for n in data["nodes"]}
-        for node in data["nodes"]:
-            for need in node["needs"]:
-                assert tier[need] < node["tier"], f"{node['code']} needs {need}"
-
-    def test_the_tree_is_drawn_vertically(self, repo):
-        # Tier is an abstraction; y is what a student actually sees. The two
-        # agreeing is what makes this a vertical tree, not a horizontal one
-        # with vertical labels.
-        write(repo, "Some prose.\n")
-        b.build()
-        data = self.data(repo)
-        place = {n["code"]: n for n in data["nodes"]}
-        for node in data["nodes"]:
-            for need in node["needs"]:
-                assert place[need]["y"] < node["y"], f"{node['code']} needs {need}"
-
-    def test_each_tier_is_a_row_of_its_own(self, repo):
-        # Two tiers sharing vertical space would say two different depths
-        # are the same depth.
-        write(repo, "Some prose.\n")
-        b.build()
-        bands = self.data(repo)["bands"]
-        assert [band["tier"] for band in bands] == sorted(band["tier"] for band in bands)
-        for earlier, later in zip(bands, bands[1:]):
-            assert earlier["y"] + earlier["height"] <= later["y"]
-
-    def test_the_tree_is_taller_than_it_is_wide(self, repo):
-        # Giving each subject its own column once produced 5854px wide
-        # against 756px tall — a horizontal tree in disguise, unusable on a phone.
-        write(repo, "Some prose.\n")
-        b.build()
-        data = self.data(repo)
-        assert data["height"] > data["width"]
-
-    def test_the_top_row_says_you_can_start_there(self, repo):
-        """The stripe labels are the only place the map explains itself."""
-        write(repo, "Some prose.\n")
-        b.build()
-        bands = {band["tier"]: band["label"] for band in self.data(repo)["bands"]}
-        assert bands[0] == "start anywhere here"
-        assert bands[1] == "one layer down"
-        assert bands[2] == "two layers down"
-
-    def test_a_taught_topic_links_to_the_section_that_teaches_it(self, repo):
+    def test_three_tutorials_one_claiming_a_topic_put_the_map_on_the_tree_page_and_link_the_topic_to_its_section(self, repo):
         """The link comes from the tutorial's own `covers:`, so it cannot point
-        somewhere the tutorial does not claim."""
+        somewhere the tutorial does not claim; and the tutorial map is drawn
+        on the tree page, not on the contents page."""
         path = write(repo, "## A section\n\nProse.\n")
         path.write_text(path.read_text().replace(
             "version: 2026.08.23.1\n", "version: 2026.08.23.1\ncovers:\n  a-section:\n    covers: [MIT-1.4]\n"
         ))
+        for n in (2, 3):
+            write(repo, f"# T{n}\n\nProse.\n", slug=f"t{n}")
         b.build()
+        # A taught topic links to the section that teaches it.
         node = next(n for n in self.data(repo)["nodes"] if n["code"] == "MIT-1.4")
         assert node["state"] == "taught"
         assert node["where"]["href"] == (
             "tutorials/sample.html#a-section"
         )
-
-    def test_a_topic_no_tutorial_claims_is_not_marked_taught(self, repo):
-        write(repo, "Some prose.\n")
-        b.build()
-        assert all(n["state"] != "taught" for n in self.data(repo)["nodes"])
-
-    def test_a_topic_nobody_teaches_is_marked_planned(self, repo):
-        write(repo, "Some prose.\n")
-        b.build()
-        states = {n["code"]: n["state"] for n in self.data(repo)["nodes"]}
-        assert states["MIT-3.6"] == "planned"
-
-    def test_groundwork_is_not_reported_as_a_missing_tutorial(self, repo):
-        # A `PRE-` topic is nobody's learning outcome, so no tutorial can
-        # claim it in `covers:` — left as "planned" it would read as a gap.
-        write(repo, "Some prose.\n")
-        b.build()
-        node = next(n for n in self.data(repo)["nodes"] if n["code"] == "PRE-1")
-        assert node["state"] == "groundwork"
-
-    def test_a_topic_may_name_its_own_strand(self, repo):
-        # Strands come from outcomes.yaml, so a topic deliberately not an
-        # outcome has none — and would otherwise land in "other".
-        write(repo, "Some prose.\n")
-        b.build()
-        node = next(n for n in self.data(repo)["nodes"] if n["code"] == "PRE-1")
-        assert node["strand"] == "geometry"
-
-    def test_the_colour_key_lists_every_strand_on_the_tree_and_no_others(self, repo):
-        """The colours are on every node and were explained nowhere except the
-        panel you only see after choosing something."""
-        write(repo, "Some prose.\n")
-        b.build()
-        page = self.tree(repo)
-        listed = set(re.findall(r'<span class="dl-tree-hue" data-strand="([^"]+)"', page))
-        assert listed == {n["strand"] for n in self.data(repo)["nodes"]}
-        assert "What the colours mean" in page
-
-    def test_a_topic_we_ruled_out_says_so(self, repo):
-        # Read from the file rather than named here: this test used to assert
-        # on MIT-2.3 by name and broke the day Venn diagrams came back into
-        # scope — a decision changing, not the tree breaking.
-        write(repo, "Some prose.\n")
-        b.build()
-        scope = yaml.safe_load(
-            (DEWLAB / "planning" / "curriculum" / "out-of-scope.yaml").read_text()
-        )
-        ruled_out = [entry["code"] for entry in scope["outcomes"] or []]
-        if not ruled_out:
-            pytest.skip("nothing is ruled out at the moment, so there is nothing "
-                        "for the tree to say so about")
-        states = {n["code"]: n["state"] for n in self.data(repo)["nodes"]}
-        for code in ruled_out:
-            assert states[code] == "excluded", f"{code} is out of scope and the tree does not say so"
-
-    def test_the_tutorial_map_moved_here_from_the_contents_page(self, repo):
-        for n in (1, 2, 3):
-            (tutorial_path(repo, f"t{n}")).write_text(
-                f'---\ntitle: "T{n}"\n'
-                f'year: "2026-2027"\n'
-                f"version: 2026.08.23.1\n---\n\n# T{n}\n\nProse.\n"
-            )
-        set_order(repo, "computational-methods", "python-fundamentals",
-                  ["t1", "t2", "t3"])
-        b.build()
+        # The tutorial map is on the tree page and not on the contents page.
         assert "dl-map-node" not in (repo / "site" / "all-tutorials.html").read_text()
         assert "How the tutorials relate" in self.tree(repo)
         assert self.tree(repo).count('class="dl-map-node"') == 3
-
-    def test_the_contents_page_introduces_the_place_instead(self, repo):
-        write(repo, "Some prose.\n")
-        b.build()
-        index = (repo / "site" / "all-tutorials.html").read_text()
-        assert "Open any tutorial and start" in index
-        assert 'href="tree.html"' in index
 
 
 class TestBrowseByTopicPage:
     """Built against the sandboxed fixture set like every other test here, so
     a mismatch against the real topic-groups.yaml is expected — see
-    TestTopicGroupsMatchRealTutorials for what actually checks that file."""
+    TestTopicGroupsMatchRealTutorials for what actually checks that file.
+    The plain build with no matching tutorial, and so no page, is checked
+    with the rest of the plain page in TestTheTopicTree."""
 
     def page(self, repo) -> str:
         path = repo / "site" / "topics.html"
         return path.read_text() if path.is_file() else ""
-
-    def test_no_topics_page_when_nothing_in_it_matches_this_build(self, repo):
-        write(repo, "Some prose.\n")
-        b.build()
-        assert self.page(repo) == ""
 
     def test_a_group_appears_once_its_own_tutorial_is_in_this_build(self, repo):
         # Any real group entry will do: an id is site-wide.
@@ -359,21 +319,16 @@ class TestNoDuplicateKeysInCurriculumData:
         with pytest.raises(yaml.YAMLError, match="duplicate key"):
             b.load_yaml_no_duplicate_keys(text)
 
-    def test_ordinary_yaml_with_no_repeats_still_loads(self):
+    def test_ordinary_yaml_and_the_real_curriculum_files_load(self):
+        # Ordinary YAML with no repeats still loads.
         text = "topics:\n  T1:\n    name: One\n    needs: [A]\n"
         assert b.load_yaml_no_duplicate_keys(text) == {
             "topics": {"T1": {"name": "One", "needs": ["A"]}}
         }
-
-    def test_the_real_topics_yaml_has_no_duplicate_keys(self):
-        path = DEWLAB / "planning" / "curriculum" / "topics.yaml"
-        b.load_yaml_no_duplicate_keys(path.read_text())
-
-    def test_the_real_outcomes_yaml_has_no_duplicate_keys(self):
-        path = DEWLAB / "planning" / "curriculum" / "outcomes.yaml"
-        b.load_yaml_no_duplicate_keys(path.read_text())
-
-    def test_the_real_out_of_scope_yaml_has_no_duplicate_keys(self):
-        path = DEWLAB / "planning" / "curriculum" / "out-of-scope.yaml"
-        if path.is_file():
-            b.load_yaml_no_duplicate_keys(path.read_text())
+        # The real topics.yaml, outcomes.yaml and, if it exists,
+        # out-of-scope.yaml have no duplicate keys.
+        curriculum = DEWLAB / "planning" / "curriculum"
+        for name in ("topics.yaml", "outcomes.yaml", "out-of-scope.yaml"):
+            path = curriculum / name
+            if path.is_file() or name != "out-of-scope.yaml":
+                b.load_yaml_no_duplicate_keys(path.read_text())

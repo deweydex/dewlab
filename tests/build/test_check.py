@@ -21,8 +21,9 @@ from helpers import b  # noqa: E402  (the `repo` fixture comes from conftest)
 
 @pytest.fixture()
 def site(tmp_path: Path, monkeypatch):
-    """A migrated-shape tree: flat tutorials/, courses/, and check.py
-    pointed at it."""
+    """A tree in the shape the build reads: flat tutorials/<id>/<id>.md,
+    one course file per course under courses/, and check.py pointed at
+    it."""
     root = tmp_path / "repo"
     (root / "tutorials").mkdir(parents=True)
     (root / "courses").mkdir()
@@ -67,84 +68,78 @@ def run_check(check, *args: str) -> tuple[int, str]:
 
 # ------------------------------------------------------------ the checks
 
-def test_a_good_tutorial_on_a_course_has_no_problems(site) -> None:
+def test_a_good_tree_has_no_problems_only_notes_and_a_whole_site_check_never_offers(site, monkeypatch) -> None:
+    """One tree, every kind of thing check.py accepts: a listed tutorial
+    with a cell, one no course lists, one whose only image is inside a code
+    example, a real tutorial whose id ends in -practice beside a practice
+    page, and two tutorials sharing a title. Checked one path at a time,
+    then all at once."""
     root, check = site
     tutorial(root, "first-steps", body="```python exec\nid: one\nprint(1)\n```\n")
-    course(root, "alpha", {"Start": ["first-steps"]})
-    code, out = run_check(check, "tutorials/first-steps")
-    assert code == 0 and "No problems" in out
-    assert "Listed on: alpha → Start" in out
-
-
-def test_an_unlisted_tutorial_gets_a_note_saying_how_to_list_it(site) -> None:
-    root, check = site
     tutorial(root, "lonely")
-    code, out = run_check(check, "tutorials/lonely")
-    assert code == 0
-    assert "No course lists `lonely` yet" in out and "courses/" in out
-
-
-def test_an_old_placement_field_is_a_problem_that_says_to_delete_it(site) -> None:
-    root, check = site
-    tutorial(root, "old", front='title: "Old"\nyear: "2026-2027"\nversion: 2026.09.14.1\nmodule: alpha\nseries: start\n')
-    code, out = run_check(check, "tutorials/old")
-    assert code == 1
-    assert "delete these old lines" in out and "module, series" in out
-
-
-def test_a_cell_without_an_id_and_two_cells_with_one_id_are_problems(site) -> None:
-    root, check = site
-    tutorial(root, "cells", body="```python exec\nprint(1)\n```\n\n```python exec\nid: a\n```\n\n```python exec\nid: a\n```\n")
-    code, out = run_check(check, "tutorials/cells")
-    assert code == 1
-    assert "has no `id:` line" in out and "used more than once: a" in out
-
-
-def test_an_image_inside_a_code_example_is_not_a_missing_image(site) -> None:
-    root, check = site
     tutorial(root, "web", body="Write this:\n\n```html\n<img src=\"does-not-exist.jpg\" alt=\"x\">\n```\n\nAnd `![x](also-not.png)` in a span.\n")
-    code, out = run_check(check, "tutorials/web")
-    assert code == 0, out
-
-
-def test_a_real_missing_image_is_a_problem(site) -> None:
-    root, check = site
-    tutorial(root, "pic", body="![A plot](plot.png)\n")
-    code, out = run_check(check, "tutorials/pic")
-    assert code == 1 and "`plot.png` is not in the folder" in out
-
-
-def test_a_practice_page_is_known_by_its_frontmatter_not_its_name(site) -> None:
-    root, check = site
     tutorial(root, "sql-practice")  # a real tutorial whose id ends in -practice
     tutorial(root, "joins")
     (root / "tutorials" / "joins" / "joins-practice.md").write_text(
         '---\ntitle: "Joins — Practice"\nyear: "2026-2027"\nversion: 2026.09.14.1\npractice_for: joins\n---\n\n**1.** Q.\n')
-    course(root, "db", {"SQL": ["sql-practice", "joins"]})
-    code, out = run_check(check, "courses/db.yaml")
+    tutorial(root, "a")
+    tutorial(root, "b")
+    course(root, "alpha", {"Start": ["first-steps"], "SQL": ["sql-practice", "joins"], "S": ["a", "b"]})
+
+    # A good tutorial on a course has no problems.
+    code, out = run_check(check, "tutorials/first-steps")
+    assert code == 0 and "No problems" in out
+    assert "Listed on: alpha → Start" in out
+
+    # An unlisted tutorial gets a note saying how to list it.
+    code, out = run_check(check, "tutorials/lonely")
+    assert code == 0
+    assert "No course lists `lonely` yet" in out and "courses/" in out
+
+    # An image inside a code example is not a missing image.
+    code, out = run_check(check, "tutorials/web")
     assert code == 0, out
 
+    # A practice page is known by its frontmatter, not its name.
+    code, out = run_check(check, "courses/alpha.yaml")
+    assert code == 0, out
 
-def test_a_course_listing_an_unknown_id_is_a_problem_naming_the_series(site) -> None:
+    # A repeated title is a note, not a problem.
+    code, out = run_check(check, "tutorials/a")
+    assert code == 0 and 'same title, "A Title": b' in out
+
+    # A whole-site check never offers a pull request.
+    monkeypatch.setattr(check, "offer_pull_request", lambda *a, **k: (_ for _ in ()).throw(AssertionError("offered")))
+    code = check.main(["check.py", "--pr"])
+    assert code == 0
+
+
+def test_every_problem_in_one_tutorial_is_named_and_so_is_an_unknown_path(site) -> None:
+    """One tutorial carrying every mistake check.py calls a Problem, a
+    course listing an id with no folder, and a path that is neither."""
     root, check = site
+    tutorial(root, "old",
+             front='title: "Old"\nyear: "2026-2027"\nversion: 2026.09.14.1\nmodule: alpha\nseries: start\n',
+             body="```python exec\nprint(1)\n```\n\n```python exec\nid: a\n```\n\n```python exec\nid: a\n```\n\n![A plot](plot.png)\n")
     tutorial(root, "first-steps")
     course(root, "alpha", {"Start": ["first-steps", "frist-steps"]})
+
+    code, out = run_check(check, "tutorials/old")
+    # An old placement field is a problem that says to delete it.
+    assert code == 1
+    assert "delete these old lines" in out and "module, series" in out
+    # A cell without an id, and two cells with one id, are problems.
+    assert code == 1
+    assert "has no `id:` line" in out and "used more than once: a" in out
+    # A real missing image is a problem.
+    assert code == 1 and "`plot.png` is not in the folder" in out
+
+    # A course listing an unknown id is a problem naming the series.
     code, out = run_check(check, "courses/alpha.yaml")
     assert code == 1
     assert 'The series "Start" lists `frist-steps`, but there is no folder' in out
 
-
-def test_a_repeated_title_is_a_note_not_a_problem(site) -> None:
-    root, check = site
-    tutorial(root, "a")
-    tutorial(root, "b")
-    course(root, "alpha", {"S": ["a", "b"]})
-    code, out = run_check(check, "tutorials/a")
-    assert code == 0 and 'same title, "A Title": b' in out
-
-
-def test_an_unknown_path_gets_a_plain_sentence_not_a_traceback(site) -> None:
-    root, check = site
+    # An unknown path gets a plain sentence, not a traceback.
     code, out = run_check(check, "somewhere/else")
     assert code == 1
     assert "I do not know how to check `somewhere/else`" in out
@@ -152,9 +147,10 @@ def test_an_unknown_path_gets_a_plain_sentence_not_a_traceback(site) -> None:
 
 # ------------------------------------------------------ the pull request
 
-def test_the_title_and_description_come_from_what_was_checked(site, monkeypatch) -> None:
+def test_the_title_and_description_come_from_what_was_checked_and_the_repository_from_the_remote(site, monkeypatch) -> None:
     root, check = site
-    monkeypatch.setattr(check, "git", lambda *a: None)  # every path counts as new
+    # Every path counts as new.
+    monkeypatch.setattr(check, "git", lambda *a: None)
     title, body = check.describe([("tutorial", "first-steps", "First Steps")], ["tutorials/first-steps/first-steps.md"])
     assert title == "Add tutorial: First Steps"
     assert "- Tutorial **First Steps** (`tutorials/first-steps/`) — new" in body
@@ -164,17 +160,11 @@ def test_the_title_and_description_come_from_what_was_checked(site, monkeypatch)
     assert title == "Add course: Alpha"
     title, _ = check.describe([("practice", "joins", "Joins — Practice")], ["tutorials/joins/joins-practice.md"])
     assert title == "Add practice: Joins — Practice"
-
-
-def test_an_existing_file_makes_it_an_update(site, monkeypatch) -> None:
-    root, check = site
+    # An existing file makes it an update.
     monkeypatch.setattr(check, "git", lambda *a: "tracked" if a[0] == "ls-files" else None)
     title, _ = check.describe([("tutorial", "first-steps", "First Steps")], ["tutorials/first-steps/first-steps.md"])
     assert title == "Update tutorial: First Steps"
-
-
-def test_the_repository_is_read_from_either_remote_address(site, monkeypatch) -> None:
-    root, check = site
+    # The repository is read from either remote address.
     monkeypatch.setattr(check, "git", lambda *a: "https://github.com/deweydex/dewlab.git")
     assert check.repository_slug() == "deweydex/dewlab"
     monkeypatch.setattr(check, "git", lambda *a: "git@github.com:deweydex/dewlab.git")
@@ -194,15 +184,6 @@ def test_on_main_it_says_to_make_a_branch_and_touches_nothing(site, monkeypatch,
     out = capsys.readouterr().out
     assert "git switch -c my-change" in out
     assert not any(a[0] in ("add", "commit", "push") for a in calls)
-
-
-def test_a_whole_site_check_never_offers(site, monkeypatch, capsys) -> None:
-    root, check = site
-    tutorial(root, "a")
-    course(root, "alpha", {"S": ["a"]})
-    monkeypatch.setattr(check, "offer_pull_request", lambda *a, **k: (_ for _ in ()).throw(AssertionError("offered")))
-    code = check.main(["check.py", "--pr"])
-    assert code == 0
 
 
 def test_the_address_carries_the_title_and_body_and_the_branch(site, monkeypatch, capsys) -> None:

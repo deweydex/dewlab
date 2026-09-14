@@ -560,8 +560,8 @@ every `tutorial:` link always resolve to the current one. Frozen releases get no
 downloadable copy of their own, since a downloadable snapshot of superseded
 material is not worth shipping.
 
-`TestVersionsOfATutorial` and `TestTheVersionListInTheManifest` in
-`tests/build/test_releases.py` pin down the exact behaviour.
+`TestVersionsOfATutorial` in `tests/build/test_releases.py` pins down the
+exact behaviour.
 
 ---
 
