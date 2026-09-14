@@ -1052,10 +1052,10 @@ p code, li code {
 }
 
 /* .dl-settings itself is dead in assets/shell.html since the corner-dock
-   rebuild split it into .dl-yourwork and .dl-appearance — kept here only
+   rebuild split it into the .dl-right-panel family — kept here only
    because compose/dewmini.html still ships its own, unrelated Settings
    panel under that same class name, sharing this stylesheet. */
-.dl-yourwork, .dl-appearance, .dl-settings {
+.dl-right-panel, .dl-settings {
   position: fixed;
   right: 0;
   top: 0;
@@ -1072,14 +1072,14 @@ p code, li code {
   font-family: var(--dl-font-family);
   font-size: 0.85rem;
 }
-.dl-yourwork[hidden], .dl-appearance[hidden], .dl-settings[hidden] { display: none; }
+.dl-right-panel[hidden], .dl-settings[hidden] { display: none; }
 
 /* Notes+Report and Appearance+Imports&Exports both open beneath the
    top-right stack, which stays on top of either panel in z-index. Starting
    the panel at the stack's tracked real height (trackCornerDockHeights(),
    tutorial-runtime.js — the same way trackChromeHeight() already tracks
    --dl-chrome-h) keeps a panel's own header clear of it. */
-.dl-yourwork, .dl-appearance {
+.dl-right-panel {
   top: calc(1rem + var(--dl-corner-tr-h, 0px));
   bottom: 0;
 }
@@ -1110,7 +1110,7 @@ p code, li code {
   gap: 1rem;
   margin-bottom: 0.9rem;
 }
-.dl-yourwork h2, .dl-appearance h2, .dl-settings h2 {
+.dl-right-panel h2, .dl-settings h2 {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -1136,7 +1136,7 @@ p code, li code {
   border-top: 1px solid var(--dl-rule);
 }
 .dl-settings-section[hidden] { display: none; }
-.dl-yourwork h3, .dl-appearance h3, .dl-settings h3 {
+.dl-right-panel h3, .dl-settings h3 {
   font-size: 0.8rem;
   letter-spacing: 0.02em;
   color: var(--dl-heading);
@@ -1209,11 +1209,12 @@ p code, li code {
 .dl-corner-identity .dl-crumbs { max-width: 100%; }
 
 /* The where-you-are tree — all tutorials, then this tutorial's own
-   module, its series, the tutorial itself, and finally its contents —
-   five independently collapsible levels with increasing indent, each a
-   native <details> (crumb_trail_html(), build.py) so the caret and the
-   expand/collapse need no JavaScript of their own, the same reasoning
-   nav_search_html() already gives for its own popover. */
+   module, its series, and, inside the series list, the page's own title
+   opening onto its sections — four independently collapsible levels with
+   increasing indent, each a native <details> (crumb_trail_html(),
+   build.py) so the caret and the expand/collapse need no JavaScript of
+   their own, the same reasoning nav_search_html() already gives for its
+   own popover. */
 .dl-crumbtrail {
   display: flex;
   flex-direction: column;
@@ -1257,26 +1258,43 @@ p code, li code {
 .dl-crumb-level .dl-crumb-current { color: var(--dl-heading); font-weight: 700; }
 .dl-crumb-level-2 { margin-left: 0.7rem; }
 .dl-crumb-level-3 { margin-left: 1.4rem; }
-/* The two rungs below the series — this tutorial, then its own contents —
-   read as page rather than place: the page's own name in the heading
-   colour, the section list in ordinary case, since neither is a category
-   the way the three rungs above it are. */
-.dl-crumb-level-4 { margin-left: 2.1rem; }
-.dl-crumb-level-4 > summary, .dl-crumb-leaf {
+/* This page's own line in the series list is the rung that opens onto its
+   sections and its practice. It reads as page rather than place — its
+   name in the heading colour and ordinary case, like the bold current
+   line it replaces — and its caret hangs in the list's left padding, so
+   the title lines up with its siblings instead of being pushed right by
+   the caret's width (0.8em at 0.75em, so 0.6em of this font). */
+.dl-crumb-level-4 > summary {
+  margin-left: -0.6em;
   text-transform: none;
   letter-spacing: 0;
   color: var(--dl-heading);
   font-weight: 700;
 }
-.dl-crumb-leaf {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-left: 0.8em;
+.dl-crumb-count { margin-left: 0.4rem; font-size: 0.85em; font-weight: 400; color: var(--dl-muted); }
+.dl-crumb-practice { margin-top: 0.25rem; }
+.dl-crumb-practice a { color: var(--dl-orange); }
+/* Versions, under this tutorial's own rung of the tree (moved there by
+   initVersionsSection()): which release you are on is a where-you-are
+   question. Set at the tree's own size, as one more line of it. */
+.dl-crumbtrail .dl-settings-section {
+  margin: 0.4rem 0 0.2rem 1.1rem;
+  padding: 0;
+  border: 0;
+  font-size: 0.72rem;
 }
-.dl-crumb-level-5 { margin-left: 0.7rem; }
-.dl-crumb-level-5 > summary { text-transform: none; letter-spacing: 0; }
-.dl-crumb-count { margin-left: 0.4rem; font-size: 0.9em; color: var(--dl-muted); }
+.dl-crumbtrail .dl-settings-section h3 {
+  margin: 0 0 0.2rem;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--dl-muted);
+}
+.dl-crumbtrail .dl-settings-section .dl-panel-note { display: none; }
+.dl-crumbtrail .dl-texture-row { grid-template-columns: 1fr; gap: 0.15rem; margin: 0 0 0.3rem; }
+.dl-crumbtrail .dl-seg button { font-size: 0.64rem; padding: 0.15rem 0.45rem; }
+.dl-crumbtrail .dl-versions-list { margin: 0; padding: 0; }
+
 .dl-crumb-level [role="list"] [role="list"] {
   margin: 0.05rem 0 0.15rem;
   padding-left: 0.9rem;
@@ -1490,7 +1508,7 @@ p code, li code {
   background: var(--dl-panel-bg);
   border-bottom: 1px solid var(--dl-cell-border);
 }
-.dl-yourwork, .dl-appearance, .dl-reference, .dl-settings {
+.dl-right-panel, .dl-reference, .dl-settings {
   scroll-padding-top: 9rem;
 }
 .dl-reference-empty { font-style: italic; }
@@ -2264,8 +2282,7 @@ p code, li code {
      for the dot to sit without covering anything. */
   .dl-whereyouare { display: block; }
   .dl-whereyouare[hidden] { display: none; }
-  .dl-yourwork,
-  .dl-appearance,
+  .dl-right-panel,
   .dl-reference,
   .dl-whereyouare {
     position: fixed;
@@ -3067,7 +3084,7 @@ p code, li code {
 
 @media print {
   .dl-chrome, .dl-corner-dock, .dl-mobile-launcher, .dl-settings-toggle,
-  .dl-yourwork, .dl-appearance, .dl-reference, .dl-whereyouare, .dl-settings, .dl-status, .dl-nav,
+  .dl-right-panel, .dl-reference, .dl-whereyouare, .dl-settings, .dl-status, .dl-nav,
   .dl-insert, .dl-hint-icon, .dl-report-icon, .dl-cell-report-doors,
   .dl-cell-head .dl-btn, .dl-cell-footbar .dl-btn, .dl-report-doors {
     display: none !important;

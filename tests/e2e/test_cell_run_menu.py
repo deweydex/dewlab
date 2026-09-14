@@ -216,7 +216,7 @@ class TestRestartAndRunAll:
         page.keyboard.insert_text("\nonly_the_old_interpreter_has_this = True")
         run_cell(page, "plain-python")
 
-        _open_panel(page, "#dl-appearance-toggle")
+        _open_panel(page, "#dl-python-toggle")
         page.once("dialog", lambda dialog: dialog.accept())
         page.click("#dl-restart-run-all")
 
