@@ -3545,6 +3545,11 @@ def report_doors_links(page: str, version: str, cell: str = "") -> str:
     bulleted list is the wrong shape for three short links, and it also
     silently broke every test that counted a page's `<li>` tags, since
     this markup reaches every page.
+
+    The account note is here rather than repeated at each caller, so
+    every surface a reader can reach these doors from — the footer, the
+    Give Feedback panel, a cell's own report box — says it the same way,
+    once, instead of drifting.
     """
     error_url = report_issue_url(page, version, _REPORT_KIND_ERROR, cell)
     wrong_url = report_issue_url(page, version, _REPORT_KIND_WRONG, cell)
@@ -3554,6 +3559,7 @@ def report_doors_links(page: str, version: str, cell: str = "") -> str:
         f'<a class="dl-report-issue-link" href="{error_url}">It gives an error</a> · '
         f'<a class="dl-report-issue-link" href="{wrong_url}">The page is wrong, or I could not follow it</a>'
         "</p>"
+        '<p class="dl-panel-note">GitHub will ask you to sign in with a free account first.</p>'
     )
 
 
