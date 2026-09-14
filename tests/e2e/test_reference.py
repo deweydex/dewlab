@@ -207,33 +207,36 @@ class TestVisibility:
         context.close()
 
 
-class TestPanelsDisclosure:
-    def test_a_closed_disclosure_does_not_reserve_its_hidden_buttons(
+class TestIdentityCornerControlsAreDirect:
+    """Series used to live behind a "Panels" disclosure shared with
+    Reference; once Reference got its own corner-tab button, the group
+    that disclosure gated could only ever hold Series alone, so the extra
+    click it asked for stopped earning its keep — Series is now a plain
+    button in the identity block, exactly like Reference and Appearance
+    are direct everywhere."""
+
+    def test_series_is_a_plain_visible_button_not_a_disclosure(
             self, site, browser, site_url):
         _tutorial(site, "one", "One")
-        _set_order(site, ["one"])
+        _tutorial(site, "two", "Two")
+        _set_order(site, ["one", "two"])
         b.build()
         context = browser.new_context(viewport={"width": 1200, "height": 800})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
 
-        assert not page.eval_on_selector("#dl-panels", "el => el.open")
-        assert page.is_hidden("#dl-panels-group")
-        assert page.eval_on_selector(
-            "#dl-panels-group", "el => el.getBoundingClientRect().width"
-        ) == 0
-
-        page.click("#dl-panels summary")
+        assert page.locator("#dl-panels").count() == 0
         assert page.is_visible("#dl-seriesnav-toggle")
+        page.click("#dl-seriesnav-toggle")
+        assert page.is_visible("#dl-seriesnav")
         context.close()
 
     @pytest.mark.parametrize("path", ["index.html", f"{MODULE}.html"])
     def test_appearance_is_direct_on_home_and_module_pages(
             self, site, browser, site_url, path):
         """Appearance (and the rest of what used to be Settings) lives in
-        its own corner dock now, never behind the Panels disclosure — so
-        this is direct everywhere, not only on pages with no series to
-        make the disclosure collapse."""
+        its own corner dock now, never behind a disclosure — so this is
+        direct everywhere, not only on pages with no series."""
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
@@ -241,7 +244,6 @@ class TestPanelsDisclosure:
         page = context.new_page()
         page.goto(f"{site_url}/{path}")
 
-        assert page.is_hidden("#dl-panels summary")
         assert page.is_visible("#dl-appearance-toggle")
         page.click("#dl-appearance-toggle")
         assert page.is_visible("#dl-appearance")
@@ -458,6 +460,78 @@ class TestDatasets:
         context.close()
 
 
+class TestPanelClearsTheCornerDocks:
+    """The top-left dock (wordmark, breadcrumb tree, search, the Series
+    toggle) and the bottom-left dock (Documentation's own tab) both stay
+    above a left-side panel in z-index so their toggle stays reachable
+    while the panel is open — see trackCornerDockHeights() in
+    tutorial-runtime.js. Without the panel carving out room for both, its
+    own header (or its content once scrolled to the bottom) renders right
+    underneath them."""
+
+    def test_the_reference_panel_starts_below_the_top_left_dock(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _glossary(site, "one", [CONCEPT])
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1400, "height": 900})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        _open_panel(page, "#dl-reference-toggle")
+        dock_bottom = page.eval_on_selector(
+            ".dl-corner-dock-tl", "el => el.getBoundingClientRect().bottom")
+        panel_top = page.eval_on_selector(
+            "#dl-reference", "el => el.getBoundingClientRect().top")
+        assert panel_top >= dock_bottom - 1
+        context.close()
+
+    def test_the_reference_panel_ends_above_the_bottom_left_dock(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _glossary(site, "one", [CONCEPT])
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1400, "height": 900})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        _open_panel(page, "#dl-reference-toggle")
+        dock_top = page.eval_on_selector(
+            ".dl-corner-dock-bl", "el => el.getBoundingClientRect().top")
+        panel_bottom = page.eval_on_selector(
+            "#dl-reference", "el => el.getBoundingClientRect().bottom")
+        assert panel_bottom <= dock_top + 1
+        context.close()
+
+    def test_the_notes_panel_starts_below_the_top_right_strip(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1400, "height": 900})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        _open_panel(page, "#dl-yourwork-toggle")
+        dock_bottom = page.eval_on_selector(
+            ".dl-corner-dock-tr", "el => el.getBoundingClientRect().bottom")
+        panel_top = page.eval_on_selector(
+            "#dl-yourwork", "el => el.getBoundingClientRect().top")
+        assert panel_top >= dock_bottom - 1
+        context.close()
+
+    def test_the_appearance_panel_ends_above_the_bottom_right_strip(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1400, "height": 900})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        _open_panel(page, "#dl-appearance-toggle")
+        dock_top = page.eval_on_selector(
+            ".dl-corner-dock-br", "el => el.getBoundingClientRect().top")
+        panel_bottom = page.eval_on_selector(
+            "#dl-appearance", "el => el.getBoundingClientRect().bottom")
+        assert panel_bottom <= dock_top + 1
+        context.close()
+
+
 class TestMobile:
     """REFERENCE_PANEL.md §6: on a phone the panel becomes a bottom sheet,
     mirroring .dl-settings' own mobile treatment, rather than staying hidden."""
@@ -474,6 +548,12 @@ class TestMobile:
         context.close()
 
     def test_opening_it_shows_a_sheet_anchored_to_the_bottom_edge(self, site, browser, site_url):
+        """The raw toggle is CSS-hidden on a phone-sized viewport now — a
+        thumb reaches Reference through the mobile launcher instead
+        (initMobileLauncher(), tutorial-runtime.js), which forwards a real
+        click to this same button. Opened that way here, matching what a
+        phone actually does, rather than clicking the (invisible) toggle
+        directly."""
         _tutorial(site, "one", "One")
         _glossary(site, "one", [CONCEPT])
         _set_order(site, ["one"])
@@ -481,7 +561,8 @@ class TestMobile:
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
-        _open_panel(page, "#dl-reference-toggle")
+        page.click("#dl-mobile-fab")
+        page.click("#dl-mobile-item-reference")
         assert page.is_visible("#dl-reference")
         style = page.eval_on_selector(
             "#dl-reference",
@@ -492,6 +573,117 @@ class TestMobile:
         assert style["bottom"] == "0px"
         assert style["left"] == "0px"
         assert style["right"] == "0px"
+        context.close()
+
+
+class TestMobileLauncher:
+    """A thumb has room for one button, not six — every corner-tab toggle
+    collapses into one launcher on a phone (initMobileLauncher(),
+    tutorial-runtime.js), forwarding a real click to the actual toggle
+    rather than duplicating its open/close logic a second time."""
+
+    def open_page(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _glossary(site, "one", [CONCEPT])
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 375, "height": 700})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        return context, page
+
+    def test_the_fab_is_hidden_on_desktop(self, site, browser, site_url):
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 1200, "height": 800})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        assert page.eval_on_selector(
+            "#dl-mobile-fab", "el => getComputedStyle(el).display") == "none"
+        context.close()
+
+    def test_clicking_the_fab_opens_the_menu(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
+        assert page.is_hidden("#dl-mobile-menu")
+        page.click("#dl-mobile-fab")
+        assert page.is_visible("#dl-mobile-menu")
+        context.close()
+
+    def test_forwarding_opens_the_real_panel_and_closes_the_menu(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
+        page.click("#dl-mobile-fab")
+        page.click("#dl-mobile-item-reference")
+        assert page.is_visible("#dl-reference")
+        assert page.is_hidden("#dl-mobile-menu")
+        context.close()
+
+    def test_the_forwarded_click_does_not_reopen_and_reclose_itself(
+            self, site, browser, site_url):
+        """A regression test for a real bug: the forwarded click's own
+        original event kept bubbling to the same document-level
+        outside-click listener that had just reacted to it opening the
+        panel, reading the (still-bubbling) original click as "outside"
+        and closing the panel right back — all within the one click.
+        Fixed with stopPropagation() on the menu item's own handler."""
+        context, page = self.open_page(site, browser, site_url)
+        page.click("#dl-mobile-fab")
+        page.click("#dl-mobile-item-reference")
+        assert page.is_visible("#dl-reference")
+        context.close()
+
+    def test_series_is_reachable_from_the_launcher(self, site, browser, site_url):
+        """Series left the identity row on phones (it had shrunk to an
+        icon-only square floating over the page) for the launcher. The
+        launcher mirrors the toggle's own hidden state once at load, so
+        this also pins the init order: initSeriesNav() has to have
+        unhidden the toggle before initMobileLauncher() looks."""
+        _tutorial(site, "one", "One")
+        _tutorial(site, "two", "Two")
+        _set_order(site, ["one", "two"])
+        b.build()
+        context = browser.new_context(viewport={"width": 375, "height": 700})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.click("#dl-mobile-fab")
+        assert page.is_visible("#dl-mobile-item-seriesnav")
+        page.click("#dl-mobile-item-seriesnav")
+        assert page.is_visible("#dl-seriesnav")
+        context.close()
+
+    def test_the_identity_row_sits_in_flow_above_the_page_not_over_it(
+            self, site, browser, site_url):
+        """Fixed at the top-left, the wordmark and search sat over the
+        first lines of every page on a phone — there is no spare column
+        to reserve for them there. In flow, the page starts below them."""
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 375, "height": 700})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        row_bottom = page.eval_on_selector(
+            ".dl-corner-dock-tl", "el => el.getBoundingClientRect().bottom")
+        body_top = page.eval_on_selector(
+            "main#dl-body", "el => el.getBoundingClientRect().top")
+        assert page.eval_on_selector(
+            ".dl-corner-dock-tl", "el => getComputedStyle(el).position") == "static"
+        assert body_top >= row_bottom
+        context.close()
+
+    def test_a_button_with_nothing_to_forward_to_is_absent_from_the_menu(
+            self, site, browser, site_url):
+        """One tutorial with no glossary at all has nothing for
+        Documentation to show — the same content-presence rule the
+        desktop toggle already follows, mirrored here."""
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context(viewport={"width": 375, "height": 700})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        page.click("#dl-mobile-fab")
+        assert page.is_hidden("#dl-mobile-item-documentation")
         context.close()
 
 

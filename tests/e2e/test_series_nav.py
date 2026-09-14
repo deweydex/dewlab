@@ -293,6 +293,10 @@ class TestMobile:
         context.close()
 
     def test_opening_it_shows_a_sheet_anchored_to_the_bottom_edge(self, site, browser, site_url):
+        """On a phone the Series tab is hidden with the rest of the corner
+        strip; a thumb reaches it through the mobile launcher, which
+        forwards a real click to the same toggle (initMobileLauncher(),
+        tutorial-runtime.js)."""
         _tutorial(site, "one", "One")
         _tutorial(site, "two", "Two")
         _set_order(site, ["one", "two"])
@@ -300,7 +304,8 @@ class TestMobile:
         context = browser.new_context(viewport={"width": 375, "height": 700})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
-        _open_panel(page, "#dl-seriesnav-toggle")
+        page.click("#dl-mobile-fab")
+        page.click("#dl-mobile-item-seriesnav")
         assert page.is_visible("#dl-seriesnav")
         style = page.eval_on_selector(
             "#dl-seriesnav",
