@@ -350,31 +350,27 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
 
   // The reading column keeps at least 26rem — dewlab's own narrowest Width
   // preset — no matter how far a panel gets dragged. .dl-page's own
-  // max-width formula reserves TWICE whichever side's panel is wider (so
-  // the centered column doesn't skew toward one edge) plus a flat 1rem —
-  // this mirrors that same arithmetic to find the widest this panel can
-  // get before it would push the column below the floor. Nothing did this
-  // before, so a drag could ask for more room than the column had left to
-  // give, and crush it toward zero.
-  function floorCapPx() {
-    const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-    return (window.innerWidth - 26 * rootPx - rootPx) / 2;
-  }
+  // max-width formula reserves each side for what is on it (this panel
+  // on this side, the dock or panel on the other) plus a 1rem gutter —
+  // .dl-page is border-box, so its padding is inside its width — and this
+  // mirrors that arithmetic to
+  // find the widest this panel can get before it would push the column
+  // below the floor. Nothing did this before, so a drag could ask for
+  // more room than the column had left to give, and crush it toward zero.
   function otherSideWidthPx() {
     const varName = side === "left" ? "--dl-panel-right-w" : "--dl-panel-left-w";
     const value = getComputedStyle(document.documentElement).getPropertyValue(varName);
     return parseFloat(value) || 0;
   }
+  function floorCapPx() {
+    const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    // 16px is the gutter watchPanelOverlap() adds to a side's width.
+    return window.innerWidth - otherSideWidthPx() - (26 + 1) * rootPx - 16;
+  }
 
   function onMove(ev) {
     const dx = side === "left" ? ev.clientX - startX : startX - ev.clientX;
-    const floorCap = floorCapPx();
-    // If the other side is already wider than the floor allows, .dl-page's
-    // own max() has already picked it as the reservation — this side can
-    // grow freely without making the column any narrower than it already
-    // is. Otherwise this side is the one about to become that reservation,
-    // so it gets capped the same way.
-    const cap = otherSideWidthPx() >= floorCap ? max : Math.min(max, floorCap);
+    const cap = Math.min(max, floorCapPx());
     const next = Math.max(min, Math.min(startWidth + dx, cap));
     panel.style.width = `${next}px`;
   }

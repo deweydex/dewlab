@@ -176,37 +176,30 @@ body {
   padding: 0 1.25rem 6rem;
 }
 
+/* The reading column sits between the docks, not centred on the screen
+   regardless of them. Each side reserves what is actually on it — the
+   resting dock, or a panel opened over it — and the column takes the
+   room that leaves, up to the reader's chosen Width (--dl-line-width),
+   never below 26rem (the narrowest Width preset). It is centred on the
+   viewport whenever that fits, and shifted only as far as the docks
+   demand. Reserving twice the wider side, as this once did to keep the
+   column centred, spent 824px of a 1440px screen on margins and left the
+   Width control dead on anything under about 1900px. .dl-page is
+   border-box, so its own side padding is inside these widths; the 1rem
+   is a gutter beside each dock. */
 @media (min-width: 34rem) {
-  html[data-dl-panel-left]:not([data-dl-panel-right]) .dl-page {
-    max-width: min(var(--dl-line-width), calc(100vw - 2 * var(--dl-panel-left-w, 25rem) - 1rem));
-  }
-  html[data-dl-panel-right]:not([data-dl-panel-left]) .dl-page {
-    max-width: min(var(--dl-line-width), calc(100vw - 2 * var(--dl-panel-right-w, 25rem) - 1rem));
-  }
-  html[data-dl-panel-left][data-dl-panel-right] .dl-page {
-    max-width: min(
+  html[data-dl-panel-left] .dl-page, html[data-dl-panel-right] .dl-page {
+    --dl-col: max(26rem, min(
       var(--dl-line-width),
-      calc(100vw - 2 * max(var(--dl-panel-left-w, 25rem), var(--dl-panel-right-w, 25rem)) - 1rem)
+      calc(100vw - var(--dl-panel-left-w, 0px) - var(--dl-panel-right-w, 0px) - 1rem)
+    ));
+    max-width: var(--dl-col);
+    margin-left: clamp(
+      calc(var(--dl-panel-left-w, 0px) + 0.5rem),
+      calc((100vw - var(--dl-col)) / 2),
+      calc(100vw - var(--dl-panel-right-w, 0px) - 0.5rem - var(--dl-col))
     );
-  }
-}
-@media (min-width: 85rem) {
-  /* Same shape as the 34rem tier above — no separate gutter floor. A fixed
-   * --dl-panel-gutter here once forced a 25rem reservation per side even
-   * once the real (smaller) panel width was known, which capped the
-   * column well below both the reader's chosen Width and the panel's own
-   * size, and made the Width control look dead while a panel was open. */
-  html[data-dl-panel-left]:not([data-dl-panel-right]) .dl-page {
-    max-width: min(var(--dl-line-width), calc(100vw - 2 * var(--dl-panel-left-w, 25rem) - 1rem));
-  }
-  html[data-dl-panel-right]:not([data-dl-panel-left]) .dl-page {
-    max-width: min(var(--dl-line-width), calc(100vw - 2 * var(--dl-panel-right-w, 25rem) - 1rem));
-  }
-  html[data-dl-panel-left][data-dl-panel-right] .dl-page {
-    max-width: min(
-      var(--dl-line-width),
-      calc(100vw - 2 * max(var(--dl-panel-left-w, 25rem), var(--dl-panel-right-w, 25rem)) - 1rem)
-    );
+    margin-right: 0;
   }
 }
 

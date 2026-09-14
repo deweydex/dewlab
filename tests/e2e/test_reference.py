@@ -598,6 +598,52 @@ class TestPanelClearsTheCornerDocks:
         context.close()
 
 
+    def test_the_width_setting_is_live_and_the_column_never_starves(
+            self, site, browser, site_url):
+        """The column sits between the docks and reserves each side for
+        what is on it. Centring it on the screen used to reserve twice the
+        wider dock, which left the Width control dead below about 1900px
+        and, on a 1024px laptop with Appearance open, 218px of text."""
+        _tutorial(site, "one", "One")
+        _set_order(site, ["one"])
+        b.build()
+
+        def column(page):
+            return page.eval_on_selector(".dl-page", "el => el.getBoundingClientRect().width")
+
+        def choose_width(page, rem):
+            page.click(f"#dl-settings-texture .dl-seg[data-texture=width] button[data-value='{rem}']")
+            page.wait_for_timeout(100)
+
+        context = browser.new_context(viewport={"width": 1440, "height": 900})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        # Measured with the panel closed again: on a 1440px screen the left
+        # dock and an open Appearance panel together leave about 32rem,
+        # so the setting shows once the panel is out of the way.
+        _open_panel(page, "#dl-appearance-toggle")
+        choose_width(page, 34)
+        page.keyboard.press("Escape")
+        page.wait_for_timeout(150)
+        narrow = column(page)
+        _open_panel(page, "#dl-appearance-toggle")
+        choose_width(page, 44)
+        page.keyboard.press("Escape")
+        page.wait_for_timeout(150)
+        assert column(page) > narrow + 90, "medium must be visibly wider than narrow at 1440px"
+        left_dock = page.eval_on_selector(".dl-corner-dock-tl", "el => el.getBoundingClientRect().right")
+        assert page.eval_on_selector(".dl-page", "el => el.getBoundingClientRect().left") >= left_dock
+        context.close()
+
+        context = browser.new_context(viewport={"width": 1024, "height": 800})
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/{MODULE}/one.html")
+        _open_panel(page, "#dl-appearance-toggle")
+        rem = page.evaluate("parseFloat(getComputedStyle(document.documentElement).fontSize)")
+        assert column(page) >= 26 * rem - 1, "the column keeps its 26rem floor even with a panel open"
+        context.close()
+
+
 class TestMobile:
     """REFERENCE_PANEL.md §6: on a phone the panel becomes a bottom sheet,
     mirroring .dl-settings' own mobile treatment, rather than staying hidden."""
