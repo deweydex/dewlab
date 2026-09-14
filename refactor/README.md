@@ -13,9 +13,15 @@ Read in this order:
    module or series today, grouped by the step that changes it.
 3. `EDITOR.md` — what changes in `assets/editor.js` here and in the dewnote
    repository, file by file.
-4. `migrate_tutorials.py` — the one-shot migration. Dry-run by default; it
+4. `DOCS.md` — the `pages/` folder (what changes and what does not), and
+   every document that describes today's layout, file by file.
+5. `migrate_tutorials.py` — the one-shot migration. Dry-run by default; it
    prints what it would do and writes nothing until `--apply`.
-5. `storage_migration.js` — the browser-side key migration the runtime gains
+6. `apply_docs.py` — the document swap: every edit in `DOCS.md` §2 as an
+   exact old-to-new replacement. `--check` (the default) proves each old
+   passage is still in the tree; `--apply` makes the edits, right after the
+   migration, in the same commit.
+7. `storage_migration.js` — the browser-side key migration the runtime gains
    in step 3, kept here so it can be read on its own.
 
 Nothing in this folder is imported by `build.py` or shipped in `site/`.
