@@ -269,9 +269,13 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
     report.checked.append(("course", course_id, str(course.get("title") or course_id)))
     if not ID_RE.match(course_id):
         report.problem(f"The file name `{course_id}` is not a valid id. Use small letters, digits and hyphens.")
-    for key in ("title", "contents"):
-        if not course.get(key):
-            report.problem(f"The course needs `{key}:`.")
+    if not course.get("title"):
+        report.problem("The course needs `title:`.")
+    if not course.get("contents"):
+        # The build accepts a course with no series; it is a course with
+        # nothing on it yet, not a mistake.
+        report.note("No series under `contents:` yet, so the course lists nothing. "
+                    "Add a series with a title and its tutorials when you are ready.")
     for key in ("code", "card", "description"):
         if not course.get(key):
             report.note(f"No `{key}:`. The course page or its card will be missing that text.")

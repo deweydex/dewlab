@@ -16,6 +16,8 @@ import pytest
 
 DEWLAB = Path(__file__).resolve().parent.parent.parent
 
+from helpers import b  # noqa: E402  (the `repo` fixture comes from conftest)
+
 
 @pytest.fixture()
 def site(tmp_path: Path, monkeypatch):
@@ -219,3 +221,57 @@ def test_the_address_carries_the_title_and_body_and_the_branch(site, monkeypatch
     check.offer_pull_request(report, "yes")
     out = capsys.readouterr().out
     assert "https://github.com/deweydex/dewlab/compare/main...my-change?quick_pull=1&title=Update+tutorial%3A+First+Steps&body=" in out
+
+
+# ------------------------------------------------ the tool's promise, proven
+
+MISTAKES = {
+    # name: (frontmatter, body, course listing) — one mistake each, of a
+    # kind check.py covers. `None` for a value keeps the good default.
+    "an old placement field": ('title: "T"\nyear: "2026-2027"\nversion: 2026.09.14.1\nmodule: alpha\n', None, None),
+    "a version that is not a release date": ('title: "T"\nyear: "2026-2027"\nversion: 1\n', None, None),
+    "a missing title": ('year: "2026-2027"\nversion: 2026.09.14.1\n', None, None),
+    "a cell with no id": (None, "```python exec\nprint(1)\n```\n", None),
+    "two cells with one id": (None, "```python exec\nid: a\nprint(1)\n```\n\n```python exec\nid: a\nprint(2)\n```\n", None),
+    "an image that is not in the folder": (None, "![A plot](plot.png)\n", None),
+    "a course listing an id with no folder": (None, None, ["good", "gone"]),
+    "a course listing an id twice": (None, None, ["good", "good"]),
+}
+
+
+@pytest.mark.parametrize("mistake", sorted(MISTAKES))
+def test_everything_check_calls_a_problem_the_build_also_refuses(repo, monkeypatch, mistake):
+    """check.py says "No problems" only about a tree the build accepts, and
+    every Problem it reports is a build failure: both run over one tree
+    with one mistake in it, and both refuse. The good tree passes both."""
+    import importlib
+    sys.path.insert(0, str(DEWLAB))
+    check = importlib.import_module("check")
+    importlib.reload(check)
+    monkeypatch.setattr(check, "ROOT", repo)
+    monkeypatch.setattr(check, "TUTORIALS", repo / "tutorials")
+    monkeypatch.setattr(check, "COURSES", repo / "courses")
+
+    front, body, listing = MISTAKES[mistake]
+    tutorial(repo, "good", body=body or "Prose.\n", front=front or 'title: "Good"\nyear: "2026-2027"\nversion: 2026.09.14.1\n')
+    course(repo, "alpha", {"Start": listing or ["good"]})
+
+    code, out = run_check(check)
+    assert code == 1, f"check.py saw no problem in {mistake}:\n{out}"
+    with pytest.raises(b.BuildError):
+        b.build()
+
+
+def test_everything_check_and_the_build_both_accept_a_good_tree(repo, monkeypatch):
+    import importlib
+    sys.path.insert(0, str(DEWLAB))
+    check = importlib.import_module("check")
+    importlib.reload(check)
+    monkeypatch.setattr(check, "ROOT", repo)
+    monkeypatch.setattr(check, "TUTORIALS", repo / "tutorials")
+    monkeypatch.setattr(check, "COURSES", repo / "courses")
+    tutorial(repo, "good", body="```python exec\nid: one\nprint(1)\n```\n")
+    course(repo, "alpha", {"Start": ["good"]})
+    code, out = run_check(check)
+    assert code == 0, out
+    assert b.build()
