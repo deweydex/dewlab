@@ -46,21 +46,21 @@
 <body>
 <div class="dl-page">
 
-  <div class="dl-chrome" id="dl-chrome">
-    <nav class="dl-nav dl-nav-top">{{NAV_PREV_NEXT}}</nav>
-  </div>
-
-  <div class="dl-corner-dock dl-corner-dock-tl">
+  <!-- Two upper docks and nothing else above the page: the top-left
+       carries the wordmark and the where-you-are tree (all tutorials,
+       module, series, this tutorial, its contents), then a search bar and
+       Reference beneath; the top-right is one vertical stack of the four
+       remaining panels. What the old top bar held — all tutorials, previous
+       and next, search, contents — is all in the tree or the bar now, so
+       the page starts at its own heading. planning/mockups/upper-docks.html
+       is the mockup this was built from. -->
+  <div class="dl-corner-dock dl-corner-dock-tl" id="dl-dock-left">
     <div class="dl-corner-identity">
       <a class="dl-wordmark" href="{{ROOT_BASE}}index.html">dewlab</a>
       {{CRUMBS}}
-      {{NAV_SEARCH}}
     </div>
-    <div class="dl-corner-strip">
-      <button type="button" class="dl-seriesnav-toggle dl-corner-tab" id="dl-seriesnav-toggle"
-              aria-expanded="false" aria-controls="dl-seriesnav" aria-label="Series" hidden>
-        <span class="dl-seriesnav-icon" aria-hidden="true"></span><span class="dl-toggle-label">Series</span>
-      </button>
+    <div class="dl-corner-stack">
+      {{NAV_SEARCH}}
       <button type="button" class="dl-reference-toggle dl-corner-tab" id="dl-reference-toggle"
               aria-expanded="false" aria-controls="dl-reference" aria-label="Reference" hidden>
         <span class="dl-reference-icon" aria-hidden="true"></span><span class="dl-toggle-label">Reference</span>
@@ -68,64 +68,55 @@
     </div>
   </div>
 
-  <div class="dl-corner-dock dl-corner-dock-bl">
-    <button type="button" class="dl-documentation-toggle dl-corner-tab" id="dl-documentation-toggle"
-            aria-expanded="false" aria-controls="dl-documentation" aria-label="Documentation" hidden>
-      <span class="dl-toggle-label">Documentation</span>
-    </button>
-  </div>
-
-  <div class="dl-corner-dock dl-corner-dock-tr">
-    <div class="dl-corner-strip">
+  <div class="dl-corner-dock dl-corner-dock-tr" id="dl-dock-right">
+    <div class="dl-corner-stack">
       <button type="button" class="dl-corner-tab" id="dl-yourwork-toggle"
               aria-pressed="false" aria-controls="dl-yourwork" aria-label="Notes">
+        <svg class="dl-tab-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 5h12M4 10h12M4 15h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <span class="dl-toggle-label">Notes</span>
       </button>
       <button type="button" class="dl-corner-tab" id="dl-report-toggle"
               aria-pressed="false" aria-controls="dl-yourwork" aria-label="Report a problem">
+        <svg class="dl-tab-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 17V3h9l-2.5 3.5L14 10H5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
         <span class="dl-toggle-label">Report</span>
       </button>
-    </div>
-  </div>
-
-  <div class="dl-corner-dock dl-corner-dock-br">
-    <div class="dl-corner-strip">
       <button type="button" class="dl-corner-tab" id="dl-appearance-toggle"
               aria-pressed="false" aria-controls="dl-appearance" aria-label="Appearance">
+        <svg class="dl-tab-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 3a7 7 0 0 1 0 14z" fill="currentColor"/></svg>
         <span class="dl-toggle-label">Appearance</span>
       </button>
       <button type="button" class="dl-corner-tab" id="dl-importsexports-toggle"
               aria-pressed="false" aria-controls="dl-appearance" aria-label="Imports and exports">
+        <svg class="dl-tab-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M7 3v10M3.5 9.5L7 13l3.5-3.5M13 17V7M9.5 10.5L13 7l3.5 3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="dl-toggle-label">Imports &amp; Exports</span>
       </button>
     </div>
   </div>
 
-  <!-- Phone-only: the seven corner tabs above collapse into one launcher —
-       a thumb has room for one button, not seven. Each row forwards to the
-       real corner toggle above rather than duplicating its open/close
-       logic; those toggles stay in the page (just hidden) purely so this
-       has something real to click. -->
+  <!-- Phone-only: the corner tabs above collapse into one launcher — the
+       wordmark's orange dot, grown up, at the bottom of the screen where
+       nothing else lives. Its menu is a full-width sheet of thumb-sized
+       rows; each forwards to the real corner toggle above rather than
+       duplicating its open/close logic (those toggles stay in the page,
+       just hidden, purely so this has something real to click), except
+       "Where you are", which is the tree itself, moved into a sheet of its
+       own on a phone (initWhereYouAre(), tutorial-runtime.js). -->
   <div class="dl-mobile-launcher">
     <button type="button" class="dl-mobile-fab" id="dl-mobile-fab"
             aria-expanded="false" aria-controls="dl-mobile-menu" aria-label="Open menu">
       <span class="dl-mobile-fab-dot" aria-hidden="true"></span>
     </button>
     <div class="dl-mobile-menu" id="dl-mobile-menu" hidden>
-      <button type="button" class="dl-mobile-menu-item" id="dl-mobile-item-seriesnav"
-              data-forward="dl-seriesnav-toggle" hidden>This series</button>
+      <button type="button" class="dl-mobile-menu-item" id="dl-mobile-item-whereyouare"
+              data-sheet="dl-whereyouare" hidden>Where you are</button>
       <button type="button" class="dl-mobile-menu-item" id="dl-mobile-item-reference"
               data-forward="dl-reference-toggle" hidden>Reference</button>
-      <button type="button" class="dl-mobile-menu-item" id="dl-mobile-item-documentation"
-              data-forward="dl-documentation-toggle" hidden>Documentation</button>
       <button type="button" class="dl-mobile-menu-item" data-forward="dl-yourwork-toggle">Notes</button>
       <button type="button" class="dl-mobile-menu-item" data-forward="dl-report-toggle">Report</button>
       <button type="button" class="dl-mobile-menu-item" data-forward="dl-appearance-toggle">Appearance</button>
       <button type="button" class="dl-mobile-menu-item" data-forward="dl-importsexports-toggle">Imports &amp; Exports</button>
     </div>
   </div>
-
-  {{TOC}}
 
   <div class="dl-status" id="dl-status" role="status" aria-live="polite" hidden>
     <span class="dl-status-text" id="dl-status-text"></span>
@@ -441,24 +432,20 @@
   </div>
 </div>
 
-<div class="dl-documentation" id="dl-documentation" role="dialog" aria-modal="false"
-     aria-labelledby="dl-documentation-title" hidden>
+<!-- Phone-only: the where-you-are tree, moved out of the identity row
+     (which has no room for it there) into a sheet the launcher opens.
+     Empty in the markup; initWhereYouAre() moves the real .dl-crumbtrail
+     in and out as the viewport crosses the phone width. -->
+<div class="dl-whereyouare" id="dl-whereyouare" role="dialog" aria-modal="false"
+     aria-labelledby="dl-whereyouare-title" hidden>
   <div class="dl-panel-sticky-head">
     <div class="dl-reference-head">
-      <h2 id="dl-documentation-title">Documentation</h2>
-      <button type="button" class="dl-reference-close" id="dl-documentation-close"
-              aria-label="Close documentation">&times;</button>
+      <h2 id="dl-whereyouare-title">Where you are</h2>
+      <button type="button" class="dl-reference-close" id="dl-whereyouare-close"
+              aria-label="Close">&times;</button>
     </div>
   </div>
-  <p class="dl-panel-note">
-    These are official Python pages for terms this page — and everything
-    before it in the series — has already covered. Not every term has a
-    page here yet; the list grows over time.
-  </p>
-  <div id="dl-documentation-links"></div>
-  <p class="dl-panel-note" id="dl-documentation-empty" hidden>
-    Nothing here yet for this page — check back later.
-  </p>
+  <div id="dl-whereyouare-body"></div>
 </div>
 
 <div class="dl-reference" id="dl-reference" role="dialog" aria-modal="false"
@@ -521,20 +508,6 @@
     <div class="dl-reference-groups" id="dl-python-groups"></div>
     <p class="dl-panel-note dl-reference-empty" id="dl-python-empty" hidden>Nothing matches that.</p>
   </div>
-</div>
-
-<div class="dl-seriesnav" id="dl-seriesnav" role="dialog" aria-modal="false"
-     aria-labelledby="dl-seriesnav-title" hidden>
-  <div class="dl-panel-sticky-head">
-    <div class="dl-seriesnav-head">
-      <h2 id="dl-seriesnav-title">This series</h2>
-      <button type="button" class="dl-seriesnav-close" id="dl-seriesnav-close"
-              aria-label="Close series navigation">&times;</button>
-    </div>
-  </div>
-  <nav aria-label="Every tutorial in this series">
-    {{SERIES_NAV}}
-  </nav>
 </div>
 
 <!-- Cell source and page metadata, JSON-encoded so Python code containing

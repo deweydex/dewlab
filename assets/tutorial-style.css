@@ -1074,15 +1074,14 @@ p code, li code {
 }
 .dl-yourwork[hidden], .dl-appearance[hidden], .dl-settings[hidden] { display: none; }
 
-/* Notes+Report and Appearance+Imports&Exports each span the whole right
-   edge, but both the top-right strip and the bottom-right strip stay on
-   top of either panel in z-index. Carving out each one's tracked real
-   height (trackCornerDockHeights(), tutorial-runtime.js — the same way
-   trackChromeHeight() already tracks --dl-chrome-h) keeps a panel's own
-   header and its scrolled-to-the-bottom content clear of both. */
+/* Notes+Report and Appearance+Imports&Exports both open beneath the
+   top-right stack, which stays on top of either panel in z-index. Starting
+   the panel at the stack's tracked real height (trackCornerDockHeights(),
+   tutorial-runtime.js — the same way trackChromeHeight() already tracks
+   --dl-chrome-h) keeps a panel's own header clear of it. */
 .dl-yourwork, .dl-appearance {
-  top: calc(var(--dl-chrome-h) + var(--dl-corner-tr-h, 0px));
-  bottom: calc(1rem + var(--dl-corner-br-h, 0px));
+  top: calc(1rem + var(--dl-corner-tr-h, 0px));
+  bottom: 0;
 }
 
 .dl-panel-resize-handle {
@@ -1151,60 +1150,70 @@ p code, li code {
   color: var(--dl-muted);
 }
 
-/* The four corner docks: a fixed strip of one or two tabs at each of the
-   page's own corners, anchored below the masthead (--dl-chrome-h, already
-   tracked by trackChromeHeight()) or just above the bottom edge. Above the
-   panels' own z-index so a tab stays reachable even while its own side's
-   panel covers that part of the screen. */
+/* The two upper docks (planning/mockups/upper-docks.html): the top-left
+   carries the wordmark, the where-you-are tree, then a search bar and
+   Reference; the top-right is one vertical stack of the four remaining
+   tabs. Nothing sits above the page any more, so both start at the top
+   edge. Above the panels' own z-index so a tab stays reachable even while
+   its own side's panel covers that part of the screen. */
 .dl-corner-dock {
   position: fixed;
   z-index: 51;
+  top: 1rem;
 }
-.dl-corner-dock-tl, .dl-corner-dock-bl { left: 0; }
-.dl-corner-dock-tr, .dl-corner-dock-br { right: 0; }
-.dl-corner-dock-tl, .dl-corner-dock-tr { top: var(--dl-chrome-h); }
-.dl-corner-dock-bl, .dl-corner-dock-br { bottom: 1rem; }
-/* Only the breadcrumb tree can grow past what a shorter screen has room
-   for — a module or series with many members otherwise pushes the strip
-   below it clean off the bottom of the viewport, with no way to scroll a
-   fixed element back into view. Capped and made to scroll internally —
-   on the tree itself, never on the whole dock: a scroll box clips
-   anything positioned outside it, and the search popover sharing this
-   dock is exactly that. 12rem leaves room for the wordmark, the search
-   and the strip beneath. */
+.dl-corner-dock-tl { left: 0; }
+.dl-corner-dock-tr { right: 0; }
+
+/* The top-left block is as wide as the panel that opens beneath it, so no
+   line of the tree is cut short — but never so wide that two docks leave
+   the reading column below its 26rem floor: .dl-page reserves twice the
+   wider side, so the block gives ground first on a laptop-sized window. */
+:root { --dl-side: clamp(14rem, calc((100vw - 30rem) / 2), 22rem); }
+
+/* Only the tree can grow past what a shorter screen has room for — a
+   module or series with many members otherwise pushes the stack below it
+   clean off the bottom of the viewport, with no way to scroll a fixed
+   element back into view. Capped and made to scroll internally — on the
+   tree itself, never on the whole dock: a scroll box clips anything
+   positioned outside it, and the search popover sharing this dock is
+   exactly that. 12rem leaves room for the wordmark and the stack. */
 .dl-crumbtrail {
-  max-height: calc(100vh - var(--dl-chrome-h) - 12rem);
+  max-height: calc(100vh - 12rem);
   overflow-y: auto;
 }
 
-/* The two-button rows (Series+Reference, Notes+Report, Appearance+Imports
-   & Exports) — a plain flex row, wrapped separately from .dl-corner-dock
-   itself so the top-left dock's own stack (identity block, then its
-   strip) can use ordinary block flow instead. */
-.dl-corner-strip { display: flex; }
+/* Each dock's own column of controls: search bar over Reference on the
+   left, four tabs joined into one strip on the right. */
+.dl-corner-stack {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+.dl-corner-dock-tl .dl-corner-stack { width: var(--dl-side); gap: 0.4rem; }
+.dl-corner-dock-tr .dl-corner-stack { width: 12.5rem; align-items: stretch; }
 
-/* What the masthead used to hold — wordmark, orientation, search, the
-   Series toggle — now living in the top-left dock instead of a separate
-   header bar. .dl-wordmark/.dl-crumbs are unstyled here beyond their own
-   existing rules; compose/dewmini.html still uses both classes inside
-   its own, unrelated <header class="dl-masthead">, so neither rule was
-   touched, only reused. */
+/* What the masthead used to hold — wordmark and orientation — now living
+   in the top-left dock instead of a separate header bar. .dl-wordmark/
+   .dl-crumbs are unstyled here beyond their own existing rules;
+   compose/dewmini.html still uses both classes inside its own, unrelated
+   <header class="dl-masthead">, so neither rule was touched, only reused. */
 .dl-corner-identity {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.35rem;
-  max-width: 12rem;
-  padding: 0.6rem 0.7rem 0.7rem;
+  gap: 0.45rem;
+  box-sizing: border-box;
+  width: var(--dl-side);
+  padding: 0.4rem 0.7rem 0.7rem;
 }
 .dl-corner-identity .dl-crumbs { max-width: 100%; }
 
-/* The breadcrumb tree — all tutorials, then this tutorial's own module,
-   series, and finally itself — three independently collapsible levels
-   with increasing indent, each a native <details> (crumb_trail_html(),
-   build.py) so the caret and the expand/collapse need no JavaScript of
-   their own, the same reasoning nav_search_html() already gives for its
-   own popover. */
+/* The where-you-are tree — all tutorials, then this tutorial's own
+   module, its series, the tutorial itself, and finally its contents —
+   five independently collapsible levels with increasing indent, each a
+   native <details> (crumb_trail_html(), build.py) so the caret and the
+   expand/collapse need no JavaScript of their own, the same reasoning
+   nav_search_html() already gives for its own popover. */
 .dl-crumbtrail {
   display: flex;
   flex-direction: column;
@@ -1248,6 +1257,31 @@ p code, li code {
 .dl-crumb-level .dl-crumb-current { color: var(--dl-heading); font-weight: 700; }
 .dl-crumb-level-2 { margin-left: 0.7rem; }
 .dl-crumb-level-3 { margin-left: 1.4rem; }
+/* The two rungs below the series — this tutorial, then its own contents —
+   read as page rather than place: the page's own name in the heading
+   colour, the section list in ordinary case, since neither is a category
+   the way the three rungs above it are. */
+.dl-crumb-level-4 { margin-left: 2.1rem; }
+.dl-crumb-level-4 > summary, .dl-crumb-leaf {
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--dl-heading);
+  font-weight: 700;
+}
+.dl-crumb-leaf {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 0.8em;
+}
+.dl-crumb-level-5 { margin-left: 0.7rem; }
+.dl-crumb-level-5 > summary { text-transform: none; letter-spacing: 0; }
+.dl-crumb-count { margin-left: 0.4rem; font-size: 0.9em; color: var(--dl-muted); }
+.dl-crumb-level [role="list"] [role="list"] {
+  margin: 0.05rem 0 0.15rem;
+  padding-left: 0.9rem;
+  font-size: 0.95em;
+}
 
 /* Desktop-hidden by default; @media (max-width: 34rem) below turns both
    on and hides the six corner tabs they replace. */
@@ -1274,10 +1308,11 @@ p code, li code {
 }
 /* An author rule with the same specificity as the browser's own
    [hidden] { display: none } always wins the tie — without this,
-   Reference and Documentation's own hidden attribute (set when a page
-   has no glossary) does nothing, since .dl-corner-tab's unconditional
-   display: inline-flex above already matches at the same weight. */
+   Reference's own hidden attribute (set on a page with nothing to show)
+   does nothing, since .dl-corner-tab's unconditional display: inline-flex
+   above already matches at the same weight. */
 .dl-corner-tab[hidden] { display: none; }
+.dl-tab-icon { width: 1em; height: 1em; flex: none; }
 .dl-corner-tab:hover, .dl-corner-tab:focus-visible {
   border-color: var(--dl-orange);
   color: var(--dl-orange);
@@ -1287,40 +1322,23 @@ p code, li code {
   border-color: var(--dl-navy);
   color: #fff;
 }
-.dl-corner-dock-tl .dl-corner-tab, .dl-corner-dock-bl .dl-corner-tab {
+/* Flush to the screen's own edge on each side, so only the outer corners
+   are rounded; the right-hand tabs join into one strip, top to bottom. */
+.dl-corner-dock-tl .dl-corner-tab {
+  width: 100%;
+  border-left: none;
   border-radius: 0 6px 6px 0;
 }
-.dl-corner-dock-tr .dl-corner-tab, .dl-corner-dock-br .dl-corner-tab {
-  border-radius: 6px 0 0 6px;
+.dl-corner-dock-tr .dl-corner-tab {
+  width: 100%;
+  border-right: none;
+  border-radius: 0;
+  box-shadow: none;
 }
-.dl-corner-dock-tr .dl-corner-tab + .dl-corner-tab,
-.dl-corner-dock-br .dl-corner-tab + .dl-corner-tab {
-  border-left: none;
-}
-/* The left-edge strip joins the same way, with only its last tab keeping
-   the rounded outer corners. Series is hidden on a page with no series,
-   so the join skips a hidden tab rather than dropping the border of the
-   first visible one. */
-.dl-corner-dock-tl .dl-corner-strip .dl-corner-tab:not(:last-child) { border-radius: 0; }
-.dl-corner-dock-tl .dl-corner-tab:not([hidden]) + .dl-corner-tab { border-left: none; }
-
-/* The Documentation panel's own rows — an external link per term, an
-   outbound arrow standing in for target="_blank" the way an icon usually
-   would. Generic enough that the corner-docks.html mockup this shipped
-   from used the same class for its own stub links. */
-.dl-corner-link {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.6rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--dl-rule);
-  font-family: var(--dl-mono);
-  font-size: 0.8rem;
-  color: var(--dl-fg);
-  text-decoration: none;
-}
-.dl-corner-link:hover { color: var(--dl-orange); }
-.dl-corner-link:last-child { border-bottom: none; }
+.dl-corner-dock-tr .dl-corner-stack { box-shadow: 0 2px 8px var(--dl-shadow); border-radius: 6px 0 0 6px; }
+.dl-corner-dock-tr .dl-corner-tab:first-child { border-radius: 6px 0 0 0; }
+.dl-corner-dock-tr .dl-corner-tab:last-child { border-radius: 0 0 0 6px; }
+.dl-corner-dock-tr .dl-corner-tab + .dl-corner-tab { border-top: none; }
 
 .dl-reference-toggle[hidden] { display: none; }
 .dl-reference-toggle {
@@ -1364,7 +1382,7 @@ p code, li code {
   border-top: 1px solid currentColor;
 }
 
-.dl-reference, .dl-documentation {
+.dl-reference{
   position: fixed;
   left: 0;
   top: 0;
@@ -1381,17 +1399,17 @@ p code, li code {
   font-family: var(--dl-font-family);
   font-size: 0.85rem;
 }
-.dl-reference[hidden], .dl-documentation[hidden] { display: none; }
-/* Reference and Documentation span the whole left edge, but the top-left
-   dock (wordmark, breadcrumb tree, search, the Series toggle — taller the
-   deeper a page's breadcrumb runs) and the bottom-left dock (Documentation's
-   own tab) both stay on top of the panel in z-index. Carving out each
-   one's tracked real height (see trackCornerDockHeights() in
-   tutorial-runtime.js) keeps the panel's own header and its
-   scrolled-to-the-bottom content clear of both, on every page. */
-.dl-reference, .dl-documentation {
-  top: calc(var(--dl-chrome-h) + var(--dl-corner-tl-h, 0px));
-  bottom: calc(1rem + var(--dl-corner-bl-h, 0px));
+.dl-reference[hidden]{ display: none; }
+/* Reference opens beneath the top-left dock (wordmark, tree, search —
+   taller the deeper a page's tree runs, and changing whenever a rung opens
+   or closes), which stays on top of the panel in z-index. Starting the
+   panel at the dock's tracked real height (trackCornerDockHeights(),
+   tutorial-runtime.js) keeps the panel's own header clear of it, on every
+   page; it is as wide as the dock so the two read as one column. */
+.dl-reference {
+  top: calc(1rem + var(--dl-corner-tl-h, 0px));
+  bottom: 0;
+  width: var(--dl-side);
 }
 .dl-reference-head {
   display: flex;
@@ -1400,7 +1418,7 @@ p code, li code {
   gap: 1rem;
   margin-bottom: 0.6rem;
 }
-.dl-reference h2, .dl-documentation h2 {
+.dl-reference h2, .dl-whereyouare h2 {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -1472,7 +1490,7 @@ p code, li code {
   background: var(--dl-panel-bg);
   border-bottom: 1px solid var(--dl-cell-border);
 }
-.dl-yourwork, .dl-appearance, .dl-reference, .dl-seriesnav, .dl-documentation, .dl-settings {
+.dl-yourwork, .dl-appearance, .dl-reference, .dl-settings {
   scroll-padding-top: 9rem;
 }
 .dl-reference-empty { font-style: italic; }
@@ -1521,90 +1539,10 @@ p code, li code {
 .dl-note > :first-child { margin-top: 0; }
 .dl-note > :last-child { margin-bottom: 0; }
 
-/* The Series toggle is a .dl-corner-tab now (assets/shell.html), sharing
-   the top-left strip with Reference; only its icon is its own. */
-/* Three rungs, drawn rather than typed for the same reason the reference's own icon is — a small ladder reads as "steps in a sequence"
-   without depending on a glyph the reader's font may not carry. */
-.dl-seriesnav-icon {
-  width: 0.75em;
-  height: 0.85em;
-  position: relative;
-}
-.dl-seriesnav-icon::before,
-.dl-seriesnav-icon::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  border-top: 2px solid currentColor;
-}
-.dl-seriesnav-icon::before { top: 0; }
-.dl-seriesnav-icon::after { bottom: 0; }
-
-.dl-seriesnav {
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 50;
-  width: min(22rem, 100vw);
-  min-width: 16rem;
-  max-width: min(40rem, 100vw);
-  overflow-y: auto;
-  overflow-x: hidden;
-  /* See the note on the panel above: the drag strip, not the native grip. */
-  padding: 1rem 1.1rem 1.1rem;
-  border-right: 1px solid var(--dl-cell-border);
-  background: var(--dl-panel-bg);
-  font-family: var(--dl-font-family);
-  font-size: 0.85rem;
-}
-.dl-seriesnav[hidden] { display: none; }
-/* Same reasoning as .dl-reference/.dl-documentation above — the Series
-   toggle now lives inside the top-left dock's own identity block. */
-.dl-seriesnav {
-  top: calc(var(--dl-chrome-h) + var(--dl-corner-tl-h, 0px));
-  bottom: calc(1rem + var(--dl-corner-bl-h, 0px));
-}
-.dl-seriesnav-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.6rem;
-}
-.dl-seriesnav h2 {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--dl-muted);
-  margin: 0;
-}
-.dl-seriesnav-close {
-  font-size: 1.3rem;
-  line-height: 1;
-  background: none;
-  border: none;
-  color: var(--dl-muted);
-  cursor: pointer;
-  padding: 0 0.2rem;
-}
-.dl-seriesnav-close:hover { color: var(--dl-orange); }
-
-.dl-seriesnav-series {
-  margin: 0;
-  padding-left: 1.4rem;
-  list-style: none;
-}
-.dl-seriesnav-series li { margin: 0.35rem 0; }
-.dl-seriesnav-series a { text-decoration: none; }
-.dl-seriesnav-series a:hover { text-decoration: underline; }
-.dl-seriesnav-series .dl-seriesnav-current {
-  font-weight: 700;
-  color: var(--dl-heading);
-  list-style: "→ ";
-  margin-left: -0.3rem;
-}
+/* Phone-only sheet the where-you-are tree moves into (initWhereYouAre(),
+   tutorial-runtime.js); on a wider screen the tree is back in the dock
+   and this stays out of the way entirely. */
+.dl-whereyouare { display: none; }
 
 .dl-texture-row {
   display: grid;
@@ -1725,56 +1663,10 @@ p code, li code {
   border-top: 0.26em solid currentColor;
   transform: translateX(-50%);
 }
-
-.dl-toc {
-  margin: 0 0 2rem;
-  border: 1px solid var(--dl-rule);
-  border-radius: 4px;
-  background: var(--dl-output-bg);
-  font-size: 0.9rem;
-}
-.dl-toc > summary {
-  display: flex;
-  align-items: baseline;
-  gap: 0.4rem;
-  padding: 0.5rem 0.8rem;
-  cursor: pointer;
-  font-family: var(--dl-mono);
-  font-size: 0.78rem;
-  color: var(--dl-muted);
-  list-style: none;
-}
-/* The default triangle sits where it likes across browsers; this one is ours
-   and turns with the disclosure. */
-.dl-toc > summary::-webkit-details-marker { display: none; }
-.dl-toc > summary::before {
-  content: "▸";
-  display: inline-block;
-  transition: transform 0.12s ease;
-}
-.dl-toc[open] > summary::before { transform: rotate(90deg); }
-.dl-toc > summary:hover { color: var(--dl-orange); }
-/* Pushed to the far end rather than spaced apart, so the marker stays beside
-   the word it belongs to. */
-.dl-toc-count { margin-left: auto; color: var(--dl-muted); font-size: 0.72rem; }
-
-.dl-toc nav { padding: 0 0.9rem 0.7rem; }
-/* Indentation alone carries the nesting. Bullets in a list of links are two
-   marks doing one job. */
-.dl-toc ul { margin: 0; padding-left: 0; list-style: none; }
-.dl-toc ul ul { padding-left: 1rem; }
-.dl-toc li { margin: 0.25rem 0; }
-.dl-toc a { text-decoration: none; }
-.dl-toc a:hover { text-decoration: underline; }
-/* Sub-headings are secondary information and read as such. */
-.dl-toc ul ul { margin: 0.2rem 0; }
-.dl-toc ul ul a { color: var(--dl-muted); font-size: 0.95em; }
-
 :root[data-header="minimal"] .dl-masthead { padding: 0.35rem 0 0.3rem; }
 :root[data-header="minimal"] .dl-crumbs, :root[data-header="minimal"] .dl-crumbtrail { display: none; }
 :root[data-header="minimal"] .dl-corner-tab,
-:root[data-header="minimal"] .dl-settings-toggle,
-:root[data-header="minimal"] .dl-seriesnav-toggle {
+:root[data-header="minimal"] .dl-settings-toggle {
   font-size: 0.72rem;
   padding: 0.25rem 0.5rem;
   min-height: 1.7rem;
@@ -1793,7 +1685,6 @@ p code, li code {
   white-space: nowrap;
   max-width: 100%;
 }
-:root[data-header="minimal"] .dl-toc { margin-bottom: 1.5rem; }
 
 .dl-hero { margin: 0 0 2.5rem; }
 .dl-hero p { margin: 0 0 0.9rem; }
@@ -2033,6 +1924,33 @@ p code, li code {
 }
 .dl-nav-search:not([open]) > .dl-search { display: none; }
 
+/* In the top-left stack the search is a bar, not a button: field-shaped,
+   the full width of the block, flush to the screen's edge like the
+   Reference tab beneath it, with a placeholder-coloured label. It stays a
+   <details> summary underneath, so nothing about how it opens changed. */
+.dl-corner-stack .dl-nav-search { width: 100%; }
+.dl-corner-stack .dl-nav-search > summary {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.1rem;
+  padding: 0.45rem 0.8rem;
+  color: var(--dl-muted);
+  cursor: text;
+  background: var(--dl-cell-bg);
+  border: 1px solid var(--dl-cell-border);
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  box-shadow: 0 2px 8px var(--dl-shadow);
+}
+.dl-corner-stack .dl-nav-search > summary:hover,
+.dl-corner-stack .dl-nav-search[open] > summary {
+  background: var(--dl-cell-bg);
+  border-color: var(--dl-orange);
+  color: var(--dl-heading);
+}
+.dl-corner-stack .dl-nav-search[open] > .dl-search { left: 0.7rem; }
+
 .dl-nav-search[open] > .dl-search {
   position: absolute;
   top: calc(100% + 0.5rem);
@@ -2247,51 +2165,64 @@ p code, li code {
   .dl-cell-head { flex-wrap: wrap; row-gap: 0.35rem; }
   .dl-cell-header-end { flex-wrap: wrap; }
 
-  /* One launcher instead of seven floating tabs — a thumb has room for
-     one button, not seven. Every panel a tab used to open, Series
-     included, opens from the launcher instead (initMobileLauncher(),
-     tutorial-runtime.js). */
-  .dl-corner-dock-bl,
+  /* One launcher instead of six floating tabs — a thumb has room for one
+     button, not six. Every panel a tab used to open opens from the
+     launcher instead (initMobileLauncher(), tutorial-runtime.js); the
+     tree opens from it too, as its own sheet. */
   .dl-corner-dock-tr,
-  .dl-corner-dock-br,
-  .dl-corner-dock-tl .dl-corner-strip {
+  .dl-corner-dock-tl .dl-reference-toggle {
     display: none;
   }
 
   /* The identity corner can't float on a phone: there is no spare column
      to reserve for it, so fixed at the top-left it sat over the first
-     lines of every page. Back in flow instead, as one slim row under the
-     nav — wordmark at one end, search at the other — that scrolls away
-     with the page the way the old masthead did. */
+     lines of every page. Back in flow instead, as one slim row at the top
+     — wordmark at one end, search at the other — that scrolls away with
+     the page the way the old masthead did. The tree is out of the row
+     (initWhereYouAre() moves it into the sheet below). */
   .dl-corner-dock-tl {
     position: static;
-    margin: 0 -1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    margin: 0 -1rem 1rem;
     padding: 0.35rem 1rem;
     border-bottom: 1px solid var(--dl-rule);
   }
   .dl-corner-identity {
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.6rem;
-    width: 100%;
-    max-width: none;
+    width: auto;
     padding: 0;
+  }
+  .dl-corner-dock-tl .dl-corner-stack { width: auto; }
+  .dl-corner-stack .dl-nav-search > summary {
+    width: auto;
+    min-height: 2.6rem;
+    padding: 0.5rem 0.7rem;
+    border-left: 1px solid var(--dl-cell-border);
+    border-radius: 6px;
   }
   /* Anchored to the search's own right edge now that it sits at the row's
      end — 90vw hung off the left edge would run past the screen. */
-  .dl-nav-search[open] > .dl-search { left: auto; right: 0; }
+  .dl-nav-search[open] > .dl-search,
+  .dl-corner-stack .dl-nav-search[open] > .dl-search { left: auto; right: 0; }
 
+  /* The launcher: the wordmark's orange dot, grown up, at the bottom
+     centre of the screen — the one place nothing else lives — and above
+     every sheet, so it stays a thumb's way back out of any of them. */
   .dl-mobile-fab {
     display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;
-    right: 1rem;
+    left: 50%;
     bottom: 1rem;
-    z-index: 52;
-    width: 3.25rem;
-    height: 3.25rem;
+    transform: translateX(-50%);
+    z-index: 53;
+    width: 3.5rem;
+    height: 3.5rem;
     padding: 0;
     border: none;
     border-radius: 50%;
@@ -2300,66 +2231,94 @@ p code, li code {
     cursor: pointer;
   }
   .dl-mobile-fab-dot {
-    width: 0.55rem;
-    height: 0.55rem;
+    width: 0.6rem;
+    height: 0.6rem;
     border-radius: 50%;
     background: #fff;
     transition: transform 0.15s ease;
   }
   .dl-mobile-fab[aria-expanded="true"] .dl-mobile-fab-dot { transform: scale(1.4); }
 
+  /* Its menu rises from the dot as a full-width sheet of thumb-sized rows,
+     with room left under the last row for the dot itself. */
   .dl-mobile-menu {
     display: block;
     position: fixed;
-    right: 1rem;
-    bottom: 4.75rem;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 52;
-    min-width: 11rem;
-    padding: 0.4rem;
+    padding: 0.4rem 0 5rem;
     background: var(--dl-panel-bg);
     border: 1px solid var(--dl-cell-border);
-    border-radius: 10px;
-    box-shadow: 0 8px 24px var(--dl-shadow);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -8px 24px var(--dl-shadow);
   }
   .dl-mobile-menu[hidden] { display: none; }
   .dl-mobile-menu-item {
     display: block;
     width: 100%;
+    min-height: 3.25rem;
     text-align: left;
-    padding: 0.55rem 0.6rem;
+    padding: 0.9rem 1.5rem;
     border: none;
-    border-radius: 6px;
+    border-top: 1px solid var(--dl-rule);
     background: none;
     font-family: var(--dl-mono);
-    font-size: 0.85rem;
+    font-size: 1rem;
     color: var(--dl-heading);
     cursor: pointer;
   }
+  .dl-mobile-menu-item:first-child { border-top: none; }
   .dl-mobile-menu-item[hidden] { display: none; }
   .dl-mobile-menu-item:hover, .dl-mobile-menu-item:focus-visible {
     background: var(--dl-cell-bg);
     color: var(--dl-orange);
   }
 
+  /* Every panel is a full-width sheet rising from the bottom, the dot
+     staying in front of it — so each leaves room under its last control
+     for the dot to sit without covering anything. */
+  .dl-whereyouare { display: block; }
+  .dl-whereyouare[hidden] { display: none; }
   .dl-yourwork,
   .dl-appearance,
   .dl-reference,
-  .dl-documentation,
-  .dl-seriesnav {
+  .dl-whereyouare {
+    position: fixed;
+    z-index: 50;
     top: auto;
     bottom: 0;
     left: 0;
     right: 0;
     width: auto !important;
     max-width: none;
-    max-height: 78vh;
+    max-height: 82vh;
+    overflow-y: auto;
+    padding: 1rem 1.1rem 5rem;
+    background: var(--dl-panel-bg);
+    font-size: 0.85rem;
     border: 1px solid var(--dl-cell-border);
     border-bottom: none;
-    border-radius: 8px 8px 0 0;
+    border-radius: 12px 12px 0 0;
     box-shadow: 0 -4px 16px var(--dl-shadow);
-    padding-bottom: 1.4rem;
     /* A full-width bottom sheet has no meaningful "width" to resize. */
     resize: none;
+  }
+  /* The tree, in its sheet: back on, and at a size a thumb can use. */
+  .dl-whereyouare .dl-crumbtrail {
+    display: flex;
+    max-height: none;
+    overflow: visible;
+    font-size: 0.95rem;
+    gap: 0.35rem;
+  }
+  .dl-whereyouare .dl-crumb-level > summary,
+  .dl-whereyouare .dl-crumb-level [role="listitem"] a,
+  .dl-whereyouare .dl-crumb-level .dl-crumb-current {
+    padding: 0.4rem 0;
+    white-space: normal;
   }
 
   .dl-panel-resize-handle { display: none; }
@@ -2373,7 +2332,7 @@ p code, li code {
   }
   .dl-nav-up { justify-self: center; }
 
-  .dl-crumbs, .dl-crumbtrail { display: none; }
+  .dl-crumbs, .dl-corner-identity .dl-crumbtrail { display: none; }
   .dl-page { padding-left: 1rem; padding-right: 1rem; }
   .dl-chrome { margin-inline: -1rem; padding-inline: 1rem; }
 
@@ -2382,7 +2341,6 @@ p code, li code {
 
   .dl-masthead-actions { gap: 0.35rem; }
   .dl-toggle-label { display: none; }
-  .dl-seriesnav-toggle,
   .dl-settings-toggle,
   .dl-corner-tab {
     padding: 0.38rem 0.55rem;
@@ -3126,9 +3084,8 @@ p code, li code {
 .dl-report-doors a:hover { color: var(--dl-fg); }
 
 @media print {
-  .dl-chrome, .dl-corner-dock, .dl-seriesnav-toggle, .dl-settings-toggle,
-  .dl-yourwork, .dl-appearance, .dl-reference, .dl-documentation,
-  .dl-seriesnav, .dl-settings, .dl-status, .dl-nav,
+  .dl-chrome, .dl-corner-dock, .dl-mobile-launcher, .dl-settings-toggle,
+  .dl-yourwork, .dl-appearance, .dl-reference, .dl-whereyouare, .dl-settings, .dl-status, .dl-nav,
   .dl-insert, .dl-hint-icon, .dl-report-icon, .dl-cell-report-doors,
   .dl-cell-head .dl-btn, .dl-cell-footbar .dl-btn, .dl-report-doors {
     display: none !important;

@@ -84,6 +84,13 @@ Documentation intro's first draft was a genuine verbless-subject fragment
 ("Official Python documentation for terms this page ... has covered so
 far.") caught and rewritten to a real sentence ("These are official Python
 pages for terms this page ... has already covered.") before it shipped.
+The Documentation panel was later removed (`DECISIONS_LOG.md` 7.165).
+
+**The upper docks' labels** (`DECISIONS_LOG.md` 7.165): "Where you are" —
+the phone launcher's row for the tree, and the sheet's own title — and the
+tree's "Contents · N sections" rung, carried over from the old in-page list.
+Both plain words in any dialect; neither is a sentence, since a label on a
+control is the one place §4 does not ask for one.
 
 Also picked up in the sibling repository `deweydex/dewstack`: the same
 reset/practice-fold language in its README, its own new `FOR_STUDENTS.md`,

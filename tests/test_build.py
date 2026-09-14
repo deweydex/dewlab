@@ -934,8 +934,10 @@ class TestNavigation:
             b.build()
 
 
-class TestSeriesNav:
-    """render_series_nav() — planning/SIDEBAR_CONTENT.md §4b."""
+class TestTheSeriesRung:
+    """The series level of the where-you-are tree (crumb_trail_html()) —
+    what the Series panel used to show, now one rung of the tree, with no
+    panel or button of its own."""
 
     def series(self, repo, count: int = 3, series: str = "s", module: str = "computational-methods",
                order: list[str] | None = None):
@@ -949,39 +951,47 @@ class TestSeriesNav:
         set_order(repo, module, series,
                   order or [f"t{n}" for n in range(1, count + 1)])
 
-    def page(self, repo, slug, module="computational-methods"):
-        return (repo / "site" / "tutorials" / module / f"{slug}.html").read_text()
+    def rung(self, repo, slug, module="computational-methods") -> str:
+        page = (repo / "site" / "tutorials" / module / f"{slug}.html").read_text()
+        return re.search(
+            r'<details class="dl-crumb-level dl-crumb-level-3" open>.*?</details>', page, re.S
+        ).group(0)
 
     def test_it_lists_every_member_of_the_series_in_order(self, repo):
         self.series(repo)
         b.build()
-        page = self.page(repo, "t2")
-        panel = re.search(r'<ol class="dl-seriesnav-series">.*?</ol>', page, re.S).group(0)
-        assert panel.index("Tutorial 1") < panel.index("Tutorial 2") < panel.index("Tutorial 3")
+        rung = self.rung(repo, "t2")
+        assert rung.index("Tutorial 1") < rung.index("Tutorial 2") < rung.index("Tutorial 3")
 
     def test_the_current_tutorial_is_marked_and_not_linked(self, repo):
         self.series(repo)
         b.build()
-        page = self.page(repo, "t2")
-        assert '<li class="dl-seriesnav-current" aria-current="page">2. Tutorial 2</li>' in page
+        assert (
+            '<div class="dl-crumb-current" role="listitem" aria-current="page">Tutorial 2</div>'
+            in self.rung(repo, "t2")
+        )
 
     def test_the_others_are_links_to_reach_them(self, repo):
         self.series(repo)
         b.build()
-        page = self.page(repo, "t2")
-        assert '<li><a href="t1.html">1. Tutorial 1</a></li>' in page
-        assert '<li><a href="t3.html">3. Tutorial 3</a></li>' in page
+        rung = self.rung(repo, "t2")
+        assert '<a href="t1.html">Tutorial 1</a>' in rung
+        assert '<a href="t3.html">Tutorial 3</a>' in rung
 
-    def test_the_order_file_decides_the_numbering_not_the_filename(self, repo):
+    def test_the_order_file_decides_the_order_not_the_filename(self, repo):
         self.series(repo, order=["t3", "t2", "t1"])
         b.build()
-        page = self.page(repo, "t2")
-        assert '<li><a href="t3.html">1. Tutorial 3</a></li>' in page
-        assert '<li class="dl-seriesnav-current" aria-current="page">2. Tutorial 2</li>' in page
-        assert '<li><a href="t1.html">3. Tutorial 1</a></li>' in page
+        rung = self.rung(repo, "t2")
+        assert rung.index("Tutorial 3") < rung.index("Tutorial 2") < rung.index("Tutorial 1")
 
-    def test_a_tutorial_with_nowhere_in_a_series_to_sit_gets_no_panel_content(self, repo):
-        # An archived tutorial: the same honest empty shape nav_for() already
+    def test_there_is_no_series_button_or_panel(self, repo):
+        self.series(repo)
+        b.build()
+        page = (repo / "site" / "tutorials" / "computational-methods" / "t2.html").read_text()
+        assert "dl-seriesnav" not in page
+
+    def test_a_tutorial_with_nowhere_in_a_series_to_sit_lists_only_itself(self, repo):
+        # An archived tutorial: the same honest shape nav_for() already
         # gives it, since there is nowhere in the series to place it.
         write(repo, "Prose.\n")
         write(repo, "More prose.\n", slug="second")
@@ -990,7 +1000,9 @@ class TestSeriesNav:
             "version: 2026.08.23.1\n", "version: 2026.08.23.1\nstatus: archived\n"))
         set_order(repo, "computational-methods", "python-fundamentals", ["second"])
         b.build()
-        assert "dl-seriesnav-series" not in built(repo, "sample")
+        rung = self.rung(repo, "sample")
+        assert 'aria-current="page"' in rung
+        assert "second.html" not in rung
 
 
 class TestTheFrontPage:
@@ -1740,7 +1752,7 @@ class TestTheSettingsPanel:
         write(repo, "Some prose.\n")
         b.build()
         page = built(repo)
-        nav = re.search(r'<nav class="dl-nav dl-nav-top">.*?</nav>', page, re.DOTALL).group(0)
+        nav = re.search(r'<nav class="dl-nav dl-nav-bottom">.*?</nav>', page, re.DOTALL).group(0)
         assert "dl-download" not in nav
         section = re.search(
             r'<section class="dl-settings-section" id="dl-settings-download">.*?</section>',
@@ -1791,16 +1803,31 @@ class TestTheSettingsPanel:
         assert 'id="dl-settings-texture"' in page
 
 
+def outside_style_and_script(page: str) -> str:
+    """A downloadable copy's own markup, with every inlined <style> and
+    <script> block removed. Splitting on the last "</style>" is not enough:
+    the inlined runtime bundle contains that literal string, so a split
+    there hands back only the page's tail — which makes a "not in" check
+    pass for the wrong reason and an "in" check fail for the same one.
+    """
+    return re.sub(r"<(style|script)\b.*?</\1>", "", page, flags=re.DOTALL)
+
+
 class TestTheContentsOfAPage:
+    """contents_rung_html() — the page's own sections, as the innermost
+    rung of the where-you-are tree rather than a list in the page."""
+
+    TOC = r'<details class="dl-crumb-level dl-crumb-level-5">.*?</details>'
+
     def toc(self, repo) -> str:
         page = built(repo)
-        match = re.search(r'<details class="dl-toc">.*?</details>', page, re.DOTALL)
+        match = re.search(self.TOC, page, re.DOTALL)
         return match.group(0) if match else ""
 
     def sections(self, count: int, sub: str = "") -> str:
         return "\n".join(f"## Section {n}\n\n{sub}Prose.\n" for n in range(1, count + 1))
 
-    def test_a_page_with_sections_gets_a_contents_list(self, repo):
+    def test_a_page_with_sections_gets_a_contents_rung(self, repo):
         write(repo, self.sections(3))
         b.build()
         toc = self.toc(repo)
@@ -1808,17 +1835,27 @@ class TestTheContentsOfAPage:
         assert 'href="#section-3"' in toc
         assert "3 sections" in toc
 
-    def test_it_starts_closed(self, repo):
+    def test_it_hangs_off_the_tutorials_own_rung_which_starts_open(self, repo):
+        """The tutorial's own rung opens by default so the reader sees that
+        there are contents to open; the contents themselves start closed —
+        a reader arriving at a tutorial should meet the tutorial, not a
+        list of its parts."""
         write(repo, self.sections(3))
         b.build()
-        assert "<details class=\"dl-toc\">" in built(repo)
-        assert "<details open" not in built(repo)
+        page = built(repo)
+        own = re.search(r'<details class="dl-crumb-level dl-crumb-level-4" open>.*?</details>\s*</nav>',
+                        page, re.DOTALL).group(0)
+        assert re.search(self.TOC, own, re.DOTALL)
+        assert '<details class="dl-crumb-level dl-crumb-level-5" open' not in page
 
-    def test_one_section_does_not_get_a_contents_list(self, repo):
-        """A contents list for a single heading is furniture."""
+    def test_one_section_does_not_get_a_contents_rung(self, repo):
+        """A contents list for a single heading is furniture — the
+        tutorial's own rung is then a plain line, no caret with nothing
+        behind it."""
         write(repo, self.sections(1))
         b.build()
         assert self.toc(repo) == ""
+        assert 'class="dl-crumb-level dl-crumb-level-4 dl-crumb-leaf"' in built(repo)
 
     def test_prose_with_no_sections_does_not_either(self, repo):
         write(repo, "Just prose, no headings at all.\n")
@@ -1829,7 +1866,7 @@ class TestTheContentsOfAPage:
         write(repo, "## First\n\nProse.\n\n### Detail\n\nProse.\n\n## Second\n\nProse.\n")
         b.build()
         toc = self.toc(repo)
-        assert re.search(r'href="#first".*?<ul>.*?href="#detail".*?</ul>', toc, re.DOTALL)
+        assert re.search(r'href="#first".*?<div role="list">.*?href="#detail".*?</div>', toc, re.DOTALL)
 
     def test_a_sub_heading_that_repeats_is_left_out(self, repo):
         """Five entries reading "Your turn" are a list nobody can choose from."""
@@ -1853,38 +1890,36 @@ class TestTheContentsOfAPage:
         b.build()
         assert "Something distinct" in self.toc(repo)
 
-    def test_the_contents_page_has_no_contents_list_of_its_own(self, repo):
+    def test_the_contents_page_has_no_contents_rung_of_its_own(self, repo):
         write(repo, self.sections(3))
         b.build()
-        assert "dl-toc" not in (repo / "site" / "index.html").read_text()
+        assert "dl-crumb-level-5" not in (repo / "site" / "index.html").read_text()
 
-    def test_a_downloadable_copy_keeps_it(self, repo_with_assets):
-        """Its links are inside the file, so they work from a student's disk."""
+    def test_a_downloadable_copy_keeps_it_and_nothing_else_of_the_tree(self, repo_with_assets):
+        """Its links are inside the file, so they work from a student's
+        disk — unlike the rest of the tree, which links to other files."""
         write(repo_with_assets, self.sections(3))
         b.build(standalone=True)
         page = (repo_with_assets / "site" / "download" / "computational-methods" / "sample.html").read_text()
-        assert 'href="#section-1"' in page
+        markup = outside_style_and_script(page)
+        assert 'href="#section-1"' in markup
+        assert "dl-crumb-level-5" in markup
+        assert "dl-crumb-level-3" not in markup
 
 
 class TestTheStickyChrome:
-    def test_the_sticky_chrome_holds_just_the_top_nav(self, repo):
-        """The wordmark, crumbs, search and Series toggle moved into the
-        top-left corner dock (the corner-dock rebuild) — .dl-chrome, the
-        sticky bar, now holds only the prev/next/all-tutorials row."""
+    def test_nothing_sits_above_the_page(self, repo):
+        """What the top bar held — all tutorials, previous and next, search,
+        contents — is all in the top-left dock's tree or its search bar
+        now, so the bar itself is gone and the page starts at its own
+        heading. Previous and next survive at the foot of the page."""
         write(repo, "Some prose.\n")
         b.build()
         page = built(repo)
-        start = page.index('<div class="dl-chrome"')
-        depth = 0
-        end = start
-        for tag in re.finditer(r"<div\b|</div>", page[start:]):
-            depth += 1 if tag.group(0) == "<div" else -1
-            if depth == 0:
-                end = start + tag.end()
-                break
-        chrome = page[start:end]
-        assert "dl-masthead" not in chrome
-        assert "dl-nav-top" in chrome
+        assert 'id="dl-chrome"' not in page
+        assert "dl-nav-top" not in page
+        assert "dl-masthead" not in page
+        assert '<nav class="dl-nav dl-nav-bottom">' in page
 
     def test_the_identity_lives_in_the_top_left_corner_dock(self, repo):
         write(repo, "Some prose.\n")
@@ -1902,28 +1937,50 @@ class TestTheStickyChrome:
         assert "dl-wordmark" in corner
         assert "dl-crumbtrail" in corner
         assert "dl-nav-search" in corner
-        assert 'id="dl-seriesnav-toggle"' in corner
+        assert 'id="dl-reference-toggle"' in corner
+        assert "dl-seriesnav" not in page
+        assert "dl-documentation" not in page
 
-    def test_a_downloadable_copy_keeps_the_chrome_without_the_navigation(
+    def test_the_right_dock_is_one_stack_of_four_tabs_with_icons(self, repo):
+        write(repo, "Some prose.\n")
+        b.build()
+        page = built(repo)
+        start = page.index('<div class="dl-corner-dock dl-corner-dock-tr"')
+        end = page.index("<!-- Phone-only", start)
+        dock = page[start:end]
+        ids = re.findall(r'id="(dl-[a-z]+-toggle)"', dock)
+        assert ids == ["dl-yourwork-toggle", "dl-report-toggle", "dl-appearance-toggle", "dl-importsexports-toggle"]
+        assert dock.count('class="dl-tab-icon"') == 4
+        assert "dl-corner-dock-bl" not in page
+        assert "dl-corner-dock-br" not in page
+
+    def test_a_downloadable_copy_keeps_the_docks_without_the_navigation(
         self, repo_with_assets
     ):
         write(repo_with_assets, "Some prose.\n")
         b.build(standalone=True)
         page = (repo_with_assets / "site" / "download" / "computational-methods" / "sample.html").read_text()
-        assert "dl-chrome" in page
+        assert "dl-corner-dock" in page
         assert "dl-nav" not in page.split("<style>")[0] + page.split("</style>")[-1]
 
 
 class TestTheCrumbTrail:
     """crumb_trail_html() — the corner dock's expandable "all tutorials /
-    module / series / tutorial" tree, replacing the old plain-text crumbs
-    for a real tutorial page."""
+    module / series / tutorial / contents" tree, replacing the old
+    plain-text crumbs for a real tutorial page."""
 
-    def test_it_is_three_levels_deep(self, repo):
+    def test_it_is_five_rungs_deep_with_a_contents_rung(self, repo):
+        write(repo, "## One\n\nProse.\n\n## Two\n\nProse.\n")
+        b.build()
+        page = built(repo)
+        assert page.count('<details class="dl-crumb-level') == 5
+
+    def test_and_four_without_the_last_a_plain_line(self, repo):
         write(repo, "Some prose.\n")
         b.build()
         page = built(repo)
         assert page.count('<details class="dl-crumb-level') == 3
+        assert 'class="dl-crumb-level dl-crumb-level-4 dl-crumb-leaf">A Title</div>' in page
 
     def test_the_series_level_lists_its_siblings_and_marks_the_current_one(self, repo_with_assets):
         for slug, title in [("t1", "First One"), ("t2", "Second One")]:
@@ -1956,18 +2013,20 @@ class TestTheCrumbTrail:
         assert "<li" not in trail
         assert 'role="list"' in trail
 
-    def test_a_downloadable_copy_drops_it_along_with_the_rest_of_the_navigation(
+    def test_a_downloadable_copy_drops_every_rung_that_links_to_another_file(
         self, repo_with_assets
     ):
+        """Only the contents rung, whose links stay inside the file, may
+        survive (TestTheContentsOfAPage covers that it does)."""
         write(repo_with_assets, "Some prose.\n")
         b.build(standalone=True)
         page = (repo_with_assets / "site" / "download" / "computational-methods" / "sample.html").read_text()
-        # The standalone build inlines the whole stylesheet, which names
-        # the class in its own selectors — checked outside that <style>
-        # block, the same way test_a_downloadable_copy_keeps_the_chrome_
-        # without_the_navigation already does for "dl-nav".
-        outside_style = page.split("<style>")[0] + page.split("</style>")[-1]
-        assert "dl-crumbtrail" not in outside_style
+        # The standalone build inlines the whole stylesheet and runtime,
+        # which name the classes in their own selectors — so only the
+        # markup outside both is checked.
+        markup = outside_style_and_script(page)
+        for rung in ("dl-crumb-level-2", "dl-crumb-level-3", "dl-crumb-level-4", "All tutorials</summary>"):
+            assert rung not in markup
 
 
 class TestTheKnowledgeMap:
