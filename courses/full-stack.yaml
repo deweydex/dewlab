@@ -1,0 +1,11 @@
+title: Full Stack
+status: beta
+card: A page whose own script reads a database directly, joining what Database Methods and Web Authoring each built on their own.
+description: >
+  Database Methods built tables. Web Authoring built pages. This is
+  where the two meet — a page whose own script reads a database
+  directly, and shows a visitor's own search back as it happens.
+contents:
+- title: Putting it together
+  tutorials:
+  - a-page-that-reads-from-a-database

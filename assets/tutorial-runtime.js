@@ -1709,6 +1709,7 @@ const customCells = [];
 /* One entry per live HTML/CSS/JS site editor on the page — see
  * buildSiteEditors() below. */
 const siteEditors = [];
+const appCells = [];
 
 function setCellCollapsed(cell, collapsed) {
   cell.collapsed = collapsed;
@@ -2102,6 +2103,127 @@ function buildSiteEditors(manifest) {
 
     siteEditors.push(editorState);
     render();
+  }
+}
+
+/* The full-stack module's own cell kind (planning/DEWSTACK_MERGE.md §3,
+ * §7 phase 4). Shares most of buildSiteEditors()'s own shape — panes,
+ * a head-level Clear, a per-pane Run button on the JS pane, HTML/CSS
+ * live without pressing Run — but the result area is not an iframe:
+ * HTML and CSS render straight into a plain `.dl-app-preview` div, CSS
+ * scoped to it with the `@scope` at-rule rather than an iframe
+ * boundary, and the JS pane's code runs as a real `<script>` element
+ * appended to the page, wrapped so `root` (this cell's own preview
+ * element) and `dlQuery` (queryRows()/queryRowsMT() below) reach it as
+ * plain parameters, nothing added to the page's own global scope. That
+ * is the one deliberate difference from a site editor, and it is the
+ * whole reason this is a separate cell kind rather than a third `site`
+ * pane language: a full-stack cell's JavaScript has to reach the page's
+ * own shared SQL connection, and the site editor's sandbox exists
+ * specifically to stop a reader's script doing exactly that. */
+function buildAppCells(manifest) {
+  const dark = isDarkNow();
+  const labelFor = { html: "html", css: "css", js: "javascript" };
+
+  for (const spec of manifest.appCells || []) {
+    const host = document.querySelector(`.dl-app-cell[data-app-name="${CSS.escape(spec.name)}"]`);
+    if (!host) {
+      console.warn(`dewlab: manifest lists full-stack cell "${spec.name}" but the page has no such element`);
+      continue;
+    }
+    const preview = host.querySelector(".dl-app-preview");
+    const errorBox = host.querySelector(".dl-app-error");
+    const clearBtn = host.querySelector(".dl-btn-app-clear");
+    const runBtn = host.querySelector(".dl-btn-app-run");
+
+    const panes = {};
+    for (const [lang, paneSpec] of Object.entries(spec.panes || {})) {
+      const paneHost = host.querySelector(`.dl-app-pane[data-lang="${lang}"] .dl-editor`);
+      if (!paneHost) continue;
+      const editor = createCodeEditor(paneHost, paneSpec.code || "", {
+        dark,
+        language: labelFor[lang] || lang,
+        onChange: () => { scheduleSave(); if (lang !== "js") renderPreview(); },
+        lineNumbersVisible: loadTexture().linenumbers !== "off",
+        indentWidth: loadTexture().indent,
+      });
+      panes[lang] = { id: paneSpec.id, starter: paneSpec.code || "", editor };
+    }
+
+    const code = (lang) => (panes[lang] ? panes[lang].editor.getValue() : "");
+
+    let styleEl = null;
+    const renderPreview = () => {
+      preview.innerHTML = code("html");
+      const css = code("css");
+      if (!css) {
+        if (styleEl) { styleEl.remove(); styleEl = null; }
+        return;
+      }
+      if (!styleEl) {
+        styleEl = document.createElement("style");
+        styleEl.className = "dl-app-style";
+        host.appendChild(styleEl);
+      }
+      styleEl.textContent = `@scope (#${preview.id}) {\n${css}\n}`;
+    };
+
+    const cellState = { name: spec.name, panes, ran: false };
+    const run = async () => {
+      if (runBtn) runBtn.disabled = true;
+      errorBox.textContent = "";
+      try {
+        await ensureBooted(currentManifest);
+        renderPreview();
+        const old = host.querySelector(".dl-app-script");
+        if (old) old.remove();
+        const script = document.createElement("script");
+        script.className = "dl-app-script";
+        script.textContent =
+          `(async function (root, dlQuery) {\n${code("js")}\n})` +
+          `(document.getElementById(${JSON.stringify(preview.id)}), window.dewlabQueryRows)` +
+          `.catch((err) => { document.getElementById(${JSON.stringify(errorBox.id)}).textContent = String(err); });`;
+        host.appendChild(script);
+        cellState.ran = true;
+        scheduleSave();
+      } catch (err) {
+        errorBox.textContent = String(err);
+      } finally {
+        if (runBtn) runBtn.disabled = false;
+      }
+    };
+    cellState.render = renderPreview;
+    cellState.run = run;
+
+    if (runBtn) {
+      runBtn.addEventListener("mousedown", (e) => e.preventDefault());
+      runBtn.addEventListener("click", run);
+    }
+    if (panes.js) {
+      host.querySelector('.dl-app-pane[data-lang="js"]').addEventListener("keydown", (ev) => {
+        if ((ev.ctrlKey || ev.metaKey) && ev.key === "Enter") {
+          ev.preventDefault();
+          ev.stopPropagation();
+          run();
+        }
+      }, true);
+    }
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        if (!confirm("Put this cell's starter code back, in every pane? Your own changes will be lost.")) return;
+        for (const pane of Object.values(panes)) pane.editor.setValue(pane.starter);
+        preview.innerHTML = "";
+        errorBox.textContent = "";
+        if (styleEl) { styleEl.remove(); styleEl = null; }
+        const old = host.querySelector(".dl-app-script");
+        if (old) old.remove();
+        cellState.ran = false;
+        scheduleSave();
+      });
+    }
+
+    appCells.push(cellState);
+    renderPreview();
   }
 }
 
@@ -3019,6 +3141,16 @@ async function runCellMainThread(cell) {
   );
 }
 
+/* The main-thread half of queryRows() below — the standalone export's
+ * own path, the same fork every other dual-path call in this file
+ * makes on `currentManifest.standalone`. */
+function queryRowsMT(sql, params) {
+  const proxy = toolsMT._query_rows(sql, params || []);
+  const rows = proxy.toJs({ dict_converter: Object.fromEntries });
+  proxy.destroy();
+  return rows;
+}
+
 let worker = null;
 let interruptBuffer = null;
 let jediReadyWorker = false;
@@ -3147,6 +3279,18 @@ function boot(manifest) {
 
 function resetPageState() {
   return currentManifest.standalone ? resetPageStateMT() : resetPageStateWorker();
+}
+
+/* An app cell's own bridge to the page's shared `db`
+ * (planning/DEWSTACK_MERGE.md §3, §7 phase 4) — `dewlabQueryRows` on
+ * `globalThis`, closed over by name as `dlQuery` inside the wrapper
+ * buildAppCells() injects, never a name a reader's own code could
+ * collide with on the page itself. */
+async function queryRows(sql, params) {
+  await ensureBooted(currentManifest);
+  return currentManifest.standalone
+    ? queryRowsMT(sql, params)
+    : workerRequest("query-rows", { sql, params: params || [] });
 }
 
 function ensureBooted(manifest) {
@@ -3744,6 +3888,16 @@ function saveNow() {
         : question.gaps.map((gap) => gap.value),
       checked: question.checked,
     })),
+    // Same reasoning as a site editor's own record just above: cheap to
+    // rebuild, so only each pane's current text and whether Run had
+    // been pressed travel here, not the preview itself.
+    appCells: appCells.map((cell) => ({
+      name: cell.name,
+      panes: Object.fromEntries(
+        Object.entries(cell.panes).map(([lang, pane]) => [lang, pane.editor.getValue()]),
+      ),
+      ran: cell.ran,
+    })),
   };
   try {
     localStorage.setItem(progressKey(), JSON.stringify(record));
@@ -3868,6 +4022,20 @@ function restoreSaved() {
       // again if Run had already been pressed, the same distinction
       // buildSiteEditors()'s own comment explains for a fresh page.
       if (saved.ran) editor.run(); else editor.render();
+    }
+  }
+
+  if (Array.isArray(record.appCells)) {
+    const byAppName = new Map(appCells.map((cell) => [cell.name, cell]));
+    for (const saved of record.appCells) {
+      const cell = byAppName.get(saved.name);
+      if (!cell) continue;
+      for (const [lang, code] of Object.entries(saved.panes || {})) {
+        if (cell.panes[lang] && typeof code === "string") cell.panes[lang].editor.setValue(code);
+      }
+      // Same reasoning as a site editor's own restore, just above: only
+      // re-run the JS pane if Run had actually been pressed before.
+      if (saved.ran) cell.run(); else cell.render();
     }
   }
 
@@ -4813,6 +4981,10 @@ initSegKeyboardNav();
 buildCells(currentManifest);
 buildQuestions();
 buildSiteEditors(currentManifest);
+buildAppCells(currentManifest);
+if (currentManifest.appCells && currentManifest.appCells.length) {
+  globalThis.dewlabQueryRows = queryRows;
+}
 initProgressSection();
 initCustomCellsSection();
 initExecutionSection();
