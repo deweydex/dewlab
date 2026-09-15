@@ -17,7 +17,7 @@ sys.path.insert(0, str(DEWLAB))
 import build as b  # noqa: E402
 from layout import write_course, write_tutorial  # noqa: E402
 
-MODULE = "contrast-fixtures"
+COURSE = "contrast-fixtures"
 
 TUTORIAL = """---
 title: "Contrast"
@@ -64,7 +64,7 @@ def site(tmp_path, monkeypatch):
     monkeypatch.setattr(b, "SHELL", DEWLAB / "assets" / "shell.html")
     write_tutorial(tmp_path, "contrast", TUTORIAL)
     # The reading order lives in the course file, not in frontmatter.
-    write_course(tmp_path, MODULE, "Contrast Series", ["contrast"])
+    write_course(tmp_path, COURSE, "Contrast Series", ["contrast"])
     b.build()
     return tmp_path
 

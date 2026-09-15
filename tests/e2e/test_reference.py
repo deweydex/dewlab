@@ -22,7 +22,7 @@ sys.path.insert(0, str(DEWLAB))
 import build as b  # noqa: E402
 from layout import write_course, write_tutorial  # noqa: E402
 
-MODULE = "reference-fixtures"
+COURSE = "reference-fixtures"
 
 FRONTMATTER = """---
 title: "{title}"
@@ -107,7 +107,7 @@ def _dataset_files(data_dir: Path, name: str, source: str = "Some source",
 
 
 def _set_order(root: Path, slugs: list[str]) -> None:
-    write_course(root, MODULE, "Sample Series", slugs)
+    write_course(root, COURSE, "Sample Series", slugs)
 
 
 @pytest.fixture()
@@ -261,7 +261,7 @@ class TestIdentityCornerControlsAreDirect:
         assert siblings == ["One", "Two"]
         context.close()
 
-    @pytest.mark.parametrize("path", ["index.html", f"{MODULE}.html"])
+    @pytest.mark.parametrize("path", ["index.html", f"{COURSE}.html"])
     def test_appearance_is_direct_on_home_and_module_pages(
             self, site, browser, site_url, path):
         """Appearance (and the rest of what used to be Settings) lives in
@@ -823,6 +823,7 @@ version: 2026.08.23.1
 # Lookup
 
 The gradient of a line is one thing, and serendipity is quite another.
+Comparing the gradients of two lines is a third.
 """
 
 SELECT = """(word) => {
@@ -879,6 +880,16 @@ class TestHighlightToLookUp:
         assert page.evaluate(SELECT, "serendipity")
         page.wait_for_timeout(200)
         assert page.is_hidden(".dl-lookup")
+        context.close()
+
+    def test_selecting_a_plural_offers_the_singular_entry(self, site, browser, site_url):
+        """The same stemming every search box on the site already does
+        (assets/search-words.js), so "gradients" finds the entry for
+        "gradient" the way typing either word into a search box would."""
+        context, page = self.open_page(site, browser, site_url)
+        assert page.evaluate(SELECT, "gradients")
+        page.wait_for_selector(".dl-lookup:not([hidden])")
+        assert "gradient" in page.inner_text(".dl-lookup")
         context.close()
 
     def test_using_it_opens_the_panel_filtered_to_that_term(self, site, browser, site_url):
