@@ -107,6 +107,18 @@ For example: how many different 5-card hands can be dealt from a 52-card deck?
 
 $$C(52, 5) = \frac{52!}{5! \cdot 47!} = 2,598,960$$
 
+```question
+id: permutation-or-combination
+type: multiple-choice
+correct: 2
+
+Quick check: a raffle draws 3 winning numbers from a barrel, one at a time. Every winner gets the same prize, whatever order their number came out in. Which counts this situation correctly?
+
+- A permutation, because the numbers come out one at a time.
+- A combination, because the prize does not depend on the order the numbers came out in.
+- The multiplication principle, because a number could be drawn more than once.
+```
+
 ### Your turn
 
 How might you write `combinations(n, r)`, building it from your `factorial` function the same way `permutations` did above?
