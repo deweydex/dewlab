@@ -293,6 +293,75 @@ working alone at eleven at night gets an answer to "did I get that right?".
 
 ---
 
+## Questions
+
+A quick check a student answers without writing any code — multiple choice, or a
+sentence with a word or two missing. Write it as a ```` ```question ```` fence:
+
+````markdown
+```question
+id: right-angle
+type: multiple-choice
+correct: 2
+
+Which of these is a right angle?
+
+- 45 degrees
+- 90 degrees
+- 180 degrees
+```
+````
+
+`id:` is required, and is a contract on the same terms a cell id is — it is what
+a student's saved answer matches on, so renaming it loses their answer the same
+way renaming a cell's id would. `type:` is `multiple-choice` or
+`fill-in-the-blank`, spelled out in full rather than abbreviated, so a question
+is readable without a reference card. Everything after the header lines is
+ordinary markdown: for a multiple-choice question, the prose before the list is
+the prompt and the list is the options, in the order a student sees them.
+`correct:` names the right one by its position in that list, starting at 1 —
+that line, and only that line, is what a student's browser could read if they
+opened the page's source, which is the trade this format makes: right for a
+quick check, wrong for anything that has to keep its answer secret.
+
+A fill-in-the-blank question has no `correct:` line. Write the sentence with
+each missing word in curly brackets:
+
+````markdown
+```question
+id: cell-basics
+type: fill-in-the-blank
+
+A cell's own {id} is the key its saved code is stored under.
+```
+````
+
+That word becomes a typing box. Offer a short list instead, separated by `|`,
+and it becomes a dropdown — the first item is the one a student is being
+checked against:
+
+````markdown
+```question
+id: angle-names
+type: fill-in-the-blank
+
+An angle of 90 degrees is a {right angle|straight angle|acute angle}.
+```
+````
+
+A question with several gaps checks them all together, with one Check button
+for the whole sentence.
+
+Like `check()`, a question is formative: right or not-yet, no score, nothing
+sent anywhere. Unlike a cell, it needs no Python and downloads nothing extra —
+a page whose only interactive content is a question never loads Pyodide.
+
+If a check calls for a picture in place of an option, or a graded, secret
+answer, this is not that: see "Checking an answer" above for the first, and
+dewmark (a separate program, for exams) for the second.
+
+---
+
 ## Sharing setup code between tutorials
 
 Boilerplate that several tutorials need — loading the same dataset, usually —

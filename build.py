@@ -125,6 +125,17 @@ SITE_LANGS = {"html", "css", "js"}
 SITE_HEADER_RE = re.compile(r"^\s*(id|site)\s*:\s*(.*)$")
 HINT_HEADER_RE = re.compile(r"^\s*(for|after|title)\s*:\s*(.*)$")
 CARD_HEADER_RE = re.compile(r"^\s*(url|status|meta|wide)\s*:\s*(.*)$")
+# planning/QUESTION_BLOCKS.md's own fifth fence kind: flat headers, the
+# same loop CARD_HEADER_RE's own caller (parse_card) already uses, then
+# ordinary markdown.
+QUESTION_HEADER_RE = re.compile(r"^\s*(id|type|correct)\s*:\s*(.*)$")
+QUESTION_TYPES = {"multiple-choice", "fill-in-the-blank"}
+# One flat level of {...} — a gap with no "|" is a typing box, one with
+# "|" a dropdown, the first item either way the expected answer.
+GAP_RE = re.compile(r"\{([^{}]*)\}")
+# "- an option" / "* an option" / "+ an option" — the same three markers
+# Python-Markdown's own sane_lists extension accepts.
+OPTION_LINE_RE = re.compile(r"^[ \t]*[-*+]\s+(.*\S)\s*$")
 # A page's own way to point at infrastructure it can never author directly —
 # the site-wide search box, say. A bracketed marker rather than an HTML
 # comment, so a future markdown editor renders it as a real, visible line
@@ -233,6 +244,25 @@ class PageCard:
     status: str | None = None
     meta: str | None = None
     wide: bool = False
+
+
+@dataclass
+class Question:
+    """A ```question fence — see extract_blocks() and
+    planning/QUESTION_BLOCKS.md. `prompt` and, for multiple-choice, each
+    entry in `options` are raw markdown, converted at render time
+    (render_question()) rather than here — the same split parse_hint()/
+    render_staged_hint() already make, so the checks below read source
+    text, not converted HTML. `correct` is a multiple-choice option's
+    1-based position in `options`; unused (0) for fill-in-the-blank,
+    where the expected answer for each {...} gap is read straight out
+    of `prompt` at render time instead."""
+
+    id: str
+    type: str
+    prompt: str
+    options: list[str] = field(default_factory=list)
+    correct: int = 0
 
 
 @dataclass
@@ -702,16 +732,184 @@ def place_hints(page_html: str, hints: list[StagedHint], maths: list[Math]) -> s
     return page_html
 
 
+def _split_multiple_choice(text: str) -> tuple[str, list[str]]:
+    """The prompt, and the options under it — "the prose before the
+    first list is the question, the list is the options"
+    (planning/QUESTION_BLOCKS.md §2). The first line that reads as a
+    bullet starts the options; every bullet line from there on is one
+    option, in source order, whatever else sits between them."""
+    lines = text.split("\n")
+    start = len(lines)
+    for index, line in enumerate(lines):
+        if OPTION_LINE_RE.match(line):
+            start = index
+            break
+    prompt = "\n".join(lines[:start]).strip()
+    options = [m.group(1) for line in lines[start:] for m in [OPTION_LINE_RE.match(line)] if m]
+    return prompt, options
+
+
+def _check_balanced_gaps(text: str, path: Path, question_id: str) -> None:
+    """Every `{` in a fill-in-the-blank question's text closes, and every
+    `}` closes one that opened — planning/QUESTION_BLOCKS.md's own "an
+    unclosed {" build check. Gaps are one flat level (GAP_RE), so a
+    depth counter is all this needs; it is not checking that `{...}`
+    nests correctly, only that it closes at all.
+    """
+    depth = 0
+    for char in text:
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth < 0:
+                fail(path, f"question {question_id!r} has a }} with no matching {{")
+    if depth > 0:
+        fail(path, f"question {question_id!r} has an unclosed {{")
+
+
+def parse_question(body: str, path: Path) -> Question:
+    """Read `id:`, `type:` and `correct:` off the top of a ```question
+    fence — the same header loop parse_cell() and parse_hint() use.
+    Everything after the header lines is the question's own markdown:
+    the prompt (and, for multiple-choice, the options after it) or the
+    sentence with its {...} gaps for a fill-in-the-blank one.
+    planning/QUESTION_BLOCKS.md has the format and the reasoning behind
+    every check below.
+    """
+    lines = body.split("\n")
+    header: dict[str, str] = {}
+    while lines:
+        match = QUESTION_HEADER_RE.match(lines[0])
+        if not match or match.group(1) in header:
+            break
+        header[match.group(1)] = match.group(2).strip()
+        lines.pop(0)
+    if "id" not in header:
+        fail(path, "a question fence has no `id:` line — ids are what saved answers match on")
+    question_id = header["id"]
+    if "type" not in header:
+        fail(path, f"question {question_id!r} has no `type:` line")
+    question_type = header["type"]
+    if question_type not in QUESTION_TYPES:
+        fail(path, f"question {question_id!r}'s type is {question_type!r}, "
+                   f"not one of {sorted(QUESTION_TYPES)}")
+    text = "\n".join(lines).strip("\n")
+    if not text.strip():
+        fail(path, f"question {question_id!r} has no text in it")
+
+    if question_type == "multiple-choice":
+        prompt, options = _split_multiple_choice(text)
+        if not prompt:
+            fail(path, f"question {question_id!r} has options but no question above them")
+        if len(options) < 2:
+            fail(path, f"question {question_id!r} has fewer than two options")
+        raw_correct = header.get("correct")
+        if not raw_correct:
+            fail(path, f"question {question_id!r} is multiple-choice and has no `correct:` line")
+        if not raw_correct.isdigit() or not (1 <= int(raw_correct) <= len(options)):
+            fail(path, f"question {question_id!r}'s `correct: {raw_correct}` does not "
+                       f"name one of its {len(options)} options")
+        return Question(id=question_id, type=question_type, prompt=prompt,
+                         options=options, correct=int(raw_correct))
+
+    _check_balanced_gaps(text, path, question_id)
+    if not GAP_RE.search(text):
+        fail(path, f"question {question_id!r} is fill-in-the-blank and has no {{...}} gap in it")
+    return Question(id=question_id, type=question_type, prompt=text)
+
+
+def render_question(question: Question) -> str:
+    """The markup `buildQuestions()` (tutorial-runtime.js) binds a Check
+    button and its feedback to.
+
+    Correctness lives in the markup itself, on the option or gap it
+    belongs to (`data-correct="true"`, or a typing gap's own
+    `data-expected`), rather than in a separate manifest entry — this is
+    the trade planning/QUESTION_BLOCKS.md §5 names outright: a reader who
+    opens the page's source can read the answer, which is the right
+    trade for a self-check and the wrong one for an exam. Marking the
+    answer instead of its position is also what lets the runtime shuffle
+    the options it draws without a second, parallel record of which one
+    moved where.
+
+    Both types share the same outer shell (a prompt, a Check button, a
+    closed feedback slot) and differ only in what sits between: a column
+    of option buttons for multiple-choice, or the prompt's own sentence
+    with each {...} gap already turned into a real control for
+    fill-in-the-blank.
+    """
+    safe_id = html.escape(question.id, quote=True)
+    if question.type == "multiple-choice":
+        prompt_html, _ = to_html(question.prompt)
+        option_items = []
+        for position, option_text in enumerate(question.options, start=1):
+            option_html, _ = to_html(option_text)
+            # A single paragraph's own <p>...</p>, unwrapped: an option is
+            # inline content sitting on a button, not a block of its own.
+            if option_html.startswith("<p>") and option_html.endswith("</p>"):
+                option_html = option_html[len("<p>"):-len("</p>")]
+            correct_attr = ' data-correct="true"' if position == question.correct else ""
+            option_items.append(
+                f'<button type="button" class="dl-question-option" '
+                f'data-option="{position}"{correct_attr}>{option_html}</button>'
+            )
+        options_html = (
+            '<div class="dl-question-options" role="group" '
+            f'aria-label="Choose one">{"".join(option_items)}</div>'
+        )
+    else:
+        def gap_widget(raw: str) -> str:
+            choices = [c.strip() for c in raw.split("|")] if "|" in raw else None
+            if choices is not None:
+                option_tags = "".join(
+                    (f'<option data-correct="true">{html.escape(choice)}</option>' if i == 0
+                     else f"<option>{html.escape(choice)}</option>")
+                    for i, choice in enumerate(choices)
+                )
+                return f'<select class="dl-question-gap-select">{option_tags}</select>'
+            expected = raw.strip()
+            return (
+                '<input type="text" class="dl-question-gap-input" '
+                f'data-expected="{html.escape(expected, quote=True)}" '
+                f'size="{max(len(expected), 3)}">'
+            )
+
+        # {...} is protected from Markdown the same way $...$ maths is
+        # (extract_math): a bare alphanumeric token — the same shape as
+        # extract_math's own "dlmath0z" — stands in for each gap while
+        # the sentence around it is converted, then the real widget is
+        # spliced back in. A gap can sit mid-sentence, where a fence's
+        # own placeholder comment would not survive Markdown's inline
+        # pass the way it survives a block fence.
+        gaps = GAP_RE.findall(question.prompt)
+        tokenised = GAP_RE.sub(lambda m: f"dlgap{len(GAP_RE.findall(question.prompt[:m.start()]))}z", question.prompt)
+        prompt_html, _ = to_html(tokenised)
+        for index, raw in enumerate(gaps):
+            prompt_html = prompt_html.replace(f"dlgap{index}z", gap_widget(raw))
+        options_html = ""
+    return (
+        f'<div class="dl-question" id="dl-question-{safe_id}" '
+        f'data-question-id="{safe_id}" data-question-type="{question.type}">'
+        f'<div class="dl-question-prompt">{prompt_html}</div>'
+        f"{options_html}"
+        '<button type="button" class="dl-btn dl-question-check" disabled>Check</button>'
+        '<div class="dl-question-feedback" hidden></div>'
+        "</div>"
+    )
+
+
 def extract_blocks(
     body: str, path: Path,
-) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint], list[SiteEditor]]:
+) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint], list[SiteEditor], list[Question]]:
     """Pull every fence out, leaving a comment placeholder markdown will keep.
 
     An `exec` fence becomes a cell; a `hint` fence becomes a staged hint
     (planning/CELL_HINTS.md); an `html site`/`css site`/`js site` fence
     becomes one pane of a `SiteEditor`, grouped with any of the same
-    `site:` name immediately before or after it; any other fence becomes
-    an illustrative, read-only block. All four
+    `site:` name immediately before or after it; a `question` fence
+    becomes a `Question` (planning/QUESTION_BLOCKS.md); any other fence
+    becomes an illustrative, read-only block. All five
     leave the source before the markdown converter runs, so nothing inside
     any of them can be reinterpreted as markup.
     """
@@ -719,6 +917,7 @@ def extract_blocks(
     blocks: list[CodeBlock] = []
     hints: list[StagedHint] = []
     site_editors: list[SiteEditor] = []
+    questions: list[Question] = []
     hints_per_cell: dict[str, int] = {}
     used_site_names: set[str] = set()
     current_site: SiteEditor | None = None
@@ -767,6 +966,9 @@ def extract_blocks(
             current_site = SiteEditor(name=pane.site, panes={pane.language: pane})
             site_editors.append(current_site)
             return f"{indent}<!--dewlab-site-{len(site_editors) - 1}-->"
+        if info and info[0] == "question":
+            questions.append(parse_question(match.group("body"), path))
+            return f"{indent}<!--dewlab-question-{len(questions) - 1}-->"
         language = info[0] if info else ""
         blocks.append(CodeBlock(language=language, code=match.group("body").strip("\n")))
         return f"{indent}<!--dewlab-code-{len(blocks) - 1}-->"
@@ -785,7 +987,16 @@ def extract_blocks(
     for hint in hints:
         if hint.cell not in seen:
             fail(path, f"a hint names a cell this tutorial does not have: {hint.cell!r}")
-    return rewritten, cells, blocks, hints, site_editors
+    for question in questions:
+        # Ids are unique across a page, questions and cells together —
+        # both are keys into the one saved-work record (saveNow(),
+        # tutorial-runtime.js), and a page cannot save two things under
+        # the same key.
+        if question.id in seen:
+            fail(path, f"question {question.id!r} shares its id with a cell "
+                       "or another question on this page")
+        seen.add(question.id)
+    return rewritten, cells, blocks, hints, site_editors, questions
 
 
 def extract_math(body: str, found: list[Math] | None = None) -> tuple[str, list[Math]]:
@@ -1333,18 +1544,19 @@ def convert_fold_bodies(page_html: str) -> str:
 
 def place_blocks(
     page_html: str, cells: list[Cell], blocks: list[CodeBlock], maths: list[Math],
-    site_editors: list[SiteEditor] | None = None, page: str = "", version: str = "",
+    site_editors: list[SiteEditor] | None = None, questions: list[Question] | None = None,
+    page: str = "", version: str = "",
 ) -> str:
-    """Puts cells, illustrative code blocks, site editors, and maths back
-    into the page after the Markdown converter has run. `extract_blocks`/
-    `extract_math` earlier in the pipeline replaced each of these with a
-    plain placeholder string before handing the body to the Markdown
-    library — this is the matching second half, swapping each placeholder
-    back out for its real rendered HTML. Doing it this way (rather than
-    rendering cells and maths inline, before Markdown sees them) is what
-    protects their content from Markdown's own text-formatting rules —
-    see `extract_math`'s own comment for a concrete example of what goes
-    wrong otherwise.
+    """Puts cells, illustrative code blocks, site editors, questions, and
+    maths back into the page after the Markdown converter has run.
+    `extract_blocks`/`extract_math` earlier in the pipeline replaced each
+    of these with a plain placeholder string before handing the body to
+    the Markdown library — this is the matching second half, swapping
+    each placeholder back out for its real rendered HTML. Doing it this
+    way (rather than rendering cells and maths inline, before Markdown
+    sees them) is what protects their content from Markdown's own
+    text-formatting rules — see `extract_math`'s own comment for a
+    concrete example of what goes wrong otherwise.
 
     `page` and `version` are only for `render_cell()`'s own report panel
     — passed straight through, since this
@@ -1365,6 +1577,11 @@ def place_blocks(
         if placeholder not in page_html:
             raise BuildError(f"site editor {editor.name!r} was lost during markdown conversion")
         page_html = page_html.replace(placeholder, render_site_editor(editor, index + 1))
+    for index, question in enumerate(questions or []):
+        placeholder = f"<!--dewlab-question-{index}-->"
+        if placeholder not in page_html:
+            raise BuildError(f"question {question.id!r} was lost during markdown conversion")
+        page_html = page_html.replace(placeholder, render_question(question))
     for index, item in enumerate(maths):
         page_html = page_html.replace(f"dlmath{index}z", render_math(item))
     return page_html
@@ -3264,14 +3481,14 @@ def load(path: Path) -> Tutorial:
     build.py builds starts here.
     """
     meta, body = split_frontmatter(path.read_text(), path)
-    stripped, cells, blocks, hints, site_editors = extract_blocks(body, path)
+    stripped, cells, blocks, hints, site_editors, questions = extract_blocks(body, path)
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
     converted = convert_fold_bodies(converted)
     converted = place_hints(converted, hints, maths)
-    body_html = place_blocks(converted, cells, blocks, maths, site_editors,
-                              id_of(path), str(meta.get("version", "")))
+    body_html = place_blocks(converted, cells, blocks, maths, site_editors, questions,
+                              page=id_of(path), version=str(meta.get("version", "")))
     body_html, notes = extract_notes(body_html, path)
     anchors = (
         set(ID_RE.findall(body_html))

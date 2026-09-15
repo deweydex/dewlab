@@ -1861,6 +1861,122 @@ function buildCells(manifest) {
   }
 }
 
+/* Every ```question fence on the page (planning/QUESTION_BLOCKS.md) —
+ * one entry per `.dl-question` the build wrote, read straight off the
+ * DOM rather than the manifest: unlike a cell, nothing about a question
+ * needs restoring beyond what saveNow()/restoreSaved() already carry
+ * for it (the reader's own selection or typed words), so there is
+ * nothing here a manifest entry would tell the runtime that the markup
+ * does not already say.
+ */
+const questions = [];
+
+/* Fisher-Yates, in place. Shared by a multiple-choice question's own
+ * option buttons and a fill-in-the-blank gap's own <option> elements —
+ * both are "show these DOM nodes in a different order," and the node
+ * doing the moving carries its own correctness with it either way
+ * (data-correct, data-expected), so shuffling never has to touch which
+ * one is right. */
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+  return list;
+}
+
+/* The one feedback message every question shows, right or not —
+ * .dl-check/.dl-check-pass/.dl-check-fail are check()'s own classes
+ * (tutorial_tools.py's _check_html), reused rather than duplicated so a
+ * question reads as the same kind of thing a reader already met inside
+ * a cell, not a second feature with its own voice. */
+function renderQuestionFeedback(question, passed) {
+  const css = passed ? "dl-check-pass" : "dl-check-fail";
+  const mark = passed ? "✓" : "✗";
+  const heading = passed ? "That’s right." : "Not quite yet.";
+  question.feedbackEl.hidden = false;
+  question.feedbackEl.innerHTML =
+    `<div class="dl-check ${css}"><span class="dl-check-mark">${mark}</span><span>${heading}</span></div>`;
+}
+
+/* A fill-in-the-blank gap is correct when a select's chosen <option>
+ * carries data-correct, or a typing box's trimmed value matches the
+ * word the build wrote onto it (data-expected) — case-sensitive and
+ * exact, the same as check()'s own fallback comparison for anything
+ * that is not a number, an array or a table. */
+function gapIsCorrect(gap) {
+  if (gap.tagName === "SELECT") {
+    const chosen = gap.options[gap.selectedIndex];
+    return !!chosen && chosen.dataset.correct === "true";
+  }
+  return gap.value.trim() === gap.dataset.expected;
+}
+
+/* The pass/fail computation and its redraw, with no side effect beyond
+ * the DOM — shared by a live Check click (checkQuestion(), below, which
+ * also records that this question has now been checked and saves) and
+ * restoreSaved() (which is redrawing a check the reader already made,
+ * not making a new one, and has no reason to schedule another save
+ * moments after the record it just read back in). */
+function evaluateQuestion(question) {
+  let passed;
+  if (question.type === "multiple-choice") {
+    const selected = question.options.find((option) => option.classList.contains("is-selected"));
+    if (!selected) return;
+    passed = selected.dataset.correct === "true";
+  } else {
+    passed = true;
+    for (const gap of question.gaps) {
+      const correct = gapIsCorrect(gap);
+      gap.classList.toggle("is-correct", correct);
+      gap.classList.toggle("is-incorrect", !correct);
+      if (!correct) passed = false;
+    }
+  }
+  renderQuestionFeedback(question, passed);
+}
+
+function checkQuestion(question) {
+  evaluateQuestion(question);
+  question.checked = true;
+  scheduleSave();
+}
+
+function buildQuestions() {
+  for (const host of document.querySelectorAll(".dl-question")) {
+    const id = host.dataset.questionId;
+    const type = host.dataset.questionType;
+    const checkBtn = host.querySelector(".dl-question-check");
+    const feedbackEl = host.querySelector(".dl-question-feedback");
+    const question = { id, type, element: host, checkBtn, feedbackEl, checked: false };
+
+    if (type === "multiple-choice") {
+      const options = shuffle([...host.querySelectorAll(".dl-question-option")]);
+      const optionsHost = host.querySelector(".dl-question-options");
+      for (const option of options) optionsHost.appendChild(option);
+      question.options = options;
+      for (const option of options) {
+        option.addEventListener("click", () => {
+          for (const other of options) other.classList.remove("is-selected");
+          option.classList.add("is-selected");
+          checkBtn.disabled = false;
+          scheduleSave();
+        });
+      }
+    } else {
+      question.gaps = [...host.querySelectorAll(".dl-question-gap-select, .dl-question-gap-input")];
+      for (const gap of question.gaps) {
+        if (gap.tagName === "SELECT") shuffle([...gap.options]).forEach((opt) => gap.appendChild(opt));
+        gap.addEventListener(gap.tagName === "SELECT" ? "change" : "input", () => scheduleSave());
+      }
+      checkBtn.disabled = false;
+    }
+
+    checkBtn.addEventListener("click", () => checkQuestion(question));
+    questions.push(question);
+  }
+}
+
 function buildSiteEditors(manifest) {
   const dark = isDarkNow();
   const labelFor = { html: "html", css: "css", js: "javascript" };
@@ -3606,6 +3722,13 @@ function saveNow() {
       ),
       ran: editor.ran,
     })),
+    questions: questions.map((question) => ({
+      id: question.id,
+      selected: question.type === "multiple-choice"
+        ? (question.options.find((option) => option.classList.contains("is-selected"))?.dataset.option ?? null)
+        : question.gaps.map((gap) => gap.value),
+      checked: question.checked,
+    })),
   };
   try {
     localStorage.setItem(progressKey(), JSON.stringify(record));
@@ -3730,6 +3853,37 @@ function restoreSaved() {
       // again if Run had already been pressed, the same distinction
       // buildSiteEditors()'s own comment explains for a fresh page.
       if (saved.ran) editor.run(); else editor.render();
+    }
+  }
+
+  if (Array.isArray(record.questions)) {
+    const byQuestionId = new Map(questions.map((question) => [question.id, question]));
+    for (const saved of record.questions) {
+      const question = byQuestionId.get(saved.id);
+      if (!question) continue;
+      if (question.type === "multiple-choice") {
+        if (saved.selected != null) {
+          const option = question.options.find((o) => o.dataset.option === String(saved.selected));
+          if (option) {
+            option.classList.add("is-selected");
+            question.checkBtn.disabled = false;
+          }
+        }
+      } else if (Array.isArray(saved.selected)) {
+        question.gaps.forEach((gap, index) => {
+          if (typeof saved.selected[index] === "string") gap.value = saved.selected[index];
+        });
+      }
+      // Recomputed, not merely redisplayed: a gap's own correctness can
+      // only be read once its saved value is back in the control, and
+      // this is also what redraws the pass/fail classes on each gap the
+      // way they looked when the reader last pressed Check. evaluateQuestion(),
+      // not checkQuestion() — this is redrawing a check already made, not
+      // making a new one, and question.checked is set just below either way.
+      if (saved.checked) {
+        evaluateQuestion(question);
+        question.checked = true;
+      }
     }
   }
 
@@ -4642,6 +4796,7 @@ const textureState = initTexture((dark) => {
 initSegKeyboardNav();
 
 buildCells(currentManifest);
+buildQuestions();
 buildSiteEditors(currentManifest);
 initProgressSection();
 initCustomCellsSection();
