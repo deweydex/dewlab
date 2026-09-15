@@ -344,10 +344,13 @@ def test_the_pages_own_rung_of_the_tree_jumps_to_a_section(page):
 
 
 def test_the_contents_page_never_scrolls_sideways(browser, base_url):
+    # "The contents page" is all-tutorials.html (write_all_tutorials_page()
+    # in build.py) — index.html is the home page, a separate page since
+    # the redesign (DECISIONS_LOG.md 7.175) split the two apart.
     for width in (1400, 900, 390):
         context = browser.new_context(viewport={"width": width, "height": 800})
         tab = context.new_page()
-        tab.goto(f"{base_url}/index.html")
+        tab.goto(f"{base_url}/all-tutorials.html")
         tab.wait_for_selector(".dl-contents", timeout=10_000)
         overflow = tab.evaluate(
             "document.documentElement.scrollWidth - document.documentElement.clientWidth"

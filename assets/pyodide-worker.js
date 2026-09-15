@@ -110,6 +110,17 @@ function describeGlobals() {
   }
 }
 
+/* A full-stack cell's own bridge (planning/DEWSTACK_MERGE.md §3, §7
+ * phase 4) — no internal try/catch, unlike describeGlobals() above:
+ * a bad query is a real error the calling JavaScript wants to see and
+ * show, not something to swallow into an empty result. */
+function queryRows(sql, params) {
+  const proxy = tools._query_rows(sql, params);
+  const rows = proxy.toJs({ dict_converter: Object.fromEntries });
+  proxy.destroy();
+  return rows;
+}
+
 const JEDI_HELPER_SOURCE = `
 import jedi
 
@@ -310,6 +321,8 @@ self.onmessage = async (ev) => {
       respond(pageNames());
     } else if (msg.type === "describe-globals") {
       respond(describeGlobals());
+    } else if (msg.type === "query-rows") {
+      respond(queryRows(msg.sql, msg.params));
     } else if (msg.type === "fs-mount-native") {
       await fsMountNative(msg.mountpoint, msg.handle);
       respond("ok");

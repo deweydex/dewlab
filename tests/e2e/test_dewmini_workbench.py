@@ -156,10 +156,30 @@ def test_a_rail_survives_clicking_your_own_notebook(dewmini):
     assert dewmini.locator("#dm-library").is_visible()
 
 
-def test_both_rails_drag_wider_and_the_notebook_gives_up_the_room(dewmini):
+def test_both_rails_drag_wider_and_the_notebook_gives_up_the_room(browser, dewmini_url):
     """The left rail relied on native `resize: horizontal` until 7.103 — a
     small corner grip facing a full-height strip, whose handle loses half
-    its width to the panel's own overflow clipping."""
+    its width to the panel's own overflow clipping.
+
+    A wide context, deliberately: the notebook's own reading column
+    shares `.dl-page`'s 26rem floor (DECISIONS_LOG.md 7.170), which holds
+    even under a dock — "the lesser evil against text 218px wide", since
+    the reader opened that panel. At the suite's default 1280px
+    viewport, both rails dragged this wide leave under 26rem between
+    them and the column legitimately floors under the right one — the
+    documented tradeoff, not the drag mechanism this test means to
+    check. A wider context leaves room for both."""
+    context = browser.new_context(viewport={"width": 1800, "height": 900})
+    dewmini = context.new_page()
+    dewmini.goto(dewmini_url)
+    dewmini.evaluate("""() => {
+        localStorage.clear();
+        localStorage.setItem('dewmini:celltype-web', 'on');
+        localStorage.setItem('dewmini:celltype-sql', 'on');
+    }""")
+    dewmini.goto(dewmini_url)
+    dewmini.wait_for_selector(".dm-toolbar")
+
     dewmini.click("#dm-library-toggle")
     dewmini.click("#dm-workbench-toggle")
 
@@ -186,6 +206,7 @@ def test_both_rails_drag_wider_and_the_notebook_gives_up_the_room(dewmini):
     main = dewmini.locator("main").bounding_box()
     assert main["x"] >= left["x"] + left["width"], "the left rail must not cover the notebook"
     assert main["x"] + main["width"] <= right["x"] + 1, "the right rail must not cover it"
+    context.close()
 
 
 def test_a_rails_width_survives_a_reload(dewmini, dewmini_url):
@@ -483,11 +504,14 @@ def _quiet_text_cell(page):
     return page.locator(".dm-cell-text").last
 
 
-def head_opacity(page, cell) -> str:
-    """Waits out the 0.1s CSS transition first — reading immediately after
-    a hover/mouse-move can catch it mid-animation."""
-    page.wait_for_timeout(150)
-    return cell.locator(".dm-cell-head").evaluate("el => getComputedStyle(el).opacity")
+def assert_head_opacity(page, cell, value: str) -> None:
+    """Polls rather than sleeping a fixed 150ms then reading once: the
+    0.1s CSS transition (compose/dewmini-style.css) usually finishes well
+    inside that, but a slow moment leaves it still mid-animation, and a
+    single read then catches a value between 0 and 1 — this was seen to
+    fail intermittently for exactly that reason. `expect()` retries until
+    the value settles or its own timeout is reached."""
+    expect(cell.locator(".dm-cell-head")).to_have_css("opacity", value)
 
 
 def hover_cell(page, cell):
@@ -502,16 +526,16 @@ def test_a_rendered_text_cells_chrome_is_invisible_until_touched(dewmini):
     """planning/CELL_IDENTITY.md §4."""
     cell = _quiet_text_cell(dewmini)
     dewmini.mouse.move(5, 5)  # away from the cell entirely
-    assert head_opacity(dewmini, cell) == "0"
+    assert_head_opacity(dewmini, cell, "0")
 
 
 def test_hovering_the_cell_reveals_its_chrome(dewmini):
     cell = _quiet_text_cell(dewmini)
     dewmini.mouse.move(5, 5)
-    assert head_opacity(dewmini, cell) == "0"
+    assert_head_opacity(dewmini, cell, "0")
 
     cell.hover()
-    assert head_opacity(dewmini, cell) == "1"
+    assert_head_opacity(dewmini, cell, "1")
 
 
 def test_tabbing_onto_a_hidden_control_reveals_it_too(dewmini):
@@ -519,10 +543,10 @@ def test_tabbing_onto_a_hidden_control_reveals_it_too(dewmini):
     §4) — so a keyboard user never needs to hover first."""
     cell = _quiet_text_cell(dewmini)
     dewmini.mouse.move(5, 5)
-    assert head_opacity(dewmini, cell) == "0"
+    assert_head_opacity(dewmini, cell, "0")
 
     cell.locator(".dm-icon-delete").focus()
-    assert head_opacity(dewmini, cell) == "1"
+    assert_head_opacity(dewmini, cell, "1")
 
 
 def test_a_python_cells_chrome_is_never_hidden(dewmini):
@@ -531,7 +555,7 @@ def test_a_python_cells_chrome_is_never_hidden(dewmini):
     add_python_cell(dewmini, "1 + 1")
     dewmini.mouse.move(5, 5)
     cell = dewmini.locator(".dm-cell-python").last
-    assert head_opacity(dewmini, cell) == "1"
+    assert_head_opacity(dewmini, cell, "1")
 
 
 def _web_cell(page, html="", css=""):
@@ -630,10 +654,10 @@ def test_a_web_cells_chrome_is_also_quiet_until_touched(dewmini):
     cell = _web_cell(dewmini, html="<p>Hi</p>")
     dewmini.evaluate("document.activeElement.blur()")
     dewmini.mouse.move(5, 5)
-    assert head_opacity(dewmini, cell) == "0"
+    assert_head_opacity(dewmini, cell, "0")
 
     hover_cell(dewmini, cell)
-    assert head_opacity(dewmini, cell) == "1"
+    assert_head_opacity(dewmini, cell, "1")
 
 
 def test_a_web_cell_survives_a_reload(dewmini):
@@ -704,7 +728,7 @@ def test_a_sql_cells_chrome_is_never_hidden(dewmini):
     add_sql_cell(dewmini, "select 1")
     dewmini.mouse.move(5, 5)
     cell = dewmini.locator(".dm-cell-sql").last
-    assert head_opacity(dewmini, cell) == "1"
+    assert_head_opacity(dewmini, cell, "1")
     assert cell.locator(".dm-icon-preview").count() == 0
     assert cell.locator(".dm-cell-runline").count() == 1
 

@@ -363,6 +363,62 @@ dewmark (a separate program, for exams) for the second.
 
 ---
 
+## Full-stack cells
+
+A page whose own HTML shows a database's real rows, rather than a copy typed
+in by hand. Write three fences with a shared `app:` name — `html app`,
+`css app` and `js app` — the same `id:`/grouping shape a live HTML/CSS/JS
+editor uses, `site:` swapped for `app:`:
+
+````markdown
+```sql exec
+id: seed-products
+CREATE TABLE products (name TEXT, price REAL);
+INSERT INTO products VALUES ('Mug', 8.5), ('Notebook', 3.0);
+```
+
+```html app
+id: shop-html
+app: shop
+<table><tbody></tbody></table>
+```
+
+```css app
+id: shop-css
+app: shop
+td { padding: 0.3rem 0.6rem; }
+```
+
+```js app
+id: shop-js
+app: shop
+const rows = await dlQuery("SELECT name, price FROM products ORDER BY name");
+root.querySelector("tbody").innerHTML =
+  rows.map((r) => `<tr><td>${r.name}</td><td>€${r.price}</td></tr>`).join("");
+```
+````
+
+Only the `js` pane is required — `html` and `css` are optional, and both are
+live in the preview without pressing Run, the same rule a site editor's own
+panes follow. Inside the JS pane, `root` is this cell's own piece of the
+page (the same idea a site editor's own sandboxed preview has, without the
+sandbox), and `dlQuery(sql, params)` runs one query against the page's
+shared database — the same one every `sql exec` cell on the page reads and
+writes — and returns its rows as an array of plain objects, one per row,
+keyed by column name. `params` fills in any `?` placeholders in `sql`, so a
+value that came from a reader — typed into a search box, say — is bound as
+one value rather than pasted into the query's own text.
+
+A full-stack cell is not a third site-editor pane language, on purpose: a
+site editor (`html site`/`css site`/`js site`) previews inside a sandboxed
+iframe specifically so a reader's script cannot reach anything else on the
+page, and this cell's whole point is reaching the page's own database. Use
+a site editor for a page that only needs live HTML/CSS/JS with no database
+behind it, and a full-stack cell only where the point of the page is a
+query's own result becoming part of it.
+
+---
+
 ## Sharing setup code between tutorials
 
 Boilerplate that several tutorials need — loading the same dataset, usually —

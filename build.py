@@ -136,6 +136,14 @@ GAP_RE = re.compile(r"\{([^{}]*)\}")
 # "- an option" / "* an option" / "+ an option" — the same three markers
 # Python-Markdown's own sane_lists extension accepts.
 OPTION_LINE_RE = re.compile(r"^[ \t]*[-*+]\s+(.*\S)\s*$")
+# `html app`/`css app`/`js app` — a full-stack module's own fence kind
+# (planning/DEWSTACK_MERGE.md §3, §7 phase 4; DECISIONS_LOG.md 7.180).
+# Same three languages as a site pane, on purpose, but a separate pair of
+# constants: site fences and app fences are read by two different
+# branches in extract_blocks(), and nothing here should make changing
+# one silently change the other.
+APP_LANGS = {"html", "css", "js"}
+APP_HEADER_RE = re.compile(r"^\s*(id|app)\s*:\s*(.*)$")
 # A page's own way to point at infrastructure it can never author directly —
 # the site-wide search box, say. A bracketed marker rather than an HTML
 # comment, so a future markdown editor renders it as a real, visible line
@@ -289,6 +297,32 @@ class SiteEditor:
 
 
 @dataclass
+class AppPane:
+    """One `html app`/`css app`/`js app` fence — see extract_blocks()."""
+
+    id: str
+    app: str
+    language: str
+    code: str
+
+
+@dataclass
+class AppCell:
+    """A full-stack module's own cell kind (planning/DEWSTACK_MERGE.md §3,
+    §7 phase 4): one or more consecutive `AppPane`s with the same `app:`
+    name. Shares `SitePane`/`SiteEditor`'s shape — `panes` is keyed by
+    language for the same reason — but is a separate cell kind rather
+    than a third site-pane language, because its JavaScript is meant to
+    reach the page's own shared `db`, which a site editor's sandboxed
+    iframe exists specifically to stop a reader's script from doing. See
+    `render_app_cell()`'s own docstring for the rendering side of that
+    difference."""
+
+    name: str
+    panes: dict[str, AppPane]
+
+
+@dataclass
 class Math:
     tex: str
     display: bool
@@ -359,6 +393,9 @@ class Tutorial:
     # A page's live HTML/CSS/JS editors, in source order — usually empty;
     # only the web-authoring module has any yet.
     site_editors: list[SiteEditor] = field(default_factory=list)
+    # A page's full-stack cells, in source order — usually empty; only the
+    # full-stack module has any yet (planning/DEWSTACK_MERGE.md §7 phase 4).
+    app_cells: list[AppCell] = field(default_factory=list)
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
     notes: list[Note] = field(default_factory=list)
@@ -628,6 +665,30 @@ def parse_site_pane(body: str, path: Path, language: str) -> SitePane:
         fail(path, "a site pane has no `site:` line naming which editor it belongs to")
     return SitePane(
         id=header["id"], site=header["site"], language=language,
+        code="\n".join(lines).strip("\n"),
+    )
+
+
+def parse_app_pane(body: str, path: Path, language: str) -> AppPane:
+    """Read `id:`/`app:` off the top of an `html app`/`css app`/`js app`
+    fence — the same header loop `parse_site_pane()` uses, on its own
+    pair of header words. A full-stack cell's code is never Python and
+    never runs through `expand_includes()`, the same reasoning
+    `parse_site_pane()` gives."""
+    lines = body.split("\n")
+    header: dict[str, str] = {}
+    while lines:
+        match = APP_HEADER_RE.match(lines[0])
+        if not match or match.group(1) in header:
+            break
+        header[match.group(1)] = match.group(2).strip()
+        lines.pop(0)
+    if "id" not in header:
+        fail(path, "an app pane has no `id:` line — ids are what saved progress matches on")
+    if "app" not in header:
+        fail(path, "an app pane has no `app:` line naming which cell it belongs to")
+    return AppPane(
+        id=header["id"], app=header["app"], language=language,
         code="\n".join(lines).strip("\n"),
     )
 
@@ -907,30 +968,37 @@ def render_question(question: Question) -> str:
 
 def extract_blocks(
     body: str, path: Path,
-) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint], list[SiteEditor], list[Question]]:
+) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint], list[SiteEditor], list[Question],
+           list[AppCell]]:
     """Pull every fence out, leaving a comment placeholder markdown will keep.
 
     An `exec` fence becomes a cell; a `hint` fence becomes a staged hint
     (planning/CELL_HINTS.md); an `html site`/`css site`/`js site` fence
     becomes one pane of a `SiteEditor`, grouped with any of the same
     `site:` name immediately before or after it; a `question` fence
-    becomes a `Question` (planning/QUESTION_BLOCKS.md); any other fence
-    becomes an illustrative, read-only block. All five
-    leave the source before the markdown converter runs, so nothing inside
-    any of them can be reinterpreted as markup.
+    becomes a `Question` (planning/QUESTION_BLOCKS.md); an `html app`/
+    `css app`/`js app` fence becomes one pane of an `AppCell`, grouped
+    the same way by its `app:` name (planning/DEWSTACK_MERGE.md §3, §7
+    phase 4); any other fence becomes an illustrative, read-only block.
+    All six leave the source before the markdown converter runs, so
+    nothing inside any of them can be reinterpreted as markup.
     """
     cells: list[Cell] = []
     blocks: list[CodeBlock] = []
     hints: list[StagedHint] = []
     site_editors: list[SiteEditor] = []
     questions: list[Question] = []
+    app_cells: list[AppCell] = []
     hints_per_cell: dict[str, int] = {}
     used_site_names: set[str] = set()
     current_site: SiteEditor | None = None
     last_site_pane_end = -1
+    used_app_names: set[str] = set()
+    current_app: AppCell | None = None
+    last_app_pane_end = -1
 
     def one(match: re.Match) -> str:
-        nonlocal current_site, last_site_pane_end
+        nonlocal current_site, last_site_pane_end, current_app, last_app_pane_end
         info = match.group("info").strip().split()
         indent = match.group("indent")
         if "exec" in info:
@@ -975,6 +1043,32 @@ def extract_blocks(
         if info and info[0] == "question":
             questions.append(parse_question(match.group("body"), path))
             return f"{indent}<!--dewlab-question-{len(questions) - 1}-->"
+        if len(info) >= 2 and info[1] == "app":
+            language = info[0]
+            if language not in APP_LANGS:
+                fail(path, f"an app pane's fence starts with {language!r}, "
+                           f"not one of {sorted(APP_LANGS)}")
+            pane = parse_app_pane(match.group("body"), path, language)
+            adjacent = (
+                current_app is not None
+                and current_app.name == pane.app
+                and not body[last_app_pane_end:match.start()].strip()
+            )
+            last_app_pane_end = match.end()
+            if adjacent:
+                if pane.language in current_app.panes:
+                    fail(path, f"the {pane.app!r} full-stack cell has two "
+                               f"{pane.language} panes")
+                current_app.panes[pane.language] = pane
+                return ""
+            if pane.app in used_app_names:
+                fail(path, f"full-stack cell blocks named {pane.app!r} are not "
+                           "consecutive — keep every html/css/js pane for "
+                           "one cell together")
+            used_app_names.add(pane.app)
+            current_app = AppCell(name=pane.app, panes={pane.language: pane})
+            app_cells.append(current_app)
+            return f"{indent}<!--dewlab-app-{len(app_cells) - 1}-->"
         language = info[0] if info else ""
         blocks.append(CodeBlock(language=language, code=match.group("body").strip("\n")))
         return f"{indent}<!--dewlab-code-{len(blocks) - 1}-->"
@@ -1002,7 +1096,15 @@ def extract_blocks(
             fail(path, f"question {question.id!r} shares its id with a cell "
                        "or another question on this page")
         seen.add(question.id)
-    return rewritten, cells, blocks, hints, site_editors, questions
+    for cell in app_cells:
+        if "js" not in cell.panes:
+            fail(path, f"the {cell.name!r} full-stack cell has no js pane — "
+                       "a cell with nothing to run is not a cell")
+        for pane in cell.panes.values():
+            if pane.id in seen:
+                fail(path, f"two cells share the id {pane.id!r}")
+            seen.add(pane.id)
+    return rewritten, cells, blocks, hints, site_editors, questions, app_cells
 
 
 def extract_math(body: str, found: list[Math] | None = None) -> tuple[str, list[Math]]:
@@ -1303,6 +1405,68 @@ def render_site_editor(editor: SiteEditor, index: int) -> str:
     )
 
 
+def render_app_cell(cell: AppCell, index: int) -> str:
+    """The markup a full-stack cell's panes, preview and error box mount
+    onto.
+
+    Shares `render_site_editor()`'s own shape — panes over a result area,
+    a head-level Clear, a per-pane Run button on the JS pane only, HTML
+    and CSS live without pressing Run — but the result area is not an
+    iframe: HTML and CSS render straight into `.dl-app-preview`, and the
+    JS pane's code runs as a real `<script>` element appended to the
+    page (`buildAppCells()`, `assets/tutorial-runtime.js`). That is the
+    one deliberate difference from a site editor, and it is a difference
+    for a reason: a full-stack cell's whole point is a query's own
+    result becoming what a reader sees, and a site editor's sandboxed
+    iframe exists specifically to stop a reader's script reaching
+    anything else on the page — exactly the channel this needs, to read
+    the page's own shared SQL connection through `_query_rows()`
+    (planning/DEWSTACK_MERGE.md §3, §7 phase 4).
+
+    `index` plays the same role `render_site_editor()`'s own `index`
+    does — this cell's 1-based position among the page's app cells, used
+    only to keep this function's own element ids from colliding across
+    more than one app cell on a page.
+    """
+    safe_name = html.escape(cell.name, quote=True)
+    labels = {"html": "HTML", "css": "CSS", "js": "JavaScript"}
+    panes_markup = []
+    for lang in ("html", "css", "js"):
+        if lang not in cell.panes:
+            continue
+        run_markup = (
+            icon_button("dl-btn-app-run", "&#9654;", "Run",
+                        title="Run this script (Ctrl+Enter or Cmd+Enter in the pane)")
+            if lang == "js" else ""
+        )
+        panes_markup.append(
+            f'<div class="dl-app-pane" data-lang="{lang}">'
+            '<div class="dl-app-pane-head">'
+            f'<span class="dl-web-pane-label">{labels[lang]}</span>'
+            f"{run_markup}"
+            "</div>"
+            '<div class="dl-editor"></div>'
+            "</div>"
+        )
+    preview_id = f"dl-app-preview-{index}"
+    error_id = f"dl-app-error-{index}"
+    return (
+        f'<div class="dl-app-cell" data-app-name="{safe_name}">'
+        '<div class="dl-app-head">'
+        + icon_button("dl-btn-app-clear", "&#8635;", "Clear",
+                      title="Put this cell's starter code back, in every pane")
+        + "</div>"
+        '<div class="dl-app-split">'
+        f'<div class="dl-app-panes">{"".join(panes_markup)}</div>'
+        '<div class="dl-app-result">'
+        f'<div class="dl-app-preview" id="{preview_id}"></div>'
+        f'<pre class="dl-app-error" id="{error_id}" aria-live="polite"></pre>'
+        "</div>"
+        "</div>"
+        "</div>"
+    )
+
+
 def render_math(item: Math) -> str:
     """A marked span. KaTeX replaces its contents in the browser.
 
@@ -1575,10 +1739,10 @@ def convert_fold_bodies(page_html: str) -> str:
 def place_blocks(
     page_html: str, cells: list[Cell], blocks: list[CodeBlock], maths: list[Math],
     site_editors: list[SiteEditor] | None = None, questions: list[Question] | None = None,
-    page: str = "", version: str = "",
+    app_cells: list[AppCell] | None = None, page: str = "", version: str = "",
 ) -> str:
-    """Puts cells, illustrative code blocks, site editors, questions, and
-    maths back into the page after the Markdown converter has run.
+    """Puts cells, illustrative code blocks, site editors, questions, app
+    cells, and maths back into the page after the Markdown converter has run.
     `extract_blocks`/`extract_math` earlier in the pipeline replaced each
     of these with a plain placeholder string before handing the body to
     the Markdown library — this is the matching second half, swapping
@@ -1612,6 +1776,11 @@ def place_blocks(
         if placeholder not in page_html:
             raise BuildError(f"question {question.id!r} was lost during markdown conversion")
         page_html = page_html.replace(placeholder, render_question(question))
+    for index, app_cell in enumerate(app_cells or []):
+        placeholder = f"<!--dewlab-app-{index}-->"
+        if placeholder not in page_html:
+            raise BuildError(f"full-stack cell {app_cell.name!r} was lost during markdown conversion")
+        page_html = page_html.replace(placeholder, render_app_cell(app_cell, index + 1))
     for index, item in enumerate(maths):
         page_html = page_html.replace(f"dlmath{index}z", render_math(item))
     return page_html
@@ -3511,19 +3680,20 @@ def load(path: Path) -> Tutorial:
     build.py builds starts here.
     """
     meta, body = split_frontmatter(path.read_text(), path)
-    stripped, cells, blocks, hints, site_editors, questions = extract_blocks(body, path)
+    stripped, cells, blocks, hints, site_editors, questions, app_cells = extract_blocks(body, path)
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
     converted = convert_fold_bodies(converted)
     converted = place_hints(converted, hints, maths)
-    body_html = place_blocks(converted, cells, blocks, maths, site_editors, questions,
+    body_html = place_blocks(converted, cells, blocks, maths, site_editors, questions, app_cells,
                               page=id_of(path), version=str(meta.get("version", "")))
     body_html, notes = extract_notes(body_html, path)
     anchors = (
         set(ID_RE.findall(body_html))
         | {c.id for c in cells}
         | {pane.id for editor in site_editors for pane in editor.panes.values()}
+        | {pane.id for cell in app_cells for pane in cell.panes.values()}
     )
     return Tutorial(
         path=path,
@@ -3543,6 +3713,7 @@ def load(path: Path) -> Tutorial:
         has_math="dl-math" in body_html or any("dl-math" in note.html for note in notes),
         has_sql=any(c.type == "sql" for c in cells),
         site_editors=site_editors,
+        app_cells=app_cells,
         anchors=anchors,
         toc=toc,
         notes=notes,
@@ -3948,7 +4119,9 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         # The runtime fetches the 266 KB KaTeX bundle only when this is set, so
         # a tutorial with no maths never pays for it.
         manifest["math"] = True
-    if tutorial.has_sql:
+    if tutorial.has_sql or tutorial.app_cells:
+        # An app cell's own JS needs the shared `db` connection to exist
+        # at boot for it to read, the same reason a `sql exec` cell does.
         manifest["needsSqlite"] = True
     if tutorial.site_editors:
         manifest["siteEditors"] = [
@@ -3960,6 +4133,17 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
                 },
             }
             for editor in tutorial.site_editors
+        ]
+    if tutorial.app_cells:
+        manifest["appCells"] = [
+            {
+                "name": cell.name,
+                "panes": {
+                    lang: {"id": pane.id, "code": pane.code}
+                    for lang, pane in cell.panes.items()
+                },
+            }
+            for cell in tutorial.app_cells
         ]
     packages = tutorial.meta.get("packages")
     if packages:
