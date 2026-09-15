@@ -386,6 +386,43 @@ class TestPageCardsAndSections:
         with pytest.raises(b.BuildError, match="not-a-real-block"):
             b.build()
 
+    def test_maths_works_in_a_cards_own_body_a_wrapped_section_and_the_pages_own_prose(self, repo):
+        # convert_prose_with_math() is the same self-contained
+        # extract-then-place dance the tutorial body's own maths already
+        # gets, applied to three surfaces that each convert their own
+        # markdown separately: a card's body (parse_card), a wrapped
+        # section (convert_page_wrapper_bodies), and the page's own
+        # top-level prose (read_page).
+        self.home(repo, (
+            r"The page opens with $a^2 + b^2 = c^2$." + "\n\n"
+            "```card\n"
+            "url: features.html\n"
+            "### A card\n"
+            "Its area is $\\pi r^2$.\n"
+            "```\n\n"
+            '<div class="dl-audience">\n\n'
+            "A section with $x^2$ in it.\n\n"
+            "</div>\n"
+        ))
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "index.html").read_text()
+        assert '<span class="dl-math">a^2 + b^2 = c^2</span>' in page
+        assert '<span class="dl-math">\\pi r^2</span>' in page
+        assert '<span class="dl-math">x^2</span>' in page
+        # The manifest turns the KaTeX bundle fetch on for this page —
+        # renderMaths() (tutorial-runtime.js) checks manifest.math before
+        # it ever looks for a .dl-math span.
+        assert manifest(page)["math"] is True
+
+    def test_a_page_with_no_maths_at_all_carries_no_math_flag(self, repo):
+        self.home(repo, "Just prose, no maths anywhere.\n")
+        write(repo, "Prose.\n")
+        b.build()
+        page = (repo / "site" / "index.html").read_text()
+        assert "dl-math" not in page
+        assert "math" not in manifest(page)
+
 
 class TestTheAboutPage:
     """about.html: hand-written content, from pages/about.md rather than a

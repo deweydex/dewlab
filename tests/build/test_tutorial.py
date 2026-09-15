@@ -598,6 +598,19 @@ class TestNotesAndDatasets:
             "description": "A plain-text dataset, loaded with load_text().",
         }]
 
+    def test_maths_works_inside_a_note(self, repo):
+        # A note converts on its own (extract_notes()), the same problem
+        # a fold's body has — this checks maths reaches it, and that the
+        # tutorial's own maths flag notices even though a note's own
+        # <span> never ends up in body_html at all, only in the manifest.
+        write(repo, '<aside class="dl-note" id="why-it-works">\n\n'
+                    r"Because $E = mc^2$." + "\n\n</aside>\n", slug="one")
+        b.build()
+        assert manifest(built(repo, "one"))["notes"] == [
+            {"id": "why-it-works", "html": '<p>Because <span class="dl-math">E = mc^2</span>.</p>'},
+        ]
+        assert manifest(built(repo, "one"))["math"] is True
+
     def test_an_image_in_a_note_still_needs_alt_text(self, repo):
         write(repo, '<aside class="dl-note" id="pic">\n\n'
                     '<img src="chart.png">\n\n</aside>\n', slug="one")
@@ -664,6 +677,22 @@ class TestFolds:
         css = (DEWLAB / "assets" / "tutorial-style.css").read_text()
         for name in b.FOLD_CLASSES:
             assert f".{name} " in css or f".{name}{{" in css or f".{name}[" in css
+
+    def test_maths_works_inside_a_hand_written_fold(self, repo):
+        # convert_fold_bodies() converts a fold's body on its own, the same
+        # way render_staged_hint() already does for a ```hint fence —
+        # Python-Markdown treats <details>...</details> as opaque raw HTML,
+        # so without this the working in a practice-page answer would
+        # reach the page as literal, unrendered text.
+        write(repo, '<details class="dl-answer"><summary>answer</summary>\n\n'
+                    r"$C(n, r) = \binom{n}{r}$" + "\n\n</details>\n")
+        b.build()
+        page = built(repo)
+        assert '<span class="dl-math">C(n, r) = \\binom{n}{r}</span>' in page
+        # The tutorial's own maths flag notices it, even though this
+        # never went through the top-level extract_math() call the flag
+        # used to be computed from.
+        assert manifest(page)["math"] is True
 
 
 class TestTwoReleasesOnOneDay:

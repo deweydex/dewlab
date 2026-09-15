@@ -168,3 +168,45 @@ class TestQuestionChecks:
         assert page.index('data-cell-id="one"') < page.index('id="dl-question-right-angle"')
         assert page.index('id="dl-question-right-angle"') < page.index('data-cell-id="two"')
 
+
+
+class TestQuestionMaths:
+    """convert_prose_with_math() — the same self-contained extract-then-
+    place dance the tutorial body's own maths gets, applied here since a
+    question's prompt and options convert on their own, with no shared
+    page-level maths list to append to."""
+
+    def test_maths_works_in_a_multiple_choice_prompt_and_an_option(self, repo):
+        write(repo, r"```question" "\n"
+                    "id: q\n"
+                    "type: multiple-choice\n"
+                    "correct: 1\n\n"
+                    r"Which equals $2^3$?" "\n\n"
+                    r"- $8$" "\n"
+                    "- $6$\n"
+                    "```\n")
+        b.build()
+        page = built(repo)
+        assert '<span class="dl-math">2^3</span>' in page
+        assert '<button type="button" class="dl-question-option" data-option="1" data-correct="true"><span class="dl-math">8</span></button>' in page
+        assert manifest(page)["math"] is True
+
+    def test_maths_works_in_a_fill_in_the_blank_sentence_alongside_a_gap(self, repo):
+        write(repo, "```question\nid: q\ntype: fill-in-the-blank\n\n"
+                    r"When $r = 2$, the area is {four} times $\pi$." + "\n```\n")
+        b.build()
+        page = built(repo)
+        assert '<span class="dl-math">r = 2</span>' in page
+        assert '<span class="dl-math">\\pi</span>' in page
+        assert 'data-expected="four"' in page
+
+    def test_a_dollar_sign_inside_a_gap_is_not_mistaken_for_maths(self, repo):
+        # Gaps are tokenised before convert_prose_with_math ever sees the
+        # text, so a price offered as one of the choices is gone from
+        # what maths extraction looks at.
+        write(repo, "```question\nid: q\ntype: fill-in-the-blank\n\n"
+                    "It costs {$5|$10}.\n```\n")
+        b.build()
+        page = built(repo)
+        assert "dl-math" not in page
+        assert "<option data-correct=\"true\">$5</option>" in page
