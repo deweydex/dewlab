@@ -289,12 +289,15 @@ class TestWhichNoticeComesFirst:
 class TestTheSwitchInSettings:
     def test_it_starts_on_where_i_left_off(self, tab, base_url):
         opened(tab, base_url, DEFAULT_PAGE)
-        pressed = tab.eval_on_selector_all(
+        # `data-versions-follow` is a `role="radiogroup"` (assets/shell.html)
+        # — setSegChecked() marks the checked option with aria-checked, the
+        # correct attribute for a radio, not aria-pressed.
+        checked = tab.eval_on_selector_all(
             "#dl-settings-versions [data-versions-follow] button",
-            "els => els.filter(e => e.getAttribute('aria-pressed') === 'true')"
+            "els => els.filter(e => e.getAttribute('aria-checked') === 'true')"
             ".map(e => e.dataset.value)",
         )
-        assert pressed == ["started"]
+        assert checked == ["started"]
 
     def test_it_lists_the_releases_too(self, tab, base_url):
         opened(tab, base_url, DEFAULT_PAGE)
