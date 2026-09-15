@@ -317,8 +317,9 @@ a student's saved answer matches on, so renaming it loses their answer the same
 way renaming a cell's id would. `type:` is `multiple-choice` or
 `fill-in-the-blank`, spelled out in full rather than abbreviated, so a question
 is readable without a reference card. Everything after the header lines is
-ordinary markdown: for a multiple-choice question, the prose before the list is
-the prompt and the list is the options, in the order a student sees them.
+ordinary markdown, LaTeX included: for a multiple-choice question, the prose
+before the list is the prompt and the list is the options, in the order a
+student sees them.
 `correct:` names the right one by its position in that list, starting at 1 —
 that line, and only that line, is what a student's browser could read if they
 opened the page's source, which is the trade this format makes: right for a

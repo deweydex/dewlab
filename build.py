@@ -902,10 +902,10 @@ def render_question(question: Question) -> str:
     """
     safe_id = html.escape(question.id, quote=True)
     if question.type == "multiple-choice":
-        prompt_html, _ = to_html(question.prompt)
+        prompt_html = convert_prose_with_math(question.prompt)
         option_items = []
         for position, option_text in enumerate(question.options, start=1):
-            option_html, _ = to_html(option_text)
+            option_html = convert_prose_with_math(option_text)
             # A single paragraph's own <p>...</p>, unwrapped: an option is
             # inline content sitting on a button, not a block of its own.
             if option_html.startswith("<p>") and option_html.endswith("</p>"):
@@ -943,9 +943,15 @@ def render_question(question: Question) -> str:
         # spliced back in. A gap can sit mid-sentence, where a fence's
         # own placeholder comment would not survive Markdown's inline
         # pass the way it survives a block fence.
+        #
+        # Gaps are tokenised first, math second (inside
+        # convert_prose_with_math): a dollar sign that happens to sit
+        # inside a gap's own {...} — a price as one of the choices, say
+        # — is already gone from the text convert_prose_with_math sees,
+        # so it is never mistaken for the start of a maths span.
         gaps = GAP_RE.findall(question.prompt)
         tokenised = GAP_RE.sub(lambda m: f"dlgap{len(GAP_RE.findall(question.prompt[:m.start()]))}z", question.prompt)
-        prompt_html, _ = to_html(tokenised)
+        prompt_html = convert_prose_with_math(tokenised)
         for index, raw in enumerate(gaps):
             prompt_html = prompt_html.replace(f"dlgap{index}z", gap_widget(raw))
         options_html = ""
@@ -1485,6 +1491,30 @@ def to_html(body: str) -> tuple[str, list]:
     return html_out, list(getattr(converter, "toc_tokens", []))
 
 
+def convert_prose_with_math(text: str) -> str:
+    """Markdown to HTML, with `$…$`/`$$…$$` typeset via KaTeX.
+
+    The tutorial's own body gets this for free: `load()` runs
+    `extract_math()` once, up front, and hands the shared list to
+    `place_blocks()` to resolve once everything else has been placed.
+    Everything else that converts a piece of author markdown on its own
+    — a card's body, a question's prompt and options, a pedagogical
+    note, a hand-written practice-page fold, a page's own prose or one
+    of its section wrappers — has no such shared list to append to, and
+    no guarantee it runs before whatever *would* resolve one. So this is
+    the same two-step `extract_math()`/`render_math()` dance, self-
+    contained: a fresh list, numbered from zero, extracted and resolved
+    in the one call, which is what makes it safe to use anywhere,
+    independent of where in the build's pipeline that call happens to
+    sit.
+    """
+    stripped, maths = extract_math(text)
+    html_out, _ = to_html(stripped)
+    for index, item in enumerate(maths):
+        html_out = html_out.replace(f"dlmath{index}z", render_math(item))
+    return html_out
+
+
 def parse_card(fence_body: str, path: Path) -> PageCard:
     """A ```card fence's body: `url:`/`status:`/`meta:`/`wide:` header lines
     (dewlab's own header-line idiom — see HEADER_RE, SITE_HEADER_RE,
@@ -1507,7 +1537,7 @@ def parse_card(fence_body: str, path: Path) -> PageCard:
     heading_match = re.match(r"^#{1,6}\s*(?P<heading>.+?)\s*#*$", first_line)
     if not heading_match:
         fail(path, "a card fence's body must open with a markdown heading")
-    body_html, _ = to_html(remainder.strip("\n")) if remainder.strip() else ("", [])
+    body_html = convert_prose_with_math(remainder.strip("\n")) if remainder.strip() else ""
     return PageCard(
         url=header["url"],
         heading=heading_match.group("heading"),
@@ -1599,7 +1629,7 @@ def convert_page_wrapper_bodies(page_html: str) -> str:
     itself is `ul`.
     """
     def one(match: re.Match) -> str:
-        body_html, _ = to_html(match.group("body"))
+        body_html = convert_prose_with_math(match.group("body"))
         if match.group("tag") == "ul":
             inner = re.match(r"^<ul>\s*(?P<items>.*?)\s*</ul>$", body_html, re.DOTALL)
             if inner:
@@ -1679,7 +1709,7 @@ def read_page(name: str) -> tuple[dict, str]:
     body = body.lstrip("\n")
     body, cards = extract_page_cards(body, path)
     body, generated = extract_generated_blocks(body, path)
-    body_html, _ = to_html(body)
+    body_html = convert_prose_with_math(body)
     body_html = convert_page_wrapper_bodies(body_html)
     body_html = place_page_cards(body_html, cards)
     body_html = place_generated_blocks(body_html, generated)
@@ -1700,7 +1730,7 @@ def convert_fold_bodies(page_html: str) -> str:
     what to_html() needs to convert it properly.
     """
     def one(match: re.Match) -> str:
-        body_html, _ = to_html(match.group("body"))
+        body_html = convert_prose_with_math(match.group("body"))
         return f'{match.group("open")}\n{body_html}\n{match.group("close")}'
 
     return FOLD_RE.sub(one, page_html)
@@ -1772,7 +1802,7 @@ def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
         if note_id in seen:
             fail(path, f"two notes share the id {note_id!r}")
         seen.add(note_id)
-        note_html, _ = to_html(match.group("html"))
+        note_html = convert_prose_with_math(match.group("html"))
         notes.append(Note(id=note_id, html=note_html))
         return ""
 
@@ -3670,7 +3700,17 @@ def load(path: Path) -> Tutorial:
         meta=meta,
         cells=cells,
         body_html=body_html,
-        has_math=bool(maths),
+        # Not just bool(maths): that list is only the top-level prose's
+        # own maths, extracted before convert_fold_bodies()/
+        # extract_notes()/render_question() ever run, and each of those
+        # can now add its own — a hand-written practice-page answer, a
+        # pedagogical note, a question's prompt. Checking the finished
+        # body_html (and, separately, a note's own html — extract_notes()
+        # has already pulled that out of body_html by this point) for a
+        # real .dl-math span is what write()'s own `if tutorial.has_math`
+        # gate (the KaTeX bundle fetch) actually needs to know, wherever
+        # the maths came from.
+        has_math="dl-math" in body_html or any("dl-math" in note.html for note in notes),
         has_sql=any(c.type == "sql" for c in cells),
         site_editors=site_editors,
         app_cells=app_cells,
@@ -4781,6 +4821,14 @@ def write_page(shell: str, name: str) -> Path:
     meta, body = read_page(name)
     manifest = {"slug": stem, "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
+    # renderMaths() (tutorial-runtime.js) checks manifest.math before it
+    # ever looks for a .dl-math span, the same gate write()'s own
+    # tutorial.has_math sets for a tutorial — a page's own prose, its
+    # cards and its section wrappers can all carry maths now
+    # (convert_prose_with_math), so this is what turns the KaTeX bundle
+    # fetch on for whichever pages actually used it.
+    if "dl-math" in body:
+        manifest["math"] = True
     tokens = {
         "{{TITLE}}": meta["title"],
         "{{VERSION}}": "1",
