@@ -1,6 +1,6 @@
 ---
 name: cell-code-review
-description: Review a dewlab tutorial's Python code — every exec cell and every illustrative (untagged) code fence — for pedagogical code quality against PEDAGOGICAL_STYLE_GUIDE.md §5: semantic variable names over mathy single letters, comments that explain why rather than restate what, in context (surrounding prose, earlier cells in the same tutorial, whether naming is deliberately withheld as a "discover first" moment, whether a cell is a stub with nothing to name). Use when asked to review, clean up, or improve code quality/naming/comments in one or more tutorials' cells, or after writing new tutorial code that should be checked before it ships.
+description: "Review a dewlab tutorial's Python code — every exec cell and every illustrative (untagged) code fence — for pedagogical code quality against PEDAGOGICAL_STYLE_GUIDE.md §5: semantic variable names over mathy single letters, comments that explain why rather than restate what, in context (surrounding prose, earlier cells in the same tutorial, whether naming is deliberately withheld as a \"discover first\" moment, whether a cell is a stub with nothing to name). Use when asked to review, clean up, or improve code quality/naming/comments in one or more tutorials' cells, or after writing new tutorial code that should be checked before it ships."
 ---
 
 # Reviewing a tutorial's cell code
