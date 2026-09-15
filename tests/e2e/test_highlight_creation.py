@@ -25,7 +25,7 @@ sys.path.insert(0, str(DEWLAB))
 import build as b  # noqa: E402
 from layout import write_course, write_tutorial  # noqa: E402
 
-MODULE = "highlight-creation-fixtures"
+COURSE = "highlight-creation-fixtures"
 
 FRONTMATTER = """---
 title: "{title}"
@@ -90,7 +90,7 @@ def _glossary(root: Path, slug: str, entries: list[dict]) -> None:
 
 
 def _set_order(root: Path, slugs: list[str]) -> None:
-    write_course(root, MODULE, "Sample Series", slugs)
+    write_course(root, COURSE, "Sample Series", slugs)
 
 
 @pytest.fixture()

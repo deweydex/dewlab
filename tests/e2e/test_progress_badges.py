@@ -20,7 +20,7 @@ sys.path.insert(0, str(DEWLAB))
 import build as b  # noqa: E402
 from layout import write_course, write_tutorial  # noqa: E402
 
-MODULE = "progress-fixtures"
+COURSE = "progress-fixtures"
 
 FRONTMATTER = """---
 title: "{title}"
@@ -49,7 +49,7 @@ def _tutorial(root: Path, slug: str, title: str = "A Title") -> None:
 
 
 def _set_order(root: Path, slugs: list[str]) -> None:
-    write_course(root, MODULE, "Sample Series", slugs)
+    write_course(root, COURSE, "Sample Series", slugs)
 
 
 @pytest.fixture()

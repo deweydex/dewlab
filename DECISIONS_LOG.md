@@ -3878,7 +3878,17 @@ The "sensible things" pass, done alongside, found and fixed: a `dl-seriesnav` as
 
 ---
 
-**7.178 — A `question` fence: multiple-choice and fill-in-the-blank, built the way the design note argued rather than a straight port of dewmark's own grammar.** Josh, on the design note (`planning/QUESTION_BLOCKS.md`, from a linked session): "let's implement the part that it gets right and implement the stuff that we know is better than its spec."
+**7.178 — Highlight-to-look-up gets the same stemming and synonyms as every search box; nine more `MODULE` fixture constants become `COURSE`.** Josh, back when #235 added prefix matching to the contents search: "the same should be true of our tooltips and other searching and helping." #239 gave every search box one shared matcher (`search-words.js`); the one search-shaped surface it missed was `initReferenceLookup()`'s `termFor()` in `tutorial-runtime.js`, which decides whether a reader's text selection names a glossary entry — a plain whole-word match either way round, so selecting "gradients" over a page whose entry is "gradient" found nothing.
+
+`termFor()` keeps its exact and whole-word checks first — a phrase like "running estimate" still prefers the phrase over half of it — and falls back to a token-for-token comparison using `tokenize()`/`tokenHits()` from `search-words.js` when those find nothing: the selection and a candidate term each split into their normalized (stemmed, synonym-mapped) words, and it's a match when they're the same length and every pair agrees, exactly or by prefix. "gradients" now stems to "gradient" the same way typing either into a search box would; "iterating" meets an entry written as "loop" through the same synonym table that already equates them. Checked with a browser test selecting "gradients" against an entry for "gradient", and the existing lookup tests unchanged.
+
+Doing this turned up two more files (of the five #237 missed) still calling their course-id fixture constant `MODULE`, and a search for the rest found nine — `test_reference.py` among them, since it's the file this change touches — plus one, in `test_versions.py`, that turned out to be dead: defined, never read. All renamed to `COURSE`; the dead one deleted outright.
+
+*Cost to change: trivial. One function gained a fallback branch; the renames are mechanical.*
+
+---
+
+**7.179 — A `question` fence: multiple-choice and fill-in-the-blank, built the way the design note argued rather than a straight port of dewmark's own grammar.** Josh, on the design note (`planning/QUESTION_BLOCKS.md`, from a linked session): "let's implement the part that it gets right and implement the stuff that we know is better than its spec."
 
 `assets/tutorial_tools.py` could already ask a multiple-choice question — `dropdown`, `button` and `check` have been there a while — but only as Python inside an exec cell, which meant downloading Pyodide to ask which of three words is right, a question unreadable without reading `lambda`s, and no way for an author who does not write Python to write one at all. What was missing was a form, not a capability, and the form is now a fifth fence kind beside `exec`, `hint`, `card` and `html`/`css`/`js site` in `extract_blocks()`: `parse_question()` reads `id:`/`type:`/`correct:` off the top with the same header loop `parse_cell()` uses, and everything after is ordinary markdown — the prompt and, for multiple-choice, the options list under it; for fill-in-the-blank, the sentence itself, with `{word}` a typing box and `{word|word|word}` a dropdown, the first item the expected one, both dewmark's own convention.
 
@@ -3891,3 +3901,4 @@ One real tutorial carries it: `counting-carefully.md` gets a multiple-choice rec
 **What this deliberately does not do.** No LaTeX inside a prompt or an option — `to_html()` runs with no `extract_math`/`render_math` pass either side of it, so `$...$` in a question would render as literal text; every worked example so far has needed none, and wiring maths through is additive whenever one does. No per-option feedback under a wrong choice, no scoring, no attempt count. Several gaps in one fill-in-the-blank question check together, on one Check button, not one at a time — the design note's own "probably right" guess, taken as the answer rather than revisited.
 
 *Cost to change: low. The fence sits in `extract_blocks()`'s existing table of kinds; the runtime half is one small module (`buildQuestions()` and what it calls) with no state outside the DOM it reads and the one array in the saved-work record.*
+

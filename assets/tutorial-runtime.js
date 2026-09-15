@@ -2,7 +2,7 @@
 import { createCodeEditor, createReadOnlyCode, setEditorTheme,
          setLineNumbers, setIndentWidth } from "./vendor/codemirror.bundle.js";
 import { mountSitePreview } from "./site-relay.js";
-import { textMatches } from "./search-words.js";
+import { textMatches, tokenize, tokenHits } from "./search-words.js";
 
 const PYODIDE_VERSION = "0.28.3";
 const PYODIDE_BASE = new URL(
@@ -1270,9 +1270,24 @@ function initReferenceLookup(manifest) {
     // false-positive problem that withdrew prose-linking, reached here by
     // a different route.
     const bounded = whole(needle);
-    return terms.find((term) => bounded.test(term))
-      || terms.find((term) => whole(term).test(needle))
-      || null;
+    const literal = terms.find((term) => bounded.test(term))
+      || terms.find((term) => whole(term).test(needle));
+    if (literal) return literal;
+
+    // Then the same stemming and synonym rule every search box on the
+    // site already uses (search-words.js): a reader who selects
+    // "gradients" or "iterating" meets the entry for "gradient" or
+    // "iteration" the same way typing either word into a search box
+    // would. Token-for-token, in order, so a two-word selection needs a
+    // two-word term rather than matching half a phrase.
+    const needleTokens = tokenize(needle);
+    if (needleTokens.length === 0) return null;
+    return terms.find((term) => {
+      const termTokens = tokenize(term);
+      return termTokens.length === needleTokens.length
+        && termTokens.every((token, i) =>
+          tokenHits(token, needleTokens[i]) || tokenHits(needleTokens[i], token));
+    }) || null;
   }
 
   document.addEventListener("selectionchange", () => {

@@ -17,7 +17,7 @@ sys.path.insert(0, str(DEWLAB))
 import build as b  # noqa: E402
 from layout import write_course, write_tutorial  # noqa: E402
 
-MODULE = "narrow-fixtures"
+COURSE = "narrow-fixtures"
 
 # The smallest screen a student is realistically carrying.
 PHONE = {"width": 375, "height": 667}
@@ -75,7 +75,7 @@ def site_url(site):
 
 def _build(site: Path) -> None:
     write_tutorial(site, "narrow", TUTORIAL)
-    write_course(site, MODULE, "Narrow Series", ["narrow"])
+    write_course(site, COURSE, "Narrow Series", ["narrow"])
     b.build()
 
 
