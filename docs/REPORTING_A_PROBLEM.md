@@ -10,7 +10,8 @@ looked odd to me". That is enough.
 ## The quick way: from the page itself
 
 Most pages carry a line at the foot, "Something wrong on this page? Tell
-us." Click it and you get three choices.
+us," and the **Give Feedback** tab in the top-right corner opens the same
+three choices. Either door gets you here.
 
 **I have a question.** Not wrong, just something you want explained. This
 one goes to Discussions rather than an issue, so an answer stays where
@@ -26,17 +27,17 @@ run"](#before-you-report-a-page-that-will-not-run) first.
 something confusing. Same form, same fields filled in, this kind picked
 instead.
 
-Whichever choice you take, all you need to add is the one thing that
-matters: what happened.
+Every choice opens on GitHub, which asks you to sign in with a free account
+before it lets you post. Whichever choice you take after that, all you need
+to add is the one thing that matters: what happened.
 
 If the choices are not there, or your report is not about one particular page
 (an idea, a suggestion, something about the site as a whole), opening an
 issue yourself works the same way — **[the issue tracker on
-GitHub](https://github.com/deweydex/dewlab/issues)**. You need a free
-GitHub account to post one. Have a quick look at the open issues first
-in case somebody has already reported it — if they have, adding what you
-saw to that issue is more useful than starting a new one. The rest of
-this page covers what is useful to include, either way.
+GitHub](https://github.com/deweydex/dewlab/issues)**. Have a quick look at
+the open issues first in case somebody has already reported it — if they
+have, adding what you saw to that issue is more useful than starting a new
+one. The rest of this page covers what is useful to include, either way.
 
 The reporting line can be turned off for a while if reports need to pause,
 for example while something is being fixed. When it is off, this page and

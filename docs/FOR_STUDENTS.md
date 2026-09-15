@@ -59,9 +59,9 @@ described below.
 
 If a tutorial is updated after you have worked on it, your answers carry over
 cell by cell wherever the cell has not been replaced. Where a tutorial has more
-than one published version, a small picker on the page lets you move between
-them, and you stay in the version you were working in rather than being moved
-without being asked.
+than one published version, a small picker under this page's own rung in
+Where you are lets you move between them, and you stay in the version you
+were working in rather than being moved without being asked.
 
 ---
 
@@ -83,26 +83,33 @@ Reference shows where you first met it.
 
 ---
 
-## Settings
+## The right-hand panels
 
-Every page has a **Settings** button in the bar at the top, and that bar
-follows you down the page, so it is always one tap away. It opens as a panel
-on the right-hand side of the screen, full height, and it stays open while you
-read and run cells — you do not have to close it to get back to the page. Drag
-its left edge to make it wider or narrower.
+Every page has five panels, opened from tabs stacked in the top-right corner:
+**Notes**, **Give Feedback**, **Python**, **Appearance**, and **Imports &
+Exports**. Each opens on the right of the screen, full height, and stays open
+while you read and run cells — you do not have to close it to get back to the
+page. Drag its left edge to make it wider or narrower.
 
-What is behind it is grouped in three parts.
+**Notes** holds a place to write your own notes on the page, whether your
+work is saving, and the buttons to export a copy, load one back in, or start
+the tutorial over.
 
-**Your work** — whether the page is saving, and buttons to export a copy of
-your work, load one back in, or start the tutorial over.
+**Give Feedback** is where a question, an error, or something confusing on
+the page goes. The three choices there are the same ones "Something wrong?"
+describes below.
 
-**This tutorial** — the ways to take the page with you, described below.
+**Python** is about running the cells: a Restart Python button for a clean
+start, and whether a hint appears after several failed runs.
 
-**Texture** — how the page looks and reads: light or dark, serif or sans or
-mono (plus two fonts built for easier reading, Lexend and OpenDyslexic),
-text size, how wide the lines run, and the colour of links.
-**High contrast** switches to black text on white, or white on black in dark
-mode. It turns on Lexend too, whatever font you had chosen.
+**Appearance** covers how the page looks and reads: light or dark, serif or
+sans or mono (plus two fonts built for easier reading, Lexend and
+OpenDyslexic), text size, how wide the lines run, and the colour of links.
+**High contrast**, also here, switches to black text on white, or white on
+black in dark mode, and turns on Lexend too, whatever font you had chosen.
+
+**Imports & Exports** holds the ways to take a tutorial with you, described
+below.
 
 These choices follow you from page to page and from visit to visit. If the
 default is uncomfortable to read, change it — that is what it is for.
@@ -111,49 +118,47 @@ default is uncomfortable to read, change it — that is what it is for.
 
 ## Finding your way around
 
-The bar at the top carries three buttons: **Reference**, **Series** and
-**Settings**. Each opens a panel on one side of the screen, full height,
-meant to be left open beside what you are reading rather than closed again
-right after. On a narrow screen the labels drop away and you get the icons
-alone, so they still fit one row.
+Two docks, one in each top corner, hold the site's own controls. The left
+holds **Reference** and **Where you are**; the right holds the five panels
+described above. Each opens full height, meant to be left open beside what
+you are reading rather than closed again right after.
 
 **Reference** is the definitions, functions and formulas this tutorial — and
 everything before it in its series — has covered. Nothing appears in it that
 you have not been taught yet. If a tutorial has nothing to show there, the
 button does not appear at all.
 
-**Series** is every tutorial in this one's series, so you can jump to any of
-them from wherever you are, not only to the one immediately before or after.
+**Where you are** is a tree you open level by level: all tutorials, then this
+one's course, then its series, then the page itself, opening onto its own
+sections. From any level you can jump straight to another tutorial in the
+same series, not only to the one immediately before or after. A tutorial can
+belong to more than one course; when this page does, the tree says so, and
+follows whichever course brought you here.
 
-Reference and Series both open on the left, so opening one closes the other.
-Settings opens on the right and is independent of both. Whichever you leave
-open stays open as you move through a series, so opening the Reference once is
-enough — you do not have to reopen it on every tutorial.
+Reference and Where you are both open on the left, so opening one closes the
+other. The right-hand panels are independent of both. Whichever you leave
+open stays open as you move through a series, so opening the Reference once
+is enough — you do not have to reopen it on every tutorial.
 
-All three can be made wider or narrower: Settings by dragging its left edge,
-Reference and Series by the handle in their bottom corner. The page moves over to
-make room rather than being covered up.
+Every panel can be made wider or narrower: the right-hand ones by dragging
+their left edge, Reference and Where you are by the handle in their bottom
+corner. The page moves over to make room rather than being covered up.
 
-On a phone, all three open as a sheet across the bottom of the screen instead,
-and they close as you move on rather than following you from page to page.
+On a phone, every panel and the tree collapse into one launcher — a dot at
+the bottom of the screen — that opens the same choices as a menu.
 
-Underneath the bar, the **previous / All tutorials / next** row sits with it,
-so moving on never means scrolling to find the link. Any tutorial with more
-than one section also has a **Contents** list, closed until you open it,
-showing the page's headings with sub-headings underneath.
-
-The contents page lists everything in teaching order and has a search box. Two
-other pages organise things differently. The **topic tree** shows every topic
-in the course and what each one needs before it; you can drag to move around
-it, scroll to zoom, and choose any topic to read what it is and where it turns
-up. Topics that are not taught here yet are drawn with a dashed outline, so
-you can see where it has gaps. **Browse by topic** gathers everything on one
-subject in one place, which is the better page when you already know what you
-want to practise.
+The contents page lists everything in teaching order and has a search box.
+Two other pages organise things differently. The **topic tree** shows every
+topic dewlab teaches and what each one needs before it; you can drag to move
+around it, scroll to zoom, and choose any topic to read what it is and where
+it turns up. Topics that are not taught here yet are drawn with a dashed
+outline, so you can see where it has gaps. **Browse by topic** gathers
+everything on one subject in one place, which is the better page when you
+already know what you want to practise.
 
 On the contents page, a small badge next to a tutorial you have opened shows
 how many of its cells you have run, turning red only if a cell's last run
-failed. It is read from your own browser, and you can turn it off in Settings.
+failed. It is read from your own browser, and you can turn it off in Notes.
 
 ---
 
@@ -175,7 +180,7 @@ it keeps failing, a small fold may appear under it, with a line like *Let's
 slow down a moment…*. Open it when you want to. Inside is a question about
 what you can see, and later a few steps. It is never the answer. Nothing
 about how many times you ran the cell is shown to you or sent anywhere.
-You can turn these hints off in Settings.
+You can turn these hints off in Python.
 
 ---
 
@@ -214,7 +219,7 @@ to someone else, who can load it into their copy of the same page.
 
 ## Taking a tutorial with you
 
-Settings offers a few ways to keep a copy.
+Imports & Exports offers a few ways to keep a copy.
 
 **Download to keep** gives you one HTML file — on a USB drive, in your
 downloads folder, wherever you like — that you open by double-clicking. The
@@ -249,13 +254,17 @@ or a `.py` file, and a Stop button that can interrupt code that is stuck.
 If a tutorial has a mistake in it, or something on the site does not work,
 please tell us. You do not need to be certain it is a bug to say something.
 Most pages carry a link at the bottom for exactly this, "Something wrong on
-this page? Tell us." Click it and pick the one that fits: a question, an
+this page? Tell us." The Give Feedback tab in the top-right corner opens the
+same three choices. Either way, pick the one that fits: a question, an
 error, or something wrong or hard to follow.
 
 A cell giving trouble has its own small circle for the same three choices, in
 its own bar. Pick that one instead, and your code and its last output are
-already included, with nothing to copy. That report link opens a form on
-GitHub. Questions about your own edits are welcome too.
+already included, with nothing to copy.
+
+However you get there, the link opens a form on GitHub, and GitHub will ask
+you to sign in with a free account first. Questions about your own edits are
+welcome too.
 
 [`REPORTING_A_PROBLEM.md`](REPORTING_A_PROBLEM.md) covers the rest: where
 to report something without that line, and what is helpful to include.

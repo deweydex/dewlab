@@ -920,8 +920,8 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
         report_markup = (
             f'<button type="button" class="dl-report-icon" aria-expanded="false" '
             f'aria-controls="dl-report-{safe_id}" '
-            f'aria-label="Report a problem with Cell {number}" '
-            f'title="Report a problem with this cell">&#9873;</button>'
+            f'aria-label="Give feedback on Cell {number}" '
+            f'title="Give feedback on this cell">&#9873;</button>'
         )
         report_box = (
             f'<div class="dl-report-doors dl-cell-report-doors" '
@@ -3547,6 +3547,11 @@ def report_doors_links(page: str, version: str, cell: str = "") -> str:
     bulleted list is the wrong shape for three short links, and it also
     silently broke every test that counted a page's `<li>` tags, since
     this markup reaches every page.
+
+    The account note is here rather than repeated at each caller, so
+    every surface a reader can reach these doors from — the footer, the
+    Give Feedback panel, a cell's own report box — says it the same way,
+    once, instead of drifting.
     """
     error_url = report_issue_url(page, version, _REPORT_KIND_ERROR, cell)
     wrong_url = report_issue_url(page, version, _REPORT_KIND_WRONG, cell)
@@ -3556,6 +3561,7 @@ def report_doors_links(page: str, version: str, cell: str = "") -> str:
         f'<a class="dl-report-issue-link" href="{error_url}">It gives an error</a> · '
         f'<a class="dl-report-issue-link" href="{wrong_url}">The page is wrong, or I could not follow it</a>'
         "</p>"
+        '<p class="dl-panel-note">GitHub will ask you to sign in with a free account first.</p>'
     )
 
 
@@ -3572,7 +3578,7 @@ def report_doors_html(page: str, version: str) -> str:
 
 
 def report_doors_panel_html(page: str, version: str) -> str:
-    """The Report tab's own content, in the top-right corner dock — the
+    """The Give Feedback tab's own content, in the top-right corner dock — the
     same three doors as the footer's disclosure (report_doors_html()),
     without the <details> wrapper, since the tab it lives in is already
     the thing a reader opens on purpose. This is a second way to the same
