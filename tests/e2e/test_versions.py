@@ -10,7 +10,6 @@ import pytest
 
 from conftest import _open_panel
 
-MODULE = "fixtures"
 SLUG = "two-takes"
 DEFAULT_PAGE = f"tutorials/{SLUG}.html"
 JUNE_PAGE = f"tutorials/{SLUG}/v2026.06.02.1.html"

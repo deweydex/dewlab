@@ -204,7 +204,11 @@ prose.
 Matching is whole-word in both directions with an exact match preferred:
 plain substring matching offered *pandas* for "and" and *cell* for
 "excellent" — the same false-positive problem §6c describes, reached by a
-different route (`DECISIONS_LOG.md` 7.96).
+different route (`DECISIONS_LOG.md` 7.96). Failing that, it falls back to
+the stemming and synonym rule every search box on the site shares
+(`assets/search-words.js`, `DECISIONS_LOG.md` 7.174 and 7.178), so
+selecting "gradients" meets the entry for "gradient" the way typing either
+word into a search box would.
 
 Nothing is stored. Selection in, the existing filter out.
 
