@@ -410,8 +410,15 @@ class TestLinkPicker:
         tab.wait_for_selector(".dl-editor-body .ProseMirror")
 
     def open_picker(self, tab):
-        tab.click(".dl-editor-body .ProseMirror")
-        tab.keyboard.press("Control+End")
+        # Clicking the ProseMirror root itself and pressing Control+End was
+        # not reliable once a fixture's last cell was a code fence: Crepe's
+        # CodeMirror node view can end up with the caret instead, so the
+        # link ends up inside the cell, unmarked (code nodes carry no
+        # marks) — clicking the trailing paragraph directly, whatever it
+        # says, puts the caret in real prose at the true end of the
+        # document without depending on Control+End's cross-node behaviour.
+        tab.click(".dl-editor-body .ProseMirror p:last-of-type")
+        tab.keyboard.press("End")
         tab.click("text=Link to another tutorial")
         tab.wait_for_selector(".dl-editor-linkpicker-row")
 

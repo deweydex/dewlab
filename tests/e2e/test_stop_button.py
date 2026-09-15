@@ -76,10 +76,16 @@ def test_a_stopped_cell_can_be_run_again(page):
         timeout=20_000,
     )
 
+    # .dl-btn-reset clears the cell's run state (its output and run-order
+    # bookkeeping), not its code — that's .dl-btn-clear, a separate button
+    # behind its own confirm(). The infinite loop just typed is still
+    # there, so it has to be selected and replaced, not appended after:
+    # appending would leave it first in the file, and Python would still
+    # hang on it before ever reaching a later "2 + 2".
     page.locator(".dl-cell[data-cell-id='plain-python'] .dl-btn-reset").click()
     cell.click()
-    page.keyboard.press("Control+End")
-    page.keyboard.insert_text("\n2 + 2")
+    page.keyboard.press("Control+A")
+    page.keyboard.insert_text("2 + 2")
     btn.click()
     page.wait_for_function(
         f"document.querySelector({js_string(output_selector('plain-python'))}).innerText.trim().endsWith('4')",
