@@ -9,11 +9,9 @@ version: 2026.09.05.1
 
 # A table is a list of rows
 
-A table stores many records in one place, and every record is shaped the
-same way. A line in a shopping list is a record. It has a name and a
-quantity, even though the values differ from line to line. A database
-table works the same way. Each row is one record, and every row has the
-same columns.
+[Table graphic] A table is a load of boxes that have stuff in them... honestly its as simple as that. Where things get complicated is when we want specific stuff to be in specific boxes according to rules or conventions. The boxes form a grid, like we see above, and we tend to talk about not just one box in that grid, but whole lines: row if we are talking about boxes (or "cells") left to right (horizontal), and columns if we refer to to a bunch of cells up and down (vertical). Each of those rows we call a record, columns refer to a specific "attribute" which we put at the top of the column as a header. So we call that box of values a table, and a table stores many records in one place, and every record is shaped the
+same way: with the same attributes. For example, a line in a shopping list is a record. It has a name and a
+quantity, and of course we want the item name to likely be different from line to line. A database table works the same way. Each row is one record, and every row has the same columns.
 
 This box creates a table of dinosaurs, adds six rows to it, then shows
 every row it holds. Click Run and see what appears.
