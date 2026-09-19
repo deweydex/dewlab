@@ -693,7 +693,7 @@ async def run_cell(
     what a traceback's file line calls this cell instead of its own id —
     a tutorial's author-given `name:`, or dewmini's "Cell 3" for a cell
     nobody has named, rather than either's own internal id showing up in
-    front of a reader (planning/CELL_IDENTITY.md). The whole lifecycle
+    front of a reader. The whole lifecycle
     lives here, in Python, rather than being split across the JS runtime, so
     output ordering and traceback formatting have exactly one implementation.
 
@@ -1487,10 +1487,10 @@ def _empty_result_notes(conn, statement: str) -> list[str]:
 
 
 def _run_sql_cell(conn, script: str, max_rows: int = 20):
-    """dewmini's own SQL cell type (planning/CELL_IDENTITY.md §8) —
-    internal plumbing a generated cell call reaches, not something a
-    reader is expected to call by name themselves; `run_query()` above
-    is the public, one-statement version of the same idea.
+    """dewmini's own SQL cell type — internal plumbing a generated cell
+    call reaches, not something a reader is expected to call by name
+    themselves; `run_query()` above is the public, one-statement version
+    of the same idea.
 
     Splits `script` into statements on a bare `;` and runs each in
     turn against `conn` — a script, not a single query, is the normal

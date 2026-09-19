@@ -46,7 +46,6 @@ DOC_FILES = ("README.md", "ARCHITECTURE.md", "CONTRIBUTING.md", "LICENSE.md")
 HISTORY = {
     "DECISIONS_LOG.md",
     "QUESTIONS.md",
-    "planning/VERSIONING_AND_PROGRESS.md",   # superseded; says so at the top
 }
 
 # [text](target) — the target only, and only up to a # or a space.

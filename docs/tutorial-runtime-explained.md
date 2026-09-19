@@ -204,11 +204,11 @@ keep already cover the full page, and the Settings panel note says so.
 ## The pill, the run line, collapse, Duplicate, the "⋯" run menu, and Restart & run all
 
 Several pieces ported from `compose/dewmini.js`, once that file had
-already proven them out (`planning/CELL_IDENTITY.md`): a numbered,
-coloured identity pill (`Cell N` plus its type); a single merged run
-line reporting order, duration, and staleness together; "Run
-above"/"Run below"; and Settings' "Restart & run all". They didn't move
-wholesale — dewmini's `cells` array holds a plain `.content` string kept
+already proven them out: a numbered, coloured identity pill (`Cell N`
+plus its type); a single merged run line reporting order, duration, and
+staleness together; "Run above"/"Run below"; and Settings' "Restart &
+run all". They didn't move wholesale — dewmini's `cells` array holds a
+plain `.content` string kept
 in sync by hand, while this file's cells only ever ask their own
 CodeMirror editor for its current value (`getCode()`), so `isStale()`
 here compares against that instead of a mirrored field; and dewmini's
@@ -223,9 +223,9 @@ one caller that must *not* reset the namespace first.
 The run line (`.dl-cell-runline`, `renderCellRunLine()`) replaced what
 used to be two separate elements — a `.dl-cell-stats` span ("Ran in
 340 ms") and a `.dl-cell-stale-badge` ("edited since last run") shown or
-hidden independently. `planning/CELL_IDENTITY.md` §3 folds them into one
-line because a reader reads them together anyway: "Ran 1st in 340 ms",
-or with the edit flag, "Ran 1st in 340 ms — edited since". The run order
+hidden independently. They're folded into one line here because a
+reader reads them together anyway: "Ran 1st in 340 ms", or with the
+edit flag, "Ran 1st in 340 ms — edited since". The run order
 (`ranOrder`, from a module-level `runSequenceCounter`) is new here —
 tutorial pages previously had no notion of *when*, relative to other
 cells, a given cell last ran, only whether its output matched its
@@ -313,10 +313,10 @@ collapse, Duplicate) onto `build.py`'s existing `.dl-cell-head`/
 *after* both the editor and the output, where dewmini's own footbar sits
 *between* them. A reader who had just learned "Run is under the code" in
 dewmini found it somewhere else entirely on a tutorial page — one of a
-short list of small, real mismatches `planning/CELL_IDENTITY.md` §9
-catalogues and closes. `render_cell()` now emits three rows in the order
-dewmini's own cells already use — `.dl-cell-head` (identity: the pill, an
-optional `.dl-cell-name`, then Duplicate), `.dl-cell-body-row` (the
+short list of small, real mismatches now closed. `render_cell()` now
+emits three rows in the order dewmini's own cells already use —
+`.dl-cell-head` (identity: the pill, an optional `.dl-cell-name`, then
+Duplicate), `.dl-cell-body-row` (the
 collapse triangle and the editor), `.dl-cell-footbar` (Run, Reset, Clear,
 the run menu, the run line) — with `.dl-output` last. `createCustomCellElement()`
 here builds the same three rows by hand for a reader's own cells, since

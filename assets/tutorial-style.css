@@ -295,11 +295,11 @@ li { margin-bottom: 0.3rem; }
 
 a { color: var(--dl-link); text-underline-offset: 0.15em; }
 
-/* A reader's own marked passage (HIGHLIGHTS_AND_NOTES.md §9). Background
- * only -- text colour stays whatever the surrounding prose already uses,
- * so this never fights a reader's own theme, font, or high-contrast
- * choice; --dl-highlight-bg is picked per theme to keep --dl-fg at or
- * above the WCAG AA 4.5:1 minimum against it. */
+/* A reader's own marked passage. Background only -- text colour stays
+ * whatever the surrounding prose already uses, so this never fights a
+ * reader's own theme, font, or high-contrast choice; --dl-highlight-bg
+ * is picked per theme to keep --dl-fg at or above the WCAG AA 4.5:1
+ * minimum against it. */
 mark.dl-highlight {
   background: var(--dl-highlight-bg);
   color: inherit;
@@ -3295,11 +3295,11 @@ p code, li code {
   a { color: #1b2a4a !important; text-decoration: underline; }
 }
 
-/* .dl-highlight-btn (HIGHLIGHTS_AND_NOTES.md §5) shares this look but not
-   this selector -- test_reference.py asserts against `.dl-lookup`
-   specifically, and it and the highlight button are independently
-   positioned/hidden `position: fixed` elements, not one toolbar with a
-   shared wrapper (initReferenceLookup()'s own comment says why). */
+/* .dl-highlight-btn shares this look but not this selector --
+   test_reference.py asserts against `.dl-lookup` specifically, and it
+   and the highlight button are independently positioned/hidden
+   `position: fixed` elements, not one toolbar with a shared wrapper
+   (initReferenceLookup()'s own comment says why). */
 .dl-lookup,
 .dl-highlight-btn {
   position: fixed;
@@ -3334,9 +3334,9 @@ p code, li code {
   .dl-lookup, .dl-highlight-btn, .dl-highlight-popover { display: none !important; }
 }
 
-/* The edit/remove popover on an existing highlight (HIGHLIGHTS_AND_NOTES.md
-   §7) -- fixed and viewport-clamped the same way the two buttons above are,
-   just larger, since it holds a textarea rather than one line of label. */
+/* The edit/remove popover on an existing highlight -- fixed and
+   viewport-clamped the same way the two buttons above are, just
+   larger, since it holds a textarea rather than one line of label. */
 .dl-highlight-popover {
   position: fixed;
   z-index: 46;

@@ -313,7 +313,7 @@ class TestAltText:
 
 class TestTutorialAssets:
     """A tutorial is a folder; an asset it uses sits there and is referenced
-    by its plain name (planning/ROADMAP.md Phase 1). One page that uses a
+    by its plain name. One page that uses a
     picture, a downloadable file, external and missing links, and shows
     markup as text; a tutorial with a frozen release; and a picture that
     is not there."""

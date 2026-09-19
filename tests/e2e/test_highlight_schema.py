@@ -1,8 +1,8 @@
-"""planning/HIGHLIGHTS_AND_NOTES.md §4, rollout step 3: `highlights` in the
-saved-progress record. A highlight round-trips through saveNow()/readSaved()
-the same way `notes` already does; one whose anchor no longer resolves on
-reload is dropped and reported in the restore summary, the "notice, never a
-block" treatment a cell whose id disappeared already gets."""
+"""Rollout step 3: `highlights` in the saved-progress record. A highlight
+round-trips through saveNow()/readSaved() the same way `notes` already
+does; one whose anchor no longer resolves on reload is dropped and
+reported in the restore summary, the "notice, never a block" treatment
+a cell whose id disappeared already gets."""
 
 from __future__ import annotations
 

@@ -1161,9 +1161,8 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
     where its output will land, so Run sits where a reader's hand
     already is, not back above everything they just wrote. This is
     dewmini's own shape (`compose/dewmini.js`'s `createCellElement()`),
-    matched here (planning/CELL_IDENTITY.md's parity pass) — a reader
-    moving from one page to the other finds the pill, and Run, in the
-    same place either way.
+    matched here — a reader moving from one page to the other finds the
+    pill, and Run, in the same place either way.
 
     `number` is the cell's plain 1-based position on the page (its index
     in `place_blocks()`'s own `cells` list, the same order the page reads
@@ -1192,8 +1191,8 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
     that icon-only mode would hide.
 
     The editor sits in a `.dl-cell-body-row`, beside a collapse triangle
-    — every cell type gets one in dewmini (`planning/CELL_IDENTITY.md`
-    §4), and there is nothing type-specific here to make that not apply.
+    — every cell type gets one in dewmini, and there is nothing
+    type-specific here to make that not apply.
     `.dl-cell-collapsed-summary` is the
     one-line stand-in tutorial-runtime.js shows in its place once
     collapsed; both start empty/hidden and are filled in by
@@ -5538,8 +5537,7 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
     tutorial at all, and a reference that hid two-thirds of itself on the
     grounds that they had not reached tutorial 31 yet would be actively
     unhelpful to the person looking at it. So this one is the union, and
-    the constraint is dropped on purpose rather than by forgetting it —
-    see `planning/DEWMINI_WORKBENCH.md` §4.
+    the constraint is dropped on purpose rather than by forgetting it.
 
     Built from `own_glossary()` so each entry can name the tutorial that
     introduced it: that provenance is what keeps the union honest, since

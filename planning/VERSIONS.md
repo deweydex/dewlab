@@ -103,6 +103,14 @@ a tutorial page loads:
    nothing is lost — and reappears the moment the student is on a
    release that has that cell again.
 
+`localStorage` autosave is the primary save path — no action required,
+persists across a closed tab or browser restart on the same device.
+Exporting to a JSON file is the secondary path, for moving to another
+device or keeping an offline copy. A `check()` cell's pass/fail result
+saves and restores the same way as any other cell's output. One real
+limitation: a widget cell restores its saved HTML, but the live Python
+object behind it only comes back once the cell is re-run.
+
 ### What the version picker tells a student
 Switching versions through the UI compares the cell-id sets of both
 releases and gives an honest, exact count, not a vague warning:

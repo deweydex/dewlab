@@ -70,10 +70,10 @@ sense.
     plain string instead of a parsed DataFrame. Right after `run_query`
     sits `_run_sql_cell` (not in `__all__` — internal plumbing, not
     something a reader calls by name), `run_query`'s multi-statement
-    counterpart: dewmini's own SQL cell type (DECISIONS_LOG.md 7.118,
-    `planning/CELL_IDENTITY.md` §8) and a tutorial page's `sql exec` cell
-    (DECISIONS_LOG.md 7.140) both generate a call to this rather than
-    handing a reader's raw SQL to Pyodide directly. Splits a script on a
+    counterpart: dewmini's own SQL cell type (DECISIONS_LOG.md 7.118)
+    and a tutorial page's `sql exec` cell (DECISIONS_LOG.md 7.140) both
+    generate a call to this rather than handing a reader's raw SQL to
+    Pyodide directly. Splits a script on a
     bare `;`, runs every statement but the last, and renders only the
     last one's own result — a table if it returned rows, otherwise how
     many rows it touched.
@@ -126,7 +126,7 @@ more detail; it's worth reading once, since the same shape shows up in
   that's harmless the way this module actually runs a cell and formats
   its traceback. A tutorial page passes its author-given `name:`, when a
   cell has one; dewmini passes a reader's own name or a plain `Cell N`
-  fallback either way (`planning/CELL_IDENTITY.md` §9).
+  fallback either way.
 - **"Why does `check()` need its own comparison function instead of
   `==`?"** — `_compare`, and its own docstring: floats need a tolerance,
   numpy arrays and DataFrames raise on a bare `==`, and `True == 1` in

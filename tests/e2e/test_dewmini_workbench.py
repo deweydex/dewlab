@@ -393,7 +393,6 @@ def test_a_dataset_writes_the_code_to_load_it(dewmini):
 
 
 def test_editing_a_run_cell_shows_the_stale_flag_on_the_run_line(dewmini):
-    """planning/CELL_IDENTITY.md §3."""
     add_python_cell(dewmini, "6 * 7")  # a bare expression, so it actually prints something
     dewmini.locator(".dm-cell .dm-icon-run").first.click()
     dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
@@ -523,7 +522,6 @@ def hover_cell(page, cell):
 
 
 def test_a_rendered_text_cells_chrome_is_invisible_until_touched(dewmini):
-    """planning/CELL_IDENTITY.md §4."""
     cell = _quiet_text_cell(dewmini)
     dewmini.mouse.move(5, 5)  # away from the cell entirely
     assert_head_opacity(dewmini, cell, "0")
@@ -539,8 +537,8 @@ def test_hovering_the_cell_reveals_its_chrome(dewmini):
 
 
 def test_tabbing_onto_a_hidden_control_reveals_it_too(dewmini):
-    """opacity/pointer-events, not display:none (planning/CELL_IDENTITY.md
-    §4) — so a keyboard user never needs to hover first."""
+    """opacity/pointer-events, not display:none — so a keyboard user
+    never needs to hover first."""
     cell = _quiet_text_cell(dewmini)
     dewmini.mouse.move(5, 5)
     assert_head_opacity(dewmini, cell, "0")
@@ -587,7 +585,6 @@ def test_a_web_cells_two_editors_are_both_always_visible(dewmini):
 
 
 def test_a_web_cells_html_renders_in_a_sandboxed_iframe(dewmini):
-    """planning/CELL_IDENTITY.md §8."""
     cell = _web_cell(dewmini, html="<h2>Hello from HTML</h2>")
     frame_el = cell.locator(".dm-html-frame")
     assert frame_el.get_attribute("sandbox") == "allow-scripts"
@@ -734,8 +731,8 @@ def test_a_sql_cells_chrome_is_never_hidden(dewmini):
 
 
 def test_a_multi_statement_sql_script_renders_only_its_last_statement(dewmini):
-    """planning/CELL_IDENTITY.md §8 — a SQL cell is a script, not a single
-    query, so only its final statement's result renders."""
+    """A SQL cell is a script, not a single query, so only its final
+    statement's result renders."""
     add_sql_cell(
         dewmini,
         "CREATE TABLE t (id INTEGER, name TEXT);\n"
@@ -860,8 +857,8 @@ def test_a_js_cells_output_survives_a_reload(dewmini):
 
 
 def test_restart_python_tears_down_the_js_session_too(dewmini):
-    """planning/CELL_IDENTITY.md §8 — the JS session is torn down and
-    recreated on Restart Python exactly like the Pyodide interpreter is."""
+    """The JS session is torn down and recreated on Restart Python
+    exactly like the Pyodide interpreter is."""
     add_js_cell(dewmini, "var survivesRestart = 42;")
     dewmini.locator(".dm-cell-javascript .dm-icon-run").last.click()
     dewmini.wait_for_timeout(500)
@@ -1621,7 +1618,6 @@ def test_the_project_is_on_the_left_and_the_reference_on_the_right(dewmini):
 
 
 def test_an_html_file_in_the_workspace_opens_as_a_site(dewmini):
-    """planning/DEWMINI_WORKBENCH.md §10."""
     write_workspace_file(dewmini, "index.html", "<h1>Hello site</h1>")
     open_files_panel(dewmini)
 

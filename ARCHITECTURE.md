@@ -382,13 +382,12 @@ to `tutorial_tools.py`'s `_run_sql_cell()` against a shared `sqlite3`
 connection (`db`) and runs it through `pyodide-engine.js` like any other
 Python — SQL and Python share one engine; only JavaScript gets a second.
 
-**dewmini is a workbench, not one column** (design in
-`planning/DEWMINI_WORKBENCH.md`). Notebooks open in tabs (`notebooks[]` in
-`dewmini.js`, with `cells` re-pointed at whichever is active), and two
-docked rails sit either side: a **Workbench** (left) carrying a live
-variable inspector, notes and a file manager, and a **Library** (right)
-carrying the cross-tutorial reference, a dataset catalogue, help text, and
-Settings.
+**dewmini is a workbench, not one column.** Notebooks open in tabs
+(`notebooks[]` in `dewmini.js`, with `cells` re-pointed at whichever is
+active), and two docked rails sit either side: a **Workbench** (left)
+carrying a live variable inspector, notes and a file manager, and a
+**Library** (right) carrying the cross-tutorial reference, a dataset
+catalogue, help text, and Settings.
 
 A tab need not hold a notebook of cells at all. The file manager's
 `openWorkspaceFile()` can open a real workspace file directly: a `.py` as
