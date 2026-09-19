@@ -433,6 +433,18 @@ function initRightPanels() {
   }
   if (searchInput) searchInput.addEventListener("input", runFilter);
 
+  // The stack itself, not just the panels, tracks RIGHT_DOCK_WIDTH_KEY —
+  // otherwise a panel wider than the tab stack sitting on top of it (the
+  // CSS default until a reader ever drags one) reads as the stack sitting
+  // askew over a wider box, not one column. Applied here on load, the same
+  // way makeEdgeResizable() applies a saved width to each panel, and kept
+  // in step by the onResize callback below whenever a drag changes it.
+  const rightStack = document.querySelector(".dl-corner-dock-tr .dl-corner-stack");
+  const savedDockWidth = loadPanelWidth(RIGHT_DOCK_WIDTH_KEY);
+  if (rightStack && savedDockWidth) {
+    rightStack.style.width = `${Math.max(256, Math.min(savedDockWidth, 640))}px`;
+  }
+
   for (const p of panels) {
     for (const section of p.panel.querySelectorAll(".dl-settings-section")) {
       if (!section.textContent.trim()) section.hidden = true;
@@ -442,6 +454,7 @@ function initRightPanels() {
       for (const other of panels) {
         if (other.panel !== p.panel) other.panel.style.width = width;
       }
+      if (rightStack) rightStack.style.width = width;
     }, RIGHT_DOCK_WIDTH_KEY);
 
     function setOpen(open) {

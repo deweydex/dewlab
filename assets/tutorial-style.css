@@ -1271,8 +1271,13 @@ p code, li code {
 }
 /* A right-hand panel's own <h2> is sr-only (shell.html) — its corner tab
    already shows the label — so with only the close button left in flow,
-   space-between above would pin it to the start instead of the end. */
+   space-between above would pin it to the start instead of the end.
+   Settings is the exception: its own tab names three different things
+   folded behind it, not one, so its <h2> is shown for real and wants its
+   title at the start and the close button at the end, the same as
+   Reference's own head. */
 .dl-right-panel .dl-settings-head { justify-content: flex-end; }
+#dl-settings .dl-settings-head { justify-content: space-between; }
 .dl-right-panel h2, .dl-settings h2 {
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -1353,7 +1358,12 @@ p code, li code {
   box-sizing: border-box;
 }
 .dl-corner-dock-tl .dl-corner-stack { width: var(--dl-side); gap: 0.4rem; }
-.dl-corner-dock-tr .dl-corner-stack { width: 12.5rem; align-items: stretch; }
+/* Matches .dl-right-panel's own default width, so the stack and whatever
+   panel opens beneath it read as one column rather than a narrow strip
+   sitting askew over a wider one. syncDockStackWidth() (tutorial-
+   runtime.js) keeps the two matched once a reader drags a panel wider or
+   narrower, or a saved width loads on a later visit. */
+.dl-corner-dock-tr .dl-corner-stack { width: min(21rem, 100vw); align-items: stretch; }
 
 /* What the masthead used to hold — wordmark and orientation — now living
    in the top-left dock instead of a separate header bar. .dl-wordmark/
