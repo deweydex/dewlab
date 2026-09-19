@@ -1358,12 +1358,13 @@ p code, li code {
   box-sizing: border-box;
 }
 .dl-corner-dock-tl .dl-corner-stack { width: var(--dl-side); gap: 0.4rem; }
-/* Matches .dl-right-panel's own default width, so the stack and whatever
-   panel opens beneath it read as one column rather than a narrow strip
-   sitting askew over a wider one. syncDockStackWidth() (tutorial-
-   runtime.js) keeps the two matched once a reader drags a panel wider or
-   narrower, or a saved width loads on a later visit. */
-.dl-corner-dock-tr .dl-corner-stack { width: min(21rem, 100vw); align-items: stretch; }
+/* Compact at rest — nothing reserves more than this for the resting stack
+   when no panel is open, or the reading column would give up real width
+   it was never asked to give up (7.163's own reasoning for keeping this
+   narrow in the first place). initRightPanels() (tutorial-runtime.js)
+   widens it inline to match whichever panel is actually open, and clears
+   that back to this default the moment it closes. */
+.dl-corner-dock-tr .dl-corner-stack { width: 12.5rem; align-items: stretch; }
 
 /* What the masthead used to hold — wordmark and orientation — now living
    in the top-left dock instead of a separate header bar. .dl-wordmark/
