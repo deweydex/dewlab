@@ -1,6 +1,6 @@
-"""planning/HIGHLIGHTS_AND_NOTES.md §3: the anchoring lookup that will let a
-highlight survive a tutorial's prose being edited later, tested here on its
-own before anything in the page calls it (rollout sketch, step 2).
+"""The anchoring lookup that will let a highlight survive a tutorial's
+prose being edited later, tested here on its own before anything in
+the page calls it (rollout sketch, step 2).
 
 PARA-ONE deliberately repeats "the pivot" so the disambiguation path (an
 exact match on the surrounding text, not just the quote itself) actually
@@ -145,13 +145,14 @@ class TestProseBlocks:
         assert texts[0] == "Anchor Fixture"
         assert texts[1].startswith("PARA-ZERO")
         assert texts[TARGET_BLOCK].startswith("PARA-THREE")
-        # The H1, ten paragraphs, then three more blocks that only appear
+        # The H1, ten paragraphs, then four more blocks that only appear
         # once a page has a cell: the (hidden) report-a-problem paragraph
-        # (planning/feedback.yaml `enabled: true`) and the "Try something
-        # of your own" heading/paragraph PRACTICE.md adds below the last
-        # cell. Both are real, readable prose -- correctly not excluded,
-        # since neither lives inside `.dl-editor`/`.dl-output`.
-        assert len(texts) == 14
+        # (planning/feedback.yaml `enabled: true`) and its GitHub
+        # sign-in note, and the "Try something of your own"
+        # heading/paragraph PRACTICE.md adds below the last cell. All are
+        # real, readable prose -- correctly not excluded, since none
+        # lives inside `.dl-editor`/`.dl-output`.
+        assert len(texts) == 15
 
     def test_excludes_a_cells_own_output(self, page):
         # A cell's output is only ever filled in by running Python, which

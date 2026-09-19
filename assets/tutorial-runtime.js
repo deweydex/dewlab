@@ -1034,9 +1034,9 @@ function initReference(manifest) {
   }
 }
 
-/* Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §3): a
- * reader marks a passage of prose, durably, with an optional note tied to
- * it. Anchoring a highlight needs no build-time id — a highlight instead
+/* Highlights and margin notes: a reader marks a passage of prose,
+ * durably, with an optional note tied to it. Anchoring a highlight
+ * needs no build-time id — a highlight instead
  * records where it was (an ordinal position among the page's prose
  * blocks) and what it was (the selected text, plus a little context to
  * tell two identical sentences apart), all computed from the live DOM.
@@ -1111,8 +1111,7 @@ const ANCHOR_SEARCH_WINDOW = 5;
 // Rebuilds {block, index} for a saved highlight anchor
 // ({block_index, quote, prefix, suffix}), tolerating the page having
 // drifted a little since the highlight was made. `null` means genuinely
-// gone — HIGHLIGHTS_AND_NOTES.md §3 says what the caller does with that
-// (drop it, and say so, rather than guess).
+// gone (the caller drops it, and says so, rather than guessing).
 function locateHighlightAnchor(anchor, root = document.getElementById("dl-body")) {
   const blocks = proseBlocks(root);
   if (!blocks.length) return null;
@@ -1159,9 +1158,9 @@ function rangeForOffsets(block, start, end) {
   return null; // the offsets don't fit this block's current text
 }
 
-// Rollout step 4 (HIGHLIGHTS_AND_NOTES.md §6): showing a highlight, once
-// one exists. A selection rarely sits inside a single text node — it can
-// span an <em>, a <code>, or just a sentence break — and
+// Rollout step 4: showing a highlight, once one exists. A selection
+// rarely sits inside a single text node — it can span an <em>, a
+// <code>, or just a sentence break — and
 // `Range.surroundContents()` throws in exactly that case, on any node it
 // can't safely wrap whole. The fix used here is the standard one: walk the
 // range's own text nodes and wrap each one's selected portion in its own
@@ -1227,12 +1226,12 @@ function unwrapHighlight(highlightId, root = document.getElementById("dl-body"))
   return marks.length;
 }
 
-// Rollout step 5 (HIGHLIGHTS_AND_NOTES.md §5): actually making one. A
-// highlight anchors to exactly one prose block (§3) — the same block a
-// reader's selection has to sit inside, checked here rather than assumed,
-// since a selection can freely cross into a heading or a second paragraph
-// and this is where that gets caught, silently, the same way Look Up
-// already stays silent for a selection that isn't a term.
+// Rollout step 5: actually making one. A highlight anchors to exactly
+// one prose block — the same block a reader's selection has to sit
+// inside, checked here rather than assumed, since a selection can
+// freely cross into a heading or a second paragraph and this is where
+// that gets caught, silently, the same way Look Up already stays
+// silent for a selection that isn't a term.
 function blockFor(node) {
   const el = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
   return el ? el.closest(PROSE_BLOCK_SELECTOR) : null;
@@ -1283,8 +1282,8 @@ function initReferenceLookup(manifest) {
   // manifest.glossary is a flat list of entries, the same one
   // renderReference() groups by kind for display. A tutorial with none —
   // termFor() below then never matches anything — still gets the
-  // Highlight button; HIGHLIGHTS_AND_NOTES.md §5 is not the same feature
-  // as REFERENCE_PANEL.md §6b's Look Up, and needs no glossary to work.
+  // Highlight button; it is not the same feature as REFERENCE_PANEL.md
+  // §6b's Look Up, and needs no glossary to work.
   const terms = (manifest.glossary || [])
     .map((entry) => String(entry.term || "").toLowerCase())
     .filter(Boolean);
@@ -1303,10 +1302,9 @@ function initReferenceLookup(manifest) {
   lookupButton.hidden = true;
   document.body.append(lookupButton);
 
-  // Rollout step 5 (HIGHLIGHTS_AND_NOTES.md §5) — "Add a note" joins this
-  // once step 6's edit/remove popover exists to open (§7); for now,
-  // Highlight is the only new button, and a note is added afterward by
-  // clicking the highlight it made.
+  // Rollout step 5 — "Add a note" joins this once step 6's edit/remove
+  // popover exists to open; for now, Highlight is the only new button,
+  // and a note is added afterward by clicking the highlight it made.
   const highlightButton = document.createElement("button");
   highlightButton.type = "button";
   // Its own class, not shared with .dl-lookup: test_reference.py already
@@ -1490,11 +1488,11 @@ function initReferenceLookup(manifest) {
   document.addEventListener("scroll", hide, { passive: true });
 }
 
-// Rollout step 6 (HIGHLIGHTS_AND_NOTES.md §7): editing or removing a
-// highlight that already exists — clicking anywhere on it (or reaching it
-// with Tab, per wrapRange()'s first-fragment tab stop) opens a small
-// popover: the note, if any, plus Save and Remove. One shared popover
-// element, not one per highlight, the same "reused, not per-item" shape
+// Rollout step 6: editing or removing a highlight that already exists —
+// clicking anywhere on it (or reaching it with Tab, per wrapRange()'s
+// first-fragment tab stop) opens a small popover: the note, if any,
+// plus Save and Remove. One shared popover element, not one per
+// highlight, the same "reused, not per-item" shape
 // initReferenceLookup()'s own button already uses.
 function initHighlightPopover() {
   const body = document.getElementById("dl-body");
@@ -1880,7 +1878,7 @@ function buildCells(manifest) {
       element: host,
       getCode: () => editor.getValue(),
       /* The author's `expect:` line, if any — evaluated by Python after
-       * every run and reported back as `reached` (planning/CELL_HINTS.md). */
+       * every run and reported back as `reached`. */
       expect: spec.expect || null,
       /* How this cell's runs have gone so far, for its staged hints below;
        * see noteAttempt(). Restored from the saved record, never shown. */
@@ -2203,8 +2201,8 @@ function buildSiteEditors(manifest) {
   }
 }
 
-/* The full-stack module's own cell kind (planning/DEWSTACK_MERGE.md §3,
- * §7 phase 4). Shares most of buildSiteEditors()'s own shape — panes,
+/* The full-stack module's own cell kind. Shares most of
+ * buildSiteEditors()'s own shape — panes,
  * a head-level Clear, a per-pane Run button on the JS pane, HTML/CSS
  * live without pressing Run — but the result area is not an iframe:
  * HTML and CSS render straight into a plain `.dl-app-preview` div, CSS
@@ -3393,9 +3391,8 @@ function resetPageState() {
   return currentManifest.standalone ? resetPageStateMT() : resetPageStateWorker();
 }
 
-/* An app cell's own bridge to the page's shared `db`
- * (planning/DEWSTACK_MERGE.md §3, §7 phase 4) — `dewlabQueryRows` on
- * `globalThis`, closed over by name as `dlQuery` inside the wrapper
+/* An app cell's own bridge to the page's shared `db` — `dewlabQueryRows`
+ * on `globalThis`, closed over by name as `dlQuery` inside the wrapper
  * buildAppCells() injects, never a name a reader's own code could
  * collide with on the page itself. */
 async function queryRows(sql, params) {
@@ -4003,9 +4000,9 @@ let saveTimer = null;
  * and restoreSaved() the same way `cells` already is. */
 let notesEl = null;
 
-/* Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §4): one
- * entry per marked passage — {id, block_index, quote, prefix, suffix,
- * note, created_at}. `const`, like `cells` above, and mutated in place
+/* Highlights and margin notes: one entry per marked passage — {id,
+ * block_index, quote, prefix, suffix, note, created_at}. `const`, like
+ * `cells` above, and mutated in place
  * rather than reassigned, so a reference to it (globalThis.dewlab's own
  * included) stays valid across a restoreSaved() call. Nothing populates
  * it yet; the selection toolbar that will (rollout step 5) has the same
@@ -4323,7 +4320,7 @@ function announceRestore(summary) {
   }
   if (summary.droppedHighlights.length) {
     // Unlike a dropped cell, this can happen with no version change at all —
-    // a prose-only edit never bumps `tutorial-version` (VERSIONING_AND_PROGRESS.md),
+    // a prose-only edit never bumps `tutorial-version` (planning/VERSIONS.md),
     // so the wording here can't lean on "this version does not have" the way
     // the cell message above does.
     const many = summary.droppedHighlights.length !== 1;
@@ -5256,11 +5253,10 @@ globalThis.dewlab = {
   hoverDoc,
   signatureHelp,
   canStop: () => !currentManifest.standalone && interruptBuffer !== null,
-  // Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §3-6):
-  // the anchoring lookup, the in-memory/save-schema state, the DOM
-  // wrap/unwrap pair, and the highlight-creation helpers the selection
-  // toolbar's Highlight button now calls, exposed here for their own
-  // tests too.
+  // Highlights and margin notes: the anchoring lookup, the
+  // in-memory/save-schema state, the DOM wrap/unwrap pair, and the
+  // highlight-creation helpers the selection toolbar's Highlight
+  // button now calls, exposed here for their own tests too.
   proseBlocks,
   describeQuote,
   locateHighlightAnchor,

@@ -1,6 +1,6 @@
-"""planning/HIGHLIGHTS_AND_NOTES.md §7, rollout step 6: the edit/remove
-popover on an existing highlight -- clicking a `<mark>` (or reaching it with
-Tab, per wrapRange()'s first-fragment tab stop, then Enter) opens it.
+"""Rollout step 6: the edit/remove popover on an existing highlight --
+clicking a `<mark>` (or reaching it with Tab, per wrapRange()'s
+first-fragment tab stop, then Enter) opens it.
 
 Every fixture here is prose-only, so tutorial-runtime.js never boots
 Pyodide for these pages -- unlike most of tests/e2e/, this file runs

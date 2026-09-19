@@ -223,9 +223,9 @@ class _CellContext:
         self.checks: list[tuple[str | None, bool]] = []
         self.last_error: tuple[str, str] | None = None
         # Whether this run's SQL query came back with zero rows — a `sql
-        # exec` cell's own "did it raise" (planning/CELL_HINTS.md), set by
-        # `_run_sql_cell()`. None when the cell isn't SQL, or its last
-        # statement wasn't a query with a result to be empty.
+        # exec` cell's own "did it raise", set by `_run_sql_cell()`. None
+        # when the cell isn't SQL, or its last statement wasn't a query
+        # with a result to be empty.
         self.last_result_empty: bool | None = None
 
 
@@ -693,7 +693,7 @@ async def run_cell(
     what a traceback's file line calls this cell instead of its own id —
     a tutorial's author-given `name:`, or dewmini's "Cell 3" for a cell
     nobody has named, rather than either's own internal id showing up in
-    front of a reader (planning/CELL_IDENTITY.md). The whole lifecycle
+    front of a reader. The whole lifecycle
     lives here, in Python, rather than being split across the JS runtime, so
     output ordering and traceback formatting have exactly one implementation.
 
@@ -748,7 +748,7 @@ def _describe_error(exc: BaseException) -> tuple[str, str]:
 
 def holds(expression: str) -> bool:
     """Whether an author's `expect:` line is true of the page namespace right
-    now (planning/CELL_HINTS.md §3). Anything that goes wrong evaluating it —
+    now. Anything that goes wrong evaluating it —
     a name not yet defined, a comparison that raises — is "not yet", not an
     error to show: the expression is the author's and the reader has never
     seen it."""
@@ -1487,10 +1487,10 @@ def _empty_result_notes(conn, statement: str) -> list[str]:
 
 
 def _run_sql_cell(conn, script: str, max_rows: int = 20):
-    """dewmini's own SQL cell type (planning/CELL_IDENTITY.md §8) —
-    internal plumbing a generated cell call reaches, not something a
-    reader is expected to call by name themselves; `run_query()` above
-    is the public, one-statement version of the same idea.
+    """dewmini's own SQL cell type — internal plumbing a generated cell
+    call reaches, not something a reader is expected to call by name
+    themselves; `run_query()` above is the public, one-statement version
+    of the same idea.
 
     Splits `script` into statements on a bare `;` and runs each in
     turn against `conn` — a script, not a single query, is the normal
@@ -1540,9 +1540,8 @@ def _run_sql_cell(conn, script: str, max_rows: int = 20):
 
 
 def _query_rows(sql: str, params: list | None = None) -> list[dict]:
-    """The Python half of a full-stack cell's own bridge
-    (planning/DEWSTACK_MERGE.md §3, §7 phase 4) — internal plumbing an
-    app cell's generated JavaScript calls, not something a reader is
+    """The Python half of a full-stack cell's own bridge — internal
+    plumbing an app cell's generated JavaScript calls, not something a reader is
     expected to call by name themselves, the same relationship
     `_run_sql_cell()` has to a SQL cell.
 

@@ -345,7 +345,7 @@ groups:
 class TestTheCrossTutorialReference:
     """`write_reference_index()` deliberately breaks the rule TestTheReference
     protects — a reader is never shown a term not yet reached — because
-    dewmini has no position in a series to protect (planning/DEWMINI_WORKBENCH.md §4).
+    dewmini has no position in a series to protect.
 
     The scenarios: two tutorials whose terms the index carries at once; two
     tutorials sharing a term, one of which also has a term of two kinds and

@@ -17,17 +17,14 @@ the record of why it works the way it does.
 ### Architecture
 - **[`STATUS.md`](./STATUS.md)** — what's built, what's still open, and
   the trickier decisions behind the parts that are done.
-- **[`ROADMAP.md`](./ROADMAP.md)** — what comes next, in phases, with
-  the questions each phase leaves open and what will be assumed if
-  nobody answers them.
+- **[`ROADMAP.md`](./ROADMAP.md)** — what's still ahead and the
+  questions each piece leaves open. Shrinks as things ship.
 - **[`PRE_BUILD_DECISIONS.md`](./PRE_BUILD_DECISIONS.md)** — the early
   choices (libraries, visual style, hosting, versioning, editor, maths)
   and why, settled before there was any code to decide differently in.
 - **[`CONTENT_AND_FILE_ARCHITECTURE.md`](./CONTENT_AND_FILE_ARCHITECTURE.md)**
   — the tutorial Markdown format: executable code blocks, setup
   includes, dataset references.
-- **[`VERSIONING_AND_PROGRESS.md`](./VERSIONING_AND_PROGRESS.md)** — how
-  saved work is stored in the browser and restored across versions.
 - **[`VERSIONS.md`](./VERSIONS.md)** — how a tutorial gets more than one
   release: dated versions, canonical URLs, frozen archives.
 - **[`WINDOW_AUDIT.md`](./WINDOW_AUDIT.md)** — a pre-release check of
@@ -48,29 +45,6 @@ written before the thing it describes was built.
 - **[`DOT_DOCK.md`](./DOT_DOCK.md)** — exploring the masthead's orange dot
   as a replacement for the Panels disclosure, up to six panels fanning
   into three zones. Design note; nothing here is built.
-- **[`HIGHLIGHTS_AND_NOTES.md`](./HIGHLIGHTS_AND_NOTES.md)** — marking a
-  specific passage of prose, durably, with an optional note tied to that
-  passage. Replaces `ROADMAP.md` Phases 3 and 4; not yet built.
-- **[`CELL_HINTS.md`](./CELL_HINTS.md)** — hints that appear after a
-  cell has errored or run some number of times: what the page can
-  already observe, the fold-and-attribute authoring surface, the
-  questions Josh answered and how. Built (DECISIONS_LOG.md 7.135); its
-  dewstack half lives beside it in that repository.
-- **[`CELL_IDENTITY.md`](./CELL_IDENTITY.md)** — the settled design for
-  execution counters and cell identity (the pill, the run line, what
-  differs by cell type), not yet built. A working mockup of every cell
-  type sits at [`mockups/cell-identity.html`](./mockups/cell-identity.html),
-  and a plain-language explanation of the reasoning, written for a reader
-  new to the project, at
-  [`mockups/cell-identity-explained.html`](./mockups/cell-identity-explained.html).
-
-### Bringing in dewstack
-- **[`DEWSTACK_MERGE.md`](./DEWSTACK_MERGE.md)** — the plan for retiring
-  `deweydex/dewstack` as a separately-hosted site: which of its courses
-  move into `database-methods` and a new `web-authoring` module, the
-  staging folder they're ported from, the engine work each needs, and
-  the dewmini/dewminiweb workspace question. In progress; its own ledger
-  tracks phase completion.
 
 ### The edges
 - **[`EDGES_AUDIT.md`](./EDGES_AUDIT.md)** — the phone, screen-reader and

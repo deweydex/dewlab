@@ -324,8 +324,8 @@ class TestRunQuery:
 @needs_pandas
 class TestRunSqlCell:
     """_run_sql_cell() — the dewmini SQL cell type's own internal
-    plumbing (planning/CELL_IDENTITY.md §8),
-    as opposed to run_query()'s public, one-statement API above."""
+    plumbing, as opposed to run_query()'s public, one-statement API
+    above."""
 
     @pytest.fixture()
     def conn(self):
@@ -440,11 +440,10 @@ class TestRunSqlCell:
 
 class TestQueryRows:
     """_query_rows() — the Python half of a full-stack cell's bridge to the
-    page's shared `db` connection (planning/DEWSTACK_MERGE.md §3, §7 phase
-    4). Unlike _run_sql_cell(), this is called from an app cell's own
-    JavaScript outside the normal cell-run lifecycle, so every test here
-    runs with no `cell` fixture — a running cell is exactly what it must
-    not require."""
+    page's shared `db` connection. Unlike _run_sql_cell(), this is called
+    from an app cell's own JavaScript outside the normal cell-run
+    lifecycle, so every test here runs with no `cell` fixture — a running
+    cell is exactly what it must not require."""
 
     @pytest.fixture(autouse=True)
     def _no_stale_db(self):
@@ -823,7 +822,7 @@ class TestDescribeGlobalsWithPandas:
 
 class TestRunReport:
     """What `run_cell_report()` tells the page about one run — the plain
-    values `tutorial-runtime.js` counts attempts from (planning/CELL_HINTS.md)."""
+    values `tutorial-runtime.js` counts attempts from."""
 
     def test_a_clean_run_with_no_checks_and_no_expect(self, cell):
         report = tt._report(True, tt._current, None)

@@ -21,22 +21,21 @@ collapsed }`, plus — for a Python cell that has run at least once this
 session — `ranContent` (the content as it looked at that run, compared
 against the cell's current content for the run-line's "edited since"
 flag), `lastRunMs`, and `ranOrder` (this session's own running count,
-`runSequenceCounter`, behind the run-line's "Ran Nth" —
-planning/CELL_IDENTITY.md §3) — and, once it's actually drawn on the
-page, a few DOM-referencing properties (`.outputEl`, `.runBtn`,
-`.runLineEl`) — the rule is: change the data, then make the page match
-it, never the other way around. `ranContent`/`lastRunMs`/`ranOrder` are
-deliberately *not* among the fields `saveState()`/`readCells()` carry to
+`runSequenceCounter`, behind the run-line's "Ran Nth") — and, once it's
+actually drawn on the page, a few DOM-referencing properties
+(`.outputEl`, `.runBtn`, `.runLineEl`) — the rule is: change the data,
+then make the page match it, never the other way around.
+`ranContent`/`lastRunMs`/`ranOrder` are deliberately *not* among the
+fields `saveState()`/`readCells()` carry to
 and from `localStorage`: they describe a live Python session, and no
 live session survives a reload, so neither should any claim about one.
 
-`compose/dewmini.js` is where `planning/CELL_IDENTITY.md`'s design
-actually lives now — the numbered, coloured identity pill, the merged
-run-line (order, duration, staleness, and the live "Running…"/"Running
-next" states), the collapse triangle (every cell type, not only
-code-bearing ones — an amendment past that document's own §4), the
-header-end group (Edit for text, Duplicate, Delete), and a text cell's
-chrome going quiet — `opacity: 0; pointer-events: none` on
+`compose/dewmini.js` is where the cell-identity design actually lives
+now — the numbered, coloured identity pill, the merged run-line (order,
+duration, staleness, and the live "Running…"/"Running next" states),
+the collapse triangle (every cell type, not only code-bearing ones),
+the header-end group (Edit for text, Duplicate, Delete), and a text
+cell's chrome going quiet — `opacity: 0; pointer-events: none` on
 `.dm-cell-head`/`.dm-cell-collapse-col` — until a reader hovers or
 focuses the cell (DECISIONS_LOG.md 7.115). Tutorial and practice pages
 carry this same anatomy now too (7.113–7.115), by way of `build.py`'s
@@ -44,10 +43,10 @@ carry this same anatomy now too (7.113–7.115), by way of `build.py`'s
 see `docs/tutorial-runtime-explained.md` for that side.
 
 Three more `CELL_TYPES` values are dewmini-only: `web`, `sql`, and
-`javascript` (DECISIONS_LOG.md 7.116–7.120, `planning/CELL_IDENTITY.md`
-§8) — the shipped set, not the four separate types §8 originally
-designed. HTML and CSS shipped as separate types first and were merged
-into one, `web`, once both existed to show the merge was the right call
+`javascript` (DECISIONS_LOG.md 7.116–7.120) — the shipped set, not the
+four separate types originally designed. HTML and CSS shipped as
+separate types first and were merged into one, `web`, once both existed
+to show the merge was the right call
 (7.120) — this file's own history briefly had separate `HTML`/`CSS`
 members on `CELL_TYPES` and a matching pair of near-identical
 `createCellElement()` branches; neither exists anymore.
@@ -172,7 +171,7 @@ for `load_csv()`).
    `createRunMoreMenu` (the per-cell "⋯" Run-above/Run-below popover),
    the run-line functions (`formatOrdinal`/`renderCellRunLine`/
    `resetRunSequence`/`startRunLineTicker`/`clearRunLineTicker`/
-   `setRunLineQueued` — planning/CELL_IDENTITY.md §3), and
+   `setRunLineQueued`), and
    `createCellElement` (the big one — builds a cell's entire DOM tree:
    header, collapsible body, footer bar, output — and wires
    `completeNames`/`getDoc`/`getSignature` straight to the shared
@@ -192,9 +191,9 @@ for `load_csv()`).
    A tab need not be a notebook of cells at all. `openWorkspaceFile`
    opens a real file from the mounted filesystem into a tab of its own —
    a `.py` as one editor (`renderFileView`, `VIEWS.FILE`), a `.ipynb` as
-   cells, an `.html` as a site (`renderSiteView`, `VIEWS.SITE`:
-   `planning/DEWMINI_WORKBENCH.md` §10) — and `writeNotebookToWorkspace`
-   is the debounced write back the other way, called from `saveState()`
+   cells, an `.html` as a site (`renderSiteView`, `VIEWS.SITE`) — and
+   `writeNotebookToWorkspace` is the debounced write back the other way,
+   called from `saveState()`
    whenever the tab's `.path` is set. A site tab has no cells; its three
    files' live text sits directly on the notebook object
    (`siteHtml`/`siteCss`/`siteJs`) instead. Its HTML and CSS panes
@@ -245,10 +244,10 @@ for `load_csv()`).
 
 ## A name beside the pill, and icon-or-label buttons
 
-Two small additions on top of the identity pill `planning/CELL_IDENTITY.md`
-already designed, both closing a gap with a tutorial page's own cells
-(`planning/CELL_IDENTITY.md` §9, `docs/tutorial-runtime-explained.md`'s
-matching section for the other half):
+Two small additions on top of the identity pill already designed, both
+closing a gap with a tutorial page's own cells
+(`docs/tutorial-runtime-explained.md`'s matching section for the other
+half):
 
 **A cell can carry a name.** `nameEl`, a plain `<input>` styled to read as
 a label rather than a form field (`.dm-cell-name`, `dewmini-style.css`),

@@ -110,8 +110,8 @@ function describeGlobals() {
   }
 }
 
-/* A full-stack cell's own bridge (planning/DEWSTACK_MERGE.md §3, §7
- * phase 4) — no internal try/catch, unlike describeGlobals() above:
+/* A full-stack cell's own bridge — no internal try/catch, unlike
+ * describeGlobals() above:
  * a bad query is a real error the calling JavaScript wants to see and
  * show, not something to swallow into an empty result. */
 function queryRows(sql, params) {

@@ -1,6 +1,6 @@
 # The edges: a phone, a screen reader, and no network
 
-`planning/ROADMAP.md` Phase 6 called this the equity work, and the reason is
+This is the equity work, and the reason is
 in `PEDAGOGICAL_STYLE_GUIDE.md` §1: adult learners in Dublin further
 education, many balancing work and family, some reading on a bus on a phone
 with poor signal. A site that works beautifully on a desktop with a good
@@ -110,9 +110,9 @@ sidebars announce themselves usefully when they open, or whether running a
 cell says anything at all to someone who cannot see the output appear. That
 needs a person and a real screen reader.
 
-The pair proposed in `planning/ROADMAP.md` Phase 6 — VoiceOver with Safari,
-NVDA with Firefox — is a guess at what a Dublin classroom contains and is
-worth someone's disagreement before it hardens into the standard.
+The proposed pair — VoiceOver with Safari, NVDA with Firefox — is a guess
+at what a Dublin classroom contains and is worth someone's disagreement
+before it hardens into the standard.
 
 ---
 

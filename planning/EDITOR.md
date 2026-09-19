@@ -1,23 +1,14 @@
 # The visual authoring editor
 
-A browser-based tool that lets a course maintainer reorder a series,
-insert or create a tutorial, edit its Markdown and code, and publish a
-new release — straight to GitHub, as a pull request, with no local
-checkout or terminal needed.
+A browser-based tool (`editor.html`, `assets/editor.js`) that lets a
+course maintainer reorder a series, insert or create a tutorial, edit
+its Markdown and code, and publish a new release — straight to GitHub,
+as a pull request, with no local checkout or terminal.
 
----
+## Order files
 
-## 1. The problem this solves
-
-Ordering used to live in each tutorial's own `order:` frontmatter field,
-which meant inserting or moving a tutorial meant editing several files
-by hand.
-
-The editor separates ordering from content entirely: a series' reading
-order lives in its own file (`<series>.order.yaml`), and the editor
-gives one interface for both editing content and managing releases.
-
-## 2. Order files
+A series' reading order lives in its own file, separate from any
+tutorial's content:
 
 ```yaml
 # tutorials/mit-pdp-maths-prog-integration/programming-foundations.order.yaml
@@ -28,82 +19,59 @@ order:
   - making-decisions
 ```
 
-- **One place to reorder.** Moving or inserting a tutorial is a
-  one-line change to `<series>.order.yaml`, nothing else.
-- **Checked at build time.** The build confirms every slug in
-  `<series>.order.yaml` actually has a real tutorial behind it, and that no
-  tutorial is quietly missing from the file and left off the reading
-  path.
+Moving or inserting a tutorial is a one-line change here. The build
+confirms every slug in an order file has a real tutorial behind it, and
+that no tutorial is missing from it.
 
-## 3. What the editor actually is (`assets/editor.js`, on a page `build.py`'s `write_editor_page()` writes)
+## What the editor does
 
-A standalone page inside the built site (`editor.html`) that talks
-directly to the GitHub REST API — nothing dewlab hosts sits between the
-editor and GitHub.
+Talks directly to the GitHub REST API — nothing dewlab hosts sits
+between it and GitHub.
 
-### What it can do
-- **Reorder a series** — drag-and-drop, or accessible keyboard controls,
-  to reorder the cards in a series. Saving writes the updated
-  `<series>.order.yaml` as a commit on a branch.
-- **Insert or create a tutorial** — a card can be inserted anywhere in a
-  series, or at the end. Giving it a title generates its slug, sets up
-  its frontmatter, and creates a starting file with the standard
-  sections, cells, and reflection blocks already in place.
-- **Edit content and frontmatter** — Markdown prose, YAML frontmatter,
-  and executable Python cells, all edited in place with syntax
-  highlighting.
-- **Preview structural problems** — rather than keeping a second
-  renderer around that could quietly drift from what `build.py` does,
-  the editor previews structural validity directly: cell counts,
-  heading levels, syntax errors, an unclosed code fence, a duplicate
-  cell id.
+- **Reorder a series** — drag-and-drop or keyboard controls; saving
+  writes the updated order file as a commit on a branch.
+- **Insert or create a tutorial** — a title generates its slug, sets up
+  frontmatter, and creates a starting file with standard sections,
+  cells, and reflection blocks in place.
+- **Edit content and frontmatter** — Markdown, YAML, and Python cells,
+  with syntax highlighting.
+- **Preview structural problems** directly — cell counts, heading
+  levels, an unclosed fence, a duplicate cell id — rather than running a
+  second renderer that could drift from what `build.py` does.
 
-## 4. Authentication
+## Authentication
 
-The editor signs in to GitHub with a fine-grained personal access token,
-scoped to `contents: write` on `deweydex/dewlab` alone.
+A fine-grained personal access token, scoped to `contents: write` on
+`deweydex/dewlab` alone, held in the browser's own `localStorage` with
+a "Forget token" control always available. The editor is never linked
+from anything a student sees, and it commits to its own feature branch
+and opens a pull request — never straight to `main`.
 
-- **Where the token lives**: in the browser's own `localStorage`. A
-  "Forget token" control is always available, and the editor is never
-  linked from anything a student sees.
-- **How a change actually ships**: the editor commits to its own feature
-  branch and opens a pull request — it never pushes straight to `main`.
-  That's what keeps ordinary review and CI in the loop before anything
-  reaches a student.
-
-## 5. What's safe, what needs care, and what's blocked
-
-Every operation is grouped by what it could do to a student's saved
-progress.
+## What's safe, what needs care, what's blocked
 
 ### Safe — fully reversible
-- **Reorder a series** — only touches `<series>.order.yaml`, never a tutorial's
-  own content.
-- **Insert or create a tutorial** — adds new files from the standard
-  template.
-- **Edit prose or a cell's code** — as long as the cell keeps its id.
-- **Edit frontmatter** — `title`, `module`, `year`, `packages`.
-- **Change status** — `draft`, `beta`, `live`, `archived`.
-- **Release a new version** — freezes the current live content and
+- Reorder a series.
+- Insert or create a tutorial.
+- Edit prose or a cell's code, keeping its id.
+- Edit frontmatter (`title`, `module`, `year`, `packages`).
+- Change status (`draft`, `beta`, `live`, `archived`).
+- Release a new version — freezes the current live content and
   publishes the working buffer as a new, dated release. The editor
-  proposes doing this automatically whenever it notices a cell's
-  structure or id has changed.
+  proposes this automatically when it notices a cell's structure or id
+  has changed.
 
-### Needs care — has real structural impact
-- **Duplicate a tutorial** — clones it under a new slug and renames its
+### Needs care — real structural impact
+- Duplicate a tutorial — clones it under a new slug and renames its
   cell ids, so the copy's saved progress can never collide with the
   original's.
-- **Move a tutorial to a different series** — updates both series'
-  order files and the tutorial's own `series:` field.
+- Move a tutorial to a different series — updates both series' order
+  files and the tutorial's own `series:` field.
 
-### Restricted, with a clear warning first
-- **Rename a slug** — breaks any external link to the old address, and
-  strands saved progress that was keyed to `(module, slug)` under the
-  old name. The editor requires archiving the old slug rather than
-  quietly renaming it.
-- **Rename a cell id** — orphans a student's saved answer for that cell
-  in any release that already shipped. The editor compares the working
-  copy's cell ids against the original and warns explicitly before a
-  commit goes through.
-- **Delete a tutorial file outright** — not offered in the UI at all. A
-  tutorial is retired by setting its status to `archived` instead.
+### Restricted, with a warning first
+- Rename a slug — breaks any external link, and strands saved progress
+  keyed to the old `(module, slug)`. The editor requires archiving the
+  old slug rather than quietly renaming it.
+- Rename a cell id — orphans a student's saved answer in any release
+  that already shipped. The editor warns explicitly before committing.
+- Delete a tutorial file — not offered. A tutorial is retired by
+  setting its status to `archived`.

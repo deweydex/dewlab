@@ -1,5 +1,5 @@
-"""planning/HIGHLIGHTS_AND_NOTES.md §6, rollout step 4: wrapping/unwrapping a
-Range in `<mark class="dl-highlight">`, and rangeForOffsets() -- the bridge
+"""Rollout step 4: wrapping/unwrapping a Range in
+`<mark class="dl-highlight">`, and rangeForOffsets() -- the bridge
 that turns locateHighlightAnchor()'s plain number back into something
 wrapRange() can actually show. Together these are what makes a *restored*
 highlight visible on reload, with nothing selected by a reader yet."""

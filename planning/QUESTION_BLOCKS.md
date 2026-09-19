@@ -175,8 +175,7 @@ obvious next thing to want — *that is half a right angle* under the
 wrong choice — and it is one more header line or one more list to add
 when somebody has written enough questions to know what they want to say
 under them. dewlab already has a better-developed answer for "the reader
-is stuck": the `hint` fence, staged, which `planning/CELL_HINTS.md`
-settles at length. A question can sit above one.
+is stuck": the `hint` fence, staged. A question can sit above one.
 
 ## 5. The answer is in the page, and that is the trade
 
