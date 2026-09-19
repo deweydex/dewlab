@@ -382,7 +382,11 @@ other four, since they share one edge of the screen. There's no shared
 "panel manager" object making that happen; each panel's own `setOpen(true)`
 just calls `closeRightPanels(itsOwnName)` directly. The Reference panel on
 the left is not in that group: it has its own edge, so it can stay open
-alongside any of the five.
+alongside any of the five. They also share one saved width
+(`RIGHT_DOCK_WIDTH_KEY`, not each panel's own DOM id) — dragging any one's
+edge applies the new width to the other four right away, so a reader
+switching which tab is open never sees the dock, and the reading column
+beside it, resize.
 
 **Live-then-static code intelligence, worker-or-main-thread.** Hover docs
 and autocomplete work by trying two different techniques and taking

@@ -3955,7 +3955,15 @@ Ten new tests cover the eight surfaces this touches — question prompt, questio
 
 ---
 
-**7.183 — A `planning/archive/` folder for design notes about shipped, uncontested features, and `dev/check_doc_links.py` stops holding it to link currency.** Josh: the accumulating count of planning documents was making it harder, not easier, for anyone (human or agent) reading the repository to tell what still describes the current state.
+**7.183 — The five right-hand panels share one dock width, and stop repeating their own tab's label.** Josh: switching tabs shifted the reading column, and each panel's own heading just said again what its corner tab already showed.
+
+Both bugs traced to the same cause: each panel was built as an independent thing, not a pane of one dock. `loadPanelWidth`/`savePanelWidth` keyed a resize by the panel's own DOM id, so dragging one didn't touch the other four — opening an untouched one after a resized one snapped the dock back to its CSS default, and `watchPanelOverlap()`'s reading-column margin followed it. Fixed by giving all five one shared storage key (`RIGHT_DOCK_WIDTH_KEY`) and syncing a drag's new width to the other four live, not just on the next page load. The per-panel `<h2>` is now `dl-sr-only`: the id stays, for `aria-labelledby`, but nothing shows it twice on screen.
+
+*Cost to change: low. `makeEdgeResizable()` takes an optional shared key instead of always defaulting to `panel.id`; reverting either panel to its own key or the heading to visible is a one-line change in each spot.*
+
+---
+
+**7.184 — A `planning/archive/` folder for design notes about shipped, uncontested features, and `dev/check_doc_links.py` stops holding it to link currency.** Josh: the accumulating count of planning documents was making it harder, not easier, for anyone (human or agent) reading the repository to tell what still describes the current state.
 
 Eleven documents moved there: `PRACTICE.md`, `BUILD_PLAN.md`, `REPO_AND_EDITOR.md`, `MINI_IDE_AND_DEWMINI_NEXT.md`, `MINI_IDE_REDESIGN.md`, `STUDENT_NOTES.md`, `PROGRESS_INDICATORS.md`, `CELL_CONTROLS.md`, `CELL_TOOLTIPS.md`, `DOCS_AND_COMMENTS_PASS.md`, `DOCS_AND_COMMENTS_PLAN.md` — each already describing something built, settled, and not under active reconsideration. `planning/WHERE_WE_ARE.md` and `planning/WHAT_IS_LEFT_TO_WRITE.md` were deleted outright rather than archived: both already said, in their own text or by having zero inbound references, that they had nothing left to say. `planning/DECISIONS.md` (pre-code choices) is renamed to `planning/PRE_BUILD_DECISIONS.md`, so its name stops colliding with this file's at a skim.
 
