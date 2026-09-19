@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import _open_panel
+from conftest import _open_panel, _open_settings_tab
 import yaml
 
 DEWLAB = Path(__file__).resolve().parents[2]
@@ -264,9 +264,10 @@ class TestIdentityCornerControlsAreDirect:
     @pytest.mark.parametrize("path", ["index.html", f"{COURSE}.html"])
     def test_appearance_is_direct_on_home_and_module_pages(
             self, site, browser, site_url, path):
-        """Appearance (and the rest of what used to be Settings) lives in
-        its own corner dock now, never behind a disclosure — so this is
-        direct everywhere, not only on pages with no series."""
+        """Settings (Appearance's own home now, alongside Give Feedback and
+        Imports & Exports) lives in its own corner dock, never behind a
+        disclosure — so this is direct everywhere, not only on pages with
+        no series, and lands on the Appearance tab by default."""
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
@@ -274,9 +275,9 @@ class TestIdentityCornerControlsAreDirect:
         page = context.new_page()
         page.goto(f"{site_url}/{path}")
 
-        assert page.is_visible("#dl-appearance-toggle")
-        page.click("#dl-appearance-toggle")
-        assert page.is_visible("#dl-appearance")
+        assert page.is_visible("#dl-settings-toggle")
+        page.click("#dl-settings-toggle")
+        assert page.is_visible("#dl-settings-pane-appearance")
         context.close()
 
 class TestOpeningAndClosing:
@@ -326,19 +327,19 @@ class TestOpeningAndClosing:
 
     def test_opening_the_reference_does_not_close_appearance(self, site, browser, site_url):
         context, page = self.open_page(site, browser, site_url)
-        _open_panel(page, "#dl-appearance-toggle")
-        assert page.is_visible("#dl-appearance")
+        _open_settings_tab(page, "appearance")
+        assert page.is_visible("#dl-settings-pane-appearance")
         _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
-        assert page.is_visible("#dl-appearance")
+        assert page.is_visible("#dl-settings-pane-appearance")
         context.close()
 
     def test_opening_appearance_does_not_close_the_reference(self, site, browser, site_url):
         context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
-        _open_panel(page, "#dl-appearance-toggle")
-        assert page.is_visible("#dl-appearance")
+        _open_settings_tab(page, "appearance")
+        assert page.is_visible("#dl-settings-pane-appearance")
         assert page.is_visible("#dl-reference")
         context.close()
 
@@ -553,18 +554,18 @@ class TestPanelClearsTheCornerDocks:
         assert panel_top >= dock_bottom - 1
         context.close()
 
-    def test_the_appearance_panel_starts_below_the_top_right_strip(self, site, browser, site_url):
+    def test_the_settings_panel_starts_below_the_top_right_strip(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context(viewport={"width": 1400, "height": 900})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/one.html")
-        _open_panel(page, "#dl-appearance-toggle")
+        _open_settings_tab(page, "appearance")
         dock_bottom = page.eval_on_selector(
             ".dl-corner-dock-tr", "el => el.getBoundingClientRect().bottom")
         panel_top = page.eval_on_selector(
-            "#dl-appearance", "el => el.getBoundingClientRect().top")
+            "#dl-settings", "el => el.getBoundingClientRect().top")
         assert panel_top >= dock_bottom - 1
         context.close()
 
@@ -611,12 +612,12 @@ class TestPanelClearsTheCornerDocks:
         # Measured with the panel closed again: on a 1440px screen the left
         # dock and an open Appearance panel together leave about 32rem,
         # so the setting shows once the panel is out of the way.
-        _open_panel(page, "#dl-appearance-toggle")
+        _open_settings_tab(page, "appearance")
         choose_width(page, 34)
         page.keyboard.press("Escape")
         page.wait_for_timeout(150)
         narrow = column(page)
-        _open_panel(page, "#dl-appearance-toggle")
+        _open_settings_tab(page, "appearance")
         choose_width(page, 44)
         page.keyboard.press("Escape")
         page.wait_for_timeout(150)
@@ -628,7 +629,7 @@ class TestPanelClearsTheCornerDocks:
         context = browser.new_context(viewport={"width": 1024, "height": 800})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/one.html")
-        _open_panel(page, "#dl-appearance-toggle")
+        _open_settings_tab(page, "appearance")
         rem = page.evaluate("parseFloat(getComputedStyle(document.documentElement).fontSize)")
         assert column(page) >= 26 * rem - 1, "the column keeps its 26rem floor even with a panel open"
         context.close()

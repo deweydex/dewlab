@@ -40,6 +40,19 @@ def _open_panel(actor, selector: str) -> None:
     actor.click(selector)
 
 
+def _open_settings_tab(actor, tab: str) -> None:
+    """Open Settings to a specific tab. Give Feedback, Appearance and
+    Imports & Exports no longer each have their own corner toggle — they
+    share one panel, #dl-settings, switched by an internal tablist
+    (dl-settings-tab-<tab>: "appearance", "feedback" or
+    "importsexports"), the same pattern Reference's own tabs already use.
+    Opens the panel only if it isn't already open, since re-clicking its
+    own toggle would close it instead of switching tabs."""
+    if not actor.is_visible("#dl-settings"):
+        actor.click("#dl-settings-toggle")
+    actor.click(f"#dl-settings-tab-{tab}")
+
+
 @pytest.fixture(scope="session")
 def site_dir(tmp_path_factory) -> Path:
     if not (PYODIDE / "pyodide.mjs").exists():

@@ -74,11 +74,6 @@
         <svg class="dl-tab-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 5h12M4 10h12M4 15h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <span class="dl-toggle-label">Notes</span>
       </button>
-      <button type="button" class="dl-corner-tab" id="dl-report-toggle"
-              aria-pressed="false" aria-controls="dl-report" aria-label="Give feedback">
-        <svg class="dl-tab-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 17V3h9l-2.5 3.5L14 10H5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-        <span class="dl-toggle-label">Give Feedback</span>
-      </button>
       <button type="button" class="dl-corner-tab" id="dl-python-toggle"
               aria-pressed="false" aria-controls="dl-python" aria-label="Python">
         <!-- The Python logo, in one colour. The Python Software
@@ -88,15 +83,10 @@
         <svg class="dl-tab-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09zm13.09 3.95l.28.06.32.12.35.18.36.27.36.35.35.47.32.59.28.73.21.88.14 1.04.05 1.23-.06 1.23-.16 1.04-.24.86-.32.71-.36.57-.4.45-.42.33-.42.24-.4.16-.36.09-.32.05-.24.02-.16-.01h-8.22v.82h5.84l.01 2.76.02.36-.05.34-.11.31-.17.29-.25.25-.31.24-.38.2-.44.17-.51.15-.58.13-.64.09-.71.07-.77.04-.84.01-1.27-.04-1.07-.14-.9-.2-.73-.25-.59-.3-.45-.33-.34-.34-.25-.34-.16-.33-.1-.3-.04-.25-.02-.2.01-.13v-5.34l.05-.64.13-.54.21-.46.26-.38.3-.32.33-.24.35-.2.35-.14.33-.1.3-.06.26-.04.21-.02.13-.01h5.84l.69-.05.59-.14.5-.21.41-.28.33-.32.27-.35.2-.36.15-.36.1-.35.07-.32.04-.28.02-.21V6.07h2.09l.14.01zm-6.47 14.25l-.23.33-.08.41.08.41.23.33.33.23.41.08.41-.08.33-.23.23-.33.08-.41-.08-.41-.23-.33-.33-.23-.41-.08-.41.08z"/></svg>
         <span class="dl-toggle-label">Python</span>
       </button>
-      <button type="button" class="dl-corner-tab" id="dl-appearance-toggle"
-              aria-pressed="false" aria-controls="dl-appearance" aria-label="Appearance">
-        <svg class="dl-tab-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 3a7 7 0 0 1 0 14z" fill="currentColor"/></svg>
-        <span class="dl-toggle-label">Appearance</span>
-      </button>
-      <button type="button" class="dl-corner-tab" id="dl-importsexports-toggle"
-              aria-pressed="false" aria-controls="dl-importsexports" aria-label="Imports and exports">
-        <svg class="dl-tab-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M7 3v10M3.5 9.5L7 13l3.5-3.5M13 17V7M9.5 10.5L13 7l3.5 3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span class="dl-toggle-label">Imports &amp; Exports</span>
+      <button type="button" class="dl-corner-tab" id="dl-settings-toggle"
+              aria-pressed="false" aria-controls="dl-settings" aria-label="Settings">
+        <svg class="dl-tab-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 6h7M14 6h2M4 14h2M7 14h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="6" r="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="14" r="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        <span class="dl-toggle-label">Settings</span>
       </button>
     </div>
   </div>
@@ -120,10 +110,8 @@
       <button type="button" class="dl-mobile-menu-item" id="dl-mobile-item-reference"
               data-forward="dl-reference-toggle" hidden>Reference</button>
       <button type="button" class="dl-mobile-menu-item" data-forward="dl-yourwork-toggle">Notes</button>
-      <button type="button" class="dl-mobile-menu-item" data-forward="dl-report-toggle">Give Feedback</button>
       <button type="button" class="dl-mobile-menu-item" data-forward="dl-python-toggle">Python</button>
-      <button type="button" class="dl-mobile-menu-item" data-forward="dl-appearance-toggle">Appearance</button>
-      <button type="button" class="dl-mobile-menu-item" data-forward="dl-importsexports-toggle">Imports &amp; Exports</button>
+      <button type="button" class="dl-mobile-menu-item" data-forward="dl-settings-toggle">Settings</button>
     </div>
   </div>
 
@@ -216,18 +204,6 @@
   </section>
 </div>
 
-<div class="dl-right-panel" id="dl-report" role="dialog" aria-modal="false"
-     aria-labelledby="dl-report-title" hidden>
-  <div class="dl-panel-sticky-head">
-    <div class="dl-settings-head">
-      <h2 id="dl-report-title" class="dl-sr-only">Give Feedback</h2>
-      <button type="button" class="dl-settings-close" id="dl-report-close"
-              aria-label="Close">&times;</button>
-    </div>
-  </div>
-  {{REPORT_DOORS}}
-</div>
-
 <div class="dl-right-panel" id="dl-python" role="dialog" aria-modal="false"
      aria-labelledby="dl-python-title" hidden>
   <div class="dl-panel-sticky-head">
@@ -268,20 +244,68 @@
     </div>
     <p class="dl-panel-note">A hint can appear under a cell after you have run it several times without getting there. Nothing is counted against you, and nothing is sent anywhere.</p>
   </section>
+
+  <!-- What the interpreter actually holds right now, on a page with a lot
+       of cells behind you — describeGlobals() (tutorial_tools.py) sorts
+       every page global into data, callable or module; "callable" is
+       shown here as Functions, "module" as Packages. Rendered by
+       refreshPythonState() (tutorial-runtime.js), whenever this panel
+       opens and after every cell run. -->
+  <section class="dl-settings-section" id="dl-settings-variables">
+    <h3>Variables</h3>
+    <p class="dl-panel-note" id="dl-variables-status">Not started yet — run a cell that makes one.</p>
+    <div class="dl-variables-list" id="dl-variables-list"></div>
+  </section>
+
+  <section class="dl-settings-section" id="dl-settings-functions">
+    <h3>Functions</h3>
+    <p class="dl-panel-note" id="dl-functions-status">Not started yet — run a cell that declares one.</p>
+    <div class="dl-variables-list" id="dl-functions-list"></div>
+  </section>
+
+  <!-- Collapsed by default: what a page has imported is rarely what a
+       reader opened this panel to check, unlike Variables and Functions. -->
+  <details class="dl-panel-details" id="dl-settings-packages">
+    <summary>Packages</summary>
+    <p class="dl-panel-note" id="dl-packages-status">Not started yet.</p>
+    <div class="dl-variables-list" id="dl-packages-list"></div>
+  </details>
 </div>
 
-<div class="dl-right-panel dl-appearance" id="dl-appearance" role="dialog" aria-modal="false"
-     aria-labelledby="dl-appearance-title" hidden>
+<!-- One door for three things that each used to have their own: Give
+     Feedback, Appearance and Imports & Exports were rarely-opened,
+     separately-named panels that read, stacked with Notes and Python, as
+     five equal-weight destinations rather than a family with two frequent
+     doors and one occasional one. Reference already carries this pattern
+     — one toggle, a real tablist inside (dl-reference-tabs) — for
+     Reference/Math Basics/Python Basics; this reuses it rather than
+     inventing a second way to switch panes. Defaults to Appearance, the
+     one of the three actually reached for often. -->
+<div class="dl-right-panel" id="dl-settings" role="dialog" aria-modal="false"
+     aria-labelledby="dl-settings-title" hidden>
   <div class="dl-panel-sticky-head">
     <div class="dl-settings-head">
-      <h2 id="dl-appearance-title" class="dl-sr-only">Appearance</h2>
-      <button type="button" class="dl-settings-close" id="dl-appearance-close"
+      <h2 id="dl-settings-title">Settings</h2>
+      <button type="button" class="dl-settings-close" id="dl-settings-close"
               aria-label="Close">&times;</button>
+    </div>
+    <div class="dl-settings-tabs" role="tablist" aria-label="Settings sections">
+      <button type="button" class="dl-settings-tab" id="dl-settings-tab-appearance"
+              role="tab" aria-selected="true" aria-controls="dl-settings-pane-appearance">Appearance</button>
+      <button type="button" class="dl-settings-tab" id="dl-settings-tab-feedback"
+              role="tab" aria-selected="false" tabindex="-1"
+              aria-controls="dl-settings-pane-feedback">Give Feedback</button>
+      <button type="button" class="dl-settings-tab" id="dl-settings-tab-importsexports"
+              role="tab" aria-selected="false" tabindex="-1"
+              aria-controls="dl-settings-pane-importsexports">Imports &amp; Exports</button>
     </div>
     <input type="search" class="dl-settings-search-input" id="dl-appearance-search"
            placeholder="Search settings — e.g. font size, dark mode…"
            aria-label="Search settings" autocomplete="off">
   </div>
+
+  <div class="dl-settings-pane" id="dl-settings-pane-appearance" role="tabpanel"
+       aria-labelledby="dl-settings-tab-appearance">
   <p class="dl-panel-note dl-settings-empty" id="dl-appearance-empty" hidden>Nothing matches that.</p>
   <section class="dl-settings-section" id="dl-settings-texture">
     <h3>Texture</h3>
@@ -386,17 +410,15 @@
 
     <button type="button" class="dl-texture-reset" id="dl-texture-reset">reset to defaults</button>
   </section>
-</div>
-
-<div class="dl-right-panel" id="dl-importsexports" role="dialog" aria-modal="false"
-     aria-labelledby="dl-importsexports-title" hidden>
-  <div class="dl-panel-sticky-head">
-    <div class="dl-settings-head">
-      <h2 id="dl-importsexports-title" class="dl-sr-only">Imports &amp; Exports</h2>
-      <button type="button" class="dl-settings-close" id="dl-importsexports-close"
-              aria-label="Close">&times;</button>
-    </div>
   </div>
+
+  <div class="dl-settings-pane" id="dl-settings-pane-feedback" role="tabpanel"
+       aria-labelledby="dl-settings-tab-feedback" hidden>
+    {{REPORT_DOORS}}
+  </div>
+
+  <div class="dl-settings-pane" id="dl-settings-pane-importsexports" role="tabpanel"
+       aria-labelledby="dl-settings-tab-importsexports" hidden>
   <section class="dl-settings-section" id="dl-settings-custom-cells">
     <h3>Your own cells</h3>
 
@@ -446,6 +468,7 @@
       "Download to keep" above) for the whole page.
     </p>
   </section>
+  </div>
 </div>
 
 <!-- Phone-only: the where-you-are tree, moved out of the identity row

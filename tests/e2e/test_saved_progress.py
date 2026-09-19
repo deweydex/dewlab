@@ -381,7 +381,7 @@ class TestAPageWithNothingToSave:
         # The panel itself still belongs: a page with no cells is still a
         # reading surface, and the texture section is what makes it one.
         assert tab.query_selector("#dl-yourwork-toggle") is not None
-        assert tab.query_selector("#dl-appearance-toggle") is not None
+        assert tab.query_selector("#dl-settings-toggle") is not None
         assert tab.query_selector("#dl-settings-texture") is not None
         context.close()
 

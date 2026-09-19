@@ -140,16 +140,22 @@ class TestOnePlainTutorial:
             '<section class="dl-settings-section" id="dl-settings-download"></section>'
             in index
         )
-        # Settings lives behind two corner-dock toggles — Appearance and
-        # Imports & Exports, each opening the same #dl-appearance panel to a
-        # different pane — not the two separate texture/progress toggles
-        # this panel originally replaced, and not one settings toggle.
-        assert 'id="dl-appearance-toggle"' in page
-        assert 'id="dl-importsexports-toggle"' in page
-        assert 'aria-controls="dl-appearance"' in page
+        # Give Feedback, Appearance and Imports & Exports live behind one
+        # corner-dock toggle, Settings, opening #dl-settings — an internal
+        # tablist inside it switches between the three, the way Reference's
+        # own tabs already do for its three sections. Not the two separate
+        # texture/progress toggles this panel originally replaced, and not
+        # a toggle of its own for each of the three.
+        assert 'id="dl-settings-toggle"' in page
+        assert 'aria-controls="dl-settings"' in page
+        assert 'id="dl-settings-tab-appearance"' in page
+        assert 'id="dl-settings-tab-feedback"' in page
+        assert 'id="dl-settings-tab-importsexports"' in page
         assert "dl-texture-toggle" not in page
         assert "dl-progress-toggle" not in page
-        assert "dl-settings-toggle" not in page
+        assert 'id="dl-appearance-toggle"' not in page
+        assert 'id="dl-report-toggle"' not in page
+        assert 'id="dl-importsexports-toggle"' not in page
 
         # ---- Nothing sits above the page. What the top bar held — all
         # tutorials, previous and next, search, contents — is all in the
@@ -176,13 +182,15 @@ class TestOnePlainTutorial:
         assert 'id="dl-reference-toggle"' in corner
         assert "dl-seriesnav" not in page
         assert "dl-documentation" not in page
-        # The right dock is one stack of five tabs with icons.
+        # The right dock is one stack of three tabs with icons: Notes,
+        # Python and Settings — Give Feedback, Appearance and Imports &
+        # Exports no longer each get their own.
         start = page.index('<div class="dl-corner-dock dl-corner-dock-tr"')
         end = page.index("<!-- Phone-only", start)
         dock = page[start:end]
         ids = re.findall(r'id="(dl-[a-z]+-toggle)"', dock)
-        assert ids == ["dl-yourwork-toggle", "dl-report-toggle", "dl-python-toggle", "dl-appearance-toggle", "dl-importsexports-toggle"]
-        assert dock.count('class="dl-tab-icon"') == 5
+        assert ids == ["dl-yourwork-toggle", "dl-python-toggle", "dl-settings-toggle"]
+        assert dock.count('class="dl-tab-icon"') == 3
         assert "dl-corner-dock-bl" not in page
         assert "dl-corner-dock-br" not in page
         # The search line under the wordmark is the input itself.
@@ -516,7 +524,7 @@ class TestTheDownloadableCopy:
         )
         assert "download/sample.html" not in page
         # It keeps the rest of the panel.
-        assert 'id="dl-appearance-toggle"' in page
+        assert 'id="dl-settings-toggle"' in page
         assert 'id="dl-settings-work"' in page
         assert 'id="dl-settings-texture"' in page
         # It keeps the contents rung and nothing else of the tree: its

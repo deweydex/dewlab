@@ -1271,8 +1271,13 @@ p code, li code {
 }
 /* A right-hand panel's own <h2> is sr-only (shell.html) — its corner tab
    already shows the label — so with only the close button left in flow,
-   space-between above would pin it to the start instead of the end. */
+   space-between above would pin it to the start instead of the end.
+   Settings is the exception: its own tab names three different things
+   folded behind it, not one, so its <h2> is shown for real and wants its
+   title at the start and the close button at the end, the same as
+   Reference's own head. */
 .dl-right-panel .dl-settings-head { justify-content: flex-end; }
+#dl-settings .dl-settings-head { justify-content: space-between; }
 .dl-right-panel h2, .dl-settings h2 {
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -1353,6 +1358,12 @@ p code, li code {
   box-sizing: border-box;
 }
 .dl-corner-dock-tl .dl-corner-stack { width: var(--dl-side); gap: 0.4rem; }
+/* Compact at rest — nothing reserves more than this for the resting stack
+   when no panel is open, or the reading column would give up real width
+   it was never asked to give up (7.163's own reasoning for keeping this
+   narrow in the first place). initRightPanels() (tutorial-runtime.js)
+   widens it inline to match whichever panel is actually open, and clears
+   that back to this default the moment it closes. */
 .dl-corner-dock-tr .dl-corner-stack { width: 12.5rem; align-items: stretch; }
 
 /* What the masthead used to hold — wordmark and orientation — now living
@@ -1656,6 +1667,31 @@ p code, li code {
   color: #fff;
 }
 
+/* Settings' own tablist — the same shape as Reference's above, reused
+   rather than invented, for Give Feedback / Appearance / Imports &
+   Exports. Words, not icons: none of the three reads unambiguously from a
+   glyph alone, and "Give Feedback" and "Imports & Exports" are longer
+   than Reference's three labels, so this wraps to a second row instead of
+   squeezing them onto one. */
+.dl-settings-tabs { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.7rem; }
+.dl-settings-tab {
+  flex: 1 1 auto;
+  font-family: var(--dl-mono);
+  font-size: 0.7rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 3px;
+  background: none;
+  color: var(--dl-fg);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dl-settings-tab[aria-selected="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+
 /* The head every docked panel already had (title, close button) now
    carries its own search too where the panel has one, and stays pinned
    to the panel's own top edge as the sections below it scroll. The
@@ -1708,6 +1744,51 @@ p code, li code {
   border-radius: 3px;
   padding: 0.2rem 0.4rem;
 }
+
+/* What Python currently holds — Variables, Functions and Packages in the
+   Python panel, one row per describe_globals() entry (tutorial_tools.py).
+   A plain name/type/summary row, not Reference's definition list: there's
+   no prose to read here, only a name and what it currently is. */
+.dl-variables-list { margin: 0; }
+.dl-variable-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  font-size: 0.82rem;
+  border-top: 1px solid var(--dl-rule);
+}
+.dl-variable-row:first-child { border-top: none; }
+.dl-variable-name {
+  flex: none;
+  font-family: var(--dl-mono);
+  font-weight: 700;
+  color: var(--dl-heading);
+}
+.dl-variable-type {
+  flex: none;
+  color: var(--dl-muted);
+  font-size: 0.72rem;
+}
+.dl-variable-summary {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--dl-muted);
+}
+
+/* Packages, collapsed by default (dl-settings-packages, shell.html): what
+   a page has imported is rarely what a reader opened this panel to check,
+   unlike Variables and Functions above it. */
+.dl-panel-details { margin-top: 0.6rem; }
+.dl-panel-details summary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--dl-heading);
+}
+.dl-panel-details[open] summary { margin-bottom: 0.5rem; }
 
 .dl-note {
   border-left: 2px solid var(--dl-navy);
