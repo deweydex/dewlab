@@ -1269,6 +1269,10 @@ p code, li code {
   gap: 1rem;
   margin-bottom: 0.9rem;
 }
+/* A right-hand panel's own <h2> is sr-only (shell.html) — its corner tab
+   already shows the label — so with only the close button left in flow,
+   space-between above would pin it to the start instead of the end. */
+.dl-right-panel .dl-settings-head { justify-content: flex-end; }
 .dl-right-panel h2, .dl-settings h2 {
   font-size: 0.72rem;
   text-transform: uppercase;

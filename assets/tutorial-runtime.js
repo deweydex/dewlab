@@ -183,6 +183,12 @@ function closeReference() {
 // here so every tab's aria-pressed is put back too.
 const RIGHT_PANELS = ["yourwork", "report", "python", "appearance", "importsexports"];
 
+// One shared width for all five, not one per panel id: they read as tabs
+// into a single dock, so dragging any one wider has to make them all that
+// wide, or switching tabs jumps the reading column between whichever
+// width each tab happens to remember (initRightPanels() below).
+const RIGHT_DOCK_WIDTH_KEY = "dl-right-dock";
+
 function closeRightPanels(except = null) {
   for (const name of RIGHT_PANELS) {
     if (name === except) continue;
@@ -335,7 +341,7 @@ function savePanelWidth(id, width) {
   }
 }
 
-function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null) {
+function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null, widthKey = null) {
   if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
   const handle = document.createElement("div");
   handle.className = "dl-panel-resize-handle"
@@ -343,7 +349,10 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
   handle.setAttribute("aria-hidden", "true");
   panel.prepend(handle);
 
-  const saved = panel.id ? loadPanelWidth(panel.id) : undefined;
+  // widthKey lets several panels share one saved width (RIGHT_DOCK_WIDTH_KEY,
+  // below) rather than each remembering its own under its own DOM id.
+  const key = widthKey || panel.id;
+  const saved = key ? loadPanelWidth(key) : undefined;
   if (saved) panel.style.width = `${Math.max(min, Math.min(saved, max))}px`;
 
   let startX = 0;
@@ -379,7 +388,7 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
     handle.classList.remove("dl-panel-resize-active");
     document.removeEventListener("pointermove", onMove);
     document.removeEventListener("pointerup", onUp);
-    if (panel.id) savePanelWidth(panel.id, panel.getBoundingClientRect().width);
+    if (key) savePanelWidth(key, panel.getBoundingClientRect().width);
     if (onResize) onResize();
   }
   handle.addEventListener("pointerdown", (ev) => {
@@ -396,7 +405,10 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
 // by its own tab and closed by that tab again, its close button, Escape,
 // or a click outside — with the left dock's panel and tree never counting
 // as outside, so the two sides can be used together. Appearance alone
-// carries a search box, filtering its own rows.
+// carries a search box, filtering its own rows. All five share one dock
+// width (RIGHT_DOCK_WIDTH_KEY): dragging one panel's edge applies the new
+// width to the other four immediately, so switching tabs never resizes
+// the dock underneath the reading column.
 function initRightPanels() {
   const panels = RIGHT_PANELS.map((name) => ({
     name,
@@ -420,7 +432,12 @@ function initRightPanels() {
     for (const section of p.panel.querySelectorAll(".dl-settings-section")) {
       if (!section.textContent.trim()) section.hidden = true;
     }
-    makeEdgeResizable(p.panel, "right", 256, 640);
+    makeEdgeResizable(p.panel, "right", 256, 640, () => {
+      const width = p.panel.style.width;
+      for (const other of panels) {
+        if (other.panel !== p.panel) other.panel.style.width = width;
+      }
+    }, RIGHT_DOCK_WIDTH_KEY);
 
     function setOpen(open) {
       p.panel.toggleAttribute("hidden", !open);
