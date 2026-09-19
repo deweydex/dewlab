@@ -181,9 +181,13 @@ function closeReference() {
 // tab clicked while its own panel is showing closes that panel. Closing
 // from outside (the mobile launcher opening a sheet, say) goes through
 // here so every tab's aria-pressed is put back too.
-const RIGHT_PANELS = ["yourwork", "report", "python", "appearance", "importsexports"];
+// "settings" is Give Feedback, Appearance and Imports & Exports folded
+// into one panel behind one toggle, switched by an internal tablist
+// (initSettingsTabs() below) rather than each getting its own corner tab
+// — the same pattern Reference already uses for its own three sections.
+const RIGHT_PANELS = ["yourwork", "python", "settings"];
 
-// One shared width for all five, not one per panel id: they read as tabs
+// One shared width for all three, not one per panel id: they read as tabs
 // into a single dock, so dragging any one wider has to make them all that
 // wide, or switching tabs jumps the reading column between whichever
 // width each tab happens to remember (initRightPanels() below).
@@ -404,11 +408,12 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
 // One right-hand panel per corner tab (RIGHT_PANELS above), each opened
 // by its own tab and closed by that tab again, its close button, Escape,
 // or a click outside — with the left dock's panel and tree never counting
-// as outside, so the two sides can be used together. Appearance alone
-// carries a search box, filtering its own rows. All five share one dock
-// width (RIGHT_DOCK_WIDTH_KEY): dragging one panel's edge applies the new
-// width to the other four immediately, so switching tabs never resizes
-// the dock underneath the reading column.
+// as outside, so the two sides can be used together. Appearance (now a
+// tab inside Settings, not a panel of its own) alone carries a search box,
+// filtering its own rows. All three share one dock width
+// (RIGHT_DOCK_WIDTH_KEY): dragging one panel's edge applies the new width
+// to the other two immediately, so switching tabs never resizes the dock
+// underneath the reading column.
 function initRightPanels() {
   const panels = RIGHT_PANELS.map((name) => ({
     name,
@@ -420,7 +425,7 @@ function initRightPanels() {
 
   const searchInput = document.getElementById("dl-appearance-search");
   const emptyMessage = document.getElementById("dl-appearance-empty");
-  const appearance = document.getElementById("dl-appearance");
+  const appearance = document.getElementById("dl-settings-pane-appearance");
   function runFilter() {
     if (!searchInput || !appearance) return;
     const anyRowVisible = filterTextureRows(appearance, searchInput.value);
@@ -443,7 +448,7 @@ function initRightPanels() {
       p.panel.toggleAttribute("hidden", !open);
       p.toggle.setAttribute("aria-pressed", String(open));
       if (!open) {
-        if (p.name === "appearance" && searchInput && searchInput.value) {
+        if (p.name === "settings" && searchInput && searchInput.value) {
           searchInput.value = "";
           runFilter();
         }
@@ -454,6 +459,7 @@ function initRightPanels() {
       // its panel was hidden, and a hidden element's scrollHeight reads as
       // 0 — re-measure now that it's actually laid out.
       if (p.name === "yourwork" && notesEl) autoGrowTextarea(notesEl);
+      if (p.name === "python") refreshPythonState();
     }
 
     p.toggle.addEventListener("click", () => setOpen(p.panel.hasAttribute("hidden")));
@@ -469,6 +475,59 @@ function initRightPanels() {
       if (p.panel.contains(ev.target) || p.toggle.contains(ev.target)) return;
       if (clickIsInsidePanels(ev.target, LEFT_DOCK_IDS)) return;
       setOpen(false);
+    });
+  }
+}
+
+/* Settings' own tablist — Appearance, Give Feedback, Imports & Exports,
+ * one panel behind one corner toggle rather than three. The plain half of
+ * initReference()'s own tab-switching (click or arrow keys move the
+ * selection): no shared search across tabs the way Reference's is, since
+ * only Appearance carries one, so this just hides that search box outside
+ * its own tab rather than threading it through every tab like Reference's
+ * per-tab filter callbacks. */
+function initSettingsTabs() {
+  const searchInput = document.getElementById("dl-appearance-search");
+  const tabs = [
+    {
+      name: "appearance",
+      tab: document.getElementById("dl-settings-tab-appearance"),
+      pane: document.getElementById("dl-settings-pane-appearance"),
+    },
+    {
+      name: "feedback",
+      tab: document.getElementById("dl-settings-tab-feedback"),
+      pane: document.getElementById("dl-settings-pane-feedback"),
+    },
+    {
+      name: "importsexports",
+      tab: document.getElementById("dl-settings-tab-importsexports"),
+      pane: document.getElementById("dl-settings-pane-importsexports"),
+    },
+  ];
+  if (!tabs.every((t) => t.tab && t.pane)) return;
+
+  function selectTab(name) {
+    for (const t of tabs) {
+      const on = t.name === name;
+      t.tab.setAttribute("aria-selected", String(on));
+      t.tab.tabIndex = on ? 0 : -1;
+      t.pane.hidden = !on;
+    }
+    if (searchInput) searchInput.hidden = name !== "appearance";
+  }
+
+  for (const [i, t] of tabs.entries()) {
+    t.tab.addEventListener("click", () => selectTab(t.name));
+    // Left/right arrow keys move focus and selection together, the usual
+    // ARIA tabs keyboard pattern — matches initReference()'s own tabs.
+    t.tab.addEventListener("keydown", (ev) => {
+      if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") return;
+      ev.preventDefault();
+      const step = ev.key === "ArrowRight" ? 1 : -1;
+      const next = tabs[(i + step + tabs.length) % tabs.length];
+      next.tab.focus();
+      selectTab(next.name);
     });
   }
 }
@@ -3144,6 +3203,21 @@ function pageNamesMT() {
   return [...toolsMT._page_globals.keys()].filter((name) => !name.startsWith("_"));
 }
 
+/* The main-thread twin of pyodide-worker.js's own describeGlobals() —
+ * same call, same proxy handling, run directly rather than crossing a
+ * worker boundary that doesn't exist in this mode. */
+function describeGlobalsMT() {
+  if (!toolsMT) return [];
+  try {
+    const proxy = toolsMT.describe_globals();
+    const described = proxy.toJs({ dict_converter: Object.fromEntries });
+    proxy.destroy();
+    return described;
+  } catch {
+    return [];
+  }
+}
+
 function wrapSqlCode(sql) {
   return `import tutorial_tools as _dl_tt\n_ = _dl_tt._run_sql_cell(db, ${JSON.stringify(sql)})`;
 }
@@ -3308,6 +3382,21 @@ async function queryRows(sql, params) {
   return currentManifest.standalone
     ? queryRowsMT(sql, params)
     : workerRequest("query-rows", { sql, params: params || [] });
+}
+
+/* What's currently in the shared namespace — the Python panel's own
+ * Variables/Functions/Packages (refreshPythonState() below), each a
+ * {name, type, summary, kind} entry from describe_globals()
+ * (tutorial_tools.py). Not gated on ensureBooted(): called before Python
+ * has ever run, when there is nothing to describe yet, and booting it
+ * just to say so would be the wrong side effect for opening a panel. */
+async function describeGlobalsForPanel() {
+  if (!pyodideReady) return [];
+  return currentManifest.standalone
+    ? describeGlobalsMT()
+    : worker
+      ? await workerRequest("describe-globals", {})
+      : [];
 }
 
 function ensureBooted(manifest) {
@@ -3609,7 +3698,10 @@ async function runCell(cell) {
     running = null;
     clearCellRunning(cell, previousLabel);
     clearRunLineTicker(cell);
-    if (completed) announceCellRun(cell);
+    if (completed) {
+      announceCellRun(cell);
+      refreshPythonState();
+    }
   }
 }
 
@@ -3721,6 +3813,7 @@ async function restartPython() {
   setRunnable(false);
   setStatus("Restarting Python…");
   updateExecutionStatus();
+  refreshPythonState();
 
   let ok = true;
   try {
@@ -3730,6 +3823,7 @@ async function restartPython() {
     ok = false;
   }
   updateExecutionStatus();
+  refreshPythonState();
   return ok;
 }
 
@@ -3739,6 +3833,72 @@ function updateExecutionStatus() {
   el.textContent = pyodideReady
     ? "Python is running."
     : "Not started yet — run a cell to start Python.";
+}
+
+/* One row of a describe_globals() entry (tutorial_tools.py) — name, type,
+ * and a value summary already length-limited on the Python side, so
+ * nothing here needs its own truncation beyond the CSS ellipsis. */
+function renderVariableRow(entry) {
+  const row = document.createElement("div");
+  row.className = "dl-variable-row";
+
+  const name = document.createElement("span");
+  name.className = "dl-variable-name";
+  name.textContent = entry.name;
+
+  const type = document.createElement("span");
+  type.className = "dl-variable-type";
+  type.textContent = entry.type;
+
+  const summary = document.createElement("span");
+  summary.className = "dl-variable-summary";
+  summary.textContent = entry.summary;
+
+  row.append(name, type, summary);
+  return row;
+}
+
+/* Variables, Functions and Packages in the Python panel — describe_globals()
+ * split by its own `kind`: data (Variables), callable (Functions, theirs
+ * or a class they defined) and module (Packages, collapsed by default in
+ * the markup since it's rarely what a reader opened this panel to check).
+ * Called when the panel opens and after every cell run (runCell()), not
+ * on a timer — a closed panel skips the round trip entirely. */
+async function refreshPythonState() {
+  const panel = document.getElementById("dl-python");
+  if (!panel || panel.hasAttribute("hidden")) return;
+
+  const lists = {
+    data: document.getElementById("dl-variables-list"),
+    callable: document.getElementById("dl-functions-list"),
+    module: document.getElementById("dl-packages-list"),
+  };
+  const statuses = {
+    data: [
+      document.getElementById("dl-variables-status"),
+      "Nothing defined yet — run a cell that makes one.",
+    ],
+    callable: [
+      document.getElementById("dl-functions-status"),
+      "Nothing declared yet — run a cell that declares one.",
+    ],
+    module: [
+      document.getElementById("dl-packages-status"),
+      "Nothing imported yet.",
+    ],
+  };
+  if (!lists.data || !lists.callable || !lists.module) return;
+
+  const notStarted = "Not started yet — run a cell to start Python.";
+  const described = await describeGlobalsForPanel();
+  for (const kind of ["data", "callable", "module"]) {
+    const entries = described.filter((entry) => entry.kind === kind);
+    lists[kind].replaceChildren(...entries.map(renderVariableRow));
+    const [statusEl, emptyMessage] = statuses[kind];
+    if (!statusEl) continue;
+    statusEl.hidden = entries.length > 0;
+    statusEl.textContent = pyodideReady ? emptyMessage : notStarted;
+  }
 }
 
 function initExecutionSection() {
@@ -5011,6 +5171,7 @@ initExportSection();
 initVersionsSection();
 initVersionMarker();
 initRightPanels();
+initSettingsTabs();
 initReference(currentManifest);
 initReferenceLookup(currentManifest);
 initHighlightPopover();
