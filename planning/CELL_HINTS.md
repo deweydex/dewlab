@@ -107,14 +107,14 @@ by Settings. Its shape is a contract with those readers and with the
 export/import tests, but it is additive: a new per-cell field is ignored
 by every existing reader.
 
-**The notes nudge** (`updateNotesNudge()`, planning/STUDENT_NOTES.md §4):
+**The notes nudge** (`updateNotesNudge()`, planning/archive/STUDENT_NOTES.md §4):
 a small dot on the export button once notes have grown past a threshold
 since the last export. The precedent for "the page changes because of
 what the reader has done, quietly, without a count on screen," and for
 keeping the state that drives it in its own small key rather than
 widening the save record.
 
-**Custom cells** (planning/PRACTICE.md §5): a reader can add a runnable
+**Custom cells** (planning/archive/PRACTICE.md §5): a reader can add a runnable
 cell at runtime on any page that has cells, so a hint that contains a
 runnable cell is not out of reach — a later stage, not the first.
 

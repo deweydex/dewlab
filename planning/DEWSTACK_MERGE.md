@@ -184,7 +184,7 @@ identity model, no instancing refactor.
 
 ## 4. dewmini and dewmini web
 
-`planning/MINI_IDE_AND_DEWMINI_NEXT.md` already answered a version of
+`planning/archive/MINI_IDE_AND_DEWMINI_NEXT.md` already answered a version of
 this question for a narrower case: Mini IDE and dewmini were two Python
 notebooks solving the same problem for two audiences, and the eventual
 answer was not "keep both" but "one absorbs the other," because keeping

@@ -130,4 +130,4 @@ asserts on prose. See `DECISIONS_LOG.md` 7.50.
   `08a` (Bayes) and `08b` (distributions) are still waiting, and their answers
   are in PDFs too.
 - **Student-authored problems**, which is a runtime feature rather than a
-  content one. See `planning/PRACTICE.md`.
+  content one. See `planning/archive/PRACTICE.md`.

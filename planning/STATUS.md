@@ -104,7 +104,7 @@ regardless of backend. `.ipynb`/`.py` import and export round it out,
 and dewmini has its own downloadable, offline-capable copy
 (`write_dewmini_bundle()` in `build.py`). How it came to be dewlab's one
 and only workspace is history, not status: `DECISIONS_LOG.md` 7.87–7.98
-and the addenda in `planning/MINI_IDE_AND_DEWMINI_NEXT.md` hold that
+and the addenda in `planning/archive/MINI_IDE_AND_DEWMINI_NEXT.md` hold that
 story.
 
 Since `DECISIONS_LOG.md` 7.99 it is a workbench rather than a single

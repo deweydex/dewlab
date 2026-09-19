@@ -21,7 +21,7 @@ it is a different question from §4's, not a contradiction of it.
 
 ## 1. Where things actually stand
 
-`planning/MINI_IDE_REDESIGN.md` shipped all eight of its phases: Mini IDE
+`planning/archive/MINI_IDE_REDESIGN.md` shipped all eight of its phases: Mini IDE
 runs Pyodide in a Worker (real Stop button, real autocomplete), has a
 file manager, SQLite via `run_query()`, `.ipynb`/`.py` import and export,
 and a folder-based offline distribution. dewmini stayed deliberately
@@ -91,7 +91,7 @@ catch up to Mini IDE."
 
 **The Stop button gap, if it turns out to matter.** dewmini runs Python
 on the main thread on purpose — the Worker migration Mini IDE went
-through is real architectural cost (`planning/CELL_CONTROLS.md` §2). If
+through is real architectural cost (`planning/archive/CELL_CONTROLS.md` §2). If
 reports of students getting stuck on a runaway `while True` pile up, that
 migration is the answer. Until then, correctly deferred, not neglected.
 

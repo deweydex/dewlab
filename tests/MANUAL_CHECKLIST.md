@@ -6,7 +6,7 @@ anything about how this behaves on a student's actual laptop, on a school
 network, or under a screen reader.
 
 Every section below is live — the build phases this was originally written
-against are all shipped (`planning/BUILD_PLAN.md`). Run what applies to what
+against are all shipped (`planning/archive/BUILD_PLAN.md`). Run what applies to what
 you changed, and run "Before a release" in full before publishing one.
 
 ## Setup

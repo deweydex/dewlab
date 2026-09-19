@@ -2,7 +2,7 @@
 
 ## Context
 
-After the Mini IDE redesign (`planning/MINI_IDE_REDESIGN.md`), the project
+After the Mini IDE redesign (`planning/archive/MINI_IDE_REDESIGN.md`), the project
 owner asked for two things across the whole repository, not just this
 redesign's own files: plain, jargon-light language in every document, and a
 comment/documentation pass — every substantial code file gets one

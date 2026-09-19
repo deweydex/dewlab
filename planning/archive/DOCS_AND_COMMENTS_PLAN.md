@@ -2,7 +2,7 @@
 
 ## Context
 
-`planning/DOCS_AND_COMMENTS_PASS.md` records the first pass at this — one
+`planning/archive/DOCS_AND_COMMENTS_PASS.md` records the first pass at this — one
 `docs/<name>-explained.md` per substantial module, code comments, and a
 language pass over every planning document — closed out **Complete**. Its
 standing rule (a change isn't finished until the document describing it
