@@ -1800,7 +1800,7 @@ function buildCells(manifest) {
       element: host,
       getCode: () => editor.getValue(),
       /* The author's `expect:` line, if any — evaluated by Python after
-       * every run and reported back as `reached` (planning/CELL_HINTS.md). */
+       * every run and reported back as `reached`. */
       expect: spec.expect || null,
       /* How this cell's runs have gone so far, for its staged hints below;
        * see noteAttempt(). Restored from the saved record, never shown. */
@@ -2123,8 +2123,8 @@ function buildSiteEditors(manifest) {
   }
 }
 
-/* The full-stack module's own cell kind (planning/DEWSTACK_MERGE.md §3,
- * §7 phase 4). Shares most of buildSiteEditors()'s own shape — panes,
+/* The full-stack module's own cell kind. Shares most of
+ * buildSiteEditors()'s own shape — panes,
  * a head-level Clear, a per-pane Run button on the JS pane, HTML/CSS
  * live without pressing Run — but the result area is not an iframe:
  * HTML and CSS render straight into a plain `.dl-app-preview` div, CSS
@@ -3298,9 +3298,8 @@ function resetPageState() {
   return currentManifest.standalone ? resetPageStateMT() : resetPageStateWorker();
 }
 
-/* An app cell's own bridge to the page's shared `db`
- * (planning/DEWSTACK_MERGE.md §3, §7 phase 4) — `dewlabQueryRows` on
- * `globalThis`, closed over by name as `dlQuery` inside the wrapper
+/* An app cell's own bridge to the page's shared `db` — `dewlabQueryRows`
+ * on `globalThis`, closed over by name as `dlQuery` inside the wrapper
  * buildAppCells() injects, never a name a reader's own code could
  * collide with on the page itself. */
 async function queryRows(sql, params) {

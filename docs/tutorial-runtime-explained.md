@@ -443,7 +443,7 @@ two near-identical implementations of the same lookup functions
   and none once `expect:` holds. The counters and which folds have shown
   travel in the saved record (`attempts`, `hints_shown`), and two Settings
   rows (`initStagedHintsToggles()`) decide whether they show at all and
-  whether a restart hides them. planning/CELL_HINTS.md is the design.
+  whether a restart hides them.
 - **"What's actually exposed to the browser console / end-to-end tests?"**
   — the `globalThis.dewlab = {...}` object at the very end of the file.
 - **"Why doesn't a shared custom cell run itself when I load it?"** —

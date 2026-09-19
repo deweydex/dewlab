@@ -50,12 +50,8 @@ written before the thing it describes was built.
   into three zones. Design note; nothing here is built.
 - **[`HIGHLIGHTS_AND_NOTES.md`](./HIGHLIGHTS_AND_NOTES.md)** — marking a
   specific passage of prose, durably, with an optional note tied to that
-  passage. Replaces `ROADMAP.md` Phases 3 and 4; not yet built.
-- **[`CELL_HINTS.md`](./CELL_HINTS.md)** — hints that appear after a
-  cell has errored or run some number of times: what the page can
-  already observe, the fold-and-attribute authoring surface, the
-  questions Josh answered and how. Built (DECISIONS_LOG.md 7.135); its
-  dewstack half lives beside it in that repository.
+  passage. Replaces `ROADMAP.md` Phases 3 and 4; built (DECISIONS_LOG.md
+  7.155–7.160).
 - **[`CELL_IDENTITY.md`](./CELL_IDENTITY.md)** — the settled design for
   execution counters and cell identity (the pill, the run line, what
   differs by cell type), not yet built. A working mockup of every cell
@@ -63,14 +59,6 @@ written before the thing it describes was built.
   and a plain-language explanation of the reasoning, written for a reader
   new to the project, at
   [`mockups/cell-identity-explained.html`](./mockups/cell-identity-explained.html).
-
-### Bringing in dewstack
-- **[`DEWSTACK_MERGE.md`](./DEWSTACK_MERGE.md)** — the plan for retiring
-  `deweydex/dewstack` as a separately-hosted site: which of its courses
-  move into `database-methods` and a new `web-authoring` module, the
-  staging folder they're ported from, the engine work each needs, and
-  the dewmini/dewminiweb workspace question. In progress; its own ledger
-  tracks phase completion.
 
 ### The edges
 - **[`EDGES_AUDIT.md`](./EDGES_AUDIT.md)** — the phone, screen-reader and

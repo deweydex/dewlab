@@ -1,6 +1,6 @@
 # Curriculum Scope & Architecture Resolutions
 
-Formal resolution record for the seven core curriculum decisions formulated in `DECISIONS_NEEDED.md`.
+Formal resolution record for the seven core curriculum decisions.
 
 ---
 

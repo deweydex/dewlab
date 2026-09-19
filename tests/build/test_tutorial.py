@@ -784,7 +784,7 @@ class TestCellReportPanel:
 
 
 class TestStagedHints:
-    """planning/CELL_HINTS.md. The fold is written back into the markdown
+    """Staged hints. The fold is written back into the markdown
     rather than the finished HTML, so its body converts like any other prose.
     One page of staged hints on one stub cell — the default trigger, a
     titled markdown body, every trigger grammar, a second hint, and one

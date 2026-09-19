@@ -14,7 +14,7 @@ talking past each other.
 | [`curriculum/outcomes.yaml`](./curriculum/outcomes.yaml) | Every learning outcome from the accredited module descriptors. |
 | [`curriculum/out-of-scope.yaml`](./curriculum/out-of-scope.yaml) | What's been deliberately left out, and why — plus a record of anything that came back in. |
 | [`curriculum/proposed.yaml`](./curriculum/proposed.yaml) | Tutorials that don't exist yet, and which outcomes they'd cover. |
-| [`curriculum/DECISIONS_NEEDED.md`](./curriculum/DECISIONS_NEEDED.md) | Open questions about sequencing and scope, waiting on a decision. |
+| [`curriculum/ANSWERS.md`](./curriculum/ANSWERS.md) | The settled sequencing and scope decisions, and why. |
 | [`outlines/`](./outlines/) | An outline for each proposed module. |
 
 ---

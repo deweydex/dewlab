@@ -137,11 +137,10 @@ GAP_RE = re.compile(r"\{([^{}]*)\}")
 # Python-Markdown's own sane_lists extension accepts.
 OPTION_LINE_RE = re.compile(r"^[ \t]*[-*+]\s+(.*\S)\s*$")
 # `html app`/`css app`/`js app` — a full-stack module's own fence kind
-# (planning/DEWSTACK_MERGE.md §3, §7 phase 4; DECISIONS_LOG.md 7.180).
-# Same three languages as a site pane, on purpose, but a separate pair of
-# constants: site fences and app fences are read by two different
-# branches in extract_blocks(), and nothing here should make changing
-# one silently change the other.
+# (DECISIONS_LOG.md 7.180). Same three languages as a site pane, on
+# purpose, but a separate pair of constants: site fences and app fences
+# are read by two different branches in extract_blocks(), and nothing
+# here should make changing one silently change the other.
 APP_LANGS = {"html", "css", "js"}
 APP_HEADER_RE = re.compile(r"^\s*(id|app)\s*:\s*(.*)$")
 # A page's own way to point at infrastructure it can never author directly —
@@ -308,9 +307,8 @@ class AppPane:
 
 @dataclass
 class AppCell:
-    """A full-stack module's own cell kind (planning/DEWSTACK_MERGE.md §3,
-    §7 phase 4): one or more consecutive `AppPane`s with the same `app:`
-    name. Shares `SitePane`/`SiteEditor`'s shape — `panes` is keyed by
+    """A full-stack module's own cell kind: one or more consecutive
+    `AppPane`s with the same `app:` name. Shares `SitePane`/`SiteEditor`'s shape — `panes` is keyed by
     language for the same reason — but is a separate cell kind rather
     than a third site-pane language, because its JavaScript is meant to
     reach the page's own shared `db`, which a site editor's sandboxed
@@ -394,7 +392,7 @@ class Tutorial:
     # only the web-authoring module has any yet.
     site_editors: list[SiteEditor] = field(default_factory=list)
     # A page's full-stack cells, in source order — usually empty; only the
-    # full-stack module has any yet (planning/DEWSTACK_MERGE.md §7 phase 4).
+    # full-stack module has any yet.
     app_cells: list[AppCell] = field(default_factory=list)
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
@@ -972,14 +970,14 @@ def extract_blocks(
            list[AppCell]]:
     """Pull every fence out, leaving a comment placeholder markdown will keep.
 
-    An `exec` fence becomes a cell; a `hint` fence becomes a staged hint
-    (planning/CELL_HINTS.md); an `html site`/`css site`/`js site` fence
+    An `exec` fence becomes a cell; a `hint` fence becomes a staged hint;
+    an `html site`/`css site`/`js site` fence
     becomes one pane of a `SiteEditor`, grouped with any of the same
     `site:` name immediately before or after it; a `question` fence
     becomes a `Question` (planning/QUESTION_BLOCKS.md); an `html app`/
     `css app`/`js app` fence becomes one pane of an `AppCell`, grouped
-    the same way by its `app:` name (planning/DEWSTACK_MERGE.md §3, §7
-    phase 4); any other fence becomes an illustrative, read-only block.
+    the same way by its `app:` name; any other fence becomes an
+    illustrative, read-only block.
     All six leave the source before the markdown converter runs, so
     nothing inside any of them can be reinterpreted as markup.
     """
@@ -1420,8 +1418,7 @@ def render_app_cell(cell: AppCell, index: int) -> str:
     result becoming what a reader sees, and a site editor's sandboxed
     iframe exists specifically to stop a reader's script reaching
     anything else on the page — exactly the channel this needs, to read
-    the page's own shared SQL connection through `_query_rows()`
-    (planning/DEWSTACK_MERGE.md §3, §7 phase 4).
+    the page's own shared SQL connection through `_query_rows()`.
 
     `index` plays the same role `render_site_editor()`'s own `index`
     does — this cell's 1-based position among the page's app cells, used

@@ -136,8 +136,8 @@ more detail; it's worth reading once, since the same shape shows up in
   JSON report of whether it raised (`_describe_error()`: type and first
   line), whether its `check()` calls passed and which did not, and whether
   the cell's `expect:` expression `holds()` in the page namespace. The
-  tutorial page counts attempts for staged hints from this
-  (planning/CELL_HINTS.md); `run_cell()` keeps its boolean for dewmini.
+  tutorial page counts attempts for staged hints from this;
+  `run_cell()` keeps its boolean for dewmini.
 - **"Why is `image_input()`'s value `None` at first?"** — reading a
   picked file's bytes is asynchronous; see the comment on `on_change`
   inside `image_input()` for how `asyncio.ensure_future` fits in.

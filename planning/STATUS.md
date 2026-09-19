@@ -173,6 +173,12 @@ folds can't go stale.
       `critique-and-reflection`, and `the-team-project`.
     - *Mixed Problem Sets*: `mixed-programming.md`, `mixed-algebra.md`,
       `mixed-trigonometry.md`, `mixed-data.md`.
+  - `database-methods` (5N0783) and `web-authoring` (5N1910) are both
+    built and fully ported from `deweydex/dewstack`; `full-stack` is
+    built with its one reference tutorial ported. `database-methods` is
+    live; `web-authoring` and `full-stack` are deliberately not yet on
+    the homepage — each waits on having run in front of a class first,
+    not on any remaining engineering work.
 
 ### Curriculum coverage (`CURRICULUM_MAP.md`)
 **115 of 116 learning outcomes across all six accredited modules are

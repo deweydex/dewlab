@@ -219,8 +219,8 @@ Its two issue links carry two fields `build.py` can't know ahead of time —
 the cell's current code and output — filled in by `updateCellReportLinks()`
 once, at the moment the panel opens.
 
-**Staged hints** (`planning/CELL_HINTS.md`) are the one place the page
-reacts to how a cell's runs have gone, not only the latest one. `build.py`
+**Staged hints** are the one place the page reacts to how a cell's runs
+have gone, not only the latest one. `build.py`
 turns a ```` ```hint ```` fence into a hidden `<details
 class="dl-hint dl-hint-staged">` fold carrying `data-cell` and a canonical
 `data-after` (`errors:5`, `same-errors:3 minutes:2`, …), and reads an
