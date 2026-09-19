@@ -153,12 +153,17 @@
      changed (DECISIONS_LOG.md 7.167). Versions is marked up here but
      lives in the where-you-are tree, under this tutorial's own rung —
      initVersionsSection() moves it there, since which release you are
-     on is a where-you-are question, not an import or an export. -->
+     on is a where-you-are question, not an import or an export.
+
+     Each panel's own <h2> is sr-only: the corner tab that opens it
+     already shows its label, so a second, visible copy at the panel's
+     own top was the same word twice (DECISIONS_LOG.md 7.183). The id
+     stays, since aria-labelledby still needs it for the dialog's name. -->
 <div class="dl-right-panel dl-yourwork" id="dl-yourwork" role="dialog" aria-modal="false"
      aria-labelledby="dl-yourwork-title" hidden>
   <div class="dl-panel-sticky-head">
     <div class="dl-settings-head">
-      <h2 id="dl-yourwork-title">Notes</h2>
+      <h2 id="dl-yourwork-title" class="dl-sr-only">Notes</h2>
       <button type="button" class="dl-settings-close" id="dl-yourwork-close"
               aria-label="Close">&times;</button>
     </div>
@@ -215,7 +220,7 @@
      aria-labelledby="dl-report-title" hidden>
   <div class="dl-panel-sticky-head">
     <div class="dl-settings-head">
-      <h2 id="dl-report-title">Give Feedback</h2>
+      <h2 id="dl-report-title" class="dl-sr-only">Give Feedback</h2>
       <button type="button" class="dl-settings-close" id="dl-report-close"
               aria-label="Close">&times;</button>
     </div>
@@ -227,7 +232,7 @@
      aria-labelledby="dl-python-title" hidden>
   <div class="dl-panel-sticky-head">
     <div class="dl-settings-head">
-      <h2 id="dl-python-title">Python</h2>
+      <h2 id="dl-python-title" class="dl-sr-only">Python</h2>
       <button type="button" class="dl-settings-close" id="dl-python-close"
               aria-label="Close">&times;</button>
     </div>
@@ -269,7 +274,7 @@
      aria-labelledby="dl-appearance-title" hidden>
   <div class="dl-panel-sticky-head">
     <div class="dl-settings-head">
-      <h2 id="dl-appearance-title">Appearance</h2>
+      <h2 id="dl-appearance-title" class="dl-sr-only">Appearance</h2>
       <button type="button" class="dl-settings-close" id="dl-appearance-close"
               aria-label="Close">&times;</button>
     </div>
@@ -387,7 +392,7 @@
      aria-labelledby="dl-importsexports-title" hidden>
   <div class="dl-panel-sticky-head">
     <div class="dl-settings-head">
-      <h2 id="dl-importsexports-title">Imports &amp; Exports</h2>
+      <h2 id="dl-importsexports-title" class="dl-sr-only">Imports &amp; Exports</h2>
       <button type="button" class="dl-settings-close" id="dl-importsexports-close"
               aria-label="Close">&times;</button>
     </div>

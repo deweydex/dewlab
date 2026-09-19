@@ -3952,3 +3952,11 @@ The main tutorial pipeline has always run `extract_math()` once in `load()` and 
 Ten new tests cover the eight surfaces this touches — question prompt, question option, a gap alongside maths, the dollar-inside-a-gap edge case, a card body, a page's wrapped section, a page's own top-level prose (plus its manifest flag, present and absent), a hand-written fold, and a pedagogical note.
 
 *Cost to change: low. `convert_prose_with_math()` is a pure function beside `to_html()`, called in place of it; nothing about `extract_blocks()`'s table of fence kinds or `place_blocks()`'s own pass changed.*
+
+---
+
+**7.183 — The five right-hand panels share one dock width, and stop repeating their own tab's label.** Josh: switching tabs shifted the reading column, and each panel's own heading just said again what its corner tab already showed.
+
+Both bugs traced to the same cause: each panel was built as an independent thing, not a pane of one dock. `loadPanelWidth`/`savePanelWidth` keyed a resize by the panel's own DOM id, so dragging one didn't touch the other four — opening an untouched one after a resized one snapped the dock back to its CSS default, and `watchPanelOverlap()`'s reading-column margin followed it. Fixed by giving all five one shared storage key (`RIGHT_DOCK_WIDTH_KEY`) and syncing a drag's new width to the other four live, not just on the next page load. The per-panel `<h2>` is now `dl-sr-only`: the id stays, for `aria-labelledby`, but nothing shows it twice on screen.
+
+*Cost to change: low. `makeEdgeResizable()` takes an optional shared key instead of always defaulting to `panel.id`; reverting either panel to its own key or the heading to visible is a one-line change in each spot.*
