@@ -149,7 +149,8 @@ class TestProseBlocks:
         # once a page has a cell: the (hidden) report-a-problem paragraph
         # (planning/feedback.yaml `enabled: true`) and its GitHub
         # sign-in note, and the "Try something of your own"
-        # heading/paragraph PRACTICE.md adds below the last cell. All are
+        # heading/paragraph a reader's own practice cell adds below the
+        # last cell. All are
         # real, readable prose -- correctly not excluded, since none
         # lives inside `.dl-editor`/`.dl-output`.
         assert len(texts) == 15

@@ -155,8 +155,8 @@ class TestOversizedOutputFallback:
 
 
 class TestStudentNotes:
-    """A student's own free-text notes (STUDENT_NOTES.md), distinct from
-    SIDEBAR_CONTENT.md's author-written notes, riding on the same record."""
+    """A student's own free-text notes, distinct from SIDEBAR_CONTENT.md's
+    author-written notes, riding on the same record."""
 
     def test_typing_a_note_is_saved_without_being_asked(self, clean_storage):
         page = clean_storage
@@ -369,7 +369,7 @@ class TestStartingAgain:
 
 class TestAPageWithNothingToSave:
     """A prose-only tutorial has no cells, but it is still a tutorial, so
-    "Your work" stays for its notes field (STUDENT_NOTES.md)."""
+    "Your work" stays for its notes field."""
 
     def test_a_prose_only_tutorial_still_offers_the_notes_field(self, browser, base_url):
         context = browser.new_context()

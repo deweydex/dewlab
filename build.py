@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Turn the markdown in tutorials/ into the hosted HTML series in site/.
 
-The shape of the job, from BUILD_PLAN.md Phase 1: read a tutorial's frontmatter
-and body, turn its `exec`-tagged fences into cell objects, expand include
-directives into the setup code they name, resolve cross-tutorial links to real
-relative hrefs and fail on any that do not resolve, then render the result into
-assets/shell.html.
+The shape of the job: read a tutorial's frontmatter and body, turn its
+`exec`-tagged fences into cell objects, expand include directives into the
+setup code they name, resolve cross-tutorial links to real relative hrefs and
+fail on any that do not resolve, then render the result into assets/shell.html.
 
 Maths and illustrative code are lifted out of the source before the markdown
 converter ever sees them, for the same reason cells are: `$a_i$` would otherwise
@@ -3143,10 +3142,10 @@ def arrow_between(place: dict, a: str, b: str, css: str, fan: int = 0) -> str:
 
 def progress_attrs(tutorial: Tutorial) -> str:
     """`data-id`/`data-cells` for a contents-page link, so
-    tutorial-runtime.js's progress indicator (planning/archive/PROGRESS_INDICATORS.md)
-    can read a reader's saved-progress record for it with no fetch. A
-    prose-only tutorial has nothing to show progress for, so it gets no
-    attribute at all rather than a "0/0"."""
+    tutorial-runtime.js's progress indicator can read a reader's
+    saved-progress record for it with no fetch. A prose-only tutorial has
+    nothing to show progress for, so it gets no attribute at all rather
+    than a "0/0"."""
     if not tutorial.cells:
         return ""
     return (
