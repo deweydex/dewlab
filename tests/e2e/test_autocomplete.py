@@ -132,7 +132,7 @@ class TestHoverDocs:
 
 
 class TestBuiltinTooltips:
-    """docFor/signatureFor were widened to also check __builtins__ (planning/CELL_TOOLTIPS.md option a). Uses insert_text() rather than type(), since type()'s real keystrokes trigger closeBrackets/indentOnInput and fight multi-line bodies elsewhere in this class."""
+    """docFor/signatureFor were widened to also check __builtins__ (planning/archive/CELL_TOOLTIPS.md option a). Uses insert_text() rather than type(), since type()'s real keystrokes trigger closeBrackets/indentOnInput and fight multi-line bodies elsewhere in this class."""
 
     def test_hovering_a_builtin_shows_its_docstring(self, page):
         cell = cell_content(page, "plain-python")
@@ -176,7 +176,7 @@ class TestBuiltinTooltips:
 
 
 class TestPreRunTooltips:
-    """planning/CELL_TOOLTIPS.md option (c): Jedi answers hover docs and signature help for a name that has never run, the one gap docFor/signatureFor can't close since they only read a live namespace."""
+    """planning/archive/CELL_TOOLTIPS.md option (c): Jedi answers hover docs and signature help for a name that has never run, the one gap docFor/signatureFor can't close since they only read a live namespace."""
 
     SOURCE = (
         "\ndef average(numbers):\n"

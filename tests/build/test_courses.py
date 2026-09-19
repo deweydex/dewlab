@@ -348,7 +348,7 @@ class TestTheCrumbTrail:
         assert "2 sections" in own
         # A tutorial with cells carries its progress data attributes on
         # the contents page: tutorial-runtime.js's progress indicator
-        # (planning/PROGRESS_INDICATORS.md) reads these with no fetch.
+        # (planning/archive/PROGRESS_INDICATORS.md) reads these with no fetch.
         index = (repo / "site" / "all-tutorials.html").read_text()
         assert 'data-id="one"' in index
         assert 'data-cells="1"' in index

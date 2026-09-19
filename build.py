@@ -3147,7 +3147,7 @@ def arrow_between(place: dict, a: str, b: str, css: str, fan: int = 0) -> str:
 
 def progress_attrs(tutorial: Tutorial) -> str:
     """`data-id`/`data-cells` for a contents-page link, so
-    tutorial-runtime.js's progress indicator (planning/PROGRESS_INDICATORS.md)
+    tutorial-runtime.js's progress indicator (planning/archive/PROGRESS_INDICATORS.md)
     can read a reader's saved-progress record for it with no fetch. A
     prose-only tutorial has nothing to show progress for, so it gets no
     attribute at all rather than a "0/0"."""

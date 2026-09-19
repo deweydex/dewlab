@@ -3952,3 +3952,15 @@ The main tutorial pipeline has always run `extract_math()` once in `load()` and 
 Ten new tests cover the eight surfaces this touches — question prompt, question option, a gap alongside maths, the dollar-inside-a-gap edge case, a card body, a page's wrapped section, a page's own top-level prose (plus its manifest flag, present and absent), a hand-written fold, and a pedagogical note.
 
 *Cost to change: low. `convert_prose_with_math()` is a pure function beside `to_html()`, called in place of it; nothing about `extract_blocks()`'s table of fence kinds or `place_blocks()`'s own pass changed.*
+
+---
+
+**7.183 — A `planning/archive/` folder for design notes about shipped, uncontested features, and `dev/check_doc_links.py` stops holding it to link currency.** Josh: the accumulating count of planning documents was making it harder, not easier, for anyone (human or agent) reading the repository to tell what still describes the current state.
+
+Eleven documents moved there: `PRACTICE.md`, `BUILD_PLAN.md`, `REPO_AND_EDITOR.md`, `MINI_IDE_AND_DEWMINI_NEXT.md`, `MINI_IDE_REDESIGN.md`, `STUDENT_NOTES.md`, `PROGRESS_INDICATORS.md`, `CELL_CONTROLS.md`, `CELL_TOOLTIPS.md`, `DOCS_AND_COMMENTS_PASS.md`, `DOCS_AND_COMMENTS_PLAN.md` — each already describing something built, settled, and not under active reconsideration. `planning/WHERE_WE_ARE.md` and `planning/WHAT_IS_LEFT_TO_WRITE.md` were deleted outright rather than archived: both already said, in their own text or by having zero inbound references, that they had nothing left to say. `planning/DECISIONS.md` (pre-code choices) is renamed to `planning/PRE_BUILD_DECISIONS.md`, so its name stops colliding with this file's at a skim.
+
+`ELSEWHERE` in `dev/check_doc_links.py` — previously just `planning/curriculum/` and `planning/outlines/`, generated or per-module content the checker never held to prose-currency standards — now includes `planning/archive/` too, replacing the five one-off `HISTORY` entries that used to name individual archived files by hand. A link *into* the archive from an active document is still checked; a link that goes stale *inside* an archived document is not, since nobody is expected to keep it current.
+
+This repo's own git history is not a substitute for any of this — checked directly rather than assumed: 713 commits back to 2026-08-21, not the 4 days a shallow clone had briefly suggested, but ordinary commit and squash-merge messages here are typically just the PR title, not the reasoning; PR descriptions that touch this kind of decision usually cite `DECISIONS_LOG.md` by entry number rather than repeat it (`git log` on PR #230, checked directly). Moving a document to `planning/archive/` is therefore about relevance to a reader today, not about whether the reasoning survives somewhere else if the file were simply deleted.
+
+*Cost to change: low. Each move is `git mv`; reversing one is the same in the other direction. Anything that turns out to still need active upkeep moves back with no scar tissue — nothing about `RIGHT_PANELS`-style code depends on where its design note lives.*

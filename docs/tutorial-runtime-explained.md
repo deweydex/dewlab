@@ -74,7 +74,7 @@ specifically:
 
 ## Custom cells: a second, deliberately separate cell system
 
-`planning/PRACTICE.md` §3 asks for a way a reader can add their own
+`planning/archive/PRACTICE.md` §3 asks for a way a reader can add their own
 Python cell to a page — not one the tutorial's author wrote, one the
 reader typed themselves, for trying something out or writing a practice
 problem of their own. The whole "custom cells" section (roughly

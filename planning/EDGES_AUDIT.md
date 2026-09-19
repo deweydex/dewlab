@@ -18,7 +18,7 @@ fixes are in the same change as this document.
 **Claim:** `write_mini_ide_bundle()` produces a folder a student can save and
 reopen with no connection at all.
 
-**Never tested.** `planning/MINI_IDE_AND_DEWMINI_NEXT.md` §2 said so
+**Never tested.** `planning/archive/MINI_IDE_AND_DEWMINI_NEXT.md` §2 said so
 plainly: "nothing currently proves the downloaded folder actually boots with
 the network disconnected on a fresh machine."
 

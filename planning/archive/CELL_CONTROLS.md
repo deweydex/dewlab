@@ -82,7 +82,7 @@ doing.
   a postMessage boundary (`assets/pyodide-worker.js`) instead of being an
   ordinary function call, since none of that state lives on the main
   thread on the hosted site anymore.
-- This was the same category of option `planning/CELL_TOOLTIPS.md` had
+- This was the same category of option `planning/archive/CELL_TOOLTIPS.md` had
   already weighed and set aside for Jedi-in-Pyodide: real, documented,
   used elsewhere — and it turned out to be worth its real cost, built
   alongside Jedi rather than instead of it.

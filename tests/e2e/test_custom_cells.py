@@ -1,4 +1,4 @@
-"""Browser tests for a reader's own cells (planning/PRACTICE.md §3-5)."""
+"""Browser tests for a reader's own cells (planning/archive/PRACTICE.md §3-5)."""
 
 from __future__ import annotations
 

@@ -140,10 +140,10 @@ real risk that duplication carries.
 Six more scripts live in `dev/` — `check_doc_links.py`,
 `apply_topic_edits.py`, `build_topic_editor.py`, `build_topic_game.py`,
 `draw_topic_graph.py`, `pair_results.py` — that this file has never
-covered, going back to when `planning/DOCS_AND_COMMENTS_PASS.md`'s own
-Phase D first scoped this file to four scripts rather than the whole
+covered, going back to when `planning/archive/DOCS_AND_COMMENTS_PASS.md`'s
+own Phase D first scoped this file to four scripts rather than the whole
 folder. Not new drift; a gap that was already there, recorded honestly
-rather than implied away by this file's title. `planning/DOCS_AND_COMMENTS_PLAN.md`
+rather than implied away by this file's title. `planning/archive/DOCS_AND_COMMENTS_PLAN.md`
 (2026-09-06) tracks closing it.
 
 ---
