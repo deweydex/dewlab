@@ -3614,10 +3614,15 @@ IMG_SVG_RE = re.compile(
     r'<img\b(?P<attrs>[^>]*?)\bsrc="(?P<url>[^"]*\.svg)"(?P<rest>[^>]*)>',
     re.IGNORECASE)
 ALT_VALUE_RE = re.compile(r'\balt\s*=\s*"(?P<alt>[^"]*)"', re.IGNORECASE)
-SVG_PROLOGUE_RE = re.compile(r"^\s*(?:<\?xml[^>]*\?>|<!DOCTYPE[^>]*>)\s*", re.I)
+# Everything an SVG file may carry before its root element: the XML
+# declaration, a DOCTYPE, and comments — draw.io writes all three, in that
+# order, and a stripper that knew only the first two left the comment in
+# front and quietly gave up on the file.
+SVG_PROLOGUE_RE = re.compile(
+    r"^\s*(?:<\?xml[^>]*\?>|<!DOCTYPE[^>]*>|<!--.*?-->)\s*", re.I | re.S)
 
 
-def inline_local_svg(folder: Path, body: str) -> str:
+def inline_local_svg(folder: Path, body: str, tutorial_path: Path) -> str:
     """Put a local SVG's own markup on the page, in place of linking to it.
 
     An `<img>`-loaded SVG is a separate document. The page's CSS custom
@@ -3651,9 +3656,23 @@ def inline_local_svg(folder: Path, body: str) -> str:
         attributes = match.group("attrs") + match.group("rest")
         described = ALT_VALUE_RE.search(attributes)
         label = html.escape(described.group("alt"), quote=True) if described else ""
-        markup = SVG_PROLOGUE_RE.sub("", source.read_text()).strip()
+        markup = source.read_text()
+        while True:                       # xml declaration, doctype, comments
+            trimmed = SVG_PROLOGUE_RE.sub("", markup, count=1)
+            if trimmed == markup:
+                break
+            markup = trimmed
+        markup = markup.strip()
         if not markup.startswith("<svg"):
-            return match.group(0)
+            # Falling back to `<img>` here is what the whole change exists to
+            # avoid, and it would do it in silence: the page builds, the
+            # diagram renders black on black, and nothing says why. Better to
+            # stop and name the file.
+            fail(
+                tutorial_path,
+                f"{url!r} does not start with <svg> once its declaration, "
+                "doctype and comments are stripped, so it cannot be inlined.",
+            )
         opening = markup[: markup.index(">") + 1]
         # A fixed width would stop the figure fitting a narrow screen, and the
         # viewBox already carries the proportions.
@@ -3661,7 +3680,7 @@ def inline_local_svg(folder: Path, body: str) -> str:
         accessibility = (
             f' role="img" aria-label="{label}"' if label else ' aria-hidden="true"'
         )
-        cleaned = cleaned[:-1] + f' class="dl-figure"{accessibility}>'
+        cleaned = cleaned[:-1] + f' class="dl-diagram"{accessibility}>'
         return cleaned + markup[markup.index(">") + 1 :]
 
     return IMG_SVG_RE.sub(swap, body)
@@ -3725,7 +3744,7 @@ def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
     # Before src() runs, so an inlined diagram has no src left to rewrite,
     # and after masking, so a tutorial *showing* `<img src="x.svg">` as an
     # example still shows it rather than drawing it.
-    masked = inline_local_svg(folder, masked)
+    masked = inline_local_svg(folder, masked, tutorial.path)
     resolved = HREF_ASSET_RE.sub(href, SRC_RE.sub(src, masked))
     return re.sub(r"\x00(\d+)\x00", lambda m: code_spans[int(m.group(1))], resolved)
 

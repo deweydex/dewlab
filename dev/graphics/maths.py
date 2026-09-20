@@ -11,12 +11,15 @@ arithmetic the page teaches.
 from __future__ import annotations
 
 import argparse
+import ast
 import sys
 from fractions import Fraction
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import nested  # noqa: E402
+import steps  # noqa: E402
 import tree as tree_renderer  # noqa: E402
 from tree import Node  # noqa: E402
 
@@ -67,7 +70,58 @@ def drawing_two_aces() -> str:
     ]))
 
 
+def the_number_domains() -> str:
+    """The nesting *Numbers and Their Families* writes as a chain of symbols.
+
+    Each example sits in the band for the smallest family it belongs to, so
+    the question the section sets — which families does this number belong
+    to — is answered by finding the number and reading outwards. That is
+    what the containment chain says, and it is faster to point at.
+    """
+    return nested.render(nested.Ring(
+        "ℝ  reals", "√2   π   −1.5",
+        inside=nested.Ring(
+            "ℚ  rationals", "2/3   0.25",
+            inside=nested.Ring(
+                "ℤ  integers", "−5   −1",
+                inside=nested.Ring("ℕ  naturals", "0   1   2   3")))))
+
+
+def _sets_from_cell() -> tuple[list[int], list[int]]:
+    """The two sets *Sets as Sorted Lists* walks, from its own cell."""
+    page = (TUTORIALS / "sets-as-sorted-lists" / "sets-as-sorted-lists.md").read_text()
+    cell = "set-operations-the-merge-pattern-1"
+    if f"id: {cell}" not in page:
+        raise SystemExit(f"sets-as-sorted-lists: no cell called {cell!r} any more")
+    block = page.split(f"id: {cell}", 1)[1].split("```", 1)[0]
+    found = {}
+    for line in block.splitlines():
+        stripped = line.strip()
+        for name in ("a", "b"):
+            if stripped.startswith(f"{name} = make_set("):
+                inner = stripped[stripped.index("(") + 1:stripped.rindex(")")]
+                found[name] = sorted(set(ast.literal_eval(inner)))
+    if set(found) != {"a", "b"}:
+        raise SystemExit(f"sets-as-sorted-lists/{cell}: no a and b defined")
+    return found["a"], found["b"]
+
+
+def walking_two_sorted_lists() -> str:
+    """The merge pattern in *Sets as Sorted Lists*, one comparison per step.
+
+    The prose states the rule as three cases and then a fourth about what
+    is left over. Three of the reader's own functions are that same walk
+    with a different line about what to keep, so it is worth seeing the
+    walk itself once, with both pointers visible and the consequence of
+    each comparison spelled out.
+    """
+    left, right = _sets_from_cell()
+    return steps.merge_walk(left, right)
+
+
 DIAGRAMS = {
+    "sets-as-sorted-lists/merge-walk.svg": walking_two_sorted_lists,
+    "numbers-and-their-families/number-domains.svg": the_number_domains,
     "what-are-the-chances/two-aces-tree.svg": drawing_two_aces,
 }
 

@@ -3777,12 +3777,16 @@ p code, li code {
   color: var(--dl-muted);
 }
 
-/* A diagram inlined by build.py's inline_local_svg(). It is inline so the
-   page's own colours and the reader's font reach inside it; the sizing here
-   is what an <img> used to do for free. A diagram reads worse squeezed to
-   prose width, so it may run a little past it, and scrolls inside its own
-   box rather than making the page scroll sideways. */
-.dl-figure {
+/* A diagram inlined by build.py's inline_local_svg(). Inline so the page's
+   own colours and the reader's font reach inside it; the sizing here is
+   what an <img> used to do for free.
+
+   Deliberately not `.dl-figure`, which is already the wrapper around a
+   matplotlib figure a cell produces (`tutorial_tools._figure_html()`).
+   Reusing that name re-styled every plot on the site — centred, different
+   margins, a max-width it never had — from a rule that looked like it only
+   described new diagrams. */
+.dl-diagram {
   display: block;
   width: 100%;
   height: auto;

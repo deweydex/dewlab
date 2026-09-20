@@ -132,6 +132,15 @@ This is *binary search*, and it only works when the data is *sorted*. But when t
 
 The idea: maintain a search range defined by `low` and `high` indices. Look at the middle element. If it matches the target, we are done. If the target is smaller, search the left half (set `high = mid - 1`). If larger, search the right half (set `low = mid + 1`). Repeat until found or the range is empty.
 
+![Four passes over a fifteen-item sorted list, searching for 3. The live
+range shrinks from fifteen cells to seven, then three, then one, with low,
+mid and high marked under it each time.](range-collapsing.svg)
+
+Count the shaded cells down the rows: fifteen, seven, three, one. That
+halving is the whole reason binary search is fast, and it is also where
+the mistakes live — `mid - 1` and `mid + 1` are what keep the range
+shrinking, and getting either wrong leaves it stuck.
+
 ### Your turn
 
 **Pseudocode** (fill in the details):

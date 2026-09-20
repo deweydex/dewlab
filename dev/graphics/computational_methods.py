@@ -22,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import grids  # noqa: E402
 import states  # noqa: E402
+import steps  # noqa: E402
 import tree as tree_renderer  # noqa: E402
 from tree import Node  # noqa: E402
 
@@ -178,7 +179,36 @@ def one_row_one_column() -> str:
     return grids.row_times_column(left, right, product, row=0, column=0)
 
 
+def the_range_collapsing() -> str:
+    """Binary search halving its range, in *Finding Things*.
+
+    The efficiency claim rests on the halving, and the halving is a thing
+    to count rather than take on trust. `low`, `mid` and `high` are marked
+    under the cells so the off-by-one the pseudocode invites has somewhere
+    to be checked.
+
+    The target is 3, one of the tutorial's own listed cases, because it
+    takes four passes. Its first listed case, 31, sits exactly on the
+    midpoint of a fifteen-item list and is found immediately — a fine test
+    and a picture with no halving in it.
+    """
+    items, target = _search_case()
+    return steps.binary_search_steps(items, target)
+
+
+def _search_case() -> tuple[list[int], int]:
+    page = (TUTORIALS / "finding-things" / "finding-things.md").read_text()
+    if "id: your-turn-6" not in page:
+        raise SystemExit("finding-things: no cell called 'your-turn-6' any more")
+    block = page.split("id: your-turn-6", 1)[1].split("```", 1)[0]
+    for line in block.splitlines():
+        if line.strip().startswith("sorted_numbers ="):
+            return ast.literal_eval(line.split("=", 1)[1].strip()), 3
+    raise SystemExit("finding-things/your-turn-6: no sorted_numbers defined")
+
+
 DIAGRAMS = {
+    "finding-things/range-collapsing.svg": the_range_collapsing,
     "multiplying-grids/row-times-column.svg": one_row_one_column,
     "where-chains-lead/weather-states.svg": a_weather_machine,
     "three-ways-to-make-change/repeated-question.svg": the_same_question_twice,
