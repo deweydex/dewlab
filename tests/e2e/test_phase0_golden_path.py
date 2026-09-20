@@ -193,6 +193,50 @@ def test_a_site_editors_js_error_gets_a_friendly_hint(page):
     assert "dl-site-goto" in html
 
 
+def test_clearing_a_site_editor_puts_its_starter_code_back_in_every_pane(page):
+    hero = site_editor(page, "hero")
+    html_pane = f"{hero} .dl-site-pane[data-lang='html'] .cm-content"
+    page.click(html_pane)
+    page.keyboard.press("Control+a")
+    page.keyboard.insert_text("<p>edited</p>")
+
+    page.once("dialog", lambda dialog: dialog.accept())
+    page.click(f"{hero} .dl-btn-site-clear")
+    assert "edited" not in page.eval_on_selector(html_pane, "el => el.textContent")
+
+
+def test_declining_the_clear_confirmation_leaves_the_edit_in_place(page):
+    hero = site_editor(page, "hero")
+    html_pane = f"{hero} .dl-site-pane[data-lang='html'] .cm-content"
+    page.click(html_pane)
+    page.keyboard.press("Control+a")
+    page.keyboard.insert_text("<p>edited</p>")
+
+    page.once("dialog", lambda dialog: dialog.dismiss())
+    page.click(f"{hero} .dl-btn-site-clear")
+    assert "edited" in page.eval_on_selector(html_pane, "el => el.textContent")
+
+
+def test_a_site_editors_edit_survives_a_reload(page):
+    """The `siteEditors` array in saveNow()'s own record -- unlike a cell's
+    output_html, cheap to rebuild, so only the pane text and whether Run had
+    been pressed travel here, not the rendered preview itself."""
+    hero = site_editor(page, "hero")
+    css_pane = f"{hero} .dl-site-pane[data-lang='css'] .cm-content"
+    page.click(css_pane)
+    page.keyboard.press("Control+End")
+    page.keyboard.insert_text("\n#go { color: red; }")
+    page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
+
+    page.reload()
+    page.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
+    page.wait_for_function(
+        "document.querySelectorAll('.dl-btn-run:not([disabled])').length > 0",
+        timeout=240_000,
+    )
+    assert "color: red" in page.eval_on_selector(css_pane, "el => el.textContent")
+
+
 def test_matplotlib_renders_a_figure_beneath_the_cell(page):
     output = run(page, "matplotlib-figure")
     assert 'src="data:image/png;base64,' in output

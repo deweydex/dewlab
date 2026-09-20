@@ -231,3 +231,64 @@ class TestRestartAndRunAll:
         assert "counting: 2" in output_text(page, "plain-python")
         assert "mean:" in output_text(page, "numpy-basics")
         assert run_line_text(page, "plain-python").startswith("Ran ")
+
+    def test_declining_the_confirmation_leaves_python_running(self, clean_storage):
+        page = clean_storage
+        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nonly_the_old_interpreter_has_this = True")
+        run_cell(page, "plain-python")
+
+        _open_panel(page, "#dl-python-toggle")
+        page.once("dialog", lambda dialog: dialog.dismiss())
+        page.click("#dl-restart-run-all")
+
+        page.click(".dl-cell[data-cell-id='numpy-basics'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nprint(only_the_old_interpreter_has_this)")
+        run_cell(page, "numpy-basics")
+        assert "True" in output_text(page, "numpy-basics")
+
+
+class TestRestartPython:
+    """The plain Restart Python button next to Restart & run all — same
+    confirm gate, but it never re-runs anything, so a variable's absence is
+    the only proof a restart actually happened."""
+
+    def test_confirming_clears_the_interpreter(self, clean_storage):
+        page = clean_storage
+        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nonly_the_old_interpreter_has_this = True")
+        run_cell(page, "plain-python")
+
+        _open_panel(page, "#dl-python-toggle")
+        page.once("dialog", lambda dialog: dialog.accept())
+        page.click("#dl-restart-python")
+        page.wait_for_function(
+            "document.querySelectorAll('.dl-btn-run:not([disabled])').length > 0",
+            timeout=240_000,
+        )
+
+        page.click(".dl-cell[data-cell-id='numpy-basics'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nprint('only_the_old_interpreter_has_this' in dir())")
+        run_cell(page, "numpy-basics")
+        assert "False" in output_text(page, "numpy-basics")
+
+    def test_declining_leaves_it_running(self, clean_storage):
+        page = clean_storage
+        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nonly_the_old_interpreter_has_this = True")
+        run_cell(page, "plain-python")
+
+        _open_panel(page, "#dl-python-toggle")
+        page.once("dialog", lambda dialog: dialog.dismiss())
+        page.click("#dl-restart-python")
+
+        page.click(".dl-cell[data-cell-id='numpy-basics'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nprint(only_the_old_interpreter_has_this)")
+        run_cell(page, "numpy-basics")
+        assert "True" in output_text(page, "numpy-basics")

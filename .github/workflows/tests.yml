@@ -169,7 +169,7 @@ jobs:
       - name: Run the browser tests that never run a cell
         run: |
           python -m pytest \
-            tests/e2e/test_reference.py \
-            tests/e2e/test_narrow_screen.py \
-            tests/e2e/test_link_contrast.py \
+            tests/e2e/test_reference_panel.py \
+            tests/e2e/test_page_smoke.py \
+            tests/e2e/test_contrast.py \
             tests/e2e/test_multi_course_pages.py

@@ -85,6 +85,22 @@ def test_clear_reverts_the_editors_and_clears_the_preview(page):
     )
 
 
+def test_declining_the_clear_confirmation_leaves_the_edit_in_place(page):
+    seed_readers(page)
+    run_app_cell(page)
+    page.wait_for_selector(f"{APP_SELECTOR} #reader-list li")
+
+    page.click(f'{APP_SELECTOR} .dl-app-pane[data-lang="html"] .cm-content')
+    page.keyboard.press("Control+a")
+    page.keyboard.insert_text("<p>edited</p>")
+
+    page.once("dialog", lambda dialog: dialog.dismiss())
+    page.click(f"{APP_SELECTOR} .dl-btn-app-clear")
+    assert "edited" in page.eval_on_selector(
+        f'{APP_SELECTOR} .dl-app-pane[data-lang="html"] .cm-content', "el => el.textContent"
+    )
+
+
 def test_a_bad_query_shows_in_the_error_box_not_silently(page):
     page.click(f'{APP_SELECTOR} .dl-app-pane[data-lang="js"] .cm-content')
     page.keyboard.press("Control+a")

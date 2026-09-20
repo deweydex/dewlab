@@ -1,4 +1,5 @@
-"""Browser tests for saved work (Phase 2).
+"""Browser tests for saved work (Phase 2): saving it, showing it back to a
+reader (the live run summary, and the site-wide badges), and restoring it.
 
 The happy path — nothing changed since last time — would very nearly work by
 accident. The paths worth driving are the awkward ones: a tutorial edited under
@@ -9,11 +10,23 @@ what the restore logic actually reads is the record, not the file it came from.
 
 from __future__ import annotations
 
+import functools
+import http.server
 import json
+import socketserver
+import sys
+import threading
+from pathlib import Path
 
 import pytest
 
-from conftest import _open_panel
+from conftest import _open_panel, _open_settings_tab
+
+DEWLAB = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(DEWLAB))
+
+import build as b  # noqa: E402
+from layout import write_course, write_tutorial  # noqa: E402
 
 
 def output_of(cell_id: str) -> str:
@@ -188,6 +201,17 @@ class TestStudentNotes:
         page.click("#dl-progress-clear")
         assert page.input_value("#dl-progress-notes") == ""
 
+    def test_declining_start_again_keeps_the_note(self, clean_storage):
+        page = clean_storage
+        _open_panel(page, "#dl-yourwork-toggle")
+        page.fill("#dl-progress-notes", "keep me")
+        page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
+
+        page.once("dialog", lambda dialog: dialog.dismiss())
+        page.click("#dl-progress-clear")
+        assert page.input_value("#dl-progress-notes") == "keep me"
+        assert page.evaluate("globalThis.dewlab.readSaved()") is not None
+
     def test_exporting_downloads_the_note_alongside_the_cells(self, clean_storage):
         page = clean_storage
         _open_panel(page, "#dl-yourwork-toggle")
@@ -270,6 +294,221 @@ class TestNotesNudge:
 
         page.click('[data-notes-nudge] button[data-value="on"]')
         assert "dl-nudge" in self.export_button_class(page)
+
+
+def _summary_js_string(text: str) -> str:
+    return json.dumps(text)
+
+
+def run_cell(page, cell_id: str) -> None:
+    selector = f".dl-cell[data-cell-id='{cell_id}'] .dl-output"
+    page.evaluate(f"dewlab.runCell({_summary_js_string(cell_id)})")
+    page.wait_for_function(
+        f"document.querySelector({_summary_js_string(selector)}).children.length > 0",
+        timeout=60_000,
+    )
+
+
+def summary_text(page) -> str:
+    _open_panel(page, "#dl-yourwork-toggle")
+    text = page.inner_text("#dl-progress-summary")
+    _open_panel(page, "#dl-yourwork-toggle")
+    return text
+
+
+class TestProgressSummary:
+    """The live "N of M cells run" line in the Your Work panel — read while
+    still on the page, from the session's own runs rather than a saved
+    record, since the `errored` count depends on the real traceback markup
+    a run produces (tutorial_tools.py's class="dl-error")."""
+
+    def test_stays_hidden_with_nothing_run(self, page):
+        _open_panel(page, "#dl-yourwork-toggle")
+        assert page.is_hidden("#dl-progress-summary")
+        _open_panel(page, "#dl-yourwork-toggle")
+
+    def test_updates_after_a_successful_run(self, page):
+        run_cell(page, "plain-python")
+        text = summary_text(page)
+        assert "of" in text and "cells run" in text
+        assert "error" not in text
+
+    def test_counts_an_errored_cell_separately_from_a_successful_one(self, page):
+        run_cell(page, "plain-python")
+        run_cell(page, "error-traceback")
+        text = summary_text(page)
+        assert "2 of" in text
+        assert "1 with an error" in text
+
+
+class TestProgressBadges:
+    """The fraction badge shown elsewhere on the site (all-tutorials.html)
+    for a tutorial with saved work — read from a saved record rather than a
+    live interpreter, so seeded directly into localStorage rather than by
+    running a cell, against a small fixture site of this class's own
+    (the shared `page` fixture's tutorial isn't listed on a contents page)."""
+
+    COURSE = "progress-fixtures"
+
+    FRONTMATTER = """---
+title: "{title}"
+year: "2026-2027"
+version: 2026.08.23.1
+---
+
+# {title}
+
+```python exec
+id: {slug}-1
+print("hello")
+```
+
+```python exec
+id: {slug}-2
+print("world")
+```
+"""
+
+    @staticmethod
+    def _tutorial(root: Path, slug: str, title: str = "A Title") -> None:
+        path = root / "tutorials" / slug / f"{slug}.md"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(TestProgressBadges.FRONTMATTER.format(title=title, slug=slug))
+
+    @classmethod
+    def _set_order(cls, root: Path, slugs: list[str]) -> None:
+        write_course(root, cls.COURSE, "Sample Series", slugs)
+
+    @staticmethod
+    def _seed(page, slug: str, cells: list[dict]) -> None:
+        """A saved-progress record written straight into localStorage, as saveNow() would, without a cell run."""
+        record = {
+            "tutorial-id": slug,
+            "tutorial-version": "2026.08.23.1",
+            "saved_at": "2026-08-28T00:00:00.000Z",
+            "cells": cells,
+        }
+        page.evaluate(
+            "([key, value]) => localStorage.setItem(key, value)",
+            [f"dewlab:progress:{slug}", json.dumps(record)],
+        )
+
+    @pytest.fixture()
+    def badges_site(self, tmp_path, monkeypatch):
+        (tmp_path / "tutorials").mkdir(parents=True)
+        monkeypatch.setattr(b, "ROOT", tmp_path)
+        monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
+        monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
+        monkeypatch.setattr(b, "OUT", tmp_path / "site")
+        monkeypatch.setattr(b, "SETUP", DEWLAB / "setup")
+        monkeypatch.setattr(b, "DATA", DEWLAB / "data")
+        monkeypatch.setattr(b, "ASSETS", DEWLAB / "assets")
+        monkeypatch.setattr(b, "SHELL", DEWLAB / "assets" / "shell.html")
+        return tmp_path
+
+    @pytest.fixture()
+    def badges_site_url(self, badges_site):
+        handler = functools.partial(_QuietBadgesHandler, directory=str(badges_site / "site"))
+        server = socketserver.TCPServer(("127.0.0.1", 0), handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            yield f"http://127.0.0.1:{server.server_address[1]}"
+        finally:
+            server.shutdown()
+            thread.join(timeout=5)
+
+    def test_a_tutorial_with_no_saved_record_shows_no_badge(self, badges_site, browser, badges_site_url):
+        self._tutorial(badges_site, "one", "One")
+        self._set_order(badges_site, ["one"])
+        b.build()
+        context = browser.new_context()
+        badge_page = context.new_page()
+        badge_page.goto(f"{badges_site_url}/all-tutorials.html")
+        assert badge_page.is_hidden(".dl-progress-badge")
+        context.close()
+
+    def test_a_saved_record_with_nothing_run_shows_no_badge(self, badges_site, browser, badges_site_url):
+        """A cell only edited, never run, has no output_html, so an empty one here must count as untouched."""
+        self._tutorial(badges_site, "one", "One")
+        self._set_order(badges_site, ["one"])
+        b.build()
+        context = browser.new_context()
+        badge_page = context.new_page()
+        badge_page.goto(f"{badges_site_url}/all-tutorials.html")
+        self._seed(badge_page, "one", [
+            {"task_id": "one-1", "student_code": "x = 1", "output_html": "", "errored": False},
+        ])
+        badge_page.reload()
+        assert badge_page.is_hidden(".dl-progress-badge")
+        context.close()
+
+    def test_a_run_cell_shows_a_fraction_badge(self, badges_site, browser, badges_site_url):
+        self._tutorial(badges_site, "one", "One")
+        self._set_order(badges_site, ["one"])
+        b.build()
+        context = browser.new_context()
+        badge_page = context.new_page()
+        badge_page.goto(f"{badges_site_url}/all-tutorials.html")
+        self._seed(badge_page, "one", [
+            {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
+            {"task_id": "one-2", "student_code": "", "output_html": "", "errored": False},
+        ])
+        badge_page.reload()
+        badge = badge_page.locator(".dl-progress-badge")
+        assert badge.inner_text() == "1/2"
+        assert "dl-progress-badge-errored" not in (badge.get_attribute("class") or "")
+        context.close()
+
+    def test_an_errored_cell_gives_the_badge_the_error_colour(self, badges_site, browser, badges_site_url):
+        self._tutorial(badges_site, "one", "One")
+        self._set_order(badges_site, ["one"])
+        b.build()
+        context = browser.new_context()
+        badge_page = context.new_page()
+        badge_page.goto(f"{badges_site_url}/all-tutorials.html")
+        self._seed(badge_page, "one", [
+            {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
+            {"task_id": "one-2", "student_code": "", "output_html": '<pre class="dl-error">boom</pre>', "errored": True},
+        ])
+        badge_page.reload()
+        badge = badge_page.locator(".dl-progress-badge")
+        assert badge.inner_text() == "2/2"
+        assert "dl-progress-badge-errored" in badge.get_attribute("class")
+        context.close()
+
+    def test_the_settings_toggle_hides_and_restores_badges(self, badges_site, browser, badges_site_url):
+        self._tutorial(badges_site, "one", "One")
+        self._set_order(badges_site, ["one"])
+        b.build()
+        context = browser.new_context()
+        badge_page = context.new_page()
+        badge_page.goto(f"{badges_site_url}/all-tutorials.html")
+        self._seed(badge_page, "one", [
+            {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
+        ])
+        badge_page.reload()
+        assert badge_page.is_visible(".dl-progress-badge")
+
+        _open_settings_tab(badge_page, "behavior")
+        badge_page.click('[data-progress-badges] button[data-value="off"]')
+        _open_panel(badge_page, "#dl-settings-toggle")
+        assert badge_page.is_hidden(".dl-progress-badge")
+
+        # And it holds across a reload — a real setting, not a one-off toggle.
+        badge_page.reload()
+        assert badge_page.is_hidden(".dl-progress-badge")
+
+        _open_settings_tab(badge_page, "behavior")
+        badge_page.click('[data-progress-badges] button[data-value="on"]')
+        _open_panel(badge_page, "#dl-settings-toggle")
+        assert badge_page.is_visible(".dl-progress-badge")
+        context.close()
+
+
+class _QuietBadgesHandler(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, *args):
+        pass
 
 
 class TestTheAwkwardPaths:
