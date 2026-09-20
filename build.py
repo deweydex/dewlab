@@ -79,6 +79,39 @@ def load_yaml_no_duplicate_keys(text: str):
     """
     return yaml.load(text, Loader=_NoDuplicateKeysLoader)
 
+
+# One parse per YAML file per build, for the files read over and over.
+# A tutorial's reference accumulates its whole series chain, so a glossary
+# early in a course is read again for every tutorial after it; the
+# redirects file, the two Basics files and the feedback switch are each
+# read fresh on every call, by design, so that a test's temporary ROOT is
+# seen. Three quarters of a build was going into re-parsing the same
+# bytes.
+#
+# The key carries the file's modification time and size as well as its
+# path, so reading fresh still happens whenever the file has changed, and
+# a temporary ROOT is a different path anyway. Nothing here is mutated by
+# its callers: each one reads the parsed data and builds its own result.
+_YAML_CACHE: dict[tuple[str, int, int, bool], object] = {}
+
+
+def read_yaml(path: Path, *, strict: bool = True):
+    """The contents of a `.yaml` file, parsed once per build.
+
+    `strict` chooses the loader: `load_yaml_no_duplicate_keys()`, which is
+    what most of this file wants, or PyYAML's own `safe_load()` for the
+    couple of places that read a plain mapping and have never asked for
+    the duplicate-key check.
+    """
+    stat = path.stat()
+    key = (str(path), stat.st_mtime_ns, stat.st_size, strict)
+    if key not in _YAML_CACHE:
+        text = path.read_text()
+        _YAML_CACHE[key] = (
+            load_yaml_no_duplicate_keys(text) if strict else yaml.safe_load(text)
+        )
+    return _YAML_CACHE[key]
+
 ROOT = Path(__file__).resolve().parent
 TUTORIALS = ROOT / "tutorials"
 COURSES = ROOT / "courses"
@@ -1481,7 +1514,16 @@ def to_html(body: str) -> tuple[str, list]:
     list on the page is built from the same headings the anchors came from,
     rather than from a second pass that could disagree with them.
     """
-    converter = markdown.Markdown(extensions=["extra", "sane_lists", "toc"])
+    converter = markdown.Markdown(
+        extensions=["extra", "sane_lists", "toc",
+                    "pymdownx.tilde", "pymdownx.tasklist"],
+        # `tilde` gives `~~struck out~~` as `<del>`, and would also give a
+        # single `~2~` as a subscript. Subscript is off: a lone tilde is
+        # already prose here — "~1,000", "after ~5 minutes", a CSS
+        # `:checked ~ .toggle` selector — and two of those on nearby lines
+        # would pair up into a subscript spanning them.
+        extension_configs={"pymdownx.tilde": {"subscript": False}},
+    )
     html_out = converter.convert(mark_markdown_wrappers(body))
     return html_out, list(getattr(converter, "toc_tokens", []))
 
@@ -1982,7 +2024,7 @@ def legacy_ids() -> dict[str, str]:
     path = COURSES / REDIRECTS_FILE
     if not path.is_file():
         return {}
-    data = yaml.safe_load(path.read_text()) or {}
+    data = read_yaml(path, strict=False) or {}
     legacy: dict[str, str] = {}
     old_re = re.compile(r"^tutorials/(?P<module>[^/]+)/(?P<slug>[^/]+)\.html$")
     new_re = re.compile(r"^tutorials/(?P<id>[^/]+)\.html$")
@@ -2510,7 +2552,7 @@ def own_glossary(tutorial: Tutorial) -> list[dict]:
     path = glossary_path(tutorial)
     if not path.is_file():
         return []
-    data = load_yaml_no_duplicate_keys(path.read_text()) or {}
+    data = read_yaml(path) or {}
     entries = data.get("entries") or []
     for entry in entries:
         if entry.get("kind") not in GLOSSARY_KINDS:
@@ -2627,7 +2669,7 @@ def _load_basics(path: Path, kind: str) -> list[dict]:
     """
     if not path.is_file():
         return []
-    data = load_yaml_no_duplicate_keys(path.read_text()) or {}
+    data = read_yaml(path) or {}
     groups = data.get("groups") or []
     for group in groups:
         if not group.get("label"):
@@ -3894,9 +3936,11 @@ FEEDBACK_CONFIG_FILE = "feedback.yaml"
 
 def feedback_enabled() -> bool:
     """Whether the "report something about this page" link appears anywhere
-    on the site, read fresh from `planning/feedback.yaml` on every call —
-    the same reasoning as `courses()`: a constant computed at import
-    time would not see a test's temporary ROOT.
+    on the site, read from `planning/feedback.yaml` rather than held in a
+    constant computed at import time, which would not see a test's
+    temporary ROOT — the same reasoning as `courses()`. `read_yaml()`
+    parses it once per build and again whenever it changes, so the file
+    still decides and the build does not re-parse it for all 1256 pages.
 
     Missing the file, or the file missing `enabled:`, both mean on. The
     switch exists to turn the link off in a hurry — one line, editable from
@@ -3906,7 +3950,7 @@ def feedback_enabled() -> bool:
     path = ROOT / "planning" / FEEDBACK_CONFIG_FILE
     if not path.is_file():
         return True
-    data = yaml.safe_load(path.read_text()) or {}
+    data = read_yaml(path, strict=False) or {}
     return bool(data.get("enabled", True))
 
 
