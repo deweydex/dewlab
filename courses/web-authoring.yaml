@@ -39,6 +39,7 @@ contents:
   - keyframes-and-the-checkbox-hack
 - title: A site with several pages
   tutorials:
+  - your-copy-of-the-project-starter
   - planning-a-site
   - pages-and-navigation
   - cards-in-a-row

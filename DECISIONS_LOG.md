@@ -4174,3 +4174,19 @@ Two separate things, and the first is not decoration. **`the-box` had one box.**
 The grid diagram's cells still read `header`, `nav`, `main`, `footer`. Those are literal strings from `grid-template-areas`, not labels — whimsy there would break the one correspondence the diagram exists to make.
 
 *Cost to change: nil. Content in three markdown cells and two paragraphs of prose.*
+
+---
+
+**7.202 — Arc 2 gets the door Arc 1 always had: a page that introduces and links `project_wad`, which eight tutorials sent readers to a fork of without anything ever naming it.** Josh, remembering two starter repositories and asking whether they were still there: "I thought we had linked to two repositories under my handle that were basically the playgrounds for them to jump through hoops and learn how things work. Is that still in those tutorials or have we kind of lost that somehow?"
+
+The repositories are fine. `deweydex/portfolio_wad` and `deweydex/project_wad` are both public and both current. What was missing is the second door. `portfolio_wad` has a whole tutorial devoted to it — `your-copy-of-the-starter`, in Welcome, which explains the two ways to take a copy and links it. `project_wad` appeared in eight tutorials, always as "Let's open your fork of `project_wad`", always in backticks, **never once as a link**, and introduced nowhere. A grep for any mention that is not "your fork of" returns nothing.
+
+So the Arc 2 series opened on `planning-a-site`, whose first "Your turn" reads "Let's open your fork of `project_wad` and its `planning.md`" — addressed to a reader who has never heard of that repository, has never been told to take a copy, and has no link to follow. The consolidation plan calls `project_wad` "the second starter, section 15's Arc 2 door"; the starter was built on 2026-09-05 and the door never was.
+
+`your-copy-of-the-project-starter` is that door, first in "A site with several pages". It mirrors the Arc 1 page's shape rather than repeating it — the two buttons are named, and the explanation of what each does stays where it already is, one link away. What it adds is what a reader actually needs at that point: that this is a *second* starter and why, that it is a skeleton rather than a finished site, what the five pages and three documents are, and that `planning.md` comes before any HTML. Written from the repository's own files rather than from the plan's description of them.
+
+**Two structures had to learn about it, and only one of them said so.** `courses/web-authoring.yaml` places it; `planning/curriculum/topic-groups.yaml` is the one that fails a test when you forget (`test_every_real_tutorial_is_reachable_from_some_group`), which is how this was caught rather than shipped as a tutorial reachable from the series but not from the topics page.
+
+No glossary file. The one term the Arc 1 page defines is *fork*, and redefining it here would be the vocabulary report's own complaint.
+
+*Cost to change: nil. One folder, two list entries.*
