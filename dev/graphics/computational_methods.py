@@ -13,12 +13,14 @@ one a reader's own cell would ask.
 from __future__ import annotations
 
 import argparse
+import ast
 import collections
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import states  # noqa: E402
 import tree as tree_renderer  # noqa: E402
 from tree import Node  # noqa: E402
 
@@ -113,7 +115,37 @@ def a_folder_of_folders() -> str:
     ]), note_style="code")
 
 
+def _matrix_from_cell(slug: str, cell_id: str, name: str) -> list[list[float]]:
+    """Read a matrix literal out of the tutorial's own cell.
+
+    Same rule as everywhere else here: if the page changes its numbers, the
+    picture changes with them, and if it stops defining them this fails at
+    generation time rather than drawing yesterday's weather.
+    """
+    page = (TUTORIALS / slug / f"{slug}.md").read_text()
+    if f"id: {cell_id}" not in page:
+        raise SystemExit(f"{slug}: no cell called {cell_id!r} any more")
+    block = page.split(f"id: {cell_id}", 1)[1].split("```", 1)[0]
+    for line in block.splitlines():
+        if line.strip().startswith(f"{name} ="):
+            return ast.literal_eval(line.split("=", 1)[1].strip())
+    raise SystemExit(f"{slug}/{cell_id}: no {name} defined")
+
+
+def a_weather_machine() -> str:
+    """The transition matrix in *Where Chains Lead*, drawn as what it is.
+
+    Two states, four arrows, and the two self-loops included, because each
+    row of the matrix is the arrows leaving one state and a row summing to
+    one is only visible if every arrow out of that state is there.
+    """
+    matrix = _matrix_from_cell("where-chains-lead", "a-weather-machine-1", "P")
+    return states.render(["sunny", "rainy"], matrix,
+                         fmt=lambda p: f"{round(p * 100)}%")
+
+
 DIAGRAMS = {
+    "where-chains-lead/weather-states.svg": a_weather_machine,
     "three-ways-to-make-change/repeated-question.svg": the_same_question_twice,
     "finding-everything-inside-a-folder/photos-tree.svg": a_folder_of_folders,
 }

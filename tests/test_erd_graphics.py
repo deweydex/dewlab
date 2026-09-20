@@ -187,3 +187,40 @@ class TestTheRepeatedQuestion:
         walk(drawn)
         assert len(marked) >= 2, "a mark that appears once argues nothing"
         assert set(marked) == {str(repeated)}
+
+
+try:
+    import states as state_renderer
+except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
+    state_renderer = None
+
+needs_states = pytest.mark.skipif(state_renderer is None, reason="svgwrite is not installed")
+
+
+@needs_states
+class TestStateDiagram:
+    WEATHER = [[0.7, 0.3], [0.4, 0.6]]
+
+    def test_every_entry_of_the_matrix_gets_an_arrow(self):
+        """Including the two on the diagonal. Dropping a self-loop would make
+        a row look as though it did not sum to one."""
+        svg = state_renderer.render(["sunny", "rainy"], self.WEATHER,
+                                    fmt=lambda p: f"{round(p * 100)}%")
+        for row in self.WEATHER:
+            for probability in row:
+                assert f">{round(probability * 100)}%<" in svg
+
+    def test_a_zero_chance_draws_no_arrow(self):
+        svg = state_renderer.render(["a", "b"], [[1.0, 0.0], [0.0, 1.0]],
+                                    fmt=lambda p: f"{p:g}")
+        assert svg.count(">0<") == 0
+
+    def test_the_matrix_is_read_from_the_tutorial_not_restated(self):
+        matrix = cm._matrix_from_cell("where-chains-lead", "a-weather-machine-1", "P")
+        assert matrix == self.WEATHER
+        for row in matrix:
+            assert sum(row) == pytest.approx(1.0), "a row that does not sum to 1"
+
+    def test_more_than_two_states_says_so_rather_than_drawing_badly(self):
+        with pytest.raises(ValueError, match="two states"):
+            state_renderer.render(["a", "b", "c"], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
