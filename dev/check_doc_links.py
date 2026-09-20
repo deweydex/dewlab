@@ -65,8 +65,8 @@ GENERATED = ("site/", "dev/pyodide/", "assets/vendor/pyodide/",
              "node_modules/", "__pycache__/")
 
 GENERATED_PAGES = {"index.html", "tree.html", "topics.html", "about.html",
-                   "editor.html", "search-index.json", "reference-index.json",
-                   "routes.json"}
+                   "editor.html", "all-notes.html", "search-index.json",
+                   "reference-index.json", "routes.json"}
 
 # Docs in these folders aren't held to link currency: generated or
 # per-module content, not architecture prose. A link from an active doc
