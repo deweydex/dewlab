@@ -40,8 +40,13 @@ close to self-contained:
   worker/main-thread split `pyodide-engine.js` uses.
 - **Illustrative code and maths** — syntax highlighting for read-only code
   blocks, and KaTeX for rendered maths.
-- **Saved work** — autosaving a student's cells and notes, and restoring
-  them.
+- **Saved work** — autosaving a student's cells, notes and highlights, and
+  restoring them.
+- **Highlights and margin notes** — marking a passage of prose, in one of
+  four colours, with an optional note attached; a live list of them in
+  the Notes panel (`refreshHighlightsList()`), and a cross-page summary
+  at `all-notes.html` built from the same saved records by a separate
+  file, `assets/my-notes.js`.
 - **Progress** — the "3 of 8 cells run" summary and the contents-page
   badges.
 - **Versions** — for a tutorial with more than one release: which one a
@@ -402,6 +407,51 @@ actually running on — inside the Worker for the hosted site, or right
 here on the main thread for the offline export — which is why there are
 two near-identical implementations of the same lookup functions
 (`docFor`-style vs. `docForMT`-style) rather than one.
+
+---
+
+## Highlights: colour, the Notes panel's own list, and My Notes
+
+A highlight anchors to a passage of prose (`locateHighlightAnchor()`,
+`describeQuote()`) rather than a build-time id — see `DECISIONS_LOG.md`
+7.155–7.160 for why that turned out cheap. Everything past that base is
+this file's own addition, built together rather than across six rollout
+steps the way the base feature was:
+
+- **Colour.** `HIGHLIGHT_COLORS` names four (amber the default, then
+  green/blue/pink); a highlight's `color` field rides in the same saved
+  record `note` already does. The popover's swatch row
+  (`initHighlightPopover()`) recolours a mark immediately on click —
+  `recolorHighlight()` sets or clears `[data-highlight-color]` on every
+  `<mark>` sharing that id, since a highlight split across an inline
+  element (`wrapRange()`'s own comment explains when) is more than one
+  `<mark>`. A fresh highlight starts in whichever colour was used last,
+  read back from `localStorage` (`readLastHighlightColor()`) — across
+  every tutorial, not per page, since a reader's own colour scheme is a
+  reader-wide choice.
+- **The Notes panel's own list** (`refreshHighlightsList()`,
+  `renderHighlightRow()`) turns the in-memory `highlights` array into
+  something reviewable: one row per highlight, a colour dot, the quote,
+  and a note preview if there is one. It's also the only place on the
+  page that says highlighting exists at all — nothing about the
+  selection toolbar itself hints at it — so its own copy carries that
+  explanation. Clicking a row calls `jumpToHighlight()`: close the
+  panels, scroll the mark into view, pulse it (`.dl-highlight-flash`,
+  `tutorial-style.css`), and open its popover, the same three things
+  clicking the mark directly does.
+- **My Notes** (`all-notes.html`, `write_all_notes_page()` in `build.py`,
+  `assets/my-notes.js`) is the same idea across every tutorial at once.
+  `localStorage` is shared per origin, not per page, so this page reads
+  every `dewlab:progress:*` record itself, client-side — nothing here
+  needs a server or an account. The one thing storage can't supply is a
+  human title for a bare slug, so the build bakes in a small
+  `{slug: title}` map as a JSON data island (`#dewlab-titles`), the same
+  pattern `tree.js` already uses for its own topic-graph data. A card's
+  own highlight rows link to `tutorials/<slug>.html#dl-highlight-<id>`;
+  landing on that hash (checked once, at boot, after `renderMaths()`
+  settles the page's layout) calls `jumpToHighlight()` again, this time
+  with `openPopover: false` — a reader arriving from a link is visiting a
+  passage to re-read it, not asking to edit it.
 
 ---
 

@@ -56,6 +56,7 @@
   <div class="dl-corner-dock dl-corner-dock-tl" id="dl-dock-left">
     <div class="dl-corner-identity">
       <a class="dl-wordmark" href="{{ROOT_BASE}}index.html">dewlab</a>
+      <a class="dl-mynotes-link" href="{{ROOT_BASE}}all-notes.html">My notes</a>
       {{NAV_SEARCH}}
       {{CRUMBS}}
     </div>
@@ -197,6 +198,25 @@
         <button type="button" data-value="off" role="radio">off</button>
       </div>
     </div>
+  </section>
+
+  <!-- Every highlight this reader has made on this page, live —
+       refreshHighlightsList() (tutorial-runtime.js), fed by the same
+       `highlights` array the selection toolbar and its popover already
+       maintain (initReferenceLookup()/initHighlightPopover()). This is
+       also the only place on the page that says highlighting exists —
+       nothing about selecting text hints at it otherwise. -->
+  <section class="dl-settings-section" id="dl-settings-highlights">
+    <h3>Your highlights</h3>
+    <p class="dl-panel-note">
+      Select any passage of text on the page to highlight it and, if you
+      like, add a note — a definition worth remembering, a step that
+      tripped you up, anything you'd want back later. Click a highlight
+      here or in the page to change its colour, edit its note, or remove
+      it.
+    </p>
+    <p class="dl-panel-note" id="dl-highlights-status">Nothing highlighted yet.</p>
+    <div class="dl-highlight-list" id="dl-highlights-list"></div>
   </section>
 
   <section class="dl-settings-section" id="dl-settings-progress">

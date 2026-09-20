@@ -35,6 +35,9 @@
   --dl-panel-bg: #ffffff;
   --dl-shadow: rgba(27, 42, 74, 0.14);
   --dl-highlight-bg: #fbe8a6;
+  --dl-highlight-green: #bfe3c4;
+  --dl-highlight-blue: #bcd8f5;
+  --dl-highlight-pink: #f5cbe0;
 
   --dl-mono: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
 
@@ -62,6 +65,9 @@
   --dl-type-css: #93c5fd;
   --dl-type-js: #f0a8db;
   --dl-highlight-bg: #4a3a12;
+  --dl-highlight-green: #1d3a24;
+  --dl-highlight-blue: #1a3350;
+  --dl-highlight-pink: #4a2138;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -86,6 +92,9 @@
     --dl-type-css: #93c5fd;
     --dl-type-js: #f0a8db;
     --dl-highlight-bg: #4a3a12;
+    --dl-highlight-green: #1d3a24;
+    --dl-highlight-blue: #1a3350;
+    --dl-highlight-pink: #4a2138;
   }
 }
 
@@ -299,7 +308,10 @@ a { color: var(--dl-link); text-underline-offset: 0.15em; }
  * whatever the surrounding prose already uses, so this never fights a
  * reader's own theme, font, or high-contrast choice; --dl-highlight-bg
  * is picked per theme to keep --dl-fg at or above the WCAG AA 4.5:1
- * minimum against it. */
+ * minimum against it. Amber is the default and the one un-migrated
+ * (color-less) saved highlights fall back to; [data-highlight-color]
+ * overrides it for the three the popover's swatch row offers, each with
+ * the same per-theme, AA-checked treatment (test_highlight_colors.py). */
 mark.dl-highlight {
   background: var(--dl-highlight-bg);
   color: inherit;
@@ -307,8 +319,27 @@ mark.dl-highlight {
   cursor: pointer;
 }
 
+mark.dl-highlight[data-highlight-color="green"] { background: var(--dl-highlight-green); }
+mark.dl-highlight[data-highlight-color="blue"] { background: var(--dl-highlight-blue); }
+mark.dl-highlight[data-highlight-color="pink"] { background: var(--dl-highlight-pink); }
+
 mark.dl-highlight:focus-visible {
   outline: 2px solid var(--dl-orange);
+  outline-offset: 1px;
+}
+
+/* Jumping to a highlight from the Notes panel's own list, or from another
+   page's My Notes list -- a brief pulse says "here" the way a search
+   result landing on screen does nowhere else on the site yet. Purely
+   decorative, so the global [data-motion="reduced"]/prefers-reduced-motion
+   rule (this file, top) already zeroes its duration without anything
+   extra needed here. */
+@keyframes dl-highlight-flash {
+  0%, 100% { outline: 2px solid transparent; }
+  25%, 75% { outline: 2px solid var(--dl-orange); }
+}
+mark.dl-highlight.dl-highlight-flash {
+  animation: dl-highlight-flash 1.6s ease-in-out;
   outline-offset: 1px;
 }
 
@@ -1384,6 +1415,68 @@ p code, li code {
 }
 .dl-corner-identity .dl-crumbs { max-width: 100%; }
 
+/* A quiet second link under the wordmark, present on every page (the
+   token that positions it, {{ROOT_BASE}}, is already substituted per
+   page type) -- deliberately smaller and unbolded next to .dl-wordmark's
+   own weight, since this is a way *out* to a different kind of page
+   (every highlight and note across every tutorial, all-notes.html), not
+   a second identity competing with the first. */
+.dl-mynotes-link {
+  font-size: 0.78rem;
+  color: var(--dl-muted);
+  text-decoration: none;
+}
+.dl-mynotes-link:hover,
+.dl-mynotes-link:focus-visible {
+  color: var(--dl-orange);
+  text-decoration: underline;
+}
+
+/* My Notes (all-notes.html, write_all_notes_page()): one card per
+   tutorial with something saved, built entirely client-side by
+   my-notes.js since localStorage can't be read at build time. Reuses
+   .dl-highlight-row/.dl-highlight-dot/.dl-highlight-quote/-note from the
+   Notes panel's own list rather than a second set of near-identical
+   rules -- the only difference here is that a row is a real link
+   (my-notes.js builds an <a>, not a <button>), which needs none of its
+   own styling beyond what those classes already give it. */
+.dl-my-notes-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 1rem 0;
+}
+#dl-my-notes-search {
+  flex: 1;
+  min-width: 12rem;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 0.35rem;
+  background: var(--dl-bg);
+  color: var(--dl-fg);
+}
+.dl-my-notes-card {
+  margin: 1.5rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--dl-rule);
+}
+.dl-my-notes-card:first-of-type { border-top: none; padding-top: 0; }
+.dl-my-notes-card h2 { margin: 0 0 0.4rem; font-size: 1.1rem; }
+.dl-my-notes-freeform {
+  white-space: pre-wrap;
+  color: var(--dl-fg);
+  margin: 0 0 0.5rem;
+}
+.dl-my-notes-card .dl-highlight-row {
+  display: flex;
+  text-decoration: none;
+  color: inherit;
+}
+
 /* The where-you-are tree — all tutorials, then this tutorial's own
    module, its series, and, inside the series list, the page's own title
    opening onto its sections — four independently collapsible levels with
@@ -1818,6 +1911,65 @@ p code, li code {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--dl-muted);
+}
+
+/* Your highlights, in the Notes panel (dl-settings-highlights, shell.html):
+   one row per highlight on this page, a button rather than a link since it
+   scrolls and opens the popover rather than navigating -- the same
+   row shape Variables uses above, with a colour dot standing in for the
+   type column. */
+.dl-highlight-list { margin: 0; }
+.dl-highlight-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.4rem 0;
+  border-top: 1px solid var(--dl-rule);
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.dl-highlight-row:first-child { border-top: none; }
+.dl-highlight-row:hover .dl-highlight-quote,
+.dl-highlight-row:focus-visible .dl-highlight-quote {
+  color: var(--dl-orange);
+}
+.dl-highlight-dot {
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-top: 0.25em;
+  border-radius: 50%;
+  background: var(--dl-highlight-bg);
+}
+.dl-highlight-dot[data-highlight-color="green"] { background: var(--dl-highlight-green); }
+.dl-highlight-dot[data-highlight-color="blue"] { background: var(--dl-highlight-blue); }
+.dl-highlight-dot[data-highlight-color="pink"] { background: var(--dl-highlight-pink); }
+.dl-highlight-text {
+  flex: 1;
+  min-width: 0;
+}
+.dl-highlight-quote {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--dl-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dl-highlight-note {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--dl-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Packages, collapsed by default (dl-settings-packages, shell.html): what
@@ -3471,6 +3623,34 @@ p code, li code {
   color: var(--dl-fg);
   box-shadow: 0 2px 8px var(--dl-shadow);
   font-family: var(--dl-font-family);
+}
+
+/* The colour swatch row: a plain radiogroup of four round buttons, each
+   filled with the colour it sets, the same shape .dl-seg's roving-tabindex
+   buttons already use elsewhere in a panel -- reused here rather than
+   invented fresh, even outside a panel. */
+.dl-highlight-popover-colors {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.dl-highlight-popover-color {
+  width: 1.35rem;
+  height: 1.35rem;
+  padding: 0;
+  border: 1px solid var(--dl-panel-border, var(--dl-muted));
+  border-radius: 50%;
+  background: var(--dl-highlight-bg);
+  cursor: pointer;
+}
+.dl-highlight-popover-color[data-highlight-color="green"] { background: var(--dl-highlight-green); }
+.dl-highlight-popover-color[data-highlight-color="blue"] { background: var(--dl-highlight-blue); }
+.dl-highlight-popover-color[data-highlight-color="pink"] { background: var(--dl-highlight-pink); }
+
+.dl-highlight-popover-color[aria-checked="true"] {
+  outline: 2px solid var(--dl-orange);
+  outline-offset: 1px;
 }
 
 .dl-highlight-popover-note {
