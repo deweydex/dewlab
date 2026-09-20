@@ -1,6 +1,5 @@
-"""A ```question fence (planning/QUESTION_BLOCKS.md): multiple-choice and
-fill-in-the-blank, the header checks each type has, and the id space it
-shares with cells."""
+"""A ```question fence: multiple-choice and fill-in-the-blank, the
+header checks each type has, and the id space it shares with cells."""
 
 from __future__ import annotations
 

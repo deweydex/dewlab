@@ -1972,7 +1972,7 @@ function buildCells(manifest) {
   }
 }
 
-/* Every ```question fence on the page (planning/QUESTION_BLOCKS.md) —
+/* Every ```question fence on the page —
  * one entry per `.dl-question` the build wrote, read straight off the
  * DOM rather than the manifest: unlike a cell, nothing about a question
  * needs restoring beyond what saveNow()/restoreSaved() already carry
