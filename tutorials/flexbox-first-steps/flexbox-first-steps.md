@@ -63,6 +63,28 @@ asks for at least 80 pixels, then grows to share any space left over
 once every card has that much. Once the row is too narrow to give all
 three their minimum, one moves down.
 
+But 80 pixels is the width of the card's content, not the width of the
+card. The padding and the border sit outside it, the way [the
+box](tutorial:the-box) showed, so each card takes 114 pixels in all —
+and three of those, with two 12-pixel gaps between them, need 366.
+
+<div class="dl-drawn dl-flexfit" role="img" aria-label="One card drawn at full size: an 80 pixel content box, 16 pixels of padding on each side and a 1 pixel border, 114 pixels in all. Below it, three such cards in a row with two 12 pixel gaps between them, 366 pixels in all — the width below which the third card moves to a row of its own.">
+<div class="dl-fx-block">
+<div class="dl-fx-card"><div class="dl-fx-content">80</div></div>
+<div class="dl-fx-rule"></div>
+</div>
+<p class="dl-fx-sum">1 + 16 + 80 + 16 + 1 = 114px <span class="dl-fx-said">one card, border and padding included</span></p>
+<div class="dl-fx-block">
+<div class="dl-fx-row">
+<div class="dl-fx-card"><div class="dl-fx-content">One</div></div>
+<div class="dl-fx-card"><div class="dl-fx-content">Two</div></div>
+<div class="dl-fx-card"><div class="dl-fx-content">Three</div></div>
+</div>
+<div class="dl-fx-rule"></div>
+</div>
+<p class="dl-fx-sum">114 + 12 + 114 + 12 + 114 = 366px <span class="dl-fx-said">narrower than this, and Three moves down</span></p>
+</div>
+
 ## Your turn
 
 Let's open your fork of the starter and find `styles.css`. Its

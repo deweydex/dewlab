@@ -138,3 +138,52 @@ def test_the_annotated_traceback_names_the_error_the_cell_raises():
         raise AssertionError(f"cell {CELL_ID} no longer raises anything")
 
     assert _diagram_rows(WHEN_IT_GOES_WRONG)[-1] == raised
+
+
+# --------------------------------------------------------------------------
+# The wrap threshold in flexbox-first-steps.
+#
+# The diagram measures the tutorial's own cards, and the numbers on it are
+# only true while the CSS cell above it says what it says now. Edit the
+# padding and the picture keeps claiming 366px for a row that no longer
+# needs it — a failure nothing else would notice, since both the cell and
+# the diagram would still render perfectly.
+# --------------------------------------------------------------------------
+
+FLEXBOX = REPO / "tutorials/flexbox-first-steps/flexbox-first-steps.md"
+SUM_ROW_RE = re.compile(r'<p class="dl-fx-sum">([^<]*)')
+
+
+def _flexbox_measurements() -> dict[str, int]:
+    css = re.search(r"^```css site\n(.*?)^```", FLEXBOX.read_text(), re.S | re.M)
+    assert css, "the site editor's CSS cell is gone from flexbox-first-steps"
+    body = css.group(1)
+
+    def one(pattern: str, what: str) -> int:
+        match = re.search(pattern, body)
+        assert match, f"no {what} in the tutorial's CSS cell"
+        return int(match.group(1))
+
+    return {
+        "basis": one(r"flex:\s*\d+\s+\d+\s+(\d+)px", "flex-basis"),
+        "padding": one(r"padding:\s*(\d+)px", "card padding"),
+        "border": one(r"border:\s*(\d+)px", "card border"),
+        "gap": one(r"gap:\s*(\d+)px", "row gap"),
+    }
+
+
+def test_the_wrap_threshold_matches_the_tutorials_own_css():
+    m = _flexbox_measurements()
+    card = m["border"] * 2 + m["padding"] * 2 + m["basis"]
+    row = card * 3 + m["gap"] * 2
+
+    sums = [line.strip() for line in SUM_ROW_RE.findall(FLEXBOX.read_text())]
+    assert len(sums) == 2, "expected two arithmetic lines under the diagram"
+
+    assert sums[0] == (
+        f"{m['border']} + {m['padding']} + {m['basis']} + {m['padding']} + "
+        f"{m['border']} = {card}px"
+    ), f"the card's arithmetic no longer follows from the CSS cell: {sums[0]!r}"
+    assert sums[1] == (
+        f"{card} + {m['gap']} + {card} + {m['gap']} + {card} = {row}px"
+    ), f"the row's arithmetic no longer follows from the CSS cell: {sums[1]!r}"

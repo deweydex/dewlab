@@ -3995,3 +3995,84 @@ p code, li code {
 .dl-gm-nav { grid-area: nav; }
 .dl-gm-main { grid-area: main; }
 .dl-gm-footer { grid-area: footer; }
+
+/* Where the row runs out of room, in flexbox-first-steps.
+ *
+ * Everything here is in px rather than rem, which is the one place on the
+ * site that is right: these are measurements of a layout written in px, and
+ * a ruler that grew with the reader's font would be measuring nothing. The
+ * cards are built with the tutorial's own padding and border, so the
+ * picture is 366px wide because it is three of them and two gaps, not
+ * because a number was typed in.
+ *
+ * The content box keeps the-box's convention — same fill as the padding,
+ * dashed edge — since the point being made is that one of these tutorials
+ * explains the other. */
+.dl-flexfit { max-width: 100%; }
+
+.dl-fx-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dl-fx-card {
+  /* Sized by its content, so the one standing on its own measures 114px
+     rather than filling the column. Inside the row it is a flex item and
+     would have done that anyway. */
+  display: inline-block;
+  border: 1px solid var(--dl-fg);
+  border-radius: 6px;
+  padding: 16px;
+  background: var(--dl-highlight-blue);
+}
+
+.dl-fx-content {
+  width: 80px;
+  border: 1px dashed var(--dl-muted);
+  text-align: center;
+  font-family: var(--dl-mono);
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--dl-fg);
+}
+
+/* Shrink-wrapped to what it holds, so the dimension rule below it is
+   exactly as wide as the thing being measured and 366px is something the
+   reader can see rather than a number to take on trust. */
+.dl-fx-block {
+  width: max-content;
+  max-width: 100%;
+}
+
+.dl-fx-rule {
+  position: relative;
+  height: 0;
+  margin-top: 0.45rem;
+  border-top: 0.125rem solid var(--dl-muted);
+}
+.dl-fx-rule::before,
+.dl-fx-rule::after {
+  content: "";
+  position: absolute;
+  top: -0.3rem;
+  width: 0;
+  height: 0.6rem;
+  border-left: 0.125rem solid var(--dl-muted);
+}
+.dl-fx-rule::before { left: 0; }
+.dl-fx-rule::after { right: 0; }
+
+.dl-fx-sum {
+  margin: 0.4rem 0 1.4rem;
+  font-family: var(--dl-mono);
+  font-size: 0.75rem;
+  color: var(--dl-fg);
+}
+.dl-fx-sum:last-child { margin-bottom: 0; }
+
+.dl-fx-said {
+  font-style: italic;
+  font-family: var(--dl-font-family);
+  color: var(--dl-muted);
+}
