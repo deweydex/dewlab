@@ -659,6 +659,7 @@ Beyond ordinary Python, a cell can use:
 | `button(label, on_click)` | A button that calls your function, appending output below itself. |
 | `image_input(label="Choose an image", id=None)` | A picker limited to image files. `.value` is a Pillow `Image`, or the raw bytes where Pillow is not loaded. |
 | `await load_csv(name)` | Load a CSV from `data/` into a DataFrame. |
+| `await load_text(name)` | Fetch a plain-text file — from `data/`, or a full URL — and return its contents as a string. |
 | `run_query(conn_or_path, sql, params=None, max_rows=20, caption=None)` | Run a SQL query and render the result as a table. Takes an open `sqlite3` connection or a path to pass to `sqlite3.connect()`. |
 
 Widgets keep their values when a cell is re-run, so a student can type an answer,
