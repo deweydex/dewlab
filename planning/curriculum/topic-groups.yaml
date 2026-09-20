@@ -90,6 +90,7 @@ groups:
     tutorials:
       - counting-carefully
       - what-are-the-chances
+      - three-doors
 
   - key: logic-and-sets
     name: Logic, sets, and decisions
@@ -203,6 +204,7 @@ groups:
       thousands of times and counting, rather than by solving it.
     tutorials:
       - what-are-the-chances
+      - three-doors
       - leaving-it-to-chance
       - counting-darts
       - a-model-that-corrects-itself

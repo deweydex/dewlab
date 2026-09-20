@@ -119,10 +119,56 @@ def walking_two_sorted_lists() -> str:
     return steps.merge_walk(left, right)
 
 
+
+def the_monty_hall_cases() -> str:
+    """The three equally likely cases behind *Three Doors*.
+
+    Enumerated rather than typed, on this file's own rule: the branches,
+    the odds on them and the count underneath all fall out of walking the
+    three places the car can be, so the picture cannot disagree with the
+    simulation on the page.
+
+    The middle row is the part worth drawing. In two of the three cases
+    the host has no choice at all about which door to open, and that —
+    not the count of doors left standing — is where the two thirds comes
+    from. A picture with only "car here / car not here" hides exactly the
+    step the reader is stuck on.
+    """
+    your_pick = 1
+    doors = (1, 2, 3)
+
+    branches = []
+    for car in doors:
+        allowed = [d for d in doors if d != your_pick and d != car]
+        if len(allowed) == 1:
+            host = f"Host must open {allowed[0]}"
+        else:
+            host = "Host opens " + " or ".join(str(d) for d in allowed)
+        switching_wins = car != your_pick
+        outcome = "Switching wins" if switching_wins else "Switching loses"
+        branches.append((car, host, outcome, switching_wins))
+
+    wins = sum(1 for *_, won in branches if won)
+    root = Node(
+        f"You pick door {your_pick}",
+        note=f"switching wins {wins} of these {len(branches)}",
+        children=[
+            Node(
+                f"Car behind {car}",
+                edge=f"1 in {len(branches)}",
+                children=[Node(host, children=[Node(outcome, marked=won)])],
+            )
+            for car, host, outcome, won in branches
+        ],
+    )
+    return tree_renderer.render(root)
+
+
 DIAGRAMS = {
     "sets-as-sorted-lists/merge-walk.svg": walking_two_sorted_lists,
     "numbers-and-their-families/number-domains.svg": the_number_domains,
     "what-are-the-chances/two-aces-tree.svg": drawing_two_aces,
+    "three-doors/monty-hall-cases.svg": the_monty_hall_cases,
 }
 
 
