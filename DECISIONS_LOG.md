@@ -4050,3 +4050,13 @@ Left unaddressed this round: reordering controls within a panel, and whether Giv
 Kept: anything a person writing, reviewing, or troubleshooting a tutorial actually opens — the style guide, `EXERCISES.md`, `REFERENCE_PANEL.md` (leaned on directly by the `tutorial-glossary` skill), `DOT_DOCK.md` (kept on Josh's standing instruction regardless of this pass), the curriculum data and the three `.claude/skills/`. Citations into the eleven deleted files were stripped and reworded across `build.py`, several tests, nine `data/*.yaml` attribution files, and `planning/README.md`'s index, the same way the archive batch was handled — not repointed, since a citation to a closed design phase is exactly the thing this pass exists to remove.
 
 *Cost to change: low for the nine straightforward deletions. Low-ish for `CONTENT_AND_FILE_ARCHITECTURE.md` and `VERSIONS.md` — their still-true facts now live in `docs/WRITING_TUTORIALS.md`, so nothing described there was actually lost, only moved to the one file a tutorial writer already has open.*
+
+---
+
+**7.193 — `planning/README.md` and `PLAIN_LANGUAGE_PASS.md` deleted; `REFERENCE_PANEL.md` §6 rewritten to describe the panel's current shape instead of its shipped-then-superseded one.** Josh, continuing 7.192's pass: `planning/README.md` was an index for a folder now down to five files, whose names already say what they are; `PLAIN_LANGUAGE_PASS.md` was 355 lines, of which perhaps twenty were not a dated log of already-shipped editorial passes — the nine checks it explained are already in `PEDAGOGICAL_STYLE_GUIDE.md` §4 verbatim, so the log was the only thing left, and it is exactly the kind of history git already keeps.
+
+`REFERENCE_PANEL.md` stayed, since `docs/WRITING_TUTORIALS.md` and the `tutorial-glossary` skill both lean on its accumulation logic (§1-5), but its §6 had drifted into the same problem in miniature: it described the panel "as it originally shipped," then a paragraph underneath correcting that to the real, current shape. Rewritten to state the current shape once — a tab in the left corner dock, a docked sidebar with three internal tabs (Reference/Math Basics/Python Basics), not a floating card — with no "here's what changed" framing needed once there is only one shape being described.
+
+Citations into the two deleted files were stripped from `CLAUDE.md`, `build.py`, `docs/WRITING_TUTORIALS.md`, and `planning/curriculum/review/split-plan.md`.
+
+*Cost to change: low. `PLAIN_LANGUAGE_PASS.md`'s small open backlog (a vocabulary sweep, some verbless fragments, thin bibliographies) is gone with the file rather than moved somewhere else — recoverable from git history if anyone picks that work back up.*

@@ -4800,8 +4800,7 @@ def write_page(shell: str, name: str) -> Path:
     and was written out three times before this function existed.
 
     Every word on these pages is student-facing: the plain-language rules
-    in PEDAGOGICAL_STYLE_GUIDE.md section 4 apply, and
-    planning/PLAIN_LANGUAGE_PASS.md records each pass.
+    in PEDAGOGICAL_STYLE_GUIDE.md section 4 apply.
     """
     stem, crumb, nav = SITE_PAGES[name]
     meta, body = read_page(name)

@@ -63,8 +63,7 @@ the current test gives: no outcome goes untaught without somebody noticing.
 ## Every new topic is student-facing
 
 `plain` and `uses` are read by students on the topic tree. They go through the
-eight checks in `CLAUDE.md`, and `planning/PLAIN_LANGUAGE_PASS.md` gets updated
-to say this surface has been through the pass. A split child inherits its
+plain-language checks in `PEDAGOGICAL_STYLE_GUIDE.md` §4. A split child inherits its
 parent's tone, not its sentences: seven number families do not want one
 sentence cut seven ways.
 
