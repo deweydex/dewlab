@@ -3403,6 +3403,26 @@ function workerRequest(type, payload) {
 
 const openStreams = new Map(); // cellId -> {el, cssClass}
 
+/* A widget rendered by Worker-run Python has no way to report itself back:
+ * `_MessageSink.append_html()` returns None, so the Python side holds no
+ * element reference and can attach no listener. The page holds the element
+ * instead, and posts one message per change into the same dict `.value`
+ * reads. The value arrives between runs rather than during one, which is
+ * exactly the interaction a cell already has: type, press Run, read it. */
+function wireWorkerWidget(cellId, widget) {
+  const control = widget.querySelector("input, select");
+  if (!control) return;
+  /* The DOM id is `dl-w-<cellId>-<widgetId>`, and the cell id is known here,
+   * so the widget id is whatever follows that prefix — ids of both kinds are
+   * lowercase and hyphenated, and a widget id may hold hyphens of its own. */
+  const prefix = `dl-w-${cellId}-`;
+  if (!control.id.startsWith(prefix)) return;
+  const widgetId = control.id.slice(prefix.length);
+  control.addEventListener("input", () => {
+    workerRequest("widget-changed", { cellId, widgetId, value: control.value });
+  });
+}
+
 function applyOutputEvent(cellId, kind, cssClass, text, markup) {
   // A reader's own cell streams output through this exact same worker
   // path as an authored one — searching only `cells` silently dropped
@@ -3427,7 +3447,9 @@ function applyOutputEvent(cellId, kind, cssClass, text, markup) {
     openStreams.delete(cellId);
     const template = document.createElement("template");
     template.innerHTML = markup;
+    const added = [...template.content.querySelectorAll(".dl-widget")];
     el.appendChild(template.content);
+    added.forEach((widget) => wireWorkerWidget(cellId, widget));
   } else if (kind === "clear") {
     openStreams.delete(cellId);
     el.replaceChildren();

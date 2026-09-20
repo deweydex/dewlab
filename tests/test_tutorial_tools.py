@@ -949,3 +949,62 @@ class TestRunReport:
         assert tt.holds("undefined_name == 1") is False
         assert tt.holds("1 / 0") is False
         assert tt.holds("this is not python") is False
+
+class TestWidgetsOnAWorkerPage:
+    """The hosted site runs Python in a Worker, where nothing can watch a
+    control. `text_input` and `dropdown` still work there: the page watches
+    the control and posts the value back between runs."""
+
+    @pytest.fixture()
+    def worker_cell(self):
+        posted = []
+        sink = tt._MessageSink(lambda *args: posted.append(args))
+        tt._begin("test-cell", sink)
+        try:
+            yield posted
+        finally:
+            tt._end(None)
+            tt.reset_page_state()
+
+    def test_text_input_renders_rather_than_raising(self, worker_cell):
+        tt.text_input("Your name", id="name")
+        markup = "".join(args[3] or "" for args in worker_cell)
+        assert 'id="dl-w-test-cell-name"' in markup
+
+    def test_dropdown_renders_rather_than_raising(self, worker_cell):
+        tt.dropdown("Units", ["metric", "imperial"], id="units")
+        markup = "".join(args[3] or "" for args in worker_cell)
+        assert "<select" in markup and "metric" in markup
+
+    def test_value_is_what_was_rendered_before_anyone_types(self, worker_cell):
+        widget = tt.text_input("Answer", value="42", id="answer")
+        assert widget.value == "42"
+
+    def test_a_dropdown_defaults_to_its_first_option(self, worker_cell):
+        widget = tt.dropdown("Units", ["metric", "imperial"], id="units")
+        assert widget.value == "metric"
+
+    def test_the_page_reporting_a_change_is_what_value_reads(self, worker_cell):
+        widget = tt.text_input("Answer", value="42", id="answer")
+        tt._set_widget_value("test-cell", "answer", "7")
+        assert widget.value == "7"
+
+    def test_button_and_image_input_still_say_why_they_cannot(self, worker_cell):
+        with pytest.raises(RuntimeError, match="main thread"):
+            tt.button("Go")
+        with pytest.raises(RuntimeError, match="main thread"):
+            tt.image_input()
+
+
+class TestAppCellQueriesCommit:
+    def test_a_write_from_an_app_cell_survives_a_rollback(self):
+        conn = sqlite3.connect(":memory:")
+        conn.execute("CREATE TABLE plushies (name TEXT)")
+        conn.commit()
+        tt._page_globals["db"] = conn
+        try:
+            assert tt._query_rows("INSERT INTO plushies (name) VALUES (?)", ["Mug"]) == []
+            conn.rollback()
+            assert tt._query_rows("SELECT name FROM plushies") == [{"name": "Mug"}]
+        finally:
+            tt._page_globals.pop("db", None)

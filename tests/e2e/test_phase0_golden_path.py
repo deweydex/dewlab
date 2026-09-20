@@ -279,15 +279,26 @@ def test_an_error_shows_the_students_line_and_does_not_stop_the_page(page):
     assert "1024" in output
 
 
-def test_widgets_give_a_clear_error_on_a_hosted_page(page):
-    """Hosted pages run Pyodide in a Worker, which has no DOM to hand a
-    widget's element through, so these raise
-    instead of rendering something inert. Standalone export still runs
-    Pyodide on the main thread and keeps working; it isn't built here."""
+def test_a_text_box_and_a_dropdown_render_but_a_button_still_cannot(page):
+    """A hosted page runs Pyodide in a Worker. `text_input` and `dropdown`
+    work there — the page watches the control and posts each change back —
+    but `button` has to call Python the moment it is clicked, with no cell
+    running, and that needs a DOM reference the Worker cannot hold."""
     run(page, "tools-widgets")
     scope = output_selector("tools-widgets")
-    assert page.locator(f"{scope} input[type=text]").count() == 0
-    assert "text_input() needs a page running Pyodide on the main thread" in page.inner_text(scope)
+    assert page.locator(f"{scope} input[type=text]").count() == 1
+    assert page.locator(f"{scope} select").count() == 1
+    assert "button() needs a page running Pyodide on the main thread" in page.inner_text(scope)
+
+
+def test_a_typed_value_reaches_the_worker_and_the_next_run_reads_it(page):
+    """The whole round trip: the page's own listener posts what was typed,
+    the Worker remembers it, and the next run sees it. Nothing here is
+    synchronous — the value arrives between runs, not during one."""
+    assert "answer is 42" in run(page, "tools-widget-roundtrip")
+    box = page.locator(f"{output_selector('tools-widget-roundtrip')} input[type=text]")
+    box.fill("7")
+    assert "answer is 7" in run(page, "tools-widget-roundtrip")
 
 
 def test_rerunning_a_cell_replaces_its_output_rather_than_appending(page):

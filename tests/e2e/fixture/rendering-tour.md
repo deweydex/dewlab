@@ -254,3 +254,13 @@ def greet():
 
 button("Say hello", on_click=greet)
 ```
+
+A text box on its own, read back on the next run. The value has to survive
+the trip out to the page and back into the Worker for this to print anything
+but the default.
+
+```python exec
+id: tools-widget-roundtrip
+answer = text_input("Answer", value="42", id="answer")
+print("answer is", answer.value)
+```
