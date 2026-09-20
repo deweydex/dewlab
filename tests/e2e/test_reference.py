@@ -311,10 +311,10 @@ class TestOpeningAndClosing:
         assert page.is_hidden("#dl-reference")
         context.close()
 
-    def test_the_close_button_closes_it(self, site, browser, site_url):
+    def test_clicking_the_toggle_again_closes_it(self, site, browser, site_url):
         context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-reference-toggle")
-        page.click("#dl-reference-close")
+        _open_panel(page, "#dl-reference-toggle")
         assert page.is_hidden("#dl-reference")
         context.close()
 
