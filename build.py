@@ -5469,31 +5469,20 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
     """One JSON file, `assets/reference-index.json`: every term every
     tutorial introduces, in one list, for dewmini's Library rail.
 
-    **This deliberately drops the rule the tutorial pages' own Reference
-    panel is built around.** `planning/REFERENCE_PANEL.md` §1 is
-    emphatic that a reader must never be shown something they have not
-    been taught yet — a reference that spoils next week's function names
-    is worse than no reference — which is why `cumulative_glossary()`
-    exists and why it is assembled per page, per position in a series.
+    Deliberately drops the rule a tutorial page's own Reference panel is
+    built around — never show a reader a term they haven't been taught yet
+    (`cumulative_glossary()`, assembled per page and series position).
+    dewmini has no position in a series; it's the workspace a reader opens
+    outside the curriculum, so this index is the plain union instead.
 
-    dewmini has no position in a series. It is the workspace a reader
-    opens *outside* the curriculum, to try an idea that may belong to no
-    tutorial at all, and a reference that hid two-thirds of itself on the
-    grounds that they had not reached tutorial 31 yet would be actively
-    unhelpful to the person looking at it. So this one is the union, and
-    the constraint is dropped on purpose rather than by forgetting it.
+    Built from `own_glossary()` so each entry names the tutorial that
+    introduced it — a reader meeting an unfamiliar term can see where it's
+    actually taught. Deduplicated on `(term, kind)`, first definition
+    winning, the same key `cumulative_glossary()` dedupes on.
 
-    Built from `own_glossary()` so each entry can name the tutorial that
-    introduced it: that provenance is what keeps the union honest, since
-    a reader meeting an unfamiliar term can see where it is actually
-    taught. Deduplicated on `(term, kind)`, first definition winning,
-    the same key `cumulative_glossary()` dedupes on.
-
-    The tutorial's *title*, deliberately, and not a link to it. This file
-    ships inside dewmini's offline bundle, which carries no tutorials at
-    all — a link would resolve on the hosted site and 404 for every
-    offline reader, and a reference that sends a student somewhere
-    broken is worse than one that simply tells them where to look.
+    Names the tutorial's *title*, not a link: this file ships inside
+    dewmini's offline bundle, which carries no tutorials, so a link would
+    404 for every offline reader.
     """
     facets = tutorial_facets(tutorials)
     seen: dict[tuple[str, str], dict] = {}
