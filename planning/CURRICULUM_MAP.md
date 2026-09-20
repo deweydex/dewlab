@@ -542,6 +542,7 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *see* | 1 | 18 |
 | *set* | 1 | 16 |
 | *sets as sorted lists* | 16 | 17 |
+| *slice* | 6 | 7 |
 | *solve* | 7 | 20 |
 | *store* | 1 | 2 |
 | *storing and computing* | 2 | 3 |
