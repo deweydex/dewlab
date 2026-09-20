@@ -271,6 +271,28 @@ be read.
 
 ---
 
+## Struck-out text, and task lists
+
+Two markdown forms beyond the usual ones.
+
+`~~like this~~` strikes text out. Use it to show what something used to say
+before a change, beside what it says now.
+
+A list item that starts with `[ ]` or `[x]` becomes a task with a tick box:
+
+```markdown
+- [x] Run the first cell
+- [ ] Change the number and run it again
+```
+
+The box is there to be read, not ticked. Nothing saves what a reader clicks,
+and the page records progress from the cells they run instead.
+
+A single tilde is left alone, so `~1,000`, `about ~5 minutes` and a CSS
+`:checked ~ .toggle` selector all reach the page as written.
+
+---
+
 ## Mathematics
 
 Write LaTeX between dollar signs — `$a_i + b_j$` inline, `$$…$$` on its own line

@@ -304,6 +304,30 @@ li { margin-bottom: 0.3rem; }
 
 a { color: var(--dl-link); text-underline-offset: 0.15em; }
 
+/* A task list. `pymdownx.tasklist` marks the list and each of its ticked
+ * or unticked items, and puts a disabled checkbox in front of the text —
+ * disabled because the page is the reading, not a place to record what
+ * you have done. The bullet goes, or the item would carry a bullet and a
+ * box both, and the list pulls back into the space the bullet used so a
+ * task list and an ordinary one start at the same place. */
+ul.task-list {
+  list-style: none;
+  padding-left: 1.2em;
+}
+
+li.task-list-item > input[type="checkbox"] {
+  margin-inline-start: -1.35em;
+  margin-inline-end: 0.45em;
+  accent-color: var(--dl-orange);
+}
+
+/* `~~struck out~~`. The browser draws the line; this says the words are
+ * still readable but no longer the point. */
+del {
+  color: var(--dl-muted);
+  text-decoration-thickness: from-font;
+}
+
 /* A reader's own marked passage. Background only -- text colour stays
  * whatever the surrounding prose already uses, so this never fights a
  * reader's own theme, font, or high-contrast choice; --dl-highlight-bg

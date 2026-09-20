@@ -1514,7 +1514,16 @@ def to_html(body: str) -> tuple[str, list]:
     list on the page is built from the same headings the anchors came from,
     rather than from a second pass that could disagree with them.
     """
-    converter = markdown.Markdown(extensions=["extra", "sane_lists", "toc"])
+    converter = markdown.Markdown(
+        extensions=["extra", "sane_lists", "toc",
+                    "pymdownx.tilde", "pymdownx.tasklist"],
+        # `tilde` gives `~~struck out~~` as `<del>`, and would also give a
+        # single `~2~` as a subscript. Subscript is off: a lone tilde is
+        # already prose here — "~1,000", "after ~5 minutes", a CSS
+        # `:checked ~ .toggle` selector — and two of those on nearby lines
+        # would pair up into a subscript spanning them.
+        extension_configs={"pymdownx.tilde": {"subscript": False}},
+    )
     html_out = converter.convert(mark_markdown_wrappers(body))
     return html_out, list(getattr(converter, "toc_tokens", []))
 

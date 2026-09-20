@@ -491,6 +491,49 @@ class TestIllustrativeCode:
         assert "<li>" not in built(repo)
 
 
+class TestStrikethroughAndTaskLists:
+    """Two things dewnote writes that Python-Markdown's `extra` bundle
+    does not cover, added through `pymdownx.tilde` and
+    `pymdownx.tasklist` — see to_html()."""
+
+    def test_struck_out_text_becomes_del(self, repo):
+        write(repo, "The old way was ~~this~~, and the new way is that.\n")
+        b.build()
+        page = built(repo)
+        assert "<del>this</del>" in page
+        assert "~~" not in page.split("dewlab-manifest")[0]
+
+    def test_a_task_list_becomes_checkboxes(self, repo):
+        write(repo, "- [ ] read the page\n- [x] run the first cell\n- an ordinary item\n")
+        b.build()
+        page = built(repo)
+        assert 'class="task-list"' in page
+        assert page.count('type="checkbox"') == 2
+        assert "checked" in page
+        # The third item is not a task, and keeps its bullet.
+        assert page.count('class="task-list-item"') == 2
+        assert "[ ]" not in page.split("dewlab-manifest")[0]
+
+    def test_a_lone_tilde_is_left_alone(self, repo):
+        # `pymdownx.tilde` would read a pair of single tildes as a
+        # subscript, and prose here already uses one on its own: an
+        # approximate number, a home directory, a CSS sibling selector.
+        # Two on nearby lines would otherwise pair up across them.
+        write(repo, "- After 10 steps: ~1,000\n- After 20 steps: ~1\n\n"
+                    "A `:checked ~ .toggle` rule, and about ~5 minutes.\n")
+        b.build()
+        page = built(repo)
+        assert "<sub>" not in page
+        assert "~1,000" in page and "~5 minutes" in page
+
+    def test_the_checkbox_a_reader_sees_is_not_one_they_can_tick(self, repo):
+        # The page is the reading. Progress is recorded by the cells a
+        # reader runs, not by a box on a page that nothing saves.
+        write(repo, "- [ ] read the page\n")
+        b.build()
+        assert "disabled" in built(repo)
+
+
 class TestListsWrittenTightAgainstProse:
     """Markdown written elsewhere often puts a list straight under a
     paragraph. Each list page counts its items, so a page holds one list:
