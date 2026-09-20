@@ -1,16 +1,23 @@
 
 
 :root {
-  /* Fixed brand hues. These are the identity, not reader preferences. */
+  /* Fixed brand hues. These are the identity, not reader preferences.
+     --dl-orange is rust rather than the brighter pumpkin this used to be,
+     because no one shade of orange reads as AA text (4.5:1) against both
+     a light and a dark background: this one clears it against the light
+     palette below, so it doubles as --dl-link's and --dl-type-python's
+     light-mode colour with no separate value needed. The dark theme block
+     restores a brighter shade for those two, since text on a dark
+     background needs the opposite adjustment. */
   --dl-navy: #1b2a4a;
-  --dl-orange: #d4692a;
+  --dl-orange: #b8541a;
 
   /* Reader-tunable, written by the texture panel. */
   --dl-font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
   --dl-font-size: 18px;
   --dl-line-width: 34rem;
   --dl-code-line-height: 1.5;
-  --dl-link: #b8541a;
+  --dl-link: var(--dl-orange);
 
   --dl-type-python: var(--dl-orange);
   --dl-type-text: var(--dl-muted);
@@ -45,7 +52,10 @@
 }
 
 :root[data-theme="dark"] {
-  --dl-link: var(--dl-orange);
+  /* --dl-orange itself stays the fixed rust brand hue (see :root above);
+     text needs a brighter shade of it against this dark background. */
+  --dl-link: #d4692a;
+  --dl-type-python: #d4692a;
   --dl-bg: #14181f;
   --dl-fg: #e6e3dd;
   --dl-muted: #98a2b3;
@@ -72,7 +82,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --dl-link: var(--dl-orange);
+    --dl-link: #d4692a;
+    --dl-type-python: #d4692a;
     --dl-bg: #14181f;
     --dl-fg: #e6e3dd;
     --dl-muted: #98a2b3;

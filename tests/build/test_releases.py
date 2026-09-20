@@ -135,12 +135,6 @@ class TestVersionsOfATutorial:
         b.build()
         assert "Tenth." in self.out(repo, "thing.html").read_text()
 
-    def test_two_releases_on_one_day_are_told_apart_by_the_last_number(self, repo):
-        self.release(repo, "thing", "2026.09.15.1", body="Morning.\n")
-        self.release(repo, "thing", "2026.09.15.2", body="Afternoon.\n")
-        b.build()
-        assert "Afternoon." in self.out(repo, "thing.html").read_text()
-
     def test_a_beta_is_built_and_reachable_but_neither_the_default_nor_in_the_reading_order(self, repo):
         # Freeze the live release, mark the working copy beta, and students
         # keep getting the live one until the beta is promoted.

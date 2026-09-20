@@ -226,58 +226,34 @@ class TestTheCourseArchive:
     def archive(self, repo) -> Path:
         return repo / "site" / "download" / "computational-methods-all.zip"
 
-    def test_two_series_become_one_archive_numbered_as_a_single_sequence(self, repo_with_assets):
+    def test_two_series_are_numbered_continuously_with_a_practice_page_following_its_tutorial_and_a_mixed_set_at_the_end(self, repo_with_assets):
         write(repo_with_assets, "One.\n", slug="one")
+        self.practice(repo_with_assets, "one-practice", practice_for="one")
         write_in_series(repo_with_assets, "Two.\n", slug="two", series="simulation")
         set_order(repo_with_assets, "computational-methods", "simulation", ["two"])
+        self.practice(repo_with_assets, "mixed", practice_across=["one", "two"])
         b.build(standalone=True)
         # It gathers every series in the course.
         assert self.archive(repo_with_assets).is_file()
         with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
             names = sorted(archive.namelist())
-        # Numbering does not restart between series.
-        assert names == [
-            "computational-methods/0-start-here.html",
-            "computational-methods/01-one.html",
-            "computational-methods/02-two.html",
-        ]
-        # The contents page offers it.
-        index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
-        assert 'href="download/computational-methods-all.zip"' in index
-        assert "Download every tutorial and practice page in this module" in index
-
-    def test_practice_still_follows_its_tutorial(self, repo_with_assets):
-        write(repo_with_assets, "One.\n", slug="one")
-        self.practice(repo_with_assets, "one-practice", practice_for="one")
-        write_in_series(repo_with_assets, "Two.\n", slug="two", series="simulation")
-        set_order(repo_with_assets, "computational-methods", "simulation", ["two"])
-        b.build(standalone=True)
-        with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
-            names = sorted(archive.namelist())
+            start_here = archive.read("computational-methods/0-start-here.html").decode()
+        # Numbering does not restart between series, a practice page follows
+        # its own tutorial rather than being sorted separately, and the
+        # mixed set lands at the end, after both series.
         assert names == [
             "computational-methods/0-start-here.html",
             "computational-methods/01-one.html",
             "computational-methods/02-one-practice.html",
             "computational-methods/03-two.html",
-        ]
-
-    def test_a_mixed_set_lands_at_the_end(self, repo_with_assets):
-        write(repo_with_assets, "One.\n", slug="one")
-        write_in_series(repo_with_assets, "Two.\n", slug="two", series="simulation")
-        set_order(repo_with_assets, "computational-methods", "simulation", ["two"])
-        self.practice(repo_with_assets, "mixed", practice_across=["one", "two"])
-        b.build(standalone=True)
-        with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
-            names = sorted(archive.namelist())
-            start_here = archive.read("computational-methods/0-start-here.html").decode()
-        assert names == [
-            "computational-methods/0-start-here.html",
-            "computational-methods/01-one.html",
-            "computational-methods/02-two.html",
-            "computational-methods/03-mixed.html",
+            "computational-methods/04-mixed.html",
         ]
         assert "Mixed problems" in start_here
-        assert start_here.index("02-two.html") < start_here.index("03-mixed.html")
+        assert start_here.index("03-two.html") < start_here.index("04-mixed.html")
+        # The contents page offers it.
+        index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
+        assert 'href="download/computational-methods-all.zip"' in index
+        assert "Download every tutorial and practice page in this module" in index
 
 
 class TestDownloadsDoNotCollide:

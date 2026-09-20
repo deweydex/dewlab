@@ -153,20 +153,11 @@ SLOW_CLIENT = """
 
 
 class TestLoadingManyTutorialsAtOnce:
-    def test_every_tutorial_in_a_large_repo_loads_with_the_right_content(self, browser, base_url):
+    @pytest.mark.parametrize("factory", [FAKE_CLIENT, SLOW_CLIENT],
+                             ids=["resolves_in_order", "resolves_out_of_order"])
+    def test_every_tutorial_in_a_large_repo_loads_with_the_right_content(self, browser, base_url, factory):
         files = _big_repo(40)
-        context, tab = _open(browser, base_url, files)
-        try:
-            titles = tab.eval_on_selector_all(
-                ".dl-editor-open", "e => e.map(b => b.textContent)")
-            assert len(titles) == 40
-            assert set(titles) == {f"Tutorial number {i}" for i in range(40)}
-        finally:
-            context.close()
-
-    def test_the_same_holds_when_requests_resolve_out_of_order(self, browser, base_url):
-        files = _big_repo(40)
-        context, tab = _open(browser, base_url, files, factory=SLOW_CLIENT)
+        context, tab = _open(browser, base_url, files, factory=factory)
         try:
             titles = tab.eval_on_selector_all(
                 ".dl-editor-open", "e => e.map(b => b.textContent)")
@@ -188,17 +179,15 @@ class TestTheListView:
         assert "Fixtures — Maths and programming" in heads
         assert "Fixtures — Reflections and review" in heads
 
-    def test_moving_a_tutorial_reorders_it(self, editor):
-        editor.click('.dl-editor-card[data-slug="next-steps"] .dl-editor-up')
+    @pytest.mark.parametrize("slug, expected", [
+        ("next-steps", ["Next Steps", "First Steps"]),
+        ("first-steps", ["First Steps", "Next Steps"]),
+    ], ids=["reorders_it", "past_the_end_does_nothing"])
+    def test_moving_a_tutorial_with_the_up_control(self, editor, slug, expected):
+        editor.click(f'.dl-editor-card[data-slug="{slug}"] .dl-editor-up')
         titles = editor.eval_on_selector_all(
             ".dl-editor-open", "e => e.map(b => b.textContent)")
-        assert titles[:2] == ["Next Steps", "First Steps"]
-
-    def test_moving_past_the_end_does_nothing(self, editor):
-        editor.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-up')
-        titles = editor.eval_on_selector_all(
-            ".dl-editor-open", "e => e.map(b => b.textContent)")
-        assert titles[:2] == ["First Steps", "Next Steps"]
+        assert titles[:2] == expected
 
     def test_nothing_can_be_committed_until_something_changes(self, editor):
         assert editor.get_attribute("#dl-editor-save", "disabled") is not None
@@ -214,7 +203,8 @@ class TestInsertingAndCreating:
             ".dl-editor-open", "e => e.map(b => b.textContent)")
         assert "Halfway There" in titles
 
-    def test_a_new_tutorial_starts_from_the_house_template(self, editor):
+    def test_a_new_tutorial_starts_from_the_house_template_and_carries_only_what_is_its_own(self, editor):
+        """Where it sits is a line in the course file, added alongside."""
         editor.once("dialog", lambda d: d.accept("Halfway There"))
         editor.click(".dl-editor-series:first-of-type .dl-editor-new")
         written = editor.evaluate(
@@ -222,13 +212,6 @@ class TestInsertingAndCreating:
         assert 'title: "Halfway There"' in written
         assert "```python exec" in written
         assert "## Reflection" in written
-
-    def test_a_new_tutorial_carries_only_what_is_its_own(self, editor):
-        """Where it sits is a line in the course file, added alongside."""
-        editor.once("dialog", lambda d: d.accept("Halfway There"))
-        editor.click(".dl-editor-series:first-of-type .dl-editor-new")
-        written = editor.evaluate(
-            "globalThis.dewlabEditor.state.files.get('tutorials/halfway-there/halfway-there.md')")
         assert 'year: "2026-2027"' in written
         for field in ("slug:", "module:", "module_title:", "series:"):
             assert field not in written
@@ -271,47 +254,31 @@ class TestEditingWhatIsInside:
         self.open_first(editor)
         assert "1 runnable cell" in editor.inner_text("#dl-editor-report")
 
-    def test_renaming_a_cell_id_warns_that_student_work_is_orphaned(self, editor):
+    def test_renaming_a_cell_id_warns_that_student_work_is_orphaned_and_that_releasing_is_the_way_not_to(self, editor):
         """The one thing the editor knows that the build cannot: by the time
-        the build runs, the rename has already happened."""
+        the build runs, the rename has already happened. The second half of
+        this used to say the work was thrown away full stop, until releases
+        arrived and made this box argue with the proposal underneath it."""
         self.open_first(editor)
         self.edit_body(editor, self.body_of(editor).replace("adding-up-1", "adding-up-2"))
         warning = editor.inner_text(".dl-editor-report")
         assert "orphaned" in warning
         assert "adding-up-1" in warning
-
-    def test_and_says_that_releasing_is_the_way_not_to(self, editor):
-        """It used to say the work was thrown away full stop, until releases
-        arrived and made this box argue with the proposal underneath it."""
-        self.open_first(editor)
-        self.edit_body(editor, self.body_of(editor).replace("adding-up-1", "adding-up-2"))
-        warning = editor.inner_text(".dl-editor-report")
         assert "Released instead, nothing is orphaned" in warning
 
-    def test_an_unclosed_fence_is_reported_before_it_reaches_the_build(self, editor):
+    @pytest.mark.parametrize("markdown, expected", [
+        ("# T\n\n```python exec\nid: a-1\nprint(1)\n", "opened and never closed"),
+        ("# T\n\n```python exec\nid: a-1\nprint(1)\n```\n\n"
+         "```python exec\nid: a-1\nprint(2)\n```\n", "used 2 times"),
+        ("# T\n\n```python exec\nprint(1)\n```\n", "has no id"),
+        # The editor has to draw the cell/illustrative-fence line exactly
+        # where build.py draws it.
+        ("# T\n\n```python\nprint(1)\n```\n", "0 runnable cells"),
+    ], ids=["unclosed_fence", "duplicate_id", "no_id", "illustrative_fence_not_a_cell"])
+    def test_the_report_surfaces_a_problem_before_it_reaches_the_build(self, editor, markdown, expected):
         self.open_first(editor)
-        self.edit_body(editor, "# T\n\n```python exec\nid: a-1\nprint(1)\n")
-        assert "opened and never closed" in editor.inner_text("#dl-editor-report")
-
-    def test_two_cells_sharing_an_id_are_reported(self, editor):
-        self.open_first(editor)
-        self.edit_body(
-            editor,
-            "# T\n\n```python exec\nid: a-1\nprint(1)\n```\n\n"
-            "```python exec\nid: a-1\nprint(2)\n```\n")
-        assert 'used 2 times' in editor.inner_text("#dl-editor-report")
-
-    def test_a_cell_with_no_id_is_reported(self, editor):
-        self.open_first(editor)
-        self.edit_body(editor, "# T\n\n```python exec\nprint(1)\n```\n")
-        assert "has no id" in editor.inner_text("#dl-editor-report")
-
-    def test_an_illustrative_fence_is_not_counted_as_a_cell(self, editor):
-        """The editor has to draw the cell/illustrative-fence line exactly
-        where build.py draws it."""
-        self.open_first(editor)
-        self.edit_body(editor, "# T\n\n```python\nprint(1)\n```\n")
-        assert "0 runnable cells" in editor.inner_text("#dl-editor-report")
+        self.edit_body(editor, markdown)
+        assert expected in editor.inner_text("#dl-editor-report")
 
 
 LINKS = {
@@ -354,41 +321,35 @@ class TestTutorialLinkChecking:
     def edit_body(self, tab, text: str) -> None:
         tab.evaluate("(md) => globalThis.dewlabEditor.editBody(md)", text)
 
-    def test_a_link_to_an_unknown_tutorial_is_reported(self, links):
+    @pytest.mark.parametrize("markdown, expected, present", [
+        ("# T\n\nSee [it](tutorial:nope-not-real).\n",
+         "does not match any tutorial", True),
+        ("# T\n\nSee [it](tutorial:next-steps).\n",
+         "does not match", False),
+        # Appends to the body rather than replacing it outright, since
+        # first-steps is both the tutorial being edited and the one
+        # supplying the anchor being linked to — replacing it would delete
+        # that anchor.
+        ("# First Steps\n\n## A Grid of Numbers\n\n"
+         "See [it](tutorial:first-steps#a-grid-of-numbers).\n\n"
+         "```python exec\nid: adding-up-1\nprint(1)\n```\n",
+         "no heading or cell", False),
+        ("# First Steps\n\n## A Grid of Numbers\n\n"
+         "See [it](tutorial:first-steps#adding-up-1).\n\n"
+         "```python exec\nid: adding-up-1\nprint(1)\n```\n",
+         "no heading or cell", False),
+        ("# T\n\nSee [it](tutorial:first-steps#not-a-real-anchor).\n",
+         'no heading or cell "not-a-real-anchor"', True),
+    ], ids=["unknown_tutorial", "real_tutorial_other_course",
+            "real_heading_anchor", "real_cell_anchor", "missing_anchor"])
+    def test_link_checking_reports_or_clears_a_link(self, links, markdown, expected, present):
         self.open_first(links)
-        self.edit_body(links, "# T\n\nSee [it](tutorial:nope-not-real).\n")
-        assert "does not match any tutorial" in links.inner_text("#dl-editor-report")
-
-    def test_a_link_to_a_real_tutorial_on_another_course_is_not_reported(self, links):
-        self.open_first(links)
-        self.edit_body(links, "# T\n\nSee [it](tutorial:next-steps).\n")
-        assert "does not match" not in links.inner_text("#dl-editor-report")
-
-    def test_a_link_to_a_real_heading_anchor_is_not_reported(self, links):
-        """Appends to the body rather than replacing it outright, since
-        first-steps is both the tutorial being edited and the one supplying
-        the anchor being linked to — replacing it would delete that anchor."""
-        self.open_first(links)
-        self.edit_body(
-            links,
-            "# First Steps\n\n## A Grid of Numbers\n\n"
-            "See [it](tutorial:first-steps#a-grid-of-numbers).\n\n"
-            "```python exec\nid: adding-up-1\nprint(1)\n```\n")
-        assert "no heading or cell" not in links.inner_text("#dl-editor-report")
-
-    def test_a_link_to_a_real_cell_anchor_is_not_reported(self, links):
-        self.open_first(links)
-        self.edit_body(
-            links,
-            "# First Steps\n\n## A Grid of Numbers\n\n"
-            "See [it](tutorial:first-steps#adding-up-1).\n\n"
-            "```python exec\nid: adding-up-1\nprint(1)\n```\n")
-        assert "no heading or cell" not in links.inner_text("#dl-editor-report")
-
-    def test_a_link_to_a_missing_anchor_is_reported(self, links):
-        self.open_first(links)
-        self.edit_body(links, "# T\n\nSee [it](tutorial:first-steps#not-a-real-anchor).\n")
-        assert 'no heading or cell "not-a-real-anchor"' in links.inner_text("#dl-editor-report")
+        self.edit_body(links, markdown)
+        report = links.inner_text("#dl-editor-report")
+        if present:
+            assert expected in report
+        else:
+            assert expected not in report
 
     def test_a_python_comment_is_not_mistaken_for_a_heading(self, links):
         """build.py strips fences before scanning for headings, so a `#`
@@ -449,18 +410,12 @@ class TestLinkPicker:
         links.fill(".dl-editor-linkpicker-search", "zzzznope")
         assert "No tutorials match" in links.inner_text(".dl-editor-linkpicker-results")
 
-    def test_picking_a_tutorial_inserts_a_link_to_it(self, links):
+    def test_picking_a_tutorial_inserts_a_link_to_it_and_closes_the_picker(self, links):
         self.open(links, "first-steps")
         self.open_picker(links)
         links.fill(".dl-editor-linkpicker-search", "next")
         links.click(".dl-editor-linkpicker-pick")
         assert "[Next Steps](tutorial:next-steps)" in self.body_of(links)
-
-    def test_picking_a_tutorial_closes_the_picker(self, links):
-        self.open(links, "first-steps")
-        self.open_picker(links)
-        links.fill(".dl-editor-linkpicker-search", "next")
-        links.click(".dl-editor-linkpicker-pick")
         assert not links.is_visible(".dl-editor-linkpicker-row")
 
     def test_a_heading_and_a_cell_anchor_are_both_offered(self, links):
@@ -552,7 +507,7 @@ class TestCrepeIsActuallyThemed:
 
 
 class TestCommitting:
-    def test_a_reorder_commits_the_course_file_and_opens_a_pull_request(self, editor):
+    def test_a_reorder_commits_the_course_file_opens_a_pr_on_a_new_branch_and_goes_quiet(self, editor):
         editor.click('.dl-editor-card[data-slug="next-steps"] .dl-editor-up')
         editor.once("dialog", lambda d: d.accept("Put next steps first"))
         editor.click("#dl-editor-save")
@@ -566,15 +521,12 @@ class TestCommitting:
         # The rest of the file — the title, the other series — is as it was.
         assert "title: Fixtures" in written
         assert "  - title: Reflections and review\n    tutorials:\n      - looking-back\n" in written
-
-    def test_the_commit_lands_on_a_new_branch_never_on_main(self, editor):
-        editor.click('.dl-editor-card[data-slug="next-steps"] .dl-editor-up')
-        editor.once("dialog", lambda d: d.accept("Put next steps first"))
-        editor.click("#dl-editor-save")
-        editor.wait_for_function("globalThis.__committed !== undefined")
-        branch = editor.evaluate("globalThis.__committed.branch")
-        assert branch.startswith("editor/")
-        assert branch != "main"
+        # The commit lands on a new branch, never on main.
+        assert change["branch"].startswith("editor/")
+        assert change["branch"] != "main"
+        # And the save button goes quiet again afterwards.
+        editor.wait_for_selector("#dl-editor-save[disabled]")
+        assert "pull/999" in editor.inner_text("#dl-editor-status")
 
     def test_an_insertion_commits_both_the_tutorial_and_the_course_file(self, editor):
         """Two files in one commit, because either alone leaves the repository
@@ -589,14 +541,6 @@ class TestCommitting:
             "courses/fixtures.yaml",
             "tutorials/halfway-there/halfway-there.md",
         ]
-
-    def test_the_save_button_goes_quiet_again_afterwards(self, editor):
-        editor.click('.dl-editor-card[data-slug="next-steps"] .dl-editor-up')
-        editor.once("dialog", lambda d: d.accept("Put next steps first"))
-        editor.click("#dl-editor-save")
-        editor.wait_for_function("globalThis.__committed !== undefined")
-        editor.wait_for_selector("#dl-editor-save[disabled]")
-        assert "pull/999" in editor.inner_text("#dl-editor-status")
 
 
 class TestStatus:
@@ -619,25 +563,19 @@ class TestStatus:
             """() => [...globalThis.dewlabEditor.state.series.values()]
                  .find((s) => s.name === "maths-and-programming").order""")
 
-    def test_every_tutorial_shows_its_status(self, editor):
+    def test_every_tutorial_shows_its_status_with_live_marked_when_nothing_says_otherwise(self, editor):
         assert editor.eval_on_selector_all(
             '.dl-editor-card[data-slug="first-steps"] .dl-editor-status-option',
             "e => e.map(b => b.textContent)") == ["draft", "beta", "live", "archived"]
-
-    def test_live_is_the_one_marked_when_nothing_says_otherwise(self, editor):
         assert editor.get_attribute(
             '.dl-editor-card[data-slug="first-steps"] '
             '.dl-editor-status-option[data-status="live"]', "aria-pressed") == "true"
 
-    def test_setting_a_status_writes_the_field(self, editor):
-        editor.click('.dl-editor-card[data-slug="first-steps"] '
-                     '.dl-editor-status-option[data-status="beta"]')
-        assert self.status_of(editor, "first-steps") == "beta"
-
-    def test_leaving_live_keeps_its_line_in_the_course_file(self, editor):
+    def test_setting_a_status_writes_the_field_and_keeps_its_line_in_the_course_file(self, editor):
         assert "first-steps" in self.order_of(editor)
         editor.click('.dl-editor-card[data-slug="first-steps"] '
                      '.dl-editor-status-option[data-status="archived"]')
+        assert self.status_of(editor, "first-steps") == "archived"
         assert "first-steps" in self.order_of(editor)
         assert editor.query_selector('.dl-editor-card[data-slug="first-steps"]')
 
@@ -724,22 +662,18 @@ class TestVersionArithmetic:
 
 
 class TestOpeningATutorialWithSeveralReleases:
-    def test_it_opens_the_newest_live_one(self, versioned):
+    def test_it_opens_the_newest_live_one_with_its_own_body_and_version_label(self, versioned):
         """It used to open an empty buffer: `pathOf` looked for a single
         `tutorials/<id>.md`, and a tutorial with a second release
         is a folder of releases instead."""
         versioned.click('.dl-editor-card[data-slug="two-takes"] .dl-editor-open')
         where = versioned.inner_text(".dl-editor-one .dl-editor-where")
         assert where == "tutorials/two-takes/v2026.09.15.1.md"
-
-    def test_the_body_is_the_one_students_are_reading(self, versioned):
-        versioned.click('.dl-editor-card[data-slug="two-takes"] .dl-editor-open')
+        # The body is the one students are reading.
         body = versioned.evaluate("() => globalThis.dewlabEditor.getBody()")
         assert "only-in-september" in body
         assert "only-in-june" not in body
-
-    def test_it_says_which_release_and_how_many_there_are(self, versioned):
-        versioned.click('.dl-editor-card[data-slug="two-takes"] .dl-editor-open')
+        # It says which release and how many there are.
         assert "2026.09.15.1" in versioned.inner_text(".dl-editor-version")
         assert "2" in versioned.inner_text(".dl-editor-version")
 
@@ -786,7 +720,9 @@ class TestReleasing:
         tab.click("#dl-editor-save")
         tab.wait_for_function("globalThis.__committed !== undefined")
 
-    def test_releasing_adds_a_frozen_copy_and_keeps_the_tutorials_own_name(self, versioned):
+    def test_releasing_adds_a_frozen_copy_of_what_students_have_and_a_new_release_of_the_edits(self, versioned):
+        """Freezing the edits instead would make the release a copy of the
+        very thing it exists to let a reader go back from."""
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
         self.release(versioned)
         self.commit(versioned)
@@ -798,36 +734,19 @@ class TestReleasing:
         assert frozen in files
         assert len([p for p in files if p.startswith("tutorials/first-steps/")]) == 2
 
-    def test_the_frozen_copy_is_what_students_have_not_what_was_typed(self, versioned):
-        """Freezing the edits instead would make the release a copy of the
-        very thing it exists to let a reader go back from."""
-        self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
-        self.release(versioned)
-        self.commit(versioned)
-        frozen = self.files(versioned)["tutorials/first-steps/v2026.06.02.1.md"]
-        assert "Rewritten." not in frozen
-        assert "adding-up-1" in frozen
-        assert "version: 2026.06.02.1" in frozen
+        # The frozen copy is what students have, not what was typed, and it
+        # keeps the tutorial's own name.
+        frozen_text = files[frozen]
+        assert "Rewritten." not in frozen_text
+        assert "adding-up-1" in frozen_text
+        assert "version: 2026.06.02.1" in frozen_text
 
-    def test_the_new_release_carries_the_edits_and_a_new_version(self, versioned):
-        self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
-        self.release(versioned)
-        self.commit(versioned)
-        files = self.files(versioned)
-        new = next(text for path, text in files.items()
-                   if path.startswith("tutorials/first-steps/")
-                   and "v2026.06.02.1" not in path)
+        # The new release carries the edits, a new version, and records
+        # what it replaced.
+        new = files[current]
         assert "Rewritten." in new
         assert re.search(r"^version: \d{4}\.\d{2}\.\d{2}\.\d+$", new, re.M)
         assert "version: 2026.06.02.1" not in new
-
-    def test_the_new_release_records_what_it_replaced(self, versioned):
-        self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
-        self.release(versioned)
-        self.commit(versioned)
-        new = next(text for path, text in self.files(versioned).items()
-                   if path.startswith("tutorials/first-steps/")
-                   and "v2026.06.02.1" not in path)
         assert "supersedes: 2026.06.02.1" in new
 
     def test_releasing_a_folder_writes_only_the_new_release(self, versioned):

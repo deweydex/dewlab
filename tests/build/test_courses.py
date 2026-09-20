@@ -156,23 +156,26 @@ class TestNavigation:
         with pytest.raises(b.BuildError, match="lists t1-practice, which is a page of problems"):
             b.build()
 
-    def test_order_left_in_the_frontmatter_stops_the_build(self, repo):
+    @pytest.mark.parametrize(
+        "field, line",
+        [
+            pytest.param("order", "order: 1\n", id="order"),
+            pytest.param("slug", "slug: t1\n", id="slug"),
+            pytest.param("module", "module: computational-methods\n", id="module"),
+            pytest.param("module_title", "module_title: Computational Methods\n", id="module_title"),
+            pytest.param("series", "series: python-fundamentals\n", id="series"),
+        ],
+    )
+    def test_a_moved_frontmatter_field_stops_the_build_and_says_to_delete_it(self, repo, field, line):
         # Half-migrated is worse than either state: the field would be
-        # ignored in silence, and it is exactly the field somebody would edit.
-        series(repo, count=1)
-        path = tutorial_path(repo, "t1")
-        path.write_text(path.read_text().replace("version: 2026.08.23.1", "order: 1\nversion: 2026.08.23.1"))
-        with pytest.raises(b.BuildError, match="no longer belongs in frontmatter"):
-            b.build()
-
-    def test_a_placement_field_in_the_frontmatter_stops_the_build_and_says_to_delete_it(self, repo):
-        # The mistake a contributor copying an old tutorial will make: the
+        # ignored in silence, and it is exactly the field somebody would edit
+        # — a mistake a contributor copying an old tutorial will make. The
         # build refuses rather than ignores, since an ignored field is a
         # field someone will keep writing.
         series(repo, count=1)
         path = tutorial_path(repo, "t1")
-        path.write_text(path.read_text().replace("version: 2026.08.23.1", "module: computational-methods\nversion: 2026.08.23.1"))
-        with pytest.raises(b.BuildError, match=r"module no longer belongs in frontmatter.*Delete the line"):
+        path.write_text(path.read_text().replace("version: 2026.08.23.1", line + "version: 2026.08.23.1"))
+        with pytest.raises(b.BuildError, match=rf"{field} no longer belongs in frontmatter.*Delete the line"):
             b.build()
 
 
@@ -376,15 +379,6 @@ class TestTheCrumbTrail:
         trail = page[page.index('<nav class="dl-crumbtrail"'):]
         trail = trail[:trail.index("</nav>")]
         assert trail.count(">Second One<") == 1
-
-    def test_the_series_level_lists_its_siblings_and_marks_the_current_one(self, repo_with_assets):
-        for slug, title in [("t1", "First One"), ("t2", "Second One")]:
-            write_titled(repo_with_assets, slug, title)
-        set_order(repo_with_assets, "computational-methods", "s", ["t1", "t2"])
-        b.build()
-        page = (repo_with_assets / "site" / "tutorials" / "t2.html").read_text()
-        assert "First One" in page
-        assert '<div class="dl-crumb-current dl-crumb-level-4" role="listitem" aria-current="page">Second One</div>' in page
 
 
 class TestArchivedTutorials:

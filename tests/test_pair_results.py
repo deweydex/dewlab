@@ -138,10 +138,36 @@ def test_the_same_judgements_give_the_same_report_across_runs(tmp_path):
     assert len(seen) == 1, "the report differs between runs over one pile"
 
 
-def test_a_pair_with_the_wrong_shape_is_ignored(pairs):
-    batch(pairs, "1.json", "josh", [{"pair": ["A"], "verdict": "unrelated"}])
+@pytest.mark.parametrize(
+    "judgements, extra, expected",
+    [
+        pytest.param(
+            [{"pair": ["A"], "verdict": "unrelated"}], {}, "0 pairs judged",
+            id="pair-of-wrong-shape",
+        ),
+        pytest.param(
+            [{"pair": ["A", "C"], "verdict": "unrelated"}],
+            dict(renamed=["not", "a", "map"], groups="nonsense", needs_work=42,
+                 new_groups={"also": "wrong"}),
+            "1 pairs judged",
+            id="top-level-field-of-wrong-type",
+        ),
+        pytest.param(
+            ["a string where an object belongs",
+             {"pair": ["A", "C"], "verdict": "unrelated"}],
+            {}, "1 pairs judged",
+            id="judgement-not-an-object",
+        ),
+        pytest.param(
+            [{"pair": [1, 2], "verdict": "unrelated"}], {}, "0 pairs judged",
+            id="pair-of-non-strings",
+        ),
+    ],
+)
+def test_malformed_input_is_skipped_not_fatal(pairs, judgements, extra, expected):
+    batch(pairs, "1.json", "tom", judgements, **extra)
     out = pr.build_report(TOPICS, pr.load_batches())
-    assert "0 pairs judged" in out
+    assert expected in out
 
 
 def test_a_group_written_as_an_object_still_counts(pairs):
@@ -152,47 +178,24 @@ def test_a_group_written_as_an_object_still_counts(pairs):
     assert "How to approach a problem" in out
 
 
-def test_a_field_of_the_wrong_type_does_not_stop_the_report(pairs):
-    batch(pairs, "1.json", "tom", [{"pair": ["A", "C"], "verdict": "unrelated"}],
-          renamed=["not", "a", "map"], groups="nonsense", needs_work=42,
-          new_groups={"also": "wrong"})
-    out = pr.build_report(TOPICS, pr.load_batches())
-    assert "1 pairs judged" in out
+def test_arrow_additions_account_for_an_existing_chain(pairs):
+    """Same judgement (A before C) against two graphs: one where a chain
+    through B already gives you that order, one where it doesn't."""
+    judgement = [{"pair": ["A", "C"], "verdict": "needs", "first": "A"}]
 
-
-def test_a_judgement_that_is_not_an_object_is_skipped(pairs):
-    batch(pairs, "1.json", "tom",
-          ["a string where an object belongs",
-           {"pair": ["A", "C"], "verdict": "unrelated"}])
-    out = pr.build_report(TOPICS, pr.load_batches())
-    assert "1 pairs judged" in out
-
-
-def test_a_pair_of_non_strings_is_skipped(pairs):
-    batch(pairs, "1.json", "tom", [{"pair": [1, 2], "verdict": "unrelated"}])
-    out = pr.build_report(TOPICS, pr.load_batches())
-    assert "0 pairs judged" in out
-
-
-def test_an_arrow_a_chain_already_gives_you_is_listed_apart(pairs):
-    topics = {"A": {"name": "Alpha", "needs": []},
-              "B": {"name": "Beta", "needs": ["A"]},
-              "C": {"name": "Gamma", "needs": ["B"]}}
-    batch(pairs, "1.json", "ruth",
-          [{"pair": ["A", "C"], "verdict": "needs", "first": "A"}])
-    out = pr.build_report(topics, pr.load_batches())
+    chained = {"A": {"name": "Alpha", "needs": []},
+               "B": {"name": "Beta", "needs": ["A"]},
+               "C": {"name": "Gamma", "needs": ["B"]}}
+    batch(pairs, "1.json", "ruth", judgement)
+    out = pr.build_report(chained, pr.load_batches())
     assert out.split("## Arrows to add")[1].split("\n## ")[0].strip().endswith(
         "Nothing new.")
     assert "Alpha" in out.split("already gives you")[1].split("\n## ")[0]
 
-
-def test_an_arrow_no_chain_gives_you_is_a_real_addition(pairs):
-    topics = {"A": {"name": "Alpha", "needs": []},
-              "B": {"name": "Beta", "needs": []},
-              "C": {"name": "Gamma", "needs": ["B"]}}
-    batch(pairs, "1.json", "ruth",
-          [{"pair": ["A", "C"], "verdict": "needs", "first": "A"}])
-    out = pr.build_report(topics, pr.load_batches())
+    unchained = {"A": {"name": "Alpha", "needs": []},
+                 "B": {"name": "Beta", "needs": []},
+                 "C": {"name": "Gamma", "needs": ["B"]}}
+    out = pr.build_report(unchained, pr.load_batches())
     assert "| Alpha | Gamma |" in out.split("## Arrows to add")[1].split("\n## ")[0]
 
 

@@ -75,18 +75,14 @@ class TestStagedHints:
         assert marker(page).is_visible()
         assert "spelled the same way" in fold(page, 0).text_content()
 
+        fold(page, 0).locator("summary").click()
+        assert marker(page).is_hidden(), "opening the fold clears the marker"
+
         run(page)
         assert fold(page, 1).is_visible()
         # The body went through the markdown converter and KaTeX.
         assert fold(page, 1).locator("ol li").count() == 2
         assert fold(page, 1).locator(".katex").count() >= 1
-
-    def test_opening_the_fold_clears_the_marker(self, page, clean_storage):
-        run(page)
-        run(page)
-        assert marker(page).is_visible()
-        fold(page, 0).locator("summary").click()
-        assert marker(page).is_hidden()
 
     def test_a_reload_keeps_what_was_shown(self, page, clean_storage):
         run(page)

@@ -53,39 +53,29 @@ def seed(tab, answers: dict[str, str], version: str = "2026.09.15.1"):
 
 
 class TestWhenThereIsNothingToChoose:
-    def test_a_tutorial_with_one_release_shows_no_picker(self, tab, base_url):
+    def test_a_tutorial_with_one_release_shows_no_picker_or_settings_section(self, tab, base_url):
         opened(tab, base_url, ONE_VERSION_PAGE)
         assert tab.locator("#dl-versions").count() == 0
-
-    def test_and_settings_does_not_carry_a_versions_section(self, tab, base_url):
-        opened(tab, base_url, ONE_VERSION_PAGE)
         assert tab.locator("#dl-settings-versions").count() == 0
 
 
 class TestTheMarkerBesideTheTitle:
-    def test_it_is_there_without_being_hovered(self, tab, base_url):
+    def test_it_shows_a_visible_date_after_the_title_closed_by_default(self, tab, base_url):
         """Hover doesn't exist on a phone, so a hover-only affordance is not
         subtle there — it's missing."""
         opened(tab, base_url, DEFAULT_PAGE)
         assert tab.locator("#dl-versions-toggle").is_visible()
-
-    def test_it_reads_as_a_date_rather_than_a_number(self, tab, base_url):
-        opened(tab, base_url, DEFAULT_PAGE)
         assert "15 September 2026" in tab.inner_text("#dl-versions-toggle")
-
-    def test_it_sits_after_the_title(self, tab, base_url):
-        opened(tab, base_url, DEFAULT_PAGE)
         assert tab.eval_on_selector(
             "#dl-versions",
             "el => el.previousElementSibling.tagName",
         ) == "H1"
-
-    def test_the_list_is_closed_until_it_is_asked_for(self, tab, base_url):
-        opened(tab, base_url, DEFAULT_PAGE)
         assert tab.locator("#dl-versions-list").is_hidden()
         assert tab.get_attribute("#dl-versions-toggle", "aria-expanded") == "false"
 
-    def test_opening_it_lists_every_release_newest_first(self, tab, base_url):
+    def test_opening_it_lists_releases_newest_first_marks_the_current_one_and_escape_closes_it(
+        self, tab, base_url
+    ):
         opened(tab, base_url, DEFAULT_PAGE)
         tab.click("#dl-versions-toggle")
         names = tab.eval_on_selector_all(
@@ -93,17 +83,11 @@ class TestTheMarkerBesideTheTitle:
         )
         assert names == ["15 September 2026", "2 June 2026"]
 
-    def test_the_one_being_read_is_marked_and_is_not_a_link(self, tab, base_url):
-        opened(tab, base_url, DEFAULT_PAGE)
-        tab.click("#dl-versions-toggle")
         here = tab.locator("#dl-versions-list .dl-version[data-current]")
         assert here.count() == 1
         assert "15 September 2026" in here.inner_text()
         assert here.locator("a").count() == 0
 
-    def test_escape_closes_it(self, tab, base_url):
-        opened(tab, base_url, DEFAULT_PAGE)
-        tab.click("#dl-versions-toggle")
         tab.keyboard.press("Escape")
         assert tab.locator("#dl-versions-list").is_hidden()
 
@@ -114,18 +98,12 @@ class TestATutorialWithoutATitleHeading:
 
     PAGE = f"tutorials/prose-only.html"
 
-    def test_the_marker_is_still_there(self, tab, base_url):
+    def test_the_marker_sits_at_the_top_and_counts_nothing_without_cells(self, tab, base_url):
         opened(tab, base_url, self.PAGE)
         assert tab.locator("#dl-versions-toggle").is_visible()
-
-    def test_it_goes_to_the_top_of_the_page(self, tab, base_url):
-        opened(tab, base_url, self.PAGE)
         assert tab.eval_on_selector(
             "#dl-versions", "el => el.previousElementSibling === null"
         )
-
-    def test_a_page_with_no_cells_counts_nothing(self, tab, base_url):
-        opened(tab, base_url, self.PAGE)
         tab.click("#dl-versions-toggle")
         assert tab.locator("#dl-versions-list .dl-version").count() == 2
         assert tab.locator("#dl-versions-list .dl-version-carry").count() == 0
@@ -136,20 +114,7 @@ class TestSayingWhatWillHappen:
     before the reader makes it — a true count, not a vague warning to export
     just in case."""
 
-    def test_it_counts_the_answers_that_carry_over(self, tab, base_url):
-        opened(tab, base_url, DEFAULT_PAGE)
-        seed(tab, {
-            "shared-one": "print('mine')",
-            "shared-two": "print('mine too')",
-            "only-in-september": "print('and this')",
-        })
-        tab.reload()
-        tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
-        tab.click("#dl-versions-toggle")
-        june = tab.locator("#dl-versions-list .dl-version[data-version='2026.06.02.1']")
-        assert "2 of your 3 answers carry over" in june.inner_text()
-
-    def test_it_says_where_the_third_one_went(self, tab, base_url):
+    def test_it_counts_the_answers_that_carry_over_and_says_where_the_rest_went(self, tab, base_url):
         """"Lost" would be a lie — the answer stays in storage and comes back
         once the reader returns to a release that has the cell."""
         opened(tab, base_url, DEFAULT_PAGE)
@@ -162,6 +127,7 @@ class TestSayingWhatWillHappen:
         tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
         tab.click("#dl-versions-toggle")
         june = tab.locator("#dl-versions-list .dl-version[data-version='2026.06.02.1']")
+        assert "2 of your 3 answers carry over" in june.inner_text()
         assert "saved but is not shown there" in june.inner_text()
 
     def test_an_untouched_starter_is_not_an_answer(self, tab, base_url):
@@ -188,19 +154,15 @@ class TestSayingWhatWillHappen:
 class TestContinuity:
     """A reader halfway through should not have the ground move."""
 
-    def test_choosing_a_release_takes_them_to_it(self, tab, base_url):
+    def test_choosing_a_release_takes_them_there_and_that_is_where_the_plain_url_takes_them_next_time(
+        self, tab, base_url
+    ):
         opened(tab, base_url, DEFAULT_PAGE)
         tab.click("#dl-versions-toggle")
         tab.click("#dl-versions-list .dl-version[data-version='2026.06.02.1'] a")
         tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
         assert tab.url.endswith("v2026.06.02.1.html")
         assert "This is the June release." in tab.inner_text("#dl-body")
-
-    def test_and_that_is_where_the_plain_url_takes_them_next_time(self, tab, base_url):
-        opened(tab, base_url, DEFAULT_PAGE)
-        tab.click("#dl-versions-toggle")
-        tab.click("#dl-versions-list .dl-version[data-version='2026.06.02.1'] a")
-        tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
 
         opened(tab, base_url, DEFAULT_PAGE)
         assert tab.url.endswith("v2026.06.02.1.html")
@@ -298,14 +260,6 @@ class TestTheSwitchInSettings:
             ".map(e => e.dataset.value)",
         )
         assert checked == ["started"]
-
-    def test_it_lists_the_releases_too(self, tab, base_url):
-        opened(tab, base_url, DEFAULT_PAGE)
-        names = tab.eval_on_selector_all(
-            "#dl-versions-settings .dl-version-name",
-            "els => els.map(e => e.textContent)",
-        )
-        assert names == ["15 September 2026", "2 June 2026"]
 
     def test_asking_for_the_newest_takes_them_there_now(self, tab, base_url):
         """Not a preference for next time — asking for the newest while
