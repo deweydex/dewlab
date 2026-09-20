@@ -3916,3 +3916,82 @@ p code, li code {
   white-space: nowrap;
   color: var(--dl-fg);
 }
+
+/* The two maps in named-grid-areas.
+ *
+ * Each one is a real grid laid out by a real `grid-template-areas`, with
+ * the same words in the same places the CSS above it puts them. That is
+ * the whole claim the section makes — the quoted strings are a picture —
+ * so the diagram had better be the picture rather than a drawing of one.
+ *
+ * The two sit side by side where there is room and stack below it, which
+ * is also the behaviour the page is about. */
+.dl-gridmap {
+  max-width: 34rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.6rem;
+  justify-content: center;
+}
+
+/* The two do not share a width: one is a narrow screen and the other is a
+   wide one, so drawing them the same size would throw away the fact the
+   media query turns on. */
+.dl-gm-case { flex: 0 1 auto; }
+.dl-gm-narrow-case { width: 10rem; }
+.dl-gm-wide-case { width: 18rem; }
+
+.dl-gm-when {
+  margin: 0;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--dl-muted);
+}
+
+/* The quoted strings, directly above the shape they make. One line per row
+   of the grid, which is the sentence the section opens with; seeing four
+   lines over four rows and three over three is what makes it land. */
+.dl-gm-strings {
+  margin: 0.3rem 0 0.5rem;
+  font-family: var(--dl-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--dl-fg);
+  /* Four lines whether this map has four or three, so the two grids below
+     start level and their shapes can be compared directly. */
+  min-height: 6em;
+}
+.dl-gm-strings code { display: block; }
+
+.dl-gm-grid {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.3rem;
+  border: 0.125rem dashed var(--dl-muted);
+}
+
+.dl-gm-narrow {
+  grid-template-areas: "header" "nav" "main" "footer";
+}
+.dl-gm-wide {
+  grid-template-areas: "header header" "nav main" "footer footer";
+  grid-template-columns: 5rem 1fr;
+}
+
+.dl-gm-cell {
+  padding: 0.6rem 0.4rem;
+  text-align: center;
+  font-family: var(--dl-mono);
+  font-size: 0.75rem;
+  color: var(--dl-fg);
+  background: var(--dl-highlight-blue);
+}
+
+/* The one area that moves between the two maps. Amber marks it in both, so
+   what changed is findable without reading all eight cells. */
+.dl-gm-cell.dl-gm-moved { background: var(--dl-highlight-bg); }
+
+.dl-gm-header { grid-area: header; }
+.dl-gm-nav { grid-area: nav; }
+.dl-gm-main { grid-area: main; }
+.dl-gm-footer { grid-area: footer; }

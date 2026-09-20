@@ -79,6 +79,38 @@ the main area. The media query redraws the same map for a wider screen:
 two columns, with the menu now beside the main area rather than above it.
 Nothing about the HTML changes, only which map applies.
 
+<div class="dl-drawn dl-gridmap" role="img" aria-label="The same four areas under two maps, each shown as its quoted lines of grid-template-areas and as the shape those lines make. Under 350 pixels: four quoted lines, so one column and four rows, in the order header, nav, main, footer. At 350 pixels and wider: three quoted lines of two words each, so two columns and three rows, with header spanning both columns on the top row, nav and main side by side on the middle row, and footer spanning both columns on the bottom.">
+<div class="dl-gm-case dl-gm-narrow-case">
+<p class="dl-gm-when">under 350px</p>
+<div class="dl-gm-strings">
+<code>"header"</code>
+<code>"nav"</code>
+<code>"main"</code>
+<code>"footer"</code>
+</div>
+<div class="dl-gm-grid dl-gm-narrow">
+<div class="dl-gm-cell dl-gm-header">header</div>
+<div class="dl-gm-cell dl-gm-nav dl-gm-moved">nav</div>
+<div class="dl-gm-cell dl-gm-main">main</div>
+<div class="dl-gm-cell dl-gm-footer">footer</div>
+</div>
+</div>
+<div class="dl-gm-case dl-gm-wide-case">
+<p class="dl-gm-when">350px and wider</p>
+<div class="dl-gm-strings">
+<code>"header header"</code>
+<code>"nav main"</code>
+<code>"footer footer"</code>
+</div>
+<div class="dl-gm-grid dl-gm-wide">
+<div class="dl-gm-cell dl-gm-header">header</div>
+<div class="dl-gm-cell dl-gm-nav dl-gm-moved">nav</div>
+<div class="dl-gm-cell dl-gm-main">main</div>
+<div class="dl-gm-cell dl-gm-footer">footer</div>
+</div>
+</div>
+</div>
+
 ## Other properties from the same lesson
 
 Two related properties are worth naming here, even without a live demo
