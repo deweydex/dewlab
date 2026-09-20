@@ -55,7 +55,14 @@ version: 2026.08.24.1
 | `title` | Shown in the browser tab and at the top of the page. |
 | `year` | An academic year like `2026-2027`, since the programme is scoped a year at a time. |
 | `version` | A dated version like `2026.08.24.1`. Bump it when you change the code in a cell, so a student's saved progress knows the page moved on. Prose fixes do not need it. See [Releasing a new version](#releasing-a-new-version) for when a bump needs a full versioned release instead. |
-| `status` | Optional. `live` (the default) or `archived`. An archived tutorial keeps its built page, so old links still resolve, but drops out of the reading order and the contents page. |
+| `status` | Optional, `live` by default. See the table below. |
+
+| `status` | Built as a page? | In the reading order? | What it means |
+|---|---|---|---|
+| `draft` | No | No | Work in progress — visible only in a local build or the authoring editor. |
+| `beta` | Yes | No | Reachable by direct URL, for testing or preview — never the default route. |
+| `live` | Yes | Yes | The active, canonical release — the one a plain URL serves. |
+| `archived` | Yes | No | Retired — still built, at its old URL, so old links and past students' saved work still have somewhere to land, but out of the reading order. |
 
 Add `packages: [sympy]` if a tutorial needs a library beyond `numpy`, `pandas`
 and `matplotlib`, which load with every page. You can add any other field you
@@ -447,6 +454,18 @@ See [working with a table](tutorial:working-with-tables#the-shared-table).
 The build turns that into a real relative link. If the slug or the anchor does
 not exist, the build fails rather than shipping a dead link for a student to
 find. Headings and cell ids both count as anchors.
+
+A tutorial can also link to a learning outcome directly, rather than to a
+specific tutorial:
+
+```markdown
+As introduced in [Linear Functions](topic:MIT-3.2) ...
+```
+
+`build.py` resolves `MIT-X.Y` to whichever tutorial currently teaches that
+outcome (`taught_where()`). If an outcome is removed or archived with
+nothing left to take its place, the build fails rather than shipping a link
+that points at nothing.
 
 ---
 

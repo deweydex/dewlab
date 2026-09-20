@@ -94,9 +94,8 @@ class TestTheReference:
         # nothing forward-looking.
         assert [e["term"] for e in manifest(built(repo, "one"))["glossary"]] == ["x"]
 
-        # An inherited term says where it was introduced. planning/ROADMAP.md
-        # Phase 5: the panel answers "what does this mean"; the origin answers
-        # "where did I meet this".
+        # An inherited term says where it was introduced: the panel answers
+        # "what does this mean"; the origin answers "where did I meet this".
         entry = manifest(built(repo, "two"))["glossary"][0]
         assert entry["origin"]["href"] == "one.html"
         assert entry["origin"]["title"]

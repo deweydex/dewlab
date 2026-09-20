@@ -39,8 +39,7 @@ sense.
 ## Reading order
 
 1. **The module docstring** — what this file is for, in the author's own
-   words, plus where its design comes from (`planning/PRE_BUILD_DECISIONS.md`,
-   `DECISIONS_LOG.md`).
+   words, plus where its design comes from (`DECISIONS_LOG.md`).
 2. **Environment** — `IN_BROWSER`, the try/except that decides whether
    `js` and `pyodide.ffi` are actually available, since this file also
    has to work under plain CPython for the test suite.

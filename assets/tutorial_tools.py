@@ -11,10 +11,9 @@ This is the module a student's cell code sees. It does two jobs:
     `show_table`, and `check` — plus `load_csv` and `run_query` for pulling
     in data, the latter usable wherever sqlite3 is loaded (dewmini today).
 
-Built from the specification in planning/PRE_BUILD_DECISIONS.md, which names those six
-functions and pins down one signature, `check(actual, expected)`. Everything
-else about how they behave was designed rather than looked up, and every such
-choice is written down in DECISIONS_LOG.md rather than left implicit here.
+How each of the six behaves was designed rather than looked up, and every
+such choice is written down in DECISIONS_LOG.md rather than left implicit
+here.
 
 Nothing about this is assessment-shaped: no scoring, no submission, no record
 kept anywhere. `check` tells a student whether they got it, and that is all.

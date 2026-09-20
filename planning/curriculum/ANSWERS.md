@@ -18,7 +18,7 @@ Tutorial 15 maintains its focused treatment of quadratic real roots, linking dir
 
 Numbered titles and filenames were eliminated across the curriculum:
 - Filenames and titles are decoupled from fixed ordinal positions, preventing cascading renames upon insertion.
-- The visual authoring editor (`planning/EDITOR.md`) manages sequence order directly via series order files (`<series>.order.yaml`).
+- The visual authoring editor manages sequence order directly via series order files (`<series>.order.yaml`).
 
 ## 6. Calculus — **Two Focused Tutorials and Application Synthesis**
 

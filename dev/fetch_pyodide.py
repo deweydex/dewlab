@@ -5,9 +5,9 @@ Three uses:
 
   * the e2e tests serve it, so they never depend on a CDN being reachable from
     wherever they run;
-  * it is the escape hatch for OPEN_QUESTIONS.md 32 — if a school network turns
-    out to block the CDN, this same directory is what gets committed under
-    assets/ and pointed at with DEWLAB_PYODIDE_BASE;
+  * it is the escape hatch if a school network turns out to block the CDN —
+    this same directory is what gets committed under assets/ and pointed at
+    with DEWLAB_PYODIDE_BASE;
   * build.py's write_dewmini_bundle() points --out at assets/vendor/pyodide/
     instead, with --packages widened to include sqlite3 and Pillow, to make
     the downloadable dewmini bundle work offline after its first run.

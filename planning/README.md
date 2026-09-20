@@ -14,51 +14,18 @@ the record of why it works the way it does.
   fold-hidden answers work, and where worksheet conversion draws from
   ([`deweydex/Mathematics`](https://github.com/deweydex/Mathematics)).
 
-### Architecture
-- **[`STATUS.md`](./STATUS.md)** — what's built, what's still open, and
-  the trickier decisions behind the parts that are done.
-- **[`ROADMAP.md`](./ROADMAP.md)** — what's still ahead and the
-  questions each piece leaves open. Shrinks as things ship.
-- **[`PRE_BUILD_DECISIONS.md`](./PRE_BUILD_DECISIONS.md)** — the early
-  choices (libraries, visual style, hosting, versioning, editor, maths)
-  and why, settled before there was any code to decide differently in.
-- **[`CONTENT_AND_FILE_ARCHITECTURE.md`](./CONTENT_AND_FILE_ARCHITECTURE.md)**
-  — the tutorial Markdown format: executable code blocks, setup
-  includes, dataset references.
-- **[`VERSIONS.md`](./VERSIONS.md)** — how a tutorial gets more than one
-  release: dated versions, canonical URLs, frozen archives.
-- **[`WINDOW_AUDIT.md`](./WINDOW_AUDIT.md)** — a pre-release check of
-  every contract this project can't change its mind about later (URL
-  slugs, cell ids, the saved-work schema, version format).
-- **[`EDITOR.md`](./EDITOR.md)** — the GitHub-integrated visual editor:
-  what it does and how releases work through it.
-
 ### The reading surface
-Each of these designs one part of what a reader sees, and each was
-written before the thing it describes was built.
-
 - **[`REFERENCE_PANEL.md`](./REFERENCE_PANEL.md)** — the per-tutorial
   reference, assembled from glossary files, and the rule it exists to
   keep: never show a reader a term they have not met.
-- **[`SIDEBAR_CONTENT.md`](./SIDEBAR_CONTENT.md)** — datasets,
-  author-written pedagogical notes, and what earns a panel of its own.
 - **[`DOT_DOCK.md`](./DOT_DOCK.md)** — exploring the masthead's orange dot
   as a replacement for the Panels disclosure, up to six panels fanning
   into three zones. Design note; nothing here is built.
-
-### The edges
-- **[`EDGES_AUDIT.md`](./EDGES_AUDIT.md)** — the phone, screen-reader and
-  offline-bundle audit: what was claimed, what testing it found, and what
-  still needs a person rather than a script.
 
 ### Curriculum
 - **[`CURRICULUM_MAP.md`](./CURRICULUM_MAP.md)** — generated; every
   learning outcome, mapped to where (or whether) it's actually taught.
   Don't edit by hand — run `python3 dev/curriculum_map.py`.
-- **[`CURRICULUM_NOTES.md`](./CURRICULUM_NOTES.md)** — notes on how the
-  curriculum is structured and named.
-- **[`OPEN_QUESTIONS.md`](./OPEN_QUESTIONS.md)** — early architectural
-  questions, the tradeoffs weighed, and how each was resolved.
 - **[`curriculum/`](./curriculum/)** — the machine-readable outcome
   descriptors, scope limits, and topic dependency graph.
 - **[`curriculum/review/contradictions.md`](./curriculum/review/contradictions.md)**
