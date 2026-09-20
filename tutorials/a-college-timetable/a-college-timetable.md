@@ -68,6 +68,10 @@ calendar date, written `'2026-09-14'`, sorts the same way whether the
 computer reads it as text or as a date — the reason this page uses real
 dates instead.
 
+![Five tables. Programmes, teachers and rooms stand on their own.
+Modules points at programmes. Sessions points at modules, teachers and
+rooms, so three lines arrive at it and none leave.](timetable-erd.svg)
+
 Four tables that describe things, and a fifth that describes an event
 tying several of them together, is a shape you will meet again outside
 this course. `sessions` is the table every clash lives or does not live
@@ -98,7 +102,8 @@ CREATE TABLE rooms (
 CREATE TABLE modules (
     id INTEGER PRIMARY KEY,
     name TEXT,
-    programme_id INTEGER
+    programme_id INTEGER,
+    FOREIGN KEY (programme_id) REFERENCES programmes(id)
 );
 
 CREATE TABLE sessions (
@@ -108,7 +113,10 @@ CREATE TABLE sessions (
     room_id INTEGER,
     session_date TEXT,
     start_time TEXT,
-    end_time TEXT
+    end_time TEXT,
+    FOREIGN KEY (module_id) REFERENCES modules(id),
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id),
+    FOREIGN KEY (room_id) REFERENCES rooms(id)
 );
 
 INSERT INTO programmes (name) VALUES

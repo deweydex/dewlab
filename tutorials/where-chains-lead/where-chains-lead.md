@@ -38,6 +38,21 @@ for row in P:
     print(row, "sums to", sum(row))
 ```
 
+![Two states, sunny and rainy. An arrow from sunny to rainy carries 30%,
+and one back carries 40%. Each state also has an arrow looping back to
+itself: 70% on sunny, 60% on rainy.](weather-states.svg)
+
+The picture above and the grid below are the same thing written two ways.
+Each row of the matrix is the arrows leaving one state, and *every arrow
+leaving a state* is drawn — including the one that loops back to where it
+started, which is what "the weather stays as it is" looks like. That is why
+each row adds up to 1: leaving a state, something has to happen.
+
+A drawing like this is a *state diagram*. Each circle is a state the thing
+can be in, and each arrow is a way of moving between them, labelled with
+how likely that move is. You will meet the same picture again wherever
+something moves between a small number of conditions.
+
 Row 1 is "if today is sunny": 70% sunny tomorrow, 30% rainy. Row 2 is "if
 today is rainy": 40% sunny, 60% more rain. Every row sums to 1, because
 tomorrow is certainly *something*. This is a *transition matrix*, and each

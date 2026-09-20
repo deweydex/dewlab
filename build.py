@@ -3608,6 +3608,65 @@ def tutorial_assets(tutorial: Tutorial) -> list[Path]:
     )
 
 
+# `<img src="diagram.svg" alt="…">` — a local SVG shown on the page, which
+# gets inlined rather than linked. See inline_local_svg().
+IMG_SVG_RE = re.compile(
+    r'<img\b(?P<attrs>[^>]*?)\bsrc="(?P<url>[^"]*\.svg)"(?P<rest>[^>]*)>',
+    re.IGNORECASE)
+ALT_VALUE_RE = re.compile(r'\balt\s*=\s*"(?P<alt>[^"]*)"', re.IGNORECASE)
+SVG_PROLOGUE_RE = re.compile(r"^\s*(?:<\?xml[^>]*\?>|<!DOCTYPE[^>]*>)\s*", re.I)
+
+
+def inline_local_svg(folder: Path, body: str) -> str:
+    """Put a local SVG's own markup on the page, in place of linking to it.
+
+    An `<img>`-loaded SVG is a separate document. The page's CSS custom
+    properties do not reach inside it and `currentColor` has no inherited
+    colour to resolve against, so a diagram drawn in `--dl-*` tokens renders
+    black on black for any reader not in light mode — and the reader's own
+    font choice, OpenDyslexic included, never reaches its labels either.
+    Inlined, both work, and the same file is what a diagramming tool wrote.
+
+    The contents page's map is already inline SVG for the same reason
+    (`write_contents_page()`), so this extends a house pattern rather than
+    inventing one.
+
+    `alt` carries across rather than being dropped: alt text on an element
+    that is no longer an image would mean nothing, so a described diagram
+    becomes `role="img"` with an `aria-label`, and an explicit `alt=""` —
+    the way this project marks a decorative image — becomes `aria-hidden`.
+    `check_alt_text()` still runs against the `<img>` tags, before this.
+
+    Raster images keep the `<img>` path: there is nothing inside a PNG for
+    the page's stylesheet to reach.
+    """
+
+    def swap(match: re.Match) -> str:
+        url = match.group("url")
+        if EXTERNAL_URL_RE.match(url):
+            return match.group(0)
+        source = folder / url
+        if not source.is_file():
+            return match.group(0)          # src() reports it, with a better message
+        attributes = match.group("attrs") + match.group("rest")
+        described = ALT_VALUE_RE.search(attributes)
+        label = html.escape(described.group("alt"), quote=True) if described else ""
+        markup = SVG_PROLOGUE_RE.sub("", source.read_text()).strip()
+        if not markup.startswith("<svg"):
+            return match.group(0)
+        opening = markup[: markup.index(">") + 1]
+        # A fixed width would stop the figure fitting a narrow screen, and the
+        # viewBox already carries the proportions.
+        cleaned = re.sub(r'\s(?:width|height)="[^"]*"', "", opening)
+        accessibility = (
+            f' role="img" aria-label="{label}"' if label else ' aria-hidden="true"'
+        )
+        cleaned = cleaned[:-1] + f' class="dl-figure"{accessibility}>'
+        return cleaned + markup[markup.index(">") + 1 :]
+
+    return IMG_SVG_RE.sub(swap, body)
+
+
 def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
     """Point every `src="picture.png"` at the copy this build will write, and
     fail on one naming a file the tutorial's folder does not hold. Do the
@@ -3663,6 +3722,10 @@ def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
         return f"\x00{len(code_spans) - 1}\x00"
 
     masked = CODE_SPAN_RE.sub(stash, body_html)
+    # Before src() runs, so an inlined diagram has no src left to rewrite,
+    # and after masking, so a tutorial *showing* `<img src="x.svg">` as an
+    # example still shows it rather than drawing it.
+    masked = inline_local_svg(folder, masked)
     resolved = HREF_ASSET_RE.sub(href, SRC_RE.sub(src, masked))
     return re.sub(r"\x00(\d+)\x00", lambda m: code_spans[int(m.group(1))], resolved)
 

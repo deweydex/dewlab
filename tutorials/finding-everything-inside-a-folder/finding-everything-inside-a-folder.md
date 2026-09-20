@@ -46,6 +46,10 @@ print(photos["files"])
 print(photos["subfolders"][0]["name"])
 ```
 
+![The photos folder holds two files and two subfolders, 2025 and 2026. 2025
+holds one file. 2026 holds no files and one subfolder, trip, which holds
+two files.](photos-tree.svg)
+
 This is a *tree*: a structure where each value can lead to several others,
 and following it never leads back to where it started. `photos` holds two
 files directly and two subfolders, `"2025"` and `"2026"`. `"2025"` holds

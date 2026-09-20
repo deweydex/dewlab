@@ -64,11 +64,18 @@ id: trying-every-combination-2
 
 ## Remembering What We Already Worked Out
 
-Brute force repeats itself. Reaching `6` by way of `3` then `3` asks, along
-the way, "what is the fewest tokens for `3`?" Reaching `6` by way of `4`
-then `1` then `1` asks that exact question too, then asks "what is the
-fewest tokens for `2`?" as well. Each of those two questions gets answered
-more than once, with the same answer every time.
+Brute force repeats itself. Reaching `6` by taking a `4` asks, along the
+way, "what is the fewest tokens for `2`?" Reaching it by taking a `1` and
+then a `3` asks that exact question. So does taking a `3` and then a `1`.
+Each time, the same question is worked out again from the beginning, and
+each time the answer comes back the same.
+
+![The call tree from six. Three of its branches arrive at the amount two,
+each by a different first move, and each one is worked out again from
+scratch.](repeated-question.svg)
+
+Only the first two moves are drawn. Carry on and `2` comes up a fourth
+time, by way of four separate `1`s.
 
 A *cache* is a place to store an answer the first time it is worked out. A
 repeated question can then be answered by looking it up, instead of

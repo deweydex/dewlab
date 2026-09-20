@@ -108,7 +108,8 @@ def _layout(schema: dict) -> dict:
         )
         for name in names:
             for c in schema[name]["columns"]:
-                label = f"{c['name']}   {c['type']}   {'PK' if c['primary'] else 'FK' if c['references'] else ''}"
+                label = (f"{c['name']}   {c['type']}   "
+                         f"{'PK' if c['primary'] else ''}{' FK' if c['references'] else ''}")
                 width = max(width, _text_width(label, ROW_PT) + PAD * 2)
         heights = {
             name: HEADER_H + ROW_H * len(schema[name]["columns"]) for name in names
@@ -133,19 +134,27 @@ def _row_centre(placed: dict, table: dict, index: int) -> float:
     return placed["y"] + HEADER_H + ROW_H * (index + 0.5)
 
 
-def _crows_foot(drawing, group, x: float, y: float, facing: int, size: float = 6.0) -> None:
-    """The many end: three prongs opening away from the box."""
-    for offset in (-size, 0, size):
+def _crows_foot(drawing, group, x: float, y: float, facing: int, size: float = 9.0) -> None:
+    """The many end: three toes spreading out where the line meets the box.
+
+    Orientation is the whole notation here. The three lines converge at a
+    point out along the line and spread apart as they reach the entity, so
+    the shape opens towards the many side. Converged at the box instead, it
+    reads as an arrowhead — "points at" rather than "many of these".
+    """
+    apex = (x + facing * size * 1.6, y)
+    for offset in (-size * 0.85, 0, size * 0.85):
         group.add(drawing.line(
-            start=(x, y), end=(x + facing * size * 1.7, y + offset),
-            stroke=INK, stroke_width=1.1, stroke_linecap="round"))
+            start=apex, end=(x, y + offset),
+            stroke=INK, stroke_width=1.6, stroke_linecap="round"))
 
 
-def _single_bar(drawing, group, x: float, y: float, size: float = 5.5) -> None:
-    """The one end: a single bar across the line."""
+def _single_bar(drawing, group, x: float, y: float, size: float = 7.0) -> None:
+    """The one end: one bar across the line, matching the foot's weight
+    so the two ends read as a pair rather than as mark and accident."""
     group.add(drawing.line(
         start=(x, y - size), end=(x, y + size),
-        stroke=INK, stroke_width=1.4, stroke_linecap="round"))
+        stroke=INK, stroke_width=2.0, stroke_linecap="round"))
 
 
 def render(schema: dict, title: str | None = None) -> str:
@@ -188,9 +197,17 @@ def render(schema: dict, title: str | None = None) -> str:
             if parent not in boxes or parent == name:
                 continue
             child_box, parent_box = boxes[name], boxes[parent]
+            # The line leaves the parent's own key column, not its name band:
+            # a foreign key names a row through a column, and a line from the
+            # header would say the relationship belongs to the whole table.
+            parent_columns = schema[parent]["columns"]
+            target = column["references"][1]
+            parent_index = next(
+                (i for i, c in enumerate(parent_columns) if c["name"] == target), 0)
             start = (parent_box["x"] + parent_box["w"],
-                     parent_box["y"] + HEADER_H / 2)
+                     _row_centre(parent_box, schema[parent], parent_index))
             end = (child_box["x"], _row_centre(child_box, table, index))
+            meet = (end[0] - 14.4, end[1])   # where the foot's toes converge
 
             def lane_after(box) -> float:
                 edge = box["x"] + box["w"]
@@ -200,7 +217,7 @@ def render(schema: dict, title: str | None = None) -> str:
             if child_box["column"] - parent_box["column"] <= 1:
                 # Neighbours: out into the gutter between them, along, and in.
                 turn = lane_after(parent_box)
-                points = [start, (turn, start[1]), (turn, end[1]), end]
+                points = [start, (turn, start[1]), (turn, end[1]), meet]
             else:
                 # A reach across a column has no clear gutter to turn in — the
                 # straight run would cross whatever sits between. It drops
@@ -211,11 +228,11 @@ def render(schema: dict, title: str | None = None) -> str:
                 out = lane_after(parent_box)
                 back = child_box["x"] - LANE * below_lanes
                 points = [start, (out, start[1]), (out, floor),
-                          (back, floor), (back, end[1]), end]
+                          (back, floor), (back, end[1]), meet]
             root.add(drawing.polyline(
-                points=points, fill="none", stroke=INK, stroke_width=1.1,
+                points=points, fill="none", stroke=INK, stroke_width=1.6,
                 stroke_linejoin="round"))
-            _single_bar(drawing, root, start[0] + 5, start[1])
+            _single_bar(drawing, root, start[0] + 7, start[1])
             _crows_foot(drawing, root, end[0], end[1], -1)
 
     for name, box in boxes.items():
@@ -243,7 +260,13 @@ def render(schema: dict, title: str | None = None) -> str:
             root.add(drawing.text(
                 column["name"], insert=(box["x"] + PAD, centre),
                 font_size=f"{ROW_PT}px", font_family=MONO, fill=INK))
-            mark = "PK" if column["primary"] else "FK" if column["references"] else ""
+            # A column can be both, and in a junction table every column is:
+            # part of the composite key, and a foreign key into one of the two
+            # tables being joined. Showing only "PK" there hides the very
+            # thing the picture is meant to explain.
+            marks = ("PK" if column["primary"] else "") + \
+                    (" FK" if column["references"] else "")
+            mark = marks.strip()
             root.add(drawing.text(
                 f"{column['type']} {mark}".strip(),
                 insert=(box["x"] + box["w"] - PAD, centre),

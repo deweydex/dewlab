@@ -47,6 +47,17 @@ That is *one-to-many*. The id lives on the `sales` side, in a column like
 join](tutorial:a-second-table-and-a-join) already showed the query side of
 this, with `sightings.dinosaur_id`.
 
+![One products row is reached by many sales rows. The id column in products
+carries PK for primary key; the product_id column in sales carries FK for
+foreign key, and the line between them ends in three prongs on the sales
+side, meaning many.](products-sales-erd.svg)
+
+That picture is an *entity relationship diagram*. Each box is a table, with
+its columns listed under its name. `PK` marks the column that gives a row
+its own identity, and `FK` marks a column holding a row's id from another
+table. The line joins the two, and its ends say how many: a single bar for
+one, three prongs — a crow's foot — for many. So one product, many sales.
+
 ## Your turn
 
 Let's pick a topic for a database with at least two related tables — a

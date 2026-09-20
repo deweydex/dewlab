@@ -342,6 +342,8 @@ own to see a full example.
 
 <details class="dl-answer"><summary>a worked solution</summary>
 
+![Five tables. book_authors sits between books and authors with a line to each, and both of its columns are marked PK, so one row of it is one book paired with one author. Loans points at books and at members.](library-erd.svg)
+
 ```sql
 CREATE TABLE authors (
     id INTEGER PRIMARY KEY,
@@ -357,7 +359,9 @@ CREATE TABLE books (
 CREATE TABLE book_authors (
     book_id INTEGER NOT NULL,
     author_id INTEGER NOT NULL,
-    PRIMARY KEY (book_id, author_id)
+    PRIMARY KEY (book_id, author_id),
+    FOREIGN KEY (book_id) REFERENCES books(id),
+    FOREIGN KEY (author_id) REFERENCES authors(id)
 );
 
 CREATE TABLE members (
@@ -371,7 +375,9 @@ CREATE TABLE loans (
     member_id INTEGER NOT NULL,
     borrowed_date TEXT NOT NULL,
     due_date TEXT NOT NULL,
-    returned_date TEXT
+    returned_date TEXT,
+    FOREIGN KEY (book_id) REFERENCES books(id),
+    FOREIGN KEY (member_id) REFERENCES members(id)
 );
 
 INSERT INTO authors (name) VALUES

@@ -111,3 +111,176 @@ class TestTheDrawing:
             for pair in points.split()
         ]
         assert max(ys) > boxes_bottom, "no edge was routed below the boxes"
+
+
+try:
+    import tree as tree_renderer
+    from tree import Node
+    import computational_methods as cm
+except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
+    tree_renderer = Node = cm = None
+
+needs_tree = pytest.mark.skipif(tree_renderer is None, reason="svgwrite is not installed")
+
+
+@needs_tree
+class TestTreeLayout:
+    def test_a_parent_sits_over_the_children_it_has(self):
+        root = Node("top", children=[Node("a"), Node("b"), Node("c")])
+        tree_renderer._measure(root)
+        placed: list = []
+        tree_renderer._place(root, 0.0, 0, placed)
+        first, last = root.children[0], root.children[-1]
+        assert root.centre == pytest.approx((first.centre + last.centre) / 2)
+
+    def test_a_deeper_level_sits_below_a_shallower_one(self):
+        root = Node("top", children=[Node("a", children=[Node("deep")])])
+        tree_renderer._measure(root)
+        placed: list = []
+        tree_renderer._place(root, 0.0, 0, placed)
+        tops = {node.label: node.top for node in placed}
+        assert tops["top"] < tops["a"] < tops["deep"]
+
+    def test_siblings_do_not_overlap(self):
+        root = Node("top", children=[
+            Node("wide label here"), Node("b"), Node("another wide one"),
+        ])
+        tree_renderer._measure(root)
+        placed: list = []
+        tree_renderer._place(root, 0.0, 0, placed)
+        spans = sorted(
+            (c.centre - c.box_width / 2, c.centre + c.box_width / 2)
+            for c in root.children
+        )
+        for (_, left_end), (right_start, _) in zip(spans, spans[1:]):
+            assert right_start >= left_end
+
+
+@needs_tree
+class TestTheRepeatedQuestion:
+    """The marked amount has to be the one a reader can count in front of
+    them, which is not the one the whole recursion repeats most."""
+
+    def test_counts_are_taken_over_the_drawn_depth_not_the_whole_recursion(self):
+        drawn = cm._repeat_counts(6, [1, 3, 4], cm.MAKE_CHANGE_DEPTH)
+        whole = cm._repeat_counts(6, [1, 3, 4], 99)
+        busiest_drawn = max(
+            (a for a in drawn if a not in (0, 6)), key=lambda a: (drawn[a], a))
+        busiest_whole = max(
+            (a for a in whole if a not in (0, 6)), key=lambda a: (whole[a], a))
+        assert busiest_drawn == 2
+        assert busiest_whole == 1, "the two differ, which is why depth matters"
+
+    def test_the_marked_amount_appears_more_than_once_in_the_drawing(self):
+        counts = cm._repeat_counts(6, [1, 3, 4], cm.MAKE_CHANGE_DEPTH)
+        repeated = max(
+            (a for a in counts if a not in (0, 6)), key=lambda a: (counts[a], a))
+        drawn = cm._call_tree(6, [1, 3, 4], repeated, cm.MAKE_CHANGE_DEPTH)
+        marked: list = []
+
+        def walk(node):
+            if node.marked:
+                marked.append(node.label)
+            for child in node.children:
+                walk(child)
+
+        walk(drawn)
+        assert len(marked) >= 2, "a mark that appears once argues nothing"
+        assert set(marked) == {str(repeated)}
+
+
+try:
+    import states as state_renderer
+except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
+    state_renderer = None
+
+needs_states = pytest.mark.skipif(state_renderer is None, reason="svgwrite is not installed")
+
+
+@needs_states
+class TestStateDiagram:
+    WEATHER = [[0.7, 0.3], [0.4, 0.6]]
+
+    def test_every_entry_of_the_matrix_gets_an_arrow(self):
+        """Including the two on the diagonal. Dropping a self-loop would make
+        a row look as though it did not sum to one."""
+        svg = state_renderer.render(["sunny", "rainy"], self.WEATHER,
+                                    fmt=lambda p: f"{round(p * 100)}%")
+        for row in self.WEATHER:
+            for probability in row:
+                assert f">{round(probability * 100)}%<" in svg
+
+    def test_a_zero_chance_draws_no_arrow(self):
+        svg = state_renderer.render(["a", "b"], [[1.0, 0.0], [0.0, 1.0]],
+                                    fmt=lambda p: f"{p:g}")
+        assert svg.count(">0<") == 0
+
+    def test_the_matrix_is_read_from_the_tutorial_not_restated(self):
+        matrix = cm._matrix_from_cell("where-chains-lead", "a-weather-machine-1", "P")
+        assert matrix == self.WEATHER
+        for row in matrix:
+            assert sum(row) == pytest.approx(1.0), "a row that does not sum to 1"
+
+    def test_more_than_two_states_says_so_rather_than_drawing_badly(self):
+        with pytest.raises(ValueError, match="two states"):
+            state_renderer.render(["a", "b", "c"], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+
+
+try:
+    import maths as maths_diagrams
+except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
+    maths_diagrams = None
+
+needs_maths = pytest.mark.skipif(maths_diagrams is None, reason="svgwrite is not installed")
+
+
+@needs_maths
+class TestTheTwoAcesTree:
+    def test_it_draws_the_numbers_the_page_multiplies(self):
+        svg = maths_diagrams.drawing_two_aces()
+        assert ">4/52<" in svg and ">3/51<" in svg
+
+    def test_both_second_draws_are_out_of_the_same_smaller_deck(self):
+        """One card is gone whichever one it was — that shared 51 is half of
+        what makes the two draws dependent."""
+        svg = maths_diagrams.drawing_two_aces()
+        assert ">3/51<" in svg and ">4/51<" in svg, "the numerators must differ"
+
+    def test_sibling_branches_summing_wrong_stops_generation(self, monkeypatch):
+        """A tree whose branches do not sum to 1 is arithmetic a reader would
+        be right to distrust, so it fails here rather than shipping."""
+        monkeypatch.setattr(maths_diagrams, "ACES", 5)
+        monkeypatch.setattr(maths_diagrams, "CARDS", 0)
+        with pytest.raises(ZeroDivisionError):
+            maths_diagrams.drawing_two_aces()
+
+
+try:
+    import grids as grid_renderer
+except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
+    grid_renderer = None
+
+needs_grids = pytest.mark.skipif(grid_renderer is None, reason="svgwrite is not installed")
+
+
+@needs_grids
+class TestRowTimesColumn:
+    A = [[1, 2], [3, 4]]
+    B = [[5, 0], [1, -1]]
+    AB = [[7, -2], [19, -4]]
+
+    def test_the_working_matches_the_entry_it_explains(self):
+        svg = grid_renderer.row_times_column(self.A, self.B, self.AB, row=0, column=0)
+        assert "1×5 + 2×1 = 7" in svg
+
+    def test_it_draws_the_matrices_the_tutorial_defines(self):
+        left, right = cm._matrices_from_cell(
+            "multiplying-grids", "multiplying-two-grids-3", ("A", "B"))
+        assert left == self.A and right == self.B
+        columns = list(zip(*right))
+        product = [[sum(a * b for a, b in zip(r, c)) for c in columns] for r in left]
+        assert product == self.AB, "the tutorial's own numbers changed"
+
+    def test_a_different_entry_picks_a_different_row_and_column(self):
+        svg = grid_renderer.row_times_column(self.A, self.B, self.AB, row=1, column=1)
+        assert "3×0 + 4×-1 = -4" in svg

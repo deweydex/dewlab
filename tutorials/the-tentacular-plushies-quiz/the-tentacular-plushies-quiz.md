@@ -256,6 +256,8 @@ own to see a full example.
 
 <details class="dl-answer"><summary>a worked solution</summary>
 
+![Two tables. One transactions row names exactly one products row through product_id, and one product can be named by many transactions, so the line ends in three prongs at the transactions side.](plushies-erd.svg)
+
 ```sql
 CREATE TABLE products (
     id INTEGER PRIMARY KEY,

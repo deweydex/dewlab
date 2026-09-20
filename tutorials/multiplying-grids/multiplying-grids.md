@@ -77,6 +77,19 @@ product of row $i$ of $A$ with column $j$ of $B$.
 
 $$c_{ij} = \sum_{k} a_{ik} \, b_{kj}$$
 
+![Matrix A times matrix B equals AB. The first row of A is shaded, the
+first column of B is shaded, and the entry they produce in the top left of
+AB is shaded. Below, the working: one times five plus two times one equals
+seven.](row-times-column.svg)
+
+One row, one column, one entry. The shaded row and the shaded column pair
+up term by term, and what comes out goes in the one place they meet. Every
+other entry of the answer is the same move with a different row and a
+different column.
+
+It also shows why the shapes have to agree: a row and a column can only
+pair up term by term if they are the same length.
+
 That is the whole rule. The columns of $B$ are the awkward part to get at in
 a plain list of lists — but you already wrote something that turns columns
 into rows: `transpose`, from the last tutorial. Each page here begins with no code from previous pages,
