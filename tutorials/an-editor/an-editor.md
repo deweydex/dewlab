@@ -12,9 +12,9 @@ covers:
 
 # An editor
 
-HTML and CSS files are plain text, and a plain text editor is all you
-need to write them. The difference between editors is how much help they
-give you while you type.
+Code is plain text, whatever language it is written in, and a plain text
+editor is all you need to write it. The difference between editors is
+how much help they give you while you type.
 
 ## VS Code, the usual choice
 

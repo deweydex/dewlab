@@ -4,6 +4,11 @@ status: beta
 card: We build a table, then several, with SQL running right beside the Python that
   reads it.
 contents:
+- title: A GitHub account and an editor
+  tutorials:
+  - a-github-account
+  - issues-and-pull-requests
+  - an-editor
 - title: A table of your own
   tutorials:
   - a-table-is-a-list-of-rows

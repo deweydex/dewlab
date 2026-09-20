@@ -4190,3 +4190,19 @@ So the Arc 2 series opened on `planning-a-site`, whose first "Your turn" reads "
 No glossary file. The one term the Arc 1 page defines is *fork*, and redefining it here would be the vocabulary report's own complaint.
 
 *Cost to change: nil. One folder, two list entries.*
+
+---
+
+**7.203 — Database Methods opens with the three GitHub pages Web Authoring already had, shared rather than copied. Only three of that series' eight pages were track-neutral, and one sentence had to change.** Josh: "I think we need to have the web authoring and database methods start with our github series... then we can link to that series if they haven't done it already."
+
+**The link he wanted comes free, because the machinery already existed.** A tutorial can sit on more than one course — twelve already do, the whole of Programming Foundations across `programming-design-principles` and `mit-pdp-maths-prog-integration` — and it brings the course chooser, the tree drawn for whichever course the reader came from, and one saved-progress key across both. So a reader who did these pages on the web track arrives on the database track with them already behind them, which is exactly "link to that series if they haven't done it already" without a link.
+
+**But the Welcome series is not a GitHub series, and sharing it whole would have been wrong.** Counting web-specific words across its eight pages: `issues-and-pull-requests` has none at all, `a-github-account` has three (one of them the sentence "Everything in this course, on either track, starts with a GitHub account" — written for both tracks, listed on one), and `an-editor` has three, all in one opening sentence. The other five are web through and through: `how-the-pieces-fit` has sixteen, `your-copy-of-the-starter` is about `portfolio_wad`, `publish-it` is GitHub Pages, `the-two-loops` is edit-save-refresh against commit-push-Pages, and `the-inspector` is browser devtools. A database student sent through those would be reading about publishing a website.
+
+So three pages move, not eight, and the one sentence that assumed a track — "HTML and CSS files are plain text" — becomes "Code is plain text, whatever language it is written in". The alternative generalisations were worse: naming SQL and Python files would promise the database track something it does not ask for, since its SQL lives in cells rather than in files.
+
+**Web Authoring is untouched.** Its Welcome series keeps all eight in their order; the three simply also appear under a new "A GitHub account and an editor" at the head of Database Methods. Nothing about the web track's shape changes, which is the cheapest way to get what was asked. `topic-groups.yaml` needs nothing either: its test asks that every tutorial be reachable from *some* group, and these three already are, through `web-authoring-orientation`.
+
+Left undone deliberately, and worth a decision later: Database Methods has no starter repository of its own, and `how-the-pieces-fit` has no database counterpart — so a database student now meets GitHub without meeting a reason to use it. That is a gap this entry narrows rather than closes.
+
+*Cost to change: nil. One sentence and one list of three.*
