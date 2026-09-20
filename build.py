@@ -3960,13 +3960,15 @@ def report_doors_html(page: str, version: str) -> str:
 
 
 def report_doors_panel_html(page: str, version: str) -> str:
-    """The Give Feedback tab's own content, in the top-right corner dock — the
-    same three doors as the footer's disclosure (report_doors_html()),
-    without the <details> wrapper, since the tab it lives in is already
-    the thing a reader opens on purpose. This is a second way to the same
-    doors, not a replacement: the footer's own version stays, since it
-    needs no JavaScript and this panel does. Respects feedback_enabled()
-    the same way site_footer() does, for the same reason.
+    """The Give Feedback door's own content — the small circle fixed at the
+    bottom-right of the screen, not a corner-dock tab (DECISIONS_LOG.md
+    7.194) — the same three doors as the footer's disclosure (report_doors_html()),
+    without the <details> wrapper, since the button that opens this panel
+    is already the thing a reader clicked on purpose. This is a second way
+    to the same doors, not a replacement: the footer's own version stays,
+    since it needs no JavaScript and this panel does. Respects
+    feedback_enabled() the same way site_footer() does, for the same
+    reason.
     """
     if not page or not feedback_enabled():
         return ""

@@ -294,10 +294,10 @@ def keyword_colour(page) -> str:
 
 def test_the_settings_panel_switches_theme_and_the_editors_follow(page):
     _open_settings_tab(page, "appearance")
-    page.click("#dl-settings-texture .dl-seg[data-texture=theme] button[data-value=light]")
+    page.click("#dl-settings-reading .dl-seg[data-texture=theme] button[data-value=light]")
     light_keyword_colour = keyword_colour(page)
 
-    page.click("#dl-settings-texture .dl-seg[data-texture=theme] button[data-value=dark]")
+    page.click("#dl-settings-reading .dl-seg[data-texture=theme] button[data-value=dark]")
     dark_keyword_colour = keyword_colour(page)
 
     assert page.get_attribute("html", "data-theme") == "dark"
@@ -305,14 +305,14 @@ def test_the_settings_panel_switches_theme_and_the_editors_follow(page):
     # shows through. What the theme switch changes is the syntax colours.
     assert dark_keyword_colour != light_keyword_colour
 
-    page.click("#dl-settings-texture .dl-seg[data-texture=font] button[data-value=mono]")
+    page.click("#dl-settings-reading .dl-seg[data-texture=font] button[data-value=mono]")
     assert page.get_attribute("html", "data-font") == "mono"
 
 
 def test_the_width_presets_set_the_measure(page):
     _open_settings_tab(page, "appearance")
     page.click(
-        '#dl-settings-texture .dl-seg[data-texture=width] button[data-value="56"]'
+        '#dl-settings-reading .dl-seg[data-texture=width] button[data-value="56"]'
     )
     assert page.eval_on_selector(
         ":root", "el => getComputedStyle(el).getPropertyValue('--dl-line-width').trim()"
@@ -376,7 +376,7 @@ def test_every_box_on_the_map_is_a_link_to_a_tutorial(browser, base_url):
 
 def test_texture_choices_survive_a_reload(page, base_url):
     _open_settings_tab(page, "appearance")
-    page.click("#dl-settings-texture .dl-seg[data-texture=theme] button[data-value=dark]")
+    page.click("#dl-settings-reading .dl-seg[data-texture=theme] button[data-value=dark]")
     page.reload()
     page.wait_for_selector("html[data-theme=dark]", timeout=5_000)
 

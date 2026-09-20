@@ -600,7 +600,7 @@ class TestPanelClearsTheCornerDocks:
             return page.eval_on_selector(".dl-page", "el => el.getBoundingClientRect().width")
 
         def choose_width(page, rem):
-            page.click(f"#dl-settings-texture .dl-seg[data-texture=width] button[data-value='{rem}']")
+            page.click(f"#dl-settings-reading .dl-seg[data-texture=width] button[data-value='{rem}']")
             page.wait_for_timeout(100)
 
         context = browser.new_context(viewport={"width": 1440, "height": 900})
