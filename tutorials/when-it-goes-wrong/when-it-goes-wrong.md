@@ -180,6 +180,24 @@ But notice something about this one. The error is in `average`, on the division 
 
 So the bottom tells you *what happened*, and the frames above tell you *how it came to happen*. You need both. A fix inside `average` -- returning zero for an empty list, say -- might be right, or it might hide the real problem, which is that something produced an empty class.
 
+<div class="dl-drawn dl-traceback">
+<p class="dl-tb-edge">The top is where the program started.</p>
+<div class="dl-tb-body">
+<div class="dl-tb-row"><code>Traceback (most recent call last):</code></div>
+<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 10, in &lt;module&gt;</code></div>
+<div class="dl-tb-row dl-tb-cause"><code>    print(report("Class B", []))</code><span class="dl-tb-note">the line that is responsible</span></div>
+<div class="dl-tb-row dl-tb-cause"><code>          ~~~~~~^^^^^^^^^^^^^^^</code></div>
+<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 6, in report</code></div>
+<div class="dl-tb-row"><code>    return name + " averaged " + str(average(numbers))</code></div>
+<div class="dl-tb-row"><code>                                     ~~~~~~~^^^^^^^^^</code></div>
+<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 2, in average</code></div>
+<div class="dl-tb-row dl-tb-failed"><code>    return sum(numbers) / len(numbers)</code><span class="dl-tb-note">the line that failed</span></div>
+<div class="dl-tb-row dl-tb-failed"><code>           ~~~~~~~~~~~~~^~~~~~~~~~~~~~</code></div>
+<div class="dl-tb-row dl-tb-error"><code>ZeroDivisionError: division by zero</code></div>
+</div>
+<p class="dl-tb-edge">The bottom is where it broke. That last line is the one to read first.</p>
+</div>
+
 ### Your turn
 
 Run this and read the traceback — which line is *responsible*, as opposed to which line failed? Say so in a comment.

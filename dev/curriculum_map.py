@@ -538,6 +538,12 @@ def conflicts(found, scope) -> list[str]:
 EMPHASIS_RE = re.compile(r"(?<![*\w])\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*(?![*\w])")
 FENCE_BLOCK_RE = re.compile(r"```.*?```", re.DOTALL)
 INLINE_CODE_RE = re.compile(r"`[^`]*`")
+# A hand-written <code> element. A diagram built out of markup — the
+# annotated traceback in when-it-goes-wrong — quotes Python source this
+# way rather than in a fence, and every word in it counted as prose: the
+# quoted `return` made "return" look like a word the curriculum uses two
+# tutorials before it explains it.
+HTML_CODE_RE = re.compile(r"<code>.*?</code>", re.DOTALL)
 SUBTITLE_RE = re.compile(r"^\*\*Programming Design Principles.*$", re.MULTILINE)
 BIBLIOGRAPHY_RE = re.compile(r"^## Where to Read More.*", re.DOTALL | re.MULTILINE)
 
@@ -553,13 +559,16 @@ STRESS_WORDS = {
 def prose_of(tutorial: Tutorial) -> str:
     """A tutorial's text with the code and the standing subtitle taken out.
 
-    Code because a `*` in a docstring is not emphasis; the subtitle because
+    Code — fenced, in backticks, or in a hand-written <code> element —
+    because a `*` in a docstring is not emphasis and a word quoted from a
+    program is not a word the prose uses; the subtitle because
     "Programming Design Principles" appears on every page and would make
     "design" look like a word used everywhere from the first tutorial.
     """
     path = next(TUTORIALS.rglob(f"{tutorial.slug}.md"))
     body = FENCE_BLOCK_RE.sub("", path.read_text())
     body = INLINE_CODE_RE.sub("", body)
+    body = HTML_CODE_RE.sub("", body)
     body = BIBLIOGRAPHY_RE.sub("", body)
     return SUBTITLE_RE.sub("", body)
 

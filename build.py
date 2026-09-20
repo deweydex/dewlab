@@ -1379,6 +1379,14 @@ def render_site_editor(editor: SiteEditor, index: int) -> str:
     (found porting `media-queries` and three other `web-authoring`
     tutorials that assume it; `dewminiweb.js` already carries the
     identical control for its own workspace, wired here the same way).
+
+    It steps by 1 rather than by 5, and its `<output>` is filled by the
+    runtime with the preview's width in pixels beside the percentage,
+    because a layout tutorial's question is nearly always *at what width*.
+    A reader who can only land on multiples of 5% cannot find the width
+    where a row wraps, and a percentage alone does not tell them what they
+    found. Left empty here: the pixel figure depends on the rendered width
+    of a frame that does not exist until the page is laid out.
     """
     safe_name = html.escape(editor.name, quote=True)
     labels = {"html": "HTML", "css": "CSS", "js": "JavaScript"}
@@ -1421,9 +1429,9 @@ def render_site_editor(editor: SiteEditor, index: int) -> str:
         '<div class="dl-site-preview-controls">'
         f'<label for="{width_id}">Preview width</label>'
         f'<input type="range" id="{width_id}" class="dl-site-width" '
-        'min="30" max="100" step="5" value="100" '
+        'min="30" max="100" step="1" value="100" '
         'aria-label="Preview width, as a percentage">'
-        f'<output for="{width_id}">100%</output>'
+        f'<output for="{width_id}"></output>'
         "</div>"
         f'<iframe class="dl-site-frame" sandbox="allow-scripts" '
         f"title=\"{safe_name}'s preview\"></iframe>"

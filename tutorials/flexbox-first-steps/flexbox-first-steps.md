@@ -11,22 +11,26 @@ covers:
 
 # Flexbox first steps
 
-Three cards, side by side. What happens once the screen is too narrow for
-all three to fit in one row? Try it below before reading on.
+Three plushies from the shop, each on its own card, side by side. What
+happens once the screen is too narrow for all three cards to fit in one
+row? Let's find out before reading on.
 
 ```html site
 id: cards-html
 site: cards
 <div class="row">
-  <div class="card">One</div>
-  <div class="card">Two</div>
-  <div class="card">Three</div>
+  <div class="card">Squishy Squid</div>
+  <div class="card">Cuddly Cuttlefish</div>
+  <div class="card">Nautical Nautilus</div>
 </div>
 ```
 
 ```css site
 id: cards-css
 site: cards
+body {
+  margin: 0;
+}
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -44,9 +48,13 @@ site: cards
 ```
 
 Drag the preview width slider down, toward the narrow end. At some point
-the third card drops to a line of its own, then the second joins it. Drag
+the nautilus drops to a line of its own, then the cuttlefish joins it. Drag
 back up, and they return to one row. Nothing you typed changed; only the
 width did.
+
+Watch the pixel figure beside the slider while you drag, and find roughly
+where the third card gives up and moves down. The rest of this page is about where that
+number comes from.
 
 ## Why this happens
 
@@ -62,6 +70,21 @@ The `flex: 1 1 80px` on `.card` decides when that happens. Each card
 asks for at least 80 pixels, then grows to share any space left over
 once every card has that much. Once the row is too narrow to give all
 three their minimum, one moves down.
+
+But 80 pixels is the width of the card's content, not the width of the
+card. The padding and the border sit outside it, the way [the
+box](tutorial:the-box) showed, so each card takes 114 pixels in all —
+and three of those, with two 12-pixel gaps between them, need 366. Here
+is one card at its real size:
+
+<div class="dl-drawn dl-flexfit" role="img" aria-label="One card drawn at full size: an 80 pixel content box with 16 pixels of padding on each side and a 1 pixel border, 114 pixels in all. Three of those, with two 12 pixel gaps between them, come to 366 pixels — the width below which the third card moves to a row of its own.">
+<div class="dl-fx-block">
+<div class="dl-fx-card"><div class="dl-fx-content">80</div></div>
+<div class="dl-fx-rule"></div>
+</div>
+<p class="dl-fx-sum">1 + 16 + 80 + 16 + 1 = 114px <span class="dl-fx-said">one card, border and padding included</span></p>
+<p class="dl-fx-sum">114 + 12 + 114 + 12 + 114 = 366px <span class="dl-fx-said">three of them, and the two gaps between</span></p>
+</div>
 
 ## Your turn
 
@@ -82,3 +105,11 @@ A *flex container* is the element with `display: flex` on it. A *flex
 item* is one of that container's direct children. `flex-wrap` is the
 property that lets items move to a new row rather than overflow or
 squeeze.
+
+## Where to Read More
+
+Codepip. *Flexbox Froggy*. <https://flexboxfroggy.com/>. Twenty-four
+levels of moving frogs onto lily pads with `justify-content`,
+`align-items` and the rest. It reaches well past this page, and playing
+it is the cheapest way to find out which flexbox property does what
+without reading a reference.

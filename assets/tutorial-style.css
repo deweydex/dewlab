@@ -3762,3 +3762,357 @@ p code, li code {
   margin: 1.4rem auto;
   overflow-x: auto;
 }
+
+/* ------------------------------------------------------------------ *
+ * Diagrams built out of the thing they describe, rather than drawn.
+ *
+ * Real nested elements with real borders and real padding. Three things
+ * fall out of that which a drawn SVG has to work for: the diagram themes
+ * with the page, it scales with the reader's font (every length below is
+ * in rem, so --dl-font-size on :root carries it), and a student who opens
+ * the page source finds markup they have been taught to read.
+ *
+ * `role="img"` and an `aria-label` on the wrapper is what carries one to a
+ * screen reader — the parts say nothing useful in document order — the
+ * same shape inline_local_svg() gives a drawn one.
+ * ------------------------------------------------------------------ */
+.dl-drawn {
+  max-width: 26rem;
+  margin: 1.6rem auto;
+}
+
+/* The box model, in the-box.
+ *
+ * One fill colour, on purpose. Padding takes the box's own background, so
+ * tinting it separately would contradict the sentence below it. What tells
+ * the four regions apart is the kind of line: dashed where nothing is
+ * painted (the content edge, the outer limit of the margin), solid and
+ * thick for the one layer that is real paint. For the same reason the
+ * border's label straddles its line while the other two sit in a corner —
+ * a border is a line, padding and margin are spaces. */
+.dl-boxmodel { --dl-bm-line: 0.4rem; }
+
+/* Even on all four sides, and wide enough that a corner label sits clear of
+   what it labels. Uneven would be a lie in a diagram about padding: a
+   reader who counts the bands would read the top one as the deeper one. */
+.dl-bm-margin,
+.dl-bm-padding {
+  position: relative;
+  padding: 2.1rem;
+}
+
+.dl-bm-margin { border: 0.125rem dashed var(--dl-muted); }
+
+.dl-bm-border {
+  position: relative;
+  border: var(--dl-bm-line) solid var(--dl-fg);
+}
+
+.dl-bm-padding { background: var(--dl-highlight-blue); }
+
+.dl-bm-content {
+  border: 0.125rem dashed var(--dl-muted);
+  padding: 1.2rem 0.8rem;
+  text-align: center;
+  font-family: var(--dl-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dl-fg);
+}
+
+/* --dl-fg, not --dl-muted: a muted label on --dl-highlight-blue lands near
+   3.5:1, under the 4.5:1 small text wants. The weight and size below are
+   what keep these reading as annotation rather than as content. */
+.dl-bm-tag {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.75rem;
+  font-family: var(--dl-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  color: var(--dl-fg);
+}
+
+/* Centred on the border line itself, page background behind it, so it
+   breaks the line the way a callout label does. top is half the line's own
+   width, negative, against a containing block that starts inside it. */
+.dl-bm-tag-line {
+  top: calc(var(--dl-bm-line) / -2);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.12rem 0.45rem;
+  line-height: 1.15;
+  background: var(--dl-bg);
+}
+
+/* An annotated traceback, in when-it-goes-wrong.
+ *
+ * Deliberately not role="img" with a label, the way a drawn diagram is: a
+ * traceback is text, it reads correctly in document order, and each note
+ * follows the line it is about. Hiding all that behind one aria-label
+ * would be the less accessible choice, not the more.
+ *
+ * One row per line of real output, so the source stays free of the
+ * whitespace traps a multi-line `pre` span has. Two adjacent rows carrying
+ * the same tint (a line and its own caret row) read as one marked block. */
+.dl-traceback {
+  max-width: 44rem;
+  margin: 1.6rem auto;
+}
+
+.dl-tb-edge {
+  margin: 0;
+  font-size: 0.85em;
+  font-style: italic;
+  color: var(--dl-muted);
+}
+.dl-tb-edge:first-child { margin-bottom: 0.4rem; }
+.dl-tb-edge:last-child { margin-top: 0.4rem; }
+
+.dl-tb-body {
+  border: 0.125rem solid var(--dl-cell-border);
+  background: var(--dl-output-bg);
+  padding: 0.7rem 0;
+  overflow-x: auto;
+}
+
+.dl-tb-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0 0.9rem;
+  white-space: pre;
+}
+
+.dl-tb-row code {
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  line-height: 1.55;
+  color: var(--dl-fg);
+  background: none;
+  padding: 0;
+}
+
+/* Both tints come from the highlighter family, not from --dl-error-bg,
+   because both are the author marking a line rather than the runtime
+   reporting a state. The error's own last line is left unmarked: the
+   caption underneath already sends the reader there, and a third tint
+   would make the two the section is actually about compete. */
+.dl-tb-cause { background: var(--dl-highlight-bg); }
+.dl-tb-failed { background: var(--dl-highlight-pink); }
+
+/* The one line the runtime itself prints in red. The panel around it stays
+   neutral rather than borrowing .dl-error's whole chrome — this is an
+   annotation of a traceback, not a picture of the error panel, and a red
+   ground would leave the two marks above with nowhere quiet to sit — but
+   the last line keeps the colour the reader just saw it in. */
+.dl-tb-error code { color: var(--dl-error-fg); }
+
+.dl-tb-note {
+  flex: none;
+  font-size: 0.78rem;
+  font-style: italic;
+  white-space: nowrap;
+  color: var(--dl-fg);
+}
+
+/* The map in named-grid-areas, which the reader resizes.
+ *
+ * Not two drawn maps side by side: one real grid, laid out by the
+ * tutorial's own two `grid-template-areas`, that the reader changes the
+ * width of and watches redraw. That is the thing the section is about and
+ * the thing no picture of it can do.
+ *
+ * A slider, wired by the runtime, rather than two states to pick between.
+ * The reader moves the width and watches the map redraw at 350px — which
+ * is the thing the section is about, and the thing neither a picture nor a
+ * pair of buttons can do. It reads out its own width in pixels, because
+ * the breakpoint is written in pixels.
+ *
+ * Not `resize: horizontal`, whose drag handle is the nicer gesture and is
+ * mouse-only: on a phone the reading column is narrow enough that a reader
+ * would never reach the wide map at all. A range input works with a mouse,
+ * a finger and a keyboard alike.
+ *
+ * The slider sets a width and a container query reacts to it, rather than
+ * switching the layout directly, because that is the shape of the thing
+ * being taught: the width decides, not the control.
+ *
+ * Widths in px, not rem. The threshold is 350px, so a box sized in rem
+ * would cross it on its own the moment a reader raised their font size,
+ * and "narrow" would draw the wide map. */
+.dl-gridmap-wrap { max-width: 100%; }
+
+/* Laid out the same way the site editor's own preview-width control is,
+   since it is the same control doing the same job one diagram down. */
+.dl-gm-control {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 26rem;
+  margin-bottom: 0.7rem;
+  font-size: 0.8rem;
+  color: var(--dl-muted);
+}
+.dl-gm-control label { flex: none; font-style: italic; }
+.dl-gm-control input[type="range"] { flex: 1 1 auto; min-width: 0; }
+.dl-gm-control output {
+  flex: none;
+  font-family: var(--dl-mono);
+  color: var(--dl-fg);
+}
+
+/* The queried element carries no padding and no border, and the dashed
+   frame goes on a child instead. A container query measures the content
+   box, and `* { box-sizing: border-box }` means padding and border eat
+   into a declared width — so with them here the map flipped at an outer
+   376px while the caption, and the tutorial's media query, said 350.
+   Exactly the mistake `flexbox-first-steps` is about. */
+.dl-gridmap {
+  container-type: inline-size;
+  width: 260px;
+  max-width: 100%;
+}
+
+.dl-gm-frame {
+  padding: 0.6rem 0.6rem 1.1rem;
+  border: 0.125rem dashed var(--dl-muted);
+}
+
+/* Both are in the markup, and only one shows. A screen reader and a
+   printed page get whichever the current width selects, the same as a
+   sighted reader; the prose underneath carries the comparison. */
+.dl-gm-strings {
+  margin: 0 0 0.5rem;
+  font-family: var(--dl-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--dl-fg);
+}
+.dl-gm-strings code { display: block; }
+
+.dl-gm-grid {
+  display: grid;
+  gap: 0.3rem;
+  grid-template-areas: "header" "nav" "main" "footer";
+}
+
+.dl-gm-cell {
+  padding: 0.6rem 0.4rem;
+  text-align: center;
+  font-family: var(--dl-mono);
+  font-size: 0.75rem;
+  color: var(--dl-fg);
+  background: var(--dl-highlight-blue);
+}
+
+/* The one area that moves. Amber in both maps, so what changed is
+   findable without reading all four cells twice. */
+.dl-gm-cell.dl-gm-moved { background: var(--dl-highlight-bg); }
+
+.dl-gm-header { grid-area: header; }
+.dl-gm-nav { grid-area: nav; }
+.dl-gm-main { grid-area: main; }
+.dl-gm-footer { grid-area: footer; }
+
+/* The narrow map is the default, the way the tutorial's own CSS writes it:
+   its media query adds the wide one rather than the other way round. */
+.dl-gm-wide { display: none; }
+
+@container (min-width: 350px) {
+  .dl-gm-grid {
+    grid-template-areas: "header header" "nav main" "footer footer";
+    grid-template-columns: 9rem 1fr;
+  }
+  .dl-gm-narrow { display: none; }
+  .dl-gm-wide { display: block; }
+}
+
+.dl-gm-drag {
+  margin: 0.7rem 0 0;
+  font-size: 0.85em;
+  font-style: italic;
+  color: var(--dl-muted);
+}
+
+/* Where the row runs out of room, in flexbox-first-steps.
+ *
+ * Everything here is in px rather than rem, which is the one place on the
+ * site that is right: these are measurements of a layout written in px, and
+ * a ruler that grew with the reader's font would be measuring nothing. The
+ * cards are built with the tutorial's own padding and border, so the
+ * picture is 366px wide because it is three of them and two gaps, not
+ * because a number was typed in.
+ *
+ * The content box keeps the-box's convention — same fill as the padding,
+ * dashed edge — since the point being made is that one of these tutorials
+ * explains the other. */
+.dl-flexfit { max-width: 100%; }
+
+.dl-fx-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dl-fx-card {
+  /* Sized by its content, so the one standing on its own measures 114px
+     rather than filling the column. Inside the row it is a flex item and
+     would have done that anyway. */
+  display: inline-block;
+  border: 1px solid var(--dl-fg);
+  border-radius: 6px;
+  padding: 16px;
+  background: var(--dl-highlight-blue);
+}
+
+.dl-fx-content {
+  width: 80px;
+  border: 1px dashed var(--dl-muted);
+  text-align: center;
+  font-family: var(--dl-mono);
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--dl-fg);
+}
+
+/* Shrink-wrapped to what it holds, so the dimension rule below it is
+   exactly as wide as the thing being measured and 366px is something the
+   reader can see rather than a number to take on trust. */
+.dl-fx-block {
+  width: max-content;
+  max-width: 100%;
+}
+
+.dl-fx-rule {
+  position: relative;
+  height: 0;
+  margin-top: 0.45rem;
+  border-top: 0.125rem solid var(--dl-muted);
+}
+.dl-fx-rule::before,
+.dl-fx-rule::after {
+  content: "";
+  position: absolute;
+  top: -0.3rem;
+  width: 0;
+  height: 0.6rem;
+  border-left: 0.125rem solid var(--dl-muted);
+}
+.dl-fx-rule::before { left: 0; }
+.dl-fx-rule::after { right: 0; }
+
+.dl-fx-sum {
+  margin: 0.4rem 0 1.4rem;
+  font-family: var(--dl-mono);
+  font-size: 0.75rem;
+  color: var(--dl-fg);
+}
+.dl-fx-sum:last-child { margin-bottom: 0; }
+
+.dl-fx-said {
+  font-style: italic;
+  font-family: var(--dl-font-family);
+  color: var(--dl-muted);
+}

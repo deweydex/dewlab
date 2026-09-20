@@ -99,3 +99,11 @@ space.
 `position: sticky` keeps an element in place once scrolling would carry
 it past a given point. `margin-top: auto`, on a flex child, pulls the
 leftover space above it, pushing the element itself to the far side.
+
+## Where to Read More
+
+Codepip. *Anchoreum*. <https://anchoreum.com/>. A puzzle game for CSS
+anchor positioning, which pins one element to another rather than to the
+page or to a scroll position. It is not on this course and it is newer
+than most of what is — take it as a look at where `position` has gone
+since.

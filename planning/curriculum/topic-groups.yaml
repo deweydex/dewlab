@@ -345,13 +345,14 @@ groups:
   - key: web-several-pages
     name: A site with several pages
     intro: >
-      Planning five pages before writing any HTML, one navigation that
-      appears on all of them, cards and a gallery that rearrange
-      themselves, a navigation that works on a phone, an accessible
-      form, keeping image files small, documenting what you built, and
-      where HTML, CSS and tools like WordPress or Carrd fit next to what
-      you just did by hand.
+      Taking a copy of the project starter, planning five pages before
+      writing any HTML, one navigation that appears on all of them,
+      cards and a gallery that rearrange themselves, a navigation that
+      works on a phone, an accessible form, keeping image files small,
+      documenting what you built, and where HTML, CSS and tools like
+      WordPress or Carrd fit next to what you just did by hand.
     tutorials:
+      - your-copy-of-the-project-starter
       - planning-a-site
       - pages-and-navigation
       - cards-in-a-row
