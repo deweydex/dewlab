@@ -714,6 +714,48 @@ def parse_trigger(text: str, path: Path) -> str:
     return " ".join(terms)
 
 
+# A footnote reference or definition: `[^label]`, optionally followed by a
+# colon. Used to keep one out of a fence body — see no_footnotes_in().
+FOOTNOTE_TOKEN_RE = re.compile(r"\[\^[^\]\s]+\]")
+# Inline code, blanked before that check, so a regex character class in a
+# hint's `[^aeiou]` example is not mistaken for a footnote. A fence body
+# cannot hold a nested ``` block (FENCE_RE stops at the first closing
+# line), so inline spans are the only code a fence body can carry — bar a
+# four-space indented block, where the check would refuse a character
+# class and the message says how to escape it.
+INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
+
+
+def no_footnotes_in(text: str, path: Path, what: str) -> None:
+    """Fail the build on a footnote written inside a fence body.
+
+    A ```hint, ```question or ```card fence is converted on its own, by
+    its own `markdown.Markdown` instance — see convert_prose_with_math().
+    The `footnotes` extension collects a document's definitions at the end
+    of the document it is converting, so a fence body is its own document
+    for that purpose, and neither half of a footnote can cross the edge of
+    one:
+
+    - a reference here, with its definition in the page's prose, reaches
+      the page as the literal text `[^label]`, because this converter
+      never saw the definition;
+    - a reference and its definition both here render, but as their own
+      rule and numbered list, inside the hint box or the question rather
+      than at the foot of the page, numbered from one again.
+
+    Both are silent: the build succeeds and the page looks wrong. So the
+    fence bodies are the one place a footnote is refused outright. Prose,
+    a `dl-hint`/`dl-answer` fold and a `dl-note` aside are all part of the
+    page's own single conversion pass (mark_markdown_wrappers()), so a
+    footnote works in any of those.
+    """
+    if FOOTNOTE_TOKEN_RE.search(INLINE_CODE_RE.sub("``", text)):
+        fail(path, f"{what} has a footnote in it. A fence is converted on its own, "
+                   "so a footnote written here cannot reach the foot of the page — "
+                   "put it in the page's own prose instead, or write `\\[^` to mean "
+                   "a literal bracket")
+
+
 def parse_hint(body: str, path: Path, previous_cell: str | None) -> StagedHint:
     """Read `for:`, `after:` and `title:` off the top of a ```hint fence.
 
@@ -736,6 +778,7 @@ def parse_hint(body: str, path: Path, previous_cell: str | None) -> StagedHint:
     text = "\n".join(lines).strip("\n")
     if not text.strip():
         fail(path, f"the hint for cell {cell!r} has no text in it")
+    no_footnotes_in(text, path, f"the hint for cell {cell!r}")
     return StagedHint(
         cell=cell,
         after=parse_trigger(header.get("after") or DEFAULT_HINT_AFTER, path),
@@ -844,6 +887,7 @@ def parse_question(body: str, path: Path) -> Question:
     text = "\n".join(lines).strip("\n")
     if not text.strip():
         fail(path, f"question {question_id!r} has no text in it")
+    no_footnotes_in(text, path, f"question {question_id!r}")
 
     if question_type == "multiple-choice":
         prompt, options = _split_multiple_choice(text)
@@ -1483,6 +1527,14 @@ def convert_prose_with_math(text: str) -> str:
     in the one call, which is what makes it safe to use anywhere,
     independent of where in the build's pipeline that call happens to
     sit.
+
+    A footnote cannot cross this edge. Each call converts its text as a
+    document of its own, and the `footnotes` extension collects a
+    document's definitions at the end of that document — so a reference
+    here never finds a definition in the page's prose, and a pair written
+    here renders its own rule and numbered list where it sits. The three
+    fence parsers refuse one outright rather than let either happen
+    quietly; see no_footnotes_in().
     """
     stripped, maths = extract_math(text)
     html_out, _ = to_html(stripped)
@@ -1509,6 +1561,7 @@ def parse_card(fence_body: str, path: Path) -> PageCard:
     rest = "\n".join(lines[index:]).strip("\n")
     if "url" not in header:
         fail(path, "a card fence has no url: header line")
+    no_footnotes_in(rest, path, f"the card linking to {header['url']!r}")
     first_line, _, remainder = rest.partition("\n")
     heading_match = re.match(r"^#{1,6}\s*(?P<heading>.+?)\s*#*$", first_line)
     if not heading_match:
