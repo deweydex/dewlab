@@ -20,6 +20,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import grids  # noqa: E402
 import states  # noqa: E402
 import tree as tree_renderer  # noqa: E402
 from tree import Node  # noqa: E402
@@ -144,7 +145,41 @@ def a_weather_machine() -> str:
                          fmt=lambda p: f"{round(p * 100)}%")
 
 
+def _matrices_from_cell(slug: str, cell_id: str, names) -> list:
+    page = (TUTORIALS / slug / f"{slug}.md").read_text()
+    if f"id: {cell_id}" not in page:
+        raise SystemExit(f"{slug}: no cell called {cell_id!r} any more")
+    block = page.split(f"id: {cell_id}", 1)[1].split("```", 1)[0]
+    found = []
+    for name in names:
+        for line in block.splitlines():
+            if line.strip().startswith(f"{name} ="):
+                found.append(ast.literal_eval(line.split("=", 1)[1].strip()))
+                break
+        else:
+            raise SystemExit(f"{slug}/{cell_id}: no {name} defined")
+    return found
+
+
+def one_row_one_column() -> str:
+    """Where a single entry of a matrix product comes from.
+
+    *Multiplying Grids* states the rule as a sum over k, which is exact and
+    hard to read the first time. The picture takes the tutorial's own A and
+    B, picks out one row and one column, and writes the products that make
+    the one entry they meet at. Why the shapes have to agree follows from
+    it: the row and the column have to be the same length to pair up.
+    """
+    left, right = _matrices_from_cell(
+        "multiplying-grids", "multiplying-two-grids-3", ("A", "B"))
+    columns = list(zip(*right))
+    product = [[sum(a * b for a, b in zip(row, col)) for col in columns]
+               for row in left]
+    return grids.row_times_column(left, right, product, row=0, column=0)
+
+
 DIAGRAMS = {
+    "multiplying-grids/row-times-column.svg": one_row_one_column,
     "where-chains-lead/weather-states.svg": a_weather_machine,
     "three-ways-to-make-change/repeated-question.svg": the_same_question_twice,
     "finding-everything-inside-a-folder/photos-tree.svg": a_folder_of_folders,

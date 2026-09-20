@@ -253,3 +253,34 @@ class TestTheTwoAcesTree:
         monkeypatch.setattr(maths_diagrams, "CARDS", 0)
         with pytest.raises(ZeroDivisionError):
             maths_diagrams.drawing_two_aces()
+
+
+try:
+    import grids as grid_renderer
+except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
+    grid_renderer = None
+
+needs_grids = pytest.mark.skipif(grid_renderer is None, reason="svgwrite is not installed")
+
+
+@needs_grids
+class TestRowTimesColumn:
+    A = [[1, 2], [3, 4]]
+    B = [[5, 0], [1, -1]]
+    AB = [[7, -2], [19, -4]]
+
+    def test_the_working_matches_the_entry_it_explains(self):
+        svg = grid_renderer.row_times_column(self.A, self.B, self.AB, row=0, column=0)
+        assert "1×5 + 2×1 = 7" in svg
+
+    def test_it_draws_the_matrices_the_tutorial_defines(self):
+        left, right = cm._matrices_from_cell(
+            "multiplying-grids", "multiplying-two-grids-3", ("A", "B"))
+        assert left == self.A and right == self.B
+        columns = list(zip(*right))
+        product = [[sum(a * b for a, b in zip(r, c)) for c in columns] for r in left]
+        assert product == self.AB, "the tutorial's own numbers changed"
+
+    def test_a_different_entry_picks_a_different_row_and_column(self):
+        svg = grid_renderer.row_times_column(self.A, self.B, self.AB, row=1, column=1)
+        assert "3×0 + 4×-1 = -4" in svg
