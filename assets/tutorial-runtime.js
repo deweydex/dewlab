@@ -420,13 +420,19 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
     const cap = Math.min(max, floorCapPx());
     const next = Math.max(min, Math.min(startWidth + dx, cap));
     panel.style.width = `${next}px`;
+    // Without this, onResize() only ran once, on release — the panel
+    // itself (and, via its own ResizeObserver, the reading column)
+    // tracked the drag live, but the corner-dock tab stack this callback
+    // widens to match sat frozen at its old width until the drag ended,
+    // then jumped to catch up. Calling it here too keeps the tabs moving
+    // with the same motion as the panel beneath them.
+    if (onResize) onResize();
   }
   function onUp() {
     handle.classList.remove("dl-panel-resize-active");
     document.removeEventListener("pointermove", onMove);
     document.removeEventListener("pointerup", onUp);
     if (key) savePanelWidth(key, panel.getBoundingClientRect().width);
-    if (onResize) onResize();
   }
   handle.addEventListener("pointerdown", (ev) => {
     startX = ev.clientX;
