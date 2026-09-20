@@ -3744,3 +3744,17 @@ p code, li code {
   font-size: 0.85em;
   color: var(--dl-muted);
 }
+
+/* A diagram inlined by build.py's inline_local_svg(). It is inline so the
+   page's own colours and the reader's font reach inside it; the sizing here
+   is what an <img> used to do for free. A diagram reads worse squeezed to
+   prose width, so it may run a little past it, and scrolls inside its own
+   box rather than making the page scroll sideways. */
+.dl-figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 44rem;
+  margin: 1.4rem auto;
+  overflow-x: auto;
+}
