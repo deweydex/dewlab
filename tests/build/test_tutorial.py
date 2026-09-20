@@ -541,9 +541,9 @@ class TestListsWrittenTightAgainstProse:
 
 
 class TestNotesAndDatasets:
-    """planning/SIDEBAR_CONTENT.md §3/§4: unlike the glossary, a note is
-    never cumulative across a series — it belongs to the tutorial that wrote
-    it, and so does a declared dataset. Two tutorials in one series, the
+    """Unlike the glossary, a note is never cumulative across a series —
+    it belongs to the tutorial that wrote it, and so does a declared
+    dataset. Two tutorials in one series, the
     first declaring a note and a dataset; the same with a note holding
     markdown and a dataset that is a text file; and the faults that fail
     the build. (A tutorial with neither is checked in TestTheHappyPath.)"""
@@ -579,8 +579,7 @@ class TestNotesAndDatasets:
 
     def test_a_note_holds_markdown_and_a_dataset_can_be_a_text_file(self, repo):
         # The note is converted on its own, separately from the surrounding
-        # raw HTML block, unlike a fold's own contents
-        # (planning/SIDEBAR_CONTENT.md §1).
+        # raw HTML block, unlike a fold's own contents.
         path = write(repo, '<aside class="dl-note" id="pic">\n\n'
                            '![a chart](chart.png)\n\n</aside>\n', slug="one")
         add_frontmatter(path, "datasets:\n  - a-book\n")

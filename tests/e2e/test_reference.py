@@ -396,8 +396,7 @@ class TestContent:
 
 
 class TestNotes:
-    """Pedagogical notes surfacing in the reference panel —
-    planning/SIDEBAR_CONTENT.md §3/§4."""
+    """Pedagogical notes surfacing in the reference panel."""
 
     def test_a_note_alone_shows_the_toggle(self, site, browser, site_url):
         _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
@@ -424,8 +423,7 @@ class TestNotes:
         context.close()
 
     def test_the_note_is_not_in_the_page_body(self, site, browser, site_url):
-        """It surfaces in the panel instead of staying inline
-        (planning/SIDEBAR_CONTENT.md §4's settled answer)."""
+        """It surfaces in the panel instead of staying inline."""
         _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
         _set_order(site, ["one"])
         b.build()
@@ -451,8 +449,7 @@ class TestNotes:
 
 
 class TestDatasets:
-    """Dataset attribution surfacing in the reference panel —
-    planning/SIDEBAR_CONTENT.md §2/§4."""
+    """Dataset attribution surfacing in the reference panel."""
 
     def test_a_dataset_alone_shows_the_toggle(self, site, browser, site_url, monkeypatch):
         monkeypatch.setattr(b, "DATA", site / "data")

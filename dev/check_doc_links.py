@@ -13,9 +13,9 @@ that had fallen behind the directory it indexes.
 What it checks, and deliberately nothing more:
 
 - **Relative links to files in the repository.** `[text](../build.py)`,
-  `[text](./STATUS.md#section)`, and bare paths in link position. A link to a
-  file that does not exist fails.
-- **Inline code spans that name a repository path.** `` `planning/STATUS.md` ``
+  `[text](./EXERCISES.md#section)`, and bare paths in link position. A link
+  to a file that does not exist fails.
+- **Inline code spans that name a repository path.** `` `planning/EXERCISES.md` ``
   is how these documents usually refer to each other — far more often than
   through a markdown link — so a checker that only read links would have
   missed most of the drift it exists to catch. A backticked path is only

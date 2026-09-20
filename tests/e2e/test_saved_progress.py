@@ -155,8 +155,8 @@ class TestOversizedOutputFallback:
 
 
 class TestStudentNotes:
-    """A student's own free-text notes, distinct from SIDEBAR_CONTENT.md's
-    author-written notes, riding on the same record."""
+    """A student's own free-text notes, distinct from a tutorial's
+    author-written pedagogical notes, riding on the same record."""
 
     def test_typing_a_note_is_saved_without_being_asked(self, clean_storage):
         page = clean_storage

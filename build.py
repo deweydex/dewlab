@@ -326,10 +326,9 @@ class Math:
 
 @dataclass
 class Note:
-    """A pedagogical note — planning/SIDEBAR_CONTENT.md §3/§4. Authored
-    inline as an HTML aside, the same trick the hint/answer fold already
-    uses, but surfaced in the reference panel rather than staying inline
-    — see extract_notes()."""
+    """A pedagogical note. Authored inline as an HTML aside, the same
+    trick the hint/answer fold already uses, but surfaced in the
+    reference panel rather than staying inline — see extract_notes()."""
 
     id: str
     html: str
@@ -496,8 +495,7 @@ class Tutorial:
     def datasets(self) -> tuple[str, ...]:
         """The names this tutorial's cells load via `load_csv()` or
         `load_text()` — declared, not scraped, the same reasoning
-        `covers:`/`practice_for` already use
-        (planning/SIDEBAR_CONTENT.md §2)."""
+        `covers:`/`practice_for` already use."""
         value = self.meta.get("datasets") or []
         if isinstance(value, str):
             value = [value]
@@ -596,8 +594,8 @@ def loosen_tight_lists(body: str) -> str:
 def expand_includes(code: str, path: Path) -> str:
     """Replace {{include: setup/x.py}} with the contents of that file.
 
-    De-duplicates the source, not the runtime: the expanded cell still executes
-    on every page load (CONTENT_AND_FILE_ARCHITECTURE.md).
+    De-duplicates the source, not the runtime: the expanded cell still
+    executes on every page load.
     """
 
     def one(match: re.Match) -> str:
@@ -644,9 +642,8 @@ def parse_site_pane(body: str, path: Path, language: str) -> SitePane:
     site` fence. `language` is the fence's own first word; the rest of the
     fence is the pane's own HTML, CSS or JavaScript, unwrapped — a site
     pane's code is never Python and never runs through expand_includes(),
-    since {{include: ...}} is a Python-cell convenience (planning/
-    CONTENT_AND_FILE_ARCHITECTURE.md) with nothing to say about a
-    stylesheet."""
+    since {{include: ...}} is a Python-cell convenience with nothing to
+    say about a stylesheet."""
     lines = body.split("\n")
     header: dict[str, str] = {}
     while lines:
@@ -1777,11 +1774,11 @@ def place_blocks(
 
 def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
     """Pull every pedagogical note out of the page body and into its own
-    list — planning/SIDEBAR_CONTENT.md §3/§4. A note is authored as an HTML
-    aside (`NOTE_RE`), the same reuse-over-invention trick the hint/answer
-    fold already established, but unlike a fold it does not stay inline: it
-    surfaces in the reference panel instead, so the aside is removed from
-    the body once its id and content are captured.
+    list. A note is authored as an HTML aside (`NOTE_RE`), the same
+    reuse-over-invention trick the hint/answer fold already established,
+    but unlike a fold it does not stay inline: it surfaces in the
+    reference panel instead, so the aside is removed from the body once
+    its id and content are captured.
     """
     notes: list[Note] = []
     seen: set[str] = set()
@@ -3433,8 +3430,8 @@ def dataset_attribution(tutorial: Tutorial, name: str) -> dict:
     """A declared dataset's own attribution file —
     `data/<name>.yaml` beside `data/<name>.csv` (loaded with `load_csv()`)
     or `data/<name>.txt` (loaded with `load_text()`), the same
-    beside-the-file pattern `<slug>.glossary.yaml` already established
-    (planning/SIDEBAR_CONTENT.md §2). Both files are required: an
+    beside-the-file pattern `<slug>.glossary.yaml` already established.
+    Both files are required: an
     undocumented dataset defeats the point of declaring one at all, so a
     missing data file or a missing/incomplete attribution file fails the
     build the same way a `practice_for` naming no real tutorial does,

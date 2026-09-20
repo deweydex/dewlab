@@ -4340,8 +4340,8 @@ function announceRestore(summary) {
   }
   if (summary.droppedHighlights.length) {
     // Unlike a dropped cell, this can happen with no version change at all —
-    // a prose-only edit never bumps `tutorial-version` (planning/VERSIONS.md),
-    // so the wording here can't lean on "this version does not have" the way
+    // a prose-only edit never bumps `tutorial-version`, so the wording here
+    // can't lean on "this version does not have" the way
     // the cell message above does.
     const many = summary.droppedHighlights.length !== 1;
     lines.push(
