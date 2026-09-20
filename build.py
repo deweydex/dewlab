@@ -3661,7 +3661,7 @@ def inline_local_svg(folder: Path, body: str) -> str:
         accessibility = (
             f' role="img" aria-label="{label}"' if label else ' aria-hidden="true"'
         )
-        cleaned = cleaned[:-1] + f' class="dl-figure"{accessibility}>'
+        cleaned = cleaned[:-1] + f' class="dl-diagram"{accessibility}>'
         return cleaned + markup[markup.index(">") + 1 :]
 
     return IMG_SVG_RE.sub(swap, body)
