@@ -273,3 +273,48 @@ def test_the_grid_maps_queried_width_is_the_width_it_draws():
             "the container query measures — put it on .dl-gm-frame instead"
         )
     assert "container-type: inline-size" in rule.group(1)
+
+
+# --------------------------------------------------------------------------
+# Two things the demos' own content decides.
+# --------------------------------------------------------------------------
+
+THE_BOX = REPO / "tutorials/the-box/the-box.md"
+
+
+def test_the_box_demo_has_something_for_a_margin_to_push():
+    """The page says margin changes how far apart the two boxes sit, and
+    that two margins meeting do not add up. Both sentences are about a
+    second box. With one box the demo shows neither — margin moves it
+    relative to the page edge and nothing else, which is the weaker half
+    of what margin does and not what the prose claims."""
+    html = re.search(r"^```html site\n(.*?)^```", THE_BOX.read_text(), re.S | re.M).group(1)
+    assert html.count('class="box"') == 2, (
+        "the-box's demo no longer has two boxes, so its prose about the gap "
+        "between them describes something the reader cannot see"
+    )
+
+
+# Measured in Chromium at the cell's own 16px sans-serif: "Cuttlefish", the
+# longest word in the demo, has a min-content width of 67px.
+LONGEST_CARD_WORD = 10
+
+
+def test_the_flexbox_cards_stay_narrower_than_their_own_flex_basis():
+    """A flex item's automatic minimum size is its min-content width, so a
+    card whose longest word is wider than the 80px basis stops wrapping
+    where the arithmetic says it does — and the page's 366px, and the
+    diagram under it, quietly become wrong. Nothing else here would
+    notice: the demo still works, it just wraps somewhere else."""
+    html = re.search(
+        r"^```html site\n(.*?)^```", FLEXBOX.read_text(), re.S | re.M
+    ).group(1)
+    labels = re.findall(r'<div class="card">([^<]*)</div>', html)
+    assert labels, "no cards in flexbox-first-steps' HTML cell"
+    for label in labels:
+        longest = max(label.split(), key=len)
+        assert len(longest) <= LONGEST_CARD_WORD, (
+            f"{longest!r} on a card is long enough to be wider than the 80px "
+            "flex-basis, which moves the wrap threshold. Measure it in a "
+            "browser and update the arithmetic under the diagram, or shorten it."
+        )

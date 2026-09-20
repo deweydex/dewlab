@@ -11,16 +11,17 @@ covers:
 
 # Flexbox first steps
 
-Three cards, side by side. What happens once the screen is too narrow for
-all three to fit in one row? Try it below before reading on.
+Three plushies from the shop, each on its own card, side by side. What
+happens once the screen is too narrow for all three cards to fit in one
+row? Let's find out before reading on.
 
 ```html site
 id: cards-html
 site: cards
 <div class="row">
-  <div class="card">One</div>
-  <div class="card">Two</div>
-  <div class="card">Three</div>
+  <div class="card">Squishy Squid</div>
+  <div class="card">Cuddly Cuttlefish</div>
+  <div class="card">Nautical Nautilus</div>
 </div>
 ```
 
@@ -47,12 +48,12 @@ body {
 ```
 
 Drag the preview width slider down, toward the narrow end. At some point
-the third card drops to a line of its own, then the second joins it. Drag
+the nautilus drops to a line of its own, then the cuttlefish joins it. Drag
 back up, and they return to one row. Nothing you typed changed; only the
 width did.
 
 Watch the pixel figure beside the slider while you drag, and find roughly
-where the third card gives up. The rest of this page is about where that
+where the third card gives up and moves down. The rest of this page is about where that
 number comes from.
 
 ## Why this happens

@@ -4160,3 +4160,17 @@ Two wrong turns on the way there, both worth keeping. `resize: horizontal` was t
 Flexbox Froggy, Grid Garden and Anchoreum are linked from the three nearest tutorials, on Josh's ask. Anchoreum teaches CSS anchor positioning, which this course does not cover; it is framed as where `position` has gone since rather than as required reading.
 
 *Cost to change: low for the diagrams themselves, each self-contained markup and CSS. Two changes touch `assets/tutorial-runtime.js` and so the committed vendor bundle, which is what cannot be reverted by editing a tutorial — the preview's pixel readout and `wireDiagramWidthSliders()`. Both are additive: the preview slider behaves as before for a page that ignores the number, and the width-slider wiring does nothing on a page with no `data-dl-width-for` on it.*
+
+---
+
+**7.201 — The web-authoring demos get the plushie shop the database course already sells from, and `the-box`'s demo gets a second box, without which its own prose describes something the reader cannot see.** Josh: "lets make sure that we use examples that really show the user what is going on and that have a bit of whimsy."
+
+Two separate things, and the first is not decoration. **`the-box` had one box.** Its "Why this happens" says margin "pushes neighbouring boxes away rather than changing this box's own size" — and the demo had no neighbour, so a reader changing `margin` saw the box shift relative to the page edge and nothing else. That is the weaker half of what margin does, and not the half the page claims. Two boxes now, and the page says what the reader will actually see: set `margin` to `4rem` and the gap between them is `4rem`, not `8rem`, because two margins that meet do not add up. Measured in a browser before it was written down — 64px, not 128.
+
+**The whimsy is the house's own, not a new one.** The database course sells Squishy Squid, Cuddly Cuttlefish, Nautical Nautilus and Octo Buddy, with descriptions like "six arms too many to count correctly"; every web-authoring demo said `One`, `Two`, `Three`, `Header`, `Button`. So the web course now builds that shop's page: three plushies on the flexbox cards, the shop's own header, menu, main and footer on the grid. It costs nothing and it joins two courses that had no reason to look like different products.
+
+**One trap, checked rather than assumed.** A flex item's automatic minimum size is its min-content width, so a card label whose longest word is wider than the 80px `flex-basis` stops the row wrapping where `flexbox-first-steps`' arithmetic says it does — and the 366px the page names, and the diagram under it, quietly go wrong while the demo carries on working. Measured at the cell's own 16px sans-serif: "Cuttlefish" is 67px, the longest word in the set, and the threshold is still exactly 366. A test caps the longest word on a card and says what to do if a future one goes over.
+
+The grid diagram's cells still read `header`, `nav`, `main`, `footer`. Those are literal strings from `grid-template-areas`, not labels — whimsy there would break the one correspondence the diagram exists to make.
+
+*Cost to change: nil. Content in three markdown cells and two paragraphs of prose.*

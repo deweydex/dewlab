@@ -25,10 +25,10 @@ the CSS below is why.
 id: layout-html
 site: layout
 <div class="page">
-  <header class="area-header">Header</header>
-  <nav class="area-nav">Menu</nav>
-  <main class="area-main">Main</main>
-  <footer class="area-footer">Footer</footer>
+  <header class="area-header">Tentacular Plushies</header>
+  <nav class="area-nav">Squid, Cuttlefish, Nautilus</nav>
+  <main class="area-main">Soft things with too many arms.</main>
+  <footer class="area-footer">Open all tentacles</footer>
 </div>
 ```
 
