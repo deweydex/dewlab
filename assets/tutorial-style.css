@@ -1003,7 +1003,22 @@ p code, li code {
 }
 .dl-site-preview-controls label { flex: none; }
 .dl-site-width { flex: 1 1 auto; min-width: 0; }
-.dl-site-preview-controls output { flex: none; font-family: var(--dl-mono); }
+/* Room reserved for the longest reading, right-aligned. Without it the
+   output grows a few pixels as "30% · 170px" becomes "100% · 547px", and
+   because the slider beside it is `flex: 1 1 auto` the track resizes
+   under the reader's own thumb while they drag it. */
+.dl-site-preview-controls output {
+  flex: none;
+  min-width: 8.5rem;
+  text-align: right;
+  font-family: var(--dl-mono);
+}
+
+/* The frame's own painting stays inside the frame. A rapidly resized
+   iframe can leave its old content painted in the space it has just
+   given up; this confines any such stale paint to a box the browser
+   repaints. */
+.dl-site-preview { contain: paint; }
 
 /* Fixed white background regardless of theme: a reader's page is written
  * assuming a page, not this site's own dark mode. Width defaults to 100%

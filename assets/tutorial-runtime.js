@@ -2368,19 +2368,48 @@ function buildSiteEditors(manifest) {
      * which flexbox-first-steps does. */
     const widthInput = host.querySelector(".dl-site-width");
     const widthOut = host.querySelector(".dl-site-preview-controls output");
+
+    /* One write and one measurement per animation frame, however fast the
+     * drag. Setting the frame's width and then immediately reading it back
+     * forces a synchronous layout inside the event handler, and a drag
+     * fires `input` far faster than the page can paint — which left the
+     * frame's old content smeared across the space it had just vacated,
+     * on every site editor on the site. Coalescing into a frame fixes the
+     * cause rather than the symptom: the value the reader lands on is
+     * still exactly the one under their thumb. */
+    let pending = null;
+    let frame = 0;
     const showWidth = () => {
       if (!widthOut || !widthInput) return;
       const px = Math.round(iframe.getBoundingClientRect().width);
-      widthOut.textContent = px ? `${widthInput.value}% · ${px}px` : `${widthInput.value}%`;
+      const text = px ? `${widthInput.value}% · ${px}px` : `${widthInput.value}%`;
+      // Never write the same text twice: a no-op mutation here still costs
+      // the style and layout work that a ResizeObserver callback can then
+      // notice again.
+      if (widthOut.textContent !== text) widthOut.textContent = text;
     };
+    const apply = () => {
+      frame = 0;
+      if (pending !== null) {
+        iframe.style.width = `${pending}%`;
+        pending = null;
+      }
+      showWidth();
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(apply);
+    };
+
     if (widthInput) {
       widthInput.addEventListener("input", () => {
-        iframe.style.width = `${widthInput.value}%`;
-        showWidth();
+        pending = widthInput.value;
+        schedule();
       });
       showWidth();
+      // Keeps the figure true when the column moves underneath it — a
+      // window resize, a panel opening — not only when the slider moves.
       if (typeof ResizeObserver === "function") {
-        new ResizeObserver(showWidth).observe(iframe);
+        new ResizeObserver(schedule).observe(iframe);
       }
     }
 
