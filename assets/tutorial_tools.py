@@ -1634,9 +1634,10 @@ def describe_globals() -> list[dict]:
 
     Powers dewmini's variable inspector: a student can see what their code
     actually made, which turns "I ran a cell and something happened" into
-    something inspectable. Returns a list of `{name, type, summary, kind}`
-    dictionaries — only strings, so the whole result crosses the worker's
-    postMessage boundary without any of Pyodide's proxy machinery.
+    something inspectable. Returns a list of `{name, type, summary, kind,
+    builtin}` dictionaries — plain strings and one plain bool, nothing a
+    Pyodide proxy could hide in, so the whole result crosses the worker's
+    postMessage boundary without any proxy machinery to destroy() after.
 
     `kind` separates the three things a namespace holds, so the panel can
     show a student's own data first and keep the furniture out of the way:
@@ -1645,12 +1646,28 @@ def describe_globals() -> list[dict]:
       * "callable" — functions and classes, theirs or ours;
       * "module" — anything imported.
 
+    Each entry also carries `builtin`: true when the name still points at
+    whatever this module itself seeded it with — every name in
+    `__all__`, freshly (re)bound at boot and after a restart
+    (RESEED_GLOBALS_SOURCE, tutorial-runtime.js) — false the moment a
+    reader's own code rebinds it to something else. `db` gets the same
+    treatment by name rather than by identity: a fresh sqlite3.Connection
+    every boot (SEED_SQL_DB_SOURCE) means there is no fixed object to
+    compare against, but it is exactly as pre-seeded as anything in
+    `__all__` on a page with a SQL cell. The Python panel's own
+    Variables/Functions/Packages lists (tutorial-runtime.js) filter this
+    out, so "what's defined right now" means what a reader actually put
+    there, not the toolbox every page starts with; dewmini's own Variables
+    panel ignores the field and keeps showing everything, since compose
+    has no such pre-seeded toolbox to distinguish from.
+
     Names starting with "_" are left out entirely, the same convention
     autocomplete already follows: they are this module's own bookkeeping,
     not anything a reader put there.
     """
     import types  # noqa: PLC0415 - only needed here, and only in this function
 
+    module_globals = globals()
     described = []
     for name, value in list(_page_globals.items()):
         if name.startswith("_"):
@@ -1666,6 +1683,7 @@ def describe_globals() -> list[dict]:
             "type": type(value).__name__,
             "summary": _summarise(value),
             "kind": kind,
+            "builtin": name == "db" or module_globals.get(name) is value,
         })
     described.sort(key=lambda entry: entry["name"].lower())
     return described

@@ -23,7 +23,7 @@ def run(page, cell_id: str) -> None:
 def summary_text(page) -> str:
     _open_panel(page, "#dl-yourwork-toggle")
     text = page.inner_text("#dl-progress-summary")
-    page.click("#dl-yourwork-close")
+    _open_panel(page, "#dl-yourwork-toggle")
     return text
 
 
@@ -31,7 +31,7 @@ class TestProgressSummary:
     def test_stays_hidden_with_nothing_run(self, page):
         _open_panel(page, "#dl-yourwork-toggle")
         assert page.is_hidden("#dl-progress-summary")
-        page.click("#dl-yourwork-close")
+        _open_panel(page, "#dl-yourwork-toggle")
 
     def test_updates_after_a_successful_run(self, page):
         run(page, "plain-python")
