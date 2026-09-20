@@ -284,3 +284,48 @@ class TestRowTimesColumn:
     def test_a_different_entry_picks_a_different_row_and_column(self):
         svg = grid_renderer.row_times_column(self.A, self.B, self.AB, row=1, column=1)
         assert "3×0 + 4×-1 = -4" in svg
+
+
+try:
+    import steps as step_renderer
+except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
+    step_renderer = None
+
+needs_steps = pytest.mark.skipif(step_renderer is None, reason="svgwrite is not installed")
+
+
+@needs_steps
+class TestTheRangeCollapsing:
+    ITEMS = [3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]
+
+    def test_the_chosen_target_actually_halves(self):
+        """31 sits on the midpoint and is found on the first pass — a fine
+        test case and a picture with no halving in it. 3 takes four."""
+        def passes(target):
+            low, high, count = 0, len(self.ITEMS) - 1, 0
+            while low <= high:
+                mid = (low + high) // 2
+                count += 1
+                if self.ITEMS[mid] == target:
+                    return count
+                if target < self.ITEMS[mid]:
+                    high = mid - 1
+                else:
+                    low = mid + 1
+            return count
+
+        assert passes(31) == 1
+        assert passes(3) == 4
+
+    def test_marks_landing_on_one_cell_are_drawn_once(self):
+        """By the last pass low, mid and high are the same index. Three
+        labels at one position overlap into something unreadable."""
+        svg = step_renderer.binary_search_steps(self.ITEMS, 3)
+        assert ">low mid high<" in svg
+        assert svg.count(">low<") == 3, "one per pass that has them apart"
+
+    def test_the_list_comes_from_the_tutorial(self):
+        items, target = cm._search_case()
+        assert items == self.ITEMS
+        assert items == sorted(items), "binary search needs it sorted"
+        assert target in items
