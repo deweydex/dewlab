@@ -22,6 +22,12 @@ const NOTES_NUDGE_THRESHOLD = 120;
 const RUN_STATS_KEY = "dewlab:run-stats";
 const STAGED_HINTS_KEY = "dewlab:staged-hints";
 const STAGED_HINTS_RESTART_KEY = "dewlab:staged-hints-restart";
+const HIGHLIGHT_COLOR_KEY = "dewlab:highlight-color";
+// Amber first and un-labelled by purpose on purpose: a plain colour name
+// leaves what each one means up to whoever is highlighting, the same way
+// a paper highlighter set does. Order here is the swatch row's own order.
+const HIGHLIGHT_COLORS = ["amber", "green", "blue", "pink"];
+const DEFAULT_HIGHLIGHT_COLOR = "amber";
 const PANEL_WIDTH_KEY = "dewlab:panel-width";
 const AUTOSAVE_DELAY = 500;
 const SAVED_OUTPUT_STRIP_THRESHOLD = 100_000;
@@ -505,7 +511,10 @@ function initRightPanels() {
       // The notes textarea may have grown (or been given a value) while
       // its panel was hidden, and a hidden element's scrollHeight reads as
       // 0 — re-measure now that it's actually laid out.
-      if (p.name === "yourwork" && notesEl) autoGrowTextarea(notesEl);
+      if (p.name === "yourwork") {
+        if (notesEl) autoGrowTextarea(notesEl);
+        refreshHighlightsList();
+      }
       if (p.name === "python") refreshPythonState();
     }
 
@@ -1197,7 +1206,9 @@ function rangeForOffsets(block, start, end) {
 // range's own text nodes and wrap each one's selected portion in its own
 // <mark>, rather than asking for one <mark> around the whole range.
 // Several <mark>s sharing one `data-highlight-id` is normal, not a bug.
-function wrapRange(range, highlightId) {
+// `color` is one of HIGHLIGHT_COLORS, or omitted for the CSS default
+// (amber) -- an un-migrated highlight saved before colour existed.
+function wrapRange(range, highlightId, color) {
   const doc = range.startContainer.ownerDocument || document;
   const root = range.commonAncestorContainer;
   const walker = doc.createTreeWalker(
@@ -1222,6 +1233,7 @@ function wrapRange(range, highlightId) {
         const mark = doc.createElement("mark");
         mark.className = "dl-highlight";
         mark.dataset.highlightId = highlightId;
+        if (color && color !== DEFAULT_HIGHLIGHT_COLOR) mark.dataset.highlightColor = color;
         // Only the first fragment is a tab stop — several <mark>s can share
         // one highlight id, and a reader tabbing through the page should
         // meet that highlight once, not once per fragment it happens to be
@@ -1235,6 +1247,20 @@ function wrapRange(range, highlightId) {
     node = next;
   }
   return marks;
+}
+
+// Recolouring an existing highlight from the popover's swatch row --
+// every <mark> sharing this id, since one highlight can be split across
+// several when its range crosses a child element (wrapRange()'s own
+// comment above explains why more than one is normal).
+function recolorHighlight(highlightId, color, root = document.getElementById("dl-body")) {
+  const marks = root
+    ? root.querySelectorAll(`mark.dl-highlight[data-highlight-id="${CSS.escape(highlightId)}"]`)
+    : [];
+  for (const mark of marks) {
+    if (color && color !== DEFAULT_HIGHLIGHT_COLOR) mark.dataset.highlightColor = color;
+    else delete mark.dataset.highlightColor;
+  }
 }
 
 // The other half: strip a highlight back out, restoring plain text nodes
@@ -1285,22 +1311,47 @@ function generateHighlightId() {
   return `h-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+// The colour a fresh highlight starts in: whichever a reader picked most
+// recently, on this device, across every tutorial — not per-page, since a
+// reader who settled on "amber means important" wants that to hold
+// everywhere, not reset each time they open a new tutorial.
+function readLastHighlightColor() {
+  try {
+    const stored = localStorage.getItem(HIGHLIGHT_COLOR_KEY);
+    return HIGHLIGHT_COLORS.includes(stored) ? stored : DEFAULT_HIGHLIGHT_COLOR;
+  } catch (err) {
+    return DEFAULT_HIGHLIGHT_COLOR;
+  }
+}
+
+function writeLastHighlightColor(color) {
+  try {
+    localStorage.setItem(HIGHLIGHT_COLOR_KEY, color);
+  } catch (err) {
+    /* This reader's own choice only; forgotten after it, same as the rest
+     * of this file's storage refusal shape. */
+  }
+}
+
 // Ties (2), (3) and (4) together: anchor the live selection, save it, show
 // it. `range` is still the reader's own selection Range, not yet a
 // reconstructed one — wrapRange() needs exactly that, and reconstructing
 // it from offsets first would be reading back something already in hand.
 function createHighlight(range, block, note = "") {
   const { start, end } = offsetsForRange(block, range);
+  const color = readLastHighlightColor();
   const highlight = {
     id: generateHighlightId(),
     block_index: proseBlocks().indexOf(block),
     ...describeQuote(block, start, end),
     note,
+    color,
     created_at: new Date().toISOString(),
   };
   highlights.push(highlight);
-  wrapRange(range, highlight.id);
+  wrapRange(range, highlight.id, color);
   scheduleSave();
+  refreshHighlightsList();
   return highlight;
 }
 
@@ -1535,6 +1586,27 @@ function initHighlightPopover() {
   popover.setAttribute("role", "dialog");
   popover.setAttribute("aria-label", "Highlight");
 
+  // One radiogroup button per HIGHLIGHT_COLORS entry, filled with the
+  // colour it sets via the same [data-highlight-color] CSS the mark
+  // itself uses -- so this row never drifts from what a highlight can
+  // actually look like.
+  const colors = document.createElement("div");
+  colors.className = "dl-highlight-popover-colors";
+  colors.setAttribute("role", "radiogroup");
+  colors.setAttribute("aria-label", "Highlight colour");
+  const colorButtons = HIGHLIGHT_COLORS.map((color) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "dl-highlight-popover-color";
+    btn.dataset.color = color;
+    if (color !== DEFAULT_HIGHLIGHT_COLOR) btn.dataset.highlightColor = color;
+    btn.setAttribute("role", "radio");
+    btn.setAttribute("aria-checked", "false");
+    btn.setAttribute("aria-label", color);
+    colors.append(btn);
+    return btn;
+  });
+
   const note = document.createElement("textarea");
   note.className = "dl-highlight-popover-note";
   note.placeholder = "Add a note (optional)";
@@ -1554,7 +1626,7 @@ function initHighlightPopover() {
   removeButton.textContent = "Remove highlight";
 
   actions.append(saveButton, removeButton);
-  popover.append(note, actions);
+  popover.append(colors, note, actions);
   document.body.append(popover);
 
   let openId = null;
@@ -1569,6 +1641,10 @@ function initHighlightPopover() {
     if (!highlight) return;
     openId = id;
     note.value = highlight.note || "";
+    const current = highlight.color || DEFAULT_HIGHLIGHT_COLOR;
+    for (const btn of colorButtons) {
+      btn.setAttribute("aria-checked", String(btn.dataset.color === current));
+    }
     popover.hidden = false;
 
     // Same fixed-position, viewport-clamped placement initReferenceLookup()'s
@@ -1604,11 +1680,31 @@ function initHighlightPopover() {
     open(mark.dataset.highlightId, mark.getBoundingClientRect());
   });
 
+  // Recolouring commits immediately, the same way every other segmented
+  // control in Settings does — unlike the note textarea, which still
+  // waits for Save, since a colour is a single click and a note is
+  // something a reader might still be typing.
+  for (const btn of colorButtons) {
+    btn.addEventListener("click", () => {
+      const highlight = highlights.find((h) => h.id === openId);
+      if (!highlight) return;
+      highlight.color = btn.dataset.color;
+      for (const other of colorButtons) {
+        other.setAttribute("aria-checked", String(other === btn));
+      }
+      recolorHighlight(openId, highlight.color, body);
+      writeLastHighlightColor(highlight.color);
+      scheduleSave();
+      refreshHighlightsList();
+    });
+  }
+
   saveButton.addEventListener("click", () => {
     const highlight = highlights.find((h) => h.id === openId);
     if (highlight) {
       highlight.note = note.value;
       scheduleSave();
+      refreshHighlightsList();
     }
     close();
   });
@@ -1626,6 +1722,7 @@ function initHighlightPopover() {
     const index = highlights.findIndex((h) => h.id === openId);
     if (index !== -1) highlights.splice(index, 1);
     scheduleSave();
+    refreshHighlightsList();
     close();
   });
 
@@ -3907,6 +4004,90 @@ function renderVariableRow(entry) {
   return row;
 }
 
+/* One row of the Notes panel's own "Your highlights" list — the quoted
+ * passage, the reader's own note if they left one, and a colour dot
+ * standing in for Variables' type column above. The whole row is a
+ * button, not a link: clicking it scrolls to and opens the highlight in
+ * the page itself, rather than navigating anywhere. */
+function renderHighlightRow(highlight) {
+  const row = document.createElement("button");
+  row.type = "button";
+  row.className = "dl-highlight-row";
+
+  const dot = document.createElement("span");
+  dot.className = "dl-highlight-dot";
+  dot.setAttribute("aria-hidden", "true");
+  if (highlight.color && highlight.color !== DEFAULT_HIGHLIGHT_COLOR) {
+    dot.dataset.highlightColor = highlight.color;
+  }
+
+  const text = document.createElement("span");
+  text.className = "dl-highlight-text";
+
+  const quote = document.createElement("span");
+  quote.className = "dl-highlight-quote";
+  quote.textContent = `"${highlight.quote}"`;
+  text.append(quote);
+
+  if (highlight.note) {
+    const note = document.createElement("span");
+    note.className = "dl-highlight-note";
+    note.textContent = highlight.note;
+    text.append(note);
+  }
+
+  row.append(dot, text);
+  row.addEventListener("click", (ev) => {
+    // jumpToHighlight() below opens the popover via a synthetic click on
+    // the mark, synchronously, before this real click event finishes
+    // bubbling to document -- where the popover's own outside-click
+    // listener would otherwise see this original click land on neither
+    // the popover nor a mark, and close right back what the synthetic
+    // one just opened (the same fix initMobileLauncher() needed for its
+    // own forwarded clicks, and for the same reason).
+    ev.stopPropagation();
+    jumpToHighlight(highlight.id);
+  });
+  return row;
+}
+
+// Scrolls a highlight into view and pulses it -- clicking a row in the
+// Notes panel's own list also opens the popover (that click is deliberate
+// upkeep, the reader chose it from a list of their own highlights), but
+// arriving from another page's URL hash (below) is a reader visiting a
+// passage to re-read it, not asking to edit it, so that path leaves
+// `openPopover` false. Several <mark>s can share one id; only the first
+// is a tab stop (wrapRange()'s own comment), so it's the one this scrolls
+// to and, when asked, clicks.
+function jumpToHighlight(highlightId, { openPopover = true } = {}) {
+  const mark = document.querySelector(
+    `mark.dl-highlight[data-highlight-id="${CSS.escape(highlightId)}"]`,
+  );
+  if (!mark) return;
+  closeRightPanels();
+  mark.scrollIntoView({ behavior: "smooth", block: "center" });
+  mark.classList.remove("dl-highlight-flash");
+  // Forces a reflow so re-adding the class restarts the animation, in
+  // case a reader jumps to the same highlight twice in a row.
+  void mark.offsetWidth;
+  mark.classList.add("dl-highlight-flash");
+  if (openPopover) mark.click();
+  else mark.focus();
+}
+
+/* Every highlight on this page, live — refreshed on the same schedule
+ * the note (highlight.note) and colour above are set on, plus whenever
+ * the Notes panel opens (initRightPanels()'s own setOpen()). Empty state
+ * doubles as the only place on the page that says highlighting exists at
+ * all, since nothing about the selection toolbar itself hints at it. */
+function refreshHighlightsList() {
+  const list = document.getElementById("dl-highlights-list");
+  const status = document.getElementById("dl-highlights-status");
+  if (!list || !status) return;
+  list.replaceChildren(...highlights.map(renderHighlightRow));
+  status.hidden = highlights.length > 0;
+}
+
 /* Variables, Functions and Packages in the Python panel — describe_globals()
  * split by its own `kind`: data (Variables), callable (Functions, theirs
  * or a class they defined) and module (Packages, collapsed by default in
@@ -4233,7 +4414,7 @@ function restoreSaved() {
         const range = rangeForOffsets(
           located.block, located.index, located.index + saved.quote.length,
         );
-        if (range) wrapRange(range, saved.id);
+        if (range) wrapRange(range, saved.id, saved.color);
       } else {
         droppedHighlights.push(saved.id);
       }
@@ -4511,6 +4692,7 @@ function initProgressSection() {
       }
       localStorage.setItem(progressKey(), JSON.stringify(record));
       announceRestore(restoreSaved());
+      refreshHighlightsList();
       showSaveState(record.saved_at);
       updateProgressSummary();
       markNotesExported();
@@ -5241,11 +5423,25 @@ initContentsProgress();
 trackChromeHeight();
 trackCornerDockHeights();
 announceRestore(restoreSaved());
+refreshHighlightsList();
 updateProgressSummary();
 updateNotesNudge();
 annotateNotice();
 highlightIllustrativeCode();
 const mathsRendered = renderMaths(currentManifest);
+
+// A link from My Notes (or anywhere else) can name one highlight by id in
+// the URL's own hash -- #dl-highlight-<id> -- the same way a plain HTML
+// anchor names a heading. Waits for maths to finish rendering first: a
+// KaTeX block below the highlighted passage can still shift the page's
+// layout after this script runs, and jumping before that would land
+// short. A hash naming a highlight this page doesn't have (a stale link,
+// or one this browser's storage never carried) is silently ignored, the
+// same "a notice, never a block" posture a dropped highlight already gets.
+if (location.hash.startsWith("#dl-highlight-")) {
+  const wanted = location.hash.slice("#dl-highlight-".length);
+  mathsRendered.then(() => jumpToHighlight(wanted, { openPopover: false }));
+}
 
 if (cells.length === 0 || leaving) {
   /* Nor is there a reason to pay for it on a page that is being replaced this
@@ -5301,4 +5497,7 @@ globalThis.dewlab = {
   unwrapHighlight,
   blockFor,
   createHighlight,
+  recolorHighlight,
+  jumpToHighlight,
+  refreshHighlightsList,
 };

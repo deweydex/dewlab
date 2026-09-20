@@ -4871,6 +4871,84 @@ def write_all_tutorials_page(
     return target
 
 
+def write_all_notes_page(shell: str, tutorials: list[Tutorial]) -> Path:
+    """My Notes: every highlight and every page's own free-text notes,
+    gathered from every tutorial this browser has ever saved progress
+    for — into one page to review, search, or download as a plain-text
+    study sheet (DECISIONS_LOG.md, the highlight-colours-and-list entry).
+
+    Nothing here comes from the build: localStorage is shared per
+    origin, not per page, so `assets/my-notes.js` reads every saved
+    record itself, client-side, once this page loads. The one thing the
+    build *can* give it that storage can't is a title for each slug —
+    a saved record only carries `tutorial-slug`, not a human title — so
+    this bakes in a small {slug: title} map the same way tree.js reads
+    its own topic-graph data island (`write_tree_page()`).
+    """
+    titles = {t.slug: t.title for t in tutorials if t.is_default}
+    body = (
+        '<h1>My Notes</h1>'
+        '<p class="dl-panel-note">Every highlight and note you\'ve made '
+        "across every tutorial you've opened in this browser, on this "
+        "device — gathered here to review. Nothing on this page is sent "
+        "anywhere; it's read straight out of this browser's own storage, "
+        "the same way each tutorial's own Notes panel already is.</p>"
+        '<div class="dl-my-notes-controls">'
+        '<input type="search" id="dl-my-notes-search" '
+        'placeholder="Search your notes and highlights…" '
+        'aria-label="Search your notes and highlights">'
+        '<button type="button" class="dl-btn" id="dl-my-notes-download">'
+        "Download as text</button>"
+        "</div>"
+        '<p class="dl-panel-note" id="dl-my-notes-empty" hidden></p>'
+        '<div id="dl-my-notes-list"></div>'
+    )
+    manifest = {"slug": "all-notes", "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
+    tokens = {
+        "{{TITLE}}": "My Notes",
+        "{{VERSION}}": "1",
+        "{{SLUG}}": "all-notes",
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": '<span class="dl-crumbs">my notes</span>',
+        "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
+        "{{PAGE_SCRIPT}}": (
+            '<script type="application/json" id="dewlab-titles">'
+            + json.dumps(titles).replace("<", "\\u003c")
+            + "</script>\n"
+            + f'<script type="module" src="{versioned("assets/", "my-notes.js")}"></script>'
+        ),
+        "{{CANONICAL}}": "",
+        "{{DOWNLOAD}}": "",
+        "{{BODY}}": body,
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer("all-notes", "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html("all-notes", "1"),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(
+            f"shell template has tokens the my-notes page does not fill: {leftover}")
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / "all-notes.html"
+    target.write_text(page)
+    return target
+
+
 def render_course_cards() -> str:
     """One front-page tile per course, in courses/index.yaml order, from
     the course files: the title, the status badge, the QQI code, and the
@@ -5702,6 +5780,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.append(write_all_tutorials_page(
             shell, groups, archives, retired, practice, mixed, course_archives
         ))
+        written.append(write_all_notes_page(shell, tutorials))
         for course in catalog.values():
             written.append(write_course_page(
                 shell, course, groups, archives, retired, practice, mixed,
