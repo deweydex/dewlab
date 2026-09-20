@@ -111,3 +111,79 @@ class TestTheDrawing:
             for pair in points.split()
         ]
         assert max(ys) > boxes_bottom, "no edge was routed below the boxes"
+
+
+try:
+    import tree as tree_renderer
+    from tree import Node
+    import computational_methods as cm
+except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
+    tree_renderer = Node = cm = None
+
+needs_tree = pytest.mark.skipif(tree_renderer is None, reason="svgwrite is not installed")
+
+
+@needs_tree
+class TestTreeLayout:
+    def test_a_parent_sits_over_the_children_it_has(self):
+        root = Node("top", children=[Node("a"), Node("b"), Node("c")])
+        tree_renderer._measure(root)
+        placed: list = []
+        tree_renderer._place(root, 0.0, 0, placed)
+        first, last = root.children[0], root.children[-1]
+        assert root.centre == pytest.approx((first.centre + last.centre) / 2)
+
+    def test_a_deeper_level_sits_below_a_shallower_one(self):
+        root = Node("top", children=[Node("a", children=[Node("deep")])])
+        tree_renderer._measure(root)
+        placed: list = []
+        tree_renderer._place(root, 0.0, 0, placed)
+        tops = {node.label: node.top for node in placed}
+        assert tops["top"] < tops["a"] < tops["deep"]
+
+    def test_siblings_do_not_overlap(self):
+        root = Node("top", children=[
+            Node("wide label here"), Node("b"), Node("another wide one"),
+        ])
+        tree_renderer._measure(root)
+        placed: list = []
+        tree_renderer._place(root, 0.0, 0, placed)
+        spans = sorted(
+            (c.centre - c.box_width / 2, c.centre + c.box_width / 2)
+            for c in root.children
+        )
+        for (_, left_end), (right_start, _) in zip(spans, spans[1:]):
+            assert right_start >= left_end
+
+
+@needs_tree
+class TestTheRepeatedQuestion:
+    """The marked amount has to be the one a reader can count in front of
+    them, which is not the one the whole recursion repeats most."""
+
+    def test_counts_are_taken_over_the_drawn_depth_not_the_whole_recursion(self):
+        drawn = cm._repeat_counts(6, [1, 3, 4], cm.MAKE_CHANGE_DEPTH)
+        whole = cm._repeat_counts(6, [1, 3, 4], 99)
+        busiest_drawn = max(
+            (a for a in drawn if a not in (0, 6)), key=lambda a: (drawn[a], a))
+        busiest_whole = max(
+            (a for a in whole if a not in (0, 6)), key=lambda a: (whole[a], a))
+        assert busiest_drawn == 2
+        assert busiest_whole == 1, "the two differ, which is why depth matters"
+
+    def test_the_marked_amount_appears_more_than_once_in_the_drawing(self):
+        counts = cm._repeat_counts(6, [1, 3, 4], cm.MAKE_CHANGE_DEPTH)
+        repeated = max(
+            (a for a in counts if a not in (0, 6)), key=lambda a: (counts[a], a))
+        drawn = cm._call_tree(6, [1, 3, 4], repeated, cm.MAKE_CHANGE_DEPTH)
+        marked: list = []
+
+        def walk(node):
+            if node.marked:
+                marked.append(node.label)
+            for child in node.children:
+                walk(child)
+
+        walk(drawn)
+        assert len(marked) >= 2, "a mark that appears once argues nothing"
+        assert set(marked) == {str(repeated)}
