@@ -139,6 +139,14 @@ class TestQuestionChecks:
         with pytest.raises(b.BuildError, match="no `id:` line"):
             b.build()
 
+    def test_a_footnote_inside_a_question_fails_the_build(self, repo):
+        # A question fence is converted on its own, so a footnote written
+        # in one cannot reach the foot of the page — see no_footnotes_in().
+        write(repo, "```question\nid: q\ntype: multiple-choice\ncorrect: 1\n\n"
+                    "Which one[^why]?\n\n- a\n- b\n```\n\n[^why]: Because.\n")
+        with pytest.raises(b.BuildError, match="has a footnote in it"):
+            b.build()
+
     def test_an_unrecognised_type_fails_the_build(self, repo):
         write(repo, "```question\nid: q\ntype: essay\n\nWrite an essay.\n```\n")
         with pytest.raises(b.BuildError, match="not one of"):

@@ -833,6 +833,46 @@ class TestStagedHints:
         with pytest.raises(b.BuildError, match="no exec cell above it"):
             b.build()
 
+    def test_a_footnote_works_in_prose_a_fold_and_a_note(self, repo):
+        # The other half of the rule below. Prose, a hand-written fold and
+        # a dl-note aside are all part of the page's one conversion pass
+        # (mark_markdown_wrappers()), so a reference in any of them finds
+        # a definition written anywhere on the page, and every definition
+        # collects into the one list at the foot of it.
+        write(repo,
+              "Prose[^a].\n\n"
+              '<details class="dl-answer"><summary>answer</summary>\n\n'
+              "In a fold[^b].\n\n</details>\n\n"
+              '<aside class="dl-note" id="n">\n\nIn a note[^c].\n\n</aside>\n\n'
+              "[^a]: One.\n\n[^b]: Two.\n\n[^c]: Three.\n")
+        b.build()
+        page = built(repo)
+        # One collected list, not one per fragment.
+        assert page.count('class="footnote"') == 1
+        for label in ("a", "b", "c"):
+            assert f'id="fn:{label}"' in page
+        # The note's own reference travels with it into the manifest, and
+        # still points at the list left behind on the page.
+        assert 'href="#fn:c"' in manifest(built(repo))["notes"][0]["html"]
+        # Nothing reached the page as literal markdown.
+        assert "[^" not in page.split("dewlab-manifest")[0]
+
+    def test_a_footnote_inside_a_hint_fails(self, repo):
+        # A fence is converted on its own, so neither half of a footnote
+        # can cross its edge: a reference here reaches the page as the
+        # literal text `[^why]`, and a pair here renders its own rule and
+        # numbered list inside the hint box. Both look fine to the build
+        # and wrong on the page, so the fence refuses one outright.
+        write(repo, self.CELL + "```hint\nA nudge[^why].\n```\n\n[^why]: Because.\n")
+        with pytest.raises(b.BuildError, match="has a footnote in it"):
+            b.build()
+
+    def test_a_regex_character_class_in_a_hint_is_not_a_footnote(self, repo):
+        # `[^aeiou]` is a character class, not a reference. Inline code is
+        # blanked before the check, so a hint can teach regexes.
+        write(repo, self.CELL + "```hint\nUse `[^aeiou]` for a consonant.\n```\n")
+        b.build()
+
     def test_a_hint_naming_a_missing_cell_fails(self, repo):
         write(repo, self.CELL + "```hint\nfor: nope\nX.\n```\n")
         with pytest.raises(b.BuildError, match="does not have: 'nope'"):
