@@ -380,7 +380,7 @@ input beside its pill — see `docs/dewmini-js-explained.md` for that half.
 
 ## Two patterns worth understanding on their own
 
-**Four panels, one rule; three of them one width.** The four right-hand
+**Four panels, one rule; three of them a dock.** The four right-hand
 panels (Notes, Python, Settings — Appearance/Behavior/Imports & Exports
 behind one tablist-switched toggle — and Report, `RIGHT_PANELS`) are
 separate, independent UI components — but opening any one of them always
@@ -388,14 +388,22 @@ closes the other three, since they share one edge of the screen. There's
 no shared "panel manager" object making that happen; each panel's own
 `setOpen(true)` just calls `closeRightPanels(itsOwnName)` directly. The
 Reference panel on the left is not in that group: it has its own edge, so
-it can stay open alongside any of the four. Notes, Python and Settings
-also share one saved width (`RIGHT_DOCK_WIDTH_KEY`, not each panel's own
-DOM id) — dragging any one's edge applies the new width to the other two
-right away, so a reader switching which tab is open never sees the dock,
-and the reading column beside it, resize. Report sits under its own fixed
-circle rather than the corner dock (`dockLinked`, `initRightPanels()`
-below), so it shares the open/close/Escape/outside-click machinery but
-never that width.
+it can stay open alongside any of the four.
+
+Three of those four are rails, and `RIGHT_DOCK_PANELS` is that shorter
+list. Notes, Python and Settings dock to the screen's edge full height,
+share one saved width (`RIGHT_DOCK_WIDTH_KEY`, not each panel's own DOM
+id) — dragging any one's edge applies the new width to the other two right
+away, so a reader switching which tab is open never sees the dock, and the
+reading column beside it, resize — are what the reading column's own
+gutter is measured against (`watchPanelOverlap()`), and are what a reader's
+saved open panel can name (`saveSidebarState()`). Report is none of those
+things: it is a popover above its own fixed circle at the bottom-right
+(`.dl-report-popover`), so it borrows only this group's one-open-at-a-time
+rule and its Escape handling, closes on an outside click where a rail does
+not, and is not remembered from one page to the next. Anywhere the code
+says `RIGHT_DOCK_PANELS` rather than `RIGHT_PANELS`, that difference is
+what it is saying.
 
 **Live-then-static code intelligence, worker-or-main-thread.** Hover docs
 and autocomplete work by trying two different techniques and taking
@@ -441,6 +449,9 @@ steps the way the base feature was:
   clicking the mark directly does.
 - **My Notes** (`all-notes.html`, `write_all_notes_page()` in `build.py`,
   `assets/my-notes.js`) is the same idea across every tutorial at once.
+  The link to it is the first thing in the Notes panel, above this page's
+  own notes; it sat under the wordmark until 7.204, where a reader looking
+  for what they had written had no reason to look.
   `localStorage` is shared per origin, not per page, so this page reads
   every `dewlab:progress:*` record itself, client-side — nothing here
   needs a server or an account. The one thing storage can't supply is a

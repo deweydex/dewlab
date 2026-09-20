@@ -56,7 +56,6 @@
   <div class="dl-corner-dock dl-corner-dock-tl" id="dl-dock-left">
     <div class="dl-corner-identity">
       <a class="dl-wordmark" href="{{ROOT_BASE}}index.html">dewlab</a>
-      <a class="dl-mynotes-link" href="{{ROOT_BASE}}all-notes.html">My notes</a>
       {{NAV_SEARCH}}
       {{CRUMBS}}
     </div>
@@ -171,6 +170,22 @@
 <div class="dl-right-panel dl-yourwork" id="dl-yourwork" role="dialog" aria-modal="false"
      aria-labelledby="dl-yourwork-title" hidden>
   <h2 id="dl-yourwork-title" class="dl-sr-only">Notes</h2>
+
+  <!-- The way out to My Notes (all-notes.html): every highlight and every
+       page's own notes, from every tutorial this browser holds, on one
+       page. It sat under the wordmark until now (DECISIONS_LOG.md 7.195),
+       where the top-left block answers where you are rather than what you
+       have written, and a reader looking for their notes had no reason to
+       read it. This panel is the one place on the page that is about the
+       reader's own notes, so the link to all of them belongs at the top of
+       it. {{ROOT_BASE}} is substituted per page type here exactly as it
+       was there. -->
+  <p class="dl-mynotes-row">
+    <a class="dl-mynotes-link" href="{{ROOT_BASE}}all-notes.html">My notes</a>
+    <span class="dl-panel-note">Everything you have written and highlighted,
+    on every page you have opened in this browser, gathered in one place.</span>
+  </p>
+
   <section class="dl-settings-section" id="dl-settings-work">
     <label class="dl-progress-notes-label" for="dl-progress-notes">Your notes</label>
     <textarea class="dl-progress-notes" id="dl-progress-notes" rows="4"
@@ -515,10 +530,22 @@
 <!-- A report door of its own — see the corner-dock comment above for why
      it isn't a fourth Settings tab. Same three doors the footer's own
      disclosure offers, without the <details> wrapper, since the button
-     that opens this is already the thing a reader clicked on purpose. -->
-<div class="dl-right-panel" id="dl-report" role="dialog" aria-modal="false"
+     that opens this is already the thing a reader clicked on purpose.
+
+     It is also the one right-hand panel that is not a rail. It holds three
+     links and two short lines, so a full-height column reaching to the top
+     of the screen left most of itself empty, pushed the reading column
+     over for nothing, and landed nowhere near the circle that had just
+     been clicked (DECISIONS_LOG.md 7.204). It keeps .dl-right-panel for
+     its type, its colours and its phone sheet; .dl-report-popover puts it
+     just above its own circle at the size its contents actually need.
+
+     Its <h2> is visible, where every other panel's is sr-only: those are
+     named by the corner tab that opens them (7.183), and this circle is an
+     icon with no label, so nothing else on screen says what the box is. -->
+<div class="dl-right-panel dl-report-popover" id="dl-report" role="dialog" aria-modal="false"
      aria-labelledby="dl-report-title" hidden>
-  <h2 id="dl-report-title" class="dl-sr-only">Give Feedback</h2>
+  <h2 id="dl-report-title">Give feedback</h2>
   {{REPORT_DOORS}}
 </div>
 
