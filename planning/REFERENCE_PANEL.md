@@ -149,40 +149,27 @@ skill never has to re-derive "what came before," only receive it.
 
 ## 6. The reader-facing panel
 
-- **Toggle**: a small fixed-position button pinned to the page's top-left
-  corner (independent of `.dl-masthead`'s flex row, which already has the
-  wordmark on the left and Settings on the right — crowding either would
-  cost one of them its space). Closed by default; state is not persisted
-  across pages, same as Settings.
-- **Panel**: anchored top-right, reusing `.dl-settings`'s own floating-card
-  positioning (`position: fixed; right: 1rem; top: calc(chrome-height +
-  ...)`, scrollable, same shadow/border/radius) rather than inventing a
-  second panel language. Opening the reference closes Settings if it is
-  open, and vice versa — both anchored to the same corner, so showing both
-  at once would overlap.
-- **Content**: entries grouped by `kind`, term + definition (+ example where
-  present), in the order the series introduced them.
-- **Empty state**: a tutorial with nothing accumulated yet (the first in its
-  series, before any glossaries exist) hides the toggle entirely — same
-  reasoning `dl-settings-section`s with nothing in them already use elsewhere
-  in this codebase.
-- **Mobile**: under the same `max-width: 34rem` phone breakpoint the rest
-  of the page already collapses at, the panel becomes a bottom sheet
-  (`top: auto; bottom: 0; left: 0; right: 0`) — the same treatment
-  `.dl-settings` already has, rather than hiding outright. The toggle stays
-  a small fixed corner button at this width; only the floating panel shape
-  stopped working, and that is what changes.
-
-**§6 describes the panel as it originally shipped — a floating card with
-a fixed corner toggle. Both changed shape — see `DECISIONS_LOG.md`
-7.83.** The current shape: the toggle lives in `.dl-masthead-actions`,
-alongside Settings and the series nav's own toggle, instead of a
-fixed-position button of its own; the panel is a full-height docked
-sidebar instead of a card capped by `max-height`; and its open state
-survives a Prev/Next navigation to the next tutorial in the series
-(still not restored below the phone breakpoint, where it stays a bottom
-sheet a reader opens on purpose each time). §6's placement details are
-kept as the record of the shape this shipped in first, not rewritten.
+- **Toggle**: one tab in the left corner dock (`.dl-corner-dock-tl`), the
+  same corner-tab pattern the right dock's Notes/Python/Settings tabs
+  use. Closed by default; state is not persisted across pages.
+- **Panel**: a full-height docked sidebar, not a floating card. Opening it
+  closes whatever else is open on the same side; its width syncs with the
+  corner tab's own width the same way the right dock's panels do, and
+  survives a Prev/Next navigation to the next tutorial in the series.
+- **Three tabs inside one panel** (`dl-reference-tabs`, a real tablist):
+  **Reference** — this tutorial's own accumulated glossary, entries
+  grouped by `kind`, in the order the series introduced them; **Math
+  Basics** and **Python Basics** — plain definitions for maths and Python's
+  own words and punctuation, built once (`load_math_basics()`/
+  `load_python_basics()` in `build.py`) and identical on every page, so
+  neither tab is ever hidden the way Reference's own content can be empty.
+- **Empty state**: a tutorial with nothing accumulated yet in its own
+  Reference tab (the first in its series, before any glossaries exist)
+  shows a "nothing yet" message in that tab rather than hiding the panel —
+  Math Basics and Python Basics still have content regardless.
+- **Mobile**: under the `max-width: 34rem` phone breakpoint the rest of
+  the page collapses at, the panel becomes a bottom sheet instead of a
+  docked sidebar.
 
 ## 6b. Highlight to look up
 

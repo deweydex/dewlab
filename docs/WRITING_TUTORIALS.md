@@ -728,8 +728,7 @@ page, the About page and the features page. Each is one markdown file under
 `pages/` — `home.md`, `about.md`, `features.md` — with a frontmatter of one
 field, `title:`, and nothing else. The body is ordinary markdown, converted
 the way a tutorial's prose is, and every word on it is student-facing, so
-the plain-language rules in the style guide apply and
-`planning/PLAIN_LANGUAGE_PASS.md` records each pass over it.
+the plain-language rules in the style guide apply.
 
 A page can hold three things ordinary prose cannot:
 

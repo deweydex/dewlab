@@ -24,8 +24,7 @@ Student-facing means the contents page, the topic tree, a glossary
 definition, a tutorial or practice page, and any string in `build.py` that
 ends up on a page — not code comments, not planning documents, not this
 file. Read `planning/PEDAGOGICAL_STYLE_GUIDE.md` §4 before writing any of
-it. `planning/PLAIN_LANGUAGE_PASS.md` tracks which surfaces have already
-been through that pass; check it first, update it when you finish one.
+it.
 
 ## Where the rest lives
 
