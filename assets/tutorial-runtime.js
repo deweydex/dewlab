@@ -961,9 +961,6 @@ function initReference(manifest) {
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
 
-  const close = document.getElementById("dl-reference-close");
-  if (close) close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
-
   document.addEventListener("keydown", (ev) => {
     if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
     setOpen(false);
