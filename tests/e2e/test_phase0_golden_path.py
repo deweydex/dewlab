@@ -269,8 +269,8 @@ def test_show_and_show_table_and_check_render(page):
 
 
 def test_widgets_give_a_clear_error_on_a_hosted_page(page):
-    """Hosted pages run Pyodide in a Worker (planning/archive/CELL_CONTROLS.md §2),
-    which has no DOM to hand a widget's element through, so these raise
+    """Hosted pages run Pyodide in a Worker, which has no DOM to hand a
+    widget's element through, so these raise
     instead of rendering something inert. Standalone export still runs
     Pyodide on the main thread and keeps working; it isn't built here."""
     run(page, "tools-widgets")

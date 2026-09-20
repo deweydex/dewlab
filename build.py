@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Turn the markdown in tutorials/ into the hosted HTML series in site/.
 
-The shape of the job, from BUILD_PLAN.md Phase 1: read a tutorial's frontmatter
-and body, turn its `exec`-tagged fences into cell objects, expand include
-directives into the setup code they name, resolve cross-tutorial links to real
-relative hrefs and fail on any that do not resolve, then render the result into
-assets/shell.html.
+The shape of the job: read a tutorial's frontmatter and body, turn its
+`exec`-tagged fences into cell objects, expand include directives into the
+setup code they name, resolve cross-tutorial links to real relative hrefs and
+fail on any that do not resolve, then render the result into assets/shell.html.
 
 Maths and illustrative code are lifted out of the source before the markdown
 converter ever sees them, for the same reason cells are: `$a_i$` would otherwise
@@ -125,9 +124,9 @@ SITE_LANGS = {"html", "css", "js"}
 SITE_HEADER_RE = re.compile(r"^\s*(id|site)\s*:\s*(.*)$")
 HINT_HEADER_RE = re.compile(r"^\s*(for|after|title)\s*:\s*(.*)$")
 CARD_HEADER_RE = re.compile(r"^\s*(url|status|meta|wide)\s*:\s*(.*)$")
-# planning/QUESTION_BLOCKS.md's own fifth fence kind: flat headers, the
-# same loop CARD_HEADER_RE's own caller (parse_card) already uses, then
-# ordinary markdown.
+# A ```question fence's own header: flat headers, the same loop
+# CARD_HEADER_RE's own caller (parse_card) already uses, then ordinary
+# markdown.
 QUESTION_HEADER_RE = re.compile(r"^\s*(id|type|correct)\s*:\s*(.*)$")
 QUESTION_TYPES = {"multiple-choice", "fill-in-the-blank"}
 # One flat level of {...} — a gap with no "|" is a typing box, one with
@@ -255,9 +254,8 @@ class PageCard:
 
 @dataclass
 class Question:
-    """A ```question fence — see extract_blocks() and
-    planning/QUESTION_BLOCKS.md. `prompt` and, for multiple-choice, each
-    entry in `options` are raw markdown, converted at render time
+    """A ```question fence — see extract_blocks(). `prompt` and, for
+    multiple-choice, each entry in `options` are raw markdown, converted at render time
     (render_question()) rather than here — the same split parse_hint()/
     render_staged_hint() already make, so the checks below read source
     text, not converted HTML. `correct` is a multiple-choice option's
@@ -792,11 +790,10 @@ def place_hints(page_html: str, hints: list[StagedHint], maths: list[Math]) -> s
 
 
 def _split_multiple_choice(text: str) -> tuple[str, list[str]]:
-    """The prompt, and the options under it — "the prose before the
-    first list is the question, the list is the options"
-    (planning/QUESTION_BLOCKS.md §2). The first line that reads as a
-    bullet starts the options; every bullet line from there on is one
-    option, in source order, whatever else sits between them."""
+    """The prompt, and the options under it: the prose before the first
+    list is the question, the list is the options. The first line that
+    reads as a bullet starts the options; every bullet line from there
+    on is one option, in source order, whatever else sits between them."""
     lines = text.split("\n")
     start = len(lines)
     for index, line in enumerate(lines):
@@ -810,8 +807,7 @@ def _split_multiple_choice(text: str) -> tuple[str, list[str]]:
 
 def _check_balanced_gaps(text: str, path: Path, question_id: str) -> None:
     """Every `{` in a fill-in-the-blank question's text closes, and every
-    `}` closes one that opened — planning/QUESTION_BLOCKS.md's own "an
-    unclosed {" build check. Gaps are one flat level (GAP_RE), so a
+    `}` closes one that opened. Gaps are one flat level (GAP_RE), so a
     depth counter is all this needs; it is not checking that `{...}`
     nests correctly, only that it closes at all.
     """
@@ -833,8 +829,6 @@ def parse_question(body: str, path: Path) -> Question:
     Everything after the header lines is the question's own markdown:
     the prompt (and, for multiple-choice, the options after it) or the
     sentence with its {...} gaps for a fill-in-the-blank one.
-    planning/QUESTION_BLOCKS.md has the format and the reasoning behind
-    every check below.
     """
     lines = body.split("\n")
     header: dict[str, str] = {}
@@ -884,9 +878,8 @@ def render_question(question: Question) -> str:
 
     Correctness lives in the markup itself, on the option or gap it
     belongs to (`data-correct="true"`, or a typing gap's own
-    `data-expected`), rather than in a separate manifest entry — this is
-    the trade planning/QUESTION_BLOCKS.md §5 names outright: a reader who
-    opens the page's source can read the answer, which is the right
+    `data-expected`), rather than in a separate manifest entry: a reader
+    who opens the page's source can read the answer, which is the right
     trade for a self-check and the wrong one for an exam. Marking the
     answer instead of its position is also what lets the runtime shuffle
     the options it draws without a second, parallel record of which one
@@ -974,7 +967,7 @@ def extract_blocks(
     an `html site`/`css site`/`js site` fence
     becomes one pane of a `SiteEditor`, grouped with any of the same
     `site:` name immediately before or after it; a `question` fence
-    becomes a `Question` (planning/QUESTION_BLOCKS.md); an `html app`/
+    becomes a `Question`; an `html app`/
     `css app`/`js app` fence becomes one pane of an `AppCell`, grouped
     the same way by its `app:` name; any other fence becomes an
     illustrative, read-only block.
@@ -3143,10 +3136,10 @@ def arrow_between(place: dict, a: str, b: str, css: str, fan: int = 0) -> str:
 
 def progress_attrs(tutorial: Tutorial) -> str:
     """`data-id`/`data-cells` for a contents-page link, so
-    tutorial-runtime.js's progress indicator (planning/archive/PROGRESS_INDICATORS.md)
-    can read a reader's saved-progress record for it with no fetch. A
-    prose-only tutorial has nothing to show progress for, so it gets no
-    attribute at all rather than a "0/0"."""
+    tutorial-runtime.js's progress indicator can read a reader's
+    saved-progress record for it with no fetch. A prose-only tutorial has
+    nothing to show progress for, so it gets no attribute at all rather
+    than a "0/0"."""
     if not tutorial.cells:
         return ""
     return (

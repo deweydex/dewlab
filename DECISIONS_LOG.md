@@ -3992,3 +3992,19 @@ Notes and Python both stay their own external doors rather than folding in. Note
 `planning/CELL_IDENTITY.md`, `planning/HIGHLIGHTS_AND_NOTES.md` and `planning/DEWMINI_WORKBENCH.md` show the same section-cited-from-code pattern, at higher density (dozens of sites each, some inside `compose/dewmini.js` itself) — flagged, not yet acted on, pending confirmation given the size of the cleanup.
 
 *Cost to change: low for the two light deletions. Low-ish for DEWSTACK_MERGE.md — every stripped comment still describes real, current behaviour correctly; only the "why this shape" pointer is gone, recoverable from git history if it is ever genuinely needed again.*
+
+---
+
+**7.187 — `planning/archive/` deleted wholesale — all sixteen files, no replacements.** Josh: no text here is holy; git history is the real archive, so a folder that exists only to hold closed design notes for their reasoning is not worth the read either, and every citation into it is one more thing a future maintainer has to chase down instead of trusting the code in front of them.
+
+Four of the sixteen (`CONTENT_AND_FILE_ARCHITECTURE.md`, `EDITOR.md`, `PRE_BUILD_DECISIONS.md`, `WINDOW_AUDIT.md`) already had a fresh, tightened rewrite living at their original path from 7.186's companion PR, so only the `planning/archive/`-prefixed citations to those four needed stripping; bare-name mentions still point at something real. The other twelve had no active counterpart, so every citation — bare or prefixed — was stripped or reworded to describe current behaviour on its own terms, in `build.py`, `dev/check_doc_links.py` (the folder's own link-currency exemption, now gone with it), and a dozen test and doc files. `planning/README.md`'s "Archived" section is gone too, not repointed.
+
+*Cost to change: low. Every stripped comment still describes real, current behaviour correctly; only the "why this shape, historically" pointer is gone, recoverable from git history if it is ever genuinely needed again.*
+
+---
+
+**7.188 — `planning/QUESTION_BLOCKS.md` deleted; its section citations across `build.py`, `tutorial-runtime.js` and a test stripped rather than repointed.** Josh: the same standard as 7.186/7.187 applies to any pre-build design note for a feature that has since shipped (here, the `question` fence, 7.179) — a citation to a closed design argument is dead weight a future maintainer has to chase down for no benefit, once the code already says what it does.
+
+Seven sites in `build.py` alone cited it by section number for parsing and rendering detail that is now just described in place. The note itself was already an outlier in `planning/README.md`'s own index — it was never listed there, despite being the densest citation source in this batch.
+
+*Cost to change: low. Every stripped comment still describes real, current behaviour correctly.*

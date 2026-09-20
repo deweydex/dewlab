@@ -71,52 +71,6 @@ written before the thing it describes was built.
 - **[`outlines/`](./outlines/)** — an outline for each curriculum
   module.
 
-### Archived
-Closed, shipped, and not expected to change again — kept for whoever
-needs the reasoning behind something that already works, not for a
-contributor getting oriented today. `dev/check_doc_links.py` doesn't
-hold this folder to the same link-currency standard as the rest of
-`planning/`, for the same reason.
-
-- **[`PRACTICE.md`](./archive/PRACTICE.md)** — cells a reader adds
-  themselves, anywhere on a page, kept separate from the tutorial's own
-  saved work. Built as designed.
-- **[`BUILD_PLAN.md`](./archive/BUILD_PLAN.md)** — the staged plan this
-  was actually built in, runtime first through curriculum last.
-- **[`REPO_AND_EDITOR.md`](./archive/REPO_AND_EDITOR.md)** — how the
-  repository is laid out, how GitHub Actions deploys it, and the
-  authoring editor's design.
-- **[`MINI_IDE_AND_DEWMINI_NEXT.md`](./archive/MINI_IDE_AND_DEWMINI_NEXT.md)**
-  — a historical record from when dewlab had two Python workspaces: what
-  was worth building on each, why merging them into one tool wasn't the
-  answer, and (in its addenda) the decision that resolved the question
-  the other way — dewmini absorbed everything and is the one workspace
-  now.
-- **[`MINI_IDE_REDESIGN.md`](./archive/MINI_IDE_REDESIGN.md)** — the
-  phased plan the earlier, since-absorbed workspace was rebuilt to:
-  Worker engine, file manager, SQLite, notebook import, offline bundle.
-  All phases shipped; the capabilities live on in dewmini.
-- **[`STUDENT_NOTES.md`](./archive/STUDENT_NOTES.md)** — a reader's own
-  free-text notes, and encouraging a copy that outlives the browser. Not
-  the same "notes" as the pedagogical ones above; §0 says why. Built
-  (DECISIONS_LOG.md 7.72/7.75).
-- **[`PROGRESS_INDICATORS.md`](./archive/PROGRESS_INDICATORS.md)** —
-  completion badges on the contents page and a summary in Settings, both
-  read from saved work that was already there. Built as designed.
-- **[`CELL_CONTROLS.md`](./archive/CELL_CONTROLS.md)** — where a cell's
-  controls sit, and the Worker migration that made a real Stop button
-  possible. Built.
-- **[`CELL_TOOLTIPS.md`](./archive/CELL_TOOLTIPS.md)** — hover docs and
-  signature help, including what Jedi in Pyodide costs and covers. Built
-  in full.
-- **[`DOCS_AND_COMMENTS_PASS.md`](./archive/DOCS_AND_COMMENTS_PASS.md)**
-  — the repo-wide pass that gave every substantial code file a matching
-  `docs/<file>-explained.md`. Its comment-density standard has since been
-  superseded by the lighter policy in `CONTRIBUTING.md`.
-- **[`DOCS_AND_COMMENTS_PLAN.md`](./archive/DOCS_AND_COMMENTS_PLAN.md)**
-  — the follow-up: real drift since that pass closed, and the gaps it
-  knowingly left out of scope.
-
 ## The principles behind it
 
 1. **Computing and maths teach each other.** Code is a lab for building

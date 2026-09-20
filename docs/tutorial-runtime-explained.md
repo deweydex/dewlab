@@ -74,8 +74,8 @@ specifically:
 
 ## Custom cells: a second, deliberately separate cell system
 
-`planning/archive/PRACTICE.md` §3 asks for a way a reader can add their own
-Python cell to a page — not one the tutorial's author wrote, one the
+A reader can add their own Python cell to a page — not one the tutorial's
+author wrote, one the
 reader typed themselves, for trying something out or writing a practice
 problem of their own. The whole "custom cells" section (roughly
 `CUSTOM_CELLS_PREFIX` through `initCustomCellsSection()`) exists to do
@@ -89,7 +89,7 @@ functions (`loadCustomCells()`/`saveCustomCells()`/
 them or get called by them.
 
 That separation isn't laziness — it's the simplest way to guarantee two
-things `PRACTICE.md` explicitly requires: a custom cell can't collide
+things this feature requires: a custom cell can't collide
 with a real cell's id (its id always starts with `custom-`, which no
 tutorial author would ever write), and a custom cell survives a tutorial
 version change completely untouched (it was never part of the versioned
@@ -168,8 +168,8 @@ carrying that anchor, also read straight from the DOM.
 If a saved cell's anchor no longer matches any real cell — the tutorial
 was updated and that particular cell is gone — `initCustomCellsSection()`
 falls back to `TRAILING_ANCHOR` rather than dropping the custom cell.
-This fallback is the concrete mechanics behind PRACTICE.md §3's "must
-survive a version change untouched": the cell and its code are never at
+This fallback is the concrete mechanics behind a custom cell surviving a
+version change untouched: the cell and its code are never at
 risk, only its position can degrade to the general section.
 
 ---

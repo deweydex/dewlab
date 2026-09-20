@@ -1,4 +1,4 @@
-"""Browser tests for a reader's own cells (planning/archive/PRACTICE.md §3-5)."""
+"""Browser tests for a reader's own cells."""
 
 from __future__ import annotations
 
@@ -209,8 +209,8 @@ class TestAddingACustomCell:
         assert page.locator(".dl-cell-custom").first.get_attribute("data-anchor") == second_id
 
     def test_an_orphaned_anchor_falls_back_to_the_trailing_section(self, clean_storage):
-        """PRACTICE.md §3: a custom cell survives a version change even if
-        the real cell it was anchored to is removed — repositioned, not dropped."""
+        """A custom cell survives a version change even if the real cell
+        it was anchored to is removed — repositioned, not dropped."""
         page = clean_storage
         key = page.evaluate("globalThis.dewlab.customCellsKey()")
         page.evaluate(
