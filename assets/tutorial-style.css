@@ -1354,14 +1354,19 @@ p code, li code {
   flex-direction: column;
   box-sizing: border-box;
 }
-.dl-corner-dock-tl .dl-corner-stack { width: var(--dl-side); gap: 0.4rem; }
-/* Compact at rest — nothing reserves more than this for the resting stack
-   when no panel is open, or the reading column would give up real width
-   it was never asked to give up (7.163's own reasoning for keeping this
-   narrow in the first place). initRightPanels() (tutorial-runtime.js)
-   widens it inline to match whichever panel is actually open, and clears
-   that back to this default the moment it closes. */
-.dl-corner-dock-tr .dl-corner-stack { width: 12.5rem; align-items: stretch; }
+/* As small as each tab's own label needs, on both sides, rather than a
+   fixed guess wide enough for whatever might open beneath it — a short
+   word in a box built for a much wider panel just left blank space inside
+   its own border. initReference() and initRightPanels() (tutorial-
+   runtime.js) widen a stack inline to match whichever panel is actually
+   open beneath it, and clear that back to this default — max-content, so
+   it never reserves more than this resting row needs — the moment that
+   panel closes. .dl-corner-identity (the wordmark/tree/search block above
+   this stack on the left) keeps its own fixed --dl-side width regardless:
+   that block needs real room to wrap breadcrumb and search text whether
+   or not Reference is open, unlike the tab sitting under it. */
+.dl-corner-dock-tl .dl-corner-stack { width: max-content; gap: 0.4rem; }
+.dl-corner-dock-tr .dl-corner-stack { width: max-content; align-items: stretch; }
 
 /* What the masthead used to hold — wordmark and orientation — now living
    in the top-left dock instead of a separate header bar. .dl-wordmark/

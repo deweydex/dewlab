@@ -175,6 +175,12 @@ function closeReference() {
   if (!panel || panel.hasAttribute("hidden")) return;
   panel.setAttribute("hidden", "");
   if (toggle) toggle.setAttribute("aria-expanded", "false");
+  // Matches closeRightPanels()'s own reset: the left stack only widens to
+  // Reference's own width while Reference is open (initReference()'s own
+  // setOpen()), so a close reached from outside that path — this one,
+  // used when a mobile sheet takes over — has to hand it back itself.
+  const leftStack = document.querySelector(".dl-corner-dock-tl .dl-corner-stack");
+  if (leftStack) leftStack.style.width = "";
 }
 
 // Every right-hand panel is its own; opening one closes the rest, and a
@@ -320,7 +326,12 @@ function watchPanelOverlap() {
   // one of them findable. Wired here rather than
   // in each panel's own init, because this is the one place that already
   // knows which edge each panel is docked to.
-  for (const panel of leftPanels) makeEdgeResizable(panel, "left", 256, 640);
+  const leftStack = document.querySelector(".dl-corner-dock-tl .dl-corner-stack");
+  for (const panel of leftPanels) {
+    makeEdgeResizable(panel, "left", 256, 640, () => {
+      if (leftStack && !panel.hasAttribute("hidden")) leftStack.style.width = panel.style.width;
+    });
+  }
 
   const widthObserver = new ResizeObserver(sync);
   for (const el of [...rightPanels, ...leftPanels, ...rightDocks, ...leftDocks]) widthObserver.observe(el);
@@ -914,9 +925,14 @@ function initReference(manifest) {
   renderPythonBasics(manifest);
   toggle.hidden = false;
 
+  const leftStack = document.querySelector(".dl-corner-dock-tl .dl-corner-stack");
+
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);
     toggle.setAttribute("aria-expanded", String(open));
+    if (leftStack) {
+      leftStack.style.width = open ? `${panel.getBoundingClientRect().width}px` : "";
+    }
   }
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
