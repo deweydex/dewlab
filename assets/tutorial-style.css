@@ -3762,3 +3762,85 @@ p code, li code {
   margin: 1.4rem auto;
   overflow-x: auto;
 }
+
+/* ------------------------------------------------------------------ *
+ * Diagrams built out of the thing they describe, rather than drawn.
+ *
+ * Real nested elements with real borders and real padding. Three things
+ * fall out of that which a drawn SVG has to work for: the diagram themes
+ * with the page, it scales with the reader's font (every length below is
+ * in rem, so --dl-font-size on :root carries it), and a student who opens
+ * the page source finds markup they have been taught to read.
+ *
+ * `role="img"` and an `aria-label` on the wrapper is what carries one to a
+ * screen reader — the parts say nothing useful in document order — the
+ * same shape inline_local_svg() gives a drawn one.
+ * ------------------------------------------------------------------ */
+.dl-drawn {
+  max-width: 26rem;
+  margin: 1.6rem auto;
+}
+
+/* The box model, in the-box.
+ *
+ * One fill colour, on purpose. Padding takes the box's own background, so
+ * tinting it separately would contradict the sentence below it. What tells
+ * the four regions apart is the kind of line: dashed where nothing is
+ * painted (the content edge, the outer limit of the margin), solid and
+ * thick for the one layer that is real paint. For the same reason the
+ * border's label straddles its line while the other two sit in a corner —
+ * a border is a line, padding and margin are spaces. */
+.dl-boxmodel { --dl-bm-line: 0.4rem; }
+
+/* Even on all four sides, and wide enough that a corner label sits clear of
+   what it labels. Uneven would be a lie in a diagram about padding: a
+   reader who counts the bands would read the top one as the deeper one. */
+.dl-bm-margin,
+.dl-bm-padding {
+  position: relative;
+  padding: 2.1rem;
+}
+
+.dl-bm-margin { border: 0.125rem dashed var(--dl-muted); }
+
+.dl-bm-border {
+  position: relative;
+  border: var(--dl-bm-line) solid var(--dl-fg);
+}
+
+.dl-bm-padding { background: var(--dl-highlight-blue); }
+
+.dl-bm-content {
+  border: 0.125rem dashed var(--dl-muted);
+  padding: 1.2rem 0.8rem;
+  text-align: center;
+  font-family: var(--dl-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dl-fg);
+}
+
+/* --dl-fg, not --dl-muted: a muted label on --dl-highlight-blue lands near
+   3.5:1, under the 4.5:1 small text wants. The weight and size below are
+   what keep these reading as annotation rather than as content. */
+.dl-bm-tag {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.75rem;
+  font-family: var(--dl-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  color: var(--dl-fg);
+}
+
+/* Centred on the border line itself, page background behind it, so it
+   breaks the line the way a callout label does. top is half the line's own
+   width, negative, against a containing block that starts inside it. */
+.dl-bm-tag-line {
+  top: calc(var(--dl-bm-line) / -2);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.12rem 0.45rem;
+  line-height: 1.15;
+  background: var(--dl-bg);
+}

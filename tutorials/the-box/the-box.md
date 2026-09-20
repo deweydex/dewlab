@@ -41,6 +41,19 @@ Every element on a page is a rectangular box, whatever it looks like on
 screen. Each box has three layers around its content, from the inside
 out.
 
+<div class="dl-drawn dl-boxmodel" role="img" aria-label="Four regions, one inside the next. Innermost, a content box outlined with a dashed line. Around it, padding, on the same tinted background as the content. Around that, the border, a thick solid line. Outside the border, the margin, an empty band outlined with a dashed line, with the page showing through it.">
+  <div class="dl-bm-margin">
+    <span class="dl-bm-tag">margin</span>
+    <div class="dl-bm-border">
+      <span class="dl-bm-tag dl-bm-tag-line">border</span>
+      <div class="dl-bm-padding">
+        <span class="dl-bm-tag">padding</span>
+        <div class="dl-bm-content">content</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 *Padding* is space between the content and the border. It takes on the
 box's own background colour, the way the space inside a picture frame
 does.
