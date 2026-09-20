@@ -979,14 +979,15 @@ def _remember(cell_id: str, widget_id: str, value) -> None:
 
 
 def _require_dom_sink(kind: str) -> _CellContext:
-    """Widgets need a live element to attach a listener to — one
-    `_MessageSink` (a Worker-run page) cannot hand back, since there is no
-    DOM on that side of the postMessage boundary to hand back a reference
-    into. Nothing published uses `text_input`,
-    `dropdown`, `button` or `image_input` today, so this is a real gap with
-    no live tutorial behind it — and a clear error a reader can see beats
-    the silent one this would otherwise be: markup that renders but does
-    nothing when clicked or typed into."""
+    """For the two widgets that still need a live element on this side.
+
+    `button` has to call Python the moment it is clicked, with no cell
+    running, and `image_input` has to read a picked file's bytes — both need
+    a DOM reference a `_MessageSink` (a Worker-run page) has no way to hand
+    back across the postMessage boundary. `text_input` and `dropdown` do
+    not: what they need is the value the reader left behind, which reaches
+    the Worker as its own message (`_set_widget_value()` below).
+    """
     cell = _require_cell()
     if isinstance(cell.sink, _MessageSink):
         raise RuntimeError(
@@ -997,7 +998,22 @@ def _require_dom_sink(kind: str) -> _CellContext:
     return cell
 
 
-def _mount_widget(markup: str, cell_id: str, widget_id: str, kind: str) -> _Widget:
+def _set_widget_value(cell_id: str, widget_id: str, value) -> None:
+    """Record what a reader typed or chose, from the page's own side.
+
+    On a Worker page nothing here can watch a control, so the main thread
+    watches it instead and posts one message per change
+    (`assets/pyodide-worker.js`'s `widget-changed` handler). The value lands
+    in the same dict `_remember()` writes and `.value` reads, so a cell that
+    runs afterwards sees it with no further machinery. That the value
+    arrives between runs rather than during one is the whole reason this
+    needs no synchronous call back into the page: a reader types, presses
+    Run, and the cell reads what they left.
+    """
+    _remember(cell_id, widget_id, value)
+
+
+def _mount_widget(markup: str, cell_id: str, widget_id: str, kind: str, current=None) -> _Widget:
     """Puts a widget's HTML on the page and wires it up to remember what
     the student types into it.
 
@@ -1024,6 +1040,11 @@ def _mount_widget(markup: str, cell_id: str, widget_id: str, kind: str) -> _Widg
     cell = _require_cell()
     root = cell.sink.append_html(markup)
     widget = _Widget(cell_id, widget_id, root, kind)
+    # Seed what the markup was rendered with. Without this a Worker page's
+    # `.value` reads None until the reader touches the control, even though
+    # the box on screen plainly shows a value — the DOM path never noticed,
+    # because there it reads the control itself.
+    _widget_values.setdefault((cell_id, widget_id), current)
 
     if root is not None and _create_proxy is not None:
         control = root.querySelector("input, select")
@@ -1037,7 +1058,7 @@ def _mount_widget(markup: str, cell_id: str, widget_id: str, kind: str) -> _Widg
 
 def text_input(label: str = "", value: str = "", id: str | None = None) -> _Widget:  # noqa: A002
     """A single-line text box. Read what the reader typed with `.value`."""
-    cell = _require_dom_sink("text_input")
+    cell = _require_cell()
     widget_id = _widget_id(id, label or "text")
     current = _widget_values.get((cell.cell_id, widget_id), value)
     dom_id = f"dl-w-{html.escape(cell.cell_id)}-{html.escape(widget_id)}"
@@ -1047,12 +1068,12 @@ def text_input(label: str = "", value: str = "", id: str | None = None) -> _Widg
         + f'<input type="text" id="{dom_id}" value="{html.escape(str(current), quote=True)}">'
         + "</div>"
     )
-    return _mount_widget(markup, cell.cell_id, widget_id, "text_input")
+    return _mount_widget(markup, cell.cell_id, widget_id, "text_input", current)
 
 
 def dropdown(label: str = "", options=(), value=None, id: str | None = None) -> _Widget:  # noqa: A002
     """A select box over `options`. Read the chosen option with `.value`."""
-    cell = _require_dom_sink("dropdown")
+    cell = _require_cell()
     widget_id = _widget_id(id, label or "choice")
     options = list(options)
     current = _widget_values.get((cell.cell_id, widget_id), value)
@@ -1072,7 +1093,7 @@ def dropdown(label: str = "", options=(), value=None, id: str | None = None) -> 
         + f'<select id="{dom_id}">{choices}</select>'
         + "</div>"
     )
-    return _mount_widget(markup, cell.cell_id, widget_id, "dropdown")
+    return _mount_widget(markup, cell.cell_id, widget_id, "dropdown", current)
 
 
 def button(label: str = "Go", on_click=None, id: str | None = None) -> _Widget:  # noqa: A002
@@ -1568,7 +1589,15 @@ def _query_rows(sql: str, params: list | None = None) -> list[dict]:
         )
     cursor = conn.execute(sql, params or [])
     columns = [description[0] for description in cursor.description or []]
-    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+    rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    # An app cell's form writes as well as reads — `INSERT` runs here as
+    # readily as `SELECT`, and comes back as an empty list because there is
+    # no result set to describe. Without this, that write sits in an open
+    # transaction: visible on this same connection, so the page looks right,
+    # and gone the moment anything rolls back. `_run_sql_cell()` and
+    # `run_query()` both commit for the same reason.
+    conn.commit()
+    return rows
 
 
 _SUMMARY_LIMIT = 80

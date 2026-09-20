@@ -323,6 +323,12 @@ self.onmessage = async (ev) => {
       respond(describeGlobals());
     } else if (msg.type === "query-rows") {
       respond(queryRows(msg.sql, msg.params));
+    } else if (msg.type === "widget-changed") {
+      /* The page watches the control, because nothing in here can: a Worker
+       * has no DOM. One message per change, landing in the same dict
+       * `.value` reads, so the next run sees what the reader left. */
+      tools._set_widget_value(msg.cellId, msg.widgetId, msg.value);
+      respond("ok");
     } else if (msg.type === "fs-mount-native") {
       await fsMountNative(msg.mountpoint, msg.handle);
       respond("ok");

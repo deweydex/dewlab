@@ -172,13 +172,20 @@ produces tests whether the structure is in their head. Both are worth having,
 in that order — so the later a tutorial sits in a sequence, the weaker the
 case for drawing its diagram for it.
 
-**Interactive here means generated from the student's own work, not a form.**
-`text_input`, `dropdown`, `button` and `image_input` raise `RuntimeError` on a
-published page: Pyodide runs in a Worker, and a widget needs to attach a
-listener to a live element on the main thread (`DECISIONS_LOG.md` 7.77). They
-work only in a downloaded copy, and nothing published uses them.
+**A form is not the right shape for a diagram, but it is available.**
+`text_input` and `dropdown` work on a published page: the page watches the
+control and posts each change into the Worker, so a cell that runs afterwards
+reads what the reader left. `button` and `image_input` still do not — one has
+to call Python the moment it is clicked with no cell running, the other has to
+read a picked file's bytes, and both need a DOM reference the Worker cannot
+hold (`DECISIONS_LOG.md` 7.77).
 
-What works published is better anyway. A Python cell reads `PRAGMA table_info`
+A form that writes to a student's own database wants a full-stack `app` cell
+rather than either: `dlQuery(sql, params)` runs against the page's shared
+database with `?` placeholders bound rather than pasted, and the student
+builds the form in HTML, which is what a web form actually is.
+
+For a diagram, though, generated beats collected. A Python cell reads `PRAGMA table_info`
 and `PRAGMA foreign_key_list` off the student's own database and draws the ER
 diagram their `CREATE TABLE` statements actually describe — not the one they
 meant. A missing arrow is a missing foreign key, seen as a gap rather than
