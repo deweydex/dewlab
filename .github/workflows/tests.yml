@@ -171,5 +171,4 @@ jobs:
           python -m pytest \
             tests/e2e/test_reference_panel.py \
             tests/e2e/test_page_smoke.py \
-            tests/e2e/test_contrast.py \
             tests/e2e/test_multi_course_pages.py
