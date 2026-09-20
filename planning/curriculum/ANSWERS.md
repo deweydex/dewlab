@@ -34,4 +34,4 @@ Tutorials are decomposed into focused, single-concept units with explicit cross-
 
 ## 8. Practice Problems Specification
 
-Architecture for practice problem sets paired with each tutorial, featuring collapsible in-line solutions and section-level verification helpers (`planning/EXERCISES.md`, `planning/archive/PRACTICE.md`).
+Architecture for practice problem sets paired with each tutorial, featuring collapsible in-line solutions and section-level verification helpers (`planning/EXERCISES.md`).

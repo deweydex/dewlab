@@ -18,9 +18,8 @@ fixes are in the same change as this document.
 **Claim:** `write_mini_ide_bundle()` produces a folder a student can save and
 reopen with no connection at all.
 
-**Never tested.** `planning/archive/MINI_IDE_AND_DEWMINI_NEXT.md` §2 said so
-plainly: "nothing currently proves the downloaded folder actually boots with
-the network disconnected on a fresh machine."
+**Never tested.** Nothing had proved the downloaded folder actually boots
+with the network disconnected on a fresh machine.
 
 **Now tested, and it is true.** The bundle was built with a vendored Pyodide
 (`dev/fetch_pyodide.py --out assets/vendor/pyodide`), served from a loopback

@@ -68,13 +68,11 @@ GENERATED_PAGES = {"index.html", "tree.html", "topics.html", "about.html",
                    "editor.html", "search-index.json", "reference-index.json",
                    "routes.json"}
 
-# Docs in these folders aren't held to link currency: curriculum/ and
-# outlines/ are generated or per-module content, not architecture prose;
-# archive/ is planning/README.md's own name for closed, shipped design
-# notes kept for their reasoning, not for a contributor getting oriented
-# today. A link from an active doc into any of them is still checked —
-# only a stale link *within* one of these goes unnoticed.
-ELSEWHERE = ("planning/curriculum/", "planning/outlines/", "planning/archive/")
+# Docs in these folders aren't held to link currency: generated or
+# per-module content, not architecture prose. A link from an active doc
+# into either is still checked — only a stale link *within* one of these
+# goes unnoticed.
+ELSEWHERE = ("planning/curriculum/", "planning/outlines/")
 
 # Referred to by name in prose about other projects, or as a shape rather than
 # a file: `<slug>.md` is a pattern, not a path.
