@@ -14,6 +14,7 @@ from __future__ import annotations
 import functools
 import http.server
 import json
+import re
 import socketserver
 import sys
 import threading
@@ -25,6 +26,7 @@ from conftest import PAGE
 from contrast import AA_MINIMUM, contrast_ratio, parse_rgb
 
 DEWLAB = Path(__file__).resolve().parents[2]
+PYODIDE = DEWLAB / "dev" / "pyodide"
 sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
@@ -79,6 +81,28 @@ def site(tmp_path, monkeypatch):
     monkeypatch.setattr(b, "ASSETS", DEWLAB / "assets")
     monkeypatch.setattr(b, "SHELL", DEWLAB / "assets" / "shell.html")
     b.build()
+
+    # This fixture's tutorial has a python and a sql exec cell, so the page
+    # always attempts a Pyodide boot even on tests that never run a cell --
+    # with no local route that boot fails against the CDN and eventually
+    # shows a #dl-status error overlay that can intercept clicks meant for
+    # unrelated elements. Point it at the self-hosted copy instead, the same
+    # way conftest.py's session-scoped fixture does.
+    if PYODIDE.exists():
+        (tmp_path / "site" / "pyodide").symlink_to(PYODIDE)
+        page_path = tmp_path / "site" / "tutorials" / f"{SLUG}.html"
+        html = page_path.read_text()
+        found = re.search(
+            r'<script type="module" src="\.\./assets/tutorial-runtime\.js[^"]*">'
+            r"</script>",
+            html,
+        )
+        if found:
+            page_path.write_text(html.replace(
+                found.group(0),
+                '<script>globalThis.DEWLAB_PYODIDE_BASE = "../pyodide/";</script>\n'
+                + found.group(0),
+            ))
     return tmp_path
 
 

@@ -114,14 +114,13 @@ The pipeline, in order:
    `[[course-cards]]`, one tile per course from the course files.
    A `<div class="dl-hero">`/`<div class="dl-audience">`/`<div
    class="dl-attribution">`/`<ul class="dl-feature-list">` section or list
-   wrapper is converted a second time (`convert_page_wrapper_bodies()`), the
-   same fix `convert_fold_bodies()` already applies to a `<details>` fold —
-   Python-Markdown treats a raw HTML block as opaque through to its closing
-   tag, so a heading, paragraph, or list item written inside one would
-   otherwise reach the page as literal, unconverted text (a `<ul>` wrapper's
-   own re-converted markdown list is spliced in with its redundant inner
-   `<ul>`/`</ul>` stripped, since the wrapper itself already supplies that
-   tag).
+   wrapper gets `markdown="1"` added to it before conversion
+   (`mark_markdown_wrappers()`), the same mark a `<details class="dl-hint">`
+   fold gets. Python-Markdown treats a raw HTML block as opaque through to
+   its closing tag, so a heading, paragraph, or list item written inside one
+   would otherwise reach the page as literal, unconverted text; the
+   `md_in_html` extension parses inside any element carrying that attribute
+   and strips the attribute from the output.
 
 7. **Write the manifest.** Every page carries a `<script
    type="application/json" id="dewlab-manifest">` with what the runtime

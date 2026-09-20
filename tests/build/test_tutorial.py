@@ -470,6 +470,49 @@ class TestIllustrativeCode:
         assert "<li>" not in built(repo)
 
 
+class TestStrikethroughAndTaskLists:
+    """Two things dewnote writes that Python-Markdown's `extra` bundle
+    does not cover, added through `pymdownx.tilde` and
+    `pymdownx.tasklist` — see to_html()."""
+
+    def test_struck_out_text_becomes_del(self, repo):
+        write(repo, "The old way was ~~this~~, and the new way is that.\n")
+        b.build()
+        page = built(repo)
+        assert "<del>this</del>" in page
+        assert "~~" not in page.split("dewlab-manifest")[0]
+
+    def test_a_task_list_becomes_checkboxes(self, repo):
+        write(repo, "- [ ] read the page\n- [x] run the first cell\n- an ordinary item\n")
+        b.build()
+        page = built(repo)
+        assert 'class="task-list"' in page
+        assert page.count('type="checkbox"') == 2
+        assert "checked" in page
+        # The third item is not a task, and keeps its bullet.
+        assert page.count('class="task-list-item"') == 2
+        assert "[ ]" not in page.split("dewlab-manifest")[0]
+
+    def test_a_lone_tilde_is_left_alone(self, repo):
+        # `pymdownx.tilde` would read a pair of single tildes as a
+        # subscript, and prose here already uses one on its own: an
+        # approximate number, a home directory, a CSS sibling selector.
+        # Two on nearby lines would otherwise pair up across them.
+        write(repo, "- After 10 steps: ~1,000\n- After 20 steps: ~1\n\n"
+                    "A `:checked ~ .toggle` rule, and about ~5 minutes.\n")
+        b.build()
+        page = built(repo)
+        assert "<sub>" not in page
+        assert "~1,000" in page and "~5 minutes" in page
+
+    def test_the_checkbox_a_reader_sees_is_not_one_they_can_tick(self, repo):
+        # The page is the reading. Progress is recorded by the cells a
+        # reader runs, not by a box on a page that nothing saves.
+        write(repo, "- [ ] read the page\n")
+        b.build()
+        assert "disabled" in built(repo)
+
+
 class TestListsWrittenTightAgainstProse:
     """Markdown written elsewhere often puts a list straight under a
     paragraph. One parametrized test covers a bullet list, a numbered
@@ -552,8 +595,9 @@ class TestNotesAndDatasets:
         assert "datasets" not in manifest(built(repo, "two"))
 
     def test_a_note_holds_markdown_and_a_dataset_can_be_a_text_file(self, repo):
-        # The note is converted on its own, separately from the surrounding
-        # raw HTML block, unlike a fold's own contents.
+        # An aside is a raw HTML block, which Python-Markdown would
+        # otherwise pass through opaque; mark_markdown_wrappers() marks it
+        # so md_in_html parses inside.
         path = write(repo, '<aside class="dl-note" id="pic">\n\n'
                            '![a chart](chart.png)\n\n</aside>\n', slug="one")
         add_frontmatter(path, "datasets:\n  - a-book\n")
@@ -572,10 +616,10 @@ class TestNotesAndDatasets:
         }]
 
     def test_maths_works_inside_a_note(self, repo):
-        # A note converts on its own (extract_notes()), the same problem
-        # a fold's body has — this checks maths reaches it, and that the
-        # tutorial's own maths flag notices even though a note's own
-        # <span> never ends up in body_html at all, only in the manifest.
+        # This checks maths reaches a note, and that the tutorial's own
+        # maths flag notices even though a note's own <span> never ends up
+        # in body_html at all, only in the manifest — extract_notes() has
+        # taken the aside out by the time that flag is computed.
         write(repo, '<aside class="dl-note" id="why-it-works">\n\n'
                     r"Because $E = mc^2$." + "\n\n</aside>\n", slug="one")
         b.build()
@@ -653,8 +697,8 @@ class TestFolds:
             assert f".{name} " in css or f".{name}{{" in css or f".{name}[" in css
 
     def test_maths_works_inside_a_hand_written_fold(self, repo):
-        # convert_fold_bodies() converts a fold's body on its own, the same
-        # way render_staged_hint() already does for a ```hint fence —
+        # mark_markdown_wrappers() marks a fold for md_in_html, so its
+        # body parses as part of the page's one markdown pass —
         # Python-Markdown treats <details>...</details> as opaque raw HTML,
         # so without this the working in a practice-page answer would
         # reach the page as literal, unrendered text.
@@ -804,6 +848,46 @@ class TestStagedHints:
         write(repo, markdown)
         with pytest.raises(b.BuildError, match=match):
             b.build()
+
+    def test_a_footnote_works_in_prose_a_fold_and_a_note(self, repo):
+        # The other half of the rule below. Prose, a hand-written fold and
+        # a dl-note aside are all part of the page's one conversion pass
+        # (mark_markdown_wrappers()), so a reference in any of them finds
+        # a definition written anywhere on the page, and every definition
+        # collects into the one list at the foot of it.
+        write(repo,
+              "Prose[^a].\n\n"
+              '<details class="dl-answer"><summary>answer</summary>\n\n'
+              "In a fold[^b].\n\n</details>\n\n"
+              '<aside class="dl-note" id="n">\n\nIn a note[^c].\n\n</aside>\n\n'
+              "[^a]: One.\n\n[^b]: Two.\n\n[^c]: Three.\n")
+        b.build()
+        page = built(repo)
+        # One collected list, not one per fragment.
+        assert page.count('class="footnote"') == 1
+        for label in ("a", "b", "c"):
+            assert f'id="fn:{label}"' in page
+        # The note's own reference travels with it into the manifest, and
+        # still points at the list left behind on the page.
+        assert 'href="#fn:c"' in manifest(built(repo))["notes"][0]["html"]
+        # Nothing reached the page as literal markdown.
+        assert "[^" not in page.split("dewlab-manifest")[0]
+
+    def test_a_footnote_inside_a_hint_fails(self, repo):
+        # A fence is converted on its own, so neither half of a footnote
+        # can cross its edge: a reference here reaches the page as the
+        # literal text `[^why]`, and a pair here renders its own rule and
+        # numbered list inside the hint box. Both look fine to the build
+        # and wrong on the page, so the fence refuses one outright.
+        write(repo, self.CELL + "```hint\nA nudge[^why].\n```\n\n[^why]: Because.\n")
+        with pytest.raises(b.BuildError, match="has a footnote in it"):
+            b.build()
+
+    def test_a_regex_character_class_in_a_hint_is_not_a_footnote(self, repo):
+        # `[^aeiou]` is a character class, not a reference. Inline code is
+        # blanked before the check, so a hint can teach regexes.
+        write(repo, self.CELL + "```hint\nUse `[^aeiou]` for a consonant.\n```\n")
+        b.build()
 
     def test_expect_travels_in_the_manifest_only_when_set(self, repo):
         write(repo, "```python exec\nid: a\nexpect: total == 6\ntotal = 0\n```\n\n"

@@ -231,22 +231,6 @@ function closeRightPanels(except = null) {
   }
 }
 
-// The ids an outside-click (or the opposite side's own open) needs to
-// treat as "still inside a panel", one array per side — every toggle and
-// every panel sharing that edge, so opening or clicking into any one of
-// them never reads as a click outside another.
-// The dock itself is in each list too: opening a rung of the tree, or
-// typing into the search bar, happens inside the left dock and must not
-// read as a click outside the Reference panel beneath it.
-const LEFT_DOCK_IDS = [
-  "dl-dock-left", "dl-reference-toggle", "dl-reference",
-];
-const RIGHT_DOCK_IDS = [
-  "dl-dock-right",
-  ...RIGHT_PANELS.map((name) => `dl-${name}-toggle`),
-  ...RIGHT_PANELS.map((name) => `dl-${name}`),
-];
-
 function saveSidebarState() {
   const left = !document.getElementById("dl-reference")?.hasAttribute("hidden") ? "reference"
     : null;
@@ -350,13 +334,6 @@ function watchPanelOverlap() {
   for (const el of [...rightPanels, ...leftPanels, ...rightDocks, ...leftDocks]) widthObserver.observe(el);
 }
 
-function clickIsInsidePanels(target, ids) {
-  return ids.some((id) => {
-    const el = document.getElementById(id);
-    return el ? el.contains(target) : false;
-  });
-}
-
 function loadPanelWidth(id) {
   try {
     const all = JSON.parse(localStorage.getItem(PANEL_WIDTH_KEY) || "{}");
@@ -379,12 +356,36 @@ function savePanelWidth(id, width) {
 }
 
 function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null, widthKey = null) {
-  if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
+  if (!panel || panel.dataset.resizable) return;
+  panel.dataset.resizable = "true";
   const handle = document.createElement("div");
-  handle.className = "dl-panel-resize-handle"
-    + (side === "left" ? " dl-panel-resize-handle-right" : "");
+  handle.className = "dl-panel-resize-handle";
   handle.setAttribute("aria-hidden", "true");
-  panel.prepend(handle);
+  // No longer findable as a child of the panel it resizes (below) -- a
+  // page can carry several of these siblings under <body> at once, so
+  // this is what a test, or anything else, selects one by.
+  if (panel.id) handle.dataset.for = panel.id;
+  document.body.append(handle);
+
+  // The handle lives outside the panel (its own comment in
+  // tutorial-style.css says why), so nothing keeps it glued to the
+  // panel's actual edge for free the way a child element would be.
+  // Panel hidden -> handle hidden too, same as the child it used to be;
+  // panel visible -> left tracks whichever edge (right-docked: the
+  // panel's own left; left-docked: its own right) faces the reading
+  // column, on every resize this panel goes through for any reason --
+  // this drag, a sibling's drag sharing its width, a font-size change,
+  // the window itself resizing.
+  function positionHandle() {
+    const hidden = panel.hasAttribute("hidden");
+    handle.hidden = hidden;
+    if (hidden) return;
+    const rect = panel.getBoundingClientRect();
+    handle.style.left = `${side === "left" ? rect.right : rect.left}px`;
+  }
+  positionHandle();
+  new ResizeObserver(positionHandle).observe(panel);
+  new MutationObserver(positionHandle).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
 
   // widthKey lets several panels share one saved width (RIGHT_DOCK_WIDTH_KEY,
   // below) rather than each remembering its own under its own DOM id.
@@ -420,13 +421,26 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
     const cap = Math.min(max, floorCapPx());
     const next = Math.max(min, Math.min(startWidth + dx, cap));
     panel.style.width = `${next}px`;
+    // Called directly here, on every move, rather than left to the
+    // ResizeObserver above alone -- that one is still what catches every
+    // *other* reason this panel's width can change (a sibling sharing it,
+    // a font-size change, the window itself), but this drag is the one
+    // path onResize() and the handle's own position both need to feel
+    // perfectly in step with, not just eventually consistent.
+    positionHandle();
+    // Without this, onResize() only ran once, on release — the panel
+    // itself (and, via its own ResizeObserver, the reading column)
+    // tracked the drag live, but the corner-dock tab stack this callback
+    // widens to match sat frozen at its old width until the drag ended,
+    // then jumped to catch up. Calling it here too keeps the tabs moving
+    // with the same motion as the panel beneath them.
+    if (onResize) onResize();
   }
   function onUp() {
     handle.classList.remove("dl-panel-resize-active");
     document.removeEventListener("pointermove", onMove);
     document.removeEventListener("pointerup", onUp);
     if (key) savePanelWidth(key, panel.getBoundingClientRect().width);
-    if (onResize) onResize();
   }
   handle.addEventListener("pointerdown", (ev) => {
     startX = ev.clientX;
@@ -439,11 +453,14 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
 }
 
 // One right-hand panel per corner tab (RIGHT_PANELS above), each opened
-// by its own tab and closed by that tab again, its close button, Escape,
-// or a click outside — with the left dock's panel and tree never counting
-// as outside, so the two sides can be used together. Appearance (now a
-// tab inside Settings, not a panel of its own) alone carries a search box,
-// filtering its own rows. All three share one dock width
+// by its own tab and closed by that tab again, its close button, or
+// Escape — a docked panel does not close on a click outside it (DECISIONS_LOG
+// 7.99 already ruled this for dewmini's own rails: "a docked rail must not
+// close on an outside click, unlike a popover"), so the left dock's own
+// panel can stay open at the same time without either one stealing focus
+// from the other. Appearance (now a tab inside Settings, not a panel of
+// its own) alone carries a search box, filtering its own rows. All three
+// share one dock width
 // (RIGHT_DOCK_WIDTH_KEY): dragging one panel's edge applies the new width
 // to the other two immediately, so switching tabs never resizes the dock
 // underneath the reading column.
@@ -526,12 +543,6 @@ function initRightPanels() {
       setOpen(false);
     });
 
-    document.addEventListener("click", (ev) => {
-      if (p.panel.hasAttribute("hidden")) return;
-      if (p.panel.contains(ev.target) || p.toggle.contains(ev.target)) return;
-      if (clickIsInsidePanels(ev.target, LEFT_DOCK_IDS)) return;
-      setOpen(false);
-    });
   }
 }
 
@@ -636,11 +647,15 @@ function initMobileLauncher() {
 
   for (const item of menu.querySelectorAll(".dl-mobile-menu-item")) {
     item.addEventListener("click", (ev) => {
-      // Without this, the real toggle's own click below opens its panel,
-      // then this original event keeps bubbling to document afterward —
-      // where every panel's own outside-click listener sees a click that
-      // landed on neither its panel nor its toggle, and closes right back
-      // what the click below just opened.
+      // Still needed for the sheet path below: showing Where You Are
+      // leaves this original event bubbling to document afterward, where
+      // its own outside-click listener sees a click that landed on
+      // neither the sheet nor its own close button, and closes right
+      // back what the line below just opened. The toggle-forwarding path
+      // no longer has an equivalent listener to guard against (a docked
+      // panel doesn't close on an outside click at all now), but one
+      // stopPropagation() covers both forwarding shapes this handler can
+      // take, so it stays unconditional rather than sheet-only.
       ev.stopPropagation();
       setOpen(false);
       if (item.dataset.sheet) {
@@ -961,27 +976,10 @@ function initReference(manifest) {
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
 
-  const close = document.getElementById("dl-reference-close");
-  if (close) close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
-
   document.addEventListener("keydown", (ev) => {
     if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
     setOpen(false);
     toggle.focus();
-  });
-
-  document.addEventListener("click", (ev) => {
-    if (panel.hasAttribute("hidden")) return;
-    if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
-    // Its own dock too: opening a rung of the tree above this panel, or
-    // the search bar, is not a click away from it.
-    if (clickIsInsidePanels(ev.target, LEFT_DOCK_IDS)) return;
-    if (clickIsInsidePanels(ev.target, RIGHT_DOCK_IDS)) return;
-    // The highlight-to-look-up button (initReferenceLookup()) opens this
-    // panel, so it is a way in rather than a click outside — without this it
-    // would close the panel its own click had just opened.
-    if (ev.target.closest && ev.target.closest(".dl-lookup")) return;
-    setOpen(false);
   });
 
   // Three tabs sharing one search box — search filters whichever tab is

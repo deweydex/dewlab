@@ -3,3 +3,6 @@
 # loaded from Pyodide at runtime.
 Markdown>=3.5
 PyYAML>=6.0
+# `~~struck out~~` and `- [ ]` task lists, which Python-Markdown's own
+# `extra` bundle does not cover — see to_html(). dewnote writes both.
+pymdown-extensions>=10.0

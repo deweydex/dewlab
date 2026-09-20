@@ -324,16 +324,32 @@ class TestOpeningAndClosing:
         assert page.is_visible("#dl-reference")
         context.close()
 
-    @pytest.mark.parametrize("dismiss", [
-        lambda page: page.keyboard.press("Escape"),
-        lambda page: page.click("#dl-reference-close"),
-        lambda page: page.click("main#dl-body"),
-    ])
-    def test_dismissing_it_closes_it(self, site, browser, site_url, dismiss):
+    def test_escape_closes_it(self, site, browser, site_url):
         context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-reference-toggle")
-        dismiss(page)
+        page.keyboard.press("Escape")
         assert page.is_hidden("#dl-reference")
+        context.close()
+
+    def test_clicking_the_toggle_again_closes_it(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
+        _open_panel(page, "#dl-reference-toggle")
+        _open_panel(page, "#dl-reference-toggle")
+        assert page.is_hidden("#dl-reference")
+        context.close()
+
+    def test_clicking_outside_does_not_close_it(self, site, browser, site_url):
+        """DECISIONS_LOG 7.99 already ruled this for dewmini's own docked
+        rails -- "a docked rail must not close on an outside click, unlike
+        a popover" -- and this panel was the one place on the tutorial
+        pages still doing it the other way. Josh, after finding it closed
+        a panel he'd left open on the other dock: "the idea is that the
+        header itself is the close button, not that whenever we lose the
+        focus or click in the document the panels go away." """
+        context, page = self.open_page(site, browser, site_url)
+        _open_panel(page, "#dl-reference-toggle")
+        page.click("main#dl-body")
+        assert page.is_visible("#dl-reference")
         context.close()
 
     def test_opening_the_reference_does_not_close_appearance(self, site, browser, site_url):
@@ -352,6 +368,26 @@ class TestOpeningAndClosing:
         _open_settings_tab(page, "appearance")
         assert page.is_visible("#dl-settings-pane-appearance")
         assert page.is_visible("#dl-reference")
+        context.close()
+
+    def test_clicking_outside_does_not_close_a_right_panel_either(self, site, browser, site_url):
+        context, page = self.open_page(site, browser, site_url)
+        _open_settings_tab(page, "appearance")
+        assert page.is_visible("#dl-settings-pane-appearance")
+        page.click("main#dl-body")
+        assert page.is_visible("#dl-settings")
+        context.close()
+
+    def test_both_docks_stay_open_after_a_click_away(self, site, browser, site_url):
+        """The bug Josh actually hit: Reference open on the left, Settings
+        open on the right, a click in the reading column closed both at
+        once -- the header re-click was meant to be the only way out."""
+        context, page = self.open_page(site, browser, site_url)
+        _open_panel(page, "#dl-reference-toggle")
+        _open_settings_tab(page, "appearance")
+        page.click("main#dl-body")
+        assert page.is_visible("#dl-reference")
+        assert page.is_visible("#dl-settings")
         context.close()
 
 
