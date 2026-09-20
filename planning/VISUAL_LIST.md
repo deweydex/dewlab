@@ -64,17 +64,26 @@ with different inputs cannot.
 
 | Tool | For | Why |
 |---|---|---|
-| **graphviz (`dot`)** | ER diagrams, state-transition graphs, trees, recursion trees, flowcharts | Automatic layout. Anything where boxes and arrows need arranging is a solved problem, and solving it by hand in matplotlib is how a week disappears. HTML-like labels give proper ER table boxes with `PK`/`FK` marks. |
-| **matplotlib** | Number lines, nested sets, the box model, timelines, binary-search bars, the unit square and its determinant, probability trees with fixed geometry | Coordinates rather than layout. It is also the library the student-facing figures already use, so a generated figure and a live one look like relatives. |
+| **Markup** | The box model, the two grid maps, the flexbox wrap threshold, the annotated traceback | Real elements with real borders, padding and `grid-template-areas`. The diagram is made of the thing it teaches, themes with the page for nothing, scales with the reader's font, and a student who opens the page source finds markup they have been taught to read. First choice wherever the subject *is* layout or text. |
+| **svgwrite** | ER diagrams, state-transition graphs, trees, recursion trees, grids, nested sets, the stepped searches | Hand layout in `dev/graphics/`. Each figure's arrangement is small, fixed and worth controlling: crow's feet spread at the entity rather than converge on it, an edge reaching past a column drops below the boxes. |
+| **matplotlib** | Number lines, timelines, the unit square and its determinant, anything plotted from data | Coordinates rather than layout. It is also the library the student-facing figures already use, so a generated figure and a live one look like relatives. |
 | **matplotlib `mplot3d`** | Three planes meeting at a point, in *Solving Systems* | The one genuine 3D case in the material. |
 
-Both are build-time only. Neither reaches a student's browser: the page's own
-Python comes from Pyodide, and `requirements-build.txt` stays as it is. The
-generator's dependencies belong in a separate file, installed by whoever is
-regenerating a diagram, never by CI to build the site.
+**Not graphviz**, though automatic layout is exactly what boxes and arrows
+want. It is a binary, and a binary cannot run in Pyodide — which rules out
+ever handing the same renderer to a student to draw their own ER diagram
+from their own schema, the thing *Drawn for the reader, or drawn by the
+reader* below turns on. A generator the reader cannot run is a generator
+that can only ever draw half of what is wanted.
 
-Adding a library is cheap here and should not be agonised over. A third one
-earns its place the moment it draws something the two above draw badly.
+All of these are build-time only except the markup, which is not a tool at
+all. Nothing here reaches a student's browser: the page's own Python comes
+from Pyodide, and `requirements-build.txt` stays as it is. The generators'
+dependencies belong in a separate file, installed by whoever is regenerating
+a diagram, never by CI to build the site.
+
+Adding a library is cheap here and should not be agonised over. Another one
+earns its place the moment it draws something these draw badly.
 
 ---
 
@@ -84,6 +93,15 @@ Every SVG in the repository passes through `dev/normalise_svg.py`, whether it
 came from a generator or from a contributor's draw.io export. It maps literal
 colours onto the tokens in `assets/tutorial-style.css`, which already solve
 the problem the diagrams have.
+
+**This only works because the SVG is spliced into the page.** An
+`<img src="…svg">` is a separate document: the page's custom properties do
+not cross into it and `currentColor` inside it resolves against nothing.
+`build.py`'s `inline_local_svg()` replaces each local `<img>` with the file's
+own markup during `resolve_assets()`, carrying `alt` across as `role="img"`
+and an `aria-label` (or `aria-hidden` for an empty one). Everything below
+about tokens presupposes that step; without it the whole scheme is a no-op
+that reports success.
 
 `--dl-type-python`, `--dl-type-sql`, `--dl-type-html`, `--dl-type-css`,
 `--dl-type-js` are chromatic **ink**: one hue that keeps its identity across
@@ -142,10 +160,18 @@ mapped" on a diagram whose text was invisible.
 
 **Not a regenerate-and-diff check.** `standalone-bundle-is-current` rebuilds
 the vendor bundle and fails on any difference, which works because the bundler
-is pinned and deterministic. Graphviz embeds its version in its output and
-shifts layout between releases, so the same check here would fail on an
-unrelated upgrade. Check the committed SVG, not the ability to reproduce it
-byte for byte.
+is pinned and deterministic. A drawing library is not: any release is free to
+round a coordinate differently, and the check would then fail on an upgrade
+that changed no diagram. Check the committed SVG, not the ability to reproduce
+it byte for byte.
+
+A markup diagram needs the opposite check, because it has no file to inspect.
+`tests/test_handwritten_classes.py` holds every `dl-` class an author writes
+by hand to a rule in the stylesheet — the build passes raw HTML through
+without looking at it, so a renamed class gives a page that is valid, silent
+and unstyled — and holds the two diagrams that quote something to the thing
+they quote: the annotated traceback to its own cell's line numbers, the
+flexbox threshold to the padding and gap in the CSS cell above it.
 
 ---
 
@@ -336,10 +362,13 @@ way from how the subclasses do.
 ### Web authoring
 
 **[The box](../tutorials/the-box/the-box.md#why-this-happens) — the box model.**
-Content, padding, border and margin as four labelled nested rectangles. The
-live preview shows what changing padding does and never puts the four names on
-the picture. Padding tinted with the box's background, margin left
-transparent, since that distinction is the one the prose makes.
+*Built.* Nested elements with real borders and real padding, not a drawing of
+some. One fill colour, because padding takes the box's own background and
+tinting it separately would contradict the sentence underneath. What tells the
+four regions apart is the kind of line: dashed where nothing is painted, solid
+and thick for the one layer that is real paint. The border's label straddles
+its line while the other two sit in a corner, for the same reason — a border
+is a line, padding and margin are spaces.
 
 **[The two loops](../tutorials/the-two-loops/the-two-loops.md) — two cycles, side by side.**
 Left: edit, save, refresh, back to edit. Right: edit, add, commit, push, wait
@@ -357,9 +386,9 @@ Worth starting once the generators and the normaliser have stopped moving.
 
 **[A page that reads from a database](../tutorials/a-page-that-reads-from-a-database/a-page-that-reads-from-a-database.md)** — the request path: page, its own script, the query, the table, rows back, rows into the DOM. The sentence carrying this tutorial is "what its script is allowed to reach"; showing the reach as an arrow crossing a boundary is what makes full-stack concrete.
 
-**[When It Goes Wrong](../tutorials/when-it-goes-wrong/when-it-goes-wrong.md#reading-a-traceback)** — an annotated traceback: top marked "where the program started", bottom "where it broke", and separate marks on the line that *failed* and the line that is *responsible*. The section makes a subtle distinction — `average` is not wrong, the empty list handed to it is — and annotation is the natural medium for it.
+**[When It Goes Wrong](../tutorials/when-it-goes-wrong/when-it-goes-wrong.md#reading-a-traceback)** — an annotated traceback. *Built, as markup.* The responsible line and the failing line marked separately, a caption at each end for the ordering the prose says confuses people constantly. Both marks are highlighter colours rather than the error tint, because both are the author marking a line and not the runtime reporting a state; only the last line keeps `--dl-error-fg`. Not `role="img"`: a traceback is text and reads correctly in document order. The quoted output came from running the cell under the Pyodide the site ships — Python 3.13 and 3.11 disagree about where a call's carets begin, and the local answer was the wrong one.
 
-**[Flexbox first steps](../tutorials/flexbox-first-steps/flexbox-first-steps.md#why-this-happens)** — main axis and cross axis. The preview shows wrapping; the vocabulary that makes every later flexbox property comprehensible is not visible in it.
+**[Flexbox first steps](../tutorials/flexbox-first-steps/flexbox-first-steps.md#why-this-happens)** — where the row runs out of room. *Built, as markup.* **Not main axis and cross axis**, which this list asked for first: nothing in the curriculum names either, and a diagram is no place to introduce vocabulary the page does not teach. What the preview cannot show is the arithmetic, and the arithmetic is a trap — the third card drops at 366px, not the 264 the prose implies, because `flex-basis` sizes the content box and the padding and border sit outside the 80. That is the box model from two tutorials earlier biting in a new place, so the prose now says so and links back.
 
 **[Planning a site](../tutorials/planning-a-site/planning-a-site.md#two-site-maps)** — the good site map drawn as a map, and one rough wireframe. A tutorial about planning visually whose two site maps are both prose blockquotes. Keep it deliberately rough, so it reads as something a student could draw in two minutes.
 
@@ -383,7 +412,7 @@ Worth starting once the generators and the normaliser have stopped moving.
 
 **[Solving Systems](../tutorials/solving-systems/solving-systems.md#three-unknowns-row-by-row)** — three planes meeting at a point, and the two degenerate cases. The one place 3D is the honest picture rather than a flourish.
 
-**[Named grid areas](../tutorials/named-grid-areas/named-grid-areas.md)** — the grid with line numbers and named areas overlaid on one picture. Grid is the CSS layout topic where the preview genuinely does not reveal the coordinate system.
+**[Named grid areas](../tutorials/named-grid-areas/named-grid-areas.md)** — the two maps, each as its quoted lines and as the shape they make. *Built, as markup:* two real grids laid out by two real `grid-template-areas`, since the section's whole claim is that those strings are a picture. Four quoted lines over four rows and three over three is the sentence the section opens with. **Not the line numbers** this list asked for first — the tutorial uses names precisely to avoid them. The two do not share a width, because one is a narrow screen and the other is a wide one.
 
 ---
 
