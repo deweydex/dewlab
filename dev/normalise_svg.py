@@ -29,21 +29,58 @@ HIGHLIGHT = ["var(--dl-highlight-bg)", "var(--dl-highlight-green)",
 TYPE_INK  = ["var(--dl-type-python)", "var(--dl-type-sql)",
              "var(--dl-type-css)", "var(--dl-type-js)"]
 
-# Style properties that would override the attribute beneath them.
+# Style properties that would override the presentation attribute beneath them.
 COLOUR_PROPS = ("fill", "stroke", "color", "stop-color", "flood-color")
+# Of those, the two that are also presentation attributes we can hoist into.
+HOISTABLE = ("fill", "stroke")
+
 
 def _bucket(hex_colour):
-    r, g, b = (int(hex_colour[i:i+2], 16) / 255 for i in (1, 3, 5))
+    r, g, b = (int(hex_colour[i:i + 2], 16) / 255 for i in (1, 3, 5))
     h, _, s = colorsys.rgb_to_hls(r, g, b)
     if s < 0.12:
         return None
     deg = h * 360
     return 0 if (deg < 70 or deg >= 330) else 1 if deg < 170 else 2 if deg < 260 else 3
 
+
+def _first_argument(text):
+    """The first comma-separated argument, counting nesting.
+
+    `light-dark(rgb(0, 0, 0), rgb(255, 255, 255))` has commas inside its own
+    first argument, so splitting on the first one finds `rgb(0`.
+    """
+    depth = 0
+    for i, char in enumerate(text):
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            if depth == 0:
+                return text[:i]
+            depth -= 1
+        elif char == "," and depth == 0:
+            return text[:i]
+    return text
+
+
 def _token(value, is_fill, unmapped):
     key = value.strip().lower()
-    if key in ("none", "transparent") or key.startswith("var(") or key == "currentcolor":
-        return value
+    # draw.io writes `light-dark(light, dark)`, which resolves against
+    # `color-scheme` — the operating system's preference, not the reader's
+    # own `data-theme`. Take the light value and map it like any other.
+    if key.startswith("light-dark("):
+        key = _first_argument(key[len("light-dark("):]).strip()
+    # A producer's own custom property is not a token of ours. Only pass
+    # through a var() that already points at the site's palette.
+    if key.startswith("var(--ge-") or key.startswith("var(--dl-"):
+        if key.startswith("var(--dl-"):
+            return value.strip()
+        fallback = re.search(r",\s*([^)]+)\)", key)
+        key = fallback.group(1).strip() if fallback else key
+    if key in ("none", "transparent") or key == "currentcolor":
+        return key
+    key = re.sub(r"rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)",
+                 lambda m: "#%02x%02x%02x" % tuple(int(g) for g in m.groups()), key)
     if key in LOOKUP:
         return LOOKUP[key]
     if re.fullmatch(r"#[0-9a-f]{3}", key):
@@ -56,39 +93,67 @@ def _token(value, is_fill, unmapped):
     unmapped.add(value)
     return value
 
-def _strip_style_colours(svg):
-    """Drop colour properties from inline styles, so the attribute wins."""
-    def clean(match):
-        decls = [d for d in match.group(1).split(";") if d.strip()]
-        kept = [d for d in decls if d.split(":", 1)[0].strip().lower() not in COLOUR_PROPS]
-        return f'style="{";".join(kept)}"' if kept else ""
-    return re.sub(r'style="([^"]*)"', clean, svg)
+
+def _rewrite_tag(tag, unmapped):
+    """Map a single element's colours, hoisting style declarations into
+    attributes rather than deleting them.
+
+    Deleting is the tempting shortcut and it is wrong. matplotlib writes
+    almost everything as `style="fill: none; stroke: #000000"`, and a
+    stripped `fill: none` leaves the element inheriting the root's fill —
+    every outline becomes a filled blob. Hoisting keeps `none` meaning none.
+    """
+    style = re.search(r'\sstyle="([^"]*)"', tag)
+    hoisted = {}
+    if style:
+        kept = []
+        for decl in style.group(1).split(";"):
+            if ":" not in decl:
+                if decl.strip():
+                    kept.append(decl)
+                continue
+            prop, value = decl.split(":", 1)
+            name = prop.strip().lower()
+            if name in HOISTABLE:
+                hoisted[name] = _token(value, name == "fill", unmapped)
+            elif name not in COLOUR_PROPS:
+                kept.append(decl)
+        replacement = f' style="{";".join(kept)}"' if any(d.strip() for d in kept) else ""
+        tag = tag[:style.start()] + replacement + tag[style.end():]
+
+    tag = re.sub(
+        r'\s(fill|stroke)="([^"]+)"',
+        lambda m: "" if m.group(1) in hoisted
+        else f' {m.group(1)}="{_token(m.group(2), m.group(1) == "fill", unmapped)}"',
+        tag)
+    if hoisted:
+        insert = "".join(f' {name}="{value}"' for name, value in sorted(hoisted.items()))
+        tag = tag[:-2] + insert + "/>" if tag.endswith("/>") else tag[:-1] + insert + ">"
+    return tag
+
 
 def normalise(svg, unmapped=None):
     unmapped = set() if unmapped is None else unmapped
-    root_end = svg.index(">", svg.index("<svg"))
-    head, body = svg[:root_end + 1], svg[root_end + 1:]
+    cut = svg.index(">", svg.index("<svg")) + 1
+    head, body = svg[:cut], svg[cut:]
     # draw.io ships a <style> block defining its own adaptive background
-    # against color-scheme. Every reference to it has just been rewritten, so
-    # the block is dead, and leaving it invites it coming back to life.
+    # against color-scheme. Every reference to it is about to be rewritten,
+    # so the block is dead, and leaving it invites it coming back to life.
     body = re.sub(r"<style[^>]*>.*?</style>", "", body, flags=re.S)
-    body = _strip_style_colours(body)
-    body = re.sub(r'\b(fill|stroke)="([^"]+)"',
-                  lambda m: f'{m.group(1)}="{_token(m.group(2), m.group(1) == "fill", unmapped)}"',
-                  body)
-    # One root style, merged rather than a second attribute the browser ignores.
-    head = re.sub(r'\sstyle="[^"]*"', "", head)
+    body = re.sub(r"<[a-zA-Z][^>]*>",
+                  lambda m: _rewrite_tag(m.group(0), unmapped), body)
     # `fill` is an inherited presentation attribute, and a producer omits it
     # wherever the colour is the SVG default of black. Nothing to rewrite, so
     # the text stays black and disappears on a dark background while the
     # checker reports every colour mapped. Setting the default on the root
-    # catches all of them at once; anything that genuinely wants no fill says
-    # so explicitly.
+    # catches all of them at once; anything that wants no fill says so.
     head = re.sub(r'\sfill="[^"]*"', "", head)
+    head = re.sub(r'\sstyle="[^"]*"', "", head)
     head = head.replace(
         "<svg",
         '<svg fill="currentColor" style="color: var(--dl-fg); color-scheme: normal"', 1)
     return head + body, unmapped
+
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -134,7 +199,9 @@ def main(argv):
     if argv and argv[0] == "--check":
         failed = 0
         for path in sorted(ROOT.rglob("*.svg")):
-            if "site/" in str(path.relative_to(ROOT)):
+            relative = str(path.relative_to(ROOT))
+            # site/ is generated, and dewmark is its own project.
+            if relative.startswith(("site/", "dewmark/")):
                 continue
             problems = needs_work(path.read_text())
             if problems:
