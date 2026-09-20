@@ -231,22 +231,6 @@ function closeRightPanels(except = null) {
   }
 }
 
-// The ids an outside-click (or the opposite side's own open) needs to
-// treat as "still inside a panel", one array per side — every toggle and
-// every panel sharing that edge, so opening or clicking into any one of
-// them never reads as a click outside another.
-// The dock itself is in each list too: opening a rung of the tree, or
-// typing into the search bar, happens inside the left dock and must not
-// read as a click outside the Reference panel beneath it.
-const LEFT_DOCK_IDS = [
-  "dl-dock-left", "dl-reference-toggle", "dl-reference",
-];
-const RIGHT_DOCK_IDS = [
-  "dl-dock-right",
-  ...RIGHT_PANELS.map((name) => `dl-${name}-toggle`),
-  ...RIGHT_PANELS.map((name) => `dl-${name}`),
-];
-
 function saveSidebarState() {
   const left = !document.getElementById("dl-reference")?.hasAttribute("hidden") ? "reference"
     : null;
@@ -348,13 +332,6 @@ function watchPanelOverlap() {
 
   const widthObserver = new ResizeObserver(sync);
   for (const el of [...rightPanels, ...leftPanels, ...rightDocks, ...leftDocks]) widthObserver.observe(el);
-}
-
-function clickIsInsidePanels(target, ids) {
-  return ids.some((id) => {
-    const el = document.getElementById(id);
-    return el ? el.contains(target) : false;
-  });
 }
 
 function loadPanelWidth(id) {
@@ -476,11 +453,14 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
 }
 
 // One right-hand panel per corner tab (RIGHT_PANELS above), each opened
-// by its own tab and closed by that tab again, its close button, Escape,
-// or a click outside — with the left dock's panel and tree never counting
-// as outside, so the two sides can be used together. Appearance (now a
-// tab inside Settings, not a panel of its own) alone carries a search box,
-// filtering its own rows. All three share one dock width
+// by its own tab and closed by that tab again, its close button, or
+// Escape — a docked panel does not close on a click outside it (DECISIONS_LOG
+// 7.99 already ruled this for dewmini's own rails: "a docked rail must not
+// close on an outside click, unlike a popover"), so the left dock's own
+// panel can stay open at the same time without either one stealing focus
+// from the other. Appearance (now a tab inside Settings, not a panel of
+// its own) alone carries a search box, filtering its own rows. All three
+// share one dock width
 // (RIGHT_DOCK_WIDTH_KEY): dragging one panel's edge applies the new width
 // to the other two immediately, so switching tabs never resizes the dock
 // underneath the reading column.
@@ -563,12 +543,6 @@ function initRightPanels() {
       setOpen(false);
     });
 
-    document.addEventListener("click", (ev) => {
-      if (p.panel.hasAttribute("hidden")) return;
-      if (p.panel.contains(ev.target) || p.toggle.contains(ev.target)) return;
-      if (clickIsInsidePanels(ev.target, LEFT_DOCK_IDS)) return;
-      setOpen(false);
-    });
   }
 }
 
@@ -673,11 +647,15 @@ function initMobileLauncher() {
 
   for (const item of menu.querySelectorAll(".dl-mobile-menu-item")) {
     item.addEventListener("click", (ev) => {
-      // Without this, the real toggle's own click below opens its panel,
-      // then this original event keeps bubbling to document afterward —
-      // where every panel's own outside-click listener sees a click that
-      // landed on neither its panel nor its toggle, and closes right back
-      // what the click below just opened.
+      // Still needed for the sheet path below: showing Where You Are
+      // leaves this original event bubbling to document afterward, where
+      // its own outside-click listener sees a click that landed on
+      // neither the sheet nor its own close button, and closes right
+      // back what the line below just opened. The toggle-forwarding path
+      // no longer has an equivalent listener to guard against (a docked
+      // panel doesn't close on an outside click at all now), but one
+      // stopPropagation() covers both forwarding shapes this handler can
+      // take, so it stays unconditional rather than sheet-only.
       ev.stopPropagation();
       setOpen(false);
       if (item.dataset.sheet) {
@@ -1002,20 +980,6 @@ function initReference(manifest) {
     if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
     setOpen(false);
     toggle.focus();
-  });
-
-  document.addEventListener("click", (ev) => {
-    if (panel.hasAttribute("hidden")) return;
-    if (panel.contains(ev.target) || toggle.contains(ev.target)) return;
-    // Its own dock too: opening a rung of the tree above this panel, or
-    // the search bar, is not a click away from it.
-    if (clickIsInsidePanels(ev.target, LEFT_DOCK_IDS)) return;
-    if (clickIsInsidePanels(ev.target, RIGHT_DOCK_IDS)) return;
-    // The highlight-to-look-up button (initReferenceLookup()) opens this
-    // panel, so it is a way in rather than a click outside — without this it
-    // would close the panel its own click had just opened.
-    if (ev.target.closest && ev.target.closest(".dl-lookup")) return;
-    setOpen(false);
   });
 
   // Three tabs sharing one search box — search filters whichever tab is
