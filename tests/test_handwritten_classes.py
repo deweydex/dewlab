@@ -318,3 +318,25 @@ def test_the_flexbox_cards_stay_narrower_than_their_own_flex_basis():
             "flex-basis, which moves the wrap threshold. Measure it in a "
             "browser and update the arithmetic under the diagram, or shorten it."
         )
+
+
+def test_the_preview_width_control_does_not_resize_while_it_is_dragged():
+    """The readout's text gets wider as the numbers grow — "30% · 170px"
+    to "100% · 547px" — and the slider beside it is `flex: 1 1 auto`, so
+    without reserved space the track shrinks under the reader's own thumb
+    mid-drag. And the frame's width is written once per animation frame
+    rather than once per `input`: writing it and reading it straight back
+    forces a synchronous layout inside the handler, and a drag fires far
+    faster than the page can paint."""
+    css = (REPO / "assets/tutorial-style.css").read_text()
+    rule = re.search(r"\.dl-site-preview-controls output \{(.*?)\}", css, re.S)
+    assert rule, "no rule for the preview-width readout"
+    assert "min-width" in rule.group(1), (
+        "the readout has no reserved width, so the slider track resizes as "
+        "its text grows"
+    )
+
+    runtime = (REPO / "assets/tutorial-runtime.js").read_text()
+    assert "requestAnimationFrame(apply)" in runtime, (
+        "the preview width is no longer coalesced into an animation frame"
+    )
