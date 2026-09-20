@@ -3844,3 +3844,75 @@ p code, li code {
   line-height: 1.15;
   background: var(--dl-bg);
 }
+
+/* An annotated traceback, in when-it-goes-wrong.
+ *
+ * Deliberately not role="img" with a label, the way a drawn diagram is: a
+ * traceback is text, it reads correctly in document order, and each note
+ * follows the line it is about. Hiding all that behind one aria-label
+ * would be the less accessible choice, not the more.
+ *
+ * One row per line of real output, so the source stays free of the
+ * whitespace traps a multi-line `pre` span has. Two adjacent rows carrying
+ * the same tint (a line and its own caret row) read as one marked block. */
+.dl-traceback {
+  max-width: 44rem;
+  margin: 1.6rem auto;
+}
+
+.dl-tb-edge {
+  margin: 0;
+  font-size: 0.85em;
+  font-style: italic;
+  color: var(--dl-muted);
+}
+.dl-tb-edge:first-child { margin-bottom: 0.4rem; }
+.dl-tb-edge:last-child { margin-top: 0.4rem; }
+
+.dl-tb-body {
+  border: 0.125rem solid var(--dl-cell-border);
+  background: var(--dl-output-bg);
+  padding: 0.7rem 0;
+  overflow-x: auto;
+}
+
+.dl-tb-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0 0.9rem;
+  white-space: pre;
+}
+
+.dl-tb-row code {
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  line-height: 1.55;
+  color: var(--dl-fg);
+  background: none;
+  padding: 0;
+}
+
+/* Both tints come from the highlighter family, not from --dl-error-bg,
+   because both are the author marking a line rather than the runtime
+   reporting a state. The error's own last line is left unmarked: the
+   caption underneath already sends the reader there, and a third tint
+   would make the two the section is actually about compete. */
+.dl-tb-cause { background: var(--dl-highlight-bg); }
+.dl-tb-failed { background: var(--dl-highlight-pink); }
+
+/* The one line the runtime itself prints in red. The panel around it stays
+   neutral rather than borrowing .dl-error's whole chrome — this is an
+   annotation of a traceback, not a picture of the error panel, and a red
+   ground would leave the two marks above with nowhere quiet to sit — but
+   the last line keeps the colour the reader just saw it in. */
+.dl-tb-error code { color: var(--dl-error-fg); }
+
+.dl-tb-note {
+  flex: none;
+  font-size: 0.78rem;
+  font-style: italic;
+  white-space: nowrap;
+  color: var(--dl-fg);
+}
