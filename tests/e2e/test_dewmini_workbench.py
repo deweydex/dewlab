@@ -15,6 +15,13 @@ from playwright.sync_api import expect
 DEWMINI = "compose/dewmini.html"
 
 
+# A resize handle is a sibling of <body>, not a child of the panel it
+# resizes (the panel clips its own overflow) -- told apart by data-for,
+# same as tests/e2e/test_panel_resize_drag.py's own copy of this helper.
+def _handle(panel_id: str) -> str:
+    return f'.dl-panel-resize-handle[data-for="{panel_id}"]'
+
+
 @pytest.fixture(scope="session")
 def dewmini_url(site_dir, base_url) -> str:
     """Points dewmini at the local Pyodide staged beside it rather than the
@@ -192,12 +199,12 @@ def test_both_rails_drag_wider_and_the_notebook_gives_up_the_room(browser, dewmi
         dewmini.mouse.up()
 
     before = dewmini.locator("#dm-workbench").bounding_box()["width"]
-    drag("#dm-workbench .dl-panel-resize-handle", 140)
+    drag(_handle("dm-workbench"), 140)
     after = dewmini.locator("#dm-workbench").bounding_box()["width"]
     assert after > before + 100, "the left rail should grow when dragged right"
 
     right_before = dewmini.locator("#dm-library").bounding_box()["width"]
-    drag("#dm-library .dl-panel-resize-handle", -140)
+    drag(_handle("dm-library"), -140)
     right_after = dewmini.locator("#dm-library").bounding_box()["width"]
     assert right_after > right_before + 100, "the right rail grows when dragged left"
 
@@ -211,7 +218,7 @@ def test_both_rails_drag_wider_and_the_notebook_gives_up_the_room(browser, dewmi
 
 def test_a_rails_width_survives_a_reload(dewmini, dewmini_url):
     dewmini.click("#dm-library-toggle")
-    box = dewmini.locator("#dm-library .dl-panel-resize-handle").bounding_box()
+    box = dewmini.locator(_handle("dm-library")).bounding_box()
     y = box["y"] + box["height"] / 2
     dewmini.mouse.move(box["x"] + box["width"] / 2, y)
     dewmini.mouse.down()

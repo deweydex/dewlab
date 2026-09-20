@@ -379,12 +379,36 @@ function savePanelWidth(id, width) {
 }
 
 function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null, widthKey = null) {
-  if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
+  if (!panel || panel.dataset.resizable) return;
+  panel.dataset.resizable = "true";
   const handle = document.createElement("div");
-  handle.className = "dl-panel-resize-handle"
-    + (side === "left" ? " dl-panel-resize-handle-right" : "");
+  handle.className = "dl-panel-resize-handle";
   handle.setAttribute("aria-hidden", "true");
-  panel.prepend(handle);
+  // No longer findable as a child of the panel it resizes (below) -- a
+  // page can carry several of these siblings under <body> at once, so
+  // this is what a test, or anything else, selects one by.
+  if (panel.id) handle.dataset.for = panel.id;
+  document.body.append(handle);
+
+  // The handle lives outside the panel (its own comment in
+  // tutorial-style.css says why), so nothing keeps it glued to the
+  // panel's actual edge for free the way a child element would be.
+  // Panel hidden -> handle hidden too, same as the child it used to be;
+  // panel visible -> left tracks whichever edge (right-docked: the
+  // panel's own left; left-docked: its own right) faces the reading
+  // column, on every resize this panel goes through for any reason --
+  // this drag, a sibling's drag sharing its width, a font-size change,
+  // the window itself resizing.
+  function positionHandle() {
+    const hidden = panel.hasAttribute("hidden");
+    handle.hidden = hidden;
+    if (hidden) return;
+    const rect = panel.getBoundingClientRect();
+    handle.style.left = `${side === "left" ? rect.right : rect.left}px`;
+  }
+  positionHandle();
+  new ResizeObserver(positionHandle).observe(panel);
+  new MutationObserver(positionHandle).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
 
   // widthKey lets several panels share one saved width (RIGHT_DOCK_WIDTH_KEY,
   // below) rather than each remembering its own under its own DOM id.
@@ -420,6 +444,13 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
     const cap = Math.min(max, floorCapPx());
     const next = Math.max(min, Math.min(startWidth + dx, cap));
     panel.style.width = `${next}px`;
+    // Called directly here, on every move, rather than left to the
+    // ResizeObserver above alone -- that one is still what catches every
+    // *other* reason this panel's width can change (a sibling sharing it,
+    // a font-size change, the window itself), but this drag is the one
+    // path onResize() and the handle's own position both need to feel
+    // perfectly in step with, not just eventually consistent.
+    positionHandle();
     // Without this, onResize() only ran once, on release — the panel
     // itself (and, via its own ResizeObserver, the reading column)
     // tracked the drag live, but the corner-dock tab stack this callback

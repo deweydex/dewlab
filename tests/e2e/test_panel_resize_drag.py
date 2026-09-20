@@ -117,6 +117,14 @@ def _drag_without_releasing(page, handle_selector: str, dx: int):
         page.mouse.move(start_x + dx * i / steps, start_y)
 
 
+# A resize handle is no longer a child of the panel it resizes (the panel
+# clips its own overflow, which is exactly the bug this file also covers)
+# -- every one lives under <body> as a sibling, told apart by which panel
+# it belongs to (makeEdgeResizable()'s own data-for).
+def _handle(panel_id: str) -> str:
+    return f'.dl-panel-resize-handle[data-for="{panel_id}"]'
+
+
 class TestTheRightDock:
     def test_the_tab_stack_widens_with_the_panel_mid_drag(self, page):
         page.click("#dl-settings-toggle")
@@ -127,7 +135,7 @@ class TestTheRightDock:
         )
         # Wider on the left in screen terms means narrower panel width for
         # a right-docked handle (dragging left grows a right-edge panel).
-        _drag_without_releasing(page, "#dl-settings .dl-panel-resize-handle", -120)
+        _drag_without_releasing(page, _handle("dl-settings"), -120)
         during_panel, during_stack = _widths(
             page, "#dl-settings", ".dl-corner-dock-tr .dl-corner-stack"
         )
@@ -142,7 +150,7 @@ class TestTheRightDock:
     def test_the_other_two_panels_share_the_width_mid_drag(self, page):
         page.click("#dl-settings-toggle")
         page.wait_for_selector("#dl-settings:not([hidden])")
-        _drag_without_releasing(page, "#dl-settings .dl-panel-resize-handle", -120)
+        _drag_without_releasing(page, _handle("dl-settings"), -120)
         settings_style = page.eval_on_selector("#dl-settings", "el => el.style.width")
         notes_style = page.eval_on_selector("#dl-yourwork", "el => el.style.width")
         python_style = page.eval_on_selector("#dl-python", "el => el.style.width")
@@ -150,6 +158,23 @@ class TestTheRightDock:
 
         assert notes_style == settings_style
         assert python_style == settings_style
+
+    def test_the_handle_reaches_all_the_way_up_past_the_tab_stack(self, page):
+        """Josh: "the 'drag highlight' doesn't go all the way up" -- the
+        handle used to be a child of the panel, whose own top sits below
+        the corner dock (trackCornerDockHeights()), so its highlight and
+        its actually-grabbable area both stopped right where the dock's
+        tabs began. Detached and fixed to the viewport now, it should
+        reach y=0, well above the dock, not merely up to the panel."""
+        page.click("#dl-settings-toggle")
+        page.wait_for_selector("#dl-settings:not([hidden])")
+        handle_top = page.eval_on_selector(
+            _handle("dl-settings"), "el => el.getBoundingClientRect().top"
+        )
+        dock_top = page.eval_on_selector(
+            ".dl-corner-dock-tr", "el => el.getBoundingClientRect().top"
+        )
+        assert handle_top <= dock_top
 
 
 class TestTheLeftDock:
@@ -161,7 +186,7 @@ class TestTheLeftDock:
             page, "#dl-reference", ".dl-corner-dock-tl .dl-corner-stack"
         )
         # A left-docked handle grows the panel by dragging right.
-        _drag_without_releasing(page, "#dl-reference .dl-panel-resize-handle", 120)
+        _drag_without_releasing(page, _handle("dl-reference"), 120)
         during_panel, during_stack = _widths(
             page, "#dl-reference", ".dl-corner-dock-tl .dl-corner-stack"
         )
@@ -170,3 +195,45 @@ class TestTheLeftDock:
         assert during_panel > before_panel + 50
         assert during_stack > before_stack + 50
         assert abs(during_stack - during_panel) < 2
+
+    def test_the_handle_reaches_all_the_way_up_past_the_tab_stack(self, page):
+        page.click("#dl-reference-toggle")
+        page.wait_for_selector("#dl-reference:not([hidden])")
+        handle_top = page.eval_on_selector(
+            _handle("dl-reference"), "el => el.getBoundingClientRect().top"
+        )
+        dock_top = page.eval_on_selector(
+            ".dl-corner-dock-tl", "el => el.getBoundingClientRect().top"
+        )
+        assert handle_top <= dock_top
+
+    def test_the_handle_tracks_the_panel_horizontally_as_it_resizes(self, page):
+        """The handle is no longer a child of the panel -- nothing but
+        positionHandle() keeps its left glued to the panel's own right
+        edge (a left-docked panel's inner edge) once a drag moves it."""
+        page.click("#dl-reference-toggle")
+        page.wait_for_selector("#dl-reference:not([hidden])")
+        _drag_without_releasing(page, _handle("dl-reference"), 120)
+        handle_left = page.eval_on_selector(
+            _handle("dl-reference"), "el => el.getBoundingClientRect().left"
+        )
+        panel_right = page.eval_on_selector(
+            "#dl-reference", "el => el.getBoundingClientRect().right"
+        )
+        page.mouse.up()
+        assert abs(handle_left - panel_right) < 2
+
+
+class TestHandleHiddenWithItsPanel:
+    def test_a_closed_panels_handle_is_not_in_the_hit_area(self, page):
+        # Never opened -- the handle should start hidden, the same way a
+        # child of a [hidden] panel used to be for free.
+        assert page.is_hidden(_handle("dl-settings"))
+
+    def test_reopening_shows_it_again(self, page):
+        page.click("#dl-settings-toggle")
+        page.wait_for_selector("#dl-settings:not([hidden])")
+        assert page.is_visible(_handle("dl-settings"))
+        page.click("#dl-settings-toggle")
+        page.wait_for_selector("#dl-settings", state="hidden")
+        assert page.is_hidden(_handle("dl-settings"))
