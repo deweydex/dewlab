@@ -17,6 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import nested  # noqa: E402
 import tree as tree_renderer  # noqa: E402
 from tree import Node  # noqa: E402
 
@@ -67,7 +68,25 @@ def drawing_two_aces() -> str:
     ]))
 
 
+def the_number_domains() -> str:
+    """The nesting *Numbers and Their Families* writes as a chain of symbols.
+
+    Each example sits in the band for the smallest family it belongs to, so
+    the question the section sets — which families does this number belong
+    to — is answered by finding the number and reading outwards. That is
+    what the containment chain says, and it is faster to point at.
+    """
+    return nested.render(nested.Ring(
+        "ℝ  reals", "√2   π   −1.5",
+        inside=nested.Ring(
+            "ℚ  rationals", "2/3   0.25",
+            inside=nested.Ring(
+                "ℤ  integers", "−5   −1",
+                inside=nested.Ring("ℕ  naturals", "0   1   2   3")))))
+
+
 DIAGRAMS = {
+    "numbers-and-their-families/number-domains.svg": the_number_domains,
     "what-are-the-chances/two-aces-tree.svg": drawing_two_aces,
 }
 

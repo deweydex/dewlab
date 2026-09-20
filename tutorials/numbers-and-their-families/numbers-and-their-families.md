@@ -35,6 +35,15 @@ Numbers live in nested families, each one extending the one before:
 
 Every natural number is an integer, every integer is a rational — put it over 1 — and every rational is a real. They are nested like Russian dolls: $\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}$.
 
+![Four rings, one inside the next. Naturals 0, 1, 2, 3 innermost; then
+integers with −5 and −1; then rationals with 2/3 and 0.25; then reals with
+root 2, pi and −1.5 outermost.](number-domains.svg)
+
+Each number sits in the ring for the smallest family it belongs to, so you
+can answer "which families is this in?" by finding it and reading outwards.
+$-5$ is in the integers ring, so it is an integer, a rational and a real —
+but not a natural, because it is outside that one.
+
 ### Your turn
 
 How might you write a function `classify_number(n)` that takes a number and returns a list of all the domains it belongs to?
