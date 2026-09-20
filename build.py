@@ -1144,68 +1144,36 @@ def icon_button(css_class: str, icon: str, label: str, **attrs: str) -> str:
 def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> str:
     """The markup the runtime binds an editor, a Run button and an output area to.
 
-    Three rows, in the order a reader's eye actually uses them: a header
-    (identity — the pill, an optional name, Duplicate) above the code;
-    the code itself, with its collapse triangle; a footer (Run, Reset,
-    the run-line, the "Run above/below" menu) between the code and
-    where its output will land, so Run sits where a reader's hand
-    already is, not back above everything they just wrote. This is
-    dewmini's own shape (`compose/dewmini.js`'s `createCellElement()`),
-    matched here — a reader moving from one page to the other finds the
-    pill, and Run, in the same place either way.
+    Three rows, top to bottom: a header (the numbered pill, an optional
+    `cell.name`, Duplicate); the code, with a collapse triangle beside it;
+    a footer (Run, Reset, the run-line, the "Run above/below" menu) sitting
+    between the code and its output, so Run is where a reader's hand
+    already is. `number` is the cell's fixed 1-based position on the page —
+    an authored cell never reorders at runtime, unlike a reader's own
+    custom cells. No drag handle, for the same reason.
 
-    `number` is the cell's plain 1-based position on the page (its index
-    in `place_blocks()`'s own `cells` list, the same order the page reads
-    in) — an authored cell's order never changes at runtime the way a
-    dewmini cell's can, so unlike `compose/dewmini.js`'s own
-    `createCellElement()` this never needs recomputing after the fact.
-    The pill shows it alongside the cell's type — "Python" or "SQL",
-    coloured via the matching `--dl-type-python`/`--dl-type-sql` token
-    dewmini's own pill uses. No drag handle: authored cells aren't
-    reorderable, so there's nothing
-    for one to do. `cell.name`, when an author gives one, sits beside the
-    pill — the word a reader can point at ("the `filter-evening` cell")
-    instead of a number, the same idea dewmini lets a reader give their
-    own cells.
+    Reset restores this cell's *starter code*, not just its output — an
+    authored cell has a fixed starting point to return to, so it gets a
+    different icon from a plain Clear.
 
-    The run-line span and the "Run above/below" menu are empty shells
-    here — tutorial-runtime.js fills and wires them the same way it
-    already owns everything else about a live cell, the same treatment
-    dewmini gives a Python cell.
+    `code` and `output` are left blank here and filled in by
+    `tutorial-runtime.js` once the reader has actually run something; the
+    run-line and the "Run above/below" menu are likewise empty shells it
+    wires up. `.dl-cell-collapsed-summary` is filled the same way by
+    `setCellCollapsed()`, once the cell is actually collapsed.
 
-    Reset is not Clear: it puts this cell's *starter code* back, throwing
-    away whatever the reader typed, because an authored cell has a fixed
-    starting point to return to — dewmini's own cells have none, so its
-    matching button only clears output and never touches code. Different
-    on purpose, so it gets a different icon, not just a different label
-    that icon-only mode would hide.
+    Duplicate copies this cell's current code into a new custom cell
+    dropped right after it, reusing the insertion seam
+    `initCustomCellsSection()` already places after every real cell — the
+    original stays the tutorial's own fixed content; the copy is the
+    reader's to edit or delete.
 
-    The editor sits in a `.dl-cell-body-row`, beside a collapse triangle
-    — every cell type gets one in dewmini, and there is nothing
-    type-specific here to make that not apply.
-    `.dl-cell-collapsed-summary` is the
-    one-line stand-in tutorial-runtime.js shows in its place once
-    collapsed; both start empty/hidden and are filled in by
-    `setCellCollapsed()` there, the same way the run-line is.
-
-    Duplicate turns this cell's current code into a new custom cell
-    dropped immediately after it — `initCustomCellsSection()` already
-    seeds an insertion point after every real cell for the reader's own
-    "Try something of your own" cells, so Duplicate just reuses that
-    same seam rather than needing one of its own. An authored cell
-    itself is the tutorial's own content and stays fixed; the copy is
-    the reader's, free to edit or delete.
-
-    The report icon is the same toggle
-    pattern as the hint icon right beside it — a small circular button
-    that opens a plain block after the cell, not a floating popover.
-    `page` and `version` are build-time constants, the same as the
-    footer's; `code` and `output` are not knowable until the reader has
-    actually typed and run something, so those two fields stay blank in
-    this markup and are filled in by `tutorial-runtime.js` at the moment
-    the panel opens — see `updateCellReportLinks()` there. A custom cell
-    (the reader's own, not the tutorial's) gets none of this: there is
-    nothing to report about code nobody but the reader wrote.
+    The report icon toggles a plain block after the cell, the same pattern
+    as the hint icon beside it, and only appears when `page` is set and
+    feedback is enabled — a custom cell (the reader's own) never gets one,
+    since there's nothing to report about code nobody but the reader wrote.
+    `updateCellReportLinks()` in `tutorial-runtime.js` fills in its actual
+    link once the panel opens.
     """
     safe_id = html.escape(cell.id, quote=True)
     hint_markup = ""
@@ -4630,46 +4598,33 @@ DEWMINI_ASSET_FILES = (
 
 
 def write_dewmini_bundle() -> Path | None:
-    """The downloadable dewmini: a folder a student (or a teacher setting a
-    classroom up for a day with no reliable connection) can save locally
-    and open on the same machine even with no internet — Pyodide
-    included, so the first run doesn't need a live connection either,
-    once assets/vendor/pyodide/ exists.
+    """The downloadable dewmini: a folder a student or teacher can save and
+    open with no internet at all, once assets/vendor/pyodide/ exists to
+    include.
 
-    Needs a local server to actually open, though: dewmini.js imports
+    It still needs a local server to open, though: dewmini.js imports
     dewmini-fs.js and pyodide-engine.js with real `import` statements,
-    the same way any modern web app is built, and a browser only allows
-    that kind of cross-file import from http:///https://, never a file
-    opened straight off disk — see SERVE_SCRIPT's own docstring, copied
-    in as this bundle's own serve.py. `index.html` below actually checks
-    for this rather than assuming a downloader read a README first.
+    and a browser only allows that kind of cross-file import from
+    http(s)://, never a file opened straight off disk. `index.html` below
+    checks for this rather than assuming a downloader read a README first,
+    and SERVE_SCRIPT is copied in as this bundle's own serve.py.
 
-    The bundle mirrors the *hosted site's actual folder shape* —
-    compose/, assets/, and data/ as siblings, exactly what
-    compose/dewmini.html's own `../assets/...`, `../data/`, and
-    `../coi-serviceworker.js` references already assume — so
-    dewmini.html, dewmini.js, and dewmini-fs.js need no rewriting at all
-    to work unhosted; only the DEWLAB_PYODIDE_BASE override gets layered
-    in. A tiny top-level `index.html` exists purely so opening the
-    downloaded folder means finding one obvious file, not knowing to
-    look inside `compose/` first — either it's being served (this
-    script, or any other local server) and it forwards straight to
-    compose/dewmini.html, or it's been opened as a bare file and it says
-    so instead of forwarding into a page that would just come up blank.
+    The bundle mirrors the hosted site's actual folder shape — compose/,
+    assets/, and data/ as siblings, exactly what compose/dewmini.html's own
+    relative references already assume — so nothing in it needs rewriting
+    to work unhosted, beyond layering in the DEWLAB_PYODIDE_BASE override.
+    The tiny top-level `index.html` exists so opening the downloaded folder
+    means finding one obvious file rather than knowing to look inside
+    compose/ first.
 
-    assets/vendor/pyodide/ is not committed (gitignored, like /dev/pyodide/
-    a few lines up in .gitignore) — populate it with dev/fetch_pyodide.py,
-    the same trimmed-Pyodide fetcher the e2e tests already use for their
-    own local copy, just pointed at a different --out and asked for the
-    packages dewmini's own DM_PACKAGES needs (compose/dewmini.js):
+    assets/vendor/pyodide/ is gitignored; populate it with:
 
         python3 dev/fetch_pyodide.py --out assets/vendor/pyodide \\
             --packages numpy pandas matplotlib sqlite3 Pillow jedi pyodide-http
 
-    A build run without that first still produces a working bundle, just
-    one that falls back to the CDN on first run, same as the hosted page
-    does. (jedi and parso belong on the list regardless of DM_PACKAGES —
-    the engine loads them itself, for autocomplete.)
+    (jedi and parso are needed regardless of DM_PACKAGES, for
+    autocomplete.) A build run without that first still produces a working
+    bundle, just one that falls back to the CDN on first run.
     """
     dewmini_html = COMPOSE / "dewmini.html"
     if not dewmini_html.exists():
