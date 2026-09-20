@@ -10,8 +10,8 @@ looked odd to me". That is enough.
 ## The quick way: from the page itself
 
 Most pages carry a line at the foot, "Something wrong on this page? Tell
-us," and the **Give Feedback** tab in the top-right corner opens the same
-three choices. Either door gets you here.
+us," and the small circle in the bottom-right corner of the screen opens the
+same three choices in a box just above it. Either door gets you here.
 
 **I have a question.** Not wrong, just something you want explained. This
 one goes to Discussions rather than an issue, so an answer stays where

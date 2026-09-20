@@ -93,16 +93,19 @@ it wider or narrower.
 
 **Notes** holds a place to write your own notes on the page, whether your
 work is saving, and the buttons to export a copy, load one back in, or start
-the tutorial over.
+the tutorial over. Every highlight you have made on the page is listed here
+too. At the top of it, **My notes** opens a page of its own, holding
+everything you have written and highlighted on every page you have opened in
+this browser.
 
 **Python** is about running the cells: a Restart Python button for a clean
-start, and whether a hint appears after several failed runs. It also shows
-what your code has made so far. Variables and declared functions appear as
+start, and Restart & run all for a clean start that then runs the page from
+the top. It also shows what your code has made so far. Variables and declared functions appear as
 soon as a cell makes them; a list of what the page has imported sits behind
 a triangle, since it is not something most tutorials ask you to check.
 
-**Settings** holds three tabs of its own, and opens on the first: **Appearance**,
-**Give Feedback**, and **Imports & Exports**.
+**Settings** holds three tabs of its own, and opens on the first:
+**Appearance**, **Behavior**, and **Imports & Exports**.
 
 **Appearance** covers how the page looks and reads: light or dark, serif or
 sans or mono (plus two fonts built for easier reading, Lexend and
@@ -110,12 +113,19 @@ OpenDyslexic), text size, how wide the lines run, and the colour of links.
 **High contrast**, also here, switches to black text on white, or white on
 black in dark mode, and turns on Lexend too, whatever font you had chosen.
 
-**Give Feedback** is where a question, an error, or something confusing on
-the page goes. The three choices there are the same ones "Something wrong?"
-describes below.
+**Behavior** covers what the page does rather than how it looks: whether a
+run shows how long it took, whether a hint appears under a cell after
+several runs that did not get there, and whether the tutorials list shows
+how far you have got.
 
 **Imports & Exports** holds the ways to take a tutorial with you, described
 below.
+
+**Give Feedback** is not one of the three panels. It has a small circle of
+its own, in the bottom-right corner of the screen, and it opens a short box
+just above that circle: a question, an error, or something confusing on the
+page. The three choices there are the same ones "Something wrong?" describes
+below. Clicking anywhere else on the page closes the box again.
 
 These choices follow you from page to page and from visit to visit. If the
 default is uncomfortable to read, change it — that is what it is for.
@@ -260,9 +270,9 @@ or a `.py` file, and a Stop button that can interrupt code that is stuck.
 If a tutorial has a mistake in it, or something on the site does not work,
 please tell us. You do not need to be certain it is a bug to say something.
 Most pages carry a link at the bottom for exactly this, "Something wrong on
-this page? Tell us." Settings, in the top-right corner, opens to the same
-three choices under its Give Feedback tab. Either way, pick the one that
-fits: a question, an error, or something wrong or hard to follow.
+this page? Tell us." The small circle in the bottom-right corner of the
+screen opens the same three choices. Either way, pick the one that fits: a
+question, an error, or something wrong or hard to follow.
 
 A cell giving trouble has its own small circle for the same three choices, in
 its own bar. Pick that one instead, and your code and its last output are

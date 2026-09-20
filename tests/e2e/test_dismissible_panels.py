@@ -7,16 +7,19 @@ each.
 
 Not every site implements every facet -- this file asserts what each one
 actually does, not what a tidier design would have it do. Outside-click no
-longer closes Your Work/Python/Settings/Give Feedback or Reference
-(DECISIONS_LOG 7.99/7.199: "a docked rail must not close on an outside
-click, unlike a popover" -- the tutorial pages' panels used to be the
-exception, on purpose, until Josh found it closing a panel he'd left open
-on the other dock); it still does for the mobile launcher menu, the
-highlight popover, the cell run menu, and the versions toggle, none of
-which are part of that dock system. Those same five docked panels close
-instead by clicking their own toggle again, now that Reference's close
-button is gone too (7.190/7.201's "no repeated title, no close button"
-cleanup, applied to all five in the end). Returning focus to the opener on
+longer closes Your Work/Python/Settings or Reference (DECISIONS_LOG
+7.99/7.199: "a docked rail must not close on an outside click, unlike a
+popover" -- the tutorial pages' panels used to be the exception, on
+purpose, until Josh found it closing a panel he'd left open on the other
+dock); it still does for the mobile launcher menu, the highlight popover,
+the cell run menu, and the versions toggle, none of which are part of that
+dock system. Give Feedback moved to that second list in 7.200: it stopped
+being a rail and became the popover the sentence above contrasts them
+with, so the same clause that protects the rails is what makes an outside
+click close it. All five of those panels also close by clicking their own
+toggle again, now that Reference's close button is gone too (7.190/7.196's
+"no repeated title, no close button" cleanup, applied to all five in the
+end). Returning focus to the opener on
 Escape is only wired for Reference, the mobile launcher menu, the cell run
 menu, and the versions toggle; Your Work/Python/Settings/Give Feedback,
 the mobile "where you are" sheet, and the highlight popover close without
@@ -216,8 +219,10 @@ CASES = [
                  None, None, None, False, "#dl-python-toggle", id="python"),
     pytest.param(None, functools.partial(_open_generic_panel, name="settings"), "#dl-settings",
                  None, None, None, False, "#dl-settings-toggle", id="settings"),
+    # The one right-hand panel that is not a rail: a popover above its own
+    # circle, so an outside click does close it (DECISIONS_LOG 7.200).
     pytest.param(None, functools.partial(_open_generic_panel, name="report"), "#dl-report",
-                 None, None, None, False, "#dl-report-toggle", id="report"),
+                 None, None, None, True, "#dl-report-toggle", id="report"),
     pytest.param(PHONE, _open_mobile_menu, "#dl-mobile-menu",
                  "#dl-mobile-fab", None, None, True, None, id="mobile-menu"),
     pytest.param(None, _open_reference, "#dl-reference",

@@ -198,10 +198,12 @@ function closeReference() {
 // (initSettingsTabs() below) rather than each getting its own corner tab
 // — the same pattern Reference already uses for its own three sections.
 // "report" is Give Feedback's own door: not in the corner dock at all (a
-// fixed circle at the bottom-right, .dl-report-fab), but sharing every
-// other bit of open/close machinery this array drives, since a report
-// panel and a corner-dock panel close, resize and restore the same way.
-const RIGHT_PANELS = ["yourwork", "python", "settings", "report"];
+// fixed circle at the bottom-right, .dl-report-fab) and not a rail either
+// — a small popover above that circle (7.200) — but sharing this array's
+// one-open-at-a-time rule and its Escape handling, since two boxes open
+// over the same corner of the screen is one too many either way.
+const RIGHT_DOCK_PANELS = ["yourwork", "python", "settings"];
+const RIGHT_PANELS = [...RIGHT_DOCK_PANELS, "report"];
 
 // One shared width for the three that actually live in the corner dock —
 // Notes, Python, Settings — not one per panel id: they read as tabs into a
@@ -234,7 +236,11 @@ function closeRightPanels(except = null) {
 function saveSidebarState() {
   const left = !document.getElementById("dl-reference")?.hasAttribute("hidden") ? "reference"
     : null;
-  const right = RIGHT_PANELS.find((name) => !document.getElementById(`dl-${name}`)?.hasAttribute("hidden")) || null;
+  // RIGHT_DOCK_PANELS, not RIGHT_PANELS: a rail left open is a way of
+  // working, worth carrying to the next page. Give Feedback's popover is
+  // read once and dismissed, so remembering it would open a feedback box
+  // over every page the reader opened afterwards.
+  const right = RIGHT_DOCK_PANELS.find((name) => !document.getElementById(`dl-${name}`)?.hasAttribute("hidden")) || null;
   try {
     localStorage.setItem("dewlab:sidebars", JSON.stringify({ left, right }));
   } catch (e) { /* private mode, blocked storage: nothing to remember */ }
@@ -262,13 +268,18 @@ function restoreSidebarState() {
   // one saved before the panels split has `right: "notesreport"` — no
   // toggle id matches either, so this simply restores nothing on the
   // right, the same graceful loss a storage failure gets elsewhere.
-  const rightToggle = RIGHT_PANELS.includes(state.right)
+  const rightToggle = RIGHT_DOCK_PANELS.includes(state.right)
     ? document.getElementById(`dl-${state.right}-toggle`) : null;
   if (rightToggle) rightToggle.click();
 }
 
 function watchPanelOverlap() {
-  const rightPanels = RIGHT_PANELS.map((name) => document.getElementById(`dl-${name}`)).filter(Boolean);
+  // RIGHT_DOCK_PANELS again: the reading column is kept clear of the rails
+  // that dock to the screen's edge full height. Give Feedback's popover
+  // floats in the bottom corner over the margin the docks already reserve,
+  // so widening the column's gutter to its width only shoved the text
+  // sideways for a box that was never in its way (7.200).
+  const rightPanels = RIGHT_DOCK_PANELS.map((name) => document.getElementById(`dl-${name}`)).filter(Boolean);
   const leftPanels = [document.getElementById("dl-reference")].filter(Boolean);
   // The corner docks themselves — unlike a panel, always on screen, never
   // hidden as a whole (the top-left one always carries the wordmark, the
@@ -452,14 +463,16 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
   });
 }
 
-// One right-hand panel per corner tab (RIGHT_PANELS above), each opened
-// by its own tab and closed by that tab again, its close button, or
+// One right-hand panel per corner tab (RIGHT_DOCK_PANELS above), each
+// opened by its own tab and closed by that tab again, its close button, or
 // Escape — a docked panel does not close on a click outside it (DECISIONS_LOG
 // 7.99 already ruled this for dewmini's own rails: "a docked rail must not
 // close on an outside click, unlike a popover"), so the left dock's own
 // panel can stay open at the same time without either one stealing focus
-// from the other. Appearance (now a tab inside Settings, not a panel of
-// its own) alone carries a search box, filtering its own rows. All three
+// from the other. Give Feedback, handled here too, is the popover that
+// sentence contrasts them with, and does close on an outside click
+// (7.200). Appearance (now a tab inside Settings, not a panel of its own)
+// alone carries a search box, filtering its own rows. All three
 // share one dock width
 // (RIGHT_DOCK_WIDTH_KEY): dragging one panel's edge applies the new width
 // to the other two immediately, so switching tabs never resizes the dock
@@ -537,6 +550,22 @@ function initRightPanels() {
 
     p.toggle.addEventListener("click", () => setOpen(p.panel.hasAttribute("hidden")));
     if (p.close) p.close.addEventListener("click", () => { setOpen(false); p.toggle.focus(); });
+
+    // Give Feedback's popover, and only it, closes on a click outside.
+    // 7.199 took that behaviour off the rails for a good reason — a rail
+    // is meant to stay open beside the page while you work in the page —
+    // but this is a popover hanging off one circle, read once and done,
+    // and a box that stays put after a reader has plainly moved on is the
+    // same annoyance from the other side (7.200). pointerdown, not click:
+    // it fires before focus moves, so the popover is gone by the time
+    // whatever was clicked underneath reacts.
+    if (p.name === "report") {
+      document.addEventListener("pointerdown", (ev) => {
+        if (p.panel.hasAttribute("hidden")) return;
+        if (p.panel.contains(ev.target) || p.toggle.contains(ev.target)) return;
+        setOpen(false);
+      });
+    }
 
     document.addEventListener("keydown", (ev) => {
       if (ev.key !== "Escape" || p.panel.hasAttribute("hidden")) return;

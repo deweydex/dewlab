@@ -1457,22 +1457,26 @@ p code, li code {
 }
 .dl-corner-identity .dl-crumbs { max-width: 100%; }
 
-/* A quiet second link under the wordmark, present on every page (the
-   token that positions it, {{ROOT_BASE}}, is already substituted per
-   page type) -- deliberately smaller and unbolded next to .dl-wordmark's
-   own weight, since this is a way *out* to a different kind of page
-   (every highlight and note across every tutorial, all-notes.html), not
-   a second identity competing with the first. */
+/* The way out to all-notes.html, at the top of the Notes panel (7.200).
+   Under the wordmark, where it used to sit, it had to stay quiet enough
+   not to compete with the identity above it, which also made it easy to
+   miss. In the panel it is the first thing under a heading about the
+   reader's own notes, so it can look like the link it is: full link
+   colour, a rule under it separating the whole site's notes from this
+   page's, and a line saying what it gathers. */
+.dl-mynotes-row {
+  margin: 0 0 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--dl-rule);
+}
 .dl-mynotes-link {
-  font-size: 0.78rem;
-  color: var(--dl-muted);
-  text-decoration: none;
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--dl-link);
 }
-.dl-mynotes-link:hover,
-.dl-mynotes-link:focus-visible {
-  color: var(--dl-orange);
-  text-decoration: underline;
-}
+.dl-mynotes-link::after { content: " \2192"; }
+.dl-mynotes-row .dl-panel-note { margin: 0.25rem 0 0; }
 
 /* My Notes (all-notes.html, write_all_notes_page()): one card per
    tutorial with something saved, built entirely client-side by
@@ -1651,6 +1655,34 @@ p code, li code {
   color: #fff;
 }
 .dl-report-fab svg { width: 1.1rem; height: 1.1rem; }
+
+/* ...and the box that circle opens. Every other right-hand panel is a
+   rail: full height, docked to the edge, meant to be left open beside
+   what you are reading. This one holds two lines and three links and is
+   read once, so it sits where it was summoned from — just above its own
+   circle, as wide as it needs and no taller than its contents — rather
+   than reserving a column the length of the screen for a paragraph
+   (DECISIONS_LOG.md 7.200).
+
+   Set after .dl-right-panel's own geometry and before the phone rules at
+   the foot of this file, so the same-specificity cascade does the right
+   thing at both ends: this overrides the rail, and the phone's own bottom
+   sheet overrides this. */
+.dl-report-popover {
+  top: auto;
+  right: 1rem;
+  bottom: 4.25rem;
+  width: min(21rem, calc(100vw - 2rem));
+  min-width: 0;
+  max-height: min(26rem, calc(100vh - 6.5rem));
+  padding: 0.85rem 1rem 1rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 10px;
+  box-shadow: 0 4px 18px var(--dl-shadow);
+}
+/* Visible, unlike every other panel's title — see assets/shell.html. */
+.dl-report-popover h2 { margin-bottom: 0.6rem; }
+.dl-report-popover p:last-child { margin-bottom: 0; }
 
 /* Filled and lifted, not outlined: a transparent tab over the page's own
    background reads as a stray border, where the mockup's white fill and
