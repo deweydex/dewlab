@@ -39,15 +39,18 @@ what to say.
 
 ## Getting your own copy
 
-Three ways in, and the first two are the same two buttons you used for
+Two ways in, and they are the same two buttons you used for
 `portfolio_wad`. [Your copy of the
 starter](tutorial:your-copy-of-the-starter) goes through what each one
 does, and the three ways to open whichever copy you end up with.
 
+Both give you a repository of your own, which is the point. The project
+is something you commit to, publish, and hand in as a place on the
+internet rather than as a folder of files.
+
 <div class="dl-module-grid">
 <a class="dl-module-card" href="https://github.com/deweydex/project_wad/generate"><h3>Use this template</h3><span class="dl-module-card-meta">no link back</span><p>Your own repository, with no visible connection to this one. This suits a project you may want to keep and show people after the course.</p></a>
 <a class="dl-module-card" href="https://github.com/deweydex/project_wad/fork"><h3>Fork it</h3><span class="dl-module-card-meta">keeps the connection</span><p>Your own repository, still visibly linked to this one, and keeping its history. Choose this if you might want to pull in a later fix from the original.</p></a>
-<a class="dl-module-card" href="https://github.com/deweydex/project_wad/archive/refs/heads/main.zip"><h3>Download the files</h3><span class="dl-module-card-meta">no repository</span><p>A folder of plain files, for reading on your own computer. There is nothing here to commit and nothing to publish, so come back to one of the other two before you start building.</p></a>
 </div>
 
 One thing is worth deciding now rather than later: this is a repository
