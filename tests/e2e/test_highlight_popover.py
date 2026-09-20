@@ -127,15 +127,14 @@ class TestOpeningThePopover:
         page.keyboard.press("Enter")
         page.wait_for_selector(".dl-highlight-popover:not([hidden])")
 
-    def test_escape_closes_it(self, page):
+    def test_closes_on_escape_or_a_click_outside(self, page):
         _make_highlight(page, "fine to mark")
+
         page.click("mark.dl-highlight")
         page.wait_for_selector(".dl-highlight-popover:not([hidden])")
         page.keyboard.press("Escape")
         assert page.is_hidden(".dl-highlight-popover")
 
-    def test_clicking_outside_closes_it(self, page):
-        _make_highlight(page, "fine to mark")
         page.click("mark.dl-highlight")
         page.wait_for_selector(".dl-highlight-popover:not([hidden])")
         page.click("h1")
@@ -143,7 +142,7 @@ class TestOpeningThePopover:
 
 
 class TestSavingANote:
-    def test_typing_a_note_and_saving_persists_it(self, page):
+    def test_typing_a_note_and_saving_persists_it_and_shows_it_on_reopen(self, page):
         _make_highlight(page, "fine to mark")
         page.click("mark.dl-highlight")
         page.wait_for_selector(".dl-highlight-popover:not([hidden])")
@@ -156,13 +155,6 @@ class TestSavingANote:
         page.wait_for_function("() => dewlab.readSaved() !== null")
         saved = page.evaluate("dewlab.readSaved()")
         assert saved["highlights"][0]["note"] == "worth remembering"
-
-    def test_reopening_shows_the_saved_note(self, page):
-        _make_highlight(page, "fine to mark")
-        page.click("mark.dl-highlight")
-        page.wait_for_selector(".dl-highlight-popover:not([hidden])")
-        page.fill(".dl-highlight-popover-note", "worth remembering")
-        page.click(".dl-highlight-popover-save")
 
         page.click("mark.dl-highlight")
         page.wait_for_selector(".dl-highlight-popover:not([hidden])")
@@ -183,28 +175,14 @@ class TestRemovingAHighlight:
         assert page.locator("mark.dl-highlight").count() == 0
         assert page.evaluate("dewlab.highlights") == []
 
-    def test_a_highlight_with_a_note_asks_for_confirmation(self, page):
+    def test_confirmation_gates_removal_of_a_highlight_with_a_note(self, page):
         _make_highlight(page, "fine to mark")
         page.click("mark.dl-highlight")
         page.wait_for_selector(".dl-highlight-popover:not([hidden])")
         page.fill(".dl-highlight-popover-note", "worth remembering")
         page.click(".dl-highlight-popover-save")
 
-        page.click("mark.dl-highlight")
-        page.wait_for_selector(".dl-highlight-popover:not([hidden])")
-        page.once("dialog", lambda dialog: dialog.accept())
-        page.click(".dl-highlight-popover-remove")
-
-        assert page.locator("mark.dl-highlight").count() == 0
-        assert page.evaluate("dewlab.highlights") == []
-
-    def test_declining_the_confirmation_keeps_the_highlight_and_its_note(self, page):
-        _make_highlight(page, "fine to mark")
-        page.click("mark.dl-highlight")
-        page.wait_for_selector(".dl-highlight-popover:not([hidden])")
-        page.fill(".dl-highlight-popover-note", "worth remembering")
-        page.click(".dl-highlight-popover-save")
-
+        # Decline first: the highlight and its note survive.
         page.click("mark.dl-highlight")
         page.wait_for_selector(".dl-highlight-popover:not([hidden])")
         page.once("dialog", lambda dialog: dialog.dismiss())
@@ -212,3 +190,12 @@ class TestRemovingAHighlight:
 
         assert page.locator("mark.dl-highlight").count() == 1
         assert page.evaluate("dewlab.highlights[0].note") == "worth remembering"
+
+        # Then accept on the same highlight: it's actually removed.
+        page.click("mark.dl-highlight")
+        page.wait_for_selector(".dl-highlight-popover:not([hidden])")
+        page.once("dialog", lambda dialog: dialog.accept())
+        page.click(".dl-highlight-popover-remove")
+
+        assert page.locator("mark.dl-highlight").count() == 0
+        assert page.evaluate("dewlab.highlights") == []

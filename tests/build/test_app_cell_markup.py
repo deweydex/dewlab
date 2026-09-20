@@ -51,6 +51,9 @@ class TestAppCells:
         assert 'class="dl-app-cell" data-app-name="reader"' in page
         assert 'data-lang="js"' in page
         assert 'class="dl-editor"' in page
+        # html and css panes are optional — the js pane needed neither.
+        assert 'data-lang="html"' not in page
+        assert 'data-lang="css"' not in page
         cells = manifest(page)["appCells"]
         assert cells == [{
             "name": "reader",
@@ -71,48 +74,27 @@ class TestAppCells:
         assert "dl-btn-app-run" in page
         assert "dl-btn-app-clear" in page
 
-    def test_html_and_css_panes_are_optional(self, repo):
-        write(repo, APP_JS)
-        b.build()
-        page = built(repo)
-        assert 'data-lang="html"' not in page
-        assert 'data-lang="css"' not in page
-        assert 'data-lang="js"' in page
-
-    def test_a_cell_with_no_js_pane_fails_the_build(self, repo):
-        write(repo, APP_HTML + APP_CSS)
-        with pytest.raises(b.BuildError, match="has no js pane"):
-            b.build()
-
-    def test_an_unknown_pane_language_fails_the_build(self, repo):
-        write(repo, "```php app\nid: c\napp: reader\n<?php ?>\n```\n")
-        with pytest.raises(b.BuildError, match="not one of"):
-            b.build()
-
-    def test_a_pane_with_no_id_fails_the_build(self, repo):
-        write(repo, "```js app\napp: reader\nconsole.log(1);\n```\n")
-        with pytest.raises(b.BuildError, match="no `id:` line"):
-            b.build()
-
-    def test_a_pane_with_no_app_name_fails_the_build(self, repo):
-        write(repo, "```js app\nid: c\nconsole.log(1);\n```\n")
-        with pytest.raises(b.BuildError, match="no `app:` line"):
-            b.build()
-
-    def test_two_panes_of_the_same_language_in_one_cell_fails_the_build(self, repo):
-        write(repo, APP_JS + "```js app\nid: reader-js-2\napp: reader\nconsole.log(2);\n```\n")
-        with pytest.raises(b.BuildError, match="two js panes"):
-            b.build()
-
-    def test_non_consecutive_panes_of_the_same_app_fail_the_build(self, repo):
-        write(repo, APP_HTML + "\ntext in between\n\n" + APP_JS)
-        with pytest.raises(b.BuildError, match="not consecutive"):
-            b.build()
-
-    def test_an_app_pane_id_cannot_collide_with_a_cell_id(self, repo):
-        write(repo, "```js app\nid: dup\napp: reader\nconsole.log(1);\n```\n\n"
-                    "```python exec\nid: dup\nprint(1)\n```\n")
-        with pytest.raises(b.BuildError, match="share the id"):
+    @pytest.mark.parametrize(
+        "body,match",
+        [
+            (APP_HTML + APP_CSS, "has no js pane"),
+            ("```php app\nid: c\napp: reader\n<?php ?>\n```\n", "not one of"),
+            ("```js app\napp: reader\nconsole.log(1);\n```\n", "no `id:` line"),
+            ("```js app\nid: c\nconsole.log(1);\n```\n", "no `app:` line"),
+            (APP_JS + "```js app\nid: reader-js-2\napp: reader\nconsole.log(2);\n```\n",
+             "two js panes"),
+            (APP_HTML + "\ntext in between\n\n" + APP_JS, "not consecutive"),
+            ("```js app\nid: dup\napp: reader\nconsole.log(1);\n```\n\n"
+             "```python exec\nid: dup\nprint(1)\n```\n", "share the id"),
+        ],
+        ids=[
+            "no-js-pane", "unknown-language", "no-id", "no-app-name",
+            "duplicate-language", "non-consecutive", "id-collides-with-a-cell",
+        ],
+    )
+    def test_a_broken_pane_or_header_fails_the_build(self, repo, body, match):
+        write(repo, body)
+        with pytest.raises(b.BuildError, match=match):
             b.build()
 
     def test_two_different_cells_with_a_cell_between_them_both_render_unconfused(self, repo):

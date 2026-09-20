@@ -64,22 +64,30 @@ def write_tutorial(repo, covers: str = "", heading: str = "A Real Section"):
 
 
 class TestWhatItRefusesToBuild:
-    def test_an_outcome_no_descriptor_lists_stops_it(self, repo):
-        write_tutorial(repo, "covers:\n  a-real-section:\n    covers: [DEMO-9.9]\n")
+    @pytest.mark.parametrize(
+        "covers, match",
+        [
+            pytest.param(
+                "covers:\n  a-real-section:\n    covers: [DEMO-9.9]\n",
+                "no module descriptor lists",
+                id="outcome-no-descriptor-lists",
+            ),
+            pytest.param(
+                "covers:\n  no-such-section:\n    covers: [DEMO-1.1]\n",
+                "not a section of it",
+                id="section-tutorial-lacks",
+            ),
+            pytest.param(
+                "covers:\n  wrong:\n    covers: [DEMO-1.1]\n",
+                "a-real-section",
+                id="error-names-real-sections",
+            ),
+        ],
+    )
+    def test_a_bad_covers_entry_stops_it(self, repo, covers, match):
+        write_tutorial(repo, covers)
         outcomes, _ = cm.load_outcomes()
-        with pytest.raises(cm.MapError, match="no module descriptor lists"):
-            cm.load_tutorials(outcomes)
-
-    def test_a_section_the_tutorial_does_not_have_stops_it(self, repo):
-        write_tutorial(repo, "covers:\n  no-such-section:\n    covers: [DEMO-1.1]\n")
-        outcomes, _ = cm.load_outcomes()
-        with pytest.raises(cm.MapError, match="not a section of it"):
-            cm.load_tutorials(outcomes)
-
-    def test_the_error_says_which_sections_there_are(self, repo):
-        write_tutorial(repo, "covers:\n  wrong:\n    covers: [DEMO-1.1]\n")
-        outcomes, _ = cm.load_outcomes()
-        with pytest.raises(cm.MapError, match="a-real-section"):
+        with pytest.raises(cm.MapError, match=match):
             cm.load_tutorials(outcomes)
 
     def test_an_outcome_listed_twice_stops_it(self, repo):
@@ -131,60 +139,64 @@ class TestStatus:
     def covered(self, **kw):
         return {"covers": kw.get("covers", []), "touches": kw.get("touches", [])}
 
-    def test_a_section_that_teaches_it_counts_as_taught(self):
-        assert cm.status_of(self.covered(covers=[object()])) == "taught"
-
-    def test_a_section_that_only_uses_it_does_not(self):
-        assert cm.status_of(self.covered(touches=[object()])) == "touched"
-
-    def test_nothing_at_all_is_a_gap(self):
-        assert cm.status_of(self.covered()) == "absent"
-
-    def test_a_deliberate_exclusion_is_not_a_gap(self):
-        scope = {"outcomes": {"X": {}}, "partial": {}}
-        assert cm.status_of(self.covered(), "X", scope) == "excluded"
-
-    def test_narrowing_something_unwritten_leaves_it_a_gap(self):
-        scope = {"outcomes": {}, "partial": {"X": {}}}
-        assert cm.status_of(self.covered(), "X", scope) == "absent"
-
-    def test_narrowing_something_written_is_its_own_state(self):
-        scope = {"outcomes": {}, "partial": {"X": {}}}
-        assert cm.status_of(self.covered(covers=[object()]), "X", scope) == "partial"
+    @pytest.mark.parametrize(
+        "kwargs, code, scope, expected",
+        [
+            pytest.param({"covers": [object()]}, "", None, "taught", id="taught"),
+            pytest.param({"touches": [object()]}, "", None, "touched", id="touched"),
+            pytest.param({}, "", None, "absent", id="nothing-is-a-gap"),
+            pytest.param(
+                {}, "X", {"outcomes": {"X": {}}, "partial": {}}, "excluded",
+                id="deliberate-exclusion",
+            ),
+            pytest.param(
+                {}, "X", {"outcomes": {}, "partial": {"X": {}}}, "absent",
+                id="narrowing-something-unwritten",
+            ),
+            pytest.param(
+                {"covers": [object()]}, "X", {"outcomes": {}, "partial": {"X": {}}},
+                "partial", id="narrowing-something-written",
+            ),
+        ],
+    )
+    def test_status_of(self, kwargs, code, scope, expected):
+        assert cm.status_of(self.covered(**kwargs), code, scope) == expected
 
 
 class TestBackReferences:
     def order_file(self, repo, slugs):
         course_file(repo, slugs)
 
-    def test_it_finds_an_earlier_tutorial_named_in_the_text(self, repo):
+    @pytest.mark.parametrize(
+        "t2_text, expected",
+        [
+            pytest.param(
+                "Recall your work from Counting Carefully.\n",
+                {"t2": {1}, "t1": set()},
+                id="finds-an-earlier-tutorial",
+            ),
+            pytest.param(
+                "Covered in Counting Carefully and later in What Are the Chances.\n",
+                {"t1": set()},
+                id="ignores-self-and-later",
+            ),
+        ],
+    )
+    def test_back_references(self, repo, t2_text, expected):
         titles = {1: "Counting Carefully", 2: "What Are the Chances"}
+        texts = {1: "Prose.\n", 2: t2_text}
         for n in (1, 2):
             (repo / "tutorials" / f"t{n}").mkdir()
             (repo / "tutorials" / f"t{n}" / f"t{n}.md").write_text(
                 f'---\ntitle: "{titles[n]}"\n'
                 f'year: "2026-2027"\nversion: 2026.08.23.1\n---\n\n# {titles[n]}\n\n'
-                + ("Recall your work from Counting Carefully.\n" if n == 2 else "Prose.\n")
+                + texts[n]
             )
         self.order_file(repo, ["t1", "t2"])
         outcomes, _ = cm.load_outcomes()
         refs = cm.back_references(cm.load_tutorials(outcomes))
-        assert refs["t2"] == {1}
-        assert refs["t1"] == set()
-
-    def test_it_ignores_a_tutorial_naming_itself_or_a_later_one(self, repo):
-        titles = {1: "Counting Carefully", 2: "What Are the Chances"}
-        for n in (1, 2):
-            (repo / "tutorials" / f"t{n}").mkdir()
-            (repo / "tutorials" / f"t{n}" / f"t{n}.md").write_text(
-                f'---\ntitle: "{titles[n]}"\n'
-                f'year: "2026-2027"\nversion: 2026.08.23.1\n---\n\n# {titles[n]}\n\n'
-                "Covered in Counting Carefully and later in What Are the Chances.\n"
-            )
-        self.order_file(repo, ["t1", "t2"])
-        outcomes, _ = cm.load_outcomes()
-        refs = cm.back_references(cm.load_tutorials(outcomes))
-        assert refs["t1"] == set()
+        for key, val in expected.items():
+            assert refs[key] == val
 
 
 class TestTheRealMap:
@@ -198,14 +210,11 @@ class TestTheRealMap:
         for code in list(scope["outcomes"]) + list(scope["partial"]):
             assert code in outcomes, f"{code} is not an outcome in any descriptor"
 
-    def test_every_proposal_names_real_outcomes(self):
+    def test_every_proposal_is_well_formed(self):
         outcomes, _ = cm.load_outcomes()
         for proposal in cm.load_proposals():
             for code in (proposal.get("covers") or []) + (proposal.get("optional") or []):
                 assert code in outcomes, f"{proposal['id']} names {code}"
-
-    def test_every_proposal_has_an_outline(self):
-        for proposal in cm.load_proposals():
             outline = cm.ROOT / "planning" / "outlines" / f"{proposal['outline']}.md"
             assert outline.is_file(), f"{proposal['id']} points at a missing {outline.name}"
 
@@ -241,20 +250,20 @@ class TestTheRealMap:
         assert str(len(wanted)) in line or len(wanted) == 1
         assert "proposal" in line
 
-    def test_and_says_so_plainly_when_there_is_nothing_left(self):
+    def test_unplanned_line_edge_cases(self):
+        outcomes, _ = cm.load_outcomes()
+
         # Guards the zero case: "every one of the 0 outcomes still to write
         # has a proposal" is a sentence nobody wrote on purpose.
-        outcomes, _ = cm.load_outcomes()
-        line = cm.unplanned_line({c: "taught" for c in outcomes}, [])
-        assert "Everything in both descriptors is written" in line
-        assert "0" not in line
+        nothing_left = cm.unplanned_line({c: "taught" for c in outcomes}, [])
+        assert "Everything in both descriptors is written" in nothing_left
+        assert "0" not in nothing_left
 
-    def test_it_names_the_outcomes_that_have_no_proposal(self):
-        outcomes, _ = cm.load_outcomes()
+        # Every outcome with no proposal gets named.
         states = {c: "absent" for c in outcomes}
-        line = cm.unplanned_line(states, [{"covers": []}])
+        all_unplanned = cm.unplanned_line(states, [{"covers": []}])
         for code in outcomes:
-            assert f"`{code}`" in line
+            assert f"`{code}`" in all_unplanned
 
     def test_the_outlines_index_lists_every_outline(self):
         folder = cm.ROOT / "planning" / "outlines"
@@ -274,17 +283,17 @@ class TestTheTopicGlossary:
         path = cm.ROOT / "planning" / "curriculum" / "topics.yaml"
         return yaml.safe_load(path.read_text())["topics"]
 
-    def test_every_outcome_is_claimed_by_a_topic(self):
+    def test_topics_and_outcomes_correspond(self):
         # Several topics may legitimately claim one outcome (a descriptor can
         # bundle ideas met weeks apart); only an unclaimed outcome is an error.
+        # The reverse must also hold: no topic invents one that isn't real.
         outcomes, _ = cm.load_outcomes()
-        served = {o for t in self.topics().values() for o in cm.outcomes_of(t)}
+        topics = self.topics()
+        served = {o for t in topics.values() for o in cm.outcomes_of(t)}
         missing = sorted(set(outcomes) - served)
         assert not missing, f"no topic claims {missing}"
 
-    def test_no_topic_invents_an_outcome(self):
-        outcomes, _ = cm.load_outcomes()
-        for code, topic in self.topics().items():
+        for code, topic in topics.items():
             claimed = cm.outcomes_of(topic)
             if code.startswith("PRE-"):
                 assert not claimed, f"{code} is groundwork and claims {claimed}"
@@ -310,15 +319,13 @@ class TestTheTopicGlossary:
                 f"{code} is groundwork but is not written up like a topic"
             )
 
-    def test_every_prerequisite_is_a_real_topic(self):
+    def test_prerequisites_are_real_and_not_self_referential(self):
         topics = self.topics()
         for code, topic in topics.items():
-            for need in topic.get("needs") or []:
+            needs = topic.get("needs") or []
+            assert code not in needs, f"{code} requires itself"
+            for need in needs:
                 assert need in topics, f"{code} needs {need}, which does not exist"
-
-    def test_nothing_requires_itself(self):
-        for code, topic in self.topics().items():
-            assert code not in (topic.get("needs") or [])
 
     def test_the_prerequisites_have_no_cycles(self):
         """A cycle would make the tiers of a tech tree impossible to compute."""
@@ -344,9 +351,7 @@ class TestTheTopicGlossary:
                 f"{code}'s description is too short to be worth reading"
             )
             assert topic.get("uses"), f"{code} lists no applications"
-
-    def test_the_descriptions_avoid_the_jargon_they_are_there_to_replace(self):
-        for code, topic in self.topics().items():
+            # The description should avoid the jargon it exists to replace.
             first = topic["plain"].strip().split(".")[0].lower()
             assert not first.startswith(topic["name"].lower()), (
                 f"{code} defines itself with its own name"
@@ -403,11 +408,35 @@ class TestSeveralReleasesOfOneTutorial:
         course_file(repo, [slug])
         return path
 
-    def test_one_tutorial_however_many_releases(self, repo):
-        self.release(repo, "v2026.08.23.1.md", "2026.08.23.1")
-        self.release(repo, "v2026.08.23.2.md", "2026.08.23.2")
-        self.release(repo, "sample.md", "2026.08.24.1")
-        assert len(cm.load_tutorials(cm.load_outcomes()[0])) == 1
+    @pytest.mark.parametrize(
+        "releases, expected_count",
+        [
+            pytest.param(
+                [
+                    ("v2026.08.23.1.md", "2026.08.23.1", "live", "sample"),
+                    ("v2026.08.23.2.md", "2026.08.23.2", "live", "sample"),
+                    ("sample.md", "2026.08.24.1", "live", "sample"),
+                ],
+                1,
+                id="one-tutorial-however-many-releases",
+            ),
+            pytest.param(
+                [
+                    ("sample.md", "2026.08.24.1", "live", "sample"),
+                    ("other.md", "2026.08.24.1", "live", "other"),
+                ],
+                2,
+                id="two-different-tutorials-are-still-two",
+            ),
+        ],
+    )
+    def test_tutorial_count_by_releases(self, repo, releases, expected_count):
+        slugs = []
+        for name, version, status, slug in releases:
+            self.release(repo, name, version, status, slug)
+            slugs.append(slug)
+        course_file(repo, sorted(set(slugs)))
+        assert len(cm.load_tutorials(cm.load_outcomes()[0])) == expected_count
 
     def test_the_newest_live_release_is_the_one_reported(self, repo):
         old = self.release(repo, "v2026.08.23.1.md", "2026.08.23.1")
@@ -417,21 +446,16 @@ class TestSeveralReleasesOfOneTutorial:
         found = cm.load_tutorials(cm.load_outcomes()[0])
         assert [t.title for t in found] == ["The New Name"]
 
-    def test_a_beta_release_does_not_displace_the_live_one(self, repo):
+    @pytest.mark.parametrize(
+        "old_status, new_status, which_wins",
+        [
+            pytest.param("live", "beta", "old", id="beta-does-not-displace-live"),
+            pytest.param("beta", "beta", "new", id="nothing-live-newest-still-answers"),
+        ],
+    )
+    def test_newest_live(self, repo, old_status, new_status, which_wins):
         # Must match build.py's own rule: newest live, not newest overall.
-        live = self.release(repo, "v2026.08.23.1.md", "2026.08.23.1", status="live")
-        self.release(repo, "sample.md", "2026.08.24.1", status="beta")
-        assert cm.newest_live(sorted(
-            (repo / "tutorials").rglob("*.md"))) == {live}
-
-    def test_with_nothing_live_the_newest_still_answers(self, repo):
-        self.release(repo, "v2026.08.23.1.md", "2026.08.23.1", status="beta")
-        newest = self.release(repo, "sample.md", "2026.08.24.1", status="beta")
-        assert cm.newest_live(sorted(
-            (repo / "tutorials").rglob("*.md"))) == {newest}
-
-    def test_two_different_tutorials_are_still_two(self, repo):
-        self.release(repo, "sample.md", "2026.08.24.1", slug="sample")
-        self.release(repo, "other.md", "2026.08.24.1", slug="other")
-        course_file(repo, ["sample", "other"])
-        assert len(cm.load_tutorials(cm.load_outcomes()[0])) == 2
+        old = self.release(repo, "v2026.08.23.1.md", "2026.08.23.1", status=old_status)
+        new = self.release(repo, "sample.md", "2026.08.24.1", status=new_status)
+        expected = {old} if which_wins == "old" else {new}
+        assert cm.newest_live(sorted((repo / "tutorials").rglob("*.md"))) == expected

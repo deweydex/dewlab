@@ -63,7 +63,8 @@ execution (numpy, pandas, matplotlib, SQL), site editors, settings, the
 contents/tree pages, all in one real browser + real Pyodide pass.
 
 *Cell chrome:* `test_cell_run_menu.py`, `test_cell_collapse_duplicate.py`,
-`test_cell_report.py`, `test_cell_hint.py`, `test_cell_hints_staged.py`,
+`test_cell_report.py` (also covers the hint icon, which shares the same
+disclosure code as the report icon), `test_cell_hints_staged.py`,
 `test_autocomplete.py`, `test_stop_button.py`, `test_custom_cells.py`,
 `test_app_cell_live.py` — things that happen on or around one cell.
 

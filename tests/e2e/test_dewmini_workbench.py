@@ -123,29 +123,32 @@ def test_work_saved_before_tabs_is_migrated(page, dewmini_url):
     assert "from_before = 1" in page.locator(".cm-content").first.inner_text()
 
 
-def test_both_rails_can_be_open_at_once(dewmini):
-    """The previous panel logic closed whatever else was open, which was
-    right when both panels shared the right edge and is wrong now that they
-    sit on opposite sides."""
-    dewmini.click("#dm-library-toggle")
-    dewmini.click("#dm-workbench-toggle")
-
-    assert dewmini.locator("#dm-library").is_visible()
-    assert dewmini.locator("#dm-workbench").is_visible()
-
-    assert dewmini.evaluate("document.documentElement.hasAttribute('data-dl-panel-left')")
-    assert dewmini.evaluate("document.documentElement.hasAttribute('data-dl-panel-right')")
-
-
-def test_settings_and_the_library_share_an_edge(dewmini):
-    """Two panels sharing one edge still close each other — otherwise the
-    second simply covers the first."""
+@pytest.mark.parametrize(
+    "open_second,second_panel,first_still_visible",
+    [
+        (lambda p: p.click("#dm-workbench-toggle"), "#dm-workbench", True),
+        (lambda p: _open_panel(p, "#dl-settings-toggle"), "#dl-settings", False),
+    ],
+    ids=["opposite-edge-panels-coexist", "same-edge-panels-close-each-other"],
+)
+def test_panel_conflict_rules(dewmini, open_second, second_panel, first_still_visible):
+    """The previous panel logic closed whatever else was open, which is
+    right for two panels sharing an edge (library and settings both close
+    the other, or the second would simply cover the first) and wrong for
+    two on opposite sides (library right, workbench left), which can be
+    open together."""
     dewmini.click("#dm-library-toggle")
     assert dewmini.locator("#dm-library").is_visible()
 
-    _open_panel(dewmini, "#dl-settings-toggle")
-    assert dewmini.locator("#dl-settings").is_visible()
-    assert dewmini.locator("#dm-library").is_hidden()
+    open_second(dewmini)
+    assert dewmini.locator(second_panel).is_visible()
+
+    if first_still_visible:
+        assert dewmini.locator("#dm-library").is_visible()
+        assert dewmini.evaluate("document.documentElement.hasAttribute('data-dl-panel-left')")
+        assert dewmini.evaluate("document.documentElement.hasAttribute('data-dl-panel-right')")
+    else:
+        assert dewmini.locator("#dm-library").is_hidden()
 
 
 def test_a_rail_survives_clicking_your_own_notebook(dewmini):
@@ -241,19 +244,22 @@ def test_the_reference_searches_every_tutorials_terms(dewmini):
     assert dewmini.locator("#dm-reference-groups dt").count() > 0
 
 
-def test_the_reference_filters_by_kind(dewmini):
+@pytest.mark.parametrize("row_id", ["dm-reference-kinds", "dm-reference-subjects"])
+def test_a_filter_chip_narrows_to_its_printed_count(dewmini, row_id):
+    """Kind and subject chips share the same rendering and counting logic
+    (renderReferenceFilters()/referenceEntryMatches() in dewmini.js) —
+    every chip already carries its own count, so a filter that would empty
+    the list says so before it is pressed, and pressing it leaves exactly
+    that many terms."""
     dewmini.click("#dm-library-toggle")
     dewmini.wait_for_function(
-        "document.querySelectorAll('#dm-reference-kinds button').length > 1",
+        f"document.querySelectorAll('#{row_id} button').length > 0",
         timeout=15_000,
     )
-    everything = dewmini.locator("#dm-reference-groups dt").count()
-
-    # Every button is a kind now — there is no "All", because no chip pressed
-    # already means all of them, the same as every other filter row.
-    dewmini.locator("#dm-reference-kinds button").nth(1).click()
-    assert dewmini.locator("#dm-reference-groups dt").count() < everything
-    assert dewmini.locator("#dm-reference-groups .dm-reference-group").count() == 1
+    chip = dewmini.locator(f"#{row_id} button").first
+    promised = int("".join(ch for ch in chip.inner_text() if ch.isdigit()))
+    chip.click()
+    assert dewmini.locator("#dm-reference-groups dt").count() == promised
 
 
 def test_the_reference_offers_subject_and_level_up_front(dewmini):
@@ -274,27 +280,19 @@ def test_the_reference_offers_subject_and_level_up_front(dewmini):
     assert dewmini.locator("#dm-reference-levels button").count() > 0
 
 
-def test_a_subject_narrows_the_list_to_its_own_count(dewmini):
-    dewmini.click("#dm-library-toggle")
-    dewmini.wait_for_function(
-        "document.querySelectorAll('#dm-reference-subjects button').length > 0",
-        timeout=15_000,
-    )
-    chip = dewmini.locator("#dm-reference-subjects button").first
-    promised = int("".join(ch for ch in chip.inner_text() if ch.isdigit()))
-    chip.click()
-    assert dewmini.locator("#dm-reference-groups dt").count() == promised
-
-
-def test_the_topics_row_opens_in_flow_rather_than_over_the_results(dewmini):
+def test_the_topics_disclosure_opens_in_flow_and_reports_its_count(dewmini):
     """Why this is a `<details>` in normal flow, not a popover: opening it
-    must push the results down, never sit on top of them. Measured, because
-    "looks fine" is exactly how an overlay ships."""
+    must push the results down, never sit on top of them — measured,
+    because "looks fine" is exactly how an overlay ships. And a
+    folded-away filter that is silently active is a trap, so the same
+    `<details>`'s summary has to report its own state."""
     dewmini.click("#dm-library-toggle")
     dewmini.wait_for_selector("#dm-reference-topics-wrap")
 
     wrap = dewmini.locator("#dm-reference-topics-wrap")
     assert wrap.evaluate("el => !el.open"), "it should start closed"
+    summary = dewmini.locator("#dm-reference-topics-summary")
+    assert summary.inner_text().strip() == "Topics"
 
     before = dewmini.locator("#dm-reference-groups").bounding_box()["y"]
     wrap.locator("summary").click()
@@ -307,19 +305,6 @@ def test_the_topics_row_opens_in_flow_rather_than_over_the_results(dewmini):
     assert after > before, "opening it should push the results down"
     assert row["y"] + row["height"] <= after + 1, "the row must not overlap them"
 
-
-def test_the_topics_summary_says_how_many_are_on(dewmini):
-    """A folded-away filter that is silently active is a trap — the summary
-    has to report its own state."""
-    dewmini.click("#dm-library-toggle")
-    dewmini.wait_for_function(
-        "document.querySelectorAll('#dm-reference-kinds button').length > 1",
-        timeout=15_000,
-    )
-    summary = dewmini.locator("#dm-reference-topics-summary")
-    assert summary.inner_text().strip() == "Topics"
-
-    dewmini.locator("#dm-reference-topics-wrap summary").click()
     topics = dewmini.locator("#dm-reference-topics button")
     if topics.count() == 0:
         pytest.skip("the fixture's tutorials belong to no curated topic group")
@@ -354,10 +339,13 @@ def test_no_rail_text_shrinks_below_twelve_pixels(dewmini):
     assert smallest >= 12, f"something in the rail renders at {smallest}px"
 
 
-def test_a_blank_cell_is_reachable_from_an_empty_notebook(dewmini):
-    """The seam used to be suppressed while the toolbar carried its own
-    Python/Text buttons — removing those as duplicates would otherwise have
-    left no way to start a *blank* cell, only "Start with imports"."""
+def test_the_toolbar_offers_openings_not_a_second_way_to_add_a_cell(dewmini):
+    """The toolbar's Python and Text buttons duplicated the insert seams
+    below, so they went; the space went to two openings that previously
+    only existed on an empty notebook. The seam itself must still be
+    suppressed nowhere — removing those toolbar buttons as duplicates would
+    otherwise have left no way to start a *blank* cell, only "Start with
+    imports"."""
     assert dewmini.locator(".dm-cell").count() == 0
     assert dewmini.locator(".dm-insert").count() == 1, "one seam, over an empty notebook"
 
@@ -365,11 +353,6 @@ def test_a_blank_cell_is_reachable_from_an_empty_notebook(dewmini):
     assert dewmini.locator(".dm-cell").count() == 1
     assert dewmini.locator(".dm-cell-python .cm-content").inner_text().strip() == ""
 
-
-def test_the_toolbar_offers_openings_not_a_second_way_to_add_a_cell(dewmini):
-    """The toolbar's Python and Text buttons duplicated the insert seams
-    below, so they went; the space went to two openings that previously
-    only existed on an empty notebook."""
     toolbar = dewmini.locator(".dm-toolbar")
     assert toolbar.locator("#dm-show-example").is_visible()
     assert toolbar.locator("#dm-add-imports").is_visible()
@@ -377,7 +360,6 @@ def test_the_toolbar_offers_openings_not_a_second_way_to_add_a_cell(dewmini):
     assert toolbar.locator("#add-python-cell").count() == 0
     assert toolbar.locator("#add-text-cell").count() == 0
 
-    dewmini.locator(".dm-insert-btn", has_text="Python").click()
     dewmini.click("#dm-add-imports")
     assert dewmini.locator(".dm-cell").count() == 2
     assert "import pandas" in dewmini.locator(".dm-cell-python .cm-content").last.inner_text()
@@ -467,31 +449,31 @@ def test_restart_and_run_all_reruns_from_a_clean_start(dewmini):
     )
 
 
-def test_a_text_cell_renders_maths(dewmini):
+@pytest.mark.parametrize(
+    "prose,should_render",
+    [
+        ("Solve $x^2 + 1 = 0$ for x.", True),
+        ("It cost $5 or $6, either way.", False),
+    ],
+    ids=["renders-maths", "dollar-sign-is-not-maths"],
+)
+def test_a_text_cell_renders_maths_only_when_it_looks_like_maths(dewmini, prose, should_render):
     """Renders through the same lazily-loaded KaTeX bundle a tutorial page
-    uses."""
+    uses — but the same guard build.py's own INLINE_MATH_RE carries: "$5"
+    in ordinary prose is money, not a broken formula."""
     dewmini.locator(".dm-insert-btn", has_text="Text").last.click()
     textarea = dewmini.locator(".dm-textarea").last
     textarea.click()
-    dewmini.keyboard.insert_text("Solve $x^2 + 1 = 0$ for x.")
+    dewmini.keyboard.insert_text(prose)
     textarea.evaluate("el => el.blur()")  # triggers showRendered(), same as clicking away
 
-    dewmini.wait_for_selector(".dl-math .katex", timeout=15_000)
-    assert dewmini.locator(".dl-math .katex").count() >= 1
-
-
-def test_maths_survives_a_dollar_sign_that_is_not_maths(dewmini):
-    """The same guard build.py's own INLINE_MATH_RE carries: "$5" in
-    ordinary prose is money, not a broken formula."""
-    dewmini.locator(".dm-insert-btn", has_text="Text").last.click()
-    textarea = dewmini.locator(".dm-textarea").last
-    textarea.click()
-    dewmini.keyboard.insert_text("It cost $5 or $6, either way.")
-    textarea.evaluate("el => el.blur()")
-
     rendered = dewmini.locator(".dm-doc-render").last
-    assert "$5 or $6" in rendered.inner_text()
-    assert rendered.locator(".dl-math").count() == 0
+    if should_render:
+        dewmini.wait_for_selector(".dl-math .katex", timeout=15_000)
+        assert rendered.locator(".dl-math .katex").count() >= 1
+    else:
+        assert "$5 or $6" in rendered.inner_text()
+        assert rendered.locator(".dl-math").count() == 0
 
 
 def _quiet_text_cell(page):
@@ -521,38 +503,22 @@ def hover_cell(page, cell):
     page.mouse.move(box["x"] + 15, box["y"] + 15, steps=5)
 
 
-def test_a_rendered_text_cells_chrome_is_invisible_until_touched(dewmini):
+def test_a_rendered_text_cells_chrome_is_quiet_until_touched(dewmini):
+    """Walks one cell through all three chrome-visibility states: invisible
+    until touched, revealed by hovering, and — opacity/pointer-events, not
+    display:none, so a keyboard user never needs to hover first — revealed
+    by tabbing onto a hidden control too."""
     cell = _quiet_text_cell(dewmini)
     dewmini.mouse.move(5, 5)  # away from the cell entirely
-    assert_head_opacity(dewmini, cell, "0")
-
-
-def test_hovering_the_cell_reveals_its_chrome(dewmini):
-    cell = _quiet_text_cell(dewmini)
-    dewmini.mouse.move(5, 5)
     assert_head_opacity(dewmini, cell, "0")
 
     cell.hover()
     assert_head_opacity(dewmini, cell, "1")
 
-
-def test_tabbing_onto_a_hidden_control_reveals_it_too(dewmini):
-    """opacity/pointer-events, not display:none — so a keyboard user
-    never needs to hover first."""
-    cell = _quiet_text_cell(dewmini)
     dewmini.mouse.move(5, 5)
     assert_head_opacity(dewmini, cell, "0")
 
     cell.locator(".dm-icon-delete").focus()
-    assert_head_opacity(dewmini, cell, "1")
-
-
-def test_a_python_cells_chrome_is_never_hidden(dewmini):
-    """Quiet-until-touched is a text-cell-only affordance — a Python cell
-    is meant to be worked on, not read past."""
-    add_python_cell(dewmini, "1 + 1")
-    dewmini.mouse.move(5, 5)
-    cell = dewmini.locator(".dm-cell-python").last
     assert_head_opacity(dewmini, cell, "1")
 
 
@@ -606,30 +572,30 @@ def test_a_web_cells_script_cannot_reach_the_parent_page(dewmini):
     assert dewmini.title() != "hijacked"
 
 
-def test_a_web_cells_css_styles_its_own_html(dewmini):
+@pytest.mark.parametrize(
+    "html",
+    ["<h2>Styled</h2><button>Go</button>", ""],
+    ids=["with-html", "without-html-falls-back-to-fixed-preview"],
+)
+def test_a_web_cells_css_styles_the_markup_it_renders(dewmini, html):
     """What merging the two types unlocks that neither could alone: a CSS
     rule styling the *same* cell's own markup, not a fixed sample page —
     the pairing the old separate CSS cell's design note declined to guess
-    at."""
+    at. A CSS-only cell — that old standalone CSS cell's own use case —
+    still needs something real to style before the reader writes any
+    markup, so it falls back to the fixed preview."""
     cell = _web_cell(
         dewmini,
-        html="<h2>Styled</h2><button>Go</button>",
+        html=html,
         css="h2 { color: rebeccapurple; } button { background: gold; }",
     )
     frame = cell.locator(".dm-html-frame").content_frame
-    assert frame.locator("h2").text_content() == "Styled"
     assert frame.locator("h2").evaluate("el => getComputedStyle(el).color") == "rgb(102, 51, 153)"
-    assert frame.locator("button").evaluate(
-        "el => getComputedStyle(el).backgroundColor"
-    ) == "rgb(255, 215, 0)"
-
-
-def test_an_empty_html_half_falls_back_to_the_fixed_preview(dewmini):
-    """A CSS-only cell — the old standalone CSS cell's own use case — still
-    needs something real to style before the reader writes any markup."""
-    cell = _web_cell(dewmini, css="h2 { color: rebeccapurple; }")
-    frame = cell.locator(".dm-html-frame").content_frame
-    assert frame.locator("h2").evaluate("el => getComputedStyle(el).color") == "rgb(102, 51, 153)"
+    if html:
+        assert frame.locator("h2").text_content() == "Styled"
+        assert frame.locator("button").evaluate(
+            "el => getComputedStyle(el).backgroundColor"
+        ) == "rgb(255, 215, 0)"
 
 
 def test_rendering_a_web_cell_only_happens_on_render_click(dewmini):
@@ -719,12 +685,21 @@ def add_sql_cell(page, script: str) -> None:
     page.keyboard.insert_text(script)
 
 
-def test_a_sql_cells_chrome_is_never_hidden(dewmini):
-    """A SQL cell runs against the shared session, so quiet-until-touched
-    (a read-not-run affordance) does not apply to it."""
-    add_sql_cell(dewmini, "select 1")
+@pytest.mark.parametrize(
+    "add_cell,selector,code",
+    [
+        (add_python_cell, ".dm-cell-python", "1 + 1"),
+        (add_sql_cell, ".dm-cell-sql", "select 1"),
+    ],
+    ids=["python", "sql"],
+)
+def test_a_run_cell_types_chrome_is_never_hidden(dewmini, add_cell, selector, code):
+    """Quiet-until-touched is a text-cell-only affordance — a cell meant to
+    be run, not read past (Python or, since it runs against the shared
+    session, SQL too), keeps its chrome visible regardless of hover."""
+    add_cell(dewmini, code)
     dewmini.mouse.move(5, 5)
-    cell = dewmini.locator(".dm-cell-sql").last
+    cell = dewmini.locator(selector).last
     assert_head_opacity(dewmini, cell, "1")
     assert cell.locator(".dm-icon-preview").count() == 0
     assert cell.locator(".dm-cell-runline").count() == 1
@@ -1364,53 +1339,41 @@ def test_the_file_view_shows_the_notebook_as_one_python_file(dewmini):
     assert dewmini.locator(".dm-cell").count() == 0
 
 
-def test_a_text_cell_survives_the_round_trip_as_a_comment(dewmini):
-    add_python_cell(dewmini, "x = 1")
-    dewmini.locator(".dm-insert-btn", has_text="Text").last.click()
-    dewmini.locator(".dm-cell-text textarea").last.fill("A note about x")
-    dewmini.locator("h1").click()  # blur, so the text cell commits
-
-    switch_view(dewmini, "file")
-    text = dewmini.locator(".dm-fileview-editor .cm-content").inner_text()
-    assert "# %% [markdown]" in text
-    assert "# A note about x" in text
-
-    switch_view(dewmini, "cells")
-    kinds = dewmini.evaluate(
-        "() => [...document.querySelectorAll('.dm-cell')]"
-        ".map(c => c.className.includes('dm-cell-text') ? 'text' : 'python')"
-    )
-    assert kinds == ["python", "text"]
-
-
-def test_a_round_trip_through_the_file_view_keeps_outputs(dewmini):
-    """parsePyCells() mints a fresh id for every cell it reads, and output
-    is stored under a cell's id — without merging by content, one look at
-    the file view would silently empty every output in the notebook."""
+def test_a_round_trip_through_the_file_view_loses_nothing(dewmini):
+    """One notebook carries the three payloads a Cells→File→Cells round
+    trip has to get right: a note (parsePyCells() round-trips it as a
+    `#` comment), a cell whose output is stored under its own id (mint a
+    fresh id per cell, without merging by content, and every output in the
+    notebook empties silently), and a blank cell (flush() inside
+    parsePyCells() used to skip any cell whose content was blank after
+    trimming, so a reader who inserted a fresh cell, or cleared one out
+    while editing, lost it the moment the view switched back)."""
     add_python_cell(dewmini, "print('kept')")
     before = run_first_cell_and_wait(dewmini)
     assert before == "kept"
 
-    switch_view(dewmini, "file")
-    switch_view(dewmini, "cells")
+    dewmini.locator(".dm-insert-btn", has_text="Text").last.click()
+    dewmini.locator(".dm-cell-text textarea").last.fill("A note about it")
+    dewmini.locator("h1").click()  # blur, so the text cell commits
 
-    assert dewmini.locator(".dm-cell-output").first.inner_text().strip() == "kept"
-
-
-def test_a_blank_cell_survives_a_round_trip_through_the_file_view(dewmini):
-    """flush() inside parsePyCells() used to skip any cell whose content
-    was blank after trimming, so a reader who inserted a fresh cell, or
-    cleared one out while editing, lost it the moment the view switched
-    back."""
-    add_python_cell(dewmini, "x = 1")
     dewmini.locator(".dm-insert-btn", has_text="Python").last.click()  # left blank
 
-    assert dewmini.locator(".dm-cell").count() == 2
+    assert dewmini.locator(".dm-cell").count() == 3
 
     switch_view(dewmini, "file")
+    text = dewmini.locator(".dm-fileview-editor .cm-content").inner_text()
+    assert "# %% [markdown]" in text
+    assert "# A note about it" in text
+
     switch_view(dewmini, "cells")
 
-    assert dewmini.locator(".dm-cell").count() == 2
+    assert dewmini.locator(".dm-cell").count() == 3, "the blank cell must survive too"
+    assert dewmini.locator(".dm-cell-output").first.inner_text().strip() == "kept"
+    kinds = dewmini.evaluate(
+        "() => [...document.querySelectorAll('.dm-cell')]"
+        ".map(c => c.className.includes('dm-cell-text') ? 'text' : 'python')"
+    )
+    assert kinds == ["python", "text", "python"]
 
 
 def test_editing_in_the_file_view_reaches_the_cells(dewmini):
@@ -1518,43 +1481,42 @@ def test_editing_an_opened_file_writes_back_to_the_workspace(dewmini):
     assert shown == "x = 1\ny = 2"
 
 
-def test_a_markerless_file_stays_markerless_after_editing(dewmini):
-    """Opening or editing a plain script with no "# %%" markers must not
-    turn it into something that looks like a notebook export the reader
-    never asked for."""
-    write_workspace_file(dewmini, "plain.py", "x = 1\n")
+@pytest.mark.parametrize(
+    "filename,content,edit,expected_markers",
+    [
+        ("plain.py", "x = 1\n", "\ny = 2\n", 0),
+        ("multi.py", "# %%\nx = 1\n\n# %%\ny = 2\n", None, 2),
+    ],
+    ids=["markerless-file-stays-markerless", "multi-cell-file-keeps-its-markers"],
+)
+def test_a_files_marker_state_survives_being_opened(dewmini, filename, content, edit, expected_markers):
+    """The two branches of one if/else in parsePyCells(): opening or
+    editing a plain script with no "# %%" markers must not turn it into
+    something that looks like a notebook export the reader never asked
+    for, while the marker is load-bearing once there is more than one cell
+    to tell apart — omitting it would merge two cells back into one on the
+    next open."""
+    write_workspace_file(dewmini, filename, content)
     open_files_panel(dewmini)
-    dewmini.locator(".dm-filelist-item-name", has_text="plain.py").click()
+    dewmini.locator(".dm-filelist-item-name", has_text=filename).click()
     dewmini.wait_for_selector(".dm-fileview-editor")
 
-    assert "# %%" not in dewmini.locator(".dm-fileview-editor .cm-content").inner_text()
+    if expected_markers == 0:
+        assert "# %%" not in dewmini.locator(".dm-fileview-editor .cm-content").inner_text()
 
-    editor = dewmini.locator(".dm-fileview-editor .cm-content")
-    editor.click()
-    dewmini.keyboard.press("Control+End")
-    dewmini.keyboard.insert_text("\ny = 2\n")
-    dewmini.wait_for_timeout(1500)
-
-    dewmini.locator("#new-notebook").click()
-    add_python_cell(dewmini, "print(open('plain.py').read())")
-    shown = run_first_cell_and_wait(dewmini)
-    assert shown == "x = 1\ny = 2"
-
-
-def test_a_multi_cell_file_keeps_its_markers(dewmini):
-    """The marker is load-bearing once there is more than one cell to tell
-    apart — omitting it would merge two cells back into one on the next
-    open."""
-    write_workspace_file(dewmini, "multi.py", "# %%\nx = 1\n\n# %%\ny = 2\n")
-    open_files_panel(dewmini)
-    dewmini.locator(".dm-filelist-item-name", has_text="multi.py").click()
-    dewmini.wait_for_selector(".dm-fileview-editor")
+    if edit:
+        editor = dewmini.locator(".dm-fileview-editor .cm-content")
+        editor.click()
+        dewmini.keyboard.press("Control+End")
+        dewmini.keyboard.insert_text(edit)
     dewmini.wait_for_timeout(1500)  # settle any debounced write before re-reading
 
     dewmini.locator("#new-notebook").click()
-    add_python_cell(dewmini, "print(open('multi.py').read())")
+    add_python_cell(dewmini, f"print(open({filename!r}).read())")
     shown = run_first_cell_and_wait(dewmini)
-    assert shown.count("# %%") == 2
+    assert shown.count("# %%") == expected_markers
+    if expected_markers == 0:
+        assert shown == "x = 1\ny = 2"
 
 
 def test_renaming_a_file_follows_the_tab_that_is_open_on_it(dewmini):
@@ -1584,7 +1546,7 @@ def test_a_file_dewmini_cannot_open_says_so_and_stays_put(dewmini):
     assert dewmini.locator(".dm-tab").count() == tabs_before
 
 
-def test_a_file_a_cell_writes_lands_in_the_workspace(dewmini):
+def test_a_file_a_cell_writes_lands_in_the_workspace_and_can_be_imported(dewmini):
     """Python's own working directory used to be a temporary folder nothing
     in the interface showed — a student's open("notes.txt", "w") went
     somewhere they could not see, import from, or keep past a reload."""
@@ -1595,13 +1557,11 @@ def test_a_file_a_cell_writes_lands_in_the_workspace(dewmini):
     names = dewmini.locator(".dm-filelist-item-name").all_inner_texts()
     assert "notes.txt" in names
 
-
-def test_a_file_a_cell_writes_can_then_be_imported(dewmini):
     add_python_cell(dewmini, "open('shapes.py', 'w').write('def area(r):\\n    return 3 * r * r\\n')\nprint('written')")
-    assert run_first_cell_and_wait(dewmini) == "written"
+    assert run_first_cell_and_wait(dewmini, 1) == "written"
 
     add_python_cell(dewmini, "import shapes\nprint(shapes.area(2))")
-    assert run_first_cell_and_wait(dewmini, 1) == "12"
+    assert run_first_cell_and_wait(dewmini, 2) == "12"
 
 
 def test_the_project_is_on_the_left_and_the_reference_on_the_right(dewmini):
@@ -1617,21 +1577,12 @@ def test_the_project_is_on_the_left_and_the_reference_on_the_right(dewmini):
     assert dewmini.locator("#dm-library #dm-reference-section").count() == 1
 
 
-def test_an_html_file_in_the_workspace_opens_as_a_site(dewmini):
-    write_workspace_file(dewmini, "index.html", "<h1>Hello site</h1>")
-    open_files_panel(dewmini)
-
-    dewmini.locator(".dm-filelist-item-name", has_text="index.html").click()
-    dewmini.wait_for_selector(".dm-siteview")
-
-    assert dewmini.locator(".dm-siteview-pane").count() == 3
-    frame = dewmini.locator(".dm-siteview-frame").content_frame
-    assert frame.locator("h1").text_content() == "Hello site"
-
-
 def test_a_site_discovers_matching_css_and_js_files(dewmini):
     """No fixed three names: a same-base-name .css and .js beside the .html
-    open with it, since a site need not be index.html/style.css/script.js."""
+    open with it, since a site need not be index.html/style.css/script.js.
+    Also covers the bare case — opening as a site at all — since a lone
+    .html opening with no matching files is just the empty end of the same
+    discovery."""
     write_workspace_file(dewmini, "page.css", "h1 { color: rebeccapurple; }")
     write_workspace_file(dewmini, "page.js", "document.querySelector('h1').textContent += '!';")
     write_workspace_file(dewmini, "page.html", "<h1>Hi</h1>")
@@ -1641,6 +1592,7 @@ def test_a_site_discovers_matching_css_and_js_files(dewmini):
     dewmini.wait_for_selector(".dm-siteview")
 
     panes = dewmini.locator(".dm-siteview-pane")
+    assert panes.count() == 3
     assert "rebeccapurple" in panes.nth(1).locator(".cm-content").inner_text()
     assert "textContent" in panes.nth(2).locator(".cm-content").inner_text()
 
@@ -1814,31 +1766,24 @@ def test_the_theme_group_announces_itself_as_a_radiogroup(dewmini):
     expect(group.locator('button[data-value="light"]')).to_have_attribute("aria-checked", "false")
 
 
-def test_arrow_right_moves_focus_and_selection_together(dewmini):
+@pytest.mark.parametrize(
+    "start_value,expected_value",
+    [("system", "light"), ("dark", "system")],
+    ids=["moves-focus-and-selection-together", "wraps-from-last-option-to-first"],
+)
+def test_arrow_right_moves_focus_and_selection_together(dewmini, start_value, expected_value):
     open_texture_settings(dewmini)
     group = dewmini.locator('.dl-seg[data-texture="theme"]')
-    group.locator('button[data-value="system"]').focus()
+    start = group.locator(f'button[data-value="{start_value}"]')
+    start.click()
+    start.focus()
 
     dewmini.keyboard.press("ArrowRight")
 
-    light = group.locator('button[data-value="light"]')
-    expect(light).to_have_attribute("aria-checked", "true")
-    expect(light).to_be_focused()
-    expect(group.locator('button[data-value="system"]')).to_have_attribute("aria-checked", "false")
-
-
-def test_arrow_right_wraps_from_the_last_option_to_the_first(dewmini):
-    open_texture_settings(dewmini)
-    group = dewmini.locator('.dl-seg[data-texture="theme"]')
-    last = group.locator('button[data-value="dark"]')
-    last.click()
-    last.focus()
-
-    dewmini.keyboard.press("ArrowRight")
-
-    first = group.locator('button[data-value="system"]')
-    expect(first).to_have_attribute("aria-checked", "true")
-    expect(first).to_be_focused()
+    expected = group.locator(f'button[data-value="{expected_value}"]')
+    expect(expected).to_have_attribute("aria-checked", "true")
+    expect(expected).to_be_focused()
+    expect(start).to_have_attribute("aria-checked", "false")
 
 
 class TestStatusAnnouncer:
@@ -1886,9 +1831,10 @@ def test_a_sites_script_logs_and_errors_into_its_console(dewmini):
     assert "does not know a name called nope" in dewmini.locator(".dm-siteview-console-output .dl-error-hint").inner_text()
 
 
-def test_a_sites_javascript_runs_on_run_not_on_typing(dewmini):
-    """HTML and CSS stay live; the JavaScript pane waits for Run, and the
-    preview keeps the last-run script until then."""
+def test_a_sites_javascript_runs_on_run_or_ctrl_enter_not_on_typing(dewmini):
+    """HTML and CSS stay live; the JavaScript pane waits for an explicit
+    trigger — the Run button or Ctrl+Enter, both calling the same run() —
+    and the preview keeps the last-run script until then."""
     open_site(dewmini, "<h1>Hi</h1>", 'console.log("first");')
     site_console_lines(dewmini).first.wait_for()
     assert site_console_lines(dewmini).first.inner_text() == "first"
@@ -1914,11 +1860,6 @@ def test_a_sites_javascript_runs_on_run_not_on_typing(dewmini):
     dewmini.locator(".dm-siteview-console-line", has_text="typed").wait_for()
     assert site_console_lines(dewmini).count() == 1
 
-
-def test_ctrl_enter_in_the_javascript_pane_runs_it(dewmini):
-    open_site(dewmini, "<p>x</p>", 'console.log("first");')
-    site_console_lines(dewmini).first.wait_for()
-    js_editor = dewmini.locator(".dm-siteview-pane").nth(2).locator(".cm-content")
     js_editor.click()
     dewmini.keyboard.press("Control+A")
     js_editor.fill('console.log("keys");')

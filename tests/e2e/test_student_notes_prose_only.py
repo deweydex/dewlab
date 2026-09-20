@@ -82,7 +82,7 @@ def site_url(site):
 
 
 class TestNotesOnAProseOnlyTutorial:
-    def test_the_work_section_and_notes_field_are_not_removed(self, site, browser, site_url):
+    def test_the_work_section_notes_field_and_autosave_survive_zero_cells(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
@@ -93,16 +93,7 @@ class TestNotesOnAProseOnlyTutorial:
         _open_panel(page, "#dl-yourwork-toggle")
         assert page.is_visible("#dl-settings-work")
         assert page.is_visible("#dl-progress-notes")
-        context.close()
 
-    def test_a_note_still_autosaves_with_zero_cells(self, site, browser, site_url):
-        _tutorial(site, "one", "One")
-        _set_order(site, ["one"])
-        b.build()
-        context = browser.new_context()
-        page = context.new_page()
-        page.goto(f"{site_url}/tutorials/one.html")
-        _open_panel(page, "#dl-yourwork-toggle")
         page.fill("#dl-progress-notes", "worth writing down")
         page.wait_for_function(
             "globalThis.dewlab.readSaved() !== null", timeout=10_000

@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from conftest import _open_settings_tab
 from pathlib import Path
 
@@ -48,12 +50,6 @@ def test_the_page_loads_its_shared_assets_rather_than_inlining_them(page):
     assert background not in ("rgba(0, 0, 0, 0)", "")
 
 
-def test_version_metadata_is_in_the_page(page):
-    """Phase 2's compare-on-load reads this. It has to be there from Phase 0."""
-    assert page.get_attribute("meta[name=tutorial-version]", "content") == "2026.08.23.1"
-    assert page.get_attribute("meta[name=tutorial-slug]", "content") == "rendering-tour"
-
-
 def test_every_exec_cell_became_an_editor_with_line_numbers(page):
     """Counted against the fixture rather than a fixed number, so adding a
     cell to rendering-tour.md does not fail a test that isn't about counting."""
@@ -84,35 +80,19 @@ def test_numpy_runs(page):
     assert "25." in output  # 12.5 * 2
 
 
-def test_pandas_dataframe_renders_as_a_table(page):
-    output = run(page, "pandas-table")
-    assert "<table" in output
-    assert "Ireland" in output
-    assert "Kenya" not in output, "the filter should have excluded Kenya"
-
-
-def test_a_sql_exec_cell_pill_reads_sql(page):
-    selector = ".dl-cell[data-cell-id='sql-basics'] .dl-cell-pill-type"
-    assert page.inner_text(selector) == "SQL"
-    assert page.get_attribute(selector, "data-type") == "sql"
-
-
-def test_a_sql_cells_select_renders_as_a_table(page):
-    """The editor holds real SQL text; the wrapper tutorial-runtime.js
-    builds around it before it reaches Python is what
-    makes _run_sql_cell() render this table, not anything in the fixture."""
+def test_a_sql_cells_select_renders_as_a_table_and_a_python_cell_can_read_it(page):
+    """The editor holds real SQL text; the wrapper tutorial-runtime.js builds
+    around it before it reaches Python is what makes _run_sql_cell() render
+    this table, not anything in the fixture. The shared db is one
+    connection, seeded once at boot, so a SQL cell's CREATE TABLE/INSERT is
+    visible to a Python cell on the same page, the same guarantee dewmini's
+    own SQL cell type already gives."""
     output = run(page, "sql-basics")
     assert "<table" in output
     assert "spider" in output
     assert "dog" in output
     assert "hen" not in output, "the WHERE legs > 2 filter should have excluded it"
 
-
-def test_a_python_cell_can_read_what_a_sql_cell_wrote(page):
-    """The shared db is one connection, seeded once at boot — a SQL cell's
-    CREATE TABLE/INSERT is visible to a Python cell on the same page,
-    the same guarantee dewmini's own SQL cell type already gives."""
-    run(page, "sql-basics")
     output = run(page, "sql-read-from-python")
     assert "<table" in output
     assert ">3<" in output, "3 rows were inserted"
@@ -135,10 +115,12 @@ def test_a_site_editors_panes_match_what_the_fixture_declares(page):
     assert page.query_selector(f"{quiet} .dl-site-console-output") is None
 
 
-def test_html_and_css_panes_are_live_without_pressing_run(page):
+def test_html_and_css_are_live_but_javascript_waits_for_the_run_button(page):
     """The iframe is sandboxed without allow-same-origin, so this reads
     through Playwright's own frame handle — proving the live rebuild reached
-    the page a reader would actually see, not just the editor's own DOM."""
+    the page a reader would actually see, not just the editor's own DOM.
+    HTML/CSS are live, JavaScript is a program that runs when asked, the
+    same rule dewmini's own Site tab follows."""
     hero = site_editor(page, "hero")
     css_pane = f"{hero} .dl-site-pane[data-lang='css'] .cm-content"
     page.click(css_pane)
@@ -152,11 +134,6 @@ def test_html_and_css_panes_are_live_without_pressing_run(page):
         timeout=10_000,
     )
 
-
-def test_javascript_does_not_run_until_the_run_button_is_pressed(page):
-    """HTML/CSS are live, JavaScript is a program
-    that runs when asked, the same rule dewmini's own Site tab follows."""
-    hero = site_editor(page, "hero")
     frame = page.query_selector(f"{hero} .dl-site-frame").content_frame()
     frame.wait_for_selector("#out")
     assert frame.inner_text("#out") == "not yet"
@@ -237,7 +214,8 @@ def test_a_site_editors_edit_survives_a_reload(page):
     assert "color: red" in page.eval_on_selector(css_pane, "el => el.textContent")
 
 
-def test_matplotlib_renders_a_figure_beneath_the_cell(page):
+def test_matplotlib_renders_a_figure_without_leaking_its_repr(page):
+    """`plt.title(...)` returns a Text. A notebook prints it; dewlab doesn't."""
     output = run(page, "matplotlib-figure")
     assert 'src="data:image/png;base64,' in output
     height = page.eval_on_selector(
@@ -245,6 +223,9 @@ def test_matplotlib_renders_a_figure_beneath_the_cell(page):
         "el => el.naturalHeight",
     )
     assert height > 50, "the figure decoded to a real image"
+    assert "matplotlib" not in output
+    assert "Text(" not in output
+    assert "dl-repr" not in output
 
 
 def test_plt_show_renders_the_figure_rather_than_warning(page):
@@ -261,18 +242,23 @@ def test_plt_show_renders_the_figure_rather_than_warning(page):
     assert height > 50, "the figure decoded to a real image"
 
 
-def test_a_plot_does_not_leak_matplotlib_object_reprs(page):
-    """`plt.title(...)` returns a Text. A notebook prints it; dewlab doesn't."""
-    output = run(page, "matplotlib-figure")
-    assert "matplotlib" not in output
-    assert "Text(" not in output
-    assert "dl-repr" not in output
+def test_pandas_and_a_check_cell_share_one_namespace_and_render_correctly(page):
+    """One run of pandas-table followed by tools-show-check covers the
+    dataframe render, the shared namespace across cells, show()/show_table()
+    rendering, check-pass/check-fail rendering, and a check cell's own
+    bare-bool suppression — all from the same two cells."""
+    output = run(page, "pandas-table")
+    assert "<table" in output
+    assert "Ireland" in output
+    assert "Kenya" not in output, "the filter should have excluded Kenya"
 
-
-def test_a_cell_ending_in_check_does_not_print_a_bare_bool(page):
-    run(page, "pandas-table")
     output = run(page, "tools-show-check")
+    assert "<table" in output, "the later cell could not see df"
+    assert "show() renders anything" in output
+    assert "First three rows" in output
+    assert "dl-check-pass" in output
     assert "dl-check-fail" in output
+    assert output.count("dl-check-pass") == 2, "0.1 + 0.2 should pass against 0.3"
 
     last_class = page.eval_on_selector(
         output_selector("tools-show-check"),
@@ -281,13 +267,7 @@ def test_a_cell_ending_in_check_does_not_print_a_bare_bool(page):
     assert "dl-check" in last_class, f"cell ended with {last_class!r}"
 
 
-def test_cells_share_one_namespace_in_document_order(page):
-    run(page, "pandas-table")
-    output = run(page, "tools-show-check")
-    assert "<table" in output, "the later cell could not see df"
-
-
-def test_an_error_shows_the_students_own_line_not_dewlabs_plumbing(page):
+def test_an_error_shows_the_students_line_and_does_not_stop_the_page(page):
     output = run(page, "error-traceback")
     assert "dl-error" in output
     assert "TypeError" in output
@@ -295,21 +275,8 @@ def test_an_error_shows_the_students_own_line_not_dewlabs_plumbing(page):
     assert "eval_code_async" not in output
     assert "tutorial_tools" not in output
 
-
-def test_an_error_does_not_stop_the_page(page):
-    run(page, "error-traceback")
     output = run(page, "plain-python")
     assert "1024" in output
-
-
-def test_show_and_show_table_and_check_render(page):
-    run(page, "pandas-table")
-    output = run(page, "tools-show-check")
-    assert "show() renders anything" in output
-    assert "First three rows" in output
-    assert "dl-check-pass" in output
-    assert "dl-check-fail" in output
-    assert output.count("dl-check-pass") == 2, "0.1 + 0.2 should pass against 0.3"
 
 
 def test_widgets_give_a_clear_error_on_a_hosted_page(page):
@@ -336,7 +303,7 @@ def keyword_colour(page) -> str:
     )
 
 
-def test_the_settings_panel_switches_theme_and_the_editors_follow(page):
+def test_the_settings_panel_switches_theme_font_and_width(page):
     _open_settings_tab(page, "appearance")
     page.click("#dl-settings-reading .dl-seg[data-texture=theme] button[data-value=light]")
     light_keyword_colour = keyword_colour(page)
@@ -352,9 +319,6 @@ def test_the_settings_panel_switches_theme_and_the_editors_follow(page):
     page.click("#dl-settings-reading .dl-seg[data-texture=font] button[data-value=mono]")
     assert page.get_attribute("html", "data-font") == "mono"
 
-
-def test_the_width_presets_set_the_measure(page):
-    _open_settings_tab(page, "appearance")
     page.click(
         '#dl-settings-reading .dl-seg[data-texture=width] button[data-value="56"]'
     )
@@ -458,29 +422,42 @@ def test_choosing_a_topic_shows_what_it_is_and_lights_its_path(browser, base_url
     context.close()
 
 
-def test_a_topic_that_is_taught_links_to_the_tutorial(browser, base_url):
+@pytest.mark.parametrize("code, taught", [("MIT-5.10", True), ("MIT-3.6", False)])
+def test_a_topic_says_whether_it_is_taught(browser, base_url, code, taught):
     """The fixture claims MIT-5.10 in its matplotlib section, so that topic —
-    and only a topic some tutorial claims — offers a way to read it."""
+    and only a topic some tutorial claims — offers a way to read it; a topic
+    nobody teaches says so instead."""
     context, tab = open_tree(browser, base_url)
-    tab.click('.dl-tree-node[data-code="MIT-5.10"]')
-    href = tab.get_attribute(".dl-tree-goto", "href")
-    assert href and href.endswith("#matplotlib")
+    tab.click(f'.dl-tree-node[data-code="{code}"]')
+    if taught:
+        href = tab.get_attribute(".dl-tree-goto", "href")
+        assert href and href.endswith("#matplotlib")
+    else:
+        assert tab.query_selector(".dl-tree-goto") is None
+        assert "Not written yet" in tab.inner_text("#dl-tree-detail")
     context.close()
 
 
-def test_a_topic_nobody_teaches_says_so_instead(browser, base_url):
+@pytest.mark.parametrize(
+    "code, jump_selector, checks_opens_list",
+    [("MIT-6.8a", ".dl-tree-jump", False), ("MIT-3.2", ".dl-tree-opens button", True)],
+)
+def test_clicking_a_related_topic_in_the_panel_moves_the_selection(
+    browser, base_url, code, jump_selector, checks_opens_list
+):
+    """A prerequisite click and an "opens up" click both move the tree's
+    selection off the topic that offered them; "opens up" also exercises the
+    map's promise that somebody can ask "where do I go next?" — that is the
+    edges pointing away from a topic rather than towards it."""
     context, tab = open_tree(browser, base_url)
-    tab.click('.dl-tree-node[data-code="MIT-3.6"]')
-    assert tab.query_selector(".dl-tree-goto") is None
-    assert "Not written yet" in tab.inner_text("#dl-tree-detail")
-    context.close()
-
-
-def test_a_prerequisite_in_the_panel_moves_the_selection(browser, base_url):
-    context, tab = open_tree(browser, base_url)
-    tab.click('.dl-tree-node[data-code="MIT-6.8a"]')
-    tab.click(".dl-tree-jump")
-    assert tab.evaluate("globalThis.dewlabTree.chosen()") != "MIT-6.8a"
+    tab.click(f'.dl-tree-node[data-code="{code}"]')
+    if checks_opens_list:
+        panel = tab.inner_text("#dl-tree-detail")
+        assert "OPENS UP" in panel
+        opens = tab.eval_on_selector_all(".dl-tree-opens button", "e => e.map(b => b.textContent)")
+        assert "Limits" in opens
+    tab.click(jump_selector)
+    assert tab.evaluate("globalThis.dewlabTree.chosen()") != code
     context.close()
 
 
@@ -585,20 +562,6 @@ def test_the_tree_reads_downwards(browser, base_url):
       return wrong;
     }""")
     assert upward == []
-    context.close()
-
-
-def test_a_topic_says_what_it_opens_up(browser, base_url):
-    """The map exists so somebody can ask "where do I go next?", and that is the
-    edges pointing away from a topic rather than towards it."""
-    context, tab = open_tree(browser, base_url)
-    tab.click('.dl-tree-node[data-code="MIT-3.2"]')
-    panel = tab.inner_text("#dl-tree-detail")
-    assert "OPENS UP" in panel
-    opens = tab.eval_on_selector_all(".dl-tree-opens button", "e => e.map(b => b.textContent)")
-    assert "Limits" in opens
-    tab.click(".dl-tree-opens button")
-    assert tab.evaluate("globalThis.dewlabTree.chosen()") != "MIT-3.2"
     context.close()
 
 

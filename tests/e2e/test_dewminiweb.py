@@ -64,8 +64,6 @@ def test_a_fresh_visit_shows_one_site_with_all_three_panes(page):
     assert page.input_value("#dl-ws-name") == "Site 1"
     assert page.problems == []
 
-
-def test_the_starter_script_has_already_run(page):
     f = frame(page)
     f.wait_for_selector("h1", timeout=10_000)
     assert f.inner_text("h1") == "Hello"
@@ -83,14 +81,6 @@ def test_css_is_live_without_pressing_run(page):
         "getComputedStyle(document.querySelector('h1')).color === 'rgb(9, 9, 9)'",
         timeout=5_000,
     )
-
-
-def test_new_site_starts_from_the_same_starter(page):
-    page.click(".dl-ws-new")
-    page.wait_for_function("document.querySelectorAll('.dl-ws-list button').length === 2")
-    f = frame(page)
-    f.wait_for_selector("h1", timeout=10_000)
-    assert f.inner_text("h1") == "Hello"
 
 
 def test_renaming_updates_the_download_filename(page):
@@ -112,7 +102,10 @@ def test_switching_sites_keeps_each_ones_own_edits(page):
 
     page.click(".dl-ws-new")
     page.wait_for_function("document.querySelectorAll('.dl-ws-list button').length === 2")
-    frame(page).wait_for_function(
+    f = frame(page)
+    f.wait_for_selector("h1", timeout=10_000)
+    assert f.inner_text("h1") == "Hello"
+    f.wait_for_function(
         "getComputedStyle(document.querySelector('h1')).color !== 'rgb(1, 2, 3)'",
         timeout=5_000,
     )

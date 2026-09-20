@@ -322,19 +322,16 @@ class TestProgressSummary:
     record, since the `errored` count depends on the real traceback markup
     a run produces (tutorial_tools.py's class="dl-error")."""
 
-    def test_stays_hidden_with_nothing_run(self, page):
+    def test_the_summary_line_tracks_runs_as_they_happen(self, page):
         _open_panel(page, "#dl-yourwork-toggle")
         assert page.is_hidden("#dl-progress-summary")
         _open_panel(page, "#dl-yourwork-toggle")
 
-    def test_updates_after_a_successful_run(self, page):
         run_cell(page, "plain-python")
         text = summary_text(page)
         assert "of" in text and "cells run" in text
         assert "error" not in text
 
-    def test_counts_an_errored_cell_separately_from_a_successful_one(self, page):
-        run_cell(page, "plain-python")
         run_cell(page, "error-traceback")
         text = summary_text(page)
         assert "2 of" in text
@@ -443,13 +440,16 @@ print("world")
         assert badge_page.is_hidden(".dl-progress-badge")
         context.close()
 
-    def test_a_run_cell_shows_a_fraction_badge(self, badges_site, browser, badges_site_url):
+    def test_a_run_cell_shows_a_fraction_badge_and_an_error_colours_it(
+        self, badges_site, browser, badges_site_url
+    ):
         self._tutorial(badges_site, "one", "One")
         self._set_order(badges_site, ["one"])
         b.build()
         context = browser.new_context()
         badge_page = context.new_page()
         badge_page.goto(f"{badges_site_url}/all-tutorials.html")
+
         self._seed(badge_page, "one", [
             {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
             {"task_id": "one-2", "student_code": "", "output_html": "", "errored": False},
@@ -458,15 +458,7 @@ print("world")
         badge = badge_page.locator(".dl-progress-badge")
         assert badge.inner_text() == "1/2"
         assert "dl-progress-badge-errored" not in (badge.get_attribute("class") or "")
-        context.close()
 
-    def test_an_errored_cell_gives_the_badge_the_error_colour(self, badges_site, browser, badges_site_url):
-        self._tutorial(badges_site, "one", "One")
-        self._set_order(badges_site, ["one"])
-        b.build()
-        context = browser.new_context()
-        badge_page = context.new_page()
-        badge_page.goto(f"{badges_site_url}/all-tutorials.html")
         self._seed(badge_page, "one", [
             {"task_id": "one-1", "student_code": "", "output_html": "<pre>hello</pre>", "errored": False},
             {"task_id": "one-2", "student_code": "", "output_html": '<pre class="dl-error">boom</pre>', "errored": True},

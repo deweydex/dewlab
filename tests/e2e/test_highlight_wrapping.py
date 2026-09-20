@@ -107,13 +107,13 @@ def _seed(page, highlight: dict):
     )
 
 
-class TestWrapRange:
-    def test_wraps_a_selection_spanning_a_child_element(self, page):
+class TestWrapAndUnwrapRange:
+    def test_wraps_then_unwraps_a_selection_spanning_a_child_element(self, page):
         # A range from inside the plain text before <em>word</em> to inside
         # the plain text after it -- the exact shape a real reader's
         # selection would have, and the one Range.surroundContents() can't
         # handle in one call.
-        result = page.evaluate(
+        wrap_result = page.evaluate(
             """() => {
                 const block = [...document.querySelectorAll('p')].find(
                     (p) => p.textContent.includes('TARGET-PARAGRAPH')
@@ -133,28 +133,13 @@ class TestWrapRange:
                 };
             }"""
         )
-        assert result["count"] == 3  # "with ", "word", " emphasised"
-        assert result["ids"] == ["h-multi"]
-        assert result["text"] == "with word emphasised"
+        assert wrap_result["count"] == 3  # "with ", "word", " emphasised"
+        assert wrap_result["ids"] == ["h-multi"]
+        assert wrap_result["text"] == "with word emphasised"
         assert "TARGET-PARAGRAPH begins here, with word emphasised right after it." \
-            == result["blockText"]
+            == wrap_result["blockText"]
 
-    def test_unwrap_restores_plain_text_without_touching_the_prose(self, page):
-        page.evaluate(
-            """() => {
-                const block = [...document.querySelectorAll('p')].find(
-                    (p) => p.textContent.includes('TARGET-PARAGRAPH')
-                );
-                const before = block.firstChild;
-                const em = block.querySelector('em');
-                const after = em.nextSibling;
-                const range = document.createRange();
-                range.setStart(before, before.length - 5);
-                range.setEnd(after, 11);
-                dewlab.wrapRange(range, 'h-multi');
-            }"""
-        )
-        result = page.evaluate(
+        unwrap_result = page.evaluate(
             """() => {
                 const removed = dewlab.unwrapHighlight('h-multi');
                 const block = [...document.querySelectorAll('p')].find(
@@ -168,12 +153,12 @@ class TestWrapRange:
                 };
             }"""
         )
-        assert result["removed"] == 3
-        assert result["marksLeft"] == 0
-        assert result["blockText"] == (
+        assert unwrap_result["removed"] == 3
+        assert unwrap_result["marksLeft"] == 0
+        assert unwrap_result["blockText"] == (
             "TARGET-PARAGRAPH begins here, with word emphasised right after it."
         )
-        assert result["emText"] == "word"
+        assert unwrap_result["emText"] == "word"
 
 
 class TestRangeForOffsets:

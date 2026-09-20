@@ -171,72 +171,73 @@ class TestProseBlocks:
 
 
 class TestLocateHighlightAnchor:
-    def test_finds_an_untouched_highlight_in_its_own_block(self, page):
-        anchor = _quote_within(
-            page, TARGET_BLOCK, "the target passage the reader wants to keep marked forever"
-        )
-        found = page.evaluate(
-            "(anchor) => { const r = dewlab.locateHighlightAnchor(anchor); "
-            "return r && { text: r.block.textContent.trim(), index: r.index }; }",
-            anchor,
-        )
-        expected_index = page.evaluate(
-            "(a) => dewlab.proseBlocks()[a.block_index].textContent.indexOf(a.quote)", anchor
-        )
-        assert found is not None
-        assert found["text"].startswith("PARA-THREE")
-        assert found["index"] == expected_index
-
-    def test_disambiguates_the_first_of_two_identical_phrases(self, page):
-        # "the pivot" itself appears twice in REPEATED_BLOCK -- this is the
-        # actual ambiguous case findQuoteInBlockText() has to resolve by
-        # context, unlike the two tests above where the quote text happened
-        # to be unique even though the paragraph mentions "the pivot" twice.
-        anchor = _quote_within(page, REPEATED_BLOCK, "the pivot", occurrence=0)
+    @pytest.mark.parametrize(
+        "block_index, quote, occurrence",
+        [
+            pytest.param(
+                TARGET_BLOCK,
+                "the target passage the reader wants to keep marked forever",
+                0,
+                id="unique_quote",
+            ),
+            # "the pivot" itself appears twice in REPEATED_BLOCK -- these two
+            # are the actual ambiguous case findQuoteInBlockText() has to
+            # resolve by context, unlike the unique-quote case above where
+            # the quote text happened to be unique even though the paragraph
+            # mentions "the pivot" twice.
+            pytest.param(REPEATED_BLOCK, "the pivot", 0, id="first_of_two_identical"),
+            pytest.param(REPEATED_BLOCK, "the pivot", 1, id="second_of_two_identical"),
+        ],
+    )
+    def test_locates_the_anchor_at_the_right_occurrence(
+        self, page, block_index, quote, occurrence
+    ):
+        anchor = _quote_within(page, block_index, quote, occurrence)
         found = page.evaluate(
             "(anchor) => { const r = dewlab.locateHighlightAnchor(anchor); "
             "return r && r.index; }",
             anchor,
         )
+        # Recomputed the same way _quote_within() found the occurrence-th
+        # match in the first place, rather than hardcoding an offset.
         expected = page.evaluate(
-            "(a) => dewlab.proseBlocks()[a.block_index].textContent.indexOf(a.quote)",
-            anchor,
+            """([blockIndex, quote, occurrence]) => {
+                const text = dewlab.proseBlocks()[blockIndex].textContent;
+                let start = -1;
+                for (let i = 0, from = 0; i <= occurrence; i++) {
+                    start = text.indexOf(quote, from);
+                    from = start + 1;
+                }
+                return start;
+            }""",
+            [block_index, quote, occurrence],
         )
         assert found == expected
 
-    def test_disambiguates_the_second_of_two_identical_phrases(self, page):
-        anchor = _quote_within(page, REPEATED_BLOCK, "the pivot", occurrence=1)
-        found = page.evaluate(
-            "(anchor) => { const r = dewlab.locateHighlightAnchor(anchor); "
-            "return r && r.index; }",
-            anchor,
-        )
-        expected_second = page.evaluate(
-            "(a) => dewlab.proseBlocks()[a.block_index].textContent.lastIndexOf(a.quote)",
-            anchor,
-        )
-        expected_first = page.evaluate(
-            "(a) => dewlab.proseBlocks()[a.block_index].textContent.indexOf(a.quote)", anchor
-        )
-        assert found == expected_second
-        assert found != expected_first
-
-    def test_follows_a_highlight_after_a_paragraph_is_inserted_above_it(self, page):
+    def test_search_window_follows_a_moved_paragraph_until_the_move_is_too_big(self, page):
         anchor = _quote_within(
             page, TARGET_BLOCK, "the target passage the reader wants to keep marked forever"
         )
-        # Shifts PARA-THREE from index 4 to 6 -- still inside the +/-5
-        # search window the stale block_index=4 anchor carries.
-        page.evaluate(
-            """() => {
-                const target = dewlab.proseBlocks()[%d];
-                for (let i = 0; i < 2; i++) {
-                    const p = document.createElement("p");
-                    p.textContent = "INSERTED-" + i + " filler paragraph.";
-                    target.parentNode.insertBefore(p, target);
-                }
-            }""" % TARGET_BLOCK
-        )
+
+        def _insert_before_target(count, start_at):
+            page.evaluate(
+                """([count, startAt]) => {
+                    const target = dewlab.proseBlocks().find(
+                        (el) => el.textContent.startsWith("PARA-THREE")
+                    );
+                    for (let i = 0; i < count; i++) {
+                        const p = document.createElement("p");
+                        p.textContent = "INSERTED-" + (startAt + i) + " filler paragraph.";
+                        target.parentNode.insertBefore(p, target);
+                    }
+                }""",
+                [count, start_at],
+            )
+
+        # Two inserted paragraphs shift PARA-THREE from index 4 to 6 -- still
+        # inside the +/-5 search window the stale block_index=4 anchor
+        # carries.
+        _insert_before_target(2, start_at=0)
         assert page.evaluate("dewlab.proseBlocks()[6].textContent.trim()").startswith(
             "PARA-THREE"
         )
@@ -248,21 +249,12 @@ class TestLocateHighlightAnchor:
         assert found is not None
         assert found.startswith("PARA-THREE")
 
-    def test_gives_up_once_the_move_is_bigger_than_the_search_window(self, page):
-        anchor = _quote_within(
-            page, TARGET_BLOCK, "the target passage the reader wants to keep marked forever"
-        )
-        # Six new paragraphs push PARA-THREE from index 4 to 10 -- one past
-        # the +/-5 window the stale anchor's block_index=4 covers (up to 9).
-        page.evaluate(
-            """() => {
-                const target = dewlab.proseBlocks()[%d];
-                for (let i = 0; i < 6; i++) {
-                    const p = document.createElement("p");
-                    p.textContent = "INSERTED-" + i + " filler paragraph.";
-                    target.parentNode.insertBefore(p, target);
-                }
-            }""" % TARGET_BLOCK
+        # Four more paragraphs (six total) push PARA-THREE to index 10 --
+        # one past the +/-5 window the stale anchor's block_index=4 covers
+        # (up to 9).
+        _insert_before_target(4, start_at=2)
+        assert page.evaluate("dewlab.proseBlocks()[10].textContent.trim()").startswith(
+            "PARA-THREE"
         )
         found = page.evaluate("(anchor) => dewlab.locateHighlightAnchor(anchor)", anchor)
         assert found is None

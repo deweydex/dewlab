@@ -43,27 +43,21 @@ class TestCrossLinks:
         # An ordinary link is left alone.
         assert 'href="https://example.org/page"' in built(repo)
 
-    def test_an_unknown_slug_fails_the_build(self, repo):
+    def _unknown_slug(repo):
         write(repo, "See [nowhere](tutorial:nowhere).\n")
-        with pytest.raises(b.BuildError, match="unknown tutorial"):
-            b.build()
 
-    def test_an_unknown_anchor_fails_the_build(self, repo):
+    def _unknown_anchor(repo):
         write(repo, "See [other](tutorial:other#absent).\n", slug="sample")
         write(repo, "Other.\n", slug="other")
-        with pytest.raises(b.BuildError, match="no anchor"):
-            b.build()
 
-    def test_two_releases_with_one_version_fail_the_build(self, repo):
+    def _two_releases_share_a_version_date(repo):
         # A frozen release beside the tutorial is a *version* of it, so the
         # collision that matters is the version, not the id.
         write(repo, "One.\n", slug="same")
         (repo / "tutorials" / "same" / "v2026.08.23.1.md").write_text(
             FRONTMATTER.format(version="2026.08.23.1") + "Two.\n")
-        with pytest.raises(b.BuildError, match="cannot share a date"):
-            b.build()
 
-    def test_a_second_file_with_an_existing_id_stops_the_build_and_names_the_other(self, repo):
+    def _a_second_file_with_an_existing_id(repo):
         # Two people create first-steps on two branches and both merge: the
         # filesystem refuses a second folder, and this catches the other
         # way it happens, a file of that name in another folder.
@@ -71,11 +65,25 @@ class TestCrossLinks:
         write(repo, "Two.\n", slug="other")
         (repo / "tutorials" / "other" / "first-steps.md").write_text(
             FRONTMATTER.format(version="2026.08.23.1") + "Again.\n")
-        with pytest.raises(b.BuildError, match=r"tutorials/other/first-steps\.md: has the id first-steps, and so does tutorials/first-steps/first-steps\.md"):
-            b.build()
 
-    def test_a_file_loose_under_tutorials_stops_the_build(self, repo):
+    def _a_file_loose_under_tutorials(repo):
         write(repo, "One.\n")
         (repo / "tutorials" / "loose.md").write_text(FRONTMATTER.format(version="2026.08.23.1") + "Prose.\n")
-        with pytest.raises(b.BuildError, match="not inside a folder"):
+
+    BROKEN_LINKS = {
+        "an unknown tutorial slug": (_unknown_slug, "unknown tutorial"),
+        "an unknown anchor": (_unknown_anchor, "no anchor"),
+        "two releases sharing a version date": (_two_releases_share_a_version_date, "cannot share a date"),
+        "a duplicate id in a second file": (
+            _a_second_file_with_an_existing_id,
+            r"tutorials/other/first-steps\.md: has the id first-steps, and so does tutorials/first-steps/first-steps\.md",
+        ),
+        "a .md file loose directly under tutorials/": (_a_file_loose_under_tutorials, "not inside a folder"),
+    }
+
+    @pytest.mark.parametrize("case", sorted(BROKEN_LINKS))
+    def test_a_broken_link_or_id_fails_the_build(self, repo, case):
+        setup, match = self.BROKEN_LINKS[case]
+        setup(repo)
+        with pytest.raises(b.BuildError, match=match):
             b.build()
