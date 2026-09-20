@@ -39,11 +39,16 @@ what to say.
 
 ## Getting your own copy
 
-The same two buttons as before, and the same choice between them. **Use
-this template** gives you a copy with no visible link back to the
-original. **Fork** gives you one that stays connected to it. [Your copy
-of the starter](tutorial:your-copy-of-the-starter) explains what each
-button does, and the three ways to open whichever copy you end up with.
+Three ways in, and the first two are the same two buttons you used for
+`portfolio_wad`. [Your copy of the
+starter](tutorial:your-copy-of-the-starter) goes through what each one
+does, and the three ways to open whichever copy you end up with.
+
+<div class="dl-module-grid">
+<a class="dl-module-card" href="https://github.com/deweydex/project_wad/generate"><h3>Use this template</h3><span class="dl-module-card-meta">no link back</span><p>Your own repository, with no visible connection to this one. This suits a project you may want to keep and show people after the course.</p></a>
+<a class="dl-module-card" href="https://github.com/deweydex/project_wad/fork"><h3>Fork it</h3><span class="dl-module-card-meta">keeps the connection</span><p>Your own repository, still visibly linked to this one, and keeping its history. Choose this if you might want to pull in a later fix from the original.</p></a>
+<a class="dl-module-card" href="https://github.com/deweydex/project_wad/archive/refs/heads/main.zip"><h3>Download the files</h3><span class="dl-module-card-meta">no repository</span><p>A folder of plain files, for reading on your own computer. There is nothing here to commit and nothing to publish, so come back to one of the other two before you start building.</p></a>
+</div>
 
 One thing is worth deciding now rather than later: this is a repository
 you may want to show people after the course. A name you choose yourself
