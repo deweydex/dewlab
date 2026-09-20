@@ -11,9 +11,7 @@ covers:
 
 # A Table Is a List of Rows
 
-![A database drawn as a cylinder, and a table drawn as a three-by-three grid of cells. One column of that grid is outlined, then one row, to show what each word picks out.](tables_turned.svg)
-
-A `table is a load of boxes that have stuff in them... honestly its as simple as that. Where things get complicated is when we want specific stuff to be in specific boxes according to rules or conventions. The boxes form a grid, like we see above, and we tend to talk about not just one box in that grid, but whole lines: row if we are talking about boxes (or "cells") left to right (horizontal), and columns if we refer to to a bunch of cells up and down (vertical). Each of those rows we call a record, columns refer to a specific "attribute" which we put at the top of the column as a header. So we call that box of values a table, and a table stores many records in one place, and every record is shaped the
+A `table is a load of boxes that have stuff in them... honestly its as simple as that. Where things get complicated is when we want specific stuff to be in specific boxes according to rules or conventions. The boxes form a grid, and we tend to talk about not just one box in that grid, but whole lines: row if we are talking about boxes (or "cells") left to right (horizontal), and columns if we refer to to a bunch of cells up and down (vertical). Each of those rows we call a record, columns refer to a specific "attribute" which we put at the top of the column as a header. So we call that box of values a table, and a table stores many records in one place, and every record is shaped the
 same way: with the same attributes. For example, a line in a shopping list is a record. It has a name and a
 quantity, and of course we want the item name to likely be different from line to line. A database table works the same way. Each row is one record, and every row has the same columns.
 
