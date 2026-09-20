@@ -89,3 +89,86 @@ def binary_search_steps(items: list[int], target: int) -> str:
 
     drawing.add(group)
     return drawing.tostring()
+
+
+PAIR_CELL_W = 30
+PAIR_CELL_H = 25
+PAIR_ROW_GAP = 4
+PAIR_STEP_GAP = 20
+
+
+def merge_walk(left: list[int], right: list[int], names=("a", "b")) -> str:
+    """The two-pointer walk along two sorted lists, one comparison per step.
+
+    Three of the reader's own functions are this shape with a different
+    line about what to keep, so the walk is worth seeing once properly.
+    Each step shows where both pointers are, which comparison that makes,
+    and which pointer moves as a result — the part the prose has to say
+    three times, once per case.
+    """
+    passes, taken = [], []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] == right[j]:
+            passes.append((i, j, "both", f"{left[i]} = {right[j]}   \u2192   take {left[i]}, both move"))
+            taken.append(left[i]); i += 1; j += 1
+        elif left[i] < right[j]:
+            passes.append((i, j, names[0], f"{left[i]} < {right[j]}   \u2192   take {left[i]}, {names[0]} moves"))
+            taken.append(left[i]); i += 1
+        else:
+            passes.append((i, j, names[1], f"{left[i]} > {right[j]}   \u2192   take {right[j]}, {names[1]} moves"))
+            taken.append(right[j]); j += 1
+    leftover = left[i:] or right[j:]
+    leftover_from = names[0] if left[i:] else names[1]
+
+    widest = max(len(left), len(right))
+    note_x = 22 + widest * PAIR_CELL_W + 18
+    width = note_x + 190
+    row_block = PAIR_CELL_H * 2 + PAIR_ROW_GAP + PAIR_STEP_GAP
+    height = len(passes) * row_block + 34
+    margin = 14
+
+    drawing = svgwrite.Drawing(
+        size=(f"{width + margin * 2:.0f}px", f"{height + margin * 2:.0f}px"),
+        viewBox=f"0 0 {width + margin * 2:.0f} {height + margin * 2:.0f}",
+        debug=False)
+    drawing.attribs["fill"] = INK
+    drawing.attribs["font-family"] = SANS
+    group = drawing.g(transform=f"translate({margin},{margin})")
+
+    def draw_list(values, cursor, top, label, colour):
+        group.add(drawing.text(
+            label, insert=(0, top + PAIR_CELL_H / 2 + 4),
+            font_size=f"{VALUE_PT}px", font_style="italic", fill=MUTED))
+        for index, value in enumerate(values):
+            left_x = 22 + index * PAIR_CELL_W
+            here = index == cursor
+            group.add(drawing.rect(
+                insert=(left_x, top), size=(PAIR_CELL_W - 3, PAIR_CELL_H),
+                fill=colour if here else PANEL,
+                stroke=INK if here else RULE,
+                stroke_width=1.5 if here else 0.9, rx=3))
+            group.add(drawing.text(
+                str(value), insert=(left_x + (PAIR_CELL_W - 3) / 2, top + PAIR_CELL_H / 2 + 4),
+                text_anchor="middle", font_size=f"{VALUE_PT}px",
+                font_family=MONO, fill=INK if here else MUTED))
+
+    for step, (i, j, _moved, note) in enumerate(passes):
+        top = step * row_block
+        draw_list(left, i, top, names[0], FILL_GREEN)
+        draw_list(right, j, top + PAIR_CELL_H + PAIR_ROW_GAP, names[1], FILL_BLUE)
+        group.add(drawing.text(
+            note, insert=(note_x, top + PAIR_CELL_H + 2),
+            font_size=f"{NOTE_PT}px", fill=INK))
+
+    group.add(drawing.text(
+        f"then whatever is left in {leftover_from}: " + "  ".join(map(str, leftover)),
+        insert=(0, len(passes) * row_block + 12),
+        font_size=f"{NOTE_PT}px", fill=MUTED))
+    group.add(drawing.text(
+        "union  " + "  ".join(map(str, taken + leftover)),
+        insert=(0, len(passes) * row_block + 30),
+        font_size=f"{NOTE_PT}px", font_family=MONO, fill=INK))
+
+    drawing.add(group)
+    return drawing.tostring()

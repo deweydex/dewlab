@@ -99,6 +99,16 @@ The core set operations -- union, intersection, and difference -- can all be imp
 
 This is an efficient $O(n + m)$ algorithm, where $n$ and $m$ are the sizes of the two sets.
 
+![Five steps walking two sorted lists. Each step shows where both pointers
+sit, the comparison that makes, and which pointer moves as a result. Then
+what is left over in b, and the union they build.](merge-walk.svg)
+
+The three rules above are the three things that can happen at one
+comparison, and the walk is the same either way: look at where the two
+pointers are, keep something, move one pointer or both. Neither pointer
+ever goes backwards, which is why the whole thing costs $n + m$ rather
+than $n \times m$.
+
 ```python exec
 id: set-operations-the-merge-pattern-1
 # The merge-walk pattern, demonstrated for union

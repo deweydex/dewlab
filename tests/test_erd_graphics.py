@@ -329,3 +329,39 @@ class TestTheRangeCollapsing:
         assert items == self.ITEMS
         assert items == sorted(items), "binary search needs it sorted"
         assert target in items
+
+
+@needs_steps
+class TestTheMergeWalk:
+    A = [1, 3, 4, 5]
+    B = [1, 2, 5, 7, 8]
+
+    def test_the_sets_come_from_the_tutorial(self):
+        left, right = maths_diagrams._sets_from_cell()
+        assert left == self.A and right == self.B
+        for values in (left, right):
+            assert values == sorted(set(values)), "make_set sorts and dedupes"
+
+    def test_every_comparison_case_appears(self):
+        """Equal, less-than and greater-than each happen on this pair, so
+        the picture shows all three rules the prose states rather than
+        illustrating one and asserting the others.
+
+        Unescaped first: `<` and `>` are `&lt;` and `&gt;` in the file, as
+        they have to be.
+        """
+        import html as html_module
+
+        svg = html_module.unescape(step_renderer.merge_walk(self.A, self.B))
+        assert "1 = 1" in svg
+        assert "3 > 2" in svg
+        assert "3 < 5" in svg
+
+    def test_the_union_it_reports_is_the_union(self):
+        svg = step_renderer.merge_walk(self.A, self.B)
+        expected = "  ".join(str(v) for v in sorted(set(self.A) | set(self.B)))
+        assert f"union  {expected}" in svg
+
+    def test_leftovers_are_named_from_the_list_that_still_has_them(self):
+        svg = step_renderer.merge_walk(self.A, self.B)
+        assert "left in b: 7  8" in svg
