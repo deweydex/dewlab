@@ -224,3 +224,32 @@ class TestStateDiagram:
     def test_more_than_two_states_says_so_rather_than_drawing_badly(self):
         with pytest.raises(ValueError, match="two states"):
             state_renderer.render(["a", "b", "c"], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+
+
+try:
+    import maths as maths_diagrams
+except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
+    maths_diagrams = None
+
+needs_maths = pytest.mark.skipif(maths_diagrams is None, reason="svgwrite is not installed")
+
+
+@needs_maths
+class TestTheTwoAcesTree:
+    def test_it_draws_the_numbers_the_page_multiplies(self):
+        svg = maths_diagrams.drawing_two_aces()
+        assert ">4/52<" in svg and ">3/51<" in svg
+
+    def test_both_second_draws_are_out_of_the_same_smaller_deck(self):
+        """One card is gone whichever one it was — that shared 51 is half of
+        what makes the two draws dependent."""
+        svg = maths_diagrams.drawing_two_aces()
+        assert ">3/51<" in svg and ">4/51<" in svg, "the numerators must differ"
+
+    def test_sibling_branches_summing_wrong_stops_generation(self, monkeypatch):
+        """A tree whose branches do not sum to 1 is arithmetic a reader would
+        be right to distrust, so it fails here rather than shipping."""
+        monkeypatch.setattr(maths_diagrams, "ACES", 5)
+        monkeypatch.setattr(maths_diagrams, "CARDS", 0)
+        with pytest.raises(ZeroDivisionError):
+            maths_diagrams.drawing_two_aces()

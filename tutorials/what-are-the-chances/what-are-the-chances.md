@@ -88,6 +88,16 @@ $$P(\text{two aces in a row}) = \frac{4}{52} \times \frac{3}{51}$$
 
 After drawing one ace, there are 3 aces left among 51 remaining cards.
 
+![A tree from 52 cards. The first draw branches into ace, 4 over 52, and
+other, 48 over 52. Under ace the next draw is 3 over 51; under other it is
+4 over 51. The ace then ace path is marked.](two-aces-tree.svg)
+
+The formula says $\frac{4}{52} \times \frac{3}{51}$, and the tree says
+where each of those numbers comes from. Both second-level branches have 51
+underneath, because one card is gone whichever one it was. What differs is
+the top: 3 aces left if you drew one, 4 if you did not. That difference is
+what *not independent* means — the first draw changed the second one.
+
 ### Your turn
 
 Using your `probability` function and the combination functions from *Counting Carefully*, here are five card questions. The reasoning is worth writing down before the computing — it is where the mistakes are visible.
