@@ -305,7 +305,7 @@ class TestPageCardsAndSections:
         # test: Python-Markdown treats a raw <div> block as opaque HTML
         # through to its closing tag, so a heading or paragraph written
         # inside one would otherwise reach the page as literal, unconverted
-        # markdown — see convert_page_wrapper_bodies().
+        # markdown — see mark_markdown_wrappers().
         assert "<h2" in page and ">A Section</h2>" in page
         assert "<strong>bold</strong>" in page
         assert '<a href="features.html">link</a>' in page
@@ -314,8 +314,8 @@ class TestPageCardsAndSections:
         # same raw-HTML-block problem, met on a <ul> rather than a <div>:
         # a markdown bullet list converts to its own <ul>...</ul>, which
         # would double up inside a wrapper that already supplies the real
-        # one — convert_page_wrapper_bodies() strips the redundant inner
-        # tag for a `ul` wrapper specifically.
+        # one — md_in_html knows a <ul> holds <li> children and emits only
+        # those.
         page = (repo / "site" / "features.html").read_text()
         assert (
             '<ul class="dl-feature-list">\n'
@@ -391,7 +391,7 @@ class TestPageCardsAndSections:
         # extract-then-place dance the tutorial body's own maths already
         # gets, applied to three surfaces that each convert their own
         # markdown separately: a card's body (parse_card), a wrapped
-        # section (convert_page_wrapper_bodies), and the page's own
+        # section (mark_markdown_wrappers), and the page's own
         # top-level prose (read_page).
         self.home(repo, (
             r"The page opens with $a^2 + b^2 = c^2$." + "\n\n"

@@ -679,8 +679,8 @@ class TestFolds:
             assert f".{name} " in css or f".{name}{{" in css or f".{name}[" in css
 
     def test_maths_works_inside_a_hand_written_fold(self, repo):
-        # convert_fold_bodies() converts a fold's body on its own, the same
-        # way render_staged_hint() already does for a ```hint fence —
+        # mark_markdown_wrappers() marks a fold for md_in_html, so its
+        # body parses as part of the page's one markdown pass —
         # Python-Markdown treats <details>...</details> as opaque raw HTML,
         # so without this the working in a practice-page answer would
         # reach the page as literal, unrendered text.

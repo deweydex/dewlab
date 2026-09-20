@@ -716,10 +716,10 @@ computational methods pages named in §8 and two FOOP pages,
 their numbered steps and backticks as literal text, not lists and
 `<code>`. The `hint` fence converts its body on its own
 (`render_staged_hint()`), so it never shared the problem; the existing
-folds did. `convert_fold_bodies()` in `build.py` now runs a fold's body
-through `to_html()` on its own, the same way, right after the page's
-main markdown conversion and before `place_hints()` sees it —
-DECISIONS_LOG.md 7.139.
+folds did. `mark_markdown_wrappers()` in `build.py` now adds
+`markdown="1"` to each fold before conversion, so the `md_in_html`
+extension parses the body as part of the page's one markdown pass —
+DECISIONS_LOG.md 7.139, later simplified from its own second pass.
 
 **dewstack** built its own version for `sql-check` blocks (its
 DECISIONS_LOG.md, this session), then dewstack itself was folded into
