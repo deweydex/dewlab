@@ -4008,3 +4008,11 @@ Four of the sixteen (`CONTENT_AND_FILE_ARCHITECTURE.md`, `EDITOR.md`, `PRE_BUILD
 Seven sites in `build.py` alone cited it by section number for parsing and rendering detail that is now just described in place. The note itself was already an outlier in `planning/README.md`'s own index — it was never listed there, despite being the densest citation source in this batch.
 
 *Cost to change: low. Every stripped comment still describes real, current behaviour correctly.*
+
+---
+
+**7.189 — `planning/PEDAGOGICAL_STYLE_GUIDE.md` rewritten from scratch, 579 lines to under 390, against five of Josh's own teaching handouts rather than a trim of the old text.** Josh: the old guide, however accurate its content, was not effective, and documentation should describe the current state in the plain, invitational register the tutorials themselves are supposed to use — not carry the history of how it got that way.
+
+Read directly rather than through memory: a "Dear Student" course letter, and handouts on figurate numbers, ciphers as functions, sequences, and derivatives. The shared voice across all five — invitational "we"/"let's", questions doing the actual teaching rather than introducing it, warmth that admits a topic is hard, concrete before formal, naming a concept only after using it informally — mostly confirmed rather than overturned what the old guide already argued for; what it did not survive was the guide's own bloat: a "these two documents were merged, and here is where they disagreed" section, a formal academic bibliography with press and year, an in-progress bibliography-coverage audit ("49 of 60 tutorials"). All of that is cut. Section numbers 1, 3, 4 (with its "Plain language" subsection), 5 and 6 are kept in place on purpose — `CLAUDE.md`, two skills, `build.py`, `dev/check_doc_links.py`'s citers, and several tests all cite this guide by section number, and renumbering them for a document that is not actually reordering its load-bearing content would have been change for its own sake.
+
+*Cost to change: low. Nothing that cites this guide by section number needed to change; the content each citation depends on (the emphasis-on-first-use rule, the cell-id-as-contract line, the hint-fold rationing, the "Plain language" checks) is still at the section number it was.*
