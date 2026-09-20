@@ -2214,6 +2214,44 @@ function buildQuestions() {
   }
 }
 
+/* A slider that sets a diagram's own width.
+ *
+ * For a diagram whose subject is what happens *at* a width — a grid that
+ * redraws past a breakpoint, a row that wraps. A container query on the
+ * sized element does the rest, which is the honest shape of the thing
+ * being taught: the width decides, not the control.
+ *
+ * Generic rather than per-diagram: an `<input type="range">` carrying
+ * `data-dl-width-for="<id>"` sizes that element in pixels and writes the
+ * figure into the `<output>` beside it. Pixels, not percent, because the
+ * breakpoint a diagram like this exists to show is written in pixels.
+ *
+ * The control ships `hidden` and this reveals it, so a reader whose
+ * JavaScript never runs is not left with a slider that does nothing. They
+ * see the diagram at its starting width and the prose underneath, which is
+ * what a drawn figure would have given them.
+ *
+ * This lives in the runtime rather than in a script beside the diagram so
+ * that it reaches a downloaded page: build.py inlines the standalone
+ * bundle into every one, and nothing here waits on a Run button. */
+function wireDiagramWidthSliders() {
+  for (const input of document.querySelectorAll("input[data-dl-width-for]")) {
+    const target = document.getElementById(input.dataset.dlWidthFor);
+    if (!target) {
+      console.warn(`dewlab: width slider points at "${input.dataset.dlWidthFor}", which is not on the page`);
+      continue;
+    }
+    const out = input.parentElement && input.parentElement.querySelector("output");
+    const apply = () => {
+      target.style.width = `${input.value}px`;
+      if (out) out.textContent = `${input.value}px`;
+    };
+    input.addEventListener("input", apply);
+    apply();
+    if (input.parentElement) input.parentElement.hidden = false;
+  }
+}
+
 function buildSiteEditors(manifest) {
   const dark = isDarkNow();
   const labelFor = { html: "html", css: "css", js: "javascript" };
@@ -5437,6 +5475,7 @@ initSegKeyboardNav();
 buildCells(currentManifest);
 buildQuestions();
 buildSiteEditors(currentManifest);
+wireDiagramWidthSliders();
 buildAppCells(currentManifest);
 if (currentManifest.appCells && currentManifest.appCells.length) {
   globalThis.dewlabQueryRows = queryRows;

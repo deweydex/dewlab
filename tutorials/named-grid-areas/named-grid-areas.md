@@ -80,12 +80,15 @@ two columns, with the menu now beside the main area rather than above it.
 Nothing about the HTML changes, only which map applies.
 
 <div class="dl-drawn dl-gridmap-wrap">
-<span class="dl-gm-label">Preview width</span>
-<input type="radio" name="dl-gm-width" id="dl-gm-w-narrow" class="dl-gm-radio" checked>
-<label class="dl-gm-pick" for="dl-gm-w-narrow">narrow</label>
-<input type="radio" name="dl-gm-width" id="dl-gm-w-wide" class="dl-gm-radio">
-<label class="dl-gm-pick" for="dl-gm-w-wide">wide</label>
-<div class="dl-gridmap">
+<div class="dl-gm-control" hidden>
+<label for="dl-gm-width">Map width</label>
+<input type="range" id="dl-gm-width" min="170" max="520" step="1" value="260"
+       list="dl-gm-ticks" data-dl-width-for="dl-gm-box">
+<datalist id="dl-gm-ticks"><option value="350" label="350px"></option></datalist>
+<output for="dl-gm-width">260px</output>
+</div>
+<div class="dl-gridmap" id="dl-gm-box">
+<div class="dl-gm-frame">
 <div class="dl-gm-strings dl-gm-narrow">
 <code>"header"</code>
 <code>"nav"</code>
@@ -104,12 +107,12 @@ Nothing about the HTML changes, only which map applies.
 <div class="dl-gm-cell dl-gm-footer">footer</div>
 </div>
 </div>
-<p class="dl-gm-drag">One grid, under the tutorial's own two maps. Past 350px the quoted
-lines change from four to three, and the shape changes with them.
-<code>nav</code> is marked in both, so you can see where it went; drag
-the preview above for the widths in between.</p>
 </div>
-
+<p class="dl-gm-drag">One grid, under the tutorial's own two maps. Drag the width across
+350px: the quoted lines change from four to three, and the shape changes
+with them, because the lines are what makes the shape. <code>nav</code>
+is marked in both, so you can see where it went.</p>
+</div>
 ## Other properties from the same lesson
 
 Two related properties are worth naming here, even without a live demo

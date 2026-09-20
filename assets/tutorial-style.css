@@ -3924,74 +3924,61 @@ p code, li code {
  * width of and watches redraw. That is the thing the section is about and
  * the thing no picture of it can do.
  *
- * A pair of radios rather than `resize: horizontal`, and no JavaScript,
- * so nothing waits on a Run button and it works on a downloaded page.
- * The browser's own drag handle is the nicer gesture but it is mouse-only,
- * and on a phone the column is narrow enough that a reader would never
- * reach the wide map at all. The two cannot be offered together: the
- * radios have to carry !important or they go dead the first time anyone
- * drags and leaves an inline width behind, and that same !important is
- * what stops the dragging. Buttons win, because they work everywhere —
- * and the continuous version is the live preview higher up the page,
- * whose width control now reads out pixels.
+ * A slider, wired by the runtime, rather than two states to pick between.
+ * The reader moves the width and watches the map redraw at 350px — which
+ * is the thing the section is about, and the thing neither a picture nor a
+ * pair of buttons can do. It reads out its own width in pixels, because
+ * the breakpoint is written in pixels.
  *
- * This is the checkbox hack `keyframes-and-the-checkbox-hack` teaches,
- * which is a nice thing for a diagram on a CSS page to be made of.
+ * Not `resize: horizontal`, whose drag handle is the nicer gesture and is
+ * mouse-only: on a phone the reading column is narrow enough that a reader
+ * would never reach the wide map at all. A range input works with a mouse,
+ * a finger and a keyboard alike.
  *
- * The buttons set a width and a container query reacts to it, rather than
+ * The slider sets a width and a container query reacts to it, rather than
  * switching the layout directly, because that is the shape of the thing
- * being taught: the width decides, not the button.
+ * being taught: the width decides, not the control.
  *
  * Widths in px, not rem. The threshold is 350px, so a box sized in rem
  * would cross it on its own the moment a reader raised their font size,
  * and "narrow" would draw the wide map. */
 .dl-gridmap-wrap { max-width: 100%; }
 
-.dl-gm-label {
+/* Laid out the same way the site editor's own preview-width control is,
+   since it is the same control doing the same job one diagram down. */
+.dl-gm-control {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 26rem;
+  margin-bottom: 0.7rem;
   font-size: 0.8rem;
-  font-style: italic;
   color: var(--dl-muted);
-  margin-right: 0.4rem;
 }
-
-.dl-gm-radio {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.dl-gm-pick {
-  display: inline-block;
-  margin-right: 0.35rem;
-  padding: 0.15rem 0.7rem;
-  border: 0.125rem solid var(--dl-muted);
-  border-radius: 999px;
+.dl-gm-control label { flex: none; font-style: italic; }
+.dl-gm-control input[type="range"] { flex: 1 1 auto; min-width: 0; }
+.dl-gm-control output {
+  flex: none;
   font-family: var(--dl-mono);
-  font-size: 0.75rem;
   color: var(--dl-fg);
-  cursor: pointer;
-}
-.dl-gm-radio:checked + .dl-gm-pick {
-  background: var(--dl-highlight-blue);
-  border-color: var(--dl-fg);
-}
-.dl-gm-radio:focus-visible + .dl-gm-pick {
-  outline: 0.15rem solid var(--dl-link);
-  outline-offset: 0.15rem;
 }
 
+/* The queried element carries no padding and no border, and the dashed
+   frame goes on a child instead. A container query measures the content
+   box, and `* { box-sizing: border-box }` means padding and border eat
+   into a declared width — so with them here the map flipped at an outer
+   376px while the caption, and the tutorial's media query, said 350.
+   Exactly the mistake `flexbox-first-steps` is about. */
 .dl-gridmap {
   container-type: inline-size;
   width: 260px;
-  min-width: 150px;
   max-width: 100%;
-  margin-top: 0.7rem;
+}
+
+.dl-gm-frame {
   padding: 0.6rem 0.6rem 1.1rem;
   border: 0.125rem dashed var(--dl-muted);
 }
-#dl-gm-w-narrow:checked ~ .dl-gridmap { width: 260px !important; }
-#dl-gm-w-wide:checked ~ .dl-gridmap { width: 460px !important; }
 
 /* Both are in the markup, and only one shows. A screen reader and a
    printed page get whichever the current width selects, the same as a

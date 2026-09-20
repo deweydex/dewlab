@@ -229,26 +229,47 @@ GRID_AREAS = REPO / "tutorials/named-grid-areas/named-grid-areas.md"
 
 def test_the_grid_map_flips_at_the_tutorials_own_breakpoint():
     """The diagram is a container query standing in for the tutorial's
-    media query. Move one and the picture starts changing shape at a width
-    the page says nothing happens at."""
-    media = re.search(r"@media \(min-width:\s*(\d+)px\)", GRID_AREAS.read_text())
+    media query, and a slider that reads out the width it is setting. Move
+    either one and the picture changes shape at a width the page says
+    nothing happens at, with a number beside it insisting otherwise."""
+    grid = GRID_AREAS.read_text()
+    media = re.search(r"@media \(min-width:\s*(\d+)px\)", grid)
     assert media, "no media query in named-grid-areas' CSS cell"
+    threshold = int(media.group(1))
 
     css = (REPO / "assets/tutorial-style.css").read_text()
     block = re.search(
         r"@container \(min-width:\s*(\d+)px\)\s*\{[^@]*?\.dl-gm-grid", css, re.S
     )
     assert block, "the grid map's container query is gone"
-    assert block.group(1) == media.group(1), (
+    assert int(block.group(1)) == threshold, (
         f"the grid map flips at {block.group(1)}px but the tutorial's media "
-        f"query turns on at {media.group(1)}px"
+        f"query turns on at {threshold}px"
     )
 
-    # Either width the buttons offer has to land on the right side of it.
-    threshold = int(media.group(1))
-    for which, expected_side in (("narrow", False), ("wide", True)):
-        rule = re.search(rf"#dl-gm-w-{which}:checked ~ \.dl-gridmap \{{ width: (\d+)px", css)
-        assert rule, f"no width rule for the {which} button"
-        assert (int(rule.group(1)) >= threshold) is expected_side, (
-            f"the {which} button sets {rule.group(1)}px, the wrong side of {threshold}"
+    slider = re.search(
+        r'<input type="range" id="dl-gm-width" min="(\d+)" max="(\d+)"', grid
+    )
+    assert slider, "the grid map's width slider is gone"
+    low, high = int(slider.group(1)), int(slider.group(2))
+    assert low < threshold < high, (
+        f"the slider runs {low}-{high}px, which cannot cross {threshold}px"
+    )
+
+
+def test_the_grid_maps_queried_width_is_the_width_it_draws():
+    """A container query measures the content box, and the site sets
+    `box-sizing: border-box` for everything — so padding or a border on the
+    queried element eats into its declared width and the map flips late.
+    It did: with the frame on the same element the map changed shape at an
+    outer 376px while its own caption said 350. The frame belongs on a
+    child, and the slider's number has to be the width of what is drawn."""
+    css = (REPO / "assets/tutorial-style.css").read_text()
+    rule = re.search(r"\n\.dl-gridmap \{(.*?)\n\}", css, re.S)
+    assert rule, "no .dl-gridmap rule"
+    for forbidden in ("padding", "border"):
+        assert forbidden not in rule.group(1), (
+            f".dl-gridmap declares {forbidden}, which shrinks the content box "
+            "the container query measures — put it on .dl-gm-frame instead"
         )
+    assert "container-type: inline-size" in rule.group(1)

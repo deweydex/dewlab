@@ -69,9 +69,8 @@ looking at a picture of two states learns that there are two states.
 
 So the order of preference is: the page's own live preview first (every site
 editor has a width control, and it reads out pixels as well as percent); then
-a small thing on the page the reader can click or drag, built from real CSS
-with no JavaScript, so nothing waits on a Run button and it survives being
-downloaded; then markup that holds still; then a drawing.
+a small thing on the page the reader can move, with a number on it; then
+markup that holds still; then a drawing.
 
 A drawing still wins for one job, and it is not a small one: **annotation**.
 Four named regions of a box, a responsible line marked against a failing one,
@@ -79,16 +78,29 @@ a dimension rule that says 114px — these are claims *about* a picture, and a
 live demo cannot hold still long enough to make them. Which is why the box
 model and the traceback stayed drawn while the grid map did not.
 
-Interaction that needs JavaScript is a step down again, not up: a site
-editor's JS pane waits on Run, a full-stack cell's does too, and both are
-gone from a printout. Reach for `:checked`, `:hover`, `:focus-within` and a
-container query before reaching for a script.
+**Script is fine; a cell's script is not.** What must be avoided is
+interaction that waits on a Run button or vanishes from a downloaded page —
+a site editor's JS pane, a full-stack cell's. The runtime is neither:
+`assets/tutorial-runtime.js` is inlined into every downloaded page and runs
+on load, so a behaviour put there reaches a reader wherever they are. Put a
+diagram's interaction in the runtime, keep it generic (`wireDiagramWidthSliders()`
+is driven by a `data-dl-width-for` attribute, not by any one diagram), and
+ship the control `hidden` so a reader without JavaScript sees the diagram
+rather than a dead widget.
+
+Two traps, both found the hard way and both about a number on a control
+disagreeing with the thing it sizes. A container query measures the **content
+box**, and the site sets `box-sizing: border-box`, so padding or a border on
+the queried element makes it flip late — put the frame on a child. And the
+site editor's preview iframe is sandboxed without `allow-same-origin`, so its
+readout is the frame's width and not the width inside it; a page that names a
+threshold wants `body { margin: 0 }` in its own CSS cell.
 
 ### Which tool draws what
 
 | Tool | For | Why |
 |---|---|---|
-| **Markup, interactive** | The grid map | Real elements the reader changes, with `:checked` and a container query doing the work and no JavaScript anywhere. First choice wherever the subject is something that changes. |
+| **Markup, interactive** | The grid map | Real elements the reader changes: a slider wired by the runtime, a container query doing the work. First choice wherever the subject is something that changes. |
 | **Markup, still** | The box model, the flexbox card at full size, the annotated traceback | Real elements with real borders and real padding. The diagram is made of the thing it teaches, themes with the page for nothing, scales with the reader's font, and a student who opens the page source finds markup they have been taught to read. Where the point is an annotation rather than a change. |
 | **svgwrite** | ER diagrams, state-transition graphs, trees, recursion trees, grids, nested sets, the stepped searches | Hand layout in `dev/graphics/`. Each figure's arrangement is small, fixed and worth controlling: crow's feet spread at the entity rather than converge on it, an edge reaching past a column drops below the boxes. |
 | **matplotlib** | Number lines, timelines, the unit square and its determinant, anything plotted from data | Coordinates rather than layout. It is also the library the student-facing figures already use, so a generated figure and a live one look like relatives. |
@@ -437,7 +449,7 @@ Worth starting once the generators and the normaliser have stopped moving.
 
 **[Solving Systems](../tutorials/solving-systems/solving-systems.md#three-unknowns-row-by-row)** — three planes meeting at a point, and the two degenerate cases. The one place 3D is the honest picture rather than a flourish.
 
-**[Named grid areas](../tutorials/named-grid-areas/named-grid-areas.md)** — one grid the reader resizes. *Built, and interactive:* a real grid laid out by the tutorial's own two `grid-template-areas`, with a container query at the same 350px its media query uses, and two radios to set the width. No JavaScript. **Not the line numbers** this list asked for first — the tutorial uses names precisely to avoid them — and **not two drawn maps side by side**, which was the first build: watching one grid move beats comparing two that cannot. Buttons rather than `resize: horizontal`, which is mouse-only and would have shown a phone reader half the diagram.
+**[Named grid areas](../tutorials/named-grid-areas/named-grid-areas.md)** — one grid the reader resizes. *Built, and interactive:* a real grid laid out by the tutorial's own two `grid-template-areas`, a container query at the same 350px its media query uses, and a slider that reads out the width it sets. **Not the line numbers** this list asked for first — the tutorial uses names precisely to avoid them — and **not two drawn maps side by side**, which was the first build: watching one grid move beats comparing two that cannot. Not `resize: horizontal` either, which is mouse-only and would have shown a phone reader half the diagram.
 
 ---
 
