@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from conftest import _open_panel
+from conftest import _open_settings_tab
 
 CELL = "staged-hints"
 
@@ -121,7 +121,7 @@ class TestStagedHints:
         run(page)
         run(page)
         assert fold(page, 0).is_visible()
-        _open_panel(page, "#dl-python-toggle")
+        _open_settings_tab(page, "behavior")
         page.click("[data-staged-hints] button[data-value='off']")
         assert fold(page, 0).is_hidden()
         page.click("[data-staged-hints] button[data-value='on']")

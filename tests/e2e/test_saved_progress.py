@@ -382,7 +382,7 @@ class TestAPageWithNothingToSave:
         # reading surface, and the texture section is what makes it one.
         assert tab.query_selector("#dl-yourwork-toggle") is not None
         assert tab.query_selector("#dl-settings-toggle") is not None
-        assert tab.query_selector("#dl-settings-texture") is not None
+        assert tab.query_selector("#dl-settings-reading") is not None
         context.close()
 
     def test_it_never_starts_python(self, browser, base_url):

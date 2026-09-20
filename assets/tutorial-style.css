@@ -1481,6 +1481,42 @@ p code, li code {
    on and hides the six corner tabs they replace. */
 .dl-mobile-fab, .dl-mobile-menu { display: none; }
 
+/* Give Feedback's own door — a report is something you reach for, not a
+   preference, so it isn't a corner-dock tab. Quiet at rest (outlined,
+   like an idle corner tab) rather than the mobile launcher's solid
+   orange, since this one should be findable without demanding attention
+   on every page. Hidden at the same 34rem the corner docks fold into the
+   mobile launcher (shell.html's own comment); the launcher's menu reaches
+   it there instead. */
+.dl-report-fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 51;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--dl-navy);
+  border-radius: 50%;
+  background: var(--dl-panel-bg);
+  color: var(--dl-heading);
+  box-shadow: 0 2px 8px var(--dl-shadow);
+  cursor: pointer;
+}
+.dl-report-fab:hover, .dl-report-fab:focus-visible {
+  border-color: var(--dl-orange);
+  color: var(--dl-orange);
+}
+.dl-report-fab[aria-pressed="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+.dl-report-fab svg { width: 1.1rem; height: 1.1rem; }
+
 /* Filled and lifted, not outlined: a transparent tab over the page's own
    background reads as a stray border, where the mockup's white fill and
    drop shadow read as a control docked to the screen's edge, in front of
@@ -2350,8 +2386,6 @@ p code, li code {
   line-height: 1.5;
   overflow-y: hidden;
 }
-.dl-progress-notes-hint { margin-top: 0.35rem; }
-
 /* Saving, exporting and starting again — the "Your work" section of the
    settings panel. */
 .dl-progress-state { margin: 0 0 0.6rem; font-size: 0.9rem; }
@@ -2415,9 +2449,12 @@ p code, li code {
   /* One launcher instead of six floating tabs — a thumb has room for one
      button, not six. Every panel a tab used to open opens from the
      launcher instead (initMobileLauncher(), tutorial-runtime.js); the
-     tree opens from it too, as its own sheet. */
+     tree opens from it too, as its own sheet. Give Feedback's own circle
+     folds into the same launcher rather than floating a second circle
+     next to it. */
   .dl-corner-dock-tr,
-  .dl-corner-dock-tl .dl-reference-toggle {
+  .dl-corner-dock-tl .dl-reference-toggle,
+  .dl-report-fab {
     display: none;
   }
 

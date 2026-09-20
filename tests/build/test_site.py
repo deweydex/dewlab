@@ -140,22 +140,25 @@ class TestOnePlainTutorial:
             '<section class="dl-settings-section" id="dl-settings-download"></section>'
             in index
         )
-        # Give Feedback, Appearance and Imports & Exports live behind one
+        # Appearance, Behavior and Imports & Exports live behind one
         # corner-dock toggle, Settings, opening #dl-settings — an internal
         # tablist inside it switches between the three, the way Reference's
         # own tabs already do for its three sections. Not the two separate
         # texture/progress toggles this panel originally replaced, and not
-        # a toggle of its own for each of the three.
+        # a toggle of its own for each of the three. Give Feedback is its
+        # own floating circle (#dl-report-toggle), not a Settings tab.
         assert 'id="dl-settings-toggle"' in page
         assert 'aria-controls="dl-settings"' in page
         assert 'id="dl-settings-tab-appearance"' in page
-        assert 'id="dl-settings-tab-feedback"' in page
+        assert 'id="dl-settings-tab-behavior"' in page
         assert 'id="dl-settings-tab-importsexports"' in page
         assert "dl-texture-toggle" not in page
         assert "dl-progress-toggle" not in page
         assert 'id="dl-appearance-toggle"' not in page
-        assert 'id="dl-report-toggle"' not in page
         assert 'id="dl-importsexports-toggle"' not in page
+        # The floating Give Feedback circle sits outside both corner docks.
+        assert 'id="dl-report-toggle"' in page
+        assert 'class="dl-report-fab"' in page
 
         # ---- Nothing sits above the page. What the top bar held — all
         # tutorials, previous and next, search, contents — is all in the
@@ -526,7 +529,7 @@ class TestTheDownloadableCopy:
         # It keeps the rest of the panel.
         assert 'id="dl-settings-toggle"' in page
         assert 'id="dl-settings-work"' in page
-        assert 'id="dl-settings-texture"' in page
+        assert 'id="dl-settings-reading"' in page
         # It keeps the contents rung and nothing else of the tree: its
         # links are inside the file, so they work from a student's disk —
         # unlike the rest of the tree, which links to other files.

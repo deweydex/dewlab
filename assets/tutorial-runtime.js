@@ -187,16 +187,23 @@ function closeReference() {
 // tab clicked while its own panel is showing closes that panel. Closing
 // from outside (the mobile launcher opening a sheet, say) goes through
 // here so every tab's aria-pressed is put back too.
-// "settings" is Give Feedback, Appearance and Imports & Exports folded
-// into one panel behind one toggle, switched by an internal tablist
+// "settings" is Appearance, Behavior and Imports & Exports folded into one
+// panel behind one toggle, switched by an internal tablist
 // (initSettingsTabs() below) rather than each getting its own corner tab
 // — the same pattern Reference already uses for its own three sections.
-const RIGHT_PANELS = ["yourwork", "python", "settings"];
+// "report" is Give Feedback's own door: not in the corner dock at all (a
+// fixed circle at the bottom-right, .dl-report-fab), but sharing every
+// other bit of open/close machinery this array drives, since a report
+// panel and a corner-dock panel close, resize and restore the same way.
+const RIGHT_PANELS = ["yourwork", "python", "settings", "report"];
 
-// One shared width for all three, not one per panel id: they read as tabs
-// into a single dock, so dragging any one wider has to make them all that
-// wide, or switching tabs jumps the reading column between whichever
-// width each tab happens to remember (initRightPanels() below).
+// One shared width for the three that actually live in the corner dock —
+// Notes, Python, Settings — not one per panel id: they read as tabs into a
+// single dock, so dragging any one wider has to make them all that wide,
+// or switching tabs jumps the reading column between whichever width each
+// tab happens to remember (initRightPanels() below). Give Feedback's own
+// panel sits under its own fixed circle, not that dock, so it never
+// touches this key or the dock-stack width sync.
 const RIGHT_DOCK_WIDTH_KEY = "dl-right-dock";
 
 function closeRightPanels(except = null) {
@@ -461,22 +468,30 @@ function initRightPanels() {
   // justify it, so this is set in setOpen() below, not once here.
   const rightStack = document.querySelector(".dl-corner-dock-tr .dl-corner-stack");
 
+  // Give Feedback's own panel shares every open/close path below, but not
+  // the corner dock's width story: it opens from its own fixed circle, not
+  // a tab in .dl-corner-dock-tr, so it neither drags the other three's
+  // shared width around nor pushes the dock stack wider while it's open.
+  const dockLinked = panels.filter((p) => p.name !== "report");
+
   for (const p of panels) {
     for (const section of p.panel.querySelectorAll(".dl-settings-section")) {
       if (!section.textContent.trim()) section.hidden = true;
     }
-    makeEdgeResizable(p.panel, "right", 256, 640, () => {
-      const width = p.panel.style.width;
-      for (const other of panels) {
-        if (other.panel !== p.panel) other.panel.style.width = width;
-      }
-      if (rightStack && !p.panel.hasAttribute("hidden")) rightStack.style.width = width;
-    }, RIGHT_DOCK_WIDTH_KEY);
+    if (p.name !== "report") {
+      makeEdgeResizable(p.panel, "right", 256, 640, () => {
+        const width = p.panel.style.width;
+        for (const other of dockLinked) {
+          if (other.panel !== p.panel) other.panel.style.width = width;
+        }
+        if (rightStack && !p.panel.hasAttribute("hidden")) rightStack.style.width = width;
+      }, RIGHT_DOCK_WIDTH_KEY);
+    }
 
     function setOpen(open) {
       p.panel.toggleAttribute("hidden", !open);
       p.toggle.setAttribute("aria-pressed", String(open));
-      if (rightStack) {
+      if (rightStack && p.name !== "report") {
         rightStack.style.width = open ? `${p.panel.getBoundingClientRect().width}px` : "";
       }
       if (!open) {
@@ -511,8 +526,8 @@ function initRightPanels() {
   }
 }
 
-/* Settings' own tablist — Appearance, Give Feedback, Imports & Exports,
- * one panel behind one corner toggle rather than three. The plain half of
+/* Settings' own tablist — Appearance, Behavior, Imports & Exports, one
+ * panel behind one corner toggle rather than three. The plain half of
  * initReference()'s own tab-switching (click or arrow keys move the
  * selection): no shared search across tabs the way Reference's is, since
  * only Appearance carries one, so this just hides that search box outside
@@ -527,9 +542,9 @@ function initSettingsTabs() {
       pane: document.getElementById("dl-settings-pane-appearance"),
     },
     {
-      name: "feedback",
-      tab: document.getElementById("dl-settings-tab-feedback"),
-      pane: document.getElementById("dl-settings-pane-feedback"),
+      name: "behavior",
+      tab: document.getElementById("dl-settings-tab-behavior"),
+      pane: document.getElementById("dl-settings-pane-behavior"),
     },
     {
       name: "importsexports",
@@ -1726,7 +1741,7 @@ function initTexture(onThemeChange) {
   const state = loadTexture();
   applyTexture(state);
 
-  const panel = document.getElementById("dl-settings-texture");
+  const panel = document.getElementById("dl-settings-pane-appearance");
   if (!panel) return state;
 
   const sizeEl = document.getElementById("dl-texture-size");

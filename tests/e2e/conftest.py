@@ -41,10 +41,10 @@ def _open_panel(actor, selector: str) -> None:
 
 
 def _open_settings_tab(actor, tab: str) -> None:
-    """Open Settings to a specific tab. Give Feedback, Appearance and
-    Imports & Exports no longer each have their own corner toggle — they
+    """Open Settings to a specific tab. Appearance, Behavior and
+    Imports & Exports don't each have their own corner toggle — they
     share one panel, #dl-settings, switched by an internal tablist
-    (dl-settings-tab-<tab>: "appearance", "feedback" or
+    (dl-settings-tab-<tab>: "appearance", "behavior" or
     "importsexports"), the same pattern Reference's own tabs already use.
     Opens the panel only if it isn't already open, since re-clicking its
     own toggle would close it instead of switching tabs."""

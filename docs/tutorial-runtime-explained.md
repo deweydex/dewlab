@@ -351,7 +351,7 @@ buttons" row (`data-texture="buttons"`, `TEXTURE_DEFAULTS.buttons`,
 no markup rewrite per mode. It rides the same generic `initTexture()`
 machinery every other Texture row already uses, so no new Settings
 wiring function was needed — only the row itself
-(`assets/shell.html#dl-settings-texture`) and the two lines in
+(`assets/shell.html#dl-settings-code-texture`) and the two lines in
 `applyTexture()` that set or clear the attribute. `setBtnLabel()`/
 `getBtnLabel()` here read or write a button's `.dl-btn-label` span
 directly, since setting `.textContent` on the button itself would erase
@@ -375,18 +375,22 @@ input beside its pill — see `docs/dewmini-js-explained.md` for that half.
 
 ## Two patterns worth understanding on their own
 
-**Five panels, one rule.** The five right-hand panels (Notes, Report,
-Python, Appearance, Imports & Exports — `RIGHT_PANELS`) are separate,
-independent UI components — but opening any one of them always closes the
-other four, since they share one edge of the screen. There's no shared
-"panel manager" object making that happen; each panel's own `setOpen(true)`
-just calls `closeRightPanels(itsOwnName)` directly. The Reference panel on
-the left is not in that group: it has its own edge, so it can stay open
-alongside any of the five. They also share one saved width
-(`RIGHT_DOCK_WIDTH_KEY`, not each panel's own DOM id) — dragging any one's
-edge applies the new width to the other four right away, so a reader
-switching which tab is open never sees the dock, and the reading column
-beside it, resize.
+**Four panels, one rule; three of them one width.** The four right-hand
+panels (Notes, Python, Settings — Appearance/Behavior/Imports & Exports
+behind one tablist-switched toggle — and Report, `RIGHT_PANELS`) are
+separate, independent UI components — but opening any one of them always
+closes the other three, since they share one edge of the screen. There's
+no shared "panel manager" object making that happen; each panel's own
+`setOpen(true)` just calls `closeRightPanels(itsOwnName)` directly. The
+Reference panel on the left is not in that group: it has its own edge, so
+it can stay open alongside any of the four. Notes, Python and Settings
+also share one saved width (`RIGHT_DOCK_WIDTH_KEY`, not each panel's own
+DOM id) — dragging any one's edge applies the new width to the other two
+right away, so a reader switching which tab is open never sees the dock,
+and the reading column beside it, resize. Report sits under its own fixed
+circle rather than the corner dock (`dockLinked`, `initRightPanels()`
+below), so it shares the open/close/Escape/outside-click machinery but
+never that width.
 
 **Live-then-static code intelligence, worker-or-main-thread.** Hover docs
 and autocomplete work by trying two different techniques and taking
