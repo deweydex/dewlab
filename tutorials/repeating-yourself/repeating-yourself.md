@@ -132,6 +132,29 @@ for i in range(1, 6):     # 1 through 5
 print("Sum:", total)       # should be 15
 ```
 
+The notation is not a new subject. It is the same five decisions you
+already make when you write that loop, written down somewhere else:
+
+| The decision | In $\sum_{i=1}^{5} i$ | In the loop |
+|---|---|---|
+| What the index is called | the $i$ under the sigma | the `i` in `for i in ...` |
+| Where it starts | the $1$ in $i = 1$ | the `1` in `range(1, 6)` |
+| Where it stops | the $5$ above the sigma | the `6` in `range(1, 6)` |
+| What gets accumulated | the $i$ after the sigma | the `+ i` in `total = total + i` |
+| What the total starts at | nothing — it is assumed | `total = 0`, written out |
+
+Two of those rows are worth pausing on.
+
+The stopping row is the one that catches people. Sigma stops **at** 5
+and `range` stops **before** 6, so the two numbers differ by one while
+describing the same five values. It is the same idea as a slice: the
+number names a boundary rather than an item.
+
+The last row is a real difference rather than a translation. Sigma never
+writes down that the total starts at zero — a sum of nothing is zero and
+mathematicians leave that unsaid. A loop has to say it out loud, which
+is why `total = 0` sits above every accumulator you write.
+
 We can generalize this. $\sum_{i=1}^{n} i^2$ means "add up the squares of all integers from 1 to n":
 
 ```python exec

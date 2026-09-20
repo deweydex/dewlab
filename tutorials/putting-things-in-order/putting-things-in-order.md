@@ -72,6 +72,45 @@ print("Notice: the largest element (90) is now at the end.")
 
 One pass is not enough to fully sort the list. But after each pass, one more element is in its final position. So we need at most n-1 passes for a list of n elements.
 
+That claim is worth watching rather than taking on trust. Here is the
+same sort again, all the way through, with a bar marking the part that
+has settled:
+
+```python exec
+id: bubble-sort-let-things-rise-2
+data = [64, 34, 25, 12, 22, 11, 90]
+comparisons = 0
+
+print("Start:            ", data, "|", [])
+
+for pass_number in range(len(data) - 1):
+    # Everything past this point settled on an earlier pass, so there is
+    # no reason to look at it again. That is why each pass is shorter.
+    still_to_check = len(data) - pass_number
+    swaps = 0
+
+    for i in range(still_to_check - 1):
+        comparisons = comparisons + 1
+        if data[i] > data[i + 1]:
+            data[i], data[i + 1] = data[i + 1], data[i]
+            swaps = swaps + 1
+
+    moving = data[:still_to_check - 1]
+    settled = data[still_to_check - 1:]
+    print("After pass", pass_number + 1, ":", moving, "|", settled,
+          "  compared:", still_to_check - 1, " swapped:", swaps)
+
+print("Comparisons in total:", comparisons)
+```
+
+Three things to look for. The bar moves left by one every pass, which is
+the claim above. The number of comparisons drops by one every pass, for
+the same reason. And the last pass swaps nothing — the list was already
+sorted before it ran, and bubble sort had no way of knowing.
+
+Try changing `data` to a list of your own. A list that is already sorted
+is worth trying, and so is one in reverse order.
+
 ### Your turn
 
 Let's try `bubble_sort(items)`, returning the list in ascending order.

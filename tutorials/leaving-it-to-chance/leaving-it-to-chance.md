@@ -140,6 +140,45 @@ for seed in [1, 2, 3]:
 print("seed 2, again:", one_experiment(2))
 ```
 
+Five numbers are easy enough to check by eye. Two thousand are not, so
+here is the same claim as a picture.
+
+```python exec
+id: what-random-is-good-enough-for-3
+import random
+import matplotlib.pyplot as plt
+
+def running_mean(seed, rolls):
+    """The average roll so far, after each of `rolls` dice."""
+    random.seed(seed)
+    total = 0
+    averages = []
+    for count in range(1, rolls + 1):
+        total = total + random.randint(1, 6)
+        averages.append(total / count)
+    return averages
+
+rolls = 2000
+plt.plot(running_mean(7, rolls), linewidth=1.6, label="seed 7")
+plt.plot(running_mean(7, rolls), linewidth=1.6, linestyle="--",
+         label="seed 7, again")
+plt.plot(running_mean(8, rolls), linewidth=0.9, label="seed 8")
+plt.axhline(3.5, color="grey", linestyle=":", label="3.5")
+plt.ylim(2.5, 4.5)
+plt.xlabel("dice rolled")
+plt.ylabel("average so far")
+plt.legend()
+```
+
+There are three runs on that chart and you can only see two paths. The
+first two are drawn on top of each other, exactly, for all two thousand
+rolls — the dashes are the only reason you can tell the second one is
+there at all. Same seed, same dice, every time.
+
+Seed 8 takes a visibly different path. It is not a better or worse run,
+just another one, and it settles towards the same 3.5 the others do. The
+seed decides which wander you get, not where it ends up.
+
 The one place where this really is a compromise is security. If an attacker
 can find your seed, they can produce every "random" number you will ever
 generate — which for a session token or a password reset link is a complete
