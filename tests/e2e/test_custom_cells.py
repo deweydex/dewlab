@@ -1,4 +1,4 @@
-"""Browser tests for a reader's own cells (planning/PRACTICE.md §3-5)."""
+"""Browser tests for a reader's own cells."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import _open_panel
+from conftest import _open_settings_tab
 
 DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
@@ -155,8 +155,8 @@ class TestAddingACustomCell:
         assert "<strong>bold</strong>" in rendered
 
     def test_a_rendered_text_cells_chrome_is_invisible_until_touched(self, clean_storage):
-        """CELL_IDENTITY.md §4: a rendered text cell reads like part of the
-        page, not a code widget, until a reader actually touches it."""
+        """A rendered text cell reads like part of the page, not a code
+        widget, until a reader actually touches it."""
         page = clean_storage
         add_via_trailing_divider(page, "Text")
         page.wait_for_selector(".dl-cell-text", timeout=5_000)
@@ -209,8 +209,8 @@ class TestAddingACustomCell:
         assert page.locator(".dl-cell-custom").first.get_attribute("data-anchor") == second_id
 
     def test_an_orphaned_anchor_falls_back_to_the_trailing_section(self, clean_storage):
-        """PRACTICE.md §3: a custom cell survives a version change even if
-        the real cell it was anchored to is removed — repositioned, not dropped."""
+        """A custom cell survives a version change even if the real cell
+        it was anchored to is removed — repositioned, not dropped."""
         page = clean_storage
         key = page.evaluate("globalThis.dewlab.customCellsKey()")
         page.evaluate(
@@ -287,7 +287,7 @@ class TestSharingAndLoadingACustomCell:
         shared_file = tmp_path / "shared.json"
         shared_file.write_text(json.dumps({"dewlab-custom-cell": 1, "code": "1 + 1"}))
 
-        _open_panel(page, "#dl-importsexports-toggle")
+        _open_settings_tab(page, "importsexports")
         page.wait_for_selector("#dl-settings-custom-cells", timeout=5_000)
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
@@ -307,7 +307,7 @@ class TestSharingAndLoadingACustomCell:
         shared_file.write_text(
             json.dumps({"dewlab-custom-cell": 1, "code": "0", "id": "custom-not-mine"})
         )
-        _open_panel(page, "#dl-importsexports-toggle")
+        _open_settings_tab(page, "importsexports")
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
         fc_info.value.set_files(str(shared_file))
@@ -323,7 +323,7 @@ class TestSharingAndLoadingACustomCell:
         shared_file.write_text(
             json.dumps({"dewlab-custom-cell": 1, "type": "text", "code": "# A note"})
         )
-        _open_panel(page, "#dl-importsexports-toggle")
+        _open_settings_tab(page, "importsexports")
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
         fc_info.value.set_files(str(shared_file))
@@ -335,7 +335,7 @@ class TestSharingAndLoadingACustomCell:
         page = clean_storage
         bad_file = tmp_path / "not-a-cell.json"
         bad_file.write_text(json.dumps({"hello": "world"}))
-        _open_panel(page, "#dl-importsexports-toggle")
+        _open_settings_tab(page, "importsexports")
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
         fc_info.value.set_files(str(bad_file))
@@ -349,7 +349,7 @@ class TestClearingAllCustomCells:
         add_via_trailing_divider(page, "Code")
         page.wait_for_selector(".dl-cell-custom", timeout=5_000)
 
-        _open_panel(page, "#dl-importsexports-toggle")
+        _open_settings_tab(page, "importsexports")
         page.once("dialog", lambda d: d.dismiss())
         page.click("#dl-custom-cells-clear")
         page.wait_for_timeout(300)
@@ -364,7 +364,7 @@ class TestClearingAllCustomCells:
             "document.querySelectorAll('.dl-cell-custom').length === 2", timeout=5_000
         )
 
-        _open_panel(page, "#dl-importsexports-toggle")
+        _open_settings_tab(page, "importsexports")
         page.once("dialog", lambda d: d.accept())
         page.click("#dl-custom-cells-clear")
         page.wait_for_timeout(300)
@@ -377,7 +377,7 @@ class TestExport:
     def test_print_button_calls_window_print(self, clean_storage):
         page = clean_storage
         page.evaluate("window.__printed = false; window.print = () => { window.__printed = true; }")
-        _open_panel(page, "#dl-importsexports-toggle")
+        _open_settings_tab(page, "importsexports")
         page.click("#dl-print-pdf")
         assert page.evaluate("window.__printed") is True
 
@@ -388,7 +388,7 @@ class TestExport:
         page.click(".dl-cell-custom .cm-content")
         page.keyboard.type("exported = True")
 
-        _open_panel(page, "#dl-importsexports-toggle")
+        _open_settings_tab(page, "importsexports")
         with page.expect_download() as dl_info:
             page.click("#dl-export-ipynb")
         nb_path = tmp_path / "exported.ipynb"
@@ -484,7 +484,7 @@ class TestNoCustomCellsOnAProseOnlyPage:
             page.goto(f"{url}/tutorials/one.html")
             assert page.locator("#dl-custom-cells").count() == 0
             assert page.locator(".dl-insert").count() == 0
-            _open_panel(page, "#dl-importsexports-toggle")
+            _open_settings_tab(page, "importsexports")
             assert page.is_hidden("#dl-settings-custom-cells")
             # Print/export still applies to a prose-only page — only the
             # custom-cells machinery is what's gated on cells.length.

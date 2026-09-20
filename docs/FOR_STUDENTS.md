@@ -85,28 +85,34 @@ Reference shows where you first met it.
 
 ## The right-hand panels
 
-Every page has five panels, opened from tabs stacked in the top-right corner:
-**Notes**, **Give Feedback**, **Python**, **Appearance**, and **Imports &
-Exports**. Each opens on the right of the screen, full height, and stays open
-while you read and run cells — you do not have to close it to get back to the
-page. Drag its left edge to make it wider or narrower.
+Every page has three panels, opened from tabs stacked in the top-right
+corner: **Notes**, **Python**, and **Settings**. Each opens on the right of
+the screen, full height, and stays open while you read and run cells — you
+do not have to close it to get back to the page. Drag its left edge to make
+it wider or narrower.
 
 **Notes** holds a place to write your own notes on the page, whether your
 work is saving, and the buttons to export a copy, load one back in, or start
 the tutorial over.
 
-**Give Feedback** is where a question, an error, or something confusing on
-the page goes. The three choices there are the same ones "Something wrong?"
-describes below.
-
 **Python** is about running the cells: a Restart Python button for a clean
-start, and whether a hint appears after several failed runs.
+start, and whether a hint appears after several failed runs. It also shows
+what your code has made so far. Variables and declared functions appear as
+soon as a cell makes them; a list of what the page has imported sits behind
+a triangle, since it is not something most tutorials ask you to check.
+
+**Settings** holds three tabs of its own, and opens on the first: **Appearance**,
+**Give Feedback**, and **Imports & Exports**.
 
 **Appearance** covers how the page looks and reads: light or dark, serif or
 sans or mono (plus two fonts built for easier reading, Lexend and
 OpenDyslexic), text size, how wide the lines run, and the colour of links.
 **High contrast**, also here, switches to black text on white, or white on
 black in dark mode, and turns on Lexend too, whatever font you had chosen.
+
+**Give Feedback** is where a question, an error, or something confusing on
+the page goes. The three choices there are the same ones "Something wrong?"
+describes below.
 
 **Imports & Exports** holds the ways to take a tutorial with you, described
 below.
@@ -119,7 +125,7 @@ default is uncomfortable to read, change it — that is what it is for.
 ## Finding your way around
 
 Two docks, one in each top corner, hold the site's own controls. The left
-holds **Reference** and **Where you are**; the right holds the five panels
+holds **Reference** and **Where you are**; the right holds the three panels
 described above. Each opens full height, meant to be left open beside what
 you are reading rather than closed again right after.
 
@@ -254,9 +260,9 @@ or a `.py` file, and a Stop button that can interrupt code that is stuck.
 If a tutorial has a mistake in it, or something on the site does not work,
 please tell us. You do not need to be certain it is a bug to say something.
 Most pages carry a link at the bottom for exactly this, "Something wrong on
-this page? Tell us." The Give Feedback tab in the top-right corner opens the
-same three choices. Either way, pick the one that fits: a question, an
-error, or something wrong or hard to follow.
+this page? Tell us." Settings, in the top-right corner, opens to the same
+three choices under its Give Feedback tab. Either way, pick the one that
+fits: a question, an error, or something wrong or hard to follow.
 
 A cell giving trouble has its own small circle for the same three choices, in
 its own bar. Pick that one instead, and your code and its last output are

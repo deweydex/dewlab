@@ -6,8 +6,8 @@ anything about how this behaves on a student's actual laptop, on a school
 network, or under a screen reader.
 
 Every section below is live — the build phases this was originally written
-against are all shipped (`planning/BUILD_PLAN.md`). Run what applies to what
-you changed, and run "Before a release" in full before publishing one.
+against have all shipped. Run what applies to what you changed, and run
+"Before a release" in full before publishing one.
 
 ## Setup
 
@@ -54,9 +54,8 @@ machine that is not the one this was built on.
 ### Hardware and environment — the part that needs real machines
 
 - [ ] **A school machine, on the school network.** Does Pyodide load at all?
-      This is OPEN_QUESTIONS.md 32 and nothing else can answer it. If the CDN
-      is blocked, the fix is `dev/fetch_pyodide.py` plus decision 0.17 in
-      DECISIONS_LOG.md.
+      Nothing else can answer it. If the CDN is blocked, the fix is
+      `dev/fetch_pyodide.py` plus decision 0.17 in DECISIONS_LOG.md.
 - [ ] Time the first load on a school machine and on a home connection. Roughly
       how long before the Run buttons enable?
 - [ ] A second page load — the browser cache should make it markedly faster.
@@ -118,10 +117,9 @@ Then, on a machine with the network off (or with everything but
       one with a slow one)
 
 Last verified: 2026-08-30 — loaded and ran Python 3.13.2 with every
-non-loopback request aborted, zero blocked requests recorded.
-`planning/EDGES_AUDIT.md` §1. The maths line above was added after that
-verification and has not itself been checked against a real offline
-bundle yet.
+non-loopback request aborted, zero blocked requests recorded. The maths
+line above was added after that verification and has not itself been
+checked against a real offline bundle yet.
 
 ### A remote dataset actually loads
 
@@ -159,8 +157,9 @@ At 375px wide, on a tutorial and a practice page:
 
 ### A screen reader
 
-Not covered by anything automated — `planning/EDGES_AUDIT.md` §3 explains
-what the structural checks do and do not tell you.
+Not covered by anything automated: a structural check (heading order,
+landmark roles, alt text) can pass while the page is still confusing read
+aloud, so this needs an actual screen reader, not a linter.
 
 - [ ] a tutorial page reads in a sensible order from the top
 - [ ] opening the Reference panel announces itself

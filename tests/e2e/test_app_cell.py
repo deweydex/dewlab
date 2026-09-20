@@ -3,9 +3,8 @@ against a real Pyodide.
 
 Exercises fixture/rendering-tour.md's "Full-stack cell" section: a `sql
 exec` cell seeds a `readers` table, then the app cell's JS pane reads it
-through `dlQuery` — the Worker-crossing bridge to `_query_rows()`
-(planning/DEWSTACK_MERGE.md §3, §7 phase 4) — and writes into its own
-`root` element. Unlike a site editor's sandboxed iframe, there is no frame
+through `dlQuery` — the Worker-crossing bridge to `_query_rows()` — and
+writes into its own `root` element. Unlike a site editor's sandboxed iframe, there is no frame
 here at all: the point of this cell kind is reaching the page's own shared
 `db`, which a site editor's sandbox exists specifically to block.
 """

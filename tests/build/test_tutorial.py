@@ -313,7 +313,7 @@ class TestAltText:
 
 class TestTutorialAssets:
     """A tutorial is a folder; an asset it uses sits there and is referenced
-    by its plain name (planning/ROADMAP.md Phase 1). One page that uses a
+    by its plain name. One page that uses a
     picture, a downloadable file, external and missing links, and shows
     markup as text; a tutorial with a frozen release; and a picture that
     is not there."""
@@ -541,9 +541,9 @@ class TestListsWrittenTightAgainstProse:
 
 
 class TestNotesAndDatasets:
-    """planning/SIDEBAR_CONTENT.md §3/§4: unlike the glossary, a note is
-    never cumulative across a series — it belongs to the tutorial that wrote
-    it, and so does a declared dataset. Two tutorials in one series, the
+    """Unlike the glossary, a note is never cumulative across a series —
+    it belongs to the tutorial that wrote it, and so does a declared
+    dataset. Two tutorials in one series, the
     first declaring a note and a dataset; the same with a note holding
     markdown and a dataset that is a text file; and the faults that fail
     the build. (A tutorial with neither is checked in TestTheHappyPath.)"""
@@ -580,7 +580,7 @@ class TestNotesAndDatasets:
     def test_a_note_holds_markdown_and_a_dataset_can_be_a_text_file(self, repo):
         # An aside is a raw HTML block, which Python-Markdown would
         # otherwise pass through opaque; mark_markdown_wrappers() marks it
-        # so md_in_html parses inside (planning/SIDEBAR_CONTENT.md §1).
+        # so md_in_html parses inside.
         path = write(repo, '<aside class="dl-note" id="pic">\n\n'
                            '![a chart](chart.png)\n\n</aside>\n', slug="one")
         add_frontmatter(path, "datasets:\n  - a-book\n")
@@ -784,7 +784,7 @@ class TestCellReportPanel:
 
 
 class TestStagedHints:
-    """planning/CELL_HINTS.md. The fold is written back into the markdown
+    """Staged hints. The fold is written back into the markdown
     rather than the finished HTML, so its body converts like any other prose.
     One page of staged hints on one stub cell — the default trigger, a
     titled markdown body, every trigger grammar, a second hint, and one

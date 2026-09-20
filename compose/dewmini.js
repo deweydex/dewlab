@@ -113,9 +113,9 @@ function readCells(saved) {
     .map((c) => ({
       id: c.id, type: c.type, content: c.content || "", style: c.style || "",
       output: c.output || "", error: !!c.error, collapsed: !!c.collapsed,
-      // A reader's own name for this cell — "a handle to hold on to"
-      // (planning/CELL_IDENTITY.md §4) — optional, so most cells carry
-      // none at all rather than an empty string round-tripping forever.
+      // A reader's own name for this cell — "a handle to hold on to" —
+      // optional, so most cells carry none at all rather than an empty
+      // string round-tripping forever.
       name: c.name || undefined,
     }));
 }
@@ -1246,11 +1246,11 @@ function createRunMoreMenu(cell) {
 }
 
 //
-// A Python cell's run-line (planning/CELL_IDENTITY.md §3) — one line,
-// below the code, folding together whether it has run this session, in
-// what order, how long it took, and whether it's stale, rather than the
-// three separate signals (a stale badge, a duration line, no order at
-// all) dewmini shipped first. A cell that never runs against the shared
+// A Python cell's run-line — one line, below the code, folding together
+// whether it has run this session, in what order, how long it took,
+// and whether it's stale, rather than the three separate signals (a
+// stale badge, a duration line, no order at all) dewmini shipped
+// first. A cell that never runs against the shared
 // session — text — never gets one; `cell.runLineEl` is simply never set
 // for it, and every function below already guards on that.
 
@@ -1344,9 +1344,9 @@ function createCellElement(cell) {
 
   //
   // Identity pill (numbered, coloured by type) on the left; Edit (text
-  // only), Duplicate, and Delete on the right (planning/CELL_IDENTITY.md
-  // §2, §4). Nothing about running a cell lives here any more — that
-  // moved to the footer bar below, next to the code (§5).
+  // only), Duplicate, and Delete on the right. Nothing about running a
+  // cell lives here any more — that moved to the footer bar below, next
+  // to the code.
 
   const head = document.createElement("div");
   head.className = "dm-cell-head";
@@ -1372,14 +1372,14 @@ function createCellElement(cell) {
 
   // A reader's own name for this cell, beside the pill rather than
   // replacing it — the pill still says where the cell sits, this is just
-  // "a handle to hold on to" when talking about it later
-  // (planning/CELL_IDENTITY.md §4). A plain text input, not
-  // contenteditable: predictable focus/selection/paste behaviour matters
-  // more here than matching a <span>'s box exactly, and dm-cell-name's
-  // own rule below strips an input's usual chrome so it still reads as
-  // text sitting on the header, not as a form field. Shares dl-cell-name
-  // with a tutorial page's own (there, static) name span, so
-  // tutorial-style.css's colour/size/ellipsis rule needs no dewmini copy.
+  // "a handle to hold on to" when talking about it later. A plain text
+  // input, not contenteditable: predictable focus/selection/paste
+  // behaviour matters more here than matching a <span>'s box exactly,
+  // and dm-cell-name's own rule below strips an input's usual chrome so
+  // it still reads as text sitting on the header, not as a form field.
+  // Shares dl-cell-name with a tutorial page's own (there, static) name
+  // span, so tutorial-style.css's colour/size/ellipsis rule needs no
+  // dewmini copy.
   const nameEl = document.createElement("input");
   nameEl.type = "text";
   nameEl.className = "dm-cell-name dl-cell-name";
@@ -1653,11 +1653,11 @@ function createCellElement(cell) {
     // opaque-origin document that cannot reach this page's own DOM,
     // localStorage, or any other cell — the same isolation a reader's
     // HTML deserves whether they wrote it themselves or it arrived
-    // through Settings' "Load a shared cell/notebook" (planning/
-    // CELL_IDENTITY.md §8). resize:vertical (see the stylesheet) rather
-    // than measuring the frame's own content height: that would need a
-    // postMessage handshake from inside the sandboxed document, not
-    // worth the complexity for a first version.
+    // through Settings' "Load a shared cell/notebook". resize:vertical
+    // (see the stylesheet) rather than measuring the frame's own
+    // content height: that would need a postMessage handshake from
+    // inside the sandboxed document, not worth the complexity for a
+    // first version.
     const iframe = document.createElement("iframe");
     iframe.className = "dm-html-frame";
     iframe.setAttribute("sandbox", "allow-scripts");
@@ -1792,9 +1792,9 @@ function createCellElement(cell) {
     // non-destructive counterpart to Delete.
     // &#8634; (↺, counterclockwise) — deliberately not build.py's own
     // &#8635; (↻, clockwise) for its destructive "reset to starter"
-    // button: a different-looking icon for a materially different action
-    // (planning/CELL_IDENTITY.md §1), not a coincidence of two similar
-    // buttons drifting to the same glyph.
+    // button: a different-looking icon for a materially different
+    // action, not a coincidence of two similar buttons drifting to the
+    // same glyph.
     const resetOutputBtn = iconButton("dm-icon-reset-output", "&#8634;", "Clear", "Clear this cell's output");
     resetOutputBtn.addEventListener("click", (e) => { e.stopPropagation(); resetCellOutput(cell.id); });
     footbar.appendChild(resetOutputBtn);
@@ -1909,7 +1909,7 @@ async function executeCell(cell) {
   // A reader's own name for this cell, if they gave it one, otherwise its
   // plain position — either way, a traceback's file line then names
   // something a reader chose or can already see, never this cell's own
-  // opaque internal id (planning/CELL_IDENTITY.md).
+  // opaque internal id.
   const label = cell.name || `Cell ${cells.indexOf(cell) + 1}`;
   if (cell.type === CELL_TYPES.JAVASCRIPT) {
     ({ ok } = await jsEngine.runCell(cell.id, cell.content));
@@ -3666,12 +3666,32 @@ function initStorageSection() {
 }
 
 function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null) {
-  if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
+  if (!panel || panel.dataset.resizable) return;
+  panel.dataset.resizable = "true";
   const handle = document.createElement("div");
-  handle.className = "dl-panel-resize-handle"
-    + (side === "left" ? " dl-panel-resize-handle-right" : "");
+  handle.className = "dl-panel-resize-handle";
   handle.setAttribute("aria-hidden", "true");
-  panel.prepend(handle);
+  // A child of <body>, not of the panel -- .dm-panel clips its own
+  // overflow (overflow-y: auto), so a child positioned to reach any
+  // higher than the panel's own top would have been clipped the moment
+  // it tried, leaving no visible or grabbable strip alongside .dm-toolbar
+  // above it (the same bug, and the same fix, tutorial-style.css's own
+  // comment on this class describes for the tutorial pages' corner
+  // dock). Told apart from any other panel's own handle by data-for,
+  // since several of these can exist as siblings under <body> at once.
+  if (panel.id) handle.dataset.for = panel.id;
+  document.body.append(handle);
+
+  function positionHandle() {
+    const hidden = panel.hidden;
+    handle.hidden = hidden;
+    if (hidden) return;
+    const rect = panel.getBoundingClientRect();
+    handle.style.left = `${side === "left" ? rect.right : rect.left}px`;
+  }
+  positionHandle();
+  new ResizeObserver(positionHandle).observe(panel);
+  new MutationObserver(positionHandle).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
 
   let startX = 0;
   let startWidth = 0;
@@ -3680,6 +3700,7 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
     const dx = side === "left" ? ev.clientX - startX : startX - ev.clientX;
     const next = Math.max(min, Math.min(startWidth + dx, Math.min(max, window.innerWidth)));
     panel.style.width = `${next}px`;
+    positionHandle();
   }
   function onUp() {
     handle.classList.remove("dl-panel-resize-active");
@@ -3888,10 +3909,10 @@ function initSegKeyboardNav() {
 const TEXTURE_DEFAULTS = {
   theme: "system", font: "serif", size: 18, width: 34, link: "#d4692a", contrast: "normal",
   // Icons only, text only, or both, for every cell's Run/Reset/Duplicate/
-  // Delete and the rest (planning/CELL_IDENTITY.md §9) — same key, same
-  // default, and the same [data-button-labels] CSS rule (tutorial-style.css)
-  // a tutorial page's own copy of this row uses, so the choice reads the
-  // same on both.
+  // Delete and the rest — same key, same default, and the same
+  // [data-button-labels] CSS rule (tutorial-style.css) a tutorial
+  // page's own copy of this row uses, so the choice reads the same on
+  // both.
   buttons: "both",
 };
 

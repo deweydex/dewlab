@@ -155,8 +155,8 @@ class TestOversizedOutputFallback:
 
 
 class TestStudentNotes:
-    """A student's own free-text notes (STUDENT_NOTES.md), distinct from
-    SIDEBAR_CONTENT.md's author-written notes, riding on the same record."""
+    """A student's own free-text notes, distinct from a tutorial's
+    author-written pedagogical notes, riding on the same record."""
 
     def test_typing_a_note_is_saved_without_being_asked(self, clean_storage):
         page = clean_storage
@@ -369,7 +369,7 @@ class TestStartingAgain:
 
 class TestAPageWithNothingToSave:
     """A prose-only tutorial has no cells, but it is still a tutorial, so
-    "Your work" stays for its notes field (STUDENT_NOTES.md)."""
+    "Your work" stays for its notes field."""
 
     def test_a_prose_only_tutorial_still_offers_the_notes_field(self, browser, base_url):
         context = browser.new_context()
@@ -381,8 +381,8 @@ class TestAPageWithNothingToSave:
         # The panel itself still belongs: a page with no cells is still a
         # reading surface, and the texture section is what makes it one.
         assert tab.query_selector("#dl-yourwork-toggle") is not None
-        assert tab.query_selector("#dl-appearance-toggle") is not None
-        assert tab.query_selector("#dl-settings-texture") is not None
+        assert tab.query_selector("#dl-settings-toggle") is not None
+        assert tab.query_selector("#dl-settings-reading") is not None
         context.close()
 
     def test_it_never_starts_python(self, browser, base_url):

@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import _open_panel
+from conftest import _open_panel, _open_settings_tab
 import yaml
 
 DEWLAB = Path(__file__).resolve().parents[2]
@@ -264,9 +264,10 @@ class TestIdentityCornerControlsAreDirect:
     @pytest.mark.parametrize("path", ["index.html", f"{COURSE}.html"])
     def test_appearance_is_direct_on_home_and_module_pages(
             self, site, browser, site_url, path):
-        """Appearance (and the rest of what used to be Settings) lives in
-        its own corner dock now, never behind a disclosure — so this is
-        direct everywhere, not only on pages with no series."""
+        """Settings (Appearance's own home now, alongside Give Feedback and
+        Imports & Exports) lives in its own corner dock, never behind a
+        disclosure — so this is direct everywhere, not only on pages with
+        no series, and lands on the Appearance tab by default."""
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
@@ -274,9 +275,9 @@ class TestIdentityCornerControlsAreDirect:
         page = context.new_page()
         page.goto(f"{site_url}/{path}")
 
-        assert page.is_visible("#dl-appearance-toggle")
-        page.click("#dl-appearance-toggle")
-        assert page.is_visible("#dl-appearance")
+        assert page.is_visible("#dl-settings-toggle")
+        page.click("#dl-settings-toggle")
+        assert page.is_visible("#dl-settings-pane-appearance")
         context.close()
 
 class TestOpeningAndClosing:
@@ -310,10 +311,10 @@ class TestOpeningAndClosing:
         assert page.is_hidden("#dl-reference")
         context.close()
 
-    def test_the_close_button_closes_it(self, site, browser, site_url):
+    def test_clicking_the_toggle_again_closes_it(self, site, browser, site_url):
         context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-reference-toggle")
-        page.click("#dl-reference-close")
+        _open_panel(page, "#dl-reference-toggle")
         assert page.is_hidden("#dl-reference")
         context.close()
 
@@ -326,19 +327,19 @@ class TestOpeningAndClosing:
 
     def test_opening_the_reference_does_not_close_appearance(self, site, browser, site_url):
         context, page = self.open_page(site, browser, site_url)
-        _open_panel(page, "#dl-appearance-toggle")
-        assert page.is_visible("#dl-appearance")
+        _open_settings_tab(page, "appearance")
+        assert page.is_visible("#dl-settings-pane-appearance")
         _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
-        assert page.is_visible("#dl-appearance")
+        assert page.is_visible("#dl-settings-pane-appearance")
         context.close()
 
     def test_opening_appearance_does_not_close_the_reference(self, site, browser, site_url):
         context, page = self.open_page(site, browser, site_url)
         _open_panel(page, "#dl-reference-toggle")
         assert page.is_visible("#dl-reference")
-        _open_panel(page, "#dl-appearance-toggle")
-        assert page.is_visible("#dl-appearance")
+        _open_settings_tab(page, "appearance")
+        assert page.is_visible("#dl-settings-pane-appearance")
         assert page.is_visible("#dl-reference")
         context.close()
 
@@ -395,8 +396,7 @@ class TestContent:
 
 
 class TestNotes:
-    """Pedagogical notes surfacing in the reference panel —
-    planning/SIDEBAR_CONTENT.md §3/§4."""
+    """Pedagogical notes surfacing in the reference panel."""
 
     def test_a_note_alone_shows_the_toggle(self, site, browser, site_url):
         _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
@@ -423,8 +423,7 @@ class TestNotes:
         context.close()
 
     def test_the_note_is_not_in_the_page_body(self, site, browser, site_url):
-        """It surfaces in the panel instead of staying inline
-        (planning/SIDEBAR_CONTENT.md §4's settled answer)."""
+        """It surfaces in the panel instead of staying inline."""
         _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
         _set_order(site, ["one"])
         b.build()
@@ -450,8 +449,7 @@ class TestNotes:
 
 
 class TestDatasets:
-    """Dataset attribution surfacing in the reference panel —
-    planning/SIDEBAR_CONTENT.md §2/§4."""
+    """Dataset attribution surfacing in the reference panel."""
 
     def test_a_dataset_alone_shows_the_toggle(self, site, browser, site_url, monkeypatch):
         monkeypatch.setattr(b, "DATA", site / "data")
@@ -553,18 +551,18 @@ class TestPanelClearsTheCornerDocks:
         assert panel_top >= dock_bottom - 1
         context.close()
 
-    def test_the_appearance_panel_starts_below_the_top_right_strip(self, site, browser, site_url):
+    def test_the_settings_panel_starts_below_the_top_right_strip(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context(viewport={"width": 1400, "height": 900})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/one.html")
-        _open_panel(page, "#dl-appearance-toggle")
+        _open_settings_tab(page, "appearance")
         dock_bottom = page.eval_on_selector(
             ".dl-corner-dock-tr", "el => el.getBoundingClientRect().bottom")
         panel_top = page.eval_on_selector(
-            "#dl-appearance", "el => el.getBoundingClientRect().top")
+            "#dl-settings", "el => el.getBoundingClientRect().top")
         assert panel_top >= dock_bottom - 1
         context.close()
 
@@ -602,7 +600,7 @@ class TestPanelClearsTheCornerDocks:
             return page.eval_on_selector(".dl-page", "el => el.getBoundingClientRect().width")
 
         def choose_width(page, rem):
-            page.click(f"#dl-settings-texture .dl-seg[data-texture=width] button[data-value='{rem}']")
+            page.click(f"#dl-settings-reading .dl-seg[data-texture=width] button[data-value='{rem}']")
             page.wait_for_timeout(100)
 
         context = browser.new_context(viewport={"width": 1440, "height": 900})
@@ -611,12 +609,12 @@ class TestPanelClearsTheCornerDocks:
         # Measured with the panel closed again: on a 1440px screen the left
         # dock and an open Appearance panel together leave about 32rem,
         # so the setting shows once the panel is out of the way.
-        _open_panel(page, "#dl-appearance-toggle")
+        _open_settings_tab(page, "appearance")
         choose_width(page, 34)
         page.keyboard.press("Escape")
         page.wait_for_timeout(150)
         narrow = column(page)
-        _open_panel(page, "#dl-appearance-toggle")
+        _open_settings_tab(page, "appearance")
         choose_width(page, 44)
         page.keyboard.press("Escape")
         page.wait_for_timeout(150)
@@ -628,7 +626,7 @@ class TestPanelClearsTheCornerDocks:
         context = browser.new_context(viewport={"width": 1024, "height": 800})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/one.html")
-        _open_panel(page, "#dl-appearance-toggle")
+        _open_settings_tab(page, "appearance")
         rem = page.evaluate("parseFloat(getComputedStyle(document.documentElement).fontSize)")
         assert column(page) >= 26 * rem - 1, "the column keeps its 26rem floor even with a panel open"
         context.close()
@@ -713,25 +711,18 @@ class TestMobileLauncher:
         context.close()
 
     def test_forwarding_opens_the_real_panel_and_closes_the_menu(self, site, browser, site_url):
+        """Also a regression test: the forwarded click's own original event
+        used to keep bubbling to the same document-level outside-click
+        listener that had just reacted to it opening the panel, reading
+        the (still-bubbling) original click as "outside" and closing the
+        panel right back — all within the one click. Fixed with
+        stopPropagation() on the menu item's own handler; the assertion
+        below would fail again if that regressed."""
         context, page = self.open_page(site, browser, site_url)
         page.click("#dl-mobile-fab")
         page.click("#dl-mobile-item-reference")
         assert page.is_visible("#dl-reference")
         assert page.is_hidden("#dl-mobile-menu")
-        context.close()
-
-    def test_the_forwarded_click_does_not_reopen_and_reclose_itself(
-            self, site, browser, site_url):
-        """A regression test for a real bug: the forwarded click's own
-        original event kept bubbling to the same document-level
-        outside-click listener that had just reacted to it opening the
-        panel, reading the (still-bubbling) original click as "outside"
-        and closing the panel right back — all within the one click.
-        Fixed with stopPropagation() on the menu item's own handler."""
-        context, page = self.open_page(site, browser, site_url)
-        page.click("#dl-mobile-fab")
-        page.click("#dl-mobile-item-reference")
-        assert page.is_visible("#dl-reference")
         context.close()
 
     def test_where_you_are_opens_the_tree_in_a_sheet(self, site, browser, site_url):

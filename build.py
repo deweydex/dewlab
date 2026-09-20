@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Turn the markdown in tutorials/ into the hosted HTML series in site/.
 
-The shape of the job, from BUILD_PLAN.md Phase 1: read a tutorial's frontmatter
-and body, turn its `exec`-tagged fences into cell objects, expand include
-directives into the setup code they name, resolve cross-tutorial links to real
-relative hrefs and fail on any that do not resolve, then render the result into
-assets/shell.html.
+The shape of the job: read a tutorial's frontmatter and body, turn its
+`exec`-tagged fences into cell objects, expand include directives into the
+setup code they name, resolve cross-tutorial links to real relative hrefs and
+fail on any that do not resolve, then render the result into assets/shell.html.
 
 Maths and illustrative code are lifted out of the source before the markdown
 converter ever sees them, for the same reason cells are: `$a_i$` would otherwise
@@ -125,9 +124,9 @@ SITE_LANGS = {"html", "css", "js"}
 SITE_HEADER_RE = re.compile(r"^\s*(id|site)\s*:\s*(.*)$")
 HINT_HEADER_RE = re.compile(r"^\s*(for|after|title)\s*:\s*(.*)$")
 CARD_HEADER_RE = re.compile(r"^\s*(url|status|meta|wide)\s*:\s*(.*)$")
-# planning/QUESTION_BLOCKS.md's own fifth fence kind: flat headers, the
-# same loop CARD_HEADER_RE's own caller (parse_card) already uses, then
-# ordinary markdown.
+# A ```question fence's own header: flat headers, the same loop
+# CARD_HEADER_RE's own caller (parse_card) already uses, then ordinary
+# markdown.
 QUESTION_HEADER_RE = re.compile(r"^\s*(id|type|correct)\s*:\s*(.*)$")
 QUESTION_TYPES = {"multiple-choice", "fill-in-the-blank"}
 # One flat level of {...} — a gap with no "|" is a typing box, one with
@@ -137,11 +136,10 @@ GAP_RE = re.compile(r"\{([^{}]*)\}")
 # Python-Markdown's own sane_lists extension accepts.
 OPTION_LINE_RE = re.compile(r"^[ \t]*[-*+]\s+(.*\S)\s*$")
 # `html app`/`css app`/`js app` — a full-stack module's own fence kind
-# (planning/DEWSTACK_MERGE.md §3, §7 phase 4; DECISIONS_LOG.md 7.180).
-# Same three languages as a site pane, on purpose, but a separate pair of
-# constants: site fences and app fences are read by two different
-# branches in extract_blocks(), and nothing here should make changing
-# one silently change the other.
+# (DECISIONS_LOG.md 7.180). Same three languages as a site pane, on
+# purpose, but a separate pair of constants: site fences and app fences
+# are read by two different branches in extract_blocks(), and nothing
+# here should make changing one silently change the other.
 APP_LANGS = {"html", "css", "js"}
 APP_HEADER_RE = re.compile(r"^\s*(id|app)\s*:\s*(.*)$")
 # A page's own way to point at infrastructure it can never author directly —
@@ -253,9 +251,8 @@ class PageCard:
 
 @dataclass
 class Question:
-    """A ```question fence — see extract_blocks() and
-    planning/QUESTION_BLOCKS.md. `prompt` and, for multiple-choice, each
-    entry in `options` are raw markdown, converted at render time
+    """A ```question fence — see extract_blocks(). `prompt` and, for
+    multiple-choice, each entry in `options` are raw markdown, converted at render time
     (render_question()) rather than here — the same split parse_hint()/
     render_staged_hint() already make, so the checks below read source
     text, not converted HTML. `correct` is a multiple-choice option's
@@ -305,9 +302,8 @@ class AppPane:
 
 @dataclass
 class AppCell:
-    """A full-stack module's own cell kind (planning/DEWSTACK_MERGE.md §3,
-    §7 phase 4): one or more consecutive `AppPane`s with the same `app:`
-    name. Shares `SitePane`/`SiteEditor`'s shape — `panes` is keyed by
+    """A full-stack module's own cell kind: one or more consecutive
+    `AppPane`s with the same `app:` name. Shares `SitePane`/`SiteEditor`'s shape — `panes` is keyed by
     language for the same reason — but is a separate cell kind rather
     than a third site-pane language, because its JavaScript is meant to
     reach the page's own shared `db`, which a site editor's sandboxed
@@ -327,10 +323,9 @@ class Math:
 
 @dataclass
 class Note:
-    """A pedagogical note — planning/SIDEBAR_CONTENT.md §3/§4. Authored
-    inline as an HTML aside, the same trick the hint/answer fold already
-    uses, but surfaced in the reference panel rather than staying inline
-    — see extract_notes()."""
+    """A pedagogical note. Authored inline as an HTML aside, the same
+    trick the hint/answer fold already uses, but surfaced in the
+    reference panel rather than staying inline — see extract_notes()."""
 
     id: str
     html: str
@@ -391,7 +386,7 @@ class Tutorial:
     # only the web-authoring module has any yet.
     site_editors: list[SiteEditor] = field(default_factory=list)
     # A page's full-stack cells, in source order — usually empty; only the
-    # full-stack module has any yet (planning/DEWSTACK_MERGE.md §7 phase 4).
+    # full-stack module has any yet.
     app_cells: list[AppCell] = field(default_factory=list)
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
@@ -497,8 +492,7 @@ class Tutorial:
     def datasets(self) -> tuple[str, ...]:
         """The names this tutorial's cells load via `load_csv()` or
         `load_text()` — declared, not scraped, the same reasoning
-        `covers:`/`practice_for` already use
-        (planning/SIDEBAR_CONTENT.md §2)."""
+        `covers:`/`practice_for` already use."""
         value = self.meta.get("datasets") or []
         if isinstance(value, str):
             value = [value]
@@ -597,8 +591,8 @@ def loosen_tight_lists(body: str) -> str:
 def expand_includes(code: str, path: Path) -> str:
     """Replace {{include: setup/x.py}} with the contents of that file.
 
-    De-duplicates the source, not the runtime: the expanded cell still executes
-    on every page load (CONTENT_AND_FILE_ARCHITECTURE.md).
+    De-duplicates the source, not the runtime: the expanded cell still
+    executes on every page load.
     """
 
     def one(match: re.Match) -> str:
@@ -645,9 +639,8 @@ def parse_site_pane(body: str, path: Path, language: str) -> SitePane:
     site` fence. `language` is the fence's own first word; the rest of the
     fence is the pane's own HTML, CSS or JavaScript, unwrapped — a site
     pane's code is never Python and never runs through expand_includes(),
-    since {{include: ...}} is a Python-cell convenience (planning/
-    CONTENT_AND_FILE_ARCHITECTURE.md) with nothing to say about a
-    stylesheet."""
+    since {{include: ...}} is a Python-cell convenience with nothing to
+    say about a stylesheet."""
     lines = body.split("\n")
     header: dict[str, str] = {}
     while lines:
@@ -791,11 +784,10 @@ def place_hints(page_html: str, hints: list[StagedHint], maths: list[Math]) -> s
 
 
 def _split_multiple_choice(text: str) -> tuple[str, list[str]]:
-    """The prompt, and the options under it — "the prose before the
-    first list is the question, the list is the options"
-    (planning/QUESTION_BLOCKS.md §2). The first line that reads as a
-    bullet starts the options; every bullet line from there on is one
-    option, in source order, whatever else sits between them."""
+    """The prompt, and the options under it: the prose before the first
+    list is the question, the list is the options. The first line that
+    reads as a bullet starts the options; every bullet line from there
+    on is one option, in source order, whatever else sits between them."""
     lines = text.split("\n")
     start = len(lines)
     for index, line in enumerate(lines):
@@ -809,8 +801,7 @@ def _split_multiple_choice(text: str) -> tuple[str, list[str]]:
 
 def _check_balanced_gaps(text: str, path: Path, question_id: str) -> None:
     """Every `{` in a fill-in-the-blank question's text closes, and every
-    `}` closes one that opened — planning/QUESTION_BLOCKS.md's own "an
-    unclosed {" build check. Gaps are one flat level (GAP_RE), so a
+    `}` closes one that opened. Gaps are one flat level (GAP_RE), so a
     depth counter is all this needs; it is not checking that `{...}`
     nests correctly, only that it closes at all.
     """
@@ -832,8 +823,6 @@ def parse_question(body: str, path: Path) -> Question:
     Everything after the header lines is the question's own markdown:
     the prompt (and, for multiple-choice, the options after it) or the
     sentence with its {...} gaps for a fill-in-the-blank one.
-    planning/QUESTION_BLOCKS.md has the format and the reasoning behind
-    every check below.
     """
     lines = body.split("\n")
     header: dict[str, str] = {}
@@ -883,9 +872,8 @@ def render_question(question: Question) -> str:
 
     Correctness lives in the markup itself, on the option or gap it
     belongs to (`data-correct="true"`, or a typing gap's own
-    `data-expected`), rather than in a separate manifest entry — this is
-    the trade planning/QUESTION_BLOCKS.md §5 names outright: a reader who
-    opens the page's source can read the answer, which is the right
+    `data-expected`), rather than in a separate manifest entry: a reader
+    who opens the page's source can read the answer, which is the right
     trade for a self-check and the wrong one for an exam. Marking the
     answer instead of its position is also what lets the runtime shuffle
     the options it draws without a second, parallel record of which one
@@ -969,14 +957,14 @@ def extract_blocks(
            list[AppCell]]:
     """Pull every fence out, leaving a comment placeholder markdown will keep.
 
-    An `exec` fence becomes a cell; a `hint` fence becomes a staged hint
-    (planning/CELL_HINTS.md); an `html site`/`css site`/`js site` fence
+    An `exec` fence becomes a cell; a `hint` fence becomes a staged hint;
+    an `html site`/`css site`/`js site` fence
     becomes one pane of a `SiteEditor`, grouped with any of the same
     `site:` name immediately before or after it; a `question` fence
-    becomes a `Question` (planning/QUESTION_BLOCKS.md); an `html app`/
+    becomes a `Question`; an `html app`/
     `css app`/`js app` fence becomes one pane of an `AppCell`, grouped
-    the same way by its `app:` name (planning/DEWSTACK_MERGE.md §3, §7
-    phase 4); any other fence becomes an illustrative, read-only block.
+    the same way by its `app:` name; any other fence becomes an
+    illustrative, read-only block.
     All six leave the source before the markdown converter runs, so
     nothing inside any of them can be reinterpreted as markup.
     """
@@ -1153,69 +1141,36 @@ def icon_button(css_class: str, icon: str, label: str, **attrs: str) -> str:
 def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> str:
     """The markup the runtime binds an editor, a Run button and an output area to.
 
-    Three rows, in the order a reader's eye actually uses them: a header
-    (identity — the pill, an optional name, Duplicate) above the code;
-    the code itself, with its collapse triangle; a footer (Run, Reset,
-    the run-line, the "Run above/below" menu) between the code and
-    where its output will land, so Run sits where a reader's hand
-    already is, not back above everything they just wrote. This is
-    dewmini's own shape (`compose/dewmini.js`'s `createCellElement()`),
-    matched here (planning/CELL_IDENTITY.md's parity pass) — a reader
-    moving from one page to the other finds the pill, and Run, in the
-    same place either way.
+    Three rows, top to bottom: a header (the numbered pill, an optional
+    `cell.name`, Duplicate); the code, with a collapse triangle beside it;
+    a footer (Run, Reset, the run-line, the "Run above/below" menu) sitting
+    between the code and its output, so Run is where a reader's hand
+    already is. `number` is the cell's fixed 1-based position on the page —
+    an authored cell never reorders at runtime, unlike a reader's own
+    custom cells. No drag handle, for the same reason.
 
-    `number` is the cell's plain 1-based position on the page (its index
-    in `place_blocks()`'s own `cells` list, the same order the page reads
-    in) — an authored cell's order never changes at runtime the way a
-    dewmini cell's can, so unlike `compose/dewmini.js`'s own
-    `createCellElement()` this never needs recomputing after the fact.
-    The pill shows it alongside the cell's type — "Python" or "SQL",
-    coloured via the matching `--dl-type-python`/`--dl-type-sql` token
-    dewmini's own pill uses. No drag handle: authored cells aren't
-    reorderable, so there's nothing
-    for one to do. `cell.name`, when an author gives one, sits beside the
-    pill — the word a reader can point at ("the `filter-evening` cell")
-    instead of a number, the same idea dewmini lets a reader give their
-    own cells.
+    Reset restores this cell's *starter code*, not just its output — an
+    authored cell has a fixed starting point to return to, so it gets a
+    different icon from a plain Clear.
 
-    The run-line span and the "Run above/below" menu are empty shells
-    here — tutorial-runtime.js fills and wires them the same way it
-    already owns everything else about a live cell, the same treatment
-    dewmini gives a Python cell.
+    `code` and `output` are left blank here and filled in by
+    `tutorial-runtime.js` once the reader has actually run something; the
+    run-line and the "Run above/below" menu are likewise empty shells it
+    wires up. `.dl-cell-collapsed-summary` is filled the same way by
+    `setCellCollapsed()`, once the cell is actually collapsed.
 
-    Reset is not Clear: it puts this cell's *starter code* back, throwing
-    away whatever the reader typed, because an authored cell has a fixed
-    starting point to return to — dewmini's own cells have none, so its
-    matching button only clears output and never touches code. Different
-    on purpose, so it gets a different icon, not just a different label
-    that icon-only mode would hide.
+    Duplicate copies this cell's current code into a new custom cell
+    dropped right after it, reusing the insertion seam
+    `initCustomCellsSection()` already places after every real cell — the
+    original stays the tutorial's own fixed content; the copy is the
+    reader's to edit or delete.
 
-    The editor sits in a `.dl-cell-body-row`, beside a collapse triangle
-    — every cell type gets one in dewmini (`planning/CELL_IDENTITY.md`
-    §4), and there is nothing type-specific here to make that not apply.
-    `.dl-cell-collapsed-summary` is the
-    one-line stand-in tutorial-runtime.js shows in its place once
-    collapsed; both start empty/hidden and are filled in by
-    `setCellCollapsed()` there, the same way the run-line is.
-
-    Duplicate turns this cell's current code into a new custom cell
-    dropped immediately after it — `initCustomCellsSection()` already
-    seeds an insertion point after every real cell for the reader's own
-    "Try something of your own" cells, so Duplicate just reuses that
-    same seam rather than needing one of its own. An authored cell
-    itself is the tutorial's own content and stays fixed; the copy is
-    the reader's, free to edit or delete.
-
-    The report icon is the same toggle
-    pattern as the hint icon right beside it — a small circular button
-    that opens a plain block after the cell, not a floating popover.
-    `page` and `version` are build-time constants, the same as the
-    footer's; `code` and `output` are not knowable until the reader has
-    actually typed and run something, so those two fields stay blank in
-    this markup and are filled in by `tutorial-runtime.js` at the moment
-    the panel opens — see `updateCellReportLinks()` there. A custom cell
-    (the reader's own, not the tutorial's) gets none of this: there is
-    nothing to report about code nobody but the reader wrote.
+    The report icon toggles a plain block after the cell, the same pattern
+    as the hint icon beside it, and only appears when `page` is set and
+    feedback is enabled — a custom cell (the reader's own) never gets one,
+    since there's nothing to report about code nobody but the reader wrote.
+    `updateCellReportLinks()` in `tutorial-runtime.js` fills in its actual
+    link once the panel opens.
     """
     safe_id = html.escape(cell.id, quote=True)
     hint_markup = ""
@@ -1417,8 +1372,7 @@ def render_app_cell(cell: AppCell, index: int) -> str:
     result becoming what a reader sees, and a site editor's sandboxed
     iframe exists specifically to stop a reader's script reaching
     anything else on the page — exactly the channel this needs, to read
-    the page's own shared SQL connection through `_query_rows()`
-    (planning/DEWSTACK_MERGE.md §3, §7 phase 4).
+    the page's own shared SQL connection through `_query_rows()`.
 
     `index` plays the same role `render_site_editor()`'s own `index`
     does — this cell's 1-based position among the page's app cells, used
@@ -1754,11 +1708,11 @@ def place_blocks(
 
 def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
     """Pull every pedagogical note out of the page body and into its own
-    list — planning/SIDEBAR_CONTENT.md §3/§4. A note is authored as an HTML
-    aside (`NOTE_RE`), the same reuse-over-invention trick the hint/answer
-    fold already established, but unlike a fold it does not stay inline: it
-    surfaces in the reference panel instead, so the aside is removed from
-    the body once its id and content are captured.
+    list. A note is authored as an HTML aside (`NOTE_RE`), the same
+    reuse-over-invention trick the hint/answer fold already established,
+    but unlike a fold it does not stay inline: it surfaces in the
+    reference panel instead, so the aside is removed from the body once
+    its id and content are captured.
     """
     notes: list[Note] = []
     seen: set[str] = set()
@@ -3113,10 +3067,10 @@ def arrow_between(place: dict, a: str, b: str, css: str, fan: int = 0) -> str:
 
 def progress_attrs(tutorial: Tutorial) -> str:
     """`data-id`/`data-cells` for a contents-page link, so
-    tutorial-runtime.js's progress indicator (planning/PROGRESS_INDICATORS.md)
-    can read a reader's saved-progress record for it with no fetch. A
-    prose-only tutorial has nothing to show progress for, so it gets no
-    attribute at all rather than a "0/0"."""
+    tutorial-runtime.js's progress indicator can read a reader's
+    saved-progress record for it with no fetch. A prose-only tutorial has
+    nothing to show progress for, so it gets no attribute at all rather
+    than a "0/0"."""
     if not tutorial.cells:
         return ""
     return (
@@ -3410,8 +3364,8 @@ def dataset_attribution(tutorial: Tutorial, name: str) -> dict:
     """A declared dataset's own attribution file —
     `data/<name>.yaml` beside `data/<name>.csv` (loaded with `load_csv()`)
     or `data/<name>.txt` (loaded with `load_text()`), the same
-    beside-the-file pattern `<slug>.glossary.yaml` already established
-    (planning/SIDEBAR_CONTENT.md §2). Both files are required: an
+    beside-the-file pattern `<slug>.glossary.yaml` already established.
+    Both files are required: an
     undocumented dataset defeats the point of declaring one at all, so a
     missing data file or a missing/incomplete attribution file fails the
     build the same way a `practice_for` naming no real tutorial does,
@@ -3971,13 +3925,15 @@ def report_doors_html(page: str, version: str) -> str:
 
 
 def report_doors_panel_html(page: str, version: str) -> str:
-    """The Give Feedback tab's own content, in the top-right corner dock — the
-    same three doors as the footer's disclosure (report_doors_html()),
-    without the <details> wrapper, since the tab it lives in is already
-    the thing a reader opens on purpose. This is a second way to the same
-    doors, not a replacement: the footer's own version stays, since it
-    needs no JavaScript and this panel does. Respects feedback_enabled()
-    the same way site_footer() does, for the same reason.
+    """The Give Feedback door's own content — the small circle fixed at the
+    bottom-right of the screen, not a corner-dock tab (DECISIONS_LOG.md
+    7.194) — the same three doors as the footer's disclosure (report_doors_html()),
+    without the <details> wrapper, since the button that opens this panel
+    is already the thing a reader clicked on purpose. This is a second way
+    to the same doors, not a replacement: the footer's own version stays,
+    since it needs no JavaScript and this panel does. Respects
+    feedback_enabled() the same way site_footer() does, for the same
+    reason.
     """
     if not page or not feedback_enabled():
         return ""
@@ -4609,46 +4565,33 @@ DEWMINI_ASSET_FILES = (
 
 
 def write_dewmini_bundle() -> Path | None:
-    """The downloadable dewmini: a folder a student (or a teacher setting a
-    classroom up for a day with no reliable connection) can save locally
-    and open on the same machine even with no internet — Pyodide
-    included, so the first run doesn't need a live connection either,
-    once assets/vendor/pyodide/ exists.
+    """The downloadable dewmini: a folder a student or teacher can save and
+    open with no internet at all, once assets/vendor/pyodide/ exists to
+    include.
 
-    Needs a local server to actually open, though: dewmini.js imports
+    It still needs a local server to open, though: dewmini.js imports
     dewmini-fs.js and pyodide-engine.js with real `import` statements,
-    the same way any modern web app is built, and a browser only allows
-    that kind of cross-file import from http:///https://, never a file
-    opened straight off disk — see SERVE_SCRIPT's own docstring, copied
-    in as this bundle's own serve.py. `index.html` below actually checks
-    for this rather than assuming a downloader read a README first.
+    and a browser only allows that kind of cross-file import from
+    http(s)://, never a file opened straight off disk. `index.html` below
+    checks for this rather than assuming a downloader read a README first,
+    and SERVE_SCRIPT is copied in as this bundle's own serve.py.
 
-    The bundle mirrors the *hosted site's actual folder shape* —
-    compose/, assets/, and data/ as siblings, exactly what
-    compose/dewmini.html's own `../assets/...`, `../data/`, and
-    `../coi-serviceworker.js` references already assume — so
-    dewmini.html, dewmini.js, and dewmini-fs.js need no rewriting at all
-    to work unhosted; only the DEWLAB_PYODIDE_BASE override gets layered
-    in. A tiny top-level `index.html` exists purely so opening the
-    downloaded folder means finding one obvious file, not knowing to
-    look inside `compose/` first — either it's being served (this
-    script, or any other local server) and it forwards straight to
-    compose/dewmini.html, or it's been opened as a bare file and it says
-    so instead of forwarding into a page that would just come up blank.
+    The bundle mirrors the hosted site's actual folder shape — compose/,
+    assets/, and data/ as siblings, exactly what compose/dewmini.html's own
+    relative references already assume — so nothing in it needs rewriting
+    to work unhosted, beyond layering in the DEWLAB_PYODIDE_BASE override.
+    The tiny top-level `index.html` exists so opening the downloaded folder
+    means finding one obvious file rather than knowing to look inside
+    compose/ first.
 
-    assets/vendor/pyodide/ is not committed (gitignored, like /dev/pyodide/
-    a few lines up in .gitignore) — populate it with dev/fetch_pyodide.py,
-    the same trimmed-Pyodide fetcher the e2e tests already use for their
-    own local copy, just pointed at a different --out and asked for the
-    packages dewmini's own DM_PACKAGES needs (compose/dewmini.js):
+    assets/vendor/pyodide/ is gitignored; populate it with:
 
         python3 dev/fetch_pyodide.py --out assets/vendor/pyodide \\
             --packages numpy pandas matplotlib sqlite3 Pillow jedi pyodide-http
 
-    A build run without that first still produces a working bundle, just
-    one that falls back to the CDN on first run, same as the hosted page
-    does. (jedi and parso belong on the list regardless of DM_PACKAGES —
-    the engine loads them itself, for autocomplete.)
+    (jedi and parso are needed regardless of DM_PACKAGES, for
+    autocomplete.) A build run without that first still produces a working
+    bundle, just one that falls back to the CDN on first run.
     """
     dewmini_html = COMPOSE / "dewmini.html"
     if not dewmini_html.exists():
@@ -4779,8 +4722,7 @@ def write_page(shell: str, name: str) -> Path:
     and was written out three times before this function existed.
 
     Every word on these pages is student-facing: the plain-language rules
-    in PEDAGOGICAL_STYLE_GUIDE.md section 4 apply, and
-    planning/PLAIN_LANGUAGE_PASS.md records each pass.
+    in PEDAGOGICAL_STYLE_GUIDE.md section 4 apply.
     """
     stem, crumb, nav = SITE_PAGES[name]
     meta, body = read_page(name)
@@ -4890,6 +4832,84 @@ def write_all_tutorials_page(
             f"shell template has tokens the all-tutorials page does not fill: {leftover}")
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "all-tutorials.html"
+    target.write_text(page)
+    return target
+
+
+def write_all_notes_page(shell: str, tutorials: list[Tutorial]) -> Path:
+    """My Notes: every highlight and every page's own free-text notes,
+    gathered from every tutorial this browser has ever saved progress
+    for — into one page to review, search, or download as a plain-text
+    study sheet (DECISIONS_LOG.md, the highlight-colours-and-list entry).
+
+    Nothing here comes from the build: localStorage is shared per
+    origin, not per page, so `assets/my-notes.js` reads every saved
+    record itself, client-side, once this page loads. The one thing the
+    build *can* give it that storage can't is a title for each slug —
+    a saved record only carries `tutorial-slug`, not a human title — so
+    this bakes in a small {slug: title} map the same way tree.js reads
+    its own topic-graph data island (`write_tree_page()`).
+    """
+    titles = {t.slug: t.title for t in tutorials if t.is_default}
+    body = (
+        '<h1>My Notes</h1>'
+        '<p class="dl-panel-note">Every highlight and note you\'ve made '
+        "across every tutorial you've opened in this browser, on this "
+        "device — gathered here to review. Nothing on this page is sent "
+        "anywhere; it's read straight out of this browser's own storage, "
+        "the same way each tutorial's own Notes panel already is.</p>"
+        '<div class="dl-my-notes-controls">'
+        '<input type="search" id="dl-my-notes-search" '
+        'placeholder="Search your notes and highlights…" '
+        'aria-label="Search your notes and highlights">'
+        '<button type="button" class="dl-btn" id="dl-my-notes-download">'
+        "Download as text</button>"
+        "</div>"
+        '<p class="dl-panel-note" id="dl-my-notes-empty" hidden></p>'
+        '<div id="dl-my-notes-list"></div>'
+    )
+    manifest = {"slug": "all-notes", "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
+    tokens = {
+        "{{TITLE}}": "My Notes",
+        "{{VERSION}}": "1",
+        "{{SLUG}}": "all-notes",
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": '<span class="dl-crumbs">my notes</span>',
+        "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
+        "{{PAGE_SCRIPT}}": (
+            '<script type="application/json" id="dewlab-titles">'
+            + json.dumps(titles).replace("<", "\\u003c")
+            + "</script>\n"
+            + f'<script type="module" src="{versioned("assets/", "my-notes.js")}"></script>'
+        ),
+        "{{CANONICAL}}": "",
+        "{{DOWNLOAD}}": "",
+        "{{BODY}}": body,
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer("all-notes", "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html("all-notes", "1"),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(
+            f"shell template has tokens the my-notes page does not fill: {leftover}")
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / "all-notes.html"
     target.write_text(page)
     return target
 
@@ -5494,32 +5514,20 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
     """One JSON file, `assets/reference-index.json`: every term every
     tutorial introduces, in one list, for dewmini's Library rail.
 
-    **This deliberately drops the rule the tutorial pages' own Reference
-    panel is built around.** `planning/REFERENCE_PANEL.md` §1 is
-    emphatic that a reader must never be shown something they have not
-    been taught yet — a reference that spoils next week's function names
-    is worse than no reference — which is why `cumulative_glossary()`
-    exists and why it is assembled per page, per position in a series.
+    Deliberately drops the rule a tutorial page's own Reference panel is
+    built around — never show a reader a term they haven't been taught yet
+    (`cumulative_glossary()`, assembled per page and series position).
+    dewmini has no position in a series; it's the workspace a reader opens
+    outside the curriculum, so this index is the plain union instead.
 
-    dewmini has no position in a series. It is the workspace a reader
-    opens *outside* the curriculum, to try an idea that may belong to no
-    tutorial at all, and a reference that hid two-thirds of itself on the
-    grounds that they had not reached tutorial 31 yet would be actively
-    unhelpful to the person looking at it. So this one is the union, and
-    the constraint is dropped on purpose rather than by forgetting it —
-    see `planning/DEWMINI_WORKBENCH.md` §4.
+    Built from `own_glossary()` so each entry names the tutorial that
+    introduced it — a reader meeting an unfamiliar term can see where it's
+    actually taught. Deduplicated on `(term, kind)`, first definition
+    winning, the same key `cumulative_glossary()` dedupes on.
 
-    Built from `own_glossary()` so each entry can name the tutorial that
-    introduced it: that provenance is what keeps the union honest, since
-    a reader meeting an unfamiliar term can see where it is actually
-    taught. Deduplicated on `(term, kind)`, first definition winning,
-    the same key `cumulative_glossary()` dedupes on.
-
-    The tutorial's *title*, deliberately, and not a link to it. This file
-    ships inside dewmini's offline bundle, which carries no tutorials at
-    all — a link would resolve on the hosted site and 404 for every
-    offline reader, and a reference that sends a student somewhere
-    broken is worse than one that simply tells them where to look.
+    Names the tutorial's *title*, not a link: this file ships inside
+    dewmini's offline bundle, which carries no tutorials, so a link would
+    404 for every offline reader.
     """
     facets = tutorial_facets(tutorials)
     seen: dict[tuple[str, str], dict] = {}
@@ -5737,6 +5745,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.append(write_all_tutorials_page(
             shell, groups, archives, retired, practice, mixed, course_archives
         ))
+        written.append(write_all_notes_page(shell, tutorials))
         for course in catalog.values():
             written.append(write_course_page(
                 shell, course, groups, archives, retired, practice, mixed,

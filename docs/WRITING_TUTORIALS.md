@@ -55,7 +55,14 @@ version: 2026.08.24.1
 | `title` | Shown in the browser tab and at the top of the page. |
 | `year` | An academic year like `2026-2027`, since the programme is scoped a year at a time. |
 | `version` | A dated version like `2026.08.24.1`. Bump it when you change the code in a cell, so a student's saved progress knows the page moved on. Prose fixes do not need it. See [Releasing a new version](#releasing-a-new-version) for when a bump needs a full versioned release instead. |
-| `status` | Optional. `live` (the default) or `archived`. An archived tutorial keeps its built page, so old links still resolve, but drops out of the reading order and the contents page. |
+| `status` | Optional, `live` by default. See the table below. |
+
+| `status` | Built as a page? | In the reading order? | What it means |
+|---|---|---|---|
+| `draft` | No | No | Work in progress — visible only in a local build or the authoring editor. |
+| `beta` | Yes | No | Reachable by direct URL, for testing or preview — never the default route. |
+| `live` | Yes | Yes | The active, canonical release — the one a plain URL serves. |
+| `archived` | Yes | No | Retired — still built, at its old URL, so old links and past students' saved work still have somewhere to land, but out of the reading order. |
 
 Add `packages: [sympy]` if a tutorial needs a library beyond `numpy`, `pandas`
 and `matplotlib`, which load with every page. You can add any other field you
@@ -448,6 +455,18 @@ The build turns that into a real relative link. If the slug or the anchor does
 not exist, the build fails rather than shipping a dead link for a student to
 find. Headings and cell ids both count as anchors.
 
+A tutorial can also link to a learning outcome directly, rather than to a
+specific tutorial:
+
+```markdown
+As introduced in [Linear Functions](topic:MIT-3.2) ...
+```
+
+`build.py` resolves `MIT-X.Y` to whichever tutorial currently teaches that
+outcome (`taught_where()`). If an outcome is removed or archived with
+nothing left to take its place, the build fails rather than shipping a link
+that points at nothing.
+
 ---
 
 ## Images, and other files a tutorial uses
@@ -640,6 +659,7 @@ Beyond ordinary Python, a cell can use:
 | `button(label, on_click)` | A button that calls your function, appending output below itself. |
 | `image_input(label="Choose an image", id=None)` | A picker limited to image files. `.value` is a Pillow `Image`, or the raw bytes where Pillow is not loaded. |
 | `await load_csv(name)` | Load a CSV from `data/` into a DataFrame. |
+| `await load_text(name)` | Fetch a plain-text file — from `data/`, or a full URL — and return its contents as a string. |
 | `run_query(conn_or_path, sql, params=None, max_rows=20, caption=None)` | Run a SQL query and render the result as a table. Takes an open `sqlite3` connection or a path to pass to `sqlite3.connect()`. |
 
 Widgets keep their values when a cell is re-run, so a student can type an answer,
@@ -709,8 +729,7 @@ page, the About page and the features page. Each is one markdown file under
 `pages/` — `home.md`, `about.md`, `features.md` — with a frontmatter of one
 field, `title:`, and nothing else. The body is ordinary markdown, converted
 the way a tutorial's prose is, and every word on it is student-facing, so
-the plain-language rules in the style guide apply and
-`planning/PLAIN_LANGUAGE_PASS.md` records each pass over it.
+the plain-language rules in the style guide apply.
 
 A page can hold three things ordinary prose cannot:
 

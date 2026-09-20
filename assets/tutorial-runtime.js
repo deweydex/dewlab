@@ -22,6 +22,12 @@ const NOTES_NUDGE_THRESHOLD = 120;
 const RUN_STATS_KEY = "dewlab:run-stats";
 const STAGED_HINTS_KEY = "dewlab:staged-hints";
 const STAGED_HINTS_RESTART_KEY = "dewlab:staged-hints-restart";
+const HIGHLIGHT_COLOR_KEY = "dewlab:highlight-color";
+// Amber first and un-labelled by purpose on purpose: a plain colour name
+// leaves what each one means up to whoever is highlighting, the same way
+// a paper highlighter set does. Order here is the swatch row's own order.
+const HIGHLIGHT_COLORS = ["amber", "green", "blue", "pink"];
+const DEFAULT_HIGHLIGHT_COLOR = "amber";
 const PANEL_WIDTH_KEY = "dewlab:panel-width";
 const AUTOSAVE_DELAY = 500;
 const SAVED_OUTPUT_STRIP_THRESHOLD = 100_000;
@@ -175,13 +181,36 @@ function closeReference() {
   if (!panel || panel.hasAttribute("hidden")) return;
   panel.setAttribute("hidden", "");
   if (toggle) toggle.setAttribute("aria-expanded", "false");
+  // Matches closeRightPanels()'s own reset: the left stack only widens to
+  // Reference's own width while Reference is open (initReference()'s own
+  // setOpen()), so a close reached from outside that path — this one,
+  // used when a mobile sheet takes over — has to hand it back itself.
+  const leftStack = document.querySelector(".dl-corner-dock-tl .dl-corner-stack");
+  if (leftStack) leftStack.style.width = "";
 }
 
 // Every right-hand panel is its own; opening one closes the rest, and a
 // tab clicked while its own panel is showing closes that panel. Closing
 // from outside (the mobile launcher opening a sheet, say) goes through
 // here so every tab's aria-pressed is put back too.
-const RIGHT_PANELS = ["yourwork", "report", "python", "appearance", "importsexports"];
+// "settings" is Appearance, Behavior and Imports & Exports folded into one
+// panel behind one toggle, switched by an internal tablist
+// (initSettingsTabs() below) rather than each getting its own corner tab
+// — the same pattern Reference already uses for its own three sections.
+// "report" is Give Feedback's own door: not in the corner dock at all (a
+// fixed circle at the bottom-right, .dl-report-fab), but sharing every
+// other bit of open/close machinery this array drives, since a report
+// panel and a corner-dock panel close, resize and restore the same way.
+const RIGHT_PANELS = ["yourwork", "python", "settings", "report"];
+
+// One shared width for the three that actually live in the corner dock —
+// Notes, Python, Settings — not one per panel id: they read as tabs into a
+// single dock, so dragging any one wider has to make them all that wide,
+// or switching tabs jumps the reading column between whichever width each
+// tab happens to remember (initRightPanels() below). Give Feedback's own
+// panel sits under its own fixed circle, not that dock, so it never
+// touches this key or the dock-stack width sync.
+const RIGHT_DOCK_WIDTH_KEY = "dl-right-dock";
 
 function closeRightPanels(except = null) {
   for (const name of RIGHT_PANELS) {
@@ -190,6 +219,15 @@ function closeRightPanels(except = null) {
     const toggle = document.getElementById(`dl-${name}-toggle`);
     if (panel && !panel.hasAttribute("hidden")) panel.setAttribute("hidden", "");
     if (toggle) toggle.setAttribute("aria-pressed", "false");
+  }
+  // Called with no except when nothing on this side is meant to stay open
+  // (a mobile sheet taking over, say) — the stack's own width-matching
+  // (initRightPanels()'s setOpen()) only runs on the toggle path, so this
+  // closing path needs to hand the corner stack back to its own compact
+  // default itself.
+  if (except === null) {
+    const rightStack = document.querySelector(".dl-corner-dock-tr .dl-corner-stack");
+    if (rightStack) rightStack.style.width = "";
   }
 }
 
@@ -301,7 +339,12 @@ function watchPanelOverlap() {
   // one of them findable. Wired here rather than
   // in each panel's own init, because this is the one place that already
   // knows which edge each panel is docked to.
-  for (const panel of leftPanels) makeEdgeResizable(panel, "left", 256, 640);
+  const leftStack = document.querySelector(".dl-corner-dock-tl .dl-corner-stack");
+  for (const panel of leftPanels) {
+    makeEdgeResizable(panel, "left", 256, 640, () => {
+      if (leftStack && !panel.hasAttribute("hidden")) leftStack.style.width = panel.style.width;
+    });
+  }
 
   const widthObserver = new ResizeObserver(sync);
   for (const el of [...rightPanels, ...leftPanels, ...rightDocks, ...leftDocks]) widthObserver.observe(el);
@@ -335,15 +378,42 @@ function savePanelWidth(id, width) {
   }
 }
 
-function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null) {
-  if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
+function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null, widthKey = null) {
+  if (!panel || panel.dataset.resizable) return;
+  panel.dataset.resizable = "true";
   const handle = document.createElement("div");
-  handle.className = "dl-panel-resize-handle"
-    + (side === "left" ? " dl-panel-resize-handle-right" : "");
+  handle.className = "dl-panel-resize-handle";
   handle.setAttribute("aria-hidden", "true");
-  panel.prepend(handle);
+  // No longer findable as a child of the panel it resizes (below) -- a
+  // page can carry several of these siblings under <body> at once, so
+  // this is what a test, or anything else, selects one by.
+  if (panel.id) handle.dataset.for = panel.id;
+  document.body.append(handle);
 
-  const saved = panel.id ? loadPanelWidth(panel.id) : undefined;
+  // The handle lives outside the panel (its own comment in
+  // tutorial-style.css says why), so nothing keeps it glued to the
+  // panel's actual edge for free the way a child element would be.
+  // Panel hidden -> handle hidden too, same as the child it used to be;
+  // panel visible -> left tracks whichever edge (right-docked: the
+  // panel's own left; left-docked: its own right) faces the reading
+  // column, on every resize this panel goes through for any reason --
+  // this drag, a sibling's drag sharing its width, a font-size change,
+  // the window itself resizing.
+  function positionHandle() {
+    const hidden = panel.hasAttribute("hidden");
+    handle.hidden = hidden;
+    if (hidden) return;
+    const rect = panel.getBoundingClientRect();
+    handle.style.left = `${side === "left" ? rect.right : rect.left}px`;
+  }
+  positionHandle();
+  new ResizeObserver(positionHandle).observe(panel);
+  new MutationObserver(positionHandle).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
+
+  // widthKey lets several panels share one saved width (RIGHT_DOCK_WIDTH_KEY,
+  // below) rather than each remembering its own under its own DOM id.
+  const key = widthKey || panel.id;
+  const saved = key ? loadPanelWidth(key) : undefined;
   if (saved) panel.style.width = `${Math.max(min, Math.min(saved, max))}px`;
 
   let startX = 0;
@@ -374,13 +444,26 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
     const cap = Math.min(max, floorCapPx());
     const next = Math.max(min, Math.min(startWidth + dx, cap));
     panel.style.width = `${next}px`;
+    // Called directly here, on every move, rather than left to the
+    // ResizeObserver above alone -- that one is still what catches every
+    // *other* reason this panel's width can change (a sibling sharing it,
+    // a font-size change, the window itself), but this drag is the one
+    // path onResize() and the handle's own position both need to feel
+    // perfectly in step with, not just eventually consistent.
+    positionHandle();
+    // Without this, onResize() only ran once, on release — the panel
+    // itself (and, via its own ResizeObserver, the reading column)
+    // tracked the drag live, but the corner-dock tab stack this callback
+    // widens to match sat frozen at its old width until the drag ended,
+    // then jumped to catch up. Calling it here too keeps the tabs moving
+    // with the same motion as the panel beneath them.
+    if (onResize) onResize();
   }
   function onUp() {
     handle.classList.remove("dl-panel-resize-active");
     document.removeEventListener("pointermove", onMove);
     document.removeEventListener("pointerup", onUp);
-    if (panel.id) savePanelWidth(panel.id, panel.getBoundingClientRect().width);
-    if (onResize) onResize();
+    if (key) savePanelWidth(key, panel.getBoundingClientRect().width);
   }
   handle.addEventListener("pointerdown", (ev) => {
     startX = ev.clientX;
@@ -395,8 +478,12 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
 // One right-hand panel per corner tab (RIGHT_PANELS above), each opened
 // by its own tab and closed by that tab again, its close button, Escape,
 // or a click outside — with the left dock's panel and tree never counting
-// as outside, so the two sides can be used together. Appearance alone
-// carries a search box, filtering its own rows.
+// as outside, so the two sides can be used together. Appearance (now a
+// tab inside Settings, not a panel of its own) alone carries a search box,
+// filtering its own rows. All three share one dock width
+// (RIGHT_DOCK_WIDTH_KEY): dragging one panel's edge applies the new width
+// to the other two immediately, so switching tabs never resizes the dock
+// underneath the reading column.
 function initRightPanels() {
   const panels = RIGHT_PANELS.map((name) => ({
     name,
@@ -408,7 +495,7 @@ function initRightPanels() {
 
   const searchInput = document.getElementById("dl-appearance-search");
   const emptyMessage = document.getElementById("dl-appearance-empty");
-  const appearance = document.getElementById("dl-appearance");
+  const appearance = document.getElementById("dl-settings-pane-appearance");
   function runFilter() {
     if (!searchInput || !appearance) return;
     const anyRowVisible = filterTextureRows(appearance, searchInput.value);
@@ -416,17 +503,42 @@ function initRightPanels() {
   }
   if (searchInput) searchInput.addEventListener("input", runFilter);
 
+  // The stack widens to match whichever panel is actually open, so the two
+  // read as one column instead of a narrow strip sitting askew over a
+  // wider box — but only while one is open. Left alone, it stays at its
+  // own compact CSS default (12.5rem) rather than permanently reserving a
+  // whole panel's width off the reading column for nothing on screen to
+  // justify it, so this is set in setOpen() below, not once here.
+  const rightStack = document.querySelector(".dl-corner-dock-tr .dl-corner-stack");
+
+  // Give Feedback's own panel shares every open/close path below, but not
+  // the corner dock's width story: it opens from its own fixed circle, not
+  // a tab in .dl-corner-dock-tr, so it neither drags the other three's
+  // shared width around nor pushes the dock stack wider while it's open.
+  const dockLinked = panels.filter((p) => p.name !== "report");
+
   for (const p of panels) {
     for (const section of p.panel.querySelectorAll(".dl-settings-section")) {
       if (!section.textContent.trim()) section.hidden = true;
     }
-    makeEdgeResizable(p.panel, "right", 256, 640);
+    if (p.name !== "report") {
+      makeEdgeResizable(p.panel, "right", 256, 640, () => {
+        const width = p.panel.style.width;
+        for (const other of dockLinked) {
+          if (other.panel !== p.panel) other.panel.style.width = width;
+        }
+        if (rightStack && !p.panel.hasAttribute("hidden")) rightStack.style.width = width;
+      }, RIGHT_DOCK_WIDTH_KEY);
+    }
 
     function setOpen(open) {
       p.panel.toggleAttribute("hidden", !open);
       p.toggle.setAttribute("aria-pressed", String(open));
+      if (rightStack && p.name !== "report") {
+        rightStack.style.width = open ? `${p.panel.getBoundingClientRect().width}px` : "";
+      }
       if (!open) {
-        if (p.name === "appearance" && searchInput && searchInput.value) {
+        if (p.name === "settings" && searchInput && searchInput.value) {
           searchInput.value = "";
           runFilter();
         }
@@ -436,7 +548,11 @@ function initRightPanels() {
       // The notes textarea may have grown (or been given a value) while
       // its panel was hidden, and a hidden element's scrollHeight reads as
       // 0 — re-measure now that it's actually laid out.
-      if (p.name === "yourwork" && notesEl) autoGrowTextarea(notesEl);
+      if (p.name === "yourwork") {
+        if (notesEl) autoGrowTextarea(notesEl);
+        refreshHighlightsList();
+      }
+      if (p.name === "python") refreshPythonState();
     }
 
     p.toggle.addEventListener("click", () => setOpen(p.panel.hasAttribute("hidden")));
@@ -452,6 +568,59 @@ function initRightPanels() {
       if (p.panel.contains(ev.target) || p.toggle.contains(ev.target)) return;
       if (clickIsInsidePanels(ev.target, LEFT_DOCK_IDS)) return;
       setOpen(false);
+    });
+  }
+}
+
+/* Settings' own tablist — Appearance, Behavior, Imports & Exports, one
+ * panel behind one corner toggle rather than three. The plain half of
+ * initReference()'s own tab-switching (click or arrow keys move the
+ * selection): no shared search across tabs the way Reference's is, since
+ * only Appearance carries one, so this just hides that search box outside
+ * its own tab rather than threading it through every tab like Reference's
+ * per-tab filter callbacks. */
+function initSettingsTabs() {
+  const searchInput = document.getElementById("dl-appearance-search");
+  const tabs = [
+    {
+      name: "appearance",
+      tab: document.getElementById("dl-settings-tab-appearance"),
+      pane: document.getElementById("dl-settings-pane-appearance"),
+    },
+    {
+      name: "behavior",
+      tab: document.getElementById("dl-settings-tab-behavior"),
+      pane: document.getElementById("dl-settings-pane-behavior"),
+    },
+    {
+      name: "importsexports",
+      tab: document.getElementById("dl-settings-tab-importsexports"),
+      pane: document.getElementById("dl-settings-pane-importsexports"),
+    },
+  ];
+  if (!tabs.every((t) => t.tab && t.pane)) return;
+
+  function selectTab(name) {
+    for (const t of tabs) {
+      const on = t.name === name;
+      t.tab.setAttribute("aria-selected", String(on));
+      t.tab.tabIndex = on ? 0 : -1;
+      t.pane.hidden = !on;
+    }
+    if (searchInput) searchInput.hidden = name !== "appearance";
+  }
+
+  for (const [i, t] of tabs.entries()) {
+    t.tab.addEventListener("click", () => selectTab(t.name));
+    // Left/right arrow keys move focus and selection together, the usual
+    // ARIA tabs keyboard pattern — matches initReference()'s own tabs.
+    t.tab.addEventListener("keydown", (ev) => {
+      if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") return;
+      ev.preventDefault();
+      const step = ev.key === "ArrowRight" ? 1 : -1;
+      const next = tabs[(i + step + tabs.length) % tabs.length];
+      next.tab.focus();
+      selectTab(next.name);
     });
   }
 }
@@ -817,15 +986,17 @@ function initReference(manifest) {
   renderPythonBasics(manifest);
   toggle.hidden = false;
 
+  const leftStack = document.querySelector(".dl-corner-dock-tl .dl-corner-stack");
+
   function setOpen(open) {
     panel.toggleAttribute("hidden", !open);
     toggle.setAttribute("aria-expanded", String(open));
+    if (leftStack) {
+      leftStack.style.width = open ? `${panel.getBoundingClientRect().width}px` : "";
+    }
   }
 
   toggle.addEventListener("click", () => setOpen(panel.hasAttribute("hidden")));
-
-  const close = document.getElementById("dl-reference-close");
-  if (close) close.addEventListener("click", () => { setOpen(false); toggle.focus(); });
 
   document.addEventListener("keydown", (ev) => {
     if (ev.key !== "Escape" || panel.hasAttribute("hidden")) return;
@@ -937,9 +1108,9 @@ function initReference(manifest) {
   }
 }
 
-/* Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §3): a
- * reader marks a passage of prose, durably, with an optional note tied to
- * it. Anchoring a highlight needs no build-time id — a highlight instead
+/* Highlights and margin notes: a reader marks a passage of prose,
+ * durably, with an optional note tied to it. Anchoring a highlight
+ * needs no build-time id — a highlight instead
  * records where it was (an ordinal position among the page's prose
  * blocks) and what it was (the selected text, plus a little context to
  * tell two identical sentences apart), all computed from the live DOM.
@@ -1014,8 +1185,7 @@ const ANCHOR_SEARCH_WINDOW = 5;
 // Rebuilds {block, index} for a saved highlight anchor
 // ({block_index, quote, prefix, suffix}), tolerating the page having
 // drifted a little since the highlight was made. `null` means genuinely
-// gone — HIGHLIGHTS_AND_NOTES.md §3 says what the caller does with that
-// (drop it, and say so, rather than guess).
+// gone (the caller drops it, and says so, rather than guessing).
 function locateHighlightAnchor(anchor, root = document.getElementById("dl-body")) {
   const blocks = proseBlocks(root);
   if (!blocks.length) return null;
@@ -1062,15 +1232,17 @@ function rangeForOffsets(block, start, end) {
   return null; // the offsets don't fit this block's current text
 }
 
-// Rollout step 4 (HIGHLIGHTS_AND_NOTES.md §6): showing a highlight, once
-// one exists. A selection rarely sits inside a single text node — it can
-// span an <em>, a <code>, or just a sentence break — and
+// Rollout step 4: showing a highlight, once one exists. A selection
+// rarely sits inside a single text node — it can span an <em>, a
+// <code>, or just a sentence break — and
 // `Range.surroundContents()` throws in exactly that case, on any node it
 // can't safely wrap whole. The fix used here is the standard one: walk the
 // range's own text nodes and wrap each one's selected portion in its own
 // <mark>, rather than asking for one <mark> around the whole range.
 // Several <mark>s sharing one `data-highlight-id` is normal, not a bug.
-function wrapRange(range, highlightId) {
+// `color` is one of HIGHLIGHT_COLORS, or omitted for the CSS default
+// (amber) -- an un-migrated highlight saved before colour existed.
+function wrapRange(range, highlightId, color) {
   const doc = range.startContainer.ownerDocument || document;
   const root = range.commonAncestorContainer;
   const walker = doc.createTreeWalker(
@@ -1095,6 +1267,7 @@ function wrapRange(range, highlightId) {
         const mark = doc.createElement("mark");
         mark.className = "dl-highlight";
         mark.dataset.highlightId = highlightId;
+        if (color && color !== DEFAULT_HIGHLIGHT_COLOR) mark.dataset.highlightColor = color;
         // Only the first fragment is a tab stop — several <mark>s can share
         // one highlight id, and a reader tabbing through the page should
         // meet that highlight once, not once per fragment it happens to be
@@ -1108,6 +1281,20 @@ function wrapRange(range, highlightId) {
     node = next;
   }
   return marks;
+}
+
+// Recolouring an existing highlight from the popover's swatch row --
+// every <mark> sharing this id, since one highlight can be split across
+// several when its range crosses a child element (wrapRange()'s own
+// comment above explains why more than one is normal).
+function recolorHighlight(highlightId, color, root = document.getElementById("dl-body")) {
+  const marks = root
+    ? root.querySelectorAll(`mark.dl-highlight[data-highlight-id="${CSS.escape(highlightId)}"]`)
+    : [];
+  for (const mark of marks) {
+    if (color && color !== DEFAULT_HIGHLIGHT_COLOR) mark.dataset.highlightColor = color;
+    else delete mark.dataset.highlightColor;
+  }
 }
 
 // The other half: strip a highlight back out, restoring plain text nodes
@@ -1130,12 +1317,12 @@ function unwrapHighlight(highlightId, root = document.getElementById("dl-body"))
   return marks.length;
 }
 
-// Rollout step 5 (HIGHLIGHTS_AND_NOTES.md §5): actually making one. A
-// highlight anchors to exactly one prose block (§3) — the same block a
-// reader's selection has to sit inside, checked here rather than assumed,
-// since a selection can freely cross into a heading or a second paragraph
-// and this is where that gets caught, silently, the same way Look Up
-// already stays silent for a selection that isn't a term.
+// Rollout step 5: actually making one. A highlight anchors to exactly
+// one prose block — the same block a reader's selection has to sit
+// inside, checked here rather than assumed, since a selection can
+// freely cross into a heading or a second paragraph and this is where
+// that gets caught, silently, the same way Look Up already stays
+// silent for a selection that isn't a term.
 function blockFor(node) {
   const el = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
   return el ? el.closest(PROSE_BLOCK_SELECTOR) : null;
@@ -1158,22 +1345,47 @@ function generateHighlightId() {
   return `h-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+// The colour a fresh highlight starts in: whichever a reader picked most
+// recently, on this device, across every tutorial — not per-page, since a
+// reader who settled on "amber means important" wants that to hold
+// everywhere, not reset each time they open a new tutorial.
+function readLastHighlightColor() {
+  try {
+    const stored = localStorage.getItem(HIGHLIGHT_COLOR_KEY);
+    return HIGHLIGHT_COLORS.includes(stored) ? stored : DEFAULT_HIGHLIGHT_COLOR;
+  } catch (err) {
+    return DEFAULT_HIGHLIGHT_COLOR;
+  }
+}
+
+function writeLastHighlightColor(color) {
+  try {
+    localStorage.setItem(HIGHLIGHT_COLOR_KEY, color);
+  } catch (err) {
+    /* This reader's own choice only; forgotten after it, same as the rest
+     * of this file's storage refusal shape. */
+  }
+}
+
 // Ties (2), (3) and (4) together: anchor the live selection, save it, show
 // it. `range` is still the reader's own selection Range, not yet a
 // reconstructed one — wrapRange() needs exactly that, and reconstructing
 // it from offsets first would be reading back something already in hand.
 function createHighlight(range, block, note = "") {
   const { start, end } = offsetsForRange(block, range);
+  const color = readLastHighlightColor();
   const highlight = {
     id: generateHighlightId(),
     block_index: proseBlocks().indexOf(block),
     ...describeQuote(block, start, end),
     note,
+    color,
     created_at: new Date().toISOString(),
   };
   highlights.push(highlight);
-  wrapRange(range, highlight.id);
+  wrapRange(range, highlight.id, color);
   scheduleSave();
+  refreshHighlightsList();
   return highlight;
 }
 
@@ -1186,8 +1398,8 @@ function initReferenceLookup(manifest) {
   // manifest.glossary is a flat list of entries, the same one
   // renderReference() groups by kind for display. A tutorial with none —
   // termFor() below then never matches anything — still gets the
-  // Highlight button; HIGHLIGHTS_AND_NOTES.md §5 is not the same feature
-  // as REFERENCE_PANEL.md §6b's Look Up, and needs no glossary to work.
+  // Highlight button; it is not the same feature as REFERENCE_PANEL.md
+  // §6b's Look Up, and needs no glossary to work.
   const terms = (manifest.glossary || [])
     .map((entry) => String(entry.term || "").toLowerCase())
     .filter(Boolean);
@@ -1206,10 +1418,9 @@ function initReferenceLookup(manifest) {
   lookupButton.hidden = true;
   document.body.append(lookupButton);
 
-  // Rollout step 5 (HIGHLIGHTS_AND_NOTES.md §5) — "Add a note" joins this
-  // once step 6's edit/remove popover exists to open (§7); for now,
-  // Highlight is the only new button, and a note is added afterward by
-  // clicking the highlight it made.
+  // Rollout step 5 — "Add a note" joins this once step 6's edit/remove
+  // popover exists to open; for now, Highlight is the only new button,
+  // and a note is added afterward by clicking the highlight it made.
   const highlightButton = document.createElement("button");
   highlightButton.type = "button";
   // Its own class, not shared with .dl-lookup: test_reference.py already
@@ -1393,11 +1604,11 @@ function initReferenceLookup(manifest) {
   document.addEventListener("scroll", hide, { passive: true });
 }
 
-// Rollout step 6 (HIGHLIGHTS_AND_NOTES.md §7): editing or removing a
-// highlight that already exists — clicking anywhere on it (or reaching it
-// with Tab, per wrapRange()'s first-fragment tab stop) opens a small
-// popover: the note, if any, plus Save and Remove. One shared popover
-// element, not one per highlight, the same "reused, not per-item" shape
+// Rollout step 6: editing or removing a highlight that already exists —
+// clicking anywhere on it (or reaching it with Tab, per wrapRange()'s
+// first-fragment tab stop) opens a small popover: the note, if any,
+// plus Save and Remove. One shared popover element, not one per
+// highlight, the same "reused, not per-item" shape
 // initReferenceLookup()'s own button already uses.
 function initHighlightPopover() {
   const body = document.getElementById("dl-body");
@@ -1408,6 +1619,27 @@ function initHighlightPopover() {
   popover.hidden = true;
   popover.setAttribute("role", "dialog");
   popover.setAttribute("aria-label", "Highlight");
+
+  // One radiogroup button per HIGHLIGHT_COLORS entry, filled with the
+  // colour it sets via the same [data-highlight-color] CSS the mark
+  // itself uses -- so this row never drifts from what a highlight can
+  // actually look like.
+  const colors = document.createElement("div");
+  colors.className = "dl-highlight-popover-colors";
+  colors.setAttribute("role", "radiogroup");
+  colors.setAttribute("aria-label", "Highlight colour");
+  const colorButtons = HIGHLIGHT_COLORS.map((color) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "dl-highlight-popover-color";
+    btn.dataset.color = color;
+    if (color !== DEFAULT_HIGHLIGHT_COLOR) btn.dataset.highlightColor = color;
+    btn.setAttribute("role", "radio");
+    btn.setAttribute("aria-checked", "false");
+    btn.setAttribute("aria-label", color);
+    colors.append(btn);
+    return btn;
+  });
 
   const note = document.createElement("textarea");
   note.className = "dl-highlight-popover-note";
@@ -1428,7 +1660,7 @@ function initHighlightPopover() {
   removeButton.textContent = "Remove highlight";
 
   actions.append(saveButton, removeButton);
-  popover.append(note, actions);
+  popover.append(colors, note, actions);
   document.body.append(popover);
 
   let openId = null;
@@ -1443,6 +1675,10 @@ function initHighlightPopover() {
     if (!highlight) return;
     openId = id;
     note.value = highlight.note || "";
+    const current = highlight.color || DEFAULT_HIGHLIGHT_COLOR;
+    for (const btn of colorButtons) {
+      btn.setAttribute("aria-checked", String(btn.dataset.color === current));
+    }
     popover.hidden = false;
 
     // Same fixed-position, viewport-clamped placement initReferenceLookup()'s
@@ -1478,11 +1714,31 @@ function initHighlightPopover() {
     open(mark.dataset.highlightId, mark.getBoundingClientRect());
   });
 
+  // Recolouring commits immediately, the same way every other segmented
+  // control in Settings does — unlike the note textarea, which still
+  // waits for Save, since a colour is a single click and a note is
+  // something a reader might still be typing.
+  for (const btn of colorButtons) {
+    btn.addEventListener("click", () => {
+      const highlight = highlights.find((h) => h.id === openId);
+      if (!highlight) return;
+      highlight.color = btn.dataset.color;
+      for (const other of colorButtons) {
+        other.setAttribute("aria-checked", String(other === btn));
+      }
+      recolorHighlight(openId, highlight.color, body);
+      writeLastHighlightColor(highlight.color);
+      scheduleSave();
+      refreshHighlightsList();
+    });
+  }
+
   saveButton.addEventListener("click", () => {
     const highlight = highlights.find((h) => h.id === openId);
     if (highlight) {
       highlight.note = note.value;
       scheduleSave();
+      refreshHighlightsList();
     }
     close();
   });
@@ -1500,6 +1756,7 @@ function initHighlightPopover() {
     const index = highlights.findIndex((h) => h.id === openId);
     if (index !== -1) highlights.splice(index, 1);
     scheduleSave();
+    refreshHighlightsList();
     close();
   });
 
@@ -1615,7 +1872,7 @@ function initTexture(onThemeChange) {
   const state = loadTexture();
   applyTexture(state);
 
-  const panel = document.getElementById("dl-settings-texture");
+  const panel = document.getElementById("dl-settings-pane-appearance");
   if (!panel) return state;
 
   const sizeEl = document.getElementById("dl-texture-size");
@@ -1783,7 +2040,7 @@ function buildCells(manifest) {
       element: host,
       getCode: () => editor.getValue(),
       /* The author's `expect:` line, if any — evaluated by Python after
-       * every run and reported back as `reached` (planning/CELL_HINTS.md). */
+       * every run and reported back as `reached`. */
       expect: spec.expect || null,
       /* How this cell's runs have gone so far, for its staged hints below;
        * see noteAttempt(). Restored from the saved record, never shown. */
@@ -1877,7 +2134,7 @@ function buildCells(manifest) {
   }
 }
 
-/* Every ```question fence on the page (planning/QUESTION_BLOCKS.md) —
+/* Every ```question fence on the page —
  * one entry per `.dl-question` the build wrote, read straight off the
  * DOM rather than the manifest: unlike a cell, nothing about a question
  * needs restoring beyond what saveNow()/restoreSaved() already carry
@@ -2106,8 +2363,8 @@ function buildSiteEditors(manifest) {
   }
 }
 
-/* The full-stack module's own cell kind (planning/DEWSTACK_MERGE.md §3,
- * §7 phase 4). Shares most of buildSiteEditors()'s own shape — panes,
+/* The full-stack module's own cell kind. Shares most of
+ * buildSiteEditors()'s own shape — panes,
  * a head-level Clear, a per-pane Run button on the JS pane, HTML/CSS
  * live without pressing Run — but the result area is not an iframe:
  * HTML and CSS render straight into a plain `.dl-app-preview` div, CSS
@@ -3127,6 +3384,21 @@ function pageNamesMT() {
   return [...toolsMT._page_globals.keys()].filter((name) => !name.startsWith("_"));
 }
 
+/* The main-thread twin of pyodide-worker.js's own describeGlobals() —
+ * same call, same proxy handling, run directly rather than crossing a
+ * worker boundary that doesn't exist in this mode. */
+function describeGlobalsMT() {
+  if (!toolsMT) return [];
+  try {
+    const proxy = toolsMT.describe_globals();
+    const described = proxy.toJs({ dict_converter: Object.fromEntries });
+    proxy.destroy();
+    return described;
+  } catch {
+    return [];
+  }
+}
+
 function wrapSqlCode(sql) {
   return `import tutorial_tools as _dl_tt\n_ = _dl_tt._run_sql_cell(db, ${JSON.stringify(sql)})`;
 }
@@ -3281,9 +3553,8 @@ function resetPageState() {
   return currentManifest.standalone ? resetPageStateMT() : resetPageStateWorker();
 }
 
-/* An app cell's own bridge to the page's shared `db`
- * (planning/DEWSTACK_MERGE.md §3, §7 phase 4) — `dewlabQueryRows` on
- * `globalThis`, closed over by name as `dlQuery` inside the wrapper
+/* An app cell's own bridge to the page's shared `db` — `dewlabQueryRows`
+ * on `globalThis`, closed over by name as `dlQuery` inside the wrapper
  * buildAppCells() injects, never a name a reader's own code could
  * collide with on the page itself. */
 async function queryRows(sql, params) {
@@ -3291,6 +3562,21 @@ async function queryRows(sql, params) {
   return currentManifest.standalone
     ? queryRowsMT(sql, params)
     : workerRequest("query-rows", { sql, params: params || [] });
+}
+
+/* What's currently in the shared namespace — the Python panel's own
+ * Variables/Functions/Packages (refreshPythonState() below), each a
+ * {name, type, summary, kind} entry from describe_globals()
+ * (tutorial_tools.py). Not gated on ensureBooted(): called before Python
+ * has ever run, when there is nothing to describe yet, and booting it
+ * just to say so would be the wrong side effect for opening a panel. */
+async function describeGlobalsForPanel() {
+  if (!pyodideReady) return [];
+  return currentManifest.standalone
+    ? describeGlobalsMT()
+    : worker
+      ? await workerRequest("describe-globals", {})
+      : [];
 }
 
 function ensureBooted(manifest) {
@@ -3592,7 +3878,10 @@ async function runCell(cell) {
     running = null;
     clearCellRunning(cell, previousLabel);
     clearRunLineTicker(cell);
-    if (completed) announceCellRun(cell);
+    if (completed) {
+      announceCellRun(cell);
+      refreshPythonState();
+    }
   }
 }
 
@@ -3704,6 +3993,7 @@ async function restartPython() {
   setRunnable(false);
   setStatus("Restarting Python…");
   updateExecutionStatus();
+  refreshPythonState();
 
   let ok = true;
   try {
@@ -3713,6 +4003,7 @@ async function restartPython() {
     ok = false;
   }
   updateExecutionStatus();
+  refreshPythonState();
   return ok;
 }
 
@@ -3722,6 +4013,160 @@ function updateExecutionStatus() {
   el.textContent = pyodideReady
     ? "Python is running."
     : "Not started yet — run a cell to start Python.";
+}
+
+/* One row of a describe_globals() entry (tutorial_tools.py) — name, type,
+ * and a value summary already length-limited on the Python side, so
+ * nothing here needs its own truncation beyond the CSS ellipsis. */
+function renderVariableRow(entry) {
+  const row = document.createElement("div");
+  row.className = "dl-variable-row";
+
+  const name = document.createElement("span");
+  name.className = "dl-variable-name";
+  name.textContent = entry.name;
+
+  const type = document.createElement("span");
+  type.className = "dl-variable-type";
+  type.textContent = entry.type;
+
+  const summary = document.createElement("span");
+  summary.className = "dl-variable-summary";
+  summary.textContent = entry.summary;
+
+  row.append(name, type, summary);
+  return row;
+}
+
+/* One row of the Notes panel's own "Your highlights" list — the quoted
+ * passage, the reader's own note if they left one, and a colour dot
+ * standing in for Variables' type column above. The whole row is a
+ * button, not a link: clicking it scrolls to and opens the highlight in
+ * the page itself, rather than navigating anywhere. */
+function renderHighlightRow(highlight) {
+  const row = document.createElement("button");
+  row.type = "button";
+  row.className = "dl-highlight-row";
+
+  const dot = document.createElement("span");
+  dot.className = "dl-highlight-dot";
+  dot.setAttribute("aria-hidden", "true");
+  if (highlight.color && highlight.color !== DEFAULT_HIGHLIGHT_COLOR) {
+    dot.dataset.highlightColor = highlight.color;
+  }
+
+  const text = document.createElement("span");
+  text.className = "dl-highlight-text";
+
+  const quote = document.createElement("span");
+  quote.className = "dl-highlight-quote";
+  quote.textContent = `"${highlight.quote}"`;
+  text.append(quote);
+
+  if (highlight.note) {
+    const note = document.createElement("span");
+    note.className = "dl-highlight-note";
+    note.textContent = highlight.note;
+    text.append(note);
+  }
+
+  row.append(dot, text);
+  row.addEventListener("click", (ev) => {
+    // jumpToHighlight() below opens the popover via a synthetic click on
+    // the mark, synchronously, before this real click event finishes
+    // bubbling to document -- where the popover's own outside-click
+    // listener would otherwise see this original click land on neither
+    // the popover nor a mark, and close right back what the synthetic
+    // one just opened (the same fix initMobileLauncher() needed for its
+    // own forwarded clicks, and for the same reason).
+    ev.stopPropagation();
+    jumpToHighlight(highlight.id);
+  });
+  return row;
+}
+
+// Scrolls a highlight into view and pulses it -- clicking a row in the
+// Notes panel's own list also opens the popover (that click is deliberate
+// upkeep, the reader chose it from a list of their own highlights), but
+// arriving from another page's URL hash (below) is a reader visiting a
+// passage to re-read it, not asking to edit it, so that path leaves
+// `openPopover` false. Several <mark>s can share one id; only the first
+// is a tab stop (wrapRange()'s own comment), so it's the one this scrolls
+// to and, when asked, clicks.
+function jumpToHighlight(highlightId, { openPopover = true } = {}) {
+  const mark = document.querySelector(
+    `mark.dl-highlight[data-highlight-id="${CSS.escape(highlightId)}"]`,
+  );
+  if (!mark) return;
+  closeRightPanels();
+  mark.scrollIntoView({ behavior: "smooth", block: "center" });
+  mark.classList.remove("dl-highlight-flash");
+  // Forces a reflow so re-adding the class restarts the animation, in
+  // case a reader jumps to the same highlight twice in a row.
+  void mark.offsetWidth;
+  mark.classList.add("dl-highlight-flash");
+  if (openPopover) mark.click();
+  else mark.focus();
+}
+
+/* Every highlight on this page, live — refreshed on the same schedule
+ * the note (highlight.note) and colour above are set on, plus whenever
+ * the Notes panel opens (initRightPanels()'s own setOpen()). Empty state
+ * doubles as the only place on the page that says highlighting exists at
+ * all, since nothing about the selection toolbar itself hints at it. */
+function refreshHighlightsList() {
+  const list = document.getElementById("dl-highlights-list");
+  const status = document.getElementById("dl-highlights-status");
+  if (!list || !status) return;
+  list.replaceChildren(...highlights.map(renderHighlightRow));
+  status.hidden = highlights.length > 0;
+}
+
+/* Variables, Functions and Packages in the Python panel — describe_globals()
+ * split by its own `kind`: data (Variables), callable (Functions, theirs
+ * or a class they defined) and module (Packages, collapsed by default in
+ * the markup since it's rarely what a reader opened this panel to check).
+ * Called when the panel opens and after every cell run (runCell()), not
+ * on a timer — a closed panel skips the round trip entirely. */
+async function refreshPythonState() {
+  const panel = document.getElementById("dl-python");
+  if (!panel || panel.hasAttribute("hidden")) return;
+
+  const lists = {
+    data: document.getElementById("dl-variables-list"),
+    callable: document.getElementById("dl-functions-list"),
+    module: document.getElementById("dl-packages-list"),
+  };
+  const statuses = {
+    data: [
+      document.getElementById("dl-variables-status"),
+      "Nothing defined yet — run a cell that makes one.",
+    ],
+    callable: [
+      document.getElementById("dl-functions-status"),
+      "Nothing declared yet — run a cell that declares one.",
+    ],
+    module: [
+      document.getElementById("dl-packages-status"),
+      "Nothing imported yet.",
+    ],
+  };
+  if (!lists.data || !lists.callable || !lists.module) return;
+
+  const notStarted = "Not started yet — run a cell to start Python.";
+  const described = await describeGlobalsForPanel();
+  for (const kind of ["data", "callable", "module"]) {
+    // !entry.builtin drops the toolbox every page starts with (show,
+    // check, button, … — tutorial_tools.__all__, reseeded at boot and
+    // after every restart) so this reads as what a reader's own code
+    // made, not the furniture it was always going to have either way.
+    const entries = described.filter((entry) => entry.kind === kind && !entry.builtin);
+    lists[kind].replaceChildren(...entries.map(renderVariableRow));
+    const [statusEl, emptyMessage] = statuses[kind];
+    if (!statusEl) continue;
+    statusEl.hidden = entries.length > 0;
+    statusEl.textContent = pyodideReady ? emptyMessage : notStarted;
+  }
 }
 
 function initExecutionSection() {
@@ -3805,9 +4250,9 @@ let saveTimer = null;
  * and restoreSaved() the same way `cells` already is. */
 let notesEl = null;
 
-/* Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §4): one
- * entry per marked passage — {id, block_index, quote, prefix, suffix,
- * note, created_at}. `const`, like `cells` above, and mutated in place
+/* Highlights and margin notes: one entry per marked passage — {id,
+ * block_index, quote, prefix, suffix, note, created_at}. `const`, like
+ * `cells` above, and mutated in place
  * rather than reassigned, so a reference to it (globalThis.dewlab's own
  * included) stays valid across a restoreSaved() call. Nothing populates
  * it yet; the selection toolbar that will (rollout step 5) has the same
@@ -4003,7 +4448,7 @@ function restoreSaved() {
         const range = rangeForOffsets(
           located.block, located.index, located.index + saved.quote.length,
         );
-        if (range) wrapRange(range, saved.id);
+        if (range) wrapRange(range, saved.id, saved.color);
       } else {
         droppedHighlights.push(saved.id);
       }
@@ -4125,8 +4570,8 @@ function announceRestore(summary) {
   }
   if (summary.droppedHighlights.length) {
     // Unlike a dropped cell, this can happen with no version change at all —
-    // a prose-only edit never bumps `tutorial-version` (VERSIONING_AND_PROGRESS.md),
-    // so the wording here can't lean on "this version does not have" the way
+    // a prose-only edit never bumps `tutorial-version`, so the wording here
+    // can't lean on "this version does not have" the way
     // the cell message above does.
     const many = summary.droppedHighlights.length !== 1;
     lines.push(
@@ -4281,6 +4726,7 @@ function initProgressSection() {
       }
       localStorage.setItem(progressKey(), JSON.stringify(record));
       announceRestore(restoreSaved());
+      refreshHighlightsList();
       showSaveState(record.saved_at);
       updateProgressSummary();
       markNotesExported();
@@ -4994,6 +5440,7 @@ initExportSection();
 initVersionsSection();
 initVersionMarker();
 initRightPanels();
+initSettingsTabs();
 initReference(currentManifest);
 initReferenceLookup(currentManifest);
 initHighlightPopover();
@@ -5010,11 +5457,25 @@ initContentsProgress();
 trackChromeHeight();
 trackCornerDockHeights();
 announceRestore(restoreSaved());
+refreshHighlightsList();
 updateProgressSummary();
 updateNotesNudge();
 annotateNotice();
 highlightIllustrativeCode();
 const mathsRendered = renderMaths(currentManifest);
+
+// A link from My Notes (or anywhere else) can name one highlight by id in
+// the URL's own hash -- #dl-highlight-<id> -- the same way a plain HTML
+// anchor names a heading. Waits for maths to finish rendering first: a
+// KaTeX block below the highlighted passage can still shift the page's
+// layout after this script runs, and jumping before that would land
+// short. A hash naming a highlight this page doesn't have (a stale link,
+// or one this browser's storage never carried) is silently ignored, the
+// same "a notice, never a block" posture a dropped highlight already gets.
+if (location.hash.startsWith("#dl-highlight-")) {
+  const wanted = location.hash.slice("#dl-highlight-".length);
+  mathsRendered.then(() => jumpToHighlight(wanted, { openPopover: false }));
+}
 
 if (cells.length === 0 || leaving) {
   /* Nor is there a reason to pay for it on a page that is being replaced this
@@ -5057,11 +5518,10 @@ globalThis.dewlab = {
   hoverDoc,
   signatureHelp,
   canStop: () => !currentManifest.standalone && interruptBuffer !== null,
-  // Highlights and margin notes (planning/HIGHLIGHTS_AND_NOTES.md §3-6):
-  // the anchoring lookup, the in-memory/save-schema state, the DOM
-  // wrap/unwrap pair, and the highlight-creation helpers the selection
-  // toolbar's Highlight button now calls, exposed here for their own
-  // tests too.
+  // Highlights and margin notes: the anchoring lookup, the
+  // in-memory/save-schema state, the DOM wrap/unwrap pair, and the
+  // highlight-creation helpers the selection toolbar's Highlight
+  // button now calls, exposed here for their own tests too.
   proseBlocks,
   describeQuote,
   locateHighlightAnchor,
@@ -5071,4 +5531,7 @@ globalThis.dewlab = {
   unwrapHighlight,
   blockFor,
   createHighlight,
+  recolorHighlight,
+  jumpToHighlight,
+  refreshHighlightsList,
 };

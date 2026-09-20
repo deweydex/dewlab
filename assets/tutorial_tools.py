@@ -11,10 +11,9 @@ This is the module a student's cell code sees. It does two jobs:
     `show_table`, and `check` — plus `load_csv` and `run_query` for pulling
     in data, the latter usable wherever sqlite3 is loaded (dewmini today).
 
-Built from the specification in planning/DECISIONS.md, which names those six
-functions and pins down one signature, `check(actual, expected)`. Everything
-else about how they behave was designed rather than looked up, and every such
-choice is written down in DECISIONS_LOG.md rather than left implicit here.
+How each of the six behaves was designed rather than looked up, and every
+such choice is written down in DECISIONS_LOG.md rather than left implicit
+here.
 
 Nothing about this is assessment-shaped: no scoring, no submission, no record
 kept anywhere. `check` tells a student whether they got it, and that is all.
@@ -223,9 +222,9 @@ class _CellContext:
         self.checks: list[tuple[str | None, bool]] = []
         self.last_error: tuple[str, str] | None = None
         # Whether this run's SQL query came back with zero rows — a `sql
-        # exec` cell's own "did it raise" (planning/CELL_HINTS.md), set by
-        # `_run_sql_cell()`. None when the cell isn't SQL, or its last
-        # statement wasn't a query with a result to be empty.
+        # exec` cell's own "did it raise", set by `_run_sql_cell()`. None
+        # when the cell isn't SQL, or its last statement wasn't a query
+        # with a result to be empty.
         self.last_result_empty: bool | None = None
 
 
@@ -693,7 +692,7 @@ async def run_cell(
     what a traceback's file line calls this cell instead of its own id —
     a tutorial's author-given `name:`, or dewmini's "Cell 3" for a cell
     nobody has named, rather than either's own internal id showing up in
-    front of a reader (planning/CELL_IDENTITY.md). The whole lifecycle
+    front of a reader. The whole lifecycle
     lives here, in Python, rather than being split across the JS runtime, so
     output ordering and traceback formatting have exactly one implementation.
 
@@ -748,7 +747,7 @@ def _describe_error(exc: BaseException) -> tuple[str, str]:
 
 def holds(expression: str) -> bool:
     """Whether an author's `expect:` line is true of the page namespace right
-    now (planning/CELL_HINTS.md §3). Anything that goes wrong evaluating it —
+    now. Anything that goes wrong evaluating it —
     a name not yet defined, a comparison that raises — is "not yet", not an
     error to show: the expression is the author's and the reader has never
     seen it."""
@@ -1487,10 +1486,10 @@ def _empty_result_notes(conn, statement: str) -> list[str]:
 
 
 def _run_sql_cell(conn, script: str, max_rows: int = 20):
-    """dewmini's own SQL cell type (planning/CELL_IDENTITY.md §8) —
-    internal plumbing a generated cell call reaches, not something a
-    reader is expected to call by name themselves; `run_query()` above
-    is the public, one-statement version of the same idea.
+    """dewmini's own SQL cell type — internal plumbing a generated cell
+    call reaches, not something a reader is expected to call by name
+    themselves; `run_query()` above is the public, one-statement version
+    of the same idea.
 
     Splits `script` into statements on a bare `;` and runs each in
     turn against `conn` — a script, not a single query, is the normal
@@ -1540,9 +1539,8 @@ def _run_sql_cell(conn, script: str, max_rows: int = 20):
 
 
 def _query_rows(sql: str, params: list | None = None) -> list[dict]:
-    """The Python half of a full-stack cell's own bridge
-    (planning/DEWSTACK_MERGE.md §3, §7 phase 4) — internal plumbing an
-    app cell's generated JavaScript calls, not something a reader is
+    """The Python half of a full-stack cell's own bridge — internal
+    plumbing an app cell's generated JavaScript calls, not something a reader is
     expected to call by name themselves, the same relationship
     `_run_sql_cell()` has to a SQL cell.
 
@@ -1636,9 +1634,10 @@ def describe_globals() -> list[dict]:
 
     Powers dewmini's variable inspector: a student can see what their code
     actually made, which turns "I ran a cell and something happened" into
-    something inspectable. Returns a list of `{name, type, summary, kind}`
-    dictionaries — only strings, so the whole result crosses the worker's
-    postMessage boundary without any of Pyodide's proxy machinery.
+    something inspectable. Returns a list of `{name, type, summary, kind,
+    builtin}` dictionaries — plain strings and one plain bool, nothing a
+    Pyodide proxy could hide in, so the whole result crosses the worker's
+    postMessage boundary without any proxy machinery to destroy() after.
 
     `kind` separates the three things a namespace holds, so the panel can
     show a student's own data first and keep the furniture out of the way:
@@ -1647,12 +1646,28 @@ def describe_globals() -> list[dict]:
       * "callable" — functions and classes, theirs or ours;
       * "module" — anything imported.
 
+    Each entry also carries `builtin`: true when the name still points at
+    whatever this module itself seeded it with — every name in
+    `__all__`, freshly (re)bound at boot and after a restart
+    (RESEED_GLOBALS_SOURCE, tutorial-runtime.js) — false the moment a
+    reader's own code rebinds it to something else. `db` gets the same
+    treatment by name rather than by identity: a fresh sqlite3.Connection
+    every boot (SEED_SQL_DB_SOURCE) means there is no fixed object to
+    compare against, but it is exactly as pre-seeded as anything in
+    `__all__` on a page with a SQL cell. The Python panel's own
+    Variables/Functions/Packages lists (tutorial-runtime.js) filter this
+    out, so "what's defined right now" means what a reader actually put
+    there, not the toolbox every page starts with; dewmini's own Variables
+    panel ignores the field and keeps showing everything, since compose
+    has no such pre-seeded toolbox to distinguish from.
+
     Names starting with "_" are left out entirely, the same convention
     autocomplete already follows: they are this module's own bookkeeping,
     not anything a reader put there.
     """
     import types  # noqa: PLC0415 - only needed here, and only in this function
 
+    module_globals = globals()
     described = []
     for name, value in list(_page_globals.items()):
         if name.startswith("_"):
@@ -1668,6 +1683,7 @@ def describe_globals() -> list[dict]:
             "type": type(value).__name__,
             "summary": _summarise(value),
             "kind": kind,
+            "builtin": name == "db" or module_globals.get(name) is value,
         })
     described.sort(key=lambda entry: entry["name"].lower())
     return described

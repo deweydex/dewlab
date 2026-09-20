@@ -1,6 +1,6 @@
-"""An `html app`/`css app`/`js app` fence (planning/DEWSTACK_MERGE.md §3, §7
-phase 4): a full-stack cell whose JavaScript can reach the page's own shared
-`db`. Shares its fence grammar with a site editor — `id:`/`app:` headers,
+"""An `html app`/`css app`/`js app` fence: a full-stack cell whose
+JavaScript can reach the page's own shared `db`. Shares its fence
+grammar with a site editor — `id:`/`app:` headers,
 consecutive panes grouped by name — but is a separate cell kind rather than
 a third site-pane language, since a site editor's sandboxed iframe exists
 specifically to block the channel this needs."""

@@ -235,8 +235,8 @@ class TestTheOutputActuallyBuilds:
         # The tutorial, minus the pages (and the search index, not a page at
         # all) the build always writes alongside it.
         alongside = {"index.html", "features.html", "all-tutorials.html",
-                     "tree.html", "about.html", "editor.html", "fixtures.html",
-                     "search-index.json", "routes.json",
+                     "all-notes.html", "tree.html", "about.html", "editor.html",
+                     "fixtures.html", "search-index.json", "routes.json",
                      "reference-index.json"}
         pages = [path for path in written if path.name not in alongside]
         assert len(pages) == 1, [path.name for path in pages]

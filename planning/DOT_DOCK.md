@@ -168,5 +168,5 @@ once §3b is settled either way.
 5. The Report scope fix (§3b's option 2).
 6. The Settings/Notes split (§4), if wanted.
 
-Each a PR of its own, the same reasoning `REFERENCE_PANEL.md` §7 and
-`SIDEBAR_CONTENT.md` §6 gave for staging those features the same way.
+Each a PR of its own, the same reasoning `REFERENCE_PANEL.md` §7 gave for
+staging that feature the same way.

@@ -10,8 +10,6 @@ import json
 
 import pytest
 
-from conftest import UP
-
 
 @pytest.fixture()
 def tab(browser, base_url):
@@ -97,4 +95,3 @@ class TestSavedWorkAndOldAddresses:
         tab.wait_for_url("**/tutorials/prose-only.html")
         tab.wait_for_selector("#dl-body")
         assert tab.get_attribute("meta[name=tutorial-slug]", "content") == "prose-only"
-        assert UP == "../"

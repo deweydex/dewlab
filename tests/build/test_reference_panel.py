@@ -94,9 +94,8 @@ class TestTheReference:
         # nothing forward-looking.
         assert [e["term"] for e in manifest(built(repo, "one"))["glossary"]] == ["x"]
 
-        # An inherited term says where it was introduced. planning/ROADMAP.md
-        # Phase 5: the panel answers "what does this mean"; the origin answers
-        # "where did I meet this".
+        # An inherited term says where it was introduced: the panel answers
+        # "what does this mean"; the origin answers "where did I meet this".
         entry = manifest(built(repo, "two"))["glossary"][0]
         assert entry["origin"]["href"] == "one.html"
         assert entry["origin"]["title"]
@@ -345,7 +344,7 @@ groups:
 class TestTheCrossTutorialReference:
     """`write_reference_index()` deliberately breaks the rule TestTheReference
     protects — a reader is never shown a term not yet reached — because
-    dewmini has no position in a series to protect (planning/DEWMINI_WORKBENCH.md §4).
+    dewmini has no position in a series to protect.
 
     The scenarios: two tutorials whose terms the index carries at once; two
     tutorials sharing a term, one of which also has a term of two kinds and

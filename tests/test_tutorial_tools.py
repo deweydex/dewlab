@@ -324,8 +324,8 @@ class TestRunQuery:
 @needs_pandas
 class TestRunSqlCell:
     """_run_sql_cell() — the dewmini SQL cell type's own internal
-    plumbing (planning/CELL_IDENTITY.md §8),
-    as opposed to run_query()'s public, one-statement API above."""
+    plumbing, as opposed to run_query()'s public, one-statement API
+    above."""
 
     @pytest.fixture()
     def conn(self):
@@ -440,11 +440,10 @@ class TestRunSqlCell:
 
 class TestQueryRows:
     """_query_rows() — the Python half of a full-stack cell's bridge to the
-    page's shared `db` connection (planning/DEWSTACK_MERGE.md §3, §7 phase
-    4). Unlike _run_sql_cell(), this is called from an app cell's own
-    JavaScript outside the normal cell-run lifecycle, so every test here
-    runs with no `cell` fixture — a running cell is exactly what it must
-    not require."""
+    page's shared `db` connection. Unlike _run_sql_cell(), this is called
+    from an app cell's own JavaScript outside the normal cell-run
+    lifecycle, so every test here runs with no `cell` fixture — a running
+    cell is exactly what it must not require."""
 
     @pytest.fixture(autouse=True)
     def _no_stale_db(self):
@@ -755,6 +754,29 @@ class TestDescribeGlobals:
         tt._page_globals["Thing"] = type("Thing", (), {})
         assert self.described()["Thing"]["kind"] == "callable"
 
+    def test_builtin_marks_the_seeded_toolbox_not_a_readers_own_code(self):
+        """RESEED_GLOBALS_SOURCE (tutorial-runtime.js) does exactly this
+        update at boot and after every restart — simulated here rather
+        than imported, since that source string lives in JS."""
+        tt._page_globals.update({name: getattr(tt, name) for name in tt.__all__})
+        tt._page_globals["mine"] = 1
+        described = self.described()
+        assert all(described[name]["builtin"] for name in tt.__all__)
+        assert described["mine"]["builtin"] is False
+
+    def test_builtin_is_false_once_a_reader_rebinds_the_name(self):
+        # Shadowing a tool name is still the reader's own doing — it
+        # should show up as theirs, not stay tagged as the toolbox.
+        tt._page_globals["show"] = lambda: None
+        assert self.described()["show"]["builtin"] is False
+
+    def test_db_is_builtin_by_name_not_identity(self):
+        # A fresh sqlite3.Connection every boot (SEED_SQL_DB_SOURCE) means
+        # there's no fixed object to compare against the way __all__'s
+        # names can be — it's still exactly as pre-seeded, just by name.
+        tt._page_globals["db"] = object()
+        assert self.described()["db"]["builtin"] is True
+
     def test_a_value_whose_repr_raises_does_not_break_the_panel(self):
         """A student's own broken __repr__ is a bug in their object, not a
         reason for every other variable to disappear."""
@@ -771,13 +793,19 @@ class TestDescribeGlobals:
         tt._page_globals.update({"zebra": 1, "apple": 2, "Mango": 3})
         assert [e["name"] for e in tt.describe_globals()] == ["apple", "Mango", "zebra"]
 
-    def test_everything_is_a_string(self):
-        """The reason this returns plain data: it crosses a postMessage
-        boundary, where a Pyodide proxy would not survive."""
+    def test_everything_is_a_string_or_a_plain_bool(self):
+        """The reason most of this returns plain strings: it crosses a
+        postMessage boundary, where a Pyodide proxy would not survive.
+        `builtin` is the one exception — a plain bool crosses that
+        boundary just as cleanly, with no proxy to destroy() either
+        side."""
         tt._page_globals.update({"n": 1, "text": "x", "items": [1, 2]})
         for entry in tt.describe_globals():
-            assert set(entry) == {"name", "type", "summary", "kind"}
-            assert all(isinstance(value, str) for value in entry.values())
+            assert set(entry) == {"name", "type", "summary", "kind", "builtin"}
+            assert isinstance(entry["builtin"], bool)
+            assert all(
+                isinstance(value, str) for key, value in entry.items() if key != "builtin"
+            )
 
 
 @needs_pandas
@@ -823,7 +851,7 @@ class TestDescribeGlobalsWithPandas:
 
 class TestRunReport:
     """What `run_cell_report()` tells the page about one run — the plain
-    values `tutorial-runtime.js` counts attempts from (planning/CELL_HINTS.md)."""
+    values `tutorial-runtime.js` counts attempts from."""
 
     def test_a_clean_run_with_no_checks_and_no_expect(self, cell):
         report = tt._report(True, tt._current, None)

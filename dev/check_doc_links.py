@@ -13,9 +13,9 @@ that had fallen behind the directory it indexes.
 What it checks, and deliberately nothing more:
 
 - **Relative links to files in the repository.** `[text](../build.py)`,
-  `[text](./STATUS.md#section)`, and bare paths in link position. A link to a
-  file that does not exist fails.
-- **Inline code spans that name a repository path.** `` `planning/STATUS.md` ``
+  `[text](./EXERCISES.md#section)`, and bare paths in link position. A link
+  to a file that does not exist fails.
+- **Inline code spans that name a repository path.** `` `planning/EXERCISES.md` ``
   is how these documents usually refer to each other — far more often than
   through a markdown link — so a checker that only read links would have
   missed most of the drift it exists to catch. A backticked path is only
@@ -46,12 +46,6 @@ DOC_FILES = ("README.md", "ARCHITECTURE.md", "CONTRIBUTING.md", "LICENSE.md")
 HISTORY = {
     "DECISIONS_LOG.md",
     "QUESTIONS.md",
-    "planning/VERSIONING_AND_PROGRESS.md",   # superseded; says so at the top
-    "planning/WHAT_IS_LEFT_TO_WRITE.md",     # retired; says so in its title
-    "planning/DOCS_AND_COMMENTS_PASS.md",    # the record of a finished pass
-    "planning/MINI_IDE_REDESIGN.md",         # a shipped plan, phase by phase
-    "planning/MINI_IDE_AND_DEWMINI_NEXT.md", # the record of that tool's absorption and removal
-    "planning/BUILD_PLAN.md",                # likewise
 }
 
 # [text](target) — the target only, and only up to a # or a space.
@@ -71,9 +65,13 @@ GENERATED = ("site/", "dev/pyodide/", "assets/vendor/pyodide/",
              "node_modules/", "__pycache__/")
 
 GENERATED_PAGES = {"index.html", "tree.html", "topics.html", "about.html",
-                   "editor.html", "search-index.json", "reference-index.json",
-                   "routes.json"}
+                   "editor.html", "all-notes.html", "search-index.json",
+                   "reference-index.json", "routes.json"}
 
+# Docs in these folders aren't held to link currency: generated or
+# per-module content, not architecture prose. A link from an active doc
+# into either is still checked — only a stale link *within* one of these
+# goes unnoticed.
 ELSEWHERE = ("planning/curriculum/", "planning/outlines/")
 
 # Referred to by name in prose about other projects, or as a shape rather than

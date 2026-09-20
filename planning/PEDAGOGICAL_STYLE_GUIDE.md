@@ -1,70 +1,63 @@
 # Pedagogical style guide
 
-How dewlab tutorials are written, and why. This merges two documents — Josh's
-general guide for his QQI Level 5 classes, which governs all his teaching
-materials, and an earlier dewlab-specific guide — into one that describes this
-repository rather than a repository somebody imagined.
-
-Where the two disagreed, section 8 says which won and on what grounds. Where
-either disagreed with the code, the code won and the guide was corrected.
+How a dewlab tutorial talks to the person reading it, and why. Not a set of
+essays to read once — a working reference to check a page against before it
+ships.
 
 ---
 
 ## 1. Who this is for
 
-QQI Level 5, Irish further education, in Dublin. Adult learners, most returning
-to education after a break, many balancing work and family with study. Prior
-academic experience varies enormously inside one room, and confidence varies
-more than ability does.
+QQI Level 5, Irish further education, in Dublin. Adult learners, most
+returning to education after a break, many balancing work and family with
+study. Prior academic experience varies enormously inside one room, and
+confidence varies more than ability does.
 
-The practical consequences are specific rather than sentimental. Assume five to
-seven hours a week including three or four contact hours, so a tutorial is an
-hour of somebody's evening and not a chapter. Assume no prior knowledge without
-saying so. Assume somebody in the room is reading this in their second language
-and somebody else has not done mathematics since school and expects to be bad at
-it.
+Assume five to seven hours a week including three or four contact hours, so a
+tutorial is an hour of somebody's evening, not a chapter. Assume no prior
+knowledge without saying so. Assume somebody in the room is reading this in
+their second language, and somebody else has not done mathematics since
+school and expects to be bad at it.
 
-The teaching this is rooted in is Freire's problem-posing education, Dewey on
-experience, Kohn on what grades do to motivation, hooks on engaged pedagogy,
-Finn on literacy and power, and Moses on mathematics as a civil right. That
-lineage is not decoration. It is why nothing here is scored, why every answer is
-visible to the student who wants it, and why the tutorials ask questions before
-they give names.
+Nothing here is scored. Every answer is visible to the student who wants it.
+The tutorials ask a question before they give it a name. That is the whole
+shape of the thing, and everything below is one consequence of it or another.
 
 ---
 
 ## 2. What dewlab is for
 
-Mathematics and programming as mutual partners rather than one serving the
-other. Code is an instrument for building mathematical intuition; mathematics is
-the structure underneath computational thinking. A student who has watched a
-sequence of secant slopes settle onto a number has met the derivative in a way
-that a definition cannot deliver.
+Mathematics and programming as partners, not one serving the other. Code is
+an instrument for building mathematical intuition; mathematics is the
+structure underneath computational thinking. A student who has watched a
+sequence of secant slopes settle onto a number has met the derivative in a
+way a definition cannot deliver.
 
-The two things this makes possible, which paper cannot:
+Two things this makes possible that paper cannot:
 
-**You can just try it.** A limit is an argument on paper and an experiment here.
-So is a probability, a sorting algorithm's cost, and the floating-point floor.
+**You can just try it.** A limit is an argument on paper and an experiment
+here. So is a probability, a sorting algorithm's cost, a cipher's blind spot.
 
-**Being wrong is cheap and visible.** A cell that raises an error in front of a
-reader is better teaching than a warning that they might. Errors are diagnostic
-information, not failures, and the runtime trims its own frames out of the
-traceback so that what is left is the student's line.
+**Being wrong is cheap and visible.** A cell that raises an error in front of
+a reader is better teaching than a paragraph saying it might. An error is
+diagnostic information about a line, not a verdict on the person who ran it —
+the runtime trims its own frames out of the traceback so what is left is the
+student's own.
 
 ---
 
 ## 3. How a tutorial is shaped
 
-Not a rule, a rhythm. Most tutorials move through these and some earn a
+Not a rule, a rhythm. Most tutorials move through these, and some earn a
 different order.
 
-**Open with the question.** What is this for, and where would somebody meet it?
-The opening paragraph should be answerable to "why am I reading this", and a
-reader who stops after it should have learned something.
+**Open with the question.** What is this for, and where would somebody meet
+it? A reader who stops after the opening paragraph should already have
+learned something, not just been told what is coming.
 
-**Give them something to run.** The first cell should work on the first click,
-before anything has been explained. Confidence comes from the machine doing
-something, and it comes early or not at all.
+**Give them something to run.** The first cell should work on the first
+click, before anything has been explained. Confidence comes from the machine
+doing something, and it comes early or not at all.
 
 **Then the explanation.** Connect what the code did to what the mathematics
 says. Formalise here, not before.
@@ -73,299 +66,208 @@ says. Formalise here, not before.
 step is not obvious. A hint scaffolds; it does not answer.
 
 **Then a check, where one is honest.** `check()` gives instant feedback and
-records nothing. Not every task has a checkable answer, and forcing one produces
-questions shaped by the checker rather than by the subject.
+records nothing. Not every task has a checkable answer, and forcing one
+produces questions shaped by the checker rather than by the subject.
 
-**Close by looking back.** What surprised you, what connects to what you already
-built, what is still unclear. These are not decoration — for many students the
-reflection is where the learning lands.
+**Close by looking back.** What surprised you, what connects to what you
+already built, what is still unclear. Not decoration — for many students the
+reflection is where the learning actually lands.
 
 ### Discover first, name afterwards
 
-The order that matters most. Let a student halve a sorted list until the search
-space collapses, and *then* say the words binary search and divide and conquer.
-Let them multiply a transition matrix until the state vector stops moving, and
-then say stationary distribution. A name given before the experience is a name
-to memorise; a name given after it is a name for something they already have.
+The order that matters most. Let a student halve a sorted list until the
+search space collapses, and *then* say the words binary search and divide
+and conquer. A name given before the experience is a name to memorise; a
+name given after it is a name for something the student already has.
 
 Three steps, in that order: explore the problem, then the general principle
-underneath it, then the name. And say what the name is *for*. It is not a label
-the tutorial awards at the end for having paid attention. It is the word that
-lets a student talk to somebody else about the thing they have just done — a
-tutor, a classmate, a search box, the next tutorial. Saying that out loud is
-what turns the naming step from a formality into the reason for it.
+underneath it, then the name — and say what the name is *for*. It is not a
+label awarded at the end for having paid attention. It is the word that lets
+a student talk to somebody else about the thing they just did: a tutor, a
+classmate, a search box, the next tutorial.
 
 ### Hints that wait for an attempt
 
 A `hint:` line on a cell is there from the first click. A `hint` fence
-(`docs/WRITING_TUTORIALS.md`, "Hints that wait for an attempt") is not: it
-appears only after the cell has been run, and has failed, some number of
-times, and the runtime never shows the count. The delay is the point.
-Koedinger and Aleven's assistance dilemma (section 10) is that help given
-early saves frustration and shallows learning, and help given late deepens
-it and wastes time; gating on attempts rather than on a clock is the answer
-they reach. Kapur's productive failure is the argument for letting the
-first attempts fail unaided.
+(`docs/WRITING_TUTORIALS.md`) is not — it appears only once the cell above it
+has run, and failed, some number of times, and the reader is never shown the
+count. The delay is the point: help given too early saves a moment of
+frustration and costs the learning; help given only after a real attempt
+teaches the habit of asking a question before reaching for one.
 
-Three rules for what goes in the fences, in order:
+Three folds, in order, and never more than a page needs:
 
 **The first fold asks.** A question about what the reader can see and what
 they expected — *what does the last line of the error name; which line of
-your cell is it pointing at; what did you expect that line to produce; what
-would the smallest input be that still shows the problem.* A question, not
-an instruction, because the habit being taught is asking it unprompted, and
-a command teaches obedience to the command. Writing down what you expect
-before you run, and comparing afterwards, is the habit worth most; a first
-fold may send the reader to their notes to do exactly that.
+your cell is it pointing at; what did you expect that line to produce?* A
+question, not an instruction, because the habit worth teaching is asking it
+unprompted, and an instruction just teaches obedience to the instruction.
 
-**The second fold gives steps**, in the shape of the `dl-hint` fold in
-section 6: numbered, ending in a **Think about** and a **Try this next**.
+**The second fold gives steps** — numbered, ending in a **Think about** and a
+**Try this next** (§6 has the exact shape).
 
 **A third fold, if any, gives the shape of the code with a gap in it.**
-Never the answer. Renkl and Atkinson's faded worked examples remove the
-last step first; a third fold that hands over the whole thing has removed
-nothing. The answer, where a page has one, stays in a `dl-answer` fold the
-reader opens for themselves.
+Never the answer. An answer belongs in a `dl-answer` fold the reader opens
+for themselves.
 
-Ration these as section 11 rations everything else that speaks to a stuck
+Ration these the way §9 rations everything else that speaks to a stuck
 reader: a "your turn" cell and a stub earn one; a worked cell does not. A
 page where every cell produces a fold on the fifth error teaches readers to
-skip folds.
+stop reading them.
 
 ---
 
 ## 4. Voice
 
-**Prose, not bullets.** Explanations are paragraphs. Bullets are for genuinely
-discrete items — a checklist, a list of operators, four things that do not
-follow from each other. An explanation broken into fragments has had its joins
-removed, and the joins were the reasoning.
+**Invitational, not commanding.** *Let's have a look*, *what happens if*,
+*how might you write this*, *shall we?* Not *Solve this problem* or
+*Complete the following*. The test is whether the sentence positions the
+reader as somebody being invited to find something out, or somebody being
+told what to do. This is the rule most worth protecting when a page gets
+edited down for length — a trimmed sentence has a way of turning back into a
+command if nobody is watching for it.
 
-**Invitational, not commanding.** "Let's try", "what happens when", "how might
-you", "give it a click and see what happens". Not "Solve this problem" or
-"Complete the following". The difference is whether the sentence positions the
-reader as somebody being told what to do or somebody being invited to find
-something out.
+A tutorial is allowed a "we" that puts the writer beside the reader in the
+work — *we've been making codes with the same alphabet*, *let's see what
+happens when we compose these* — right up until the sentence is about
+something that belongs to the reader alone, their own file, their own
+answer, where "we" would be a pretence.
 
-This licenses "let's" and rules out imperatives aimed at the student. Both
-halves matter and they are easy to confuse — see section 8.
+**Talk to the person, not the room.** *You should know that the concept of
+functions is one of the most powerful ideas in mathematics* reaches one
+reader; *students should know* reaches nobody. Second person, always, for
+anything the reader is doing right now.
 
-**Warm without condescension.** Adult learners hear the difference immediately.
-"This is easy" is the worst sentence available: if they find it hard, they now
-have a second problem.
+**Warm, without condescension, and honest about the difficulty.** Say
+plainly that a topic causes "brain-pain," that a question is meant to be
+harder than the last one, that the reader is allowed to find it hard. "This
+is easy" is the worst sentence available — if a reader finds it hard
+anyway, they now have a second problem. A joke, an aside, a footnote
+confessing that nobody has agreed how to pluralise *gnomon* — these cost
+nothing and tell a reader a person wrote this for them, not a system.
 
-**Plain titles.** *Lines and Distances*, not *Coordinate Geometry*. *How We Got
-Here*, not *The Computing Time Machine*. A title names what the reader gets in
-words they already have.
+**Questions carry the content, not just introduce it.** *Can you write
+triangle(4k) in terms of triangle(k)? Is there a picture that makes it make
+sense?* does more teaching than the equivalent instruction, because it
+leaves the reader something to do with their own thinking rather than a
+fact to accept. Reach for a question before reaching for an assertion
+wherever the reader could plausibly answer it themselves.
 
-**Define every technical term where it first appears**, and mark it in italics
-the first time it means something particular. The build's vocabulary report
-reads those italics and will tell you when a term is used before it is
+**Plain titles.** *Lines and Distances*, not *Coordinate Geometry*. A title
+names what the reader gets, in words they already have.
+
+**Define every technical term where it first appears**, and mark it in
+italics the first time it means something particular. The build's
+vocabulary report reads those italics and flags a term used before it is
 introduced, or introduced twice with different meanings.
 
-**No emoji**, unless Josh asks for them.
-
-**Do not over-format.** Bold that appears in every paragraph has stopped meaning
-anything.
+**No emoji, unless Josh asks for them. Don't over-format.** Bold that
+appears in every paragraph has stopped meaning anything.
 
 ### Plain language
 
-Everything above governs *stance* — who the sentence positions the reader as.
-Nothing above governs *sentence architecture*, and section 1 says a reader may
+Everything above governs *stance* — who the sentence positions the reader
+as. Nothing above governs *sentence architecture*, and §1 says a reader may
 be working in their second language and may not have done mathematics since
-school. Prose can satisfy every rule in this section and still be hard for that
-reader. These are the rules that close the gap.
+school. Prose can satisfy every rule above and still be hard for that
+reader. Nine checks close the gap:
 
-**Say what a thing is before what it is not.** "An expression has a value; an
-equation is a claim that two of them are equal" reaches a reader who knows
-neither. "Not a value but a claim" only reaches one who already knows the first
-half. Contrast is a second pass, not a first definition.
+1. **Does every sentence have a verb?** *Two ways of measuring an angle* is
+   a fragment. *There are two ways to measure an angle* is a sentence. The
+   one exception is a function or operator glossary entry, which drops the
+   subject and leads with the verb: *Displays whatever is inside its
+   parentheses.*
+2. **Does every clause earn its place?** Read the sentence back, then try a
+   shorter version. If it still says the same thing, the clause that
+   vanished was never necessary — whatever the sentence's length was.
+3. **Is the meaning after an em dash?** A short main clause plus a dash
+   carrying the real content reads well to somebody who already understands
+   it, and costs everybody else a re-read. One dash per paragraph, never
+   the one holding the definition.
+4. **Does it say what a thing is before what it is not?** *Not x but y*
+   only works for a reader who already has x.
+5. **Is a sequence marked?** *First… then… then…* Two actions folded into
+   one clause with an *and then* hide the order inside a single breath.
+6. **Is a metaphor carrying the meaning?** It may follow a plain statement.
+   It may not replace one.
+7. **Any idiom that assumes Irish or British English?** *Already behind
+   you*, *it earns its keep* — the most invisible barrier here, because a
+   native speaker cannot see them.
+8. **Is a claim stated flat that is not a binary?** Hedge it — *usually
+   comes afterwards*. State flatly only what is genuinely flat.
+9. **Any idiom from another dialect, or a rare word where a common one
+   would do?** *Get*, not *obtain*. *Continue*, not *carry on*. Pitched at a
+   reader with a working vocabulary of about two thousand English words.
 
-**A definition is a sentence with a subject and a verb.** *Standing in for a
-process that would be slow to run for real, by working it out numerically
-instead* is a participle with nothing to attach to; a reader has to supply the
-missing "this topic is about" before they can start. Write "You work out what
-would happen instead of running the real thing."
-
-**Read it back, then try a shorter version.** A sentence's tone matters more
-than its length: read it in the voice you would use explaining this to the
-reader in person, and cut anything that would not survive being said aloud
-that way. Then try trimming a clause and see whether the sentence still says
-the same thing. If it does, the clause was never necessary, whatever the
-sentence's word count was. A list of four things is allowed to run long,
-because the reader is counting rather than following an argument; a
-nine-word sentence that still hides an unearned aside is not automatically
-fine either.
-
-**Put the meaning before the dash, not after it.** The habit this repository
-fell into is a short main clause, an em dash, and then the part that actually
-carries the sense. It reads beautifully to somebody who already understands
-the sentence and it costs everyone else a re-read. One dash to a paragraph, and
-never the one holding the definition.
-
-**A metaphor illustrates a plain statement; it does not replace one.** *How
-much skin a solid has*, *turning the probability toolkit outward onto the
-machine*, *something to hang it on* — each asks a reader to unpack an image
-before they can find the fact. Say the fact, then reach for the picture if it
-earns its place. A picture that has to be decoded is a second problem, not a
-help.
-
-**No idiom that depends on knowing Irish or British English.** *Behind you*,
-*paging through*, *cuts across that order*, *at the first dead end*, *it earns
-its keep*, *the average that flatters*. These are the most invisible barrier in
-the whole document, because a native speaker cannot see them.
-
-**Ration the aphorism.** A unit that ends on a maxim rather than on information
-is teaching the reader to expect a punchline, and at this density it trains
-them to skim for it. Keep the best ones; that is what makes them the best ones.
-
-**Put steps in the order they happen, and mark the order.** *First… then…
-then…* Three short sentences in sequence show a reader where they are in a
-process. Two actions folded into one clause with an *and then* hide the
-sequence inside a single breath, and a reader who is not confident loses their
-place in it. This is the cheapest fix on this page and the one that helps most.
-
-**No reversals.** *Not the answer but the steps* asks a reader to hold a
-negative in mind before there is anything to hold it against. *What we are
-learning is the steps that get us there* says the same thing forwards. Put the
-thing you actually mean in the subject of the sentence, and let it arrive in
-the order it happens.
-
-**"We" for the learning, "you" for what is theirs.** *We explore, then we name
-what we found* puts the writer beside the reader in the work. *Your work is
-saved on this device* is about their machine and their file, and a "we" there
-would be a pretence. Keep the two apart and both stay honest.
-
-**Hedge what is not a binary.** *Usually comes afterwards*, *is usually telling
-us something useful*, *what usually comes first*. Most teaching claims have
-exceptions, and a reader who meets the exception in their second tutorial
-learns to distrust the flat ones. State flatly only what is genuinely flat —
-*nothing you write leaves your browser* is a real binary, and hedging it would
-read as evasion.
+**"We" for the learning, "you" for what is the reader's own.** *We explore,
+then we name what we found.* *Your work is saved on this device.*
 
 **The test.** Not whether the sentence is elegant. Whether a reader who is
 unsure of themselves comes out of it feeling more able than they went in.
-
-None of this asks for flat writing. Warmth is in the second person, in the
-invitation, and in what the sentence does not assume about the reader — not in
-figurative language. The plainest version of a sentence is usually also the
-friendliest.
-
-### Vocabulary
-
-Rules 1–8 above govern architecture and dialect. Neither governs the word
-itself, and a sentence can pass every one of them and still put a reader who
-learned English as a second language in front of *masthead*, *furniture*, or a
-phrasal verb with no single-word equivalent. Rule 7 already bans idiom that
-assumes Irish or British English; this rule bans idiom and rare vocabulary
-regardless of which English it belongs to.
-
-**Prefer the common word.** *Get*, not *obtain*. *Start*, not *commence*.
-Where the site's own terminology (section 7) needs the less common word, keep
-it and define it — this rule is about the words around the terminology, not
-the terminology itself.
-
-**A phrasal verb needs a one-word replacement to be worth finding.** *Carry
-on* becomes *continue*. *Have a go* becomes *try*. *Get stuck* stays — there
-is no single word that keeps the meaning, and the phrase is common enough in
-plain teaching English to belong on a B1 word list.
-
-**No idiom, from any dialect.** *Having a go*, *with the working*, *earns its
-keep* — rule 7 named the Irish and British cases; this one drops the
-qualifier. If a phrase would need explaining to a fluent English speaker from
-outside the country that coined it, it needs explaining here too, or cutting.
-
-**Ration the passive.** *The page is saved* is a real binary and stays passive
-on purpose — nobody does the saving, the browser just does it. Where an agent
-is hiding in a passive sentence and naming it costs the sentence nothing, name
-it.
-
-**The test.** Would a reader with a working vocabulary of about two thousand
-English words — roughly a B1 CEFR reader, the level this rule is pitched at —
-get through the sentence without stopping to guess at a word?
-
-`CONTRIBUTING.md` ("Who reads what") has said most of this for the site's own
-pages all along — *no jargon without explaining it, no metaphor for its own
-sake, if you would not say it that way to a fifteen-year-old sitting next to
-you, rewrite it*. It was never in the guide the tutorial writers read, so it
-governed the homepage and not the teaching. It governs both now.
 
 ---
 
 ## 5. Code in a tutorial
 
-**Short cells.** Five to fifteen lines. A thirty-line cell has usually got two
-ideas in it and wants to be two cells.
+**Short cells.** Five to fifteen lines. A thirty-line cell has usually got
+two ideas in it and wants to be two cells.
 
-**No unmotivated boilerplate.** Every import earns its place. A student should
-not meet a configuration line whose purpose cannot be explained yet.
+**No unmotivated boilerplate.** Every import earns its place. A student
+should not meet a configuration line whose purpose cannot be explained yet.
 
-**The seven tools are already there.** `show`, `show_table`, `check`,
-`text_input`, `dropdown`, `button` and `load_csv` are injected into the page
-namespace before any cell runs. Do not write `from tutorial_tools import check`
-— it works, and it teaches an import that is not part of how the page functions.
+**The tools are already there.** `show`, `show_table`, `check`,
+`text_input`, `dropdown`, `button`, `image_input`, `load_csv`, `load_text`
+and `run_query` are injected into the page namespace before any cell runs
+(the full, current list is `docs/WRITING_TUTORIALS.md`'s own table — check
+there rather than trusting a count here). Do not write
+`from tutorial_tools import check` — it works, and it teaches an import
+that is not part of how the page functions.
 
 **Figures need no `plt.show()`.** Creating a figure is enough; the runtime
-collects it. `plt.show()` is harmless and two tutorials use it, which is a small
-inconsistency worth removing rather than spreading.
+collects it.
 
-**Cell ids are a contract.** Lowercase, hyphenated, `<section-slug>-<n>`. Once a
-tutorial has been in front of a class, a cell id is the key somebody's saved work
-lives under, and renaming one throws that work away. The editor warns about this;
-believe it.
+**Cell ids are a contract.** Lowercase, hyphenated, `<section-slug>-<n>`.
+Once a tutorial has been in front of a class, a cell id is the key
+somebody's saved work lives under, and renaming one throws that work away.
+The editor warns about this; believe it.
 
 **Deliberate failure is a teaching tool.** A cell that divides by zero, in a
-tutorial about what happens when you divide by zero, is better than a paragraph
-saying it would. Say in the prose that it is meant to fail, so a reader does not
-think they broke it.
+tutorial about what happens when you divide by zero, is better than a
+paragraph saying it would. Say in the prose that it is meant to fail, so a
+reader does not think they broke it.
 
 **Variable names read as words, not as the symbols a textbook would use.**
 `count`, `total`, `midpoint`, `is_valid` — not `n`, `s`, `m`, `ok`, and not
-the single mathematical letter a formula happens to use for the same
-quantity (`a`, `b`, `c` for a quadratic's coefficients is the one common
-exception: it matches the formula on the page directly above the cell, and
-a reader translating between the two benefits from the names matching,
-not diverging). A name earns its length by what it prevents a reader from
-having to hold in their head — `row_total` over `t` in a cell with more
-than one running sum, `left` and `right` over `a` and `b` once a cell is
-about halves of something rather than about two arbitrary quantities.
-`i`/`j` for a loop index and `x`/`y` for a coordinate are established
-enough, in code and in the maths above it, to need no defence.
+the single letter a formula happens to use for the same quantity (`a`, `b`,
+`c` for a quadratic's coefficients is the one common exception: it matches
+the formula on the page directly above the cell). `i`/`j` for a loop index
+and `x`/`y` for a coordinate are established enough, in code and in the
+maths above it, to need no defence.
 
-**One real exception: "discover first, name afterwards" (§3) can apply to
-variable names too, not only to prose.** A cell exploring towards a
-stationary distribution before that term has been said out loud is not
-better for a variable called `stationary_distribution` — the generic
-`state` or `vector` is the honest name for what the reader has actually
-met so far, and the more specific name would spoil, in code, the exact
-thing the prose is about to reveal in words. Reading the surrounding
-prose, not just the cell in isolation, is what tells the two cases apart.
+**"Discover first, name afterwards" (§3) applies to variable names too.** A
+cell exploring towards a stationary distribution before that term has been
+said out loud is not better for a variable called `stationary_distribution`
+— `state` or `vector` is the honest name for what the reader has actually
+met so far. Read the surrounding prose, not just the cell in isolation, to
+tell the two cases apart.
 
-**Comments explain why, in the tutorial's own voice, not what the code
-already says.** `# average the two coordinates` on `midpoint = (x1 + x2) /
-2` tells a reader nothing `midpoint`'s own name did not; a comment worth
-having says why this particular step matters or what a reader might
-mistake it for. Not every cell needs one — a cell that is itself the
-prose's worked example, walked through in the paragraphs around it, can
-be more clearly commented needs no repeated commentary inside the code.
-`hint:` (§ above) already carries this weight for a cell meant to make a
-reader think before being told; a comment inside the cell is for
-something worth knowing once you are already reading the code, not a
-second hint competing with the first.
+**Comments explain why, not what the code already says.**
+`# average the two coordinates` on `midpoint = (x1 + x2) / 2` tells a reader
+nothing the name `midpoint` did not already. A comment worth having says why
+this particular step matters, or what a reader might mistake it for — and a
+cell that is itself the prose's worked example, walked through in the
+paragraphs around it, often needs none at all.
 
-**Illustrative code and a "your turn" stub follow different rules from a
-worked cell.** An untagged fence showing what a *finished* version of
-something looks like earns the same naming and comment care as any other
-cell. A stub cell — `# Your code here.`, with nothing to name yet — needs
-none of this: there is no variable to rename in a cell that has none.
+**A "your turn" stub follows none of the naming or comment rules above** —
+there is no variable to name in a cell that has none.
 
 ---
 
 ## 6. Practice pages
 
-Every tutorial has one, at `<slug>-practice.md`, declared with `practice_for:`.
-Sets that draw on several tutorials use `practice_across:` and appear on the
-contents page under their module.
+Every tutorial has one, at `<slug>-practice.md`, declared with
+`practice_for:`. Sets that draw on several tutorials use
+`practice_across:` and appear on the contents page under their module.
 
 **Answers go behind a fold beside the problem**, not in a key at the end:
 
@@ -377,10 +279,10 @@ The answer, with the working.
 </details>
 ```
 
-The `dl-answer` class is load-bearing — the styling and the fold marker come from
-it. The site is public, so an answer that exists can be read and no arrangement
-changes that; what is worth protecting is the moment before looking, and a fold
-is that moment made physical.
+The `dl-answer` class is load-bearing — the styling and the fold marker
+come from it. The site is public, so an answer that exists can be read, and
+no arrangement changes that; what is worth protecting is the moment before
+looking, and a fold is that moment made physical.
 
 **Hints go in a fold of their own, before the answer**, for problems where a
 student can get genuinely stuck:
@@ -400,28 +302,25 @@ student can get genuinely stuck:
 ```
 
 Two folds, opened in order, so a stuck student gets a route rather than the
-answer. The reflection and the follow-on question at the end matter as much as
-the steps — a hint that ends at the answer teaches the answer, and one that ends
-in a related question teaches the method.
+answer. A hint that ends at the answer teaches the answer; one that ends in
+a related question teaches the method.
 
 **A few tools per section, not a cell per problem.** One `python exec` cell
-holding the helpers that section needs. Sixty editors on a page is a slow page,
-and a cell under every question invites running it instead of thinking.
+holding the helpers that section needs. Sixty editors on a page is a slow
+page, and a cell under every question invites running it instead of
+thinking.
 
-**Answers are shown with complete working.** Every step, including the ones that
-look obvious. Note the common mistake where there is one, and give the second
-method where a second method is illuminating.
-
-**Every number in an answer gets run before it is published.** Twenty-one wrong
-numbers were caught this way in one afternoon and none of them would have failed
-a test, because no test asserts on prose.
+**Answers are shown with complete working**, every step including the ones
+that look obvious, and **every number gets run before it is published** —
+not reasoned about. A test asserts on code, never on prose, so a wrong
+number in an answer is the one kind of mistake nothing catches for you.
 
 ---
 
 ## 7. Terminology
 
-Moving between mathematics and programming makes some words ambiguous. These are
-settled.
+Moving between mathematics and programming makes some words ambiguous.
+These are settled.
 
 | Use | Not | Because |
 |---|---|---|
@@ -432,48 +331,34 @@ settled.
 
 ---
 
-## 8. Where the two guides disagreed
+## 8. Struggle, effort and self-worth
 
-Recorded rather than silently resolved, because somebody will meet the same
-question again.
+An error can quietly turn into a verdict on the reader instead of staying
+information about a line. This section is about the moment right after a
+mistake, where that turn happens or doesn't.
 
-**Whether "let's" is allowed.** The two versions of Josh's general guide
-disagree — the only substantive difference between them. The earlier one bans
-command language, naming *"Let's do this!"* and *"Now we'll…"* as examples;
-the revised one — Josh's own educational reference document, kept outside this
-repository — narrows the ban to imperatives aimed at the student (*"Solve this
-problem!"*, *"Complete this"*) and asks instead for "welcoming and
-invitational or reflective language, like 'let's try' or 'what happens when'
-or 'how might you'".
+**An error is a fact about a line, not about the person who ran it.** Say
+this directly, where a tutorial is already in the middle of demonstrating
+it, rather than assume the point makes itself.
 
-**The revised one governs.** "Let's" is invitational — it puts the writer and
-the reader on the same side of the problem — and the imperative aimed at the
-student is what actually needed banning. (Reading the earlier guide literally
-would also have meant rewriting the thirty-five tutorials that already use
-"let's".)
+**Structural before verbal.** A reader who is stuck needs a real place to
+go — the Reference panel, the topic tree, a step back to an earlier
+tutorial — more than a sentence telling them they can do this. Naming the
+route earns more trust than naming the feeling alone, for the same number
+of words.
 
-**Bibliographies.** Josh's guide requires one in every tutorial, naming Khan
-Academy, 3Blue1Brown, StatQuest, Computerphile, Ben Eater, Sebastian Lague and
-others as the sources to prefer. 49 of 60 tutorials have one now, as a "Where
-to Read More" section at the foot, but depth is uneven — some carry the three
-or four genuinely useful entries the guide asks for, others a single link.
-What remains is an audit: which of the 49 are thin, and closing the gap on the
-eleven that have none.
+**Name the feeling, then hand over the route.** *Frustrated*, *stuck*,
+*unsure what to do next* are fine to say plainly, and better than talking
+around them. What is not fine is naming a feeling and leaving it to float
+with nothing under it.
 
-**Stating learning outcomes at the start.** Josh's guide asks for them
-explicitly; dewlab puts them in frontmatter under `covers:`, where the build and
-the curriculum map read them and the student never sees them. The revised guide
-softens this to "when relevant". Whether a student-visible outcome line is worth
-adding is an open question for Josh — it would be a build change and a line on
-every page.
+**Ration this.** Said once, at the place a tutorial is already
+demonstrating it, this stays a real statement. Said in every tutorial's
+error message, it becomes exactly the kind of maxim a reader learns to skim
+past.
 
-**The `check()` example.** The earlier dewlab guide showed
-`from tutorial_tools import check`. Unnecessary and now removed from this guide;
-see section 5.
-
-**The fold markup.** The earlier dewlab guide showed a bare
-`<details><summary>Check solution</summary>`. The class is required; see section
-6.
+**The test.** Whether a reader who is stuck has somewhere real to go, not
+only something reassuring to read.
 
 ---
 
@@ -482,98 +367,25 @@ see section 5.
 - Is the opening welcoming, and does it say why this is worth an hour?
 - Can a student click **Run** and see something happen within a minute of
   arriving?
-- Does the code produce something visible — a plot, a table, a number that means
-  something?
+- Does the code produce something visible — a plot, a table, a number that
+  means something?
 - Are the cell ids unique, lowercase, hyphenated, and stable?
-- Is every technical term defined where it first appears, and italicised once?
-- Does the frontmatter declare `covers:` for what is taught and `touches:` for
-  what is referenced?
+- Is every technical term defined where it first appears, and italicised
+  once?
+- Does the frontmatter declare `covers:` for what is taught and `touches:`
+  for what is referenced?
 - Are the explanations prose rather than bullets?
 - Read each sentence back: does every clause survive a shorter version, and
   does it still sound right said aloud?
-- Does every definition open with a subject and a verb, and say what the thing
-  is before what it is not?
-- Is any metaphor carrying the meaning rather than illustrating it? Any idiom
-  that assumes Irish or British English?
-- Any idiom from another dialect, or a rare word where a common one would do?
-- Where something happens in a sequence, is the sequence marked — first, then,
-  then — rather than folded into one clause?
-- Any reversal that makes the reader hold a negative before they have anything
-  to hold it against?
-- Is a claim stated flatly that is not actually a binary?
+- Any idiom that assumes Irish or British English, or a rare word where a
+  common one would do?
 - Any command language aimed at the student? Any emoji?
 - Has every number in the tutorial and its practice page actually been run?
 - Does the practice page exist, and do hard problems carry a stepped hint?
-- Is there a bibliography, with three or four genuinely useful entries rather
-  than one placeholder link? (Uneven across the site — see section 8.)
-- Where a mistake or a stuck moment is named, is a real next step named with
-  it — the Reference panel, the topic tree, a step back — not only the fact
-  that it is normal? See section 11.
-
----
-
-## 10. Sources
-
-The pedagogy this rests on:
-
-Freire, P. (1970). *Pedagogy of the Oppressed.* Continuum.
-
-Dewey, J. (1938). *Experience and Education.* Kappa Delta Pi.
-
-Kohn, A. (1993). *Punished by Rewards.* Houghton Mifflin.
-
-hooks, b. (1994). *Teaching to Transgress: Education as the Practice of
-Freedom.* Routledge.
-
-Finn, P. J. (1999). *Literacy with an Attitude: Educating Working-Class Children
-in Their Own Self-Interest.* SUNY Press.
-
-Moses, R. P. and Cobb, C. E. (2001). *Radical Equations: Civil Rights from
-Mississippi to the Algebra Project.* Beacon Press.
-
-QQI (Quality and Qualifications Ireland). Level 5 award requirements and module
-descriptors. <https://www.qqi.ie/>
-
-Sources to prefer when writing a tutorial's own bibliography: 3Blue1Brown for
-visual mathematics, StatQuest for statistics, Computerphile for computer science
-concepts, Ben Eater for architecture and low-level work, Sebastian Lague for
-algorithms, Welch Labs for machine learning, and Khan Academy or MDN for
-straightforward reference. Cite the original paper or a textbook where one
-exists.
-
----
-
-## 11. Struggle, effort and self-worth
-
-Kohn (section 1, section 10) argues that external evaluation — grades, praise,
-punishment — trains a person to read any judgment of their work as a judgment
-of themselves. Section 2's refusal to score anything already acts on that
-argument; this section carries it one step further, to the moment right after
-a mistake, where an error can still quietly turn into a verdict on the reader
-rather than staying information about a method.
-
-**An error is a fact about a line, not about the person who ran it.** Say this
-directly, where a tutorial is already in the middle of demonstrating it —
-`when-it-goes-wrong.md`'s opening is the house example — rather than assume
-the point makes itself. Being wrong is cheap; it should not also be shameful,
-and the second half needs saying at least once as plainly as the first.
-
-**Structural before verbal.** A reader who is stuck needs a real place to go —
-the Reference panel, the topic tree, a step back to an earlier tutorial —
-more than a sentence telling them they can do this. Naming the route earns
-more trust than naming the feeling alone, and costs the same number of words.
-`docs/FOR_STUDENTS.md`'s "If a Page Stops Making Sense" is the house example.
-
-**Name the feeling, then hand over the route.** *Frustrated*, *stuck*, *unsure
-what to do next* are fine to say plainly, and better than talking around them.
-What is not fine is naming a feeling and leaving it to float with nothing
-under it. Say what it feels like, then say the concrete next step, in that
-order.
-
-**Ration this too.** Said once, at the place a tutorial is already
-demonstrating it, this stays a real statement. Said in every tutorial's error
-message, it becomes exactly the aphorism the "Plain language" rules above
-already warn against — a maxim a reader learns to skim past.
-
-**The test.** Whether a reader who is stuck has somewhere real to go, not only
-something reassuring to read.
+- Where a mistake or a stuck moment is named, is a real next step named
+  with it — not only the fact that it is normal? See §8.
+- If this tutorial's own bibliography is thin, is there a real source to
+  add — Khan Academy or MDN for reference, 3Blue1Brown for visual
+  mathematics, StatQuest for statistics, Computerphile for computer
+  science, Ben Eater for architecture, Sebastian Lague for algorithms? The
+  original paper or a textbook, where one exists, beats all of them.

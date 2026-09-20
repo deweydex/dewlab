@@ -35,6 +35,9 @@
   --dl-panel-bg: #ffffff;
   --dl-shadow: rgba(27, 42, 74, 0.14);
   --dl-highlight-bg: #fbe8a6;
+  --dl-highlight-green: #bfe3c4;
+  --dl-highlight-blue: #bcd8f5;
+  --dl-highlight-pink: #f5cbe0;
 
   --dl-mono: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
 
@@ -62,6 +65,9 @@
   --dl-type-css: #93c5fd;
   --dl-type-js: #f0a8db;
   --dl-highlight-bg: #4a3a12;
+  --dl-highlight-green: #1d3a24;
+  --dl-highlight-blue: #1a3350;
+  --dl-highlight-pink: #4a2138;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -86,6 +92,9 @@
     --dl-type-css: #93c5fd;
     --dl-type-js: #f0a8db;
     --dl-highlight-bg: #4a3a12;
+    --dl-highlight-green: #1d3a24;
+    --dl-highlight-blue: #1a3350;
+    --dl-highlight-pink: #4a2138;
   }
 }
 
@@ -295,11 +304,14 @@ li { margin-bottom: 0.3rem; }
 
 a { color: var(--dl-link); text-underline-offset: 0.15em; }
 
-/* A reader's own marked passage (HIGHLIGHTS_AND_NOTES.md §9). Background
- * only -- text colour stays whatever the surrounding prose already uses,
- * so this never fights a reader's own theme, font, or high-contrast
- * choice; --dl-highlight-bg is picked per theme to keep --dl-fg at or
- * above the WCAG AA 4.5:1 minimum against it. */
+/* A reader's own marked passage. Background only -- text colour stays
+ * whatever the surrounding prose already uses, so this never fights a
+ * reader's own theme, font, or high-contrast choice; --dl-highlight-bg
+ * is picked per theme to keep --dl-fg at or above the WCAG AA 4.5:1
+ * minimum against it. Amber is the default and the one un-migrated
+ * (color-less) saved highlights fall back to; [data-highlight-color]
+ * overrides it for the three the popover's swatch row offers, each with
+ * the same per-theme, AA-checked treatment (test_highlight_colors.py). */
 mark.dl-highlight {
   background: var(--dl-highlight-bg);
   color: inherit;
@@ -307,8 +319,27 @@ mark.dl-highlight {
   cursor: pointer;
 }
 
+mark.dl-highlight[data-highlight-color="green"] { background: var(--dl-highlight-green); }
+mark.dl-highlight[data-highlight-color="blue"] { background: var(--dl-highlight-blue); }
+mark.dl-highlight[data-highlight-color="pink"] { background: var(--dl-highlight-pink); }
+
 mark.dl-highlight:focus-visible {
   outline: 2px solid var(--dl-orange);
+  outline-offset: 1px;
+}
+
+/* Jumping to a highlight from the Notes panel's own list, or from another
+   page's My Notes list -- a brief pulse says "here" the way a search
+   result landing on screen does nowhere else on the site yet. Purely
+   decorative, so the global [data-motion="reduced"]/prefers-reduced-motion
+   rule (this file, top) already zeroes its duration without anything
+   extra needed here. */
+@keyframes dl-highlight-flash {
+  0%, 100% { outline: 2px solid transparent; }
+  25%, 75% { outline: 2px solid var(--dl-orange); }
+}
+mark.dl-highlight.dl-highlight-flash {
+  animation: dl-highlight-flash 1.6s ease-in-out;
   outline-offset: 1px;
 }
 
@@ -1243,18 +1274,25 @@ p code, li code {
   bottom: 0;
 }
 
+/* A child of <body>, not of the panel it resizes -- the panel clips its
+   own overflow (overflow-y: auto, for its own scrolling content), which
+   would have clipped this the moment it tried to reach any higher than
+   the panel's own top edge. Fixed to the viewport instead, spanning the
+   full height, with its own left glued to the panel's current edge
+   (makeEdgeResizable()'s positionHandle()) rather than a CSS side rule --
+   a plain rule only ever knew the panel's resting edge, not wherever a
+   drag or a font-size change had actually put it. Above the corner
+   dock's own z-index (51), so the whole edge is grabbable, including the
+   stretch running past the tab stack that sits above the panel itself. */
 .dl-panel-resize-handle {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
   width: 6px;
+  z-index: 52;
   cursor: col-resize;
   touch-action: none;
-}
-.dl-panel-resize-handle-right {
-  left: auto;
-  right: 0;
 }
 .dl-panel-resize-handle:hover,
 .dl-panel-resize-handle.dl-panel-resize-active {
@@ -1262,6 +1300,12 @@ p code, li code {
   opacity: 0.5;
 }
 
+/* Still used by compose/dewmini.html's own, unrelated Settings panel,
+   which keeps a visible title and close button — shell.html's right-hand
+   panels dropped both (DECISIONS_LOG.md): a corner tab already names the
+   panel it opens, showing that name again inside it said it twice, and
+   the same tab closes it again, so a second control to do that was
+   redundant too. */
 .dl-settings-head {
   display: flex;
   align-items: center;
@@ -1348,8 +1392,19 @@ p code, li code {
   flex-direction: column;
   box-sizing: border-box;
 }
-.dl-corner-dock-tl .dl-corner-stack { width: var(--dl-side); gap: 0.4rem; }
-.dl-corner-dock-tr .dl-corner-stack { width: 12.5rem; align-items: stretch; }
+/* As small as each tab's own label needs, on both sides, rather than a
+   fixed guess wide enough for whatever might open beneath it — a short
+   word in a box built for a much wider panel just left blank space inside
+   its own border. initReference() and initRightPanels() (tutorial-
+   runtime.js) widen a stack inline to match whichever panel is actually
+   open beneath it, and clear that back to this default — max-content, so
+   it never reserves more than this resting row needs — the moment that
+   panel closes. .dl-corner-identity (the wordmark/tree/search block above
+   this stack on the left) keeps its own fixed --dl-side width regardless:
+   that block needs real room to wrap breadcrumb and search text whether
+   or not Reference is open, unlike the tab sitting under it. */
+.dl-corner-dock-tl .dl-corner-stack { width: max-content; gap: 0.4rem; }
+.dl-corner-dock-tr .dl-corner-stack { width: max-content; align-items: stretch; }
 
 /* What the masthead used to hold — wordmark and orientation — now living
    in the top-left dock instead of a separate header bar. .dl-wordmark/
@@ -1366,6 +1421,68 @@ p code, li code {
   padding: 0.4rem 0.7rem 0.7rem;
 }
 .dl-corner-identity .dl-crumbs { max-width: 100%; }
+
+/* A quiet second link under the wordmark, present on every page (the
+   token that positions it, {{ROOT_BASE}}, is already substituted per
+   page type) -- deliberately smaller and unbolded next to .dl-wordmark's
+   own weight, since this is a way *out* to a different kind of page
+   (every highlight and note across every tutorial, all-notes.html), not
+   a second identity competing with the first. */
+.dl-mynotes-link {
+  font-size: 0.78rem;
+  color: var(--dl-muted);
+  text-decoration: none;
+}
+.dl-mynotes-link:hover,
+.dl-mynotes-link:focus-visible {
+  color: var(--dl-orange);
+  text-decoration: underline;
+}
+
+/* My Notes (all-notes.html, write_all_notes_page()): one card per
+   tutorial with something saved, built entirely client-side by
+   my-notes.js since localStorage can't be read at build time. Reuses
+   .dl-highlight-row/.dl-highlight-dot/.dl-highlight-quote/-note from the
+   Notes panel's own list rather than a second set of near-identical
+   rules -- the only difference here is that a row is a real link
+   (my-notes.js builds an <a>, not a <button>), which needs none of its
+   own styling beyond what those classes already give it. */
+.dl-my-notes-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 1rem 0;
+}
+#dl-my-notes-search {
+  flex: 1;
+  min-width: 12rem;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 0.35rem;
+  background: var(--dl-bg);
+  color: var(--dl-fg);
+}
+.dl-my-notes-card {
+  margin: 1.5rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--dl-rule);
+}
+.dl-my-notes-card:first-of-type { border-top: none; padding-top: 0; }
+.dl-my-notes-card h2 { margin: 0 0 0.4rem; font-size: 1.1rem; }
+.dl-my-notes-freeform {
+  white-space: pre-wrap;
+  color: var(--dl-fg);
+  margin: 0 0 0.5rem;
+}
+.dl-my-notes-card .dl-highlight-row {
+  display: flex;
+  text-decoration: none;
+  color: inherit;
+}
 
 /* The where-you-are tree — all tutorials, then this tutorial's own
    module, its series, and, inside the series list, the page's own title
@@ -1463,6 +1580,42 @@ p code, li code {
 /* Desktop-hidden by default; @media (max-width: 34rem) below turns both
    on and hides the six corner tabs they replace. */
 .dl-mobile-fab, .dl-mobile-menu { display: none; }
+
+/* Give Feedback's own door — a report is something you reach for, not a
+   preference, so it isn't a corner-dock tab. Quiet at rest (outlined,
+   like an idle corner tab) rather than the mobile launcher's solid
+   orange, since this one should be findable without demanding attention
+   on every page. Hidden at the same 34rem the corner docks fold into the
+   mobile launcher (shell.html's own comment); the launcher's menu reaches
+   it there instead. */
+.dl-report-fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 51;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--dl-navy);
+  border-radius: 50%;
+  background: var(--dl-panel-bg);
+  color: var(--dl-heading);
+  box-shadow: 0 2px 8px var(--dl-shadow);
+  cursor: pointer;
+}
+.dl-report-fab:hover, .dl-report-fab:focus-visible {
+  border-color: var(--dl-orange);
+  color: var(--dl-orange);
+}
+.dl-report-fab[aria-pressed="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+.dl-report-fab svg { width: 1.1rem; height: 1.1rem; }
 
 /* Filled and lifted, not outlined: a transparent tab over the page's own
    background reads as a stray border, where the mockup's white fill and
@@ -1652,9 +1805,37 @@ p code, li code {
   color: #fff;
 }
 
-/* The head every docked panel already had (title, close button) now
-   carries its own search too where the panel has one, and stays pinned
-   to the panel's own top edge as the sections below it scroll. The
+/* Settings' own tablist — the same shape as Reference's above, reused
+   rather than invented, for Give Feedback / Appearance / Imports &
+   Exports. Words, not icons: none of the three reads unambiguously from a
+   glyph alone, and "Give Feedback" and "Imports & Exports" are longer
+   than Reference's three labels, so this wraps to a second row instead of
+   squeezing them onto one. No margin-top: with the visible title gone
+   (see .dl-settings-head above), this is the sticky head's first real
+   content, and the head's own top padding is already the gap it needs. */
+.dl-settings-tabs { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+.dl-settings-tab {
+  flex: 1 1 auto;
+  font-family: var(--dl-mono);
+  font-size: 0.7rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 3px;
+  background: none;
+  color: var(--dl-fg);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dl-settings-tab[aria-selected="true"] {
+  background: var(--dl-navy);
+  border-color: var(--dl-navy);
+  color: #fff;
+}
+
+/* Pins whatever a panel needs reachable while its own sections scroll
+   below it — Reference and Where you are still keep a title and close
+   button here; Settings keeps its tablist and Appearance's search; Notes
+   and Python, with nothing that needs pinning, don't use this at all. The
    negative margin/top pair pulls this out to the panel's own edges and
    cancels its top padding, then re-applies it here, so the sticky
    element sits flush with the panel's real edge once scrolled. */
@@ -1704,6 +1885,110 @@ p code, li code {
   border-radius: 3px;
   padding: 0.2rem 0.4rem;
 }
+
+/* What Python currently holds — Variables, Functions and Packages in the
+   Python panel, one row per describe_globals() entry (tutorial_tools.py).
+   A plain name/type/summary row, not Reference's definition list: there's
+   no prose to read here, only a name and what it currently is. */
+.dl-variables-list { margin: 0; }
+.dl-variable-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  font-size: 0.82rem;
+  border-top: 1px solid var(--dl-rule);
+}
+.dl-variable-row:first-child { border-top: none; }
+.dl-variable-name {
+  flex: none;
+  font-family: var(--dl-mono);
+  font-weight: 700;
+  color: var(--dl-heading);
+}
+.dl-variable-type {
+  flex: none;
+  color: var(--dl-muted);
+  font-size: 0.72rem;
+}
+.dl-variable-summary {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--dl-muted);
+}
+
+/* Your highlights, in the Notes panel (dl-settings-highlights, shell.html):
+   one row per highlight on this page, a button rather than a link since it
+   scrolls and opens the popover rather than navigating -- the same
+   row shape Variables uses above, with a colour dot standing in for the
+   type column. */
+.dl-highlight-list { margin: 0; }
+.dl-highlight-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.4rem 0;
+  border-top: 1px solid var(--dl-rule);
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.dl-highlight-row:first-child { border-top: none; }
+.dl-highlight-row:hover .dl-highlight-quote,
+.dl-highlight-row:focus-visible .dl-highlight-quote {
+  color: var(--dl-orange);
+}
+.dl-highlight-dot {
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-top: 0.25em;
+  border-radius: 50%;
+  background: var(--dl-highlight-bg);
+}
+.dl-highlight-dot[data-highlight-color="green"] { background: var(--dl-highlight-green); }
+.dl-highlight-dot[data-highlight-color="blue"] { background: var(--dl-highlight-blue); }
+.dl-highlight-dot[data-highlight-color="pink"] { background: var(--dl-highlight-pink); }
+.dl-highlight-text {
+  flex: 1;
+  min-width: 0;
+}
+.dl-highlight-quote {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--dl-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dl-highlight-note {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--dl-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Packages, collapsed by default (dl-settings-packages, shell.html): what
+   a page has imported is rarely what a reader opened this panel to check,
+   unlike Variables and Functions above it. */
+.dl-panel-details { margin-top: 0.6rem; }
+.dl-panel-details summary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--dl-heading);
+}
+.dl-panel-details[open] summary { margin-bottom: 0.5rem; }
 
 .dl-note {
   border-left: 2px solid var(--dl-navy);
@@ -2260,8 +2545,6 @@ p code, li code {
   line-height: 1.5;
   overflow-y: hidden;
 }
-.dl-progress-notes-hint { margin-top: 0.35rem; }
-
 /* Saving, exporting and starting again — the "Your work" section of the
    settings panel. */
 .dl-progress-state { margin: 0 0 0.6rem; font-size: 0.9rem; }
@@ -2325,9 +2608,12 @@ p code, li code {
   /* One launcher instead of six floating tabs — a thumb has room for one
      button, not six. Every panel a tab used to open opens from the
      launcher instead (initMobileLauncher(), tutorial-runtime.js); the
-     tree opens from it too, as its own sheet. */
+     tree opens from it too, as its own sheet. Give Feedback's own circle
+     folds into the same launcher rather than floating a second circle
+     next to it. */
   .dl-corner-dock-tr,
-  .dl-corner-dock-tl .dl-reference-toggle {
+  .dl-corner-dock-tl .dl-reference-toggle,
+  .dl-report-fab {
     display: none;
   }
 
@@ -3291,11 +3577,11 @@ p code, li code {
   a { color: #1b2a4a !important; text-decoration: underline; }
 }
 
-/* .dl-highlight-btn (HIGHLIGHTS_AND_NOTES.md §5) shares this look but not
-   this selector -- test_reference.py asserts against `.dl-lookup`
-   specifically, and it and the highlight button are independently
-   positioned/hidden `position: fixed` elements, not one toolbar with a
-   shared wrapper (initReferenceLookup()'s own comment says why). */
+/* .dl-highlight-btn shares this look but not this selector --
+   test_reference.py asserts against `.dl-lookup` specifically, and it
+   and the highlight button are independently positioned/hidden
+   `position: fixed` elements, not one toolbar with a shared wrapper
+   (initReferenceLookup()'s own comment says why). */
 .dl-lookup,
 .dl-highlight-btn {
   position: fixed;
@@ -3330,9 +3616,9 @@ p code, li code {
   .dl-lookup, .dl-highlight-btn, .dl-highlight-popover { display: none !important; }
 }
 
-/* The edit/remove popover on an existing highlight (HIGHLIGHTS_AND_NOTES.md
-   §7) -- fixed and viewport-clamped the same way the two buttons above are,
-   just larger, since it holds a textarea rather than one line of label. */
+/* The edit/remove popover on an existing highlight -- fixed and
+   viewport-clamped the same way the two buttons above are, just
+   larger, since it holds a textarea rather than one line of label. */
 .dl-highlight-popover {
   position: fixed;
   z-index: 46;
@@ -3344,6 +3630,34 @@ p code, li code {
   color: var(--dl-fg);
   box-shadow: 0 2px 8px var(--dl-shadow);
   font-family: var(--dl-font-family);
+}
+
+/* The colour swatch row: a plain radiogroup of four round buttons, each
+   filled with the colour it sets, the same shape .dl-seg's roving-tabindex
+   buttons already use elsewhere in a panel -- reused here rather than
+   invented fresh, even outside a panel. */
+.dl-highlight-popover-colors {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.dl-highlight-popover-color {
+  width: 1.35rem;
+  height: 1.35rem;
+  padding: 0;
+  border: 1px solid var(--dl-panel-border, var(--dl-muted));
+  border-radius: 50%;
+  background: var(--dl-highlight-bg);
+  cursor: pointer;
+}
+.dl-highlight-popover-color[data-highlight-color="green"] { background: var(--dl-highlight-green); }
+.dl-highlight-popover-color[data-highlight-color="blue"] { background: var(--dl-highlight-blue); }
+.dl-highlight-popover-color[data-highlight-color="pink"] { background: var(--dl-highlight-pink); }
+
+.dl-highlight-popover-color[aria-checked="true"] {
+  outline: 2px solid var(--dl-orange);
+  outline-offset: 1px;
 }
 
 .dl-highlight-popover-note {

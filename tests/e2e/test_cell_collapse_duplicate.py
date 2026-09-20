@@ -72,8 +72,7 @@ class TestCollapse:
         assert not is_collapsed(page, "plain-python")
 
     def test_output_stays_visible_while_collapsed(self, clean_storage):
-        """Collapsing hides the code, not the result it produced
-        (planning/CELL_IDENTITY.md §4)."""
+        """Collapsing hides the code, not the result it produced."""
         page = clean_storage
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-run")
         page.wait_for_function(

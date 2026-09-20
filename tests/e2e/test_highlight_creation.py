@@ -1,7 +1,7 @@
-"""planning/HIGHLIGHTS_AND_NOTES.md §5, rollout step 5: the selection
-toolbar's Highlight button -- the first reader-facing way to actually make
-a highlight, wired to the anchoring (step 2), schema (step 3), and DOM
-wrapping (step 4) rollout steps built before it.
+"""Rollout step 5: the selection toolbar's Highlight button -- the
+first reader-facing way to actually make a highlight, wired to the
+anchoring (step 2), schema (step 3), and DOM wrapping (step 4) rollout
+steps built before it.
 
 Every fixture here is prose-only, so tutorial-runtime.js never boots
 Pyodide for these pages -- unlike most of tests/e2e/, this file runs

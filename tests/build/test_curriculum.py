@@ -16,16 +16,22 @@ from helpers import *  # noqa: F401,F403
 from helpers import DEWLAB, FRONTMATTER, CELL, COURSE, SERIES, b
 
 class TestTheKnowledgeMap:
-    def series(self, repo, count=4, covers=True):
+    def series(self, repo, monkeypatch, count=4, covers=True):
         strands = ["programming", "programming", "algorithms", "algebra"]
         codes = ["PDP-LO4", "PDP-LO6", "MIT-6.3", "MIT-1.6"]
         (repo / "planning" / "curriculum").mkdir(parents=True, exist_ok=True)
-        (repo / "planning" / "curriculum" / "outcomes.yaml").write_text(
+        outcomes_path = repo / "planning" / "curriculum" / "outcomes.yaml"
+        outcomes_path.write_text(
             "outcomes:\n" + "".join(
                 f"  - code: {c}\n    title: t\n    strand: {s}\n"
                 for c, s in zip(codes, strands)
             )
         )
+        # OUTCOME_DATA is bound to the real project root at import time, so
+        # the `repo` fixture's own ROOT monkeypatch never touches it —
+        # without this, every test here would silently read this repo's
+        # own real outcomes.yaml instead of the fake one just written above.
+        monkeypatch.setattr(b, "OUTCOME_DATA", outcomes_path)
         for n in range(1, count + 1):
             block = ""
             if covers:
@@ -45,23 +51,23 @@ class TestTheKnowledgeMap:
                           page.read_text() if page.is_file() else "", re.DOTALL)
         return match.group(0) if match else ""
 
-    def test_a_series_too_short_to_have_a_shape_gets_none(self, repo):
-        self.series(repo, count=2)
+    def test_a_series_too_short_to_have_a_shape_gets_none(self, repo, monkeypatch):
+        self.series(repo, monkeypatch, count=2)
         b.build()
         assert self.svg(repo) == ""
 
-    def test_it_still_builds_without_the_curriculum_data(self, repo):
+    def test_it_still_builds_without_the_curriculum_data(self, repo, monkeypatch):
         # Without outcome data there is no topic tree — but the tutorial map
         # does not need it.
-        self.series(repo, covers=False)
+        self.series(repo, monkeypatch, covers=False)
         (repo / "planning" / "curriculum" / "outcomes.yaml").unlink()
         b.build()
         assert (repo / "site" / "index.html").is_file()
 
-    def test_a_series_of_four_gets_a_map_and_naming_an_earlier_tutorial_draws_an_arrow_back(self, repo):
+    def test_a_series_of_four_gets_a_map_and_naming_an_earlier_tutorial_draws_an_arrow_back(self, repo, monkeypatch):
         """Four tutorials in one series, the last naming the first: a map of
         linked nodes in lanes from the curriculum data, plus one arrow back."""
-        self.series(repo)
+        self.series(repo, monkeypatch)
         path = tutorial_path(repo, "t4")
         path.write_text(path.read_text() + "\nWe used this in Tutorial 1.\n")
         b.build()
@@ -79,9 +85,9 @@ class TestTheKnowledgeMap:
         # Naming an earlier tutorial draws an arrow back to it.
         assert 'class="dl-map-back"' in svg
 
-    def test_the_tutorial_just_before_does_not_get_a_second_arrow(self, repo):
+    def test_the_tutorial_just_before_does_not_get_a_second_arrow(self, repo, monkeypatch):
         """The reading-order arrow already says that one."""
-        self.series(repo)
+        self.series(repo, monkeypatch)
         path = tutorial_path(repo, "t4")
         path.write_text(path.read_text() + "\nAs in Tutorial 3.\n")
         b.build()

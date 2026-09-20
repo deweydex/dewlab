@@ -218,8 +218,8 @@ Its two issue links carry two fields `build.py` can't know ahead of time —
 the cell's current code and output — filled in by `updateCellReportLinks()`
 once, at the moment the panel opens.
 
-**Staged hints** (`planning/CELL_HINTS.md`) are the one place the page
-reacts to how a cell's runs have gone, not only the latest one. `build.py`
+**Staged hints** are the one place the page reacts to how a cell's runs
+have gone, not only the latest one. `build.py`
 turns a ```` ```hint ```` fence into a hidden `<details
 class="dl-hint dl-hint-staged">` fold carrying `data-cell` and a canonical
 `data-after` (`errors:5`, `same-errors:3 minutes:2`, …), and reads an
@@ -381,13 +381,12 @@ to `tutorial_tools.py`'s `_run_sql_cell()` against a shared `sqlite3`
 connection (`db`) and runs it through `pyodide-engine.js` like any other
 Python — SQL and Python share one engine; only JavaScript gets a second.
 
-**dewmini is a workbench, not one column** (design in
-`planning/DEWMINI_WORKBENCH.md`). Notebooks open in tabs (`notebooks[]` in
-`dewmini.js`, with `cells` re-pointed at whichever is active), and two
-docked rails sit either side: a **Workbench** (left) carrying a live
-variable inspector, notes and a file manager, and a **Library** (right)
-carrying the cross-tutorial reference, a dataset catalogue, help text, and
-Settings.
+**dewmini is a workbench, not one column.** Notebooks open in tabs
+(`notebooks[]` in `dewmini.js`, with `cells` re-pointed at whichever is
+active), and two docked rails sit either side: a **Workbench** (left)
+carrying a live variable inspector, notes and a file manager, and a
+**Library** (right) carrying the cross-tutorial reference, a dataset
+catalogue, help text, and Settings.
 
 A tab need not hold a notebook of cells at all. The file manager's
 `openWorkspaceFile()` can open a real workspace file directly: a `.py` as

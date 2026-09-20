@@ -45,9 +45,9 @@ FENCE_RE = re.compile(r"^\s*```", re.MULTILINE)
 def today_release() -> str:
     """A converted notebook's first release, dated today.
 
-    A version is a release date now, not a counter (planning/VERSIONS.md), and
-    a notebook arriving from everlearning is being released for the first time
-    on the day it is converted."""
+    A version is a release date, not a counter, and a notebook arriving
+    from everlearning is being released for the first time on the day it
+    is converted."""
     return datetime.date.today().strftime("%Y.%m.%d") + ".1"
 
 

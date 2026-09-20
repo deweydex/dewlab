@@ -6,7 +6,7 @@ Formal architectural specifications covering the authoring editor capabilities, 
 
 ## 1. Authoring Editor Capabilities
 
-The browser-based authoring editor (`planning/EDITOR.md`) provides dual capabilities:
+The browser-based authoring editor provides dual capabilities:
 1. **Series Structure Management**: Reordering, inserting, and creating tutorials with automated `order.yaml` branch commits.
 2. **Content & Cell Editing**: In-place editing of Markdown prose, frontmatter metadata, and executable Python code cells.
 

@@ -5,8 +5,7 @@ A verbatim, unedited copy-in from `deweydex/dewstack`, taken at commit
 report doors off"). Not built, not linked, not live — `build.py` only
 globs `tutorials/`, not `staging/`, so nothing here reaches `site/`.
 
-See `planning/DEWSTACK_MERGE.md` for what this is for and the phased plan
-that reads from it. In short: this folder is the source material for
+This folder is the source material for
 porting dewstack's `data` and `web` tracks into dewlab's own
 `tutorials/database-methods/` and `tutorials/web-authoring/`, and the
 engine files (`assets/site-editor.js`, `assets/sql-cell.js`,
@@ -27,7 +26,7 @@ repository throughout.
 - `tutorials/data/` — 12 pages, the source for `database-methods`.
 - `tutorials/web/` — 30 pages, the source for `web-authoring`.
 - `tutorials/full-stack/` — the one page dewstack has so far; reference
-  only, not scheduled for porting yet (`planning/DEWSTACK_MERGE.md` §2).
+  only, not scheduled for porting yet.
 - `tutorials/modules.yaml` — dewstack's own module ordering, for
   reference when deciding dewlab's `database-methods`/`web-authoring`
   ordering.

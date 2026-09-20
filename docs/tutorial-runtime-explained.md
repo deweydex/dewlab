@@ -40,8 +40,13 @@ close to self-contained:
   worker/main-thread split `pyodide-engine.js` uses.
 - **Illustrative code and maths** — syntax highlighting for read-only code
   blocks, and KaTeX for rendered maths.
-- **Saved work** — autosaving a student's cells and notes, and restoring
-  them.
+- **Saved work** — autosaving a student's cells, notes and highlights, and
+  restoring them.
+- **Highlights and margin notes** — marking a passage of prose, in one of
+  four colours, with an optional note attached; a live list of them in
+  the Notes panel (`refreshHighlightsList()`), and a cross-page summary
+  at `all-notes.html` built from the same saved records by a separate
+  file, `assets/my-notes.js`.
 - **Progress** — the "3 of 8 cells run" summary and the contents-page
   badges.
 - **Versions** — for a tutorial with more than one release: which one a
@@ -74,8 +79,8 @@ specifically:
 
 ## Custom cells: a second, deliberately separate cell system
 
-`planning/PRACTICE.md` §3 asks for a way a reader can add their own
-Python cell to a page — not one the tutorial's author wrote, one the
+A reader can add their own Python cell to a page — not one the tutorial's
+author wrote, one the
 reader typed themselves, for trying something out or writing a practice
 problem of their own. The whole "custom cells" section (roughly
 `CUSTOM_CELLS_PREFIX` through `initCustomCellsSection()`) exists to do
@@ -89,7 +94,7 @@ functions (`loadCustomCells()`/`saveCustomCells()`/
 them or get called by them.
 
 That separation isn't laziness — it's the simplest way to guarantee two
-things `PRACTICE.md` explicitly requires: a custom cell can't collide
+things this feature requires: a custom cell can't collide
 with a real cell's id (its id always starts with `custom-`, which no
 tutorial author would ever write), and a custom cell survives a tutorial
 version change completely untouched (it was never part of the versioned
@@ -168,8 +173,8 @@ carrying that anchor, also read straight from the DOM.
 If a saved cell's anchor no longer matches any real cell — the tutorial
 was updated and that particular cell is gone — `initCustomCellsSection()`
 falls back to `TRAILING_ANCHOR` rather than dropping the custom cell.
-This fallback is the concrete mechanics behind PRACTICE.md §3's "must
-survive a version change untouched": the cell and its code are never at
+This fallback is the concrete mechanics behind a custom cell surviving a
+version change untouched: the cell and its code are never at
 risk, only its position can degrade to the general section.
 
 ---
@@ -204,11 +209,11 @@ keep already cover the full page, and the Settings panel note says so.
 ## The pill, the run line, collapse, Duplicate, the "⋯" run menu, and Restart & run all
 
 Several pieces ported from `compose/dewmini.js`, once that file had
-already proven them out (`planning/CELL_IDENTITY.md`): a numbered,
-coloured identity pill (`Cell N` plus its type); a single merged run
-line reporting order, duration, and staleness together; "Run
-above"/"Run below"; and Settings' "Restart & run all". They didn't move
-wholesale — dewmini's `cells` array holds a plain `.content` string kept
+already proven them out: a numbered, coloured identity pill (`Cell N`
+plus its type); a single merged run line reporting order, duration, and
+staleness together; "Run above"/"Run below"; and Settings' "Restart &
+run all". They didn't move wholesale — dewmini's `cells` array holds a
+plain `.content` string kept
 in sync by hand, while this file's cells only ever ask their own
 CodeMirror editor for its current value (`getCode()`), so `isStale()`
 here compares against that instead of a mirrored field; and dewmini's
@@ -223,9 +228,9 @@ one caller that must *not* reset the namespace first.
 The run line (`.dl-cell-runline`, `renderCellRunLine()`) replaced what
 used to be two separate elements — a `.dl-cell-stats` span ("Ran in
 340 ms") and a `.dl-cell-stale-badge` ("edited since last run") shown or
-hidden independently. `planning/CELL_IDENTITY.md` §3 folds them into one
-line because a reader reads them together anyway: "Ran 1st in 340 ms",
-or with the edit flag, "Ran 1st in 340 ms — edited since". The run order
+hidden independently. They're folded into one line here because a
+reader reads them together anyway: "Ran 1st in 340 ms", or with the
+edit flag, "Ran 1st in 340 ms — edited since". The run order
 (`ranOrder`, from a module-level `runSequenceCounter`) is new here —
 tutorial pages previously had no notion of *when*, relative to other
 cells, a given cell last ran, only whether its output matched its
@@ -313,10 +318,10 @@ collapse, Duplicate) onto `build.py`'s existing `.dl-cell-head`/
 *after* both the editor and the output, where dewmini's own footbar sits
 *between* them. A reader who had just learned "Run is under the code" in
 dewmini found it somewhere else entirely on a tutorial page — one of a
-short list of small, real mismatches `planning/CELL_IDENTITY.md` §9
-catalogues and closes. `render_cell()` now emits three rows in the order
-dewmini's own cells already use — `.dl-cell-head` (identity: the pill, an
-optional `.dl-cell-name`, then Duplicate), `.dl-cell-body-row` (the
+short list of small, real mismatches now closed. `render_cell()` now
+emits three rows in the order dewmini's own cells already use —
+`.dl-cell-head` (identity: the pill, an optional `.dl-cell-name`, then
+Duplicate), `.dl-cell-body-row` (the
 collapse triangle and the editor), `.dl-cell-footbar` (Run, Reset, Clear,
 the run menu, the run line) — with `.dl-output` last. `createCustomCellElement()`
 here builds the same three rows by hand for a reader's own cells, since
@@ -351,7 +356,7 @@ buttons" row (`data-texture="buttons"`, `TEXTURE_DEFAULTS.buttons`,
 no markup rewrite per mode. It rides the same generic `initTexture()`
 machinery every other Texture row already uses, so no new Settings
 wiring function was needed — only the row itself
-(`assets/shell.html#dl-settings-texture`) and the two lines in
+(`assets/shell.html#dl-settings-code-texture`) and the two lines in
 `applyTexture()` that set or clear the attribute. `setBtnLabel()`/
 `getBtnLabel()` here read or write a button's `.dl-btn-label` span
 directly, since setting `.textContent` on the button itself would erase
@@ -375,14 +380,22 @@ input beside its pill — see `docs/dewmini-js-explained.md` for that half.
 
 ## Two patterns worth understanding on their own
 
-**Five panels, one rule.** The five right-hand panels (Notes, Report,
-Python, Appearance, Imports & Exports — `RIGHT_PANELS`) are separate,
-independent UI components — but opening any one of them always closes the
-other four, since they share one edge of the screen. There's no shared
-"panel manager" object making that happen; each panel's own `setOpen(true)`
-just calls `closeRightPanels(itsOwnName)` directly. The Reference panel on
-the left is not in that group: it has its own edge, so it can stay open
-alongside any of the five.
+**Four panels, one rule; three of them one width.** The four right-hand
+panels (Notes, Python, Settings — Appearance/Behavior/Imports & Exports
+behind one tablist-switched toggle — and Report, `RIGHT_PANELS`) are
+separate, independent UI components — but opening any one of them always
+closes the other three, since they share one edge of the screen. There's
+no shared "panel manager" object making that happen; each panel's own
+`setOpen(true)` just calls `closeRightPanels(itsOwnName)` directly. The
+Reference panel on the left is not in that group: it has its own edge, so
+it can stay open alongside any of the four. Notes, Python and Settings
+also share one saved width (`RIGHT_DOCK_WIDTH_KEY`, not each panel's own
+DOM id) — dragging any one's edge applies the new width to the other two
+right away, so a reader switching which tab is open never sees the dock,
+and the reading column beside it, resize. Report sits under its own fixed
+circle rather than the corner dock (`dockLinked`, `initRightPanels()`
+below), so it shares the open/close/Escape/outside-click machinery but
+never that width.
 
 **Live-then-static code intelligence, worker-or-main-thread.** Hover docs
 and autocomplete work by trying two different techniques and taking
@@ -394,6 +407,51 @@ actually running on — inside the Worker for the hosted site, or right
 here on the main thread for the offline export — which is why there are
 two near-identical implementations of the same lookup functions
 (`docFor`-style vs. `docForMT`-style) rather than one.
+
+---
+
+## Highlights: colour, the Notes panel's own list, and My Notes
+
+A highlight anchors to a passage of prose (`locateHighlightAnchor()`,
+`describeQuote()`) rather than a build-time id — see `DECISIONS_LOG.md`
+7.155–7.160 for why that turned out cheap. Everything past that base is
+this file's own addition, built together rather than across six rollout
+steps the way the base feature was:
+
+- **Colour.** `HIGHLIGHT_COLORS` names four (amber the default, then
+  green/blue/pink); a highlight's `color` field rides in the same saved
+  record `note` already does. The popover's swatch row
+  (`initHighlightPopover()`) recolours a mark immediately on click —
+  `recolorHighlight()` sets or clears `[data-highlight-color]` on every
+  `<mark>` sharing that id, since a highlight split across an inline
+  element (`wrapRange()`'s own comment explains when) is more than one
+  `<mark>`. A fresh highlight starts in whichever colour was used last,
+  read back from `localStorage` (`readLastHighlightColor()`) — across
+  every tutorial, not per page, since a reader's own colour scheme is a
+  reader-wide choice.
+- **The Notes panel's own list** (`refreshHighlightsList()`,
+  `renderHighlightRow()`) turns the in-memory `highlights` array into
+  something reviewable: one row per highlight, a colour dot, the quote,
+  and a note preview if there is one. It's also the only place on the
+  page that says highlighting exists at all — nothing about the
+  selection toolbar itself hints at it — so its own copy carries that
+  explanation. Clicking a row calls `jumpToHighlight()`: close the
+  panels, scroll the mark into view, pulse it (`.dl-highlight-flash`,
+  `tutorial-style.css`), and open its popover, the same three things
+  clicking the mark directly does.
+- **My Notes** (`all-notes.html`, `write_all_notes_page()` in `build.py`,
+  `assets/my-notes.js`) is the same idea across every tutorial at once.
+  `localStorage` is shared per origin, not per page, so this page reads
+  every `dewlab:progress:*` record itself, client-side — nothing here
+  needs a server or an account. The one thing storage can't supply is a
+  human title for a bare slug, so the build bakes in a small
+  `{slug: title}` map as a JSON data island (`#dewlab-titles`), the same
+  pattern `tree.js` already uses for its own topic-graph data. A card's
+  own highlight rows link to `tutorials/<slug>.html#dl-highlight-<id>`;
+  landing on that hash (checked once, at boot, after `renderMaths()`
+  settles the page's layout) calls `jumpToHighlight()` again, this time
+  with `openPopover: false` — a reader arriving from a link is visiting a
+  passage to re-read it, not asking to edit it.
 
 ---
 
@@ -439,7 +497,7 @@ two near-identical implementations of the same lookup functions
   and none once `expect:` holds. The counters and which folds have shown
   travel in the saved record (`attempts`, `hints_shown`), and two Settings
   rows (`initStagedHintsToggles()`) decide whether they show at all and
-  whether a restart hides them. planning/CELL_HINTS.md is the design.
+  whether a restart hides them.
 - **"What's actually exposed to the browser console / end-to-end tests?"**
   — the `globalThis.dewlab = {...}` object at the very end of the file.
 - **"Why doesn't a shared custom cell run itself when I load it?"** —

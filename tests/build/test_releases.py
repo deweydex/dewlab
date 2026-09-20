@@ -16,7 +16,7 @@ from helpers import *  # noqa: F401,F403
 from helpers import DEWLAB, FRONTMATTER, CELL, COURSE, SERIES, b
 
 class TestVersionsOfATutorial:
-    """A version is a release, not a save (planning/VERSIONS.md). The
+    """A version is a release, not a save. The
     manifest of every release lists them all: saved answers are matched
     back on cell id, so which survive a move to another release is knowable
     only if the page knows which cells that release has."""

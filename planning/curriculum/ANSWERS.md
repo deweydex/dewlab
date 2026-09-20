@@ -1,6 +1,6 @@
 # Curriculum Scope & Architecture Resolutions
 
-Formal resolution record for the seven core curriculum decisions formulated in `DECISIONS_NEEDED.md`.
+Formal resolution record for the seven core curriculum decisions.
 
 ---
 
@@ -18,7 +18,7 @@ Tutorial 15 maintains its focused treatment of quadratic real roots, linking dir
 
 Numbered titles and filenames were eliminated across the curriculum:
 - Filenames and titles are decoupled from fixed ordinal positions, preventing cascading renames upon insertion.
-- The visual authoring editor (`planning/EDITOR.md`) manages sequence order directly via series order files (`<series>.order.yaml`).
+- The visual authoring editor manages sequence order directly via series order files (`<series>.order.yaml`).
 
 ## 6. Calculus — **Two Focused Tutorials and Application Synthesis**
 
@@ -34,4 +34,4 @@ Tutorials are decomposed into focused, single-concept units with explicit cross-
 
 ## 8. Practice Problems Specification
 
-Architecture for practice problem sets paired with each tutorial, featuring collapsible in-line solutions and section-level verification helpers (`planning/EXERCISES.md`, `planning/PRACTICE.md`).
+Architecture for practice problem sets paired with each tutorial, featuring collapsible in-line solutions and section-level verification helpers (`planning/EXERCISES.md`).
