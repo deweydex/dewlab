@@ -171,16 +171,14 @@ class TestTheReference:
         entry = by_term["gamma"]
         assert entry["origin"]["href"] == "one.html#where-it-is-taught"
 
-    def test_an_unknown_kind_fails_the_build(self, repo):
+    @pytest.mark.parametrize("entry,match", [
+        ({"term": "x", "kind": "vibe", "definition": "Nope."}, "not one of"),
+        ({"term": "x", "kind": "concept"}, "missing a term or a definition"),
+    ])
+    def test_a_malformed_own_glossary_entry_fails_the_build(self, repo, entry, match):
         write(repo, "One.\n", slug="one")
-        glossary(repo, "one", [{"term": "x", "kind": "vibe", "definition": "Nope."}])
-        with pytest.raises(b.BuildError, match="not one of"):
-            b.build()
-
-    def test_an_entry_missing_a_definition_fails_the_build(self, repo):
-        write(repo, "One.\n", slug="one")
-        glossary(repo, "one", [{"term": "x", "kind": "concept"}])
-        with pytest.raises(b.BuildError, match="missing a term or a definition"):
+        glossary(repo, "one", [entry])
+        with pytest.raises(b.BuildError, match=match):
             b.build()
 
 
@@ -189,8 +187,9 @@ class TestMathBasics:
     glossary, so tests monkeypatch MATH_BASICS_DATA directly rather than
     using the `repo` fixture's tutorial layout. The scenarios: a well-formed
     maths file and a well-formed Python file, loaded and both reaching a
-    built page's manifest; the three malformed files that stop the build;
-    and the files this repo ships, maths and Python both. A missing file is
+    built page's manifest; and the files this repo ships, maths and Python
+    both. The three malformed shapes that stop the build are shared with
+    Python Basics and live in TestBasicsValidation below. A missing file is
     covered by TestTheReference's lone tutorial with nothing."""
 
     def _write(self, repo: Path, monkeypatch, text: str) -> Path:
@@ -238,31 +237,6 @@ groups:
             ]},
         ]
 
-    def test_a_group_with_no_label_fails_the_build(self, repo, monkeypatch):
-        self._write(repo, monkeypatch, """
-groups:
-  - entries:
-      - term: Sum
-        definition: Adding.
-""")
-        with pytest.raises(b.BuildError, match="label"):
-            b.load_math_basics()
-
-    def test_a_group_with_no_entries_fails_the_build(self, repo, monkeypatch):
-        self._write(repo, monkeypatch, "groups:\n  - label: Operations\n    entries: []\n")
-        with pytest.raises(b.BuildError, match="no entries"):
-            b.load_math_basics()
-
-    def test_an_entry_missing_a_definition_fails_the_build(self, repo, monkeypatch):
-        self._write(repo, monkeypatch, """
-groups:
-  - label: Operations
-    entries:
-      - term: Sum
-""")
-        with pytest.raises(b.BuildError, match="term or a definition"):
-            b.load_math_basics()
-
     def test_the_shipped_files_are_themselves_well_formed(self):
         # Not monkeypatched: loads the real files this repo ships, guarding
         # against a malformed hand-edit reaching main.
@@ -273,10 +247,12 @@ groups:
 class TestPythonBasics:
     """Same shape and shared validation (_load_basics()) as Math Basics;
     tests mirror TestMathBasics, monkeypatching PYTHON_BASICS_DATA directly.
-    The one difference is an entry's optional `example`, so the well-formed
-    file is loaded here with one and without one; reaching a page's
-    manifest, the missing file and the shipped file are covered alongside
-    the maths ones."""
+    The one difference is an entry's optional `example`: the well-formed
+    file with one example is already exercised by TestMathBasics (which
+    loads a Python file alongside its own and checks both reach the
+    manifest), so this class covers only the file with no example at all.
+    The malformed shapes it shares with Math Basics live in
+    TestBasicsValidation below."""
 
     def _write(self, repo: Path, monkeypatch, text: str) -> Path:
         path = repo / "planning" / "curriculum" / "python-basics.yaml"
@@ -284,22 +260,6 @@ class TestPythonBasics:
         path.write_text(text)
         monkeypatch.setattr(b, "PYTHON_BASICS_DATA", path)
         return path
-
-    def test_a_well_formed_file_loads_its_groups(self, repo, monkeypatch):
-        self._write(repo, monkeypatch, """
-groups:
-  - label: Values
-    entries:
-      - term: String
-        definition: Text, written between quotation marks.
-        example: '"hello"'
-""")
-        assert b.load_python_basics() == [
-            {"label": "Values", "entries": [
-                {"term": "String", "definition": "Text, written between quotation marks.",
-                 "example": '"hello"'},
-            ]},
-        ]
 
     def test_an_entry_with_no_example_is_fine(self, repo, monkeypatch):
         self._write(repo, monkeypatch, """
@@ -315,30 +275,51 @@ groups:
             ]},
         ]
 
-    def test_a_group_with_no_label_fails_the_build(self, repo, monkeypatch):
-        self._write(repo, monkeypatch, """
+
+@pytest.mark.parametrize("attr,filename,loader", [
+    ("MATH_BASICS_DATA", "math-basics.yaml", "load_math_basics"),
+    ("PYTHON_BASICS_DATA", "python-basics.yaml", "load_python_basics"),
+])
+class TestBasicsValidation:
+    """The three malformed shapes _load_basics() rejects, shared by Math
+    Basics and Python Basics alike, so each is checked once here against
+    both files rather than twice in TestMathBasics and TestPythonBasics."""
+
+    def _write(self, repo: Path, monkeypatch, attr: str, filename: str, text: str) -> Path:
+        path = repo / "planning" / "curriculum" / filename
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        monkeypatch.setattr(b, attr, path)
+        return path
+
+    def test_a_group_with_no_label_fails_the_build(
+            self, repo, monkeypatch, attr, filename, loader):
+        self._write(repo, monkeypatch, attr, filename, """
 groups:
   - entries:
-      - term: String
-        definition: Text.
+      - term: Sum
+        definition: Adding.
 """)
         with pytest.raises(b.BuildError, match="label"):
-            b.load_python_basics()
+            getattr(b, loader)()
 
-    def test_a_group_with_no_entries_fails_the_build(self, repo, monkeypatch):
-        self._write(repo, monkeypatch, "groups:\n  - label: Values\n    entries: []\n")
+    def test_a_group_with_no_entries_fails_the_build(
+            self, repo, monkeypatch, attr, filename, loader):
+        self._write(repo, monkeypatch, attr, filename,
+                     "groups:\n  - label: Operations\n    entries: []\n")
         with pytest.raises(b.BuildError, match="no entries"):
-            b.load_python_basics()
+            getattr(b, loader)()
 
-    def test_an_entry_missing_a_definition_fails_the_build(self, repo, monkeypatch):
-        self._write(repo, monkeypatch, """
+    def test_an_entry_missing_a_definition_fails_the_build(
+            self, repo, monkeypatch, attr, filename, loader):
+        self._write(repo, monkeypatch, attr, filename, """
 groups:
-  - label: Values
+  - label: Operations
     entries:
-      - term: String
+      - term: Sum
 """)
         with pytest.raises(b.BuildError, match="term or a definition"):
-            b.load_python_basics()
+            getattr(b, loader)()
 
 
 class TestTheCrossTutorialReference:
@@ -346,30 +327,14 @@ class TestTheCrossTutorialReference:
     protects — a reader is never shown a term not yet reached — because
     dewmini has no position in a series to protect.
 
-    The scenarios: two tutorials whose terms the index carries at once; two
-    tutorials sharing a term, one of which also has a term of two kinds and
-    an entry with an example (what each entry carries, keyed by term); one
-    tutorial whose two terms show the sort order; and the offline bundle."""
+    The scenarios: two tutorials sharing a term, one of which also has a
+    term of two kinds and an entry with an example (what each entry
+    carries, keyed by term, and that the index carries terms from every
+    tutorial at once, not just the first); one tutorial whose two terms
+    show the sort order; and the offline bundle."""
 
     def index(self, repo: Path):
         return json.loads((repo / "site" / "assets" / "reference-index.json").read_text())
-
-    def test_it_carries_terms_from_every_tutorial_at_once(self, repo):
-        # Including a term from a *later* tutorial, which is exactly what a
-        # tutorial page's own panel would hide.
-        write(repo, "One.\n", slug="one")
-        write(repo, "Two.\n", slug="two")
-        set_order(repo, "computational-methods", "python-fundamentals", ["one", "two"])
-        glossary(repo, "one", [
-            {"term": "early", "kind": "concept", "definition": "Taught first."},
-        ])
-        glossary(repo, "two", [
-            {"term": "late", "kind": "function", "definition": "Taught later."},
-        ])
-        b.build()
-
-        terms = {entry["term"] for entry in self.index(repo)}
-        assert terms == {"early", "late"}
 
     def test_each_entry_carries_its_origin_kind_and_example_but_no_link(self, repo):
         write(repo, "One.\n", slug="one")
@@ -386,6 +351,11 @@ class TestTheCrossTutorialReference:
             {"term": "shared", "kind": "concept", "definition": "A later one."},
         ])
         b.build()
+
+        # It carries terms from every tutorial at once, not just the first
+        # — including one taught only in a *later* tutorial, which is
+        # exactly what a tutorial page's own panel would hide.
+        assert {e["term"] for e in self.index(repo)} == {"x", "y", "print", "shared"}
 
         # Each entry names the tutorial that introduced it.
         entry = self.index(repo)[0]

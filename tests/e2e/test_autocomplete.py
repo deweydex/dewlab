@@ -134,7 +134,7 @@ class TestHoverDocs:
 class TestBuiltinTooltips:
     """docFor/signatureFor were widened to also check __builtins__. Uses insert_text() rather than type(), since type()'s real keystrokes trigger closeBrackets/indentOnInput and fight multi-line bodies elsewhere in this class."""
 
-    def test_hovering_a_builtin_shows_its_docstring(self, page):
+    def test_hover_docstring_and_signature_help_both_work_on_a_builtin(self, page):
         cell = cell_content(page, "plain-python")
         cell.click()
         page.keyboard.press("Control+End")
@@ -143,22 +143,12 @@ class TestBuiltinTooltips:
         page.wait_for_selector(".cm-dewlab-doc-tooltip")
         assert "Return the number of items" in page.inner_text(".cm-dewlab-doc-tooltip")
 
-    def test_typing_a_builtin_call_shows_its_signature(self, page):
-        cell = cell_content(page, "plain-python")
-        cell.click()
         page.keyboard.press("Control+End")
         page.keyboard.insert_text("\nlen")
         page.keyboard.type("(")  # the real keystroke closeBrackets reacts to
         page.wait_for_selector(".cm-dewlab-signature-tooltip")
         assert "len(" in page.inner_text(".cm-dewlab-signature-tooltip")
 
-    def test_signature_help_disappears_once_the_call_closes(self, page):
-        cell = cell_content(page, "plain-python")
-        cell.click()
-        page.keyboard.press("Control+End")
-        page.keyboard.insert_text("\nlen")
-        page.keyboard.type("(")
-        page.wait_for_selector(".cm-dewlab-signature-tooltip")
         page.keyboard.type("[1]")
         page.wait_for_selector(".cm-dewlab-signature-tooltip", state="hidden")
 
@@ -185,7 +175,7 @@ class TestPreRunTooltips:
         "average"
     )
 
-    def test_hovering_a_just_written_function_shows_its_docstring(self, page):
+    def test_jedi_answers_hover_docs_and_signature_help_before_a_run(self, page):
         page.wait_for_function("dewlab.jediReady()", timeout=30_000)
         cell = cell_content(page, "plain-python")
         cell.click()
@@ -196,12 +186,7 @@ class TestPreRunTooltips:
         page.wait_for_selector(".cm-dewlab-doc-tooltip")
         assert "Return the mean of numbers" in page.inner_text(".cm-dewlab-doc-tooltip")
 
-    def test_signature_help_works_before_the_cell_has_run(self, page):
-        page.wait_for_function("dewlab.jediReady()", timeout=30_000)
-        cell = cell_content(page, "plain-python")
-        cell.click()
         page.keyboard.press("Control+End")
-        page.keyboard.insert_text(self.SOURCE)
         page.keyboard.type("(")
         page.wait_for_selector(".cm-dewlab-signature-tooltip")
         assert "average(" in page.inner_text(".cm-dewlab-signature-tooltip")

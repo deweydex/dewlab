@@ -107,13 +107,13 @@ def _seed(page, highlight: dict):
     )
 
 
-class TestWrapRange:
-    def test_wraps_a_selection_spanning_a_child_element(self, page):
+class TestWrapAndUnwrapRange:
+    def test_wraps_then_unwraps_a_selection_spanning_a_child_element(self, page):
         # A range from inside the plain text before <em>word</em> to inside
         # the plain text after it -- the exact shape a real reader's
         # selection would have, and the one Range.surroundContents() can't
         # handle in one call.
-        result = page.evaluate(
+        wrap_result = page.evaluate(
             """() => {
                 const block = [...document.querySelectorAll('p')].find(
                     (p) => p.textContent.includes('TARGET-PARAGRAPH')
@@ -133,28 +133,13 @@ class TestWrapRange:
                 };
             }"""
         )
-        assert result["count"] == 3  # "with ", "word", " emphasised"
-        assert result["ids"] == ["h-multi"]
-        assert result["text"] == "with word emphasised"
+        assert wrap_result["count"] == 3  # "with ", "word", " emphasised"
+        assert wrap_result["ids"] == ["h-multi"]
+        assert wrap_result["text"] == "with word emphasised"
         assert "TARGET-PARAGRAPH begins here, with word emphasised right after it." \
-            == result["blockText"]
+            == wrap_result["blockText"]
 
-    def test_unwrap_restores_plain_text_without_touching_the_prose(self, page):
-        page.evaluate(
-            """() => {
-                const block = [...document.querySelectorAll('p')].find(
-                    (p) => p.textContent.includes('TARGET-PARAGRAPH')
-                );
-                const before = block.firstChild;
-                const em = block.querySelector('em');
-                const after = em.nextSibling;
-                const range = document.createRange();
-                range.setStart(before, before.length - 5);
-                range.setEnd(after, 11);
-                dewlab.wrapRange(range, 'h-multi');
-            }"""
-        )
-        result = page.evaluate(
+        unwrap_result = page.evaluate(
             """() => {
                 const removed = dewlab.unwrapHighlight('h-multi');
                 const block = [...document.querySelectorAll('p')].find(
@@ -168,12 +153,12 @@ class TestWrapRange:
                 };
             }"""
         )
-        assert result["removed"] == 3
-        assert result["marksLeft"] == 0
-        assert result["blockText"] == (
+        assert unwrap_result["removed"] == 3
+        assert unwrap_result["marksLeft"] == 0
+        assert unwrap_result["blockText"] == (
             "TARGET-PARAGRAPH begins here, with word emphasised right after it."
         )
-        assert result["emText"] == "word"
+        assert unwrap_result["emText"] == "word"
 
 
 class TestRangeForOffsets:
@@ -221,69 +206,6 @@ class TestRestoredHighlightsRenderVisibly:
         assert "".join(mark.all_inner_texts()) == "a passage worth marking on reload"
 
 
-@pytest.mark.parametrize("scheme", ["light", "dark"])
-def test_a_highlight_meets_aa_against_its_own_background(browser, site_url, scheme):
-    page = browser.new_page(color_scheme=scheme)
-    try:
-        page.goto(f"{site_url}/tutorials/{SLUG}.html")
-        page.wait_for_function("() => !!globalThis.dewlab")
-        anchor = page.evaluate(
-            """() => {
-                const blocks = dewlab.proseBlocks();
-                const block = blocks.find((el) => el.textContent.includes('PLAIN-PARAGRAPH'));
-                const quote = 'a passage worth marking';
-                const start = block.textContent.indexOf(quote);
-                return {
-                    block_index: blocks.indexOf(block),
-                    ...dewlab.describeQuote(block, start, start + quote.length),
-                };
-            }"""
-        )
-        _seed(page, {
-            "id": "h-contrast", "note": "", "created_at": "2026-01-01T00:00:00.000Z", **anchor,
-        })
-        page.reload()
-        page.wait_for_function("() => !!globalThis.dewlab")
-
-        measured = page.evaluate(
-            """() => {
-                const mark = document.querySelector('mark.dl-highlight[data-highlight-id="h-contrast"]');
-                const style = getComputedStyle(mark);
-                return {
-                    color: style.color,
-                    background: style.backgroundColor,
-                    size: parseFloat(style.fontSize),
-                };
-            }"""
-        )
-        color = _parse_rgb(measured["color"])
-        background = _parse_rgb(measured["background"])
-        ratio = _contrast_ratio(color, background)
-        assert measured["size"] < 24
-        assert ratio >= 4.5, (
-            f"{scheme}: highlight text {measured['color']} on {measured['background']} "
-            f"is {ratio:.2f}:1, under the 4.5:1 AA minimum"
-        )
-    finally:
-        page.close()
-
-
-def _channel(value):
-    v = value / 255
-    return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
-
-
-def _relative_luminance(rgb):
-    r, g, bl = (_channel(c) for c in rgb)
-    return 0.2126 * r + 0.7152 * g + 0.0722 * bl
-
-
-def _contrast_ratio(fg, bg):
-    """WCAG's own formula, so the number here is the number that is cited."""
-    high, low = sorted((_relative_luminance(fg), _relative_luminance(bg)), reverse=True)
-    return (high + 0.05) / (low + 0.05)
-
-
-def _parse_rgb(value):
-    inner = value[value.index("(") + 1:value.index(")")]
-    return tuple(int(float(part)) for part in inner.split(",")[:3])
+# AA contrast for a restored highlight, across every highlight colour and
+# both themes, lives in test_contrast.py -- this file owns the DOM mechanics
+# of wrapping and restoring a mark, not the colours it can carry.

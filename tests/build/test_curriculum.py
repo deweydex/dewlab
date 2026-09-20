@@ -308,20 +308,24 @@ class TestNoDuplicateKeysInCurriculumData:
     real prerequisite, with no test noticing since both values were valid
     topic codes."""
 
-    def test_a_repeated_top_level_key_is_rejected(self):
-        with pytest.raises(yaml.YAMLError, match="duplicate key"):
-            b.load_yaml_no_duplicate_keys("one: 1\ntwo: 2\none: 3\n")
-
-    def test_a_repeated_key_inside_a_nested_mapping_is_rejected(self):
-        # The actual shape of the bug: the duplicate was not at the top
-        # level, it was a second `needs:` inside one topic's own entry.
-        text = (
-            "topics:\n"
-            "  T1:\n"
-            "    name: One\n"
-            "    needs: [A]\n"
-            "    needs: [B]\n"
-        )
+    @pytest.mark.parametrize(
+        "text",
+        [
+            pytest.param("one: 1\ntwo: 2\none: 3\n", id="top-level"),
+            pytest.param(
+                # The actual shape of the bug: the duplicate was not at the
+                # top level, it was a second `needs:` inside one topic's own
+                # entry.
+                "topics:\n"
+                "  T1:\n"
+                "    name: One\n"
+                "    needs: [A]\n"
+                "    needs: [B]\n",
+                id="nested",
+            ),
+        ],
+    )
+    def test_a_repeated_key_is_rejected(self, text):
         with pytest.raises(yaml.YAMLError, match="duplicate key"):
             b.load_yaml_no_duplicate_keys(text)
 

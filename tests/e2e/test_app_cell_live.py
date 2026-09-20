@@ -56,12 +56,7 @@ def test_running_the_cell_reads_the_shared_db_and_renders_the_page(page):
     )
     assert names == ["Ada", "Grace"]
     assert page.problems == []
-
-
-def test_the_css_pane_is_scoped_with_scope_not_a_global_rule(page):
-    seed_readers(page)
-    run_app_cell(page)
-    page.wait_for_selector(f"{APP_SELECTOR} #reader-list li")
+    # The css pane is scoped with @scope, not a global rule.
     text = page.eval_on_selector(f"{APP_SELECTOR} .dl-app-style", "el => el.textContent")
     assert text.strip().startswith("@scope (#")
 
@@ -81,6 +76,22 @@ def test_clear_reverts_the_editors_and_clears_the_preview(page):
         f"document.querySelector({js_string(APP_SELECTOR + ' .dl-app-preview')}).children.length === 0"
     )
     assert "edited" not in page.eval_on_selector(
+        f'{APP_SELECTOR} .dl-app-pane[data-lang="html"] .cm-content', "el => el.textContent"
+    )
+
+
+def test_declining_the_clear_confirmation_leaves_the_edit_in_place(page):
+    seed_readers(page)
+    run_app_cell(page)
+    page.wait_for_selector(f"{APP_SELECTOR} #reader-list li")
+
+    page.click(f'{APP_SELECTOR} .dl-app-pane[data-lang="html"] .cm-content')
+    page.keyboard.press("Control+a")
+    page.keyboard.insert_text("<p>edited</p>")
+
+    page.once("dialog", lambda dialog: dialog.dismiss())
+    page.click(f"{APP_SELECTOR} .dl-btn-app-clear")
+    assert "edited" in page.eval_on_selector(
         f'{APP_SELECTOR} .dl-app-pane[data-lang="html"] .cm-content', "el => el.textContent"
     )
 

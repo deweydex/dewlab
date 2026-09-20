@@ -61,21 +61,13 @@ class TestRunLine:
         page = clean_storage
         assert run_line_text(page, "plain-python") == "Not yet run this session"
 
-    def test_appears_after_editing_a_cell_that_already_ran(self, clean_storage):
+    def test_edited_since_marker_appears_after_an_edit_and_clears_on_rerun(self, clean_storage):
         page = clean_storage
         run_cell(page, "plain-python")
         text = run_line_text(page, "plain-python")
         assert text.startswith("Ran ")
         assert "edited since" not in text
 
-        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
-        page.keyboard.press("Control+End")
-        page.keyboard.insert_text("\n# a harmless edit")
-        assert "edited since" in run_line_text(page, "plain-python")
-
-    def test_clears_once_the_cell_is_run_again(self, clean_storage):
-        page = clean_storage
-        run_cell(page, "plain-python")
         page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
         page.keyboard.press("Control+End")
         page.keyboard.insert_text("\n# a harmless edit")
@@ -97,27 +89,23 @@ class TestRunLine:
 
 
 class TestClear:
-    def test_cancelling_the_confirmation_leaves_the_edit_in_place(self, clean_storage):
-        page = clean_storage
-        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
-        page.keyboard.press("Control+End")
-        page.keyboard.insert_text("\n# a harmless edit")
-
-        page.once("dialog", lambda dialog: dialog.dismiss())
-        page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-clear")
-        assert "# a harmless edit" in cell(page, "plain-python").locator(".cm-content").inner_text()
-
-    def test_confirming_puts_the_starter_code_back_and_clears_the_run_line(self, clean_storage):
+    @pytest.mark.parametrize("accept", [False, True])
+    def test_clear_confirmation_dialog(self, clean_storage, accept):
         page = clean_storage
         run_cell(page, "plain-python")
         page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
         page.keyboard.press("Control+End")
         page.keyboard.insert_text("\n# a harmless edit")
 
-        page.once("dialog", lambda dialog: dialog.accept())
+        page.once("dialog", lambda dialog: dialog.accept() if accept else dialog.dismiss())
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-clear")
-        assert "# a harmless edit" not in cell(page, "plain-python").locator(".cm-content").inner_text()
-        assert run_line_text(page, "plain-python") == "Not yet run this session"
+
+        edit_present = "# a harmless edit" in cell(page, "plain-python").locator(".cm-content").inner_text()
+        if accept:
+            assert not edit_present
+            assert run_line_text(page, "plain-python") == "Not yet run this session"
+        else:
+            assert edit_present
 
 
 class TestRunMenu:
@@ -182,18 +170,21 @@ class TestRunAnnouncer:
             timeout=5_000,
         )
 
-    def test_a_successful_run_is_announced(self, clean_storage):
+    @pytest.mark.parametrize(
+        "edit, expected",
+        [
+            (None, "Ran — output below"),
+            ("\nraise ValueError('boom')", "Ran — error"),
+        ],
+    )
+    def test_a_run_is_announced(self, clean_storage, edit, expected):
         page = clean_storage
+        if edit:
+            page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
+            page.keyboard.press("Control+End")
+            page.keyboard.insert_text(edit)
         run_cell(page, "plain-python")
-        self.wait_for_announcement(page, "Ran — output below")
-
-    def test_an_errored_run_is_announced_differently(self, clean_storage):
-        page = clean_storage
-        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
-        page.keyboard.press("Control+End")
-        page.keyboard.insert_text("\nraise ValueError('boom')")
-        run_cell(page, "plain-python")
-        self.wait_for_announcement(page, "Ran — error")
+        self.wait_for_announcement(page, expected)
 
     def test_running_the_same_cell_twice_announces_both_times(self, clean_storage):
         """A live region only announces on a text change, so the same result twice in a row must not go silent the second time."""
@@ -231,3 +222,64 @@ class TestRestartAndRunAll:
         assert "counting: 2" in output_text(page, "plain-python")
         assert "mean:" in output_text(page, "numpy-basics")
         assert run_line_text(page, "plain-python").startswith("Ran ")
+
+    def test_declining_the_confirmation_leaves_python_running(self, clean_storage):
+        page = clean_storage
+        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nonly_the_old_interpreter_has_this = True")
+        run_cell(page, "plain-python")
+
+        _open_panel(page, "#dl-python-toggle")
+        page.once("dialog", lambda dialog: dialog.dismiss())
+        page.click("#dl-restart-run-all")
+
+        page.click(".dl-cell[data-cell-id='numpy-basics'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nprint(only_the_old_interpreter_has_this)")
+        run_cell(page, "numpy-basics")
+        assert "True" in output_text(page, "numpy-basics")
+
+
+class TestRestartPython:
+    """The plain Restart Python button next to Restart & run all — same
+    confirm gate, but it never re-runs anything, so a variable's absence is
+    the only proof a restart actually happened."""
+
+    def test_confirming_clears_the_interpreter(self, clean_storage):
+        page = clean_storage
+        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nonly_the_old_interpreter_has_this = True")
+        run_cell(page, "plain-python")
+
+        _open_panel(page, "#dl-python-toggle")
+        page.once("dialog", lambda dialog: dialog.accept())
+        page.click("#dl-restart-python")
+        page.wait_for_function(
+            "document.querySelectorAll('.dl-btn-run:not([disabled])').length > 0",
+            timeout=240_000,
+        )
+
+        page.click(".dl-cell[data-cell-id='numpy-basics'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nprint('only_the_old_interpreter_has_this' in dir())")
+        run_cell(page, "numpy-basics")
+        assert "False" in output_text(page, "numpy-basics")
+
+    def test_declining_leaves_it_running(self, clean_storage):
+        page = clean_storage
+        page.click(".dl-cell[data-cell-id='plain-python'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nonly_the_old_interpreter_has_this = True")
+        run_cell(page, "plain-python")
+
+        _open_panel(page, "#dl-python-toggle")
+        page.once("dialog", lambda dialog: dialog.dismiss())
+        page.click("#dl-restart-python")
+
+        page.click(".dl-cell[data-cell-id='numpy-basics'] .cm-content")
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nprint(only_the_old_interpreter_has_this)")
+        run_cell(page, "numpy-basics")
+        assert "True" in output_text(page, "numpy-basics")

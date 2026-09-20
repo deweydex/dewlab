@@ -120,23 +120,28 @@ class TestCheckRendering:
         assert "dl-check-fail" in cell.html
         assert "expected 5" in cell.html
 
-    def test_custom_label_is_used(self, cell):
+    def test_custom_label_is_used_and_escaped(self, cell):
         tt.check(1, 1, label="Is the total right?")
         assert "Is the total right?" in cell.html
 
-    def test_label_is_escaped(self, cell):
         tt.check(1, 2, label="<script>bad()</script>")
         assert "<script>bad()</script>" not in cell.html
         assert "&lt;script&gt;" in cell.html
 
 
 class TestStreamedOutput:
-    def test_print_lands_in_the_output_area(self, cell):
+    def test_print_lands_in_the_output_area_and_escapes_markup(self, cell):
         with streaming():
             print("hello")
         cell.close_stream()
         assert "dl-stdout" in cell.html
         assert "hello" in cell.html
+
+        with streaming():
+            print("<b>not bold</b>")
+        cell.close_stream()
+        assert "<b>not bold</b>" not in cell.html
+        assert "&lt;b&gt;" in cell.html
 
     def test_consecutive_prints_share_one_block(self, cell):
         with streaming():
@@ -153,25 +158,17 @@ class TestStreamedOutput:
         cell.close_stream()
         assert cell.html.count("dl-stdout") == 2
 
-    def test_printed_markup_is_escaped_not_rendered(self, cell):
-        with streaming():
-            print("<b>not bold</b>")
-        cell.close_stream()
-        assert "<b>not bold</b>" not in cell.html
-        assert "&lt;b&gt;" in cell.html
-
 
 class TestRenderValue:
     def test_none_renders_nothing(self, cell):
         tt._render_value(None)
         assert cell.html == ""
 
-    def test_other_values_render_as_repr(self, cell):
+    def test_values_render_as_escaped_repr(self, cell):
         tt._render_value(1024)
         assert "1024" in cell.html
         assert "dl-repr" in cell.html
 
-    def test_repr_is_escaped(self, cell):
         tt._render_value("<img src=x onerror=alert(1)>")
         assert "onerror=alert(1)>" not in cell.html
         assert "&lt;img" in cell.html
@@ -368,74 +365,115 @@ class TestRunSqlCell:
             tt._run_sql_cell(conn, "select * from a_table_that_does_not_exist")
         assert cell.html == ""
 
-    def test_a_select_with_no_matching_rows_marks_the_cell_empty(self, cell, conn):
-        tt._run_sql_cell(conn, "create table t (a)")
-        tt._run_sql_cell(conn, "insert into t values (1)")
-        result = tt._run_sql_cell(conn, "select * from t where a = 2")
-        assert len(result) == 0
-        assert tt._current.last_result_empty is True
+    @pytest.mark.parametrize(
+        "script, expected_empty",
+        [
+            pytest.param(
+                "create table t (a); insert into t values (1); "
+                "select * from t where a = 2",
+                True,
+                id="rows_selected_but_none_match",
+            ),
+            pytest.param(
+                "create table t (a); insert into t values (1); select * from t",
+                False,
+                id="rows_match",
+            ),
+            pytest.param(
+                "create table t (a); insert into t values (1)",
+                None,
+                id="non_select_last_statement",
+            ),
+        ],
+    )
+    def test_last_result_empty(self, cell, conn, script, expected_empty):
+        tt._run_sql_cell(conn, script)
+        assert tt._current.last_result_empty is expected_empty
 
-    def test_a_select_with_matching_rows_is_not_marked_empty(self, cell, conn):
-        tt._run_sql_cell(conn, "create table t (a)")
-        tt._run_sql_cell(conn, "insert into t values (1)")
-        tt._run_sql_cell(conn, "select * from t")
-        assert tt._current.last_result_empty is False
+    @pytest.mark.parametrize(
+        "setup_sql, query, expected_match, forbidden_text",
+        [
+            pytest.param(
+                "create table products (a)", "select * from prodcuts",
+                "did you mean 'products'", None,
+                id="table_typo",
+            ),
+            pytest.param(
+                "create table products (price)", "select pricee from products",
+                "did you mean 'price'", None,
+                id="column_typo",
+            ),
+            pytest.param(
+                "create table products (a)", "select * from zzz",
+                None, "did you mean",
+                id="no_close_match",
+            ),
+            pytest.param(
+                "create table t (a)", "select a from t where count(*) > 1",
+                "HAVING instead", None,
+                id="aggregate_in_where",
+            ),
+            pytest.param(
+                "create table t (a)", "select a from t group by a where a > 1",
+                "have to come in this order", None,
+                id="clause_order",
+            ),
+        ],
+    )
+    def test_raises_with_a_specific_hint(
+        self, cell, conn, setup_sql, query, expected_match, forbidden_text
+    ):
+        conn.execute(setup_sql)
+        if expected_match is not None:
+            with pytest.raises(sqlite3.OperationalError, match=expected_match):
+                tt._run_sql_cell(conn, query)
+        else:
+            with pytest.raises(sqlite3.OperationalError) as excinfo:
+                tt._run_sql_cell(conn, query)
+            assert forbidden_text not in str(excinfo.value)
 
-    def test_a_non_select_last_statement_leaves_empty_unset(self, cell, conn):
-        tt._run_sql_cell(conn, "create table t (a); insert into t values (1)")
-        assert tt._current.last_result_empty is None
-
-    def test_a_typo_d_table_name_gets_a_suggestion(self, cell, conn):
-        conn.execute("create table products (a)")
-        with pytest.raises(sqlite3.OperationalError, match="did you mean 'products'"):
-            tt._run_sql_cell(conn, "select * from prodcuts")
-
-    def test_a_typo_d_column_name_gets_a_suggestion(self, cell, conn):
-        conn.execute("create table products (price)")
-        with pytest.raises(sqlite3.OperationalError, match="did you mean 'price'"):
-            tt._run_sql_cell(conn, "select pricee from products")
-
-    def test_no_close_match_adds_no_suggestion(self, cell, conn):
-        conn.execute("create table products (a)")
-        with pytest.raises(sqlite3.OperationalError) as excinfo:
-            tt._run_sql_cell(conn, "select * from zzz")
-        assert "did you mean" not in str(excinfo.value)
-
-    def test_an_aggregate_in_where_is_pointed_at_having(self, cell, conn):
-        conn.execute("create table t (a)")
-        with pytest.raises(sqlite3.OperationalError, match="HAVING instead"):
-            tt._run_sql_cell(conn, "select a from t where count(*) > 1")
-
-    def test_clauses_out_of_order_get_a_note(self, cell, conn):
-        conn.execute("create table t (a)")
-        with pytest.raises(sqlite3.OperationalError, match="have to come in this order"):
-            tt._run_sql_cell(conn, "select a from t group by a where a > 1")
-
-    def test_an_empty_table_explains_itself(self, cell, conn):
-        conn.execute("create table t (a)")
-        tt._run_sql_cell(conn, "select * from t")
-        assert "t has no rows in it yet" in cell.html
-
-    def test_a_filter_that_matched_nothing_reports_the_tables_row_count(self, cell, conn):
-        conn.execute("create table t (a)")
-        conn.execute("insert into t values (1)")
-        tt._run_sql_cell(conn, "select * from t where a = 2")
-        assert "t has 1 row(s) in it" in cell.html
-        assert "Ignoring uppercase" not in cell.html
-
-    def test_a_case_mismatch_is_caught_alongside_the_row_count(self, cell, conn):
-        conn.execute("create table t (category)")
-        conn.execute("insert into t values ('Octopus')")
-        tt._run_sql_cell(conn, "select * from t where category = 'octopus'")
-        assert "t has 1 row(s) in it" in cell.html
-        assert "Ignoring uppercase and lowercase, 1 row would have matched" in cell.html
-
-    def test_a_non_empty_result_gets_no_extra_notes(self, cell, conn):
-        conn.execute("create table t (a)")
-        conn.execute("insert into t values (1)")
-        tt._run_sql_cell(conn, "select * from t")
-        assert "row(s) in it" not in cell.html
-        assert "Ignoring uppercase" not in cell.html
+    @pytest.mark.parametrize(
+        "setup_statements, query, expected, forbidden",
+        [
+            pytest.param(
+                ["create table t (a)"],
+                "select * from t",
+                ["t has no rows in it yet"],
+                [],
+                id="empty_table",
+            ),
+            pytest.param(
+                ["create table t (a)", "insert into t values (1)"],
+                "select * from t where a = 2",
+                ["t has 1 row(s) in it"],
+                ["Ignoring uppercase"],
+                id="filtered_empty",
+            ),
+            pytest.param(
+                ["create table t (category)", "insert into t values ('Octopus')"],
+                "select * from t where category = 'octopus'",
+                ["t has 1 row(s) in it",
+                 "Ignoring uppercase and lowercase, 1 row would have matched"],
+                [],
+                id="case_mismatch_hint",
+            ),
+            pytest.param(
+                ["create table t (a)", "insert into t values (1)"],
+                "select * from t",
+                [],
+                ["row(s) in it", "Ignoring uppercase"],
+                id="non_empty_no_notes",
+            ),
+        ],
+    )
+    def test_empty_result_notes(self, cell, conn, setup_statements, query, expected, forbidden):
+        for statement in setup_statements:
+            conn.execute(statement)
+        tt._run_sql_cell(conn, query)
+        for substring in expected:
+            assert substring in cell.html
+        for substring in forbidden:
+            assert substring not in cell.html
 
 
 class TestQueryRows:
@@ -499,14 +537,22 @@ needs_numpy = pytest.mark.skipif(np is None, reason="numpy is not installed")
 
 @needs_numpy
 class TestArrays:
-    def test_equal_arrays_pass(self):
-        assert tt._compare(np.array([1, 2, 3]), np.array([1, 2, 3]), None)[0]
-
-    def test_float_arrays_compare_within_tolerance(self):
-        assert tt._compare(np.array([0.1 + 0.2]), np.array([0.3]), None)[0]
-
-    def test_different_arrays_fail(self):
-        assert not tt._compare(np.array([1, 2, 3]), np.array([1, 2, 4]), None)[0]
+    @pytest.mark.parametrize(
+        "kind, should_pass",
+        [
+            pytest.param("equal", True, id="equal_arrays_pass"),
+            pytest.param("float_tolerance", True, id="float_arrays_compare_within_tolerance"),
+            pytest.param("different", False, id="different_arrays_fail"),
+        ],
+    )
+    def test_array_comparisons(self, kind, should_pass):
+        if kind == "equal":
+            actual, expected = np.array([1, 2, 3]), np.array([1, 2, 3])
+        elif kind == "float_tolerance":
+            actual, expected = np.array([0.1 + 0.2]), np.array([0.3])
+        else:
+            actual, expected = np.array([1, 2, 3]), np.array([1, 2, 4])
+        assert tt._compare(actual, expected, None)[0] is should_pass
 
     def test_shape_mismatch_reports_shape(self):
         passed, detail = tt._compare(np.zeros((2, 2)), np.zeros((3, 3)), None)
@@ -568,7 +614,7 @@ class TestTracebackTrimming:
         tt._register_source(filename, self.SOURCE)
         exec(compile(self.SOURCE, filename, "exec"), {})  # noqa: S102 - the point
 
-    def test_traceback_keeps_only_the_students_frames(self):
+    def test_traceback_keeps_only_the_students_frames_and_shows_the_failing_line(self):
         filename = tt.cell_filename("demo")
         try:
             self._raise_from_user_code(filename)
@@ -577,13 +623,6 @@ class TestTracebackTrimming:
         assert "TypeError" in text
         assert "test_tutorial_tools.py" not in text
         assert filename in text
-
-    def test_traceback_shows_the_line_that_failed_not_just_its_number(self):
-        filename = tt.cell_filename("demo")
-        try:
-            self._raise_from_user_code(filename)
-        except TypeError as exc:
-            text = tt._format_exception(exc)
         assert "return 1 + 'x'" in text
 
     def test_each_cell_gets_its_own_filename(self):
@@ -599,27 +638,45 @@ class TestTracebackTrimming:
             return tt._format_exception(exc)
         raise AssertionError("that source compiled, so there is nothing to format")
 
-    def test_a_syntax_error_opens_with_the_students_own_line(self):
-        # A syntax error has no frames of the student's — it's raised while
-        # compiling, before any of their code runs — so the frames are all ours.
-        filename = tt.cell_filename("demo")
-        text = self._syntax_error(filename, "if hours > 10\n    print('long')\n")
-        assert "tutorial_tools" not in text
-        assert "Traceback (most recent call last)" not in text
-        assert text.lstrip().startswith("File")
+    SYNTAX_SOURCE = "if hours > 10\n    print('long')\n"
+    INDENTATION_SOURCE = "def check():\nprint('hello')\n"
 
-    def test_and_still_says_where_and_what(self):
+    @pytest.mark.parametrize(
+        "source, expected, forbidden, starts_with_file, checks_filename",
+        [
+            pytest.param(
+                SYNTAX_SOURCE, [], ["tutorial_tools", "Traceback (most recent call last)"],
+                True, False,
+                id="syntax_error_opens_with_the_students_own_line",
+                # A syntax error has no frames of the student's — it's raised
+                # while compiling, before any of their code runs — so the
+                # frames are all ours.
+            ),
+            pytest.param(
+                SYNTAX_SOURCE, ["if hours > 10", "SyntaxError"], [],
+                False, True,
+                id="and_still_says_where_and_what",
+            ),
+            pytest.param(
+                INDENTATION_SOURCE, ["IndentationError"], ["tutorial_tools"],
+                False, False,
+                id="an_indentation_error_is_treated_the_same_way",
+            ),
+        ],
+    )
+    def test_syntax_and_indentation_errors(
+        self, source, expected, forbidden, starts_with_file, checks_filename
+    ):
         filename = tt.cell_filename("demo")
-        text = self._syntax_error(filename, "if hours > 10\n    print('long')\n")
-        assert filename in text
-        assert "if hours > 10" in text
-        assert "SyntaxError" in text
-
-    def test_an_indentation_error_is_treated_the_same_way(self):
-        filename = tt.cell_filename("demo")
-        text = self._syntax_error(filename, "def check():\nprint('hello')\n")
-        assert "tutorial_tools" not in text
-        assert "IndentationError" in text
+        text = self._syntax_error(filename, source)
+        if starts_with_file:
+            assert text.lstrip().startswith("File")
+        if checks_filename:
+            assert filename in text
+        for substring in expected:
+            assert substring in text
+        for substring in forbidden:
+            assert substring not in text
 
     def test_a_traceback_with_no_user_frames_is_still_shown(self):
         try:
@@ -653,15 +710,12 @@ class TestPltShow:
         finally:
             del sys.modules["matplotlib.pyplot"]
 
-    def test_show_is_replaced_when_a_cell_starts(self, cell):
+    def test_show_is_replaced_and_the_replacement_renders_instead_of_warning(self, cell):
         with self.fake_pyplot() as plt:
             tt._begin("c", tt._RecordingSink())
             assert plt.show is not None
             assert getattr(plt.show, "_dewlab", False) is True
 
-    def test_the_replacement_renders_instead_of_warning(self, cell):
-        with self.fake_pyplot() as plt:
-            tt._begin("c", tt._RecordingSink())
             plt.show()
             # The original would have recorded a call; ours flushes figures,
             # which on a stub with no open figures closes them and returns.
@@ -736,7 +790,7 @@ class TestDescribeGlobals:
         assert "_internal" not in self.described()
         assert "visible" in self.described()
 
-    def test_functions_and_modules_are_separated_from_data(self):
+    def test_functions_modules_and_classes_are_separated_from_data(self):
         """What the panel folds away, so a student's own variables stay at
         the top rather than being buried under the seeded names."""
         import math
@@ -750,11 +804,10 @@ class TestDescribeGlobals:
         assert described["helper"]["kind"] == "callable"
         assert described["mine"]["kind"] == "data"
 
-    def test_a_class_counts_as_callable(self):
         tt._page_globals["Thing"] = type("Thing", (), {})
         assert self.described()["Thing"]["kind"] == "callable"
 
-    def test_builtin_marks_the_seeded_toolbox_not_a_readers_own_code(self):
+    def test_builtin_flag_tracks_the_seeded_toolbox_by_name(self):
         """RESEED_GLOBALS_SOURCE (tutorial-runtime.js) does exactly this
         update at boot and after every restart — simulated here rather
         than imported, since that source string lives in JS."""
@@ -764,13 +817,11 @@ class TestDescribeGlobals:
         assert all(described[name]["builtin"] for name in tt.__all__)
         assert described["mine"]["builtin"] is False
 
-    def test_builtin_is_false_once_a_reader_rebinds_the_name(self):
         # Shadowing a tool name is still the reader's own doing — it
         # should show up as theirs, not stay tagged as the toolbox.
         tt._page_globals["show"] = lambda: None
         assert self.described()["show"]["builtin"] is False
 
-    def test_db_is_builtin_by_name_not_identity(self):
         # A fresh sqlite3.Connection every boot (SEED_SQL_DB_SOURCE) means
         # there's no fixed object to compare against the way __all__'s
         # names can be — it's still exactly as pre-seeded, just by name.
@@ -819,22 +870,26 @@ class TestDescribeGlobalsWithPandas:
         yield
         tt._page_globals.clear()
 
-    def test_a_dataframe_shows_its_shape(self):
-        tt._page_globals["df"] = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
-        entry = next(e for e in tt.describe_globals() if e["name"] == "df")
-        assert entry["summary"] == "3 rows x 2 columns"
+    @pytest.mark.parametrize(
+        "name, kind, expected_summary",
+        [
+            pytest.param("df", "dataframe", "3 rows x 2 columns", id="dataframe_shows_its_shape"),
+            pytest.param("column", "series", "4 values", id="series_shows_its_length"),
+            pytest.param("grid", "array", "array(2, 3)", id="array_shows_its_dimensions"),
+        ],
+    )
+    def test_shape_summaries(self, name, kind, expected_summary):
+        if kind == "dataframe":
+            value = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
+        elif kind == "series":
+            value = pd.Series([1, 2, 3, 4])
+        else:
+            import numpy as np
 
-    def test_a_series_shows_its_length(self):
-        tt._page_globals["column"] = pd.Series([1, 2, 3, 4])
-        entry = next(e for e in tt.describe_globals() if e["name"] == "column")
-        assert entry["summary"] == "4 values"
-
-    def test_an_array_shows_its_dimensions(self):
-        import numpy as np
-
-        tt._page_globals["grid"] = np.zeros((2, 3))
-        entry = next(e for e in tt.describe_globals() if e["name"] == "grid")
-        assert entry["summary"] == "array(2, 3)"
+            value = np.zeros((2, 3))
+        tt._page_globals[name] = value
+        entry = next(e for e in tt.describe_globals() if e["name"] == name)
+        assert entry["summary"] == expected_summary
 
     def test_shape_is_recognised_by_duck_typing_not_module_path(self):
         # Regression guard: the first version hardcoded `pandas.core.frame`
@@ -868,14 +923,14 @@ class TestRunReport:
         assert report["ok"] is False
         assert report["error"] == {"type": "ValueError", "message": "first line"}
 
-    def test_checks_report_the_first_failure_by_label(self, cell):
+    def test_checks_report_the_first_failure_or_the_last_passing_label(self, cell):
         tt.check(1, 1, label="q1")
         tt.check(2, 3, label="q2")
         tt.check(4, 5, label="q3")
         report = tt._report(True, tt._current, None)
         assert report["check"] == {"passed": False, "label": "q2"}
 
-    def test_all_checks_passing_reports_the_last_label(self, cell):
+        tt._begin("test-cell-2", cell)
         tt.check(1, 1, label="q1")
         tt.check(2, 2)
         assert tt._report(True, tt._current, None)["check"] == {"passed": True, "label": None}
@@ -886,12 +941,12 @@ class TestRunReport:
         assert tt.holds("total == 7") is False
         assert tt._report(True, tt._current, "total == 6")["reached"] is True
 
-    def test_expect_that_raises_is_not_yet_not_an_error(self, cell):
-        assert tt.holds("undefined_name == 1") is False
-
-    def test_a_sql_cells_empty_result_is_reported(self, cell):
+    def test_a_sql_cells_empty_result_is_reported_and_holds_treats_errors_as_false(self, cell):
         tt._current.last_result_empty = True
         assert tt._report(True, tt._current, None)["empty"] is True
+        # holds() must treat any runtime or syntax error as simply "not
+        # true", never let it escape as a crash.
+        assert tt.holds("undefined_name == 1") is False
         assert tt.holds("1 / 0") is False
         assert tt.holds("this is not python") is False
 

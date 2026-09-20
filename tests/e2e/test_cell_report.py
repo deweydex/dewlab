@@ -14,6 +14,14 @@ def panel(page, cell_id: str):
     return page.locator(f".dl-cell[data-cell-id='{cell_id}'] .dl-report-doors")
 
 
+def hint_icon(page, cell_id: str):
+    return page.locator(f".dl-cell[data-cell-id='{cell_id}'] .dl-hint-icon")
+
+
+def hint_text(page, cell_id: str):
+    return page.locator(f"#dl-hint-{cell_id}")
+
+
 def issue_link_params(page, cell_id: str, which: str) -> dict:
     """`which` is a fragment of the link's visible text — "error" or
     "wrong" — since that is the only thing telling the two issue links
@@ -110,3 +118,20 @@ class TestCellReportPanel:
         icon(page, "matplotlib-show").click()
         params = issue_link_params(page, "matplotlib-show", "error")
         assert "after the plot" in params["output"][0]
+
+
+class TestCellHintIcon:
+    """The hint icon shares the exact same generic disclosure code as the report icon above — open/close/position mechanics are already proven there, so this only checks the hint's own text and that its toggle works."""
+
+    def test_toggle_shows_and_hides_the_hint_text(self, page):
+        assert hint_text(page, "numpy-basics").is_hidden()
+        assert hint_icon(page, "numpy-basics").get_attribute("aria-expanded") == "false"
+
+        hint_icon(page, "numpy-basics").click()
+        assert hint_text(page, "numpy-basics").is_visible()
+        assert hint_icon(page, "numpy-basics").get_attribute("aria-expanded") == "true"
+        assert "not one number at a time" in hint_text(page, "numpy-basics").inner_text()
+
+        hint_icon(page, "numpy-basics").click()
+        assert hint_text(page, "numpy-basics").is_hidden()
+        assert hint_icon(page, "numpy-basics").get_attribute("aria-expanded") == "false"

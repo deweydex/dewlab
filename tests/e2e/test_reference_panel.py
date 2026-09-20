@@ -164,6 +164,25 @@ def _toggle_shows(actor, selector: str) -> bool:
     return actor.get_attribute(selector, "hidden") is None
 
 
+def _setup_glossary_alone(site, monkeypatch):
+    _tutorial(site, "one", "One")
+    _glossary(site, "one", [CONCEPT])
+    _set_order(site, ["one"])
+
+
+def _setup_note_alone(site, monkeypatch):
+    _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
+    _set_order(site, ["one"])
+
+
+def _setup_dataset_alone(site, monkeypatch):
+    monkeypatch.setattr(b, "DATA", site / "data")
+    _dataset_files(site / "data", "life-expectancy", source="World Bank",
+                    license="CC-BY-4.0", description="Life expectancy by country.")
+    _tutorial_with_dataset(site, "one", "life-expectancy")
+    _set_order(site, ["one"])
+
+
 class TestVisibility:
     def test_no_glossary_anywhere_in_the_series_still_shows_the_basics_tabs(
             self, site, browser, site_url):
@@ -185,10 +204,11 @@ class TestVisibility:
         assert page.locator("#dl-python-groups dt").count() > 0
         context.close()
 
-    def test_a_tutorial_with_something_accumulated_shows_the_toggle(self, site, browser, site_url):
-        _tutorial(site, "one", "One")
-        _glossary(site, "one", [CONCEPT])
-        _set_order(site, ["one"])
+    @pytest.mark.parametrize(
+        "setup", [_setup_glossary_alone, _setup_note_alone, _setup_dataset_alone])
+    def test_the_toggle_shows_when_one_kind_of_content_is_present_alone(
+            self, site, browser, site_url, monkeypatch, setup):
+        setup(site, monkeypatch)
         b.build()
         context = browser.new_context()
         page = context.new_page()
@@ -425,30 +445,6 @@ class TestContent:
 class TestNotes:
     """Pedagogical notes surfacing in the reference panel."""
 
-    def test_a_note_alone_shows_the_toggle(self, site, browser, site_url):
-        _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
-        _set_order(site, ["one"])
-        b.build()
-        context = browser.new_context()
-        page = context.new_page()
-        page.goto(f"{site_url}/tutorials/one.html")
-        assert _toggle_shows(page, "#dl-reference-toggle")
-        context.close()
-
-    def test_opening_the_panel_shows_the_notes_heading_and_content(self, site, browser, site_url):
-        _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
-        _set_order(site, ["one"])
-        b.build()
-        context = browser.new_context()
-        page = context.new_page()
-        page.goto(f"{site_url}/tutorials/one.html")
-        _open_panel(page, "#dl-reference-toggle")
-        headings = page.eval_on_selector_all(
-            "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
-        assert "Notes" in headings
-        assert "Because reasons." in page.inner_text("#dl-reference-groups")
-        context.close()
-
     def test_the_note_is_not_in_the_page_body(self, site, browser, site_url):
         """It surfaces in the panel instead of staying inline."""
         _tutorial_with_note(site, "one", "why-it-works", "Because reasons.")
@@ -476,29 +472,19 @@ class TestNotes:
 
 
 class TestDatasets:
-    """Dataset attribution surfacing in the reference panel."""
+    """Dataset attribution surfacing in the reference panel. The heading+
+    content test below is parametrized across both Notes and Datasets,
+    since opening the panel shows each one's own heading and its own
+    content in the same way."""
 
-    def test_a_dataset_alone_shows_the_toggle(self, site, browser, site_url, monkeypatch):
-        monkeypatch.setattr(b, "DATA", site / "data")
-        _dataset_files(site / "data", "life-expectancy", source="World Bank",
-                        license="CC-BY-4.0", description="Life expectancy by country.")
-        _tutorial_with_dataset(site, "one", "life-expectancy")
-        _set_order(site, ["one"])
-        b.build()
-        context = browser.new_context()
-        page = context.new_page()
-        page.goto(f"{site_url}/tutorials/one.html")
-        assert _toggle_shows(page, "#dl-reference-toggle")
-        context.close()
-
-    def test_opening_the_panel_shows_the_datasets_heading_and_attribution(
-        self, site, browser, site_url, monkeypatch
-    ):
-        monkeypatch.setattr(b, "DATA", site / "data")
-        _dataset_files(site / "data", "life-expectancy", source="World Bank",
-                        license="CC-BY-4.0", description="Life expectancy by country.")
-        _tutorial_with_dataset(site, "one", "life-expectancy")
-        _set_order(site, ["one"])
+    @pytest.mark.parametrize("setup,heading,expected_texts", [
+        (_setup_note_alone, "Notes", ["Because reasons."]),
+        (_setup_dataset_alone, "Datasets used here",
+         ["life-expectancy", "World Bank", "CC-BY-4.0", "Life expectancy by country."]),
+    ])
+    def test_opening_the_panel_shows_the_heading_and_its_content(
+            self, site, browser, site_url, monkeypatch, setup, heading, expected_texts):
+        setup(site, monkeypatch)
         b.build()
         context = browser.new_context()
         page = context.new_page()
@@ -506,12 +492,10 @@ class TestDatasets:
         _open_panel(page, "#dl-reference-toggle")
         headings = page.eval_on_selector_all(
             "#dl-reference-groups h3", "els => els.map(e => e.textContent)")
-        assert "Datasets used here" in headings
+        assert heading in headings
         text = page.inner_text("#dl-reference-groups")
-        assert "life-expectancy" in text
-        assert "World Bank" in text
-        assert "CC-BY-4.0" in text
-        assert "Life expectancy by country." in text
+        for expected in expected_texts:
+            assert expected in text
         context.close()
 
 
@@ -524,19 +508,24 @@ class TestPanelClearsTheCornerDocks:
     own header (or its content once scrolled to the bottom) renders right
     underneath them."""
 
-    def test_the_reference_panel_starts_below_the_top_left_dock(self, site, browser, site_url):
+    @pytest.mark.parametrize("open_action,dock_side,panel_selector", [
+        (lambda page: _open_panel(page, "#dl-reference-toggle"), "tl", "#dl-reference"),
+        (lambda page: _open_panel(page, "#dl-yourwork-toggle"), "tr", "#dl-yourwork"),
+        (lambda page: _open_settings_tab(page, "appearance"), "tr", "#dl-settings"),
+    ])
+    def test_a_panel_starts_below_its_corner_dock(
+            self, site, browser, site_url, open_action, dock_side, panel_selector):
         _tutorial(site, "one", "One")
-        _glossary(site, "one", [CONCEPT])
         _set_order(site, ["one"])
         b.build()
         context = browser.new_context(viewport={"width": 1400, "height": 900})
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/one.html")
-        _open_panel(page, "#dl-reference-toggle")
+        open_action(page)
         dock_bottom = page.eval_on_selector(
-            ".dl-corner-dock-tl", "el => el.getBoundingClientRect().bottom")
+            f".dl-corner-dock-{dock_side}", "el => el.getBoundingClientRect().bottom")
         panel_top = page.eval_on_selector(
-            "#dl-reference", "el => el.getBoundingClientRect().top")
+            panel_selector, "el => el.getBoundingClientRect().top")
         assert panel_top >= dock_bottom - 1
         context.close()
 
@@ -561,36 +550,6 @@ class TestPanelClearsTheCornerDocks:
         after = page.eval_on_selector("#dl-reference", "el => el.getBoundingClientRect().top")
         assert after > before
         assert after >= dock_bottom - 1
-        context.close()
-
-    def test_the_notes_panel_starts_below_the_top_right_strip(self, site, browser, site_url):
-        _tutorial(site, "one", "One")
-        _set_order(site, ["one"])
-        b.build()
-        context = browser.new_context(viewport={"width": 1400, "height": 900})
-        page = context.new_page()
-        page.goto(f"{site_url}/tutorials/one.html")
-        _open_panel(page, "#dl-yourwork-toggle")
-        dock_bottom = page.eval_on_selector(
-            ".dl-corner-dock-tr", "el => el.getBoundingClientRect().bottom")
-        panel_top = page.eval_on_selector(
-            "#dl-yourwork", "el => el.getBoundingClientRect().top")
-        assert panel_top >= dock_bottom - 1
-        context.close()
-
-    def test_the_settings_panel_starts_below_the_top_right_strip(self, site, browser, site_url):
-        _tutorial(site, "one", "One")
-        _set_order(site, ["one"])
-        b.build()
-        context = browser.new_context(viewport={"width": 1400, "height": 900})
-        page = context.new_page()
-        page.goto(f"{site_url}/tutorials/one.html")
-        _open_settings_tab(page, "appearance")
-        dock_bottom = page.eval_on_selector(
-            ".dl-corner-dock-tr", "el => el.getBoundingClientRect().bottom")
-        panel_top = page.eval_on_selector(
-            "#dl-settings", "el => el.getBoundingClientRect().top")
-        assert panel_top >= dock_bottom - 1
         context.close()
 
     def test_nothing_sits_above_the_page_and_the_column_clears_both_docks(
@@ -884,30 +843,25 @@ class TestHighlightToLookUp:
         assert page.is_hidden(".dl-lookup")
         context.close()
 
-    def test_selecting_a_term_offers_to_look_it_up(self, site, browser, site_url):
+    @pytest.mark.parametrize("word,offered", [
+        ("gradient", True),
+        # A reader selecting a sentence to copy must not be interrupted.
+        ("serendipity", False),
+        # The same stemming every search box on the site already does
+        # (assets/search-words.js), so "gradients" finds the entry for
+        # "gradient" the way typing either word into a search box would.
+        ("gradients", True),
+    ])
+    def test_the_lookup_offer_shows_only_for_a_term_it_knows(
+            self, site, browser, site_url, word, offered):
         context, page = self.open_page(site, browser, site_url)
-        assert page.evaluate(SELECT, "gradient")
-        page.wait_for_selector(".dl-lookup:not([hidden])")
-        assert "gradient" in page.inner_text(".dl-lookup")
-        context.close()
-
-    def test_selecting_a_word_the_reference_does_not_know_offers_nothing(
-            self, site, browser, site_url):
-        """A reader selecting a sentence to copy must not be interrupted."""
-        context, page = self.open_page(site, browser, site_url)
-        assert page.evaluate(SELECT, "serendipity")
-        page.wait_for_timeout(200)
-        assert page.is_hidden(".dl-lookup")
-        context.close()
-
-    def test_selecting_a_plural_offers_the_singular_entry(self, site, browser, site_url):
-        """The same stemming every search box on the site already does
-        (assets/search-words.js), so "gradients" finds the entry for
-        "gradient" the way typing either word into a search box would."""
-        context, page = self.open_page(site, browser, site_url)
-        assert page.evaluate(SELECT, "gradients")
-        page.wait_for_selector(".dl-lookup:not([hidden])")
-        assert "gradient" in page.inner_text(".dl-lookup")
+        assert page.evaluate(SELECT, word)
+        if offered:
+            page.wait_for_selector(".dl-lookup:not([hidden])")
+            assert "gradient" in page.inner_text(".dl-lookup")
+        else:
+            page.wait_for_timeout(200)
+            assert page.is_hidden(".dl-lookup")
         context.close()
 
     def test_using_it_opens_the_panel_filtered_to_that_term(self, site, browser, site_url):

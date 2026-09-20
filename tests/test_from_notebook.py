@@ -48,17 +48,31 @@ def convert(path: Path, **kwargs):
 
 
 class TestFrontmatter:
-    def test_the_title_comes_from_the_first_heading(self, tmp_path):
-        path = write(tmp_path, "Tutorial_01_First_Steps.ipynb",
-                     notebook(("markdown", "# Tutorial 1: First Steps\n\nProse.")))
+    @pytest.mark.parametrize(
+        "filename, cell_source, expected_title, title_in_frontmatter",
+        [
+            pytest.param(
+                "Tutorial_01_First_Steps.ipynb",
+                "# Tutorial 1: First Steps\n\nProse.",
+                "Tutorial 1: First Steps",
+                True,
+                id="title_from_first_heading",
+            ),
+            pytest.param(
+                "Loose_Notes.ipynb",
+                "No heading here.",
+                "Loose Notes",
+                False,
+                id="filename_stands_in_for_missing_heading",
+            ),
+        ],
+    )
+    def test_the_title(self, tmp_path, filename, cell_source, expected_title, title_in_frontmatter):
+        path = write(tmp_path, filename, notebook(("markdown", cell_source)))
         text, result = convert(path)
-        assert result.title == "Tutorial 1: First Steps"
-        assert 'title: "Tutorial 1: First Steps"' in text
-
-    def test_the_filename_stands_in_when_there_is_no_heading(self, tmp_path):
-        path = write(tmp_path, "Loose_Notes.ipynb", notebook(("markdown", "No heading here.")))
-        _, result = convert(path)
-        assert result.title == "Loose Notes"
+        assert result.title == expected_title
+        if title_in_frontmatter:
+            assert f'title: "{expected_title}"' in text
 
     def test_the_slug_comes_from_the_filename(self, tmp_path):
         path = write(tmp_path, "Tutorial_09_Counting_Carefully.ipynb",
@@ -66,15 +80,23 @@ class TestFrontmatter:
         _, result = convert(path)
         assert result.slug == "tutorial-09-counting-carefully"
 
-    def test_order_comes_from_the_number_in_the_filename(self, tmp_path):
-        path = write(tmp_path, "Tutorial_09_Counting.ipynb", notebook(("markdown", "# C")))
-        _, result = convert(path)
-        assert result.order == 9
-
-    def test_order_falls_back_when_the_filename_has_no_number(self, tmp_path):
-        path = write(tmp_path, "Interlude.ipynb", notebook(("markdown", "# I")))
-        _, result = convert(path, default_order=18)
-        assert result.order == 18
+    @pytest.mark.parametrize(
+        "filename, cell_source, kwargs, expected_order",
+        [
+            pytest.param(
+                "Tutorial_09_Counting.ipynb", "# C", {}, 9,
+                id="order_from_number_in_filename",
+            ),
+            pytest.param(
+                "Interlude.ipynb", "# I", {"default_order": 18}, 18,
+                id="order_falls_back_without_a_number",
+            ),
+        ],
+    )
+    def test_order(self, tmp_path, filename, cell_source, kwargs, expected_order):
+        path = write(tmp_path, filename, notebook(("markdown", cell_source)))
+        _, result = convert(path, **kwargs)
+        assert result.order == expected_order
 
     def test_the_supplied_fields_are_written_through(self, tmp_path):
         path = write(tmp_path, "T.ipynb", notebook(("markdown", "# T")))
@@ -93,25 +115,36 @@ class TestFrontmatter:
 
 
 class TestCells:
-    def test_a_code_cell_becomes_an_exec_fence(self, tmp_path):
-        path = write(tmp_path, "T.ipynb",
-                     notebook(("markdown", "# Adding"), ("code", "1 + 1")))
+    @pytest.mark.parametrize(
+        "cells, expected_substrings, expected_count",
+        [
+            pytest.param(
+                [("markdown", "# Adding"), ("code", "1 + 1")],
+                ["```python exec\nid: adding-1\n1 + 1\n```"],
+                1,
+                id="base_exec_fence",
+            ),
+            pytest.param(
+                [("markdown", "# Loops"), ("code", "a = 1"), ("code", "b = 2")],
+                ["id: loops-1", "id: loops-2"],
+                2,
+                id="ids_numbered_within_a_section",
+            ),
+            pytest.param(
+                [("markdown", "# Loops"), ("code", "a = 1"),
+                 ("markdown", "## Lists"), ("code", "b = 2")],
+                ["id: loops-1", "id: lists-1"],
+                2,
+                id="new_heading_starts_a_new_id_family",
+            ),
+        ],
+    )
+    def test_cell_ids(self, tmp_path, cells, expected_substrings, expected_count):
+        path = write(tmp_path, "T.ipynb", notebook(*cells))
         text, result = convert(path)
-        assert "```python exec\nid: adding-1\n1 + 1\n```" in text
-        assert result.cells == 1
-
-    def test_ids_are_numbered_within_a_section(self, tmp_path):
-        path = write(tmp_path, "T.ipynb", notebook(
-            ("markdown", "# Loops"), ("code", "a = 1"), ("code", "b = 2")))
-        text, _ = convert(path)
-        assert "id: loops-1" in text and "id: loops-2" in text
-
-    def test_a_new_heading_starts_a_new_id_family(self, tmp_path):
-        path = write(tmp_path, "T.ipynb", notebook(
-            ("markdown", "# Loops"), ("code", "a = 1"),
-            ("markdown", "## Lists"), ("code", "b = 2")))
-        text, _ = convert(path)
-        assert "id: loops-1" in text and "id: lists-1" in text
+        for substring in expected_substrings:
+            assert substring in text
+        assert result.cells == expected_count
 
     def test_markdown_is_carried_through_unchanged(self, tmp_path):
         prose = "Some *emphasis*, a $\\frac{1}{2}$, and a [link](https://example.org)."
@@ -142,20 +175,34 @@ class TestCells:
 
 
 class TestNotebookOnlyLines:
-    def test_magics_are_dropped(self, tmp_path):
-        path = write(tmp_path, "T.ipynb", notebook(
-            ("markdown", "# Plots"), ("code", "%matplotlib inline\nimport numpy")))
+    @pytest.mark.parametrize(
+        "heading, code, dropped, kept, note_substring",
+        [
+            pytest.param(
+                "# Plots", "%matplotlib inline\nimport numpy",
+                "%matplotlib", "import numpy", "%matplotlib inline",
+                id="magics_are_dropped",
+            ),
+            pytest.param(
+                "# Setup", "!pip install pandas\nimport pandas",
+                "!pip install", "import pandas", None,
+                id="shell_escapes_are_dropped",
+            ),
+            pytest.param(
+                "# Maths", "remainder = 7 % 3",
+                None, "remainder = 7 % 3", None,
+                id="percent_inside_code_is_left_alone",
+            ),
+        ],
+    )
+    def test_magic_re_lines(self, tmp_path, heading, code, dropped, kept, note_substring):
+        path = write(tmp_path, "T.ipynb", notebook(("markdown", heading), ("code", code)))
         text, result = convert(path)
-        assert "%matplotlib" not in text
-        assert "import numpy" in text
-        assert any("%matplotlib inline" in note for note in result.notes)
-
-    def test_shell_escapes_are_dropped(self, tmp_path):
-        path = write(tmp_path, "T.ipynb", notebook(
-            ("markdown", "# Setup"), ("code", "!pip install pandas\nimport pandas")))
-        text, _ = convert(path)
-        assert "!pip install" not in text
-        assert "import pandas" in text
+        if dropped is not None:
+            assert dropped not in text
+        assert kept in text
+        if note_substring is not None:
+            assert any(note_substring in note for note in result.notes)
 
     def test_a_cell_of_nothing_but_magics_is_dropped_entirely(self, tmp_path):
         path = write(tmp_path, "T.ipynb", notebook(
@@ -163,12 +210,6 @@ class TestNotebookOnlyLines:
         _, result = convert(path)
         assert result.cells == 0
         assert any("only magics" in note for note in result.notes)
-
-    def test_a_percent_inside_code_is_left_alone(self, tmp_path):
-        path = write(tmp_path, "T.ipynb", notebook(
-            ("markdown", "# Maths"), ("code", "remainder = 7 % 3")))
-        text, _ = convert(path)
-        assert "remainder = 7 % 3" in text
 
     def test_an_embedded_attachment_is_flagged_rather_than_silently_broken(self, tmp_path):
         path = write(tmp_path, "T.ipynb",
@@ -251,10 +292,12 @@ class TestTheReport:
     """`--out` may point outside the repo; `relative_to` alone crashed on such
     a path after the files were already written, the worst order to fail in."""
 
-    def test_a_path_inside_the_repository_is_shown_relative(self):
-        inside = fn.ROOT / "tutorials" / "somewhere" / "a-tutorial.md"
-        assert fn.shown(inside) == "tutorials/somewhere/a-tutorial.md"
-
-    def test_a_path_outside_it_is_shown_in_full_rather_than_raising(self, tmp_path):
-        outside = tmp_path / "a-tutorial.md"
-        assert fn.shown(outside) == str(outside)
+    @pytest.mark.parametrize("is_inside", [True, False], ids=["inside_the_repo", "outside_it"])
+    def test_shown(self, tmp_path, is_inside):
+        if is_inside:
+            path = fn.ROOT / "tutorials" / "somewhere" / "a-tutorial.md"
+            expected = "tutorials/somewhere/a-tutorial.md"
+        else:
+            path = tmp_path / "a-tutorial.md"
+            expected = str(path)
+        assert fn.shown(path) == expected

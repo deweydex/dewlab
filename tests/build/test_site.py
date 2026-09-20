@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import sys
 import urllib.parse
 import zipfile
@@ -336,59 +337,66 @@ class TestPageCardsAndSections:
         ) in page
         assert "- **First.**" not in page
 
-    def test_a_status_card_and_cards_separated_by_other_content_get_separate_grids(self, repo):
-        self.home(repo, (
-            "```card\n"
-            "url: computational-methods.html\n"
-            "status: beta\n"
-            "meta: 5N0554 · QQI Level 5\n"
-            "### Computational Methods\n"
-            "```\n\n"
-            "```card\n"
-            "url: a.html\n"
-            "### A\n"
-            "```\n\n"
-            "Some prose in between.\n\n"
-            "```card\n"
-            "url: b.html\n"
-            "### B\n"
-            "```\n"
-        ))
+    @pytest.mark.parametrize(
+        "body,expected_grids",
+        [
+            (
+                "```card\n"
+                "url: computational-methods.html\n"
+                "status: beta\n"
+                "meta: 5N0554 · QQI Level 5\n"
+                "### Computational Methods\n"
+                "```\n\n"
+                "```card\n"
+                "url: a.html\n"
+                "### A\n"
+                "```\n\n"
+                "Some prose in between.\n\n"
+                "```card\n"
+                "url: b.html\n"
+                "### B\n"
+                "```\n",
+                2,
+            ),
+            (
+                "```card\n"
+                "url: a.html\n"
+                "### A\n"
+                "```\n\n"
+                "```card\n"
+                "url: b.html\n"
+                "### B\n"
+                "```\n",
+                1,
+            ),
+        ],
+        ids=["separated-by-prose", "adjacent"],
+    )
+    def test_cards_share_one_grid_only_while_adjacent(self, repo, body, expected_grids):
+        self.home(repo, body)
         write(repo, "Prose.\n")
         b.build()
         page = (repo / "site" / "index.html").read_text()
-        # Status and meta render as badge and meta span.
-        assert '<span class="dl-module-card-badge" data-status="beta">Beta</span>' in page
-        assert '<span class="dl-module-card-meta">5N0554 · QQI Level 5</span>' in page
-        assert page.count('<div class="dl-module-grid">') == 2
+        assert page.count('<div class="dl-module-grid">') == expected_grids
+        if expected_grids == 2:
+            # Status and meta render as badge and meta span.
+            assert '<span class="dl-module-card-badge" data-status="beta">Beta</span>' in page
+            assert '<span class="dl-module-card-meta">5N0554 · QQI Level 5</span>' in page
+        else:
+            assert page.count('dl-module-card" href') == 2
 
-    def test_adjacent_cards_share_one_module_grid(self, repo):
-        self.home(repo, (
-            "```card\n"
-            "url: a.html\n"
-            "### A\n"
-            "```\n\n"
-            "```card\n"
-            "url: b.html\n"
-            "### B\n"
-            "```\n"
-        ))
+    @pytest.mark.parametrize(
+        "body,match",
+        [
+            ("```card\n### A\n```\n", "url"),
+            ("```card\nurl: a.html\nJust prose, no heading.\n```\n", "heading"),
+        ],
+        ids=["no-url", "no-heading"],
+    )
+    def test_a_card_missing_a_required_field_fails_the_build(self, repo, body, match):
+        self.home(repo, body)
         write(repo, "Prose.\n")
-        b.build()
-        page = (repo / "site" / "index.html").read_text()
-        assert page.count('<div class="dl-module-grid">') == 1
-        assert page.count("dl-module-card\" href") == 2
-
-    def test_a_card_with_no_url_fails_the_build(self, repo):
-        self.home(repo, "```card\n### A\n```\n")
-        write(repo, "Prose.\n")
-        with pytest.raises(b.BuildError, match="url"):
-            b.build()
-
-    def test_a_card_with_no_heading_fails_the_build(self, repo):
-        self.home(repo, "```card\nurl: a.html\nJust prose, no heading.\n```\n")
-        write(repo, "Prose.\n")
-        with pytest.raises(b.BuildError, match="heading"):
+        with pytest.raises(b.BuildError, match=match):
             b.build()
 
     def test_an_unknown_generated_block_fails_the_build(self, repo):
@@ -397,7 +405,7 @@ class TestPageCardsAndSections:
         with pytest.raises(b.BuildError, match="not-a-real-block"):
             b.build()
 
-    def test_maths_works_in_a_cards_own_body_a_wrapped_section_and_the_pages_own_prose(self, repo):
+    def test_maths_flag_follows_whether_a_page_actually_uses_maths(self, repo):
         # convert_prose_with_math() is the same self-contained
         # extract-then-place dance the tutorial body's own maths already
         # gets, applied to three surfaces that each convert their own
@@ -426,9 +434,8 @@ class TestPageCardsAndSections:
         # it ever looks for a .dl-math span.
         assert manifest(page)["math"] is True
 
-    def test_a_page_with_no_maths_at_all_carries_no_math_flag(self, repo):
+        # A page with no maths at all carries no math flag.
         self.home(repo, "Just prose, no maths anywhere.\n")
-        write(repo, "Prose.\n")
         b.build()
         page = (repo / "site" / "index.html").read_text()
         assert "dl-math" not in page
@@ -440,16 +447,18 @@ class TestTheAboutPage:
     hardcoded string in build.py — see read_page(). The page that builds
     is checked in TestOnePlainTutorial; these are the two ways it fails."""
 
-    def test_a_missing_pages_about_md_fails_the_build(self, repo):
-        (repo / "pages" / "about.md").unlink()
+    @pytest.mark.parametrize(
+        "mutate,match",
+        [
+            (lambda about: about.unlink(), "pages/about.md"),
+            (lambda about: about.write_text("---\nnot_title: x\n---\n\nBody.\n"), "title"),
+        ],
+        ids=["missing-file", "missing-title"],
+    )
+    def test_a_broken_about_md_fails_the_build(self, repo, mutate, match):
+        mutate(repo / "pages" / "about.md")
         write(repo, "Prose.\n")
-        with pytest.raises(b.BuildError, match="pages/about.md"):
-            b.build()
-
-    def test_frontmatter_with_no_title_fails_the_build(self, repo):
-        (repo / "pages" / "about.md").write_text("---\nnot_title: x\n---\n\nBody.\n")
-        write(repo, "Prose.\n")
-        with pytest.raises(b.BuildError, match="title"):
+        with pytest.raises(b.BuildError, match=match):
             b.build()
 
 
@@ -460,11 +469,14 @@ class TestTheContentsOfAPage:
     (one nested, one repeated, one distinct). A page with no sections is
     in TestOnePlainTutorial; a downloadable copy in TestTheDownloadableCopy."""
 
-    def test_three_sections_give_the_page_its_own_closed_rung_and_the_front_page_none(self, repo):
+    def test_three_sections_give_the_page_its_own_closed_rung_and_one_section_gets_none(self, repo):
         """The page's own name is the caret: it opens straight onto the
         sections, no "Contents" rung in between, and starts closed — a
         reader arriving at a tutorial should meet the tutorial, not a list
-        of its parts. The front page (index.html) has no such rung."""
+        of its parts. The front page (index.html) has no such rung, and
+        nor does a page with only one section — a contents list for a
+        single heading is furniture, so that rung is a plain line instead,
+        no caret with nothing behind it."""
         write(repo, sections(3))
         b.build()
         toc = contents_rung(repo)
@@ -478,10 +490,6 @@ class TestTheContentsOfAPage:
         assert "<summary>Contents" not in page
         assert "dl-crumb-level-4" not in (repo / "site" / "index.html").read_text()
 
-    def test_one_section_does_not_get_a_contents_rung(self, repo):
-        """A contents list for a single heading is furniture — the
-        tutorial's own rung is then a plain line, no caret with nothing
-        behind it."""
         write(repo, sections(1))
         b.build()
         assert contents_rung(repo) == ""
@@ -612,7 +620,9 @@ class TestAssetVersions:
         assert first.group(1) != after.group(1)
 
 
-def test_the_marking_workbench_the_topic_pair_game_and_the_topic_editor_are_published(repo, monkeypatch):
+def test_the_marking_workbench_the_topic_pair_game_and_the_topic_editor_are_published_when_present_and_skipped_when_not(
+    repo, monkeypatch
+):
     # Nothing on the site links to /dewmark/, so a broken copy step would go
     # unnoticed until somebody typed the address.
     workbench = repo / "dewmark" / "workbench"
@@ -650,12 +660,11 @@ def test_the_marking_workbench_the_topic_pair_game_and_the_topic_editor_are_publ
     assert (b.OUT / "topic_editor" / "help.html").is_file()
     assert not (b.OUT / "topic_editor" / "README.md").exists()
 
-
-def test_no_workbench_game_or_editor_folder_is_not_an_error(repo, monkeypatch):
-    monkeypatch.setattr(b, "DEWMARK_WORKBENCH", repo / "dewmark" / "workbench")
-    monkeypatch.setattr(b, "TOPIC_GAME", repo / "topic_tree_game")
-    monkeypatch.setattr(b, "TOPIC_EDITOR", repo / "topic_editor")
-
+    # With the source folders gone, a rebuild is silent — no error, and
+    # nothing left behind from the previous build.
+    shutil.rmtree(b.OUT)
+    for path in (workbench, game, editor):
+        shutil.rmtree(path)
     b.build()
 
     assert not (b.OUT / "dewmark").exists()

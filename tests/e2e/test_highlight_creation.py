@@ -155,7 +155,9 @@ class TestHighlightButtonWithNoGlossary:
 
 
 class TestHighlightButtonAlongsideLookUp:
-    def test_nothing_is_offered_until_something_is_selected(self, site, browser, site_url):
+    def test_nothing_is_offered_until_a_known_term_is_selected_then_both_appear(
+        self, site, browser, site_url
+    ):
         _tutorial(site, "one", "One")
         _glossary(site, "one", [
             {"term": "gradient", "kind": "concept", "definition": "How steeply something changes."},
@@ -165,16 +167,7 @@ class TestHighlightButtonAlongsideLookUp:
         context, page = _open(browser, site_url)
         assert page.is_hidden(".dl-lookup")
         assert page.is_hidden(".dl-highlight-btn")
-        context.close()
 
-    def test_a_known_term_offers_both_buttons_together(self, site, browser, site_url):
-        _tutorial(site, "one", "One")
-        _glossary(site, "one", [
-            {"term": "gradient", "kind": "concept", "definition": "How steeply something changes."},
-        ])
-        _set_order(site, ["one"])
-        b.build()
-        context, page = _open(browser, site_url)
         assert page.evaluate(SELECT, "gradient")
         page.wait_for_selector(".dl-lookup:not([hidden])")
         page.wait_for_selector(".dl-highlight-btn:not([hidden])")
@@ -194,7 +187,7 @@ class TestHighlightButtonAlongsideLookUp:
 
 
 class TestClickingHighlight:
-    def test_creates_a_visible_mark_and_saves_it(self, site, browser, site_url):
+    def test_click_creates_saves_and_the_mark_survives_a_reload(self, site, browser, site_url):
         _tutorial(site, "one", "One")
         _set_order(site, ["one"])
         b.build()
@@ -207,46 +200,19 @@ class TestClickingHighlight:
         mark = page.locator("mark.dl-highlight")
         assert mark.count() > 0
         assert "".join(mark.all_inner_texts()) == "this whole sentence is fine to mark too"
+        assert page.is_hidden(".dl-highlight-btn")
+        assert page.is_hidden(".dl-lookup")
 
+        highlight_id = page.eval_on_selector("mark.dl-highlight", "el => el.dataset.highlightId")
         page.evaluate("dewlab.saveNow()")
         saved = page.evaluate("dewlab.readSaved()")
         assert len(saved["highlights"]) == 1
         assert saved["highlights"][0]["quote"] == "this whole sentence is fine to mark too"
-        context.close()
-
-    def test_the_buttons_go_away_after_use(self, site, browser, site_url):
-        _tutorial(site, "one", "One")
-        _set_order(site, ["one"])
-        b.build()
-        context, page = _open(browser, site_url)
-
-        assert page.evaluate(SELECT, "fine to mark")
-        page.wait_for_selector(".dl-highlight-btn:not([hidden])")
-        page.click(".dl-highlight-btn")
-
-        assert page.is_hidden(".dl-highlight-btn")
-        assert page.is_hidden(".dl-lookup")
-        context.close()
-
-    def test_a_created_highlight_survives_a_reload(self, site, browser, site_url):
-        _tutorial(site, "one", "One")
-        _set_order(site, ["one"])
-        b.build()
-        context, page = _open(browser, site_url)
-
-        assert page.evaluate(SELECT, "fine to mark")
-        page.wait_for_selector(".dl-highlight-btn:not([hidden])")
-        page.click(".dl-highlight-btn")
-        highlight_id = page.eval_on_selector("mark.dl-highlight", "el => el.dataset.highlightId")
-        # createHighlight() only schedules the debounced autosave -- waiting
-        # for it to have actually landed, the same way test_saved_progress.py
-        # does before its own reload, rather than racing it.
-        page.wait_for_function("() => dewlab.readSaved() !== null")
 
         page.reload()
         page.wait_for_function("() => !!globalThis.dewlab")
 
         mark = page.locator(f'mark.dl-highlight[data-highlight-id="{highlight_id}"]')
         assert mark.count() > 0
-        assert "".join(mark.all_inner_texts()) == "fine to mark"
+        assert "".join(mark.all_inner_texts()) == "this whole sentence is fine to mark too"
         context.close()

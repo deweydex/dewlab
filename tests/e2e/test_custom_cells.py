@@ -67,92 +67,72 @@ def clean_storage(page):
 
 
 class TestDividersAppearEverywhere:
-    def test_a_divider_follows_every_real_cell_plus_one_trailing(self, clean_storage):
+    def test_a_divider_follows_every_real_cell_plus_one_trailing_each_carrying_its_own_anchor(
+        self, clean_storage
+    ):
         page = clean_storage
         real = page.locator(".dl-cell:not(.dl-cell-custom)").count()
         dividers = page.locator(".dl-insert").count()
         assert dividers == real + 1
 
-    def test_each_real_cells_divider_carries_that_cells_id_as_anchor(self, clean_storage):
-        page = clean_storage
         first_id = page.locator(".dl-cell:not(.dl-cell-custom)").first.get_attribute("data-cell-id")
         assert page.locator(f'.dl-insert[data-anchor="{first_id}"]').count() == 1
 
 
 class TestAddingACustomCell:
-    def test_the_section_appears_on_a_page_with_cells(self, clean_storage):
+    @pytest.mark.parametrize("kind", ["Code", "Text"])
+    def test_adding_a_cell_appears_in_the_previously_empty_section(self, clean_storage, kind):
         page = clean_storage
+        # Precondition: the section exists on a page with cells, and starts
+        # empty until something is added to it.
         assert page.is_visible("#dl-custom-cells")
         assert page.locator(".dl-cell-custom").count() == 0
 
-    def test_adding_a_code_cell_creates_a_dl_cell_custom(self, clean_storage):
-        page = clean_storage
-        add_via_trailing_divider(page, "Code")
+        add_via_trailing_divider(page, kind)
         page.wait_for_selector(".dl-cell-custom", timeout=5_000)
         assert page.locator(".dl-cell-custom").count() == 1
-        assert page.locator(".dl-cell-custom.dl-cell-text").count() == 0
 
-    def test_adding_a_text_cell_creates_a_dl_cell_text_with_no_run_button(self, clean_storage):
-        page = clean_storage
-        add_via_trailing_divider(page, "Text")
-        page.wait_for_selector(".dl-cell-custom.dl-cell-text", timeout=5_000)
-        cell = page.locator(".dl-cell-custom.dl-cell-text").first
-        assert cell.locator(".dl-btn-run").count() == 0
-        assert cell.locator(".dl-doc-editor").count() == 1
+        if kind == "Code":
+            assert page.locator(".dl-cell-custom.dl-cell-text").count() == 0
+        else:
+            cell = page.locator(".dl-cell-custom.dl-cell-text").first
+            assert cell.count() == 1
+            assert cell.locator(".dl-btn-run").count() == 0
+            assert cell.locator(".dl-doc-editor").count() == 1
 
-    def test_a_divider_right_after_a_real_cell_inserts_the_cell_there(self, clean_storage):
+    @pytest.mark.parametrize("kind", ["Code", "Text"])
+    def test_typing_autosaves_under_its_own_key_not_the_tutorials(self, clean_storage, kind):
         page = clean_storage
-        second_real = page.locator(".dl-cell:not(.dl-cell-custom)").nth(1)
-        second_id = second_real.get_attribute("data-cell-id")
-        page.locator(f'.dl-insert[data-anchor="{second_id}"]').first.locator(
-            ".dl-insert-btn", has_text="Code"
-        ).click()
+        add_via_trailing_divider(page, kind)
         page.wait_for_selector(".dl-cell-custom", timeout=5_000)
-        new_cell = page.locator(".dl-cell-custom").first
-        assert new_cell.get_attribute("data-anchor") == second_id
-        preceding_real = page.evaluate(
-            """() => {
-              let n = document.querySelector('.dl-cell-custom').previousElementSibling;
-              while (n && !n.classList.contains('dl-cell')) n = n.previousElementSibling;
-              return n ? n.dataset.cellId : null;
-            }"""
-        )
-        assert preceding_real == second_id
 
-    def test_typing_autosaves_under_its_own_key_not_the_tutorials(self, clean_storage):
-        page = clean_storage
-        add_via_trailing_divider(page, "Code")
-        page.wait_for_selector(".dl-cell-custom", timeout=5_000)
-        page.click(".dl-cell-custom .cm-content")
-        page.keyboard.type("6 * 7")
+        if kind == "Code":
+            page.click(".dl-cell-custom .cm-content")
+            page.keyboard.type("6 * 7")
+        else:
+            page.fill(".dl-cell-text .dl-doc-editor", "# Heading\n\n**bold** notes")
+
         wait_for_saved_count(page, 1)
         saved = custom_cells_storage(page)
         assert len(saved) == 1
-        assert "6 * 7" in saved[0]["code"]
-        assert saved[0]["type"] == "python"
-        assert saved[0]["anchor"] == TRAILING_ANCHOR
 
-        # The tutorial's own saved-work record never sees it.
-        tutorial_record = page.evaluate("globalThis.dewlab.readSaved()")
-        if tutorial_record:
-            ids = [c["task_id"] for c in tutorial_record["cells"]]
-            assert saved[0]["id"] not in ids
-
-    def test_a_text_cells_notes_autosave_too(self, clean_storage):
-        page = clean_storage
-        add_via_trailing_divider(page, "Text")
-        page.wait_for_selector(".dl-cell-text", timeout=5_000)
-        page.fill(".dl-cell-text .dl-doc-editor", "# Heading\n\n**bold** notes")
-        wait_for_saved_count(page, 1)
-        saved = custom_cells_storage(page)
-        assert saved[0]["type"] == "text"
-        assert "**bold** notes" in saved[0]["code"]
-
-        page.locator(".dl-cell-text .dl-doc-editor").blur()
-        page.wait_for_selector(".dl-cell-text .dl-doc-render:not([hidden])", timeout=5_000)
-        rendered = page.inner_html(".dl-cell-text .dl-doc-render")
-        assert "<h4>Heading</h4>" in rendered
-        assert "<strong>bold</strong>" in rendered
+        if kind == "Code":
+            assert "6 * 7" in saved[0]["code"]
+            assert saved[0]["type"] == "python"
+            assert saved[0]["anchor"] == TRAILING_ANCHOR
+            # The tutorial's own saved-work record never sees it.
+            tutorial_record = page.evaluate("globalThis.dewlab.readSaved()")
+            if tutorial_record:
+                ids = [c["task_id"] for c in tutorial_record["cells"]]
+                assert saved[0]["id"] not in ids
+        else:
+            assert saved[0]["type"] == "text"
+            assert "**bold** notes" in saved[0]["code"]
+            page.locator(".dl-cell-text .dl-doc-editor").blur()
+            page.wait_for_selector(".dl-cell-text .dl-doc-render:not([hidden])", timeout=5_000)
+            rendered = page.inner_html(".dl-cell-text .dl-doc-render")
+            assert "<h4>Heading</h4>" in rendered
+            assert "<strong>bold</strong>" in rendered
 
     def test_a_rendered_text_cells_chrome_is_invisible_until_touched(self, clean_storage):
         """A rendered text cell reads like part of the page, not a code
@@ -190,7 +170,11 @@ class TestAddingACustomCell:
         btn.click()
         assert page.eval_on_selector(".dl-cell-text .dl-doc-editor", "el => el.hidden") is False
 
-    def test_a_custom_cell_survives_a_reload_in_the_same_place(self, clean_storage):
+    def test_inserting_editing_running_and_reloading_all_stick(self, clean_storage):
+        """One lifecycle, three assertion blocks: insert a cell at a real
+        cell's anchor, type into it and run it, then reload — checking the
+        anchor placement, the reload of the typed code, and the reload of
+        the run output all against the same cell."""
         page = clean_storage
         second_real = page.locator(".dl-cell:not(.dl-cell-custom)").nth(1)
         second_id = second_real.get_attribute("data-cell-id")
@@ -198,15 +182,44 @@ class TestAddingACustomCell:
             ".dl-insert-btn", has_text="Code"
         ).click()
         page.wait_for_selector(".dl-cell-custom", timeout=5_000)
+
+        # ---- It lands right after the anchor cell, not at the end.
+        new_cell = page.locator(".dl-cell-custom").first
+        assert new_cell.get_attribute("data-anchor") == second_id
+        preceding_real = page.evaluate(
+            """() => {
+              let n = document.querySelector('.dl-cell-custom').previousElementSibling;
+              while (n && !n.classList.contains('dl-cell')) n = n.previousElementSibling;
+              return n ? n.dataset.cellId : null;
+            }"""
+        )
+        assert preceding_real == second_id
+
         page.click(".dl-cell-custom .cm-content")
-        page.keyboard.type("remember this one")
-        wait_for_saved_count(page, 1)
+        page.keyboard.type("print('from a custom cell')")
+        page.click(".dl-cell-custom .dl-btn-run")
+        page.wait_for_selector(".dl-cell-custom .dl-output .dl-stdout", timeout=120_000)
+        page.wait_for_function(
+            """([key, text]) => {
+              const raw = localStorage.getItem(key);
+              if (!raw) return false;
+              const saved = JSON.parse(raw);
+              return saved.some((c) => (c.output || "").includes(text));
+            }""",
+            arg=[page.evaluate("globalThis.dewlab.customCellsKey()"), "from a custom cell"],
+            timeout=10_000,
+        )
 
         reload_and_wait(page)
+
+        # ---- The cell reappears at the same anchor, with its typed code...
         assert page.locator(".dl-cell-custom").count() == 1
         text = page.eval_on_selector(".dl-cell-custom .cm-content", "el => el.innerText")
-        assert "remember this one" in text
+        assert "print('from a custom cell')" in text
         assert page.locator(".dl-cell-custom").first.get_attribute("data-anchor") == second_id
+
+        # ...and its output.
+        assert "from a custom cell" in page.inner_text(".dl-cell-custom .dl-output")
 
     def test_an_orphaned_anchor_falls_back_to_the_trailing_section(self, clean_storage):
         """A custom cell survives a version change even if the real cell
@@ -226,28 +239,6 @@ class TestAddingACustomCell:
             '() => document.querySelector(\'[data-cell-id="custom-orphan"]\').dataset.anchor'
         )
         assert anchor == TRAILING_ANCHOR
-
-    def test_output_is_saved_and_restored_too(self, clean_storage):
-        page = clean_storage
-        add_via_trailing_divider(page, "Code")
-        page.wait_for_selector(".dl-cell-custom", timeout=5_000)
-        page.click(".dl-cell-custom .cm-content")
-        page.keyboard.type("print('from a custom cell')")
-        page.click(".dl-cell-custom .dl-btn-run")
-        page.wait_for_selector(".dl-cell-custom .dl-output .dl-stdout", timeout=120_000)
-        page.wait_for_function(
-            """([key, text]) => {
-              const raw = localStorage.getItem(key);
-              if (!raw) return false;
-              const saved = JSON.parse(raw);
-              return saved.some((c) => (c.output || "").includes(text));
-            }""",
-            arg=[page.evaluate("globalThis.dewlab.customCellsKey()"), "from a custom cell"],
-            timeout=10_000,
-        )
-
-        reload_and_wait(page)
-        assert "from a custom cell" in page.inner_text(".dl-cell-custom .dl-output")
 
     def test_deleting_one_needs_no_confirmation_and_removes_its_own_divider(self, clean_storage):
         page = clean_storage
@@ -299,37 +290,34 @@ class TestSharingAndLoadingACustomCell:
         output = page.eval_on_selector(".dl-cell-custom .dl-output", "el => el.innerHTML")
         assert output.strip() == ""
 
-    def test_loading_a_shared_cell_never_reuses_its_id(self, clean_storage, tmp_path):
+    @pytest.mark.parametrize(
+        "payload,selector,expected_type",
+        [
+            ({"code": "0", "id": "custom-not-mine"}, ".dl-cell-custom", "python"),
+            ({"type": "text", "code": "# A note"}, ".dl-cell-text", "text"),
+        ],
+        ids=["python-id-reuse", "text-type-preserved"],
+    )
+    def test_loading_a_shared_cell_always_gets_a_fresh_id_and_keeps_its_type(
+        self, clean_storage, tmp_path, payload, selector, expected_type
+    ):
         """A file's own id is never trusted — always a fresh local one, so an
-        imported cell can never collide with one of this reader's own."""
+        imported cell can never collide with one of this reader's own —
+        whatever type of cell it is."""
         page = clean_storage
         shared_file = tmp_path / "shared.json"
-        shared_file.write_text(
-            json.dumps({"dewlab-custom-cell": 1, "code": "0", "id": "custom-not-mine"})
-        )
+        shared_file.write_text(json.dumps({"dewlab-custom-cell": 1, **payload}))
         _open_settings_tab(page, "importsexports")
         with page.expect_file_chooser() as fc_info:
             page.click("#dl-custom-cells-import")
         fc_info.value.set_files(str(shared_file))
-        page.wait_for_selector(".dl-cell-custom", timeout=5_000)
+        page.wait_for_selector(selector, timeout=5_000)
         wait_for_saved_count(page, 1)
         saved = custom_cells_storage(page)
-        assert saved[0]["id"] != "custom-not-mine"
         assert saved[0]["id"].startswith("custom-")
-
-    def test_loading_a_shared_text_cell_keeps_its_type(self, clean_storage, tmp_path):
-        page = clean_storage
-        shared_file = tmp_path / "shared.json"
-        shared_file.write_text(
-            json.dumps({"dewlab-custom-cell": 1, "type": "text", "code": "# A note"})
-        )
-        _open_settings_tab(page, "importsexports")
-        with page.expect_file_chooser() as fc_info:
-            page.click("#dl-custom-cells-import")
-        fc_info.value.set_files(str(shared_file))
-        page.wait_for_selector(".dl-cell-text", timeout=5_000)
-        wait_for_saved_count(page, 1)
-        assert custom_cells_storage(page)[0]["type"] == "text"
+        if "id" in payload:
+            assert saved[0]["id"] != payload["id"]
+        assert saved[0]["type"] == expected_type
 
     def test_a_file_that_is_not_a_shared_cell_is_rejected(self, clean_storage, tmp_path):
         page = clean_storage
@@ -344,18 +332,9 @@ class TestSharingAndLoadingACustomCell:
 
 
 class TestClearingAllCustomCells:
-    def test_asks_for_confirmation_and_respects_cancel(self, clean_storage):
-        page = clean_storage
-        add_via_trailing_divider(page, "Code")
-        page.wait_for_selector(".dl-cell-custom", timeout=5_000)
-
-        _open_settings_tab(page, "importsexports")
-        page.once("dialog", lambda d: d.dismiss())
-        page.click("#dl-custom-cells-clear")
-        page.wait_for_timeout(300)
-        assert page.locator(".dl-cell-custom").count() == 1
-
-    def test_accepting_removes_every_custom_cell_but_keeps_the_seed_dividers(self, clean_storage):
+    def test_cancel_leaves_cells_untouched_but_accepting_clears_them_and_keeps_the_seed_dividers(
+        self, clean_storage
+    ):
         page = clean_storage
         before = page.locator(".dl-insert").count()
         add_via_trailing_divider(page, "Code")
@@ -365,6 +344,11 @@ class TestClearingAllCustomCells:
         )
 
         _open_settings_tab(page, "importsexports")
+        page.once("dialog", lambda d: d.dismiss())
+        page.click("#dl-custom-cells-clear")
+        page.wait_for_timeout(300)
+        assert page.locator(".dl-cell-custom").count() == 2
+
         page.once("dialog", lambda d: d.accept())
         page.click("#dl-custom-cells-clear")
         page.wait_for_timeout(300)

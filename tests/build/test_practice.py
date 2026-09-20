@@ -118,65 +118,66 @@ class TestPagesOfProblems:
         assert "Mixed problems" in other and 'href="tutorials/mixed.html"' in other
         assert 'href="tutorials/mixed.html"' not in (repo / "site" / "computational-methods.html").read_text()
 
-    def test_two_pages_cannot_claim_the_same_tutorial(self, repo):
+    def _two_pages_claim_one_tutorial(self, repo):
         write(repo, "One.\n", slug="one")
         self.practice(repo, "one-practice", practice_for="one")
         self.practice(repo, "more-practice", practice_for="one")
-        with pytest.raises(b.BuildError, match="has one page of problems"):
-            b.build()
 
-    def test_a_page_of_problems_declaring_coverage_is_an_error(self, repo):
+    def _covers_declared_on_a_practice_page(self, repo):
         write(repo, "One.\n", slug="one")
         path = self.practice(repo, "one-practice", practice_for="one")
         path.write_text(path.read_text().replace(
             "practice_for: one\n",
             "practice_for: one\ncovers:\n  a-question:\n    covers: [MIT-1.1]\n"))
-        with pytest.raises(b.BuildError, match="declares `covers:`"):
-            b.build()
 
-    def test_a_mixed_set_naming_one_tutorial_is_an_error(self, repo):
+    def _mixed_naming_one_tutorial(self, repo):
         write(repo, "One.\n", slug="one")
         self.practice(repo, "mixed", practice_across=["one"])
-        with pytest.raises(b.BuildError, match="practice_for is for"):
-            b.build()
 
-    def test_mixed_naming_a_page_that_is_not_a_mixed_set_is_an_error(self, repo):
+    def _mixed_naming_a_non_mixed_page(self, repo):
         write(repo, "One.\n", slug="one")
         course(repo, "zz-other", {}, mixed=["one"])
-        with pytest.raises(b.BuildError, match="lists one under `mixed:`, and it is not a mixed problem set"):
-            b.build()
 
-    def test_a_mixed_set_naming_a_slug_that_does_not_exist_is_an_error(self, repo):
+    def _mixed_naming_a_nonexistent_slug(self, repo):
         write(repo, "One.\n", slug="one")
         self.practice(repo, "mixed", practice_across=["one", "nowhere"])
-        with pytest.raises(b.BuildError, match="there is no folder tutorials/nowhere/"):
-            b.build()
 
-    def test_a_mixed_set_naming_a_page_of_problems_is_an_error(self, repo):
+    def _mixed_naming_a_practice_page(self, repo):
         write(repo, "One.\n", slug="one")
         write(repo, "Two.\n", slug="two")
         self.practice(repo, "one-practice", practice_for="one")
         self.practice(repo, "mixed", practice_across=["two", "one-practice"])
-        with pytest.raises(b.BuildError, match="itself a page of problems"):
-            b.build()
 
-    def test_a_mixed_set_naming_itself_is_an_error(self, repo):
+    def _mixed_naming_itself(self, repo):
         write(repo, "One.\n", slug="one")
         self.practice(repo, "mixed", practice_across=["one", "mixed"])
-        with pytest.raises(b.BuildError, match="which is itself"):
-            b.build()
 
-    def test_a_repeated_slug_is_an_error(self, repo):
+    def _repeated_slug_in_practice_across(self, repo):
         write(repo, "One.\n", slug="one")
         write(repo, "Two.\n", slug="two")
         self.practice(repo, "mixed", practice_across=["one", "two", "one"])
-        with pytest.raises(b.BuildError, match="more than once"):
-            b.build()
 
-    def test_a_page_cannot_be_both_kinds_at_once(self, repo):
+    def _both_practice_for_and_practice_across(self, repo):
         write(repo, "One.\n", slug="one")
         write(repo, "Two.\n", slug="two")
         self.practice(repo, "mixed", practice_for="one",
                       practice_across=["one", "two"])
-        with pytest.raises(b.BuildError, match="cannot do both"):
+
+    ERRORS = {
+        "two pages claim one tutorial": (_two_pages_claim_one_tutorial, "has one page of problems"),
+        "a practice page declares covers": (_covers_declared_on_a_practice_page, "declares `covers:`"),
+        "a mixed set names one tutorial": (_mixed_naming_one_tutorial, "practice_for is for"),
+        "mixed: names a page that is not a mixed set": (_mixed_naming_a_non_mixed_page, "lists one under `mixed:`, and it is not a mixed problem set"),
+        "a mixed set names a slug that does not exist": (_mixed_naming_a_nonexistent_slug, "there is no folder tutorials/nowhere/"),
+        "a mixed set names a page of problems": (_mixed_naming_a_practice_page, "itself a page of problems"),
+        "a mixed set names itself": (_mixed_naming_itself, "which is itself"),
+        "a repeated slug in practice_across": (_repeated_slug_in_practice_across, "more than once"),
+        "a page sets both practice_for and practice_across": (_both_practice_for_and_practice_across, "cannot do both"),
+    }
+
+    @pytest.mark.parametrize("case", sorted(ERRORS))
+    def test_a_broken_page_of_problems_fails_the_build(self, repo, case):
+        setup, match = self.ERRORS[case]
+        setup(self, repo)
+        with pytest.raises(b.BuildError, match=match):
             b.build()

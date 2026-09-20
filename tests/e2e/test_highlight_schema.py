@@ -122,7 +122,7 @@ def _anchor_for_target_paragraph(page) -> dict:
 
 
 class TestHighlightSchema:
-    def test_a_highlight_round_trips_through_save_and_reload(self, page):
+    def test_a_highlight_round_trips_and_a_successful_restore_stays_silent(self, page):
         anchor = _anchor_for_target_paragraph(page)
         page.evaluate(
             """(anchor) => dewlab.highlights.push({
@@ -145,12 +145,19 @@ class TestHighlightSchema:
         assert len(restored) == 1
         assert restored[0]["id"] == "h-test"
         assert restored[0]["note"] == "worth remembering"
+        # A successful restore is silent -- announceRestore()'s guard only
+        # fires on a dropped highlight (or cell), never on an ordinary one.
+        assert page.locator(".dl-restored").count() == 0
 
-    def test_a_dropped_highlights_note_is_never_lost_along_with_it(self, page):
+    def test_a_dropped_highlight_keeps_its_note_and_is_reported_in_the_restore_summary(
+        self, page
+    ):
         # The anchor is what can go stale, not the note -- the record still
         # carries the note in localStorage even once the highlight itself
         # is dropped from the live page, in case a future version's prose
-        # brings the same passage back (or a student exports the file).
+        # brings the same passage back (or a student exports the file). The
+        # restore box, meanwhile, is the reader-visible half of that same
+        # drop.
         _seed(page, {
             "tutorial-id": SLUG,
             "tutorial-version": "2026.08.23.1",
@@ -174,27 +181,6 @@ class TestHighlightSchema:
         assert saved["highlights"][0]["note"] == (
             "a note worth keeping even if the highlight itself is gone"
         )
-
-    def test_a_dropped_highlight_is_reported_in_the_restore_summary(self, page):
-        _seed(page, {
-            "tutorial-id": SLUG,
-            "tutorial-version": "2026.08.23.1",
-            "saved_at": "2026-01-01T00:00:00.000Z",
-            "notes": "",
-            "cells": [],
-            "highlights": [{
-                "id": "h-gone",
-                "block_index": 0,
-                "quote": "text this fixture never actually contains anywhere",
-                "prefix": "",
-                "suffix": "",
-                "note": "",
-                "created_at": "2026-01-01T00:00:00.000Z",
-            }],
-        })
-        _reload_and_wait(page)
-
-        assert page.evaluate("dewlab.highlights") == []
         box = page.locator(".dl-restored")
         assert box.count() == 1
         assert "could not be put back" in box.inner_text()
@@ -221,22 +207,3 @@ class TestHighlightSchema:
 
         box_text = page.locator(".dl-restored").inner_text()
         assert "2 of your highlights were" in box_text
-
-    def test_an_unchanged_highlight_is_not_reported_as_dropped(self, page):
-        # A page with no cells, restoring a highlight successfully, used to
-        # never show the restore box at all -- announceRestore()'s guard
-        # only checked restored/dropped *cells*. Confirms that stays true:
-        # a *successful* highlight restore is still silent, only a dropped
-        # one is worth a notice.
-        anchor = _anchor_for_target_paragraph(page)
-        page.evaluate(
-            """(anchor) => dewlab.highlights.push({
-                id: "h-fine", note: "", created_at: new Date().toISOString(), ...anchor,
-            })""",
-            anchor,
-        )
-        page.evaluate("dewlab.saveNow()")
-        _reload_and_wait(page)
-
-        assert len(page.evaluate("dewlab.highlights")) == 1
-        assert page.locator(".dl-restored").count() == 0

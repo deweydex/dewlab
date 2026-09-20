@@ -54,6 +54,11 @@ message rather than failing.
 There is also [`tests/MANUAL_CHECKLIST.md`](tests/MANUAL_CHECKLIST.md) for the
 things a browser test does not cover well.
 
+New to the suite, or not sure where a new test belongs?
+[`docs/tests-explained.md`](docs/tests-explained.md) maps what's in each
+directory and file, and why, plus a short decision guide for where a new
+one goes.
+
 ---
 
 ## What runs in CI

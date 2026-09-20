@@ -108,19 +108,22 @@ class TestCells:
         assert "</script><script>alert(1)" not in page
         assert cells["x"]["code"] == 'print("</script><script>alert(1)")'
 
-    def test_cells_keep_document_order(self, repo):
-        write(repo, "```python exec\nid: one\n1\n```\n\ntext\n\n```python exec\nid: two\n2\n```\n")
+    @pytest.mark.parametrize("markdown", [
+        "```python exec\nid: one\n1\n```\n\ntext\n\n```python exec\nid: two\n2\n```\n",
+        "```sql exec\nid: one\nSELECT 1;\n```\n\ntext\n\n```python exec\nid: two\n2\n```\n",
+    ], ids=["same_type", "mixed_type"])
+    def test_cells_keep_document_order(self, repo, markdown):
+        write(repo, markdown)
         b.build()
         assert [c["id"] for c in manifest(built(repo))["cells"]] == ["one", "two"]
 
-    def test_a_cell_without_an_id_fails_the_build(self, repo):
-        write(repo, "```python exec\nprint(1)\n```\n")
-        with pytest.raises(b.BuildError, match="no `id:` line"):
-            b.build()
-
-    def test_two_cells_sharing_an_id_fail_the_build(self, repo):
-        write(repo, "```python exec\nid: same\n1\n```\n\n```python exec\nid: same\n2\n```\n")
-        with pytest.raises(b.BuildError, match="share the id"):
+    @pytest.mark.parametrize("markdown, match", [
+        ("```python exec\nprint(1)\n```\n", "no `id:` line"),
+        ("```python exec\nid: same\n1\n```\n\n```python exec\nid: same\n2\n```\n", "share the id"),
+    ])
+    def test_id_faults_fail_the_build(self, repo, markdown, match):
+        write(repo, markdown)
+        with pytest.raises(b.BuildError, match=match):
             b.build()
 
 
@@ -158,10 +161,10 @@ console.log("hi");
 class TestSqlCells:
     """A sql exec cell shares python exec's header grammar and manifest shape;
     only the fence's language word and the pill it produces differ. One sql
-    cell alone; a sql cell with a hint and a python cell on one page; the
-    two types in order; a fence in an unknown language. (What a python-only
-    page does not carry — no type key, no needsSqlite — is checked in
-    TestCells.)"""
+    cell alone; a sql cell with a hint and a python cell on one page; and
+    a fence in an unknown language. (What a python-only page does not
+    carry — no type key, no needsSqlite — is checked in TestCells, which
+    also covers document order across mixed cell types.)"""
 
     def test_one_sql_exec_fence_becomes_a_typed_cell_that_needs_sqlite(self, repo):
         write(repo, SQL_CELL)
@@ -191,11 +194,6 @@ class TestSqlCells:
         write(repo, "```rust exec\nid: c\nfn main() {}\n```\n")
         with pytest.raises(b.BuildError, match="not one of"):
             b.build()
-
-    def test_cells_of_different_types_keep_document_order(self, repo):
-        write(repo, "```sql exec\nid: one\nSELECT 1;\n```\n\ntext\n\n```python exec\nid: two\n2\n```\n")
-        b.build()
-        assert [c["id"] for c in manifest(built(repo))["cells"]] == ["one", "two"]
 
 
 class TestSiteEditors:
@@ -238,35 +236,18 @@ class TestSiteEditors:
         assert "dl-btn-site-run" not in page
         assert "dl-site-console-output" not in page
 
-    def test_an_unknown_pane_language_fails_the_build(self, repo):
-        write(repo, "```php site\nid: c\nsite: hero\n<?php ?>\n```\n")
-        with pytest.raises(b.BuildError, match="not one of"):
-            b.build()
-
-    def test_a_pane_with_no_id_fails_the_build(self, repo):
-        write(repo, "```html site\nsite: hero\n<p>hi</p>\n```\n")
-        with pytest.raises(b.BuildError, match="no `id:` line"):
-            b.build()
-
-    def test_a_pane_with_no_site_name_fails_the_build(self, repo):
-        write(repo, "```html site\nid: c\n<p>hi</p>\n```\n")
-        with pytest.raises(b.BuildError, match="no `site:` line"):
-            b.build()
-
-    def test_two_panes_of_the_same_language_in_one_editor_fails_the_build(self, repo):
-        write(repo, SITE_HTML + "```html site\nid: hero-html-2\nsite: hero\n<p>again</p>\n```\n")
-        with pytest.raises(b.BuildError, match="two html panes"):
-            b.build()
-
-    def test_non_consecutive_panes_of_the_same_site_fail_the_build(self, repo):
-        write(repo, SITE_HTML + "\ntext in between\n\n" + SITE_CSS)
-        with pytest.raises(b.BuildError, match="not consecutive"):
-            b.build()
-
-    def test_a_site_pane_id_cannot_collide_with_a_cell_id(self, repo):
-        write(repo, "```html site\nid: dup\nsite: hero\n<p>hi</p>\n```\n\n"
-                    "```python exec\nid: dup\nprint(1)\n```\n")
-        with pytest.raises(b.BuildError, match="share the id"):
+    @pytest.mark.parametrize("markdown, match", [
+        ("```php site\nid: c\nsite: hero\n<?php ?>\n```\n", "not one of"),
+        ("```html site\nsite: hero\n<p>hi</p>\n```\n", "no `id:` line"),
+        ("```html site\nid: c\n<p>hi</p>\n```\n", "no `site:` line"),
+        (SITE_HTML + "```html site\nid: hero-html-2\nsite: hero\n<p>again</p>\n```\n", "two html panes"),
+        (SITE_HTML + "\ntext in between\n\n" + SITE_CSS, "not consecutive"),
+        ("```html site\nid: dup\nsite: hero\n<p>hi</p>\n```\n\n"
+         "```python exec\nid: dup\nprint(1)\n```\n", "share the id"),
+    ])
+    def test_site_editor_faults_fail_the_build(self, repo, markdown, match):
+        write(repo, markdown)
+        with pytest.raises(b.BuildError, match=match):
             b.build()
 
     def test_two_different_sites_with_a_cell_between_them_both_render_unconfused(self, repo):
@@ -288,14 +269,13 @@ class TestIncludes:
         b.build()
         assert manifest(built(repo))["cells"][0]["code"] == "shared = 1\nshared"
 
-    def test_a_missing_include_fails_the_build(self, repo):
-        write(repo, "```python exec\nid: c\n{{include: setup/absent.py}}\n```\n")
-        with pytest.raises(b.BuildError, match="does not exist"):
-            b.build()
-
-    def test_an_include_cannot_escape_the_repository(self, repo):
-        write(repo, "```python exec\nid: c\n{{include: ../../etc/passwd}}\n```\n")
-        with pytest.raises(b.BuildError, match="escapes the repository|does not exist"):
+    @pytest.mark.parametrize("markdown, match", [
+        ("```python exec\nid: c\n{{include: setup/absent.py}}\n```\n", "does not exist"),
+        ("```python exec\nid: c\n{{include: ../../etc/passwd}}\n```\n", "escapes the repository|does not exist"),
+    ])
+    def test_include_faults_fail_the_build(self, repo, markdown, match):
+        write(repo, markdown)
+        with pytest.raises(b.BuildError, match=match):
             b.build()
 
 
@@ -399,14 +379,13 @@ class TestFrontmatter:
         with pytest.raises(b.BuildError, match="missing version"):
             b.build()
 
-    def test_a_file_without_frontmatter_fails_the_build(self, repo):
-        (tutorial_path(repo, "bare")).write_text("Just prose.\n")
-        with pytest.raises(b.BuildError, match="no YAML frontmatter"):
-            b.build()
-
-    def test_unclosed_frontmatter_fails_the_build(self, repo):
-        (tutorial_path(repo, "bad")).write_text("---\ntitle: x\n")
-        with pytest.raises(b.BuildError, match="never closed"):
+    @pytest.mark.parametrize("slug, content, match", [
+        ("bare", "Just prose.\n", "no YAML frontmatter"),
+        ("bad", "---\ntitle: x\n", "never closed"),
+    ])
+    def test_raw_frontmatter_faults_fail_the_build(self, repo, slug, content, match):
+        tutorial_path(repo, slug).write_text(content)
+        with pytest.raises(b.BuildError, match=match):
             b.build()
 
     def test_a_packages_list_widens_the_manifest_and_a_title_with_markup_is_escaped(self, repo):
@@ -536,24 +515,26 @@ class TestStrikethroughAndTaskLists:
 
 class TestListsWrittenTightAgainstProse:
     """Markdown written elsewhere often puts a list straight under a
-    paragraph. Each list page counts its items, so a page holds one list:
-    a bullet list, a numbered list, one with its blank line, one of three
-    items; then a page with a list under a heading beside one under a
-    paragraph, and a page whose leading hyphen is not a list at all."""
+    paragraph. One parametrized test covers a bullet list, a numbered
+    list and a three-item list, each proving the tight-list regex turns
+    it into exactly one list tag without splitting its items apart; then
+    a page with a list that already had its blank line, a list under a
+    heading beside one under a paragraph, and a page whose leading hyphen
+    is not a list at all."""
 
-    def test_a_bullet_list_under_a_paragraph_still_becomes_a_list(self, repo):
-        write(repo, "When you look at it, consider:\n- Is it symmetric?\n- Is there one peak?\n")
+    @pytest.mark.parametrize("markdown, list_tag, count", [
+        ("When you look at it, consider:\n- Is it symmetric?\n- Is there one peak?\n", "ul", 2),
+        ("Then do this:\n1. Print the first value\n2. Print the last value\n", "ol", 2),
+        ("Consider:\n- One\n- Two\n- Three\n", "ul", 3),
+    ], ids=["bullet", "numbered", "three_item"])
+    def test_a_list_under_a_paragraph_still_becomes_one_list(self, repo, markdown, list_tag, count):
+        write(repo, markdown)
         b.build()
         page = built(repo)
-        assert "<ul>" in page
-        assert page.count("<li>") == 2
-
-    def test_a_numbered_list_under_a_paragraph_still_becomes_a_list(self, repo):
-        write(repo, "Then do this:\n1. Print the first value\n2. Print the last value\n")
-        b.build()
-        page = built(repo)
-        assert "<ol>" in page
-        assert page.count("<li>") == 2
+        # Exactly one list tag: the items are not split apart into several
+        # lists.
+        assert page.count(f"<{list_tag}>") == 1
+        assert page.count("<li>") == count
 
     def test_the_paragraph_above_a_list_and_a_heading_above_another_are_left_intact(self, repo):
         write(repo, "The pattern appears everywhere:\n- Looking up a contact\n\n"
@@ -569,13 +550,6 @@ class TestListsWrittenTightAgainstProse:
         write(repo, "Consider:\n\n- One\n- Two\n")
         b.build()
         assert built(repo).count("<li>") == 2
-
-    def test_items_within_a_list_are_not_split_apart(self, repo):
-        write(repo, "Consider:\n- One\n- Two\n- Three\n")
-        b.build()
-        page = built(repo)
-        assert page.count("<ul>") == 1
-        assert page.count("<li>") == 3
 
     def test_a_hyphenated_sentence_is_not_mistaken_for_a_list(self, repo):
         write(repo, "A sentence.\n-5 degrees is cold.\n")
@@ -660,33 +634,36 @@ class TestNotesAndDatasets:
         with pytest.raises(b.BuildError, match="no alt attribute"):
             b.build()
 
-    def test_two_notes_sharing_an_id_fail_the_build(self, repo):
+    def _duplicate_note_id(repo):
         write(repo,
               '<aside class="dl-note" id="dup">\n\nOne.\n\n</aside>\n\n'
               '<aside class="dl-note" id="dup">\n\nTwo.\n\n</aside>\n', slug="one")
-        with pytest.raises(b.BuildError, match="share the id"):
-            b.build()
 
-    def test_a_dataset_with_no_csv_file_fails_the_build(self, repo):
+    def _dataset_missing_csv(repo):
         path = write(repo, "Prose.\n", slug="one")
         add_frontmatter(path, "datasets:\n  - missing\n")
         dataset(repo, "missing", with_csv=False)
-        with pytest.raises(b.BuildError, match="data/missing.csv"):
-            b.build()
 
-    def test_a_dataset_with_no_attribution_file_fails_the_build(self, repo):
+    def _dataset_missing_attribution(repo):
         path = write(repo, "Prose.\n", slug="one")
         add_frontmatter(path, "datasets:\n  - missing\n")
         dataset(repo, "missing", with_attribution=False)
-        with pytest.raises(b.BuildError, match="data/missing.yaml"):
-            b.build()
 
-    def test_an_attribution_file_missing_a_field_fails_the_build(self, repo):
+    def _dataset_incomplete_attribution(repo):
         path = write(repo, "Prose.\n", slug="one")
         add_frontmatter(path, "datasets:\n  - incomplete\n")
         (repo / "data" / "incomplete.csv").write_text("a,b\n1,2\n")
         (repo / "data" / "incomplete.yaml").write_text('source: "Somewhere"\n')
-        with pytest.raises(b.BuildError, match="license, description"):
+
+    @pytest.mark.parametrize("setup, match", [
+        (_duplicate_note_id, "share the id"),
+        (_dataset_missing_csv, "data/missing.csv"),
+        (_dataset_missing_attribution, "data/missing.yaml"),
+        (_dataset_incomplete_attribution, "license, description"),
+    ])
+    def test_note_and_dataset_faults_fail_the_build(self, repo, setup, match):
+        setup(repo)
+        with pytest.raises(b.BuildError, match=match):
             b.build()
 
 
@@ -704,14 +681,12 @@ class TestFolds:
         assert "dl-answer" in built(repo)
         assert "dl-hint" in built(repo)
 
-    def test_a_fold_with_no_class_stops_the_build(self, repo):
-        write(repo, "<details><summary>Check solution</summary>\n\nHere.\n\n</details>\n")
-        with pytest.raises(b.BuildError, match="names no style"):
-            b.build()
-
-    def test_a_fold_with_the_wrong_class_stops_the_build(self, repo):
-        write(repo, '<details class="solution"><summary>answer</summary>\n\n'
-                    "Here.\n\n</details>\n")
+    @pytest.mark.parametrize("markdown", [
+        "<details><summary>Check solution</summary>\n\nHere.\n\n</details>\n",
+        '<details class="solution"><summary>answer</summary>\n\nHere.\n\n</details>\n',
+    ], ids=["no_class", "wrong_class"])
+    def test_a_fold_naming_no_recognised_style_stops_the_build(self, repo, markdown):
+        write(repo, markdown)
         with pytest.raises(b.BuildError, match="names no style"):
             b.build()
 
@@ -758,15 +733,6 @@ class TestTwoReleasesOnOneDay:
     def versions(self, repo, slug: str) -> list[dict]:
         page = (repo / "site" / "tutorials" / f"{slug}.html").read_text()
         return manifest(page).get("versions", [])
-
-    def test_two_releases_on_one_day_are_told_apart(self, repo):
-        self.release(repo, "sample", "2026.08.23.1")
-        self.release(repo, "sample", "2026.08.23.2")
-        b.build()
-        shown = [v["date"] for v in self.versions(repo, "sample")]
-        assert len(shown) == 2
-        assert len(set(shown)) == 2, f"both options read the same: {shown}"
-        assert shown == ["23 August 2026 (2)", "23 August 2026 (1)"]
 
     def test_releases_on_different_days_keep_a_plain_date(self, repo):
         """The number is noise where the date already separates them."""
@@ -871,9 +837,16 @@ class TestStagedHints:
         # for: names a cell anywhere on the page.
         assert 'data-cell="later"' in built(repo)
 
-    def test_a_hint_with_no_cell_above_and_no_for_fails(self, repo):
-        write(repo, "```hint\nLost.\n```\n")
-        with pytest.raises(b.BuildError, match="no exec cell above it"):
+    @pytest.mark.parametrize("markdown, match", [
+        ("```hint\nLost.\n```\n", "no exec cell above it"),
+        (CELL + "```hint\nfor: nope\nX.\n```\n", "does not have: 'nope'"),
+        (CELL + "```hint\nafter: soon\nX.\n```\n", "cannot read"),
+        (CELL + "```hint\nafter: 5 bananas\nX.\n```\n", "does not track"),
+        (CELL + "```hint\nafter: 5 errors\n```\n", "no text"),
+    ])
+    def test_hint_faults_fail_the_build(self, repo, markdown, match):
+        write(repo, markdown)
+        with pytest.raises(b.BuildError, match=match):
             b.build()
 
     def test_a_footnote_works_in_prose_a_fold_and_a_note(self, repo):
@@ -915,26 +888,6 @@ class TestStagedHints:
         # blanked before the check, so a hint can teach regexes.
         write(repo, self.CELL + "```hint\nUse `[^aeiou]` for a consonant.\n```\n")
         b.build()
-
-    def test_a_hint_naming_a_missing_cell_fails(self, repo):
-        write(repo, self.CELL + "```hint\nfor: nope\nX.\n```\n")
-        with pytest.raises(b.BuildError, match="does not have: 'nope'"):
-            b.build()
-
-    def test_an_unreadable_trigger_fails(self, repo):
-        write(repo, self.CELL + "```hint\nafter: soon\nX.\n```\n")
-        with pytest.raises(b.BuildError, match="cannot read"):
-            b.build()
-
-    def test_an_unknown_signal_fails(self, repo):
-        write(repo, self.CELL + "```hint\nafter: 5 bananas\nX.\n```\n")
-        with pytest.raises(b.BuildError, match="does not track"):
-            b.build()
-
-    def test_an_empty_hint_fails(self, repo):
-        write(repo, self.CELL + "```hint\nafter: 5 errors\n```\n")
-        with pytest.raises(b.BuildError, match="no text"):
-            b.build()
 
     def test_expect_travels_in_the_manifest_only_when_set(self, repo):
         write(repo, "```python exec\nid: a\nexpect: total == 6\ntotal = 0\n```\n\n"

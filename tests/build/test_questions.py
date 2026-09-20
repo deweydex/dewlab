@@ -69,19 +69,21 @@ class TestMultipleChoice:
         assert "Which prints <code>&lt;b&gt;</code>?" in page
         assert '<code>print("&lt;b&gt;")</code>' in page
 
-    def test_a_question_with_no_correct_line_fails_the_build(self, repo):
-        write(repo, "```question\nid: q\ntype: multiple-choice\n\nQ?\n\n- a\n- b\n```\n")
-        with pytest.raises(b.BuildError, match="no `correct:` line"):
-            b.build()
-
-    def test_correct_naming_no_such_option_fails_the_build(self, repo):
-        write(repo, "```question\nid: q\ntype: multiple-choice\ncorrect: 9\n\nQ?\n\n- a\n- b\n```\n")
-        with pytest.raises(b.BuildError, match="does not name one of its 2 options"):
-            b.build()
-
-    def test_fewer_than_two_options_fails_the_build(self, repo):
-        write(repo, "```question\nid: q\ntype: multiple-choice\ncorrect: 1\n\nQ?\n\n- only one\n```\n")
-        with pytest.raises(b.BuildError, match="fewer than two options"):
+    @pytest.mark.parametrize(
+        "body,match",
+        [
+            ("```question\nid: q\ntype: multiple-choice\n\nQ?\n\n- a\n- b\n```\n",
+             "no `correct:` line"),
+            ("```question\nid: q\ntype: multiple-choice\ncorrect: 9\n\nQ?\n\n- a\n- b\n```\n",
+             "does not name one of its 2 options"),
+            ("```question\nid: q\ntype: multiple-choice\ncorrect: 1\n\nQ?\n\n- only one\n```\n",
+             "fewer than two options"),
+        ],
+        ids=["no-correct-line", "correct-names-nothing", "too-few-options"],
+    )
+    def test_a_broken_correct_line_or_option_count_fails_the_build(self, repo, body, match):
+        write(repo, body)
+        with pytest.raises(b.BuildError, match=match):
             b.build()
 
 
@@ -118,14 +120,19 @@ class TestFillInTheBlank:
         assert prompt.index('data-expected="one"') < prompt.index('data-expected="two"')
         assert "First" in prompt and ", then" in prompt and "." in prompt
 
-    def test_no_gap_at_all_fails_the_build(self, repo):
-        write(repo, "```question\nid: q\ntype: fill-in-the-blank\n\nNo gaps here.\n```\n")
-        with pytest.raises(b.BuildError, match=r"no \{\.\.\.\} gap"):
-            b.build()
-
-    def test_an_unclosed_brace_fails_the_build(self, repo):
-        write(repo, "```question\nid: q\ntype: fill-in-the-blank\n\nAn {unclosed gap.\n```\n")
-        with pytest.raises(b.BuildError, match="unclosed"):
+    @pytest.mark.parametrize(
+        "body,match",
+        [
+            ("```question\nid: q\ntype: fill-in-the-blank\n\nNo gaps here.\n```\n",
+             r"no \{\.\.\.\} gap"),
+            ("```question\nid: q\ntype: fill-in-the-blank\n\nAn {unclosed gap.\n```\n",
+             "unclosed"),
+        ],
+        ids=["no-gap", "unclosed-brace"],
+    )
+    def test_a_missing_or_unclosed_gap_fails_the_build(self, repo, body, match):
+        write(repo, body)
+        with pytest.raises(b.BuildError, match=match):
             b.build()
 
 
@@ -134,34 +141,42 @@ class TestQuestionChecks:
     a recognised type, and an id no cell or other question on the page
     already uses — cells and questions are one saved-work record."""
 
-    def test_a_question_without_an_id_fails_the_build(self, repo):
-        write(repo, "```question\ntype: multiple-choice\ncorrect: 1\n\nQ?\n\n- a\n- b\n```\n")
-        with pytest.raises(b.BuildError, match="no `id:` line"):
+    @pytest.mark.parametrize(
+        "body,match",
+        [
+            ("```question\ntype: multiple-choice\ncorrect: 1\n\nQ?\n\n- a\n- b\n```\n",
+             "no `id:` line"),
+            ("```question\nid: q\ntype: essay\n\nWrite an essay.\n```\n",
+             "not one of"),
+        ],
+        ids=["missing-id", "unrecognised-type"],
+    )
+    def test_a_question_missing_its_id_or_naming_an_unknown_type_fails_the_build(self, repo, body, match):
+        write(repo, body)
+        with pytest.raises(b.BuildError, match=match):
+            b.build()
+
+    @pytest.mark.parametrize(
+        "body",
+        [
+            "```python exec\nid: shared\n1\n```\n\n"
+            "```question\nid: shared\ntype: multiple-choice\ncorrect: 1\n\nQ?\n\n- a\n- b\n```\n",
+            "```question\nid: same\ntype: multiple-choice\ncorrect: 1\n\nQ?\n\n- a\n- b\n```\n\n"
+            "```question\nid: same\ntype: fill-in-the-blank\n\n{gap}\n```\n",
+        ],
+        ids=["cell-vs-question", "question-vs-question"],
+    )
+    def test_an_id_shared_with_a_cell_or_another_question_fails_the_build(self, repo, body):
+        write(repo, body)
+        with pytest.raises(b.BuildError, match="shares its id"):
             b.build()
 
     def test_a_footnote_inside_a_question_fails_the_build(self, repo):
         # A question fence is converted on its own, so a footnote written
-        # in one cannot reach the foot of the page — see no_footnotes_in().
+        # in one cannot reach the foot of the page -- see no_footnotes_in().
         write(repo, "```question\nid: q\ntype: multiple-choice\ncorrect: 1\n\n"
                     "Which one[^why]?\n\n- a\n- b\n```\n\n[^why]: Because.\n")
         with pytest.raises(b.BuildError, match="has a footnote in it"):
-            b.build()
-
-    def test_an_unrecognised_type_fails_the_build(self, repo):
-        write(repo, "```question\nid: q\ntype: essay\n\nWrite an essay.\n```\n")
-        with pytest.raises(b.BuildError, match="not one of"):
-            b.build()
-
-    def test_a_question_sharing_a_cells_id_fails_the_build(self, repo):
-        write(repo, "```python exec\nid: shared\n1\n```\n\n"
-                     "```question\nid: shared\ntype: multiple-choice\ncorrect: 1\n\nQ?\n\n- a\n- b\n```\n")
-        with pytest.raises(b.BuildError, match="shares its id"):
-            b.build()
-
-    def test_two_questions_sharing_an_id_fail_the_build(self, repo):
-        write(repo, "```question\nid: same\ntype: multiple-choice\ncorrect: 1\n\nQ?\n\n- a\n- b\n```\n\n"
-                     "```question\nid: same\ntype: fill-in-the-blank\n\n{gap}\n```\n")
-        with pytest.raises(b.BuildError, match="shares its id"):
             b.build()
 
     def test_a_question_between_two_cells_leaves_neither_lost(self, repo):
@@ -183,7 +198,9 @@ class TestQuestionMaths:
     question's prompt and options convert on their own, with no shared
     page-level maths list to append to."""
 
-    def test_maths_works_in_a_multiple_choice_prompt_and_an_option(self, repo):
+    def test_maths_works_in_a_multiple_choice_prompt_and_option_and_in_a_fill_in_the_blank_sentence(
+        self, repo
+    ):
         write(repo, r"```question" "\n"
                     "id: q\n"
                     "type: multiple-choice\n"
@@ -198,7 +215,6 @@ class TestQuestionMaths:
         assert '<button type="button" class="dl-question-option" data-option="1" data-correct="true"><span class="dl-math">8</span></button>' in page
         assert manifest(page)["math"] is True
 
-    def test_maths_works_in_a_fill_in_the_blank_sentence_alongside_a_gap(self, repo):
         write(repo, "```question\nid: q\ntype: fill-in-the-blank\n\n"
                     r"When $r = 2$, the area is {four} times $\pi$." + "\n```\n")
         b.build()

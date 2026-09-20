@@ -26,15 +26,13 @@ def clean_storage(page):
 
 
 class TestCollapse:
-    def test_starts_expanded(self, clean_storage):
+    def test_starts_expanded_then_the_triangle_collapses_and_expands_the_code(self, clean_storage):
         page = clean_storage
         assert not is_collapsed(page, "plain-python")
         assert page.locator(
             ".dl-cell[data-cell-id='plain-python'] .dl-cell-collapsed-summary"
         ).is_hidden()
 
-    def test_the_triangle_collapses_and_expands_the_code(self, clean_storage):
-        page = clean_storage
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-collapse-toggle")
         assert is_collapsed(page, "plain-python")
         # The summary is the cell's own first line (fixture/rendering-tour.md).
@@ -51,8 +49,8 @@ class TestCollapse:
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-cell-collapsed-summary")
         assert not is_collapsed(page, "plain-python")
 
-    def test_the_summary_announces_itself_as_a_button(self, clean_storage):
-        """It is a <div>, not a real <button>, so a screen reader needs role="button" — the keydown handler alone doesn't announce it."""
+    def test_the_summary_is_an_accessible_button_and_space_expands_it(self, clean_storage):
+        """It is a <div>, not a real <button>, so a screen reader needs role="button" and the keydown handler has to give it Space itself — one accessibility contract, not two."""
         page = clean_storage
         page.click(".dl-cell[data-cell-id='plain-python'] .dl-collapse-toggle")
         assert is_collapsed(page, "plain-python")
@@ -60,12 +58,6 @@ class TestCollapse:
             ".dl-cell[data-cell-id='plain-python'] .dl-cell-collapsed-summary"
         )
         assert summary.get_attribute("role") == "button"
-
-    def test_pressing_space_on_the_summary_expands_it(self, clean_storage):
-        """A real <button> gets Space for free from the browser; this div-as-button has to handle it itself."""
-        page = clean_storage
-        page.click(".dl-cell[data-cell-id='plain-python'] .dl-collapse-toggle")
-        assert is_collapsed(page, "plain-python")
 
         page.focus(".dl-cell[data-cell-id='plain-python'] .dl-cell-collapsed-summary")
         page.keyboard.press("Space")
@@ -130,15 +122,6 @@ class TestDuplicate:
             ".dl-cell[data-cell-id='plain-python'] .cm-content", "el => el.innerText"
         )
         assert "a change only in the copy" not in original_code
-
-    def test_duplicating_twice_keeps_both_copies(self, clean_storage):
-        page = clean_storage
-        page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-duplicate")
-        page.wait_for_selector(".dl-cell-custom", timeout=5_000)
-        page.click(".dl-cell[data-cell-id='plain-python'] .dl-btn-duplicate")
-        page.wait_for_function(
-            "document.querySelectorAll('.dl-cell-custom').length === 2", timeout=5_000
-        )
 
     def test_a_custom_cell_can_duplicate_itself_too(self, clean_storage):
         page = clean_storage

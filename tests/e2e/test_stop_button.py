@@ -28,7 +28,8 @@ def test_the_page_is_cross_origin_isolated(page):
     assert page.evaluate("typeof SharedArrayBuffer") == "function"
 
 
-def test_stopping_a_genuine_infinite_loop(page):
+def test_stopping_an_infinite_loop_then_running_the_cell_again(page):
+    """The worker survives an interrupt rather than needing a reboot — run_cell() catches KeyboardInterrupt like any other exception, so the same cell can be stopped and then run clean code right after."""
     page.wait_for_function("dewlab.canStop()", timeout=30_000)
     cell = cell_content(page, "plain-python")
     cell.click()
@@ -52,29 +53,6 @@ def test_stopping_a_genuine_infinite_loop(page):
     )
     assert btn.locator(".dl-btn-label").inner_text() == "Run"
     assert not btn.is_disabled()
-
-
-def test_a_stopped_cell_can_be_run_again(page):
-    """The worker survives an interrupt rather than needing a reboot — run_cell() catches KeyboardInterrupt like any other exception."""
-    page.wait_for_function("dewlab.canStop()", timeout=30_000)
-    cell = cell_content(page, "plain-python")
-    cell.click()
-    page.keyboard.press("Control+End")
-    page.keyboard.insert_text("\nwhile True:\n    pass")
-
-    btn = run_button(page, "plain-python")
-    btn_selector = js_string(".dl-cell[data-cell-id='plain-python'] .dl-btn-run .dl-btn-label")
-    btn.click()
-    page.wait_for_function(
-        f"document.querySelector({btn_selector}).textContent === 'Stop'",
-        timeout=10_000,
-    )
-    page.wait_for_timeout(1_000)
-    btn.click()
-    page.wait_for_function(
-        f"document.querySelector({js_string(output_selector('plain-python'))}).innerText.includes('Stopped.')",
-        timeout=20_000,
-    )
 
     # .dl-btn-reset clears the cell's run state (its output and run-order
     # bookkeeping), not its code — that's .dl-btn-clear, a separate button
