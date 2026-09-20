@@ -1262,6 +1262,12 @@ p code, li code {
   opacity: 0.5;
 }
 
+/* Still used by compose/dewmini.html's own, unrelated Settings panel,
+   which keeps a visible title and close button — shell.html's right-hand
+   panels dropped both (DECISIONS_LOG.md): a corner tab already names the
+   panel it opens, showing that name again inside it said it twice, and
+   the same tab closes it again, so a second control to do that was
+   redundant too. */
 .dl-settings-head {
   display: flex;
   align-items: center;
@@ -1269,15 +1275,6 @@ p code, li code {
   gap: 1rem;
   margin-bottom: 0.9rem;
 }
-/* A right-hand panel's own <h2> is sr-only (shell.html) — its corner tab
-   already shows the label — so with only the close button left in flow,
-   space-between above would pin it to the start instead of the end.
-   Settings is the exception: its own tab names three different things
-   folded behind it, not one, so its <h2> is shown for real and wants its
-   title at the start and the close button at the end, the same as
-   Reference's own head. */
-.dl-right-panel .dl-settings-head { justify-content: flex-end; }
-#dl-settings .dl-settings-head { justify-content: space-between; }
 .dl-right-panel h2, .dl-settings h2 {
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -1672,8 +1669,10 @@ p code, li code {
    Exports. Words, not icons: none of the three reads unambiguously from a
    glyph alone, and "Give Feedback" and "Imports & Exports" are longer
    than Reference's three labels, so this wraps to a second row instead of
-   squeezing them onto one. */
-.dl-settings-tabs { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.7rem; }
+   squeezing them onto one. No margin-top: with the visible title gone
+   (see .dl-settings-head above), this is the sticky head's first real
+   content, and the head's own top padding is already the gap it needs. */
+.dl-settings-tabs { display: flex; flex-wrap: wrap; gap: 0.25rem; }
 .dl-settings-tab {
   flex: 1 1 auto;
   font-family: var(--dl-mono);
@@ -1692,9 +1691,10 @@ p code, li code {
   color: #fff;
 }
 
-/* The head every docked panel already had (title, close button) now
-   carries its own search too where the panel has one, and stays pinned
-   to the panel's own top edge as the sections below it scroll. The
+/* Pins whatever a panel needs reachable while its own sections scroll
+   below it — Reference and Where you are still keep a title and close
+   button here; Settings keeps its tablist and Appearance's search; Notes
+   and Python, with nothing that needs pinning, don't use this at all. The
    negative margin/top pair pulls this out to the panel's own edges and
    cancels its top padding, then re-applies it here, so the sticky
    element sits flush with the panel's real edge once scrolled. */

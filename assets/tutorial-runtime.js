@@ -3910,7 +3910,11 @@ async function refreshPythonState() {
   const notStarted = "Not started yet — run a cell to start Python.";
   const described = await describeGlobalsForPanel();
   for (const kind of ["data", "callable", "module"]) {
-    const entries = described.filter((entry) => entry.kind === kind);
+    // !entry.builtin drops the toolbox every page starts with (show,
+    // check, button, … — tutorial_tools.__all__, reseeded at boot and
+    // after every restart) so this reads as what a reader's own code
+    // made, not the furniture it was always going to have either way.
+    const entries = described.filter((entry) => entry.kind === kind && !entry.builtin);
     lists[kind].replaceChildren(...entries.map(renderVariableRow));
     const [statusEl, emptyMessage] = statuses[kind];
     if (!statusEl) continue;
