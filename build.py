@@ -177,12 +177,6 @@ IMG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
 ALT_RE = re.compile(r"\balt\s*=", re.IGNORECASE)
 DETAILS_RE = re.compile(r"<details\b[^>]*>", re.IGNORECASE)
 FOLD_CLASSES = ("dl-hint", "dl-answer")
-FOLD_RE = re.compile(
-    r'(?P<open><details class="(?:dl-hint|dl-answer)">\s*<summary>[^<]*</summary>)'
-    r"\s*(?P<body>.*?)\s*"
-    r"(?P<close></details>)",
-    re.DOTALL,
-)
 NOTE_RE = re.compile(
     r'<aside class="dl-note" id="(?P<id>[^"]+)">\s*(?P<html>.*?)\s*</aside>\n?',
     re.DOTALL,
@@ -192,13 +186,16 @@ DISPLAY_MATH_RE = re.compile(r"\$\$(?P<tex>.+?)\$\$", re.DOTALL)
 INLINE_MATH_RE = re.compile(r"\$(?!\s)(?P<tex>[^$\n]+?)(?<!\s)\$")
 ESCAPED_DOLLAR = "\x00dldollar\x00"
 
-# A page's own section or list wrapper — see convert_page_wrapper_bodies().
-# Scoped to these known tag/class pairs, the same way FOLD_RE is scoped to
-# dl-hint/dl-answer, rather than matching any element a page happens to write.
-PAGE_WRAPPER_RE = re.compile(
-    r'(?P<open><(?P<tag>div|ul) class="(?:dl-hero|dl-audience|dl-attribution|dl-feature-list)">)'
-    r"\s*(?P<body>.*?)\s*(?P<close></(?P=tag)>)",
-    re.DOTALL,
+# The wrappers an author writes by hand and then writes markdown inside:
+# a practice page's hint or answer fold, and a page's own section or list
+# wrapper. Python-Markdown treats a raw HTML block as opaque through to its
+# closing tag, so the `md_in_html` extension (part of `extra`) needs telling
+# which ones to look inside — see mark_markdown_wrappers(). Scoped to these
+# known tag/class pairs rather than to any element a page happens to write.
+MARKDOWN_WRAPPER_RE = re.compile(
+    r'<details class="(?:dl-hint|dl-answer)">'
+    r'|<(?:div|ul) class="(?:dl-hero|dl-audience|dl-attribution|dl-feature-list)">'
+    r'|<aside class="dl-note" id="[^"]+">'
 )
 # A run of one or more adjacent card placeholders — see place_page_cards().
 CARD_RUN_RE = re.compile(r"<!--dewlab-page-card-\d+-->(?:\n\n<!--dewlab-page-card-\d+-->)*")
@@ -1441,8 +1438,33 @@ def to_html(body: str) -> tuple[str, list]:
     rather than from a second pass that could disagree with them.
     """
     converter = markdown.Markdown(extensions=["extra", "sane_lists", "toc"])
-    html_out = converter.convert(body)
+    html_out = converter.convert(mark_markdown_wrappers(body))
     return html_out, list(getattr(converter, "toc_tokens", []))
+
+
+def mark_markdown_wrappers(body: str) -> str:
+    """Adds `markdown="1"` to each wrapper listed in MARKDOWN_WRAPPER_RE.
+
+    Python-Markdown treats a raw HTML block as opaque: it swallows the
+    whole element through to its closing tag and never looks inside, so a
+    heading, a numbered list or a backtick span written inside a fold or a
+    section wrapper would reach the page as literal text. `md_in_html`
+    (already here, inside `extra`) parses the children of any element
+    carrying `markdown="1"`, choosing block or inline per child, and
+    strips the attribute from the output. Adding it here rather than
+    asking authors to write it keeps the source plain, and keeps which
+    elements get parsed a decision this file makes.
+
+    A `<ul class="dl-feature-list">` needs no special case: `md_in_html`
+    already knows a `<ul>` holds `<li>` children, so a markdown bullet
+    list inside one becomes those items rather than a second nested
+    `<ul>`.
+
+    A `<aside class="dl-note">` is marked here too, even though it never
+    stays on the page: `extract_notes()` pulls it out of the converted
+    body afterwards, and its contents are already HTML by then.
+    """
+    return MARKDOWN_WRAPPER_RE.sub(lambda m: f'{m.group(0)[:-1]} markdown="1">', body)
 
 
 def convert_prose_with_math(text: str) -> str:
@@ -1558,41 +1580,6 @@ def place_page_cards(page_html: str, cards: list[PageCard]) -> str:
     return page_html
 
 
-def convert_page_wrapper_bodies(page_html: str) -> str:
-    """Converts the markdown inside a page's own `<div class="dl-hero">`/
-    `<div class="dl-audience">` section wrapper, or `<ul class=
-    "dl-feature-list">` list wrapper. Named `*_div_bodies` before a `<ul>`
-    joined the two `<div>` classes it started with — decision 7.161's own
-    name, corrected here rather than kept for its own sake.
-
-    The same problem `convert_fold_bodies()` already solves for a
-    `<details>` fold: Python-Markdown treats a raw HTML block as opaque
-    through to its closing tag, so a heading, paragraph, or list item
-    written inside one of these wrappers would otherwise reach the page as
-    literal, unconverted text. Run before `place_page_cards()`/
-    `place_generated_blocks()`, so a card or generated-block placeholder
-    sitting inside a wrapper is still a bare HTML comment at this point —
-    passed through untouched by this second conversion, the same way it
-    was by the first.
-
-    A markdown bullet list converts to its own `<ul>…</ul>`, which would
-    double up inside a `<ul class="dl-feature-list">` wrapper that already
-    supplies the real opening tag — invalid HTML besides, since a `<ul>`
-    can only directly hold `<li>` children. The redundant inner `<ul>` is
-    stripped, keeping only its `<li>` items, whenever the wrapper tag
-    itself is `ul`.
-    """
-    def one(match: re.Match) -> str:
-        body_html = convert_prose_with_math(match.group("body"))
-        if match.group("tag") == "ul":
-            inner = re.match(r"^<ul>\s*(?P<items>.*?)\s*</ul>$", body_html, re.DOTALL)
-            if inner:
-                body_html = inner.group("items")
-        return f'{match.group("open")}\n{body_html}\n{match.group("close")}'
-
-    return PAGE_WRAPPER_RE.sub(one, page_html)
-
-
 # Infrastructure a page's markdown can point at with a [[name]] marker but
 # never author directly — each a page-independent, no-argument HTML
 # renderer already defined elsewhere in this file. A lambda, not the
@@ -1639,9 +1626,9 @@ def read_page(name: str) -> tuple[dict, str]:
     class="dl-feature-list">` section or list wrapper are the three things
     a page can have that ordinary prose doesn't — the first two extracted
     before conversion and placed back after, the same extract-then-place
-    shape `place_blocks()` uses for a tutorial's cells; the third converted
-    a second time, the way `convert_fold_bodies()` already does for a
-    `<details>` fold. Returns the frontmatter mapping and the rendered body
+    shape `place_blocks()` uses for a tutorial's cells; the third marked
+    for `md_in_html` by `mark_markdown_wrappers()`, the same way a
+    `<details>` fold is. Returns the frontmatter mapping and the rendered body
     — never the raw markdown.
     """
     path = PAGES / f"{name}.md"
@@ -1664,30 +1651,9 @@ def read_page(name: str) -> tuple[dict, str]:
     body, cards = extract_page_cards(body, path)
     body, generated = extract_generated_blocks(body, path)
     body_html = convert_prose_with_math(body)
-    body_html = convert_page_wrapper_bodies(body_html)
     body_html = place_page_cards(body_html, cards)
     body_html = place_generated_blocks(body_html, generated)
     return meta, body_html
-
-
-def convert_fold_bodies(page_html: str) -> str:
-    """Convert the markdown inside a hand-written `dl-hint`/`dl-answer` fold.
-
-    Python-Markdown treats a `<details>` block as raw HTML through to its
-    closing tag — the same behaviour extract_notes()'s own comment describes
-    — so a fold's numbered steps and backtick code would otherwise reach the
-    page as literal text rather than a real list and `<code>`. Converting the
-    body on its own, the same way render_staged_hint() already does for a
-    ```hint fence, fixes that without touching the summary line or the class
-    that styles the fold. Run against `page_html` straight out of to_html():
-    a fold's body is still the untouched source text at that point, exactly
-    what to_html() needs to convert it properly.
-    """
-    def one(match: re.Match) -> str:
-        body_html = convert_prose_with_math(match.group("body"))
-        return f'{match.group("open")}\n{body_html}\n{match.group("close")}'
-
-    return FOLD_RE.sub(one, page_html)
 
 
 def place_blocks(
@@ -1756,7 +1722,7 @@ def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
         if note_id in seen:
             fail(path, f"two notes share the id {note_id!r}")
         seen.add(note_id)
-        note_html = convert_prose_with_math(match.group("html"))
+        note_html = match.group("html")
         notes.append(Note(id=note_id, html=note_html))
         return ""
 
@@ -3638,7 +3604,6 @@ def load(path: Path) -> Tutorial:
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
-    converted = convert_fold_bodies(converted)
     converted = place_hints(converted, hints, maths)
     body_html = place_blocks(converted, cells, blocks, maths, site_editors, questions, app_cells,
                               page=id_of(path), version=str(meta.get("version", "")))
@@ -3655,8 +3620,8 @@ def load(path: Path) -> Tutorial:
         cells=cells,
         body_html=body_html,
         # Not just bool(maths): that list is only the top-level prose's
-        # own maths, extracted before convert_fold_bodies()/
-        # extract_notes()/render_question() ever run, and each of those
+        # own maths, extracted before extract_notes()/
+        # render_question() ever run, and each of those
         # can now add its own — a hand-written practice-page answer, a
         # pedagogical note, a question's prompt. Checking the finished
         # body_html (and, separately, a note's own html — extract_notes()
