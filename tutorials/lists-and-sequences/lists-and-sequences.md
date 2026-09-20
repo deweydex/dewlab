@@ -53,6 +53,24 @@ print(scores[:3])     # first three elements
 print(scores[7:])     # from index 7 to the end
 ```
 
+That first line surprises nearly everybody: `2` to `5` looks like four
+elements, and it gives three. The rule is that the end index is left
+out, and the rule is easier to keep hold of once you can see where the
+two numbers actually point.
+
+They do not point at elements. They point at the gaps between them.
+
+![The ten scores in a row. Above each one is its index, 0 to 9. Below, along the boundaries between them, are the eleven cut positions, 0 to 10, offset from the indices above. Underneath, each of the three slices is drawn as a band running between the two cuts it names: 2 to 5 takes 35, 47 and 29; the start-to-3 slice takes 42, 38 and 35; and the 7-to-end slice takes 33, 39 and 48.](where-the-cuts-are.svg)
+
+Ten elements have eleven places you could cut. A slice names two of
+those places and takes everything between them, so `scores[2:5]` is
+"cut before 35, cut before 41, keep the middle" — three elements. The
+end index is not excluded by a special rule. There is nothing at a cut
+to include.
+
+It also explains why `scores[:3]` and `scores[3:]` fit back together
+with nothing missing and nothing repeated. They meet at the same cut.
+
 We can change the contents of a list, because lists are *mutable*:
 
 ```python exec
