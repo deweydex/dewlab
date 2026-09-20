@@ -1,0 +1,9 @@
+# For regenerating diagrams only. Not a build dependency: build.py never runs
+# these, and nothing here reaches a student's browser. Install it when you
+# need to change a picture.
+#
+#     python3 -m pip install -r dev/graphics/requirements.txt
+#
+# svgwrite is also in Pyodide, so the same drawing code runs in a tutorial
+# cell when a diagram has to be drawn from a student's own work.
+svgwrite>=1.4.3
