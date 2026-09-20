@@ -215,9 +215,11 @@ two ideas in it and wants to be two cells.
 **No unmotivated boilerplate.** Every import earns its place. A student
 should not meet a configuration line whose purpose cannot be explained yet.
 
-**The seven tools are already there.** `show`, `show_table`, `check`,
-`text_input`, `dropdown`, `button` and `load_csv` are injected into the page
-namespace before any cell runs. Do not write
+**The tools are already there.** `show`, `show_table`, `check`,
+`text_input`, `dropdown`, `button`, `image_input`, `load_csv`, `load_text`
+and `run_query` are injected into the page namespace before any cell runs
+(the full, current list is `docs/WRITING_TUTORIALS.md`'s own table — check
+there rather than trusting a count here). Do not write
 `from tutorial_tools import check` — it works, and it teaches an import
 that is not part of how the page functions.
 
