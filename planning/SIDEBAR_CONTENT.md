@@ -7,11 +7,12 @@ markdown into something else.* No code changes in this pass.
 
 **§2 (datasets) and §3/§4 (notes, and where both surface) are shipped as
 designed — `DECISIONS_LOG.md` 7.74.** One correction made while building:
-this project's markdown converter does not itself re-run a raw HTML
-block's contents through conversion (confirmed against the pre-existing
-hint/answer fold, which has the same limitation and was left alone), so
-`extract_notes()` converts a note's captured content separately, on its
-own. Images are not part of this pass otherwise — no sidebar image
+this project's markdown converter does not look inside a raw HTML block
+unless told to, so `extract_notes()` converted a note's captured content
+separately, on its own. It no longer needs to — an aside is marked for
+the `md_in_html` extension by `mark_markdown_wrappers()`, alongside the
+hint/answer fold, which had the same limitation and now shares the same
+fix. Images are not part of this pass otherwise — no sidebar image
 gallery was built, since neither asked-for use turned out to need one.
 
 ---

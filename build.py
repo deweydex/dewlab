@@ -197,6 +197,7 @@ ESCAPED_DOLLAR = "\x00dldollar\x00"
 MARKDOWN_WRAPPER_RE = re.compile(
     r'<details class="(?:dl-hint|dl-answer)">'
     r'|<(?:div|ul) class="(?:dl-hero|dl-audience|dl-attribution|dl-feature-list)">'
+    r'|<aside class="dl-note" id="[^"]+">'
 )
 # A run of one or more adjacent card placeholders — see place_page_cards().
 CARD_RUN_RE = re.compile(r"<!--dewlab-page-card-\d+-->(?:\n\n<!--dewlab-page-card-\d+-->)*")
@@ -1504,6 +1505,10 @@ def mark_markdown_wrappers(body: str) -> str:
     already knows a `<ul>` holds `<li>` children, so a markdown bullet
     list inside one becomes those items rather than a second nested
     `<ul>`.
+
+    A `<aside class="dl-note">` is marked here too, even though it never
+    stays on the page: `extract_notes()` pulls it out of the converted
+    body afterwards, and its contents are already HTML by then.
     """
     return MARKDOWN_WRAPPER_RE.sub(lambda m: f'{m.group(0)[:-1]} markdown="1">', body)
 
@@ -1763,7 +1768,7 @@ def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
         if note_id in seen:
             fail(path, f"two notes share the id {note_id!r}")
         seen.add(note_id)
-        note_html = convert_prose_with_math(match.group("html"))
+        note_html = match.group("html")
         notes.append(Note(id=note_id, html=note_html))
         return ""
 

@@ -578,9 +578,9 @@ class TestNotesAndDatasets:
         assert "datasets" not in manifest(built(repo, "two"))
 
     def test_a_note_holds_markdown_and_a_dataset_can_be_a_text_file(self, repo):
-        # The note is converted on its own, separately from the surrounding
-        # raw HTML block, unlike a fold's own contents
-        # (planning/SIDEBAR_CONTENT.md §1).
+        # An aside is a raw HTML block, which Python-Markdown would
+        # otherwise pass through opaque; mark_markdown_wrappers() marks it
+        # so md_in_html parses inside (planning/SIDEBAR_CONTENT.md §1).
         path = write(repo, '<aside class="dl-note" id="pic">\n\n'
                            '![a chart](chart.png)\n\n</aside>\n', slug="one")
         add_frontmatter(path, "datasets:\n  - a-book\n")
@@ -599,10 +599,10 @@ class TestNotesAndDatasets:
         }]
 
     def test_maths_works_inside_a_note(self, repo):
-        # A note converts on its own (extract_notes()), the same problem
-        # a fold's body has — this checks maths reaches it, and that the
-        # tutorial's own maths flag notices even though a note's own
-        # <span> never ends up in body_html at all, only in the manifest.
+        # This checks maths reaches a note, and that the tutorial's own
+        # maths flag notices even though a note's own <span> never ends up
+        # in body_html at all, only in the manifest — extract_notes() has
+        # taken the aside out by the time that flag is computed.
         write(repo, '<aside class="dl-note" id="why-it-works">\n\n'
                     r"Because $E = mc^2$." + "\n\n</aside>\n", slug="one")
         b.build()
