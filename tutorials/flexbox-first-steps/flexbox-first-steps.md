@@ -27,6 +27,9 @@ site: cards
 ```css site
 id: cards-css
 site: cards
+body {
+  margin: 0;
+}
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -48,6 +51,10 @@ the third card drops to a line of its own, then the second joins it. Drag
 back up, and they return to one row. Nothing you typed changed; only the
 width did.
 
+Watch the pixel figure beside the slider while you drag, and find roughly
+where the third card gives up. The rest of this page is about where that
+number comes from.
+
 ## Why this happens
 
 Setting `display: flex` on `.row` turns it into a flex container. Its
@@ -66,23 +73,16 @@ three their minimum, one moves down.
 But 80 pixels is the width of the card's content, not the width of the
 card. The padding and the border sit outside it, the way [the
 box](tutorial:the-box) showed, so each card takes 114 pixels in all —
-and three of those, with two 12-pixel gaps between them, need 366.
+and three of those, with two 12-pixel gaps between them, need 366. Here
+is one card at its real size:
 
-<div class="dl-drawn dl-flexfit" role="img" aria-label="One card drawn at full size: an 80 pixel content box, 16 pixels of padding on each side and a 1 pixel border, 114 pixels in all. Below it, three such cards in a row with two 12 pixel gaps between them, 366 pixels in all — the width below which the third card moves to a row of its own.">
+<div class="dl-drawn dl-flexfit" role="img" aria-label="One card drawn at full size: an 80 pixel content box with 16 pixels of padding on each side and a 1 pixel border, 114 pixels in all. Three of those, with two 12 pixel gaps between them, come to 366 pixels — the width below which the third card moves to a row of its own.">
 <div class="dl-fx-block">
 <div class="dl-fx-card"><div class="dl-fx-content">80</div></div>
 <div class="dl-fx-rule"></div>
 </div>
 <p class="dl-fx-sum">1 + 16 + 80 + 16 + 1 = 114px <span class="dl-fx-said">one card, border and padding included</span></p>
-<div class="dl-fx-block">
-<div class="dl-fx-row">
-<div class="dl-fx-card"><div class="dl-fx-content">One</div></div>
-<div class="dl-fx-card"><div class="dl-fx-content">Two</div></div>
-<div class="dl-fx-card"><div class="dl-fx-content">Three</div></div>
-</div>
-<div class="dl-fx-rule"></div>
-</div>
-<p class="dl-fx-sum">114 + 12 + 114 + 12 + 114 = 366px <span class="dl-fx-said">narrower than this, and Three moves down</span></p>
+<p class="dl-fx-sum">114 + 12 + 114 + 12 + 114 = 366px <span class="dl-fx-said">three of them, and the two gaps between</span></p>
 </div>
 
 ## Your turn
@@ -104,3 +104,11 @@ A *flex container* is the element with `display: flex` on it. A *flex
 item* is one of that container's direct children. `flex-wrap` is the
 property that lets items move to a new row rather than overflow or
 squeeze.
+
+## Where to Read More
+
+Codepip. *Flexbox Froggy*. <https://flexboxfroggy.com/>. Twenty-four
+levels of moving frogs onto lily pads with `justify-content`,
+`align-items` and the rest. It reaches well past this page, and playing
+it is the cheapest way to find out which flexbox property does what
+without reading a reference.

@@ -60,11 +60,36 @@ This also makes a module's visual language reviewable in one place. Five ER
 diagrams drawn by five separate hands drift; five produced by one function
 with different inputs cannot.
 
+### Prefer the live thing to a picture of it
+
+Where the subject is something that *changes* — a row that wraps, a grid that
+redraws — a drawing of it changing is the weakest option available. A reader
+who can move the width themselves learns where the threshold is; a reader
+looking at a picture of two states learns that there are two states.
+
+So the order of preference is: the page's own live preview first (every site
+editor has a width control, and it reads out pixels as well as percent); then
+a small thing on the page the reader can click or drag, built from real CSS
+with no JavaScript, so nothing waits on a Run button and it survives being
+downloaded; then markup that holds still; then a drawing.
+
+A drawing still wins for one job, and it is not a small one: **annotation**.
+Four named regions of a box, a responsible line marked against a failing one,
+a dimension rule that says 114px — these are claims *about* a picture, and a
+live demo cannot hold still long enough to make them. Which is why the box
+model and the traceback stayed drawn while the grid map did not.
+
+Interaction that needs JavaScript is a step down again, not up: a site
+editor's JS pane waits on Run, a full-stack cell's does too, and both are
+gone from a printout. Reach for `:checked`, `:hover`, `:focus-within` and a
+container query before reaching for a script.
+
 ### Which tool draws what
 
 | Tool | For | Why |
 |---|---|---|
-| **Markup** | The box model, the two grid maps, the flexbox wrap threshold, the annotated traceback | Real elements with real borders, padding and `grid-template-areas`. The diagram is made of the thing it teaches, themes with the page for nothing, scales with the reader's font, and a student who opens the page source finds markup they have been taught to read. First choice wherever the subject *is* layout or text. |
+| **Markup, interactive** | The grid map | Real elements the reader changes, with `:checked` and a container query doing the work and no JavaScript anywhere. First choice wherever the subject is something that changes. |
+| **Markup, still** | The box model, the flexbox card at full size, the annotated traceback | Real elements with real borders and real padding. The diagram is made of the thing it teaches, themes with the page for nothing, scales with the reader's font, and a student who opens the page source finds markup they have been taught to read. Where the point is an annotation rather than a change. |
 | **svgwrite** | ER diagrams, state-transition graphs, trees, recursion trees, grids, nested sets, the stepped searches | Hand layout in `dev/graphics/`. Each figure's arrangement is small, fixed and worth controlling: crow's feet spread at the entity rather than converge on it, an edge reaching past a column drops below the boxes. |
 | **matplotlib** | Number lines, timelines, the unit square and its determinant, anything plotted from data | Coordinates rather than layout. It is also the library the student-facing figures already use, so a generated figure and a live one look like relatives. |
 | **matplotlib `mplot3d`** | Three planes meeting at a point, in *Solving Systems* | The one genuine 3D case in the material. |
@@ -388,7 +413,7 @@ Worth starting once the generators and the normaliser have stopped moving.
 
 **[When It Goes Wrong](../tutorials/when-it-goes-wrong/when-it-goes-wrong.md#reading-a-traceback)** — an annotated traceback. *Built, as markup.* The responsible line and the failing line marked separately, a caption at each end for the ordering the prose says confuses people constantly. Both marks are highlighter colours rather than the error tint, because both are the author marking a line and not the runtime reporting a state; only the last line keeps `--dl-error-fg`. Not `role="img"`: a traceback is text and reads correctly in document order. The quoted output came from running the cell under the Pyodide the site ships — Python 3.13 and 3.11 disagree about where a call's carets begin, and the local answer was the wrong one.
 
-**[Flexbox first steps](../tutorials/flexbox-first-steps/flexbox-first-steps.md#why-this-happens)** — where the row runs out of room. *Built, as markup.* **Not main axis and cross axis**, which this list asked for first: nothing in the curriculum names either, and a diagram is no place to introduce vocabulary the page does not teach. What the preview cannot show is the arithmetic, and the arithmetic is a trap — the third card drops at 366px, not the 264 the prose implies, because `flex-basis` sizes the content box and the padding and border sit outside the 80. That is the box model from two tutorials earlier biting in a new place, so the prose now says so and links back.
+**[Flexbox first steps](../tutorials/flexbox-first-steps/flexbox-first-steps.md#why-this-happens)** — where the row runs out of room. *Built.* **Not main axis and cross axis**, which this list asked for first: nothing in the curriculum names either, and a diagram is no place to introduce vocabulary the page does not teach. The wrapping itself is the live preview's job — the page now tells the reader to watch its pixel readout and find the width — and the drawn part is the one card the preview cannot explain: the third card drops at 366px, not the 264 the prose implied, because `flex-basis` sizes the content box and the padding and border sit outside the 80. The cell sets `body { margin: 0 }` so the readout measures the row rather than the frame around it.
 
 **[Planning a site](../tutorials/planning-a-site/planning-a-site.md#two-site-maps)** — the good site map drawn as a map, and one rough wireframe. A tutorial about planning visually whose two site maps are both prose blockquotes. Keep it deliberately rough, so it reads as something a student could draw in two minutes.
 
@@ -412,7 +437,7 @@ Worth starting once the generators and the normaliser have stopped moving.
 
 **[Solving Systems](../tutorials/solving-systems/solving-systems.md#three-unknowns-row-by-row)** — three planes meeting at a point, and the two degenerate cases. The one place 3D is the honest picture rather than a flourish.
 
-**[Named grid areas](../tutorials/named-grid-areas/named-grid-areas.md)** — the two maps, each as its quoted lines and as the shape they make. *Built, as markup:* two real grids laid out by two real `grid-template-areas`, since the section's whole claim is that those strings are a picture. Four quoted lines over four rows and three over three is the sentence the section opens with. **Not the line numbers** this list asked for first — the tutorial uses names precisely to avoid them. The two do not share a width, because one is a narrow screen and the other is a wide one.
+**[Named grid areas](../tutorials/named-grid-areas/named-grid-areas.md)** — one grid the reader resizes. *Built, and interactive:* a real grid laid out by the tutorial's own two `grid-template-areas`, with a container query at the same 350px its media query uses, and two radios to set the width. No JavaScript. **Not the line numbers** this list asked for first — the tutorial uses names precisely to avoid them — and **not two drawn maps side by side**, which was the first build: watching one grid move beats comparing two that cannot. Buttons rather than `resize: horizontal`, which is mouse-only and would have shown a phone reader half the diagram.
 
 ---
 

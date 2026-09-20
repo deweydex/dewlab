@@ -3917,65 +3917,98 @@ p code, li code {
   color: var(--dl-fg);
 }
 
-/* The two maps in named-grid-areas.
+/* The map in named-grid-areas, which the reader resizes.
  *
- * Each one is a real grid laid out by a real `grid-template-areas`, with
- * the same words in the same places the CSS above it puts them. That is
- * the whole claim the section makes — the quoted strings are a picture —
- * so the diagram had better be the picture rather than a drawing of one.
+ * Not two drawn maps side by side: one real grid, laid out by the
+ * tutorial's own two `grid-template-areas`, that the reader changes the
+ * width of and watches redraw. That is the thing the section is about and
+ * the thing no picture of it can do.
  *
- * The two sit side by side where there is room and stack below it, which
- * is also the behaviour the page is about. */
-.dl-gridmap {
-  max-width: 34rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.6rem;
-  justify-content: center;
-}
+ * A pair of radios rather than `resize: horizontal`, and no JavaScript,
+ * so nothing waits on a Run button and it works on a downloaded page.
+ * The browser's own drag handle is the nicer gesture but it is mouse-only,
+ * and on a phone the column is narrow enough that a reader would never
+ * reach the wide map at all. The two cannot be offered together: the
+ * radios have to carry !important or they go dead the first time anyone
+ * drags and leaves an inline width behind, and that same !important is
+ * what stops the dragging. Buttons win, because they work everywhere —
+ * and the continuous version is the live preview higher up the page,
+ * whose width control now reads out pixels.
+ *
+ * This is the checkbox hack `keyframes-and-the-checkbox-hack` teaches,
+ * which is a nice thing for a diagram on a CSS page to be made of.
+ *
+ * The buttons set a width and a container query reacts to it, rather than
+ * switching the layout directly, because that is the shape of the thing
+ * being taught: the width decides, not the button.
+ *
+ * Widths in px, not rem. The threshold is 350px, so a box sized in rem
+ * would cross it on its own the moment a reader raised their font size,
+ * and "narrow" would draw the wide map. */
+.dl-gridmap-wrap { max-width: 100%; }
 
-/* The two do not share a width: one is a narrow screen and the other is a
-   wide one, so drawing them the same size would throw away the fact the
-   media query turns on. */
-.dl-gm-case { flex: 0 1 auto; }
-.dl-gm-narrow-case { width: 10rem; }
-.dl-gm-wide-case { width: 18rem; }
-
-.dl-gm-when {
-  margin: 0;
+.dl-gm-label {
   font-size: 0.8rem;
   font-style: italic;
   color: var(--dl-muted);
+  margin-right: 0.4rem;
 }
 
-/* The quoted strings, directly above the shape they make. One line per row
-   of the grid, which is the sentence the section opens with; seeing four
-   lines over four rows and three over three is what makes it land. */
+.dl-gm-radio {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.dl-gm-pick {
+  display: inline-block;
+  margin-right: 0.35rem;
+  padding: 0.15rem 0.7rem;
+  border: 0.125rem solid var(--dl-muted);
+  border-radius: 999px;
+  font-family: var(--dl-mono);
+  font-size: 0.75rem;
+  color: var(--dl-fg);
+  cursor: pointer;
+}
+.dl-gm-radio:checked + .dl-gm-pick {
+  background: var(--dl-highlight-blue);
+  border-color: var(--dl-fg);
+}
+.dl-gm-radio:focus-visible + .dl-gm-pick {
+  outline: 0.15rem solid var(--dl-link);
+  outline-offset: 0.15rem;
+}
+
+.dl-gridmap {
+  container-type: inline-size;
+  width: 260px;
+  min-width: 150px;
+  max-width: 100%;
+  margin-top: 0.7rem;
+  padding: 0.6rem 0.6rem 1.1rem;
+  border: 0.125rem dashed var(--dl-muted);
+}
+#dl-gm-w-narrow:checked ~ .dl-gridmap { width: 260px !important; }
+#dl-gm-w-wide:checked ~ .dl-gridmap { width: 460px !important; }
+
+/* Both are in the markup, and only one shows. A screen reader and a
+   printed page get whichever the current width selects, the same as a
+   sighted reader; the prose underneath carries the comparison. */
 .dl-gm-strings {
-  margin: 0.3rem 0 0.5rem;
+  margin: 0 0 0.5rem;
   font-family: var(--dl-mono);
   font-size: 0.75rem;
   line-height: 1.5;
   color: var(--dl-fg);
-  /* Four lines whether this map has four or three, so the two grids below
-     start level and their shapes can be compared directly. */
-  min-height: 6em;
 }
 .dl-gm-strings code { display: block; }
 
 .dl-gm-grid {
   display: grid;
   gap: 0.3rem;
-  padding: 0.3rem;
-  border: 0.125rem dashed var(--dl-muted);
-}
-
-.dl-gm-narrow {
   grid-template-areas: "header" "nav" "main" "footer";
-}
-.dl-gm-wide {
-  grid-template-areas: "header header" "nav main" "footer footer";
-  grid-template-columns: 5rem 1fr;
 }
 
 .dl-gm-cell {
@@ -3987,14 +4020,34 @@ p code, li code {
   background: var(--dl-highlight-blue);
 }
 
-/* The one area that moves between the two maps. Amber marks it in both, so
-   what changed is findable without reading all eight cells. */
+/* The one area that moves. Amber in both maps, so what changed is
+   findable without reading all four cells twice. */
 .dl-gm-cell.dl-gm-moved { background: var(--dl-highlight-bg); }
 
 .dl-gm-header { grid-area: header; }
 .dl-gm-nav { grid-area: nav; }
 .dl-gm-main { grid-area: main; }
 .dl-gm-footer { grid-area: footer; }
+
+/* The narrow map is the default, the way the tutorial's own CSS writes it:
+   its media query adds the wide one rather than the other way round. */
+.dl-gm-wide { display: none; }
+
+@container (min-width: 350px) {
+  .dl-gm-grid {
+    grid-template-areas: "header header" "nav main" "footer footer";
+    grid-template-columns: 9rem 1fr;
+  }
+  .dl-gm-narrow { display: none; }
+  .dl-gm-wide { display: block; }
+}
+
+.dl-gm-drag {
+  margin: 0.7rem 0 0;
+  font-size: 0.85em;
+  font-style: italic;
+  color: var(--dl-muted);
+}
 
 /* Where the row runs out of room, in flexbox-first-steps.
  *

@@ -79,36 +79,35 @@ the main area. The media query redraws the same map for a wider screen:
 two columns, with the menu now beside the main area rather than above it.
 Nothing about the HTML changes, only which map applies.
 
-<div class="dl-drawn dl-gridmap" role="img" aria-label="The same four areas under two maps, each shown as its quoted lines of grid-template-areas and as the shape those lines make. Under 350 pixels: four quoted lines, so one column and four rows, in the order header, nav, main, footer. At 350 pixels and wider: three quoted lines of two words each, so two columns and three rows, with header spanning both columns on the top row, nav and main side by side on the middle row, and footer spanning both columns on the bottom.">
-<div class="dl-gm-case dl-gm-narrow-case">
-<p class="dl-gm-when">under 350px</p>
-<div class="dl-gm-strings">
+<div class="dl-drawn dl-gridmap-wrap">
+<span class="dl-gm-label">Preview width</span>
+<input type="radio" name="dl-gm-width" id="dl-gm-w-narrow" class="dl-gm-radio" checked>
+<label class="dl-gm-pick" for="dl-gm-w-narrow">narrow</label>
+<input type="radio" name="dl-gm-width" id="dl-gm-w-wide" class="dl-gm-radio">
+<label class="dl-gm-pick" for="dl-gm-w-wide">wide</label>
+<div class="dl-gridmap">
+<div class="dl-gm-strings dl-gm-narrow">
 <code>"header"</code>
 <code>"nav"</code>
 <code>"main"</code>
 <code>"footer"</code>
 </div>
-<div class="dl-gm-grid dl-gm-narrow">
-<div class="dl-gm-cell dl-gm-header">header</div>
-<div class="dl-gm-cell dl-gm-nav dl-gm-moved">nav</div>
-<div class="dl-gm-cell dl-gm-main">main</div>
-<div class="dl-gm-cell dl-gm-footer">footer</div>
-</div>
-</div>
-<div class="dl-gm-case dl-gm-wide-case">
-<p class="dl-gm-when">350px and wider</p>
-<div class="dl-gm-strings">
+<div class="dl-gm-strings dl-gm-wide">
 <code>"header header"</code>
 <code>"nav main"</code>
 <code>"footer footer"</code>
 </div>
-<div class="dl-gm-grid dl-gm-wide">
+<div class="dl-gm-grid">
 <div class="dl-gm-cell dl-gm-header">header</div>
 <div class="dl-gm-cell dl-gm-nav dl-gm-moved">nav</div>
 <div class="dl-gm-cell dl-gm-main">main</div>
 <div class="dl-gm-cell dl-gm-footer">footer</div>
 </div>
 </div>
+<p class="dl-gm-drag">One grid, under the tutorial's own two maps. Past 350px the quoted
+lines change from four to three, and the shape changes with them.
+<code>nav</code> is marked in both, so you can see where it went; drag
+the preview above for the widths in between.</p>
 </div>
 
 ## Other properties from the same lesson
@@ -143,3 +142,10 @@ named areas. `auto-fill` fits as many grid columns as `auto-fit`, but
 leaves any spare columns empty instead of growing the existing ones.
 `order` changes a flex item's visual position without changing its
 position in the HTML.
+
+## Where to Read More
+
+Codepip. *Grid Garden*. <https://cssgridgarden.com/>. Twenty-eight levels
+of watering carrots with `grid-column`, `grid-row` and `grid-template`.
+It works in the column and row numbers this page avoided; having named
+the areas first, the numbers underneath them are easier to meet.

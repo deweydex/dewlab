@@ -187,3 +187,68 @@ def test_the_wrap_threshold_matches_the_tutorials_own_css():
     assert sums[1] == (
         f"{card} + {m['gap']} + {card} + {m['gap']} + {card} = {row}px"
     ), f"the row's arithmetic no longer follows from the CSS cell: {sums[1]!r}"
+
+
+# --------------------------------------------------------------------------
+# Three things about the live layout demos that can drift silently.
+# --------------------------------------------------------------------------
+
+
+def test_the_preview_width_readout_can_land_on_a_threshold():
+    """A layout tutorial's question is at what width, so the slider has to
+    step finely enough to find one and say what it found. At the old
+    step of 5 the reader could not land near 366px, and a percentage of a
+    column whose width depends on their font told them nothing anyway."""
+    build = (REPO / "build.py").read_text()
+    assert 'min="30" max="100" step="1"' in build, (
+        "the preview-width slider no longer steps by 1"
+    )
+    assert '<output for="{width_id}"></output>' in build, (
+        "the readout is no longer left for the runtime to fill with pixels"
+    )
+    runtime = (REPO / "assets/tutorial-runtime.js").read_text()
+    assert "iframe.getBoundingClientRect().width" in runtime, (
+        "the readout no longer measures the frame"
+    )
+
+
+def test_the_flexbox_preview_measures_the_row_and_not_the_frame():
+    """The page tells the reader to watch the pixel figure and find where
+    the row wraps, and names 366. Both are only true while the previewed
+    page has no body margin: the readout measures the frame, and a default
+    8px margin each side would put the wrap at 382."""
+    css = re.search(r"^```css site\n(.*?)^```", FLEXBOX.read_text(), re.S | re.M).group(1)
+    assert re.search(r"body\s*\{[^}]*margin:\s*0", css), (
+        "flexbox-first-steps' CSS cell no longer zeroes the body margin, so "
+        "the preview's pixel readout no longer agrees with the 366 in the prose"
+    )
+
+
+GRID_AREAS = REPO / "tutorials/named-grid-areas/named-grid-areas.md"
+
+
+def test_the_grid_map_flips_at_the_tutorials_own_breakpoint():
+    """The diagram is a container query standing in for the tutorial's
+    media query. Move one and the picture starts changing shape at a width
+    the page says nothing happens at."""
+    media = re.search(r"@media \(min-width:\s*(\d+)px\)", GRID_AREAS.read_text())
+    assert media, "no media query in named-grid-areas' CSS cell"
+
+    css = (REPO / "assets/tutorial-style.css").read_text()
+    block = re.search(
+        r"@container \(min-width:\s*(\d+)px\)\s*\{[^@]*?\.dl-gm-grid", css, re.S
+    )
+    assert block, "the grid map's container query is gone"
+    assert block.group(1) == media.group(1), (
+        f"the grid map flips at {block.group(1)}px but the tutorial's media "
+        f"query turns on at {media.group(1)}px"
+    )
+
+    # Either width the buttons offer has to land on the right side of it.
+    threshold = int(media.group(1))
+    for which, expected_side in (("narrow", False), ("wide", True)):
+        rule = re.search(rf"#dl-gm-w-{which}:checked ~ \.dl-gridmap \{{ width: (\d+)px", css)
+        assert rule, f"no width rule for the {which} button"
+        assert (int(rule.group(1)) >= threshold) is expected_side, (
+            f"the {which} button sets {rule.group(1)}px, the wrong side of {threshold}"
+        )

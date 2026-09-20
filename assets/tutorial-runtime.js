@@ -2313,13 +2313,37 @@ function buildSiteEditors(manifest) {
       });
     }
 
+    /* The readout carries the preview's width in pixels beside the
+     * percentage, because a layout tutorial's question is nearly always
+     * *at what width* — the row wraps, the media query turns on — and a
+     * percentage of a column whose own width depends on the reader's font
+     * and window answers none of it. Measured from the frame rather than
+     * computed from the percentage, so it stays true when the column
+     * itself changes: a window resize, the reference panel opening, a
+     * different font size. Rounded, since a fractional pixel is noise to
+     * anybody reading it.
+     *
+     * The frame is sandboxed without allow-same-origin, so this is the
+     * frame's own width and not the width inside it. The two differ by
+     * whatever margin the previewed page's body carries — a tutorial that
+     * wants the two to agree sets `body { margin: 0 }` in its own CSS,
+     * which flexbox-first-steps does. */
     const widthInput = host.querySelector(".dl-site-width");
     const widthOut = host.querySelector(".dl-site-preview-controls output");
+    const showWidth = () => {
+      if (!widthOut || !widthInput) return;
+      const px = Math.round(iframe.getBoundingClientRect().width);
+      widthOut.textContent = px ? `${widthInput.value}% · ${px}px` : `${widthInput.value}%`;
+    };
     if (widthInput) {
       widthInput.addEventListener("input", () => {
         iframe.style.width = `${widthInput.value}%`;
-        if (widthOut) widthOut.textContent = `${widthInput.value}%`;
+        showWidth();
       });
+      showWidth();
+      if (typeof ResizeObserver === "function") {
+        new ResizeObserver(showWidth).observe(iframe);
+      }
     }
 
     siteEditors.push(editorState);
