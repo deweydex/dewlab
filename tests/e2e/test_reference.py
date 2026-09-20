@@ -711,25 +711,18 @@ class TestMobileLauncher:
         context.close()
 
     def test_forwarding_opens_the_real_panel_and_closes_the_menu(self, site, browser, site_url):
+        """Also a regression test: the forwarded click's own original event
+        used to keep bubbling to the same document-level outside-click
+        listener that had just reacted to it opening the panel, reading
+        the (still-bubbling) original click as "outside" and closing the
+        panel right back — all within the one click. Fixed with
+        stopPropagation() on the menu item's own handler; the assertion
+        below would fail again if that regressed."""
         context, page = self.open_page(site, browser, site_url)
         page.click("#dl-mobile-fab")
         page.click("#dl-mobile-item-reference")
         assert page.is_visible("#dl-reference")
         assert page.is_hidden("#dl-mobile-menu")
-        context.close()
-
-    def test_the_forwarded_click_does_not_reopen_and_reclose_itself(
-            self, site, browser, site_url):
-        """A regression test for a real bug: the forwarded click's own
-        original event kept bubbling to the same document-level
-        outside-click listener that had just reacted to it opening the
-        panel, reading the (still-bubbling) original click as "outside"
-        and closing the panel right back — all within the one click.
-        Fixed with stopPropagation() on the menu item's own handler."""
-        context, page = self.open_page(site, browser, site_url)
-        page.click("#dl-mobile-fab")
-        page.click("#dl-mobile-item-reference")
-        assert page.is_visible("#dl-reference")
         context.close()
 
     def test_where_you_are_opens_the_tree_in_a_sheet(self, site, browser, site_url):
