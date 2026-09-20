@@ -450,7 +450,7 @@ steps the way the base feature was:
 - **My Notes** (`all-notes.html`, `write_all_notes_page()` in `build.py`,
   `assets/my-notes.js`) is the same idea across every tutorial at once.
   The link to it is the first thing in the Notes panel, above this page's
-  own notes; it sat under the wordmark until 7.200, where a reader looking
+  own notes; it sat under the wordmark until 7.204, where a reader looking
   for what they had written had no reason to look.
   `localStorage` is shared per origin, not per page, so this page reads
   every `dewlab:progress:*` record itself, client-side — nothing here

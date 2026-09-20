@@ -130,25 +130,26 @@ graph TD
   T10["10. Building Reusable Tools"]
   T11["11. Counting Carefully"]
   T12["12. What Are the Chances?"]
-  T13["13. Making Sense of Data"]
-  T14["14. Pictures Worth Numbers"]
-  T15["15. Sets as Sorted Lists"]
-  T16["16. Logic and Truth"]
-  T17["17. Drawing Sets"]
-  T18["18. Numbers and Their Families"]
-  T19["19. Expressions Come Alive"]
-  T20["20. Rearranging Formulae"]
-  T21["21. Cracking Equations"]
-  T22["22. When There Is No Answer"]
-  T23["23. Drawing Functions"]
-  T24["24. Parabolas"]
-  T25["25. Lines and Distances"]
-  T26["26. The Unit Circle"]
-  T27["27. Sine and Cosine Waves"]
-  T28["28. Solving Triangles"]
-  T29["29. Approaching a Limit"]
-  T30["30. Rates of Change"]
-  T31["31. Bringing It All Together"]
+  T13["13. Three Doors"]
+  T14["14. Making Sense of Data"]
+  T15["15. Pictures Worth Numbers"]
+  T16["16. Sets as Sorted Lists"]
+  T17["17. Logic and Truth"]
+  T18["18. Drawing Sets"]
+  T19["19. Numbers and Their Families"]
+  T20["20. Expressions Come Alive"]
+  T21["21. Rearranging Formulae"]
+  T22["22. Cracking Equations"]
+  T23["23. When There Is No Answer"]
+  T24["24. Drawing Functions"]
+  T25["25. Parabolas"]
+  T26["26. Lines and Distances"]
+  T27["27. The Unit Circle"]
+  T28["28. Sine and Cosine Waves"]
+  T29["29. Solving Triangles"]
+  T30["30. Approaching a Limit"]
+  T31["31. Rates of Change"]
+  T32["32. Bringing It All Together"]
 
   T1 --> T2
   T2 --> T3
@@ -180,38 +181,39 @@ graph TD
   T28 --> T29
   T29 --> T30
   T30 --> T31
+  T31 --> T32
 
   T11 -.->|builds on| T6
-  T15 -.->|builds on| T8
-  T15 -.->|builds on| T9
-  T16 -.->|builds on| T4
-  T17 -.->|builds on| T15
-  T20 -.->|builds on| T2
-  T21 -.->|builds on| T19
-  T22 -.->|builds on| T18
-  T23 -.->|builds on| T10
-  T23 -.->|builds on| T14
+  T16 -.->|builds on| T8
+  T16 -.->|builds on| T9
+  T17 -.->|builds on| T4
+  T18 -.->|builds on| T16
+  T21 -.->|builds on| T2
+  T22 -.->|builds on| T20
   T23 -.->|builds on| T19
-  T23 -.->|builds on| T21
-  T24 -.->|builds on| T21
+  T24 -.->|builds on| T10
+  T24 -.->|builds on| T15
+  T24 -.->|builds on| T20
   T24 -.->|builds on| T22
-  T25 -.->|builds on| T13
-  T25 -.->|builds on| T14
+  T25 -.->|builds on| T22
   T25 -.->|builds on| T23
-  T27 -.->|builds on| T23
-  T27 -.->|builds on| T24
-  T27 -.->|builds on| T25
-  T28 -.->|builds on| T23
+  T26 -.->|builds on| T14
+  T26 -.->|builds on| T15
+  T26 -.->|builds on| T24
+  T28 -.->|builds on| T24
   T28 -.->|builds on| T25
   T28 -.->|builds on| T26
-  T29 -.->|builds on| T2
-  T30 -.->|builds on| T24
-  T30 -.->|builds on| T25
-  T31 -.->|builds on| T1
-  T31 -.->|builds on| T15
-  T31 -.->|builds on| T18
-  T31 -.->|builds on| T19
-  T31 -.->|builds on| T21
+  T29 -.->|builds on| T24
+  T29 -.->|builds on| T26
+  T29 -.->|builds on| T27
+  T30 -.->|builds on| T2
+  T31 -.->|builds on| T25
+  T31 -.->|builds on| T26
+  T32 -.->|builds on| T1
+  T32 -.->|builds on| T16
+  T32 -.->|builds on| T19
+  T32 -.->|builds on| T20
+  T32 -.->|builds on| T22
 ```
 
 ## What is missing, and where it would go
@@ -234,25 +236,26 @@ graph TD
   T10["10. Building Reusable Tools"]
   T11["11. Counting Carefully"]
   T12["12. What Are the Chances?"]
-  T13["13. Making Sense of Data"]
-  T14["14. Pictures Worth Numbers"]
-  T15["15. Sets as Sorted Lists"]
-  T16["16. Logic and Truth"]
-  T17["17. Drawing Sets"]
-  T18["18. Numbers and Their Families"]
-  T19["19. Expressions Come Alive"]
-  T20["20. Rearranging Formulae"]
-  T21["21. Cracking Equations"]
-  T22["22. When There Is No Answer"]
-  T23["23. Drawing Functions"]
-  T24["24. Parabolas"]
-  T25["25. Lines and Distances"]
-  T26["26. The Unit Circle"]
-  T27["27. Sine and Cosine Waves"]
-  T28["28. Solving Triangles"]
-  T29["29. Approaching a Limit"]
-  T30["30. Rates of Change"]
-  T31["31. Bringing It All Together"]
+  T13["13. Three Doors"]
+  T14["14. Making Sense of Data"]
+  T15["15. Pictures Worth Numbers"]
+  T16["16. Sets as Sorted Lists"]
+  T17["17. Logic and Truth"]
+  T18["18. Drawing Sets"]
+  T19["19. Numbers and Their Families"]
+  T20["20. Expressions Come Alive"]
+  T21["21. Rearranging Formulae"]
+  T22["22. Cracking Equations"]
+  T23["23. When There Is No Answer"]
+  T24["24. Drawing Functions"]
+  T25["25. Parabolas"]
+  T26["26. Lines and Distances"]
+  T27["27. The Unit Circle"]
+  T28["28. Sine and Cosine Waves"]
+  T29["29. Solving Triangles"]
+  T30["30. Approaching a Limit"]
+  T31["31. Rates of Change"]
+  T32["32. Bringing It All Together"]
 
   T1 --> T2
   T2 --> T3
@@ -284,6 +287,7 @@ graph TD
   T28 --> T29
   T29 --> T30
   T30 --> T31
+  T31 --> T32
 
 
   classDef new fill:#fdf6ec,stroke:#b5651d,color:#7a4310,stroke-dasharray:4 3;
@@ -360,8 +364,8 @@ graph TD
 | `MIT-5.3` Arrangements of n objects (n factorial) | 🟩 | [Counting Carefully — Factorials: The Foundation](https://deweydex.github.io/dewlab/tutorials/counting-carefully.html#factorials-the-foundation) |
 | `MIT-5.4` Permutations P(n, r) | 🟩 | [Counting Carefully — Permutations: Order Matters](https://deweydex.github.io/dewlab/tutorials/counting-carefully.html#permutations-order-matters) |
 | `MIT-5.5` Combinations C(n, r) | 🟩 | [Counting Carefully — Combinations: Order Does Not Matter](https://deweydex.github.io/dewlab/tutorials/counting-carefully.html#combinations-order-does-not-matter) |
-| `MIT-5.6` Probability as a scale from 0 to 1 | 🟩 | [What Are the Chances? — Basic Probability](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#basic-probability) |
-| `MIT-5.7` Probability from equally likely outcomes | 🟩 | [What Are the Chances? — Basic Probability](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#basic-probability)<br/>_used in:_ [What Are the Chances? — Simulation: Testing Probability with Code](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#simulation-testing-probability-with-code) |
+| `MIT-5.6` Probability as a scale from 0 to 1 | 🟩 | [What Are the Chances? — Basic Probability](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#basic-probability)<br/>_used in:_ [Three Doors — Why staying feels fine](https://deweydex.github.io/dewlab/tutorials/three-doors.html#why-staying-feels-fine)<br/>_used in:_ [Three Doors — Playing it ten thousand times](https://deweydex.github.io/dewlab/tutorials/three-doors.html#playing-it-ten-thousand-times) |
+| `MIT-5.7` Probability from equally likely outcomes | 🟩 | [Three Doors — Three cases you can count](https://deweydex.github.io/dewlab/tutorials/three-doors.html#three-cases-you-can-count)<br/>[What Are the Chances? — Basic Probability](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#basic-probability)<br/>_used in:_ [Three Doors — Playing it ten thousand times](https://deweydex.github.io/dewlab/tutorials/three-doors.html#playing-it-ten-thousand-times)<br/>_used in:_ [Three Doors — A host who is not paying attention](https://deweydex.github.io/dewlab/tutorials/three-doors.html#a-host-who-is-not-paying-attention)<br/>_used in:_ [What Are the Chances? — Simulation: Testing Probability with Code](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#simulation-testing-probability-with-code) |
 | `MIT-5.8` Compound probability: independent and mutually exclusive events | 🟩 | [What Are the Chances? — Compound Events](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#compound-events)<br/>[What Are the Chances? — Conditional Probability](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#conditional-probability) |
 | `MIT-5.9` Data types: nominal, ordinal, discrete, continuous | 🟩 | [Making Sense of Data — Data Types](https://deweydex.github.io/dewlab/tutorials/making-sense-of-data.html#data-types) |
 | `MIT-5.10` Effectiveness of displays: pie, histogram, stem-and-leaf | 🟩 | [Making Sense of Data — Visualization with matplotlib](https://deweydex.github.io/dewlab/tutorials/making-sense-of-data.html#visualization-with-matplotlib)<br/>[Pictures Worth Numbers — Why Visualize?](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#why-visualize)<br/>[Pictures Worth Numbers — Choosing the Right Chart](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#choosing-the-right-chart)<br/>[Pictures Worth Numbers — Good Practices for Visualization](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#good-practices-for-visualization) |
@@ -456,7 +460,7 @@ graph TD
 | `WA-LO1` The development of HTML and CSS, through the versions of each standard | 🟩 | [Conclusions and Next Steps — How HTML and CSS got here](https://deweydex.github.io/dewlab/tutorials/conclusions-and-next-steps.html#how-html-and-css-got-here) |
 | `WA-LO2` The use, purpose and attributes of a range of HTML tags, and how browsers render them | 🟩 | [A page is files — Why this happens](https://deweydex.github.io/dewlab/tutorials/a-page-is-files.html#why-this-happens)<br/>[Headings, paragraphs and emphasis — Why this happens](https://deweydex.github.io/dewlab/tutorials/headings-and-emphasis.html#why-this-happens)<br/>[Images, paths and alt text — Why this happens](https://deweydex.github.io/dewlab/tutorials/images-and-alt-text.html#why-this-happens)<br/>[Navigation — Why this happens](https://deweydex.github.io/dewlab/tutorials/navigation.html#why-this-happens)<br/>[Sections, and the tags that mean something — Why this happens](https://deweydex.github.io/dewlab/tutorials/sections-that-mean-something.html#why-this-happens)<br/>[The skeleton: head and body — Why this happens](https://deweydex.github.io/dewlab/tutorials/the-skeleton.html#why-this-happens)<br/>[Three kinds of link — Why this happens](https://deweydex.github.io/dewlab/tutorials/three-kinds-of-link.html#why-this-happens)<br/>_used in:_ [A form — Why this happens](https://deweydex.github.io/dewlab/tutorials/a-form.html#why-this-happens)<br/>_used in:_ [A rule, and where it lives — Why this happens](https://deweydex.github.io/dewlab/tutorials/a-rule-and-where-it-lives.html#why-this-happens)<br/>_used in:_ [Images and file size — Your turn](https://deweydex.github.io/dewlab/tutorials/images-and-file-size.html#your-turn)<br/>_used in:_ [Keyframe animation and the checkbox hack — Why this happens](https://deweydex.github.io/dewlab/tutorials/keyframes-and-the-checkbox-hack.html#why-this-happens)<br/>_used in:_ [Keyframe animation and the checkbox hack — Your turn](https://deweydex.github.io/dewlab/tutorials/keyframes-and-the-checkbox-hack.html#your-turn)<br/>_used in:_ [Several pages, one navigation — Why this happens](https://deweydex.github.io/dewlab/tutorials/pages-and-navigation.html#why-this-happens)<br/>_used in:_ [Quick reference — HTML](https://deweydex.github.io/dewlab/tutorials/quick-reference.html#html) |
 | `WA-LO3` Explore available HTML and CSS editors and development tools (the descriptor's own contrast is a WYSIWYG editor against a text editor; dewlab explores its own in-browser site editor against a plain-text editor instead) | 🟩 | [An editor — VS Code, the usual choice](https://deweydex.github.io/dewlab/tutorials/an-editor.html#vs-code-the-usual-choice)<br/>[An editor — No installing anything: GitHub's own editor](https://deweydex.github.io/dewlab/tutorials/an-editor.html#no-installing-anything-githubs-own-editor)<br/>_used in:_ [Your copy of the starter — Three ways to open it](https://deweydex.github.io/dewlab/tutorials/your-copy-of-the-starter.html#three-ways-to-open-it) |
-| `WA-LO4` The principles of good website design: target audience, site objectives, navigation, structure, interface and access speed | 🟩 | [Images and file size — Choosing a format](https://deweydex.github.io/dewlab/tutorials/images-and-file-size.html#choosing-a-format)<br/>[Images and file size — Keeping file size down](https://deweydex.github.io/dewlab/tutorials/images-and-file-size.html#keeping-file-size-down)<br/>[Planning a site — Two site maps](https://deweydex.github.io/dewlab/tutorials/planning-a-site.html#two-site-maps)<br/>[Planning a site — Why this happens](https://deweydex.github.io/dewlab/tutorials/planning-a-site.html#why-this-happens)<br/>_used in:_ [Images and file size — Your turn](https://deweydex.github.io/dewlab/tutorials/images-and-file-size.html#your-turn)<br/>_used in:_ [Several pages, one navigation — Why this happens](https://deweydex.github.io/dewlab/tutorials/pages-and-navigation.html#why-this-happens)<br/>_used in:_ [Planning a site — Your turn](https://deweydex.github.io/dewlab/tutorials/planning-a-site.html#your-turn)<br/>_used in:_ [Project ideas — Making any of them easy to read](https://deweydex.github.io/dewlab/tutorials/project-ideas.html#making-any-of-them-easy-to-read) |
+| `WA-LO4` The principles of good website design: target audience, site objectives, navigation, structure, interface and access speed | 🟩 | [Images and file size — Choosing a format](https://deweydex.github.io/dewlab/tutorials/images-and-file-size.html#choosing-a-format)<br/>[Images and file size — Keeping file size down](https://deweydex.github.io/dewlab/tutorials/images-and-file-size.html#keeping-file-size-down)<br/>[Planning a site — Two site maps](https://deweydex.github.io/dewlab/tutorials/planning-a-site.html#two-site-maps)<br/>[Planning a site — Why this happens](https://deweydex.github.io/dewlab/tutorials/planning-a-site.html#why-this-happens)<br/>_used in:_ [Images and file size — Your turn](https://deweydex.github.io/dewlab/tutorials/images-and-file-size.html#your-turn)<br/>_used in:_ [Several pages, one navigation — Why this happens](https://deweydex.github.io/dewlab/tutorials/pages-and-navigation.html#why-this-happens)<br/>_used in:_ [Planning a site — Your turn](https://deweydex.github.io/dewlab/tutorials/planning-a-site.html#your-turn)<br/>_used in:_ [Project ideas — Making any of them easy to read](https://deweydex.github.io/dewlab/tutorials/project-ideas.html#making-any-of-them-easy-to-read)<br/>_used in:_ [Your copy of the project starter — Start with the planning document](https://deweydex.github.io/dewlab/tutorials/your-copy-of-the-project-starter.html#start-with-the-planning-document) |
 | `WA-LO5` Investigate available web authoring tools, including desktop publishing programs and website management systems (the descriptor's own examples — Dreamweaver, Photoshop, Joomla, WordPress — are commercial GUI tools; dewlab discusses GitHub Pages, WordPress and two modern single-page builders against the hand-written HTML and CSS this course actually teaches) | 🟩 | [Conclusions and Next Steps — Other ways to build a website](https://deweydex.github.io/dewlab/tutorials/conclusions-and-next-steps.html#other-ways-to-build-a-website)<br/>_used in:_ [Conclusions and Next Steps — Give it a try](https://deweydex.github.io/dewlab/tutorials/conclusions-and-next-steps.html#give-it-a-try) |
 | `WA-LO6` Keep evidence of a web authoring project: its own research, requirements, and an evaluation of the finished site | 🟩 | [Documenting what you built — What readme.md is for](https://deweydex.github.io/dewlab/tutorials/documenting-what-you-built.html#what-readmemd-is-for)<br/>_used in:_ [Documenting what you built — Your turn](https://deweydex.github.io/dewlab/tutorials/documenting-what-you-built.html#your-turn) |
 | `WA-LO7` Plan a design and user interface for a specified website, documenting each stage of the process (the descriptor's own outcome also has the learner selecting an authoring tool; dewlab's own tool is a given, not a choice) | 🟩 | [Planning a site — Why this happens](https://deweydex.github.io/dewlab/tutorials/planning-a-site.html#why-this-happens)<br/>_used in:_ [Planning a site — Your turn](https://deweydex.github.io/dewlab/tutorials/planning-a-site.html#your-turn) |
@@ -478,24 +482,24 @@ The same word presented as new in two places. Either it is being introduced twic
 
 | Term | Introduced in tutorials |
 |---|---|
-| *building reusable tools* | 5, 23 |
-| *cracking equations* | 19, 22, 23, 24, 31 |
-| *drawing functions* | 24, 25, 27, 28 |
-| *expressions come alive* | 20, 21, 23, 31 |
-| *finding things* | 9, 15 |
-| *function* | 1, 23 |
-| *index* | 6, 7, 18 |
-| *lines and distances* | 26, 27, 28, 30 |
-| *making sense of data* | 14, 25 |
-| *numbers and their families* | 22, 31 |
-| *parabolas* | 27, 30 |
-| *pictures worth numbers* | 23, 25 |
-| *see* | 17, 29 |
-| *set* | 15, 21 |
-| *sets as sorted lists* | 16, 17, 31 |
-| *solve* | 19, 21 |
-| *storing and computing* | 3, 20, 29 |
-| *zahlen* | 2, 18 |
+| *building reusable tools* | 5, 24 |
+| *cracking equations* | 20, 23, 24, 25, 32 |
+| *drawing functions* | 25, 26, 28, 29 |
+| *expressions come alive* | 21, 22, 24, 32 |
+| *finding things* | 9, 16 |
+| *function* | 1, 24 |
+| *index* | 6, 7, 19 |
+| *lines and distances* | 27, 28, 29, 31 |
+| *making sense of data* | 15, 26 |
+| *numbers and their families* | 23, 32 |
+| *parabolas* | 28, 31 |
+| *pictures worth numbers* | 24, 26 |
+| *see* | 18, 30 |
+| *set* | 16, 22 |
+| *sets as sorted lists* | 17, 18, 32 |
+| *solve* | 20, 22 |
+| *storing and computing* | 3, 21, 30 |
+| *zahlen* | 2, 19 |
 
 ### Used before it was introduced
 
@@ -505,46 +509,46 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 |---|---:|---:|
 | *argument* | 5 | 7 |
 | *before* | 1 | 3 |
-| *between* | 2 | 28 |
+| *between* | 2 | 29 |
 | *counting carefully* | 11 | 12 |
 | *design* | 8 | 10 |
-| *drawing functions* | 23 | 24 |
-| *equation* | 15 | 19 |
-| *expression* | 6 | 19 |
-| *expressions come alive* | 19 | 20 |
+| *drawing functions* | 24 | 25 |
+| *equation* | 16 | 20 |
+| *expression* | 6 | 20 |
+| *expressions come alive* | 20 | 21 |
 | *finding things* | 8 | 9 |
-| *first steps* | 1 | 31 |
+| *first steps* | 1 | 32 |
 | *functions* | 1 | 7 |
 | *how* | 1 | 3 |
 | *independent* | 10 | 12 |
-| *inside* | 1 | 28 |
-| *lines and distances* | 23 | 26 |
-| *local* | 8 | 30 |
-| *logic and truth* | 16 | 17 |
-| *making decisions* | 4 | 16 |
-| *making sense of data* | 13 | 14 |
-| *numbers and their families* | 18 | 22 |
-| *opposite* | 22 | 28 |
-| *parabolas* | 24 | 27 |
+| *inside* | 1 | 29 |
+| *lines and distances* | 24 | 27 |
+| *local* | 8 | 31 |
+| *logic and truth* | 17 | 18 |
+| *making decisions* | 4 | 17 |
+| *making sense of data* | 14 | 15 |
+| *numbers and their families* | 19 | 23 |
+| *opposite* | 23 | 29 |
+| *parabolas* | 25 | 28 |
 | *parameters* | 7 | 10 |
-| *pictures worth numbers* | 14 | 23 |
-| *power* | 2 | 18 |
-| *putting things in order* | 9 | 15 |
-| *reaches* | 5 | 29 |
+| *pictures worth numbers* | 15 | 24 |
+| *power* | 2 | 19 |
+| *putting things in order* | 9 | 16 |
+| *reaches* | 5 | 30 |
 | *repeating yourself* | 6 | 11 |
 | *repetition* | 4 | 11 |
-| *representation* | 2 | 19 |
+| *representation* | 2 | 20 |
 | *return values* | 7 | 10 |
-| *see* | 1 | 17 |
-| *set* | 1 | 15 |
-| *sets as sorted lists* | 15 | 16 |
-| *solve* | 7 | 19 |
+| *see* | 1 | 18 |
+| *set* | 1 | 16 |
+| *sets as sorted lists* | 16 | 17 |
+| *solve* | 7 | 20 |
 | *store* | 1 | 2 |
 | *storing and computing* | 2 | 3 |
-| *the unit circle* | 25 | 28 |
+| *the unit circle* | 26 | 29 |
 | *tools* | 1 | 10 |
 | *what* | 1 | 3 |
-| *wrong* | 1 | 26 |
+| *wrong* | 1 | 27 |
 
 ## Scope questions, settled
 

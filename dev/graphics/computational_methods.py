@@ -15,12 +15,14 @@ from __future__ import annotations
 import argparse
 import ast
 import collections
+import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import grids  # noqa: E402
+import slices  # noqa: E402
 import states  # noqa: E402
 import steps  # noqa: E402
 import tree as tree_renderer  # noqa: E402
@@ -207,8 +209,53 @@ def _search_case() -> tuple[list[int], int]:
     raise SystemExit("finding-things/your-turn-6: no sorted_numbers defined")
 
 
+def where_the_cuts_are() -> str:
+    """The cut positions behind *Lists and Sequences*' slicing examples.
+
+    The page writes `scores[2:5]` and explains in a comment that the end
+    index is excluded. That is true and it is the second thing a reader
+    needs; the first is why, and the why is positional. The two numbers
+    in a slice are not items, they are the gaps between items, and ten
+    items have eleven gaps. Drawn that way the exclusion stops being a
+    rule to memorise — you cannot include a fence post, there is nothing
+    there to include.
+
+    Both the list and the slices come from the page's own cells, so the
+    picture cannot show a slice the page does not write or a result the
+    slice would not give.
+    """
+    return slices.slicing_cuts(*_slicing_case())
+
+
+def _slicing_case() -> tuple[list, list[tuple[int | None, int | None]]]:
+    page = (TUTORIALS / "lists-and-sequences" / "lists-and-sequences.md").read_text()
+
+    if "id: lists-ordered-collections-1" not in page:
+        raise SystemExit("lists-and-sequences: no cell 'lists-ordered-collections-1'")
+    block = page.split("id: lists-ordered-collections-1", 1)[1].split("```", 1)[0]
+    items = None
+    for line in block.splitlines():
+        if line.strip().startswith("scores ="):
+            items = ast.literal_eval(line.split("=", 1)[1].strip())
+    if items is None:
+        raise SystemExit("lists-and-sequences: no scores list to draw")
+
+    if "id: lists-ordered-collections-3" not in page:
+        raise SystemExit("lists-and-sequences: no cell 'lists-ordered-collections-3'")
+    block = page.split("id: lists-ordered-collections-3", 1)[1].split("```", 1)[0]
+    found: list[tuple[int | None, int | None]] = []
+    for match in re.finditer(r"scores\[(-?\d*):(-?\d*)\]", block):
+        start = int(match.group(1)) if match.group(1) else None
+        stop = int(match.group(2)) if match.group(2) else None
+        found.append((start, stop))
+    if not found:
+        raise SystemExit("lists-and-sequences: no slices in the slicing cell")
+    return items, found
+
+
 DIAGRAMS = {
     "finding-things/range-collapsing.svg": the_range_collapsing,
+    "lists-and-sequences/where-the-cuts-are.svg": where_the_cuts_are,
     "multiplying-grids/row-times-column.svg": one_row_one_column,
     "where-chains-lead/weather-states.svg": a_weather_machine,
     "three-ways-to-make-change/repeated-question.svg": the_same_question_twice,

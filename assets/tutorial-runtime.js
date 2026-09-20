@@ -199,7 +199,7 @@ function closeReference() {
 // — the same pattern Reference already uses for its own three sections.
 // "report" is Give Feedback's own door: not in the corner dock at all (a
 // fixed circle at the bottom-right, .dl-report-fab) and not a rail either
-// — a small popover above that circle (7.200) — but sharing this array's
+// — a small popover above that circle (7.204) — but sharing this array's
 // one-open-at-a-time rule and its Escape handling, since two boxes open
 // over the same corner of the screen is one too many either way.
 const RIGHT_DOCK_PANELS = ["yourwork", "python", "settings"];
@@ -278,7 +278,7 @@ function watchPanelOverlap() {
   // that dock to the screen's edge full height. Give Feedback's popover
   // floats in the bottom corner over the margin the docks already reserve,
   // so widening the column's gutter to its width only shoved the text
-  // sideways for a box that was never in its way (7.200).
+  // sideways for a box that was never in its way (7.204).
   const rightPanels = RIGHT_DOCK_PANELS.map((name) => document.getElementById(`dl-${name}`)).filter(Boolean);
   const leftPanels = [document.getElementById("dl-reference")].filter(Boolean);
   // The corner docks themselves — unlike a panel, always on screen, never
@@ -471,7 +471,7 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
 // panel can stay open at the same time without either one stealing focus
 // from the other. Give Feedback, handled here too, is the popover that
 // sentence contrasts them with, and does close on an outside click
-// (7.200). Appearance (now a tab inside Settings, not a panel of its own)
+// (7.204). Appearance (now a tab inside Settings, not a panel of its own)
 // alone carries a search box, filtering its own rows. All three
 // share one dock width
 // (RIGHT_DOCK_WIDTH_KEY): dragging one panel's edge applies the new width
@@ -556,7 +556,7 @@ function initRightPanels() {
     // is meant to stay open beside the page while you work in the page —
     // but this is a popover hanging off one circle, read once and done,
     // and a box that stays put after a reader has plainly moved on is the
-    // same annoyance from the other side (7.200). pointerdown, not click:
+    // same annoyance from the other side (7.204). pointerdown, not click:
     // it fires before focus moves, so the popover is gone by the time
     // whatever was clicked underneath reacts.
     if (p.name === "report") {
@@ -2243,6 +2243,44 @@ function buildQuestions() {
   }
 }
 
+/* A slider that sets a diagram's own width.
+ *
+ * For a diagram whose subject is what happens *at* a width — a grid that
+ * redraws past a breakpoint, a row that wraps. A container query on the
+ * sized element does the rest, which is the honest shape of the thing
+ * being taught: the width decides, not the control.
+ *
+ * Generic rather than per-diagram: an `<input type="range">` carrying
+ * `data-dl-width-for="<id>"` sizes that element in pixels and writes the
+ * figure into the `<output>` beside it. Pixels, not percent, because the
+ * breakpoint a diagram like this exists to show is written in pixels.
+ *
+ * The control ships `hidden` and this reveals it, so a reader whose
+ * JavaScript never runs is not left with a slider that does nothing. They
+ * see the diagram at its starting width and the prose underneath, which is
+ * what a drawn figure would have given them.
+ *
+ * This lives in the runtime rather than in a script beside the diagram so
+ * that it reaches a downloaded page: build.py inlines the standalone
+ * bundle into every one, and nothing here waits on a Run button. */
+function wireDiagramWidthSliders() {
+  for (const input of document.querySelectorAll("input[data-dl-width-for]")) {
+    const target = document.getElementById(input.dataset.dlWidthFor);
+    if (!target) {
+      console.warn(`dewlab: width slider points at "${input.dataset.dlWidthFor}", which is not on the page`);
+      continue;
+    }
+    const out = input.parentElement && input.parentElement.querySelector("output");
+    const apply = () => {
+      target.style.width = `${input.value}px`;
+      if (out) out.textContent = `${input.value}px`;
+    };
+    input.addEventListener("input", apply);
+    apply();
+    if (input.parentElement) input.parentElement.hidden = false;
+  }
+}
+
 function buildSiteEditors(manifest) {
   const dark = isDarkNow();
   const labelFor = { html: "html", css: "css", js: "javascript" };
@@ -2342,13 +2380,66 @@ function buildSiteEditors(manifest) {
       });
     }
 
+    /* The readout carries the preview's width in pixels beside the
+     * percentage, because a layout tutorial's question is nearly always
+     * *at what width* — the row wraps, the media query turns on — and a
+     * percentage of a column whose own width depends on the reader's font
+     * and window answers none of it. Measured from the frame rather than
+     * computed from the percentage, so it stays true when the column
+     * itself changes: a window resize, the reference panel opening, a
+     * different font size. Rounded, since a fractional pixel is noise to
+     * anybody reading it.
+     *
+     * The frame is sandboxed without allow-same-origin, so this is the
+     * frame's own width and not the width inside it. The two differ by
+     * whatever margin the previewed page's body carries — a tutorial that
+     * wants the two to agree sets `body { margin: 0 }` in its own CSS,
+     * which flexbox-first-steps does. */
     const widthInput = host.querySelector(".dl-site-width");
     const widthOut = host.querySelector(".dl-site-preview-controls output");
+
+    /* One write and one measurement per animation frame, however fast the
+     * drag. Setting the frame's width and then immediately reading it back
+     * forces a synchronous layout inside the event handler, and a drag
+     * fires `input` far faster than the page can paint — which left the
+     * frame's old content smeared across the space it had just vacated,
+     * on every site editor on the site. Coalescing into a frame fixes the
+     * cause rather than the symptom: the value the reader lands on is
+     * still exactly the one under their thumb. */
+    let pending = null;
+    let frame = 0;
+    const showWidth = () => {
+      if (!widthOut || !widthInput) return;
+      const px = Math.round(iframe.getBoundingClientRect().width);
+      const text = px ? `${widthInput.value}% · ${px}px` : `${widthInput.value}%`;
+      // Never write the same text twice: a no-op mutation here still costs
+      // the style and layout work that a ResizeObserver callback can then
+      // notice again.
+      if (widthOut.textContent !== text) widthOut.textContent = text;
+    };
+    const apply = () => {
+      frame = 0;
+      if (pending !== null) {
+        iframe.style.width = `${pending}%`;
+        pending = null;
+      }
+      showWidth();
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(apply);
+    };
+
     if (widthInput) {
       widthInput.addEventListener("input", () => {
-        iframe.style.width = `${widthInput.value}%`;
-        if (widthOut) widthOut.textContent = `${widthInput.value}%`;
+        pending = widthInput.value;
+        schedule();
       });
+      showWidth();
+      // Keeps the figure true when the column moves underneath it — a
+      // window resize, a panel opening — not only when the slider moves.
+      if (typeof ResizeObserver === "function") {
+        new ResizeObserver(schedule).observe(iframe);
+      }
     }
 
     siteEditors.push(editorState);
@@ -5442,6 +5533,7 @@ initSegKeyboardNav();
 buildCells(currentManifest);
 buildQuestions();
 buildSiteEditors(currentManifest);
+wireDiagramWidthSliders();
 buildAppCells(currentManifest);
 if (currentManifest.appCells && currentManifest.appCells.length) {
   globalThis.dewlabQueryRows = queryRows;

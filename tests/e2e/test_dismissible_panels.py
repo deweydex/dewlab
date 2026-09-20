@@ -13,7 +13,7 @@ popover" -- the tutorial pages' panels used to be the exception, on
 purpose, until Josh found it closing a panel he'd left open on the other
 dock); it still does for the mobile launcher menu, the highlight popover,
 the cell run menu, and the versions toggle, none of which are part of that
-dock system. Give Feedback moved to that second list in 7.200: it stopped
+dock system. Give Feedback moved to that second list in 7.204: it stopped
 being a rail and became the popover the sentence above contrasts them
 with, so the same clause that protects the rails is what makes an outside
 click close it. All five of those panels also close by clicking their own
@@ -220,7 +220,7 @@ CASES = [
     pytest.param(None, functools.partial(_open_generic_panel, name="settings"), "#dl-settings",
                  None, None, None, False, "#dl-settings-toggle", id="settings"),
     # The one right-hand panel that is not a rail: a popover above its own
-    # circle, so an outside click does close it (DECISIONS_LOG 7.200).
+    # circle, so an outside click does close it (DECISIONS_LOG 7.204).
     pytest.param(None, functools.partial(_open_generic_panel, name="report"), "#dl-report",
                  None, None, None, True, "#dl-report-toggle", id="report"),
     pytest.param(PHONE, _open_mobile_menu, "#dl-mobile-menu",

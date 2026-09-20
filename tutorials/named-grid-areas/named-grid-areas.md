@@ -25,10 +25,10 @@ the CSS below is why.
 id: layout-html
 site: layout
 <div class="page">
-  <header class="area-header">Header</header>
-  <nav class="area-nav">Menu</nav>
-  <main class="area-main">Main</main>
-  <footer class="area-footer">Footer</footer>
+  <header class="area-header">Tentacular Plushies</header>
+  <nav class="area-nav">Squid, Cuttlefish, Nautilus</nav>
+  <main class="area-main">Soft things with too many arms.</main>
+  <footer class="area-footer">Open all tentacles</footer>
 </div>
 ```
 
@@ -79,6 +79,40 @@ the main area. The media query redraws the same map for a wider screen:
 two columns, with the menu now beside the main area rather than above it.
 Nothing about the HTML changes, only which map applies.
 
+<div class="dl-drawn dl-gridmap-wrap">
+<div class="dl-gm-control" hidden>
+<label for="dl-gm-width">Map width</label>
+<input type="range" id="dl-gm-width" min="170" max="520" step="1" value="260"
+       list="dl-gm-ticks" data-dl-width-for="dl-gm-box">
+<datalist id="dl-gm-ticks"><option value="350" label="350px"></option></datalist>
+<output for="dl-gm-width">260px</output>
+</div>
+<div class="dl-gridmap" id="dl-gm-box">
+<div class="dl-gm-frame">
+<div class="dl-gm-strings dl-gm-narrow">
+<code>"header"</code>
+<code>"nav"</code>
+<code>"main"</code>
+<code>"footer"</code>
+</div>
+<div class="dl-gm-strings dl-gm-wide">
+<code>"header header"</code>
+<code>"nav main"</code>
+<code>"footer footer"</code>
+</div>
+<div class="dl-gm-grid">
+<div class="dl-gm-cell dl-gm-header">header</div>
+<div class="dl-gm-cell dl-gm-nav dl-gm-moved">nav</div>
+<div class="dl-gm-cell dl-gm-main">main</div>
+<div class="dl-gm-cell dl-gm-footer">footer</div>
+</div>
+</div>
+</div>
+<p class="dl-gm-drag">One grid, under the tutorial's own two maps. Drag the width across
+350px: the quoted lines change from four to three, and the shape changes
+with them, because the lines are what makes the shape. <code>nav</code>
+is marked in both, so you can see where it went.</p>
+</div>
 ## Other properties from the same lesson
 
 Two related properties are worth naming here, even without a live demo
@@ -111,3 +145,10 @@ named areas. `auto-fill` fits as many grid columns as `auto-fit`, but
 leaves any spare columns empty instead of growing the existing ones.
 `order` changes a flex item's visual position without changing its
 position in the HTML.
+
+## Where to Read More
+
+Codepip. *Grid Garden*. <https://cssgridgarden.com/>. Twenty-eight levels
+of watering carrots with `grid-column`, `grid-row` and `grid-template`.
+It works in the column and row numbers this page avoided; having named
+the areas first, the numbers underneath them are easier to meet.
