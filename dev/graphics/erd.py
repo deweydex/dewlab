@@ -108,7 +108,8 @@ def _layout(schema: dict) -> dict:
         )
         for name in names:
             for c in schema[name]["columns"]:
-                label = f"{c['name']}   {c['type']}   {'PK' if c['primary'] else 'FK' if c['references'] else ''}"
+                label = (f"{c['name']}   {c['type']}   "
+                         f"{'PK' if c['primary'] else ''}{' FK' if c['references'] else ''}")
                 width = max(width, _text_width(label, ROW_PT) + PAD * 2)
         heights = {
             name: HEADER_H + ROW_H * len(schema[name]["columns"]) for name in names
@@ -259,7 +260,13 @@ def render(schema: dict, title: str | None = None) -> str:
             root.add(drawing.text(
                 column["name"], insert=(box["x"] + PAD, centre),
                 font_size=f"{ROW_PT}px", font_family=MONO, fill=INK))
-            mark = "PK" if column["primary"] else "FK" if column["references"] else ""
+            # A column can be both, and in a junction table every column is:
+            # part of the composite key, and a foreign key into one of the two
+            # tables being joined. Showing only "PK" there hides the very
+            # thing the picture is meant to explain.
+            marks = ("PK" if column["primary"] else "") + \
+                    (" FK" if column["references"] else "")
+            mark = marks.strip()
             root.add(drawing.text(
                 f"{column['type']} {mark}".strip(),
                 insert=(box["x"] + box["w"] - PAD, centre),
