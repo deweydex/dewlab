@@ -1274,18 +1274,25 @@ p code, li code {
   bottom: 0;
 }
 
+/* A child of <body>, not of the panel it resizes -- the panel clips its
+   own overflow (overflow-y: auto, for its own scrolling content), which
+   would have clipped this the moment it tried to reach any higher than
+   the panel's own top edge. Fixed to the viewport instead, spanning the
+   full height, with its own left glued to the panel's current edge
+   (makeEdgeResizable()'s positionHandle()) rather than a CSS side rule --
+   a plain rule only ever knew the panel's resting edge, not wherever a
+   drag or a font-size change had actually put it. Above the corner
+   dock's own z-index (51), so the whole edge is grabbable, including the
+   stretch running past the tab stack that sits above the panel itself. */
 .dl-panel-resize-handle {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
   width: 6px;
+  z-index: 52;
   cursor: col-resize;
   touch-action: none;
-}
-.dl-panel-resize-handle-right {
-  left: auto;
-  right: 0;
 }
 .dl-panel-resize-handle:hover,
 .dl-panel-resize-handle.dl-panel-resize-active {

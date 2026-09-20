@@ -3666,12 +3666,32 @@ function initStorageSection() {
 }
 
 function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize = null) {
-  if (!panel || panel.querySelector(".dl-panel-resize-handle")) return;
+  if (!panel || panel.dataset.resizable) return;
+  panel.dataset.resizable = "true";
   const handle = document.createElement("div");
-  handle.className = "dl-panel-resize-handle"
-    + (side === "left" ? " dl-panel-resize-handle-right" : "");
+  handle.className = "dl-panel-resize-handle";
   handle.setAttribute("aria-hidden", "true");
-  panel.prepend(handle);
+  // A child of <body>, not of the panel -- .dm-panel clips its own
+  // overflow (overflow-y: auto), so a child positioned to reach any
+  // higher than the panel's own top would have been clipped the moment
+  // it tried, leaving no visible or grabbable strip alongside .dm-toolbar
+  // above it (the same bug, and the same fix, tutorial-style.css's own
+  // comment on this class describes for the tutorial pages' corner
+  // dock). Told apart from any other panel's own handle by data-for,
+  // since several of these can exist as siblings under <body> at once.
+  if (panel.id) handle.dataset.for = panel.id;
+  document.body.append(handle);
+
+  function positionHandle() {
+    const hidden = panel.hidden;
+    handle.hidden = hidden;
+    if (hidden) return;
+    const rect = panel.getBoundingClientRect();
+    handle.style.left = `${side === "left" ? rect.right : rect.left}px`;
+  }
+  positionHandle();
+  new ResizeObserver(positionHandle).observe(panel);
+  new MutationObserver(positionHandle).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
 
   let startX = 0;
   let startWidth = 0;
@@ -3680,6 +3700,7 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
     const dx = side === "left" ? ev.clientX - startX : startX - ev.clientX;
     const next = Math.max(min, Math.min(startWidth + dx, Math.min(max, window.innerWidth)));
     panel.style.width = `${next}px`;
+    positionHandle();
   }
   function onUp() {
     handle.classList.remove("dl-panel-resize-active");

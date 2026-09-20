@@ -133,12 +133,14 @@ jobs:
   # A few browser files, not the whole e2e suite (which still stays a local
   # step, per the note at the top): the ones that prove the page's chrome
   # and the layout, and never run a cell — the reference panel, the phone
-  # layout, link contrast, and the course chooser, the remembered course,
-  # the saved-work key migration and an old address. The phone identity-row
-  # regression in #230 reached main with CI green because none of these ran
-  # here (DECISIONS_LOG 7.173). Pyodide is fetched once and cached: the
-  # fixture site serves it, and a page with cells boots it even when no
-  # test presses Run.
+  # layout, link contrast, the course chooser, the remembered course, the
+  # saved-work key migration and an old address, and a panel's edge-resize
+  # drag. The phone identity-row regression in #230 reached main with CI
+  # green because none of these ran here (DECISIONS_LOG 7.173) — the same
+  # reasoning added the resize-drag file after a live-sync bug (7.197)
+  # shipped with nothing here to have caught it either. Pyodide is fetched
+  # once and cached: the fixture site serves it, and a page with cells
+  # boots it even when no test presses Run.
   browser:
     runs-on: ubuntu-latest
     steps:
@@ -172,4 +174,5 @@ jobs:
             tests/e2e/test_reference.py \
             tests/e2e/test_narrow_screen.py \
             tests/e2e/test_link_contrast.py \
-            tests/e2e/test_multi_course_pages.py
+            tests/e2e/test_multi_course_pages.py \
+            tests/e2e/test_panel_resize_drag.py
