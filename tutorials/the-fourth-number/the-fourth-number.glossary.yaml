@@ -1,0 +1,58 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of Computer graphics. The perspective divide and the
+# near plane were introduced in a-point-on-the-screen and are not
+# repeated; this page only gives the divide its matrix form.
+entries:
+  - term: homogeneous coordinates
+    kind: concept
+    definition: >
+      A point written with an extra fourth number on the end, kept at 1.
+      The 1 is what lets a 4×4 matrix add to a point as well as multiply
+      it, so moving and turning become the same kind of step.
+  - term: w
+    kind: concept
+    definition: >
+      w is a point's fourth number in homogeneous coordinates. It starts
+      as 1. After a projection matrix it holds the depth, and dividing
+      the point by it is the perspective divide.
+  - term: translation matrix
+    kind: formula
+    definition: >
+      A 4×4 matrix that moves every point by a fixed amount. It is the
+      identity matrix with the move written down its last column, and it
+      only works on points that carry a 1 as their fourth number.
+    example: "translation(0, 0, 5)  # push everything five units out"
+  - term: projection matrix
+    kind: concept
+    definition: >
+      A 4×4 matrix whose last row copies a point's depth into its w, so
+      that dividing by w afterwards is the perspective divide. A whole
+      camera is one projection matrix times the moves and turns before it.
+  - term: field of view
+    kind: concept
+    definition: >
+      The angle a camera can see, from one edge of the picture to the
+      other. A wide field of view draws everything smaller to fit it in.
+  - term: "f = 1 / tan(fov / 2)"
+    kind: formula
+    definition: >
+      The number the top of a projection matrix's diagonal holds. It
+      scales x and y for the field of view, and it is the distance to
+      the glass in the first tutorial, written as a zoom.
+  - term: far plane
+    kind: concept
+    definition: >
+      The far plane is the greatest depth a renderer will draw. With the
+      near plane, it fixes the range that the projection matrix's third
+      row squeezes every depth into.
+  - term: clipping
+    kind: concept
+    definition: >
+      Clipping cuts away any point that falls outside the range between
+      the near and far planes before the divide. It is how a renderer
+      never divides by a depth of zero.
+  - term: "math.tan()"
+    kind: function
+    definition: "Gives the tangent of an angle measured in radians."
+    example: "f = 1 / math.tan(math.radians(60) / 2)"

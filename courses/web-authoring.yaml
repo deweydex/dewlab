@@ -49,6 +49,11 @@ contents:
   - images-and-file-size
   - documenting-what-you-built
   - conclusions-and-next-steps
+- title: Movement and depth
+  tutorials:
+  - an-orbit-in-css
+  - a-cube-in-css
+  - drawing-frames-with-javascript
 - title: Reference shelf
   tutorials:
   - faq

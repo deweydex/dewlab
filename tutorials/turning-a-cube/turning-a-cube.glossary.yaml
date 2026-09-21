@@ -1,0 +1,44 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second tutorial of Computer graphics. `multiply`, `transpose` and the
+# dot product are inherited from Matrices; `rotate90` and reading a
+# matrix's columns come from what-a-matrix-does-to-a-picture. Neither
+# is repeated here.
+entries:
+  - term: rotation matrix
+    kind: formula
+    definition: >
+      The matrix that turns the plane by an angle θ is
+      [[cos θ, -sin θ], [sin θ, cos θ]]. Its first column is the point on
+      the unit circle at angle θ, which is where (1, 0) lands.
+  - term: rotation about an axis
+    kind: concept
+    definition: >
+      A turn in three dimensions leaves one axis alone and turns the
+      other two into each other. Its 3×3 matrix is the 2D rotation matrix
+      in two of the rows and columns, and a 1 on the diagonal for the
+      axis that stays put.
+  - term: edge list
+    kind: concept
+    definition: >
+      An edge list says which corners of a shape to join, by their column
+      numbers. The points alone are numbers; drawing the edges between
+      them is what makes them a shape.
+  - term: composing transformations
+    kind: concept
+    definition: >
+      Two matrices applied one after the other are one matrix, their
+      product. The matrix nearest the points acts first, so AB means B
+      first, then A.
+  - term: "math.radians(), math.degrees()"
+    kind: function
+    definition: >
+      Convert an angle from degrees to radians, and back. The rotation
+      functions in math want radians.
+    example: "rotate_y(math.radians(30))"
+  - term: "plt.sca()"
+    kind: function
+    definition: >
+      Chooses which frame of a figure the next plotting commands draw
+      into. Useful inside a loop over frames from plt.subplots().
+    example: "plt.sca(frame)"
