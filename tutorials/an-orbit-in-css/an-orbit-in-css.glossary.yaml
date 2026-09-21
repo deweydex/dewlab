@@ -4,6 +4,12 @@
 # Web Authoring. `transform`, `@keyframes` and `animation` are inherited
 # from first-site and not repeated.
 entries:
+  - term: frame
+    kind: concept
+    definition: >
+      A frame is one still picture. A browser draws about sixty a second
+      and your eye blends them into movement. A `@keyframes` rule names
+      the important ones and the browser fills in the rest.
   - term: perspective
     kind: keyword
     definition: >

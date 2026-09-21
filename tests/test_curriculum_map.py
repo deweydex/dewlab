@@ -459,3 +459,10 @@ class TestSeveralReleasesOfOneTutorial:
         new = self.release(repo, "sample.md", "2026.08.24.1", status=new_status)
         expected = {old} if which_wins == "old" else {new}
         assert cm.newest_live(sorted((repo / "tutorials").rglob("*.md"))) == expected
+
+
+class TestEmphasisReadsBoldItalics:
+    def test_a_term_in_bold_italics_is_found_like_a_plain_italic_one(self):
+        prose = "One *frame* and a ***frame rate***, but not **bold** alone."
+        found = [plain or bold for plain, bold in cm.EMPHASIS_RE.findall(prose)]
+        assert found == ["frame", "frame rate"]

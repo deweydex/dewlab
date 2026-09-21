@@ -5,6 +5,21 @@
 # matrix's columns come from what-a-matrix-does-to-a-picture. Neither
 # is repeated here.
 entries:
+  - term: wireframe
+    kind: concept
+    definition: >
+      A wireframe is a drawing of a shape made only of the lines between
+      its corners. Every 3D model starts out as one.
+  - term: axis
+    kind: concept
+    definition: >
+      An axis is the line something turns around, the way a wheel turns
+      around its axle. Turning about the y axis leaves y alone.
+  - term: origin
+    kind: concept
+    definition: >
+      The origin is the point (0, 0, 0). Every matrix leaves it where it
+      is, so a turn is always a turn about the origin.
   - term: rotation matrix
     kind: formula
     definition: >

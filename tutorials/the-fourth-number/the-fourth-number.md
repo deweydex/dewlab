@@ -21,12 +21,13 @@ covers:
 Two tutorials, two kinds of step. Turning a cube was a matrix. Moving
 it was not: `move` added a number to every coordinate, and no
 multiplication does that. This tutorial fixes that with a trick that
-looks like cheating, and then uses the same trick to turn the
-perspective divide itself into a matrix, so that everything a camera
-does to a point becomes one multiplication and one division.
+looks like cheating. Then it uses the same trick to turn the
+perspective divide itself into a matrix. By the end, everything a
+camera does to a point is one multiplication and one division, which
+is exactly how a graphics card works.
 
-Everything from the last two tutorials, gathered into one cell. Run it
-first, and then it is out of the way:
+Everything from the last two tutorials, gathered into one cell. Let's
+run it first, and then it is out of the way:
 
 ```python exec
 id: a-move-no-matrix-can-make-1
@@ -46,16 +47,26 @@ any_matrix = [[2, 7, 1], [-3, 5, 0], [4, 4, 4]]
 print(multiply(any_matrix, origin))
 ```
 
-The origin cannot move. Every 3×3 matrix leaves it where it is, so no
-3×3 matrix can move everything.
+Let's do the top row by hand: $2 \cdot 0 + 7 \cdot 0 + 1 \cdot 0 = 0$.
+The other two rows are the same story. The origin cannot move. Every
+3×3 matrix leaves it where it is, so no 3×3 matrix can move
+everything.
 
-This matters, because a *scene*, everything the camera can see, is a
-long chain of moves and turns. Turn the wheel, move it onto the car,
-turn the car, move the car down the road, turn the whole world so that
-the camera is looking along $z$. A graphics card, the part of a
-computer that draws, wants to combine that whole chain into one matrix,
-work it out once, and apply it once to every point. It cannot do that
-while moving is an addition and turning is a multiplication.
+This matters, because a ***scene***, everything the camera can see, is
+a long chain of moves and turns. For one car in a racing game:
+
+1. Turn the wheel about its own axle.
+2. Move the wheel onto the car.
+3. Turn the car to face down the road.
+4. Move the car along the road.
+5. Turn and move the whole world so that the camera is at the origin,
+   looking along $z$.
+
+A ***graphics card***, the part of a computer that draws, wants to
+combine that whole chain into one matrix, work it out once, and apply
+it once to every point. It cannot do that while moving is an addition
+and turning is a multiplication. They are different kinds of step, and
+a chain of different kinds of step does not collapse into one.
 
 ```question
 id: a-move-no-matrix-can-make-3
@@ -72,7 +83,7 @@ Which of these can a 3×3 matrix do to a cube centred on the origin?
 ## One More Row
 
 Here is the trick. Give every point a fourth number, and make it 1. The
-cube gets a fourth row, all ones, and a 4×4 matrix's last column gets
+cube gets a fourth row, all ones. Now a 4×4 matrix's last column gets
 multiplied by that 1 and added on:
 
 $$\begin{bmatrix} 1 & 0 & 0 & d_x \\ 0 & 1 & 0 & d_y \\ 0 & 0 & 1 & d_z \\ 0 & 0 & 0 & 1 \end{bmatrix}
@@ -80,8 +91,9 @@ $$\begin{bmatrix} 1 & 0 & 0 & d_x \\ 0 & 1 & 0 & d_y \\ 0 & 0 & 1 & d_z \\ 0 & 0
 \begin{bmatrix} x + d_x \\ y + d_y \\ z + d_z \\ 1 \end{bmatrix}$$
 
 Work through the top row: $1 \cdot x + 0 \cdot y + 0 \cdot z + d_x \cdot 1$.
-The $d_x$ gets in because it is multiplied by the 1 at the bottom. The last row, $0, 0, 0, 1$,
-puts the 1 back so that the next matrix along can do the same.
+The $d_x$ gets in because it is multiplied by the 1 at the bottom. The
+last row, $0, 0, 0, 1$, puts the 1 back, so that the next matrix along
+can do the same.
 
 ```python exec
 id: one-more-row-1
@@ -100,23 +112,28 @@ print("z row:  ", shifted[2])
 print("ones row:", shifted[3])
 ```
 
-The $z$ row has gone from $-1$ and $1$ to $4$ and $6$. Pushed out five
-units by a multiplication, which is what could not be done a moment
-ago. The first three rows are an ordinary set of points again, so
-`draw` can have them:
+The $z$ row has gone from $-1$ and $1$ to $4$ and $6$. The cube was
+pushed out five units by a multiplication, which could not be done a
+moment ago. The first three rows are an ordinary set of points again,
+so `draw` can have them:
 
 ```python exec
 id: one-more-row-2
 draw(shifted[:3])
 ```
 
-A point written with an extra 1 on the end is said to be in
-*homogeneous coordinates*, and the fourth number is called $w$. A
-matrix shaped like `translation` is a *translation matrix*, translation
-being the graphics word for a move that keeps the shape and the
-direction and only changes the position. There is nothing four
-dimensional going on. The fourth number is a trick for making
-addition look like multiplication, and for now it stays at 1.
+Three new words, for three things you have just seen:
+
+- A point written with an extra 1 on the end is in ***homogeneous
+  coordinates***. Homogeneous means "all of one kind", and the point
+  of it is that moves and turns become one kind of step.
+- The fourth number is called ***w***. For now it stays at 1.
+- A matrix shaped like `translation` is a ***translation matrix***.
+  Translation is the graphics word for a move that keeps the shape and
+  the direction and only changes the position.
+
+There is nothing four-dimensional going on. The fourth number is a
+trick for making addition look like multiplication.
 
 ### Your turn
 
@@ -161,8 +178,8 @@ draw(multiply(swing, cube4)[:3])
 
 ### Your turn
 
-Sixty frames of `swing` with a different angle in each is the ball's
-orbit from [A Point on the Screen](tutorial:a-point-on-the-screen),
+Sixty frames of `swing`, with a different angle in each, is the ball's
+orbit from [A Point on the Screen](tutorial:a-point-on-the-screen)
 with a cube in place of the ball. Could you draw four of those frames,
 at $0°$, $30°$, $60°$ and $90°$? `plt.subplots(1, 4)` and `plt.sca` are
 in the flip-book cells of the last tutorial if you want the shape of
@@ -178,15 +195,21 @@ hint: Build swing inside the loop from the frame's own angle. The cube leaves th
 Dividing by $z$ is not a multiplication, so no matrix can do it. But a
 matrix can *arrange* for it. Here is the arrangement. After the
 multiplying is done, every point is divided by its own fourth number,
-$w$. So far $w$ has been 1 throughout, and dividing by it changed
+$w$. So far $w$ has been 1 throughout, and dividing by 1 changes
 nothing. Now watch what this matrix does to $w$:
 
 $$P = \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix}$$
 
-The last row reads $0, 0, 1, 0$: the new $w$ is $z$. So a point
-$(x, y, z, 1)$ comes out as $(x, y, z, z)$, and dividing everything by
-$w$ gives $(x/z, \; y/z, \; 1, \; 1)$. The first two are the
-perspective divide, exactly as [A Point on the
+The last row reads $0, 0, 1, 0$: the new $w$ is $z$. Let's follow one
+point through, the corner $(2, 1, 4, 1)$:
+
+1. Multiply by $P$: the first three rows pass $x$, $y$ and $z$ through
+   unchanged, and the last row copies $z$ into $w$. Result:
+   $(2, 1, 4, 4)$.
+2. Divide everything by $w = 4$: $(0.5, 0.25, 1, 1)$.
+
+The first two numbers are $2/4$ and $1/4$: the perspective divide,
+exactly as [A Point on the
 Screen](tutorial:a-point-on-the-screen#why-dividing-works) had it.
 
 ```python exec
@@ -214,23 +237,27 @@ draw_edges(divide_by_w(multiply(camera, cube4)))
 
 One matrix, `camera`, built once from a projection, a move and a turn.
 Then, for every point in the scene, one multiplication and one divide.
-A matrix shaped like $P$ is a *projection matrix*. The divide by $w$
-afterwards is the perspective divide, under the name graphics people
-use for it. This
-is the arrangement a graphics card is built around: it multiplies
-millions of points by one 4×4 matrix, divides each by its $w$, and
-draws.
+A matrix shaped like $P$ is a ***projection matrix***. The divide by
+$w$ afterwards is the perspective divide, under the name graphics
+people use for it. This is the arrangement a graphics card is built
+around: it multiplies millions of points by one 4×4 matrix, divides
+each by its $w$, and draws. That is why a game can draw a whole city
+sixty times a second. Each point is one multiplication and one divide,
+and a graphics card does thousands of those at the same time.
 
 ## Field of View
 
 The blog post this series follows ends with the projection matrix a
-graphics card is really handed, and it differs from `simple_projection`
-in two places.
+graphics card is really handed. It differs from `simple_projection` in
+two places.
 
 The first is the pair of 1s at the top of the diagonal. They become a
 number $f$. This is where the zoom lens from the first tutorial comes
-back. A camera is described by its *field of view*, the angle it can
-see from one edge of the picture to the other, and $f = 1 / \tan(\text{fov} / 2)$.
+back. A camera is described by its ***field of view***, the angle it
+can see from one edge of the picture to the other, and
+
+$$f = \frac{1}{\tan(\text{fov} / 2)}$$
+
 A wide field of view gives a small $f$, and everything is drawn smaller
 to fit it in. A narrow one gives a large $f$, and everything is drawn
 bigger, like looking through a zoom lens.
@@ -244,12 +271,12 @@ for fov in [30, 60, 90, 120]:
 
 The second difference is the third row, which so far has just passed
 $z$ through. A graphics card needs to know, for every pixel, which of
-several surfaces is nearest. So it keeps a depth for each pixel, and it
-wants that depth as a number between $-1$ and $1$. The third row does
-the conversion. It uses two more numbers, the depths of the near
-plane and the *far plane*, the nearest and farthest anything is
-allowed to be. The near plane is the rule the first tutorial's orbit
-was missing.
+several surfaces is nearest, so that a wall in front hides the wall
+behind it. So it keeps a depth for each pixel, and it wants that depth
+as a number between $-1$ and $1$. The third row does the conversion. It
+uses two more numbers: the depths of the near plane and the ***far
+plane***, the nearest and the farthest anything is allowed to be. The
+near plane is the rule the first tutorial's orbit was missing.
 
 $$P = \begin{bmatrix} f & 0 & 0 & 0 \\ 0 & f & 0 & 0 \\ 0 & 0 & \dfrac{\text{far} + \text{near}}{\text{far} - \text{near}} & \dfrac{-2 \cdot \text{far} \cdot \text{near}}{\text{far} - \text{near}} \\ 0 & 0 & 1 & 0 \end{bmatrix}$$
 
@@ -270,14 +297,17 @@ for depth in [1, 2, 5, 10, 20]:
     print(f"depth {depth:2} -> {z / w:.3f}")
 ```
 
-Depth 1, the near plane, comes out as exactly $-1$, and depth 20, the
-far plane, as exactly $1$. Anything whose converted depth falls outside
-that range is *clipped*: cut away before the divide, which is how a
-renderer avoids ever dividing by a depth of zero. Notice too that the
-range is shared out unevenly. Depths 1 to 2 use up half of it, and 10
-to 20 use a twentieth. Nearby things get the finest depth steps. That
-is where you would most easily notice two surfaces, one just behind the
-other, drawn in the wrong order.
+Reading the printout:
+
+- Depth 1, the near plane, comes out as exactly $-1$.
+- Depth 20, the far plane, comes out as exactly $1$.
+- Anything whose converted depth falls outside that range is
+  ***clipped***: cut away before the divide. That is how a renderer
+  avoids ever dividing by a depth of zero.
+- The range is shared out unevenly. Depths 1 to 2 use up half of it,
+  and 10 to 20 use a twentieth. Nearby things get the finest depth
+  steps. That is where you would most easily notice two surfaces, one
+  just behind the other, drawn in the wrong order.
 
 Here is the cube through two lenses, a wide one and a narrow one, with
 the screen's edges now at $-1$ and $1$:
@@ -296,11 +326,10 @@ The blog post's matrix has a $-1$ where ours has a $1$ in the last row,
 and a $w$ that is $-z$ rather than $z$. That is because its camera
 looks along the negative $z$ axis, which is what most graphics
 libraries do, and ours has looked along positive $z$ since the first
-tutorial. The arithmetic is the same either way. It also
-divides $f$ by the picture's width-to-height ratio in the top-left
-entry, so that a wide screen does not stretch a circle into an oval.
-Our pictures are square, so that ratio is 1 and the correction
-vanishes.
+tutorial. The arithmetic is the same either way. It also divides $f$ by
+the picture's width-to-height ratio in the top-left entry, so that a
+wide screen does not stretch a circle into an oval. Our pictures are
+square, so that ratio is 1 and the correction vanishes.
 
 ### Your turn
 

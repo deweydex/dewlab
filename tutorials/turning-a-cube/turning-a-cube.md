@@ -42,16 +42,23 @@ edges = [(0, 1), (1, 2), (2, 3), (3, 0),   # the square at the front
          (0, 4), (1, 5), (2, 6), (3, 7)]   # the four joining them
 ```
 
+Two lists, and it is worth being clear what each holds:
+
+- `cube` is three rows, one for each coordinate, and eight columns, one
+  for each corner. Column 0 is the corner $(-1, -1, -1)$: read down the
+  first entry of each row. Column 6 is $(1, 1, 1)$, the opposite corner.
+- `edges` says which corners to join, by their column numbers. `(0, 1)`
+  joins corner 0 to corner 1. A cube has twelve edges: four round the
+  front, four round the back, and four joining the two.
+
 This is the layout the square had in [What a Matrix Does to a
-Picture](tutorial:what-a-matrix-does-to-a-picture): one row per
-coordinate, one column per point, so that a matrix can be applied to
-every corner in a single multiplication. There are three rows now
-instead of two. `edges` says which corners to join, by their column
-numbers, and there are twelve of them.
+Picture](tutorial:what-a-matrix-does-to-a-picture), with a third row
+because each point now has a depth. That layout lets a matrix be
+applied to every corner in a single multiplication.
 
 The cube is sitting exactly where the camera stands, so before anything
 can be projected it has to be pushed out in front. `move` adds a fixed
-amount to every coordinate, and `project` is the divide from the last
+amount to every coordinate. `project` is the divide from the last
 tutorial, done to a whole row of points at once:
 
 ```python exec
@@ -66,6 +73,13 @@ def project(points):
 
 print(project(move(cube, 0, 0, 5)))
 ```
+
+Let's read one of those numbers. Corner 0 was $(-1, -1, -1)$. After
+`move(cube, 0, 0, 5)` it is $(-1, -1, 4)$: only $z$ changed. After
+`project` it is $(-1/4, -1/4) = (-0.25, -0.25)$, the first entry in
+each of the two rows printed. Corner 4, directly behind it, was
+$(-1, -1, 1)$, moves to $(-1, -1, 6)$, and projects to
+$(-0.167, -0.167)$: closer to the centre, because it is further away.
 
 Sixteen numbers, and not much of a cube yet. Drawing the twelve edges
 between them is what makes it one:
@@ -87,17 +101,19 @@ def draw(points, color="C0"):
 draw(move(cube, 0, 0, 5))
 ```
 
-The front face is the bigger square and the back face is the smaller
-one inside it, because it is two units further away. Nothing here drew
-a cube. Twelve straight lines were drawn between projected corners, and
-your eye did the rest.
+The front face is the bigger square. The back face is the smaller one
+inside it, because it is two units further away. Nothing here drew a
+cube. Twelve straight lines were drawn between projected corners, and
+your eye did the rest. A drawing made only of lines like this is called
+a ***wireframe***, and it is how every 3D model starts out, whether it
+ends up as a game character or a car.
 
 ### Your turn
 
 What does the cube look like from further away? Try pushing it out to
-depth 20 instead of 5. And what happens if you move it sideways as well,
-say two units to the right, so that you are no longer looking at it
-straight on?
+depth 20 instead of 5. And what happens if you move it sideways as
+well, say two units to the right, so that you are no longer looking at
+it straight on?
 
 ```python exec
 id: eight-corners-twelve-edges-4
@@ -105,27 +121,33 @@ hint: draw(move(cube, 0, 0, 20)) for the first. Compare the sizes of the two squ
 ```
 
 Far away, the two squares are nearly the same size and the cube looks
-flat. That is also why a photograph taken with a zoom lens from far away
-looks flat, and one taken up close does not.
+flat. That is also why a photograph taken with a zoom lens from far
+away looks flat, and one taken up close does not.
 
 ## A Matrix That Turns
 
 In the gallery of 2×2 matrices, `rotate90 = [[0, -1], [1, 0]]` turned
-the square a quarter turn. For any angle $\theta$, the matrix that turns
-the plane by that angle is
+the square a quarter turn. That was one fixed angle. For any angle
+$\theta$, the matrix that turns the plane by that angle is
 
 $$R(\theta) = \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}$$
 
-Read its columns the way you did in *What a Matrix Does to a Picture*. The first column is where
-$(1, 0)$ lands: at $(\cos\theta, \sin\theta)$, which is the point on the
-unit circle at angle $\theta$. The second column is where $(0, 1)$
-lands, a quarter turn further round. Put in $\theta = 90°$ and the two
-columns are $(0, 1)$ and $(-1, 0)$, which are the columns of `rotate90`.
+This is the ***rotation matrix***. Read its columns the way you did in
+*What a Matrix Does to a Picture*:
+
+- The first column is where $(1, 0)$ lands: at $(\cos\theta, \sin\theta)$,
+  which is the point on the unit circle at angle $\theta$.
+- The second column is where $(0, 1)$ lands: a quarter turn further
+  round.
+- Put in $\theta = 90°$, so $\cos\theta = 0$ and $\sin\theta = 1$, and
+  the two columns are $(0, 1)$ and $(-1, 0)$. Those are the columns of
+  `rotate90`. The old matrix was this one with one angle filled in.
 
 In three dimensions, a turn about the vertical axis is like a
 turntable: $y$ stays the same, and $x$ and $z$ change into each other.
-So the matrix is the 2D one with an extra row and column that do
-nothing:
+An ***axis*** is the line something turns around, the way a wheel turns
+around its axle. So the matrix is the 2D one with an extra row and
+column that do nothing:
 
 $$R_y(\theta) = \begin{bmatrix} \cos\theta & 0 & \sin\theta \\ 0 & 1 & 0 \\ -\sin\theta & 0 & \cos\theta \end{bmatrix}$$
 
@@ -161,10 +183,10 @@ draw(move(turned, 0, 0, 5))
 ```
 
 Notice the order. The cube is turned first, while it is still centred
-on the origin, and moved out to depth 5 afterwards. Turning is always
-about the origin, because $(0, 0, 0)$ is the one point every matrix
-leaves alone. What happens if you do it the other way round, and turn
-the cube after moving it?
+on the origin, and moved out to depth 5 afterwards. The ***origin*** is
+the point $(0, 0, 0)$. Turning is always about the origin, because the
+origin is the one point every matrix leaves alone. What happens if you
+do it the other way round, and turn the cube after moving it?
 
 ```python exec
 id: a-matrix-that-turns-3
@@ -172,19 +194,25 @@ draw(multiply(rotate_y(math.radians(15)), move(cube, 0, 0, 5)))
 ```
 
 Now the cube moves off to the side. It is being turned about the
-camera, not about its own centre. Keep going, a few degrees
-at a time, and it would go all the way round the camera and come back.
-That is the ball's orbit from the last tutorial, done with a matrix
-instead of with $\cos$ and $\sin$ written out by hand. The ball was a
-single point being turned about the camera.
+camera, not about its own centre. Keep going, a few degrees at a time,
+and it would go all the way round the camera and come back. That is the
+ball's orbit from the last tutorial, done with a matrix instead of with
+$\cos$ and $\sin$ written out by hand. The ball was a single point being
+turned about the camera.
 
 ### Your turn
 
-Turning about the vertical axis is `rotate_y`. Nodding, forwards and
-back, is turning about the $x$ axis: it leaves $x$ alone and turns $y$
-and $z$ into each other. How might you write `rotate_x(angle)`? Start
-from the 2D matrix and decide which row and column should be the one
-that does nothing.
+Turning about the vertical axis is `rotate_y`. Nodding forwards and
+back is turning about the $x$ axis: $x$ stays the same, and $y$ and $z$
+change into each other. How might you write `rotate_x(angle)`? Small
+steps:
+
+1. Start from the 2D rotation matrix.
+2. Decide which row and which column should be the ones that do
+   nothing. For `rotate_y` it was the middle row and column, because
+   $y$ was left alone.
+3. Put a 1 where that row and column cross, and zeros along the rest
+   of them.
 
 ```python exec
 id: a-matrix-that-turns-4
@@ -202,7 +230,9 @@ check(multiply(rotate_x(math.radians(90)), [[0], [1], [0]]), [[0.0], [0.0], [1.0
 
 ## A Flip-Book
 
-Twelve frames, each with the cube turned 30° further than the last:
+In the last tutorial, a moving picture turned out to be many still
+pictures, or **frames**, shown one after another. Here are twelve
+frames of the cube, each turned 30° further than the last:
 
 ```python exec
 id: a-flip-book-1
@@ -220,7 +250,9 @@ At 90° the picture is the same as at 0°, because a different face has
 turned to the front and a cube's faces are all alike. Halfway between,
 at 45°, it is at its widest, with two faces showing. A game does
 exactly this, sixty times a second: the same eight columns, multiplied
-by a slightly different matrix each time, then divided and drawn.
+by a slightly different matrix each time, then divided and drawn. When
+a game feels smooth, that is because it manages sixty of these every
+second. When it stutters, it has fallen behind.
 
 Here are the pages turned for you. `FuncAnimation` did the same job for
 the ball in the last tutorial. This time each frame moves twelve lines,
@@ -246,6 +278,17 @@ def draw_step(step):
 FuncAnimation(figure, draw_step, frames=48, interval=60)
 ```
 
+Two things are new compared with the ball:
+
+- The twelve lines are made once, before the animation starts, and
+  each frame only moves them with `set_data`. That is faster than
+  drawing new lines every frame, and it is how animation is usually
+  done: set everything up once, then change a little each frame.
+- The angle is $2\pi / 48$ times the frame number, so after 48 frames
+  the cube has turned exactly once. When the animation loops back to
+  the first frame, the cube is where it started, and the join is
+  invisible.
+
 Change the two 48s to 96 and the cube turns more slowly and more
 smoothly. Change `rotate_y` to your own `rotate_x` and it tumbles
 forwards instead.
@@ -254,8 +297,11 @@ forwards instead.
 
 A cube spinning on a turntable, seen straight on, never shows you its
 top. To look down on it a little, tilt it about $x$ as well, by a fixed
-angle, and keep the spin about $y$ going at the same time. Two matrices,
-applied one after the other, are one matrix: their product.
+angle, and keep the spin about $y$ going at the same time. Two
+matrices, applied one after the other, are one matrix: their product.
+Putting two turns together like this is called ***composing*** them:
+the output of one turn goes straight into the next, the way the output
+of one function can go straight into another.
 
 ```python exec
 id: two-turns-at-once-1
@@ -270,7 +316,7 @@ for index, frame in enumerate(frames.flat):
     frame.set_yticks([])
 ```
 
-`multiply(tilt, rotate_y(angle))` spins first and tilts second, since
+`multiply(tilt, rotate_y(angle))` spins first and tilts second, because
 the matrix nearest the points is the one that acts first. That is the
 one you want here: spin the cube on its own vertical axis, then tip the
 whole turntable towards the camera.
@@ -295,8 +341,8 @@ being a cube? For most people it is the first `draw`, which is worth
 noticing, because nothing changed in the numbers at that moment.
 
 Turning was a matrix. Moving was not: `move` added a number to every
-coordinate, and there is no 3×3 matrix that does that, since every one
-of them leaves the origin where it is. The next tutorial fixes that
+coordinate, and there is no 3×3 matrix that does that, because every
+one of them leaves the origin where it is. The next tutorial fixes that
 with a trick that looks like cheating, and then uses the same trick on
 the perspective divide itself.
 

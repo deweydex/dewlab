@@ -4254,3 +4254,17 @@ Left undone deliberately, and worth a decision later: Database Methods has no st
 **Where it is used.** Only after the flip-book, in both tutorials that have one. The strip of frames is what teaches that a film is arithmetic repeated; the moving picture is the reward, and a reader who saw only the moving picture would have learned less. The style guide says so now.
 
 *Cost to change: low. One predicate, one renderer and one branch in `assets/tutorial_tools.py`, with a unit test; two cells and one glossary entry in the tutorials. The `assetVersions` hash on `tutorial_tools.py` already tells a cached page the file changed.*
+
+---
+
+**7.207 — The six graphics pages are rewritten in the register of Josh's own class handouts: worked numbers in the prose, small numbered steps, short lists of what each part of a cell does, key terms in bold italics, and every animation idea explained from a still picture up.** Josh: "let's see if we can really simplify the language and explain everything that is going on as animation would be new to folks … Nice bold key words and introduce context and connections where possible", and then, with five of his handouts attached: "Let's use these as our style guide here—we want real concrete texts but we can use more bullet points."
+
+**What the handouts do that the first draft did not.** They work an example with real values in the running text (*encrypt(albatross) → grhgzxuyy*), not only in a cell. They break a task into small numbered steps. They put "things to keep in mind" in a short list. They ask the reader a question and leave it there. They name the feeling ("brain-pain") and hand over a route. And they are warm without being soft: the register is a person talking, footnotes and all. The rewrite takes each of those. Every page now walks at least one number through by hand beside the cell that computes it, every "your turn" that has steps lists them, and the animation pages explain frame, frame rate and loop before any animation runs, because a reader who has never thought about how a screen moves has nothing to hang `interval=60` on.
+
+**Bold italics, not bold.** The style guide's italics are what `dev/curriculum_map.py` and `origin_anchor()` read to find where a term is introduced, and a plain `**term**` would have made these six pages invisible to both. `***term***` renders as `<strong><em>`, so the term machinery still sees the `<em>`, the reader sees bold, and `EMPHASIS_RE` now reads the triple form too. Whether every page should move to bold is Josh's call for another day; the guide says a page *may*.
+
+**Lists, with a rule.** §9 asked "are the explanations prose rather than bullets?" and the honest answer on these pages is now "mostly". The checklist line says where a list earns its place: the small steps of a task, what each part of a cell does, things to keep in mind, things to try one at a time. An explanation of *why* stays prose.
+
+**Cells untouched.** The rewrite was assembled by pasting each fence back in by its id, so no cell's code, id or hint changed and no saved work is at risk. Every number quoted in the new prose was run.
+
+*Cost to change: nil for the prose. The regex change is one alternation with a test.*

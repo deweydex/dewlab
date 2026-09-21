@@ -4,6 +4,17 @@
 # near plane were introduced in a-point-on-the-screen and are not
 # repeated; this page only gives the divide its matrix form.
 entries:
+  - term: scene
+    kind: concept
+    definition: >
+      A scene is everything the camera can see, built from a chain of
+      moves and turns.
+  - term: graphics card
+    kind: concept
+    definition: >
+      A graphics card is the part of a computer that draws. It multiplies
+      millions of points by one 4×4 matrix, divides each by its w, and
+      draws, many points at the same time.
   - term: homogeneous coordinates
     kind: concept
     definition: >

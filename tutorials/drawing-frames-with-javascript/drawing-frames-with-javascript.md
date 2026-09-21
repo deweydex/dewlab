@@ -13,15 +13,18 @@ covers:
 
 # Drawing frames with JavaScript
 
-The last two pages let the browser do the dividing by depth. This one
-does the arithmetic by hand, in JavaScript, and draws the result onto
-a `<canvas>` sixty times a second. It is the ball in orbit from [A
+On the last two pages the browser drew every frame for you, from the
+few key frames you wrote down. This page does the opposite. You draw
+every frame yourself, in JavaScript, and the browser only tells you
+when it is time for the next one. It is the ball in orbit from [A
 Point on the Screen](tutorial:a-point-on-the-screen#a-ball-in-orbit),
-written in a different language.
+written in a different language, and it is the first JavaScript on
+this course.
 
 This editor has a third pane. HTML and CSS update the preview as you
 type, the way they have all along, but JavaScript only runs when you
-press **Run** in its pane, or Ctrl+Enter inside it. Press it now.
+press **Run** in its pane, or Ctrl+Enter inside it. Let's press it
+now.
 
 ```html site
 id: orbit-canvas-html
@@ -87,37 +90,55 @@ frame();
 
 ## Why this happens
 
-A `<canvas>` is a blank rectangle of pixels that JavaScript can draw
-on. `getContext("2d")` gives you the pen that does the drawing:
-`fillRect` draws a rectangle, `arc` draws a circle, and `fill` colours
-in whatever shape was just described.
+**The canvas.** A `<canvas>` is a blank rectangle of pixels that
+JavaScript can draw on. Nothing else on this course has needed one,
+because HTML and CSS describe a page and the browser draws it. A
+canvas is for when you want to do the drawing yourself.
+`getContext("2d")` gives you the pen that does it:
 
-`project` is the perspective divide, with two changes to fit a canvas.
-The first change: after dividing by $z$, the result is multiplied by
-`glass`, the distance to the screen in pixels, because a canvas counts
-in pixels rather than units. The second: the result is added to the
-middle of the canvas, because a canvas puts $(0, 0)$ in its top-left
-corner, not at the centre. A canvas also counts $y$ downwards, so the
-$0.2$ in the sun and the ball puts them a little below eye level, which
-is why you look slightly down on the orbit. The ball's radius is scaled by
-`glass / z`, the same divide again, so it shrinks as it goes away.
+- `fillRect` draws a rectangle;
+- `arc` draws a circle, or part of one;
+- `fill` colours in whatever shape was just described.
 
-`requestAnimationFrame(frame)` is the line that makes it move. It asks
-the browser to call `frame` once, just before it next paints the
-screen, which is usually sixty times a second. `frame` clears the
-canvas, works out where the ball is now, draws everything, adds a
-little to the angle, and then asks to be called again. That loop, draw
-and ask again, is the *animation loop*, and every game and every
-animated chart on the web is built round one.
+**The divide, in pixels.** `project` is the perspective divide, with
+two changes to fit a canvas. The first change: after dividing by $z$,
+the result is multiplied by `glass`, the distance to the screen in
+pixels, because a canvas counts in pixels rather than units. The
+second: the result is added to the middle of the canvas, because a
+canvas puts $(0, 0)$ in its top-left corner, not at the centre. A
+canvas also counts $y$ downwards, so the $0.2$ in the sun and the ball
+puts them a little below eye level, which is why you look slightly
+down on the orbit. The ball's radius is scaled by `glass / z`, the
+same divide again, so it shrinks as it goes away. Let's check one
+number: the sun is at depth 4, so its radius of $0.5$ becomes
+$0.5 \times 200 / 4 = 25$ pixels.
 
-One line does a job that CSS did for us on the last two pages. The ball has to go
-behind the sun for half of every turn, and a canvas has no idea what is
-in front of what. It draws whatever it is told, in the order it is
-told. So `frame` sorts the two bodies by depth, farthest first, and the
-nearer one is painted over the farther one. Sorting a scene by depth
-and painting from the back is called the *painter's algorithm*, after
-the way a painter lays down a background before the figures in front
-of it.
+**The loop.** `requestAnimationFrame(frame)` is the line that makes it
+move. It asks the browser to call `frame` once, just before it next
+paints the screen, which is usually sixty times a second. Each time
+`frame` runs it does the same four things:
+
+1. Clear the canvas, by painting a dark rectangle over everything.
+2. Work out where the ball is now, from `angle`.
+3. Draw the sun and the ball.
+4. Add a little to `angle`, and ask to be called again.
+
+That loop, draw and ask again, is the ***animation loop***, and every
+game and every animated chart on the web is built round one. It is
+`FuncAnimation` from the Computational Methods course, written out by
+hand: there, matplotlib called `draw_step` once per frame; here, the
+browser calls `frame`. Adding `0.02` to the angle each time, at sixty
+frames a second, is $1.2$ radians a second, so one full turn takes
+about five seconds.
+
+**Front and back.** One line does a job that CSS did for us on the
+last two pages. The ball has to go behind the sun for half of every
+turn, and a canvas has no idea what is in front of what. It draws
+whatever it is told, in the order it is told. So `frame` sorts the two
+bodies by depth, farthest first, and the nearer one is painted over
+the farther one. Sorting a scene by depth and painting from the back
+is called the ***painter's algorithm***, after the way a painter lays
+down a background before the figures in front of it.
 
 ## The cube again
 
@@ -200,20 +221,29 @@ frame();
 
 `turn` takes one row of the matrix at a time and works out its dot
 product with the point. That is exactly what `multiply` did with a row
-and a column. Then the
-same `project`, with the cube pushed five units out first, and twelve
-`moveTo` and `lineTo` pairs for the twelve edges.
+and a column. Then the same `project`, with the cube pushed five units
+out first, and twelve `moveTo` and `lineTo` pairs for the twelve
+edges. Every frame:
+
+1. Build the rotation matrix for the current `angle`.
+2. Turn all eight corners with it, and project each one.
+3. Draw the twelve edges between the projected corners.
+4. Add a little to `angle`, and ask for the next frame.
 
 ## Your turn
 
-Let's try changing `angle + 0.02` in the first editor to `angle + 0.05`
-and pressing Run again, to see the ball go faster. Then try a second
-ball, on a smaller orbit, going the other way: a negative angle does
-that. Remember to add it to the list that gets sorted, or it will not
-know to go behind anything. In the second editor, try a `rotateX`
-function alongside `rotateY`, with `x` left alone this time, and apply
-both turns to each corner. Which order gives a cube that spins on a
-tilted turntable, and which gives one that tumbles?
+Some things to try, each one in its own run:
+
+- In the first editor, change `angle + 0.02` to `angle + 0.05` and
+  press Run again. The ball goes faster. How long does one turn take
+  now?
+- Add a second ball on a smaller orbit, going the other way: a
+  negative angle does that. Remember to add it to the list that gets
+  sorted, or it will not know to go behind anything.
+- In the second editor, write a `rotateX` function alongside
+  `rotateY`, with `x` left alone this time, and apply both turns to
+  each corner. Which order gives a cube that spins on a tilted
+  turntable, and which gives one that tumbles?
 
 ## What you have now
 
@@ -221,8 +251,7 @@ The perspective divide written out by hand, running sixty times a
 second.
 
 A `<canvas>` is a rectangle JavaScript draws on, and
-`getContext("2d")` gives the pen that draws on it. The animation
-loop draws one frame, then calls `requestAnimationFrame` to ask for
-the next. The painter's algorithm sorts what is to be drawn by depth
-and paints from the back forwards, so nearer things cover farther
-ones.
+`getContext("2d")` gives the pen that draws on it. The animation loop
+draws one frame, then calls `requestAnimationFrame` to ask for the
+next. The painter's algorithm sorts what is to be drawn by depth and
+paints from the back forwards, so nearer things cover farther ones.

@@ -40,6 +40,27 @@ entries:
       The near plane is the smallest depth a renderer will draw. Anything
       closer is cut away before dividing, so the divide never meets a
       depth of zero or a point behind the camera.
+  - term: renderer
+    kind: concept
+    definition: >
+      A renderer is the program that turns points into a picture. A game
+      engine has one, and so does a browser.
+  - term: frame
+    kind: concept
+    definition: >
+      A frame is one still picture. A screen shows many frames one after
+      another, and if they come fast enough your eye sees movement.
+  - term: frame rate
+    kind: concept
+    definition: >
+      The frame rate is how many frames are shown each second. A cinema
+      film shows 24 a second and a game usually draws 60.
+  - term: loop
+    kind: concept
+    definition: >
+      An animation loops when it starts again from its first frame after
+      showing its last one, so it keeps going for as long as the page is
+      open.
   - term: "math.sin(), math.cos()"
     kind: function
     definition: >
