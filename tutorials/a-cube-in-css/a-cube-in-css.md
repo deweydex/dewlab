@@ -74,17 +74,17 @@ site: cube
 
 ## Why this happens
 
-All six faces start in the same place: `position: absolute` with no
-offsets leaves each one at the top-left corner of `.cube`, stacked on
-top of each other, 100 pixels square. What separates them is one
-transform each.
+All six faces start in the same place. `position: absolute` with no
+`top` or `left` leaves each one at the top-left corner of `.cube`. They
+are stacked on top of each other, each 100 pixels square. One transform
+each is what separates them.
 
-`.front` is `translateZ(50px)`, pushed 50 pixels towards you, half the
+`.front` is `translateZ(50px)`: pushed 50 pixels towards you, half the
 cube's width. Every other face is a `rotate` followed by that same
-push, and the order is worth reading slowly, because the browser
-applies a list of transforms from the right-hand end. `rotateY(90deg)
+push. The order is worth reading slowly, because the browser applies a
+list of transforms from the right-hand end. `rotateY(90deg)
 translateZ(50px)` means: push the face 50 pixels towards you first,
-then swing that whole arrangement a quarter turn about the vertical
+then turn the pushed-out face a quarter turn about the vertical
 axis. A face that was in front and facing you ends up on the right and
 facing right. The same push with a half turn puts a face at the back,
 facing away. `rotateX` does the same trick for the top and bottom. Six
@@ -108,7 +108,7 @@ through the front ones and you can watch the whole shape at once.
 
 Let's try `backface-visibility: hidden` on `.face`. A face's back is
 the side you see when it has turned away from you, so hiding it makes
-the cube look solid, and the three faces facing away stop drawing.
+the cube look solid, and the three faces facing away stop being drawn.
 Then try giving each face its own background colour, like a child's
 building block. Then change the `to` line of `tumble` to
 `rotateX(0deg) rotateY(360deg)`, so that the cube spins on a

@@ -46,15 +46,16 @@ any_matrix = [[2, 7, 1], [-3, 5, 0], [4, 4, 4]]
 print(multiply(any_matrix, origin))
 ```
 
-The origin is nailed down. Every 3×3 matrix leaves it where it is, so
-no 3×3 matrix can move everything, and that is the end of that.
+The origin cannot move. Every 3×3 matrix leaves it where it is, so no
+3×3 matrix can move everything.
 
-It matters, because a scene is a long chain of moves and turns. Turn
-the wheel, move it onto the car, turn the car, move the car down the
-road, turn the whole world so that the camera is looking along $z$.
-A graphics card wants that chain to collapse into one matrix, worked
-out once, and applied once to every point. It cannot, while moving is
-an addition and turning is a multiplication.
+This matters, because a *scene*, everything the camera can see, is a
+long chain of moves and turns. Turn the wheel, move it onto the car,
+turn the car, move the car down the road, turn the whole world so that
+the camera is looking along $z$. A graphics card, the part of a
+computer that draws, wants to combine that whole chain into one matrix,
+work it out once, and apply it once to every point. It cannot do that
+while moving is an addition and turning is a multiplication.
 
 ```question
 id: a-move-no-matrix-can-make-3
@@ -79,7 +80,7 @@ $$\begin{bmatrix} 1 & 0 & 0 & d_x \\ 0 & 1 & 0 & d_y \\ 0 & 0 & 1 & d_z \\ 0 & 0
 \begin{bmatrix} x + d_x \\ y + d_y \\ z + d_z \\ 1 \end{bmatrix}$$
 
 Work through the top row: $1 \cdot x + 0 \cdot y + 0 \cdot z + d_x \cdot 1$.
-The $d_x$ rides in on the 1 at the bottom. The last row, $0, 0, 0, 1$,
+The $d_x$ gets in because it is multiplied by the 1 at the bottom. The last row, $0, 0, 0, 1$,
 puts the 1 back so that the next matrix along can do the same.
 
 ```python exec
@@ -114,7 +115,7 @@ A point written with an extra 1 on the end is said to be in
 matrix shaped like `translation` is a *translation matrix*, translation
 being the graphics word for a move that keeps the shape and the
 direction and only changes the position. There is nothing four
-dimensional going on. The fourth number is a device for making
+dimensional going on. The fourth number is a trick for making
 addition look like multiplication, and for now it stays at 1.
 
 ### Your turn
@@ -203,7 +204,7 @@ on_screen = divide_by_w(multiply(simple_projection, shifted))
 check(on_screen, project(shifted[:3]))
 ```
 
-The two agree, and the whole pipeline is now visible in one line:
+The two agree, and the whole process now fits in one line:
 
 ```python exec
 id: the-divide-as-a-matrix-2
@@ -213,8 +214,9 @@ draw_edges(divide_by_w(multiply(camera, cube4)))
 
 One matrix, `camera`, built once from a projection, a move and a turn.
 Then, for every point in the scene, one multiplication and one divide.
-A matrix shaped like $P$ is a *projection matrix*, and the divide by
-$w$ afterwards is the perspective divide wearing its usual name. This
+A matrix shaped like $P$ is a *projection matrix*. The divide by $w$
+afterwards is the perspective divide, under the name graphics people
+use for it. This
 is the arrangement a graphics card is built around: it multiplies
 millions of points by one 4×4 matrix, divides each by its $w$, and
 draws.
@@ -226,11 +228,12 @@ graphics card is really handed, and it differs from `simple_projection`
 in two places.
 
 The first is the pair of 1s at the top of the diagonal. They become a
-number $f$, and $f$ is where the zoom lens from the first tutorial
-lives. A camera is described by its *field of view*, the angle it can
+number $f$. This is where the zoom lens from the first tutorial comes
+back. A camera is described by its *field of view*, the angle it can
 see from one edge of the picture to the other, and $f = 1 / \tan(\text{fov} / 2)$.
 A wide field of view gives a small $f$, and everything is drawn smaller
-to fit it in. A narrow one gives a large $f$, which is a telephoto lens.
+to fit it in. A narrow one gives a large $f$, and everything is drawn
+bigger, like looking through a zoom lens.
 
 ```python exec
 id: field-of-view-1
@@ -241,7 +244,7 @@ for fov in [30, 60, 90, 120]:
 
 The second difference is the third row, which so far has just passed
 $z$ through. A graphics card needs to know, for every pixel, which of
-several surfaces is nearest, so it keeps a depth for each pixel, and it
+several surfaces is nearest. So it keeps a depth for each pixel, and it
 wants that depth as a number between $-1$ and $1$. The third row does
 the conversion. It uses two more numbers, the depths of the near
 plane and the *far plane*, the nearest and farthest anything is
@@ -271,9 +274,10 @@ Depth 1, the near plane, comes out as exactly $-1$, and depth 20, the
 far plane, as exactly $1$. Anything whose converted depth falls outside
 that range is *clipped*: cut away before the divide, which is how a
 renderer avoids ever dividing by a depth of zero. Notice too that the
-range is spent unevenly. Depths 1 to 2 use up half of it, and 10 to 20
-use a twentieth. Nearby surfaces get the finest depth steps, which is
-where two surfaces one behind the other are most visible.
+range is shared out unevenly. Depths 1 to 2 use up half of it, and 10
+to 20 use a twentieth. Nearby things get the finest depth steps. That
+is where you would most easily notice two surfaces, one just behind the
+other, drawn in the wrong order.
 
 Here is the cube through two lenses, a wide one and a narrow one, with
 the screen's edges now at $-1$ and $1$:
@@ -290,9 +294,9 @@ for frame, fov in zip(frames, [100, 40]):
 
 The blog post's matrix has a $-1$ where ours has a $1$ in the last row,
 and a $w$ that is $-z$ rather than $z$. That is because its camera
-looks along the negative $z$ axis, which is the convention most
-graphics libraries use, and ours has looked along positive $z$ since
-the first tutorial. The arithmetic is the same either way. It also
+looks along the negative $z$ axis, which is what most graphics
+libraries do, and ours has looked along positive $z$ since the first
+tutorial. The arithmetic is the same either way. It also
 divides $f$ by the picture's width-to-height ratio in the top-left
 entry, so that a wide screen does not stretch a circle into an oval.
 Our pictures are square, so that ratio is 1 and the correction

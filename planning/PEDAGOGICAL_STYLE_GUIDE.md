@@ -224,7 +224,10 @@ there rather than trusting a count here). Do not write
 that is not part of how the page functions.
 
 **Figures need no `plt.show()`.** Creating a figure is enough; the runtime
-collects it.
+collects it. A `FuncAnimation` left as a cell's last expression is
+collected too, as a moving picture, and it is worth reaching for wherever
+the point is that something moves — after the reader has seen the frames
+one at a time, not instead of it.
 
 **Cell ids are a contract.** Lowercase, hyphenated, `<section-slug>-<n>`.
 Once a tutorial has been in front of a class, a cell id is the key

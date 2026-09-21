@@ -46,6 +46,14 @@ entries:
       Give the sine and cosine of an angle measured in radians. Together
       they turn an angle into a point on a circle of radius 1.
     example: "x, z = radius * math.cos(angle), radius * math.sin(angle)"
+  - term: "FuncAnimation()"
+    kind: function
+    definition: >
+      Turns a figure into a moving picture. Calls the function you give it
+      once for each frame, with the frame number, and waits `interval`
+      thousandths of a second between frames. Leave it as the last line of
+      a cell and the page plays it.
+    example: "FuncAnimation(figure, draw_step, frames=48, interval=60)"
   - term: "plt.subplots()"
     kind: function
     definition: >

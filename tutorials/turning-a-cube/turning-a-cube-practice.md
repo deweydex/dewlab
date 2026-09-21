@@ -164,7 +164,7 @@ print(rounded(multiply(spin, tilt)))
 The first spins the cube on its own vertical axis and then tips the
 whole turntable towards you. The second tips the cube first, and then
 spins the tipped cube about the vertical axis of the room, so its own
-axis sweeps round in a cone. Matrix multiplication is not commutative,
+axis moves round in a circle. Matrix multiplication is not commutative,
 and here the difference is something you can see.
 
 </details>

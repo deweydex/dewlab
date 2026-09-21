@@ -4240,3 +4240,17 @@ Left undone deliberately, and worth a decision later: Database Methods has no st
 **Checked, not assumed.** Every Python cell, and every number in the three practice pages, was run. The three site editors were screenshotted in Chromium with their animations paused at several moments, which is how the ball's edge-on vanishing was confirmed as a real effect worth teaching rather than a guess.
 
 *Cost to change: nil to reorder or drop a page; the series are two list entries each. `setup/cube.py` is read by `the-fourth-number` and its practice page only. The link from `the-fourth-number` to `an-orbit-in-css` is the one cross-course dependency, and the build would name it if the web page went.*
+
+---
+
+**7.206 — A matplotlib animation left at the end of a cell plays on the page, as an animated PNG, so the graphics series can show the ball going round and the cube turning rather than only a strip of frames.** Josh, looking at Pyodide's package list: "Is there a way of doing animation with any of those packages listed here?"
+
+**The answer was nearly yes already.** matplotlib's `FuncAnimation` runs in Pyodide as it does anywhere, and its `PillowWriter` writes frames with Pillow, which every page loads for `image_input()`. What was missing was on dewlab's side: `_render_value()` knew figures and tables and fell back to `repr` for everything else, so an animation at the end of a cell printed `<matplotlib.animation.FuncAnimation object at 0x…>`. One more branch renders it.
+
+**Animated PNG, not GIF, and not matplotlib's own HTML player.** `Animation.to_jshtml()` is the notebook answer, and it is a block of HTML with a script in it; the page appends cell output with `innerHTML`, where a script does not run, and the hosted page runs Python in a Worker with no DOM on the far side anyway (7.77). A GIF plays anywhere but has 256 colours and one-bit transparency, so matplotlib's smooth edges go jagged and the transparent background every figure gets (so it never sits in a white box on a dark page) becomes a halo. APNG keeps full alpha and every browser dewlab runs in plays it. It goes through matplotlib's own `PillowWriter`, so the frames are what `save()` would produce, with one change: each frame is cleared to transparent before the next is drawn. The stock writer never asks for that because its frames are opaque; with transparent frames and no disposal, a moving ball leaves a trail of itself round the loop, which was checked by reading a frame back rather than assumed.
+
+**The figure is shown once.** The frames are drawn on a figure, and a cell's leftover figures are flushed as stills at its end. Rendering the animation marks that figure as rendered, so the moving picture is not followed by a frozen copy of its last frame.
+
+**Where it is used.** Only after the flip-book, in both tutorials that have one. The strip of frames is what teaches that a film is arithmetic repeated; the moving picture is the reward, and a reader who saw only the moving picture would have learned less. The style guide says so now.
+
+*Cost to change: low. One predicate, one renderer and one branch in `assets/tutorial_tools.py`, with a unit test; two cells and one glossary entry in the tutorials. The `assetVersions` hash on `tutorial_tools.py` already tells a cached page the file changed.*

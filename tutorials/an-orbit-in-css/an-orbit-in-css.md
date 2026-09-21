@@ -13,9 +13,9 @@ covers:
 
 # An orbit in pure CSS
 
-A white ball circling a sun, passing behind it and coming back round
-the front, with no JavaScript and no arithmetic. The browser does the
-dividing by depth for us. Watch it for a full turn before reading on,
+Here is a white ball circling a sun. It passes behind the sun and
+comes back round the front, with no JavaScript and no arithmetic. The
+browser does the dividing by depth for us. Watch it for a full turn before reading on,
 and keep an eye on the ball when it is at the far left or far right.
 
 ```html site
@@ -74,9 +74,9 @@ site: orbit
 `perspective: 400px` on the stage is the sheet of glass from [A Point
 on the Screen](tutorial:a-point-on-the-screen#why-dividing-works),
 standing 400 pixels in front of your eye. Once it is set, anything
-inside the stage that has a depth gets its position divided by that
-depth: nearer things are drawn bigger and further from the centre,
-further things smaller and closer to it. Without this line, every
+inside the stage that has a depth is divided by that depth. Nearer
+things are drawn bigger and further from the centre. Further things are
+drawn smaller and closer to it. Without this line, every
 `rotateY` and `translateZ` below would still run, and the ball would
 slide left and right without ever changing size.
 
@@ -85,25 +85,25 @@ The three-dimensional part is two transforms working together.
 animation turns `.orbit` all the way round once every six seconds.
 `translateZ(100px)` pushes the ball 100 pixels towards you, out from
 the centre of `.orbit`. Because the ball is inside `.orbit`, it is
-carried round as `.orbit` turns, always 100 pixels out from the
-centre, which is what a circle is. `.orbit` itself has no size at all.
+carried round as `.orbit` turns, always 100 pixels from the centre. A
+path that stays the same distance from a centre is a circle. `.orbit` itself has no size at all.
 It is just a point in the middle of the stage for the ball to swing
 around.
 
-`transform-style: preserve-3d` is the line that is easiest to leave
-out and hardest to diagnose. Normally a browser flattens an element's
+`transform-style: preserve-3d` is the line that is easiest to forget,
+and the hardest to find when it is missing. Normally a browser flattens an element's
 children onto it, like a photograph, before applying the parent's own
 transform. `preserve-3d` keeps them in their real positions instead,
-so the ball's depth survives, and so the browser can see that the ball
-is behind the sun for half of every turn and draw it there.
+so the ball keeps its depth, and the browser can see that the ball is
+behind the sun for half of every turn and draw it there.
 
 ## Why the ball vanishes
 
 At the far left and the far right of its orbit the ball thins to a
 line and disappears for a moment. That is not a bug in the browser.
-The ball is a flat disc, glued to a turntable, and at those two points
-the turntable has turned it edge-on to you. A coin on a record player
-does the same thing.
+The ball is a flat disc, glued to a turntable. At those two points the
+turntable has turned it side-on to you, so all you can see is its edge.
+A coin lying on a record player does the same thing.
 
 The fix is to turn the ball back the other way, by the same angle, at
 the same speed, so that it always faces you. A second animation on the
@@ -169,8 +169,8 @@ site: orbit-facing
 The two animations run for the same six seconds, so at every moment
 the ball has been turned one way by `.orbit` and back the other way by
 exactly as much. The order inside `face-front` matters: `translateZ`
-first, then `rotateY`, so the ball spins on its own spot out at the
-edge of the orbit rather than swinging back in to the centre.
+first, then `rotateY`, so the ball spins in place, out at the edge of
+the orbit, rather than swinging back in to the centre.
 
 ## Your turn
 

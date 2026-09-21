@@ -58,8 +58,8 @@ matrix do you get, and does the order matter for this pair?
 
 `translation(5, 7, 9)`, in either order. Two moves one after the other
 are one move by the sum, and adding is the same both ways round.
-Translations are one of the few families of matrices that do commute
-with each other.
+Translations are one of the few kinds of matrix where the order does
+not matter.
 
 ```python
 print(multiply(translation(1, 2, 3), translation(4, 5, 6)))
@@ -165,8 +165,8 @@ between $-1$ and $1$ has already been used up by the time the depth
 reaches the middle.
 
 The depth that maps to $0$ is $z = 20 / 11 \approx 1.818$: that is
-where $\frac{11}{9} z - \frac{20}{9} = 0$. Less than a unit past the
-near plane, and already half the depth range is spent. The conversion
+where $\frac{11}{9} z - \frac{20}{9} = 0$. The depth range is already half used up less than one unit past the
+near plane. The conversion
 is a divide by $z$, like everything else in this series, so it is
 steep near the camera and flat far away.
 

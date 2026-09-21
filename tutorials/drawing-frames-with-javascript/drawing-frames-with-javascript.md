@@ -88,29 +88,29 @@ frame();
 ## Why this happens
 
 A `<canvas>` is a blank rectangle of pixels that JavaScript can draw
-on. `getContext("2d")` hands back the pen that does the drawing:
-`fillRect` for a rectangle, `arc` for a circle, `fill` to colour in
-whatever path was just described.
+on. `getContext("2d")` gives you the pen that does the drawing:
+`fillRect` draws a rectangle, `arc` draws a circle, and `fill` colours
+in whatever shape was just described.
 
 `project` is the perspective divide, with two changes to fit a canvas.
-A point's $x$ and $y$ are divided by its $z$ and then multiplied by
-`glass`, the distance to the screen in pixels, since a canvas counts in
-pixels rather than units. And the result is added to the middle of the
-canvas, because a canvas puts $(0, 0)$ in its top-left corner rather
-than at the centre. A canvas also counts $y$ downwards, so the $0.2$
-in the sun and the ball puts them a little below eye level, which is
-why you look slightly down on the orbit. The ball's radius is scaled by
+The first change: after dividing by $z$, the result is multiplied by
+`glass`, the distance to the screen in pixels, because a canvas counts
+in pixels rather than units. The second: the result is added to the
+middle of the canvas, because a canvas puts $(0, 0)$ in its top-left
+corner, not at the centre. A canvas also counts $y$ downwards, so the
+$0.2$ in the sun and the ball puts them a little below eye level, which
+is why you look slightly down on the orbit. The ball's radius is scaled by
 `glass / z`, the same divide again, so it shrinks as it goes away.
 
 `requestAnimationFrame(frame)` is the line that makes it move. It asks
 the browser to call `frame` once, just before it next paints the
 screen, which is usually sixty times a second. `frame` clears the
-canvas, works out where the ball is now, draws everything, moves the
-angle on a little, and then asks to be called again. That loop, draw
+canvas, works out where the ball is now, draws everything, adds a
+little to the angle, and then asks to be called again. That loop, draw
 and ask again, is the *animation loop*, and every game and every
 animated chart on the web is built round one.
 
-One line does something CSS did for us last time. The ball has to go
+One line does a job that CSS did for us on the last two pages. The ball has to go
 behind the sun for half of every turn, and a canvas has no idea what is
 in front of what. It draws whatever it is told, in the order it is
 told. So `frame` sorts the two bodies by depth, farthest first, and the
@@ -121,10 +121,9 @@ of it.
 
 ## The cube again
 
-The turning cube from [Turning a Cube](tutorial:turning-a-cube), with
-the rotation matrix applied to each corner by `turn`, which is the
-matrix multiplication from that tutorial written for one point at a
-time.
+Here is the turning cube from [Turning a Cube](tutorial:turning-a-cube).
+`turn` applies the rotation matrix to one corner at a time. It is the
+matrix multiplication from that tutorial, written for a single point.
 
 ```html site
 id: cube-canvas-html
@@ -199,8 +198,9 @@ function frame() {
 frame();
 ```
 
-`turn` takes a row of the matrix at a time and dots it with the point,
-which is exactly what `multiply` did with a row and a column. Then the
+`turn` takes one row of the matrix at a time and works out its dot
+product with the point. That is exactly what `multiply` did with a row
+and a column. Then the
 same `project`, with the cube pushed five units out first, and twelve
 `moveTo` and `lineTo` pairs for the twelve edges.
 

@@ -17,16 +17,16 @@ covers:
 # Turning a Cube
 
 [A Point on the Screen](tutorial:a-point-on-the-screen) projected posts
-and a ball, one point at a time. A cube is eight points, and the
-interesting thing about a cube is not the points but the lines between
-them, and what happens to the whole shape when it turns. Turning, it
-turns out, is a matrix, and the `multiply` you built in [Multiplying
-Grids](tutorial:multiplying-grids) does all the work.
+and a ball, one point at a time. A cube is eight points. The
+interesting part is not the points but the lines between them, and what
+happens to the whole shape when it turns. Turning is a matrix, and the
+`multiply` you built in [Multiplying Grids](tutorial:multiplying-grids)
+does all the work.
 
 ## Eight Corners, Twelve Edges
 
-A cube two units on a side, centred on $(0, 0, 0)$, so every corner is
-some mix of $-1$ and $1$:
+Here is a cube. Each side is two units long, and its centre is at
+$(0, 0, 0)$, so every corner is made of $-1$s and $1$s:
 
 ```python exec
 id: eight-corners-twelve-edges-1
@@ -105,8 +105,8 @@ hint: draw(move(cube, 0, 0, 20)) for the first. Compare the sizes of the two squ
 ```
 
 Far away, the two squares are nearly the same size and the cube looks
-flat. That is also why a photograph taken with a long lens from a
-distance looks flat, and one taken up close with a wide lens does not.
+flat. That is also why a photograph taken with a zoom lens from far away
+looks flat, and one taken up close does not.
 
 ## A Matrix That Turns
 
@@ -116,20 +116,21 @@ the plane by that angle is
 
 $$R(\theta) = \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}$$
 
-Read its columns the way you learned to. The first column is where
+Read its columns the way you did in *What a Matrix Does to a Picture*. The first column is where
 $(1, 0)$ lands: at $(\cos\theta, \sin\theta)$, which is the point on the
 unit circle at angle $\theta$. The second column is where $(0, 1)$
 lands, a quarter turn further round. Put in $\theta = 90°$ and the two
 columns are $(0, 1)$ and $(-1, 0)$, which are the columns of `rotate90`.
 
-In three dimensions, turning about the vertical axis leaves $y$ alone
-and turns $x$ and $z$ into each other, the way a turntable does. So the
-matrix is the 2D one with an extra row and column that do nothing:
+In three dimensions, a turn about the vertical axis is like a
+turntable: $y$ stays the same, and $x$ and $z$ change into each other.
+So the matrix is the 2D one with an extra row and column that do
+nothing:
 
 $$R_y(\theta) = \begin{bmatrix} \cos\theta & 0 & \sin\theta \\ 0 & 1 & 0 \\ -\sin\theta & 0 & \cos\theta \end{bmatrix}$$
 
-To apply it we need `multiply`, which is the same as it was, exactly as
-before, since each page here begins with no code from previous pages:
+To apply it we need `multiply`. Each page here begins with no code from
+earlier pages, so here it is again, exactly as before:
 
 ```python exec
 id: a-matrix-that-turns-1
@@ -170,8 +171,8 @@ id: a-matrix-that-turns-3
 draw(multiply(rotate_y(math.radians(15)), move(cube, 0, 0, 5)))
 ```
 
-Now the cube swings off to the side, because it is being turned about
-the camera rather than about its own centre. Keep going, a few degrees
+Now the cube moves off to the side. It is being turned about the
+camera, not about its own centre. Keep going, a few degrees
 at a time, and it would go all the way round the camera and come back.
 That is the ball's orbit from the last tutorial, done with a matrix
 instead of with $\cos$ and $\sin$ written out by hand. The ball was a
@@ -201,7 +202,7 @@ check(multiply(rotate_x(math.radians(90)), [[0], [1], [0]]), [[0.0], [0.0], [1.0
 
 ## A Flip-Book
 
-Twelve frames, each with the cube turned a further thirtieth of a turn:
+Twelve frames, each with the cube turned 30° further than the last:
 
 ```python exec
 id: a-flip-book-1
@@ -217,15 +218,43 @@ for index, frame in enumerate(frames.flat):
 
 At 90° the picture is the same as at 0°, because a different face has
 turned to the front and a cube's faces are all alike. Halfway between,
-at 45°, it is at its widest, with two faces showing. A game does exactly this, sixty times a second:
-the same eight columns, multiplied by a slightly different matrix each
-time, then divided and drawn.
+at 45°, it is at its widest, with two faces showing. A game does
+exactly this, sixty times a second: the same eight columns, multiplied
+by a slightly different matrix each time, then divided and drawn.
+
+Here are the pages turned for you. `FuncAnimation` did the same job for
+the ball in the last tutorial. This time each frame moves twelve lines,
+one for each edge. `draw_step` does what one pass of the flip-book's
+loop did, with a smaller angle between frames:
+
+```python exec
+id: a-flip-book-2
+from matplotlib.animation import FuncAnimation
+
+figure, stage = plt.subplots(figsize=(3.4, 3.4))
+lines = [stage.plot([], [], color="C0")[0] for edge in edges]
+stage.set_xlim(-0.6, 0.6)
+stage.set_ylim(-0.6, 0.6)
+stage.set_aspect("equal")
+
+def draw_step(step):
+    turned = move(multiply(rotate_y(step * 2 * math.pi / 48), cube), 0, 0, 5)
+    screen_xs, screen_ys = project(turned)
+    for line, (start, end) in zip(lines, edges):
+        line.set_data([screen_xs[start], screen_xs[end]], [screen_ys[start], screen_ys[end]])
+
+FuncAnimation(figure, draw_step, frames=48, interval=60)
+```
+
+Change the two 48s to 96 and the cube turns more slowly and more
+smoothly. Change `rotate_y` to your own `rotate_x` and it tumbles
+forwards instead.
 
 ## Two Turns at Once
 
 A cube spinning on a turntable, seen straight on, never shows you its
 top. To look down on it a little, tilt it about $x$ as well, by a fixed
-angle, and let the spin about $y$ carry on underneath. Two matrices,
+angle, and keep the spin about $y$ going at the same time. Two matrices,
 applied one after the other, are one matrix: their product.
 
 ```python exec

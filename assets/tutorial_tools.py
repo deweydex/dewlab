@@ -330,6 +330,11 @@ def _is_figure(value) -> bool:
     return mpl is not None and isinstance(value, mpl.Figure)
 
 
+def _is_animation(value) -> bool:
+    module = sys.modules.get("matplotlib.animation")
+    return module is not None and isinstance(value, module.Animation)
+
+
 _FIGURE_INK = "#7a7a7a"
 
 
@@ -367,6 +372,54 @@ def _figure_html(figure) -> str:
     return (
         '<div class="dl-figure">'
         f'<img alt="Figure produced by this cell" src="data:image/png;base64,{encoded}">'
+        "</div>"
+    )
+
+
+def _animation_html(animation) -> str:
+    """A matplotlib Animation as a moving picture: an animated PNG with one
+    frame per step of the animation, looping for as long as the page is
+    open.
+
+    An animated PNG rather than a GIF because a GIF has one-bit
+    transparency and 256 colours, which turns matplotlib's smooth edges
+    jagged and its transparent background (`_figure_html()`) into a halo;
+    every browser dewlab runs in plays APNG. Written through matplotlib's
+    own PillowWriter so the frames are exactly what `Animation.save()`
+    would produce, with one change: each frame is cleared to transparent
+    before the next is drawn (`disposal=1`), which the stock writer never
+    asks for because its frames are opaque. Without it a moving ball
+    leaves a trail of itself around the loop.
+
+    Frame rate comes from the animation's own `interval`, clamped to a
+    range a browser will honour. Pillow is on every page (it is what
+    `image_input()` decodes into), so nothing extra has to load.
+    """
+    import tempfile
+    from matplotlib.animation import PillowWriter
+
+    class _TransparentFrames(PillowWriter):
+        def finish(self):
+            self._frames[0].save(
+                self.outfile, save_all=True, append_images=self._frames[1:],
+                duration=int(1000 / self.fps), loop=0, disposal=1,
+            )
+
+    figure = animation._fig
+    _recolour_for_theme(figure, _FIGURE_INK)
+    interval = getattr(animation, "_interval", None) or 200
+    fps = max(1, min(30, round(1000 / interval)))
+    with tempfile.TemporaryDirectory() as folder:
+        path = os.path.join(folder, "animation.png")
+        animation.save(
+            path, writer=_TransparentFrames(fps=fps), dpi=110,
+            savefig_kwargs={"transparent": True},
+        )
+        with open(path, "rb") as handle:
+            encoded = base64.b64encode(handle.read()).decode("ascii")
+    return (
+        '<div class="dl-figure">'
+        f'<img alt="Animation produced by this cell" src="data:image/png;base64,{encoded}">'
         "</div>"
     )
 
@@ -409,8 +462,9 @@ def _render_value(value) -> None:
 
     The rules, in order: `None` renders nothing (so a cell ending in an
     assignment or a `print` stays quiet); DataFrames and Series render as
-    tables; matplotlib figures render as PNGs; everything else falls back to
-    `repr`, which is what a reader coming from a notebook expects.
+    tables; matplotlib figures render as PNGs and matplotlib animations as
+    animated PNGs; everything else falls back to `repr`, which is what a
+    reader coming from a notebook expects.
     """
     if value is None:
         return
@@ -433,6 +487,13 @@ def _render_value(value) -> None:
     if _is_figure(value):
         cell.figures_rendered.add(id(value))
         cell.sink.append_html(_figure_html(value))
+        return
+
+    # The animation's own figure is what the frames were drawn on, so it must
+    # not come round again as a still at the end of the cell.
+    if _is_animation(value):
+        cell.figures_rendered.add(id(value._fig))
+        cell.sink.append_html(_animation_html(value))
         return
 
     if _is_artist(value):

@@ -19,10 +19,11 @@ covers:
 # A Point on the Screen
 
 Every picture on a screen is flat, and most of the things in it are not.
-A game, a film's effects, a 3D chart: each one starts with points that
-have a depth, and ends with pixels that do not. Somewhere in between,
-every point loses its third number. This tutorial is about the rule that
-takes it away, and the rule turns out to be one division.
+A game, a film's special effects and a 3D chart all start with points
+that have a depth. They all end as pixels on a flat screen, which have
+none. Somewhere in between, every point loses its third number. This
+tutorial is about the rule that takes it away. The rule turns out to be
+one division.
 
 ## A Road of Posts
 
@@ -51,8 +52,9 @@ plt.gca().set_aspect("equal")
 Every post is built the same way: two units tall, from $y = -1$ up to
 $y = 1$, and one and a half units out from the middle of the road. The
 only thing that changes from post to post is `depth`. Yet the far ones
-are drawn smaller, and closer to the centre, and the feet of the posts
-climb towards the middle of the picture the way a real road does.
+are drawn smaller and closer to the centre, and the bottoms of the far
+posts sit higher up the picture, the way the far end of a real road
+does.
 Nothing in the cell says "make the far ones smaller". All `project` does
 is divide.
 
@@ -78,9 +80,9 @@ hint: Copy the loop from the cell above and change the list of depths. Depth 0 i
 Why divide, rather than subtract, or anything else? A side view answers
 it. Imagine standing at the left edge of the next picture, looking to
 the right along $z$. The screen is a sheet of glass standing one unit in
-front of your eye. Light from a point beyond the glass travels in a
-straight line to your eye, and where that line crosses the glass is
-where the point appears.
+front of your eye. Light from a point behind the glass travels in a
+straight line to your eye. The place where that line crosses the glass
+is where you see the point.
 
 ```python exec
 id: why-dividing-works-1
@@ -102,22 +104,24 @@ plt.legend()
 The line of sight crosses the glass at $y = 0.5$, and $0.5$ is $2 / 4$:
 the point's height divided by its depth. Two triangles share this
 picture. A big one runs from your eye out to the point, and a small one
-runs from your eye out to the glass. They are the same shape, one being
-a scaled copy of the other, which is what *similar triangles* means. So
-the small triangle's height over its base is the big triangle's height
-over its base:
+runs from your eye out to the glass. They are the same shape. One is a
+bigger copy of the other. Two triangles like that are called *similar
+triangles*, and in similar triangles the matching sides are in the same
+ratio. So the small triangle's height divided by its base equals the big
+triangle's height divided by its base:
 
 $$\frac{y'}{1} = \frac{y}{z}$$
 
-Seen from above instead of from the side, the same picture gives $x'$.
-That is the whole rule, and it has a name: the *perspective divide*.
-Turning a point that has a depth into a point on a flat screen is called
-*projecting* it, and this division is the projection that every camera,
-real or in code, is doing.
+Look at the same scene from above instead of from the side, and the
+same picture gives $x'$. That is the whole rule, and it has a name: the
+*perspective divide*. Turning a point that has a depth into a point on a
+flat screen is called *projecting* it. This division is the projection
+that every camera does, whether it is a real camera or a few lines of
+code.
 
 One thing in the picture was a choice: the glass stands one unit away.
-Stand it two units away and everything on it is drawn twice as big,
-which is what a zoom lens does. We come back to that in the third
+Stand it two units away and everything on it is drawn twice as big.
+That is what a zoom lens does. We come back to that in the third
 tutorial of this series.
 
 ```question
@@ -138,7 +142,8 @@ So far your eye has been at $(0, 0, 0)$, looking along $z$. A camera
 somewhere else sees a different picture, because a point's depth is how
 far it is *ahead of the camera*, not how far it is from some fixed spot.
 If the camera is at `camera`, then a point's position as the camera
-sees it is the point minus the camera. Subtract first, then divide.
+sees it is the point's position minus the camera's position. Subtract
+first, then divide.
 
 ```python exec
 id: where-the-camera-stands-1
@@ -152,9 +157,9 @@ print(project_from((1.5, 1, 4), camera=(0, 0, 0)))
 print(project_from((1.5, 1, 4), camera=(0, 0, -4)))
 ```
 
-The second camera stands four units further back, so the same post top
-is now eight units ahead of it instead of four, and it lands at half the
-distance from the centre. Here is the road again, drawn from wherever
+The second camera stands four units further back. The same post top is
+now eight units ahead of it instead of four, so it lands half as far
+from the centre. Here is the road again, drawn from wherever
 you put the camera:
 
 ```python exec
@@ -191,9 +196,9 @@ $z$. Turning is a matrix, and it is the next tutorial's job.
 ## A Ball in Orbit
 
 Now something that moves. Here is a ball travelling in a circle in
-front of the camera. The circle lies flat, like a hoop on a table, a
-little below eye level so that we look slightly down on it, and its
-centre is five units ahead. At an angle $\theta$ around the hoop, the
+front of the camera. The circle lies flat, like a hoop on a table. It
+sits a little below eye level, so that we look slightly down on it, and
+its centre is five units ahead. At an angle $\theta$ around the hoop, the
 ball is at $x = r\cos\theta$ and $z = 5 + r\sin\theta$, which is the
 unit circle from [The Unit Circle](tutorial:the-unit-circle) scaled up
 by the hoop's radius $r$ and pushed out to depth 5.
@@ -237,13 +242,14 @@ A circle, seen from slightly above, comes out as a squashed oval: lower
 and wider at the front, where the ball is near, and higher and narrower
 at the back. The sixty steps are equally spaced around the hoop, but on
 the screen they are spread out at the front and crowded together at the
-back, because the same distance travelled far away looks like less. The
+back, because the same distance looks shorter when it is far away. The
 ball's drawn radius follows the same rule as everything else, its real
 radius divided by its depth. `scatter` wants an area rather than a
 radius, so the size is divided by $z$ twice.
 
-A film is a flip-book, and a game draws sixty pages of it a second.
-Here are ten pages of ours, one frame for every tenth of a turn:
+A film is a flip-book: many still pictures, shown quickly one after
+another. A game draws sixty of those pictures every second. Here are ten
+pages of our flip-book, one for every tenth of a turn:
 
 ```python exec
 id: a-ball-in-orbit-3
@@ -277,6 +283,39 @@ id: a-ball-in-orbit-4
 hint: Copy the flip-book cell, and call ball_position twice per frame. Going the other way is a negative angle.
 ```
 
+A flip-book only becomes a film when somebody turns the pages.
+`FuncAnimation` turns them. It calls `draw_step` once for each frame
+number, and `interval` is the pause between one page and the next, in
+thousandths of a second. Forty-eight frames, and the ball goes round:
+
+```python exec
+id: a-ball-in-orbit-5
+from matplotlib.animation import FuncAnimation
+
+figure, stage = plt.subplots(figsize=(3.5, 2.6))
+ball = plt.Circle((0, 0), 0.1, color="C0")
+stage.add_patch(ball)
+stage.set_xlim(-0.8, 0.8)
+stage.set_ylim(-0.6, 0.6)
+stage.set_aspect("equal")
+
+def draw_step(step):
+    x, y, z = ball_position(step * 2 * math.pi / 48)
+    ball.center = project(x, y, z)
+    ball.radius = 0.3 / z
+
+FuncAnimation(figure, draw_step, frames=48, interval=60)
+```
+
+The last line is the animation itself, and leaving it as the last
+thing in the cell is what makes the page play it. Nothing else changed:
+`draw_step` is the three lines of arithmetic from the flip-book, run
+forty-eight times.
+
+This cell is yours to change, like any other. What happens with
+`interval=200`? With `frames=12`? Try `radius=3` inside `draw_step`,
+and then try a `height` of $0$, so the hoop is at eye level.
+
 ## Through the Camera
 
 What happens if the hoop is wider than the distance to its centre? With
@@ -302,19 +341,21 @@ plt.gca().set_aspect("equal")
 ```
 
 The run of small dots along the bottom is the far half of the orbit,
-drawn as before. As the ball comes towards the camera its depth
-shrinks towards zero, so dividing by it makes the ball enormous and
-throws it far below the picture, out of sight. Then its depth goes
-negative, and dividing by a negative number flips the ball to the
-wrong side: those are the big dots along the top, above eye level when
-the ball is really below it, and large because a small negative depth
-divides just like a small positive one. The arithmetic did exactly
-what it was told. It was never given a rule for points that are not in
-front of the camera.
+drawn as before. As the ball comes towards the camera, its depth
+shrinks towards zero. Dividing by a number close to zero gives a huge
+answer, so the ball is drawn enormous, and so far below the picture
+that it is out of sight. Then its depth becomes negative. Dividing by a
+negative number flips the sign, so the ball jumps to the wrong side of
+the picture. Those are the big dots along the top. They sit above eye
+level when the ball is really below it, and they are large because a
+small negative depth divides just like a small positive one. The
+arithmetic did exactly what it was told. Nobody gave it a rule for
+points that are not in front of the camera.
 
-A real renderer has one. It refuses to draw anything closer than a
-small fixed depth, the *near plane*, and cuts those points away before
-any dividing happens. The third tutorial in this series shows where that
+A real *renderer*, the program that turns a scene into a picture, has
+such a rule. It refuses to draw anything closer than a small fixed
+depth, called the *near plane*, and cuts those points away before any
+dividing happens. The third tutorial in this series shows where that
 number lives.
 
 ### Your turn
@@ -338,7 +379,7 @@ on inside a game?
 
 Look back at the flip-book. Nothing in it knows what a ball is. It knows
 three numbers per frame, one division for each of two of them, and a
-radius scaled by the third. That is most of what a 3D engine is doing,
+radius scaled by the third. That is most of what a 3D game engine does, for
 many thousands of points at a time. The next tutorial gives it something
 with edges to draw, and a way to turn it.
 
