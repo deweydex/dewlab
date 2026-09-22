@@ -1,0 +1,22 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fifteenth tutorial of first-site, split out of
+# position-and-the-sticky-header. Checked against the cumulative glossary
+# so far -- no overlap. `margin-top: auto` here is the flexbox version of
+# the same leftover-space idea behind "auto margin" in the-container
+# (`margin: 0 auto`, which centres sideways); related, but a different
+# mechanism, so it gets its own entry rather than reusing that one.
+# `display: flex` is used, but taught in flexbox-first-steps, so it is
+# left for that page's glossary.
+entries:
+  - term: "margin-top: auto"
+    kind: keyword
+    definition: >
+      On a flex child, `margin-top: auto` pulls all the leftover space
+      above it, pushing the element itself to the far side of its
+      container.
+  - term: vh
+    kind: keyword
+    definition: >
+      `vh` is a unit for heights, measured against the browser window.
+      `100vh` is the window's full height.

@@ -601,6 +601,58 @@ for the full shape of a good practice page.
 
 ---
 
+## Context pages
+
+A tutorial should be doable in about an hour. Background that a student does
+not need to finish it — where the idea is used in the wild, why browsers
+behave the way they do, a little history, the deeper detail — goes on a
+**context page** beside it instead. Students can finish the tutorial without
+ever opening it. (Common mistakes go on the practice page, not here; and a
+tutorial that teaches two ideas is better split into two tutorials than
+trimmed. `DECISIONS_LOG.md` 7.208 has the reasoning.)
+
+A context page is an ordinary tutorial file in its own folder,
+`tutorials/<id>/<id>.md`, like a mixed problem set. It names the tutorial it
+gives background for with `context_for:`, as one id or a list:
+
+```yaml
+title: "Where Joins Show Up"
+context_for: joins
+year: "2026-2027"
+version: 2026.09.22.1
+```
+
+```yaml
+context_for:
+  - joins
+  - joining-two-real-tables
+```
+
+A tutorial can have more than one context page. It sits off the reading order
+the way a practice page does: it has no previous or next, it is not a search
+result, it sits in the tree under the first tutorial it names, and its
+Reference panel holds everything those tutorials have taught.
+
+**How it links.** Each tutorial it names gets a short block after its practice
+link, naming the context page and saying that nothing in it is needed to
+finish the tutorial. The context page opens with a line naming those
+tutorials, again saying it is optional. The contents page lists it beside each
+of its tutorials, after the Practice button, with a small "context" tag.
+
+**What the build refuses**, each with a message naming the file:
+
+- an id in `context_for:` with no tutorial behind it;
+- naming a practice page or another context page — name the tutorial;
+- naming itself, or naming one id twice;
+- setting `practice_for:` or `practice_across:` as well — a page is
+  background or problems, not both;
+- declaring `covers:` — nothing on a context page is needed to finish a
+  tutorial, so it is never where an outcome is taught;
+- a course file listing it. It follows its tutorial onto every course, the
+  same as a practice page.
+
+---
+
 ## The Reference panel and glossary files
 
 Each tutorial has a `<slug>.glossary.yaml` beside it listing the terms,

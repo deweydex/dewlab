@@ -58,7 +58,9 @@ A **practice page** does not have its own coverage — `practice_for`/
 a course file's series list. Its reference is therefore not computed
 from its own series position at all: it is the union of the named
 tutorial(s)' own cumulative references, unpacked through the same
-`practice_for`/`practice_across` build.py already validates.
+`practice_for`/`practice_across` build.py already validates. A **context
+page** (`context_for`, optional background reading) is treated the same
+way.
 
 ## 3. The glossary file: one per (module, slug), not per release
 
@@ -141,8 +143,9 @@ skill never has to re-derive "what came before," only receive it.
 
 1. Load each member's glossary file (if any).
 2. Accumulate: `cumulative[i] = cumulative[i-1] + member[i].own_entries`.
-3. For a practice page, look up its `practice_for`/`practice_across`
-   target(s)' cumulative list instead of computing its own.
+3. For a practice or context page, look up its `practice_for`/
+   `practice_across`/`context_for` target(s)' cumulative list instead of
+   computing its own.
 4. Pass the page's cumulative list into the page template as JSON — the
    same pattern `{{MANIFEST_JSON}}` already uses — so the runtime renders it
    without a second fetch.

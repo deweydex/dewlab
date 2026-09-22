@@ -105,7 +105,7 @@ gaps harder to read.
 Oftentimes, when we put `text-align: center` on a box, we expect the box
 itself to move to the middle. It does not. The box stays where it is,
 and only the lines of text inside it move. Centring the box itself is a different job, which we meet in
-[Setting a page's width and centring it](tutorial:the-container).
+[A readable width, centred on the page](tutorial:the-container).
 
 ## Now in your own site
 

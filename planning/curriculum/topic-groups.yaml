@@ -333,6 +333,7 @@ groups:
       - text-and-units
       - selectors-and-classes
       - the-container
+      - how-a-browser-lays-out-a-page
 
   - key: web-interactive-css
     name: Interactive and responsive CSS
@@ -342,6 +343,7 @@ groups:
       and CSS that only applies below a chosen screen width.
     tutorials:
       - position-and-the-sticky-header
+      - footer-at-the-bottom
       - hover-and-focus
       - transitions-and-transforms
       - media-queries

@@ -229,7 +229,7 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
     additional thing build.py doesn't check: that every anchor and
     outcome code a tutorial claims to cover actually exists. Skips
     frozen old releases (`newest_live()` decides which file answers for
-    each tutorial), practice-only pages, and archived tutorials — none
+    each tutorial), practice and context pages, and archived tutorials — none
     of those should appear as "where this outcome is taught."
     """
     tutorials = []
@@ -268,7 +268,7 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
                     )
             sections.append(Section(anchor, headings[anchor], covers, touches))
 
-        if meta.get("practice_for") or meta.get("practice_across"):
+        if meta.get("practice_for") or meta.get("practice_across") or meta.get("context_for"):
             continue
 
         if str(meta.get("status", "live")) == "archived":

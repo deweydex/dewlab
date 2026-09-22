@@ -79,9 +79,14 @@ The pipeline, in order:
    the same checks client-side, before a commit rather than after CI.
 
 5. **Assemble navigation.** `series_of()`, `versions_of()`, `practice_pairs()`,
-   `archived_of()` read `courses/*.yaml` and each tutorial's frontmatter to
-   work out reading order, the current release, which tutorial a practice
-   page belongs to, and what's retired. An id listed in a course file with
+   `mixed_practice()`, `context_pages()`, `archived_of()` read
+   `courses/*.yaml` and each tutorial's frontmatter to work out reading
+   order, the current release, which tutorial a practice or context page
+   belongs to, and what's retired. Practice pages (`practice_for`,
+   `practice_across`) and context pages (`context_for`, optional background
+   reading in a folder of its own) are *companion* pages
+   (`Tutorial.is_companion`): off the route, out of search and coverage,
+   placed and glossed through the tutorial(s) they name. An id listed in a course file with
    no tutorial behind it fails the build here rather than surfacing as a
    broken "next" link; a tutorial on no course builds, and is noted. A
    tutorial listed on two courses builds once, with the tree and
