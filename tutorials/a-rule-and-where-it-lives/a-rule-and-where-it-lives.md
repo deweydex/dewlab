@@ -77,6 +77,18 @@ Why might that be useful? One stylesheet can style many pages at once.
 That is why `index.html` and `about.html` look consistent without
 repeating any CSS.
 
+Sometimes we might notice that a page with no CSS at all still has
+some style. Headings are large and bold, and links are blue and
+underlined. That is because every browser has its own built-in
+stylesheet. Our rules are applied on top of it, and they win wherever
+the two disagree.
+
+Oftentimes, when styles seem to vanish from a page, the problem is the
+`<link>` tag and not the CSS. A misspelt file name in `href`, or a
+stylesheet saved in a different folder, means the browser never finds
+the rules at all. If every style on a page disappears at once, the
+`<link>` is a good first place to look.
+
 ## Now in your own site
 
 1. In your fork, open `index.html`. Can you find the `<link>` tag in

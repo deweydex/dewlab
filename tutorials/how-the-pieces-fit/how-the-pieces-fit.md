@@ -37,6 +37,11 @@ something there.
 This site has explanations and examples. We can try an idea here first,
 then use it in a website or a database of our own.
 
+These are not tools made only for students. Many people who build
+websites and software for a living use Git and GitHub every day, and the
+path a change takes, from an editor to a published site, is much the
+same for them as it is for us.
+
 ## From a change to a published page
 
 How does a change in a file end up on a website that anyone can visit?

@@ -93,6 +93,18 @@ do not add up. The larger of the two sets the gap on its own. This is
 called *margin collapse*, and it happens with margins above and below a
 box, not with margins at the sides.
 
+Sometimes we might set a box's `width` to `200px` and then notice
+that it takes up more room than that on the page. Why? By default,
+`width` sets the width of the content only. The padding and the border
+are added on outside it. Many stylesheets change this with
+`box-sizing: border-box`, which makes `width` include the padding and
+the border. We will meet this idea again when we line up cards in a row.
+
+The browser can also show us these layers directly. When we select an
+element in [the browser inspector](tutorial:the-inspector), most
+browsers have a panel that draws its box model as a diagram, like the
+one above, with the real numbers for each layer.
+
 ## Now in your own site
 
 In your fork, `styles.css` has a `.card` rule. We can try the same

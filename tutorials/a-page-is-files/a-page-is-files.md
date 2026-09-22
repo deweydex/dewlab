@@ -70,6 +70,17 @@ Can you spot the attribute here? It is `href="about.html"`, and it tells
 the link where to go. We will meet attributes often. For now, it is
 enough to recognise the shape.
 
+Every website works this way, not only ours. In most browsers, we can
+right-click on any page and choose **View page source** to see the HTML
+behind it. On a large site there is a lot more of it, but the tags have
+the same shape.
+
+Sometimes we might forget a closing tag. What happens then? Browsers are
+forgiving: they do not stop with an error. Instead, they guess where the
+element should end, and the guess is often not what we meant. You can
+see this in the box above. If we delete `</strong>`, where does the bold
+text stop now?
+
 ## Now in your own site
 
 Let's open your fork of the starter and find `index.html`. Near the top,
