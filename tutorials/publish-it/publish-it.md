@@ -34,8 +34,9 @@ A personal GitHub Pages site follows one pattern:
 your repository is `web`, your address is `janedoe.github.io/web`.
 
 GitHub Pages looks for a file named exactly `index.html` and serves it as
-the homepage. If your main file is named anything else, rename it, or
-visitors will see a directory listing instead of your page.
+the homepage. If your main file is named anything else, rename it.
+Otherwise visitors will not see your page: they will get a "404: page
+not found" error, or the repository's README file instead.
 
 The connection runs the other way too. GitHub Pages generally needs a
 repository to be public, unless you are on a paid plan. The starter is

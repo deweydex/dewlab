@@ -100,7 +100,8 @@ the rules at all. If every style on a page disappears at once, the
 
 ## What we have now
 
-A rule traced from the page it styles to the file it lives in.
+We can now follow a rule from the page it styles to the file it lives
+in.
 
 | Word | Meaning | Example |
 |---|---|---|

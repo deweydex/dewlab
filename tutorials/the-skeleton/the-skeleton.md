@@ -95,7 +95,7 @@ again? Which feels right for your site?
 
 ## What we have now
 
-A page split into two parts, and a reason for it.
+We now know that every page has two parts, and why.
 
 - The *head* holds information about the page. It is not shown directly
   to a visitor.

@@ -124,7 +124,8 @@ changed, just by looking at the result?
 
 ## What we have now
 
-A box with three layers we can name and change on purpose.
+Every box has three layers, and we can now name each one and change it
+on purpose.
 
 - *Padding* is the space between content and border. It takes the box's
   own background colour.

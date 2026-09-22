@@ -61,6 +61,8 @@ A box that stays a sensible width and sits in the middle of the page,
 however wide the screen is.
 
 `max-width` is the widest an element is allowed to grow. An *auto
-margin* is `margin: 0 auto`, which centres a width-capped element by
-splitting the leftover space evenly. A *container* is the element on a
-page whose width and centring most of the rest sits inside.
+margin* is a margin set to `auto`. When an element's width is capped,
+auto margins on its left and right split the leftover space evenly,
+which centres it; `margin: 0 auto` is the usual way to write that. A
+*container* is an element that holds most of a page's content, and sets
+how wide that content can grow and where it sits.

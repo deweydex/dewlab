@@ -99,8 +99,8 @@ Now look at your browser tab. Does the text there match what you typed?
 
 ## What we have now
 
-A page we can trace back to plain text, and words for the pieces that
-text is made of:
+We can now trace a page back to plain text, and we have words for the
+pieces that text is made of:
 
 | Word | Meaning | Example |
 |---|---|---|
