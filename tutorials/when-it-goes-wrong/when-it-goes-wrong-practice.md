@@ -7,11 +7,19 @@ version: 2026.08.23.1
 
 # When It Goes Wrong — Practice
 
-Answers are hidden. The prediction is the exercise, and running the code is the marking. For most of these, predict the error before you run it.
+The answers are hidden until you open them. On this page, your
+prediction is the exercise, and running the code is the marking. For
+most questions, try to predict the error before you run the code.
+
+Some of the code here uses lists, functions and loops, which we meet
+properly in [Repeating Yourself](tutorial:repeating-yourself) and
+[Lists and Sequences](tutorial:lists-and-sequences). You only need to
+read the errors they cause.
 
 ## Tools
 
-There is nothing to set up here. Each question is its own cell, and each is meant to fail.
+There is nothing to set up here. Each question is its own cell, and
+each one is meant to fail.
 
 ```python exec
 id: tools-1
@@ -23,13 +31,15 @@ print("Logical error: it all runs, and the answer is wrong.")
 
 ## Which Kind?
 
-For each, say whether it is a syntax error, a runtime error, a logical error, or no error at all.
+For each one, is it a syntax error, a runtime error, a logical error, or
+no error at all?
 
 **1.** `def calculate(x)` followed by `return x * 2`
 
 <details class="dl-answer"><summary>answer</summary>
 
-Syntax. The colon is missing after the parameter list, so Python cannot parse the line and never runs anything.
+Syntax error. The colon is missing after `(x)`, so Python cannot read
+the line, and it never runs anything.
 
 </details>
 
@@ -37,7 +47,8 @@ Syntax. The colon is missing after the parameter list, so Python cannot parse th
 
 <details class="dl-answer"><summary>answer</summary>
 
-Runtime — a `TypeError`. The line is valid Python; adding a number to a string is not something Python will do.
+Runtime error: a `TypeError`. The line is valid Python, but Python will
+not add a number to a string.
 
 </details>
 
@@ -45,9 +56,12 @@ Runtime — a `TypeError`. The line is valid Python; adding a number to a string
 
 <details class="dl-answer"><summary>answer</summary>
 
-Logical. It runs and returns `"55"`, because `+` on strings joins them.
+Logical error. It runs and gives back `"55"`, because `+` joins two
+strings together.
 
-Nothing is red and the answer is wrong, which is the dangerous kind. Worse: `double(5)` gives 10, so the function looks correct until somebody passes it a string.
+Nothing is red, and the answer is wrong. This is the dangerous kind. It
+is even worse than that: `double(5)` gives 10, so the function looks
+correct until somebody passes it a string.
 
 </details>
 
@@ -63,7 +77,8 @@ No error. It gives 6.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Runtime — `IndexError`. There are two items, at positions 0 and 1, so position 2 does not exist.
+Runtime error: an `IndexError`. The list has two items, at positions 0
+and 1, so position 2 does not exist.
 
 </details>
 
@@ -71,15 +86,18 @@ Runtime — `IndexError`. There are two items, at positions 0 and 1, so position
 
 <details class="dl-answer"><summary>answer</summary>
 
-Runtime — `ZeroDivisionError`. The length is zero.
+Runtime error: a `ZeroDivisionError`. The length of an empty list is
+zero.
 
-This is the most common cause of that error in practice: a collection turning out empty when the code assumed it would not, far more often than somebody typing `/0`.
+In real programs, this is the most common cause of that error. A
+collection turns out to be empty when the code expected it not to be.
+That happens far more often than somebody typing `/0`.
 
 </details>
 
 ## Naming the Error
 
-Predict which error each raises, then run it.
+Which error do you think each one raises? Predict, then run it.
 
 **7.**
 
@@ -91,9 +109,10 @@ print(value + 3)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`TypeError`. A string and an integer cannot be added.
+`TypeError`. Python cannot add a string and an integer.
 
-Note that `value * 3` would work and give `"121212"`, which is a different kind of surprise.
+Notice that `value * 3` would work, and give `"121212"`. That is a
+different kind of surprise.
 
 </details>
 
@@ -106,13 +125,17 @@ count = int("twelve")
 
 <details class="dl-answer"><summary>answer</summary>
 
-`ValueError`. The type is right — `int` wants a string — but the content is not a number.
+`ValueError`. The type is right, because `int` wants a string. But the
+content of the string is not a number.
 
-This is the distinction people mix up most: `TypeError` is the wrong kind of thing, `ValueError` is the right kind with unusable content.
+People mix these two up more than any other pair. A `TypeError` means
+the wrong kind of thing. A `ValueError` means the right kind of thing,
+with content Python cannot use.
 
 </details>
 
-**9.**
+**9.** This cell uses a dictionary, which stores values under names. We
+meet dictionaries later in the course.
 
 ```python exec
 id: naming-the-error-3
@@ -124,7 +147,9 @@ print(marks["Cara"])
 
 `KeyError`. There is no entry for Cara.
 
-`marks.get("Cara")` returns `None` instead of raising, which is often what you want — and sometimes hides a problem you would rather have been told about.
+`marks.get("Cara")` gives back `None` instead of raising an error. That
+is often what you want. Sometimes, though, it hides a problem you would
+have preferred to hear about.
 
 </details>
 
@@ -138,9 +163,13 @@ print(name.lenght())
 
 <details class="dl-answer"><summary>answer</summary>
 
-`AttributeError`. It is misspelled, and even spelled correctly, a string has no `.length()` method. The answer is `len(name)`.
+`AttributeError`. The name is misspelled. And even spelled correctly, a
+string has no `.length()` method. The way to get the length is
+`len(name)`.
 
-`AttributeError` frequently means the value is not the type you thought it was, so it is worth printing the value before assuming the method name is wrong.
+An `AttributeError` often means the value is not the type you thought it
+was. So it is worth printing the value before you decide the method name
+is wrong.
 
 </details>
 
@@ -158,23 +187,30 @@ print(total(prices))
 
 `NameError`. `prices` was never created.
 
-Also raised when a variable exists but not where the code can see it — created inside a function and used outside it, say.
+Python also raises a `NameError` when a variable exists, but not where
+the code can see it. One example is a variable created inside a function
+and used outside it.
 
 </details>
 
 ## Reading a Traceback
 
-**12.** In a traceback, where is the error that stopped the program?
+**12.** In a traceback, where do you find the error that stopped the
+program?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The last line names it. Above that, the frames run from the outermost call downwards, so the innermost — where it happened — is nearest the bottom.
+The last line names it. Above that line, the steps run from the
+outermost call downwards. So the innermost step, where the error
+happened, is nearest the bottom.
 
-Read from the bottom. The top of a traceback is where your program started; the bottom is where it broke.
+Read from the bottom. The top of a traceback is where your program
+started, and the bottom is where it broke.
 
 </details>
 
-**13.** Run this and identify two things: the line that failed, and the line that is *responsible*.
+**13.** Run this. Can you find two things: the line that failed, and the
+line that is *responsible*?
 
 ```python exec
 id: reading-a-traceback-1
@@ -192,25 +228,33 @@ print(report([120, 0]))
 
 <details class="dl-answer"><summary>answer</summary>
 
-The line that failed is `return distance / hours` in `rate` — that is where the `ZeroDivisionError` happened.
+The line that failed is `return distance / hours`, in `rate`. That is
+where the `ZeroDivisionError` happened.
 
-The line responsible is `print(report([120, 0]))`, which supplied a zero.
+The line that is responsible is `print(report([120, 0]))`, because it
+supplied the zero.
 
-`rate` is not wrong. Dividing distance by hours is the correct thing to do. A "fix" inside `rate` — returning zero for zero hours, say — might be right, or it might hide the real problem, which is that a journey took no time.
+`rate` is not wrong. Dividing distance by hours is the correct thing to
+do. You could "fix" `rate` so that it gives back zero when hours is
+zero. That might be right. Or it might hide the real problem, which is
+a journey that took no time.
 
 </details>
 
-**14.** Why does a traceback show the whole chain rather than just the failing line?
+**14.** Why does a traceback show the whole chain of calls, and not only
+the line that failed?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because the failing line is often not where the mistake is. A function can be perfectly correct and still fail on bad input, and the chain is what tells you where the bad input came from.
+Because the line that failed is often not where the mistake is. A
+function can be completely correct and still fail on bad input. The
+chain tells you where the bad input came from.
 
 </details>
 
 ## The Dangerous Kind
 
-Each of these runs. Each is wrong. Find the mistake.
+Each of these runs, and each one is wrong. Can you find the mistake?
 
 **15.**
 
@@ -226,9 +270,11 @@ print(average([80, 90, 70]))
 
 <details class="dl-answer"><summary>answer</summary>
 
-The `+ 1` is outside the division and should not be there at all. The average of 80, 90 and 70 is 80, and this says 81.
+The `+ 1` is outside the division, and it should not be there at all.
+The average of 80, 90 and 70 is 80, and this code says 81.
 
-Found only by knowing what the answer should be, which is the whole lesson.
+The only way to find this is to know what the answer should be. That is
+the whole lesson.
 
 </details>
 
@@ -250,11 +296,15 @@ print(biggest([-5, -2, -9]))
 
 <details class="dl-answer"><summary>answer</summary>
 
-Starting at 0 assumes the numbers are positive. On an all-negative list it returns 0, which is not in the list at all.
+Starting `largest` at 0 assumes the numbers are positive. On a list of
+only negative numbers, it gives back 0, which is not in the list at all.
 
-The fix is to start at the first item: `largest = numbers[0]`. Which then raises an `IndexError` on an empty list — so decide what an empty list should do, rather than leaving it to chance.
+The fix is to start at the first item: `largest = numbers[0]`. But then
+an empty list raises an `IndexError`. So decide what an empty list
+should do. Do not leave it to chance.
 
-Notice it works on the numbers you would try first. That is what makes this kind hard.
+Notice that the code works on the numbers you would try first. That is
+what makes this kind of error hard.
 
 </details>
 
@@ -274,9 +324,11 @@ for score in [39, 40, 41]:
 
 <details class="dl-answer"><summary>answer</summary>
 
-If 40 is the pass mark, this fails everyone who scored exactly 40 — it needs `>=`.
+If 40 is the pass mark, this code fails everyone who scored exactly 40.
+It needs `>=`.
 
-Boundary conditions are where logical errors live. Always test the exact boundary, one below, and one above.
+Logical errors live at boundaries. Always test the exact boundary, one
+below it, and one above it.
 
 </details>
 
@@ -293,9 +345,11 @@ print(percentage_change(50, 60))
 
 <details class="dl-answer"><summary>answer</summary>
 
-It divides by the new value; percentage change is measured against the *old* one. This gives 16.67% when the answer is 20%.
+It divides by the new value, but percentage change is measured against
+the *old* value. The code gives 16.67%, and the right answer is 20%.
 
-It is close enough to look plausible, which is exactly why it survives.
+The wrong answer is close enough to look believable. That is exactly
+why nobody notices it.
 
 </details>
 
@@ -305,15 +359,20 @@ It is close enough to look plausible, which is exactly why it survives.
 
 Checking against an answer you already know.
 
-Before trusting a function on data you cannot verify, give it data you can. The average of 80, 90 and 70 is 80. Ten percent of 50 is 5. If the function disagrees, you have found something.
+Before you trust a function on data you cannot check, give it data you
+can check. The average of 80, 90 and 70 is 80. Ten percent of 50 is 5.
+If the function disagrees, you have found something.
 
-That habit is worth more than any debugging tool, and it is what *Building Reusable Tools* takes further into testing properly.
+That habit is worth more than any debugging tool.
+[Building Reusable Tools](tutorial:building-reusable-tools) takes it
+further, into testing code properly.
 
 </details>
 
 ## Fixing
 
-**20.** Fix this so it works for any list, including an empty one.
+**20.** Can you fix this so that it works for any list, including an
+empty one?
 
 ```python exec
 id: fixing-1
@@ -333,13 +392,20 @@ def average(numbers):
     return sum(numbers) / len(numbers)
 ```
 
-The important part is not the code, it is the decision. What *should* the average of nothing be? `None` says "no answer exists", `0` claims an answer that is not true, and raising an error says "you should not have asked".
+The important part is the decision, more than the code. What *should*
+the average of nothing be? There are three choices:
 
-All three are defensible and they mean different things. Leaving it to crash means nobody decided.
+- `None` says "no answer exists".
+- `0` gives an answer that is not true.
+- Raising an error says "you should not have asked".
+
+You could defend any of the three, and they mean different things. If
+you leave the code to crash, nobody made the decision.
 
 </details>
 
-**21.** This is meant to count how many marks are passes. Fix it.
+**21.** This code is meant to count how many marks are passes. Can you
+fix it?
 
 ```python exec
 id: fixing-2
@@ -356,9 +422,12 @@ print(count_passes([35, 50, 60, 20]))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`passes = 1` should be `passes += 1`. As written it sets the count to 1 every time and returns 1 for any list with at least one pass.
+`passes = 1` should be `passes += 1`, which is short for
+`passes = passes + 1`. As written, the code sets the count to 1 each
+time. So it gives back 1 for any list with at least one pass.
 
-It gives the right answer for a list with exactly one pass, which is probably the list it was tested on.
+It gives the right answer for a list with exactly one pass. That is
+probably the list somebody tested it on.
 
 </details>
 
@@ -366,10 +435,13 @@ It gives the right answer for a list with exactly one pass, which is probably th
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because it tells you where and what. A syntax error stops you before anything happens; a runtime error names the line and the reason.
+Because an error message tells you where and what. A syntax error stops
+you before anything happens. A runtime error names the line and the
+reason.
 
-A logical error tells you nothing, and may not be found for weeks — by which point it has produced a great deal of confident, wrong output.
+A logical error tells you nothing. It may not be found for weeks, and by
+then it has produced a great deal of confident, wrong output.
 
-The red text is the computer being as helpful as it knows how.
+The red text is the computer helping you as much as it can.
 
 </details>

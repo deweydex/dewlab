@@ -7,9 +7,16 @@ version: 2026.08.23.1
 
 # Repeating Yourself — Practice
 
-Answers are hidden. For every loop here, ask the same three questions before you write it: what am I accumulating, what does it start at, and what makes it stop.
+The answers are hidden until you open them. Before you write any loop
+on this page, ask yourself three questions:
+
+1. What am I accumulating?
+2. What does it start at?
+3. What makes the loop stop?
 
 ## Range
+
+In this cell, `list()` shows all the numbers in a range at once.
 
 ```python exec
 id: range-1
@@ -19,7 +26,7 @@ print(list(range(0, 20, 5)))
 print(list(range(10, 0, -2)))
 ```
 
-**1.** What does each produce?
+**1.** What numbers does each one give?
 
 - (a) `range(5)`
 - (b) `range(1, 5)`
@@ -29,23 +36,30 @@ print(list(range(10, 0, -2)))
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) 0, 1, 2, 3, 4. (b) 1, 2, 3, 4. (c) 0, 3, 6, 9. (d) 5, 4, 3, 2, 1. (e) nothing at all.
+(a) 0, 1, 2, 3, 4. (b) 1, 2, 3, 4. (c) 0, 3, 6, 9. (d) 5, 4, 3, 2, 1.
+(e) nothing at all.
 
-The end is never included. That is why `range(1, n + 1)` is the idiom for "1 to n" and why the `+ 1` is not a mistake somebody left in.
+The stop value is never included. That is why programmers write
+`range(1, n + 1)` for "1 to n". The `+ 1` is not a mistake that somebody
+left in.
 
 </details>
 
-**2.** How many numbers does `range(1, 101)` produce? And `range(0, 100)`?
+**2.** How many numbers does `range(1, 101)` give? And `range(0, 100)`?
 
 <details class="dl-answer"><summary>answer</summary>
 
 100 each.
 
-They cover different numbers and there are the same quantity of them. Counting the elements of a range is `(stop - start)` divided by the step, and this is the one place where excluding the end makes the arithmetic simple.
+They cover different numbers, but there are the same number of them.
+With a step of 1, the count is always `stop - start`. (With a bigger
+step, divide by the step and round up.) Leaving out the stop value is
+what makes this arithmetic so easy.
 
 </details>
 
-**3.** Write a loop that prints the odd numbers from 1 to 99. Then write it a second way.
+**3.** Write a loop that prints the odd numbers from 1 to 99. Can you
+then write it a second way?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -62,13 +76,15 @@ for n in range(1, 100):
         print(n, end=" ")
 ```
 
-The first does fifty steps, the second ninety-nine and a test each time. Both are correct; the first says what it means more directly.
+The first way takes fifty steps. The second takes ninety-nine, with a
+test at each one. Both are correct, but the first says what it means
+more directly.
 
 </details>
 
 ## Accumulators
 
-**4.** Compute the sum of the numbers from 1 to 100.
+**4.** Work out the sum of the numbers from 1 to 100.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -79,11 +95,14 @@ for i in range(1, 101):
 print(total)
 ```
 
-5050. Gauss is said to have seen it as fifty pairs each adding to 101, which is the formula `n(n + 1)/2`. Check that the loop and the formula agree — when a closed form exists, it is a free test of the loop.
+The answer is 5050. The story is that Gauss saw it as fifty pairs, each
+adding up to 101. That gives the formula `n(n + 1)/2`. Check that the
+loop and the formula agree. When a formula like this exists, it gives
+you a free test of your loop.
 
 </details>
 
-**5.** Compute $\sum_{i=1}^{10} i^2$, then $\sum_{i=1}^{10} \frac{1}{i}$.
+**5.** Work out $\sum_{i=1}^{10} i^2$, then $\sum_{i=1}^{10} \frac{1}{i}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -94,11 +113,17 @@ print(sum(i ** 2 for i in range(1, 11)))
 print(sum(1 / i for i in range(1, 11)))
 ```
 
-Written as a loop, the second one needs `1 / i` rather than `1 // i`, or every term after the first is zero and the answer is 1.
+`sum(i ** 2 for i in range(1, 11))` is a short way to write an
+accumulator loop. It adds up `i ** 2` for each `i` in the range.
+
+If you write the second one as a loop, it needs `1 / i`, and not
+`1 // i`. With `//`, every term after the first is zero, and the answer
+comes out as 1.
 
 </details>
 
-**6.** Compute 10! with a loop. Why does the accumulator start at 1 rather than 0?
+**6.** Work out 10! with a loop. Why does the accumulator start at 1, and
+not at 0?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -110,21 +135,31 @@ for i in range(1, 11):
     product = product * i
 ```
 
-Starting at 0 would give 0 forever, because zero times anything is zero. Each accumulator has to start at the value that changes nothing: 0 for a sum, 1 for a product. Mathematicians call those identity elements, and the reason they matter here is entirely practical.
+If it started at 0, the answer would be 0 forever, because zero times
+anything is zero. Each accumulator has to start at the value that
+changes nothing: 0 for a sum, and 1 for a product. Mathematicians call
+these values identity elements. Here, the reason they matter is
+completely practical.
 
 </details>
 
-**7.** What is the sum of the harmonic series after 1,000 terms? After 10,000? Does it settle anywhere?
+**7.** What is the sum of the harmonic series after 1,000 terms? After
+10,000? Does it settle at some value?
 
 <details class="dl-answer"><summary>answer</summary>
 
-About 7.485 and about 9.788.
+About 7.485, and about 9.788.
 
-It never settles. The harmonic series grows without bound, but so slowly that it takes over 10^43 terms to reach 100. This is one of the better demonstrations that "the terms are getting smaller" is not enough to make a sum finite — a point *Approaching a Limit* comes back to.
+It never settles. The harmonic series grows without limit, but so slowly
+that it needs more than 10^43 terms to reach 100. This shows that "the
+terms are getting smaller" is not enough to make a sum finite.
+[Approaching a Limit](tutorial:approaching-a-limit) comes back to this
+point.
 
 </details>
 
-**8.** Find the largest number in `[3, 17, 4, 22, 8]` with a loop, without using `max()`.
+**8.** Find the largest number in `[3, 17, 4, 22, 8]` with a loop,
+without using `max()`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -137,7 +172,9 @@ for n in numbers:
 print(largest)
 ```
 
-22. Starting at `numbers[0]` rather than 0 is the detail worth keeping: start at zero and a list of negative numbers reports its maximum as 0, which is not in the list.
+The answer is 22. The detail to remember is starting at `numbers[0]`,
+the first item, and not at 0. If you start at zero, a list of negative
+numbers reports its largest value as 0, which is not in the list.
 
 </details>
 
@@ -153,13 +190,17 @@ while n > 0:
 
 <details class="dl-answer"><summary>answer</summary>
 
-Nothing changes `n`, so the condition never becomes false and it prints 10 forever.
+Nothing changes `n`. So the condition never becomes False, and the loop
+prints 10 forever.
 
-Every `while` needs something inside it that moves towards the stopping condition. When one hangs, that is the first thing to look for.
+Every `while` loop needs something inside it that moves it towards the
+stopping condition. When a loop never stops, that is the first thing to
+look for.
 
 </details>
 
-**10.** Write a loop that halves a number until it drops below 1, printing each value.
+**10.** Write a loop that halves a number until it drops below 1, and
+prints each value.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -170,17 +211,25 @@ while x >= 1:
     x = x / 2
 ```
 
-It stops after seven halvings. If you write `x = x // 2` instead it also stops, and at zero rather than at 0.78 — integer division on the way down eventually gets stuck at 0, which for once is a stop rather than a hang.
+It stops after seven halvings. If you write `x = x // 2` instead, it
+also stops, but at 0 and not at 0.78. Whole-number division on the way
+down reaches 0 in the end. Here, for once, that means the loop stops,
+and does not run forever.
 
 </details>
 
-**11.** When should you use `while` rather than `for`?
+**11.** When should you use `while`, and when `for`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-When you do not know how many times in advance.
+Use `while` when you do not know in advance how many times to repeat.
 
-`for` is for a known count: every item of a list, every number in a range. `while` is for a condition: until the user types "quit", until the guess is right, until the answer stops changing. Written the other way round, both are awkward: a `for` loop faking a `while` needs a `break`, and a `while` counting to ten needs its own counter.
+`for` is for a known count: every item of a list, or every number in a
+range. `while` is for a condition: until the user types "quit", until
+the guess is right, or until the answer stops changing. Each one is
+awkward when it does the other one's job. A `for` loop acting as a
+`while` needs a `break` to get out early, and a `while` loop counting to
+ten needs its own counter.
 
 </details>
 
@@ -195,13 +244,16 @@ while power <= 1_000_000:
 print(power)
 ```
 
-1048576, which is 2^20. This is why a "megabyte" is sometimes 1,048,576 bytes rather than a million.
+The answer is 1048576, which is 2^20. (Python lets you write
+`1_000_000` with underscores, to make big numbers easier to read.) This
+is why a "megabyte" is sometimes 1,048,576 bytes, and not a million.
 
 </details>
 
 ## Nested Loops
 
-**13.** Print a 10 by 10 multiplication table with the columns lined up.
+**13.** Print a 10 by 10 multiplication table, with the columns lined
+up.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -212,21 +264,28 @@ for row in range(1, 11):
     print()
 ```
 
-The `print()` on its own after the inner loop is what ends the row. Leaving it out prints a hundred numbers on one line, which is the classic first attempt.
+The `print()` on its own, after the inner loop, is what ends each row.
+If you leave it out, all hundred numbers print on one line. That is the
+classic first attempt.
 
 </details>
 
-**14.** How many multiplications does that table perform? What if it were 100 by 100?
+**14.** How many multiplications does that table do? What if it were 100
+by 100?
 
 <details class="dl-answer"><summary>answer</summary>
 
 100, and 10,000.
 
-Two nested loops of n steps each do n² operations. That squaring is what makes the difference between a fast and a slow algorithm later, in *Putting Things in Order* — and it is why a sort that compares every pair struggles on a large list.
+Two nested loops of n steps each do n² steps. That squaring is what
+separates a fast algorithm from a slow one later, in
+[Putting Things in Order](tutorial:putting-things-in-order). It is also
+why a sort that compares every pair of items struggles on a large list.
 
 </details>
 
-**15.** Print a triangle of stars, five rows tall: one star on the first row, five on the last.
+**15.** Print a triangle of stars, five rows tall: one star on the first
+row, and five on the last.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -235,11 +294,14 @@ for row in range(1, 6):
     print("*" * row)
 ```
 
-No inner loop needed, because `*` repeats a string. Written with an inner loop it also works, and this version says the intention in one line.
+You do not need an inner loop, because `*` repeats a string. A version
+with an inner loop also works, but this version says what it means in
+one line.
 
 </details>
 
-**16.** Print the same triangle right-aligned, so the left edge slopes and the right edge is straight.
+**16.** Print the same triangle lined up on the right, so that the left
+edge slopes and the right edge is straight.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -248,13 +310,16 @@ for row in range(1, 6):
     print(" " * (5 - row) + "*" * row)
 ```
 
-The spaces are the whole trick, and getting `5 - row` rather than `5 - row - 1` right is a matter of trying it on the first and last rows rather than on the middle ones. Edges are where off-by-one errors live.
+The spaces are the whole trick. How do you know it is `5 - row` and not
+`5 - row - 1`? Try it on the first and last rows, not the middle ones.
+Off-by-one errors live at the edges.
 
 </details>
 
 ## Loops With Conditions
 
-**17.** Count the numbers from 1 to 100 divisible by both 3 and 7. Then by 3 or 7.
+**17.** Count the numbers from 1 to 100 that can be divided by both 3
+and 7. Then count those that can be divided by 3 or 7.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -265,11 +330,16 @@ print(sum(1 for i in range(1, 101) if i % 3 == 0 and i % 7 == 0))
 print(sum(1 for i in range(1, 101) if i % 3 == 0 or i % 7 == 0))
 ```
 
-Note that 33 + 14 is 47, not 43. The four multiples of 21 were counted twice, and subtracting them once is inclusion–exclusion, which *Drawing Sets* makes a picture of.
+Each line adds 1 for every `i` that passes the test, so it counts them.
+
+Notice that 33 + 14 is 47, not 43. The four multiples of 21 were counted
+twice. Taking them away once is called inclusion–exclusion, and
+[Drawing Sets](tutorial:venn-diagrams) turns it into a picture.
 
 </details>
 
-**18.** Print all numbers from 1 to 50 that are perfect squares or perfect cubes.
+**18.** Print all the numbers from 1 to 50 that are perfect squares or
+perfect cubes.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -281,13 +351,19 @@ cubes = {i ** 3 for i in range(1, 4)}
 print(sorted(squares | cubes))
 ```
 
-Generating them is more reliable than testing them. Testing with `n ** 0.5 == int(n ** 0.5)` works for small numbers and starts lying at large ones, because the square root is a float and floats are approximate.
+The curly brackets make a set, which is a collection with no repeats.
+`|` joins two sets together, and `sorted()` puts the result in order.
 
-1 is both a square and a cube, and appears once.
+Making the squares and cubes is more reliable than testing for them. A
+test like `n ** 0.5 == int(n ** 0.5)` works for small numbers, but gives
+wrong answers for large ones. The square root is a float, and floats are
+approximate.
+
+1 is both a square and a cube, and it appears once.
 
 </details>
 
-**19.** Sum the first 500 prime numbers.
+**19.** Add up the first 500 prime numbers.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -314,11 +390,23 @@ while found < 500:
 print(total)
 ```
 
-Two things worth noticing. The outer loop is a `while` because you do not know in advance which number the 500th prime is. And a factor larger than the square root always has a partner smaller than it, so there is nothing above there to find, which is why `d * d <= n` rather than `d <= n` is what makes it fast enough to finish.
+This answer uses `def` to make a function, `is_prime`, and `return` to
+give back its answer. We meet these in
+[Lists and Sequences](tutorial:lists-and-sequences). The line
+`total, found, n = 0, 0, 1` sets three variables at once.
+
+There are two things to notice here:
+
+- The outer loop is a `while`, because you do not know in advance which
+  number the 500th prime is.
+- A factor larger than the square root of `n` always has a partner
+  factor smaller than it. So there is nothing new to find above the
+  square root. That is why the test is `d * d <= n`, and not `d <= n`,
+  and it is what makes the program fast enough to finish.
 
 </details>
 
-**20.** Compute the sum of the digits of 9,876,543.
+**20.** Work out the sum of the digits of 9,876,543.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -332,15 +420,19 @@ while n > 0:
 print(total)
 ```
 
-`% 10` takes the last digit and `// 10` removes it. That pair walks through the digits of any number without turning it into text, and it is the same shift-and-take pattern as reading a number in another base.
+`% 10` takes the last digit, and `// 10` removes it. That pair walks
+through the digits of any number without turning it into text. It is
+the same shift-and-take pattern as reading a number in another base.
 
 </details>
 
-**21.** The Collatz rule: if a number is even, halve it; if odd, triple it and add one. Starting from 27, how many steps does it take to reach 1?
+**21.** The Collatz rule says: if a number is even, halve it; if it is
+odd, multiply it by three and add one. Starting from 27, how many steps
+does it take to reach 1?
 
 <details class="dl-answer"><summary>answer</summary>
 
-111 steps, having climbed as high as 9,232 on the way.
+111 steps. On the way, it climbs as high as 9,232.
 
 ```python
 n, steps, highest = 27, 0, 27
@@ -350,6 +442,14 @@ while n != 1:
 print(steps, highest)
 ```
 
-Nobody has proved that this reaches 1 for every starting number, and nobody has found one that does not. So this is a `while` loop that is known to stop for every value anyone has tried and not known to stop in general — which is an unusual thing for a five-line program to be.
+Two short forms appear here. `n // 2 if n % 2 == 0 else 3 * n + 1`
+gives `n // 2` when `n` is even, and `3 * n + 1` when it is odd.
+`max(highest, n)` gives the larger of the two values.
+
+Nobody has proved that this rule reaches 1 for every starting number.
+Nobody has found a number that does not reach 1, either. So this
+`while` loop is known to stop for every value anyone has tried, but not
+known to stop in general. That is an unusual thing for a five-line
+program to be.
 
 </details>

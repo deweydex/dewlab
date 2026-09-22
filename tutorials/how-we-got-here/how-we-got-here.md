@@ -19,33 +19,83 @@ covers:
 
 # How We Got Here
 
-**Programming Design Principles / Maths for IT**
+In [Storing and Computing](tutorial:storing-and-computing) you taught
+the computer to store things. Near the end, you met binary and
+hexadecimal: two ways of writing numbers that seemed to come from
+nowhere. Where did they come from? This page tells that story.
 
-Last time you taught a computer to store things, and near the end of it you met binary and hexadecimal -- two ways of writing numbers that seemed to come out of nowhere. This tutorial is where they came from.
+It is also a short history of programming, the thing you are learning to
+do. Many parts of programming look like strange choices at first. Almost
+every one of them was a decision somebody made for a reason, and the
+reasons still hold today.
 
-It is also a short history of the thing you are learning to do. Almost everything that seems arbitrary about programming turns out to be a decision somebody made for a reason, and the reasons are still there.
+We will travel forwards in time:
 
-We will travel forwards: from a program written before there was a machine to run it, through the raw patterns of on and off that early computers consumed, to the languages you are using now. At each stop there is a message left behind in the notation of its era, and the only way to read it is to write the code that translates it.
+1. a program written before there was a machine to run it
+2. the patterns of on and off that early computers read
+3. the languages we use now
+
+At each stop, someone has left a message written in the notation of that
+time. The only way to read each message is to write the code that
+translates it.
 
 ## Before There Were Computers
 
-In 1843, Charles Babbage had designed a machine called the Analytical Engine. It was mechanical -- gears and cards, no electricity -- and it was never finished in his lifetime.
+By 1843, Charles Babbage had designed a machine called the Analytical
+Engine. It was mechanical, made of gears and cards, with no electricity.
+It was never finished in his lifetime.
 
-**Ada Lovelace** was translating an Italian paper about the machine into English. She added notes of her own, and one of them described, step by step, how the Engine could be made to compute a sequence of numbers, using loops and conditional branching. It was longer than the paper she was translating.
+**Ada Lovelace** was translating a paper about the machine into English.
+The paper was by an Italian engineer, Luigi Menabrea, and it was written
+in French. Lovelace added notes of her own. One of them described, step
+by step, how the Engine could work out a sequence of numbers, using loops
+and conditional branching. (Conditional branching means choosing which
+step to do next, depending on a result.) Her notes were longer than the
+paper she was translating.
 
-By most historians' account that makes her the first computer programmer, more than a century before there was an electronic computer to run her program on.
+Most historians say this makes her the first computer programmer. She
+wrote her program more than a century before there was an electronic
+computer to run it.
 
-There is an idea worth taking from this, and it is not a fact to memorize. **A program does not need a working machine, or electricity, to exist.** It is a sequence of precise instructions. Everything in the rest of this tutorial is about how those instructions get carried out -- which turns out to be a story about making them easier for people to write, over and over again, for a hundred and eighty years.
+What can we take from this? It is an idea, and not a fact to memorise:
+**a program does not need a working machine, or electricity, to exist.**
+A program is a list of exact instructions. The rest of this page is about
+how those instructions get carried out. It turns out to be a story about
+making instructions easier for people to write, again and again, for a
+hundred and eighty years.
 
 ## The Only Language the Machine Understands
 
-ENIAC, in 1945, had no programming language at all. To program it, engineers physically rewired it -- moving cables between plugboards and setting switches by hand. A few years later machines were built that could read their instructions from memory instead. That was an enormous step, and the instructions were still just patterns of on and off.
+ENIAC, built in 1945, had no programming language at all. To program it,
+engineers rewired it by hand: they moved cables between boards and set
+switches. A few years later, people built machines that could read their
+instructions from memory. That was a huge step forward, but the
+instructions were still only patterns of on and off.
 
-This is **machine code**: the raw, native language of the hardware, with nothing standing between it and the circuits. Every instruction, every number, every letter, all of it written in **binary** -- base 2.
+*Machine code* is the computer's own language: instructions the hardware
+runs directly, with nothing in between. In machine code every
+instruction, every number and every letter is written in binary, base 2.
 
-Binary is not a stylistic choice. A transistor, or a vacuum tube in ENIAC's day, is naturally a two-state device: on or off, high voltage or low. Base 2 maps onto that exactly. Base 10, which we use because we have ten fingers, does not.
+Why binary? It is not a question of style. A transistor, or a vacuum
+tube in ENIAC's time, works best with two states: on or off, high
+voltage or low. Base 2 matches those two states exactly. Base 10, which
+we use because we have ten fingers, does not. (ENIAC itself still counted
+in base 10, with a ring of ten on-off circuits for each digit. The machines that
+came after it moved to binary, because two states are simpler to build
+and more reliable.)
 
-Run the cell below to build the two tools you will need. You met these ideas in *Storing and Computing*; here they are as functions you can call.
+The cell below builds two tools that we will need: `to_binary` and
+`from_binary`. You met these ideas in Storing and Computing. Here they
+are as functions you can use.
+
+The cell uses some Python we have not met yet. `def` makes a new
+function, `if` makes a decision, and `while` and `for` repeat steps. You
+do not need to follow every line now:
+[Making Decisions](tutorial:making-decisions),
+[Repeating Yourself](tutorial:repeating-yourself) and
+[Building Reusable Tools](tutorial:building-reusable-tools) explain them.
+Run the cell, and after that you can use `to_binary` and `from_binary`
+the same way you use `print()`.
 
 ```python exec
 id: the-only-language-the-machine-understands-1
@@ -72,13 +122,30 @@ print(to_binary(72))
 print(from_binary("01001000"))
 ```
 
-Notice what `from_binary` is doing: it walks along the string, doubling what it has so far and adding the next digit. That is the same thing you do in base 10 without thinking about it, with ten instead of two.
+How does `from_binary` work? It moves along the string, one digit at a
+time. At each digit, it doubles the total so far, then adds the new
+digit. You do the same thing in base 10 without thinking about it, with
+ten in place of two.
 
 ### Your turn
 
-An ENIAC operator has left a message, written as ASCII character codes in binary. Each group of eight digits is one letter's code -- `01001000` is 72, and 72 is `H`.
+Imagine that an operator from the 1940s has left a message. It is
+written in *ASCII*, a standard code that gives each character a number.
+(The message is made up: ASCII came later, in 1963.) Each group of eight
+binary digits is the code for one letter. For example, `01001000` is 72,
+and 72 is the code for `H`.
 
-How might you write `decode_binary_message(groups)`? For each group, convert it to a number with `from_binary`, turn that number into a character with `chr`, and join the characters together.
+The function `chr()` turns a number into the character it stands for.
+How might you write `decode_binary_message(groups)`? For each group:
+
+1. Change the group into a number with `from_binary`.
+2. Turn that number into a character with `chr`.
+3. Join the characters together.
+
+Then remove the `#` from the last line, and run the cell.
+
+This needs a loop, which is new. If it feels too soon, you can decode
+one group at a time instead: `chr(from_binary("01001000"))` gives `H`.
 
 ```python exec
 id: your-turn-1
@@ -100,13 +167,31 @@ def decode_binary_message(groups):
 
 ## Assembly, and Why Hexadecimal Exists
 
-Writing binary by hand is exhausting and very easy to get wrong. `01001000` and `01001100` differ in one digit, and you have to count to find it. Two things happened in response, and both of them are about people rather than about machines.
+Writing binary by hand is tiring, and it is very easy to make mistakes.
+`01001000` and `01001100` differ in only one digit, and you have to count
+to find it. People found two answers to this problem, and both were
+about making life easier for people. The machines did not need either of
+them.
 
-**Assembly language** gave each machine instruction a short readable name -- `ADD`, `MOV`, `JMP` -- instead of a binary pattern. A program called an **assembler** translated those names back into the binary the hardware needed. This is the first time in our story that a program's job is to write another program.
+*Assembly language* gives each machine instruction a short name that a
+person can read, such as `ADD`, `MOV` or `JMP`, in place of a binary
+pattern. An *assembler* is a program that turns those names back into
+the binary the hardware needs. This is the first time in our story that
+a program's job is to write another program.
 
-**Hexadecimal**, base 16, became the standard shorthand for writing binary. It works because one hex digit is exactly four binary digits: `1111` is `F`, `1010` is `A`, and any eight-digit binary byte is exactly two hex characters.
+Hexadecimal, base 16, became the usual short way to write binary. It
+works because one hex digit is exactly four binary digits: `1111` is
+`F`, `1010` is `A`, and any eight-digit binary byte is exactly two hex
+characters. (Some early machines used octal, base 8, for the same job.
+Hexadecimal became the standard in the 1960s, along with the eight-digit
+byte.)
 
-That is the whole reason hexadecimal exists. It is not a third number system with its own ideas; it is binary, written shorter, for the benefit of the person reading it.
+That is the whole reason hexadecimal exists. It is binary, written
+shorter, for the person reading it. It is not a separate number system
+with ideas of its own.
+
+What do you think `hex_to_binary("48")` will print? Run the cell to
+check.
 
 ```python exec
 id: assembly-and-why-hexadecimal-exists-1
@@ -125,11 +210,19 @@ print(hex_to_binary("FF"))
 print(hex_to_binary("48"))
 ```
 
-Look at that last line beside the first message in the previous section. `48` in hex and `01001000` in binary are the same number, written two ways, and both of them are the letter `H`.
+Now compare that last line with the first group of the message in the
+previous section. `48` in hex and `01001000` in binary are the same
+number, written two ways. Both of them are the letter `H`.
 
 ### Your turn
 
-A memory dump from 1958, in hex this time. As before, `int(group, 16)` converts a hex string to a number, and `chr` turns a number into a character.
+Here is a memory dump from 1958, and this time it is in hex. (A memory
+dump is a copy of what was stored in a computer's memory.)
+
+1. Change each group into a number with `int(group, 16)`.
+2. Turn each number into a character with `chr`.
+3. Join the characters together, and remove the `#` from the last line
+   to print the result.
 
 ```python exec
 id: your-turn-2
@@ -145,31 +238,52 @@ def decode_hex_message(groups):
 
 ## Languages People Can Read
 
-Assembly was still tied to one particular machine. Its instruction names matched that machine's instruction set, so a program written for one computer would not run on another. Rewriting everything for each new machine was, unsurprisingly, unpopular.
+Assembly was still tied to one kind of machine. Its instruction names
+matched that machine's own instructions, so a program written for one
+computer would not run on another. Nobody enjoyed rewriting every program
+for every new machine.
 
-The next step was the **high-level language**: code that reads more like English or mathematics, translated into machine code by software rather than by a person.
+The next step was the *high-level language*. A high-level language is a
+way of writing code that reads more like English or maths. Software
+translates it into machine code, so a person does not have to.
 
 | Year | Language | What it was for |
 |---|---|---|
 | 1957 | FORTRAN | Scientific and engineering calculation |
 | 1959 | COBOL | Business data processing |
-| 1958--60 | LISP | Symbolic and mathematical reasoning, and the ancestor of functional programming |
+| 1958–1960 | LISP | Symbolic and mathematical reasoning, and the ancestor of functional programming |
 | 1972 | C | Systems programming, close to the hardware |
 | 1991 | Python | General purpose, readable, and what you are writing now |
 
-There are two ways a high-level language becomes something a machine can run, and the difference between them shapes how it feels to work in.
+There are two ways to turn a high-level language into something a
+machine can run. The difference between them shapes how it feels to work
+in the language.
 
-A **compiler** translates the whole program into machine code *before* it runs, producing a file the machine can execute on its own. C works this way.
+A *compiler* translates the whole program into machine code *before* it
+runs. The result is a file that the machine can run on its own. C works
+this way.
 
-An **interpreter** reads and runs the program line by line *as it goes*, with no separate translation step. Python works this way -- strictly it compiles to an intermediate form called bytecode first and then interprets that, which is a hybrid, but from where you are sitting it behaves like an interpreted language.
+An *interpreter* reads the program and runs it line by line, *as it
+goes*, with no separate translation step. Python works this way. To be
+exact, Python first translates your code into an in-between form called
+bytecode, and then interprets that. So it is a mix of the two. But from
+where you sit, it behaves like an interpreted language.
 
-Here is a question worth thinking about before reading on. A compiled program usually runs faster than an interpreted one, and an interpreted language is usually quicker to test and debug while you are writing it. Both of those follow from the difference above. **How might each one follow from it?**
+Here is a question to think about before you read on. A compiled program
+usually runs faster than an interpreted one. An interpreted language is
+usually quicker to test and fix while you are writing it. Both facts come
+from the difference above. **Can you see how each one follows from it?**
 
 ## The Same Problem, Four Ways
 
-A **paradigm** is a way of organizing a program: a set of habits about where the logic goes and what the pieces are. Languages tend to encourage one, and some, Python among them, will let you use several.
+A *paradigm* is a way of organising a program. It is a set of habits
+about where the logic goes and what the pieces are. Most languages
+encourage one paradigm. Some, including Python, let you use several.
 
-The four below all do exactly the same thing: double every number in a list. Run the cell and read them against each other, because the differences are the point.
+All four pieces of code below do the same thing: they double every
+number in a list. They use some Python you have not met yet, so do not
+worry about every word. Run the cell, then compare the four. What is
+different about each one?
 
 ```python exec
 id: the-same-problem-four-ways-1
@@ -202,13 +316,26 @@ doubled_scripting = [n * 2 for n in numbers]
 print("Comprehension:", doubled_scripting)
 ```
 
-The procedural version says *how* to build the answer. The functional version says *what* the answer is. The object-oriented version says *what kind of thing* has an answer. The comprehension says the same as the functional one in fewer characters.
+- The procedural version says *how* to build the answer, step by step.
+- The functional version says *what* the answer is.
+- The object-oriented version says *what kind of thing* has the answer.
+- The comprehension says the same as the functional version, in fewer
+  characters.
 
-None of them is correct and the others wrong. They are habits of thought, and which one suits depends on the problem and on who else has to read your code.
+None of them is right and the others wrong. They are habits of thought.
+Which one suits depends on the problem, and on who else has to read your
+code.
 
 ### Your turn
 
-Here are three snippets, all adding up a shopping basket. For each one, which paradigm is it closest to — and, this is the part that matters, *what specific feature of the code told you*?
+Here are three snippets, and each one adds up a shopping basket. For each
+one:
+
+1. Which paradigm is it closest to?
+2. What exact feature of the code told you? This is the part that
+   matters most.
+
+Fill in the blanks in the comments.
 
 ```python exec
 id: your-turn-3
@@ -249,9 +376,12 @@ print(cart.total())
 
 ## The Vault
 
-One last message, and this one mixes both notations. Each entry is a pair: the base it is written in, and the code.
+Here is one last message, and this one mixes both notations. Each entry
+is a pair: the base it is written in, and the code.
 
-You have written the logic for this twice already. This is the two of them in one function, with a check to decide which applies.
+You have already written the logic for this twice. This time, the two
+go into one function, with a check to decide which one applies to each
+pair.
 
 ```python exec
 id: your-turn-4
@@ -275,19 +405,35 @@ def crack_the_vault(groups):
 # print(crack_the_vault(vault_message))
 ```
 
-If it comes out right, it describes somebody from the first section of this tutorial.
+When your function is ready, remove the `#` from the last line and run
+the cell. If your answer is right, the message describes somebody from
+the first section of this page.
 
 ## Reflection
 
-You have traveled from a program written on paper in 1843, through the on-and-off patterns a 1945 machine consumed, past the shorthand invented so that people could stand to read them, into languages that let you say what you mean, and out into four different opinions about how a program should be organized.
+You have travelled a long way on this page:
 
-Two threads run through all of it and are worth naming.
+- from a program written on paper in 1843
+- through the on-and-off patterns that a 1945 machine read
+- past the short notation invented so that people could bear to read
+  those patterns
+- into languages that let you say what you mean
+- and out into four different views of how a program should be
+  organised
 
-**Every step was about making things easier for people.** The hardware never needed assembly, or hexadecimal, or Python. It needs binary and it always has. Everything above binary exists because a person had to write it, read it, or fix it at three in the morning.
+Two ideas run through all of it.
 
-**Notation is a tool with a purpose.** Hexadecimal is a decision about legibility, not a fact about computers, and knowing why it was made is more useful than knowing the conversion table.
+**Every step was about making things easier for people.** The hardware
+never needed assembly, or hexadecimal, or Python. It needs binary, and it
+always has. Everything above binary exists because a person had to
+write it, read it, or fix it at three in the morning.
 
-In a few sentences, which of the steps in this tutorial do you think made the biggest difference to what a person could build, and why?
+**Notation is a tool with a purpose.** Hexadecimal is a choice made to
+help people read, and not a fact about computers. Knowing why that
+choice was made is more useful than knowing the conversion table.
+
+Which step on this page do you think made the biggest difference to what
+a person could build? Why? You could answer in a few sentences.
 
 ## Where to Read More
 

@@ -1,7 +1,7 @@
 ---
 title: "Putting Things in Order"
 year: "2026-2027"
-version: 2026.08.23.2
+version: 2026.09.22.1
 covers:
   bubble-sort-let-things-rise:
     covers: [MIT-6.8]
@@ -17,15 +17,29 @@ covers:
 
 # Putting Things in Order
 
-**Programming Design Principles / Maths for IT**
+In [Finding Things](tutorial:finding-things) we saw that binary search is
+very fast, but it needs sorted data. So how do we sort a list?
 
-Binary search is wonderful, but it needs sorted data. So how do we sort? This turns out to be one of the most studied problems in computer science, because there are so many different ways to do it, and the differences in efficiency become dramatic as the data grows, not because sorting itself is hard to do.
+Sorting is one of the most studied problems in computer science. It is
+not hard to sort a list. What makes sorting interesting is that there are
+many ways to do it, and as the data grows, some ways become far slower
+than others.
 
-Today we implement three classic sorting algorithms. Each one reflects a different way of thinking about the problem, and each teaches us something about algorithm design.
+On this page we:
+
+- learn how to swap two elements in a list
+- build three classic sorting algorithms: bubble sort, insertion sort
+  and selection sort
+- count the work each one does, and see how that work grows
+
+Each algorithm thinks about the problem in a different way, and each one
+teaches us something about how to design algorithms.
 
 ## The Swap: A Small but Essential Tool
 
-Before we sort anything, we need to know how to swap two elements in a list. In Python, this is elegant:
+Before we sort anything, we need a way to *swap* two elements in a list.
+To swap two elements is to exchange their positions. Python can do this
+in one line:
 
 ```python exec
 id: the-swap-a-small-but-essential-tool-1
@@ -37,7 +51,10 @@ numbers[1], numbers[3] = numbers[3], numbers[1]
 print("After: ", numbers)
 ```
 
-The line `a, b = b, a` works because Python evaluates the right side completely before assigning to the left side. In many other languages you would need a temporary variable:
+A line like `a, b = b, a` works because Python first works out the whole
+right side. Only then does it assign the values to the left side.
+
+Many other languages need a temporary variable to do the same thing:
 
 ```
 temp = a
@@ -45,13 +62,19 @@ a = b
 b = temp
 ```
 
-Both approaches work. The Python one says the same thing in fewer moving parts.
+Both ways work. The Python way says the same thing with fewer parts.
 
 ## Bubble Sort: Let Things Rise
 
-The idea behind bubble sort is simple: walk through the list comparing adjacent pairs. If they are in the wrong order, swap them. After one complete pass, the largest element will have "bubbled up" to the end. Repeat until the list is sorted.
+*Bubble sort* is a sorting algorithm that walks through the list and
+compares each pair of neighbours. If a pair is in the wrong order, it
+swaps them. After one full pass, the largest element has "bubbled up" to
+the end. Then it repeats, until the list is sorted.
 
-Let's watch it happen step by step:
+Let's watch one pass, step by step. In this list, the largest number,
+90, is already at the end. Look at 64, the next largest, which starts at
+the front. Where do you think 64 will be after one pass? Run the cell to
+check.
 
 ```python exec
 id: bubble-sort-let-things-rise-1
@@ -67,14 +90,20 @@ for i in range(len(data) - 1):
         print("  No swap at index " + str(i) + ":", data)
 
 print("After one pass:", data)
-print("Notice: the largest element (90) is now at the end.")
 ```
 
-One pass is not enough to fully sort the list. But after each pass, one more element is in its final position. So we need at most n-1 passes for a list of n elements.
+The 64 moves one place to the right at every swap, until it meets 90. A
+pass always carries the largest element it meets along with it. So after
+one pass, the largest element is at the end. Here that was 90, which
+started there.
 
-That claim is worth watching rather than taking on trust. Here is the
-same sort again, all the way through, with a bar marking the part that
-has settled:
+One pass is not enough to sort the whole list. But after each pass, one
+more element is in its final place. So a list of n elements needs at most
+n − 1 passes.
+
+That claim is worth watching, and not only believing. Here is the same
+sort again, all the way to the end. A bar, `|`, marks the part that has
+settled into place.
 
 ```python exec
 id: bubble-sort-let-things-rise-2
@@ -103,19 +132,23 @@ for pass_number in range(len(data) - 1):
 print("Comparisons in total:", comparisons)
 ```
 
-Three things to look for. The bar moves left by one every pass, which is
-the claim above. The number of comparisons drops by one every pass, for
-the same reason. And the last pass swaps nothing — the list was already
-sorted before it ran, and bubble sort had no way of knowing.
+Here are three things to look for:
 
-Try changing `data` to a list of your own. A list that is already sorted
-is worth trying, and so is one in reverse order.
+1. The bar moves one place to the left on every pass. That is the claim
+   above.
+2. The number of comparisons drops by one on every pass, for the same
+   reason.
+3. The last pass swaps nothing. The list was already sorted before that
+   pass ran, but bubble sort had no way to know.
+
+What happens with a list of your own? Change `data` and run the cell
+again. Try a list that is already sorted, and a list in reverse order.
 
 ### Your turn
 
-Let's try `bubble_sort(items)`, returning the list in ascending order.
+Here is the pseudocode for a function `bubble_sort(items)`. It returns
+the list in *ascending order*, which means from smallest to largest.
 
-**Pseudocode:**
 ```
 FOR each pass from 0 to length-2:
     FOR each index i from 0 to length-2-pass:
@@ -124,7 +157,13 @@ FOR each pass from 0 to length-2:
 RETURN items
 ```
 
-Why can the inner loop stop earlier on each pass? The largest unsorted element reaches its final position at the end of every pass, so there is one fewer place worth looking each time.
+Why can the inner loop stop earlier on each pass? At the end of every
+pass, the largest element that is not yet in place reaches its final
+position. So each time, there is one fewer place worth looking.
+
+1. In the first cell, write `bubble_sort(items)` from the pseudocode.
+2. In the second cell, test it. The comment there lists some good test
+   cases.
 
 ```python exec
 id: your-turn-1
@@ -139,15 +178,20 @@ id: your-turn-2
 
 ## Insertion Sort: Sort Like You Sort Cards
 
-Insertion sort works the way most people sort a hand of playing cards: pick up cards one at a time and insert each one into the correct position among the cards you have already sorted.
+*Insertion sort* is a sorting algorithm that works the way most people
+sort a hand of playing cards. You pick up the cards one at a time. You
+put each new card into its correct place among the cards you have
+already sorted.
 
-The algorithm maintains a sorted portion at the beginning of the list. It takes the next unsorted element and walks it backwards through the sorted portion until it finds the right spot.
+In a list, insertion sort keeps a sorted part at the start of the list.
+It takes the next element that is not yet sorted. Then it walks that
+element backwards through the sorted part, until it finds the right
+place.
 
 ### Your turn
 
-How might `insertion_sort(items)` look?
+How might `insertion_sort(items)` look? Here is the pseudocode:
 
-**Pseudocode:**
 ```
 FOR each index i from 1 to length-1:
     SET key = items[i]
@@ -159,7 +203,13 @@ FOR each index i from 1 to length-1:
 RETURN items
 ```
 
-The `key` variable holds the element we are currently inserting. We shift larger elements to the right until we find where the key belongs.
+The variable `key` holds the element we are inserting right now. We move
+each larger element one place to the right, until we find where `key`
+belongs.
+
+1. In the first cell, write `insertion_sort(items)`.
+2. In the second cell, test it with the same cases you used for bubble
+   sort.
 
 ```python exec
 id: your-turn-3
@@ -173,15 +223,20 @@ id: your-turn-4
 
 ## Selection Sort: Find the Smallest
 
-Selection sort takes a different approach: find the smallest element in the unsorted portion and swap it into the next position of the sorted portion. Then find the next smallest, and so on.
+*Selection sort* is a sorting algorithm that finds the smallest element
+in the part of the list that is not yet sorted. It swaps that element
+into the next place in the sorted part. Then it finds the next smallest,
+and so on.
 
-It is like sorting a hand of cards by scanning for the lowest card, putting it first, then scanning the remaining cards for the next lowest, and so on.
+With a hand of cards, this is like looking through all the cards for the
+lowest one, and putting it first. Then you look through the rest for the
+next lowest, and so on.
 
 ### Your turn
 
-And `selection_sort(items)` — the third of the three.
+Here is the pseudocode for `selection_sort(items)`, the third of our
+three sorts:
 
-**Pseudocode:**
 ```
 FOR each index i from 0 to length-2:
     SET min_index = i
@@ -191,6 +246,9 @@ FOR each index i from 0 to length-2:
     SWAP items[i] and items[min_index]
 RETURN items
 ```
+
+1. In the first cell, write `selection_sort(items)`.
+2. In the second cell, test it.
 
 ```python exec
 id: your-turn-5
@@ -204,9 +262,13 @@ id: your-turn-6
 
 ## Comparing Our Sorts
 
-All three algorithms produce the same result -- a sorted list -- but they get there differently. Let's think about efficiency.
+All three algorithms give the same result, a sorted list. But they get
+there in different ways. So which one does less work?
 
-For each algorithm, the key question is: how many comparisons does it make? Let's add counting to find out:
+A good measure is the number of comparisons each one makes. The next
+cell adds a counter to bubble sort. It runs the sort on lists of 10, 50,
+100 and 200 items, each in reverse order, which is the worst case. What
+do you think happens to the count when the size doubles?
 
 ```python exec
 id: comparing-our-sorts-1
@@ -224,21 +286,37 @@ def bubble_sort_counted(items):
 # Test with different sized lists
 for size in [10, 50, 100, 200]:
     test_data = list(range(size, 0, -1))   # worst case: reverse sorted
-    sorted_data, comps = bubble_sort_counted(test_data)
-    print("Size " + str(size) + ": " + str(comps) + " comparisons")
+    sorted_data, comparison_count = bubble_sort_counted(test_data)
+    print("Size " + str(size) + ": " + str(comparison_count) + " comparisons")
 ```
 
-Notice a pattern? When the size doubles, the number of comparisons roughly quadruples. This is because each of our three algorithms makes approximately $\frac{n(n-1)}{2}$ comparisons in the worst case, which grows proportionally to $n^2$.
+Do you see a pattern? When the size doubles, the number of comparisons
+goes up about four times. In the worst case, each of our three
+algorithms makes about $\frac{n(n-1)}{2}$ comparisons. That number grows
+in proportion to $n^2$, and we write this as $O(n^2)$.
 
-For 10 items, that is about 45 comparisons: instant. For 1,000 items, about 500,000: still fast. For 1,000,000 items, about 500,000,000,000: that is going to take a while.
+| Items | Comparisons, about | Time |
+|---|---|---|
+| 10 | 45 | instant |
+| 1,000 | 500,000 | still fast |
+| 1,000,000 | 500,000,000,000 | a long wait |
 
-Faster algorithms exist — merge sort and quicksort reach $O(n \log n)$ — and the three built today are still the ones worth building first. They are short enough to hold in your head at once, which is what makes the cost of an algorithm visible rather than asserted.
+Faster algorithms exist. Merge sort reaches $O(n \log n)$, and quicksort
+usually does too. Even so, the three sorts on this page are the best
+ones to build first. Each one is short enough to hold in your head all
+at once. That lets you see the cost of an algorithm for yourself, and
+not only be told about it.
 
 ### Your turn
 
-What happens if you add comparison counting to the insertion and selection sorts as well, and run all three over the same data? Do they always make the same number of comparisons, or does it depend on what they are given?
+1. Add comparison counting to your insertion sort and your selection
+   sort, too.
+2. Run all three sorts over the same data. Try three kinds of data:
+   random order, already sorted, and reverse order.
 
-Random order, already sorted, and reverse sorted are the three cases worth trying. Which algorithm does best on data that is already in order, and can you say why before you run it?
+Do the three sorts always make the same number of comparisons? Or does
+it depend on the data they get? Which one do you think does best on data
+that is already in order? Can you say why, before you run it?
 
 ```python exec
 id: your-turn-7
@@ -247,11 +325,21 @@ id: your-turn-7
 
 ## Optional Challenges
 
-If you have time, here are two extensions worth exploring.
+If you have time, here are two more things to explore.
 
-**Shell sort** is a clever improvement on insertion sort. Instead of comparing adjacent elements, it compares elements a fixed distance apart, called the *gap*, and then reduces the gap gradually. When the gap reaches 1 it has become an ordinary insertion sort, but by then the list is nearly in order and insertion sort's best case takes over. It is a satisfying one to build.
+**Shell sort** is a clever improvement on insertion sort. Insertion sort
+compares elements that sit next to each other. Shell sort compares
+elements a fixed distance apart. This distance is called the *gap*.
+Shell sort makes the gap smaller, step by step. When the gap reaches 1,
+shell sort has become an ordinary insertion sort. But by then the list
+is nearly in order, and insertion sort is at its fastest on a list that
+is nearly in order. It is a satisfying one to build.
 
-**Recursive binary search**: In *Finding Things* we wrote binary search with a while loop. Can you rewrite it so the function calls itself with a smaller range instead? This is called *recursion*, and it is an elegant way to express divide-and-conquer algorithms.
+**Recursive binary search.** In [Finding Things](tutorial:finding-things)
+we wrote binary search with a `while` loop. Can you rewrite it so that
+the function calls itself, each time with a smaller range? A function
+that calls itself is using *recursion*. Recursion is a neat way to write
+divide-and-conquer algorithms. Here is one way to write it:
 
 ```
 def binary_search_recursive(items, target, low, high):
@@ -278,13 +366,29 @@ id: optional-challenges-2
 
 ## Reflection
 
-We have now built three sorting algorithms from scratch, and we understand how to compare their efficiency by counting operations. Combined with the search algorithms from *Finding Things*, we have a solid toolkit for organizing and finding data.
+We have now built three sorting algorithms from nothing. We also know how
+to compare how fast they are, by counting the steps they take. Together
+with the search algorithms from [Finding Things](tutorial:finding-things),
+we now have a good set of tools for putting data in order and finding
+things in it.
 
-More importantly, we have practiced the full cycle of algorithm development: understand the problem, write pseudocode, implement, test, and analyze. This cycle is the same whether the problem is sorting numbers or building a machine learning system.
+We also went through the full cycle of building an algorithm:
 
-You are now ready to build these tools fresh, from nothing but the ideas -- which is the only real way to find out whether the algorithms and the programming behind them have landed.
+1. Understand the problem.
+2. Write pseudocode.
+3. Write the code.
+4. Test it.
+5. Measure how much work it does.
 
-What was the most satisfying moment in these last two tutorials? What would you like to understand better?
+This cycle is the same whether the problem is sorting numbers or
+building a machine learning system.
+
+You are now ready to build these tools again, from nothing but the
+ideas. That is the only real way to find out whether the algorithms, and
+the programming behind them, have stuck.
+
+What was the most satisfying moment in these last two tutorials? What
+would you like to understand better?
 
 ## Where to Read More
 

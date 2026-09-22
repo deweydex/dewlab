@@ -1,6 +1,18 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# A reflection/code-review tutorial with no new technical terms — "modular
-# code" is only previewed here as something coming later, not taught, so
-# it is left for whichever tutorial actually introduces it.
-entries: []
+# A reflection/code-review tutorial with no new programming terms.
+# "Modular design" is only mentioned here, with a link back to Building
+# Reusable Tools, which is where it is taught and defined.
+entries:
+  - term: reflect
+    kind: concept
+    definition: >
+      To reflect is to look back at your own work and ask what it can
+      teach you: what you would change, where you got stuck, and what
+      helped.
+  - term: code review
+    kind: concept
+    definition: >
+      A code review is when one person reads another person's code and
+      tells them what they notice: what is clear, what works well, and
+      where they got confused.

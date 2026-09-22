@@ -183,6 +183,9 @@ graph TD
   T30 --> T31
   T31 --> T32
 
+  T4 -.->|builds on| T1
+  T10 -.->|builds on| T7
+  T10 -.->|builds on| T8
   T11 -.->|builds on| T6
   T16 -.->|builds on| T8
   T16 -.->|builds on| T9
@@ -474,7 +477,7 @@ graph TD
 
 ## Vocabulary
 
-The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **112 terms** are marked that way, and asking two questions of them is free.
+The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **151 terms** are marked that way, and asking two questions of them is free.
 
 ### Introduced more than once
 
@@ -482,13 +485,13 @@ The same word presented as new in two places. Either it is being introduced twic
 
 | Term | Introduced in tutorials |
 |---|---|
-| *building reusable tools* | 5, 24 |
 | *cracking equations* | 20, 23, 24, 25, 32 |
 | *drawing functions* | 25, 26, 28, 29 |
 | *expressions come alive* | 21, 22, 24, 32 |
-| *finding things* | 9, 16 |
-| *function* | 1, 24 |
+| *function* | 1, 7, 24 |
+| *how* | 3, 5 |
 | *index* | 6, 7, 19 |
+| *iteration* | 4, 6 |
 | *lines and distances* | 27, 28, 29, 31 |
 | *making sense of data* | 15, 26 |
 | *numbers and their families* | 23, 32 |
@@ -498,7 +501,8 @@ The same word presented as new in two places. Either it is being introduced twic
 | *set* | 16, 22 |
 | *sets as sorted lists* | 17, 18, 32 |
 | *solve* | 20, 22 |
-| *storing and computing* | 3, 21, 30 |
+| *storing and computing* | 21, 30 |
+| *what* | 3, 5 |
 | *zahlen* | 2, 19 |
 
 ### Used before it was introduced
@@ -507,45 +511,43 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 
 | Term | First appears in | Introduced in |
 |---|---:|---:|
-| *argument* | 5 | 7 |
+| *after* | 1 | 5 |
 | *before* | 1 | 3 |
-| *between* | 2 | 29 |
+| *between* | 1 | 29 |
+| *building reusable tools* | 3 | 24 |
 | *counting carefully* | 11 | 12 |
 | *design* | 8 | 10 |
 | *drawing functions* | 24 | 25 |
 | *equation* | 16 | 20 |
 | *expression* | 6 | 20 |
 | *expressions come alive* | 20 | 21 |
-| *finding things* | 8 | 9 |
+| *finding things* | 6 | 16 |
 | *first steps* | 1 | 32 |
-| *functions* | 1 | 7 |
+| *gap* | 7 | 9 |
 | *how* | 1 | 3 |
-| *independent* | 10 | 12 |
 | *inside* | 1 | 29 |
 | *lines and distances* | 24 | 27 |
+| *list* | 1 | 7 |
 | *local* | 8 | 31 |
 | *logic and truth* | 17 | 18 |
-| *making decisions* | 4 | 17 |
+| *making decisions* | 3 | 17 |
 | *making sense of data* | 14 | 15 |
 | *numbers and their families* | 19 | 23 |
 | *opposite* | 23 | 29 |
 | *parabolas* | 25 | 28 |
-| *parameters* | 7 | 10 |
 | *pictures worth numbers* | 15 | 24 |
-| *power* | 2 | 19 |
-| *putting things in order* | 9 | 16 |
-| *reaches* | 5 | 30 |
-| *repeating yourself* | 6 | 11 |
+| *power* | 1 | 19 |
+| *putting things in order* | 6 | 16 |
+| *reaches* | 4 | 30 |
+| *repeating yourself* | 1 | 11 |
 | *repetition* | 4 | 11 |
-| *representation* | 2 | 20 |
-| *return values* | 7 | 10 |
+| *representation* | 18 | 20 |
 | *see* | 1 | 18 |
+| *sequence* | 3 | 7 |
 | *set* | 1 | 16 |
 | *sets as sorted lists* | 16 | 17 |
-| *slice* | 6 | 7 |
 | *solve* | 7 | 20 |
-| *store* | 1 | 2 |
-| *storing and computing* | 2 | 3 |
+| *storing and computing* | 1 | 21 |
 | *the unit circle* | 26 | 29 |
 | *tools* | 1 | 10 |
 | *what* | 1 | 3 |

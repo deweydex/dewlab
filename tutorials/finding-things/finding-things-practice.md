@@ -7,7 +7,9 @@ version: 2026.08.23.1
 
 # Finding Things — Practice
 
-Answers are hidden. Several of these are about counting comparisons rather than writing code, and those are the ones worth doing on paper first.
+The answers are hidden in folds under each problem. Several problems ask
+you to count comparisons, and not to write code. Those are the ones to
+try on paper first.
 
 ## Scope
 
@@ -23,13 +25,17 @@ def bump():
 print(bump(), count)
 ```
 
-**1.** What does the cell above print, and why is `count` still 0 afterwards?
+**1.** What does the cell above print? Why is `count` still 0 afterwards?
 
 <details class="dl-answer"><summary>answer</summary>
 
 `10 0`.
 
-The assignment inside the function created a *new* variable that exists only while the function is running. Assigning inside a function never reaches out and changes a variable outside it, unless you say `global` — and needing `global` is usually a sign the function should return a value instead.
+The line `count = 10` inside the function created a *new* variable. That
+variable exists only while the function is running. An assignment inside
+a function never changes a variable outside it, unless you use the word
+`global`. If you find you need `global`, that is usually a sign that the
+function should return a value instead.
 
 </details>
 
@@ -49,13 +55,22 @@ print(things)
 
 `['a', 'b', 'new']`.
 
-This looks like it contradicts the previous question, and it does not. The function did not *assign* to `items`; it changed the list `items` refers to, which is the same list `things` refers to. Rebinding a name is local; changing an object is not.
+This looks like it goes against the previous question, but it does not.
+The function did not *assign* anything to `items`. It changed the list
+that `items` refers to, and that is the same list that `things` refers
+to.
 
-Functions that quietly modify their arguments are a common source of surprise. It is worth deciding deliberately whether a function returns a new list or edits the one it was given, and saying so in its name.
+So there are two different actions. Giving a name a new value, with
+`=`, stays local to the function. Changing a list in place, with
+something like `append`, is seen everywhere that list is used.
+
+A function that changes its arguments without saying so often surprises
+people. So decide on purpose whether a function returns a new list or
+changes the list it was given, and make its name say which.
 
 </details>
 
-**3.** What is a pure function, and which of these are pure?
+**3.** What is a pure function? Which of these are pure?
 
 - (a) `def double(x): return x * 2`
 - (b) `def add_to_log(msg): log.append(msg)`
@@ -64,17 +79,24 @@ Functions that quietly modify their arguments are a common source of surprise. I
 
 <details class="dl-answer"><summary>answer</summary>
 
-A pure function depends only on its arguments and changes nothing outside itself. Same input, same output, no side effects.
+A pure function is one that depends only on its arguments, and changes
+nothing outside itself. The same input always gives the same output. It
+has no *side effects*: a side effect is any change a function makes
+outside itself, such as adding to a list elsewhere in the program.
 
-(a) and (d) are pure. (b) changes something outside. (c) gives a different answer each time.
+(a) and (d) are pure. (b) changes something outside itself. (c) gives a
+different answer each time.
 
-Pure functions are the ones you can test easily, reason about safely, and cache. The point is knowing which kind you are writing: both of the impure ones here are useful and necessary too.
+Pure functions are easy to test and easy to think about. Their answers
+can also be saved and reused, because the answer to the same question
+never changes. Still, the goal is to know which kind you are writing.
+The two functions here that are not pure are useful and needed too.
 
 </details>
 
 ## Linear Search
 
-**4.** Write `linear_search(items, target)` returning the index or −1.
+**4.** Write `linear_search(items, target)`. It returns the index of the target, or −1 if the target is not there.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -86,31 +108,40 @@ def linear_search(items, target):
     return -1
 ```
 
-The `return -1` has to be outside the loop. Inside, it would return −1 after checking only the first item.
+The `return -1` has to be outside the loop. If it were inside the loop,
+the function would return −1 after checking only the first item.
 
 </details>
 
-**5.** Why −1 rather than 0 for "not found"?
+**5.** Why use −1 for "not found", and not 0?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because 0 is a real index: it means "found at the start". A not-found marker has to be something that could never be a valid answer, and no list has an item at index −1 in the "found here" sense.
+Because 0 is a real index. It means "found at the start". A "not found"
+marker has to be a value that could never be a real answer. No search
+ever reports "found here" at index −1, so −1 is safe.
 
-Returning `None` is the more Pythonic choice, and it has the advantage that using it by accident fails loudly rather than pointing at the last element.
+Many Python programmers would return `None` instead. `None` has an
+advantage: if you use it as an index by mistake, Python stops with an
+error. An index of −1 used by mistake points at the last element, with
+no error at all.
 
 </details>
 
-**6.** How many comparisons does linear search make on a list of 100 items when the target is first? Last? Absent? On average?
+**6.** Linear search looks through a list of 100 items. How many comparisons does it make when the target is first? When it is last? When it is not there? On average?
 
 <details class="dl-answer"><summary>answer</summary>
 
 1, 100, 100, and about 50.
 
-The average assumes the target is present and equally likely to be anywhere. If half your searches are for things that are absent, the average is much closer to 100 — which is why a cache that answers "not here" quickly is often the thing worth building.
+The average assumes that the target is in the list, and that it is
+equally likely to be anywhere. Now suppose half of your searches are for
+things that are not there. Then the average is much closer to 100. This
+is why it is often worth building a quick way to answer "not here".
 
 </details>
 
-**7.** Find the *last* occurrence of a target rather than the first.
+**7.** Can you find the *last* place a target appears, and not the first?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -122,7 +153,12 @@ def last_index(items, target):
     return -1
 ```
 
-Searching backwards returns on the first match found, which is the last one in the list. The alternative, searching forwards and remembering the most recent match, always looks at every item, even when the match is at the end.
+This searches backwards. It returns at the first match it finds, and
+that is the last one in the list.
+
+Another way is to search forwards and remember the most recent match.
+But that way always looks at every item, even when the match is at the
+end.
 
 </details>
 
@@ -153,9 +189,12 @@ print(binary_search(data, 751))
 
 <details class="dl-answer"><summary>answer</summary>
 
-Indices 0–14, so mid is 7, which is 31. Found in one comparison.
+The indexes run from 0 to 14, so the first `mid` is 7. The item at index
+7 is 31. It is found in one comparison.
 
-That is the best case, and it happens because 31 sits exactly in the middle. Try 89 instead: mid 7 (31), then 11 (55), then 13 (72), then 14 (89). Four comparisons.
+That is the best case. It happens because 31 sits exactly in the middle.
+Try 89 instead: mid 7 (31), then 11 (55), then 13 (72), then 14 (89).
+That takes four comparisons.
 
 </details>
 
@@ -163,61 +202,91 @@ That is the best case, and it happens because 31 sits exactly in the middle. Try
 
 <details class="dl-answer"><summary>answer</summary>
 
-It reports "not found" for things that are in the list, and it does so without complaint.
+It can report "not found" for items that are in the list, and it gives
+no warning. For example, in `[5, 1, 9, 3, 7]` it finds 9, but it says
+that 1 is not there.
 
-That is the dangerous kind of wrong. The function has no way to tell that its precondition was broken, so it returns a confident answer. Whoever calls it is responsible for the list being sorted, and if that is not obvious from the code it belongs in the function's name or its docstring.
+That is the dangerous kind of wrong. Binary search has a *precondition*:
+a precondition is something that must be true before a function runs,
+for its answer to be right. Here, the list must be sorted. The function
+has no way to tell that this was broken, so it gives a confident answer
+anyway.
+
+So the code that calls the function is responsible for sorting the
+list. If that is not clear from the code, say it in the function's name,
+or in the note that describes the function.
 
 </details>
 
-**10.** Why `mid = (low + high) // 2` rather than `(low + high) / 2`?
+**10.** Why write `mid = (low + high) // 2`, and not `(low + high) / 2`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-An index must be a whole number. `/` gives a float, and `items[3.5]` is a `TypeError`.
+An index must be a whole number. `/` always gives a float, and
+`items[3.5]` raises a `TypeError`.
 
-There is a famous variant of this line: in languages with fixed-size integers, `low + high` can overflow on a very large list, and the fix is `low + (high - low) // 2`. That bug sat undetected in the standard Java library for nine years.
+There is a famous problem with this line in some other languages. In
+those languages, whole numbers have a fixed size, and `low + high` can
+become too big to store when the list is very large. The fix is
+`low + (high - low) // 2`. That bug sat unnoticed in the standard Java
+library for nine years. Python's whole numbers can grow as large as they
+need to, so this does not happen in Python.
 
 </details>
 
-**11.** What is the maximum number of comparisons binary search needs on 1,000 items? On 1,000,000?
+**11.** What is the largest number of comparisons binary search needs on 1,000 items? On 1,000,000?
 
 <details class="dl-answer"><summary>answer</summary>
 
 10 and 20.
 
-Each step halves the range, so the count is how many times you can halve n before reaching 1 — which is log₂n rounded up. 2¹⁰ is 1,024 and 2²⁰ is 1,048,576.
+Each step halves the range. So the count is the number of times you can
+halve n before you reach 1. This is log₂n, rounded up. 2¹⁰ is 1,024, and
+2²⁰ is 1,048,576.
 
-Multiplying the data by a thousand adds ten comparisons. That is what logarithmic growth means, and it is why binary search does not care how big your data is.
+Multiplying the data by a thousand adds only ten comparisons. That is
+what logarithmic growth means. It is why binary search stays fast, however
+big the data gets.
 
 </details>
 
-**12.** I am thinking of a number from 1 to 100 and you may ask "is it greater than X?". How many questions guarantee finding it?
+**12.** I am thinking of a whole number from 1 to 100. You may ask "Is it greater than X?". How many questions do you need to be sure of finding it?
 
 <details class="dl-answer"><summary>answer</summary>
 
 Seven.
 
-Each question halves the range: 100 → 50 → 25 → 13 → 7 → 4 → 2 → 1. Six questions only guarantee narrowing 64 possibilities, and 100 is more than 64.
+Each question halves the range: 100 → 50 → 25 → 13 → 7 → 4 → 2 → 1. Six
+questions can only be sure of finding one number out of 64, and 100 is
+more than 64.
 
-The general rule is that n yes-or-no questions can distinguish 2ⁿ possibilities, which is the same statement as binary search's cost and also the reason a 7-bit code has 128 values.
+The general rule is that n yes-or-no questions can tell apart 2ⁿ
+possibilities. This is the same fact as the cost of binary search. It is
+also the reason a 7-bit code has 128 values.
 
 </details>
 
-**13.** Binary search needs sorted data, and sorting takes longer than a single linear search. When is it worth it?
+**13.** Binary search needs sorted data, and sorting takes longer than one linear search. When is sorting worth it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-When you search the same data more than a handful of times.
+When you search the same data more than a few times.
 
-Sorting costs roughly n log n once. Each linear search costs n; each binary search costs log n. So sorting pays for itself after about log n searches — for a million items, after about twenty. Any lookup table, index or dictionary you have ever used is this trade-off already made for you.
+Sorting costs about n log n, once. Each linear search costs n. Each
+binary search costs log n. So sorting pays for itself after about log n
+searches. For a million items, that is after about twenty searches.
 
-If the data changes constantly and you search it rarely, linear search wins.
+Every lookup table, index or dictionary you have used has already made
+this trade for you.
+
+If the data changes all the time and you search it only rarely, linear
+search wins.
 
 </details>
 
 ## Putting It Together
 
-**14.** Modify binary search to return where the target *would* go if it is absent.
+**14.** Change binary search so that, when the target is not there, it returns the place where the target *would* go.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -233,32 +302,44 @@ def insertion_point(items, target):
     return low
 ```
 
-When the loop ends, `low` is the index where the target belongs. This is what `bisect.bisect_left` does, and it is the basis of keeping a list sorted as items arrive — search for the position, insert there.
+When the loop ends, `low` is the index where the target belongs. Python's
+`bisect.bisect_left` does the same thing. This is how we keep a list
+sorted as new items arrive: search for the right position, then insert
+the item there.
 
-Note the boundaries changed: `high` starts at `len(items)`, not `len(items) - 1`, and the loop is `<` rather than `<=`. Binary search is unusually sensitive to those two choices, which is why it is worth writing out rather than adapting from memory.
+Notice that two boundaries changed. `high` starts at `len(items)`, not at
+`len(items) - 1`. The loop test is `<`, not `<=`. Binary search breaks
+easily if either choice is wrong. That is why it is worth writing it out
+carefully, and not changing a version you half remember.
 
 </details>
 
-**15.** Count comparisons for both searches over a list of 334 items, for a target at the start, in the middle, at the end, and absent.
+**15.** Use a list of 334 items. Count the comparisons each search makes when the target is at the start, in the middle, at the end, and not there.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Using `data = list(range(0, 1000, 3))`, which has 334 items:
+With `data = list(range(0, 1000, 3))`, which has 334 items:
 
 | Target | Linear | Binary |
 |---|---:|---:|
 | 0 (first) | 1 | 8 |
-| 498 (dead center) | 167 | 1 |
+| 498 (exact middle) | 167 | 1 |
 | 999 (last) | 334 | 9 |
-| 751 (absent) | 334 | 8 |
+| 751 (not there) | 334 | 8 |
 
-Binary search is *worse* than linear when the target is first — eight comparisons against one — and that is not a small point. If a few items are asked for constantly, moving them to the front beats any amount of cleverness, and that idea is a real cache design rather than a curiosity.
+Binary search is *worse* than linear search when the target is first:
+eight comparisons against one. That matters. If a few items are asked
+for again and again, moving them to the front of the list beats any
+clever method. Real systems use this idea to store popular answers
+where they are quick to reach.
 
-Note also that an absent target costs binary search nearly its worst case, because it has to narrow the range to nothing before it can say no. Linear search pays its full worst case for every absent target, every time.
+Notice also that a missing target costs binary search nearly its worst
+case. It has to shrink the range to nothing before it can say no. Linear
+search pays its full worst case for every missing target, every time.
 
 </details>
 
-**16.** Write a function that finds *all* the indices where a target appears.
+**16.** Write a function that finds *all* the indexes where a target appears.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -267,11 +348,16 @@ def all_indices(items, target):
     return [i for i, item in enumerate(items) if item == target]
 ```
 
-This has to be linear even on sorted data, because you cannot stop early — you do not know how many there are. On sorted data you could binary search for the first and last and take everything between, which is worth doing only when the list is large and the matches are few.
+This has to be a linear search, even on sorted data, because it cannot
+stop early: it does not know how many matches there are.
+
+On sorted data, there is another way. Binary search for the first match
+and for the last match, and take everything between them. That is worth
+doing only when the list is large and there are few matches.
 
 </details>
 
-**17.** Search a list of names for one that is not there, and make the function report the closest match instead of failing.
+**17.** Search a list of names for a name that is not there. Can you make the function report the closest match, and not only fail?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -285,8 +371,16 @@ def closest(names, target):
     return best
 ```
 
-Counting matching characters in matching positions is a crude measure, and it is enough to catch a typo in the first few letters. Real spell-checkers use edit distance, which asks how many insertions, deletions and substitutions separate two words — a considerably better answer and a considerably longer function.
+This counts the letters that match in the same positions. That is a
+rough measure, but it is enough to catch a typing mistake in the first
+few letters.
 
-The point of the exercise is the decision, not the metric: "not found" is often not the most useful thing a search can say.
+Real spell-checkers use *edit distance*. Edit distance is the number of
+single-letter insertions, deletions and replacements it takes to turn one word
+into another. It gives a much better answer, and it needs a much longer
+function.
+
+The lesson here is the decision, more than the measure: "not found" is
+often not the most useful thing a search can say.
 
 </details>

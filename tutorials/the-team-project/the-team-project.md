@@ -15,31 +15,57 @@ covers:
 
 # The Team Project
 
-**Programming Design Principles**
+This page is a brief, not a tutorial. A *brief* is a description of a
+piece of work you are asked to do. This one is for a project you will
+do over several weeks, in a group of three to five. There is no code to
+run here, and nothing to work through in an hour. The page is here so
+that the plan is written down somewhere you can come back to.
 
-This one is a brief for a piece of work you will do over several weeks, in a group of three to five, not a tutorial: there is no code to run and nothing to work through in an hour. It is here so that the shape of it is written down somewhere you can go back to.
-
-The learning outcome behind it asks you to design, develop, release and review software **over time, in a team**. Every word of that matters, and the two that people underestimate are *over time* and *review*.
+The learning outcome behind the project asks you to design, develop,
+release and review software **over time, in a team**. Every word of
+that matters. The two that people most often underestimate are *over
+time* and *review*.
 
 ## What You Are Being Asked to Do
 
-Build something small, in a group of three to five, and release it three times.
+As a group of three to five, you will:
 
-Small is important. A project that is too ambitious fails in week two, when nobody can see how the pieces fit and everyone quietly stops — not at the end. Something you could reasonably finish alone in a weekend is about right for a team over several weeks, because most of what you are learning here is not how to write the code.
+1. build something small;
+2. release it three times.
 
-Things that have worked:
+**Small is important.** A project that is too big fails early, in week
+two, not at the end. Nobody can see how the pieces fit together, and
+everyone quietly stops working on it.
 
-- **A tool that does something you do by hand.** A timetable checker, a marks calculator, something that renames files the way you keep renaming them.
-- **A small game.** Guessing, quizzes, tic-tac-toe. The rules are known so the arguments are about the building.
-- **Something with data in it.** Take a dataset you can get hold of and answer three questions about it, with plots.
+A good size is something one of you could finish alone in a weekend.
+For a team over several weeks, that is about right, because most of
+what you learn here is not how to write the code.
 
-Things that go wrong: anything needing an account with somebody else's service, anything with a login, and anything where the interesting part is a library you have not used yet.
+Here are kinds of project that have worked:
+
+- **A tool that does something you do by hand.** A timetable checker, a
+  marks calculator, or a program that renames files the way you keep
+  renaming them.
+- **A small game.** A guessing game, a quiz, or tic-tac-toe. Everyone
+  already knows the rules, so the discussions are about how to build it.
+- **Something with data in it.** Find a dataset you can get, and answer
+  three questions about it, with plots.
+
+And here are kinds of project that go wrong:
+
+- anything that needs an account with somebody else's service;
+- anything with a login;
+- anything where the interesting part is a library you have not used
+  yet.
 
 ## Three Releases, Not One Deadline
 
-This is the part that makes it a project rather than an assignment.
+Three releases are what make this a project and not an assignment.
 
-**You will release three times.** Each release is a version somebody outside the team could use, at the point you release it — a working thing, however little it does, not a plan for one and not most of one.
+A *release* is a version of your program that somebody outside the
+team could use on the day you release it. It is a working thing, however
+little it does. A plan is not a release, and neither is most of a
+program.
 
 | | What it is | The question it answers |
 |---|---|---|
@@ -47,64 +73,132 @@ This is the part that makes it a project rather than an assignment.
 | **Release 2** | The main feature, done properly | Can we build the thing we described? |
 | **Release 3** | Finished, tidied, and documented | Would we hand this to somebody? |
 
-Release 1 is the one teams get wrong. It should feel embarrassingly small. If your project is a quiz game, release 1 asks one hard-coded question and says whether you got it right. That is enough — it proves that the pieces connect, and it means the first time you find out that two people's code does not fit together is week two rather than week six.
+**Every release must:**
 
-**Each release gets a version number and a date**, and you keep the old ones. That is the same idea as the versions on these tutorials: a release is a thing somebody could go back to.
+- [ ] work, so that somebody outside the team could use it;
+- [ ] have a version number;
+- [ ] have a date;
+- [ ] be kept after the next release comes out. Do not delete or
+  overwrite old releases.
+
+Keeping old releases is the same idea as the versions on these
+tutorials. A release is a thing somebody could go back to.
+
+**Release 1 is the one most teams get wrong.** It should feel almost
+too small to show anyone. Say your project is a quiz game. Release 1
+could ask one question, written straight into the code, and say whether
+the answer is right. That is enough.
+
+Why is so little enough? Release 1 proves that the pieces connect. It
+also means you find out early when two people's code does not fit
+together: in week two, not in week six.
 
 ## Working on One Thing at Once
 
-Three to five people editing the same project will collide. There is no arrangement that prevents this; there is only being ready for it.
+When three to five people edit the same project, their changes will
+clash. No way of organising the team stops this completely. What you can
+do is be ready for it. Here is a way to set up the work.
 
-**Split by what a piece does, not by who is good at what.** "Ciara does the input, Dev does the calculations, Maeve does the output" gives everyone something to build and a clear edge where their piece meets the next. "Ciara does the hard parts" gives you one person doing a project and three people watching.
+1. **Split the work by what each piece does.** Do not split it by who
+   is good at what. "Ciara does the input, Dev does the calculations,
+   Maeve does the output" gives everyone something to build. It also
+   gives a clear edge where one person's piece meets the next.
+   "Ciara does the hard parts" gives you one person doing the project
+   and three people watching.
+2. **Agree the edges before anybody writes code.** Say Ciara's code
+   will call Dev's function. Decide now:
+   - what the function is called;
+   - what goes in;
+   - what comes out.
+3. **Write that agreement down.** Now both people can build against it,
+   and neither has to wait for the other.
+4. **Tell the team what you are working on.** Two people editing the
+   same file at the same time is the most common way a week's work is
+   lost. A short message like "I'm in the scoring code this evening"
+   prevents nearly all of it.
 
-**Agree the edges before you write anything.** If Dev's function is going to be called by Ciara's code, decide now what it is called, what goes in, and what comes out. Write that down. Both people can then build against it without waiting.
-
-That agreement is worth more than any amount of planning about features. It is the thing that lets four people work at once instead of in a queue.
-
-**Talk about what you are touching.** Two people editing the same file at the same time is the most common way a week's work disappears, and a message saying "I'm in the scoring code this evening" prevents nearly all of it.
+The agreement in steps 2 and 3 is worth more than any amount of planning
+about features. It is what lets four people work at the same time,
+instead of one after another.
 
 ## Reviewing Each Other's Work
 
-The outcome says *review*, and this is the half most teams skip.
+The learning outcome says *review*, and this is the half most teams
+skip.
 
-**Before each release, read each other's code** — to find out whether it can be read, not to find fault. If you cannot follow what a function does, that is information about the function rather than about you, and it is much cheaper to find out now.
+**Before each release, read each other's code.** The point is to find
+out whether the code can be read, not to find fault. Suppose you cannot
+follow what a function does. That tells you something about the
+function, not about you. It is much cheaper to find that out now than
+later.
 
-Three questions that make a review useful rather than polite:
+A polite review says "looks fine". A useful review asks questions. For
+each piece of code, work through these three:
 
-**Can I tell what this does without asking?** If the answer is no, the fix is usually a better name or a sentence of comment, not more code.
+1. **Can I tell what this does without asking?** If not, the fix is
+   usually a better name or one sentence of comment, not more code.
+2. **What happens if this gets something unexpected?** For example, an
+   empty list, a zero, a negative number, or a word where a number was
+   expected. [When It Goes Wrong](tutorial:when-it-goes-wrong) is the
+   tutorial for this. Somebody using your program will hit every one of
+   those errors.
+3. **Have we already written this somewhere else?** Two people often
+   solve the same problem separately. That is normal, and it is worth
+   catching.
 
-**What happens if this gets something unexpected?** An empty list, a zero, a negative number, a word where a number was expected. *When It Goes Wrong* is the tutorial for this, and every one of those errors is one somebody will hit.
-
-**Is there something here we have already written somewhere else?** Two people solving the same problem separately is normal and worth catching.
-
-**Write down what you agreed**, briefly. "We are keeping the two scoring functions separate for now" is worth a line, because in three weeks nobody will remember whether that was a decision or an accident.
+Then **write down what you agreed**, in a line or two. For example: "We
+are keeping the two scoring functions separate for now." In three weeks,
+nobody will remember whether that was a decision or an accident.
 
 ### After the last release
 
-The review that matters most is the one at the end, and it is about the process rather than the product.
+The review that matters most comes at the end. It is about how you
+worked together, more than about what you built. Ask yourself:
 
 - What went differently from what you expected?
-- Where did the time go, against where you thought it would?
-- What would you do differently with the same brief and a fresh start?
-- What did somebody else in the team do that you would like to be able to do?
+- Where did the time go, compared with where you thought it would go?
+- With the same brief and a fresh start, what would you do differently?
+- What did somebody else in the team do that you would like to be able
+  to do?
 
-That last one is worth taking seriously. Three to five people building something together is the closest this course comes to how software is made, and most of what people take away from it is something they watched somebody else do.
+Take that last question seriously. Building something with three to
+five people is the closest this course comes to how software is made in
+real jobs. Most of what people take away from it is something they
+watched somebody else do.
 
 ## What Gets Handed In
 
-Per release: the working code, a short note on what changed, and who did what.
+**With each release, hand in:**
 
-At the end: the three releases, and a reflection of a page or so per person, answering the questions above in your own words.
+- [ ] the working code;
+- [ ] a short note on what changed;
+- [ ] a note on who did what.
 
-The reflection is what you learned, including the parts that did not go well, not a summary of the project — and a project where nothing went wrong is either very small or not being described accurately.
+**At the end, hand in:**
+
+- [ ] all three releases;
+- [ ] a reflection from each person, about a page long, answering the
+  questions in [After the last release](#after-the-last-release) in
+  your own words.
+
+The reflection is about what you learned, including the parts that did
+not go well. It is not a summary of the project. If a project had
+nothing go wrong, it was either very small, or it is not being
+described accurately.
 
 ## A Last Thing
 
-The hardest problem in a team project is almost always somebody being stuck and not saying so, for two weeks, because they think everybody else understands it — almost never something technical.
+The hardest problem in a team project is almost never technical. It is
+almost always somebody who is stuck and does not say so, for two
+weeks, because they think everybody else understands.
 
-This happens in professional teams constantly and it is the single most expensive thing that goes wrong.
+This happens in professional teams all the time, and it is the most
+expensive thing that goes wrong.
 
-If you are stuck, say so on the day. If somebody has gone quiet, ask them. Neither of those is a small kindness — they are the actual skill this outcome is about.
+If you are stuck, say so on the same day. If somebody in your team has
+gone quiet, ask them how they are getting on. Neither of these is just
+a small kindness. They are the real skill this learning outcome is
+about.
 
 ## Where to Read More
 

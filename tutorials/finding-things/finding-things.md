@@ -1,7 +1,7 @@
 ---
 title: "Finding Things"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.22.1
 covers:
   functions-as-input-output-machines:
     covers: [MIT-6.2]
@@ -20,30 +20,51 @@ covers:
 
 # Finding Things
 
-**Programming Design Principles / Maths for IT**
+We can now keep data in lists, and write functions that work with them.
+So here is the next question. We have a list, and we want one item in
+it. How do we find it?
 
-We can now store collections of data in lists and write functions to work with them. A natural next question: given a collection, how do we find a specific item in it? This is the *search problem*, and it turns out there are very different approaches depending on what we know about the data.
+This is the *search problem*: the task of finding one item in a
+collection. There are very different ways to solve it. Which way works
+best depends on what we know about the data.
 
-We will also deepen our understanding of functions today, looking at how they communicate with each other and how to think about what a function *is* from a mathematical perspective.
+On this page we:
+
+- look at what a function is, in mathematics and in Python
+- see where a variable lives, inside or outside a function
+- write two ways to search a list, and count how much work each one does
 
 ## Functions as Input-Output Machines
 
-In mathematics, a function is a rule that assigns *exactly one output* to each input. $f(x) = x^2$ takes 3 and gives 9, takes -3 and also gives 9. The key property: the same input always gives the same output.
+In mathematics, a function is a rule that gives *exactly one output* for
+each input. For example, $f(x) = x^2$ takes 3 and gives 9. It takes -3
+and also gives 9. The important property is this: the same input always
+gives the same output.
 
-Our Python functions work the same way. When we write:
+Our Python functions can work the same way. Here is one:
 
 ```python
 def square(n):
     return n ** 2
 ```
 
-we are defining a rule that maps each input to exactly one output. This is a mathematical function implemented in code.
+This code defines a rule that gives exactly one output for each input.
+It is a mathematical function, written in code.
 
-Not every Python function is a mathematical function (some depend on external state, or use randomness), but the ones that are -- where the output depends only on the inputs -- are the easiest to understand, test, and trust. We call these *pure functions*, and they are worth striving for.
+Not every Python function is a mathematical function. Some depend on
+things outside the function. Others use random numbers. A *pure
+function* is a function whose output depends only on its inputs. Pure
+functions are the easiest to understand, to test and to trust, so they
+are worth aiming for.
 
 ## Scope: Where Variables Live
 
-When we define a variable inside a function, it only exists while that function is running. This is called *local scope*:
+A variable's *scope* is the part of the program where that variable
+exists. A variable we create inside a function has *local scope*: it
+exists only while that function is running.
+
+Look at the last line of the next cell. It is a comment, so it does not
+run. What do you think would happen if it did run?
 
 ```python exec
 id: scope-where-variables-live-1
@@ -55,17 +76,28 @@ def calculate_area(radius):
 result = calculate_area(5)
 print(result)
 
-# This would cause an error if uncommented:
-# print(area)    # 'area' does not exist outside the function
+# What happens if this line runs? Delete the # at its start to find out.
+# print(area)
 ```
 
-This is a feature, not a limitation. It means functions are self-contained -- you do not need to worry about a variable inside one function accidentally interfering with a variable in another. Each function has its own workspace.
+Try it: delete the `#` at the start of the last line, and run the cell
+again. Python stops with a `NameError`. The name `area` does not exist
+outside the function.
 
-Variables defined outside any function have *global scope*: they can be read from anywhere. But it is good practice to pass values into functions as parameters rather than relying on global variables. This makes your functions portable and testable.
+Local scope helps us. Each function has its own workspace. A variable
+inside one function cannot get mixed up with a variable in another
+function, even when the two have the same name.
+
+A variable we create outside any function has *global scope*: we can
+read it from anywhere in the program. Even so, it is better to pass
+values into a function as parameters than to rely on global variables.
+Then the function does not depend on anything outside it, so we can
+move it to another program and test it on its own.
 
 ### Your turn
 
-Let's write a function `circle_info(radius)` that returns *both* the area and circumference of a circle. Python lets you return multiple values by separating them with a comma:
+Python lets a function return more than one value. We put a comma
+between the values:
 
 ```python
 def example():
@@ -73,6 +105,11 @@ def example():
 
 a, b = example()   # a gets 10, b gets 20
 ```
+
+1. In the first cell, write a function `circle_info(radius)` that
+   returns *both* the area and the circumference of a circle. The cell
+   starts with `import math`, so you can use `math.pi`.
+2. In the second cell, test it with a radius you can check by hand.
 
 ```python exec
 id: your-turn-1
@@ -87,13 +124,19 @@ id: your-turn-2
 
 ## Linear Search: The Straightforward Approach
 
-Given a list and a target value, linear search checks each element one by one until it finds the target or runs out of list. It is the approach you would use to find a friend's name in an unsorted guest list.
+*Linear search* is a way of searching that checks each element in turn,
+from the start of the list. It stops when it finds the target, or when
+it reaches the end of the list. It is how you would look for a friend's
+name on a guest list that is in no order.
 
 ### Your turn
 
-Let's write a function `linear_search(items, target)` that returns the index where the target was found, or -1 if the target is not in the list.
+We want a function `linear_search(items, target)`. It returns the index
+where it finds the target. If the target is not in the list, it returns
+-1.
 
-**Pseudocode:**
+Here are the steps in pseudocode:
+
 ```
 FOR each index i in the list:
     IF items[i] equals the target:
@@ -101,7 +144,9 @@ FOR each index i in the list:
 RETURN -1 (target not found)
 ```
 
-Translate this to Python:
+1. In the first cell, turn this pseudocode into Python.
+2. In the second cell, test it three ways: with a name that is in the
+   list, a name that is not in the list, and an empty list.
 
 ```python exec
 id: your-turn-3
@@ -120,30 +165,61 @@ names = ["Grace", "Ada", "Alan", "Margaret", "Linus", "Barbara"]
 
 ### How efficient is linear search?
 
-If the list has 10 items, we might need up to 10 comparisons. If it has 1,000,000 items, we might need up to 1,000,000 comparisons. The worst case grows directly with the size of the list. Computer scientists describe this as O(n) -- "order n" -- meaning the time grows proportionally to the input size.
+If the list has 10 items, we might need up to 10 comparisons. If it has
+1,000,000 items, we might need up to 1,000,000 comparisons. In the worst
+case, the work grows in step with the size of the list.
 
-For a small list, this is fine. For a large one, it can be painfully slow. Can we do better?
+Computer scientists write this as *O(n)*, said "order n". O(n) means
+that the time grows in proportion to the size of the input, n. Twice as
+many items means up to twice as many comparisons.
+
+For a small list, that is fine. For a large list, it can be very slow.
+Can we do better?
 
 ## Binary Search: The Power of Sorted Data
 
-Imagine looking up a word in a dictionary. You would not start at page one and read every entry. You would open it roughly in the middle, see if your word comes before or after that point, and immediately eliminate half the dictionary. Then you would repeat with the remaining half.
+Think about looking up a word in a paper dictionary. You would not start
+at page one and read every word. You would open it near the middle. Then
+you would check whether your word comes before or after that page. With
+one look, you have ruled out half of the dictionary. Then you do the
+same thing again with the half that is left.
 
-This is *binary search*, and it only works when the data is *sorted*. But when the data is sorted, it is spectacularly fast.
+This is *binary search*. Binary search is a way of searching a sorted
+list by checking the middle item and throwing away the half that cannot
+hold the target. It works only when the data is *sorted*, which means
+that it is in order, from smallest to largest. When the data is sorted,
+binary search is very fast.
 
-The idea: maintain a search range defined by `low` and `high` indices. Look at the middle element. If it matches the target, we are done. If the target is smaller, search the left half (set `high = mid - 1`). If larger, search the right half (set `low = mid + 1`). Repeat until found or the range is empty.
+Here is how it works, step by step:
+
+1. Keep track of the part of the list that is still possible. Two
+   indexes mark its ends: `low` and `high`.
+2. Look at the middle element, at index `mid`.
+3. If the middle element is the target, we are done.
+4. If the target is smaller, search the left half. To do this, set
+   `high = mid - 1`.
+5. If the target is larger, search the right half. To do this, set
+   `low = mid + 1`.
+6. Repeat from step 2, until we find the target or nothing is left to
+   search.
 
 ![Four passes over a fifteen-item sorted list, searching for 3. The live
 range shrinks from fifteen cells to seven, then three, then one, with low,
 mid and high marked under it each time.](range-collapsing.svg)
 
-Count the shaded cells down the rows: fifteen, seven, three, one. That
-halving is the whole reason binary search is fast, and it is also where
-the mistakes live — `mid - 1` and `mid + 1` are what keep the range
-shrinking, and getting either wrong leaves it stuck.
+Count the shaded cells in each row, from top to bottom. How many are
+left each time?
+
+There are fifteen, then seven, then three, then one. This halving is the
+reason binary search is fast. It is also where the mistakes happen. The
+`mid - 1` and `mid + 1` are what make the range smaller each time. If
+either one is wrong, the range can stop shrinking, and the loop never
+ends.
 
 ### Your turn
 
-**Pseudocode** (fill in the details):
+Here is the pseudocode, with three gaps marked `???`:
+
 ```
 SET low = 0
 SET high = length of list - 1
@@ -158,7 +234,11 @@ WHILE low <= high:
 RETURN -1
 ```
 
-Now implement it:
+1. What goes in each of the three gaps?
+2. In the first cell, write a `binary_search` function from the
+   pseudocode.
+3. In the second cell, run the four tests listed there. Remember that
+   the list must be sorted.
 
 ```python exec
 id: your-turn-5
@@ -178,34 +258,61 @@ sorted_numbers = [3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]
 
 ### How efficient is binary search?
 
-Each step halves the search space. Starting with 1,000,000 items:
-- After 1 step: 500,000 remaining
-- After 2 steps: 250,000
-- After 10 steps: ~1,000
-- After 20 steps: ~1
+Each step cuts the part left to search in half. Say we start with
+1,000,000 items:
 
-So binary search on a million items needs at most about 20 comparisons. Linear search might need a million. That is the difference between $O(\log n)$ and $O(n)$.
+| After | Items left to search |
+|---|---|
+| 1 step | 500,000 |
+| 2 steps | 250,000 |
+| 10 steps | about 1,000 |
+| 20 steps | about 1 |
 
-The catch: the data must be sorted first. Sorting takes time, so binary search only wins when we search the same data many times (which is very common).
+So binary search on a million items needs at most about 20 comparisons.
+Linear search might need a million. That is the difference between
+$O(\log n)$ and $O(n)$. *O(log n)* means that the time grows with the
+number of times we can halve n before we reach 1. That number grows very
+slowly as n gets bigger.
+
+There is a cost. The data must be sorted first, and sorting takes time.
+So binary search pays off when we search the same data many times. That
+happens very often.
 
 ## Divide and Conquer
 
-Binary search is our first example of *divide and conquer*: split the problem into smaller pieces, solve the smaller pieces, and combine. This is one of the most powerful ideas in algorithm design.
+Binary search is our first example of *divide and conquer*. Divide and
+conquer is a way to solve a problem in three steps:
 
-The pattern appears everywhere:
-- Looking up a contact on your phone (the list is sorted alphabetically)
-- Finding a page in a book (pages are numbered in order)
-- A doctor diagnosing an illness (running tests that rule out half the possibilities)
+1. Split the problem into smaller pieces.
+2. Solve the smaller pieces.
+3. Combine the answers.
+
+It is one of the most useful ideas in the design of algorithms, and it
+shows up in many places:
+
+- Looking up a contact on your phone (the list is sorted by name).
+- Finding a page in a book (the pages are numbered in order).
+- A doctor finding out what illness someone has (each test rules out
+  about half of the possible causes).
 
 ### Your turn
 
-Here is a small puzzle. I am thinking of a number between 1 and 100. You can ask questions of the form "is it greater than X?" and I will answer truthfully. What is the maximum number of questions you need to guarantee finding the number?
+Here is a small puzzle. I am thinking of a whole number between 1 and
+100. You can ask questions of the form "Is it greater than X?", and I
+will always answer truthfully.
 
-What's your reasoning?
+What is the largest number of questions you could need, to be sure of
+finding my number? How did you work it out?
 
 ## Putting It Together
 
-Let's write a small program that demonstrates the difference between linear and binary search. We will search for the same target in the same list using both methods, and count how many comparisons each one makes.
+Let's write a small program that compares linear search and binary
+search. It searches for the same target in the same list, both ways, and
+counts the comparisons each one makes.
+
+The list holds the numbers 0, 3, 6, 9, and so on, up to 999. The target
+is 750. Before you run the cell, guess: how many comparisons will linear
+search need? And binary search?
 
 ```python exec
 id: putting-it-together-1
@@ -236,17 +343,25 @@ def binary_search_counted(sorted_items, target):
 data = list(range(0, 1000, 3))   # [0, 3, 6, 9, ..., 999]
 target = 750
 
-index_lin, comps_lin = linear_search_counted(data, target)
-index_bin, comps_bin = binary_search_counted(data, target)
+linear_index, linear_comparisons = linear_search_counted(data, target)
+binary_index, binary_comparisons = binary_search_counted(data, target)
 
 print("List size:", len(data))
-print("Linear search: found at index " + str(index_lin) + ", " + str(comps_lin) + " comparisons")
-print("Binary search: found at index " + str(index_bin) + ", " + str(comps_bin) + " comparisons")
+print("Linear search: found at index " + str(linear_index) + ", " + str(linear_comparisons) + " comparisons")
+print("Binary search: found at index " + str(binary_index) + ", " + str(binary_comparisons) + " comparisons")
 ```
 
 ### Your turn
 
-Try different targets and list sizes. What happens when the target is the very first element? The very last? Not in the list at all? Which search method handles each case better?
+Change the target and the size of the list, and run the searches again.
+Try these cases:
+
+1. The target is the very first element.
+2. The target is the very last element.
+3. The target is not in the list at all.
+
+Which search does better in each case? Were you surprised by any of
+them?
 
 ```python exec
 id: your-turn-7
@@ -255,11 +370,20 @@ id: your-turn-7
 
 ## Reflection
 
-Today we explored functions more deeply (scope, return values, pure functions as mathematical functions), and we implemented two fundamental search algorithms. The key takeaway is that *how we organize data affects how efficiently we can work with it*. Sorted data enables binary search, which is dramatically faster than linear search for large collections.
+On this page we looked more closely at functions: pure functions as
+mathematical functions, scope, and returning more than one value. We
+also wrote two important search algorithms.
 
-Next time, we will tackle the other side of this coin: how do we sort data in the first place?
+The main lesson is this: *the way we organise data changes how fast we
+can work with it*. When data is sorted, we can use binary search. For a
+large collection, binary search is much faster than linear search.
 
-What surprised you most about the difference between linear and binary search?
+Next, we look at the other side of this: how do we sort data in the
+first place? That is the subject of
+[Putting Things in Order](tutorial:putting-things-in-order).
+
+What surprised you most about the difference between linear search and
+binary search?
 
 ## Where to Read More
 

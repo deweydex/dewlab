@@ -4,69 +4,81 @@
 # unattended over the rest of the curriculum. See planning/REFERENCE_PANEL.md.
 #
 # "variables" is emphasized in this tutorial's own closing paragraph
-# ("In the next tutorial we will learn about *variables*") but is left out
-# here on purpose: that sentence describes what storing-and-computing.md
-# teaches, not something this tutorial itself defines. A term only belongs to
-# the tutorial that actually introduces it.
+# ("we will learn about *variables*") but is left out here on purpose: that
+# sentence describes what storing-and-computing.md teaches, not something
+# this tutorial itself defines. A term only belongs to the tutorial that
+# actually introduces it.
 entries:
+  - term: program
+    kind: concept
+    definition: >
+      A program is a set of clear steps, written carefully enough for a
+      computer to follow.
   - term: cell
     kind: concept
     definition: >
-      A small, runnable box of Python inside a tutorial page. You can edit
-      it and run it, and the result appears underneath. Nothing you type
-      leaves your browser.
+      A cell is a small box of Python code inside a tutorial page. You can
+      change the code and run it, and the result appears underneath.
+      Nothing you type leaves your browser.
   - term: function
     kind: concept
     definition: >
-      A named, reusable piece of code you call by writing its name followed
-      by parentheses, like print(). What a function is made of comes later
-      — for now, it is a tool you reach for by name.
+      A function is a named tool that does one job. You use it by writing
+      its name followed by brackets, like print(). What a function is made
+      of comes later.
   - term: "print()"
     kind: function
-    definition: Displays whatever is inside its parentheses.
+    definition: Displays whatever is inside its brackets.
     example: 'print("Hello, world!")'
+  - term: comment
+    kind: concept
+    definition: >
+      A comment is a note for the people who read the code. In Python it
+      starts with #, and Python ignores it.
   - term: algorithm
     kind: concept
     definition: >
-      A sequence of clear, unambiguous steps that accomplish a task —
-      followed exactly, in order, by whoever or whatever is doing them.
+      An algorithm is a list of clear steps that complete a task. Each step
+      has only one meaning, and the steps are followed exactly, in order.
   - term: loop
     kind: concept
     definition: >
-      A step, or group of steps, repeated until some condition is met —
-      like "while the water has not boiled, wait."
+      A loop is a step, or a group of steps, that repeats until a condition
+      is met. "While the water has not boiled, wait" is a loop.
   - term: pseudocode
     kind: concept
     definition: >
-      A plan for what code should do, written in plain English (or a mix of
-      English and code-like structure) before writing the actual Python.
+      Pseudocode is a plan for a program, written in plain English before
+      the Python. It can include a little code-like structure, but no
+      computer runs it.
   - term: "+"
     kind: operator
-    definition: Addition.
+    definition: Adds two numbers.
   - term: "-"
     kind: operator
-    definition: Subtraction.
+    definition: Subtracts the right number from the left.
   - term: "*"
     kind: operator
-    definition: Multiplication.
+    definition: Multiplies two numbers.
   - term: "/"
     kind: operator
-    definition: "Regular division — always gives a decimal result, e.g. 17 / 5 = 3.4."
+    definition: "Divides. The result is always a decimal number: 17 / 5 is 3.4, and 6 / 3 is 2.0."
   - term: "//"
     kind: operator
-    definition: "Floor division — divides and rounds down to a whole number, e.g. 17 // 5 = 3."
+    definition: "Divides, then rounds down to a whole number. This is floor division: 17 // 5 is 3."
   - term: "%"
     kind: operator
-    definition: "Modulo — the remainder after division, e.g. 17 % 5 = 2."
+    definition: "Gives the remainder after division. This is modulo: 17 % 5 is 2."
   - term: "**"
     kind: operator
-    definition: "Exponent (power), e.g. 2 ** 3 = 8."
+    definition: "Raises a number to a power: 2 ** 3 is 8."
   - term: "#"
     kind: keyword
-    definition: Marks the rest of the line as a comment — Python ignores everything after it.
+    definition: Starts a comment. Python ignores everything after it on the same line.
   - term: order of operations
     kind: concept
     definition: >
-      The order Python works through an expression: parentheses first, then
-      exponents, then multiplication and division, then addition and
-      subtraction. It is the same rule taught as PEMDAS or BODMAS in maths.
+      The order of operations is the order Python works through a
+      calculation: brackets first, then powers, then multiplication and
+      division, then addition and subtraction. It is the same rule as
+      BODMAS or PEMDAS in school maths.
