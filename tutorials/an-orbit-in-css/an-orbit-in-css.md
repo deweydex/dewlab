@@ -89,10 +89,13 @@ between. `turn` names just two:
 steady speed, and starts again forever. So the browser draws about 360
 frames for every turn, and you wrote two of them.
 
-**Depth.** `perspective: 400px` on the stage is the sheet of glass
-from [A Point on the Screen](tutorial:a-point-on-the-screen#why-dividing-works),
-standing 400 pixels in front of your eye. Once it is set, anything
-inside the stage that has a depth is divided by that depth. Nearer
+**Depth.** `perspective: 400px` on the stage says: imagine a sheet of
+glass standing 400 pixels in front of your eye, and draw everything
+where it would appear on that glass. Once it is set, anything inside
+the stage that has a depth is divided by that depth. ([A Point on the
+Screen](tutorial:a-point-on-the-screen#why-dividing-works), on the
+Computational Methods course, shows why one division does all of
+that.) Nearer
 things are drawn bigger and further from the centre. Further things
 are drawn smaller and closer to it. Without this line, every `rotateY`
 and `translateZ` below would still run, and the ball would slide left
@@ -111,9 +114,9 @@ Because the ball is inside `.orbit`, it is carried round as `.orbit`
 turns, always 100 pixels from the centre. A path that stays the same
 distance from a centre is a circle. `.orbit` itself has no size at all.
 It is just a point in the middle of the stage for the ball to swing
-around. Compare the first tutorial on the Computational Methods course,
-where the ball's position was $x = r\cos\theta$ and
-$z = 5 + r\sin\theta$: here $r$ is `100px`, $\theta$ is whatever
+around. If you have done the Computational Methods page, this is the
+same ball: there its position was $x = r\cos\theta$ and
+$z = 5 + r\sin\theta$. Here $r$ is `100px`, $\theta$ is whatever
 `rotateY` has reached, and the browser does the $\cos$ and $\sin$.
 
 **Keeping the depth.** `transform-style: preserve-3d` is the line that

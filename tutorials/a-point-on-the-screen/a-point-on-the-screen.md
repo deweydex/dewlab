@@ -151,9 +151,10 @@ $$\frac{y'}{1} = \frac{y}{z} = \frac{2}{4}$$
 Look at the same scene from above instead of from the side, and the
 same picture gives $x'$. That is the whole rule, and it has a name: the
 ***perspective divide***. Perspective is the word for the way far
-things look smaller, and this divide is where that comes from. Every
-painting since about the year 1400 that looks "right" is using it,
-whether the painter knew the arithmetic or not.
+things look smaller, and this divide is where that comes from. Painters
+worked this out around the year 1400, and every picture since then
+that looks "right" is using it, whether the painter knew the
+arithmetic or not.
 
 Turning a point that has a depth into a point on a flat screen is
 called ***projecting*** it. The word comes from a projector, which
@@ -246,11 +247,14 @@ front of the camera. The circle lies flat, like a hoop on a table. It
 sits a little below eye level, so that we look slightly down on it, and
 its centre is five units ahead.
 
-To place the ball we need a point on a circle. [The Unit
-Circle](tutorial:the-unit-circle) showed that a point at angle
-$\theta$ on a circle of radius 1 is at $(\cos\theta, \sin\theta)$. Our
-hoop has radius $r$, and it lies flat, so the two coordinates that
-change are $x$ and $z$:
+To place the ball we need a point on a circle, and $\cos$ and $\sin$
+are the tools for that. For a circle of radius 1, the point at angle
+$\theta$ round from the right-hand side is at $(\cos\theta, \sin\theta)$:
+$\cos\theta$ is how far across, $\sin\theta$ is how far up. That is all
+you need here. [The Unit Circle](tutorial:the-unit-circle), on the
+maths course, has the full story if you want it. Our hoop has radius
+$r$, and it lies flat, so the two coordinates that change are $x$ and
+$z$:
 
 - $x = r\cos\theta$, how far left or right the ball is;
 - $z = 5 + r\sin\theta$, how far away it is, with the 5 pushing the

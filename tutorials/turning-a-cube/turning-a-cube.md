@@ -19,7 +19,9 @@ covers:
 [A Point on the Screen](tutorial:a-point-on-the-screen) projected posts
 and a ball, one point at a time. A cube is eight points. The
 interesting part is not the points but the lines between them, and what
-happens to the whole shape when it turns. Turning is a matrix, and the
+happens to the whole shape when it turns. Every 3D game turns things
+thousands of times a second: a wheel, a door, a whole world as the
+player looks round. Every one of those turns is a matrix, and the
 `multiply` you built in [Multiplying Grids](tutorial:multiplying-grids)
 does all the work.
 
@@ -126,14 +128,15 @@ away looks flat, and one taken up close does not.
 
 ## A Matrix That Turns
 
-In the gallery of 2×2 matrices, `rotate90 = [[0, -1], [1, 0]]` turned
-the square a quarter turn. That was one fixed angle. For any angle
+In [the gallery of 2×2
+matrices](tutorial:what-a-matrix-does-to-a-picture#a-small-gallery),
+`rotate90 = [[0, -1], [1, 0]]` turned the square a quarter turn. That was one fixed angle. For any angle
 $\theta$, the matrix that turns the plane by that angle is
 
 $$R(\theta) = \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}$$
 
 This is the ***rotation matrix***. Read its columns the way you did in
-*What a Matrix Does to a Picture*:
+that gallery:
 
 - The first column is where $(1, 0)$ lands: at $(\cos\theta, \sin\theta)$,
   which is the point on the unit circle at angle $\theta$.

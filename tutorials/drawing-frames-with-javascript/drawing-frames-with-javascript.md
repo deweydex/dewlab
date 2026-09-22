@@ -19,7 +19,10 @@ every frame yourself, in JavaScript, and the browser only tells you
 when it is time for the next one. It is the ball in orbit from [A
 Point on the Screen](tutorial:a-point-on-the-screen#a-ball-in-orbit),
 written in a different language, and it is the first JavaScript on
-this course.
+this course. JavaScript is the language that makes a web page do
+things after it has loaded, and this page is a first taste of it.
+Nothing here needs to be memorised. Read the code alongside the
+explanation below it, then change something and press Run.
 
 This editor has a third pane. HTML and CSS update the preview as you
 type, the way they have all along, but JavaScript only runs when you
@@ -127,9 +130,9 @@ That loop, draw and ask again, is the ***animation loop***, and every
 game and every animated chart on the web is built round one. It is
 `FuncAnimation` from the Computational Methods course, written out by
 hand: there, matplotlib called `draw_step` once per frame; here, the
-browser calls `frame`. Adding `0.02` to the angle each time, at sixty
-frames a second, is $1.2$ radians a second, so one full turn takes
-about five seconds.
+browser calls `frame`. The angle is measured in radians, where a full turn is
+$2\pi$, about $6.28$. Adding `0.02` each time, at sixty frames a
+second, is $1.2$ a second, so one full turn takes about five seconds.
 
 **Front and back.** One line does a job that CSS did for us on the
 last two pages. The ball has to go behind the sun for half of every

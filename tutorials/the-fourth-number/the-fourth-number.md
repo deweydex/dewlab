@@ -66,7 +66,7 @@ A ***graphics card***, the part of a computer that draws, wants to
 combine that whole chain into one matrix, work it out once, and apply
 it once to every point. It cannot do that while moving is an addition
 and turning is a multiplication. They are different kinds of step, and
-a chain of different kinds of step does not collapse into one.
+a chain of different kinds of step cannot be combined into one.
 
 ```question
 id: a-move-no-matrix-can-make-3

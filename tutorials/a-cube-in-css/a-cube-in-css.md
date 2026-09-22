@@ -14,7 +14,9 @@ covers:
 
 Six squares, each pushed out and turned to face a different way, make
 a cube. The cube tumbles on its own, and the whole thing is HTML and
-CSS. Six `div`s, six transforms, one `@keyframes` rule.
+CSS. Six `div`s, six transforms, one `@keyframes` rule. The same
+trick, with more faces, is how a product spins round on a shop's
+website.
 
 ```html site
 id: cube-html
