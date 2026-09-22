@@ -9,66 +9,71 @@ covers:
 
 # Your copy of the project starter
 
-[Your copy of the starter](tutorial:your-copy-of-the-starter) gave you
-`portfolio_wad`: three pages to edit while you found out what HTML and
-CSS do. The project is a larger thing — a site of five pages or more, on
-a topic you choose yourself — so it has a starter of its own.
+In [Your copy of the starter](tutorial:your-copy-of-the-starter) you got
+`portfolio_wad`. It had three pages to edit while you learned what HTML
+and CSS do. The project is bigger. It is a site of five pages or more,
+on a topic you choose yourself. So it has a starter of its own, called
+[`project_wad`](https://github.com/deweydex/project_wad).
 
-That one is
-[`project_wad`](https://github.com/deweydex/project_wad). Every page
-from here to the end of this series asks you to open your own copy of
-it, so let's get that copy first.
+Every page from here to the end of this series asks you to open your own
+copy of `project_wad`. On this page we:
 
-## What is different about this one
+- see what is inside the project starter
+- get your own copy of it
+- find the one file to open first
 
-`portfolio_wad` was a small finished site. `project_wad` is a skeleton:
-the shape of a five-page site with the content left out, waiting for
-yours.
+## What is inside the project starter
 
-It holds five HTML pages — `index.html`, `about.html`, `gallery.html`,
-`contact.html` and `resources.html`. Each one already has the structure
-the project brief asks for, and placeholder text marking where your own
-writing goes. One stylesheet, `styles.css`, is linked from all five. It
-carries just enough CSS for Flexbox, Grid, a media query and link states
-to work. The colours, the fonts and the personality are yours to add.
+`portfolio_wad` was a small, finished site. `project_wad` is a
+skeleton. It has the shape of a five-page site, and the content is left
+out, ready for yours.
 
-It also holds three documents the brief asks you to write: `planning.md`,
-`readme.md` and `maintenance.md`. Each one is a template with the
-questions already in it, so you are answering rather than working out
-what to say.
+It holds three kinds of file:
+
+| Files | What they are |
+|---|---|
+| `index.html`, `about.html`, `gallery.html`, `contact.html`, `resources.html` | Five HTML pages. Each one already has the structure the project brief asks for. Placeholder text marks where your own writing goes. |
+| `styles.css` | One stylesheet, linked from all five pages. It has enough CSS to make Flexbox, Grid, a media query and link states work. The colours, the fonts and the personality are yours to add. |
+| `planning.md`, `readme.md`, `maintenance.md` | Three documents the brief asks you to write. Each one is a template with the questions already in it. You answer the questions, so you do not have to work out what to say. |
 
 ## Getting your own copy
 
-Two ways in, and they are the same two buttons you used for
-`portfolio_wad`. [Your copy of the
-starter](tutorial:your-copy-of-the-starter) goes through what each one
-does, and the three ways to open whichever copy you end up with.
-
-Both give you a repository of your own, which is the point. The project
-is something you commit to, publish, and hand in as a place on the
-internet rather than as a folder of files.
+There are two ways to get a copy. They are the same two buttons you used
+for `portfolio_wad`. [Your copy of the
+starter](tutorial:your-copy-of-the-starter) explains what each button
+does. It also shows three ways to open your copy once you have it.
 
 <div class="dl-module-grid">
-<a class="dl-module-card" href="https://github.com/deweydex/project_wad/generate"><h3>Use this template</h3><span class="dl-module-card-meta">no link back</span><p>Your own repository, with no visible connection to this one. This suits a project you may want to keep and show people after the course.</p></a>
+<a class="dl-module-card" href="https://github.com/deweydex/project_wad/generate"><h3>Use this template</h3><span class="dl-module-card-meta">starts its own history</span><p>Your own repository, with a history that starts fresh. GitHub shows only a small "generated from" note under its name. This suits a project you may want to keep and show people after the course.</p></a>
 <a class="dl-module-card" href="https://github.com/deweydex/project_wad/fork"><h3>Fork it</h3><span class="dl-module-card-meta">keeps the connection</span><p>Your own repository, still visibly linked to this one, and keeping its history. Choose this if you might want to pull in a later fix from the original.</p></a>
 </div>
 
-One thing is worth deciding now rather than later: this is a repository
-you may want to show people after the course. A name you choose yourself
-suits it better than `project_wad` does.
+Both buttons give you a repository of your own. That matters for the
+project. You commit to it, you publish it, and you hand it in as a place
+on the internet, not as a folder of files.
+
+It is worth choosing a name now. You may want to show this repository
+to people after the course. Which name would suit it better: a name you
+choose yourself, or `project_wad`?
 
 ## Start with the planning document
 
 Open `planning.md` before you touch any HTML or CSS.
 
-That is not a matter of taste. The planning document is marked in its
-own right, and answering its questions first makes the building faster:
-you will know what you are building, instead of deciding while you build
-it. Your teacher has the brief itself, with the marking criteria on it.
+Why first? The planning document gets marks of its own. Answering its
+questions first also makes the building faster. You will know what you
+are building before you start, so you do not have to decide while you
+build. Your teacher has the brief itself, with the marking criteria on
+it.
 
-[Planning a site](tutorial:planning-a-site), the next page, is about how
-to answer those questions well.
+The next page, [Planning a site](tutorial:planning-a-site), shows how to
+answer those questions well.
 
-## What you have now
+## What we have now
 
-Your own copy of the project starter, and the one file to open first.
+You now have your own copy of the project starter, and you know which
+file to open first.
+
+- Your own repository for the project.
+- Five skeleton pages and one stylesheet, ready for your content.
+- Three document templates, with `planning.md` first in line.

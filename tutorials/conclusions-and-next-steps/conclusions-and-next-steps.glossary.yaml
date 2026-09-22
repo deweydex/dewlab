@@ -20,9 +20,9 @@ entries:
   - term: deprecated
     kind: concept
     definition: >
-      A deprecated tag or property is one a browser still understands
-      but no longer recommends using, usually because a newer feature
-      does its job better.
+      A deprecated tag or property is one that browsers still
+      understand, but the standard no longer recommends, usually
+      because CSS or a newer feature took over its job.
   - term: website management system
     kind: concept
     definition: >
@@ -30,3 +30,15 @@ entries:
       publishing them as a real website. GitHub Pages is one; a content
       management system like WordPress is a more elaborate one, storing
       content in a database rather than as files.
+  - term: module (CSS)
+    kind: concept
+    definition: >
+      Since CSS2.1, CSS comes out as many separate modules, each
+      developed, tested and released on its own schedule. Flexbox and
+      grid are two of them.
+  - term: content management system
+    kind: concept
+    definition: >
+      A content management system, or CMS, keeps a site's content in a
+      database and builds each page from it, with a theme deciding how
+      the content looks. WordPress is one.

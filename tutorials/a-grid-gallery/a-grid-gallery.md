@@ -3,16 +3,20 @@ title: "A grid gallery"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  why-this-happens:
+  why-does-this-happen:
     touches: [WA-LO9]
-  your-turn:
+  now-in-your-own-site:
     touches: [WA-LO9]
 ---
 
 # A grid gallery
 
-Drag the preview narrower. The number of columns drops on its own,
-without a single media query in the CSS below.
+Can a grid choose its own number of columns, to suit the screen? On this
+page we try a gallery grid, then change the one in your own site.
+
+## Let's try it
+
+Here is a gallery of four tiles, and its CSS.
 
 ```html site
 id: gallery-html
@@ -42,31 +46,50 @@ site: gallery
 }
 ```
 
-## Why this happens
+1. Drag the width slider slowly toward the narrow end. What happens to
+   the number of columns?
+2. Look through the CSS. Can you find a media query?
 
-`display: grid` turns a container into a grid; `grid-template-columns`
-says how many columns it has and how wide each one is.
+## Why does this happen?
 
-`repeat(auto-fit, ...)` does not name a fixed number of columns. It fits
-as many as the current width allows, adding or removing a column as the
-container grows or shrinks.
+Now we can explain what we saw. The number of columns drops as the
+preview gets narrower, and the CSS has no media query at all.
 
-`minmax(120px, 1fr)` sets each column's range: at least 120 pixels, but
-sharing any wider space evenly once every column has that much. Together,
-`repeat(auto-fit, minmax(120px, 1fr))` is a grid that resizes itself.
+`display: grid` turns `.gallery` into a grid. `grid-template-columns`
+says how many columns it has, and how wide each one is. Its value here
+has three parts:
 
-## Your turn
+- `repeat(...)` repeats one column size many times.
+- *auto-fit* means "as many columns as fit". The browser adds or removes
+  a column as the container grows or shrinks.
+- *minmax()* sets a column's smallest and largest size.
+  `minmax(120px, 1fr)` means at least 120 pixels, and an equal share
+  (`1fr`) of any wider space.
 
-Let's open your fork of `project_wad` and find the `.gallery` rule in
-`styles.css`. It already uses this pattern. Try changing `120px` to
-`300px`, then check your gallery page at a phone width. Fewer, wider
-columns fit, and at a narrow enough width, just one.
+Together, `repeat(auto-fit, minmax(120px, 1fr))` makes a grid that
+resizes itself.
 
-## What you have now
+In [Named grid areas](tutorial:named-grid-areas) we met `auto-fill`,
+which also fits as many columns as will hold. The two differ when there
+is room for more columns than there are tiles. `auto-fit` lets the four
+tiles grow to fill the row. `auto-fill` keeps the spare columns empty.
 
-A gallery that rearranges its own columns, with nothing written for any
-particular screen size.
+## Now in your own site
 
-`display: grid` turns a container into a grid. `repeat(auto-fit, …)`
-fits as many columns as the current width allows. `minmax()` sets a
-column's smallest and largest allowed size.
+1. Open your copy of `project_wad`, and find the `.gallery` rule in
+   `styles.css`. It already uses this pattern, with `200px`.
+2. Change `200px` to `300px`. Save.
+3. Open your gallery page, and narrow the window to about a phone's
+   width.
+
+Do fewer, wider columns fit now? At what width is there only one?
+
+## What we have now
+
+We now have a gallery that rearranges its own columns, with no CSS
+written for any particular screen size.
+
+- `display: grid` turns a container into a grid.
+- *auto-fit*, inside `repeat()`, fits as many columns as the width
+  allows.
+- *minmax()* sets a column's smallest and largest allowed size.
