@@ -1,5 +1,5 @@
 ---
-title: "A GitHub account"
+title: "Creating a GitHub account"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -7,7 +7,7 @@ covers:
     touches: [WA-LO13]
 ---
 
-# A GitHub account
+# Creating a GitHub account
 
 What does GitHub do for us, and why do we need an account there? On
 the website track of this course, everything starts with a GitHub

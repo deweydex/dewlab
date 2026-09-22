@@ -1,0 +1,63 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for publish-it,
+# the-two-loops and the-inspector, declared with `context_for:`. Checked
+# against the cumulative glossary up to the-inspector -- no overlap. The
+# Welcome pages use "address" and "404" without defining them; the terms
+# below are defined here, in the pilot's pattern for a context page.
+entries:
+  - term: domain name
+    kind: concept
+    definition: >
+      A domain name is the name of a website, which leads the browser to
+      the computer that holds it. In `janedoe.github.io/web/about.html`,
+      it is `janedoe.github.io`.
+  - term: path
+    kind: concept
+    definition: >
+      The path is the part of a web address after the domain name. It
+      says which file we want on that site, such as `/web/about.html`.
+  - term: IP address
+    kind: concept
+    definition: >
+      An IP address is the number a computer has on the internet.
+      Computers find each other by these numbers.
+  - term: DNS
+    kind: concept
+    definition: >
+      DNS, the Domain Name System, turns a domain name into an IP
+      address, like the contacts list on a phone turns a name into a
+      number.
+  - term: server
+    kind: concept
+    definition: >
+      A server is a computer that waits for requests and answers them.
+      GitHub's servers answer the requests for every GitHub Pages site.
+  - term: request
+    kind: concept
+    definition: >
+      A request is a message from the browser that asks a server for one
+      file, by its path.
+  - term: response
+    kind: concept
+    definition: >
+      A response is the server's answer to a request: a status code, and
+      then the file.
+  - term: status code
+    kind: concept
+    definition: >
+      A status code is the number at the start of a response, which says
+      how the request went. `200` means here is the file; `404` means
+      there is no file at that path.
+  - term: HTTP
+    kind: concept
+    definition: >
+      HTTP is the set of rules for requests and responses on the web. It
+      is the `http` in `https://`, where the `s` means the conversation
+      is secure.
+  - term: cache
+    kind: concept
+    definition: >
+      The cache is the browser's store of files it has already fetched.
+      A hard refresh (`Ctrl+Shift+R`, or `Cmd+Shift+R` on a Mac) asks for
+      fresh copies instead.

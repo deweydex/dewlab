@@ -1,9 +1,9 @@
 ---
-title: "Conclusions and Next Steps"
+title: "Where to go next: beyond HTML and CSS"
 year: "2026-2027"
 version: 2026.09.12.1
 covers:
-  how-html-and-css-got-here:
+  where-html-and-css-came-from:
     covers: [WA-LO1]
   other-ways-to-build-a-website:
     covers: [WA-LO5]
@@ -11,54 +11,40 @@ covers:
     touches: [WA-LO5]
 ---
 
-# Conclusions and Next Steps
+# Where to go next: beyond HTML and CSS
 
 On the last page you documented your site. That site is real. You wrote
 it by hand, tag by tag and rule by rule, and anyone with the address can
-open it. On this page we look back at how HTML and CSS came to be.
-Then we look at other ways people
-build a website. Writing HTML and CSS by hand is one choice among
-several.
+open it. Where do you go from here? Writing HTML and CSS by hand is one
+way to build a website among several. On this page we:
 
-## How HTML and CSS got here
+- see, in brief, where HTML and CSS came from
+- meet other ways people build a website
+- compare one of them with the site you built
 
-Tim Berners-Lee described the first version of HTML in 1991, with
-about eighteen tags. Here is what came after:
+## Where HTML and CSS came from
 
-| Year | HTML |
-|---|---|
-| 1995 | HTML 2.0, the first version treated as a real standard |
-| 1997 | HTML 3.2 |
-| 1999 | HTML 4.01 |
-| 2004 | Progress had stalled for years, so a group of browser makers broke away to keep improving HTML on their own |
-| 2008 | Their work, HTML5, appears as a public draft |
-| 2014 | HTML5 becomes an official standard |
+HTML and CSS did not arrive finished. Tim Berners-Lee described the
+first HTML in 1991, with about eighteen tags. Numbered versions
+followed: HTML 2.0 in 1995, 3.2 in 1997 and 4.01 in 1999. Then a group
+of browser makers took the work on, and their HTML5 became an official
+standard in 2014. Today HTML is a *living standard*: a document that is
+updated as the web changes. There is no HTML6 waiting to happen. HTML5
+keeps growing instead.
 
-Today HTML is a *living standard*: a document that is updated as the
-web changes. There is no HTML6 waiting to happen. HTML5 keeps growing
-instead.
+CSS came out as CSS1 in 1996, CSS2 in 1998 and CSS2.1 in 2011. After
+CSS2.1, it split into many separate *modules*, each developed, tested
+and released on its own schedule. Flexbox and grid are two of them.
 
-CSS has a shorter, steadier history:
+Along the way, some tags lost their jobs to CSS. A *deprecated* tag or
+property is one that browsers still understand, but the standard no
+longer recommends. `<center>` centred content, before CSS had
+`text-align`. `<font>` set a typeface and a colour, before CSS could
+style text at all. Both still work in most browsers. Neither belongs in
+a new page.
 
-| Year | CSS |
-|---|---|
-| 1996 | CSS1: colours, fonts and basic backgrounds |
-| 1998 | CSS2 adds positioning, the same `position` property we met on [A header that stays in view as you scroll](tutorial:position-and-the-sticky-header) |
-| 2011 | CSS2.1 tidies up differences between browsers |
-
-After CSS2.1, CSS stopped coming out as one single specification. CSS3
-split into many separate *modules*, each developed, tested and released
-on its own schedule. Flexbox and grid are two of them.
-
-A *deprecated* tag or property is one that browsers still understand,
-but the standard no longer recommends. Usually CSS took over its job.
-Two examples:
-
-- `<center>` centred content on the page, before CSS had `text-align`.
-- `<font>` set a typeface and a colour, before CSS could style text at
-  all.
-
-Both still work in most browsers. Neither belongs in a new page.
+[How HTML and CSS got here](tutorial:how-html-and-css-got-here) tells
+the whole story, if you would like to read it.
 
 ## Other ways to build a website
 

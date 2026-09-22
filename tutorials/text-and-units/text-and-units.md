@@ -1,5 +1,5 @@
 ---
-title: "Text and units"
+title: "Text size, units and alignment"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Text and units
+# Text size, units and alignment
 
 When we write `16px` or `1rem` in CSS, what are we measuring in? On this
 page we:
@@ -71,6 +71,8 @@ we saw.
   parent's width. That is why percentages turn up most often for
   widths.
 
+![Two panels, each with the same two boxes. In the left panel the root font size is 16px: the box measured in px has 16 pixels of padding, and the box measured in rem has 1rem, which is also 16 pixels, so the two look the same. In the right panel the root font size is 40px: the px box still has 16 pixels of padding, but the rem box now has 40 pixels. The text in both boxes is bigger, because both take their font size from the root.](px-and-rem.svg)
+
 And why did the words grow in both boxes? The boxes do not set a font
 size of their own, so their text takes the font size from `<html>`.
 
@@ -78,13 +80,6 @@ Why does this matter? Some people set their browser to a larger font
 size. It is a common choice for people with visual impairments. Wherever
 a page uses `rem`, its spacing and text grow to match that setting. That
 is why the starter uses `rem` for most spacing and font sizes.
-
-Sometimes we might zoom in on a page, with **Ctrl** and **+** (or
-**Cmd** and **+** on a Mac), and see everything grow, `px` sizes too.
-Zoom scales the whole page. The font size setting in the browser's
-options is different: it changes the root font size, so `rem` sizes
-follow it and `px` sizes do not. That makes it an easy way to test a
-page. Change the font size setting, and see what stays small.
 
 ### Lining up text
 
@@ -97,24 +92,25 @@ sit inside their element. It has four common values:
 - `justify` stretches each line so both edges line up, except the last
   line of a paragraph
 
-Newspapers often justify their columns. On the web, `justify` can leave
-wide, uneven gaps between words, and these are worse in a narrow
-column. Many readers, including many people with dyslexia, find those
-gaps harder to read.
+![Four copies of the same short paragraph, one for each value of text-align. Each word is drawn as a bar. With left, every line starts at the left edge and the right edge is ragged. With right, every line ends at the right edge. With center, each line sits in the middle, so both edges are ragged. With justify, every line but the last is stretched to touch both edges, and the last line starts at the left.](text-align-values.svg)
 
 Oftentimes, when we put `text-align: center` on a box, we expect the box
 itself to move to the middle. It does not. The box stays where it is,
-and only the lines of text inside it move. Centring the box itself is a different job, which we meet in
-[A readable width, centred on the page](tutorial:the-container).
+and only the lines of text inside it move. Centring the box itself is a
+different job, which we meet in [A readable width, centred on the
+page](tutorial:the-container).
 
 ## Now in your own site
 
 In your fork, open `styles.css`.
 
-1. Find the `.hero` rule. It sets `text-align: center`.
-2. Change it to `text-align: left`.
-3. Save, and refresh.
-4. Now try `text-align: right`.
+1. Find the `:root` section near the top. Under the colours is a group
+   of spacing variables, from `--spacing-xs` to `--spacing-xl`. Which
+   unit do they use? Read the comment just above them.
+2. Now find the `.hero` rule. It sets `text-align: center`.
+3. Change it to `text-align: left`.
+4. Save, and refresh.
+5. Now try `text-align: right`.
 
 How differently do the same words sit on the page each time? Which one
 do you want to keep?

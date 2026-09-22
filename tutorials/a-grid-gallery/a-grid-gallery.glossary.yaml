@@ -23,3 +23,9 @@ entries:
     kind: function
     definition: "Sets a grid column's smallest and largest allowed size."
     example: "grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));"
+  - term: auto-fill
+    kind: keyword
+    definition: >
+      Used inside `repeat()`, `auto-fill` fits as many grid columns as
+      will hold, and keeps any spare columns empty. `auto-fit` lets the
+      existing columns grow to fill the row instead.

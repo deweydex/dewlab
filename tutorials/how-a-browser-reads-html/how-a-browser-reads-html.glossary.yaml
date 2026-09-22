@@ -1,0 +1,42 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for a-page-is-files and
+# the-skeleton, declared with `context_for:`. Checked against the
+# cumulative glossary up to the-skeleton -- no overlap. `<meta>` and
+# `<link>` appear only as examples of void elements; `<link>` is taught
+# in a-rule-and-where-it-lives, so neither gets an entry here.
+entries:
+  - term: document tree
+    kind: concept
+    definition: >
+      The document tree is the browser's model of a page: every
+      element, arranged by which one sits inside which. Developers often
+      call it the DOM, short for Document Object Model. The inspector's
+      Elements tab shows it.
+  - term: whitespace
+    kind: concept
+    definition: >
+      Whitespace is spaces, tabs and new lines. In ordinary text, a
+      browser shows each run of whitespace as one space.
+  - term: "<br>"
+    kind: keyword
+    definition: >
+      `<br>` starts a new line inside a paragraph. It has no closing
+      tag.
+  - term: void element
+    kind: concept
+    definition: >
+      A void element is an element that can never hold content, so it
+      has no closing tag, such as `<img>`, `<br>` or `<meta>`.
+  - term: character reference
+    kind: concept
+    definition: >
+      A character reference is a name for a character, written between
+      `&` and `;`. `&lt;` writes `<`, `&amp;` writes `&`, and `&copy;`
+      writes ©.
+  - term: comment
+    kind: concept
+    definition: >
+      A comment is text between `<!--` and `-->`. The browser skips it,
+      so it never shows on the page, but anyone can read it with View
+      page source.

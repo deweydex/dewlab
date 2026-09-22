@@ -1,0 +1,47 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for a-form, declared with
+# `context_for:`. Checked against the cumulative glossary up to a-form
+# -- no overlap. `label`, `for`, `type="email"` and `required` are used
+# and widened here but defined in a-form, so they stay there.
+entries:
+  - term: "name (on a form field)"
+    kind: keyword
+    definition: >
+      A form field's `name` attribute is the label on its answer when
+      the form is sent. A field with no `name` is not sent at all.
+  - term: name/value pair
+    kind: concept
+    definition: >
+      A name/value pair is one answer as a form sends it: the field's
+      `name`, an `=`, and what the visitor typed. The pairs are joined
+      with `&`.
+  - term: action
+    kind: keyword
+    definition: >
+      A `<form>`'s `action` attribute is the address its answers are
+      sent to. With no `action`, they go to the page's own address.
+  - term: method
+    kind: keyword
+    definition: >
+      A `<form>`'s `method` attribute says how its answers travel: on
+      the end of the address with `get`, the default, or inside the
+      request with `post`.
+  - term: server
+    kind: concept
+    definition: >
+      A server is a program on a computer connected to the internet. It
+      receives requests from browsers and sends back replies. A form's
+      answers need one to receive them.
+  - term: validation
+    kind: concept
+    definition: >
+      Validation is checking that each answer is the kind of thing it
+      should be. The browser's checks help the visitor, but the server
+      must check every answer again.
+  - term: placeholder
+    kind: keyword
+    definition: >
+      A placeholder is grey example text inside a field, set with the
+      `placeholder` attribute. It disappears when the visitor types, so
+      it cannot take the place of a label.

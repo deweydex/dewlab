@@ -69,10 +69,14 @@ has three parts:
 Together, `repeat(auto-fit, minmax(120px, 1fr))` makes a grid that
 resizes itself.
 
-In [Named grid areas](tutorial:named-grid-areas) we met `auto-fill`,
-which also fits as many columns as will hold. The two differ when there
-is room for more columns than there are tiles. `auto-fit` lets the four
+`auto-fit` has a close relative, *auto-fill*. It also fits as many
+columns as will hold. The two differ when there is room for more
+columns than there are tiles. `auto-fit` lets the four
 tiles grow to fill the row. `auto-fill` keeps the spare columns empty.
+Here is the difference with two tiles, in a grid with room for four
+columns:
+
+![Two grids, each as wide as four columns of at least 120 pixels. The top one uses repeat(auto-fill, minmax(120px, 1fr)): tiles 1 and 2 fill the first two columns, and the other two columns are drawn dashed and labelled "empty column". The bottom one uses repeat(auto-fit, minmax(120px, 1fr)): the empty columns are gone, and tiles 1 and 2 each stretch across half of the row.](auto-fit-and-auto-fill.svg)
 
 ## Now in your own site
 

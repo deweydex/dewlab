@@ -33,8 +33,8 @@ two things: where the file lives, and that it is an image.
 What if a path like this shows a broken image? Check that the folder
 name and the file name match exactly, including capital letters.
 `Images/Hero.JPG` and `images/hero.jpg` are two different paths on
-GitHub Pages. As we saw on [Images, paths and alt
-text](tutorial:images-and-alt-text), a wrong capital letter can still
+GitHub Pages. As we saw on [Placing an image, and the path that finds
+it](tutorial:images-and-alt-text), a wrong capital letter can still
 work on Windows or a Mac, and then break once the site is published.
 
 ## Choosing a format
@@ -57,7 +57,11 @@ underneath is, and the visitor still downloads the whole file. To
 
 An image twice as wide as it needs to be is also twice as tall. So it
 has four times as many pixels, and a much larger file, for no visible
-benefit. Many image editors, including some on phones, can resize and
+benefit.
+
+![A small grid of pixels, 4 across and 3 down, 12 pixels in all. An arrow labelled "twice as wide" points to a grid 8 across and 6 down: 48 pixels, four times as many.](twice-as-wide.svg)
+
+Many image editors, including some on phones, can resize and
 compress an image before you save it.
 
 ## Now in your own site
@@ -67,8 +71,9 @@ compress an image before you save it.
 3. Put them in `images/`.
 4. In `gallery.html`, replace the stand-in images with your own, using
    paths like `images/your-file.jpg`.
-5. Write a real `alt` description for each one. [Images, paths and alt
-   text](tutorial:images-and-alt-text) shows what makes a good one.
+5. Write a real `alt` description for each one. [Describing an image
+   with alt text](tutorial:describing-an-image) shows what makes a good
+   one.
 6. Save, and refresh.
 
 Does every image in your gallery load?

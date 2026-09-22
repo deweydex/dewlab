@@ -3,11 +3,11 @@
 # Twentieth tutorial of first-site. Checked against the cumulative
 # glossary so far -- no overlap.
 #
-# This tutorial's prose used to say `auto-fill` sits "alongside the
-# auto-fit already shown on a grid gallery" -- but a-grid-gallery is in
-# several-pages, the series after first-site in series.yaml's order, so
-# a reader reaches this page before that one, not after. Fixed to point
-# forward instead of claiming auto-fit was already covered.
+# `order` and `auto-fill` used to sit here, in a section of their own
+# with no live cell. `order` is now taught in order-on-screen, the
+# tutorial after this one, and has its entry there. `auto-fill` only
+# means something inside `repeat()`, which a-grid-gallery teaches beside
+# `auto-fit`, so its entry belongs to that tutorial now.
 entries:
   - term: grid-template-areas
     kind: keyword
@@ -17,15 +17,9 @@ entries:
   - term: grid-area
     kind: keyword
     definition: "Assigns an element to one of the named areas set by `grid-template-areas`."
-  - term: auto-fill
+  - term: fr
     kind: keyword
     definition: >
-      `auto-fill` fits as many grid columns as will hold at the given
-      minimum width, but leaves any spare columns empty rather than
-      growing the existing ones to fill the row.
-  - term: order
-    kind: keyword
-    definition: >
-      The `order` property changes a flex item's visual position
-      without changing its position in the HTML. A screen reader still
-      follows the HTML order, not the visual one.
+      `fr` is a unit for grid columns and rows. It means a share of the
+      space left over, so `150px 1fr` gives the second column all the
+      width the first one does not use.

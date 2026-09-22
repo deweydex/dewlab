@@ -1,0 +1,39 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for
+# a-rule-and-where-it-lives, variables-and-colour, text-and-units and
+# selectors-and-classes, declared with `context_for:`. Checked against
+# the cumulative glossary up to selectors-and-classes -- no overlap.
+# `class selector` and `descendant selector` are used here but defined
+# in selectors-and-classes, so they stay there.
+entries:
+  - term: cascade
+    kind: concept
+    definition: >
+      The cascade is the set of steps a browser follows to decide which
+      declaration wins, when several set the same property on one
+      element. The more precise selector wins. If two are equally
+      precise, the later rule wins.
+  - term: specificity
+    kind: concept
+    definition: >
+      Specificity is how precise a selector is. The browser counts its
+      ids, then its classes, then its tags, so `.highlight p` beats `p`.
+  - term: id selector
+    kind: concept
+    definition: >
+      An id selector is a `#` and an id, such as `#skills`. It matches
+      the element with that `id`, and it beats any number of classes.
+  - term: inheritance
+    kind: concept
+    definition: >
+      Inheritance is how some properties, such as `color`, `font-size`
+      and `text-align`, pass down to the elements inside an element.
+      A rule written for the inner element itself always beats the
+      inherited value.
+  - term: user agent stylesheet
+    kind: concept
+    definition: >
+      The user agent stylesheet is the browser's own built-in
+      stylesheet. It gives links their blue underline and headings their
+      size. Our own rules win wherever the two disagree.

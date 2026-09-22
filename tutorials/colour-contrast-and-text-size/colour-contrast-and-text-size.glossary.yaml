@@ -1,0 +1,41 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for variables-and-colour
+# and text-and-units, declared with `context_for:`. Checked against the
+# cumulative glossary up to text-and-units -- no overlap. `hex colour`,
+# `rem` and `root font size` are used here but defined on those pages,
+# so they stay there.
+entries:
+  - term: "rgb()"
+    kind: function
+    definition: "Writes a colour as three amounts, for red, green and blue, each from 0 to 255."
+    example: "background: rgb(51 102 153);"
+  - term: "hsl()"
+    kind: function
+    definition: >
+      Writes a colour as a hue, an angle on a colour wheel from 0 to
+      360, then a saturation and a lightness, each as a percentage.
+    example: "background: hsl(210 50% 40%);"
+  - term: alpha
+    kind: concept
+    definition: >
+      Alpha is how solid a colour is, from `0` (fully see-through) to
+      `1` (solid). It is the fourth value in `rgba(0, 0, 0, 0.1)`.
+  - term: contrast ratio
+    kind: concept
+    definition: >
+      A contrast ratio compares how light the text colour and its
+      background are. It goes from 1 to 1 for two colours that are the
+      same, up to 21 to 1 for black on white.
+  - term: WCAG
+    kind: concept
+    definition: >
+      WCAG is the Web Content Accessibility Guidelines. Its level AA
+      asks for a contrast ratio of at least 4.5 to 1 for ordinary text,
+      and 3 to 1 for large text.
+  - term: em
+    kind: keyword
+    definition: >
+      `em` is a unit measured against a nearby font size, not the root
+      one. For `font-size`, that is the parent's font size. For other
+      properties, it is the element's own.

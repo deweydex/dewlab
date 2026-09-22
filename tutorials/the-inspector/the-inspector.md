@@ -1,5 +1,5 @@
 ---
-title: "The browser inspector"
+title: "Looking inside a page with the inspector"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -11,7 +11,7 @@ covers:
     covers: [WA-LO10]
 ---
 
-# The browser inspector
+# Looking inside a page with the inspector
 
 What can we do when a page looks wrong, and we cannot see why? Every
 browser has a tool for this. The *inspector* is a tool built into the

@@ -1,9 +1,10 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Third tutorial of Movement and depth, and the course's first
-# JavaScript. The perspective divide itself belongs to the
-# Computational Methods series it links to; only the canvas and the
-# loop are new here.
+# Fourth tutorial of Movement and depth, and the course's first
+# JavaScript. The perspective divide is named here for the first time
+# in this series (Computational Methods teaches it in its own series).
+# `moveTo`, `lineTo` and `stroke` moved to a-cube-on-a-canvas with the
+# cube cell.
 entries:
   - term: "<canvas>"
     kind: keyword
@@ -15,9 +16,16 @@ entries:
     kind: function
     definition: >
       Gives the pen that draws on a canvas: `fillRect` for a rectangle,
-      `arc` for a circle, `moveTo` and `lineTo` for a line, `fill` and
-      `stroke` to put ink on the path just described.
+      `arc` for a circle, and `fill` to colour in the shape just
+      described.
     example: 'const pen = canvas.getContext("2d");'
+  - term: perspective divide
+    kind: formula
+    definition: >
+      The perspective divide divides a point's `x` and `y` by its depth,
+      so far things are drawn smaller and closer to the middle. CSS's
+      `perspective` does it for us; on a canvas we write it by hand.
+    example: "glass * point.x / point.z"
   - term: "requestAnimationFrame()"
     kind: function
     definition: >

@@ -1,0 +1,37 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fifth tutorial of Movement and depth, split out of
+# drawing-frames-with-javascript with the cube cell. The canvas, the pen,
+# the loop and the perspective divide come from that page and are not
+# repeated. The Computational Methods course defines wireframe, rotation
+# matrix and dot product in its own series; this series meets them here.
+entries:
+  - term: wireframe
+    kind: concept
+    definition: >
+      A wireframe is a drawing of a shape that shows only its edges, as
+      lines between its corners.
+  - term: rotation matrix
+    kind: concept
+    definition: >
+      A rotation matrix is a grid of numbers that turns a point about an
+      axis. Each row gives one new coordinate of the turned point.
+    example: "[[cos, 0, sin], [0, 1, 0], [-sin, 0, cos]]"
+  - term: dot product
+    kind: formula
+    definition: >
+      The dot product multiplies two lists of numbers item by item and
+      adds up the results. A rotation matrix uses one for each row.
+    example: "a * x + b * y + c * z"
+  - term: "moveTo() and lineTo()"
+    kind: function
+    definition: >
+      Put a canvas pen down at a point without drawing, then describe a
+      line from there to another point.
+    example: "pen.moveTo(10, 10); pen.lineTo(50, 50);"
+  - term: "stroke()"
+    kind: function
+    definition: >
+      Draws the line just described, in the pen's `strokeStyle` colour
+      and `lineWidth`.
+    example: "pen.stroke();"

@@ -1,5 +1,5 @@
 ---
-title: "Three kinds of link"
+title: "Links to pages, other sites and email"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO8]
 ---
 
-# Three kinds of link
+# Links to pages, other sites and email
 
 A link is an `<a>` element, and its `href` attribute says where the link
 goes. Can one tag really point at three quite different things? On this
@@ -38,6 +38,9 @@ site: links
    does with that?
 3. Which of the three links would stay inside your own site?
 
+If you click the first link, the preview goes blank. This small preview
+has no About page for the link to open. Your own site has one.
+
 ## Why does this happen?
 
 Each `href` has a different shape, and each shape tells the browser to
@@ -59,12 +62,12 @@ do something different. Now we can explain what we saw:
   message addressed to whoever comes after the colon. Unlike the other
   two, it does not lead to a page at all.
 
-Oftentimes, when a same-site link leads to an error page, the filename
-is the problem. The name in `href` has to match the real file exactly.
-`About.html` and `about.html` are two different names on most web
-servers, including GitHub Pages. On your own computer the wrong case may
-still work, because Windows and macOS usually ignore the difference.
-That makes this mistake easy to miss until the site is published.
+A same-site link's `href` is a path, like the `src` of an image on
+[Placing an image, and the path that finds
+it](tutorial:images-and-alt-text). So `about.html` means a file in the
+same folder as this page, and a link could also use a path such as
+`pages/about.html`. The name has to match the real file exactly,
+capital letters included.
 
 Sometimes we might click a `mailto:` link and see nothing happen, or see
 the browser ask which program to use. What a `mailto:` link opens
@@ -101,7 +104,7 @@ Now click **Send Me an Email**. Does your browser try to open an email
 program?
 
 The `id="contact"` on this section has a job too. On the next page,
-[Navigation](tutorial:navigation), a link in the menu jumps straight to
+[A menu that jumps to each section](tutorial:navigation), a link in the menu jumps straight to
 it.
 
 ## What we have now

@@ -1,0 +1,20 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Split out of named-grid-areas, where `order` sat in a section of its
+# own with no live cell. Checked against the cumulative glossary so far
+# -- no overlap. `focus` and `:focus` are hover-and-focus's, and are
+# only used here.
+entries:
+  - term: order
+    kind: keyword
+    definition: >
+      The `order` property sets where a flex or grid item sits on
+      screen. Smaller numbers come first, and every item starts at `0`.
+      It does not change the HTML, so Tab and screen readers keep the
+      HTML's order.
+  - term: source order
+    kind: concept
+    definition: >
+      The source order is the order of the elements in the HTML. The
+      Tab key and screen readers follow it, whatever order the CSS
+      shows on screen.

@@ -1,0 +1,27 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for media-queries and
+# flexible-images, declared with `context_for:`. Checked against the
+# cumulative glossary up to flexible-images -- no overlap. `viewport`,
+# `breakpoint`, `media query`, `max-width` and `min-width` in a media
+# query are media-queries' own, and are only used here.
+entries:
+  - term: viewport meta tag
+    kind: concept
+    definition: >
+      The viewport meta tag is a line in a page's `<head>`,
+      `<meta name="viewport" content="width=device-width, initial-scale=1">`.
+      It tells a phone to lay the page out at the phone's own width,
+      instead of a much wider width shrunk to fit.
+  - term: desktop-first
+    kind: concept
+    definition: >
+      A desktop-first stylesheet writes its ordinary rules for a wide
+      screen, then uses `max-width` media queries to change them for
+      narrower screens.
+  - term: mobile-first
+    kind: concept
+    definition: >
+      A mobile-first stylesheet writes its ordinary rules for a phone,
+      then uses `min-width` media queries to add to them for wider
+      screens.

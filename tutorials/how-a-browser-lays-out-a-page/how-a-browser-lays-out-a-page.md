@@ -84,7 +84,7 @@ Each element starts with a value of its own: `block` for a paragraph,
 `inline` for a link. In step 2, `display: inline` turned the heading and
 paragraphs into inline boxes, so they ran on in one line of text. In
 step 3, `display: block` put each shaded phrase on a line of its own.
-[Flexbox first steps](tutorial:flexbox-first-steps) uses a third value,
+[Lining boxes up in a row with Flexbox](tutorial:flexbox-first-steps) uses a third value,
 `flex`, which lays out the boxes inside an element in a row or a column.
 
 One rule of normal flow explains a lot on the other pages: a block box
@@ -197,8 +197,7 @@ difference between `relative` and `absolute`:
 Your site uses `absolute` once. The "Skip to main content" link at the
 top of every page has `position: absolute`, with `top: 0` and `left: 0`.
 It takes no room in the flow, so it never pushes your header down. It
-stays hidden until someone presses Tab, as we see on [States: hover and
-focus](tutorial:hover-and-focus).
+stays hidden until someone presses Tab, as we see on [Styling what the visitor points at: hover and focus](tutorial:hover-and-focus).
 
 When two boxes overlap, which one is drawn on top? For an element with
 a `position` other than `static`, the `z-index` property decides. A box
@@ -213,7 +212,7 @@ the heading row in view as we scroll down the rows.
 ## Seeing all this in the inspector
 
 All of this is easier to believe once we see it on a real page, and
-[the browser inspector](tutorial:the-inspector) can show it. When we
+[Looking inside a page with the inspector](tutorial:the-inspector) can show it. When we
 point at an element in the **Elements** tab, most browsers shade its
 margin in its own colour. On a centred container, the two auto margins
 show up as two equal bands, one on each side. When we select an

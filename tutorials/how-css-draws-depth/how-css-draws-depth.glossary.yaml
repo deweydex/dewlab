@@ -1,0 +1,25 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for the five tutorials of
+# Movement and depth, declared with `context_for:`. `perspective`,
+# `preserve-3d` and transform order are defined in the tutorials and
+# stay there.
+entries:
+  - term: perspective-origin
+    kind: keyword
+    definition: >
+      `perspective-origin` sets where the eye is, across the element that
+      has the `perspective`. By default the eye is in front of its middle.
+    example: "perspective-origin: left;"
+  - term: "perspective()"
+    kind: function
+    definition: >
+      Gives one element an eye of its own, inside its `transform`, in
+      place of a `perspective` shared by all the children of a parent.
+    example: "transform: perspective(400px) rotateY(40deg);"
+  - term: "matrix3d()"
+    kind: function
+    definition: >
+      Holds the one grid of sixteen numbers that a browser makes from a
+      whole list of transforms. The inspector's Computed tab shows a 3D
+      transform this way.

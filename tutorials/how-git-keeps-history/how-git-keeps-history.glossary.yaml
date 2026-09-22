@@ -1,0 +1,44 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for the-two-loops,
+# how-the-pieces-fit, issues-and-pull-requests and
+# your-copy-of-the-starter, declared with `context_for:`. Checked against
+# the cumulative glossary up to the-two-loops -- no overlap. `commit`,
+# `push`, `repository`, `fork`, `clone` and `pull request` are used and
+# widened here but defined earlier in the Welcome series, so they stay
+# there.
+entries:
+  - term: Git
+    kind: concept
+    definition: >
+      Git is the program that records the changes to a project's files.
+      It runs on your own computer; GitHub is a website that keeps Git
+      repositories online.
+  - term: snapshot
+    kind: concept
+    definition: >
+      A snapshot is the state of every file in a project at one moment,
+      as a commit records it.
+  - term: commit id
+    kind: concept
+    definition: >
+      A commit id is the long string of letters and numbers that names
+      one commit. It is worked out from everything in the commit, and
+      GitHub shows its first seven characters, such as `5f60c9a`.
+  - term: staging area
+    kind: concept
+    definition: >
+      The staging area is the list of changes that will go into the next
+      commit. `git add` puts a change there, and `git commit` records
+      what is in it.
+  - term: history
+    kind: concept
+    definition: >
+      A repository's history is its line of commits, each one pointing
+      to the commit before it.
+  - term: branch
+    kind: concept
+    definition: >
+      A branch is a name for a line of commits, which always points at
+      the newest one. `main` is the usual name for a repository's first
+      branch.

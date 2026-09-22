@@ -146,7 +146,11 @@ groups:
       - the-fourth-number
       - an-orbit-in-css
       - a-cube-in-css
+      - a-ball-that-faces-you
       - drawing-frames-with-javascript
+      - a-cube-on-a-canvas
+      - how-a-browser-draws-a-frame
+      - how-css-draws-depth
 
   - key: text-generation
     name: Generating text with Markov chains
@@ -290,6 +294,8 @@ groups:
       - publish-it
       - the-two-loops
       - the-inspector
+      - how-a-browser-fetches-a-page
+      - how-git-keeps-history
 
   - key: web-authoring-reference
     name: Web authoring reference shelf
@@ -317,8 +323,11 @@ groups:
       - headings-and-emphasis
       - sections-that-mean-something
       - images-and-alt-text
+      - describing-an-image
       - three-kinds-of-link
       - navigation
+      - how-a-browser-reads-html
+      - who-reads-a-page
 
   - key: web-css-basics
     name: "CSS basics: rules, boxes and selectors"
@@ -331,7 +340,9 @@ groups:
       - variables-and-colour
       - the-box
       - text-and-units
+      - colour-contrast-and-text-size
       - selectors-and-classes
+      - which-rule-wins
       - the-container
       - how-a-browser-lays-out-a-page
 
@@ -346,7 +357,9 @@ groups:
       - footer-at-the-bottom
       - hover-and-focus
       - transitions-and-transforms
+      - movement-focus-and-keyboards
       - media-queries
+      - designing-for-many-screens
 
   - key: web-layout-and-naming
     name: Flexbox, grid, and naming your CSS
@@ -359,8 +372,11 @@ groups:
       - flexible-images
       - flexbox-first-steps
       - named-grid-areas
+      - order-on-screen
+      - flexbox-or-grid
       - css-variables-and-bem
       - keyframes-and-the-checkbox-hack
+      - the-checkbox-hack
 
   - key: web-several-pages
     name: A site with several pages
@@ -382,6 +398,9 @@ groups:
       - images-and-file-size
       - documenting-what-you-built
       - conclusions-and-next-steps
+      - what-happens-when-a-form-is-sent
+      - image-formats-and-compression
+      - how-html-and-css-got-here
 
   - key: full-stack-basics
     name: A page joined to its own database

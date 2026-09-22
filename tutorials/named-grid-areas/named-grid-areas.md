@@ -1,17 +1,15 @@
 ---
-title: "Named grid areas"
+title: "Laying out a page with grid areas"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
   why-does-this-happen:
     covers: [WA-LO9]
-  two-related-properties-order-and-auto-fill:
-    touches: [WA-LO9]
   now-add-a-sidebar:
     touches: [WA-LO9]
 ---
 
-# Named grid areas
+# Laying out a page with grid areas
 
 How could we lay out a whole page at once: a header, a menu, a main
 area and a footer? CSS grid can do it. With `grid-template-areas`, we
@@ -20,7 +18,6 @@ a row of column numbers. On this page we:
 
 - change the width of a page and watch its layout change
 - read the map that describes the layout
-- meet two related properties, `order` and `auto-fill`
 - add a new area to the map ourselves
 
 ## Let's try it
@@ -100,6 +97,8 @@ rows and columns. `gap: 8px` sets the space between them, the same way
 - Each word in a line names one cell of that row.
 - Repeating a name across several cells makes one area span all of
   them. So `"header header"` is one header area, two columns wide.
+- Every quoted line must have the same number of words, and each named
+  area must make a rectangle. A dot (`.`) names an empty cell.
 
 Then each element needs to know which area it fills. That is the job of
 `grid-area`. The rule `header { grid-area: header; }` places the
@@ -160,36 +159,10 @@ with them, because the lines are what makes the shape. <code>nav</code>
 is marked in both, so you can see where it went.</p>
 </div>
 
-Sometimes we might edit a map and find that the whole layout falls
-apart. Every quoted line must have the same number of words, and every
-named area must make a rectangle. If either rule is broken, the browser
-ignores the whole `grid-template-areas` declaration. A dot (`.`) in a
-line names an empty cell, which is useful when a line needs a gap.
-
-Chrome and Firefox can also show the grid for us, in the inspector we
-met on [The browser inspector](tutorial:the-inspector). Select the
-element with `display: grid`, and look for the grid options in the
-**Layout** panel.
-They draw the grid lines over the page, and can show the area names too.
-
-## Two related properties: order and auto-fill
-
-Two more properties are worth naming here, even without a live demo of
-their own.
-
-`order` changes a flex item's position on screen without changing where
-it sits in the HTML. It works for grid items too. A screen reader still
-follows the HTML order, and so does the Tab key. So a page that has been
-reordered on screen can confuse someone who cannot see the new order,
-or who moves through the page with a keyboard. For that reason, we use
-`order` with care.
-
-`auto-fill` is for a grid of many columns. It fits as many columns as
-will hold, and so does `auto-fit`. The difference is in the spare
-columns. `auto-fill` keeps any spare columns empty. `auto-fit` lets the
-existing items grow to fill the row. [A grid
-gallery](tutorial:a-grid-gallery), later in this course, covers
-`auto-fit` itself.
+What if a map breaks those rules, with a short line, or an area that is
+not a rectangle? The browser does not try to guess. It ignores the whole
+`grid-template-areas` declaration, and the layout falls apart. The
+practice page has a few broken maps to mend.
 
 ## Now add a sidebar
 
@@ -219,8 +192,6 @@ itself at a width we choose.
 | `grid-template-areas` | Names each area of a grid as a small map, with one quoted line for each row | `"nav main"` |
 | `grid-area` | Places an element in one of the named areas | `nav { grid-area: nav; }` |
 | `fr` | A share of the space left over in a grid | `grid-template-columns: 150px 1fr;` |
-| `auto-fill` | Fits as many grid columns as will hold, and keeps any spare columns empty, instead of growing the existing ones | used with `grid-template-columns` |
-| `order` | Changes a flex item's position on screen without changing its position in the HTML | `order: 2;` |
 
 ## Where to Read More
 

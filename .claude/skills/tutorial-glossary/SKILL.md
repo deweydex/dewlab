@@ -30,11 +30,14 @@ step-by-step for running that design on one tutorial.
    you will already have built this up from the runs before it. If asked
    to redo one tutorial in the middle of a series, gather every earlier
    member's glossary file fresh rather than trusting a stale list.
-4. If the tutorial's `frontmatter` sets `practice_for:`,
-   `practice_across:` or `context_for:` — **stop**. A practice or context
-   page gets no glossary file of its own; its reference is the union of the
-   tutorial(s) it names, which build.py resolves automatically. Do not
-   write one.
+4. If the tutorial's `frontmatter` sets `practice_for:` or
+   `practice_across:` — **stop**. A practice page gets no glossary file of
+   its own; its reference is the union of the tutorial(s) it names, which
+   build.py resolves automatically. Do not write one. A **context page**
+   (`context_for:`) is different: its reference is that same union, plus
+   its own glossary file for the terms it defines that its tutorials do
+   not. Write one for those terms only, checked against the union rather
+   than a series position.
 
 ## Finding candidates
 

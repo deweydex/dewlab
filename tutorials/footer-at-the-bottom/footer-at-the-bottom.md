@@ -20,7 +20,7 @@ this page we:
 - find the same rules in your own site
 
 This page uses `display: flex`, which the course teaches properly later,
-in [Flexbox first steps](tutorial:flexbox-first-steps).
+in [Lining boxes up in a row with Flexbox](tutorial:flexbox-first-steps).
 
 ## Let's try it
 
@@ -86,7 +86,7 @@ set to `auto` counts as `0`.
 
 Your own site uses the same idea, with one small difference. Your home
 page has a lot of content, so to see the footer move we first make the
-page short for a moment, in [the browser inspector](tutorial:the-inspector).
+page short for a moment, in [Looking inside a page with the inspector](tutorial:the-inspector).
 
 1. In your fork, open `styles.css` and find the `body` rule. It sets
    `display: flex` and `flex-direction: column`, the same as our

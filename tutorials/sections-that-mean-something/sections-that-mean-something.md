@@ -79,19 +79,16 @@ Here are four of them:
 | `<main>` | This is the main content of the page. |
 | `<section>` | This is one meaningful part of the page. |
 
-Who reads this meaning? A screen reader does. A screen reader is
-software that reads a page aloud for someone who cannot see it. It can
-say "navigation" when it reaches a `<nav>`. Search engines use these
-tags too, and so do other developers who read your code. Choosing a
-semantic tag in place of a `<div>` changes what a page means. It
-usually does not change how the page looks.
+Who reads this meaning? Software that reads the code does. A *screen
+reader* is software that reads a page aloud for someone who cannot see
+it. It can say "navigation" when it reaches a `<nav>`. Search engines
+use these tags too, and so do other developers who read your code.
 
-Sometimes we might notice that a page with no CSS at all shows a
-`<div>` and a `<section>` the same way. Each one starts on a new line
-and takes up the full width, with no border and no extra space. The
-browser gives them the same look, so the tag is free to say what the
-content is. `<div>` is still useful. It is the right choice when a group
-of content has no special meaning, and we only need a box to style.
+So choosing a semantic tag in place of a `<div>` changes what a page
+means. It does not change how the page looks: even with no CSS at all, a
+browser shows a `<div>` and a `<section>` the same way. `<div>` is still
+useful. It is the right choice when a group of content has no special
+meaning, and we only need a box to style.
 
 ## Now in your own site
 
@@ -122,9 +119,9 @@ any new CSS. The section is styled because `class="section"` and
 `class="card"` reuse rules that are already in `styles.css`. A `class`
 attribute can hold more than one name, with a space between each one,
 as in `class="section skills-section"`. We meet classes properly in
-[Selectors and classes](tutorial:selectors-and-classes). The
+[Choosing what to style: selectors and classes](tutorial:selectors-and-classes). The
 `id="skills"` gives this section a name of its own, and we come back to
-`id` in [Three kinds of link](tutorial:three-kinds-of-link).
+`id` in [Links to pages, other sites and email](tutorial:three-kinds-of-link).
 
 ## What we have now
 
@@ -136,3 +133,4 @@ well as how it looks.
 | *semantic element* | A tag that names the kind of content it holds | `<nav>`, `<section>` |
 | `<section>` | One meaningful part of a page | `<section id="skills">` |
 | `<div>` | A generic container with no meaning of its own | `<div class="container">` |
+| *screen reader* | Software that reads a page aloud for someone who cannot see it | it says "navigation" at a `<nav>` |

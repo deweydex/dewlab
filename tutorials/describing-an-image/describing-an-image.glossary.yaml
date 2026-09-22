@@ -1,0 +1,21 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Split from images-and-alt-text, which now teaches paths only; the
+# `alt` entry moved here with the half of the page that teaches it.
+# "screen reader" is used here but defined in
+# sections-that-mean-something, so it is not repeated. Checked against
+# the cumulative glossary so far -- no overlap.
+entries:
+  - term: alt
+    kind: keyword
+    definition: >
+      The `alt` attribute describes an image in words, for a screen
+      reader to read aloud, or for a visitor to see if the image fails
+      to load.
+  - term: alt text
+    kind: concept
+    definition: >
+      Alt text is the description of an image written in its `alt`
+      attribute. It stands in for the image whenever the image cannot
+      be seen. An empty `alt=""` marks an image as decoration, so a
+      screen reader skips it.

@@ -1,26 +1,23 @@
 ---
-title: "CSS variables and BEM names"
+title: "Naming classes so they stay tidy (BEM)"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
   why-does-this-happen:
     covers: [WA-LO9]
-  naming-with-bem:
-    touches: [WA-LO9]
   now-add-a-third-button:
     touches: [WA-LO9]
 ---
 
-# CSS variables and BEM names
+# Naming classes so they stay tidy (BEM)
 
-On [Variables and colour](tutorial:variables-and-colour) we stored a
-colour in a CSS variable and read it back in several rules. This page
-goes one step further. Can one rule give two buttons two different
-colours? On this page we:
+As a stylesheet grows, it fills up with class names. Which rule styles
+which part of the page? A good class name can tell us, before we open
+the CSS. On this page we:
 
-- change a variable in two places, and see which button follows
-- learn to set a variable again for one element only
-- meet BEM, a way of naming classes so that each name explains itself
+- read class names written in a pattern called BEM
+- see how one extra class changes one button, and leaves the other alone
+- add a third button of our own
 
 ## Let's try it
 
@@ -53,64 +50,25 @@ site: buttons
 }
 ```
 
-1. Look at the CSS. Which rule sets a `background`? What does the
+1. Look at the HTML. Which class do both buttons have? Which class does
+   only the second button have?
+2. Look at the CSS. Which rule sets a `background`? What does the
    `.button--danger` rule set?
-2. What happens if we change the colour inside `:root` to `#16a34a`?
-   Which button changes?
-3. Now change the colour inside `.button--danger` instead. Which button
-   changes this time?
-4. What if we delete `button--danger` from the second button's `class`
+3. What if we delete `button--danger` from the second button's `class`
    in the HTML? Put it back afterwards.
+4. What happens if we change the colour inside `.button--danger` to
+   `#7c3aed`? Which button changes?
+5. Now change the colour inside `:root` to `#16a34a`. Which button
+   changes this time?
 
 ## Why does this happen?
 
-Now we can explain what we saw. The first button follows the value on
-`:root`. The second button follows the value in `.button--danger`. Yet
-only `.button` sets a `background`.
+Now we can explain what we saw. Both buttons have the class `button`,
+so both get the padding, the rounded corners and the white text. The
+second button also has `button--danger`, and only that button turns
+red. Without that class, in step 3, it looked like the first one.
 
-The variable `--button-color` is a *CSS custom property*. A CSS custom
-property is a value declared once, most often on `:root`, and read back
-anywhere with `var()`. "Custom property" is the official CSS name for
-what we have been calling a CSS variable.
-
-Here is the path the value takes:
-
-```css
-:root {
-  --button-color: #2563eb;       /* 1. declared once, for the whole page */
-}
-.button {
-  background: var(--button-color); /* 2. read back here */
-}
-.button--danger {
-  --button-color: #dc2626;       /* 3. set again, for this button only */
-}
-```
-
-- `:root` declares `--button-color` once. `:root` selects the `<html>`
-  element, which holds every other element on the page. A custom
-  property passes down from an element to everything inside it, so
-  every element on the page can read this value.
-- `var(--button-color)` in `.button` reads the value back.
-- `.button--danger` sets no `background` of its own. It sets
-  `--button-color` again, for itself and its children. So when
-  `.button`'s rule reads `var(--button-color)` on the second button, it
-  gets the new value, not the one on `:root`.
-
-This is a *scoped override*. A scoped override sets a custom property
-again on a more specific rule, and changes its value for that rule and
-its children only. One value is read in two places, and changed in one.
-
-That explains step 4 too. Without the class `button--danger`, the second
-button has no value of its own, so it reads the one on `:root`, like
-the first button.
-
-Oftentimes, a website keeps all its colours as custom properties on
-`:root`. A scoped override then changes the colour for one part of the
-page, such as one button, one card or a dark footer, and the main rules
-stay the same.
-
-## Naming with BEM
+### Naming with BEM
 
 The class names `button` and `button--danger` follow a naming pattern
 called *BEM*. BEM is short for Block, Element, Modifier. It is a way of
@@ -139,6 +97,43 @@ Written this way, a class name tells a reader which block it belongs to
 and which variant it is. The reader does not have to trace back through
 the CSS to find out.
 
+### How the modifier changes the colour
+
+The `.button--danger` rule sets no `background`. How does the button
+turn red? The answer is the CSS variable `--button-color`, which works
+the way `--brand-color` did on [Colours, and naming them with
+variables](tutorial:variables-and-colour). "Custom property" is its
+official CSS name.
+
+```css
+:root {
+  --button-color: #2563eb;       /* 1. declared once, for the whole page */
+}
+.button {
+  background: var(--button-color); /* 2. read back here */
+}
+.button--danger {
+  --button-color: #dc2626;       /* 3. set again, for this button only */
+}
+```
+
+A variable passes down from an element to everything inside it. `:root`
+holds the whole page, so every element can read the blue from `:root`.
+But `.button--danger` sets `--button-color` again, on the second button
+itself. So when the `.button` rule reads `var(--button-color)` on that
+button, it finds the red first. This is a *scoped override*. A scoped
+override sets a variable again on a more specific rule, and changes its
+value for that element and the elements inside it only.
+
+That explains steps 4 and 5. The purple in step 4 reached only the
+second button. The green in step 5 reached only the first button,
+because the second button has a value of its own.
+
+Oftentimes a website keeps all its colours as variables on `:root`.
+Then a modifier can change the colour for one part of the page, such
+as one button, one card or a dark footer, and the block's own rule
+stays the same.
+
 ## Now add a third button
 
 Can we add a green button, the same way the red one works?
@@ -153,13 +148,22 @@ Can we add a green button, the same way the red one works?
 Does the new button pick up its own colour, with no change to the
 `.button` rule?
 
+Your own site has a block and a modifier too. In `index.html`, the
+link styled as a button, under your main heading, has
+`class="btn btn-primary"`. `btn` is
+the block, and `btn-primary` is a variant of it, always used beside
+`btn`. The idea is the same as BEM. Only the joining mark is different:
+one hyphen, not two. The practice page renames it.
+
 ## What we have now
 
-We can now store a value once and read it in more than one place, and
-we can give classes names that say what they are, with no CSS to check.
+We can now give classes names that say what they are, and change one
+variant of a block with a modifier class.
 
 | Word | Meaning | Example |
 |---|---|---|
-| *CSS custom property* | A value declared once, most often on `:root`, and read back anywhere with `var()` | `--button-color: #2563eb;` |
-| *scoped override* | A custom property set again on a more specific rule, which changes its value for that rule and its children only | `.button--danger { --button-color: #dc2626; }` |
 | *BEM* | A naming pattern of block, element and modifier, joined with `__` and `--`, so that a class name says what it is for on its own | `button`, `button__icon`, `button--danger` |
+| *block* | A self-contained piece, styled on its own | `button` |
+| *element* (BEM) | A named part of a block, joined with `__` | `button__icon` |
+| *modifier* | A variant of a block, joined with `--`, and always used beside the block's own class | `button--danger` |
+| *scoped override* | A variable set again on a more specific rule, which changes its value for that element and the elements inside it only | `.button--danger { --button-color: #dc2626; }` |

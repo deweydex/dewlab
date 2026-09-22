@@ -1,5 +1,5 @@
 ---
-title: "Transitions and transforms"
+title: "Moving things smoothly: transforms and transitions"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,9 +9,9 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Transitions and transforms
+# Moving things smoothly: transforms and transitions
 
-On [States: hover and focus](tutorial:hover-and-focus), a button lifted
+On [Styling what the visitor points at: hover and focus](tutorial:hover-and-focus), a button lifted
 up under the pointer. That lift was a transform. On this page we:
 
 - move, resize and turn a box with `transform`
@@ -64,6 +64,11 @@ stayed still in step 2. It is also why, in step 3, the bigger box spread
 across the gaps and into its neighbours' space, without pushing them
 away.
 
+![Three boxes in a row, drawn twice. In the top row, none of them has a transform, and they sit side by side with gaps between them. In the bottom row, the middle box has scale(2). It is drawn twice as big, and spreads over the gaps and over the edges of the boxes on either side. A dashed outline shows the middle box's original space, which the page keeps. The first and third boxes have not moved.](transform-keeps-its-space.svg)
+
+The boxes sit side by side because they have `display: inline-block`.
+That lets them share one line, like words, and still take a transform.
+
 Each of the three boxes uses a different transform function:
 
 | Function | What it does | Example |
@@ -94,34 +99,32 @@ When a transition sits on an element's base rule, not on `:hover`, it
 animates a change in both directions. The element settles back as
 smoothly as it arrived.
 
-Sometimes we might give one element two `transform` declarations, one to
-move it and one to grow it, and find that only one of them works. A
-later `transform` replaces an earlier one completely. To combine two
-functions, we list them in one declaration, with a space between them:
+To use two transform functions at once, we list them in one
+declaration, with a space between them:
 `transform: translateY(-5px) scale(1.05);`.
-
-Oftentimes, a transform on a link or a `<span>` seems to do nothing.
-Elements like these sit inside a line of text, and a transform does not
-work on them. The boxes above have
-`display: inline-block`, which lets them sit side by side on one line
-and still take a transform.
 
 ## Now in your own site
 
-In your fork, find the `.card:hover` rule you added on [States: hover
-and focus](tutorial:hover-and-focus).
+In your fork, find the `.card:hover` rule you turned on in [Styling what the visitor points at: hover and focus](tutorial:hover-and-focus).
 
 1. Change `translateY(-5px)` to `scale(1.05)`.
 2. Save, and refresh. Move your pointer over a card. Does it lift, or
    grow?
-3. Now find the base `.card` rule, with the `transition` line. Change
-   both `0.2s` values to `1s`.
+3. Now find the base `.card` rule, with the `transition` line. It uses
+   `var(--transition-fast)` twice, and that variable is `0.2s ease`.
+   Change the line to this:
+
+   ```css
+   transition: transform 1s ease, box-shadow 1s ease;
+   ```
+
 4. Save, refresh, and hover again. Can you follow the same animation in
    slow motion?
 5. You could try both at once: `transform: translateY(-5px) scale(1.05);`
 
 Which do you like best for your cards: a lift, a grow, or both? When you
-have chosen, you could set the time back to `0.2s`.
+have chosen, you could put `var(--transition-fast)` back in place of
+`1s ease`.
 
 ## What we have now
 

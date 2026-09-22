@@ -1,0 +1,14 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of Movement and depth, split out of an-orbit-in-css.
+# `rotateY()`, `translateZ()` and `perspective` come from
+# an-orbit-in-css, and transform order from a-cube-in-css, just before
+# this page; none is repeated.
+entries:
+  - term: animations in step
+    kind: concept
+    definition: >
+      Two animations are in step when they have the same duration, the
+      same timing and the same start. Their changes then match at every
+      moment, so one can undo the other.
+    example: "turn 6s linear infinite; face-front 6s linear infinite"

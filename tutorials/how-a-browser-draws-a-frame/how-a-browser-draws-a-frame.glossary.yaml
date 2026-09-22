@@ -1,0 +1,32 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for the five tutorials of
+# Movement and depth, declared with `context_for:`. `frame` is defined in
+# an-orbit-in-css and `requestAnimationFrame()` in
+# drawing-frames-with-javascript, so they stay there.
+# `prefers-reduced-motion` was met in keyframes-and-the-checkbox-hack.
+entries:
+  - term: refresh rate
+    kind: concept
+    definition: >
+      The refresh rate is how many times a second a screen shows a new
+      picture, measured in hertz (Hz). Many screens run at 60 Hz, and
+      many newer ones at 90 Hz or 120 Hz.
+  - term: layout
+    kind: concept
+    definition: >
+      Layout is the step of drawing a frame where the browser works out
+      the size and place of every box. Changing `width`, `left` or
+      `margin` means doing it again.
+  - term: paint
+    kind: concept
+    definition: >
+      Paint is the step of drawing a frame where the browser fills in the
+      pixels of each part of the page: colours, text, borders and
+      shadows.
+  - term: composite
+    kind: concept
+    definition: >
+      Composite is the last step of drawing a frame. The browser puts the
+      painted layers together into one picture. A change to `transform`
+      or `opacity` can often skip layout and paint, and go straight here.

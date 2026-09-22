@@ -1,5 +1,5 @@
 ---
-title: "Media queries"
+title: "Changing the layout for phones: media queries"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Media queries
+# Changing the layout for phones: media queries
 
 A phone has much less room than a laptop. How can one stylesheet suit
 both? On this page we:
@@ -77,6 +77,10 @@ turns the rule on and off.
   viewport is 350 pixels wide or wider". In step 4, the rule applied
   above that width, not below it.
 
+Here are the two conditions on one line of widths:
+
+![A line of widths from 0 to 600 pixels, with a mark at 350. Above the line, a band runs from 0 up to the mark, labelled max-width: 350px, applies at 350 pixels or narrower. Below the line, a band runs from the mark up to 600 and beyond, labelled min-width: 350px, applies at 350 pixels or wider. The mark at 350 is the breakpoint where each one switches on or off.](media-query-ranges.svg)
+
 The word `max-width` also appeared on [A readable width, centred
 on the page](tutorial:the-container). The name is the same, but the job
 is different. There, `max-width` sets the widest an element can grow.
@@ -86,24 +90,13 @@ A *breakpoint* is a width where a media query switches on or off. In
 our example, the breakpoint is `350px`. In step 3 we moved it to
 `500px`, so the change came sooner as we dragged.
 
-Sometimes we might see a media query work in a desktop browser, and yet
-never switch on for a real phone. Oftentimes the page is missing this
-line in its `<head>`:
-
-```html
-<meta name="viewport" content="width=device-width, initial-scale=1">
-```
-
-Without it, a phone lays the page out as if its screen were much wider,
-then shrinks the whole page to fit. The text looks tiny, and a
-`max-width` media query for phones never switches on.
-
-The order of the rules matters too. Suppose two media queries both
-match, and each has a rule with the same selector that sets the same
-property. Then the one further down the stylesheet wins. So a rule for very small screens belongs after a
-rule for larger ones. In [the browser inspector](tutorial:the-inspector),
-most browsers show a rule's `@media` condition right above it, which
-helps us see which one is in use.
+What if a media query and an ordinary rule both set the same property?
+While the condition is true, both rules match. When two rules with the
+same selector set the same property, the one further down the
+stylesheet wins. That is why the `@media` block comes after the
+ordinary `.msg` rule. Media queries usually sit at the bottom of a
+stylesheet, below the rules they change. [Which rule
+wins](tutorial:which-rule-wins) looks at this more closely.
 
 ## Now in your own site
 
@@ -141,6 +134,7 @@ helps us see which one is in use.
    the smaller heading start to apply now?
 8. Now try `min-width` in place of `max-width`. Does the rule apply
    above that width, or below it?
+9. Put the line back to `@media (max-width: 480px)`, and save.
 
 Can you find the width where your heading changes size, and say which
 media query caused it?

@@ -1,5 +1,5 @@
 ---
-title: "Flexbox first steps"
+title: "Lining boxes up in a row with Flexbox"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Flexbox first steps
+# Lining boxes up in a row with Flexbox
 
 Here are three plushies from the shop, each on its own card, side by
 side. What happens once the screen is too narrow for all three cards to
@@ -122,22 +122,27 @@ The 12-pixel gaps come from `gap: 12px` on `.row`. The `gap` property
 sets the space between flex items. It adds no space around the outside
 of the row.
 
-Sometimes we might see a flex row that runs off the side of the phone
-screen. A missing `flex-wrap: wrap` is often the reason, and it is worth
-checking first. Rows of buttons, menus and cards on many websites use
-this same pattern of `display: flex` and `flex-wrap: wrap`.
+Here are the three cards at three widths, with the width of each card:
+
+![The three cards drawn at three widths. At 420 pixels there is room to spare: all three cards sit in one row, and each has grown to 132 pixels. At 366 pixels, three just fit: each card is 114 pixels, its starting width with padding and border, and there is no space left over. At 340 pixels, the row is too narrow for three: the squid and the cuttlefish share the first row at 164 pixels each, and the nautilus moves to a second row, where it grows to the full 340 pixels](flex-row-wraps.svg)
 
 ## Now in your own site
 
 1. Open your fork of the starter, and find `styles.css`.
 2. Find the `.cta-buttons` rule. It already sets `display: flex` and
-   `flex-wrap: wrap`. It lays out the buttons below the introduction.
-3. Narrow your browser window, the way you narrowed the preview above.
-   Watch for the point where a button drops to its own line.
-4. Now remove `flex-wrap: wrap` for a moment. Save, and refresh.
-5. Narrow the window again. What does the row of buttons do without
+   `flex-wrap: wrap`. It lays out the two buttons near the bottom of
+   `about.html`, under the heading "Want to See My Work?".
+3. Open `about.html` in your browser, and scroll down to those buttons.
+   Open the inspector, and switch on device mode, as on [Changing the
+   layout for phones: media queries](tutorial:media-queries). A desktop
+   window cannot get narrow enough on its own.
+4. Drag the page's width from wide to narrow, the way you dragged the
+   preview above. Watch for the point where a button drops to its own
+   line.
+5. Now remove `flex-wrap: wrap` for a moment. Save, and refresh.
+6. Narrow the page again. What does the row of buttons do without
    `flex-wrap`?
-6. Put `flex-wrap: wrap` back, and save.
+7. Put `flex-wrap: wrap` back, and save.
 
 Do your buttons stay on the screen at every width now?
 

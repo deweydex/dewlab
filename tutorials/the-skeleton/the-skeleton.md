@@ -54,6 +54,9 @@ see both:
 </html>
 ```
 
+- `<!DOCTYPE html>`, on the first line, tells the browser that this is
+  a modern HTML page.
+- `<html>` wraps everything else. Inside it are two parts.
 - The *head* holds information about the page: its `<title>`, and other
   details a visitor does not see directly.
 - The *body* holds everything a visitor sees: headings, paragraphs,
@@ -63,16 +66,11 @@ Now we can explain what we saw. `<title>` lives in the head, which is
 why its text goes to the browser tab and not to the page. `<h1>` lives
 in the body, with all the other visible content.
 
-Sometimes we might notice that the code in the box above has no
-`<head>` or `<body>` tags at all, and yet the `<title>` still went to the
-right place. Browsers fill in the missing parts of the skeleton for us.
-It is still good practice to write them out, so that anyone reading the
-file, including you later on, can see where each piece belongs.
-
-The title matters more than it might seem. It is the name a page has
-when someone bookmarks it, and search engines usually show it as the
-heading of a search result. When a page has no title, the browser tab
-often shows the file name or the web address instead.
+Did you notice that the code in the box above has no `<head>` or
+`<body>` tags at all? And yet the `<title>` still stayed off the page.
+Browsers fill in the missing parts of the skeleton for us. It is still
+good practice to write them out, so that anyone reading the file,
+including you later on, can see where each piece belongs.
 
 ## Now in your own site
 
