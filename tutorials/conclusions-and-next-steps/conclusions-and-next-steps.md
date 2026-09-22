@@ -43,7 +43,7 @@ CSS has a shorter, steadier history:
 | Year | CSS |
 |---|---|
 | 1996 | CSS1: colours, fonts and basic backgrounds |
-| 1998 | CSS2 adds positioning, the same `position` property we met on [Position, and the sticky header](tutorial:position-and-the-sticky-header) |
+| 1998 | CSS2 adds positioning, the same `position` property we met on [A header that stays in view as you scroll](tutorial:position-and-the-sticky-header) |
 | 2011 | CSS2.1 tidies up differences between browsers |
 
 After CSS2.1, CSS stopped coming out as one single specification. CSS3

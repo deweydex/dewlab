@@ -1,24 +1,22 @@
 ---
-title: "Position, and the sticky header"
+title: "A header that stays in view as you scroll"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
   why-does-this-happen:
     covers: [WA-LO9]
-  and-the-footer:
-    covers: [WA-LO9]
   now-in-your-own-site:
     touches: [WA-LO9]
 ---
 
-# Position, and the sticky header
+# A header that stays in view as you scroll
 
 On a long page, how do we keep the header in view while everything else
 scrolls? On this page we:
 
 - make a header bar stay at the top as we scroll
 - compare the values of the `position` property
-- keep a footer at the bottom of a short page
+- find the same header in your own site
 
 ## Let's try it
 
@@ -60,7 +58,10 @@ p { height: 100px; margin: 0; padding: 10px; border-bottom: 1px solid #ccc; }
 ## Why does this happen?
 
 Now we can explain what we saw. Everything in the preview scrolled
-except the dark bar at the top, which stayed where it was.
+except the dark bar at the top, which stayed where it was. Here is the
+same page before and after we scroll:
+
+![Two browser windows showing the same page. On the left, before scrolling, the dark bar "I stay in view" is at the top of the window, with sections one, two and three below it. Sections four and five are drawn dashed below the window, off screen. On the right, after scrolling down, the sections have moved up. The header's own place in the page and section one are now above the window, drawn dashed, off screen. Section two has slid under the dark bar, which is still at the top of the window. Sections three and four fill the window, and section five runs past its bottom edge.](sticky-header-scrolled.svg)
 
 The `position` property sets how an element is placed as the page
 scrolls. `position: sticky` with `top: 0` keeps an element in place once
@@ -88,63 +89,6 @@ where does the element sit in the HTML? A sticky element can only stay
 in view while its parent element is on screen. If a header sits inside a
 short wrapper, it scrolls away as soon as the wrapper does.
 
-Sticky headers are common on shops and news sites. The same idea works
-on long tables too: `position: sticky` on a table's heading cells keeps
-the heading row in view as we scroll down the rows.
-
-## And the footer
-
-The second example is a very short page: one paragraph, and a footer.
-
-```html site
-id: footer-push-html
-site: footer-push
-<p>Just a little content.</p>
-<footer>Footer</footer>
-```
-
-```css site
-id: footer-push-css
-site: footer-push
-html, body { height: 100%; margin: 0; }
-body { display: flex; flex-direction: column; }
-footer {
-  margin-top: auto;
-  background: #2c3e50;
-  color: white;
-  padding: 10px;
-}
-```
-
-1. Where does the dark footer bar sit in the preview? Is it right under
-   the text, or somewhere else?
-2. What happens if we delete `margin-top: auto;` from the `footer` rule?
-3. Put it back. Now change `height: 100%` to `height: auto` in the first
-   rule. Where does the footer go this time?
-
-The page has almost no content, and yet the footer sits at the very
-bottom of the preview, not right under the text. Three rules work
-together to do this:
-
-- `html, body { height: 100%; }` makes the page's body as tall as the
-  preview. With `height: auto` in step 3, the body was only as tall as
-  its content, so there was no empty space for the footer to move into.
-- `body { display: flex; flex-direction: column; }` stacks the body's
-  children from top to bottom, and lets them share out the space inside
-  it. We meet `display: flex` properly in [Flexbox first
-  steps](tutorial:flexbox-first-steps).
-- `margin-top: auto` on the footer takes all the leftover space above
-  it. However little content comes before the footer, this pushes the
-  footer itself down to the bottom of the page. In step 2, without it,
-  the footer moved up under the text.
-
-This is a close relative of the auto margins on [Setting a page's width
-and centring it](tutorial:the-container). There, auto margins shared
-out the space beside a box. Here, one auto margin takes the space above
-the footer. Oftentimes, when `margin-top: auto` seems to do nothing, the
-parent element is missing `display: flex`. On an ordinary page, a top
-margin set to `auto` counts as `0`.
-
 ## Now in your own site
 
 In your fork, `styles.css` has a `header` rule. It sets
@@ -157,16 +101,13 @@ In your fork, `styles.css` has a `header` rule. It sets
    what changed?
 4. Now try `position: relative`. What does the header do as you scroll?
 5. Set it back to `position: sticky`.
-6. Find the `footer` rule. It has `margin-top: auto`. That is why the
-   footer sits at the bottom of your page, even when there is little
-   content above it.
 
 Scroll your page one more time. Does the header stay in view again?
 
 ## What we have now
 
-We can now keep a header in view as a page scrolls, and keep a footer
-at the bottom of a short page.
+We can now keep a header in view as a page scrolls, and say how the
+other values of `position` behave.
 
 | Word | Meaning | Example |
 |---|---|---|
@@ -174,7 +115,6 @@ at the bottom of a short page.
 | `position: fixed` | Keeps an element in the same place in the window all the time. It no longer takes up space on the page. | `position: fixed;` |
 | `position: static` | The default. The element scrolls with the page. | `position: static;` |
 | `position: relative` | Looks the same as `static` on its own. With `top` or `left`, it moves the element a little from where it would normally sit. | `position: relative;` |
-| `margin-top: auto` | On a child of a `display: flex` element, takes all the leftover space above it, pushing the element itself to the far side | `margin-top: auto;` |
 
 ## Where to Read More
 

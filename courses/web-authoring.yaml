@@ -29,6 +29,7 @@ contents:
   - selectors-and-classes
   - the-container
   - position-and-the-sticky-header
+  - footer-at-the-bottom
   - hover-and-focus
   - transitions-and-transforms
   - media-queries

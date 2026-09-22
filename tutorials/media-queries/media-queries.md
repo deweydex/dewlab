@@ -77,8 +77,8 @@ turns the rule on and off.
   viewport is 350 pixels wide or wider". In step 4, the rule applied
   above that width, not below it.
 
-The word `max-width` also appeared on [Setting a page's width and
-centring it](tutorial:the-container). The name is the same, but the job
+The word `max-width` also appeared on [A readable width, centred
+on the page](tutorial:the-container). The name is the same, but the job
 is different. There, `max-width` sets the widest an element can grow.
 Inside `@media ( )`, it tests the width of the viewport.
 

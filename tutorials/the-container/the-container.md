@@ -1,5 +1,5 @@
 ---
-title: "Setting a page's width and centring it"
+title: "A readable width, centred on the page"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Setting a page's width and centring it
+# A readable width, centred on the page
 
 On a very wide screen, a line of text that runs from one edge to the
 other is hard to read. How do we stop a page's content from growing too
@@ -92,21 +92,23 @@ centres the element. `margin: 0 auto` is the usual way to write that. In
 step 3, `margin: 0` took the auto margins away, so the box moved over to
 the left.
 
+<div class="dl-drawn dl-automargin" role="img" aria-label="A wide page, drawn as a long grey strip. In the middle of it sits a white box labelled max-width. On each side of the box is a dashed band labelled auto. The two bands are the same width: the space left over beside the box, split evenly between the two auto margins.">
+<div class="dl-am-page">
+<div class="dl-am-margin">auto</div>
+<div class="dl-am-box">max-width</div>
+<div class="dl-am-margin">auto</div>
+</div>
+<p class="dl-am-said">The leftover space, split evenly between two auto margins.</p>
+</div>
+
 A *container* is an element that holds most of a page's content, and
 sets how wide that content can grow and where it sits. The box in our
-example is a small container. Many websites wrap their content in one
-like it, often with a class name such as `container` or `wrapper`.
+example is a small container.
 
 Sometimes we might notice that `margin: 0 auto` seems to do nothing.
 What is the first thing to check? Look for a `max-width` or a `width`.
 Without one, the box already fills the whole width of the page, so there
 is no leftover space for the auto margins to split.
-
-We can also see auto margins in [the browser
-inspector](tutorial:the-inspector). When we point at an element there,
-most browsers shade its margin in its own colour. On a centred
-container, the two auto margins show up as two equal bands, one on each
-side.
 
 ## Now in your own site
 

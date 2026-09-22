@@ -91,19 +91,18 @@ margin only moves the boxes apart.
 the bottom margin of the first meets the top margin of the second. They
 do not add up. The larger of the two sets the gap on its own. This is
 called *margin collapse*, and it happens with margins above and below a
-box, not with margins at the sides.
+box, not with margins at the sides. Here are two margins of different
+sizes meeting in one gap:
 
-Sometimes we might set a box's `width` to `200px` and then notice
-that it takes up more room than that on the page. Why? By default,
-`width` sets the width of the content only. The padding and the border
-are added on outside it. Many stylesheets change this with
-`box-sizing: border-box`, which makes `width` include the padding and
-the border. We will meet this idea again when we line up cards in a row.
-
-The browser can also show us these layers directly. When we select an
-element in [the browser inspector](tutorial:the-inspector), most
-browsers have a panel that draws its box model as a diagram, like the
-one above, with the real numbers for each layer.
+<div class="dl-drawn dl-collapse" role="img" aria-label="Two boxes, one above the other, with a gap between them. The first box has a bottom margin of 4rem, drawn as a hatched band that fills the whole gap. The second box has a top margin of 2rem, drawn as a shorter hatched band that rises from the second box. The two bands overlap inside the same gap, side by side, instead of sitting end to end. So the gap is 4rem, the larger of the two margins, and not 6rem.">
+<div class="dl-mc-box">first box</div>
+<div class="dl-mc-gap">
+<div class="dl-mc-margin dl-mc-bottom"><span class="dl-mc-label">margin-bottom: 4rem</span></div>
+<div class="dl-mc-margin dl-mc-top"><span class="dl-mc-label">margin-top: 2rem</span></div>
+</div>
+<div class="dl-mc-box">second box</div>
+<p class="dl-mc-said">The gap is 4rem, not 6rem.</p>
+</div>
 
 ## Now in your own site
 

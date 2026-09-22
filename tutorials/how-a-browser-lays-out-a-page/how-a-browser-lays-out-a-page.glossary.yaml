@@ -1,0 +1,44 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for the-box, the-container,
+# position-and-the-sticky-header and footer-at-the-bottom, declared with
+# `context_for:`. Checked against the cumulative glossary up to
+# footer-at-the-bottom -- no overlap. `margin collapse` is used and
+# widened here but defined in the-box, so it stays there. `display` is
+# named but taught properly in flexbox-first-steps, so it is left out.
+entries:
+  - term: normal flow
+    kind: concept
+    definition: >
+      Normal flow is the default way a browser places boxes, when no
+      layout rule moves them. Block boxes stack from top to bottom, and
+      inline boxes sit in lines of text.
+  - term: block box
+    kind: concept
+    definition: >
+      A block box starts on a new line and fills the width of the
+      element it sits in. Headings, paragraphs and `<div>` make block
+      boxes.
+  - term: inline box
+    kind: concept
+    definition: >
+      An inline box sits inside a line of text and is as wide as its
+      content. When the line is full, it wraps onto the next line, the
+      way a word does. `<em>` and `<a>` make inline boxes.
+  - term: box-sizing
+    kind: keyword
+    definition: >
+      `box-sizing` sets what `width` measures. With `content-box`, the
+      default, it is the content alone. With `border-box`, it is the
+      whole box, padding and border included.
+  - term: "position: absolute"
+    kind: keyword
+    definition: >
+      `position: absolute` takes an element out of normal flow, so it
+      takes no room, and places it against the nearest element around
+      it that has a `position` set.
+  - term: z-index
+    kind: keyword
+    definition: >
+      `z-index` decides which of two overlapping positioned boxes is
+      drawn on top. The higher number is on top.
