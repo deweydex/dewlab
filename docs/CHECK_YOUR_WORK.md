@@ -112,6 +112,32 @@ Checklist:
 You do not add a practice page to any course. It follows its tutorial onto
 every course the tutorial is on.
 
+## If you are adding a context page
+
+A context page is optional background reading for a tutorial: where an idea
+is used, why something behaves as it does, some history. It lives in its own
+folder, like a tutorial: `tutorials/where-joins-show-up/where-joins-show-up.md`.
+
+Checklist:
+
+- [ ] Its frontmatter has `title:`, `year:`, `version:` and one more line,
+      `context_for:`, with the id of the tutorial (or a list of ids):
+
+  ```markdown
+  ---
+  title: "Where Joins Show Up"
+  year: "2026-2027"
+  version: 2026.09.22.1
+  context_for: joins
+  ---
+  ```
+
+- [ ] It has no `covers:` line, and no `practice_for:` line.
+- [ ] Run `python3 check.py tutorials/where-joins-show-up`.
+
+You do not add a context page to any course. It follows its tutorial, like a
+practice page. `docs/WRITING_TUTORIALS.md` has more.
+
 ## If you are adding to a course, or adding a series
 
 A course is one file in `courses/`. A series is a heading inside that file

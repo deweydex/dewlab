@@ -522,6 +522,41 @@ class Tutorial:
         return bool(self.practice_for or self.practice_across)
 
     @property
+    def context_for(self) -> tuple[str, ...]:
+        """The slugs a context page is background reading for, or ().
+
+        A context page holds what a tutorial does not need a reader to
+        finish it: where the idea is used, why things behave as they do,
+        history, the deeper detail. Mechanically it is a practice page's
+        shape — off the reading order, no coverage, hanging off the
+        tutorial(s) it names, which link to it in turn (DECISIONS_LOG 7.208).
+        """
+        value = self.meta.get("context_for") or []
+        if isinstance(value, str):
+            value = [value]
+        return tuple(str(s) for s in value)
+
+    @property
+    def is_context(self) -> bool:
+        """Whether this page is optional background reading."""
+        return bool(self.context_for)
+
+    @property
+    def is_companion(self) -> bool:
+        """Whether this page sits beside a tutorial rather than on the
+        route: a page of problems or a context page. The gate for "not a
+        teaching page" — the search index, the series, coverage."""
+        return self.is_practice or self.is_context
+
+    @property
+    def owners(self) -> tuple[str, ...]:
+        """The tutorial(s) a companion page belongs to, first one first;
+        () for a tutorial."""
+        if self.practice_for:
+            return (self.practice_for,)
+        return self.practice_across or self.context_for
+
+    @property
     def datasets(self) -> tuple[str, ...]:
         """The names this tutorial's cells load via `load_csv()` or
         `load_text()` — declared, not scraped, the same reasoning
@@ -2051,11 +2086,12 @@ def place_tutorials(tutorials: list[Tutorial], registry: dict[str, Tutorial]) ->
     complete and the course is short, which nothing else would ever say. A
     draft is the one exception, skipped with a note, so a course can list
     next week's tutorial before it is finished. A practice page cannot be
-    listed at all — it is reached from its tutorial — and an archived one
-    may be, but sits in the course's Archive rather than on the route.
+    listed at all — it is reached from its tutorial — and neither can a
+    context page; an archived one may be, but sits in the course's Archive
+    rather than on the route.
 
-    Practice pages are placed afterwards, by practice_pairs() and
-    mixed_practice(), from the tutorial they belong to.
+    Practice and context pages are placed afterwards, by practice_pairs(),
+    mixed_practice() and context_pages(), from the tutorial they belong to.
     """
     for course in courses().values():
         for series in course.contents:
@@ -2069,6 +2105,11 @@ def place_tutorials(tutorials: list[Tutorial], registry: dict[str, Tutorial]) ->
                         continue
                     fail(course.path, f'the series "{series.title}" lists {ident}, but '
                                       f"there is no folder tutorials/{ident}/")
+                if member.is_context:
+                    fail(course.path, f'the series "{series.title}" lists {ident}, which is '
+                                      "a context page. A context page is reached from the "
+                                      "tutorial it gives background for; list the tutorial "
+                                      "instead.")
                 if member.is_practice:
                     fail(course.path, f'the series "{series.title}" lists {ident}, which is '
                                       "a page of problems. A practice page is reached from "
@@ -2168,6 +2209,11 @@ def practice_pairs(
             fail(page.path, f"has practice_for: {target}, which is itself a "
                             "practice page. Problems about problems is not a "
                             "shape this supports.")
+        if owner.is_context:
+            fail(page.path, f"has practice_for: {target}, which is a context "
+                            "page. Practice sets problems on what a tutorial "
+                            "teaches, and a context page teaches nothing a "
+                            "reader needs.")
         page.placements = list(owner.placements)
         if not page.is_default:
             continue
@@ -2223,6 +2269,9 @@ def mixed_practice(
             if owner.is_practice:
                 fail(page.path, f"has practice_across naming {slug}, which is "
                                 "itself a page of problems.")
+            if owner.is_context:
+                fail(page.path, f"has practice_across naming {slug}, which is "
+                                "a context page, not a tutorial.")
         if not page.placements:
             first = registry[across[0]]
             if first.course:
@@ -2231,6 +2280,65 @@ def mixed_practice(
             continue
         for course in page.courses:
             out.setdefault(course, []).append(page)
+    for members in out.values():
+        members.sort(key=lambda t: t.title)
+    return out
+
+
+def context_pages(
+    tutorials: list[Tutorial], registry: dict[str, Tutorial]
+) -> dict[str, list[Tutorial]]:
+    """Each tutorial's context pages, by the id of the tutorial, in title order.
+
+    A context page names the tutorial(s) it gives background for with
+    `context_for:`, one id or a list. Checked the way `practice_for` and
+    `practice_across` are: every id exists, is a tutorial rather than
+    another companion page, is not the page itself, and is named once. It
+    declares no coverage — nothing on it is needed to finish a tutorial, so
+    it cannot be where an outcome is taught — and it is not also a page of
+    problems, since a reader has to be able to tell optional reading from
+    work. It sits wherever its first tutorial sits, the same as a practice
+    page.
+
+    Unlike practice, a tutorial may have several: background splits
+    naturally by subject, and each page is only read by whoever wants it.
+    """
+    out: dict[str, list[Tutorial]] = {}
+    for page in tutorials:
+        named = page.context_for
+        if not named:
+            continue
+        if page.is_practice:
+            fail(page.path, "sets context_for and a practice line. A context "
+                            "page is background reading and a practice page is "
+                            "problems; one page cannot be both.")
+        if page.meta.get("covers"):
+            fail(page.path, "is a context page and declares `covers:`. Nothing "
+                            "on it is needed to finish a tutorial, so it cannot "
+                            "be where an outcome is taught.")
+        if len(set(named)) != len(named):
+            repeated = sorted({s for s in named if named.count(s) > 1})
+            fail(page.path, f"names {', '.join(repeated)} in context_for more "
+                            "than once.")
+        for slug in named:
+            if slug == page.slug:
+                fail(page.path, f"has context_for naming {slug}, which is itself.")
+            owner = registry.get(slug)
+            if owner is None:
+                fail(page.path, f"has context_for naming {slug}, and there is "
+                                f"no folder tutorials/{slug}/.")
+            if owner.is_practice:
+                fail(page.path, f"has context_for naming {slug}, which is a "
+                                "page of problems. Name the tutorial it "
+                                "practises instead.")
+            if owner.is_context:
+                fail(page.path, f"has context_for naming {slug}, which is "
+                                "itself a context page.")
+        page.placements = list(registry[named[0]].placements)
+        if not page.is_default:
+            continue
+        for slug in named:
+            out.setdefault(slug, []).append(page)
     for members in out.values():
         members.sort(key=lambda t: t.title)
     return out
@@ -2266,11 +2374,12 @@ def series_of(tutorials: list[Tutorial]) -> dict[tuple[str, str], list[Tutorial]
 
     Only the current, live version of each tutorial is on a route. A
     superseded release is still readable; an archived tutorial is still
-    built; a practice page hangs off its tutorial. None of them is here.
+    built; a practice or context page hangs off its tutorial. None of them
+    is here.
     """
     groups: dict[tuple[str, str], list[Tutorial]] = {}
     for tutorial in tutorials:
-        if tutorial.status != "live" or not tutorial.is_default or tutorial.is_practice:
+        if tutorial.status != "live" or not tutorial.is_default or tutorial.is_companion:
             continue
         for placement in tutorial.placements:
             groups.setdefault((placement.course, placement.series), []).append(tutorial)
@@ -2397,6 +2506,7 @@ def crumb_trail_html(
     practice: Tutorial | None = None,
     registry: dict[str, Tutorial] | None = None,
     also: list[Tutorial] | None = None,
+    context: list[Tutorial] | None = None,
 ) -> str:
     """Where this page sits — all tutorials, then this tutorial's own
     course, then its series, then the page itself, opening onto its own
@@ -2413,6 +2523,9 @@ def crumb_trail_html(
     at the end of its own rung, since the problems are part of it), and
     the way back from a page of problems to the tutorial it belongs to
     (in whose series rung this page then sits, one level under it).
+    `context` is the tutorial's context pages, listed after its problems
+    with a "context" tag; a context page sits under its first tutorial the
+    way a practice page does.
 
     The course and series rungs are the default course's — the first that
     lists this page. A page on more than one course says so on the nav
@@ -2420,8 +2533,8 @@ def crumb_trail_html(
     course the reader is following (tutorial-runtime.js, drawCourseChrome).
     A page no course lists has only the first rung and its own.
     """
-    if tutorial.is_practice and tutorial.practice_for and registry:
-        owner = registry.get(tutorial.practice_for)
+    if (tutorial.practice_for or tutorial.is_context) and registry:
+        owner = registry.get(tutorial.owners[0])
         if owner is not None:
             members = groups.get((owner.course, owner.series), members)
     else:
@@ -2448,21 +2561,28 @@ def crumb_trail_html(
         )
 
     # The page's own line in the series list is the rung that opens onto its
-    # sections and its practice — the title itself carries the caret, so
-    # the name is not printed twice (once bold in the list, once as a rung
-    # of its own beneath). It starts closed: a reader arriving at a
-    # tutorial should meet the tutorial, not a list of its parts. A page
-    # with nothing behind its own name — too few sections for a contents
-    # list (contents_items_html()), no practice — gets a plain bold line
-    # rather than a caret with nothing behind it.
+    # sections, its practice and its context pages — the title itself
+    # carries the caret, so the name is not printed twice (once bold in the
+    # list, once as a rung of its own beneath). It starts closed: a reader
+    # arriving at a tutorial should meet the tutorial, not a list of its
+    # parts. A page with nothing behind its own name — too few sections for
+    # a contents list (contents_items_html()), no companion page — gets a
+    # plain bold line rather than a caret with nothing behind it.
     contents, count = contents_items_html(tutorial)
     # A practice page's own title already says what it is ("First Steps —
     # Practice", "Mixed Problems — Programming"), so the line is the title
-    # and nothing more; the colour marks it as a different kind of page.
+    # and nothing more; the colour marks it as a different kind of page. A
+    # context page's title names its subject, not its kind, so it carries a
+    # small tag saying so.
     extra = [
         f'<div role="listitem" class="dl-crumb-practice">'
         f'<a href="{link_between(tutorial, problems)}">{html.escape(problems.title)}</a></div>'
         for problems in ([practice] if practice is not None else []) + list(also or [])
+    ] + [
+        f'<div role="listitem" class="dl-crumb-context">'
+        f'<a href="{link_between(tutorial, page)}">{html.escape(page.title)}</a>'
+        ' <span class="dl-crumb-tag">context</span></div>'
+        for page in context or []
     ]
     own = html.escape(tutorial.title)
     if contents or extra:
@@ -2480,7 +2600,7 @@ def crumb_trail_html(
             f'aria-current="page">{own}</div>'
         )
 
-    # An archived tutorial or a practice page has no reading-order position
+    # An archived tutorial or a companion page has no reading-order position
     # (nav_for() uses the same honest shape for that case) — members will
     # not include it, so it gets a list of just itself rather than an empty
     # series level with no current page marked at all.
@@ -2492,8 +2612,8 @@ def crumb_trail_html(
         if member is tutorial:
             tutorial_items.append(own_rung)
         elif member is owner:
-            # A page of problems belongs to its tutorial, so it sits one
-            # level under it — the tutorial stays a plain link back to
+            # A page of problems or a context page belongs to its
+            # tutorial, so it sits one level under it — the tutorial stays a plain link back to
             # itself, and the page of problems is the bold line beneath.
             tutorial_items.append(
                 f'<div role="listitem">{link}<div role="list">{own_rung}</div></div>'
@@ -2605,18 +2725,16 @@ def cumulative_glossary(
     on a term repeated later, so a definition never contradicts an earlier
     one on the same page.
 
-    A practice page has no series position that means anything —
-    `practice_for`/`practice_across` name what it tests instead of where it
-    sits — so its reference is the union of the tutorial(s) it names, each
-    resolved the same way, rather than its own (nonexistent) coverage.
+    A practice or context page has no series position that means anything —
+    `practice_for`/`practice_across`/`context_for` name what it belongs to
+    instead of where it sits — so its reference is the union of the
+    tutorial(s) it names, each resolved the same way, rather than its own
+    (nonexistent) coverage.
     """
     reader_at = reader_at or tutorial
 
-    if tutorial.is_practice:
-        targets = (
-            [tutorial.practice_for] if tutorial.practice_for
-            else list(tutorial.practice_across)
-        )
+    if tutorial.is_companion:
+        targets = list(tutorial.owners)
         seen: set[tuple[str, str]] = set()
         found: list[dict] = []
         for slug in targets:
@@ -3249,6 +3367,27 @@ def nav_search_html() -> str:
     )
 
 
+def companion_buttons_html(
+    member: Tutorial,
+    practice: dict[str, Tutorial],
+    context: dict[str, list[Tutorial]] | None = None,
+) -> str:
+    """The buttons after a tutorial's line on a contents list: its practice
+    page, then each context page, which is marked with a small "context"
+    tag since its title names its subject rather than its kind. Paths are
+    relative to the site root, where every contents page lives."""
+    extra = ""
+    also = practice.get(member.slug)
+    if also is not None:
+        where = also.out_path.relative_to(OUT).as_posix()
+        extra += f' <a class="dl-contents-practice" href="{where}">Practice</a>'
+    for page in (context or {}).get(member.slug, []):
+        where = page.out_path.relative_to(OUT).as_posix()
+        extra += (f' <a class="dl-contents-context" href="{where}">'
+                  f'{html.escape(page.title)} <span class="dl-contents-tag">context</span></a>')
+    return extra
+
+
 def render_tutorials_list(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
@@ -3256,6 +3395,7 @@ def render_tutorials_list(
     practice: dict[str, Tutorial] | None = None,
     mixed: dict[str, list[Tutorial]] | None = None,
     course_archives: dict[str, Path] | None = None,
+    context: dict[str, list[Tutorial]] | None = None,
 ) -> str:
     """"All tutorials": every course, every series, in order — the whole
     site on one page, for a reader who wants to browse rather than
@@ -3322,6 +3462,7 @@ def render_tutorials_list(
     for course in courses_present(groups, retired, mixed):
         out.extend(render_course_body(
             catalog[course], groups, archives, retired, practice, mixed, course_archives,
+            context=context,
         ))
     return "\n".join(out)
 
@@ -3335,6 +3476,7 @@ def render_course_body(
     mixed: dict[str, list[Tutorial]],
     course_archives: dict[str, Path],
     heading: bool = True,
+    context: dict[str, list[Tutorial]] | None = None,
 ) -> list[str]:
     """One course's own content: its heading, its whole-course download
     offer, every series in it (each with its own download offer and its
@@ -3382,12 +3524,7 @@ def render_course_body(
         out.append('<ol class="dl-contents">')
         for member in members:
             href = member.out_path.relative_to(OUT).as_posix()
-            also = practice.get(member.slug)
-            extra = ""
-            if also is not None:
-                where = also.out_path.relative_to(OUT).as_posix()
-                extra = (f' <a class="dl-contents-practice" href="{where}">'
-                         "Practice</a>")
+            extra = companion_buttons_html(member, practice, context)
             out.append(
                 f'<li><a class="dl-contents-btn" href="{href}"{progress_attrs(member)}>'
                 f'<span class="dl-contents-kicker">Explore</span>'
@@ -4019,6 +4156,44 @@ def practice_link(tutorial: Tutorial, practice: Tutorial | None,
     return "".join(parts)
 
 
+def context_link(tutorial: Tutorial, context: list[Tutorial] | None = None,
+                 registry: dict[str, Tutorial] | None = None) -> str:
+    """The link between a tutorial and its context pages, in both directions.
+
+    Placed as practice_link() places its own: on the tutorial at the end,
+    after the practice link, one block per context page; on the context page
+    at the top, naming every tutorial it is background for. Both say plainly
+    that nothing on the context page is needed, so that a reader short of
+    time can pass it by without worrying.
+    """
+    if tutorial.is_context:
+        links = []
+        for slug in tutorial.context_for:
+            owner = (registry or {}).get(slug)
+            if owner is None:
+                continue
+            where = os.path.relpath(owner.out_path, tutorial.out_path.parent)
+            links.append(f'<a href="{where}">{html.escape(owner.title)}</a>')
+        if not links:
+            return ""
+        named = links[0] if len(links) == 1 else ", ".join(links[:-1]) + " and " + links[-1]
+        those = "that tutorial" if len(links) == 1 else "those tutorials"
+        return (
+            f'<p class="dl-context-back">Background for {named}. Nothing here '
+            f"is needed to finish {those}.</p>"
+        )
+    parts = []
+    for page in context or []:
+        where = os.path.relpath(page.out_path, tutorial.out_path.parent)
+        parts.append(
+            f'<div class="dl-context-link"><p><a href="{where}">'
+            f"{html.escape(page.title)}</a> — background reading, for when you "
+            "want to know more. Nothing in it is needed to finish this "
+            "tutorial.</p></div>"
+        )
+    return "".join(parts)
+
+
 _LICENCE_URL = "https://github.com/deweydex/dewlab/blob/main/LICENSE.md"
 _REPORT_REPO_URL = "https://github.com/deweydex/dewlab"
 FEEDBACK_CONFIG_FILE = "feedback.yaml"
@@ -4178,6 +4353,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           practice: Tutorial | None = None,
           registry: dict[str, Tutorial] | None = None,
           also: list[Tutorial] | None = None,
+          context: list[Tutorial] | None = None,
           glossary: list[dict] | None = None,
           notes: list[dict] | None = None,
           datasets: list[dict] | None = None,
@@ -4290,7 +4466,8 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{RUNTIME_URL}}": versioned(f"{up}assets/", "tutorial-runtime.js"),
         "{{ROOT_BASE}}": up,
         "{{CRUMBS}}": (
-            crumb_trail_html(tutorial, groups, members, up, practice, registry, also)
+            crumb_trail_html(tutorial, groups, members, up, practice, registry, also,
+                             context)
             if groups is not None
             else html.escape(f"{course_title(tutorial.course) or 'dewlab'} · {tutorial.meta['year']}")
         ),
@@ -4301,9 +4478,12 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
             page_notice(tutorial, default)
             + (practice_link(tutorial, practice, registry, also)
                if tutorial.is_practice else "")
+            + (context_link(tutorial, context, registry)
+               if tutorial.is_context else "")
             + also_part_of(tutorial, body_html, up)
             + (practice_link(tutorial, practice, registry, also)
-               if not tutorial.is_practice else "")
+               + context_link(tutorial, context, registry)
+               if not tutorial.is_companion else "")
         ),
         # `<` escaped so nothing in a cell can close the surrounding <script>.
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
@@ -4448,7 +4628,7 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     # just built by crumb_trail_html() instead of nav_for(). The page's own
     # rung is its contents, whose links point inside this file and work
     # from a student's disk, so that one rung stays — minus its practice
-    # lines, which point at other files.
+    # and context lines, which point at other files.
     def keep_contents(match: re.Match) -> str:
         contents = re.search(
             r'<details class="dl-crumb-level dl-crumb-level-4">.*?</details>',
@@ -4456,7 +4636,7 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
         )
         if not contents:
             return ""
-        own = re.sub(r'<div role="listitem" class="dl-crumb-practice">.*?</div>', "", contents.group(0), flags=re.DOTALL)
+        own = re.sub(r'<div role="listitem" class="dl-crumb-(?:practice|context)">.*?</div>', "", contents.group(0), flags=re.DOTALL)
         return f'<nav class="dl-crumbtrail" aria-label="Contents">{own}</nav>'
     page = re.sub(r"<nav class=\"dl-crumbtrail\".*?</nav>", keep_contents, page, flags=re.DOTALL)
     page = re.sub(
@@ -4972,6 +5152,7 @@ def write_all_tutorials_page(
     practice: dict[str, Tutorial] | None = None,
     mixed: dict[str, list[Tutorial]] | None = None,
     course_archives: dict[str, Path] | None = None,
+    context: dict[str, list[Tutorial]] | None = None,
 ) -> Path:
     """Every course, every series, every tutorial — the page "All
     tutorials" on the front page and every other page's own "All
@@ -5005,7 +5186,7 @@ def write_all_tutorials_page(
         # This page is a contents list. It does not need one of its own.
         # Nor a series to navigate — it is the thing every series links back to.
         "{{BODY}}": render_tutorials_list(
-            groups, archives, retired, practice, mixed, course_archives),
+            groups, archives, retired, practice, mixed, course_archives, context),
         "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
         "{{FOOTER}}": site_footer("all-tutorials", "1"),
         "{{REPORT_DOORS}}": report_doors_panel_html("all-tutorials", "1"),
@@ -5129,6 +5310,7 @@ def write_course_page(
     practice: dict[str, Tutorial],
     mixed: dict[str, list[Tutorial]],
     course_archives: dict[str, Path],
+    context: dict[str, list[Tutorial]] | None = None,
 ) -> Path:
     """One course's own page: its description, its QQI code, and only its
     own tutorials and practice pages — not the other courses' too.
@@ -5150,6 +5332,7 @@ def write_course_page(
         body.append(f"<p>{html.escape(para)}</p>")
     body.extend(render_course_body(
         course, groups, archives, retired, practice, mixed, course_archives, heading=False,
+        context=context,
     ))
 
     # `course` is what the runtime remembers: opening a tutorial from here
@@ -5306,7 +5489,7 @@ def warn_about_titles_and_overlap(tutorials: list[Tutorial]) -> None:
     second look, and nothing else would ever mention it (refactor
     decisions: DECISIONS_LOG 7.172).
     """
-    pages = [t for t in tutorials if t.is_default and not t.is_practice]
+    pages = [t for t in tutorials if t.is_default and not t.is_companion]
     by_title: dict[str, list[Tutorial]] = {}
     for page in pages:
         by_title.setdefault(page.title.strip().lower(), []).append(page)
@@ -5469,6 +5652,7 @@ def write_topics_page(
     shell: str,
     registry: dict[str, Tutorial],
     practice: dict[str, Tutorial],
+    context: dict[str, list[Tutorial]] | None = None,
 ) -> Path | None:
     """"Browse by topic" — the topic tree's sibling, and a genuinely
     different question. The tree says what a topic needs before it, for
@@ -5514,11 +5698,7 @@ def write_topics_page(
                 )
                 continue
             href = member.out_path.relative_to(OUT).as_posix()
-            also = practice.get(member.slug)
-            extra = ""
-            if also is not None:
-                where = also.out_path.relative_to(OUT).as_posix()
-                extra = f' <a class="dl-contents-practice" href="{where}">Practice</a>'
+            extra = companion_buttons_html(member, practice, context)
             items.append(
                 f'<li><a class="dl-contents-btn" href="{href}"{progress_attrs(member)}>'
                 f'<span class="dl-contents-kicker">Explore</span>'
@@ -5594,14 +5774,14 @@ def write_search_index(
 
     `assets/search.js` loads this once and does the actual matching
     client-side — nothing server-side to run, consistent with the rest
-    of a site that is just static files. Archived and practice-only
-    pages are left out: a search result should be something worth
-    sending a reader to first, and both already sit off the main
-    reading order for the same reason.
+    of a site that is just static files. Archived, practice and
+    context pages are left out: a search result should be something
+    worth sending a reader to first, and all three already sit off the
+    main reading order for the same reason.
     """
     documents = []
     for tutorial in tutorials:
-        if tutorial.archived or not tutorial.is_default or tutorial.is_practice:
+        if tutorial.archived or not tutorial.is_default or tutorial.is_companion:
             continue
         terms = sorted({entry["term"] for entry in own_glossary(tutorial) if entry.get("term")})
         course = courses().get(tutorial.course)
@@ -5662,7 +5842,8 @@ def tutorial_facets(
       * `groups` — the curated topic groups from topic-groups.yaml, which
         already allow a tutorial in more than one group by design.
 
-    A tutorial claiming no outcomes (two real ones, plus every practice page)
+    A tutorial claiming no outcomes (two real ones, plus every practice and
+    context page)
     simply has no subject and no level. That is left as absence rather than
     guessed at, and the panel offers it as "unfiled" instead of hiding it.
     """
@@ -5719,7 +5900,7 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
     facets = tutorial_facets(tutorials)
     seen: dict[tuple[str, str], dict] = {}
     for tutorial in sorted(tutorials, key=lambda t: t.slug):
-        if tutorial.archived or not tutorial.is_default or tutorial.is_practice:
+        if tutorial.archived or not tutorial.is_default or tutorial.is_companion:
             continue
         facet = facets.get(tutorial.slug, {})
         for entry in own_glossary(tutorial):
@@ -5857,6 +6038,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
 
     catalog = courses()
     place_tutorials(tutorials, registry)
+    context = context_pages(tutorials, registry)
     practice = practice_pairs(tutorials, registry)
     mixed = mixed_practice(tutorials, registry)
     # A frozen release sits where its current one does.
@@ -5869,7 +6051,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     retired = archived_of(tutorials)
     warn_about_titles_and_overlap(tutorials)
     for tutorial in tutorials:
-        if (tutorial.is_default and not tutorial.is_practice and not tutorial.placements
+        if (tutorial.is_default and not tutorial.is_companion and not tutorial.placements
                 and catalog and tutorial.status == "live"):
             print(f"note: no course lists {tutorial.slug}. It builds at "
                   f"tutorials/{tutorial.slug}.html, and nothing links to it — add "
@@ -5891,6 +6073,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             practice=practice.get(tutorial.slug),
             also=[page for pages in mixed.values() for page in pages
                   if tutorial.slug in page.practice_across],
+            context=context.get(tutorial.slug),
             registry=registry,
             glossary=cumulative_glossary(tutorial, registry, groups),
             notes=[{"id": n.id, "html": n.html} for n in tutorial.notes],
@@ -5930,18 +6113,19 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.append(write_page(shell, "home"))
         written.append(write_page(shell, "features"))
         written.append(write_all_tutorials_page(
-            shell, groups, archives, retired, practice, mixed, course_archives
+            shell, groups, archives, retired, practice, mixed, course_archives,
+            context,
         ))
         written.append(write_all_notes_page(shell, tutorials))
         for course in catalog.values():
             written.append(write_course_page(
                 shell, course, groups, archives, retired, practice, mixed,
-                course_archives,
+                course_archives, context,
             ))
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
             written.append(tree)
-        topics_page = write_topics_page(shell, registry, practice)
+        topics_page = write_topics_page(shell, registry, practice, context)
         if topics_page is not None:
             written.append(topics_page)
         written.append(write_page(shell, "about"))

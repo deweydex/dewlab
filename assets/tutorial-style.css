@@ -1604,6 +1604,13 @@ p code, li code {
 .dl-crumb-count { margin-left: 0.4rem; font-size: 0.85em; font-weight: 400; color: var(--dl-muted); }
 .dl-crumb-practice { margin-top: 0.25rem; }
 .dl-crumb-practice a { color: var(--dl-orange); }
+.dl-crumb-context { margin-top: 0.25rem; }
+.dl-crumb-tag,
+.dl-contents-tag {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--dl-muted);
+}
 /* Versions, under this tutorial's own rung of the tree (moved there by
    initVersionsSection()): which release you are on is a where-you-are
    question. Set at the tree's own size, as one more line of it. */
@@ -3496,7 +3503,9 @@ p code, li code {
 .dl-archived .dl-version-carry { margin-top: 0.5rem; font-size: 0.85rem; }
 
 .dl-practice-link,
-.dl-practice-back {
+.dl-practice-back,
+.dl-context-link,
+.dl-context-back {
   max-width: var(--dl-line-width);
   margin: 1.8rem 0;
   padding: 0.7rem 0.9rem;
@@ -3508,6 +3517,12 @@ p code, li code {
   line-height: 1.55;
 }
 .dl-practice-back { margin-top: 0; }
+/* Context pages (build.py's context_link()): the same box, in a quieter
+   colour, since it is optional reading rather than the next thing to do. */
+.dl-context-link,
+.dl-context-back { border-left-color: var(--dl-cell-border); }
+.dl-context-link > p { margin: 0; }
+.dl-context-back { margin-top: 0; }
 
 /* "This page is also part of …": one line under the heading on a page
    that more than one course lists (build.py's also_part_of()). */
@@ -3613,6 +3628,20 @@ p code, li code {
 }
 .dl-contents-practice:hover {
   background: rgba(212, 105, 42, 0.14);
+  text-decoration: none;
+}
+.dl-contents-context {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid var(--dl-cell-border);
+  color: var(--dl-link);
+  text-decoration: none;
+}
+.dl-contents-context:hover {
+  background: var(--dl-cell-bg);
   text-decoration: none;
 }
 

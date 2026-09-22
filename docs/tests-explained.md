@@ -52,6 +52,7 @@ If you're not sure which one a new test belongs in, ask "does this call
 | `test_releases.py` | Version/release numbering and manifest fields |
 | `test_downloads.py` | Standalone/zip export generation |
 | `test_practice.py` | Practice-page linking rules |
+| `test_context.py` | Context-page linking rules and the build errors a bad `context_for:` gets |
 | `test_links.py` | Cross-page link resolution and validation |
 | `test_old_addresses.py` | Legacy-URL redirect stub generation |
 | `test_check.py` | `check.py`'s own Problems, cross-checked against real `BuildError`s |

@@ -174,13 +174,14 @@ def tutorial_path(repo: Path, slug: str, course: str | None = None) -> Path:
 
 
 def is_practice_file(path: Path) -> bool:
+    """A page no course file may list: a page of problems or a context page."""
     text = path.read_text()
-    return "practice_for" in text or "practice_across" in text
+    return "practice_for" in text or "practice_across" in text or "context_for" in text
 
 
 def listed_tutorials(repo: Path) -> list[str]:
-    """Every id with a file behind it and no practice line, sorted — what
-    write() keeps the default course listing."""
+    """Every id with a file behind it and no practice or context line,
+    sorted — what write() keeps the default course listing."""
     return sorted(
         folder.name for folder in (repo / "tutorials").iterdir()
         if folder.is_dir() and (folder / f"{folder.name}.md").is_file()
