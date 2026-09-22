@@ -1,20 +1,29 @@
 ---
-title: "Sections, and the tags that mean something"
+title: "Semantic HTML: tags that describe their content"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  why-this-happens:
+  why-does-this-happen:
     covers: [WA-LO2]
-  your-turn:
+  now-in-your-own-site:
     touches: [WA-LO8]
 ---
 
-# Sections, and the tags that mean something
+# Semantic HTML: tags that describe their content
 
 Your fork's `index.html` is full of tags like `<nav>`, `<header>` and
-`<section>`, when a plain `<div>` could hold the same content. Try the box
-below, then swap `<div>` for `<section>` in the first one and see whether
-anything changes on the page.
+`<section>`. A plain `<div>` could hold the same content. So why use
+different tags? On this page we:
+
+- swap one container tag for another, and see what changes
+- find out what these tags tell the browser and other software
+- add a new section to your own site
+
+## Let's try it
+
+The HTML below has two blocks of content. The first uses `<div>`, and
+the second uses `<section>`. The code under it is CSS, the language for
+how a page looks. It draws a border around each of the two blocks.
 
 ```html site
 id: semantic-html
@@ -39,26 +48,54 @@ div, section {
 }
 ```
 
-Both boxes look identical. Swapping the tag changes nothing you can see.
+1. Look at the preview. Can you see any difference between the two
+   blocks?
+2. In the HTML, change the first `<div>` to `<section>`, and `</div>` to
+   `</section>`. Does anything change on the page?
+3. Now change them back to `<div>` and `</div>`. In the CSS box, what
+   happens if we delete `, section` from the first line?
 
-## Why this happens
+## Why does this happen?
 
-`<div>` creates a generic container. It groups content together without
-saying what that content is. `<nav>`, `<header>`, `<main>` and `<section>`
-are containers too, but each one names its content. A `<nav>` says this is
-navigation. A `<main>` says this is the main content. A `<section>` says
-this is one part of it.
+Now we can explain what we saw. The two blocks look the same, and
+swapping the tag changes nothing we can see. How a box looks comes from
+the CSS, and the CSS gives `div` and `section` the same border. When we
+deleted `, section`, only the `<div>` kept its border.
 
-A screen reader, software that reads a page aloud for someone who cannot
-see it, can announce "navigation" on reaching a `<nav>`. Search engines and
-other developers reading your code use these tags the same way. Choosing a
-semantic tag over `<div>` changes what a page means. It usually does not
-change how the page looks.
+So what does the tag change? It changes what the content *means*.
 
-## Your turn
+- `<div>` makes a generic container. It groups content together, but it
+  does not say what that content is.
+- `<nav>`, `<header>`, `<main>` and `<section>` are containers too. Each
+  one names the kind of content it holds.
 
-Let's open your fork and find the closing `</section>` tag of the
-about-preview section. Try adding a new section straight after it:
+A *semantic element* is a tag that names the kind of content it holds.
+Here are four of them:
+
+| Tag | What it says about its content |
+|---|---|
+| `<nav>` | This is navigation: links to other pages or parts of the page. |
+| `<header>` | This is introductory content, such as a title or a logo. |
+| `<main>` | This is the main content of the page. |
+| `<section>` | This is one meaningful part of the page. |
+
+Who reads this meaning? A screen reader does. A screen reader is
+software that reads a page aloud for someone who cannot see it. It can
+say "navigation" when it reaches a `<nav>`. Search engines use these
+tags too, and so do other developers who read your code. Choosing a
+semantic tag in place of a `<div>` changes what a page means. It
+usually does not change how the page looks.
+
+Sometimes we might notice that a page with no CSS at all shows a
+`<div>` and a `<section>` the same way. Each one starts on a new line
+and takes up the full width, with no border and no extra space. The
+browser gives them the same look, so the tag is free to say what the
+content is. `<div>` is still useful. It is the right choice when a group
+of content has no special meaning, and we only need a box to style.
+
+## Now in your own site
+
+Here is a new section for your fork's `index.html`:
 
 ```html
 <section id="skills" class="section skills-section">
@@ -73,15 +110,29 @@ about-preview section. Try adding a new section straight after it:
 </section>
 ```
 
-Save and refresh. The new section appears already styled, without you
-writing any new CSS, because `class="section"` and `class="card"` reuse
-rules already in `styles.css`.
+1. In your fork, open `index.html`.
+2. Find the closing `</section>` tag of the about-preview section.
+3. Straight after it, paste the new section above.
+4. Change the text inside `<h2>`, `<h3>` and the two `<p>` tags to your
+   own words.
+5. Save, and refresh.
 
-## What you have now
+Does the new section appear with a style of its own? You did not write
+any new CSS. The section is styled because `class="section"` and
+`class="card"` reuse rules that are already in `styles.css`. A `class`
+attribute can hold more than one name, with a space between each one,
+as in `class="section skills-section"`. We meet classes properly in
+[Selectors and classes](tutorial:selectors-and-classes). The
+`id="skills"` gives this section a name of its own, and we come back to
+`id` in [Three kinds of link](tutorial:three-kinds-of-link).
 
-Content grouped in containers that say what they are, not only how they
-look.
+## What we have now
 
-A *semantic element* is a tag, such as `<nav>` or `<section>`, that names
-the kind of content it holds. `<section>` marks one meaningful part of a
-page. `<div>` is a generic container with no meaning of its own.
+We can now group content in containers that say what the content is, as
+well as how it looks.
+
+| Word | Meaning | Example |
+|---|---|---|
+| *semantic element* | A tag that names the kind of content it holds | `<nav>`, `<section>` |
+| `<section>` | One meaningful part of a page | `<section id="skills">` |
+| `<div>` | A generic container with no meaning of its own | `<div class="container">` |

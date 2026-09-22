@@ -1,19 +1,23 @@
 ---
-title: "The skeleton: head and body"
+title: "The head and body of a page"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  why-this-happens:
+  why-does-this-happen:
     covers: [WA-LO2]
-  your-turn:
+  now-in-your-own-site:
     touches: [WA-LO8]
 ---
 
-# The skeleton: head and body
+# The head and body of a page
 
-You already changed the `<title>` element in your fork. Try the same page
-below, but look closely this time. The title and the heading say the same
-words. Only one of them shows up.
+On the last page we changed the `<title>` element in your fork. Let's
+look more closely at it this time. Why does some text on a page never
+appear on the page itself?
+
+## Let's try it
+
+The code below has a `<title>` and an `<h1>`. Both say the same words.
 
 ```html site
 id: skeleton-html
@@ -23,38 +27,77 @@ site: skeleton
 <p>Both lines above say "My page". Only one of them renders below.</p>
 ```
 
-The `<h1>` text appears. The `<title>` text does not; on a real page it
-would show up in the browser tab instead, not in the preview here.
+1. Before changing anything, look at the preview. How many times does
+   "My page" appear?
+2. What if we change the text inside `<title>`? Does the preview change?
+3. What about the text inside `<h1>`?
 
-## Why this happens
+The `<h1>` text appears. The `<title>` text does not. Where do you think
+it went? On a real page, it shows up in the browser tab instead, not in
+the page itself.
 
-Every HTML page splits into two parts. Let's see why the title
-disappeared from the preview. The *head* holds information about the
-page: its `<title>`, and other details a visitor does not see directly.
-The *body* holds everything a visitor actually sees: headings,
-paragraphs, images, and the rest.
+## Why does this happen?
 
-`<title>` lives in the head, which is why its text goes to the browser tab
-rather than the page itself. `<h1>` lives in the body, alongside all your
-other visible content.
+Every HTML page splits into two parts. Here is a whole page, so we can
+see both:
 
-## Your turn
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My page</title>
+  </head>
+  <body>
+    <h1>My page</h1>
+    <p>Everything a visitor sees goes here.</p>
+  </body>
+</html>
+```
 
-Let's open `index.html` in your fork again. Inside the hero section
-there is an `<h1>` element — it currently says "Welcome to My
-Portfolio". Try changing it to something that represents you, then save
-and refresh.
+- The *head* holds information about the page: its `<title>`, and other
+  details a visitor does not see directly.
+- The *body* holds everything a visitor sees: headings, paragraphs,
+  images, and the rest.
 
-Now compare the two changes we have made. The title, in the head, changed
-your browser tab. The heading, in the body, changed the page itself. Try
-making them identical for a moment, then different again, and notice
-which feels right for your site.
+Now we can explain what we saw. `<title>` lives in the head, which is
+why its text goes to the browser tab and not to the page. `<h1>` lives
+in the body, with all the other visible content.
 
-## What you have now
+Sometimes we might notice that the code in the box above has no
+`<head>` or `<body>` tags at all, and yet the `<title>` still went to the
+right place. Browsers fill in the missing parts of the skeleton for us.
+It is still good practice to write them out, so that anyone reading the
+file, including you later on, can see where each piece belongs.
 
-A page split into two parts, and a reason for it.
+The title matters more than it might seem. It is the name a page has
+when someone bookmarks it, and search engines usually show it as the
+heading of a search result. When a page has no title, the browser tab
+often shows the file name or the web address instead.
 
-The *head* is the part of the page holding information about it, not
-shown directly to a visitor. The *body* is the part holding everything a
-visitor sees. `<title>` is the head element whose text appears in the
-browser tab.
+## Now in your own site
+
+We are back in `index.html` in your fork.
+
+1. Inside the hero section there is an `<h1>` element. It says "Welcome
+   to My Portfolio".
+2. What would represent you better? Change the text to that.
+3. Save, and refresh.
+
+We have now made two changes. How do they compare?
+
+| What we changed | It lives in the | It changed |
+|---|---|---|
+| `<title>`, on the last page | head | the browser tab |
+| `<h1>`, on this page | body | the page itself |
+
+What happens if we make them identical for a moment, then different
+again? Which feels right for your site?
+
+## What we have now
+
+We now know that every page has two parts, and why.
+
+- The *head* holds information about the page. It is not shown directly
+  to a visitor.
+- The *body* holds everything a visitor sees.
+- `<title>` is the head element whose text appears in the browser tab.

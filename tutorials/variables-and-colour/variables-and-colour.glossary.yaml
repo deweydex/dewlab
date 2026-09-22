@@ -8,14 +8,22 @@ entries:
     kind: concept
     definition: >
       A CSS variable, also called a custom property, is a value defined
-      once and read back wherever it is used. Change the definition,
-      and everywhere that reads it changes too.
+      once and read back wherever it is used. Its name starts with two
+      dashes. Change the definition, and everywhere that reads it
+      changes too.
   - term: ":root"
     kind: keyword
     definition: >
-      `:root` is the selector usually holding a page's CSS variable
-      definitions.
+      `:root` is a selector that matches the `<html>` element. A page's
+      CSS variables are usually defined there, so every element can
+      read them.
   - term: "var()"
     kind: function
     definition: "Reads a CSS variable's value back into a declaration."
     example: "background: var(--brand-color);"
+  - term: hex colour
+    kind: concept
+    definition: >
+      A hex colour is a `#` followed by three pairs of characters, for
+      the amount of red, green and blue. Each pair goes from `00` (none)
+      to `ff` (full), so `#000000` is black and `#ffffff` is white.

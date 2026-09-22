@@ -23,3 +23,10 @@ entries:
       The `alt` attribute describes an image in words, for a screen
       reader to read aloud, or for a visitor to see if the image fails
       to load.
+  - term: path
+    kind: concept
+    definition: >
+      A path is the address of a file inside your own site, starting
+      from the HTML file that uses it. `images/photo.jpg` means a file
+      called `photo.jpg` in a folder called `images`, inside the HTML
+      file's folder.

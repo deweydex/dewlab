@@ -13,5 +13,5 @@ entries:
     kind: keyword
     definition: >
       The `flex-wrap` property lets flex items move to a new row when
-      they no longer fit, rather than overflow or squeeze to force a
+      they no longer fit, so they do not overflow or squeeze to force a
       fit.

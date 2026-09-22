@@ -12,11 +12,12 @@ entries:
   - term: auto margin
     kind: concept
     definition: >
-      An auto margin, written `margin: 0 auto`, centres a width-capped
-      element by splitting the leftover space evenly between its left
-      and right sides.
+      An auto margin is a margin set to `auto`. On the left and right
+      of a width-capped element, auto margins split the leftover space
+      evenly, which centres it. `margin: 0 auto` is the usual way to
+      write that.
   - term: container
     kind: concept
     definition: >
-      A container is the element on a page whose width and centring
-      most of the rest of the page sits inside.
+      A container is an element that holds most of a page's content,
+      and sets how wide that content can grow and where it sits.

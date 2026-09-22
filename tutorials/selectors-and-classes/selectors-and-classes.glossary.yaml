@@ -8,11 +8,12 @@ entries:
   - term: class selector
     kind: concept
     definition: >
-      A class selector, such as `.highlight`, matches every element
-      carrying that class, wherever it sits on the page.
+      A class selector is a dot and a class name, such as `.highlight`.
+      It matches every element carrying that class, wherever it sits on
+      the page.
   - term: descendant selector
     kind: concept
     definition: >
-      A descendant selector is two selectors joined by a space,
-      matching an element nested inside another at any depth, not only
-      as a direct child.
+      A descendant selector is two selectors joined by a space, such as
+      `.highlight p`. It matches an element nested inside another at any
+      depth, not only as a direct child.

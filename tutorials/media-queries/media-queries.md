@@ -3,17 +3,25 @@ title: "Media queries"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  why-this-happens:
+  why-does-this-happen:
     covers: [WA-LO9]
-  your-turn:
+  now-in-your-own-site:
     touches: [WA-LO9]
 ---
 
 # Media queries
 
-Drag the preview width slider from wide to narrow. Somewhere along the
-way, the message below changes colour, with nothing else on the page
-touched.
+A phone has much less room than a laptop. How can one stylesheet suit
+both? On this page we:
+
+- write CSS that applies only at some widths
+- find the width where that CSS switches on
+- add a rule for very small screens to your own site
+
+## Let's try it
+
+The HTML has one message. The CSS has a rule for the message, and then
+a second rule for it, inside an `@media` block.
 
 ```html site
 id: media-html
@@ -30,44 +38,115 @@ site: media
 }
 ```
 
-## Why this happens
+The preview has a **Preview width** slider. Beside it, a number shows
+the preview's width in pixels.
 
-A *media query* wraps a block of CSS in a condition based on the
-screen, most often its width. `@media (max-width: 350px) { ... }` applies
-the rules inside it only when the screen is 350 pixels wide or narrower.
-Outside that condition, the rules inside do nothing at all.
+1. Drag the slider slowly from wide to narrow. Does anything about the
+   message change along the way? Watch the number: at about what width
+   does it happen?
+2. Does anything else on the page change at the same moment?
+3. What happens if we change `350px` to `500px`? Does the change come
+   sooner or later as we drag?
+4. What happens if we change `max-width` to `min-width`?
 
-`min-width` works the other way, applying its rules only above a given
-width rather than below it.
+## Why does this happen?
 
-## Your turn
+Now we can explain what we saw. While the preview was wide, the message
+kept its normal look. At about 350 pixels, it changed colour, and
+nothing else on the page was touched.
 
-Let's open your browser's developer tools and switch to its device or
-responsive mode, then resize to a narrow width, like a phone's. Now open
-your fork and find the `@media (max-width: 768px)` block at the bottom
-of `styles.css`. Try adding a second breakpoint for very small screens:
+A *media query* wraps a block of CSS in a condition. The rules inside
+apply only while the condition is true. Outside that condition, the
+rules inside do nothing at all.
 
 ```css
-@media (max-width: 480px) {
-    .hero h1 {
-        font-size: 1.75rem;
-    }
-
-    .container {
-        padding: 0 1rem;
-    }
+@media (max-width: 350px) {                     /* the condition */
+  .msg { background: #d9720c; color: white; }   /* used only while it is true */
 }
 ```
 
-Try changing `max-width: 480px` to `max-width: 800px` and notice when
-the smaller heading starts to apply. Then try `min-width` in place of
-`max-width`, and the rule applies above that width instead of below it.
+The condition here is about width, the most common kind. It tests the
+width of the *viewport*. The viewport is the part of the browser window
+that shows the page. On a phone, that is most of the screen. In our
+example, the viewport is the preview itself, and that is why the slider
+turns the rule on and off.
 
-## What you have now
+- `max-width: 350px` means "when the viewport is 350 pixels wide or
+  narrower".
+- `min-width` works the other way. `min-width: 350px` means "when the
+  viewport is 350 pixels wide or wider". In step 4, the rule applied
+  above that width, not below it.
 
-CSS that only applies within a condition, rather than everywhere at once.
+The word `max-width` also appeared on [Setting a page's width and
+centring it](tutorial:the-container). The name is the same, but the job
+is different. There, `max-width` sets the widest an element can grow.
+Inside `@media ( )`, it tests the width of the viewport.
 
-A *media query* is a block of CSS that applies only when a condition,
-usually about screen width, is met. `max-width` in a media query applies
-below a given width. `min-width` in a media query applies above a given
-width.
+A *breakpoint* is a width where a media query switches on or off. In
+our example, the breakpoint is `350px`. In step 3 we moved it to
+`500px`, so the change came sooner as we dragged.
+
+Sometimes we might see a media query work in a desktop browser, and yet
+never switch on for a real phone. Oftentimes the page is missing this
+line in its `<head>`:
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1">
+```
+
+Without it, a phone lays the page out as if its screen were much wider,
+then shrinks the whole page to fit. The text looks tiny, and a
+`max-width` media query for phones never switches on.
+
+The order of the rules matters too. Suppose two media queries both
+match, and each has a rule with the same selector that sets the same
+property. Then the one further down the stylesheet wins. So a rule for very small screens belongs after a
+rule for larger ones. In [the browser inspector](tutorial:the-inspector),
+most browsers show a rule's `@media` condition right above it, which
+helps us see which one is in use.
+
+## Now in your own site
+
+1. Open your site in the browser, and open the inspector.
+2. Switch it to device mode, also called responsive mode. This mode
+   shows the page at the width of a phone or a tablet. In Chrome and
+   Edge it is the **Toggle device toolbar** button. In Firefox it is
+   **Responsive Design Mode**.
+3. Set a narrow width, like a phone's.
+4. In your fork, open `styles.css`. Find the `@media (max-width: 768px)`
+   block at the bottom.
+5. After that block, add a second breakpoint for very small screens:
+
+   ```css
+   @media (max-width: 480px) {
+       .hero h1 {
+           font-size: 1.75rem;
+       }
+
+       .container {
+           padding: 0 1rem;
+       }
+   }
+   ```
+
+6. Save, and refresh. Is the heading smaller at a phone's width?
+7. Change `max-width: 480px` to `max-width: 800px`. At what width does
+   the smaller heading start to apply now?
+8. Now try `min-width` in place of `max-width`. Does the rule apply
+   above that width, or below it?
+
+Can you find the width where your heading changes size, and say which
+media query caused it?
+
+## What we have now
+
+We can now write CSS that applies only while a condition is true, and
+not everywhere at once.
+
+| Word | Meaning | Example |
+|---|---|---|
+| *media query* | A block of CSS that applies only while a condition, most often about width, is true | `@media (max-width: 768px) { ... }` |
+| *viewport* | The part of the browser window that shows the page | |
+| *breakpoint* | A width where a media query switches on or off | `768px` |
+| `max-width` in a media query | Applies the rules inside at that width or narrower | `@media (max-width: 480px)` |
+| `min-width` in a media query | Applies the rules inside at that width or wider | `@media (min-width: 480px)` |

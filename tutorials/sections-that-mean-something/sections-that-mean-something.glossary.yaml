@@ -10,8 +10,8 @@ entries:
     kind: concept
     definition: >
       A semantic element is a tag that names the kind of content it
-      holds, such as `<nav>` or `<section>`, rather than only grouping
-      it.
+      holds, such as `<nav>` or `<section>`. A `<div>` only groups
+      content; a semantic element also says what that content is.
   - term: "<section>"
     kind: keyword
     definition: "`<section>` marks one meaningful part of a page."

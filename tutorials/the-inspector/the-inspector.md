@@ -3,60 +3,116 @@ title: "The browser inspector"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  opening-it:
+  opening-the-inspector:
     touches: [WA-LO10]
-  elements-the-pages-actual-structure:
+  the-elements-tab-how-the-page-is-built:
     covers: [WA-LO10]
-  console-where-errors-show-up:
+  the-console-tab-where-errors-show-up:
     covers: [WA-LO10]
 ---
 
 # The browser inspector
 
-Every browser has a tool that shows you the HTML and CSS actually
-running a page, on your own site or anyone else's. It is called the
-*inspector*, and it is the fastest way to find out why something looks
-wrong. If you are on the data track, this is one of only two pages in
-this series you need. The rest is about publishing a website.
+What can we do when a page looks wrong, and we cannot see why? Every
+browser has a tool for this. The *inspector* is a tool built into the
+browser that shows the HTML and CSS behind a page. It works on your own
+site, and on anyone else's. It is often the quickest way to find out why
+something looks wrong.
 
-## Opening it
+HTML is the language that says what each part of a page is: a heading,
+a paragraph, a link. CSS is the language that says how each part looks.
+We learn both in the next series, starting with [HTML: tags, elements
+and attributes](tutorial:a-page-is-files). For now, it is enough to know
+that the inspector shows both of them.
 
-Press `F12`, or `Ctrl+Shift+I` on Windows and Linux, or `Cmd+Option+I` on
-a Mac. Alternatively, right-click anything on a page and choose
-**Inspect**. Both open the same panel, usually docked to one side or the
-bottom of the window. The second method also selects whatever you
-clicked on.
+If you are on the data track, this is one of only two pages in this
+series you need. The rest of the series is about publishing a website.
 
-The panel has several tabs. Two matter for now.
+On this page we:
 
-## Elements: the page's actual structure
+- open the inspector
+- look at a page's structure in the **Elements** tab
+- find errors in the **Console** tab
 
-The **Elements** tab, called **Inspector** in Firefox, shows the HTML the
-browser is currently using to draw the page. This can differ slightly
-from the file you wrote, since the browser fixes small mistakes as it
-reads a page.
+## Opening the inspector
 
-Click an element in this tree, and the matching part of the page
-highlights so you can see exactly what you selected. Alongside the tree,
-a panel lists every CSS rule affecting that element, including ones
-overridden by something more specific. This is usually the fastest way
-to find out why a style you wrote is not the one actually showing.
+There are two ways to open it:
 
-You can also double-click any piece of text, tag or attribute in this
-tab to change it. The change only exists in your browser; it disappears
-on refresh and never touches the real file. This makes the Elements tab
-a safe place to try an idea before writing it into your code.
+- **With the keyboard.** Press `F12`, or `Ctrl+Shift+I` on Windows and
+  Linux, or `Cmd+Option+I` on a Mac.
+- **With the mouse.** Right-click anything on a page, and choose
+  **Inspect**. In some browsers the menu item is called **Inspect
+  Element**.
 
-## Console: where errors show up
+Both ways open the same panel. It sits along one side or the bottom of
+the window. The second way also selects the part of the page you
+right-clicked.
 
-The **Console** tab lists errors and warnings the browser found while
-loading the page. A misspelled file name, a failed script, or a missing
-CSS file typically shows up here first, before you notice anything is
-wrong.
+In Safari on a Mac, the inspector is hidden at first. To turn it on,
+open Safari's **Settings**, go to the **Advanced** tab, and switch on the
+option for web developer features.
 
-## What you have now
+Let's try it on this page:
 
-A way to look inside any page, including one that is not yet working the
-way you meant it to. [Troubleshooting](tutorial:troubleshooting) leans on
-this tool throughout; open the inspector alongside it the next time
-something does not look right.
+1. Right-click the heading at the top of this page.
+2. Choose **Inspect**.
+3. Can you find the words of the heading in the panel that opens?
+
+The panel has several tabs. Two of them matter for now.
+
+## The Elements tab: how the page is built
+
+The **Elements** tab shows the HTML that the browser is using to draw
+the page. In Firefox, this tab is called **Inspector**.
+
+This HTML can differ a little from the file you wrote. The browser fixes
+small mistakes as it reads a page, and the inspector shows the fixed
+version.
+
+Here is what we can do in this tab:
+
+1. Move the mouse over a line in the tree. Which part of the page lights
+   up?
+2. Click a line to select that element.
+3. Look at the panel beside the tree. It lists every CSS rule that
+   affects the selected element. A rule that another rule has overruled
+   is still listed, and it is shown crossed out.
+4. Double-click any piece of text, tag or attribute in the tree, and
+   change it. What happens on the page?
+
+The panel of rules is often the quickest way to find out why a style
+you wrote is not the one showing on the page. Look for your rule. Is it
+in the list? Is it crossed out?
+
+A change we make in this tab exists only in our own browser. It
+disappears when we refresh the page, and it never touches the real file.
+That makes the Elements tab a safe place to try an idea before we write
+it into our code.
+
+## The Console tab: where errors show up
+
+The **Console** tab lists errors and warnings. The browser finds these
+while it loads the page. A misspelt file name, a missing CSS file, or a
+script that failed will often show up here first, before you notice
+anything is wrong. A script is a small program, written in JavaScript,
+that runs inside the page.
+
+Sometimes we might open the Console on a site we did not build and see
+a long list of warnings. That is normal. Many working sites have some.
+On our own site, an error in red is worth reading, because it often
+names the file that the browser could not find.
+
+## What we have now
+
+We can now look inside any page, including one that is not yet working
+the way we meant it to.
+
+| Part | What it shows | How we use it |
+|---|---|---|
+| *inspector* | The HTML and CSS behind a page | Open it with `F12`, or right-click and choose **Inspect** |
+| **Elements** tab | The HTML the browser is using, and the CSS rules for each element | Find which rule wins, and try changes safely |
+| **Console** tab | Errors and warnings from loading the page | Find missing files and failed scripts |
+
+[Troubleshooting](tutorial:troubleshooting) uses this tool all the way
+through. Next time something does not look right, open the inspector
+beside it.

@@ -18,3 +18,8 @@ entries:
     definition: >
       A declaration is a property and a value, inside a rule's braces.
       `color: darkslateblue;` is one declaration.
+  - term: stylesheet
+    kind: concept
+    definition: >
+      A stylesheet is a file of CSS rules, like `styles.css`. A page
+      loads it with a `<link>` tag in its head.

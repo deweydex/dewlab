@@ -19,3 +19,20 @@ entries:
       On a flex child, `margin-top: auto` pulls all the leftover space
       above it, pushing the element itself to the far side of its
       container.
+  - term: "position: fixed"
+    kind: keyword
+    definition: >
+      `position: fixed` keeps an element in the same place in the
+      window all the time. It no longer takes up space on the page, so
+      the content after it can end up hidden behind it.
+  - term: "position: static"
+    kind: keyword
+    definition: >
+      `position: static` is the default value of `position`. The
+      element scrolls with the page.
+  - term: "position: relative"
+    kind: keyword
+    definition: >
+      On its own, `position: relative` looks the same as `static`. With
+      `top` or `left`, it moves the element a little from where it
+      would normally sit.

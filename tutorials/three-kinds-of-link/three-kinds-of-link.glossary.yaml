@@ -11,10 +11,16 @@ entries:
   - term: same-site link
     kind: concept
     definition: >
-      A same-site link is a filename in `href`, pointing at another
-      page within your own site rather than somewhere else on the web.
+      A same-site link has a filename in its `href`. It points at
+      another page in your own site. The browser looks for that file in
+      the same folder as the page you are on.
+  - term: external link
+    kind: concept
+    definition: >
+      An external link has a full web address in its `href`, starting
+      with `https://`. It points at a page on another site.
   - term: "mailto: link"
     kind: keyword
     definition: >
-      A mailto: link opens the visitor's email application instead of a
-      page, addressed to whoever follows the colon.
+      A mailto: link opens the visitor's email program, not a page, with
+      a new message addressed to whoever follows the colon.

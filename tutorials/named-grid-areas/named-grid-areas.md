@@ -3,23 +3,30 @@ title: "Named grid areas"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  why-this-happens:
+  why-does-this-happen:
     covers: [WA-LO9]
-  other-properties-from-the-same-lesson:
+  two-related-properties-order-and-auto-fill:
     touches: [WA-LO9]
-  your-turn:
+  now-add-a-sidebar:
     touches: [WA-LO9]
 ---
 
 # Named grid areas
 
-Grid can lay out a whole page at once: a header, a menu, a main area, a
-footer. `grid-template-areas` names each of those areas, so the layout
-reads like a small map instead of a row of column numbers.
+How could we lay out a whole page at once: a header, a menu, a main
+area and a footer? CSS grid can do it. With `grid-template-areas`, we
+give each area a name, and the layout reads like a small map instead of
+a row of column numbers. On this page we:
 
-Drag the preview width slider from narrow to wide. Somewhere along the
-way, the menu moves from above the main area to beside it, and the map in
-the CSS below is why.
+- change the width of a page and watch its layout change
+- read the map that describes the layout
+- meet two related properties, `order` and `auto-fill`
+- add a new area to the map ourselves
+
+## Let's try it
+
+The HTML below is a small page with four parts. The CSS places each
+part on a grid, and has a second map inside a media query.
 
 ```html site
 id: layout-html
@@ -67,17 +74,56 @@ footer { grid-area: footer; }
 }
 ```
 
-## Why this happens
+1. Look at `grid-template-areas` at the top of the CSS. How many quoted
+   lines does it have? How many words are in each line?
+2. Drag the preview's width slider to the narrow end. Where does the menu
+   (`nav`) sit?
+3. Now drag slowly to the wide end. Where does the menu sit now?
+4. Watch the pixel figure beside the slider. At what width does the
+   layout change? Can you find that number in the CSS?
+5. In the media query, what happens if we change `"nav main"` to
+   `"main nav"`? Change it back afterwards.
 
-`grid-template-areas` takes one quoted line per row of the grid. Each word
-in that line names an area, and repeating a name across several cells
-makes one area span all of them. `grid-area: header` on the `header`
-element then says which named area it fills.
+## Why does this happen?
 
-The narrow layout has four rows, one area each, so the menu sits above
-the main area. The media query redraws the same map for a wider screen:
-two columns, with the menu now beside the main area rather than above it.
-Nothing about the HTML changes, only which map applies.
+Now we can explain what we saw. At the narrow end, the menu sits above
+the main area. Somewhere along the way, it moves beside the main area.
+The two maps in the CSS are the reason.
+
+`display: grid` on `.page` makes it a grid. Its children are placed in
+rows and columns. `gap: 8px` sets the space between them, the same way
+`gap` did for a flex row.
+
+`grid-template-areas` is the map. It works like this:
+
+- It takes one quoted line for each row of the grid.
+- Each word in a line names one cell of that row.
+- Repeating a name across several cells makes one area span all of
+  them. So `"header header"` is one header area, two columns wide.
+
+Then each element needs to know which area it fills. That is the job of
+`grid-area`. The rule `header { grid-area: header; }` places the
+`header` element in the area named `header`.
+
+Now look at the two maps:
+
+| Map | Rows | Columns | Where the menu sits |
+|---|---|---|---|
+| `"header"` `"nav"` `"main"` `"footer"` | 4 | 1 | above the main area |
+| `"header header"` `"nav main"` `"footer footer"` | 3 | 2 | beside the main area |
+
+The narrow map has four rows, with one area in each. The media query
+`@media (min-width: 350px)` swaps in the wide map from 350 pixels up.
+That is the number from step 4. The HTML never changes. Only the map
+changes.
+
+The wide map also sets `grid-template-columns: 150px 1fr`. This gives
+the first column a width of 150 pixels. The unit `fr` means a share of
+the space that is left over, so `1fr` gives the second column all the
+rest. That is also why, in step 5, the main area was squeezed into 150
+pixels: `"main nav"` puts `main` in the first column.
+
+The drawing below shows the same two maps on one grid.
 
 <div class="dl-drawn dl-gridmap-wrap">
 <div class="dl-gm-control" hidden>
@@ -113,38 +159,68 @@ Nothing about the HTML changes, only which map applies.
 with them, because the lines are what makes the shape. <code>nav</code>
 is marked in both, so you can see where it went.</p>
 </div>
-## Other properties from the same lesson
 
-Two related properties are worth naming here, even without a live demo
-of their own. `order` changes a flex
-item's visual position without changing where it sits in the HTML. A
-screen reader still follows the HTML order, not the visual one, so a
-reordered page can confuse someone who cannot see the new order. Use
-`order` carefully for that reason. `auto-fill` fits as many columns as
-`auto-fit` does, but keeps any leftover columns empty rather than
-letting the existing items grow to fill them. [A grid
+Sometimes we might edit a map and find that the whole layout falls
+apart. Every quoted line must have the same number of words, and every
+named area must make a rectangle. If either rule is broken, the browser
+ignores the whole `grid-template-areas` declaration. A dot (`.`) in a
+line names an empty cell, which is useful when a line needs a gap.
+
+Chrome and Firefox can also show the grid for us, in the inspector we
+met on [The browser inspector](tutorial:the-inspector). Select the
+element with `display: grid`, and look for the grid options in the
+**Layout** panel.
+They draw the grid lines over the page, and can show the area names too.
+
+## Two related properties: order and auto-fill
+
+Two more properties are worth naming here, even without a live demo of
+their own.
+
+`order` changes a flex item's position on screen without changing where
+it sits in the HTML. It works for grid items too. A screen reader still
+follows the HTML order, and so does the Tab key. So a page that has been
+reordered on screen can confuse someone who cannot see the new order,
+or who moves through the page with a keyboard. For that reason, we use
+`order` with care.
+
+`auto-fill` is for a grid of many columns. It fits as many columns as
+will hold, and so does `auto-fit`. The difference is in the spare
+columns. `auto-fill` keeps any spare columns empty. `auto-fit` lets the
+existing items grow to fill the row. [A grid
 gallery](tutorial:a-grid-gallery), later in this course, covers
 `auto-fit` itself.
 
-## Your turn
+## Now add a sidebar
 
-Let's try adding a third column to the wide layout above, for a
-right-hand sidebar. First, give the new area a name in the media query's
-map. Then add an element for it in the HTML, and give that element a
-matching `grid-area`. Drag the slider wide again once you are done, to
-see the new column appear.
+The box above is ours to change. Can we give the wide layout a third
+column, for a sidebar on the right?
 
-## What you have now
+1. In the media query's map, give the new area a name, such as
+   `sidebar`. Each quoted line needs a third word, so that every line
+   has the same number of words.
+2. In the HTML, add an element for the sidebar, for example a `<div>`
+   with the class `area-sidebar`.
+3. In the CSS, give that element a matching `grid-area`, the way
+   `header`, `nav`, `main` and `footer` have one.
+4. You could also add a third width to `grid-template-columns`, such as
+   `150px 1fr 150px`.
+5. Drag the slider to the wide end again.
 
-A page-sized layout that redraws itself at a chosen width, described as a
-map rather than a set of column numbers.
+Does the new column appear on the right of the main area?
 
-`grid-template-areas` names each area of a grid as a small map, one
-quoted line per row. `grid-area` assigns an element to one of those
-named areas. `auto-fill` fits as many grid columns as `auto-fit`, but
-leaves any spare columns empty instead of growing the existing ones.
-`order` changes a flex item's visual position without changing its
-position in the HTML.
+## What we have now
+
+We can now describe a page-sized layout as a map, and make it redraw
+itself at a width we choose.
+
+| Word | Meaning | Example |
+|---|---|---|
+| `grid-template-areas` | Names each area of a grid as a small map, with one quoted line for each row | `"nav main"` |
+| `grid-area` | Places an element in one of the named areas | `nav { grid-area: nav; }` |
+| `fr` | A share of the space left over in a grid | `grid-template-columns: 150px 1fr;` |
+| `auto-fill` | Fits as many grid columns as will hold, and keeps any spare columns empty, instead of growing the existing ones | used with `grid-template-columns` |
+| `order` | Changes a flex item's position on screen without changing its position in the HTML | `order: 2;` |
 
 ## Where to Read More
 

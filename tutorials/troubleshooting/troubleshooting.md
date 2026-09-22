@@ -32,7 +32,7 @@ A blank page usually means the browser could not make sense of the file.
 - Check that content sits between the opening and closing `<body>` tags,
   not outside them.
 
-[The skeleton](tutorial:the-skeleton) shows the parts of an HTML page
+[The head and body of a page](tutorial:the-skeleton) shows the parts of an HTML page
 if you want an example to compare.
 
 ### The CSS isn't doing anything
@@ -46,7 +46,7 @@ find it:
 - Does the CSS file have a missing semicolon or an unclosed `{` near the
   top? One mistake there can stop everything below it from working.
 
-[A rule and where it lives](tutorial:a-rule-and-where-it-lives) shows
+[CSS rules and stylesheets](tutorial:a-rule-and-where-it-lives) shows
 how an HTML page links to CSS.
 
 ### Only some of the styles apply
@@ -173,7 +173,7 @@ normal. Once that time has passed, these questions usually help:
   usually called `main`.
 - Does a hard refresh show the new version?
 
-[The two loops](tutorial:the-two-loops) explains saving and publishing.
+[Saving and publishing a change](tutorial:the-two-loops) explains saving and publishing.
 
 ## GitHub won't take my changes
 

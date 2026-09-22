@@ -9,7 +9,8 @@ entries:
     definition: >
       An issue is a single report filed in a repository, made up of a
       title, a description, and a place for anyone to reply. Anyone can
-      open one, and anyone can read one in a public repository.
+      read one in a public repository, and anyone signed in to GitHub
+      can open one.
   - term: pull request
     kind: concept
     definition: >

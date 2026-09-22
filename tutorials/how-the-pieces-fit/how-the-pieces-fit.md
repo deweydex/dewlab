@@ -1,5 +1,5 @@
 ---
-title: "How the pieces fit"
+title: "The tools for building a website"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -7,60 +7,75 @@ covers:
     touches: [WA-LO13]
 ---
 
-# How the pieces fit
+# The tools for building a website
 
-Welcome. This page introduces the tools we use to make a website. You
-can read it first, then try the steps on the pages that follow.
+Welcome. In this course we build a website and publish it online. Let's
+start by meeting the tools we will use, and seeing how they connect. You
+do not need to do anything on this page yet: you can read it first, then
+try the steps on the pages that follow.
 
-If you want to begin with data, [a table is a list of
+Would you rather begin with data? [A table is a list of
 rows](tutorial:a-table-is-a-list-of-rows) has an example you can run.
-The data exercises work in your browser without a GitHub account.
+The data exercises work in your browser, without a GitHub account.
 
 ## The tools for a website
 
-An *editor* is a program for changing text files. We use it to write
-code. VS Code is one option. GitHub also has an editor on its website,
-so you can work without installing a program.
+We use four tools. Here they are side by side:
 
-*GitHub* keeps a project's files in a place called a *repository*. It
-also records changes you save there, so you can look at earlier versions.
-Other people can see files in a public repository.
+| Tool | What it does | Where we find it |
+|---|---|---|
+| An *editor* | A program for changing text files. We write our code in it. | VS Code, on your own computer, is one option. GitHub also has an editor on its website, so you can work without installing anything. |
+| *GitHub* | Keeps a project's files online, and records every change we save, so we can look back at earlier versions. | github.com |
+| *GitHub Pages* | Publishes a website from the files on GitHub. Once it is set up, updates to your files appear at your site's web address. | Part of GitHub |
+| A *browser* | Shows a web page. It can open a file on your computer, or a website that has been published online. | Chrome, Firefox, Safari, Edge |
 
-*GitHub Pages* publishes a website from files in a GitHub repository.
-Once publishing is set up, updates to your files appear at your site's
-web address.
+GitHub keeps a project's files in a folder called a *repository*, often
+shortened to "repo". Who do you think can see the files in a public
+repository? Anyone can, which is worth remembering before you put
+something there.
 
-Your *browser* shows a web page. It can open a file on your computer or
-a website that has been published online.
+This site has explanations and examples. We can try an idea here first,
+then use it in a website or a database of our own.
 
-This site has explanations and examples. We can try an idea here, then
-use it in a website or database of our own.
+These are not tools made only for students. Many people who build
+websites and software for a living use Git and GitHub every day, and the
+path a change takes, from an editor to a published site, is much the
+same for them as it is for us.
 
 ## From a change to a published page
 
-If you use an editor on your computer, there are two stages.
+How does a change in a file end up on a website that anyone can visit?
+If we use an editor on our own computer, it happens in two stages.
 
-First, you change a file and save it on your computer. Then you refresh
-the browser, which loads the file again, so you can see the result.
+**Stage one: on your computer.**
 
-Then you send your changes to GitHub. Git calls recording a set of
-changes a *commit*. Sending those recorded changes to GitHub is called a
-*push*. After GitHub publishes the update, other people can see it on
-your website.
+1. We change a file and save it.
+2. We refresh the browser. It loads the saved file again, so we can see
+   the result.
 
-If you use GitHub's browser editor, you save a commit directly on
-GitHub. [The two loops](tutorial:the-two-loops) explains both ways of
-working, with steps to try once your site is ready.
+**Stage two: on GitHub.**
+
+3. We record the change. Git calls a recorded set of changes a *commit*.
+4. We send our commits to GitHub. This is called a *push*.
+5. GitHub publishes the update. Now other people can see it on your
+   website.
+
+What if we use GitHub's editor in the browser instead? Then we save a
+commit straight onto GitHub, so stage one and stage two happen together.
+[Saving and publishing a change](tutorial:the-two-loops) looks at both ways of working,
+with steps to try once your site is ready.
 
 ## Reading and trying examples
 
-The bar at the top stays in view as you scroll. **dewlab** takes you
-back to the front page. **Settings** lets you change the colours, font,
-text size, and line width. Your choices are saved in this browser.
+Let's look at how this site itself works:
 
-Links near the top and bottom take you to the previous or next page in
-a series. A series is a group of tutorials in teaching order. You can
-return to an earlier page whenever it helps.
+- The bar at the top stays in view as you scroll. **dewlab** takes you
+  back to the front page. **Settings** lets you change the colours,
+  font, text size and line width. Your choices are saved in this
+  browser.
+- Links near the top and bottom of a page take you to the previous or
+  next page in a *series*: a group of tutorials in teaching order. You
+  can go back to an earlier page whenever it helps.
 
 Some code boxes are examples to read, like this one:
 
@@ -70,16 +85,17 @@ FROM products
 WHERE price < 20;
 ```
 
-We will explore SQL in the data tutorials. You do not need to understand
-this example yet. On those pages, code boxes with a **Run** button let
-you change code and see its result. Some website tutorials also have an
-editor with a preview that changes as you type.
+This is SQL, and we explore it in the data tutorials. You do not need
+to understand it yet. On those pages, code boxes with a **Run** button
+let us change the code and see its result. Some website tutorials have
+an editor with a preview instead, and the preview changes as we type.
 
 ## Where to go next
 
-For a website, [a GitHub account](tutorial:a-github-account) explains the
-next step. For data, you can begin with [a table is a list of
-rows](tutorial:a-table-is-a-list-of-rows).
+- For a website, [a GitHub account](tutorial:a-github-account) is the
+  next step.
+- For data, we can begin with [a table is a list of
+  rows](tutorial:a-table-is-a-list-of-rows).
 
-If something is unclear, you can return to this page or ask your teacher.
+If something is unclear, come back to this page, or ask your teacher.
 It is fine to learn these tools one at a time.
