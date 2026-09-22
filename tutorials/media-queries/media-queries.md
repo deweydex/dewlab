@@ -1,5 +1,5 @@
 ---
-title: "Media queries"
+title: "Changing the layout for phones: media queries"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Media queries
+# Changing the layout for phones: media queries
 
 A phone has much less room than a laptop. How can one stylesheet suit
 both? On this page we:
@@ -101,7 +101,7 @@ then shrinks the whole page to fit. The text looks tiny, and a
 The order of the rules matters too. Suppose two media queries both
 match, and each has a rule with the same selector that sets the same
 property. Then the one further down the stylesheet wins. So a rule for very small screens belongs after a
-rule for larger ones. In [the browser inspector](tutorial:the-inspector),
+rule for larger ones. In [Looking inside a page with the inspector](tutorial:the-inspector),
 most browsers show a rule's `@media` condition right above it, which
 helps us see which one is in use.
 

@@ -122,9 +122,9 @@ any new CSS. The section is styled because `class="section"` and
 `class="card"` reuse rules that are already in `styles.css`. A `class`
 attribute can hold more than one name, with a space between each one,
 as in `class="section skills-section"`. We meet classes properly in
-[Selectors and classes](tutorial:selectors-and-classes). The
+[Choosing what to style: selectors and classes](tutorial:selectors-and-classes). The
 `id="skills"` gives this section a name of its own, and we come back to
-`id` in [Three kinds of link](tutorial:three-kinds-of-link).
+`id` in [Links to pages, other sites and email](tutorial:three-kinds-of-link).
 
 ## What we have now
 

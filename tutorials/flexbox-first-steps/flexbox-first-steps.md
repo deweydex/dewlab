@@ -1,5 +1,5 @@
 ---
-title: "Flexbox first steps"
+title: "Lining boxes up in a row with Flexbox"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Flexbox first steps
+# Lining boxes up in a row with Flexbox
 
 Here are three plushies from the shop, each on its own card, side by
 side. What happens once the screen is too narrow for all three cards to

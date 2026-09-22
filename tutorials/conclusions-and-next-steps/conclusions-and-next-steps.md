@@ -1,5 +1,5 @@
 ---
-title: "Conclusions and Next Steps"
+title: "Where to go next: beyond HTML and CSS"
 year: "2026-2027"
 version: 2026.09.12.1
 covers:
@@ -11,7 +11,7 @@ covers:
     touches: [WA-LO5]
 ---
 
-# Conclusions and Next Steps
+# Where to go next: beyond HTML and CSS
 
 On the last page you documented your site. That site is real. You wrote
 it by hand, tag by tag and rule by rule, and anyone with the address can

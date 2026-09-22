@@ -1,5 +1,5 @@
 ---
-title: "Three kinds of link"
+title: "Links to pages, other sites and email"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO8]
 ---
 
-# Three kinds of link
+# Links to pages, other sites and email
 
 A link is an `<a>` element, and its `href` attribute says where the link
 goes. Can one tag really point at three quite different things? On this
@@ -101,7 +101,7 @@ Now click **Send Me an Email**. Does your browser try to open an email
 program?
 
 The `id="contact"` on this section has a job too. On the next page,
-[Navigation](tutorial:navigation), a link in the menu jumps straight to
+[A menu that jumps to each section](tutorial:navigation), a link in the menu jumps straight to
 it.
 
 ## What we have now

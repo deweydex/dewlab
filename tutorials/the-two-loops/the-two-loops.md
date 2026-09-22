@@ -114,5 +114,5 @@ In GitHub's editor, each commit goes straight to GitHub, so we only need
 the second loop.
 
 Sometimes a page appears, but it looks different from what we
-expected. [The browser inspector](tutorial:the-inspector) shows us what
+expected. [Looking inside a page with the inspector](tutorial:the-inspector) shows us what
 to do then, whichever loop we are in.

@@ -64,8 +64,7 @@ value is `row`, which lays items out side by side. `column` stacks them
 from top to bottom. In step 2, without `column`, the list became a row
 again.
 
-Why not let the links wrap, as on [Flexbox first
-steps](tutorial:flexbox-first-steps)? Wrapping stops links
+Why not let the links wrap, as on [Lining boxes up in a row with Flexbox](tutorial:flexbox-first-steps)? Wrapping stops links
 from squeezing sideways until they overlap, but it can leave a ragged
 half-row, with one link alone on the next line. A whole menu stacked
 into one column is easier to read.
@@ -75,8 +74,7 @@ into one column is easier to read.
 1. In your fork of `project_wad`, open `styles.css`.
 2. Find the `@media (max-width: 480px)` block. Can you find
    `flex-direction: column` inside it?
-3. Open your site in device mode, as on [Media
-   queries](tutorial:media-queries), at a phone's width. Your navigation
+3. Open your site in device mode, as on [Changing the layout for phones: media queries](tutorial:media-queries), at a phone's width. Your navigation
    should already stack into a column.
 4. If you changed page names while planning your site map, read the
    menu. Does it show the right links, in the right order?

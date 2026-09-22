@@ -58,7 +58,7 @@ disagreeing about the same element.
   does nothing to an element with no `class="card"`.
 - Two rules can both match one element. A more specific selector, such
   as a class name, usually takes priority over a tag name. The
-  [inspector](tutorial:the-inspector) can show which rules the browser
+  [Looking inside a page with the inspector](tutorial:the-inspector) can show which rules the browser
   uses.
 - Does every value have its unit? `font-size: 16;` does nothing;
   `font-size: 16px;` works.

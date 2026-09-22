@@ -1,5 +1,5 @@
 ---
-title: "Your copy of the starter"
+title: "Making your own copy of the starter"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -7,7 +7,7 @@ covers:
     touches: [WA-LO3]
 ---
 
-# Your copy of the starter
+# Making your own copy of the starter
 
 The website track begins with
 [`portfolio_wad`](https://github.com/deweydex/portfolio_wad). It is a
@@ -71,8 +71,7 @@ of plain files to open in your editor. This folder has no connection to
 GitHub. To put a changed file back into your repository, you upload it
 on GitHub's website.
 
-**Edit it in the browser.** This uses GitHub's own editor, from [An
-editor](tutorial:an-editor). You download nothing. Everything happens on
+**Edit it in the browser.** This uses GitHub's own editor, from [Choosing an editor](tutorial:an-editor). You download nothing. Everything happens on
 GitHub's website.
 
 Not sure which to pick? Editing in the browser is the easiest place to

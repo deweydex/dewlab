@@ -9,7 +9,7 @@ covers:
 
 # Your copy of the project starter
 
-In [Your copy of the starter](tutorial:your-copy-of-the-starter) you got
+In [Making your own copy of the starter](tutorial:your-copy-of-the-starter) you got
 `portfolio_wad`. It had three pages to edit while you learned what HTML
 and CSS do. The project is bigger. It is a site of five pages or more,
 on a topic you choose yourself. So it has a starter of its own, called
@@ -39,8 +39,7 @@ It holds three kinds of file:
 ## Getting your own copy
 
 There are two ways to get a copy. They are the same two buttons you used
-for `portfolio_wad`. [Your copy of the
-starter](tutorial:your-copy-of-the-starter) explains what each button
+for `portfolio_wad`. [Making your own copy of the starter](tutorial:your-copy-of-the-starter) explains what each button
 does. It also shows three ways to open your copy once you have it.
 
 <div class="dl-module-grid">

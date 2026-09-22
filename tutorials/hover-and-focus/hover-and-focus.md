@@ -1,5 +1,5 @@
 ---
-title: "States: hover and focus"
+title: "Styling what the visitor points at: hover and focus"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# States: hover and focus
+# Styling what the visitor points at: hover and focus
 
 A button can change its look when a pointer moves over it, or when
 someone reaches it with the keyboard. Each of these is a state the
@@ -82,7 +82,7 @@ own rule:
 
 In the hover rule, `transform: translateY(-4px)` moves the button up by
 4 pixels. We look at `transform` properly on the next page,
-[Transitions and transforms](tutorial:transitions-and-transforms).
+[Moving things smoothly: transforms and transitions](tutorial:transitions-and-transforms).
 `box-shadow` draws a shadow behind the box. Its colour here,
 `rgba(0, 0, 0, 0.2)`, is black that is 80% see-through, so the shadow is
 soft.

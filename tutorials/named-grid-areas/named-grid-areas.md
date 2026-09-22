@@ -167,7 +167,7 @@ ignores the whole `grid-template-areas` declaration. A dot (`.`) in a
 line names an empty cell, which is useful when a line needs a gap.
 
 Chrome and Firefox can also show the grid for us, in the inspector we
-met on [The browser inspector](tutorial:the-inspector). Select the
+met on [Looking inside a page with the inspector](tutorial:the-inspector). Select the
 element with `display: grid`, and look for the grid options in the
 **Layout** panel.
 They draw the grid lines over the page, and can show the area names too.

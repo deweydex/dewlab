@@ -11,7 +11,7 @@ covers:
 
 # Cards in a row
 
-In [Flexbox first steps](tutorial:flexbox-first-steps) we met
+In [Lining boxes up in a row with Flexbox](tutorial:flexbox-first-steps) we met
 `flex: 1 1 80px`. What does each of its three parts do? On this page we
 change them, then use them on your own cards.
 

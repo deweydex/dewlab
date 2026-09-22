@@ -1,5 +1,5 @@
 ---
-title: "Text and units"
+title: "Text size, units and alignment"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Text and units
+# Text size, units and alignment
 
 When we write `16px` or `1rem` in CSS, what are we measuring in? On this
 page we:

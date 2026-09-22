@@ -1,5 +1,5 @@
 ---
-title: "CSS variables and BEM names"
+title: "Naming classes so they stay tidy (BEM)"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -11,9 +11,9 @@ covers:
     touches: [WA-LO9]
 ---
 
-# CSS variables and BEM names
+# Naming classes so they stay tidy (BEM)
 
-On [Variables and colour](tutorial:variables-and-colour) we stored a
+On [Colours, and naming them with variables](tutorial:variables-and-colour) we stored a
 colour in a CSS variable and read it back in several rules. This page
 goes one step further. Can one rule give two buttons two different
 colours? On this page we:

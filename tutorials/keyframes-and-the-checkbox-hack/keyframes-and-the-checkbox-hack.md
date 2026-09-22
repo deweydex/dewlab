@@ -12,7 +12,7 @@ covers:
 
 # Keyframe animation and the checkbox hack
 
-On [Transitions and transforms](tutorial:transitions-and-transforms),
+On [Moving things smoothly: transforms and transitions](tutorial:transitions-and-transforms),
 `transition` animated a change between two states. It needed something
 to trigger it, such as `:hover`. Can CSS move something with no trigger
 at all? Can it answer a click, with no JavaScript? On this page we:

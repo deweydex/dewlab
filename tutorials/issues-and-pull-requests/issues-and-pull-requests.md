@@ -82,4 +82,4 @@ We can now read the two records a repository keeps, beside its files.
 | *pull request* | A set of edits sent to a repository for someone to review | pull request #151 |
 
 When you are ready to make changes of your own, you need something to
-write them with. [An editor](tutorial:an-editor) is the next page.
+write them with. [Choosing an editor](tutorial:an-editor) is the next page.

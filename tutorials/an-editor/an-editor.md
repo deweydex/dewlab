@@ -1,5 +1,5 @@
 ---
-title: "An editor"
+title: "Choosing an editor"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -10,7 +10,7 @@ covers:
     touches: [WA-LO13]
 ---
 
-# An editor
+# Choosing an editor
 
 What do we need to write code? Code is plain text, whatever language it
 is in. So any plain text editor can write it. Editors differ in how much
@@ -71,6 +71,5 @@ with or without installing anything.
 | VS Code | your own computer | yes | yes, by opening the file in a browser |
 | GitHub's editor | GitHub's website, in the browser | no | no, but the published site shows changes |
 
-Next comes [Your copy of the
-starter](tutorial:your-copy-of-the-starter). That is where you get the
+Next comes [Making your own copy of the starter](tutorial:your-copy-of-the-starter). That is where you get the
 first files you will open.

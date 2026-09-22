@@ -1,5 +1,5 @@
 ---
-title: "Navigation"
+title: "A menu that jumps to each section"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO8]
 ---
 
-# Navigation
+# A menu that jumps to each section
 
 On the last page, a link took us to another page, or to another site.
 Can a link also take us to a place further down the same page? On this
@@ -113,7 +113,7 @@ movement comes from `scroll-behavior: smooth` in `styles.css`. Can you
 find it there?
 
 You might also notice that the links in this menu sit in a row, not in a
-column. [Flexbox first steps](tutorial:flexbox-first-steps) explains why,
+column. [Lining boxes up in a row with Flexbox](tutorial:flexbox-first-steps) explains why,
 once you reach it.
 
 ## What we have now

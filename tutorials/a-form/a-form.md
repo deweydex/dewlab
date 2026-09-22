@@ -1,5 +1,5 @@
 ---
-title: "A form"
+title: "A contact form"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO8, WA-LO10]
 ---
 
-# A form
+# A contact form
 
 A form field needs a name, so a visitor knows what to type. How do we
 join a name to its field?

@@ -92,7 +92,7 @@ an editor with a preview instead, and the preview changes as we type.
 
 ## Where to go next
 
-- For a website, [a GitHub account](tutorial:a-github-account) is the
+- For a website, [Creating a GitHub account](tutorial:a-github-account) is the
   next step.
 - For data, we can begin with [a table is a list of
   rows](tutorial:a-table-is-a-list-of-rows).

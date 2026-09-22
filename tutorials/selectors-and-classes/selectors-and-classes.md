@@ -1,5 +1,5 @@
 ---
-title: "Selectors and classes"
+title: "Choosing what to style: selectors and classes"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Selectors and classes
+# Choosing what to style: selectors and classes
 
 So far, a selector like `p` has styled every paragraph on a page. What
 if we want to style only some of them? On this page we:
@@ -117,7 +117,7 @@ The border shows up only on cards inside the skills section, because
 
 Why add the rules before the `@media` rules? An `@media` rule holds
 other rules that apply only on some screen sizes, and we meet them in
-[Media queries](tutorial:media-queries). When two rules disagree about
+[Changing the layout for phones: media queries](tutorial:media-queries). When two rules disagree about
 the same element, the one later in the file often wins. With our new
 rules above them, the `@media` rules come later, so they still win at
 the screen sizes they are written for.

@@ -90,8 +90,7 @@ your page, from top to bottom. Do they look like a list of contents?
 In your fork, open `index.html`. Below your `<h1>` there is a paragraph
 with `class="hero-text"` in its opening tag. `class` is an attribute.
 It gives an element a name that CSS can use to style it. We meet
-classes properly in [Selectors and
-classes](tutorial:selectors-and-classes).
+classes properly in [Choosing what to style: selectors and classes](tutorial:selectors-and-classes).
 
 1. Find the paragraph with `class="hero-text"`.
 2. Rewrite it in your own words: who you are, what you are working on,

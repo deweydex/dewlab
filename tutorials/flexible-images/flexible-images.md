@@ -1,5 +1,5 @@
 ---
-title: "Flexible images"
+title: "Images that shrink to fit the screen"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Flexible images
+# Images that shrink to fit the screen
 
 What happens to a picture when the screen is narrower than the picture
 itself? On this page we:

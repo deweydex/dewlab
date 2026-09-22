@@ -1,5 +1,5 @@
 ---
-title: "Variables and colour"
+title: "Colours, and naming them with variables"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Variables and colour
+# Colours, and naming them with variables
 
 Suppose one colour appears in ten places on your site, and you want to
 change it. Do you have to edit all ten? On this page we:
@@ -81,7 +81,7 @@ definition, everything that reads it changes too.
 
 The selector `.header, .button` is also new. `.header` matches the
 element with `class="header"`, and the comma lets one rule style both
-elements. [Selectors and classes](tutorial:selectors-and-classes) looks
+elements. [Choosing what to style: selectors and classes](tutorial:selectors-and-classes) looks
 at selectors like these more closely. The `padding` and `margin-bottom`
 lines add space around each box, which we explore in [The box model:
 padding, border and margin](tutorial:the-box).

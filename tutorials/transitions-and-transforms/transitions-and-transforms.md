@@ -1,5 +1,5 @@
 ---
-title: "Transitions and transforms"
+title: "Moving things smoothly: transforms and transitions"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,9 +9,9 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Transitions and transforms
+# Moving things smoothly: transforms and transitions
 
-On [States: hover and focus](tutorial:hover-and-focus), a button lifted
+On [Styling what the visitor points at: hover and focus](tutorial:hover-and-focus), a button lifted
 up under the pointer. That lift was a transform. On this page we:
 
 - move, resize and turn a box with `transform`
@@ -108,8 +108,7 @@ and still take a transform.
 
 ## Now in your own site
 
-In your fork, find the `.card:hover` rule you added on [States: hover
-and focus](tutorial:hover-and-focus).
+In your fork, find the `.card:hover` rule you added on [Styling what the visitor points at: hover and focus](tutorial:hover-and-focus).
 
 1. Change `translateY(-5px)` to `scale(1.05)`.
 2. Save, and refresh. Move your pointer over a card. Does it lift, or
