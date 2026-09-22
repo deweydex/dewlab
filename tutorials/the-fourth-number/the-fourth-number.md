@@ -355,7 +355,7 @@ arithmetic. What changed was what the rows and columns were made to
 mean.
 
 A browser has all of this built in. CSS has a property called
-`perspective`, and it is this divide. [An Orbit in Pure
+`perspective`, and it is this divide. [An orbit in pure
 CSS](tutorial:an-orbit-in-css), on the Web Authoring course, has the
 ball from the first tutorial going round with no arithmetic written
 down at all.

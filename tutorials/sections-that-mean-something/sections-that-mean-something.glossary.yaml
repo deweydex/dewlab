@@ -20,3 +20,9 @@ entries:
     definition: >
       `<div>` groups content into a generic container with no meaning
       of its own.
+  - term: screen reader
+    kind: concept
+    definition: >
+      A screen reader is software that reads a page aloud for someone
+      who cannot see it. It uses the meaning of the tags, so it can say
+      "navigation" when it reaches a `<nav>`.

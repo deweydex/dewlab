@@ -81,33 +81,39 @@ The rule `img { display: block; margin-bottom: 8px; }` is there for the
 demo. It puts each image on its own line, with a small gap below it, so
 the two are easy to compare.
 
-Sometimes we might notice that removing `height: auto` changes nothing
-in the box above. An image's height is already `auto` unless something
-else sets it. Oftentimes that something is a `height` attribute in the
-HTML, like `<img src="..." height="300">`. With that attribute and only
-`max-width: 100%`, the image gets narrower but stays 300 pixels tall,
-and looks squashed. `height: auto` guards against that, which is why the
-two declarations usually travel together.
-
-These two lines appear on a great many websites, often in a rule for
-every `img` on the page. A phone screen is often narrower than the
-photos we put on a page, so without them a site can scroll sideways on a
-phone.
+Why do the two declarations usually travel together? An image's height
+is already `auto`, unless something else sets it. In the box above,
+nothing does, so deleting `height: auto` there would change nothing.
+Often, though, the HTML gives
+an image a `height` attribute, such as `<img src="..." height="300">`.
+Then `max-width: 100%` on its own makes the image narrower, but it stays
+300 pixels tall. `height: auto` stops that from happening.
 
 ## Now in your own site
 
-On [Images, paths and alt text](tutorial:images-and-alt-text) you added
-an image to your fork.
+On [Placing an image, and the path that finds it](tutorial:images-and-alt-text) you added
+an image to your fork, inside a `<figure class="profile-image">`.
 
-1. Open your fork and find that image in the HTML.
-2. Open `styles.css`. Can you find `max-width: 100%` and `height: auto`
-   for that image? They may be on a rule for the image itself, or on a
-   rule that reaches it, such as one for every `img`.
-3. If they are missing, you could add them.
-4. Save, and refresh.
-5. Make your browser window narrow, about the width of a phone.
+1. Open your fork, and find that image in the HTML.
+2. Open `styles.css`, and find the section called Images. It has two
+   rules for your figure.
+3. Look at `.profile-image`. What is the widest the figure can be?
+4. Look at `.profile-image img`. It sets `width: 100%` and
+   `height: auto`. So how wide is the image, compared with the figure?
+5. Open your page in the browser, and make the window narrow, about the
+   width of a phone. You could use device mode in the inspector, as on
+   [Changing the layout for phones: media
+   queries](tutorial:media-queries).
 
-Does your image stay inside the edge of the page at every width?
+Does your image stay inside the edge of the page at every width? Does
+it keep its shape?
+
+Your starter uses `width: 100%` where our example used `max-width:
+100%`. Here both do the same job. The figure is never wider than
+`400px`, and never wider than the page, and the image fills the figure.
+The difference shows with an image smaller than its container.
+`width: 100%` stretches it to fill the space. `max-width: 100%` leaves
+it at its own size.
 
 ## What we have now
 

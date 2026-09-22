@@ -73,21 +73,14 @@ page connects the two:
 <link rel="stylesheet" href="styles.css">
 ```
 
-Why might that be useful? One stylesheet can style many pages at once.
-That is why `index.html` and `about.html` look consistent without
-repeating any CSS.
+The `href` names the file to load. `rel="stylesheet"` tells the browser
+that the file holds CSS rules.
 
-Sometimes we might notice that a page with no CSS at all still has
-some style. Headings are large and bold, and links are blue and
-underlined. That is because every browser has its own built-in
-stylesheet. Our rules are applied on top of it, and they win wherever
-the two disagree.
+Why keep the rules in a file of their own? One stylesheet can style many
+pages at once. That is why `index.html` and `about.html` look consistent
+without repeating any CSS.
 
-Oftentimes, when styles seem to vanish from a page, the problem is the
-`<link>` tag and not the CSS. A misspelt file name in `href`, or a
-stylesheet saved in a different folder, means the browser never finds
-the rules at all. If every style on a page disappears at once, the
-`<link>` is a good first place to look.
+![Two page files, index.html and about.html, side by side. Each has a link tag in its head, and an arrow runs from each link tag down to one shared file, styles.css. Inside styles.css is the rule p with color darkslateblue, so this one rule styles the paragraphs on both pages.](one-stylesheet-two-pages.svg)
 
 ## Now in your own site
 

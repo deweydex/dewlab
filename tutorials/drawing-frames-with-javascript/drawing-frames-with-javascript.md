@@ -1,33 +1,40 @@
 ---
 title: "Drawing frames with JavaScript"
 year: "2026-2027"
-version: 2026.09.21.1
+version: 2026.09.22.1
 covers:
-  why-this-happens:
+  why-does-this-happen:
     touches: [WA-LO2, WA-LO9]
-  the-cube-again:
-    touches: [WA-LO2]
-  your-turn:
+  now-add-your-own:
     touches: [WA-LO2]
 ---
 
 # Drawing frames with JavaScript
 
-On the last two pages the browser drew every frame for you, from the
-few key frames you wrote down. This page does the opposite. You draw
-every frame yourself, in JavaScript, and the browser only tells you
-when it is time for the next one. It is the ball in orbit from [A
-Point on the Screen](tutorial:a-point-on-the-screen#a-ball-in-orbit),
-written in a different language, and it is the first JavaScript on
-this course. JavaScript is the language that makes a web page do
-things after it has loaded, and this page is a first taste of it.
-Nothing here needs to be memorised. Read the code alongside the
-explanation below it, then change something and press Run.
+On the last three pages, the browser drew every frame for us, from the
+few key frames we wrote down. This page does the opposite. We draw
+every frame ourselves, in JavaScript, and the browser only tells us
+when it is time for the next one. On this page we:
 
-This editor has a third pane. HTML and CSS update the preview as you
-type, the way they have all along, but JavaScript only runs when you
-press **Run** in its pane, or Ctrl+Enter inside it. Let's press it
-now.
+- draw a sun and a ball on a canvas
+- make them move with an animation loop
+- draw the far one first, so that the near one covers it
+
+This is the first JavaScript on this course. JavaScript is the language
+that makes a web page do things after it has loaded, and this page is
+a first taste of it. Nothing here needs to be memorised. Read the code
+alongside the explanation below it, then change something and press
+Run. The ball in orbit is the same one as on [A Point on the
+Screen](tutorial:a-point-on-the-screen#a-ball-in-orbit), on the
+Computational Methods course, written in a different language.
+
+## Let's try it
+
+This editor has a third pane, for JavaScript. HTML and CSS update the
+preview as we type, as they have all along. JavaScript runs only when
+we press **Run** in its pane, or Ctrl+Enter inside it.
+
+Here is a canvas, and the JavaScript that draws on it.
 
 ```html site
 id: orbit-canvas-html
@@ -91,170 +98,118 @@ function frame() {
 frame();
 ```
 
-## Why this happens
+1. Press **Run**. What does the ball do? Does it pass behind the sun?
+2. Change `angle + 0.02` to `angle + 0.05`, and press Run again. How
+   long does one turn take now?
+3. Put it back to `0.02`. Now delete the line
+   `pen.fillRect(0, 0, canvas.width, canvas.height);` near the top of
+   `frame`, and press Run. What do you see?
+4. Put that line back, and press Run once more.
 
-**The canvas.** A `<canvas>` is a blank rectangle of pixels that
-JavaScript can draw on. Nothing else on this course has needed one,
-because HTML and CSS describe a page and the browser draws it. A
-canvas is for when you want to do the drawing yourself.
-`getContext("2d")` gives you the pen that does it:
+## Why does this happen?
 
-- `fillRect` draws a rectangle;
-- `arc` draws a circle, or part of one;
-- `fill` colours in whatever shape was just described.
+Now we can explain what we saw.
 
-**The divide, in pixels.** `project` is the perspective divide, with
-two changes to fit a canvas. The first change: after dividing by $z$,
-the result is multiplied by `glass`, the distance to the screen in
-pixels, because a canvas counts in pixels rather than units. The
-second: the result is added to the middle of the canvas, because a
-canvas puts $(0, 0)$ in its top-left corner, not at the centre. A
-canvas also counts $y$ downwards, so the $0.2$ in the sun and the ball
-puts them a little below eye level, which is why you look slightly
-down on the orbit. The ball's radius is scaled by `glass / z`, the
-same divide again, so it shrinks as it goes away. Let's check one
-number: the sun is at depth 4, so its radius of $0.5$ becomes
-$0.5 \times 200 / 4 = 25$ pixels.
+### The canvas
 
-**The loop.** `requestAnimationFrame(frame)` is the line that makes it
-move. It asks the browser to call `frame` once, just before it next
-paints the screen, which is usually sixty times a second. Each time
-`frame` runs it does the same four things:
+A *canvas* is a blank rectangle of pixels that JavaScript can draw on.
+The `<canvas>` element makes one, and its `width` and `height` set how
+many pixels it has. Nothing else on this course has needed one, because
+HTML and CSS describe a page and the browser draws it. A canvas is for
+when we want to do the drawing ourselves.
+
+`getContext("2d")` gives us the pen that draws on it. The code calls it
+`pen`:
+
+- `fillStyle` sets the colour for the next shape
+- `fillRect` draws a rectangle
+- `beginPath` starts a new shape
+- `arc` describes a circle, or part of one
+- `fill` colours in the shape that was just described
+
+### Where a point lands
+
+`project` does by hand what `perspective` did for us on the CSS pages.
+It divides a point's `x` and `y` by its depth, `z`, so that far things
+come closer to the middle. This is called the *perspective divide*. It
+makes two changes to fit a canvas.
+
+First, it multiplies the result by `glass`, the distance from our eye
+to the screen in pixels. The points are measured in units, and a
+canvas counts in pixels. Second, it adds the middle of the canvas,
+because a canvas puts `(0, 0)` in its top-left corner, and not at the
+centre:
+
+![A rectangle for the canvas, 320 wide and 200 tall. Its top-left corner is marked (0, 0), with an arrow along the top saying "x grows to the right" and an arrow down the left side saying "y grows downwards". A cross in the middle is marked (160, 100), middleX, middleY. The bottom-right corner is marked (320, 200).](canvas-coordinates.svg)
+
+A canvas also counts `y` downwards. So the `0.2` in the sun and the
+ball puts them a little below eye level, and we look slightly down on
+the orbit.
+
+The ball's radius is multiplied by `glass / z`, the same divide again,
+so it shrinks as the ball goes away. We can check one number. The sun is
+at depth 4, so its radius of `0.5` becomes `0.5 × 200 / 4 = 25` pixels.
+
+### The loop
+
+`requestAnimationFrame(frame)` is the line that makes it move. It asks
+the browser to call `frame` once, just before it next draws the screen.
+Many screens do that sixty times a second, and some do it more often.
+Each time `frame` runs, it does the same four things:
 
 1. Clear the canvas, by painting a dark rectangle over everything.
 2. Work out where the ball is now, from `angle`.
 3. Draw the sun and the ball.
 4. Add a little to `angle`, and ask to be called again.
 
-That loop, draw and ask again, is the ***animation loop***, and every
-game and every animated chart on the web is built round one. It is
-`FuncAnimation` from the Computational Methods course, written out by
-hand: there, matplotlib called `draw_step` once per frame; here, the
-browser calls `frame`. The angle is measured in radians, where a full turn is
-$2\pi$, about $6.28$. Adding `0.02` each time, at sixty frames a
-second, is $1.2$ a second, so one full turn takes about five seconds.
+That loop, draw and ask again, is an *animation loop*. In step 3 we
+took away its first step. Nothing cleared the old pictures, so every
+ball ever drawn stayed on the canvas, and the ball left a white smear
+behind it.
 
-**Front and back.** One line does a job that CSS did for us on the
-last two pages. The ball has to go behind the sun for half of every
-turn, and a canvas has no idea what is in front of what. It draws
-whatever it is told, in the order it is told. So `frame` sorts the two
-bodies by depth, farthest first, and the nearer one is painted over
-the farther one. Sorting a scene by depth and painting from the back
-is called the ***painter's algorithm***, after the way a painter lays
-down a background before the figures in front of it.
+`angle` is measured in radians, where a full turn is `2π`, about
+`6.28`. Adding `0.02` each time, sixty times a second, adds `1.2` a
+second, so one full turn takes about five seconds. In step 2, `0.05`
+adds `3` a second, so one turn takes about two seconds. On a screen
+that draws more frames a second, the ball goes faster.
+[How a browser draws each frame](tutorial:how-a-browser-draws-a-frame)
+shows how to keep the speed the same on every screen.
 
-## The cube again
+### Front and back
 
-Here is the turning cube from [Turning a Cube](tutorial:turning-a-cube).
-`turn` applies the rotation matrix to one corner at a time. It is the
-matrix multiplication from that tutorial, written for a single point.
+On the CSS pages, the browser worked out what was in front of what. A
+canvas has no idea. It draws whatever it is told, in the order it is
+told, and each new shape covers what is already there. But the ball has
+to go behind the sun for half of every turn.
 
-```html site
-id: cube-canvas-html
-site: cube-canvas
-<canvas id="screen" width="320" height="240"></canvas>
-```
+So `frame` sorts the two bodies by depth, farthest first, and draws
+them in that order. The nearer one is drawn last, over the farther one.
+Sorting a scene by depth and drawing it from the back forwards is
+called the *painter's algorithm*. It is named after the way a painter
+paints the background first, and then the people in front of it.
 
-```css site
-id: cube-canvas-css
-site: cube-canvas
-canvas {
-  background: #1b1f2a;
-}
-```
+## Now add your own
 
-```js site
-id: cube-canvas-js
-site: cube-canvas
-const canvas = document.getElementById("screen");
-const pen = canvas.getContext("2d");
-const glass = 200;
-const middleX = canvas.width / 2;
-const middleY = canvas.height / 2;
+Let's add a second ball, on a smaller orbit, going the other way.
 
-const corners = [
-  [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
-  [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1],
-];
-const edges = [
-  [0, 1], [1, 2], [2, 3], [3, 0],
-  [4, 5], [5, 6], [6, 7], [7, 4],
-  [0, 4], [1, 5], [2, 6], [3, 7],
-];
+1. Under the line that makes `ball`, add a line that makes `ball2`.
+   Copy the `ball` line, change both `1.5`s to `0.8`, and change both
+   `angle`s to `-angle`. A minus angle goes round the other way.
+2. Add `ball2` to the list in the sort line: `[sun, ball, ball2]`.
+3. Press Run.
 
-function rotateY(angle) {
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
-  return [[cos, 0, sin], [0, 1, 0], [-sin, 0, cos]];
-}
+Does the new ball go behind the sun, and in front of it? What happens
+if you leave `ball2` out of the list that gets sorted?
 
-function turn(matrix, [x, y, z]) {
-  return matrix.map(([a, b, c]) => a * x + b * y + c * z);
-}
+## What we have now
 
-function project([x, y, z]) {
-  const depth = z + 5;   // push the cube five units out in front
-  return [middleX + glass * x / depth, middleY + glass * y / depth];
-}
+We can now draw on a canvas, and move what we draw with an animation
+loop.
 
-let angle = 0;
-
-function frame() {
-  pen.fillStyle = "#1b1f2a";
-  pen.fillRect(0, 0, canvas.width, canvas.height);
-
-  const turning = rotateY(angle);
-  const onScreen = corners.map((corner) => project(turn(turning, corner)));
-
-  pen.strokeStyle = "white";
-  pen.lineWidth = 2;
-  for (const [start, end] of edges) {
-    pen.beginPath();
-    pen.moveTo(onScreen[start][0], onScreen[start][1]);
-    pen.lineTo(onScreen[end][0], onScreen[end][1]);
-    pen.stroke();
-  }
-
-  angle = angle + 0.01;
-  requestAnimationFrame(frame);
-}
-
-frame();
-```
-
-`turn` takes one row of the matrix at a time and works out its dot
-product with the point. That is exactly what `multiply` did with a row
-and a column. Then the same `project`, with the cube pushed five units
-out first, and twelve `moveTo` and `lineTo` pairs for the twelve
-edges. Every frame:
-
-1. Build the rotation matrix for the current `angle`.
-2. Turn all eight corners with it, and project each one.
-3. Draw the twelve edges between the projected corners.
-4. Add a little to `angle`, and ask for the next frame.
-
-## Your turn
-
-Some things to try, each one in its own run:
-
-- In the first editor, change `angle + 0.02` to `angle + 0.05` and
-  press Run again. The ball goes faster. How long does one turn take
-  now?
-- Add a second ball on a smaller orbit, going the other way: a
-  negative angle does that. Remember to add it to the list that gets
-  sorted, or it will not know to go behind anything.
-- In the second editor, write a `rotateX` function alongside
-  `rotateY`, with `x` left alone this time, and apply both turns to
-  each corner. Which order gives a cube that spins on a tilted
-  turntable, and which gives one that tumbles?
-
-## What you have now
-
-The perspective divide written out by hand, running sixty times a
-second.
-
-A `<canvas>` is a rectangle JavaScript draws on, and
-`getContext("2d")` gives the pen that draws on it. The animation loop
-draws one frame, then calls `requestAnimationFrame` to ask for the
-next. The painter's algorithm sorts what is to be drawn by depth and
-paints from the back forwards, so nearer things cover farther ones.
+| Word | Meaning | Example |
+|---|---|---|
+| *canvas* | A blank rectangle of pixels that JavaScript draws on | `<canvas id="screen" width="320" height="200"></canvas>` |
+| `getContext("2d")` | Gives the pen that draws on a canvas | `const pen = canvas.getContext("2d");` |
+| `requestAnimationFrame()` | Asks the browser to call a function once, just before it next draws the screen | `requestAnimationFrame(frame);` |
+| *animation loop* | A function that draws one frame, moves things on a little, and asks to be called again | `frame` |
+| *painter's algorithm* | Sort what is to be drawn by depth, and draw from the back forwards, so nearer things cover farther ones | the sort line in `frame` |

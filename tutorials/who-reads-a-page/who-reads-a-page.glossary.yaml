@@ -1,0 +1,32 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for the HTML pages that
+# choose tags for their meaning, declared with `context_for:`. Checked
+# against the cumulative glossary up to navigation -- no overlap.
+# "screen reader" is used and widened here, but defined in
+# sections-that-mean-something, so it stays there.
+entries:
+  - term: accessibility tree
+    kind: concept
+    definition: >
+      The accessibility tree is the browser's model of what each
+      element on a page is for: its role, such as heading or link, and
+      its name, such as a link's words or an image's alt text. Screen
+      readers read a page through it.
+  - term: landmark
+    kind: concept
+    definition: >
+      A landmark is a main region of a page that a screen reader can
+      jump to. `<header>`, `<nav>`, `<main>` and `<footer>` each make
+      one.
+  - term: crawler
+    kind: concept
+    definition: >
+      A crawler is a search engine's program that visits pages, reads
+      their HTML, and follows their links to find more pages.
+  - term: "<b> and <i>"
+    kind: keyword
+    definition: >
+      `<b>` and `<i>` make text bold and italic, with no meaning of
+      their own. `<strong>` and `<em>` look the same, and also say that
+      the words are important or stressed.

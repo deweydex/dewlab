@@ -1,0 +1,23 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Twenty-fourth and last tutorial of first-site, split out of
+# keyframes-and-the-checkbox-hack. Checked against the cumulative
+# glossary so far -- no overlap. `:checked` and `~` now have entries of
+# their own, since the page's closing table names each of them; `for`
+# stays folded into the checkbox hack's entry, as before.
+entries:
+  - term: ":checked"
+    kind: keyword
+    definition: "`:checked` matches a checkbox only while it is ticked."
+  - term: "~"
+    kind: operator
+    definition: >
+      `~` selects an element that comes after another one and shares
+      the same parent. `.toggle:checked ~ .toggle-content` means a
+      `.toggle-content` that comes after a ticked `.toggle`.
+  - term: checkbox hack
+    kind: concept
+    definition: >
+      The checkbox hack is a hidden checkbox, a label linked to it with
+      `for`, and a `:checked ~` rule. Together they reveal content only
+      while the checkbox is ticked, with no JavaScript at all.

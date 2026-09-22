@@ -20,6 +20,7 @@ contents:
   - headings-and-emphasis
   - sections-that-mean-something
   - images-and-alt-text
+  - describing-an-image
   - three-kinds-of-link
   - navigation
   - a-rule-and-where-it-lives
@@ -36,8 +37,10 @@ contents:
   - flexible-images
   - flexbox-first-steps
   - named-grid-areas
+  - order-on-screen
   - css-variables-and-bem
   - keyframes-and-the-checkbox-hack
+  - the-checkbox-hack
 - title: A site with several pages
   tutorials:
   - your-copy-of-the-project-starter
@@ -54,7 +57,9 @@ contents:
   tutorials:
   - an-orbit-in-css
   - a-cube-in-css
+  - a-ball-that-faces-you
   - drawing-frames-with-javascript
+  - a-cube-on-a-canvas
 - title: Reference shelf
   tutorials:
   - faq

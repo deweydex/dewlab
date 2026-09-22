@@ -79,6 +79,12 @@ Now we can explain what we saw. The header and the button do not name a
 colour of their own. Both read `--brand-color`. When we change the
 definition, everything that reads it changes too.
 
+![On the left, the rule for :root holds one line, --brand-color: #2c3e50. Two arrows run from it to the right, one to a box labelled .header and one to a box labelled .button. Each box holds the line background: var(--brand-color). Both boxes are filled with the same solid colour.](one-variable-two-rules.svg)
+
+Without a variable, changing a colour used in ten places means editing
+ten rules, and it is easy to miss one. With a variable, we edit one
+line.
+
 The selector `.header, .button` is also new. `.header` matches the
 element with `class="header"`, and the comma lets one rule style both
 elements. [Choosing what to style: selectors and classes](tutorial:selectors-and-classes) looks
@@ -93,17 +99,6 @@ each pair goes from `00` (none) to `ff` (full). So `#000000` is black, and
 `#ffffff` is white. Colour names like `firebrick` work too, but hex
 colours can describe millions of shades.
 
-Without a variable, changing a colour used in ten places means editing
-ten rules, and it is easy to miss one. Oftentimes, when a colour
-refuses to change on one part of a page, that part names the colour
-directly and does not read the variable.
-
-Sometimes we might misspell a variable's name inside `var()`. Names must
-match exactly, capital letters included. When `var()` finds no variable
-with that name, the browser cannot use the value. In the boxes above,
-the background would disappear altogether. If a colour suddenly
-vanishes after an edit, check the spelling on both sides.
-
 ## Now in your own site
 
 Your fork's `styles.css` uses variables for its colours.
@@ -117,15 +112,20 @@ The header, the hero section, the footer and the buttons all change at
 once, because they all read the same two variables.
 
 A new colour also has to keep the text on it readable. The starter's
-default colours were chosen so that text stays readable. A contrast
-checker, such as the
-one at [webaim.org](https://webaim.org/resources/contrastchecker/),
-confirms this. It compares the colour of the text with the colour behind
-it. For ordinary text, a ratio of at least 4.5 to 1 passes the common
-standard, WCAG AA.
+default colours were chosen so that text stays readable, and a comment
+in the `:root` section says so. A contrast checker, such as the one at
+[webaim.org](https://webaim.org/resources/contrastchecker/), confirms
+this. It compares the colour of the text with the colour behind it, and
+gives a ratio. For ordinary text, a ratio of at least 4.5 to 1 passes
+the common standard, WCAG AA.
 
-5. Put your own two colours into the checker. Do your choices still
-   pass?
+5. Your header and your hero section show white text on
+   `--primary-color`. Put `#ffffff` and your new `--primary-color` into
+   the checker. Does it pass?
+6. The main button shows white text on `--accent-color`. Does that pair
+   pass too?
+7. If both pass, commit the change, with a message such as "Choose my
+   own site colours". If one fails, try a darker shade first.
 
 ## What we have now
 

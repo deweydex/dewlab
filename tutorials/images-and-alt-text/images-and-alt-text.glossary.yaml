@@ -1,7 +1,9 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Fifth tutorial of first-site. No italicised terms at all, but the
-# whole page teaches these three attributes by name, the same reason
+# Fifth tutorial of first-site. The page used to teach alt text as well;
+# that half is now describing-an-image, and the `alt` entry moved with
+# it. `<img>` and `src` have no italicised defining sentence, but the
+# whole page teaches them by name, the same reason
 # computational-methods glossaries include a function like zip() even
 # where it only ever appears in backticks. Checked against the
 # cumulative glossary so far -- no overlap.
@@ -17,16 +19,15 @@ entries:
     definition: >
       The `src` attribute on an `<img>` holds the address of the image
       file, either a path within your own site or a full web address.
-  - term: alt
-    kind: keyword
-    definition: >
-      The `alt` attribute describes an image in words, for a screen
-      reader to read aloud, or for a visitor to see if the image fails
-      to load.
   - term: path
     kind: concept
     definition: >
       A path is the address of a file inside your own site, starting
       from the HTML file that uses it. `images/photo.jpg` means a file
       called `photo.jpg` in a folder called `images`, inside the HTML
-      file's folder.
+      file's folder. `..` in a path means the folder one level up.
+  - term: "<figure>"
+    kind: keyword
+    definition: >
+      `<figure>` groups an image with its caption. The caption goes in
+      a `<figcaption>` inside it.

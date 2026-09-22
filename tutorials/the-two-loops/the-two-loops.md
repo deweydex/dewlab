@@ -36,15 +36,10 @@ editor you use:
    `Cmd+S` on a Mac.
 3. Look at the file in a browser. The first time, open the file in the
    browser directly. After that, refresh the browser tab to see each new
-   change.
+   change. A refresh makes the browser read the saved file again.
 
 Nothing in this loop leaves your own computer. Your published site stays
 the same until the change goes through the second loop, on GitHub.
-
-Two things in this loop surprise most people at first. A browser does
-not show a change you have not saved. And it does not show a saved
-change either, until you refresh the page and the browser reads the file
-again.
 
 What if you work in GitHub's editor, on the GitHub website? Then there
 is no separate save on your computer. Saving a file there makes a
@@ -84,6 +79,10 @@ or two. So a new change may not appear the moment you push it and
 refresh. Wait a little, then refresh again.
 
 ## Why is my change not showing?
+
+Here are the two loops side by side:
+
+![Two circles of steps. The first, on your computer, goes round from change to save to refresh and back to change. Refreshing the file in your browser, one turn takes a few seconds. The second, on GitHub, goes round from commit to push to wait to refresh and back to commit. Refreshing your published site, one turn takes a minute or two. An arrow labelled ready to publish? leads from save in the first loop to commit in the second. A note underneath says that in GitHub's editor, saving is a commit, so there is only the second loop.](two-loops.svg)
 
 When a change does not show up, a good first question is: which loop am
 I in?

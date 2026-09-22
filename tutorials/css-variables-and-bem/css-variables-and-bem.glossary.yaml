@@ -1,24 +1,22 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Twenty-first tutorial of first-site. "CSS custom property" here is
-# the same idea as "CSS variable" from variables-and-colour, given its
-# more formal, official CSS name now that the reader already knows it
-# informally -- kept as its own entry, not a rewrite of that one. Its
-# own "element" is BEM's element, a named part of a block, joined with
+# Twenty-first tutorial of first-site. This page is about BEM now. It
+# used to define "CSS custom property" as an entry of its own, but that
+# is the same idea as "CSS variable" from variables-and-colour, whose
+# entry already gives the other name, so the entry is gone and the page
+# points back there. "scoped override" stays: it is new here, and it is
+# how the page's modifier changes the button's colour. Its own
+# "element" is BEM's element, a named part of a block, joined with
 # `__`; a different thing from the HTML element glossaried in
 # a-page-is-files, so its term is written "element (BEM)" to keep the
 # two apart in the reference.
 entries:
-  - term: CSS custom property
-    kind: concept
-    definition: >
-      A CSS custom property is a value declared once, most often on
-      `:root`, and read back anywhere with `var()`.
   - term: scoped override
     kind: concept
     definition: >
-      A scoped override sets a custom property again on a more specific
-      rule, changing its value for that rule and its children only.
+      A scoped override sets a CSS variable again on a more specific
+      rule. It changes the variable's value for that element and the
+      elements inside it only.
   - term: BEM
     kind: concept
     definition: >

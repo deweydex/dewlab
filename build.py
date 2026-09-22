@@ -2728,8 +2728,10 @@ def cumulative_glossary(
     A practice or context page has no series position that means anything —
     `practice_for`/`practice_across`/`context_for` name what it belongs to
     instead of where it sits — so its reference is the union of the
-    tutorial(s) it names, each resolved the same way, rather than its own
-    (nonexistent) coverage.
+    tutorial(s) it names, each resolved the same way. A context page may
+    also define terms of its own (background reading goes further than
+    its tutorials did), so its own glossary follows the union; a practice
+    page teaches nothing new and has none.
     """
     reader_at = reader_at or tutorial
 
@@ -2747,6 +2749,12 @@ def cumulative_glossary(
                     continue
                 seen.add(key)
                 found.append(entry)
+        if tutorial.is_context:
+            for entry in own_glossary(tutorial):
+                key = (entry["term"], entry["kind"])
+                if key not in seen:
+                    seen.add(key)
+                    found.append(entry)
         return found
 
     chain = series_chain(tutorial.course, tutorial.series, groups)

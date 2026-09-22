@@ -69,6 +69,11 @@ card stays at its basis, and the spare width stays empty at the end of
 the row. With a basis of `200px`, each card needs more room, so fewer
 cards fit on one line, and they wrap sooner.
 
+Here is the same row twice, in a preview a little wider than the cards
+need:
+
+![Two rows of the three cards, One, Two and Three, each card labelled "basis 90px". In the top row, flex: 0 0 90px, the cards stay at their basis, and a dashed area at the end of the row is labelled "spare space, left empty". In the bottom row, flex: 1 1 90px, each card has a tinted part added on its right, labelled "+ share". The three shares are equal, and together they fill the same space that was empty in the top row.](spare-space-shared.svg)
+
 ## Now in your own site
 
 Your `index.html` has three cards inside `.card-row`. In `styles.css`,

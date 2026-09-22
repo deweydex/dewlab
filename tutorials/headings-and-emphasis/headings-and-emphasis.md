@@ -58,6 +58,13 @@ We can change how headings look later with CSS, the language for how a
 page looks. We start on CSS in [CSS rules and
 stylesheets](tutorial:a-rule-and-where-it-lives).
 
+So we choose a level for its place in the page's structure, and not for
+its size. A good check is to read only the headings of a page, from top
+to bottom. Do they look like a list of contents? Here is a slightly
+longer page, with its headings read out on their own:
+
+![On the left, a short shop page as a browser draws it: a large heading "Plushie Shop", a smaller heading "New this week", two smaller headings again, "Squishy Squid" and "Cuddly Cuttlefish", each with a line of text under it, and then another heading the size of "New this week", "Visit us". On the right, the same headings as a list of contents: "Plushie Shop" at the top, marked h1; under it, indented once, "New this week" and "Visit us", marked h2; and under "New this week", indented twice, "Squishy Squid" and "Cuddly Cuttlefish", marked h3.](heading-outline.svg)
+
 `<p>` marks a paragraph of ordinary text.
 
 Inside a paragraph, two tags mark words that matter more than the rest:
@@ -67,23 +74,9 @@ Inside a paragraph, two tags mark words that matter more than the rest:
 | `<strong>` | This text is important. | In bold |
 | `<em>` | This text is emphasised: we would stress it if we said it aloud. | In italics |
 
-When we swapped the two tags, the bold and the italics swapped too.
-
-The tags `<b>` and `<i>` also make text bold and italic, and they often
-look the same on the page. The difference is in the meaning. `<strong>`
-and `<em>` tell any software that reads the code that the words are
-important or stressed. `<b>` and `<i>` do not say that. A screen reader
-(software that reads a page aloud for someone who cannot see it) or a
-search engine can use the meaning of `<strong>` and `<em>`. Not every
-screen reader announces it, but the meaning is there in the code.
-
-Oftentimes, when people start writing HTML, they choose a heading level
-by its size. They pick `<h4>` because it looks small and neat. That is a
-common mistake. Choose the level that matches the structure of the
-page, and change the size later with CSS. Many screen reader users move
-around a page by jumping from heading to heading, so the levels need to
-make sense on their own. A good check is to read only the headings of
-your page, from top to bottom. Do they look like a list of contents?
+When we swapped the two tags, the bold and the italics swapped too. The
+bold and the italics are only how a browser shows these two meanings.
+The meaning itself stays in the code, where other software can read it.
 
 ## Now in your own site
 

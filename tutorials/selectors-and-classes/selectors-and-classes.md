@@ -71,6 +71,8 @@ paragraph outside the box has no such element around it, so it stays
 untouched. When we moved it inside, it matched too. With plain `p`, the
 rule matched every paragraph.
 
+![The HTML of the example drawn as a tree. At the top is body. Under it are two branches: a div with class highlight, and a p that says Outside it. Under the div is a p that says Inside the highlighted box. That inner p is shaded and marked as matched by .highlight p, because the highlight div is above it. The outer p is not shaded, because no element with class highlight is above it.](descendant-tree.svg)
+
 "Somewhere inside" means at any depth. The `<p>` does not have to sit
 directly inside the `.highlight` element. It could be inside a
 `<section>` that is inside it, and it would still match.
@@ -80,21 +82,15 @@ names. You have met this already: your skills section has
 `class="section skills-section"`. That element matches both `.section`
 and `.skills-section`.
 
-Oftentimes, when a rule with a class selector does nothing, the dot is
-missing. `highlight p` (with no dot) looks for an element called
-`<highlight>`, and there is no such element. The space matters too.
-`p.highlight`, with no space, means a `<p>` that carries the class
-itself. That is a different selector from `.highlight p`.
-
 ## Now in your own site
 
 On an earlier page you added a skills section to your fork. Now we can
-style that section on its own.
+style that section on its own. The starter already holds two rules for
+it, inside a comment, so they do nothing yet.
 
-1. Open `styles.css`.
-2. Scroll down near the bottom. If there are any `@media` rules there,
-   find the first one.
-3. Just before any `@media` rules, add these two rules:
+1. Open `styles.css`, and find section 7, Sections & Cards.
+2. Find the comment that starts `/* → Exercise 18`. Under it are these
+   two rules:
 
 ```css
 .skills-section {
@@ -106,6 +102,9 @@ style that section on its own.
 }
 ```
 
+3. Delete the comment's first line, the one that starts
+   `/* → Exercise 18`. Then delete the `*/` line just after the two
+   rules. Now the two rules are no longer inside a comment.
 4. Save, and refresh. Which cards have a border on the left?
 
 The border shows up only on cards inside the skills section, because
@@ -114,13 +113,6 @@ The border shows up only on cards inside the skills section, because
 5. For a moment, change `.skills-section .card` to plain `.card`. Which
    other cards on the page pick up the same border?
 6. Change it back when you have looked.
-
-Why add the rules before the `@media` rules? An `@media` rule holds
-other rules that apply only on some screen sizes, and we meet them in
-[Changing the layout for phones: media queries](tutorial:media-queries). When two rules disagree about
-the same element, the one later in the file often wins. With our new
-rules above them, the `@media` rules come later, so they still win at
-the screen sizes they are written for.
 
 ## What we have now
 

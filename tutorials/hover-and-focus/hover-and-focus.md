@@ -97,45 +97,41 @@ and settling back. In step 4, with the transition inside `:hover`, the
 button lifted smoothly, but jumped straight back when the pointer left.
 
 **Why does focus matter?** Some people move through a page with the
-keyboard alone, pressing Tab from one link to the next. Without a
-visible focus style, they have no way to see where they are. That is why
-focus styles matter for accessibility. A person using a mouse may never
-see the focus style at all. Removing it changes nothing for them, but it
-is a real loss for a keyboard user. In most browsers, clicking a button
-also gives it focus, so you may have seen the outline as soon as you
+keyboard alone, pressing Tab from one link to the next. The focus style
+is how they see where they are. A person using a mouse may never see it
+at all, and that answers step 3: the lift is for the mouse, and the
+outline is for the keyboard. In most browsers, clicking a button also
+gives it focus, so you may have seen the outline as soon as you
 clicked.
-
-Sometimes we might find `outline: none` in a stylesheet, often added to
-hide the outline after a mouse click. It hides the focus style from
-keyboard users too, so it is worth looking for. Many sites use
-`:focus-visible` in place of `:focus` for this reason. With
-`:focus-visible`, the browser shows the style after Tab, and usually not
-after a mouse click.
-
-A phone or a tablet has no pointer that can rest over an element. A
-hover effect is a nice extra, but it should never be the only way to
-find something on a page.
 
 ## Now in your own site
 
 In your fork, `styles.css` has a `.card` rule. We can give your cards a
-hover effect like the button's.
+hover effect like the button's. The starter has already done half of
+the work.
 
-1. Add this `transition` line inside the `.card` rule:
+1. Find the `.card` rule. It already has a `transition` line:
 
    ```css
-   transition: transform 0.2s ease, box-shadow 0.2s ease;
+   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
    ```
 
-2. Below the `.card` rule, add a new rule for `.card:hover`:
+   `--transition-fast` is a variable, set near the top of the file to
+   `0.2s ease`. So this is the same transition as our button's.
+2. Below the `.card` rule, there is a `.card:hover` rule inside a
+   comment. The comment starts with `/* → Exercise 22`. Delete that
+   first line of the comment, and the `*/` line after the rule. The
+   rule should now look like this:
 
    ```css
    .card:hover {
-     transform: translateY(-5px);
-     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+       transform: translateY(-5px);
+       box-shadow: var(--shadow-lg);
    }
    ```
 
+   `--shadow-lg` is a larger, deeper shadow than the card's own
+   `--shadow-md`.
 3. Save, and refresh. Move your pointer over a card. What happens?
 4. Now find the `a:focus` rule in `styles.css`.
 5. Go back to your page and press Tab several times. Where does the

@@ -37,11 +37,6 @@ something there.
 This site has explanations and examples. We can try an idea here first,
 then use it in a website or a database of our own.
 
-These are not tools made only for students. Many people who build
-websites and software for a living use Git and GitHub every day, and the
-path a change takes, from an editor to a published site, is much the
-same for them as it is for us.
-
 ## From a change to a published page
 
 How does a change in a file end up on a website that anyone can visit?
@@ -59,6 +54,11 @@ If we use an editor on our own computer, it happens in two stages.
 4. We send our commits to GitHub. This is called a *push*.
 5. GitHub publishes the update. Now other people can see it on your
    website.
+
+Here is the same path as a picture. The numbers on the arrows match the
+steps above.
+
+![A diagram in two bands. The top band, stage one, is on your computer. Your editor has an arrow labelled 1 save to the file, saved on your computer, and the file has an arrow labelled 2 refresh to your browser, where only you see it. From the file, an arrow labelled 3 commit goes down to a commit, recorded by Git. The bottom band, stage two, is on GitHub. From the commit, an arrow labelled 4 push goes down into your repository, and from there an arrow labelled 5 publish goes to your published site. Below that, an arrow goes to anyone's browser, at your site's address. A dashed line runs from your editor straight down into your repository, labelled: GitHub's editor, a commit goes straight here.](path-of-a-change.svg)
 
 What if we use GitHub's editor in the browser instead? Then we save a
 commit straight onto GitHub, so stage one and stage two happen together.

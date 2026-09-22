@@ -1,5 +1,5 @@
 ---
-title: "Images, paths and alt text"
+title: "Placing an image, and the path that finds it"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,14 +9,15 @@ covers:
     touches: [WA-LO8]
 ---
 
-# Images, paths and alt text
+# Placing an image, and the path that finds it
 
 What happens when a browser cannot find the image we asked for? On this
 page we:
 
 - ask for an image that does not exist, and see what the browser shows
-- learn how the `<img>` tag finds an image, and how it describes one
-- add an image to your own site
+- learn how the `<img>` tag finds an image, with a web address or a
+  path
+- put an image of your own on your site
 
 ## Let's try it
 
@@ -31,16 +32,19 @@ site: image-alt
 ```
 
 1. Look at the preview. What appears where the image should be?
-2. Change the words inside `alt="..."`. Does the preview change?
-3. Now change `does-not-exist.jpg` to `https://picsum.photos/400/300`.
-   If you are online, what happens? Where did the words from `alt` go?
+2. Now change `does-not-exist.jpg` to `https://picsum.photos/400/300`.
+   If you are online, what happens?
+3. Take the `https://` away from the start, so that the address is
+   `picsum.photos/400/300`. Does the image still load?
 
 ## Why does this happen?
 
-Now we can explain what we saw. Something still appeared, even though
-the image failed. Most browsers show the words from `alt` in its place.
-Some also show a small broken-image icon. Those words are doing their
-job: they tell us what should be there.
+Now we can explain what we saw. In step 1, the browser looked for a
+file called `does-not-exist.jpg`, and found nothing. Something still
+appeared: most browsers show the words from `alt` in place of the
+image, and some also show a small broken-image icon. Those words are
+the subject of the next page, [Describing an image with alt
+text](tutorial:describing-an-image).
 
 `<img>` is different from the tags we have met so far. It has no closing
 tag, and no content between tags. The whole element is one tag with
@@ -56,39 +60,33 @@ attributes:
 - The `src` attribute holds the address of the image file.
 - The `alt` attribute describes the image in words.
 
-### Paths: where the image is
+### Two kinds of address
 
 The address in `src` can be one of two kinds. It can be a full web
 address, starting with `https://`, like the `picsum.photos` address in
-step 3. Or it can be a *path*. A path is the address of a file inside
+step 2. Or it can be a *path*. A path is the address of a file inside
 your own site, starting from the HTML file that uses it.
 
 | `src` | Where the browser looks |
 |---|---|
 | `photo.jpg` | In the same folder as the HTML file |
 | `images/photo.jpg` | In a folder called `images`, inside the HTML file's folder |
+| `../photo.jpg` | In the folder one level up from the HTML file's folder |
 | `https://picsum.photos/400/300` | At that full web address, on another site |
 
-Oftentimes, an image works on our own computer and then breaks on the
-published site. Check the spelling of the path first, including capital
-letters. On Windows and on a Mac, `Photo.jpg` and `photo.jpg` open the
-same file. On GitHub Pages they are two different names, so a path
-with the wrong capital letter finds nothing.
+Here are the first three paths, drawn as the folders of a small site.
+Each one starts from the same HTML file, `index.html`:
 
-### Alt text: what the image shows
+![A small site drawn as folders. The outer folder, "projects", holds a file called photo.jpg and a folder called "my-site". Inside "my-site" are the HTML file index.html, a file called photo.jpg, and a folder called "images" that holds a third photo.jpg. Three arrows start from index.html. The arrow labelled "photo.jpg" goes to the photo beside index.html. The arrow labelled "images/photo.jpg" goes into the images folder, to the photo there. The arrow labelled "../photo.jpg" goes up and out of "my-site", to the photo in "projects".](paths.svg)
 
-A screen reader is software that reads a page aloud for someone who
-cannot see it. When it reaches an image, it reads the `alt` text in
-place of the image. The same text appears on the page whenever the image
-fails to load, as it did in step 1. In step 3, the image loaded, so the
-`alt` text was no longer shown. It is still there in the code, for a
-screen reader.
+So a path is a set of directions. Each `/` means "go into this folder".
+`..` means "go up one folder". A full web address is different: it
+names the site as well, so it finds the same file from any page.
 
-Sometimes an image is only there for decoration, and it tells a visitor
-nothing new. Then we can write an empty `alt=""`. That tells a screen
-reader to skip the image. Leaving out `alt` completely is different. A
-screen reader then has no description, and some screen readers read out
-the file name in its place.
+Now we can explain step 3. Without `https://`, the address no longer
+starts like a web address. So the browser reads `picsum.photos/400/300`
+as a path: a folder called `picsum.photos`, next to the page. There is
+no such folder, so the image fails again.
 
 ## Now in your own site
 
@@ -110,28 +108,36 @@ address gives you a random stand-in image.
    [Semantic HTML: tags that describe their
    content](tutorial:sections-that-mean-something).
 3. Paste the code above inside that section.
-4. Write your own description in `alt`, in place of the example text.
-5. Write your own caption inside `<figcaption>`.
-6. Save, and refresh.
+4. Write your own caption inside `<figcaption>`.
+5. Save, and refresh. Can you see a stand-in image, with your caption
+   under it?
 
-Now try two more changes, one at a time:
+Now let's swap the stand-in for a photo of your own, and point at it
+with a path. Choose a photo you are happy to put on a public website.
 
-7. Change `alt` to empty: `alt=""`. Save, and refresh.
-8. Remove `alt` completely. Save, and refresh.
+6. Give the photo file a short name, in small letters, with no spaces,
+   such as `my-photo.jpg`.
+7. Put the file in your fork, in the same folder as `index.html`:
+   - **On your own computer:** copy the file into that folder.
+   - **On GitHub:** open your fork, click **Add file**, then **Upload
+     files**, and drag the photo in. Then commit.
+8. In `index.html`, change the `src` of your image from the
+   `picsum.photos` address to the photo's file name, such as
+   `src="my-photo.jpg"`.
+9. Save, and refresh.
 
-Can you see any difference on the page between steps 7 and 8? Both look
-the same, but a screen reader treats them differently. When you have
-finished, put your own description back in `alt`.
+Is your own photo on the page now? If not, compare the file name and
+the path letter by letter.
 
 ## What we have now
 
-We can now place an image on a page, point to it with a path, and
-describe it in words that work even when the image does not.
+We can now place an image on a page, and point to it with a full web
+address or with a path.
 
 | Word | Meaning | Example |
 |---|---|---|
 | `<img>` | Places an image. It has no closing tag. | `<img src="photo.jpg" alt="...">` |
 | `src` | The address of the image file | `src="images/photo.jpg"` |
 | *path* | The address of a file inside your own site, starting from the HTML file | `images/photo.jpg` |
-| `alt` | A description of the image, for a screen reader or a failed load | `alt="A greyhound on a sofa"` |
-| `alt=""` | An empty description: the image is decoration, and a screen reader skips it | `alt=""` |
+| `..` | In a path, the folder one level up | `../photo.jpg` |
+| `<figure>` | Groups an image with its caption, in `<figcaption>` | `<figure class="profile-image">` |

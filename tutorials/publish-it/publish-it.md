@@ -46,6 +46,14 @@ username.github.io/repository-name
 What would your own address be? Suppose your username is `janedoe`, and
 your repository is `web`. Then your address is `janedoe.github.io/web`.
 
+Each part of the address comes from somewhere you can name:
+
+![The address https://janedoe.github.io/web/about.html, cut into parts. The part janedoe is labelled your username. The part .github.io is labelled GitHub Pages. The part /web is labelled your repository. The part /about.html is labelled one page in it. Below, the same address for the home page ends in /web/ with nothing after the last slash, labelled: no file named, so GitHub Pages sends index.html.](address-pattern.svg)
+
+A page other than the home page adds its file name at the end, such as
+`janedoe.github.io/web/about.html`. When no file is named, GitHub Pages
+sends `index.html`, as the next section explains.
+
 ### The home page is `index.html`
 
 GitHub Pages looks for a file named exactly `index.html`, and shows it

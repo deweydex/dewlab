@@ -631,7 +631,8 @@ context_for:
 A tutorial can have more than one context page. It sits off the reading order
 the way a practice page does: it has no previous or next, it is not a search
 result, it sits in the tree under the first tutorial it names, and its
-Reference panel holds everything those tutorials have taught.
+Reference panel holds everything those tutorials have taught, followed
+by the terms it defines itself, from its own `<id>.glossary.yaml`.
 
 **How it links.** Each tutorial it names gets a short block after its practice
 link, naming the context page and saying that nothing in it is needed to

@@ -14,13 +14,11 @@ entries:
   - term: "<strong>"
     kind: keyword
     definition: >
-      `<strong>` marks text as important. Browsers show it in bold.
-      `<b>` looks the same, but it does not say that the text is
-      important; `<strong>` does, for any software that reads the code.
+      `<strong>` marks text as important. Browsers show it in bold,
+      and the meaning stays in the code for any software that reads it.
   - term: "<em>"
     kind: keyword
     definition: >
       `<em>` marks text as emphasised, the way we would stress a word
-      when we say it aloud. Browsers show it in italics. `<i>` looks the
-      same, but it does not say that the text is stressed; `<em>` does,
-      for any software that reads the code.
+      when we say it aloud. Browsers show it in italics, and the
+      meaning stays in the code for any software that reads it.

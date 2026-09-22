@@ -1,0 +1,39 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for hover-and-focus,
+# transitions-and-transforms, keyframes-and-the-checkbox-hack and
+# the-checkbox-hack, declared with `context_for:`. Checked against the
+# cumulative glossary up to the-checkbox-hack -- no overlap. `screen
+# reader` is used here but defined in sections-that-mean-something, and
+# "media query" in media-queries, so both stay where they are.
+# `@media (hover: hover)` is shown once as an example of a media query,
+# not taught as a term of its own, so it is left out.
+entries:
+  - term: tab order
+    kind: concept
+    definition: >
+      The tab order is the order Tab visits the links, buttons and form
+      fields on a page. It is the order they come in the HTML.
+  - term: ":focus-visible"
+    kind: keyword
+    definition: >
+      `:focus-visible` matches an element that has focus, but only when
+      the browser decides the person needs to see it: after Tab, and not
+      after a mouse click on a button.
+  - term: prefers-reduced-motion
+    kind: keyword
+    definition: >
+      `prefers-reduced-motion` is a media query that tells a page whether
+      the person has asked their device for less movement.
+      `@media (prefers-reduced-motion: reduce)` applies its CSS only when
+      they have.
+  - term: "<details>"
+    kind: keyword
+    definition: >
+      `<details>` is an element that hides its content until it is
+      opened. It works with a mouse and with the keyboard, with no CSS.
+  - term: "<summary>"
+    kind: keyword
+    definition: >
+      `<summary>` is the part of a `<details>` element that always
+      shows. Clicking it opens or closes the rest.

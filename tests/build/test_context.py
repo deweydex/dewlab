@@ -72,8 +72,9 @@ class TestContextPages:
         assert "Python fundamentals" in why
         assert 'class="dl-crumb-context"' in page and "dl-crumb-tag" in page
 
-        # Its reference is the union of its tutorials'.
-        assert {e["term"] for e in manifest(why)["glossary"]} == {"x", "y"}
+        # Its reference is the union of its tutorials', then its own terms.
+        assert [e["term"] for e in manifest(why)["glossary"]][-1] == "z"
+        assert {e["term"] for e in manifest(why)["glossary"]} == {"x", "y", "z"}
 
         # The contents page lists it beside each tutorial, tagged.
         index = (repo / "site" / "all-tutorials.html").read_text()

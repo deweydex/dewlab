@@ -69,6 +69,8 @@ from squeezing sideways until they overlap, but it can leave a ragged
 half-row, with one link alone on the next line. A whole menu stacked
 into one column is easier to read.
 
+![Two narrow browser windows showing the same menu: the logo "Site" and the links Home, About and Contact. On the left, labelled flex-wrap: wrap, Home and About sit on one line under the logo, and Contact sits alone on the next line, marked as a half-row. On the right, labelled flex-direction: column, the three links sit one per line under the logo, in the same order.](wrap-or-stack.svg)
+
 ## Now in your own site
 
 1. In your fork of `project_wad`, open `styles.css`.

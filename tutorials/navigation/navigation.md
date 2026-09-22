@@ -75,15 +75,12 @@ Here are the two halves of an anchor link side by side:
 <section id="two">...</section>  <!-- the target: the same name in id -->
 ```
 
-Oftentimes, when an anchor link does nothing, the two names do not
-match. `#Two` and `id="two"` are different names, because the match is
-exact, capital letters included. An `id` must also appear only once on a
-page, so the browser knows which element to scroll to.
+The two names must match exactly, capital letters included. An `id`
+must also appear only once on a page, so the browser knows which
+element to scroll to. Here is the jump, drawn on a page that is too long
+for its window:
 
-Sometimes we might notice that, after clicking an anchor link, the web
-address in the browser's address bar ends with the `#` part, such as
-`#contact`. We can copy that full address and share it. Whoever opens
-it lands on that same section.
+![A long page drawn twice, with a browser window over part of it. On the left, before the click, the window shows the top of the page: a menu with the links "Section one" and "Section two", and the start of section one. Section two, marked id="two", is further down the page, outside the window. An arrow goes from the link href="#two" down to section two. On the right, after the click, the page has moved up inside the window, so section two sits at the top of the window. The menu and section one are now above the window, out of view.](anchor-jump.svg)
 
 ## Now in your own site
 
@@ -92,7 +89,9 @@ your skills section, and `id="contact"` on your contact section.
 
 1. In your fork, open `index.html`.
 2. Find the `<nav>` element in the header.
-3. Update its links so they point at your sections:
+3. Compare its links with the ones below. The starter already points
+   two of them at `#skills` and `#contact`, so they may match already.
+   If you changed any, make them match:
 
 ```html
 <nav class="main-nav" aria-label="Main">

@@ -1,0 +1,33 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for
+# conclusions-and-next-steps, declared with `context_for:`. Checked
+# against the cumulative glossary up to conclusions-and-next-steps --
+# no overlap. `living standard`, `module (CSS)` and `deprecated` are
+# retold here but defined in conclusions-and-next-steps, which keeps the
+# short account of the versions, so they stay there.
+entries:
+  - term: W3C
+    kind: concept
+    definition: >
+      The W3C, the World Wide Web Consortium, is a group that writes and
+      publishes standards for the web. Tim Berners-Lee founded it in
+      1994.
+  - term: standard
+    kind: concept
+    definition: >
+      A standard is a document that says exactly how a language such as
+      HTML or CSS works, so that every browser can follow the same
+      rules.
+  - term: WHATWG
+    kind: concept
+    definition: >
+      The WHATWG is a group started by people from Apple, Mozilla and
+      Opera in 2004. Its work became HTML5, and it now looks after the
+      HTML standard.
+  - term: browser compatibility
+    kind: concept
+    definition: >
+      Browser compatibility is whether a feature works the same way in
+      every browser a site's visitors use. MDN Web Docs and caniuse.com
+      both show it.

@@ -1,0 +1,46 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for images-and-file-size,
+# declared with `context_for:`. Checked against the cumulative glossary
+# up to images-and-file-size -- no overlap. `format`, `compress`, `JPEG`,
+# `PNG` and `SVG` are used and widened here but defined in
+# images-and-file-size, so they stay there.
+entries:
+  - term: pixel
+    kind: concept
+    definition: >
+      A pixel is one tiny square of a single colour. A picture on a
+      screen, and a JPEG, PNG or GIF file, is a grid of them.
+  - term: lossless
+    kind: concept
+    definition: >
+      A lossless format makes an image file smaller without changing
+      any pixel, by finding patterns such as a long row of one colour.
+      PNG is lossless.
+  - term: lossy
+    kind: concept
+    definition: >
+      A lossy format makes an image file smaller by throwing away
+      detail we are unlikely to notice. JPEG is lossy.
+  - term: quality (JPEG)
+    kind: concept
+    definition: >
+      When saving a lossy format such as JPEG, the quality, often from
+      0 to 100, sets how much detail is kept. A lower quality gives a
+      smaller file.
+  - term: WebP
+    kind: concept
+    definition: >
+      WebP is a newer image format that can be lossy or lossless, and
+      can have a transparent background. Its files are often smaller
+      than a JPEG or PNG of the same picture.
+  - term: AVIF
+    kind: concept
+    definition: >
+      AVIF is a newer image format again, with files often smaller than
+      WebP. All current major browsers can show it.
+  - term: metadata
+    kind: concept
+    definition: >
+      A photo's metadata is information stored inside its file: the date
+      it was taken, the camera or phone, and sometimes the place.
