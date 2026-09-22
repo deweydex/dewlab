@@ -7,18 +7,20 @@ entries:
   - term: heading level
     kind: concept
     definition: >
-      A heading level is one of `<h1>` through `<h6>`. `<h1>` marks a
-      page's one main heading, and each level below it marks a smaller
-      section heading.
+      A heading level is one of `<h1>` to `<h6>`. It tells the browser
+      how important a heading is in the page's structure. `<h1>` marks a
+      page's one main heading, and each level below it marks a heading
+      for a smaller part of the page.
   - term: "<strong>"
     kind: keyword
     definition: >
-      `<strong>` marks text as important. Browsers usually show it in
-      bold, but a screen reader or a search engine reads the meaning
-      too, unlike `<b>`, which only changes how the text looks.
+      `<strong>` marks text as important. Browsers show it in bold.
+      `<b>` looks the same, but it does not say that the text is
+      important; `<strong>` does, for any software that reads the code.
   - term: "<em>"
     kind: keyword
     definition: >
-      `<em>` marks text as emphasised. Browsers usually show it in
-      italics, but a screen reader or a search engine reads the meaning
-      too, unlike `<i>`, which only changes how the text looks.
+      `<em>` marks text as emphasised, the way we would stress a word
+      when we say it aloud. Browsers show it in italics. `<i>` looks the
+      same, but it does not say that the text is stressed; `<em>` does,
+      for any software that reads the code.

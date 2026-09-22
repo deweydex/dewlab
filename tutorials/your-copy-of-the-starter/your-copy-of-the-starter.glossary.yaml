@@ -4,12 +4,19 @@
 # far (editor, repository, browser, commit, push, username, issue, pull
 # request) -- no overlap. "Use this template", "Clone it", "Download
 # it" and "Edit it in the browser" are bold because they name buttons
-# and methods to choose between, not technical terms; that leaves
-# "fork" as the one word this page actually defines.
+# and methods to choose between, not technical terms; "fork" and
+# "clone" are the words this page defines.
 entries:
   - term: fork
     kind: concept
     definition: >
-      A fork is your own copy of somebody else's repository, made
-      through GitHub. It stays visibly connected to the original and
-      keeps its history, unlike a copy made from a template.
+      A fork is your own copy of another person's repository, made
+      through GitHub. It keeps the history of the original and stays
+      connected to it. A copy made from a template starts a history of
+      its own.
+  - term: clone
+    kind: concept
+    definition: >
+      To clone a repository is to download a copy of it, with its
+      history, that Git keeps connected to GitHub. You edit the files
+      on your computer and push your commits back up.

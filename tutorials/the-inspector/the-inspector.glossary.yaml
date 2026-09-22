@@ -9,7 +9,7 @@ entries:
   - term: inspector
     kind: concept
     definition: >
-      The inspector is a tool built into every browser that shows the
-      HTML and CSS actually running a page, on your own site or anyone
-      else's. Opening it is usually the fastest way to find out why
-      something looks wrong.
+      The inspector is a tool built into the browser that shows the
+      HTML and CSS behind a page, on your own site or anyone else's.
+      It is often the quickest way to find out why something looks
+      wrong.

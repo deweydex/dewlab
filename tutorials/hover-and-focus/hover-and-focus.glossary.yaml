@@ -19,3 +19,8 @@ entries:
       The `transition` property makes a change to another property
       happen smoothly over time, instead of jumping straight to its new
       value.
+  - term: focus
+    kind: concept
+    definition: >
+      An element with focus is the one the keyboard is working with
+      right now. Pressing Tab moves focus to the next link or button.

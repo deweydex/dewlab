@@ -11,11 +11,16 @@ entries:
   - term: rem
     kind: keyword
     definition: >
-      `rem` is a unit relative to the root font size, the one set on
-      `<html>`. It scales automatically if a reader has changed their
-      own browser's font size.
+      `rem` is a unit measured against the root font size, the one set
+      on `<html>`. It grows automatically if a reader has made their
+      own browser's font size larger.
+  - term: root font size
+    kind: concept
+    definition: >
+      The root font size is the font size set on `<html>`. Browsers set
+      it to `16px` by default, so `1rem` normally equals `16px`.
   - term: text-align
     kind: keyword
     definition: >
-      The `text-align` property sets how text sits within its element:
-      `left`, `right`, `center` or `justify`.
+      The `text-align` property sets where lines of text sit within
+      their element: `left`, `right`, `center` or `justify`.

@@ -9,16 +9,27 @@ entries:
   - term: media query
     kind: concept
     definition: >
-      A media query wraps a block of CSS in a condition based on the
-      screen, most often its width. The rules inside apply only while
-      the condition holds.
+      A media query wraps a block of CSS in a condition, most often
+      about the width of the viewport. The rules inside apply only
+      while the condition is true.
+  - term: viewport
+    kind: concept
+    definition: >
+      The viewport is the part of the browser window that shows the
+      page. A media query about width tests the viewport's width.
+  - term: breakpoint
+    kind: concept
+    definition: >
+      A breakpoint is a width where a media query switches on or off,
+      such as the `768px` in `@media (max-width: 768px)`.
   - term: "max-width (media query)"
     kind: keyword
     definition: >
       Inside `@media (max-width: 350px) { ... }`, `max-width` applies
-      the rules inside only when the screen is that width or narrower.
+      the rules inside only when the viewport is that width or
+      narrower.
   - term: min-width
     kind: keyword
     definition: >
       Inside a media query, `min-width` applies its rules only when the
-      screen is a given width or wider, the opposite of `max-width`.
+      viewport is a given width or wider, the opposite of `max-width`.

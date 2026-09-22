@@ -3,85 +3,119 @@ title: "A GitHub account"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  what-github-actually-does:
+  what-github-does:
     touches: [WA-LO13]
 ---
 
 # A GitHub account
 
-Everything in this course, on either track, starts with a GitHub
-account. It costs nothing and takes a few minutes to set up.
+What does GitHub do for us, and why do we need an account there? On
+the website track of this course, everything starts with a GitHub
+account. The account is free, and it takes a few minutes to set up. On
+this page we:
 
-## What GitHub actually does
+- see what GitHub does with our files
+- create your account, step by step
+- find where your username appears
+- look at the free tools GitHub offers to students
 
-GitHub stores your files online, in a project folder called a
-repository, or "repo" for short. Every change you save there is kept.
-You can see how a project looked at an earlier point, and return to it
-if something goes wrong.
+The data exercises run in your browser without an account. You still
+need one to post a question or a report on GitHub, as we see below.
 
-GitHub also publishes websites. A repository that holds HTML and CSS
-files can be turned into a live site with GitHub Pages, at no cost.
-[Publishing your site with GitHub Pages](tutorial:publish-it) covers how.
+## What GitHub does
 
-Repositories are usually public, meaning anyone with the link can see the
-files. Private repositories exist too, but a public one is normally what
-you want here. It is what lets a page you publish actually be seen, and
-what lets a teacher check your work.
+GitHub stores your files online. It keeps each project in a folder
+called a repository, or "repo" for short. GitHub keeps every change you
+save there. So you can see how a project looked at an earlier time, and
+you can go back to that version if something goes wrong.
+
+GitHub also publishes websites. A repository with HTML and CSS files in
+it can become a live website through GitHub Pages, and this costs
+nothing. [Publishing your site with GitHub Pages](tutorial:publish-it)
+shows how.
+
+A repository can be public or private. Anyone can see the files in a
+public repository. Only you, and the people you choose, can see a
+private one. For this course, you want a public repository. A public
+repository lets people see the page you publish, and it lets your
+teacher check your work.
 
 ## Creating an account
 
-Go to [github.com](https://github.com) and look for the sign-up form. It
-asks for three things.
+1. Go to [github.com](https://github.com) and find the sign-up form.
+2. Enter an email address. GitHub sends account and security messages
+   to this address, so use one you check.
+3. Choose a password. It has to follow GitHub's rules for length and
+   for the mix of characters.
+4. Choose a *username*. A username is the name of your GitHub account.
+   It becomes part of your GitHub address, and it appears on everything
+   you publish there.
+5. Send the form. GitHub then sends an email to check your address.
+   Follow what it says: it may give you a code to type in, or a link to
+   click. After that, your account is ready.
 
-A *username* becomes part of your GitHub address and appears on
-everything you publish. Choose one you would be happy to keep: changing
-it later is possible, but it can break links to work you have already
-shared.
+Your username needs some thought. Choose one you would be happy to
+keep. You can change it later, but a change can break links to work you
+have already shared.
 
-GitHub uses your email address to send account and security notices, so
-use one you check.
-
-Your password has to meet GitHub's usual length and complexity rules.
-
-After you submit the form, GitHub sends a verification email. Follow its
-link to confirm your address, and your account is ready. GitHub may also
-ask a few questions about your experience and interests. These only
-shape the suggestions it shows you, not what you are able to do.
+GitHub may also ask a few questions about your experience and your
+interests. Your answers change only the suggestions GitHub shows you.
+They do not limit what you can do.
 
 ## Where your username shows up again
 
-Post anywhere on GitHub, including someone else's repository, and your
-username sits beside what you wrote. This course's own tutorials are a
-repository too, so a report you file about a mistake, or a question you
-ask, carries your name the same way.
+When you post anything on GitHub, your username appears beside it. This
+is true in your own repositories, and in other people's repositories
+too. The tutorials of this course live in a repository on GitHub as
+well. So a question you ask, or a report you send about a mistake,
+carries your username in the same way.
 
-Most tutorial pages carry a line at the foot, "Something wrong on this
-page? Tell us." Click it and three doors open: a question, an error, or
-the page being wrong or hard to follow. A question goes to Discussions;
-the other two open GitHub's own form with the page and its version
-already filled in, so you only need to write one sentence.
-[Troubleshooting](tutorial:troubleshooting) has the checks worth trying
-first, for a page that will not run.
+Most tutorial pages end with a line at the bottom: "Something wrong on
+this page? Tell us." When you click it, three choices open, like three
+doors:
+
+- **I have a question.** This goes to the course's Discussions page on
+  GitHub.
+- **It gives an error.** This opens a form on GitHub.
+- **The page is wrong, or I could not follow it.** This opens the same
+  kind of form.
+
+The two forms arrive with the page and its version already filled in.
+One sentence from you is enough. GitHub asks you to sign in first, which
+is one more reason to have an account. Does a page not run for you?
+[Troubleshooting](tutorial:troubleshooting) has some checks to try
+before you send a report.
 
 ## GitHub Education
 
-GitHub gives students access to paid tools at no cost, through what it
-calls the Student Developer Pack. It normally includes a paid plan on
-your own account, GitHub Copilot (an assistant that suggests code as you
-type), and offers from other companies, including a free domain name for
-a year.
+GitHub gives students some paid tools at no cost. It calls this the
+Student Developer Pack. The pack normally includes:
 
-To apply, you tell GitHub you are a student and then prove it, usually
-with a college email address or a photograph of your student card. We
-cannot say whether this course's own award qualifies. GitHub decides on
-each application, and its rules can change. Try applying, and if a
-college email address does not work, try the student card instead.
+- a paid plan on your own GitHub account
+- GitHub Copilot, an assistant that suggests code while you type
+- offers from other companies, such as a free domain name for one year
 
-Find the pack at [education.github.com/pack](https://education.github.com/pack).
+How do you apply? You tell GitHub that you are a student, and then you
+show proof. The proof is usually a college email address, or a photo of
+your student card. We cannot say if this course's award qualifies.
+GitHub decides on each application, and its rules can change. It is
+worth trying. If a college email address does not work, you could try
+your student card instead.
 
-## What you have now
+You can find the pack at
+[education.github.com/pack](https://education.github.com/pack).
 
-A GitHub account, and a place your work can live once you start putting
-files into it. The next page, [issues and pull
-requests](tutorial:issues-and-pull-requests), covers two more things
+## What we have now
+
+You now have a GitHub account. It is the place your work will live,
+once you start to put files into it.
+
+| Word | Meaning | Example |
+|---|---|---|
+| *repository* | A project folder on GitHub, which keeps every saved change | the starter site, once you have a copy |
+| *username* | The name of your GitHub account, shown beside everything you post | `janedoe` |
+| public | Anyone can see the files | a repository for this course |
+
+The next page, [Issues and pull
+requests](tutorial:issues-and-pull-requests), shows two more things
 this account lets you do.

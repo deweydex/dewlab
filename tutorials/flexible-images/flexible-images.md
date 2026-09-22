@@ -3,16 +3,26 @@ title: "Flexible images"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  why-this-happens:
+  why-does-this-happen:
     covers: [WA-LO9]
-  your-turn:
+  now-in-your-own-site:
     touches: [WA-LO9]
 ---
 
 # Flexible images
 
-Both images below are the same file, 500 pixels wide. Drag the preview
-narrow. One of them spills past the edge; the other shrinks to fit.
+What happens to a picture when the screen is narrower than the picture
+itself? On this page we:
+
+- watch two copies of one image on a narrow screen
+- find the two declarations that make an image fit its space
+- check the images in your own site
+
+## Let's try it
+
+Below are two images. Both come from the same file, and that file is
+500 pixels wide. The CSS under them gives the second image two extra
+declarations.
 
 ```html site
 id: responsive-img-html
@@ -30,27 +40,81 @@ img { display: block; margin-bottom: 8px; }
 .responsive { max-width: 100%; height: auto; }
 ```
 
-## Why this happens
+1. Look at the HTML. Which class does each image have?
+2. Drag the preview's width slider toward the narrow end, below 500
+   pixels. What happens to the first image?
+3. What happens to the second image at the same width?
+4. What if we delete `max-width: 100%;` from the `.responsive` rule, and
+   narrow the preview again? Put it back afterwards.
 
-An `<img>` normally renders at its file's own size, however wide its
-container is. `max-width: 100%` caps it at its container's width instead,
-so it shrinks on a narrow screen rather than spilling past the edge.
+## Why does this happen?
 
-`height: auto` keeps the image's proportions as it shrinks, so a square
-image stays square rather than being squashed. That relationship between
-an image's width and its height is its *aspect ratio*.
+Now we can explain what we saw. The first image spills past the edge of
+the preview. The second one shrinks to fit.
 
-## Your turn
+An `<img>` shows at the size of its file, however wide its container
+is. Here the container is the element the image sits in, the preview's
+page. So the first image stays 500 pixels wide, even when the preview is
+narrower than that.
 
-Let's open your fork and find wherever you added an image earlier. Check
-that it already has these two properties, either on the image itself or
-through a rule that reaches it. Try narrowing your browser to a phone
-width to confirm it never goes past the edge of the page.
+The second image has two more declarations:
 
-## What you have now
+```css
+.responsive {
+  max-width: 100%;  /* never wider than its container */
+  height: auto;     /* keep the shape while it shrinks */
+}
+```
 
-An image that fits its container at any width, on any screen.
+- `max-width: 100%` sets the widest the image may be: the full width of
+  its container, and no more. On a wide screen the image keeps its own
+  size. On a narrow screen it shrinks.
+- `height: auto` lets the browser work out the height from the width.
+  So as the image gets narrower, it also gets shorter, and it keeps its
+  shape. A square image stays square, and is never squashed.
 
-`max-width: 100%` caps an image at its container's width. `height: auto`
-keeps an image's proportions as it shrinks. *Aspect ratio* is the
-relationship between an image's width and its height.
+The link between an image's width and its height is its *aspect ratio*.
+Our test image is 500 by 300, so its height is always three fifths of
+its width, at any size.
+
+The rule `img { display: block; margin-bottom: 8px; }` is there for the
+demo. It puts each image on its own line, with a small gap below it, so
+the two are easy to compare.
+
+Sometimes we might notice that removing `height: auto` changes nothing
+in the box above. An image's height is already `auto` unless something
+else sets it. Oftentimes that something is a `height` attribute in the
+HTML, like `<img src="..." height="300">`. With that attribute and only
+`max-width: 100%`, the image gets narrower but stays 300 pixels tall,
+and looks squashed. `height: auto` guards against that, which is why the
+two declarations usually travel together.
+
+These two lines appear on a great many websites, often in a rule for
+every `img` on the page. A phone screen is often narrower than the
+photos we put on a page, so without them a site can scroll sideways on a
+phone.
+
+## Now in your own site
+
+On [Images, paths and alt text](tutorial:images-and-alt-text) you added
+an image to your fork.
+
+1. Open your fork and find that image in the HTML.
+2. Open `styles.css`. Can you find `max-width: 100%` and `height: auto`
+   for that image? They may be on a rule for the image itself, or on a
+   rule that reaches it, such as one for every `img`.
+3. If they are missing, you could add them.
+4. Save, and refresh.
+5. Make your browser window narrow, about the width of a phone.
+
+Does your image stay inside the edge of the page at every width?
+
+## What we have now
+
+We can now make an image fit its container at any width, on any screen.
+
+| Word | Meaning | Example |
+|---|---|---|
+| `max-width: 100%` | Sets the widest an image may be: the width of its container | `img { max-width: 100%; }` |
+| `height: auto` | Works out the height from the width, so the image keeps its shape as it shrinks | `img { height: auto; }` |
+| *aspect ratio* | The link between an element's width and its height | 500 by 300 |
