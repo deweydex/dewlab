@@ -21,3 +21,9 @@ entries:
       Margin is the space outside an element's border. It is always
       transparent, and it pushes neighbouring boxes away rather than
       changing this box's own size.
+  - term: margin collapse
+    kind: concept
+    definition: >
+      Margin collapse is what happens when the bottom margin of one box
+      meets the top margin of the box below it. The margins do not add
+      up; the larger one sets the gap.

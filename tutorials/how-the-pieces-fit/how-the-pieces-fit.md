@@ -9,77 +9,60 @@ covers:
 
 # How the pieces fit
 
-Welcome. This page introduces the tools we use to make a website. You
-can read it first, then try the steps on the pages that follow.
+In this course you build a website and publish it on the internet. You
+use four tools to do it. This page names them and shows how they connect.
+You do not need to do anything yet. The next pages set each tool up, one
+at a time.
 
-If you want to begin with data, [a table is a list of
-rows](tutorial:a-table-is-a-list-of-rows) has an example you can run.
-The data exercises work in your browser without a GitHub account.
+## The four tools
 
-## The tools for a website
+| Tool | What it does | Where you use it |
+|---|---|---|
+| An *editor* | Changes text files. You write your website's code in it. | VS Code on your computer, or GitHub's editor in a browser |
+| *GitHub* | Stores your project's files online, and remembers every change you save. | github.com |
+| *GitHub Pages* | Turns the files stored on GitHub into a website with its own address. | Part of GitHub |
+| A *browser* | Shows a web page, from a file on your computer or from a website online. | Chrome, Firefox, Safari, Edge |
 
-An *editor* is a program for changing text files. We use it to write
-code. VS Code is one option. GitHub also has an editor on its website,
-so you can work without installing a program.
-
-*GitHub* keeps a project's files in a place called a *repository*. It
-also records changes you save there, so you can look at earlier versions.
-Other people can see files in a public repository.
-
-*GitHub Pages* publishes a website from files in a GitHub repository.
-Once publishing is set up, updates to your files appear at your site's
-web address.
-
-Your *browser* shows a web page. It can open a file on your computer or
-a website that has been published online.
-
-This site has explanations and examples. We can try an idea here, then
-use it in a website or database of our own.
+GitHub keeps a project's files in a folder called a *repository*. People
+often call it a "repo". If a repository is public, anyone can look at its
+files.
 
 ## From a change to a published page
 
-If you use an editor on your computer, there are two stages.
+Every change you make to your site follows the same path:
 
-First, you change a file and save it on your computer. Then you refresh
-the browser, which loads the file again, so you can see the result.
+1. **Edit.** You change a file in your editor and save it.
+2. **Check.** You look at the result in your browser. On your own
+   computer, you refresh the page to load the saved file again.
+3. **Commit.** You record the change in Git. A recorded set of changes
+   is called a *commit*.
+4. **Push.** You send your commits to GitHub. This is called a *push*.
+5. **Publish.** GitHub Pages rebuilds your site. After a minute or so,
+   anyone who visits your site's address sees the change.
 
-Then you send your changes to GitHub. Git calls recording a set of
-changes a *commit*. Sending those recorded changes to GitHub is called a
-*push*. After GitHub publishes the update, other people can see it on
-your website.
+If you use GitHub's editor in the browser, steps 3 and 4 happen together:
+when you commit there, the change is already on GitHub.
+[The two loops](tutorial:the-two-loops) shows both ways of working, once
+your site is ready.
 
-If you use GitHub's browser editor, you save a commit directly on
-GitHub. [The two loops](tutorial:the-two-loops) explains both ways of
-working, with steps to try once your site is ready.
+## Finding your way around this site
 
-## Reading and trying examples
+- The bar at the top of every page stays in view as you scroll.
+  **dewlab** takes you to the front page. **Settings** changes the
+  colours, font, text size and line width. This browser remembers your
+  choices.
+- The links at the top and bottom of a page take you to the previous or
+  next page in the series. A *series* is a group of tutorials in the
+  order they are taught. You can go back to an earlier page at any time.
+- Some code boxes are only for reading. Others have a live preview:
+  change the code, and the preview changes as you type. You will meet the
+  first one on [a page is files](tutorial:a-page-is-files).
 
-The bar at the top stays in view as you scroll. **dewlab** takes you
-back to the front page. **Settings** lets you change the colours, font,
-text size, and line width. Your choices are saved in this browser.
+## Next
 
-Links near the top and bottom take you to the previous or next page in
-a series. A series is a group of tutorials in teaching order. You can
-return to an earlier page whenever it helps.
+[A GitHub account](tutorial:a-github-account) is the first step: it
+gives you somewhere to keep your site.
 
-Some code boxes are examples to read, like this one:
-
-```sql
-SELECT name, price
-FROM products
-WHERE price < 20;
-```
-
-We will explore SQL in the data tutorials. You do not need to understand
-this example yet. On those pages, code boxes with a **Run** button let
-you change code and see its result. Some website tutorials also have an
-editor with a preview that changes as you type.
-
-## Where to go next
-
-For a website, [a GitHub account](tutorial:a-github-account) explains the
-next step. For data, you can begin with [a table is a list of
-rows](tutorial:a-table-is-a-list-of-rows).
-
-If something is unclear, you can return to this page or ask your teacher.
-It is fine to learn these tools one at a time.
+It is normal for these tools to feel like a lot at first. You learn them
+one at a time, and you can come back to this page whenever you want the
+overview again.

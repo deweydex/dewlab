@@ -3,17 +3,26 @@ title: "A page is files"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  why-this-happens:
+  how-it-works:
     covers: [WA-LO2]
-  your-turn:
+  in-your-own-site:
     covers: [WA-LO8]
 ---
 
 # A page is files
 
-Where does a web page actually live? It lives in a plain text file,
-sitting in your fork, that you can open and read like any other document.
-Let's try changing the text below and see what the browser builds from it.
+A web page starts as a plain text file. The browser reads the text and
+builds the page you see. On this page you:
+
+- change some HTML and watch the page change with it
+- learn three words for the parts of HTML: *tag*, *element* and
+  *attribute*
+- make your first change to your own site
+
+## Try it
+
+The box below is HTML, the language web pages are written in. The
+preview under it shows the page the browser builds from that text.
 
 ```html site
 id: first-page-html
@@ -23,41 +32,61 @@ site: first-page
 text in it.</p>
 ```
 
-Try adding a second paragraph, or changing a word inside the `<strong>`
-tags. Nothing you do here can break anything; this is a small copy of the
-same idea your fork uses.
+1. Change the words between `<h1>` and `</h1>`. The heading in the
+   preview changes as you type.
+2. Change the word between `<strong>` and `</strong>`. It stays bold.
+3. Add a second paragraph on a new line: `<p>Another paragraph.</p>`.
 
-## Why this happens
+You cannot break anything here. If the preview looks wrong, undo your
+change.
 
-Every piece in angle brackets, like `<h1>` or `</p>`, is a *tag*. An
-opening tag, the content after it, and a matching closing tag together
-make one *element*. `<p>Hello</p>` is one paragraph element: an opening
-tag, the word "Hello", and a closing tag.
+## How it works
 
-Your browser reads a file like this from top to bottom. It does not show
-you the tags. It uses them to work out what each piece of text is, then
-builds the page you see from that.
+The text inside angle brackets, like `<h1>` or `</p>`, is a *tag*. Most
+tags come in pairs:
 
-Some tags carry extra information inside them, called an *attribute*,
-written as `name="value"`. You will meet these often; for now it is enough
-to recognise the shape.
+- an opening tag, like `<p>`
+- a closing tag, with a slash, like `</p>`
 
-## Your turn
+An opening tag, the content after it and the matching closing tag make
+one *element*. So `<p>Hello</p>` is one paragraph element.
 
-Let's open your fork of the starter and find `index.html`. Near the top,
-inside the `<head>` section, is a `<title>` element. It currently says "My
-Portfolio". Try changing it to your name, or to anything else, then save.
+The browser reads the file from top to bottom. It does not show the
+tags. It uses them to decide what each piece of text is: a heading, a
+paragraph, bold text. Then it draws the page.
 
-If you are working on your own computer, refresh the browser to see the
-change. If you are using GitHub's web editor, commit the change first, then
-wait a minute for the page to rebuild. Look at your browser tab: the text
-there should match what you typed.
+Some tags also hold extra information, called an *attribute*. An
+attribute is written as `name="value"` inside the opening tag:
 
-## What you have now
+```html
+<a href="about.html">About me</a>
+```
 
-A page you can trace back to plain text, and the words for the pieces that
-text is made of.
+Here `href="about.html"` is an attribute. It tells the link where to go.
+You will use attributes on later pages. For now, it is enough to
+recognise the shape.
 
-A *tag* is a marker in angle brackets, like `<p>` or `</p>`. An *element*
-is an opening tag, its content, and a matching closing tag. An
-*attribute* is extra information inside a tag, written `name="value"`.
+## In your own site
+
+Your site's home page is a file called `index.html` in your fork of the
+starter. Near the top of the file, inside the `<head>` section, there is
+a `<title>` element. It says "My Portfolio".
+
+1. Open `index.html`.
+2. Change the text between `<title>` and `</title>` to your name.
+3. Save the file.
+4. See the change:
+   - **On your own computer:** refresh the page in your browser.
+   - **In GitHub's web editor:** commit the change, then wait about a
+     minute for your site to rebuild.
+
+**Check:** look at the tab at the top of your browser. It should show
+the text you typed.
+
+## Summary
+
+| Word | Meaning | Example |
+|---|---|---|
+| *tag* | A marker in angle brackets | `<p>` or `</p>` |
+| *element* | An opening tag, its content and its closing tag | `<p>Hello</p>` |
+| *attribute* | Extra information inside an opening tag | `href="about.html"` |

@@ -3,17 +3,21 @@ title: "The skeleton: head and body"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  why-this-happens:
+  how-it-works:
     covers: [WA-LO2]
-  your-turn:
+  in-your-own-site:
     touches: [WA-LO8]
 ---
 
 # The skeleton: head and body
 
-You already changed the `<title>` element in your fork. Try the same page
-below, but look closely this time. The title and the heading say the same
-words. Only one of them shows up.
+Every HTML page has two parts: a *head* and a *body*. On this page you
+find out what goes in each part, and why some text never appears on the
+page itself.
+
+## Try it
+
+The code below has a `<title>` and an `<h1>`. Both say "My page".
 
 ```html site
 id: skeleton-html
@@ -23,38 +27,63 @@ site: skeleton
 <p>Both lines above say "My page". Only one of them renders below.</p>
 ```
 
-The `<h1>` text appears. The `<title>` text does not; on a real page it
-would show up in the browser tab instead, not in the preview here.
+1. Look at the preview. How many times does "My page" appear?
+2. Change the text inside `<title>`. Does the preview change?
+3. Now change the text inside `<h1>`. What happens this time?
 
-## Why this happens
+Only the `<h1>` shows in the preview. The `<title>` text is not lost: on
+a real page, it appears in the browser tab.
 
-Every HTML page splits into two parts. Let's see why the title
-disappeared from the preview. The *head* holds information about the
-page: its `<title>`, and other details a visitor does not see directly.
-The *body* holds everything a visitor actually sees: headings,
-paragraphs, images, and the rest.
+## How it works
 
-`<title>` lives in the head, which is why its text goes to the browser tab
-rather than the page itself. `<h1>` lives in the body, alongside all your
-other visible content.
+A complete HTML page has this shape:
 
-## Your turn
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My page</title>
+  </head>
+  <body>
+    <h1>My page</h1>
+    <p>Everything a visitor sees goes here.</p>
+  </body>
+</html>
+```
 
-Let's open `index.html` in your fork again. Inside the hero section
-there is an `<h1>` element — it currently says "Welcome to My
-Portfolio". Try changing it to something that represents you, then save
-and refresh.
+The page has two parts:
 
-Now compare the two changes we have made. The title, in the head, changed
-your browser tab. The heading, in the body, changed the page itself. Try
-making them identical for a moment, then different again, and notice
-which feels right for your site.
+- The *head* holds information *about* the page. A visitor does not see
+  it on the page itself. The `<title>` goes here, and the browser shows
+  it in the tab.
+- The *body* holds everything a visitor sees: headings, paragraphs,
+  images, links.
 
-## What you have now
+That is why the two "My page" lines behaved differently. `<title>` belongs
+in the head, so its text goes to the tab. `<h1>` belongs in the body, so
+its text goes on the page.
 
-A page split into two parts, and a reason for it.
+## In your own site
 
-The *head* is the part of the page holding information about it, not
-shown directly to a visitor. The *body* is the part holding everything a
-visitor sees. `<title>` is the head element whose text appears in the
-browser tab.
+1. Open `index.html` in your fork.
+2. Find the hero section. It has an `<h1>` element that says "Welcome to
+   My Portfolio".
+3. Change the text to something that describes you. Save, and refresh
+   your browser.
+
+**Check:** you have now changed two things in this file.
+
+| You changed | It is in the | It shows up in |
+|---|---|---|
+| `<title>` (last page) | head | the browser tab |
+| `<h1>` (this page) | body | the page itself |
+
+Should the title and the heading say the same thing? Try making them the
+same, then different, and decide which works better for your site.
+
+## Summary
+
+- The *head* holds information about the page. Visitors do not see it on
+  the page.
+- The *body* holds everything visitors see.
+- `<title>` goes in the head. Its text appears in the browser tab.

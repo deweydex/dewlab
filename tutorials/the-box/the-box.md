@@ -3,17 +3,22 @@ title: "The box"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  why-this-happens:
+  how-it-works:
     covers: [WA-LO9]
-  your-turn:
+  in-your-own-site:
     touches: [WA-LO9]
 ---
 
 # The box
 
-Here are two plushies from the shop, each sitting in a box of its own.
-Let's change `padding` below to `0`, then to `4rem`. Each box changes
-size and its border moves with it, but the words inside never move.
+Every element on a web page sits in a rectangular box, whatever shape it
+looks like. On this page you learn the three layers around that box:
+*padding*, *border* and *margin*. Once you can name them, you can control
+the space on your page.
+
+## Try it
+
+Here are two plushies from the shop, each in a box of its own.
 
 ```html site
 id: box-html
@@ -34,19 +39,23 @@ site: box
 }
 ```
 
-Now let's try `margin` instead. The boxes stay exactly the same size.
-What changes is how far apart they sit, and how far they are from the
-edge of the page.
+**Padding.** Change `padding` to `0`, then to `4rem`.
+The boxes grow and shrink, and the border moves with them. The space
+inside the border has the same background colour as the words.
 
-Here is something worth watching for. Set `margin` to `4rem`, and the
-gap between the two boxes is `4rem` — not `8rem`. When two margins meet,
-they do not add up. The larger of the two sets the gap on its own.
+**Margin.** Put `padding` back to `20px`. Now change `margin` to `0`,
+then to `4rem`. The boxes stay the same size. What changes is the space
+*around* them: the gap between the two boxes, and the gap to the edge of
+the preview.
 
-## Why this happens
+**A surprise.** With `margin` at `4rem`, look at the gap *between* the
+two boxes. The first box has `4rem` of margin below it. The second box
+has `4rem` of margin above it. You might expect a gap of `8rem`, but the
+gap is only `4rem`.
 
-Every element on a page is a rectangular box, whatever it looks like on
-screen. Each box has three layers around its content, from the inside
-out.
+## How it works
+
+Each box has three layers around its content. From the inside out:
 
 <div class="dl-drawn dl-boxmodel" role="img" aria-label="Four regions, one inside the next. Innermost, a content box outlined with a dashed line. Around it, padding, on the same tinted background as the content. Around that, the border, a thick solid line. Outside the border, the margin, an empty band outlined with a dashed line, with the page showing through it.">
   <div class="dl-bm-margin">
@@ -61,31 +70,44 @@ out.
   </div>
 </div>
 
-*Padding* is space between the content and the border. It takes on the
-box's own background colour, the way the space inside a picture frame
-does.
+| Layer | Where it is | What it looks like |
+|---|---|---|
+| *Padding* | Between the content and the border | The box's own background colour |
+| *Border* | The edge of the box | Any colour and style, or none at all |
+| *Margin* | Outside the border | Always transparent: the page shows through |
 
-*Border* is the edge of the box. It can be visible, with a colour and a
-style, or invisible, with no width at all. `border-radius` rounds its
-corners.
+Padding makes the box bigger. Margin does not change the box. It pushes
+the boxes next to it further away.
 
-*Margin* is space outside the border. It is always transparent, and it
-pushes neighbouring boxes away rather than changing this box's own size.
+`border-radius` rounds the corners of the border.
 
-## Your turn
+**About the surprise.** When one box sits above another, the bottom
+margin of the first box and the top margin of the second box meet. They
+do not add up. The larger of the two margins sets the gap. This is called
+*margin collapse*. It only happens to margins above and below a box, not
+to margins at the left and right.
 
-Let's open your fork and find the `.card` rule in `styles.css`. Try
-padding of `0`, then `4rem`, then `1rem 3rem` for different
-top-and-bottom versus left-and-right spacing. Then find `border-radius`
-in the same rule. Try `0` for sharp corners, `20px` for rounded ones,
-and `50%` to see what happens to a shape that is not a circle. Once you
-have a feel for those, try adding a visible border with
-`border: 2px solid var(--accent-color);`.
+## In your own site
 
-## What you have now
+Open `styles.css` in your fork and find the `.card` rule.
 
-A box with three layers you can now name and change on purpose.
+1. Change its `padding` to `0`, then `4rem`. Then try `1rem 3rem`. With
+   two values, the first sets top and bottom and the second sets left and
+   right.
+2. Find `border-radius` in the same rule. Try `0` for sharp corners and
+   `20px` for round ones. Then try `50%`: the card is not a square, so
+   it becomes an oval.
+3. Add a visible border: `border: 2px solid var(--accent-color);`.
 
-*Padding* is the space between content and border; it takes the box's
-own background colour. *Border* is the box's edge, visible or not.
-*Margin* is space outside the border, always transparent.
+**Check:** after each change, save and refresh. Can you say which layer
+you changed by looking at the result?
+
+## Summary
+
+- *Padding* is the space between the content and the border. It has the
+  box's background colour and makes the box bigger.
+- *Border* is the edge of the box.
+- *Margin* is the space outside the border. It is transparent and pushes
+  other boxes away.
+- When a top margin and a bottom margin meet, the larger one wins. This
+  is *margin collapse*.
