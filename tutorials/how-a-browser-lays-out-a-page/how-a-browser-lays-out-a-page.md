@@ -2,7 +2,6 @@
 title: "How a browser lays out a page"
 year: "2026-2027"
 version: 2026.09.22.1
-status: draft
 context_for: [the-box, the-container, position-and-the-sticky-header, footer-at-the-bottom]
 ---
 

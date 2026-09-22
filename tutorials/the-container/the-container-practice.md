@@ -1,11 +1,11 @@
 ---
-title: "Setting a page's width and centring it — Practice"
+title: "A readable width, centred on the page — Practice"
 practice_for: the-container
 year: "2026-2027"
 version: 2026.09.22.1
 ---
 
-# Setting a page's width and centring it — Practice
+# A readable width, centred on the page — Practice
 
 On this page we practise `max-width` and auto margins: how to stop a box
 from growing too wide, and how to keep it in the middle. There are three

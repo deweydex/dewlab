@@ -1,7 +1,7 @@
 ---
 title: "A header that stays in view as you scroll"
 year: "2026-2027"
-version: 2026.09.11.1
+version: 2026.09.22.1
 covers:
   why-does-this-happen:
     covers: [WA-LO9]
