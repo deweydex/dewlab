@@ -30,7 +30,7 @@ asked.
    `hint:` line, then code) and untagged fences (illustrative, read-only,
    no `id:`). Both get reviewed; only `exec` cells carry an `id:` you must
    preserve exactly.
-3. If the tutorial has `practice_for:`/`practice_across:` in its
+3. If the tutorial has `practice_for:`/`practice_across:`/`context_for:` in its
    frontmatter, it is still a real tutorial with real cells — review it
    the same way. It just is not part of a series' reading order, which is
    irrelevant here.

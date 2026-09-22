@@ -132,6 +132,13 @@ def is_practice_page(path: Path) -> bool:
     return bool(fields and "practice_for" in fields)
 
 
+def is_context_page(path: Path) -> bool:
+    if not path.is_file():
+        return False
+    fields, _, _ = split_frontmatter(path.read_text())
+    return bool(fields and "context_for" in fields)
+
+
 def title_of(folder: Path) -> str | None:
     main = folder / f"{folder.name}.md"
     if not main.is_file():
@@ -203,9 +210,29 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
     if title and others:
         report.note(f"Another tutorial has the same title, \"{title}\": {', '.join(others)}. That is allowed, but check it is a different tutorial and not a copy.")
 
+    # context page: background reading, which follows the tutorial(s) it
+    # names the way a practice page does, so it is neither listed in a
+    # course nor given a practice page of its own
+    context_for = fields.get("context_for")
+    if context_for is not None:
+        named = [context_for] if isinstance(context_for, str) else list(context_for or [])
+        missing = [str(n) for n in named if not (TUTORIALS / str(n)).is_dir()]
+        if not named:
+            report.problem(f"`{ident}.md`: `context_for:` is empty. Name the tutorial this page gives background for.")
+        elif missing:
+            report.problem(f"`{ident}.md`: `context_for:` names {', '.join(missing)}, and there is no such tutorial.")
+        else:
+            report.ok(f"A context page for {', '.join(str(n) for n in named)}. It is not listed in a course; it follows those tutorials.")
+        if "covers" in fields:
+            report.problem(f"`{ident}.md`: a context page must not have `covers:`. Nothing on it is needed to finish a tutorial.")
+        if "practice_for" in fields or "practice_across" in fields:
+            report.problem(f"`{ident}.md`: a context page cannot also be a practice page. Remove `practice_for:` or `practice_across:`.")
+
     # practice page
     practice = folder / f"{ident}-practice.md"
-    if practice.is_file():
+    if context_for is not None:
+        pass  # a context page has no practice page of its own
+    elif practice.is_file():
         pf, _, perr = split_frontmatter(practice.read_text())
         if perr:
             report.problem(f"`{practice.name}`: {perr}.")
@@ -245,7 +272,9 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
 
     # where it is listed
     where = listed_in(courses, ident)
-    if where:
+    if context_for is not None:
+        pass  # said above: it follows its tutorials, not a course
+    elif where:
         report.ok("Listed on: " + "; ".join(where) + ".")
     else:
         report.note(f"No course lists `{ident}` yet. The page will build, but nobody will find it from a course page. To list it, add `{ident}` to a `tutorials:` list in a file under `courses/`.")
@@ -294,6 +323,8 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
                 report.problem(f"The series \"{series['title']}\" lists `{ident}`, but there is no folder `tutorials/{ident}/`.")
             elif is_practice_page(TUTORIALS / ident / f"{ident}.md"):
                 report.problem(f"`{ident}` is a practice page (it has `practice_for:`). Practice pages are not listed in courses; they follow their tutorial.")
+            elif is_context_page(TUTORIALS / ident / f"{ident}.md"):
+                report.problem(f"`{ident}` is a context page (it has `context_for:`). Context pages are not listed in courses; they follow their tutorial.")
     for ident, n in seen.items():
         if n > 1:
             report.problem(f"`{ident}` is listed {n} times in this course. List it once.")
@@ -472,8 +503,12 @@ def check_everything(report: Report) -> None:
     for course_id in courses:
         check_course(COURSES / f"{course_id}.yaml", courses, report)
     listed = {i for c in courses.values() for s in c.get("contents") or [] for i in s.get("tutorials") or []}
+    def follows_another(i: str) -> bool:
+        path = TUTORIALS / i / f"{i}.md"
+        fields = (split_frontmatter(path.read_text())[0] or {}) if path.is_file() else {}
+        return "practice_across" in fields or "context_for" in fields
     unlisted = [i for i in ids if i not in listed and not i.endswith("-practice")
-                and "practice_across" not in ((split_frontmatter((TUTORIALS / i / f"{i}.md").read_text())[0] or {}) if (TUTORIALS / i / f"{i}.md").is_file() else {})]
+                and not follows_another(i)]
     report.note(f"— summary —")
     report.note(f"{len(ids)} tutorials, {len(courses)} courses, {len(unlisted)} tutorial{'s' if len(unlisted) != 1 else ''} on no course.")
 
