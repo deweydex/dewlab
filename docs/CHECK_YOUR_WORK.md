@@ -116,7 +116,7 @@ every course the tutorial is on.
 
 A context page is optional background reading for a tutorial: where an idea
 is used, why something behaves as it does, some history. It lives in its own
-folder, like a tutorial: `tutorials/where-joins-show-up/where-joins-show-up.md`.
+folder, like a tutorial: `tutorials/how-a-browser-lays-out-a-page/how-a-browser-lays-out-a-page.md`.
 
 Checklist:
 
