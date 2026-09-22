@@ -1,0 +1,83 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# First tutorial of the Computer graphics series, after the whole of
+# Matrices. Checked against that series' cumulative glossary -- no
+# overlap. `math.sin()`/`math.cos()` are new to this course even though
+# the unit-circle tutorial on the maths course uses them.
+entries:
+  - term: perspective divide
+    kind: formula
+    definition: >
+      A point's position on the screen is its x and its y each divided
+      by its depth. Written x' = x / z and y' = y / z. This one division
+      is what makes far things small.
+  - term: projection
+    kind: concept
+    definition: >
+      Projecting a point turns a point that has a depth into a point on
+      a flat screen. The perspective divide is the projection a camera
+      does.
+  - term: depth
+    kind: concept
+    definition: >
+      A point's depth is how far it is in front of the camera, along z.
+      A point behind the camera has a negative depth and cannot be drawn.
+  - term: similar triangles
+    kind: concept
+    definition: >
+      Two triangles are similar when one is a scaled copy of the other.
+      Their matching sides are then in the same ratio, which is where the
+      perspective divide comes from.
+  - term: camera position
+    kind: concept
+    definition: >
+      A camera sees every point relative to where it stands. Subtract
+      the camera's position from the point first, then divide by what is
+      left of z.
+  - term: near plane
+    kind: concept
+    definition: >
+      The near plane is the smallest depth a renderer will draw. Anything
+      closer is cut away before dividing, so the divide never meets a
+      depth of zero or a point behind the camera.
+  - term: renderer
+    kind: concept
+    definition: >
+      A renderer is the program that turns points into a picture. A game
+      engine has one, and so does a browser.
+  - term: frame
+    kind: concept
+    definition: >
+      A frame is one still picture. A screen shows many frames one after
+      another, and if they come fast enough your eye sees movement.
+  - term: frame rate
+    kind: concept
+    definition: >
+      The frame rate is how many frames are shown each second. A cinema
+      film shows 24 a second and a game usually draws 60.
+  - term: loop
+    kind: concept
+    definition: >
+      An animation loops when it starts again from its first frame after
+      showing its last one, so it keeps going for as long as the page is
+      open.
+  - term: "math.sin(), math.cos()"
+    kind: function
+    definition: >
+      Give the sine and cosine of an angle measured in radians. Together
+      they turn an angle into a point on a circle of radius 1.
+    example: "x, z = radius * math.cos(angle), radius * math.sin(angle)"
+  - term: "FuncAnimation()"
+    kind: function
+    definition: >
+      Turns a figure into a moving picture. Calls the function you give it
+      once for each frame, with the frame number, and waits `interval`
+      thousandths of a second between frames. Leave it as the last line of
+      a cell and the page plays it.
+    example: "FuncAnimation(figure, draw_step, frames=48, interval=60)"
+  - term: "plt.subplots()"
+    kind: function
+    definition: >
+      Makes a grid of small plots inside one figure. Returns the figure
+      and the grid of frames, so a loop can draw one picture in each.
+    example: "figure, frames = plt.subplots(2, 5)"

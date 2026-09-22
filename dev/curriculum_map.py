@@ -535,7 +535,13 @@ def conflicts(found, scope) -> list[str]:
     return notes
 
 
-EMPHASIS_RE = re.compile(r"(?<![*\w])\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*(?![*\w])")
+# A term's first use is `*term*`, or `***term***` where a page sets its key
+# terms in bold as well (PEDAGOGICAL_STYLE_GUIDE.md §4): the italics are
+# what marks the term, the bold is only how it looks.
+EMPHASIS_RE = re.compile(
+    r"(?<![*\w])\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*(?![*\w])"
+    r"|(?<![*\w])\*\*\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*\*\*(?![*\w])"
+)
 FENCE_BLOCK_RE = re.compile(r"```.*?```", re.DOTALL)
 INLINE_CODE_RE = re.compile(r"`[^`]*`")
 # A hand-written <code> element. A diagram built out of markup — the
@@ -577,8 +583,8 @@ def terms_of(tutorials: list[Tutorial]) -> dict[str, set[str]]:
     """Every emphasised term, and which tutorials emphasise it."""
     found: dict[str, set[str]] = {}
     for tutorial in tutorials:
-        for match in EMPHASIS_RE.findall(prose_of(tutorial)):
-            term = match.strip().lower()
+        for plain, bold in EMPHASIS_RE.findall(prose_of(tutorial)):
+            term = (plain or bold).strip().lower()
             if term not in STRESS_WORDS:
                 found.setdefault(term, set()).add(tutorial.slug)
     return found

@@ -1,0 +1,23 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second tutorial of Movement and depth. `perspective`, `translateZ()`
+# and `preserve-3d` come from an-orbit-in-css and are not repeated.
+entries:
+  - term: "rotateX()"
+    kind: function
+    definition: >
+      Turns an element about a horizontal axis, tipping its top towards
+      you or away from you.
+    example: "transform: rotateX(90deg);"
+  - term: transform order
+    kind: concept
+    definition: >
+      A list of transforms is applied from the right-hand end. In
+      `rotateY(90deg) translateZ(50px)` the push happens first and the
+      turn second.
+  - term: backface-visibility
+    kind: keyword
+    definition: >
+      Decides whether an element is drawn when its back is towards you.
+      `hidden` makes a cube's far faces disappear, so it looks solid.
+    example: "backface-visibility: hidden;"

@@ -1,0 +1,39 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of Movement and depth, and the course's first
+# JavaScript. The perspective divide itself belongs to the
+# Computational Methods series it links to; only the canvas and the
+# loop are new here.
+entries:
+  - term: "<canvas>"
+    kind: keyword
+    definition: >
+      A `<canvas>` is a blank rectangle of pixels that JavaScript draws
+      on. Its `width` and `height` attributes set how many pixels it has.
+    example: '<canvas id="screen" width="320" height="200"></canvas>'
+  - term: 'getContext("2d")'
+    kind: function
+    definition: >
+      Gives the pen that draws on a canvas: `fillRect` for a rectangle,
+      `arc` for a circle, `moveTo` and `lineTo` for a line, `fill` and
+      `stroke` to put ink on the path just described.
+    example: 'const pen = canvas.getContext("2d");'
+  - term: "requestAnimationFrame()"
+    kind: function
+    definition: >
+      Asks the browser to call a function once, just before it next
+      paints the screen. Calling it again inside that function is what
+      makes an animation loop.
+    example: "requestAnimationFrame(frame);"
+  - term: animation loop
+    kind: concept
+    definition: >
+      A function that clears the canvas, draws one frame, moves things
+      on a little, and asks to be called again before the next paint.
+      Every game and animated chart on the web has one.
+  - term: painter's algorithm
+    kind: concept
+    definition: >
+      Sort what is to be drawn by depth and paint from the back forwards,
+      so nearer things cover farther ones. A canvas has no idea of depth
+      on its own, so the sorting is up to you.

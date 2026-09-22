@@ -17,6 +17,11 @@ contents:
   - undoing-it
   - solving-systems
   - where-chains-lead
+- title: Computer Graphics
+  tutorials:
+  - a-point-on-the-screen
+  - turning-a-cube
+  - the-fourth-number
 - title: Text Generation
   tutorials:
   - a-chain-reads-a-book

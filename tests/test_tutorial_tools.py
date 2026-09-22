@@ -182,6 +182,35 @@ class TestRenderValue:
         assert cell.html.index("A number") < cell.html.index("dl-repr")
 
 
+class TestAnimations:
+    def test_an_animation_renders_as_a_moving_png_and_its_figure_only_once(self, cell):
+        matplotlib = pytest.importorskip("matplotlib")
+        matplotlib.use("Agg")
+        import base64
+        import io
+        import matplotlib.pyplot as plt
+        from matplotlib.animation import FuncAnimation
+        from PIL import Image
+
+        figure, axes = plt.subplots(figsize=(1, 1))
+        (dot,) = axes.plot([0], [0], "o")
+        animation = FuncAnimation(
+            figure, lambda step: dot.set_data([step], [step]), frames=3, interval=100
+        )
+        tt._render_value(animation)
+        assert cell.html.count("data:image/png") == 1
+        assert "Animation produced by this cell" in cell.html
+
+        encoded = cell.html.split("base64,")[1].split('"')[0]
+        image = Image.open(io.BytesIO(base64.b64decode(encoded)))
+        assert image.is_animated and image.n_frames == 3
+
+        # The figure the frames were drawn on is not rendered again as a
+        # still when the cell's leftover figures are flushed.
+        tt._flush_figures()
+        assert cell.html.count("data:image/png") == 1
+
+
 class TestSuppressedReprs:
     def test_a_cell_ending_in_check_does_not_repeat_the_bool(self, cell):
         result = tt.check(2, 2)

@@ -132,6 +132,22 @@ groups:
       - undoing-it
       - where-chains-lead
 
+  - key: computer-graphics
+    name: Computer graphics — depth, perspective, and things that move
+    intro: >
+      How a flat screen shows a world with depth in it: one division,
+      a matrix that turns, and a fourth number that lets a matrix move
+      things too. Then the same ideas without any arithmetic, in CSS,
+      and with the arithmetic written out by hand, in JavaScript on a
+      canvas.
+    tutorials:
+      - a-point-on-the-screen
+      - turning-a-cube
+      - the-fourth-number
+      - an-orbit-in-css
+      - a-cube-in-css
+      - drawing-frames-with-javascript
+
   - key: text-generation
     name: Generating text with Markov chains
     intro: >

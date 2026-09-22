@@ -1,0 +1,35 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# First tutorial of Movement and depth, after both earlier series of
+# Web Authoring. `transform`, `@keyframes` and `animation` are inherited
+# from first-site and not repeated.
+entries:
+  - term: frame
+    kind: concept
+    definition: >
+      A frame is one still picture. A browser draws about sixty a second
+      and your eye blends them into movement. A `@keyframes` rule names
+      the important ones and the browser fills in the rest.
+  - term: perspective
+    kind: keyword
+    definition: >
+      The `perspective` property makes a stage's children shrink with
+      their depth. Its value is how far the screen stands in front of
+      your eye, and a smaller value gives a stronger effect.
+    example: "perspective: 400px;"
+  - term: "rotateY()"
+    kind: function
+    definition: "Turns an element about its vertical axis, like a turntable."
+    example: "transform: rotateY(90deg);"
+  - term: "translateZ()"
+    kind: function
+    definition: >
+      Pushes an element towards you or away from you. Only visible when
+      an ancestor has `perspective` set.
+    example: "transform: translateZ(100px);"
+  - term: "transform-style: preserve-3d"
+    kind: keyword
+    definition: >
+      Keeps an element's children at their real depth when the element
+      itself is transformed. Without it the browser flattens them onto
+      the parent first, like a photograph.

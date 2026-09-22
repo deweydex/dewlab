@@ -699,6 +699,16 @@ you are reaching for one, that is the constraint to know about first.
 `numpy`, `pandas` and `matplotlib` are available in every tutorial without
 importing anything special — they load with the page.
 
+**A matplotlib animation renders as a moving picture.** Build one with
+`FuncAnimation` and make it the cell's last expression, or pass it to
+`show()`, and the page shows it as an animated PNG that loops: every frame
+the animation would have drawn, at the frame rate its `interval` asks for,
+with the same transparent background a still figure gets. The figure it was
+drawn on is not shown again as a still. Keep animations short — a few dozen
+frames of a small figure is a few hundred kilobytes in the page, and every
+frame is rendered in the reader's browser when the cell runs. Pillow, which
+does the encoding, is on every page already.
+
 ---
 
 ## Releasing a new version

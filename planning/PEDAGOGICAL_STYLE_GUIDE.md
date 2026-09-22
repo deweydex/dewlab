@@ -159,7 +159,9 @@ names what the reader gets, in words they already have.
 **Define every technical term where it first appears**, and mark it in
 italics the first time it means something particular. The build's
 vocabulary report reads those italics and flags a term used before it is
-introduced, or introduced twice with different meanings.
+introduced, or introduced twice with different meanings. A page whose
+key terms should stand out may set them in bold italics, `***term***`;
+the italics are still what marks the term, and the tooling reads both.
 
 **No emoji, unless Josh asks for them. Don't over-format.** Bold that
 appears in every paragraph has stopped meaning anything.
@@ -224,7 +226,10 @@ there rather than trusting a count here). Do not write
 that is not part of how the page functions.
 
 **Figures need no `plt.show()`.** Creating a figure is enough; the runtime
-collects it.
+collects it. A `FuncAnimation` left as a cell's last expression is
+collected too, as a moving picture, and it is worth reaching for wherever
+the point is that something moves — after the reader has seen the frames
+one at a time, not instead of it.
 
 **Cell ids are a contract.** Lowercase, hyphenated, `<section-slug>-<n>`.
 Once a tutorial has been in front of a class, a cell id is the key
@@ -374,7 +379,9 @@ only something reassuring to read.
   once?
 - Does the frontmatter declare `covers:` for what is taught and `touches:`
   for what is referenced?
-- Are the explanations prose rather than bullets?
+- Are the explanations prose, with a list only where it earns its
+  place: the small steps of a task, what each part of a cell does, a
+  few things to keep in mind, a set of things to try one at a time?
 - Read each sentence back: does every clause survive a shorter version, and
   does it still sound right said aloud?
 - Any idiom that assumes Irish or British English, or a rare word where a
