@@ -3,22 +3,21 @@ title: "The box"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  how-it-works:
+  why-does-this-happen:
     covers: [WA-LO9]
-  in-your-own-site:
+  now-in-your-own-site:
     touches: [WA-LO9]
 ---
 
 # The box
 
-Every element on a web page sits in a rectangular box, whatever shape it
-looks like. On this page you learn the three layers around that box:
-*padding*, *border* and *margin*. Once you can name them, you can control
-the space on your page.
+Every element on a page is a rectangular box, whatever it looks like on
+screen. On this page we find the three layers around that box, and learn
+to change each one on purpose.
 
-## Try it
+## Let's try it
 
-Here are two plushies from the shop, each in a box of its own.
+Here are two plushies from the shop, each sitting in a box of its own.
 
 ```html site
 id: box-html
@@ -39,21 +38,25 @@ site: box
 }
 ```
 
-**Padding.** Change `padding` to `0`, then to `4rem`.
-The boxes grow and shrink, and the border moves with them. The space
-inside the border has the same background colour as the words.
+**Padding first.** Let's change `padding` to `0`, then to `4rem`. What
+happens to each box? What happens to its border? And do the words inside
+move at all?
 
-**Margin.** Put `padding` back to `20px`. Now change `margin` to `0`,
-then to `4rem`. The boxes stay the same size. What changes is the space
-*around* them: the gap between the two boxes, and the gap to the edge of
-the preview.
+Each box changes size, and its border moves with it. The words inside
+never move.
 
-**A surprise.** With `margin` at `4rem`, look at the gap *between* the
-two boxes. The first box has `4rem` of margin below it. The second box
-has `4rem` of margin above it. You might expect a gap of `8rem`, but the
-gap is only `4rem`.
+**Now margin.** Let's put `padding` back to `20px`, and try `margin`
+instead: `0`, then `4rem`. Does the box itself change size this time?
 
-## How it works
+The boxes stay exactly the same size. What changes is how far apart they
+sit, and how far they are from the edge of the page.
+
+**Something worth watching for.** Let's set `margin` to `4rem` and look
+at the gap between the two boxes. The first box has `4rem` of margin
+below it, and the second has `4rem` above it. So is the gap `8rem`? Look
+closely: it is `4rem`. We will see why below.
+
+## Why does this happen?
 
 Each box has three layers around its content. From the inside out:
 
@@ -70,44 +73,49 @@ Each box has three layers around its content. From the inside out:
   </div>
 </div>
 
-| Layer | Where it is | What it looks like |
-|---|---|---|
-| *Padding* | Between the content and the border | The box's own background colour |
-| *Border* | The edge of the box | Any colour and style, or none at all |
-| *Margin* | Outside the border | Always transparent: the page shows through |
+1. *Padding* is space between the content and the border. It takes on
+   the box's own background colour, the way the space inside a picture
+   frame does.
+2. *Border* is the edge of the box. It can be visible, with a colour and
+   a style, or invisible, with no width at all. `border-radius` rounds
+   its corners.
+3. *Margin* is space outside the border. It is always transparent, and
+   it pushes neighbouring boxes away rather than changing this box's own
+   size.
 
-Padding makes the box bigger. Margin does not change the box. It pushes
-the boxes next to it further away.
+Now can we explain what we saw? Padding is inside the border, so more
+padding makes the box bigger. Margin is outside the border, so more
+margin only moves the boxes apart.
 
-`border-radius` rounds the corners of the border.
+**And the gap that was not `8rem`?** When one box sits above another,
+the bottom margin of the first meets the top margin of the second. They
+do not add up. The larger of the two sets the gap on its own. This is
+called *margin collapse*, and it happens with margins above and below a
+box, not with margins at the sides.
 
-**About the surprise.** When one box sits above another, the bottom
-margin of the first box and the top margin of the second box meet. They
-do not add up. The larger of the two margins sets the gap. This is called
-*margin collapse*. It only happens to margins above and below a box, not
-to margins at the left and right.
+## Now in your own site
 
-## In your own site
+Let's open your fork and find the `.card` rule in `styles.css`.
 
-Open `styles.css` in your fork and find the `.card` rule.
+1. Let's try `padding` of `0`, then `4rem`.
+2. Now `1rem 3rem`. What changes? With two values, the first sets the
+   top and bottom, and the second sets the left and right.
+3. Let's find `border-radius` in the same rule. Try `0` for sharp
+   corners and `20px` for rounded ones.
+4. What happens with `50%`, on a shape that is not a circle?
+5. Once you have a feel for those, let's add a visible border:
+   `border: 2px solid var(--accent-color);`
 
-1. Change its `padding` to `0`, then `4rem`. Then try `1rem 3rem`. With
-   two values, the first sets top and bottom and the second sets left and
-   right.
-2. Find `border-radius` in the same rule. Try `0` for sharp corners and
-   `20px` for round ones. Then try `50%`: the card is not a square, so
-   it becomes an oval.
-3. Add a visible border: `border: 2px solid var(--accent-color);`.
+After each change, save and refresh. Can you name which layer you
+changed, just by looking at the result?
 
-**Check:** after each change, save and refresh. Can you say which layer
-you changed by looking at the result?
+## What we have now
 
-## Summary
+A box with three layers we can name and change on purpose.
 
-- *Padding* is the space between the content and the border. It has the
-  box's background colour and makes the box bigger.
-- *Border* is the edge of the box.
-- *Margin* is the space outside the border. It is transparent and pushes
-  other boxes away.
-- When a top margin and a bottom margin meet, the larger one wins. This
-  is *margin collapse*.
+- *Padding* is the space between content and border. It takes the box's
+  own background colour.
+- *Border* is the box's edge, visible or not.
+- *Margin* is space outside the border, always transparent.
+- When a bottom margin meets a top margin, the larger one sets the gap.
+  This is *margin collapse*.

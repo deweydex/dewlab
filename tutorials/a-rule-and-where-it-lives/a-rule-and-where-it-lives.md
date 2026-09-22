@@ -3,7 +3,7 @@ title: "A rule, and where it lives"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  how-it-works:
+  why-does-this-happen:
     covers: [WA-LO9]
     touches: [WA-LO2]
 ---
@@ -11,12 +11,13 @@ covers:
 # A rule, and where it lives
 
 HTML says what each part of a page *is*. CSS says how it should *look*.
-On this page you:
+On this page we:
 
-- write a CSS rule and name its three parts
+- change one line of CSS, and see what it reaches
+- name the parts of a CSS rule
 - find where the rules for your own site are kept
 
-## Try it
+## Let's try it
 
 The HTML below has two paragraphs. The CSS under it has one rule.
 
@@ -35,59 +36,63 @@ p {
 }
 ```
 
-1. In the CSS, change `darkslateblue` to `firebrick`. Both paragraphs
-   change colour.
-2. Look at the HTML again. Neither paragraph says anything about colour.
-   So how did both of them change?
+1. Let's change `darkslateblue` to `firebrick`. How many paragraphs
+   change colour?
+2. Now let's look at the HTML again. Does either paragraph mention
+   colour at all?
 
-## How it works
+So how did both of them change, together, from one line?
 
-The code in the CSS box is one *rule*. A rule has two parts:
+## Why does this happen?
+
+The code in the CSS box is one *rule*. Let's label its parts:
 
 ```css
 p {                      /* selector: which elements to style */
-  color: darkslateblue;  /* declaration: property and value   */
+  color: darkslateblue;  /* declaration: a property and a value */
 }
 ```
 
-- The *selector* comes first. It says which elements the rule styles.
-  The selector `p` means "every paragraph".
-- Inside the curly braces come one or more *declarations*. Each
-  declaration is a property, a colon, a value, and a semicolon. Here the
-  property is `color` and the value is `darkslateblue`.
+- A *selector* says which elements to style. The selector `p` matches
+  every paragraph.
+- Inside the curly braces after it come one or more *declarations*.
+  Each declaration is a property and a value. Here the property is
+  `color` and the value is `darkslateblue`.
 
-This is the answer to the question above. The HTML does not mention
-colour, because the CSS rule selects every `<p>` and colours all of them.
-One rule can style many elements.
+That answers our question. The HTML never mentions colour, because the
+rule selects every `<p>` and sets the `color` of each one.
 
 ### Where rules live
 
-On a real site, CSS rules are usually kept in their own file, called a
-*stylesheet*. In your site, that file is `styles.css`.
-
-The HTML page loads the stylesheet with a `<link>` tag in its `<head>`:
+A rule usually lives in its own file, not inside the HTML file it
+styles. In your site that file is `styles.css`. A file of CSS rules like
+this is called a *stylesheet*. A `<link>` tag in the `<head>` of the
+page connects the two:
 
 ```html
 <link rel="stylesheet" href="styles.css">
 ```
 
-Every page that has this line uses the same rules. That is why
-`index.html` and `about.html` look alike, even though the CSS is only
-written once.
+Why might that be useful? One stylesheet can style many pages at once.
+That is why `index.html` and `about.html` look consistent without
+repeating any CSS.
 
-## In your own site
+## Now in your own site
 
-1. Open `index.html`. Find the `<link>` tag in the `<head>`.
-2. Open `about.html`. Find the same `<link>` tag there.
-3. Open `styles.css`. Scroll through it. The comments, between `/*` and
-   `*/`, explain what each section does. You do not need to understand
-   all of it yet.
+1. Let's open your fork and find that `<link>` tag in the `<head>` of
+   `index.html`.
+2. Can you find the same tag in `about.html`?
+3. Now let's open `styles.css` itself and scroll through it. It has many
+   comments, between `/*` and `*/`, explaining what each section does.
+   Browse them whenever you are curious.
 
-## Summary
+## What we have now
+
+A rule traced from the page it styles to the file it lives in.
 
 | Word | Meaning | Example |
 |---|---|---|
 | *rule* | A selector plus one or more declarations | `p { color: firebrick; }` |
-| *selector* | Says which elements a rule styles | `p` |
-| *declaration* | A property and a value, inside the braces | `color: firebrick;` |
-| *stylesheet* | A file of CSS rules, loaded by a `<link>` tag | `styles.css` |
+| *selector* | The part of a rule saying which elements to style | `p` |
+| *declaration* | A property and a value, inside a rule's braces | `color: firebrick;` |
+| *stylesheet* | A file of CSS rules, linked from the `<head>` | `styles.css` |

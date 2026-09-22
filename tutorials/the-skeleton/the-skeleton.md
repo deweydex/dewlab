@@ -3,21 +3,21 @@ title: "The skeleton: head and body"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  how-it-works:
+  why-does-this-happen:
     covers: [WA-LO2]
-  in-your-own-site:
+  now-in-your-own-site:
     touches: [WA-LO8]
 ---
 
 # The skeleton: head and body
 
-Every HTML page has two parts: a *head* and a *body*. On this page you
-find out what goes in each part, and why some text never appears on the
-page itself.
+On the last page we changed the `<title>` element in your fork. Let's
+look more closely at it this time. Why does some text on a page never
+appear on the page itself?
 
-## Try it
+## Let's try it
 
-The code below has a `<title>` and an `<h1>`. Both say "My page".
+The code below has a `<title>` and an `<h1>`. Both say the same words.
 
 ```html site
 id: skeleton-html
@@ -27,16 +27,19 @@ site: skeleton
 <p>Both lines above say "My page". Only one of them renders below.</p>
 ```
 
-1. Look at the preview. How many times does "My page" appear?
-2. Change the text inside `<title>`. Does the preview change?
-3. Now change the text inside `<h1>`. What happens this time?
+1. Let's look at the preview first. How many times does "My page"
+   appear?
+2. Now let's change the text inside `<title>`. Does the preview change?
+3. What about the text inside `<h1>`?
 
-Only the `<h1>` shows in the preview. The `<title>` text is not lost: on
-a real page, it appears in the browser tab.
+The `<h1>` text appears. The `<title>` text does not. Where do you think
+it went? On a real page, it shows up in the browser tab instead, not in
+the page itself.
 
-## How it works
+## Why does this happen?
 
-A complete HTML page has this shape:
+Every HTML page splits into two parts. Here is a whole page, so we can
+see both:
 
 ```html
 <!DOCTYPE html>
@@ -51,39 +54,39 @@ A complete HTML page has this shape:
 </html>
 ```
 
-The page has two parts:
-
-- The *head* holds information *about* the page. A visitor does not see
-  it on the page itself. The `<title>` goes here, and the browser shows
-  it in the tab.
+- The *head* holds information about the page: its `<title>`, and other
+  details a visitor does not see directly.
 - The *body* holds everything a visitor sees: headings, paragraphs,
-  images, links.
+  images, and the rest.
 
-That is why the two "My page" lines behaved differently. `<title>` belongs
-in the head, so its text goes to the tab. `<h1>` belongs in the body, so
-its text goes on the page.
+Now we can explain what we saw. `<title>` lives in the head, which is
+why its text goes to the browser tab and not to the page. `<h1>` lives
+in the body, with all the other visible content.
 
-## In your own site
+## Now in your own site
 
-1. Open `index.html` in your fork.
-2. Find the hero section. It has an `<h1>` element that says "Welcome to
-   My Portfolio".
-3. Change the text to something that describes you. Save, and refresh
-   your browser.
+Let's open `index.html` in your fork again.
 
-**Check:** you have now changed two things in this file.
+1. Inside the hero section there is an `<h1>` element. It says "Welcome
+   to My Portfolio".
+2. Let's change it to something that represents you.
+3. Save, and refresh.
 
-| You changed | It is in the | It shows up in |
+Now let's compare the two changes we have made:
+
+| What we changed | It lives in the | It changed |
 |---|---|---|
-| `<title>` (last page) | head | the browser tab |
-| `<h1>` (this page) | body | the page itself |
+| `<title>`, on the last page | head | the browser tab |
+| `<h1>`, on this page | body | the page itself |
 
-Should the title and the heading say the same thing? Try making them the
-same, then different, and decide which works better for your site.
+What happens if we make them identical for a moment, then different
+again? Which feels right for your site?
 
-## Summary
+## What we have now
 
-- The *head* holds information about the page. Visitors do not see it on
-  the page.
-- The *body* holds everything visitors see.
-- `<title>` goes in the head. Its text appears in the browser tab.
+A page split into two parts, and a reason for it.
+
+- The *head* holds information about the page. It is not shown directly
+  to a visitor.
+- The *body* holds everything a visitor sees.
+- `<title>` is the head element whose text appears in the browser tab.
