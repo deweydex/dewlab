@@ -14,3 +14,9 @@ entries:
       Consistent navigation is the same menu, in the same order, on
       every page of a site, so a visitor who has found their way around
       one page already knows where everything is on the next.
+  - term: attribute selector
+    kind: concept
+    definition: >
+      An attribute selector is an attribute written in square brackets,
+      such as `a[aria-current="page"]`. It matches elements that carry
+      that attribute and value.

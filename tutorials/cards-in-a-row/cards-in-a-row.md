@@ -3,17 +3,21 @@ title: "Cards in a row"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  why-this-happens:
+  why-does-this-happen:
     touches: [WA-LO9]
-  your-turn:
+  now-in-your-own-site:
     touches: [WA-LO9]
 ---
 
 # Cards in a row
 
-Try changing `flex: 1 1 90px` below to `flex: 0 0 90px`. The three
-cards stop sharing the leftover width evenly; instead each one stays
-exactly 90 pixels, with a gap of empty space beside them.
+In [Flexbox first steps](tutorial:flexbox-first-steps) we met
+`flex: 1 1 80px`. What does each of its three parts do? On this page we
+change them, then use them on your own cards.
+
+## Let's try it
+
+Here is a row of three cards, and the CSS that lays them out.
 
 ```html site
 id: cards-html
@@ -38,37 +42,55 @@ site: cards
 }
 ```
 
-## Why this happens
+1. Change `flex: 1 1 90px` to `flex: 0 0 90px`. What happens to the
+   cards? Where does the spare width go?
+2. Put it back to `1 1 90px`. Now change `90px` to `200px`, and drag
+   the width slider toward the narrow end. Do the cards move to new rows
+   sooner or later than before?
 
-`flex` combines three numbers into one line: *flex-grow*,
-*flex-shrink*, and *flex-basis*, in that order.
+## Why does this happen?
 
-*flex-basis* is a card's starting size, 90 pixels here, before any
-growing or shrinking happens.
+`flex` holds three values in one line: *flex-grow*, *flex-shrink* and
+*flex-basis*, in that order.
 
-*flex-grow* decides whether a card claims a share of any space left
-over once every card has its basis. `1` means yes, share it evenly with
-the other cards; `0` means stay at the basis size and leave the rest
-empty.
+- *flex-basis* is an item's starting size, before any growing or
+  shrinking. Here it is 90 pixels of content, with the padding and
+  border added outside it.
+- *flex-grow* decides whether an item takes a share of the space left
+  over once every item has its basis. `0` means "stay at the basis
+  size". `1` means "share it evenly". An item with `2` takes twice the
+  share of an item with `1`.
+- *flex-shrink* is for when there is too little space. `1` lets an item
+  shrink below its basis to fit. `0` holds it at its basis, even if it
+  then spills out of the row.
 
-*flex-shrink* works the other way, for when there is too little space
-rather than too much. `1` lets a card shrink below its basis to fit;
-`0` holds it at the basis size even if that means overflowing.
+Now we can explain what we saw. With `0 0 90px`, no card grows. Each
+card stays at its basis, and the spare width stays empty at the end of
+the row. With a basis of `200px`, each card needs more room, so fewer
+cards fit on one line, and they wrap sooner.
 
-## Your turn
+## Now in your own site
 
-Let's open your fork of `project_wad` and find the `.card` rule in
-`styles.css`. It already uses `flex: 1 1 200px` on the card row from
-your planning page. Try `flex: 0 0 200px` and watch the gap appear.
-Then try `flex: 2 1 200px` on just one card, and watch it take twice
-the leftover space of the other two.
+Your `index.html` has three cards inside `.card-row`. In `styles.css`,
+the `.card` rule has `flex: 1 1 200px`. Your stylesheet sets
+`box-sizing: border-box`, so those 200 pixels include padding and
+border.
 
-## What you have now
+1. In `styles.css`, change the `.card` rule to `flex: 0 0 200px`.
+2. Save, and refresh the home page. Where does the spare space go?
+3. Change it back to `flex: 1 1 200px`.
+4. In `index.html`, give the first card a second class:
+   `class="card card-wide"`.
+5. In `styles.css`, directly after the `.card` rule, add
+   `.card-wide { flex: 2 1 200px; }`. It comes later, so it wins.
+6. Save, and refresh.
 
-A row of cards whose width you can now describe in three separate
-numbers, not just one setting.
+Does the first card take twice the spare space of each of the other two?
 
-*flex-grow* decides whether an item claims leftover space, and how much
-relative to its neighbours. *flex-shrink* decides whether an item
-shrinks below its basis when space is short. *flex-basis* is an item's
-starting size, before any growing or shrinking.
+## What we have now
+
+We can now describe a card's width with three separate numbers.
+
+- *flex-grow* decides how big a share of the spare space an item takes.
+- *flex-shrink* decides whether an item shrinks below its basis.
+- *flex-basis* sets an item's starting size.

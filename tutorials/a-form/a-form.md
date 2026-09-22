@@ -3,17 +3,20 @@ title: "A form"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
-  why-this-happens:
+  why-does-this-happen:
     touches: [WA-LO2, WA-LO9]
-  your-turn:
+  now-in-your-own-site:
     touches: [WA-LO8, WA-LO10]
 ---
 
 # A form
 
-Click directly on the word "Email" below, not the box beside it. The
-input gains focus anyway, with the same blue outline a click on the box
-itself would give it.
+A form field needs a name, so a visitor knows what to type. How do we
+join a name to its field?
+
+## Let's try it
+
+Here is one form field, with the word "Email" above it.
 
 ```html site
 id: form-demo-html
@@ -30,33 +33,47 @@ input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
 input:focus { outline: 3px solid #0066cc; }
 ```
 
-## Why this happens
+1. Click inside the box. What appears around it?
+2. Click elsewhere, then click the word "Email". What happens?
+3. What if we change `for="email"` to `for="mail"`, and click the word
+   again?
 
-`for="email"` on the `<label>` names the `id` of the field it belongs to.
-That connection does two things at once. Clicking the label text focuses
-the input, the way you just saw. A screen reader also reads the label's
-words aloud the moment that input gets focus, rather than saying nothing
-more than "edit text."
+## Why does this happen?
 
-`type="email"` changes more than what the field is called. A phone shows
-a keyboard suited to typing an address, with `@` easy to reach. The
-browser also checks the text has roughly the right shape before letting
-the form submit.
+Now we can explain what we saw. A *label* is the name of a form field,
+written with `<label>`. Its `for` attribute names the `id` of its field.
+This connection does two things:
 
-## Your turn
+- Clicking the label gives the field focus. That is the blue outline we
+  saw in step 2.
+- A screen reader reads the label aloud when the field gets focus.
+  Without a label, it may say only "edit text".
 
-Let's open your fork of `project_wad` and its `contact.html`. Try
-clicking each label and watching focus land on the right field — that
-confirms every field has a `<label>` whose `for` matches its input's
-`id`. The `required` attribute is already on all three fields, which
-stops the form submitting with any of them empty.
+In step 3, `for` named a missing `id`, so clicking the label did
+nothing. This mistake is common: one letter differs between
+`for` and `id`. Capitals count too: `Email` and `email`
+differ.
 
-## What you have now
+`type="email"` says the field expects an email address. A phone then
+shows a keyboard with `@` easy to reach. The browser also checks that
+the text has roughly the right shape before the form submits.
 
-A form where every field has a name a person and a screen reader can
-both use.
+## Now in your own site
 
-`<label for="…">` names which field a label belongs to, matching the
-field's `id`. `type="email"` gives a phone-friendly keyboard and a basic
-shape check. `required` stops a form submitting while the field is
-empty.
+1. In your fork of `project_wad`, open `contact.html` in your editor.
+   The `required` attribute is on all three fields. It stops the form
+   submitting while any of them is empty.
+2. Open the same page in the browser.
+3. Click each label in turn. Does focus land on the right field each
+   time? If so, each `for` matches its field's `id`.
+
+## What we have now
+
+We can now give every field a name that a person and a screen reader
+can both use.
+
+| Word | Meaning | Example |
+|---|---|---|
+| *label* | The name of a form field. Its `for` names the field's `id`. | `<label for="email">Email</label>` |
+| `type="email"` | Gives a phone a keyboard for addresses, and a basic shape check | `<input type="email">` |
+| `required` | Stops a form submitting while the field is empty | `<input required>` |

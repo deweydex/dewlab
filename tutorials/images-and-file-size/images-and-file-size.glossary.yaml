@@ -26,3 +26,13 @@ entries:
       SVG is an image format suited to a simple icon or a logo made of
       flat shapes. It describes an image as instructions rather than
       pixels, so it stays sharp at any size.
+  - term: format
+    kind: concept
+    definition: >
+      An image's format is the way its file stores the picture. The end
+      of the file name shows it, like `.jpg`, `.png` or `.svg`.
+  - term: compress
+    kind: concept
+    definition: >
+      To compress an image is to store it in a smaller file, so a page
+      downloads faster.

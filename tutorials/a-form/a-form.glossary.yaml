@@ -3,6 +3,11 @@
 # Sixth tutorial of several-pages. Checked against the cumulative
 # glossary so far -- no overlap.
 entries:
+  - term: label
+    kind: concept
+    definition: >
+      A label is the name of a form field, written with the `<label>`
+      element. Its `for` attribute joins it to the field.
   - term: "for (on <label>)"
     kind: keyword
     definition: >

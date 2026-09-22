@@ -16,3 +16,15 @@ entries:
       A `maintenance.md` is a short plan for keeping a site current
       after it is submitted: how a page would be added later, what
       would be checked periodically, and what would come next.
+  - term: README
+    kind: concept
+    definition: >
+      A README is a document that explains a project to someone opening
+      it for the first time. GitHub shows a repository's `README.md` on
+      its front page.
+  - term: maintenance plan
+    kind: concept
+    definition: >
+      A maintenance plan says how a site would be kept current: how a
+      page would be added later, what would be checked every so often,
+      and what would be built next.
