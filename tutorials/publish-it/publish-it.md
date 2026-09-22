@@ -1,5 +1,5 @@
 ---
-title: "Publish it"
+title: "Publishing your site with GitHub Pages"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -11,7 +11,7 @@ covers:
     covers: [WA-LO13]
 ---
 
-# Publish it
+# Publishing your site with GitHub Pages
 
 A repository of HTML and CSS files is not yet a website anyone can visit.
 GitHub Pages is the switch that turns it into one, and it is free.
@@ -45,8 +45,7 @@ meant to be forked as a public repository for exactly this reason.
 
 Once Pages is switched on, commit a change to the branch you chose.
 GitHub rebuilds the site on its own, usually within a minute or two.
-There is no separate publishing step to remember. [The two
-loops](tutorial:the-two-loops) covers this update cycle from the editing
+There is no separate publishing step to remember. [Saving and publishing a change](tutorial:the-two-loops) covers this update cycle from the editing
 side.
 
 ## What you have now

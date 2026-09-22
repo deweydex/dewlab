@@ -72,8 +72,8 @@ once every card has that much. Once the row is too narrow to give all
 three their minimum, one moves down.
 
 But 80 pixels is the width of the card's content, not the width of the
-card. The padding and the border sit outside it, the way [the
-box](tutorial:the-box) showed, so each card takes 114 pixels in all —
+card. The padding and the border sit outside it, the way [the box
+model](tutorial:the-box) showed, so each card takes 114 pixels in all —
 and three of those, with two 12-pixel gaps between them, need 366. Here
 is one card at its real size:
 

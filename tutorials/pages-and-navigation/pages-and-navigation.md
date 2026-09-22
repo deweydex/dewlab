@@ -1,5 +1,5 @@
 ---
-title: "Several pages, one navigation"
+title: "One navigation bar across several pages"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO8]
 ---
 
-# Several pages, one navigation
+# One navigation bar across several pages
 
 Change which link below carries `aria-current="page"`. That link becomes
 bold; the rest of the menu never changes.

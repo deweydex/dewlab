@@ -39,7 +39,7 @@ works there too.
 The trade-off is that this editor only works on files already in a
 GitHub repository. It also cannot preview a page the way opening a file
 directly from your computer can. For the web track, this matters less
-than it sounds. [Publish it](tutorial:publish-it) covers a loop where you
+than it sounds. [Publishing your site with GitHub Pages](tutorial:publish-it) covers a loop where you
 see your changes on the published site instead.
 
 ## What you have now

@@ -1,5 +1,5 @@
 ---
-title: "A rule, and where it lives"
+title: "CSS rules and stylesheets"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -8,7 +8,7 @@ covers:
     touches: [WA-LO2]
 ---
 
-# A rule, and where it lives
+# CSS rules and stylesheets
 
 HTML says what each part of a page *is*. CSS says how it should *look*.
 On this page we:
@@ -36,10 +36,10 @@ p {
 }
 ```
 
-1. Let's change `darkslateblue` to `firebrick`. How many paragraphs
-   change colour?
-2. Now let's look at the HTML again. Does either paragraph mention
-   colour at all?
+1. What happens if we change `darkslateblue` to `firebrick`? How many
+   paragraphs change colour?
+2. Look at the HTML again. Does either paragraph mention colour at
+   all?
 
 So how did both of them change, together, from one line?
 
@@ -79,10 +79,10 @@ repeating any CSS.
 
 ## Now in your own site
 
-1. Let's open your fork and find that `<link>` tag in the `<head>` of
-   `index.html`.
+1. In your fork, open `index.html`. Can you find the `<link>` tag in
+   its `<head>`?
 2. Can you find the same tag in `about.html`?
-3. Now let's open `styles.css` itself and scroll through it. It has many
+3. Now we can open `styles.css` itself and scroll through it. It has many
    comments, between `/*` and `*/`, explaining what each section does.
    Browse them whenever you are curious.
 

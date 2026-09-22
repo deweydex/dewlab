@@ -21,7 +21,7 @@ if something goes wrong.
 
 GitHub also publishes websites. A repository that holds HTML and CSS
 files can be turned into a live site with GitHub Pages, at no cost.
-[Publish it](tutorial:publish-it) covers how.
+[Publishing your site with GitHub Pages](tutorial:publish-it) covers how.
 
 Repositories are usually public, meaning anyone with the link can see the
 files. Private repositories exist too, but a public one is normally what

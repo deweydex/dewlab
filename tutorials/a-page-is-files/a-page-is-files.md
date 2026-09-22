@@ -1,5 +1,5 @@
 ---
-title: "A page is files"
+title: "HTML: tags, elements and attributes"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     covers: [WA-LO8]
 ---
 
-# A page is files
+# HTML: tags, elements and attributes
 
 Where does a web page live? It lives in a plain text file, sitting in
 your fork, that you can open and read like any other document. On this
@@ -32,10 +32,10 @@ site: first-page
 text in it.</p>
 ```
 
-1. Let's change the words between `<h1>` and `</h1>`. What happens to
-   the preview as you type?
-2. Now let's change the word between `<strong>` and `</strong>`. Does it
-   stay bold?
+1. What happens to the preview if we change the words between `<h1>`
+   and `</h1>`? Watch it as you type.
+2. The word between `<strong>` and `</strong>` is bold. If we change
+   it, does the new word stay bold?
 3. What if we add a second paragraph on a new line, like
    `<p>Another paragraph.</p>`?
 
@@ -76,10 +76,10 @@ Let's open your fork of the starter and find `index.html`. Near the top,
 inside the `<head>` section, there is a `<title>` element. It says "My
 Portfolio".
 
-1. Let's change the text between `<title>` and `</title>` to your name,
-   or to anything else you like.
+1. Change the text between `<title>` and `</title>` to your name, or
+   to anything else you like.
 2. Save the file.
-3. Now let's see the change:
+3. How we see the change depends on where you are working:
    - **On your own computer:** refresh the browser.
    - **In GitHub's web editor:** commit the change first, then wait a
      minute for the page to rebuild.

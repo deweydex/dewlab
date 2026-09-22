@@ -1,5 +1,5 @@
 ---
-title: "How the pieces fit"
+title: "The tools for building a website"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -7,7 +7,7 @@ covers:
     touches: [WA-LO13]
 ---
 
-# How the pieces fit
+# The tools for building a website
 
 Welcome. In this course we build a website and publish it online. Let's
 start by meeting the tools we will use, and seeing how they connect. You
@@ -57,7 +57,7 @@ If we use an editor on our own computer, it happens in two stages.
 
 What if we use GitHub's editor in the browser instead? Then we save a
 commit straight onto GitHub, so stage one and stage two happen together.
-[The two loops](tutorial:the-two-loops) looks at both ways of working,
+[Saving and publishing a change](tutorial:the-two-loops) looks at both ways of working,
 with steps to try once your site is ready.
 
 ## Reading and trying examples

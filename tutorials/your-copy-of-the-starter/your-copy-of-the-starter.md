@@ -60,7 +60,6 @@ repository later.
 
 ## What you have now
 
-Your own copy of the starter, ready to open. [Publish
-it](tutorial:publish-it) covers making that copy visible as a website,
+Your own copy of the starter, ready to open. [Publishing your site with GitHub Pages](tutorial:publish-it) covers making that copy visible as a website,
 which the starter's own first exercise asks you to do before changing
 anything else.

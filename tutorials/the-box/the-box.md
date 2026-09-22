@@ -1,5 +1,5 @@
 ---
-title: "The box"
+title: "The box model: padding, border and margin"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# The box
+# The box model: padding, border and margin
 
 Every element on a page is a rectangular box, whatever it looks like on
 screen. On this page we find the three layers around that box, and learn
@@ -45,14 +45,14 @@ move at all?
 Each box changes size, and its border moves with it. The words inside
 never move.
 
-**Now margin.** Let's put `padding` back to `20px`, and try `margin`
-instead: `0`, then `4rem`. Does the box itself change size this time?
+**Now margin.** With `padding` back at `20px`, what happens when we
+change `margin` instead, to `0` and then to `4rem`? Does the box itself change size this time?
 
 The boxes stay exactly the same size. What changes is how far apart they
 sit, and how far they are from the edge of the page.
 
-**Something worth watching for.** Let's set `margin` to `4rem` and look
-at the gap between the two boxes. The first box has `4rem` of margin
+**Something worth watching for.** With `margin` at `4rem`, look at the
+gap between the two boxes. The first box has `4rem` of margin
 below it, and the second has `4rem` above it. So is the gap `8rem`? Look
 closely: it is `4rem`. We will see why below.
 
@@ -95,15 +95,16 @@ box, not with margins at the sides.
 
 ## Now in your own site
 
-Let's open your fork and find the `.card` rule in `styles.css`.
+In your fork, `styles.css` has a `.card` rule. We can try the same
+changes there.
 
-1. Let's try `padding` of `0`, then `4rem`.
+1. Set `padding` to `0`, then `4rem`.
 2. Now `1rem 3rem`. What changes? With two values, the first sets the
    top and bottom, and the second sets the left and right.
-3. Let's find `border-radius` in the same rule. Try `0` for sharp
-   corners and `20px` for rounded ones.
+3. The same rule has a `border-radius`. What do `0` and `20px` do to
+   the corners?
 4. What happens with `50%`, on a shape that is not a circle?
-5. Once you have a feel for those, let's add a visible border:
+5. Once you have a feel for those, you could add a visible border:
    `border: 2px solid var(--accent-color);`
 
 After each change, save and refresh. Can you name which layer you

@@ -1,5 +1,5 @@
 ---
-title: "The container: width and centring"
+title: "Setting a page's width and centring it"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# The container: width and centring
+# Setting a page's width and centring it
 
 Drag the preview wide, then change `max-width` below from `300px` to
 `100%`. The white box stops staying a fixed size and starts filling

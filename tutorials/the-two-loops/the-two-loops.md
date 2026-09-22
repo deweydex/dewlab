@@ -1,5 +1,5 @@
 ---
-title: "The two loops"
+title: "Saving and publishing a change"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -11,11 +11,13 @@ covers:
     touches: [WA-LO13]
 ---
 
-# The two loops
+# Saving and publishing a change
 
-[How the pieces fit](tutorial:how-the-pieces-fit) named two loops without
-explaining either. You now have an account, a copy of the starter, and a
-published site to try them on. Here is how each one runs.
+[The tools for building a website](tutorial:how-the-pieces-fit) followed
+one change from your editor to your published site. That path has two
+loops in it: one on your own computer, and one on GitHub. You now have
+an account, a copy of the starter, and a published site to try them on.
+Here is how each one runs.
 
 ## The local loop: save and refresh
 

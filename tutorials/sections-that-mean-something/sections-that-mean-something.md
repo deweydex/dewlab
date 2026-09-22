@@ -1,5 +1,5 @@
 ---
-title: "Sections, and the tags that mean something"
+title: "Semantic HTML: tags that describe their content"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO8]
 ---
 
-# Sections, and the tags that mean something
+# Semantic HTML: tags that describe their content
 
 Your fork's `index.html` is full of tags like `<nav>`, `<header>` and
 `<section>`, when a plain `<div>` could hold the same content. Try the box

@@ -1,5 +1,5 @@
 ---
-title: "The skeleton: head and body"
+title: "The head and body of a page"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO8]
 ---
 
-# The skeleton: head and body
+# The head and body of a page
 
 On the last page we changed the `<title>` element in your fork. Let's
 look more closely at it this time. Why does some text on a page never
@@ -27,9 +27,9 @@ site: skeleton
 <p>Both lines above say "My page". Only one of them renders below.</p>
 ```
 
-1. Let's look at the preview first. How many times does "My page"
-   appear?
-2. Now let's change the text inside `<title>`. Does the preview change?
+1. Before changing anything, look at the preview. How many times does
+   "My page" appear?
+2. What if we change the text inside `<title>`? Does the preview change?
 3. What about the text inside `<h1>`?
 
 The `<h1>` text appears. The `<title>` text does not. Where do you think
@@ -65,14 +65,14 @@ in the body, with all the other visible content.
 
 ## Now in your own site
 
-Let's open `index.html` in your fork again.
+We are back in `index.html` in your fork.
 
 1. Inside the hero section there is an `<h1>` element. It says "Welcome
    to My Portfolio".
-2. Let's change it to something that represents you.
+2. What would represent you better? Change the text to that.
 3. Save, and refresh.
 
-Now let's compare the two changes we have made:
+We have now made two changes. How do they compare?
 
 | What we changed | It lives in the | It changed |
 |---|---|---|
