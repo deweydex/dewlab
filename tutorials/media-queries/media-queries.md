@@ -115,7 +115,10 @@ helps us see which one is in use.
 3. Set a narrow width, like a phone's.
 4. In your fork, open `styles.css`. Find the `@media (max-width: 768px)`
    block at the bottom.
-5. After that block, add a second breakpoint for very small screens:
+5. Just below it, a second breakpoint for very small screens is
+   already waiting, switched off inside a comment. It starts with
+   `/* → Exercise 24` and ends with `*/`. Delete those two comment
+   markers to switch it on. The block looks like this:
 
    ```css
    @media (max-width: 480px) {
@@ -125,6 +128,10 @@ helps us see which one is in use.
 
        .container {
            padding: 0 1rem;
+       }
+
+       .card {
+           padding: 1rem;
        }
    }
    ```
