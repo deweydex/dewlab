@@ -1,5 +1,18 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
 # A project brief, not a tutorial — no code, no new technical or
-# mathematical terms.
-entries: []
+# mathematical terms. The two entries are the words the brief itself
+# relies on.
+entries:
+  - term: brief
+    kind: concept
+    definition: >
+      A brief is a description of a piece of work you are asked to do:
+      what to build, how it will be handed in, and how it will be judged.
+  - term: release
+    kind: concept
+    definition: >
+      A release is a version of a program that somebody outside the team
+      could use on the day it comes out. It has a version number and a
+      date, and it is kept after the next release, so people can go back
+      to it.

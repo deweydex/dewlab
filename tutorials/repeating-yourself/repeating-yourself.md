@@ -1,7 +1,7 @@
 ---
 title: "Repeating Yourself"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.22.1
 covers:
   while-loops-repeat-until-done:
     covers: [PDP-LO6]
@@ -17,15 +17,18 @@ covers:
 
 # Repeating Yourself
 
-**Programming Design Principles / Maths for IT**
+Our programs can now run lines in order, and make decisions. One thing
+is still missing: repetition. How would we add up 100 numbers, check
+every item in a list, or convert a whole batch of temperatures? Without
+a way to repeat, we would have to write the same code again and again.
 
-We can now write programs that execute in sequence and make decisions. But we are still missing a crucial capability: repetition. Imagine calculating the sum of 100 numbers, or checking every item in a list, or converting a whole batch of temperatures. Without loops, we would need to write the same code over and over.
-
-Today we learn to make the computer repeat things for us, and we will discover that mathematical notation has had the same idea for centuries.
+On this page, we make the computer repeat things for us. We also find
+that mathematical notation has had the same idea for centuries.
 
 ## While Loops: Repeat Until Done
 
-A `while` loop keeps executing its body as long as a condition remains True:
+A *while loop* runs its body again and again, for as long as a condition
+stays True. What do you think this one prints?
 
 ```python exec
 id: while-loops-repeat-until-done-1
@@ -39,13 +42,28 @@ while count <= 5:
 print("Done!")
 ```
 
-Three things make a while loop work:
+A while loop needs three things to work:
 
-First, an initial state (`count = 1`). Second, a condition that gets checked before each iteration (`count <= 5`). Third, an update inside the loop body that eventually makes the condition False (`count = count + 1`). Forget that third part and the loop runs forever -- a very common mistake, and one worth experiencing once (you can interrupt a running cell with the stop button or Kernel > Interrupt).
+1. a starting state: `count = 1`
+2. a condition that Python checks before each pass through the loop:
+   `count <= 5`
+3. an update inside the body that, in the end, makes the condition
+   False: `count = count + 1`
+
+What happens if we forget the third part? The condition never becomes
+False, so the loop runs forever. This is a very common mistake, and it
+is worth seeing once. While a cell is running, its **Run** button
+changes to **Stop**. Press it to stop the loop. (If you do not see a
+Stop button, reloading the page stops the loop too.)
 
 ### Your turn
 
-Before running the next cell, trace through it by hand: for each iteration, write down the value of `total` and `n`. Predict the final output, then run it to check.
+Before you run the next cell, trace it by hand:
+
+1. For each pass through the loop, write down the values of `total` and
+   `n` in the comments at the bottom of the cell.
+2. Predict what the cell prints at the end.
+3. Run it to check.
 
 ```python exec
 id: your-turn-1
@@ -67,11 +85,16 @@ print(total)
 # Final total: ?
 ```
 
-That program computes 1 + 2 + 3 + 4. This pattern of starting with zero and repeatedly adding is called the *accumulator pattern*, and it is one of the most common structures in programming.
+Which sum did that program work out? It adds 1 + 2 + 3 + 4. The program
+starts a total at zero, then adds to it again and again. This is the
+*accumulator pattern*, and it is one of the most common shapes in
+programming.
 
 ## For Loops: When You Know How Many Times
 
-When we know in advance how many times to repeat, a `for` loop is cleaner. The `range()` function generates a sequence of numbers:
+When we know in advance how many times to repeat, a *for loop* is
+simpler. A for loop runs its body once for each item in a sequence. The
+`range()` function makes a sequence of numbers for it:
 
 ```python exec
 id: for-loops-when-you-know-how-many-times-1
@@ -80,9 +103,13 @@ for i in range(5):
     print(i)
 ```
 
-`range(5)` produces the numbers 0, 1, 2, 3, 4 -- five numbers starting from 0. This might seem odd, but starting from 0 turns out to be very convenient in programming (we will see why when we work with lists).
+Did you expect it to start at 0? `range(5)` gives the numbers 0, 1, 2, 3
+and 4: five numbers, starting from 0. This might seem strange. Starting
+from 0 turns out to be very useful in programming, and we will see why
+when we work with lists in
+[Lists and Sequences](tutorial:lists-and-sequences).
 
-You can also specify a start and a step:
+We can also give `range()` a start and a step:
 
 ```python exec
 id: for-loops-when-you-know-how-many-times-2
@@ -102,11 +129,22 @@ for i in range(10, 0, -1):
 print("Liftoff!")
 ```
 
+| Call | Numbers it gives |
+|---|---|
+| `range(stop)` | from 0 up to, but not including, `stop` |
+| `range(start, stop)` | from `start` up to, but not including, `stop` |
+| `range(start, stop, step)` | from `start`, jumping by `step` each time, stopping before `stop` |
+
 ### Your turn
 
-Let's write a for loop that prints the first 10 multiples of 7 (that is: 7, 14, 21, ..., 70). Think about what start, stop, and step values you need for `range()`.
+Can you write a for loop that prints the first 10 multiples of 7? (That
+is 7, 14, 21, and so on, up to 70.)
 
-**Pseudocode:**
+1. Decide what start, stop and step values `range()` needs.
+2. Write your plan as pseudocode comments in the cell below.
+3. Write the loop, and run it.
+
+**Pseudocode first, then the code:**
 
 ```python exec
 id: your-turn-2
@@ -115,13 +153,17 @@ id: your-turn-2
 
 ## Sigma Notation: Mathematics Meets Loops
 
-Mathematicians have a compact notation for writing sums. Instead of writing $1 + 2 + 3 + 4 + 5$, they write:
+Mathematicians have a short way to write sums. Instead of
+$1 + 2 + 3 + 4 + 5$, they write:
 
 $$\sum_{i=1}^{5} i$$
 
-That capital sigma means "add up all the values of the expression, for each value of i from 1 to 5." The variable $i$ is called the *index* of summation.
+The large symbol is the capital Greek letter sigma. It means "add up the
+expression, for each value of $i$ from 1 to 5." The variable $i$ is
+called the *index* of the sum.
 
-Here is the beautiful thing: this is *exactly* what a loop with an accumulator does.
+Does that sound like something we have already written? It is exactly
+what a loop with an accumulator does.
 
 ```python exec
 id: sigma-notation-mathematics-meets-loops-1
@@ -132,8 +174,8 @@ for i in range(1, 6):     # 1 through 5
 print("Sum:", total)       # should be 15
 ```
 
-The notation is not a new subject. It is the same five decisions you
-already make when you write that loop, written down somewhere else:
+The notation is not a new subject. It writes down the same five
+decisions you already make when you write that loop:
 
 | The decision | In $\sum_{i=1}^{5} i$ | In the loop |
 |---|---|---|
@@ -143,19 +185,21 @@ already make when you write that loop, written down somewhere else:
 | What gets accumulated | the $i$ after the sigma | the `+ i` in `total = total + i` |
 | What the total starts at | nothing — it is assumed | `total = 0`, written out |
 
-Two of those rows are worth pausing on.
+Two of those rows need a closer look.
 
-The stopping row is the one that catches people. Sigma stops **at** 5
-and `range` stops **before** 6, so the two numbers differ by one while
-describing the same five values. It is the same idea as a slice: the
-number names a boundary rather than an item.
+The stopping row is the one that trips people up. Sigma stops **at** 5,
+and `range` stops **before** 6. So the two numbers differ by one, but
+they describe the same five values. The number in `range` marks a
+boundary, not an item. We will see the same idea again with slices, in
+[Lists and Sequences](tutorial:lists-and-sequences).
 
-The last row is a real difference rather than a translation. Sigma never
-writes down that the total starts at zero — a sum of nothing is zero and
-mathematicians leave that unsaid. A loop has to say it out loud, which
-is why `total = 0` sits above every accumulator you write.
+The last row is a real difference between the two. Sigma never writes
+down that the total starts at zero: a sum of nothing is zero, and
+mathematicians leave that unsaid. A loop has to say it out loud. That is
+why `total = 0` sits above every accumulator you write.
 
-We can generalize this. $\sum_{i=1}^{n} i^2$ means "add up the squares of all integers from 1 to n":
+We can make this more general. $\sum_{i=1}^{n} i^2$ means "add up the
+squares of all the integers from 1 to n":
 
 ```python exec
 id: sigma-notation-mathematics-meets-loops-2
@@ -167,7 +211,10 @@ for i in range(1, n + 1):
 print("Sum of squares from 1 to " + str(n) + ":", total)
 ```
 
-There is also a product notation using the capital pi: $\prod_{i=1}^{n} i$ means "multiply all the integers from 1 to n." This is exactly the factorial function! $5! = 1 \times 2 \times 3 \times 4 \times 5 = 120.$
+There is also a notation for products, using the capital Greek letter
+pi: $\prod_{i=1}^{n} i$ means "multiply all the integers from 1 to n."
+This is the factorial function, written with `!`:
+$5! = 1 \times 2 \times 3 \times 4 \times 5 = 120.$
 
 ```python exec
 id: sigma-notation-mathematics-meets-loops-3
@@ -179,17 +226,25 @@ for i in range(1, n + 1):
 print(str(n) + "! =", product)
 ```
 
-Notice the key difference between sum and product accumulators: the sum starts at 0 (the identity element for addition) while the product starts at 1 (the identity element for multiplication).
+Why does `product` start at 1 and not at 0? What would happen if it
+started at 0?
+
+A sum starts at 0, because adding 0 changes nothing. A product starts at
+1, because multiplying by 1 changes nothing. In mathematics, 0 is called
+the identity element for addition, and 1 is the identity element for
+multiplication.
 
 ### Your turn
 
-Let's compute the following using loops, with pseudocode first for each one.
+Can you work out each of these with a loop? For each one, write
+pseudocode first, then the code.
 
-1. $\sum_{i=1}^{100} i$ (the sum of the first 100 natural numbers -- there is a famous story about the young Gauss solving this instantly)
-
-2. $\sum_{i=1}^{10} \frac{1}{i}$ (the first 10 terms of the harmonic series)
-
-3. $10!$ (10 factorial)
+1. $\sum_{i=1}^{100} i$, the sum of the first 100 natural numbers. (There
+   is a famous story that the young Gauss worked this out in moments.)
+2. $\sum_{i=1}^{10} \frac{1}{i}$, the first 10 terms of the *harmonic
+   series*. The harmonic series is the sum
+   $1 + \frac{1}{2} + \frac{1}{3} + \frac{1}{4} + \dots$
+3. $10!$, which is 10 factorial.
 
 ```python exec
 id: your-turn-3
@@ -203,7 +258,7 @@ id: your-turn-3
 ```python exec
 id: your-turn-4
 # 2. First 10 terms of the harmonic series
-# (Hint: be careful about integer vs float division)
+# (Hint: 1 / i gives a float. What would 1 // i give instead?)
 ```
 
 ```python exec
@@ -213,7 +268,9 @@ id: your-turn-5
 
 ## Nested Loops
 
-Loops can contain other loops. The inner loop completes all its iterations for each single iteration of the outer loop:
+A loop can contain another loop. These are called *nested loops*. For
+each single pass of the outer loop, the inner loop runs all the way
+through. What do you think this prints?
 
 ```python exec
 id: nested-loops-1
@@ -221,13 +278,22 @@ id: nested-loops-1
 for row in range(1, 4):
     for col in range(1, 4):
         result = row * col
+        # rjust(4) pads each number to 4 characters wide, so the columns line up
         print(str(result).rjust(4), end="")
     print()   # new line after each row
 ```
 
 ### Your turn
 
-Let's modify the code above to produce a full 10x10 multiplication table. Then think about how many total multiplications it computes. If the outer loop runs n times and the inner loop runs n times, the total number of operations is n x n, or $n^2$. Counting how many operations an algorithm performs will be very important when we study search and sort algorithms.
+1. Change the code above so that it prints a full 10 by 10
+   multiplication table.
+2. How many multiplications does your table work out?
+
+If the outer loop runs n times, and the inner loop runs n times for each
+of those, the total number of steps is n × n, or $n^2$. Counting how many
+steps an algorithm takes will matter a lot when we study searching and
+sorting, in [Finding Things](tutorial:finding-things) and
+[Putting Things in Order](tutorial:putting-things-in-order).
 
 ```python exec
 id: your-turn-6
@@ -236,7 +302,9 @@ id: your-turn-6
 
 ## Building Up Gradually: Counting with Conditions
 
-We can combine loops with conditionals to count or accumulate selectively. For instance, let's count how many numbers between 1 and 100 are divisible by both 3 and 7:
+We can put an `if` inside a loop, so that we only count or add some of
+the values. For example, how many numbers from 1 to 100 can be divided
+by both 3 and 7? Can you guess before you run it?
 
 ```python exec
 id: building-up-gradually-counting-with-conditions-1
@@ -251,9 +319,20 @@ print("Total:", count)
 
 ### Your turn
 
-Let's write a program that finds and prints all numbers between 1 and 50 that are *either* perfect squares (1, 4, 9, 16, ...) *or* perfect cubes (1, 8, 27, ...). One approach: for each number, check whether its square root (or cube root) is a whole number.
+Can you write a program that finds and prints every number from 1 to 50
+that is *either* a perfect square (1, 4, 9, 16, …) *or* a perfect cube
+(1, 8, 27, …)?
 
-**Pseudocode:**
+One way: for each number, check whether its square root, or its cube
+root, is a whole number. `n ** 0.5` gives the square root of `n`, and
+`n ** (1/3)` gives the cube root.
+
+Be careful with that cube root, though. Python stores most fractions
+only approximately, so `64 ** (1/3)` gives `3.9999999999999996`, not
+`4`. Another way avoids the problem: loop over whole numbers `k`, and
+check whether `k * k` or `k * k * k` equals your number.
+
+**Pseudocode first, then the code:**
 
 ```python exec
 id: your-turn-7
@@ -262,11 +341,19 @@ id: your-turn-7
 
 ## Reflection
 
-Today we covered `while` loops, `for` loops with `range()`, the accumulator pattern for both sums and products, nested loops, and loops combined with conditionals.
+On this page, we met `while` loops, `for` loops with `range()`, the
+accumulator pattern for both sums and products, nested loops, and loops
+with an `if` inside them.
 
-The big insight is the connection between loops and mathematical notation. When a mathematician writes $\sum$ or $\prod$, they are describing a loop. When a programmer writes a `for` loop with an accumulator, they are computing a sum or product. Same idea, different notation.
+The big idea is the link between loops and mathematical notation. When
+a mathematician writes $\sum$ or $\prod$, they are describing a loop.
+When a programmer writes a `for` loop with an accumulator, they are
+working out a sum or a product. It is the same idea, in two notations.
 
-We now have all three fundamental control structures: sequential execution, selection (if/elif/else), and iteration (while, for). Every program ever written is built from these three building blocks.
+We now have all three basic control structures: sequential execution,
+selection (`if`, `elif`, `else`), and *iteration*. Iteration is
+repetition: `while` and `for`. Any program can be built from these three
+building blocks.
 
 What patterns are you starting to see? What questions do you have?
 

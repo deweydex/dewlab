@@ -1,7 +1,7 @@
 ---
 title: "Making Decisions"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.22.1
 covers:
   comparisons-true-or-false:
     covers: [PDP-LO6]
@@ -20,13 +20,22 @@ covers:
 
 # Making Decisions
 
-**Programming Design Principles / Maths for IT**
+So far, our programs have run every line from top to bottom, every time.
+Real algorithms need to make choices. "If the water has boiled, pour it.
+Otherwise, keep waiting." "If the number is negative, deal with it in a
+different way."
 
-So far our programs have been strictly sequential: they execute every line from top to bottom, every time. But real algorithms need to make choices. "If the water has boiled, pour it; otherwise, keep waiting." "If the number is negative, handle it differently." Today we learn how to make our programs choose different paths depending on conditions.
+On this page, we learn how a program can choose a different path,
+depending on a condition.
 
 ## Comparisons: True or False?
 
-Before we can make decisions, we need to be able to ask questions that have True or False answers. Python gives us comparison operators for this:
+Before a program can make a decision, it needs to ask a question with a
+True or False answer. Python has *comparison operators* for this. A
+comparison operator is a symbol that compares two values and gives back
+`True` or `False`.
+
+Here are all six. Can you guess what each line prints before you run it?
 
 ```python exec
 id: comparisons-true-or-false-1
@@ -39,13 +48,31 @@ print(5 == 5)       # equal to (note: two equals signs!)
 print(5 != 3)       # not equal to
 ```
 
-A crucial distinction: `=` is *assignment* (give this name this value), while `==` is *comparison* (are these two things equal?). Mixing them up is one of the most common mistakes in programming.
+| Operator | Meaning |
+|---|---|
+| `>` | greater than |
+| `<` | less than |
+| `>=` | greater than or equal to |
+| `<=` | less than or equal to |
+| `==` | equal to |
+| `!=` | not equal to |
 
-Each comparison produces a Boolean value: `True` or `False`. These are the building blocks of all decision-making in programs.
+Look closely at `==`. It has two equals signs.
+
+- One equals sign, `=`, is *assignment*. It gives a name a value.
+- Two equals signs, `==`, is *comparison*. It asks whether two things
+  are equal.
+
+Mixing up `=` and `==` is one of the most common mistakes in
+programming. It trips up experienced programmers too.
+
+Each comparison gives a Boolean value, `True` or `False`. Every decision
+a program makes is built from values like these.
 
 ### Your turn
 
-What do you predict each comparison below will output? Run the cell to check.
+What do you think each comparison below will print? Write your guess
+after `prediction:` on each line. Then run the cell to check.
 
 ```python exec
 id: your-turn-1
@@ -58,11 +85,15 @@ print(1 == 1.0)       # prediction:
 print(0 == False)     # prediction: 
 ```
 
-That last one is interesting. In Python, `False` is equivalent to `0` and `True` is equivalent to `1`. This connection between logic and arithmetic goes all the way back to George Boole's work in the 1850s.
+Did any of them surprise you? Look at the last one. In Python, `False`
+counts as equal to `0`, and `True` counts as equal to `1`. This link
+between logic and arithmetic goes back to George Boole's work in the
+1850s. The word "Boolean" comes from his name.
 
 ## If Statements: Choosing a Path
 
-The `if` statement lets us execute code only when a condition is True:
+An *if statement* is code that runs only when a condition is True. Here
+is one. What do you think it prints?
 
 ```python exec
 id: if-statements-choosing-a-path-1
@@ -75,17 +106,32 @@ if temperature > 30:
 print("This line always runs, regardless of the temperature.")
 ```
 
-Notice the structure: the `if` keyword, followed by a condition, followed by a colon. The indented lines below are the *body* of the if statement: they only run when the condition is True. The unindented line after is back to the normal flow and runs no matter what.
+Look at the shape of the first line. It has three parts:
 
-Indentation is how Python knows which code belongs inside the if statement, so it is not optional in Python. Use four spaces for each level of indentation (most editors will do this automatically when you press Tab).
+1. the keyword `if`
+2. a condition, `temperature > 30`
+3. a colon, `:`
+
+The indented lines under it are the *body* of the if statement. The body
+runs only when the condition is True. The last line is not indented, so
+it is back in the normal flow. It runs every time.
+
+Python uses indentation to know which lines belong inside the if
+statement. So in Python, indentation is required. We use four spaces for
+each level. Most editors put in four spaces for you when you press Tab.
 
 ### What happens when the condition is False?
 
-If the temperature were 20, the two indented lines would be skipped entirely, and only the final print would run. Try changing the temperature above to see this.
+What would happen if the temperature were 20? Change `35` to `20` in the
+cell above, and run it again.
+
+This time, Python skips the two indented lines. Only the last `print`
+runs.
 
 ## If-Else: Two Paths
 
-Often we want to do one thing if a condition is True and a different thing if it is False:
+Often we want to do one thing when a condition is True, and something
+different when it is False. An *if-else* statement does this.
 
 ```python exec
 id: if-else-two-paths-1
@@ -97,16 +143,26 @@ else:
     print(str(number) + " is odd")
 ```
 
-The `else` clause catches everything that the `if` condition does not. Between them, they cover all possibilities.
+The `else` part catches every case that the `if` condition does not.
+Between them, the two paths cover every possibility.
 
-Notice the use of the modulo operator `%` here. If a number divided by 2 has a remainder of 0, it is even. Otherwise it is odd. This is a pattern you will see again and again.
+What is the `%` doing here? We met `%`, the remainder (or modulo)
+operator, in [First Steps](tutorial:first-steps). When a number divided
+by 2 leaves a remainder of 0, the number is even. Otherwise, it is odd.
+We will use `% 2 == 0` to test for "even" many more times in this
+course.
 
 ### Your turn
 
-Let's write a program that takes a variable `year` and prints whether it is a leap year or not. The rule is: a year is a leap year if it is divisible by 4. (There are more detailed rules involving centuries, but let's start simple.)
+Can you write a program that looks at a variable `year` and prints
+whether it is a leap year? For now, we use a short rule: a year is a
+leap year if it can be divided by 4. (The full rule has more detail about
+centuries. We come back to it further down this page.)
 
-Pseudocode first, as comments in the cell below — then the Python for each
-step underneath it.
+1. In the cell below, write your pseudocode as comments, one step per
+   line.
+2. Under each comment, write the Python for that step.
+3. Run it.
 
 ```python exec
 id: your-turn-2
@@ -116,7 +172,9 @@ year = 2024
 
 ## Elif: Multiple Paths
 
-Sometimes there are more than two possibilities. The `elif` keyword (short for "else if") lets us chain multiple conditions:
+Sometimes there are more than two possible cases. The keyword `elif` is
+short for "else if". It adds another condition to an if statement, so a
+program can have as many paths as it needs.
 
 ```python exec
 id: elif-multiple-paths-1
@@ -134,13 +192,31 @@ else:
 print("Score: " + str(score) + " -> " + grade)
 ```
 
-Python checks each condition from top to bottom and executes the first one that is True. Once a matching condition is found, the rest are skipped. This means the order matters: if we checked `score >= 50` first, a score of 90 would match it and get "Pass" instead of "Distinction."
+Python checks each condition in turn, from top to bottom. It runs the
+body of the first condition that is True, and skips all the rest.
+
+So does the order of the conditions matter? Imagine we checked
+`score >= 50` first. What grade would a score of 90 get?
+
+It would get "Pass". The number 90 is greater than 50, and that
+condition comes first, so Python never reaches the check for
+"Distinction". The order matters.
 
 ### Your turn
 
-Let's modify the cell above to try different scores. Make sure you test at least one value in each range, plus the boundary values (50, 65, 80). Boundary testing is where bugs often hide.
+1. Change `score` in the cell above, and run it a few times. Try at
+   least one score in each grade.
+2. Now try the boundary values: 50, 65 and 80. Does each one get the
+   grade you expect?
 
-Now write your own classifier. Create a program that takes a number and classifies it as positive, negative, or zero:
+Bugs often hide at the boundaries, so they are worth testing every time.
+
+Next, you could write a classifier of your own.
+
+3. Plan it as pseudocode, in the comment lines at the top of the cell
+   below.
+4. Write a program that looks at `number` and prints whether it is
+   positive, negative or zero.
 
 ```python exec
 id: your-turn-3
@@ -154,9 +230,11 @@ number = -5
 
 ## Boolean Operators: Combining Conditions
 
-Sometimes a single comparison is not enough. Python provides three Boolean operators for combining conditions: `and`, `or`, and `not`.
+Sometimes one comparison is not enough. A *Boolean operator* is a word
+that combines True and False values, or changes one. Python has three:
+`and`, `or` and `not`.
 
-**`and`** is True only when *both* conditions are True:
+**`and`** is True only when *both* conditions are True.
 
 ```python exec
 id: boolean-operators-combining-conditions-1
@@ -169,7 +247,7 @@ else:
     print("Cannot drive")
 ```
 
-**`or`** is True when *at least one* condition is True:
+**`or`** is True when *at least one* condition is True.
 
 ```python exec
 id: boolean-operators-combining-conditions-2
@@ -181,7 +259,7 @@ else:
     print("It's a weekday.")
 ```
 
-**`not`** flips True to False and vice versa:
+**`not`** turns True into False, and False into True.
 
 ```python exec
 id: boolean-operators-combining-conditions-3
@@ -191,15 +269,36 @@ if not is_raining:
     print("No umbrella needed")
 ```
 
-These operators follow a precedence order: `not` is evaluated first, then `and`, then `or`. When in doubt, use parentheses to make your intention clear.
+| Operator | True when… |
+|---|---|
+| `a and b` | `a` and `b` are both True |
+| `a or b` | at least one of `a` and `b` is True |
+| `not a` | `a` is False |
+
+What changes if you set `age` to 16, `day` to `"Monday"`, or
+`is_raining` to `True`? Can you predict each result before you run it?
+
+When one line uses more than one of these operators, Python works them
+out in a fixed order: `not` first, then `and`, then `or`. If you are not
+sure how Python will read a line, add brackets, `( )`, to make your
+meaning clear.
 
 ### Your turn
 
-Let's revisit the leap year problem with the full rule: a year is a leap year if it is divisible by 4, *except* that years divisible by 100 are not leap years, *unless* they are also divisible by 400.
+Let's go back to the leap year problem, this time with the full rule:
 
-So 2024 is a leap year (divisible by 4). 1900 is not (divisible by 100 but not 400). 2000 is (divisible by 400).
+- A year is a leap year if it can be divided by 4,
+- *except* that a year that can be divided by 100 is not a leap year,
+- *unless* it can also be divided by 400.
 
-Let's write pseudocode first, then implement it:
+So 2024 is a leap year, because it can be divided by 4. 1900 is not,
+because it can be divided by 100 but not by 400. 2000 is a leap year,
+because it can be divided by 400.
+
+1. Write your pseudocode in the comment lines of the first cell below.
+2. Write the Python under it.
+3. Use the second cell to test your checker with several years: 2024,
+   1900, 2000, 2023 and 1600. Which of them should be leap years?
 
 ```python exec
 id: your-turn-4
@@ -219,9 +318,27 @@ id: your-turn-5
 
 ## Classifying Numbers: A Mathematical Application
 
-Let's use our new tools for something that connects to mathematics: classifying numbers into families. Mathematicians organize numbers into nested domains -- natural numbers (N), integers (Z), rationals (Q), and reals (R) -- each one extending the one before.
+Now we can use our new tools on a problem from mathematics: sorting
+numbers into families. Mathematicians sort numbers into four families,
+and each one sits inside the next.
 
-We can write a program that examines a number and tells us which domains it belongs to. Every natural number is also an integer, which is also a rational, which is also a real -- they are nested like Russian dolls.
+| Family | Symbol | What it holds | Examples |
+|---|---|---|---|
+| natural numbers | N | whole numbers from 0 upwards | 0, 1, 7 |
+| integers | Z | whole numbers, positive, negative or zero | -3, 0, 7 |
+| rational numbers | Q | numbers we can write as one integer divided by another | 1/2, -3.5, 7 |
+| real numbers | R | every number on the number line | π, 1/2, 7 |
+
+Each family contains the one before it. Every natural number is also an
+integer. Every integer is also a rational number, and every rational
+number is also a real number. The families fit together like a set of
+Russian dolls, one inside the next.
+
+(Some books start the natural numbers at 1. On this page, and in the
+code below, 0 counts as a natural number.)
+
+The program below looks at a value and tells us which families it
+belongs to. What do you think it will say about -3.5?
 
 ```python exec
 id: classifying-numbers-a-mathematical-application-1
@@ -242,22 +359,46 @@ print("Real (R): " + str(is_real))
 
 ### Your turn
 
-Try changing the value to different numbers: 7, -3, 0.5, 0, 3.14159. Observe how the classification changes. Then turn this into a proper program using if/elif/else that prints a clean summary like "7 is a natural number (and therefore also an integer, rational, and real)."
+1. Change `value` to each of these in turn: 7, -3, 0.5, 0, 3.14159. How
+   does the answer change each time?
+2. In the cell below, plan a new version as pseudocode. It should use
+   `if`, `elif` and `else`.
+3. Write it so that it prints one clear summary, such as "7 is a natural
+   number (and therefore also an integer, rational, and real)."
 
-**Pseudocode:**
+**Pseudocode first, then the code:**
 
 ```python exec
 id: your-turn-6
+# Pseudocode:
+#
+#
+#
+
 # Your number classifier
+value = 7
 ```
 
 ## Reflection
 
-Today we learned to make our programs choose different paths: `if`, `else`, `elif`, and Boolean operators `and`, `or`, `not`. These are *selection structures*, and together with *sequential* execution (which we already knew) they give us two of the three fundamental building blocks of programming. The third -- *iteration* (repetition) -- comes next.
+On this page, our programs learned to choose between paths. We used
+`if`, `else` and `elif`, and the Boolean operators `and`, `or` and
+`not`. These are *selection structures*: code that chooses which lines
+to run.
 
-We also saw that the simple act of classifying a number into mathematical categories requires exactly the kind of conditional logic we have been learning. The mathematics and the programming are the same activity viewed from different angles.
+Before this page, our programs used only *sequential* execution, which
+means running every line from top to bottom, every time. Sequence and
+selection are two of the three basic building blocks of programming. The
+third is *iteration*, which means repetition. We meet it in
+[Repeating Yourself](tutorial:repeating-yourself), after a page on what
+to do [When It Goes Wrong](tutorial:when-it-goes-wrong).
 
-What did you find most interesting or challenging today?
+We also saw that sorting a number into its mathematical families needs
+exactly this kind of decision. The mathematics and the programming are
+the same activity, seen from two sides.
+
+What did you find most interesting on this page? What did you find
+hardest?
 
 ## Where to Read More
 

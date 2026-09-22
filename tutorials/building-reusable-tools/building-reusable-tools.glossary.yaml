@@ -7,20 +7,33 @@ entries:
   - term: docstring
     kind: concept
     definition: >
-      A triple-quoted string at the top of a function, describing what it
-      does, what it expects and what it returns. It is the function's
-      contract, readable by anyone who wants to use it without reading its
-      code.
+      A docstring is a description of a function, written in triple
+      quotes at the top of it. It says what the function does, what it
+      needs as input and what it gives back.
     example: 'def mean(numbers):\n    """Compute the arithmetic mean of a list of numbers."""'
+  - term: contract
+    kind: concept
+    definition: >
+      A function's contract is its promise: give it this, and it gives
+      you that. The docstring states the contract, so anyone can use the
+      function without reading its code.
+  - term: standard deviation
+    kind: formula
+    definition: >
+      The standard deviation is a measure of how spread out numbers are
+      around their mean. The population standard deviation is the square
+      root of the mean of the squared differences from the mean.
+    example: "std_dev([10, 20, 30]) is about 8.165"
   - term: edge case
     kind: concept
     definition: >
-      An input a function needs to handle deliberately rather than let
-      crash. An empty list handed to a function that divides by its length
-      is one.
+      An edge case is an unusual input, at the edge of what a function
+      expects, that the function must handle on purpose. An empty list
+      given to a function that divides by its length is one.
   - term: test function
     kind: concept
     definition: >
-      A function that calls another function with a known input and checks
-      the result against the expected answer, printing PASS or FAIL. Writing
-      one forces you to say clearly what the function should do.
+      A test function is a function that calls another function with an
+      input whose right answer is known, checks the result, and prints
+      PASS or FAIL. Writing one makes you say clearly what the function
+      should do.

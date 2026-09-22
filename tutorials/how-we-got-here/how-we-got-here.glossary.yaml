@@ -3,47 +3,56 @@ entries:
   - term: machine code
     kind: concept
     definition: >
-      The raw, native language of the hardware — every instruction written
-      in binary, with nothing standing between it and the circuits.
-  - term: Assembly language
+      Machine code is the computer's own language: instructions the
+      hardware runs directly. Every instruction is written in binary.
+  - term: assembly language
     kind: concept
     definition: >
-      Gives each machine instruction a short readable name (ADD, MOV, JMP)
-      instead of a binary pattern.
+      Assembly language gives each machine instruction a short name that a
+      person can read, such as ADD, MOV or JMP, in place of a binary
+      pattern.
   - term: assembler
     kind: concept
-    definition: A program that translates assembly language back into the binary the hardware needs.
+    definition: >
+      An assembler is a program that turns assembly language back into the
+      binary the hardware needs.
   - term: high-level language
     kind: concept
     definition: >
-      Code that reads more like English or mathematics, translated into
-      machine code by software rather than by a person. Python is one.
+      A high-level language is a way of writing code that reads more like
+      English or maths. Software translates it into machine code. Python is
+      one.
   - term: compiler
     kind: concept
-    definition: Translates a whole program into machine code before it runs, producing a file the machine can execute on its own.
+    definition: >
+      A compiler is a program that translates a whole program into machine
+      code before it runs. The result is a file the machine can run on its
+      own.
   - term: interpreter
     kind: concept
     definition: >
-      Reads and runs a program line by line as it goes, with no separate
-      translation step first. Python behaves like one, from where you're
-      sitting.
+      An interpreter is a program that reads another program and runs it
+      line by line, as it goes. Python behaves like an interpreted
+      language.
   - term: paradigm
     kind: concept
     definition: >
-      A way of organizing a program — a set of habits about where the
-      logic goes and what the pieces are. A language tends to encourage
-      one, though some let you use several.
+      A paradigm is a way of organising a program: a set of habits about
+      where the logic goes and what the pieces are. Some languages,
+      including Python, let you use several.
   - term: procedural, functional, object-oriented
     kind: concept
     definition: >
-      Three paradigms for the same task. Procedural says how to build the
-      answer step by step. Functional describes the transformation rather
-      than the loop that applies it. Object-oriented keeps the data and the
-      things you do to it together, as a class.
+      These are three paradigms. Procedural code says how to build the
+      answer, step by step. Functional code says what the answer is.
+      Object-oriented code keeps the data and the things you do to it
+      together.
   - term: "chr()"
     kind: function
-    definition: Turns a number into the character it represents.
+    definition: Turns a number into the character it stands for.
     example: 'chr(72)  # "H"'
   - term: ASCII
     kind: concept
-    definition: A standard way of representing text characters as numbers.
+    definition: >
+      ASCII is a standard code that gives each text character a number.
+      For example, 72 is the code for H.

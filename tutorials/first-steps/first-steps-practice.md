@@ -7,11 +7,20 @@ version: 2026.08.23.1
 
 # First Steps — Practice
 
-Answers are hidden. Most of these are short — the point is repetition on the operators until they stop needing thought.
+On this page we practise the operators, `print()`, comments, algorithms
+and pseudocode. Most of the problems are short. The aim is to use the
+operators again and again, until you no longer need to stop and think
+about them.
 
-Several ask you to predict before running. Predicting wrongly and finding out why is worth more than getting it right by executing the cell first, so resist.
+Each answer is folded away under its problem. Many problems ask you to
+predict the result before you run anything. Try to predict first, and
+wait before you run the cell. A wrong prediction, and finding out why it
+was wrong, teaches you more than a right answer that came from running
+the cell.
 
 ## Arithmetic
+
+The cell below is a scratchpad for this section.
 
 ```python exec
 id: arithmetic-1
@@ -20,7 +29,7 @@ print(7 + 3, 7 - 3, 7 * 3, 7 / 3)
 print(7 // 3, 7 % 3, 7 ** 3)
 ```
 
-**1.** Predict each, then check.
+**1.** Predict each result, then check.
 
 - (a) `9 + 4 * 2`
 - (b) `(9 + 4) * 2`
@@ -31,11 +40,17 @@ print(7 // 3, 7 % 3, 7 ** 3)
 
 (a) 17. (b) 26. (c) 18.0. (d) 4.666…
 
-Two things to notice. Multiplication and division happen before addition and subtraction unless brackets say otherwise, and any division produces a decimal even when it comes out even — `6 / 3` is `2.0`, not `2`.
+There are two things to notice:
+
+- Multiplication and division happen before addition and subtraction,
+  unless brackets say otherwise.
+- Division with `/` always gives a decimal number, even when the answer
+  is whole. `6 / 3` is `2.0`, and not `2`.
 
 </details>
 
-**2.** How many seconds are there in a week? Write it as one expression rather than a number you worked out elsewhere.
+**2.** How many seconds are there in a week? Write it as one calculation,
+and not as a number you worked out somewhere else.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -43,11 +58,14 @@ Two things to notice. Multiplication and division happen before addition and sub
 print(7 * 24 * 60 * 60)
 ```
 
-604800. Writing it as `7 * 24 * 60 * 60` rather than `604800` means anyone reading it can see where the number came from, and it is one edit away from being a month.
+604800. Anyone who reads `7 * 24 * 60 * 60` can see where the number
+came from. It is also easy to change: with one edit, from 7 to 30, it
+counts the seconds in a month.
 
 </details>
 
-**3.** A film is 143 minutes long. Print how many whole hours and how many leftover minutes that is.
+**3.** A film is 143 minutes long. Print how many whole hours that is,
+and how many minutes are left over.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -55,11 +73,12 @@ print(7 * 24 * 60 * 60)
 print(143 // 60, "hours and", 143 % 60, "minutes")
 ```
 
-2 hours and 23 minutes. This pairing of `//` for how many whole ones and `%` for what is left over comes up constantly.
+2 hours and 23 minutes. This pair comes up all the time: `//` counts how
+many whole ones there are, and `%` gives what is left over.
 
 </details>
 
-**4.** Predict each, then check.
+**4.** Predict each result, then check.
 
 - (a) `17 // 5`
 - (b) `17 % 5`
@@ -70,21 +89,29 @@ print(143 // 60, "hours and", 143 % 60, "minutes")
 
 (a) 3. (b) 2. (c) 0. (d) 5.
 
-The last two surprise people. Seventeen does not go into five at all, so the whole part is 0 and *all* of the 5 is left over.
+The last two surprise people. 17 does not go into 5 at all. So the whole
+part is 0, and *all* of the 5 is left over.
 
 </details>
 
-**5.** What does `%` do with negative numbers? Predict `-7 % 3` before running it.
+**5.** What does `%` do with negative numbers? Predict `-7 % 3`, then
+run it.
 
 <details class="dl-answer"><summary>answer</summary>
 
-2, which surprises most people who expected −1.
+2. Most people expect −1, so this is a surprise.
 
-Python's `%` always returns something with the same sign as the right-hand number. It is defined so that `(a // b) * b + (a % b)` comes back to `a`, and `-7 // 3` is −3 rather than −2. Other languages disagree with Python about this, which is worth knowing before you translate code between them.
+In Python, the result of `%` always has the same sign as the number on
+the right, or is 0. Python defines `%` so that `(a // b) * b + (a % b)`
+always gives back `a`. And `-7 // 3` is −3, not −2, because `//` rounds
+down, and down from −2.33 is −3. So (−3 × 3) + 2 = −7.
+
+Other programming languages do not all agree with Python about this. It
+is worth knowing before you translate code from one language to another.
 
 </details>
 
-**6.** Predict each, then check.
+**6.** Predict each result, then check.
 
 - (a) `2 ** 10`
 - (b) `10 ** 2`
@@ -93,25 +120,33 @@ Python's `%` always returns something with the same sign as the right-hand numbe
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) 1024. (b) 100. (c) 1.4142… — a fractional power is a root. (d) 0.5 — a negative power is a reciprocal.
+(a) 1024. (b) 100. (c) 1.4142…, because a fractional power is a root:
+the power 0.5 gives the square root. (d) 0.5, because a negative power
+gives the reciprocal, one divided by the number.
 
-The last two are the whole content of *Numbers and Their Families* arriving early.
+The last two are the main ideas of
+[Numbers and Their Families](tutorial:numbers-and-their-families),
+arriving early.
 
 </details>
 
 ## Print, and Comments
 
-**7.** What is the difference between `print(5 + 3)` and `print("5 + 3")`?
+**7.** What is the difference between `print(5 + 3)` and
+`print("5 + 3")`?
 
 <details class="dl-answer"><summary>answer</summary>
 
 The first prints 8. The second prints `5 + 3`.
 
-Quotes mean "this is text, do not work it out". Without them Python evaluates the expression; with them it has a piece of writing that happens to contain a plus sign.
+Quotes mean "this is text, so do not work it out". Without quotes,
+Python works out the calculation. With quotes, Python has a piece of
+writing that happens to contain a plus sign.
 
 </details>
 
-**8.** Write one `print()` that displays `The answer is 42`, where the 42 is calculated rather than typed.
+**8.** Write one `print()` that displays `The answer is 42`. Let Python
+calculate the 42, and do not type it in.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -119,7 +154,10 @@ Quotes mean "this is text, do not work it out". Without them Python evaluates th
 print("The answer is", 6 * 7)
 ```
 
-Commas inside `print()` put a space between the pieces. There are neater ways to do this and you will meet them in *Storing and Computing*.
+A comma between the pieces inside `print()` puts a space between them in
+the output.
+[Storing and Computing](tutorial:storing-and-computing) shows another
+way to do this, which joins pieces of text with `+`.
 
 </details>
 
@@ -132,9 +170,11 @@ print("second")  # print("third")
 
 <details class="dl-answer"><summary>answer</summary>
 
-Just `second`.
+Only `second`.
 
-Everything after a `#` on a line is ignored, including code. The first line is entirely a comment; the third print is inside a comment on the second line.
+Python ignores everything after a `#` on a line, and that includes code.
+The first line is all comment. The third `print()` sits inside the
+comment at the end of the second line.
 
 </details>
 
@@ -150,15 +190,20 @@ Everything after a `#` on a line is ignored, including code. The first line is e
 
 <details class="dl-answer"><summary>answer</summary>
 
-Step 2 does not say how long, or what to wait *for*.
+Step 2 does not say how long to wait, or what to wait *for*.
 
-"Wait" is not an instruction a machine can follow. "While the toaster has not popped, wait" is, because it names the condition that ends the waiting. Every loop needs one of those, and a loop whose condition never becomes true never stops.
+A machine cannot follow "Wait". It can follow "While the toaster has not
+popped, wait", because that step names the condition that ends the
+waiting. Every loop needs a condition like this. A loop whose condition
+never becomes true never stops.
 
-Also missing: turning the toaster on.
+Something else is missing too: nobody turns the toaster on.
 
 </details>
 
-**11.** Write an algorithm, as numbered steps, for finding the largest number in a list of numbers written on paper. Assume you can only look at one number at a time.
+**11.** Write an algorithm, as numbered steps, to find the largest number
+in a list of numbers written on paper. You can look at only one number at
+a time.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -169,19 +214,31 @@ Also missing: turning the toaster on.
 4. The largest so far is the answer
 ```
 
-The one-number-at-a-time constraint is what forces you to carry something with you as you go. That "largest so far" is a variable, and this algorithm is what `max()` does internally.
+Because you can see only one number at a time, you have to carry
+something with you as you go: the "largest so far". That is a variable,
+which the next page explains. Python has a function, `max()`, that finds
+the largest value for you, and inside, it follows this same algorithm.
 
 </details>
 
-**12.** Two algorithms both make tea. One boils the kettle then gets a cup; the other gets a cup then boils the kettle. Are they the same algorithm?
+**12.** Two algorithms both make tea. One boils the kettle, then gets a
+cup. The other gets a cup, then boils the kettle. Are they the same
+algorithm?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No, though they give the same tea.
+No, even though they make the same tea.
 
-Order matters in an algorithm even when it does not matter to the outcome, because the two are not always interchangeable: swap two steps where the second depends on the first and the whole thing breaks. Part of reading an algorithm is spotting which of its orderings are forced and which are arbitrary.
+The order of the steps is part of an algorithm, even when another order
+gives the same result. Some steps cannot swap places: if the second step
+depends on the first, swapping them breaks the whole thing. Part of
+reading an algorithm is spotting which orders are forced and which are
+free choices.
 
-The second one is faster in real life, because you can get the cup while the kettle boils. That is concurrency, and it is a topic for later.
+In real life, you would probably do something faster than either one:
+turn the kettle on, then get the cup while the water boils. Doing two
+things at the same time like this is called concurrency, and it is a
+topic for later.
 
 </details>
 
@@ -207,11 +264,14 @@ total = price + vat
 print(total)
 ```
 
-49.2. Writing `total = price * 1.23` in one line gives the same answer and hides what the 1.23 is, which matters the day the rate changes.
+49.2. You could write `total = price * 1.23` on one line. It gives the
+same answer, but it hides what the 1.23 means. That matters on the day
+the VAT rate changes.
 
 </details>
 
-**14.** Write pseudocode for converting a distance in miles to kilometres (multiply by 1.60934), then write the Python underneath.
+**14.** Write pseudocode to change a distance in miles to kilometres
+(multiply by 1.60934). Then write the Python underneath.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -227,25 +287,37 @@ kilometres = miles * 1.60934
 print(kilometres)
 ```
 
-About 42.16 km, which is a marathon.
+About 42.16 km, which is the length of a marathon.
 
 </details>
 
-**15.** Why write pseudocode at all, when you could write the Python directly?
+**15.** Why write pseudocode at all, when you could write the Python
+straight away?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because the two hard parts are separate, and doing them at once is what makes programming feel impossible at the start.
+Because programming has two hard parts, and doing both at once is what
+makes it feel impossible at the start.
 
-Working out *what* the steps are is thinking about the problem. Working out how to say them in Python is thinking about Python. Pseudocode lets you finish the first before starting the second, and when the code then fails you know which of the two went wrong.
+- Working out *what* the steps are is thinking about the problem.
+- Working out how to say them in Python is thinking about Python.
 
-For a three-line program it is overkill. Keep the habit anyway, because you will not notice the moment a problem stops being three lines.
+Pseudocode lets you finish the first part before you start the second.
+Then, when the code fails, you know which of the two went wrong.
+
+For a three-line program, pseudocode is more than you need. Keep the
+habit anyway, because you will not notice the moment a problem stops
+being three lines long.
 
 </details>
 
 ## Putting It Together
 
-**16.** A shop sells items at €7.50 each. Print the cost of 13 items, the cost with 23% VAT added, and how many whole items you could buy with €100.
+**16.** A shop sells items at €7.50 each. Print three things:
+
+1. the cost of 13 items
+2. that cost with 23% VAT added
+3. how many whole items you could buy with €100
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -258,7 +330,11 @@ print(100 // price)
 
 97.5, then 119.925, then 13.0.
 
-That last one is `//` on decimals, which still gives a whole number of items but as a float — `13.0`. If that bothers you, `int(100 // price)` is the fix, and *Storing and Computing* explains why the two are different kinds of thing at all.
+The last one uses `//` with a decimal number. It still gives a whole
+number of items, but written as a decimal: `13.0`. If that bothers you,
+`int(100 // price)` gives `13`.
+[Storing and Computing](tutorial:storing-and-computing) explains why
+`13` and `13.0` are different kinds of value.
 
 </details>
 
@@ -268,11 +344,16 @@ That last one is `//` on decimals, which still gives a whole number of items but
 
 512.
 
-Powers group from the right, so this is `2 ** (3 ** 2)`, which is `2 ** 9`. Nearly every other operator in Python groups from the left, and this is the exception. When in doubt, bracket it — the reader should not have to know this rule to read your code.
+Powers group from the right, so Python reads this as `2 ** (3 ** 2)`,
+which is `2 ** 9`. Almost every other operator in Python groups from the
+left, and `**` is the exception. When you are not sure, add brackets.
+Then nobody who reads your code needs to know this rule.
 
 </details>
 
-**18.** A number is even when `n % 2` is 0. Print whether 1234567 is even, using only what this tutorial has covered.
+**18.** A number is even when its remainder after dividing by 2 is 0, so
+when `n % 2` is 0. Print whether 1234567 is even, using only what the
+tutorial has covered.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -280,6 +361,9 @@ Powers group from the right, so this is `2 ** (3 ** 2)`, which is `2 ** 9`. Near
 print(1234567 % 2)
 ```
 
-1, so it is odd. You cannot yet make Python print the word "odd" — that needs a decision, which is two tutorials away. Printing the remainder and reading it yourself is a perfectly good stopping point.
+1, so it is odd. You cannot yet make Python print the word "odd". That
+needs a decision, and [Making Decisions](tutorial:making-decisions)
+teaches decisions, three pages from now. Printing the remainder and
+reading it yourself is a good place to stop.
 
 </details>

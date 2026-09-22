@@ -7,32 +7,37 @@ entries:
   - term: swap
     kind: concept
     definition: >
-      Exchange two elements' positions. Python does it in one line, with
-      no temporary variable needed, because the right-hand side is fully
-      evaluated before anything is assigned.
+      To swap two elements is to exchange their positions. Python does it
+      in one line, with no temporary variable, because it works out the
+      whole right-hand side before it assigns anything.
     example: "a, b = b, a"
   - term: bubble sort
     kind: concept
     definition: >
-      Walk the list comparing adjacent pairs, swapping any that are in
-      the wrong order. One pass moves the largest remaining element to
-      its final position; repeat until sorted.
+      Bubble sort is a sorting algorithm that walks through the list,
+      comparing each pair of neighbours and swapping any pair in the
+      wrong order. One pass moves the largest remaining element to its
+      final place. It repeats until the list is sorted.
+  - term: ascending order
+    kind: concept
+    definition: Ascending order is order from smallest to largest.
   - term: insertion sort
     kind: concept
     definition: >
-      Keep a sorted portion at the start of the list, and insert each new
-      element into its right place within it. It is the way most people sort
-      a hand of playing cards.
+      Insertion sort is a sorting algorithm that keeps a sorted part at
+      the start of the list, and puts each new element into its right
+      place in that part. It is the way most people sort a hand of
+      playing cards.
   - term: selection sort
     kind: concept
     definition: >
-      Find the smallest element in the unsorted portion and swap it into
-      place at the front, then repeat for what remains.
+      Selection sort is a sorting algorithm that finds the smallest
+      element in the part not yet sorted, and swaps it into place at the
+      front of that part. It repeats for what is left.
   - term: "O(n^2)"
     kind: concept
     definition: >
-      Roughly n(n-1)/2 comparisons in the worst case — what bubble,
-      insertion, and selection sort all cost, growing with the square of
-      the list's size. Faster sorts exist (merge sort, quicksort) at
-      O(n log n), the same growth rate as the search algorithms already
-      met.
+      O(n²) means the work grows with the square of the list's size.
+      Bubble, insertion and selection sort all make about n(n-1)/2
+      comparisons in the worst case, so they are O(n²). Faster sorts,
+      such as merge sort, are O(n log n).

@@ -2,14 +2,22 @@
 title: "Storing and Computing — Practice"
 practice_for: storing-and-computing
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.22.1
 ---
 
 # Storing and Computing — Practice
 
-Answers are hidden. The type questions are the ones worth slowing down on — nearly every confusing error in your first term will turn out to be a type you did not expect.
+On this page we practise variables, types, floating-point numbers, and
+binary and hexadecimal. Each answer is folded away under its problem.
+Try the problem first, then open the answer.
+
+The questions about types are the ones to slow down on. In your first
+term, most confusing errors will turn out to come from a value whose type
+you did not expect.
 
 ## Variables
+
+The cell below is a scratchpad for this section.
 
 ```python exec
 id: variables-1
@@ -19,21 +27,31 @@ b = 4
 print(a, b, type(a), type(b))
 ```
 
-**1.** Which of these are legal variable names in Python? For the illegal ones, say why.
+**1.** Which of these are allowed as variable names in Python? For the
+ones that are not allowed, can you say why?
 
-`total`, `2nd_place`, `first name`, `_hidden`, `class`, `Total`, `total_2`, `my-name`
+`total`, `2nd_place`, `first name`, `_hidden`, `class`, `Total`,
+`total_2`, `my-name`
 
 <details class="dl-answer"><summary>answer</summary>
 
-Legal: `total`, `_hidden`, `Total`, `total_2`.
+Allowed: `total`, `_hidden`, `Total`, `total_2`.
 
-Illegal: `2nd_place` (cannot start with a digit), `first name` (no spaces — Python reads it as two things), `class` (a reserved word Python needs for itself), `my-name` (the hyphen is a minus sign, so Python reads `my - name`).
+Not allowed:
 
-`Total` is legal and is a different variable from `total`, which is an easy way to waste time debugging.
+- `2nd_place`: a name cannot start with a digit.
+- `first name`: a name cannot contain a space. Python reads it as two
+  separate things.
+- `class`: this is a reserved word, which Python keeps for its own use.
+- `my-name`: the hyphen is a minus sign, so Python reads it as
+  `my - name`.
+
+`Total` is allowed, and it is a different variable from `total`. Mixing
+the two up is an easy way to lose time looking for a bug.
 
 </details>
 
-**2.** After these lines, what is `x`?
+**2.** After these lines run, what is `x`?
 
 ```python
 x = 5
@@ -45,11 +63,16 @@ x = 10
 
 `x` is 10, and `y` is 5.
 
-The line `y = x` copied the value 5 into `y`. Assignment happens once, at the moment it runs, so it did not tie `y` to `x`. This is the difference between `=` in Python and `=` in mathematics: in an equation, `y = x` stays true; here it was a one-off instruction.
+The line `y = x` copied the value 5 into `y`. Assignment happens once, at
+the moment the line runs, so it did not tie `y` to `x`. This is the
+difference between `=` in Python and `=` in maths. In an equation,
+`y = x` stays true. In Python, it was a single instruction, carried out
+once.
 
 </details>
 
-**3.** Swap the values of two variables so that `a` ends up with what `b` had and the other way round.
+**3.** How could you swap the values of two variables, so that `a` ends
+up with what `b` had, and `b` ends up with what `a` had?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -57,7 +80,9 @@ The line `y = x` copied the value 5 into `y`. Assignment happens once, at the mo
 a, b = b, a
 ```
 
-Python can do it in one line. Every other language needs a third variable, and it is worth knowing that version too because it shows what is happening:
+Python can do it in one line. Many other languages need a third
+variable. That version is worth knowing too, because it shows what is
+happening:
 
 ```python
 temp = a
@@ -65,11 +90,13 @@ a = b
 b = temp
 ```
 
-Without the `temp`, writing `a = b` first destroys the value you still needed.
+Without `temp`, the line `a = b` would come first and wipe out the value
+of `a` that you still need.
 
 </details>
 
-**4.** Rewrite this so a person reading it can tell what it does.
+**4.** Rewrite this code so that a person reading it can tell what it
+does.
 
 ```python
 x = 4.5
@@ -80,7 +107,7 @@ print(z)
 
 <details class="dl-answer"><summary>answer</summary>
 
-Something like:
+Something like this:
 
 ```python
 hourly_rate = 4.5
@@ -89,29 +116,38 @@ pay = hourly_rate * hours_worked
 print(pay)
 ```
 
-The arithmetic is identical and the code is now readable. Names are the cheapest documentation there is, and the only kind that cannot fall out of date without the code changing too.
+The arithmetic is the same, and now the code is easy to read. Names are
+the cheapest way to explain your code. They are also the only kind of
+explanation that cannot go out of date unless the code changes with it.
 
 </details>
 
 ## Types
 
+The cell below prints five values, each with its type.
+
 ```python exec
 id: types-1
-for value in [7, 7.0, "7", True, 7 + 0.5]:
-    print(f"{str(value):<6} is a {type(value).__name__}")
+print(7, type(7))
+print(7.0, type(7.0))
+print("7", type("7"))
+print(True, type(True))
+print(7 + 0.5, type(7 + 0.5))
 ```
 
-**5.** Give the type of each: `42`, `42.0`, `"42"`, `True`, `4 / 2`, `4 // 2`, `"4" + "2"`.
+**5.** What is the type of each of these? `42`, `42.0`, `"42"`, `True`,
+`4 / 2`, `4 // 2`, `"4" + "2"`
 
 <details class="dl-answer"><summary>answer</summary>
 
 `int`, `float`, `str`, `bool`, `float`, `int`, `str`.
 
-`4 / 2` is the one people miss. Division always gives a float in Python, even when it comes out exactly — `2.0`, not `2`.
+Most people miss `4 / 2`. In Python, division with `/` always gives a
+float, even when the answer is whole: `2.0`, and not `2`.
 
 </details>
 
-**6.** Predict each, then check.
+**6.** Predict each result, then check.
 
 - (a) `"5" + "3"`
 - (b) `5 + 3`
@@ -121,49 +157,74 @@ for value in [7, 7.0, "7", True, 7 + 0.5]:
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) `53`. (b) `8`. (c) `555`. (d) `333`. (e) a `TypeError`.
+(a) `53`. (b) `8`. (c) `555`. (d) `33333`. (e) An error called a
+`TypeError`.
 
-`+` joins strings and adds numbers. `*` with a string and a whole number repeats it. `+` with one of each has no sensible meaning, so Python refuses rather than guessing — which is the behavior you want, because guessing wrong silently is much worse than stopping.
+- `+` joins strings, and adds numbers.
+- `*` with a string and a whole number repeats the string that many
+  times.
+- `+` with one string and one number has no clear meaning, so Python
+  stops with an error. It does not guess.
+
+Stopping is what you want here. A wrong guess that nobody notices is much
+worse than an error. (We look at errors properly in
+[When It Goes Wrong](tutorial:when-it-goes-wrong).)
 
 </details>
 
-**7.** Why does `int("3.7")` fail when `int(3.7)` works?
+**7.** Why does `int("3.7")` fail, when `int(3.7)` works?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`int(3.7)` takes a number and throws away the fractional part, giving 3.
+`int(3.7)` takes a number and throws away the part after the decimal
+point, giving 3.
 
-`int("3.7")` takes a *string* and tries to read it as a whole number. It is not a whole number written down, so there is nothing to read. `float("3.7")` works, and `int(float("3.7"))` gets you to 3 by doing the two steps in order.
+`int("3.7")` takes a *string* and tries to read it as a whole number.
+But "3.7" is not a whole number written down, so there is nothing for
+`int()` to read. `float("3.7")` works, and `int(float("3.7"))` gets you
+to 3 by doing the two steps in order.
 
 </details>
 
-**8.** What does `int(-3.7)` give, and is that rounding?
+**8.** What does `int(-3.7)` give? Is that rounding?
 
 <details class="dl-answer"><summary>answer</summary>
 
-−3, and no, it is not rounding.
+−3. No, it is not rounding.
 
-`int()` truncates: it cuts towards zero. Rounding would give −4. `round(-3.7)` does give −4. Two different operations that agree on positive numbers and part company on negative ones, which is exactly the kind of thing that hides in code for months.
+`int()` cuts off the part after the decimal point, which moves the number
+towards zero. This is called truncating. Rounding would give −4, and
+`round(-3.7)` does give −4. These two operations agree on positive
+numbers, but they give different answers for negative ones. A difference
+like this can hide in code for months.
 
 </details>
 
-**9.** Predict, then check: `bool(0)`, `bool(1)`, `bool(-5)`, `bool("")`, `bool("False")`.
+**9.** Predict each result, then check: `bool(0)`, `bool(1)`, `bool(-5)`,
+`bool("")`, `bool("False")`.
 
 <details class="dl-answer"><summary>answer</summary>
 
 `False`, `True`, `True`, `False`, `True`.
 
-Zero and empty things are false; everything else is true. `bool("False")` catching people out is the point of including it — it is a non-empty piece of text, and Python is not reading what the text says.
+Zero and empty things are false. Everything else is true.
+`bool("False")` is here because it catches people out. `"False"` is a
+piece of text that is not empty, so it counts as true. Python does not
+read what the text says.
 
 </details>
 
-**10.** Someone types their age into `input()` and the program adds 1. It prints `251` instead of `26`. What happened?
+**10.** A program asks someone to type their age with `input()`, then
+adds 1. It prints `251` instead of `26`. What happened?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`input()` always returns a string, so `"25" + "1"` joined two pieces of text.
+`input()` always gives back a string, so `"25" + "1"` joined two pieces
+of text.
 
-The fix is `int(input(...))`, converting the moment it arrives rather than remembering to convert everywhere it is used.
+The fix is `int(input(...))`. This changes the text to a number the
+moment it arrives, so you do not have to remember to change it
+everywhere it is used.
 
 </details>
 
@@ -173,16 +234,21 @@ The fix is `int(input(...))`, converting the moment it arrives rather than remem
 id: floating-point-1
 print(0.1 + 0.2)
 print(0.1 + 0.2 == 0.3)
-print(abs((0.1 + 0.2) - 0.3) < 1e-9)
+print(abs((0.1 + 0.2) - 0.3) < 1e-9)   # is the gap smaller than 0.000000001?
 ```
 
 **11.** Why is `0.1 + 0.2 == 0.3` false?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because 0.1 and 0.2 cannot be stored exactly in binary, any more than a third can be written exactly in decimal. Each is stored as the nearest number the machine can represent, and the two small errors do not cancel.
+Because 0.1 and 0.2 cannot be stored exactly in binary, in the same way
+that one third cannot be written exactly in decimal (0.333…). The
+computer stores each one as the nearest number it can. The two small
+errors do not cancel out.
 
-The result is 0.30000000000000004 — wrong in the seventeenth decimal place, which does not matter, and unequal to 0.3, which does if you test for equality.
+The result is 0.30000000000000004. It is wrong in the seventeenth
+decimal place. For most uses that does not matter. But it is not equal
+to 0.3, and that does matter when you test whether two values are equal.
 
 </details>
 
@@ -190,66 +256,89 @@ The result is 0.30000000000000004 — wrong in the seventeenth decimal place, wh
 
 <details class="dl-answer"><summary>answer</summary>
 
-By asking whether they are close enough:
+Ask whether they are close enough:
 
 ```python
 abs(a - b) < 1e-9
 ```
 
-How close is close enough depends on what the numbers are. Money in cents wants a different tolerance from astronomical distances, and there is no universal right answer — which is why Python does not pick one for you.
+`abs()` gives the size of a number without its sign, and `1e-9` is
+0.000000001.
+
+How close is close enough depends on what the numbers are. Money counted
+in cents needs a different limit from distances between stars. There is
+no single right answer. Python does have a helper, `math.isclose()`, with
+a default limit, but you still need to check that its limit suits your
+numbers.
 
 </details>
 
-**13.** Which of these are exact in binary floating point? `0.5`, `0.25`, `0.1`, `0.75`, `0.3`
+**13.** Which of these can binary floating point store exactly? `0.5`,
+`0.25`, `0.1`, `0.75`, `0.3`
 
 <details class="dl-answer"><summary>answer</summary>
 
 `0.5`, `0.25` and `0.75` are exact. `0.1` and `0.3` are not.
 
-A number is exact in binary when it is a sum of halves, quarters, eighths and so on. A tenth is not, for the same reason a third is not exact in decimal — 10 has a factor of 5 and binary only has 2s to work with.
+A number is exact in binary when it is a sum of halves, quarters, eighths
+and so on. A tenth is not, for the same reason that a third is not exact
+in decimal. 10 has a factor of 5, and binary has only 2s to work with.
 
 </details>
 
 ## Binary and Hexadecimal
 
+This cell shows 42 in binary, hexadecimal and base 8, and then reads
+text written in base 2 and base 16.
+
 ```python exec
 id: binary-and-hexadecimal-1
-n = 42
-print(n, bin(n), hex(n), oct(n))
+number = 42
+print(number, bin(number), hex(number), oct(number))   # oct() writes base 8
+
+# int() with a second number reads text written in that base
 print(int("101010", 2), int("2A", 16))
 ```
 
-**14.** Convert to decimal by hand, then check: binary `1101`, `10000`, `11111`, `10101010`.
+**14.** Change these binary numbers to decimal by hand, then check:
+`1101`, `10000`, `11111`, `10101010`.
 
 <details class="dl-answer"><summary>answer</summary>
 
 13, 16, 31, 170.
 
-`11111` being 31 rather than 32 is worth holding on to: a run of n ones is one less than the next power of two. That is why a byte holds 0 to 255 and not 0 to 256.
+Notice that `11111` is 31, and not 32. A row of ones is always one less
+than the next power of two. That is why a byte holds 0 to 255, and not 0
+to 256.
 
 </details>
 
-**15.** Convert to binary by hand, then check: 6, 12, 100, 255.
+**15.** Change these to binary by hand, then check: 6, 12, 100, 255.
 
 <details class="dl-answer"><summary>answer</summary>
 
 110, 1100, 1100100, 11111111.
 
-Notice 12 is 6 shifted one place left. Multiplying by two in binary is exactly what multiplying by ten is in decimal — add a zero on the end.
+Notice that 12 is 6 moved one place to the left. Multiplying by two in
+binary works the same way as multiplying by ten in decimal: you add a
+zero on the end.
 
 </details>
 
-**16.** Convert to hexadecimal: 15, 16, 255, 256, 4095.
+**16.** Change these to hexadecimal: 15, 16, 255, 256, 4095.
 
 <details class="dl-answer"><summary>answer</summary>
 
 F, 10, FF, 100, FFF.
 
-Each hex digit is exactly four binary digits, so FF is eight bits — one byte. That correspondence is the entire reason hexadecimal is used: it is a shorthand for binary that a person can read.
+Each hex digit is exactly four binary digits, so FF is eight bits, which
+is one byte. This match is the whole reason people use hexadecimal: it
+is a short way of writing binary that a person can read.
 
 </details>
 
-**17.** A color on the web is written `#1E90FF`. What are its red, green and blue values in decimal?
+**17.** A colour on the web is written `#1E90FF`. What are its red, green
+and blue values in decimal?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -259,13 +348,21 @@ Each hex digit is exactly four binary digits, so FF is eight bits — one byte. 
 print(int("1E", 16), int("90", 16), int("FF", 16))
 ```
 
-Two hex digits per channel, each 0 to 255. This is dodger blue, and the notation is hexadecimal precisely because three bytes write as six digits with no ambiguity.
+There are two hex digits for each colour, and each pair is a number from
+0 to 255. This colour is called dodger blue. Web colours use hexadecimal
+because three bytes fit into six digits, with no confusion about where
+one ends and the next begins.
 
 </details>
 
-**18.** Write a program that takes a hex string like `"2A"` and prints its decimal value, without using `int(x, 16)`.
+**18.** Write a program that takes a hex string like `"2A"` and prints
+its value in decimal, without using `int(x, 16)`.
 
 <details class="dl-answer"><summary>answer</summary>
+
+This answer uses a `for` loop, which repeats a step once for each
+character. [Repeating Yourself](tutorial:repeating-yourself) explains
+loops properly.
 
 ```python
 digits = "0123456789ABCDEF"
@@ -276,13 +373,17 @@ for character in text.upper():
 print(total)
 ```
 
-42. The `total = total * 16 + digit` step is the general method for reading any base: shift everything you have up one place, then add the new digit. Change the 16 and the digit list and it reads binary, or base 7.
+42. The key step is `total = total * 16 + digit`. It is the general way
+to read a number in any base: move everything you have up one place,
+then add the new digit. Change the 16 and the list of digits, and the
+same program reads binary, or base 7.
 
 </details>
 
 ## Putting It Together
 
-**19.** Write a converter that turns a number of minutes into hours and minutes, with clear names and a labeled output.
+**19.** Write a converter that changes a number of minutes into hours
+and minutes. Use clear names, and label the output.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -295,15 +396,24 @@ print(f"{total_minutes} minutes is {hours} hours and {minutes} minutes")
 
 8 hours and 20 minutes.
 
+The last line uses an f-string. An f-string is a string with an `f`
+before the opening quote. Python replaces each name in curly brackets,
+such as `{hours}`, with that variable's value.
+
 </details>
 
-**20.** A shop's register stores prices in euro as floats. Adding fifty items at €0.10 gives €4.999999999999998. What should it store instead?
+**20.** A shop's till stores prices in euro as floats. Adding up fifty
+items at €0.10 gives €4.999999999999998. What should the till store
+instead?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Whole cents, as integers. Fifty lots of 10 cents is exactly 500, and you divide by 100 only when displaying it.
+Whole cents, as integers. Fifty lots of 10 cents is exactly 500. You
+divide by 100 only when you display the total.
 
-This is what real payment systems do. The general rule: when a quantity is fundamentally whole units of something small, store the whole units. Floating point is for measurements, not for counting.
+Real payment systems work this way. The general rule: when a quantity is
+made of whole small units, store the whole units. Floats are for
+measurements. For counting, use integers.
 
 </details>
 
@@ -320,8 +430,9 @@ print(int(x) + y)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`10101010101010101010`, then `50`, then `105`, then `15`.
+`1010101010`, then `50`, then `105`, then `15`.
 
-Four different answers from the same two values, decided entirely by types. That is the tutorial's point in one cell.
+The same two values give four different answers, and the types decide
+every one. That is the main idea of the tutorial, in one cell.
 
 </details>

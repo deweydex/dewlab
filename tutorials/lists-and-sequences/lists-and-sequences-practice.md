@@ -7,7 +7,10 @@ version: 2026.08.23.1
 
 # Lists and Sequences — Practice
 
-Answers are hidden. Indexing and slicing reward being tried rather than reasoned about, so run the tools cell and poke at it before answering from memory.
+The answers are hidden in folds under each problem. With indexing and
+slicing, trying things out teaches more than working them out in your
+head. So run the tools cell, change it, and test your guesses before you
+answer from memory.
 
 ## Indexing and Slicing
 
@@ -18,7 +21,7 @@ print(xs[0], xs[4], xs[-1], xs[-2])
 print(xs[1:4], xs[:3], xs[2:], xs[::-1])
 ```
 
-**1.** With `xs = [10, 20, 30, 40, 50]`, give each.
+**1.** Here `xs = [10, 20, 30, 40, 50]`. What does each of these give?
 
 - (a) `xs[0]`
 - (b) `xs[2]`
@@ -30,11 +33,13 @@ print(xs[1:4], xs[:3], xs[2:], xs[::-1])
 
 (a) 10. (b) 30. (c) 50. (d) an `IndexError`. (e) 5.
 
-The last valid index is always `len(xs) - 1`, and that off-by-one is worth saying out loud a few times until it stops being surprising.
+The last valid index is always `len(xs) - 1`. A list of 5 elements has
+no index 5. This "off by one" trips up most people, so it is worth
+saying out loud a few times, until it stops being a surprise.
 
 </details>
 
-**2.** Give each slice.
+**2.** What does each slice give?
 
 - (a) `xs[1:3]`
 - (b) `xs[:2]`
@@ -47,11 +52,16 @@ The last valid index is always `len(xs) - 1`, and that off-by-one is worth sayin
 
 (a) `[20, 30]`. (b) `[10, 20]`. (c) `[40, 50]`. (d) the whole list. (e) `[10, 30, 50]`. (f) `[50, 40, 30, 20, 10]`.
 
-A slice excludes its end, exactly like `range`. And `xs[:]` makes a copy, which matters in the next question, so it is not pointless.
+A slice leaves out its end index, in the same way as `range`. A third
+number in a slice is the step: `::2` takes every second element, and
+`::-1` walks backwards.
+
+`xs[:]` makes a copy of the list. That is useful, and it matters in the
+next question.
 
 </details>
 
-**3.** What does this print, and why?
+**3.** What does this print? Why?
 
 ```python
 a = [1, 2, 3]
@@ -64,25 +74,35 @@ print(a)
 
 `[1, 2, 3, 4]`.
 
-`b = a` did not copy the list. Both names refer to the same list, so changing it through one name changes what the other sees. `b = a[:]` or `b = list(a)` makes an actual copy.
+The line `b = a` does not copy the list. After it, both names refer to
+the same list. So a change made through one name shows up through the
+other name too. To make a real copy, write `b = a[:]` or `b = list(a)`.
 
-This is the single most common source of baffling behavior in a first year of Python, and it comes from lists being changeable in a way that numbers and strings are not.
+This is the most common cause of confusing behaviour in a first year of
+Python. It happens because a list can be changed in place, and numbers
+and strings cannot.
 
 </details>
 
-**4.** After `xs[1] = 99`, what is `xs`? What happens if you try the same with a string?
+**4.** After `xs[1] = 99`, what is `xs`? What happens if you try the same thing with a string?
 
 <details class="dl-answer"><summary>answer</summary>
 
 `[10, 99, 30, 40, 50]`.
 
-`s[1] = "x"` on a string raises a `TypeError`. Strings are immutable, so you build a new one instead, with slicing or `replace`. Lists are mutable, and that difference is why a list can be quietly changed underneath you and a string cannot.
+With a string `s`, the line `s[1] = "x"` raises a `TypeError`. Strings
+are *immutable*: an immutable value is one that cannot be changed after
+it is made. To change a string, we build a new one, with slicing or with
+`replace`.
+
+Lists are mutable. That difference is why a list can change without you
+noticing, through another name, and a string cannot.
 
 </details>
 
 ## Building Lists
 
-**5.** Build a list of the first ten square numbers, two ways.
+**5.** Can you build a list of the first ten square numbers in two different ways?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -98,11 +118,15 @@ or
 squares = [n ** 2 for n in range(1, 11)]
 ```
 
-`[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]`. The second is a comprehension, and it is the same loop written on one line.
+Both give `[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]`.
+
+The second way is a *list comprehension*. A list comprehension is a loop
+that builds a list, written on one line inside square brackets. It does
+the same work as the first way.
 
 </details>
 
-**6.** Build a list of the even numbers from a list of mixed numbers.
+**6.** Given a list called `numbers` that holds a mix of numbers, build a list of only the even ones.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -110,11 +134,17 @@ squares = [n ** 2 for n in range(1, 11)]
 evens = [n for n in numbers if n % 2 == 0]
 ```
 
-The `if` at the end of a comprehension filters. Building a new list rather than removing from the old one is nearly always the right move — deleting from a list while looping over it skips items, in a way that looks like a bug in Python and is not.
+An `if` at the end of a comprehension is a filter. It keeps only the
+values that pass the test.
+
+Building a new list is nearly always better than removing values from
+the old one. If you delete from a list while you loop over it, the loop
+skips some items. That looks like a bug in Python, but it is not: the
+positions shift under the loop as you delete.
 
 </details>
 
-**7.** Given `words = ["apple", "fig", "banana", "kiwi"]`, build a list of their lengths, and find the longest word.
+**7.** Here `words = ["apple", "fig", "banana", "kiwi"]`. Can you build a list of the lengths of the words, and then find the longest word?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -127,11 +157,14 @@ for w in words:
         longest = w
 ```
 
-`banana`. The one-line version is `max(words, key=len)`, and writing the loop once first is what makes that line readable when you meet it.
+The longest word is `banana`.
+
+Python can also do this in one line: `max(words, key=len)`. It is much
+easier to read that line after you have written the loop yourself once.
 
 </details>
 
-**8.** Reverse a list without using `reverse()` or `[::-1]`.
+**8.** Can you reverse a list without using `reverse()` or `[::-1]`?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -141,19 +174,24 @@ for item in xs:
     result.insert(0, item)
 ```
 
-Or by walking backwards:
+`insert(0, item)` puts each item at the front of the list.
+
+Another way is to walk through the indexes backwards:
 
 ```python
 result = [xs[i] for i in range(len(xs) - 1, -1, -1)]
 ```
 
-The `-1` as the stop value is what makes it reach index 0, since the stop is excluded. Ranges counting down are where that exclusion stops feeling convenient.
+Here `range` counts down, from the last index to 0. The stop value is
+`-1` because the stop is left out, so a stop of `-1` is what lets it
+reach index 0. When a range counts down, leaving out the stop becomes
+harder to think about.
 
 </details>
 
 ## Working Through a List
 
-**9.** Sum a list without `sum()`. Then find its mean.
+**9.** Can you add up a list without `sum()`? Then find its mean.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -164,11 +202,13 @@ for n in numbers:
 mean = total / len(numbers)
 ```
 
-An empty list divides by zero here. Deciding what the mean of nothing should be is a real question with no obvious answer, which is why most libraries raise an error rather than pick one.
+If the list is empty, the last line divides by zero. What should the
+mean of nothing be? That is a real question with no clear answer. This
+is why most libraries raise an error, and do not choose an answer.
 
 </details>
 
-**10.** Count how many numbers in a list are above the mean.
+**10.** How could you count the numbers in a list that are above the mean?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -177,11 +217,16 @@ mean = sum(numbers) / len(numbers)
 above = sum(1 for n in numbers if n > mean)
 ```
 
-You need two passes: one to find the mean, one to compare against it. There is no way to do it in a single pass, because the mean depends on values you have not seen yet.
+The second line counts: it adds 1 for each number that is above the
+mean.
+
+We need to go through the list twice. The first pass finds the mean. The
+second pass compares each number with it. One pass cannot do it, because
+the mean depends on values we have not seen yet.
 
 </details>
 
-**11.** Multiply two lists element by element: `[1, 2, 3]` and `[4, 5, 6]` gives `[4, 10, 18]`.
+**11.** Multiply two lists element by element. For example, `[1, 2, 3]` and `[4, 5, 6]` give `[4, 10, 18]`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -189,17 +234,22 @@ You need two passes: one to find the mean, one to compare against it. There is n
 products = [a * b for a, b in zip(xs, ys)]
 ```
 
-or by index:
+`zip` takes two lists and pairs up their elements: the first with the
+first, the second with the second, and so on.
+
+Or we can use the index:
 
 ```python
 products = [xs[i] * ys[i] for i in range(len(xs))]
 ```
 
-`zip` stops at the shorter list, which is either exactly what you want or a silent bug, depending on whether unequal lengths should have been an error.
+`zip` stops at the end of the shorter list. Sometimes that is what you
+want. Other times, lists of different lengths should have been an error,
+and `zip` hides the problem without telling you.
 
 </details>
 
-**12.** Write `dot_product(a, b)`. Decide what it does when the lists are different lengths, and say why.
+**12.** Write `dot_product(a, b)`. Decide what it does when the lists have different lengths, and say why.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -212,13 +262,19 @@ def dot_product(a, b):
 
 `[1, 2, 3] · [4, 5, 6]` is 32.
 
-Raising is better than returning `None` or silently using the shorter list, because the dot product of two different-length vectors is a question that does not make sense, not a smaller dot product. An error says so at the point where the mistake was made, rather than a few functions later.
+`raise` stops the function and reports an error on purpose.
+
+Raising an error is better than returning `None`, and better than
+quietly using the shorter list. The dot product of two vectors of
+different lengths is a question that makes no sense. It is not a smaller
+dot product. An error says so at the point where the mistake happened,
+and not a few functions later.
 
 </details>
 
 ## Sequences
 
-**13.** Write functions for the square numbers and the triangular numbers, and print the first eight of each.
+**13.** Write functions for the square numbers and the triangular numbers. Print the first eight of each.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -231,23 +287,28 @@ def triangular(n):
     return n * (n + 1) // 2
 ```
 
-Squares: 1, 4, 9, 16, 25, 36, 49, 64. Triangulars: 1, 3, 6, 10, 15, 21, 28, 36.
+Squares: 1, 4, 9, 16, 25, 36, 49, 64. Triangular numbers: 1, 3, 6, 10, 15, 21, 28, 36.
 
-`//` rather than `/` in the triangular one keeps it a whole number. `n(n+1)` is always even, so nothing is lost.
+The triangular function uses `//`, whole-number division, and not `/`.
+This keeps the answer a whole number. Nothing is lost, because `n(n+1)`
+is always even.
 
 </details>
 
-**14.** Add consecutive triangular numbers: 1+3, 3+6, 6+10, 10+15. What do you get?
+**14.** Add pairs of triangular numbers that sit next to each other: 1+3, 3+6, 6+10, 10+15. What do you get?
 
 <details class="dl-answer"><summary>answer</summary>
 
-4, 9, 16, 25 — the square numbers.
+4, 9, 16, 25. These are the square numbers.
 
-Two triangles of the same size, one flipped, fit together into a square. It is one of the few results in this area you can see in a picture faster than you can prove it algebraically, though the algebra is short: n(n+1)/2 + (n+1)(n+2)/2 = (n+1)².
+Take two triangles of the same size, and flip one. They fit together
+into a square. This is one of the few results here that a picture shows
+faster than a proof. The algebra is short, though:
+n(n+1)/2 + (n+1)(n+2)/2 = (n+1)².
 
 </details>
 
-**15.** Generate the first fifteen Fibonacci numbers.
+**15.** Can you generate the first fifteen Fibonacci numbers?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -260,7 +321,8 @@ print(fibs)
 
 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610.
 
-`fibs[-1]` and `fibs[-2]` are why negative indices earn their keep: "the last two" needs no arithmetic on the length.
+Here `fibs[-1]` and `fibs[-2]` show why negative indexes are useful. To
+get "the last two", we do not need to do any sums with the length.
 
 </details>
 
@@ -268,18 +330,22 @@ print(fibs)
 
 <details class="dl-answer"><summary>answer</summary>
 
-The ratios settle on about 1.6180339887 — the golden ratio, exactly (1 + √5)/2.
+The results settle on about 1.6180339887. This number is the golden
+ratio, which is exactly (1 + √5)/2.
 
 ```python
 for i in range(2, len(fibs)):
     print(fibs[i] / fibs[i - 1])
 ```
 
-They alternate above and below it, closing in from both sides. That is a limit, arrived at from a completely different direction than *Approaching a Limit* comes at it.
+The results go above it, then below it, then above it again, and each
+time they come closer. That is a limit. We reach it here from a very
+different direction than
+[Approaching a Limit](tutorial:approaching-a-limit) does.
 
 </details>
 
-**17.** Write `generate_sequence(rule, n)` that takes a *function* and returns the first n terms of the sequence it defines.
+**17.** Write `generate_sequence(rule, n)`. It takes a *function* and returns the first n terms of the sequence that the function defines.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -292,13 +358,16 @@ print(generate_sequence(square, 5))       # [1, 4, 9, 16, 25]
 print(generate_sequence(triangular, 5))   # [1, 3, 6, 10, 15]
 ```
 
-Passing a function as an argument feels strange the first time. It is the same as passing a number: `square` without brackets is the function itself, `square(3)` is the result of calling it, and the difference between those two is the whole idea.
+Passing a function as an argument feels strange the first time. It works
+the same way as passing a number. `square` without brackets is the
+function itself. `square(3)` is the result of calling it. The difference
+between those two is the whole idea.
 
 </details>
 
 ## From the Everlearning Problem Bank
 
-**18.** Given a list of integers, find the number that appears most often.
+**18.** Given a list of whole numbers, find the number that appears most often.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -312,13 +381,19 @@ def most_frequent(numbers):
     return best
 ```
 
-`numbers.count(n)` walks the whole list, and it is inside a loop over the whole list, so this does n² work. For a few hundred numbers that is invisible; for a few hundred thousand it is a coffee break. A `Counter` from the standard library does it in one pass.
+`numbers.count(n)` walks through the whole list. It sits inside a loop
+that also walks through the whole list. So the work grows with the
+square of the list's length. For a few hundred numbers, you will not
+notice. For a few hundred thousand, you could wait for minutes.
+`Counter`, from Python's standard library, does the same job in one pass.
 
-The first tie found wins here, and ties are otherwise unresolved. Whether that is right depends on a question the problem did not answer.
+If two numbers tie, the one found first wins here. The problem does not
+say how to break a tie, so whether this is right depends on a question
+nobody answered.
 
 </details>
 
-**19.** Reverse the words of a sentence, keeping the words themselves intact.
+**19.** Reverse the order of the words in a sentence, but keep each word the same.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -329,11 +404,13 @@ def reverse_words(sentence):
 
 `"the quick brown fox"` becomes `"fox brown quick the"`.
 
-`split()` with no argument splits on any run of whitespace and drops empties, which handles double spaces without you thinking about it. `split(" ")` does not.
+`split()` with nothing in the brackets splits on any run of spaces, and
+drops empty pieces. So it handles double spaces without you having to
+think about them. `split(" ")` does not do this.
 
 </details>
 
-**20.** Take a string and return four copies of its last four characters.
+**20.** Take a string, and return four copies of its last four characters.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -344,11 +421,14 @@ def four_of_the_last_four(text):
 
 `"Python"` gives `"thonthonthonthon"`.
 
-For a string shorter than four characters, `text[-4:]` quietly returns the whole thing rather than failing — slices clamp, indexes do not. Whether that is the desired behavior is again a question the problem left open.
+What if the string is shorter than four characters? Then `text[-4:]`
+returns the whole string, with no error. A slice never goes out of
+range: it stops at the ends. An index that is out of range fails. Is that what we want here? Again, the
+problem does not say.
 
 </details>
 
-**21.** Given a list of numbers, return a new list with the duplicates removed, keeping the original order.
+**21.** Given a list of numbers, return a new list with the repeated values removed. Keep the original order.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -362,6 +442,8 @@ def unique(numbers):
     return result
 ```
 
-`set(numbers)` removes duplicates in one word and loses the order. Keeping the order is the whole difficulty, and it is why the `seen` list exists.
+`set(numbers)` also removes repeated values, in one word, but it loses
+the order. Keeping the order is the hard part, and it is the reason the
+`seen` list is there.
 
 </details>

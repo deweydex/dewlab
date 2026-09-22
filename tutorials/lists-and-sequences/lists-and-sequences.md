@@ -1,7 +1,7 @@
 ---
 title: "Lists and Sequences"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.22.1
 covers:
   lists-ordered-collections:
     covers: [MIT-6.3]
@@ -19,13 +19,21 @@ covers:
 
 # Lists and Sequences
 
-**Programming Design Principles / Maths for IT**
+So far, each variable has held one value: one number, or one string. Many
+real problems need a group of values. Think of a set of test scores, a
+week of temperatures, or the names of everyone in a class.
 
-Until now we have been working with individual values: a single number, a single string. But most interesting problems involve *collections* of data: a set of test scores, a sequence of temperatures, a list of student names. Today we learn how Python handles collections, and we will write our first *functions* -- reusable blocks of code that we can call whenever we need them.
+On this page we:
+
+- keep many values together in a list, and pick out the ones we want
+- build lists with a loop, and loop over them
+- write our first functions: named blocks of code that we can use again
+  and again
 
 ## Lists: Ordered Collections
 
-A list is an ordered sequence of values, enclosed in square brackets:
+A *list* is an ordered sequence of values, written inside square
+brackets. Each value in a list is called an element.
 
 ```python exec
 id: lists-ordered-collections-1
@@ -34,7 +42,9 @@ print(scores)
 print("Number of scores:", len(scores))
 ```
 
-Each element in a list has a position called its *index*. Python uses zero-based indexing, meaning the first element is at index 0:
+Each element has a position, called its *index*. Python uses
+*zero-based indexing*: it starts counting at 0, so the first element is
+at index 0.
 
 ```python exec
 id: lists-ordered-collections-2
@@ -44,34 +54,41 @@ print(scores[9])    # tenth (last) element
 print(scores[-1])   # also the last element (negative indexing counts from the end)
 ```
 
-A *slice* is a portion of the list, and you can take one like this:
+A *slice* is a part of a list. We write it with two indexes and a colon
+between them. Before you run the next cell, look at its first line,
+`scores[2:5]`. How many scores do you think it prints? Run it to check.
 
 ```python exec
 id: lists-ordered-collections-3
-print(scores[2:5])    # elements at indices 2, 3, 4 (the end index is excluded)
+print(scores[2:5])    # from index 2 up to index 5: how many scores?
 print(scores[:3])     # first three elements
 print(scores[7:])     # from index 7 to the end
 ```
 
-That first line surprises nearly everybody: `2` to `5` looks like four
-elements, and it gives three. The rule is that the end index is left
-out, and the rule is easier to keep hold of once you can see where the
-two numbers actually point.
+That first line surprises nearly everybody. From `2` to `5` looks like
+four elements, but we get three. The rule is that the end index is left
+out. The rule is easier to remember once we see where the two numbers
+point.
 
-They do not point at elements. They point at the gaps between them.
+In a slice, the two numbers do not point at elements. They point at the
+gaps between elements.
 
 ![The ten scores in a row. Above each one is its index, 0 to 9. Below, along the boundaries between them, are the eleven cut positions, 0 to 10, offset from the indices above. Underneath, each of the three slices is drawn as a band running between the two cuts it names: 2 to 5 takes 35, 47 and 29; the start-to-3 slice takes 42, 38 and 35; and the 7-to-end slice takes 33, 39 and 48.](where-the-cuts-are.svg)
 
-Ten elements have eleven places you could cut. A slice names two of
-those places and takes everything between them, so `scores[2:5]` is
-"cut before 35, cut before 41, keep the middle" — three elements. The
-end index is not excluded by a special rule. There is nothing at a cut
-to include.
+Ten elements have eleven places where we could cut. A slice names two of
+those places and takes everything between them. So `scores[2:5]` means
+"cut before 35, cut before 41, and keep the middle". That gives three
+elements.
 
-It also explains why `scores[:3]` and `scores[3:]` fit back together
-with nothing missing and nothing repeated. They meet at the same cut.
+So the end index is not left out by a special rule. A cut is a gap, and
+there is nothing in a gap to include.
 
-We can change the contents of a list, because lists are *mutable*:
+The picture also shows why `scores[:3]` and `scores[3:]` fit back
+together, with nothing missing and nothing repeated. Both slices meet at
+the same cut.
+
+We can change what is inside a list after we create it. A value we can
+change like this is *mutable*, and lists are mutable.
 
 ```python exec
 id: lists-ordered-collections-4
@@ -85,10 +102,11 @@ print("Now we have", len(scores), "scores")
 
 ### Your turn
 
-Let's create a list called `temperatures` containing at least 7 temperature values. Then:
-1. Print the first and last temperatures
-2. Print the middle three temperatures (using a slice)
-3. Change one of the temperatures and print the updated list
+1. Create a list called `temperatures`, with at least 7 temperature
+   values in it.
+2. Print the first temperature and the last temperature.
+3. Print the middle three temperatures, using a slice.
+4. Change one of the temperatures, and print the updated list.
 
 ```python exec
 id: your-turn-1
@@ -97,7 +115,8 @@ id: your-turn-1
 
 ## Building Lists with Loops
 
-One of the most useful patterns is constructing a list by starting empty and appending values:
+A useful way to make a list is to start with an empty list, and then add
+values to it one at a time in a loop.
 
 ```python exec
 id: building-lists-with-loops-1
@@ -108,13 +127,20 @@ for i in range(1, 11):
 print(squares)
 ```
 
-This is the list-building version of the accumulator pattern. Instead of accumulating a sum, we accumulate a collection.
+Does this remind you of the accumulator pattern from
+[Repeating Yourself](tutorial:repeating-yourself)? It is the same idea.
+There, we added each new value to a running total. Here, we add each new
+value to a list.
 
 ### Your turn
 
-Let's build a list containing the first 15 terms of the Fibonacci sequence. Each term is the sum of the two preceding terms, starting with 1, 1. So the sequence begins: 1, 1, 2, 3, 5, 8, 13, ...
+The Fibonacci sequence starts with 1, 1. After that, each term is the sum
+of the two terms before it. So the sequence begins 1, 1, 2, 3, 5, 8,
+13, ...
 
-**Pseudocode:**
+Can you build a list that holds the first 15 terms of the Fibonacci
+sequence? Before you write any Python, try writing the steps in
+pseudocode, as comments at the top of the cell.
 
 ```python exec
 id: your-turn-2
@@ -123,7 +149,8 @@ id: your-turn-2
 
 ## Looping Over Lists
 
-A `for` loop can iterate directly over the elements of a list:
+A `for` loop can go through the elements of a list directly, one at a
+time.
 
 ```python exec
 id: looping-over-lists-1
@@ -133,7 +160,9 @@ for name in names:
     print("Hello, " + name)
 ```
 
-Sometimes we need both the index and the value. We could use `range(len(list))`, but Python provides a cleaner way with `enumerate()`:
+Sometimes we need both the index and the value. We could loop over
+`range(len(names))` and look up each index. Python has a neater way,
+`enumerate()`, which gives us the index and the value together.
 
 ```python exec
 id: looping-over-lists-2
@@ -143,7 +172,9 @@ for index, name in enumerate(names):
 
 ### Your turn: Summing a list
 
-Using the accumulator pattern and a for loop, compute the sum of all elements in the `scores` list we created earlier. Do not use Python's built-in `sum()` function -- write the loop yourself.
+Can you add up all the elements in the `scores` list, using a `for` loop
+and the accumulator pattern? Python has a built-in `sum()` function, but
+please leave it aside this time, and write the loop yourself.
 
 ```python exec
 id: your-turn-summing-a-list-1
@@ -153,7 +184,13 @@ scores = [42, 38, 35, 47, 29, 41, 44, 33, 39, 48]
 
 ## Functions: Reusable Algorithms
 
-We have been writing code that does useful things, but if we wanted to do the same thing again with different data, we would have to copy and paste. Functions solve this problem. A function is a named block of code that we can call whenever we need it, passing in different inputs each time.
+Our code so far does useful things. But what if we want to do the same
+thing again, with different data? We would have to copy and paste the
+code.
+
+Functions solve this problem. A *function* is a named block of code. We
+can call it, which means run it, whenever we need it, and we can give it
+different inputs each time.
 
 ```python exec
 id: functions-reusable-algorithms-1
@@ -166,9 +203,21 @@ greet("Grace")
 greet("Alan")
 ```
 
-The `def` keyword defines a function. `name` is a *parameter*: a placeholder for the value we will provide when we call the function. The indented code is the function body. When we write `greet("Ada")`, `"Ada"` is the *argument* that gets assigned to the parameter `name`.
+Here is what each part does:
 
-Most useful functions *return* a value rather than just printing:
+- The `def` keyword defines a function. Here the function's name is
+  `greet`.
+- `name` is a *parameter*. A parameter is a placeholder for a value we
+  give the function when we call it.
+- The indented code under `def` is the *function body*. It runs each
+  time we call the function.
+- In `greet("Ada")`, the value `"Ada"` is the *argument*. An argument is
+  the actual value we pass in. Python puts it into the parameter `name`.
+
+A function can also *return* a value. To return a value means to send it
+back to the code that called the function. Most useful functions return
+a value, so that we can keep working with it. What do you think the next
+cell prints?
 
 ```python exec
 id: functions-reusable-algorithms-2
@@ -180,11 +229,18 @@ print(result)
 print(square(12))
 ```
 
-The `return` statement sends a value back to the caller. We can use the result in further calculations, which is what makes functions truly powerful.
+The `return` statement sends the value back to the caller. We can store
+the result, print it, or use it in more calculations. That is what makes
+functions so useful.
 
 ### Your turn
 
-Let's write a function called `celsius_to_fahrenheit` that takes a temperature in Celsius and returns the Fahrenheit equivalent. Test it with a few values you can verify.
+1. Write a function called `celsius_to_fahrenheit`. It takes a
+   temperature in Celsius and returns the same temperature in Fahrenheit.
+   You can plan it in pseudocode first, in the comment lines at the top
+   of the first cell.
+2. Test it in the second cell with a few values you can check. What
+   should 0 and 100 give?
 
 ```python exec
 id: your-turn-3
@@ -201,13 +257,18 @@ id: your-turn-4
 
 ## Mathematical Sequences as Functions
 
-In mathematics, a sequence is a list of numbers generated by a rule. The rule is just a function that maps a position (index) to a value.
+In mathematics, a *sequence* is a list of numbers made by a rule. The
+rule is a function: it takes a position, $n$, and gives back the value
+at that position.
 
-For example, the sequence of square numbers $1, 4, 9, 16, 25, ...$ is generated by the function $f(n) = n^2$.
+For example, the square numbers $1, 4, 9, 16, 25, ...$ come from the
+rule $f(n) = n^2$.
 
-The sequence of triangular numbers $1, 3, 6, 10, 15, ...$ is generated by $f(n) = \frac{n(n+1)}{2}$ -- which is also $\sum_{i=1}^{n} i$.
+The triangular numbers $1, 3, 6, 10, 15, ...$ come from the rule
+$f(n) = \frac{n(n+1)}{2}$. This is the same as $\sum_{i=1}^{n} i$, the
+sum of the whole numbers from 1 to $n$.
 
-Let's write functions that generate these sequences:
+Let's write a Python function for each of these rules.
 
 ```python exec
 id: mathematical-sequences-as-functions-1
@@ -225,9 +286,16 @@ for i in range(1, 9):
 
 ### Your turn
 
-Let's write a function `generate_sequence(func, n)` that takes *another function* as its first argument and an integer n, and returns a list containing the first n terms of the sequence generated by that function. Then use it with `square_number` and `triangular_number`.
+Here, a function takes *another function* as its input. Passing a
+function to a function can seem strange at first. It is also a very
+useful idea.
 
-Passing a function to a function might seem strange, but it is a powerful idea.
+1. Write a function `generate_sequence(func, n)`. Its first argument,
+   `func`, is a function. Its second argument, `n`, is a whole number.
+2. Make it return a list of the first `n` terms of the sequence that
+   `func` makes.
+3. In the second cell, try it with `square_number` and with
+   `triangular_number`.
 
 ```python exec
 id: your-turn-5
@@ -242,19 +310,26 @@ id: your-turn-6
 
 ## The Dot Product: Lists Meet Arithmetic
 
-When we have two lists of the same length, we can combine them element by element. The *dot product* multiplies corresponding elements and sums the results:
+When two lists have the same length, we can combine them element by
+element. The *dot product* of two lists is the sum we get when we
+multiply each pair of matching elements and add up the results.
 
 $$\vec{a} \cdot \vec{b} = \sum_{i=0}^{n-1} a_i \times b_i$$
 
 For example, $[1, 2, 3] \cdot [4, 5, 6] = 1 \times 4 + 2 \times 5 + 3 \times 6 = 32$.
 
-This operation is fundamental in machine learning, physics, and many other fields.
+The dot product is used everywhere in machine learning, in physics, and
+in many other fields.
 
 ### Your turn
 
-Let's write a function `dot_product(a, b)` that computes the dot product of two lists. Think about what should happen if the lists are different lengths -- your function should handle this gracefully rather than crashing.
-
-**Pseudocode:**
+1. Write a function `dot_product(a, b)` that returns the dot product of
+   two lists. You can plan it in pseudocode first, as comments at the top
+   of the cell.
+2. Think about lists of different lengths. What should your function do
+   then? Decide, and make it do that on purpose, so that it does not
+   crash with an error you did not plan for.
+3. Test it in the second cell.
 
 ```python exec
 id: your-turn-7
@@ -270,11 +345,19 @@ id: your-turn-8
 
 ## Reflection
 
-Today we covered lists (creation, indexing, slicing, mutability, building with loops), iteration over lists, and functions (definition, parameters, return values). We also saw how mathematical sequences and operations like the dot product translate directly into code.
+On this page we met lists. We created them, read elements by index, took
+slices, and changed them. We built lists with loops, and we looped over
+them. We also wrote functions, with parameters and return values. Then
+we saw how mathematical sequences and the dot product turn straight into
+code.
 
-Functions are a major turning point. From now on, when we solve a problem, we will package the solution as a function so we can reuse it. This is the beginning of *modular* programming -- building complex programs from simple, tested pieces.
+Functions are a big step. From now on, when we solve a problem, we will
+put the solution inside a function, so that we can use it again. This is
+the start of *modular programming*. Modular programming means building
+large programs out of small pieces, each one tested on its own.
 
-What connections are you seeing between the mathematical ideas and the programming patterns?
+What links do you see between the ideas from mathematics and the
+patterns in the code?
 
 ## Where to Read More
 

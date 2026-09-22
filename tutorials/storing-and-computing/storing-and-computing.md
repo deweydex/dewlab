@@ -1,7 +1,7 @@
 ---
 title: "Storing and Computing"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.22.1
 covers:
   variables-giving-names-to-things:
     covers: [PDP-LO4, PDP-LO11]
@@ -17,15 +17,25 @@ covers:
 
 # Storing and Computing
 
-**Programming Design Principles / Maths for IT**
+In [First Steps](tutorial:first-steps) we did arithmetic and displayed
+the results. But each result was gone as soon as it was displayed. To use
+it again, we had to work it out again. What if Python could remember a
+value for us?
 
-Last time we learned to do arithmetic and display results. But we had a limitation: every time we calculated something, it was gone. If we wanted to use the result again, we would have to recalculate it. Today we learn to *store* information using variables, and we will explore the different types of data Python can work with.
+On this page we:
 
-Along the way, we will start thinking about how computers represent numbers -- which turns out to be quite different from how we write them on paper.
+- store values under names, so we can use them again
+- meet the different types of data Python works with
+- change a value from one type to another
+- look at how computers write numbers, which is quite different from how
+  we write them on paper
 
 ## Variables: Giving Names to Things
 
-A variable is a name that refers to a value. You create one with the `=` sign, which in programming means "assign this value to this name" (not "is equal to" as in mathematics -- that distinction will matter later).
+A *variable* is a name that refers to a value. We make one with the `=`
+sign. In programming, `=` means "give this name to this value". This is
+different from "is equal to" in maths, and the difference will matter
+later.
 
 ```python exec
 id: variables-giving-names-to-things-1
@@ -39,17 +49,39 @@ is_raining = False
 print(name)
 print(age)
 print(temperature)
+print(is_raining)
 ```
 
-We now have four variables, each holding a different kind of data. Notice that we did not have to declare what kind of data each variable would hold -- Python figures that out from the value we assign. This is one of the things that makes Python pleasant to work with.
+We now have four variables, and each one holds a different kind of data.
+Did you notice that we never told Python what kind of data each one
+holds? Python works that out from the value we give it. This is one of
+the things that makes Python pleasant to work with.
 
-Variable names should describe what they contain. `temperature` is a good name; `t` is not, because someone reading your code (including future you) would not know what `t` refers to. This is a professional practice that makes code maintainable, not just a style preference.
+A variable's name should describe what it holds. `temperature` is a good
+name. `t` is a poor one, because someone reading your code would not know
+what `t` means, and that someone could be you, a few months from now.
+Good names are a professional habit that keeps code easy to change. They
+are more than a matter of style.
 
-Names must start with a letter or underscore, can contain letters, numbers, and underscores, and are case-sensitive (`Age` and `age` are different variables). By convention in Python, we use `snake_case` for variable names: lowercase words separated by underscores.
+Python has a few rules for names:
+
+- A name starts with a letter or an underscore (`_`).
+- After that, it can contain letters, numbers and underscores.
+- Capital letters matter: `Age` and `age` are two different variables.
+
+Python programmers write variable names in *snake_case*. Snake case is
+lowercase words joined by underscores, like `is_raining`.
 
 ### Your turn
 
-Let's create variables to store the following information about yourself (or make something up): your first name, your age, the number of years you have been using computers, and whether you have programmed before (True or False). Then print each one with a descriptive label.
+Let's store some information about you. You can make it up if you
+prefer.
+
+1. Make a variable for your first name.
+2. Make one for your age.
+3. Make one for the number of years you have been using computers.
+4. Make one for whether you have programmed before: `True` or `False`.
+5. Print each one with a label that says what it is.
 
 ```python exec
 id: your-turn-1
@@ -58,17 +90,35 @@ id: your-turn-1
 
 ## Data Types: Different Kinds of Information
 
-Python has several built-in data types. The ones we will use most are:
+A *data type*, or type for short, is the kind of data a value is. Python
+has several types built in. These are the four we will use most:
 
-**Integers** (`int`): whole numbers like 42, -7, 0. These correspond to the mathematical integers, which mathematicians call **Z** (from the German word *Zahlen*, meaning numbers). Integers extend in both directions from zero: ..., -3, -2, -1, 0, 1, 2, 3, ...
+| Type | What it holds | Examples |
+|---|---|---|
+| `int` | whole numbers | `42`, `-7`, `0` |
+| `float` | numbers with a decimal point | `3.14`, `-0.5`, `2.0` |
+| `str` | text, in quotes | `"hello"`, `'world'` |
+| `bool` | true or false | `True`, `False` |
 
-**Floating-point numbers** (`float`): numbers with a decimal point like 3.14, -0.5, 2.0. These approximate the real numbers (**R**), though they cannot represent every real number exactly (more on this in a moment).
+An *integer* (`int`) is a whole number. Integers go on in both
+directions from zero: …, -3, -2, -1, 0, 1, 2, 3, … Python's integers
+match the integers in maths, which mathematicians call **Z**, from the
+German word *Zahlen*, meaning "numbers".
 
-**Strings** (`str`): text enclosed in quotes like "hello" or 'world'. Single or double quotes both work.
+A *floating-point number* (`float`) is a number with a decimal point.
+Floats stand in for the real numbers of maths (**R**), but they cannot
+store every real number exactly. The practice page for this tutorial has
+a section on why.
 
-**Booleans** (`bool`): either `True` or `False`. Named after George Boole, who developed the algebra of logic in the 1850s.
+A *string* (`str`) is a piece of text, written between quotes. Single
+quotes and double quotes both work.
 
-You can check what type a value has using the `type()` function:
+A *Boolean* (`bool`) is a value that is either `True` or `False`.
+Booleans are named after George Boole, who worked out an algebra of
+logic in the 1840s and 1850s.
+
+What type is a value? The `type()` function tells us. Run the cell to
+see the four types.
 
 ```python exec
 id: data-types-different-kinds-of-information-1
@@ -80,7 +130,13 @@ print(type(True))
 
 ### Where I might get stuck
 
-A common source of confusion: `"42"` (with quotes) is a string, not a number. Python sees it as text that happens to contain digit characters. You cannot do arithmetic with it. This distinction matters enormously.
+This one catches out almost everyone at first. `"42"`, with quotes, is a
+string. To Python, it is text that happens to contain two digits, and
+you cannot do arithmetic with it. Getting this right matters a great
+deal.
+
+The cell below adds `40` and `2`, and then `"40"` and `"2"`. What do you
+think each line prints? Run it to check.
 
 ```python exec
 id: where-i-might-get-stuck-1
@@ -91,11 +147,17 @@ print(40 + 2)
 print("40" + "2")
 ```
 
-The `+` operator behaves differently depending on the types involved. For numbers, it adds. For strings, it *concatenates* (joins them end to end). This is why types matter.
+The `+` operator does different things for different types. For numbers,
+it adds. For strings, it *concatenates*. To concatenate is to join pieces
+of text end to end. This is why types matter.
 
 ### Your turn
 
-Before running the next cell, predict what each line will output. Then run it and check.
+What will each line print?
+
+1. Write your prediction after `prediction:` on each line.
+2. Run the cell.
+3. Compare the results with your predictions.
 
 ```python exec
 id: your-turn-2
@@ -111,7 +173,9 @@ print(3 + 4)                # prediction:
 
 ## Type Conversion
 
-Sometimes we need to convert between types. Python gives us functions for this: `int()`, `float()`, `str()`, and `bool()`.
+Sometimes we need to change a value from one type to another. Python has
+a function for each type: `int()`, `float()`, `str()` and `bool()`. Each
+one takes a value and gives back that value as its own type.
 
 ```python exec
 id: type-conversion-1
@@ -130,12 +194,20 @@ number_as_text = str(100)        # integer to string
 print("The answer is " + number_as_text)
 ```
 
-This becomes especially important when we get input from the user, because the `input()` function always returns a string -- even if the user types a number.
+This matters most when a program asks the person using it to type
+something. The `input()` function asks for some typing, and gives back
+what was typed. It always gives back a string, even when the person
+types a number.
+
+The lines in the next cell are comments, so the cell does nothing yet.
+To try them, remove the `#` at the start of each line of code, then run
+the cell. The cell will wait for you to type something.
 
 ```python exec
 id: type-conversion-2
 # Getting input from the user
-# Uncomment these lines to try them (they will wait for you to type something)
+# To try these lines, remove the # at the start of each line of code.
+# Each input() line waits for you to type something.
 
 # user_name = input("What is your name? ")
 # print("Hello, " + user_name)
@@ -148,15 +220,29 @@ id: type-conversion-2
 
 ## Number Systems: How Computers Count
 
-We count in base 10 (decimal), using digits 0-9. This is probably because we have ten fingers. But there is nothing special about base 10 -- you can build a perfectly good number system with any base.
+We count in *base 10*, also called decimal. Base 10 uses ten digits,
+0 to 9. We probably count in tens because we have ten fingers. But there
+is nothing special about ten: you can build a working number system on
+any base.
 
-Computers use base 2 (binary), because their fundamental building blocks (transistors) have two states: on and off, 1 and 0.
+Computers use base 2, also called *binary*. Binary uses only two
+digits, 0 and 1. The reason is in the hardware: a computer is built from
+tiny switches called transistors, and each one has two states, on and
+off.
 
-In decimal, the number 42 means: `4 tens + 2 ones`, or `4 x 10^1 + 2 x 10^0`.
+In decimal, each position in a number is worth a power of 10. The number
+42 means 4 tens and 2 ones:
 
-In binary, the number 101010 means: `1x32 + 0x16 + 1x8 + 0x4 + 1x2 + 0x1 = 42`.
+    4 × 10 + 2 × 1  =  42
 
-Each position is a power of 2 instead of a power of 10.
+In binary, each position is worth a power of 2: 1, 2, 4, 8, 16, 32, and
+so on. The binary number 101010 means:
+
+    1 × 32 + 0 × 16 + 1 × 8 + 0 × 4 + 1 × 2 + 0 × 1  =  42
+
+Python can write numbers in binary too. The cell below also shows base
+16, *hexadecimal*, which uses the digits 0 to 9 and then the letters A to
+F. What do you think `print(0b101010)` will show? Run the cell to check.
 
 ```python exec
 id: number-systems-how-computers-count-1
@@ -172,15 +258,21 @@ print(hex(42))        # hex() converts to a hex string
 print(1*32 + 0*16 + 1*8 + 0*4 + 1*2 + 0*1)
 ```
 
-Hexadecimal is popular because each hex digit corresponds to exactly four binary digits, making it a compact way to write binary. The hex digit `A` is 1010 in binary, `F` is 1111, and so on.
+Why do people use hexadecimal? Each hex digit matches exactly four
+binary digits, so hexadecimal is a short way to write binary. The hex
+digit `A` is 1010 in binary, `F` is 1111, and so on.
 
 ### Your turn
 
-Let's convert these numbers by hand first (write your working in comments), then verify with Python:
+Let's convert these numbers by hand first, and then check them with
+Python.
 
 1. What is the decimal value of binary `11001`?
-2. What is the binary representation of decimal 100?
-3. What is the hex representation of decimal 255?
+2. How do you write decimal 100 in binary?
+3. How do you write decimal 255 in hex?
+
+Write your working in the comments in the cell. Then, under
+`# Verification:`, use Python to check each answer.
 
 ```python exec
 id: your-turn-3
@@ -199,7 +291,9 @@ id: your-turn-3
 
 ## Putting It Together: A Small Program
 
-Let's write a program that brings together everything from this tutorial. We will make a converter that takes a temperature in Celsius and converts it to Fahrenheit, with properly named variables and clear output.
+Now we can write a program that uses everything on this page. It will
+change a temperature in Celsius to Fahrenheit, with clear variable names
+and a clear result.
 
 ### First, the pseudocode
 
@@ -210,6 +304,9 @@ DISPLAY the result with a clear label
 ```
 
 ### Now the implementation
+
+Look at the last line of the cell. Why do you think it needs `str()`
+around `celsius` and `fahrenheit`?
 
 ```python exec
 id: now-the-implementation-1
@@ -226,10 +323,19 @@ print(str(celsius) + " degrees Celsius = " + str(fahrenheit) + " degrees Fahrenh
 
 ### Your turn
 
-Let's write a small program that converts between two units of your choice. Some ideas: kilometres to miles (multiply by 0.621371), kilograms to pounds (multiply by 2.20462), or euros to another currency. Follow the same pattern: pseudocode first, then implementation, then test with a few values you can verify by hand.
+Now you can write a small program that converts between two units of
+your choice. Here are some ideas:
 
-Start with the pseudocode, written as comments at the top of the cell below,
-then fill in the Python underneath each step.
+- kilometres to miles: multiply by 0.621371
+- kilograms to pounds: multiply by 2.20462
+- euros to another currency
+
+Follow the same pattern as the temperature converter:
+
+1. In the first cell, write your pseudocode as comments at the top.
+2. Under each comment, write the Python for that step.
+3. In the second cell, test your program with a few values you can
+   check by hand.
 
 ```python exec
 id: your-turn-4
@@ -243,11 +349,17 @@ id: your-turn-5
 
 ## Reflection
 
-We covered a lot of ground today: variables, data types (int, float, str, bool), type conversion, user input, and the binary and hexadecimal number systems.
+We have met a lot of new ideas on this page: variables, the four data
+types (`int`, `float`, `str` and `bool`), type conversion, input from the
+user, and the binary and hexadecimal number systems.
 
-The key idea is that *types matter*. The same symbols can mean different things depending on context -- `+` adds numbers but concatenates strings, `"42"` looks like a number but is text. Being precise about types is one of the things that separates clear thinking from fuzzy thinking, in programming and in mathematics.
+The key idea is that *types matter*. The same symbols can mean different
+things, depending on the types involved. `+` adds numbers, but it joins
+strings. `"42"` looks like a number, but it is text. Being exact about
+types is part of thinking clearly, in programming and in maths.
 
-In a few sentences, what did you find most interesting or most confusing?
+What did you find most interesting on this page, or most confusing? You
+could write a few sentences about it.
 
 ## Where to Read More
 

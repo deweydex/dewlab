@@ -11,31 +11,50 @@ covers:
 
 # Looking Back Before Moving Forward
 
-**Programming Design Principles / Maths for IT**
+You have built a lot of your own work by now: functions, loops, and
+search and sort algorithms written from scratch. Before we move on,
+let's stop and look back at it.
 
-You have just finished a substantial piece of your own work -- search and sort algorithms, built from scratch. Before moving on to new territory, let's pause and do something professional developers do regularly but that gets surprisingly little attention in education: *reflect on what we built, and learn to read each other's code*.
+Professional developers do this all the time, but courses rarely give
+it much space. On this page we do two things. First, we *reflect* on
+what we built. To reflect is to look back at your own work and ask what
+it can teach you. Second, we practise reading each other's code.
 
-This tutorial has no single right moment. Come back to it whenever you have finished something big enough to be worth looking at again.
+There is no single right time for this page. Come back to it whenever
+you finish something big enough to be worth a second look.
 
 ## Part 1: Reading Your Own Code
 
-Try opening your own work alongside this page — whatever you built most recently — and reading through it as if you were seeing it for the first time. Then answer these questions truthfully in the cells below.
+Open your most recent piece of work beside this page. Read through it as
+if you were seeing it for the first time. Then write your answers in the
+cells below. Be honest: nobody grades these answers.
 
-What would you change if you were starting over? Ask "what would I do differently now that I have been through the process?" rather than "what did I get wrong?"
+**If you were starting over, what would you change?** A useful way to
+ask this is: "What would I do differently, now that I have been through
+the process?" That question looks forward. "What did I get wrong?" only
+looks back.
 
 ```python exec
 id: part-1-reading-your-own-code-1
 # Your thoughts on what you would change
 ```
 
-Were there places where you got stuck? What did the stuck-ness feel like, and what eventually helped you move forward? Getting stuck is where the real learning happens, not a sign of failure. Understanding your own patterns of getting stuck helps you get unstuck faster next time.
+**Where did you get stuck?** What did being stuck feel like? What
+helped you move forward in the end?
+
+Getting stuck is not a sign of failure. It is where most of the learning
+happens. When you know how you tend to get stuck, you get unstuck faster
+next time.
 
 ```python exec
 id: part-1-reading-your-own-code-2
 # Where you got stuck and how you moved through it
 ```
 
-What do your variable names, comments, and function structure tell you? If a classmate read your code with no other context, would they understand what each piece does and why? Be specific about which parts are clear and which are not.
+**What do your variable names, comments and functions tell a reader?**
+Imagine a classmate reads your code with nothing else to help them.
+Would they understand what each piece does, and why? Name the parts that
+are clear and the parts that are not.
 
 ```python exec
 id: part-1-reading-your-own-code-3
@@ -44,23 +63,34 @@ id: part-1-reading-your-own-code-3
 
 ## Part 2: Reading Someone Else's Code
 
-Pair up with another student -- your teacher may arrange this, or you may just ask someone. Read through what they built and answer the following. The goal is to practice reading code, which is at least as important as writing it, not to judge or grade.
+Now find a partner. Your teacher may pair you up, or you can ask
+somebody yourself. Read through what your partner built, and answer the
+questions below.
 
-What is the first thing you notice about how they structured their code? Is it similar to yours or different?
+What we are doing here is a small *code review*. A code review is when
+one person reads another person's code and tells them what they notice.
+The goal is to practise reading code, which matters at least as much as
+writing it. Nobody is judging or grading.
+
+**What is the first thing you notice about how your partner organised
+their code?** Is it like yours, or different?
 
 ```python exec
 id: part-2-reading-someone-elses-code-1
 # Your observations on their structure
 ```
 
-What's one thing they did that you think is particularly clear or clever? What makes it work well?
+**What is one thing they did that seems especially clear or clever?**
+What makes it work well?
 
 ```python exec
 id: part-2-reading-someone-elses-code-2
 # Something that works well in their code
 ```
 
-Where were you confused, or did you have to read twice? Describe what was confusing — not to criticize, but to help them see it through fresh eyes.
+**Where were you confused, or where did you have to read twice?**
+Describe what confused you. The point is to help your partner see their
+code through fresh eyes, not to criticise it.
 
 ```python exec
 id: part-2-reading-someone-elses-code-3
@@ -69,11 +99,25 @@ id: part-2-reading-someone-elses-code-3
 
 ## Part 3: Looking Ahead
 
-From here the emphasis shifts. You already know how to write functions, use loops, and build algorithms. What comes next is *modular* code -- functions designed to be reused, combined, and tested independently -- and deeper mathematics: probability, statistics, algebra, and sets.
+You can already write functions, use loops, and build algorithms. You
+have also seen how to design functions as tools that can be reused,
+combined, and tested one at a time. That idea is called modular design,
+and [Building Reusable Tools](tutorial:building-reusable-tools) is the
+page that teaches it.
 
-The programming will feel familiar. The mathematics will be new for some of you. The key insight we will keep returning to is that *writing a function to compute something is one of the best ways to understand that something*. If you can explain a concept clearly enough to write code for it, you understand it.
+Next comes [The Team Project](tutorial:the-team-project). There, you
+will use all of this with three to five other people, over several
+weeks. The code will feel familiar. Working on it together will be new
+for most of you, and the reviewing you practised in Part 2 is a big
+part of it.
 
-In a few sentences, what are you curious about or apprehensive about as we move into the next section?
+One idea from these pages is worth keeping with you. Writing a function
+to compute something is one of the best ways to understand that thing.
+If you can explain an idea clearly enough to write code for it, you
+understand it.
+
+**What are you curious about, or worried about, as you move on?** A few
+sentences is enough.
 
 ```python exec
 id: part-3-looking-ahead-1

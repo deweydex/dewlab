@@ -3,48 +3,50 @@ entries:
   - term: syntax error, runtime error, logical error
     kind: concept
     definition: >
-      Three kinds of wrong, found three different ways. A syntax error
-      means the code is not valid Python — caught before anything runs. A
-      runtime error means valid code tried something impossible — caught
-      partway through. A logical error means the code runs fine and gives
-      the wrong answer — caught only by checking against an answer you
-      already know.
+      These are the three kinds of wrong, and each is found a different
+      way. A syntax error is code that is not valid Python, and Python
+      catches it before anything runs. A runtime error is valid code that
+      tries something impossible, and it stops the program partway. A
+      logical error is code that runs to the end and gives the wrong
+      answer, and only checking against an answer you already know will
+      catch it.
   - term: "SyntaxError"
     kind: keyword
     definition: >
-      Your code is not valid Python at all. Python's marker often points
-      just after the real problem rather than at it. An unclosed bracket is
-      reported where Python gives up looking for the closing one, though
-      recent versions also point back to where it was opened.
+      Means your code is not valid Python. Python's marker often points
+      just after the real problem. Modern Python points back to an
+      unclosed bracket, but older versions report it where they gave up
+      looking for the closing one.
   - term: "ZeroDivisionError"
     kind: keyword
-    definition: You divided by zero. Almost always means a count came out empty when you assumed it would not.
+    definition: Means you divided by zero. It nearly always means a count came out as zero when you expected it not to.
   - term: "TypeError"
     kind: keyword
-    definition: You did something to a value that its type does not support — adding a number to a string, for instance.
+    definition: Means you did something to a value that its type does not allow, such as adding a number to a string.
   - term: "ValueError"
     kind: keyword
     definition: >
-      The right type, the wrong content — int("hello") is a string, which
-      is what int wants, but not one that means anything as a number.
+      Means the type is right but the content is wrong. int("hello") gives
+      int a string, which is what it wants, but not a string that means a
+      number.
   - term: "IndexError"
     kind: keyword
-    definition: A position that does not exist in a list.
+    definition: Means you asked for a position that does not exist in a list.
   - term: "KeyError"
     kind: keyword
-    definition: A name that does not exist in a dictionary.
+    definition: Means you asked for a name that does not exist in a dictionary.
   - term: "NameError"
     kind: keyword
-    definition: A variable you never created, or created somewhere the code cannot see, or misspelled.
+    definition: Means you used a variable that was never created, was created somewhere the code cannot see, or is misspelled.
   - term: "AttributeError"
     kind: keyword
     definition: >
-      You asked a value for something it does not have — often a sign
-      that the value is not the type you thought it was.
+      Means you asked a value for something it does not have. This often
+      means the value is not the type you thought it was.
   - term: traceback
     kind: concept
     definition: >
-      The record of how a running program got to the place it broke. Read it
-      from the bottom: the last line says what went wrong, and the lines
-      above say how it got there. The line that failed is often not the line
-      that is responsible.
+      A traceback is the record of how a running program got to the place
+      where it broke. Read it from the bottom: the last line says what
+      went wrong, and the lines above say how the program got there. The
+      line that failed is often not the line that is responsible.

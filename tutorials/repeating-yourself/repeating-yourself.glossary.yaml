@@ -3,41 +3,46 @@ entries:
   - term: while loop
     kind: keyword
     definition: >
-      Repeats its body as long as a condition stays True. It needs three
-      things: a starting state, a condition checked before each pass, and an
-      update inside the body that eventually makes the condition False. Miss
-      that last part and it never stops.
+      Repeats its body for as long as a condition stays True. It needs a
+      starting state, a condition checked before each pass, and an update
+      inside the body that in the end makes the condition False. Without
+      that update, the loop never stops.
   - term: for loop
     kind: keyword
-    definition: Repeats its body once per item in a sequence — cleaner than a while loop when you know in advance how many times to repeat.
+    definition: Repeats its body once for each item in a sequence. It is simpler than a while loop when you know in advance how many times to repeat.
   - term: "range()"
     kind: function
     definition: >
-      Generates a sequence of numbers. range(5) gives 0-4; range(start,
-      stop) excludes stop; range(start, stop, step) can count by any step,
-      including backwards with a negative one.
+      Makes a sequence of numbers. range(5) gives 0 to 4. range(start,
+      stop) stops before stop. range(start, stop, step) counts by any
+      step, and a negative step counts backwards.
     example: "range(1, 6)   # 1, 2, 3, 4, 5"
   - term: accumulator pattern
     kind: concept
     definition: >
-      Start with a running total (0 for a sum, 1 for a product) and add
-      or multiply into it on every pass of a loop.
+      The accumulator pattern is a loop that keeps a running total. The
+      total starts at 0 for a sum, or 1 for a product, and the loop adds
+      or multiplies into it on every pass.
   - term: sigma notation
     kind: formula
-    definition: "Σ means \"add up the expression for each value of the index, over the given range.\" Exactly what a loop with a sum accumulator does."
+    definition: "Sigma notation is the mathematical way to write a sum. Σ means \"add up the expression for each value of the index, over the given range\", which is what a loop with a sum accumulator does."
     example: "sum(i for i in range(1, 6))  # Σ, i=1 to 5, of i"
   - term: "product notation (Π) and factorial"
     kind: formula
     definition: >
-      Capital pi means "multiply every value over the given range". Sigma
-      means "add" in the same way. The product from 1 to n is exactly the
-      factorial function, n!.
+      Product notation uses capital pi, Π, to mean "multiply every value
+      over the given range", in the same way that sigma means "add". The
+      product of the integers from 1 to n is the factorial, n!.
     example: "5! = 1 * 2 * 3 * 4 * 5 = 120"
+  - term: harmonic series
+    kind: formula
+    definition: The harmonic series is the sum 1 + 1/2 + 1/3 + 1/4 + and so on, adding 1/i for each whole number i.
   - term: nested loops
     kind: concept
-    definition: A loop inside another loop — the inner one runs all its iterations for every single iteration of the outer one.
+    definition: Nested loops are a loop inside another loop. For each pass of the outer loop, the inner loop runs all the way through.
   - term: iteration
     kind: concept
     definition: >
-      Repetition — the third of programming's three fundamental control
-      structures, alongside sequential execution and selection.
+      Iteration is repetition, using while or for. It is the third of
+      programming's three basic control structures, with sequential
+      execution and selection.
