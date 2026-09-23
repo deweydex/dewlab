@@ -1,11 +1,11 @@
 ---
-title: "The Unit Circle — Practice"
+title: "The unit circle: sine, cosine and tangent — Practice"
 practice_for: the-unit-circle
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# The Unit Circle — Practice
+# The unit circle: sine, cosine and tangent — Practice
 
 Work through these with the tutorial open beside you if you want it. Every answer is on this page, hidden — click to see it, and try not to click until you have written something down.
 
@@ -244,7 +244,7 @@ For most purposes that does not matter. It matters when the small error is squar
 
 They are equal.
 
-The up value peaks at 90° and comes back down symmetrically, so 89° and 91° are the same height. That symmetry is exactly what makes the Sine Rule ambiguous — see *Solving Triangles*.
+The up value peaks at 90° and comes back down symmetrically, so 89° and 91° are the same height. That symmetry is exactly what makes the Sine Rule ambiguous — see *Solving triangles: the sine rule and the cosine rule*.
 
 </details>
 
@@ -284,7 +284,7 @@ The last two are reciprocals of each other, for the same reason 30° and 60° sw
 
 It has no value. At 90° the point is at (0, 1), so the across value is zero, and tangent is up divided by across.
 
-Geometrically: tangent is the slope of the line from the origin to the point, and at 90° that line is vertical. A vertical line has no slope — the same fact that `y = mx + c` could not express in *Lines and Distances*.
+Geometrically: tangent is the slope of the line from the origin to the point, and at 90° that line is vertical. A vertical line has no slope — the same fact that `y = mx + c` could not express in *Straight lines: slope, midpoint and distance*.
 
 </details>
 

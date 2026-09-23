@@ -137,8 +137,7 @@ start.
 
 ### Why the order matters
 
-The order of the two transforms inside `face-front` matters. On [A cube
-in CSS](tutorial:a-cube-in-css) we saw that the browser applies a list
+The order of the two transforms inside `face-front` matters. On [A 3D cube in CSS](tutorial:a-cube-in-css) we saw that the browser applies a list
 of transforms from the right-hand end. So `translateZ(100px)
 rotateY(-360deg)` means:
 

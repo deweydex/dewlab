@@ -1,11 +1,11 @@
 ---
-title: "Sine and Cosine Waves — Practice"
+title: "Sine and cosine waves: amplitude, period and shift — Practice"
 practice_for: sine-and-cosine-waves
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Sine and Cosine Waves — Practice
+# Sine and cosine waves: amplitude, period and shift — Practice
 
 Answers are hidden. Several of these are about reading a picture, so plot first and check afterwards.
 
@@ -205,7 +205,7 @@ It has no maximum or minimum — it runs away to infinity. And it repeats twice 
 
 At 90°, 270°, and every 180° from there. At those angles the point on the circle is straight up or straight down, so the across value is zero, and tangent is up divided by across.
 
-Geometrically it is the vertical line that has no slope — the same fact as in *Lines and Distances*, met for the third time.
+Geometrically it is the vertical line that has no slope — the same fact as in *Straight lines: slope, midpoint and distance*, met for the third time.
 
 </details>
 

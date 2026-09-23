@@ -1,5 +1,5 @@
 ---
-title: "Mixed Problems — Programming with Objects"
+title: "Mixed problems: programming with objects"
 practice_across:
   - objects-and-classes
   - one-class-many-methods
@@ -11,7 +11,7 @@ year: "2026-2027"
 version: 2026.09.04.1
 ---
 
-# Mixed Problems — Programming with Objects
+# Mixed problems: programming with objects
 
 Every problem here draws on more than one tutorial from this series. None
 of them says which. Deciding whether a problem wants inheritance,

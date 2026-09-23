@@ -1,11 +1,11 @@
 ---
-title: "Making Sense of Data — Practice"
+title: "Statistics: averages, spread and frequency — Practice"
 practice_for: making-sense-of-data
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Making Sense of Data — Practice
+# Statistics: averages, spread and frequency — Practice
 
 Answers are hidden. Compute the statistics by hand on the small sets — five numbers is quick, and doing it once is what makes the formulae stop being formulae.
 

@@ -1,11 +1,11 @@
 ---
-title: "Solving Triangles — Practice"
+title: "Solving triangles: the sine rule and the cosine rule — Practice"
 practice_for: solving-triangles
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Solving Triangles — Practice
+# Solving triangles: the sine rule and the cosine rule — Practice
 
 Answers are hidden. Draw the triangle before you compute anything — most of the mistakes in this topic are about which side is opposite which angle.
 

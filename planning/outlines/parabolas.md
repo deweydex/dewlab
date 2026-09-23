@@ -8,9 +8,9 @@ Functions (plotting a function and reading an answer off it).
 
 ## Why Parabolas is Structured as a Dedicated Module
 
-*Drawing Functions* establishes the general workflow of plotting arbitrary functions and visually reading behavior.
+*Functions and their graphs* establishes the general workflow of plotting arbitrary functions and visually reading behavior.
 
-*Parabolas* focuses specifically on quadratic geometry and completing the square ($y = a(x-h)^2 + k$). Separating the modules ensures algebraic rearrangement and vertex form derivation receive thorough treatment without being rushed to reach graphing code.
+*Parabolas: completing the square* focuses specifically on quadratic geometry and completing the square ($y = a(x-h)^2 + k$). Separating the modules ensures algebraic rearrangement and vertex form derivation receive thorough treatment without being rushed to reach graphing code.
 
 This provides dedicated focus for finding vertices, axes of symmetry, and algebraic connections between vertex form and quadratic roots.
 

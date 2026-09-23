@@ -1,5 +1,5 @@
 ---
-title: "Rearranging Formulae"
+title: "Rearranging formulae: changing the subject"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -13,15 +13,13 @@ covers:
     covers: [MIT-1.7]
 ---
 
-# Rearranging Formulae
-
-**Maths for IT**
+# Rearranging formulae: changing the subject
 
 A formula is usually written with one particular letter on the left, and that letter is whichever one the person who first wrote it down happened to care about. `v = u + at` is written for somebody who wants the final speed. If you know the final speed and want the time, the formula is still true -- it is just facing the wrong way.
 
 Turning it round is called **transposing** a formula, and it is one of those skills every other subject assumes you already have. Physics assumes it, electronics assumes it, statistics assumes it, and none of them teach it.
 
-You have already been doing the hard half of it. In *Expressions Come Alive* you built expressions and evaluated them; here you take the same expression apart and rebuild it pointing a different way.
+You have already been doing the hard half of it. In *Polynomials: representing and combining them in Python* you built expressions and evaluated them; here you take the same expression apart and rebuild it pointing a different way.
 
 ## The Same Formula, Five Ways
 

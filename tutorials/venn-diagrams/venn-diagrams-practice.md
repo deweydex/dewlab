@@ -1,11 +1,11 @@
 ---
-title: "Drawing Sets — Practice"
+title: "Venn diagrams: drawing sets and their overlaps — Practice"
 practice_for: venn-diagrams
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Drawing Sets — Practice
+# Venn diagrams: drawing sets and their overlaps — Practice
 
 Answers are hidden. Where a question asks about three sets, sketch the diagram before you reason about it — that is what the diagram is for.
 
@@ -119,7 +119,7 @@ Eight. Each set is either in or out, so `2³`.
 
 Yes. Both give Cara, Dara, Eoin, Fiona.
 
-This is the distributive law, and it is exactly the same shape as `(a and b) or (a and c)` being the same as `a and (b or c)` in *Logic and Truth*.
+This is the distributive law, and it is exactly the same shape as `(a and b) or (a and c)` being the same as `a and (b or c)` in *Logic: truth tables, XOR and De Morgan's laws*.
 
 </details>
 
@@ -173,7 +173,7 @@ Yes. Being outside the overlap means missing at least one of the two, which is b
 
 </details>
 
-**16.** How does this proof differ from the truth-table one in *Logic and Truth*?
+**16.** How does this proof differ from the truth-table one in *Logic: truth tables, XOR and De Morgan's laws*?
 
 <details class="dl-answer"><summary>answer</summary>
 

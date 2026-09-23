@@ -1,5 +1,5 @@
 ---
-title: "SQL Practice"
+title: "SQL practice: five short exercises"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
@@ -15,7 +15,7 @@ covers:
     touches: [DBM-LO5]
 ---
 
-# SQL Practice
+# SQL practice: five short exercises
 
 This page has five short exercises, using a shared table of students,
 `student_tbl`, and a shared table of courses, `course_tbl`. None of

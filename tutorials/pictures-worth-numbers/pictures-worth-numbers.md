@@ -1,5 +1,5 @@
 ---
-title: "Pictures Worth Numbers"
+title: "Charts: choosing the right chart for your data"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -15,9 +15,7 @@ covers:
     covers: [MIT-5.10]
 ---
 
-# Pictures Worth Numbers
-
-**Programming Design Principles / Maths for IT**
+# Charts: choosing the right chart for your data
 
 In the last tutorial we built statistical tools and made our first histogram. Today we go deeper into data visualization: how to choose the right type of chart, how to make charts that communicate clearly, and how to use visualization as a tool for understanding rather than just decoration.
 
@@ -191,7 +189,7 @@ The most informative approach is to combine numerical summaries with visual disp
 id: combining-statistics-and-visualisation-1
 def analyse_dataset(data, title):
     """Print summary statistics and show a histogram for a dataset."""
-    # We are using our functions from *Making Sense of Data*
+    # We are using our functions from *Statistics: averages, spread and frequency*
     # (you may need to redefine mean, median, mode, std_dev here
     #  or copy them from your previous work)
     
@@ -207,7 +205,7 @@ def analyse_dataset(data, title):
 
 ### Your turn
 
-How might you complete the `analyse_dataset` function, adding calls to your statistical functions from *Making Sense of Data*? Use it on the quiz scores — and if you want a challenge, create a second dataset and compare the two analyses side by side.
+How might you complete the `analyse_dataset` function, adding calls to your statistical functions from *Statistics: averages, spread and frequency*? Use it on the quiz scores — and if you want a challenge, create a second dataset and compare the two analyses side by side.
 
 ```python exec
 id: your-turn-5

@@ -1,5 +1,5 @@
 ---
-title: "Numbers and Their Families"
+title: "Number types, powers and logarithms"
 year: "2026-2027"
 version: 2026.08.23.2
 covers:
@@ -13,9 +13,7 @@ covers:
     covers: [MIT-1.2, MIT-1.3]
 ---
 
-# Numbers and Their Families
-
-**Programming Design Principles / Maths for IT**
+# Number types, powers and logarithms
 
 The next few tutorials are about algebra, equations, and sets -- the classical mathematical tools, built as programs.
 

@@ -1,5 +1,5 @@
 ---
-title: "Logic and Truth"
+title: "Logic: truth tables, XOR and De Morgan's laws"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -15,15 +15,13 @@ covers:
     covers: [MIT-2.5]
 ---
 
-# Logic and Truth
-
-**Maths for IT**
+# Logic: truth tables, XOR and De Morgan's laws
 
 You have been writing `and`, `or` and `not` since *Making Decisions*, and you have never once seen them laid out.
 
 That is the definition of a quiet gap. The operators are everywhere, so it looks covered -- and yet almost nobody who has been using them for a month could tell you what `not (A and B)` is equivalent to, or why a condition they wrote works but reads horribly.
 
-This tutorial lays them out, and then shows you the two rules that let you rewrite a tangled condition into one a person can read. It comes after *Sets as Sorted Lists* on purpose: union and intersection give you the shape first, and the logic here turns out to be the same shape with different names.
+This tutorial lays them out, and then shows you the two rules that let you rewrite a tangled condition into one a person can read. It comes after *Sets: building them from sorted lists* on purpose: union and intersection give you the shape first, and the logic here turns out to be the same shape with different names.
 
 ## Every Possible Case
 
@@ -191,7 +189,7 @@ def three(a, b, c):
 
 ## The Same Shapes, on Sets
 
-Now the reason this tutorial comes after *Sets as Sorted Lists*.
+Now the reason this tutorial comes after *Sets: building them from sorted lists*.
 
 Everything above was about true and false. The same two laws hold for sets, with **union** where `or` was, **intersection** where `and` was, and **complement** where `not` was.
 
@@ -216,7 +214,7 @@ The same two lines, twice, with sets instead of booleans.
 
 **De Morgan is one law wearing two costumes.** A statement being true or false, and an item being in a set or out of it, are the same question asked about different things -- and once you see that, a rule you learned in one place works in the other without being learned again.
 
-That connection is the reason this tutorial sits where it does, and it is the most useful thing in it. It is also what [Drawing Sets](tutorial:venn-diagrams) makes into a picture: the same two laws, shaded on a diagram, proved by looking instead of by counting rows.
+That connection is the reason this tutorial sits where it does, and it is the most useful thing in it. It is also what [Venn diagrams: drawing sets and their overlaps](tutorial:venn-diagrams) makes into a picture: the same two laws, shaded on a diagram, proved by looking instead of by counting rows.
 
 ## Reflection
 

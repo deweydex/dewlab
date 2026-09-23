@@ -1,11 +1,11 @@
 ---
-title: "Reusable methods: one class that does many jobs — Practice"
+title: "A class with many methods: building a polynomial class — Practice"
 practice_for: one-class-many-methods
 year: "2026-2027"
 version: 2026.09.04.1
 ---
 
-# Reusable methods: one class that does many jobs — Practice
+# A class with many methods: building a polynomial class — Practice
 
 The answers are hidden in folds under each problem. A few problems ask
 you to predict what a piece of code prints. Try to answer before you

@@ -1,5 +1,5 @@
 ---
-title: "Counting Carefully"
+title: "Counting: factorials, permutations and combinations"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -13,9 +13,7 @@ covers:
     covers: [MIT-5.2]
 ---
 
-# Counting Carefully
-
-**Programming Design Principles / Maths for IT**
+# Counting: factorials, permutations and combinations
 
 How many different ways can 5 people sit around a dinner table? How many different 6-digit PINs are possible? How many ways can you choose 3 toppings from a menu of 12?
 

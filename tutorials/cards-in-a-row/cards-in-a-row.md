@@ -1,5 +1,5 @@
 ---
-title: "Cards in a row"
+title: "Cards in a row: grow, shrink and basis in Flexbox"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# Cards in a row
+# Cards in a row: grow, shrink and basis in Flexbox
 
 In [Lining boxes up in a row with Flexbox](tutorial:flexbox-first-steps) we met
 `flex: 1 1 80px`. What does each of its three parts do? On this page we

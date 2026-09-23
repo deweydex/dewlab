@@ -393,7 +393,7 @@ Loose variables and functions can do everything a class can. Nothing
 here was impossible before. What changes is how much you have to hold in
 your head as a program grows past one account, one shape, one anything.
 
-Next, [The moves you already know, inside a class](tutorial:the-moves-you-already-know)
+Next, [Sequence, selection and iteration inside a class](tutorial:the-moves-you-already-know)
 looks inside methods and finds the same `if` statements and loops you
 already write. After that,
 [Encapsulation: keeping an object's data behind its methods](tutorial:keeping-details-inside-an-object)

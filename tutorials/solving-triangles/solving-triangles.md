@@ -1,5 +1,5 @@
 ---
-title: "Solving Triangles"
+title: "Solving triangles: the sine rule and the cosine rule"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -15,9 +15,7 @@ covers:
     covers: [MIT-4.9, MIT-4.10]
 ---
 
-# Solving Triangles
-
-**Maths for IT**
+# Solving triangles: the sine rule and the cosine rule
 
 Given some of a triangle, find the rest. That is the whole tutorial.
 
@@ -33,7 +31,7 @@ The area formula falls out of the second one on the way past.
 
 ## When There Is a Right Angle
 
-The easy case, and it uses only what you already have: Pythagoras from *Lines and Distances*, and the ratios from *The Unit Circle*.
+The easy case, and it uses only what you already have: Pythagoras from *Straight lines: slope, midpoint and distance*, and the ratios from *The unit circle: sine, cosine and tangent*.
 
 The unit circle had radius 1. A right-angled triangle is the same picture scaled up — which is why the ratios do not care how big the triangle is.
 
@@ -87,7 +85,7 @@ The mnemonic is SOH-CAH-TOA — Sine is Opposite over Hypotenuse, Cosine is Adja
 
 ### Going backwards
 
-If you know the ratio and want the angle, you need the inverse — the reflection idea from *Drawing Functions*.
+If you know the ratio and want the angle, you need the inverse — the reflection idea from *Functions and their graphs*.
 
 ```python exec
 id: when-there-is-a-right-angle-3

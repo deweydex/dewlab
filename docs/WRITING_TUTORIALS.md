@@ -556,7 +556,7 @@ A **mixed problem set** draws on several tutorials at once, declared with
 the course page knows to show it:
 
 ```yaml
-title: "Mixed Problems — Algebra and Functions"
+title: "Mixed problems: algebra and functions"
 slug: mixed-algebra
 practice_across:
   - numbers-and-their-families

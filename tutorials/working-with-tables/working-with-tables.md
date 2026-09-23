@@ -11,7 +11,7 @@ covers:
 
 So far, every table we have made has lived in the database, and SQL has
 asked it our questions. Real data often starts somewhere else. On the
-next page, [Loading a Real Dataset](tutorial:loading-a-real-dataset), we
+next page, [Loading a CSV dataset into a SQL table](tutorial:loading-a-real-dataset), we
 load a real file into Python, clean it up there, and only then put it
 into the database.
 
@@ -149,7 +149,7 @@ check(readings["morning"].mean(), 10.85)
 - **`readings[readings["evening"] > 14]`** keeps only the rows where the
   comparison is `True`, like `WHERE` in SQL.
 
-Next, [Loading a Real Dataset](tutorial:loading-a-real-dataset) fills a
+Next, [Loading a CSV dataset into a SQL table](tutorial:loading-a-real-dataset) fills a
 DataFrame from a real file, with thousands of rows, and then writes it
 into the database so that SQL can query it.
 

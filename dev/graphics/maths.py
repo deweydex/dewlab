@@ -29,7 +29,7 @@ ACES, CARDS = 4, 52
 
 
 def drawing_two_aces() -> str:
-    """The tree behind *What Are the Chances?*'s two-aces example.
+    """The tree behind *Probability: simple, compound and conditional*'s two-aces example.
 
     The formula on the page, 4/52 times 3/51, is correct and says nothing
     about where 51 came from or why the second numerator is 3 rather than
@@ -71,7 +71,7 @@ def drawing_two_aces() -> str:
 
 
 def the_number_domains() -> str:
-    """The nesting *Numbers and Their Families* writes as a chain of symbols.
+    """The nesting *Number types, powers and logarithms* writes as a chain of symbols.
 
     Each example sits in the band for the smallest family it belongs to, so
     the question the section sets — which families does this number belong
@@ -88,7 +88,7 @@ def the_number_domains() -> str:
 
 
 def _sets_from_cell() -> tuple[list[int], list[int]]:
-    """The two sets *Sets as Sorted Lists* walks, from its own cell."""
+    """The two sets *Sets: building them from sorted lists* walks, from its own cell."""
     page = (TUTORIALS / "sets-as-sorted-lists" / "sets-as-sorted-lists.md").read_text()
     cell = "set-operations-the-merge-pattern-1"
     if f"id: {cell}" not in page:
@@ -107,7 +107,7 @@ def _sets_from_cell() -> tuple[list[int], list[int]]:
 
 
 def walking_two_sorted_lists() -> str:
-    """The merge pattern in *Sets as Sorted Lists*, one comparison per step.
+    """The merge pattern in *Sets: building them from sorted lists*, one comparison per step.
 
     The prose states the rule as three cases and then a fourth about what
     is left over. Three of the reader's own functions are that same walk
@@ -121,7 +121,7 @@ def walking_two_sorted_lists() -> str:
 
 
 def the_monty_hall_cases() -> str:
-    """The three equally likely cases behind *Three Doors*.
+    """The three equally likely cases behind *The Monty Hall problem: three doors and a simulation*.
 
     Enumerated rather than typed, on this file's own rule: the branches,
     the odds on them and the count underneath all fall out of walking the

@@ -144,8 +144,7 @@ The comment beside it gives the same kind of example: without it, a
 `200px` box with `20px` of padding would be `240px` wide.
 
 The live examples on this site's pages do not set it, so a box in a
-preview uses `content-box`. We meet `box-sizing` again in [Cards in a
-row](tutorial:cards-in-a-row), where cards share one row and every pixel
+preview uses `content-box`. We meet `box-sizing` again in [Cards in a row: grow, shrink and basis in Flexbox](tutorial:cards-in-a-row), where cards share one row and every pixel
 of their width counts.
 
 ## Margin collapse, more closely

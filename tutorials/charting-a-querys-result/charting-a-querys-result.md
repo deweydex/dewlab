@@ -1,5 +1,5 @@
 ---
-title: "Charting a Query's Result"
+title: "Charting a query's result: one line per country"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [DBM-LO7]
 ---
 
-# Charting a Query's Result
+# Charting a query's result: one line per country
 
 A table of numbers and a chart of the same numbers answer different
 questions. The table says exactly what one row holds; the chart shows what

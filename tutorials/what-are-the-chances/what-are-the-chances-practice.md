@@ -1,11 +1,11 @@
 ---
-title: "What Are the Chances — Practice"
+title: "Probability: simple, compound and conditional — Practice"
 practice_for: what-are-the-chances
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# What Are the Chances — Practice
+# Probability: simple, compound and conditional — Practice
 
 Answers are hidden. Calculate first, then simulate — and when the two disagree, one of them is wrong and it is usually not the simulation.
 

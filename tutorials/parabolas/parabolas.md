@@ -1,5 +1,5 @@
 ---
-title: "Parabolas"
+title: "Parabolas: completing the square"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -13,13 +13,11 @@ covers:
     covers: [MIT-3.4]
 ---
 
-# Parabolas
-
-**Maths for IT**
+# Parabolas: completing the square
 
 A quadratic makes a curve with one turn in it, and that curve has a name: a **parabola**. Every quadratic makes one, and — this is the surprising part — they are all the same shape.
 
-In *Cracking Equations* you solved quadratics with the formula. In *Drawing Functions* you plotted them. This tutorial is about a third thing you can do to one: **rewrite it into a form that tells you where the curve turns, just by looking at it.**
+In *Solving equations: linear, quadratic and simultaneous* you solved quadratics with the formula. In *Functions and their graphs* you plotted them. This tutorial is about a third thing you can do to one: **rewrite it into a form that tells you where the curve turns, just by looking at it.**
 
 The rewriting is called completing the square. Most people meet it as a trick with no obvious purpose, which is a shame, because its purpose is the best reason to learn it.
 
@@ -259,7 +257,7 @@ The vertex is at `(−1, 6)`, which is above the axis, and the curve opens upwar
 
 The formula says the same by giving a negative discriminant. The completed form says it in a way you can picture.
 
-And [When There Is No Answer](tutorial:complex-roots) is where those roots have gone. They exist; they are just not on this line.
+And [Complex numbers: roots that are not real](tutorial:complex-roots) is where those roots have gone. They exist; they are just not on this line.
 
 ### Your turn
 

@@ -1,14 +1,13 @@
 ---
-title: "How CSS draws depth"
+title: "How CSS draws 3D: perspective and depth"
 year: "2026-2027"
 version: 2026.09.22.1
 context_for: [an-orbit-in-css, a-cube-in-css, a-ball-that-faces-you, drawing-frames-with-javascript, a-cube-on-a-canvas]
 ---
 
-# How CSS draws depth
+# How CSS draws 3D: perspective and depth
 
-On [An orbit in pure CSS](tutorial:an-orbit-in-css), [A cube in
-CSS](tutorial:a-cube-in-css) and [A ball that keeps facing
+On [An orbit in pure CSS](tutorial:an-orbit-in-css), [A 3D cube in CSS](tutorial:a-cube-in-css) and [A ball that keeps facing
 you](tutorial:a-ball-that-faces-you), the browser drew depth for us,
 with no arithmetic written down. [Drawing frames with
 JavaScript](tutorial:drawing-frames-with-javascript) and [A turning cube

@@ -1,11 +1,11 @@
 ---
-title: "Drawing Functions — Practice"
+title: "Functions and their graphs — Practice"
 practice_for: drawing-functions
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Drawing Functions — Practice
+# Functions and their graphs — Practice
 
 Answers are hidden. The prediction is the exercise and the plot is the marking, so several of these ask you to predict before plotting.
 
@@ -213,7 +213,7 @@ The curve is symmetric about its peak, which is why halfway between the roots is
 
 (a) `x − 7`. (b) `x/5`. (c) `(x + 2)/3`. (d) the cube root, `x**(1/3)`.
 
-Each one undoes the operations in reverse order, which is the same unwrapping as in *Rearranging Formulae*.
+Each one undoes the operations in reverse order, which is the same unwrapping as in *Rearranging formulae: changing the subject*.
 
 </details>
 

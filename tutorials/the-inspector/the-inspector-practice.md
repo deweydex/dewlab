@@ -176,8 +176,7 @@ The panel lists two rules for `h1`. In the first one, `color: #2c3e50`
 is crossed out. The second one, `color: #b03a2e`, is the colour in use,
 and that is red. When two rules give the same part of the page a
 different value for the same thing, the rule further down the
-stylesheet wins. We look at this properly in [Which rule
-wins](tutorial:which-rule-wins).
+stylesheet wins. We look at this properly in [The cascade: which CSS rule wins](tutorial:which-rule-wins).
 
 The fix is to delete the second `h1` rule:
 

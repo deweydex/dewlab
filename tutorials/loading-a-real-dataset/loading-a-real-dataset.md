@@ -1,5 +1,5 @@
 ---
-title: "Loading a Real Dataset"
+title: "Loading a CSV dataset into a SQL table"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [DBM-LO5]
 ---
 
-# Loading a Real Dataset
+# Loading a CSV dataset into a SQL table
 
 Real data almost never starts as a database table. It starts as a file, most
 often a *CSV*. A CSV holds rows of plain text, one line per record, with each

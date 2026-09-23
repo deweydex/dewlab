@@ -1,11 +1,11 @@
 ---
-title: "Lines and Distances — Practice"
+title: "Straight lines: slope, midpoint and distance — Practice"
 practice_for: lines-and-distances
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Lines and Distances — Practice
+# Straight lines: slope, midpoint and distance — Practice
 
 Answers are hidden. Write something down before you unfold.
 

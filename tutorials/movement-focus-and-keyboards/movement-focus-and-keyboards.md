@@ -1,11 +1,11 @@
 ---
-title: "Movement, focus and the people who use your page"
+title: "Accessibility: keyboards, focus and movement"
 year: "2026-2027"
 version: 2026.09.22.1
 context_for: [hover-and-focus, transitions-and-transforms, keyframes-and-the-checkbox-hack, the-checkbox-hack]
 ---
 
-# Movement, focus and the people who use your page
+# Accessibility: keyboards, focus and movement
 
 Four pages make a page answer the people who use it: [Styling what the
 visitor points at: hover and focus](tutorial:hover-and-focus), [Moving

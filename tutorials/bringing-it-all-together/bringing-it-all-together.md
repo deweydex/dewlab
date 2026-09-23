@@ -1,5 +1,5 @@
 ---
-title: "Bringing It All Together"
+title: "Review problems: combining numbers, polynomials and equations"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -13,9 +13,7 @@ covers:
     covers: [PDP-LO10]
 ---
 
-# Bringing It All Together
-
-**Programming Design Principles / Maths for IT**
+# Review problems: combining numbers, polynomials and equations
 
 This tutorial introduces no new material. Today we practice combining the tools we have built across the last four tutorials into something cohesive. We will work through a few problems that require multiple tools, and we will think about how all these mathematical concepts connect to each other and to programming.
 
@@ -23,13 +21,13 @@ This tutorial introduces no new material. Today we practice combining the tools 
 
 Over the last several tutorials, we built:
 
-**From *Numbers and Their Families*:** `classify_number`, `power`, `log_base`, geometry functions
+**From *Number types, powers and logarithms*:** `classify_number`, `power`, `log_base`, geometry functions
 
-**From *Expressions Come Alive*:** `evaluate_poly`, `poly_to_string`, `add_poly`, `multiply_poly`, `subtract_poly`, `scale_poly`
+**From *Polynomials: representing and combining them in Python*:** `evaluate_poly`, `poly_to_string`, `add_poly`, `multiply_poly`, `subtract_poly`, `scale_poly`
 
-**From *Cracking Equations*:** `solve_linear`, `solve_quadratic`, `factor_quadratic`, `solve_linear_inequality`, `solve_simultaneous`
+**From *Solving equations: linear, quadratic and simultaneous*:** `solve_linear`, `solve_quadratic`, `factor_quadratic`, `solve_linear_inequality`, `solve_simultaneous`
 
-**From *Sets as Sorted Lists*:** `make_set`, `is_member`, `union`, `intersection`, `difference`, `symmetric_difference`, `is_subset`, `is_equal`
+**From *Sets: building them from sorted lists*:** `make_set`, `is_member`, `union`, `intersection`, `difference`, `symmetric_difference`, `is_subset`, `is_equal`
 
 Let's start by collecting our key functions. Copy them into the cell below (or rewrite them -- sometimes rewriting from memory is the best test of understanding):
 
@@ -173,7 +171,7 @@ id: looking-ahead-to-skills-demo-2b-1
 
 ## Reflection
 
-We have come a long way: from "Hello, world!" in [Algorithms, pseudocode and your first Python](tutorial:first-steps) to polynomial algebra, equation solving, and set theory in *Sets as Sorted Lists*. Each piece builds on the ones before it, and the mathematical ideas and programming concepts are woven together throughout.
+We have come a long way: from "Hello, world!" in [Algorithms, pseudocode and your first Python](tutorial:first-steps) to polynomial algebra, equation solving, and set theory in *Sets: building them from sorted lists*. Each piece builds on the ones before it, and the mathematical ideas and programming concepts are woven together throughout.
 
 The final reflection: what has changed about how you think about mathematics since we started? And what has changed about how you think about programming?
 

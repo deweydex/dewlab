@@ -1,5 +1,5 @@
 ---
-title: "Cracking Equations"
+title: "Solving equations: linear, quadratic and simultaneous"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -15,9 +15,7 @@ covers:
     covers: [MIT-1.12]
 ---
 
-# Cracking Equations
-
-**Programming Design Principles / Maths for IT**
+# Solving equations: linear, quadratic and simultaneous
 
 We can now represent, evaluate, and manipulate polynomials. Today we learn to *solve* them: given an equation like $3x + 7 = 22$ or $x^2 - 4x + 3 = 0$, find the values of x that make it true.
 
@@ -155,7 +153,7 @@ id: your-turn-8
 
 ### Verification by expansion
 
-We can verify a factorization by multiplying the factors back together and checking that we get the original polynomial. This is where `multiply_poly` from *Expressions Come Alive* pays off:
+We can verify a factorization by multiplying the factors back together and checking that we get the original polynomial. This is where `multiply_poly` from *Polynomials: representing and combining them in Python* pays off:
 
 ```python exec
 id: verification-by-expansion-1

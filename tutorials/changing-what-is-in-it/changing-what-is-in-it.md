@@ -1,5 +1,5 @@
 ---
-title: "Updating and Deleting Rows"
+title: "Updating and deleting rows: UPDATE and DELETE"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
@@ -9,7 +9,7 @@ covers:
     covers: [DBM-LO4]
 ---
 
-# Updating and Deleting Rows
+# Updating and deleting rows: UPDATE and DELETE
 
 `INSERT` adds a row. Two more statements change the rows already there:
 `UPDATE` changes values in existing rows, and `DELETE` removes rows

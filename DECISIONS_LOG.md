@@ -942,17 +942,17 @@ already-covered outcome.
 *Cost to change: none.*
 
 **7.37 — Coordinate geometry is a tutorial, because Pythagoras is a gateway.**
-Outcomes `MIT-4.1`–`MIT-4.4` form their own tutorial, *Lines and Distances*,
+Outcomes `MIT-4.1`–`MIT-4.4` form their own tutorial, *Straight lines: slope, midpoint and distance*,
 between Drawing Functions and Angles and Waves. Pythagoras is one of the topic
 tree's six gateways, unlocking seven downstream topics, so it needs a
 dedicated tutorial rather than a subsection of graphing — and having one also
-means *The Unit Circle* doesn't have to introduce Cartesian coordinates as an
+means *The unit circle: sine, cosine and tangent* doesn't have to introduce Cartesian coordinates as an
 aside.
 *Cost to change: none yet.*
 
 **7.38 — Connections between whole things, rather than things merged.**
-Venn diagrams (`MIT-2.3`) get a dedicated short tutorial, *Drawing Sets*,
-linked to *Logic and Truth* and *Sets as Sorted Lists* — three distinct,
+Venn diagrams (`MIT-2.3`) get a dedicated short tutorial, *Venn diagrams: drawing sets and their overlaps*,
+linked to *Logic: truth tables, XOR and De Morgan's laws* and *Sets: building them from sorted lists* — three distinct,
 cross-linked modules are easier to discover, sequence, and maintain than one
 overloaded composite. Matplotlib draws the diagrams directly from set
 operations, framing them as computed output rather than manual notation.
@@ -989,11 +989,9 @@ modules.
 *Cost to change: none.*
 
 **7.43 — Trigonometry partitioned into three focused tutorials.**
-*The Unit Circle* (radians, sine/cosine definitions, exact values), *Sine and
-Cosine Waves* (unrolling circular motion into wave functions), and *Solving
-Triangles* (Sine/Cosine Rules, area, right-triangle applications) — each a
-distinct conceptual activity with room for exercises. *Parabolas* was split
-from *Drawing Functions* on the same principle.
+*The unit circle: sine, cosine and tangent* (radians, sine/cosine definitions, exact values), *Sine and cosine waves: amplitude, period and shift* (unrolling circular motion into wave functions), and *Solving triangles: the sine rule and the cosine rule* (Sine/Cosine Rules, area, right-triangle applications) — each a
+distinct conceptual activity with room for exercises. *Parabolas: completing the square* was split
+from *Functions and their graphs* on the same principle.
 *Cost to change: none.*
 
 **7.44 — Geometric grounding for exact trigonometric ratios.**
@@ -1049,7 +1047,7 @@ contracts from the first class that uses them. The window is still open.*
 **7.48 — Every tutorial has a page of problems, and some problems have no
 tutorial.**
 Fourteen practice pages became thirty-two — one per tutorial except the three
-that are already problems or reflection (*Bringing It All Together*, *Looking
+that are already problems or reflection (*Review problems: combining numbers, polynomials and equations*, *Looking
 Back Before Moving Forward*, *The Team Project*).
 
 Three sources fed them. `deweydex/Mathematics`'s twenty-six worksheets, twenty
@@ -1115,7 +1113,7 @@ check is six lines and five tests.*
 
 **7.53 — Four tutorials re-released, and what the trial found.**
 Josh asked for the versioning system (7.20–7.24) to be tried on real content:
-*First Steps*, *Numbers and Their Families*, *What Are the Chances*, and
+*First Steps*, *Number types, powers and logarithms*, *What Are the Chances*, and
 *Putting Things in Order* — four diverse subjects, each converted from
 notebooks. Each became a folder: a working copy at `2026.08.23.2`, the
 previous release frozen at `v2026.08.23.1.md`. Thirty-one tutorials became a
@@ -4340,3 +4338,18 @@ Left undone deliberately, and worth a decision later: Database Methods has no st
 **The topics stay.** Dinosaurs, students, plushies, the library, the timetable and the published datasets keep their subjects; only names changed, across every page, the quizzes' check cells, the full-stack page, the reference shelf and the four diagrams, which regenerate from the pages' own `CREATE TABLE` statements. Two exceptions, each explained on its page: a table loaded straight from a CSV keeps the CSV's column names, and `country_region_tbl` keeps `country` as its key, because the join to the income data is by country name.
 
 *Cost to change: a rename throughout the course's SQL, its quiz checks and `dev/graphics/database_methods.py`; the diagrams follow by regenerating.*
+
+---
+
+**7.213 — Every page title names its subject in the words a student would search for, the entity relationship diagrams stack tables in whichever order crosses fewest lines, and the portfolio starter's known faults are written down in dewlab until they are fixed there.** Josh: "make a note of the issues in portfolio_wad in a md file and fix the other non-video issues … see if we can improve some tutorial or practice titles in all series."
+
+**Titles.** Forty-nine pages still carried titles from before 7.209–7.211. They were in Title Case, and often a phrase that only makes sense once the page has been read: *Cracking Equations*, *Expressions Come Alive*, *When There Is No Answer*, *A Table Is a List of Rows*. They now follow the pattern the other series already use, a familiar term and then what the page does with it: *Solving equations: linear, quadratic and simultaneous*, *Polynomials: representing and combining them in Python*, *Complex numbers: roots that are not real*, *Tables in SQL: CREATE TABLE, INSERT and SELECT*. Mixed-problem pages read "Mixed problems: …". The practice pages follow their tutorials, the stale `**Maths for IT**` label lines under the old titles are gone, and every link, italic mention and generator docstring naming an old title now names the new one. `dev/curriculum_map.py` finds a dependency by its title in prose, so a missed mention would have lost it one. Ids are unchanged. The only cell touched is one comment in `complex-roots`, which named the old title. The curriculum map's sequence graph cut every title at its first colon, a leftover from "Tutorial 14: …" numbering, which had already clipped the Programming titles from 7.210 to "keeping many values in order". It now drops only that numbering prefix.
+
+**Diagrams.** `erd.py` stacked the tables in a column alphabetically and gave out lanes in whatever order it met the edges. In the timetable diagram, that sent `room_tbl`'s line across `programme_tbl`'s, and its line and `teacher_tbl`'s crossed twice below the boxes. Lanes are now handed out by rule: the line leaving highest takes the lane furthest out, and the lines that drop below the boxes nest. `_arrange` then tries every order of tables within each column and keeps the one with the fewest crossings, preferring alphabetical on a tie. That costs little for a student's schema, and it stops trying past 2,000 orders. The timetable now has no crossings. The library diagram keeps one, which no order avoids. The first lane also moved clear of the "one" bar, so no line turns a corner on top of it.
+
+**The starter.** A browser audit of `portfolio_wad` found fourteen problems; `planning/PORTFOLIO_WAD_ISSUES.md` lists them with tested fixes, for fixing in that repository. Three touched dewlab pages, which now say what a student will see:
+- *Changing the layout for phones* told students to delete only the comment markers around Exercise 24. That drops the whole block, because the instruction shares a line with `/*`. It now says to delete both whole lines.
+- The hover-and-focus practice claimed every other button kept a visible outline. The hero's button is invisible in the same way.
+- The transitions practice has students hover the contact button, whose label turns white on near-white. Its answer now says so, and gives the fix.
+
+*Cost to change: a title is one frontmatter line plus a text sync. The arrangement is one function, and returning to alphabetical is `_arrange` returning its first candidate.*

@@ -1,11 +1,11 @@
 ---
-title: "A cube in CSS — Practice"
+title: "A 3D cube in CSS — Practice"
 practice_for: a-cube-in-css
 year: "2026-2027"
 version: 2026.09.22.1
 ---
 
-# A cube in CSS — Practice
+# A 3D cube in CSS — Practice
 
 On this page we practise building solid shapes from flat squares: a
 push and a turn for each face, the order of the transforms, and

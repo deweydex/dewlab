@@ -69,7 +69,7 @@ def _schema_from_section(slug: str, heading: str) -> sqlite3.Connection:
 
 
 def products_and_sales() -> str:
-    """The pair *Designing a Table Before You Build It* reasons about.
+    """The pair *Designing tables: columns, types and one-to-many links* reasons about.
 
     A price lives in `product_tbl` once. A sale points at it. The diagram is
     there so a reader can see which way round that goes — one product row
@@ -98,7 +98,7 @@ def products_and_sales() -> str:
 
 
 def college_timetable() -> str:
-    """The five tables *A College Timetable* builds.
+    """The five tables *A college timetable: five tables and finding clashes* builds.
 
     Four tables describing things, and a fifth describing an event that ties
     several of them together — the shape the section names in prose and

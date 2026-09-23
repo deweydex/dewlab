@@ -1,11 +1,11 @@
 ---
-title: "Sets as Sorted Lists — Practice"
+title: "Sets: building them from sorted lists — Practice"
 practice_for: sets-as-sorted-lists
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Sets as Sorted Lists — Practice
+# Sets: building them from sorted lists — Practice
 
 Answers are hidden. Half of these are set arithmetic to do on paper and half are the merge-walk to implement — do the paper ones first, because the code is much easier to write once you know what it should produce.
 
@@ -53,7 +53,7 @@ It is $(A \setminus B) \cup (B \setminus A)$, and also $(A \cup B) \setminus (A 
 
 Seven, not nine.
 
-$|A \cup B| = |A| + |B| - |A \cap B|$: 5 + 4 − 2. The two shared elements were counted twice and must be taken back once. This is inclusion–exclusion, and *Drawing Sets* makes it a picture.
+$|A \cup B| = |A| + |B| - |A \cap B|$: 5 + 4 − 2. The two shared elements were counted twice and must be taken back once. This is inclusion–exclusion, and *Venn diagrams: drawing sets and their overlaps* makes it a picture.
 
 </details>
 

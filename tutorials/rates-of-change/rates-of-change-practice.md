@@ -1,11 +1,11 @@
 ---
-title: "Rates of Change — Practice"
+title: "Derivatives: the rate of change of a curve — Practice"
 practice_for: rates-of-change
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Rates of Change — Practice
+# Derivatives: the rate of change of a curve — Practice
 
 Answers are hidden. Differentiate by hand first, then check numerically — the check is what tells you whether the rule was applied correctly.
 

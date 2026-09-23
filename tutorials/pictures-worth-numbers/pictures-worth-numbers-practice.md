@@ -1,11 +1,11 @@
 ---
-title: "Pictures Worth Numbers — Practice"
+title: "Charts: choosing the right chart for your data — Practice"
 practice_for: pictures-worth-numbers
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Pictures Worth Numbers — Practice
+# Charts: choosing the right chart for your data — Practice
 
 Answers are hidden. Most of these ask you to choose a chart and defend the choice — the plotting is a few lines, and the choosing is the skill.
 

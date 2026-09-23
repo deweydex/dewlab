@@ -546,7 +546,7 @@ for i in range(2, len(fibs)):
 The results go above it, then below it, then above it again, and each
 time they come closer. That is a limit. We reach it here from a very
 different direction than
-[Approaching a Limit](tutorial:approaching-a-limit) does.
+[Limits: getting closer without arriving](tutorial:approaching-a-limit) does.
 
 </details>
 

@@ -1,5 +1,5 @@
 ---
-title: "Rates of Change"
+title: "Derivatives: the rate of change of a curve"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -15,11 +15,9 @@ covers:
     covers: [MIT-3.7]
 ---
 
-# Rates of Change
+# Derivatives: the rate of change of a curve
 
-**Maths for IT**
-
-In *Lines and Distances* you named slope as a rate of change: **if x goes up by one, what happens to y?** For a straight line the answer is one number and it is the same everywhere.
+In *Straight lines: slope, midpoint and distance* you named slope as a rate of change: **if x goes up by one, what happens to y?** For a straight line the answer is one number and it is the same everywhere.
 
 For anything that bends, the answer changes as you move along it. This tutorial is about getting that answer at a single point — and then about not having to work it out from scratch every time.
 
@@ -135,7 +133,7 @@ for t in [0, 1, 2, 3]:
           f"and is travelling at {derivative_at(fallen, t):>5.2f} m/s")
 ```
 
-Distance and speed. Same relationship, no axes required — which is what "rate of change" means, and why the phrasing was worth committing to back in *Lines and Distances*.
+Distance and speed. Same relationship, no axes required — which is what "rate of change" means, and why the phrasing was worth committing to back in *Straight lines: slope, midpoint and distance*.
 
 ## The Derivative as a Function
 
@@ -161,7 +159,7 @@ top.set_title("A curve, and how steep it is")
 
 Read them together. Where the top curve goes downhill, the bottom one is negative. Where the top curve is flat — at the very bottom — the bottom one crosses zero. Where the top curve climbs steeply, the bottom one is large.
 
-**The derivative being zero is where the original is flat**, which is where its turning points are. That is the most useful single fact in this tutorial, and it connects straight back to *Parabolas*: the vertex is where the slope is nothing.
+**The derivative being zero is where the original is flat**, which is where its turning points are. That is the most useful single fact in this tutorial, and it connects straight back to *Parabolas: completing the square*: the vertex is where the slope is nothing.
 
 ```python exec
 id: the-derivative-as-a-function-2
@@ -374,7 +372,7 @@ The slope of a curve at a single point, which is a limit, which is what made the
 
 **The derivative is a function** — a rule that gives the slope wherever you ask, not a number.
 
-**Zero slope is a turning point.** The most useful fact here, and it agrees with what completing the square told you in *Parabolas*.
+**Zero slope is a turning point.** The most useful fact here, and it agrees with what completing the square told you in *Parabolas: completing the square*.
 
 **The rules save you the limit.** Bring the power down and reduce it by one; sums come apart; products do not, and need `f′g + fg′`; nesting multiplies the rates.
 

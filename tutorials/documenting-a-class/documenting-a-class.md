@@ -70,8 +70,7 @@ and keeps it there, for `help()`, an editor or a reader to find.
 
 ### Your turn
 
-1. The cell below holds the `Polynomial` class from [Reusable methods:
-   one class that does many jobs](tutorial:one-class-many-methods). Write a class docstring that
+1. The cell below holds the `Polynomial` class from [A class with many methods: building a polynomial class](tutorial:one-class-many-methods). Write a class docstring that
    says what one `Polynomial` object represents.
 2. Call `help()` on `Polynomial` to check it.
 

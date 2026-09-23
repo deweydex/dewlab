@@ -1,5 +1,5 @@
 ---
-title: "A Form That Writes a Row"
+title: "From a form to a database row"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
@@ -7,7 +7,7 @@ covers:
     covers: [DBM-LO6]
 ---
 
-# A Form That Writes a Row
+# From a form to a database row
 
 Every table in this series has grown by running SQL directly: an `INSERT`
 typed into a cell, or a DataFrame written in with `to_sql`. Somebody using

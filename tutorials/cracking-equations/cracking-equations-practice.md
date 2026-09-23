@@ -1,11 +1,11 @@
 ---
-title: "Cracking Equations — Practice"
+title: "Solving equations: linear, quadratic and simultaneous — Practice"
 practice_for: cracking-equations
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Cracking Equations — Practice
+# Solving equations: linear, quadratic and simultaneous — Practice
 
 Answers are hidden. Every root you find can be checked by substituting it back, and there is no excuse for a wrong answer surviving on this page — put it back in and see whether you get zero.
 
@@ -99,7 +99,7 @@ The difference of two squares and the perfect square are worth recognizing on si
 
 It does not factorize over the real numbers.
 
-A *sum* of squares has no real factorization, unlike a difference. Over the complex numbers it is $(x - 2i)(x + 2i)$, which is what *When There Is No Answer* is about.
+A *sum* of squares has no real factorization, unlike a difference. Over the complex numbers it is $(x - 2i)(x + 2i)$, which is what *Complex numbers: roots that are not real* is about.
 
 </details>
 

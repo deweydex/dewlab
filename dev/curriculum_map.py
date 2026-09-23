@@ -451,6 +451,16 @@ def strand_graph(outcomes, found, scope) -> str:
     return "\n".join(lines)
 
 
+def node_label(title: str) -> str:
+    """A tutorial's title as a node in the sequence graph.
+
+    Only a leftover "Tutorial 14: " numbering prefix is dropped, since the
+    node carries its own number. A colon inside a title is part of it:
+    "Lists: keeping many values in order" names the topic before the colon.
+    """
+    return re.sub(r"^Tutorial \d+:\s*", "", title).strip()
+
+
 def sequence_graph(tutorials: list[Tutorial], refs: dict[str, set[int]]) -> str:
     """The teaching order, with a dashed arrow wherever one tutorial names
     an earlier one in its own text."""
@@ -462,7 +472,7 @@ def sequence_graph(tutorials: list[Tutorial], refs: dict[str, set[int]]) -> str:
 
     lines = ["```mermaid", "graph TD"]
     for tutorial in ordered:
-        label = tutorial.title.split(":", 1)[-1].strip()
+        label = node_label(tutorial.title)
         lines.append(f'  T{tutorial.order}["{tutorial.order}. {label}"]')
     lines.append("")
     for a, b in zip(ordered, ordered[1:]):
@@ -692,7 +702,7 @@ def proposal_graph(tutorials: list[Tutorial], proposals: list[dict]) -> str:
 
     lines = ["```mermaid", "graph TD"]
     for tutorial in ordered:
-        label = tutorial.title.split(":", 1)[-1].strip()
+        label = node_label(tutorial.title)
         lines.append(f'  T{tutorial.order}["{tutorial.order}. {label}"]')
     for proposal in proposals:
         lines.append(f'  {node_of[proposal["id"]]}("{proposal["title"]}")')

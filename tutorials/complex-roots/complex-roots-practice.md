@@ -1,11 +1,11 @@
 ---
-title: "When There Is No Answer — Practice"
+title: "Complex numbers: roots that are not real — Practice"
 practice_for: complex-roots
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# When There Is No Answer — Practice
+# Complex numbers: roots that are not real — Practice
 
 Answers are hidden. The checking cell will confirm a root by substituting it back — which is the argument, not just a convenience.
 

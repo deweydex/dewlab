@@ -1,5 +1,5 @@
 ---
-title: "Mixed Problems — Trigonometry and Geometry"
+title: "Mixed problems: trigonometry and geometry"
 practice_across:
   - lines-and-distances
   - the-unit-circle
@@ -9,7 +9,7 @@ year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Mixed Problems — Trigonometry and Geometry
+# Mixed problems: trigonometry and geometry
 
 Coordinates, angles, triangles and waves are four views of the same circle. These problems move between them, usually without saying so.
 

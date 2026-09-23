@@ -12,7 +12,7 @@ true.
 
 ## Why the Unit Circle is Structured as a Dedicated Module
 
-Trigonometry was originally structured as a composite tutorial (*Angles and Waves*), carrying five outcomes. Decomposing it allows *The Unit Circle* to develop radians, trigonometric definitions, and exact surd ratios in depth.
+Trigonometry was originally structured as a composite tutorial (*Angles and Waves*), carrying five outcomes. Decomposing it allows *The unit circle: sine, cosine and tangent* to develop radians, trigonometric definitions, and exact surd ratios in depth.
 
 This establishes exact values (`MIT-4.7`) through geometry rather than rote memorization: **on the unit circle, surds are coordinates**. $\frac{\sqrt{2}}{2}$ is the coordinate where the $45^\circ$ line intersects the unit circle ($x^2 + y^2 = 1$). Pythagoras yields this directly from prior coordinate geometry concepts.
 

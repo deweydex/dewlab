@@ -1,11 +1,11 @@
 ---
-title: "Numbers and Their Families — Practice"
+title: "Number types, powers and logarithms — Practice"
 practice_for: numbers-and-their-families
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Numbers and Their Families — Practice
+# Number types, powers and logarithms — Practice
 
 Answers are hidden. The index laws reward being *used* rather than memorized, so do the manipulations by hand and let the cells settle the arguments.
 
@@ -53,7 +53,7 @@ Over twelfths: $\frac{8}{12} + \frac{3}{12} - \frac{2}{12} = \frac{9}{12}$.
 
 5 and 21.
 
-Neither needs the factorials worked out. $\frac{5!}{4!}$ cancels everything below 5. The second is $\frac{7 \times 6}{2}$, and it is the number of ways to choose 2 things from 7 — which is where *Counting Carefully* picks this up.
+Neither needs the factorials worked out. $\frac{5!}{4!}$ cancels everything below 5. The second is $\frac{7 \times 6}{2}$, and it is the number of ways to choose 2 things from 7 — which is where *Counting: factorials, permutations and combinations* picks this up.
 
 </details>
 

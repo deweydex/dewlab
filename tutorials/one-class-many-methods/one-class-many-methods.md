@@ -1,5 +1,5 @@
 ---
-title: "Reusable methods: one class that does many jobs"
+title: "A class with many methods: building a polynomial class"
 year: "2026-2027"
 version: 2026.09.04.1
 covers:
@@ -11,7 +11,7 @@ covers:
     covers: [FOOP-LO8]
 ---
 
-# Reusable methods: one class that does many jobs
+# A class with many methods: building a polynomial class
 
 So far our classes have had only a few methods. What happens when a
 class has many jobs to do? On this page we build one class step by
@@ -26,7 +26,7 @@ We can store a polynomial as a list of its coefficients. The item at
 index `i` is the coefficient of $x^i$. So $3x^2 + 5x - 2$ becomes
 `[-2, 5, 3]`: first the number on its own ($x^0$), then $x^1$, then
 $x^2$. If you have done
-[Expressions Come Alive](tutorial:expressions-come-alive), you have
+[Polynomials: representing and combining them in Python](tutorial:expressions-come-alive), you have
 seen this list before.
 
 ## From loose functions to one class

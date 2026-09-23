@@ -1,5 +1,5 @@
 ---
-title: "Three Doors"
+title: "The Monty Hall problem: three doors and a simulation"
 year: "2026-2027"
 version: 2026.09.20.1
 covers:
@@ -13,7 +13,7 @@ covers:
     touches: [MIT-5.7]
 ---
 
-# Three Doors
+# The Monty Hall problem: three doors and a simulation
 
 On a game show there are three doors. Behind one of them is a car.
 Behind each of the other two is a goat.

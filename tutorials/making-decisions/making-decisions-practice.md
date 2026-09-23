@@ -267,8 +267,8 @@ off-by-one bugs.
 `(not a) or (not b)`.
 
 This is De Morgan's law. We meet it again in
-[Logic and Truth](tutorial:logic-and-truth) and in
-[Drawing Sets](tutorial:venn-diagrams). The opposite of "both" is "at
+[Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth) and in
+[Venn diagrams: drawing sets and their overlaps](tutorial:venn-diagrams). The opposite of "both" is "at
 least one is not". The other half of the law: the opposite of "either"
 is "neither".
 
