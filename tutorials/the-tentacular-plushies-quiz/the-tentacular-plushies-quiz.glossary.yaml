@@ -44,7 +44,7 @@ entries:
     definition: >
       PRAGMA table_info lists a table's columns, one row for each
       column. An empty result means the table does not exist yet.
-    example: "PRAGMA table_info(products);"
+    example: "PRAGMA table_info(product_tbl);"
 
   - term: "FOREIGN KEY"
     kind: keyword
@@ -52,4 +52,4 @@ entries:
       FOREIGN KEY marks a column as one that names a row in another
       table. REFERENCES follows it, naming the table and column the key
       points to.
-    example: "FOREIGN KEY (product_id) REFERENCES products(id)"
+    example: "FOREIGN KEY (product_id) REFERENCES product_tbl(product_id)"

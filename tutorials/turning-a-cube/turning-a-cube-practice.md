@@ -1,11 +1,11 @@
 ---
-title: "Turning a Cube — Practice"
+title: "The rotation matrix: turning a cube in 3D — Practice"
 practice_for: turning-a-cube
 year: "2026-2027"
 version: 2026.09.21.1
 ---
 
-# Turning a Cube — Practice
+# The rotation matrix: turning a cube in 3D — Practice
 
 Read the matrix before you run it. The columns say where the three
 axes land, and that is usually enough to predict the picture.

@@ -24,4 +24,4 @@ entries:
   - term: "COUNT()"
     kind: function
     definition: "COUNT() counts the rows a query matches, instead of returning the rows themselves."
-    example: "SELECT COUNT(*) FROM courses;"
+    example: "SELECT COUNT(*) FROM course_tbl;"

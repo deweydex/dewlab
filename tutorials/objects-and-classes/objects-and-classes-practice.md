@@ -1,17 +1,18 @@
 ---
-title: "Objects and Classes — Practice"
+title: "Classes and objects: keeping data and actions together — Practice"
 practice_for: objects-and-classes
 year: "2026-2027"
-version: 2026.09.04.1
+version: 2026.09.22.1
 ---
 
-# Objects and Classes — Practice
+# Classes and objects: keeping data and actions together — Practice
 
-Answers are folded. Several of these ask you to predict an output before
-running anything. Resist checking first — being wrong and finding out why
-is worth more than being right by accident.
+The answers are hidden in folds under each problem. Several problems ask
+you to predict what a piece of code prints. Try to answer before you
+run anything. Being wrong and finding out why teaches you more than
+being right by luck.
 
-## One Thing, Many Parts
+## One thing, many parts
 
 ```python exec
 id: one-thing-many-parts-1
@@ -29,17 +30,18 @@ account.deposit(50.0)
 print(account.balance)
 ```
 
-**1.** Create two separate `BankAccount` objects above, both called
-`account_a` and `account_b`. Deposit into `account_a` only. Predict, then
-check: does `account_b`'s balance change too?
+**1.** In the cell above, create two separate `BankAccount` objects,
+called `account_a` and `account_b`. Deposit money into `account_a` only.
+Does `account_b`'s balance change too? Predict first, then run it to
+check.
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. `account_b.balance` stays whatever it started at.
+No. `account_b.balance` stays at whatever it started with.
 
-Each object has its own `self`. `self.balance` inside `deposit()` means
-"the balance of whichever object this call was made on," so calling
-`account_a.deposit(...)` never touches `account_b` at all.
+Each object has its own `self`. Inside `deposit()`, `self.balance` means
+"the balance of the object this call was made on". So
+`account_a.deposit(...)` never touches `account_b`.
 
 </details>
 
@@ -54,13 +56,13 @@ class Dog:
 
 <details class="dl-answer"><summary>answer</summary>
 
-`self` as the first parameter. It should read `def __init__(self, name,
-breed):`.
+`self` is missing as the first parameter. The line should read
+`def __init__(self, name, breed):`.
 
-Without it, Python still passes the new object as the first argument. So
-`name` inside the method actually receives the object, and the real `name`
-argument has nowhere to go. `Dog("Rex", "Collie")` fails with a `TypeError`
-about too many arguments, since `__init__` was only written to accept two.
+Without it, Python still passes the new object in as the first
+argument. So `name` receives the object, and the real name has nowhere
+to go. `Dog("Rex", "Collie")` fails with a `TypeError`: it says
+`__init__` takes 2 arguments but 3 were given.
 
 </details>
 
@@ -80,207 +82,187 @@ book = Book("Dune", "Frank Herbert")
 print(book.title)
 ```
 
-The shape is identical to `BankAccount`'s constructor, with different field
-names. Every class's `__init__` follows this same pattern: `self`, then
-whatever the object needs to start with.
+The shape is the same as `BankAccount`'s constructor, with different
+field names. Every class's `__init__` follows this pattern: first
+`self`, then whatever the object needs to start with.
 
 </details>
 
-**4.** What does a method need in its parameter list that a plain function
-never does, and what is it for?
+**4.** What does a method need in its parameter list that a plain
+function does not? What is it for?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`self`, always first. It is how the method knows which object's own fields
-to read and change.
+A method needs `self`, always first. `self` is how the method knows
+which object's fields to read and change.
 
-A plain function has no object attached to it, so it has nothing for a
-hidden first parameter to refer to. A method is only ever called through an
-object (`account.deposit(...)`), and `self` is Python's way of handing that
-object to the method's own body.
+A plain function has no object attached to it, so there is nothing for
+`self` to refer to. We call a method through an object, as in
+`account.deposit(...)`. `self` is Python's way of handing that object
+to the method's body.
 
 </details>
 
-## Keeping Details to Itself
+## Printing an object
 
 ```python exec
-id: keeping-details-to-itself-1
+id: objects-and-classes-practice-printing-1
 class BankAccount:
     def __init__(self, owner, balance):
         self.owner = owner
         self.balance = balance
 
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
+    def __str__(self):
+        return f"{self.owner} has {self.balance}"
 
 
-account = BankAccount("Priya", 100.0)
-account.withdraw(150.0)
-print(account.balance)
+account = BankAccount("Priya", 200.0)
+print(account)
+print([account])
 ```
 
-**5.** Predict the cell's output before running it. Then change `150.0` to
-`50.0` and predict again before running.
+**5.** Predict both lines of output before you run the cell. Which line
+uses `__str__`, and which does not?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`Refused: not enough balance.` then `100.0` — the withdrawal is refused, so
-the balance never moves.
+The first line is `Priya has 200.0`. `print(account)` uses `__str__`.
 
-With `50.0` instead: nothing printed by `withdraw()` itself, then `50.0` —
-the balance drops from 100.0 to 50.0.
-
-</details>
-
-**6.** A teammate suggests removing `withdraw()` entirely and just writing
-`account.balance = account.balance - 150` wherever a withdrawal happens in
-the program. What is lost by doing that?
-
-<details class="dl-answer"><summary>answer</summary>
-
-The refusal check. Every one of those scattered lines would need its own
-copy of `if amount > self.balance`. Missing it in even one place lets the
-balance go negative there.
-
-This is what encapsulation buys: the rule about changing `balance` lives in
-exactly one method. Every caller gets it for free, rather than needing to
-remember it themselves.
+The second line is something like
+`[<__main__.BankAccount object at 0x7f...>]`. The number at the end
+will be different on your screen. An object inside a list is shown with
+`__repr__`, and this class does not define one yet.
 
 </details>
 
-**7.** `deposit()` above has no guard against a negative `amount`. Add one,
-so a negative deposit is refused the same way an over-large withdrawal is.
+**6.** Add a `__repr__` method to the class above, so the second line
+prints `[BankAccount('Priya', 200.0)]`.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def deposit(self, amount):
-    if amount < 0:
-        print("Refused: cannot deposit a negative amount.")
-        return
-    self.balance = self.balance + amount
+    def __repr__(self):
+        return f"BankAccount('{self.owner}', {self.balance})"
 ```
 
-The shape matches `withdraw()`'s own guard: check first, refuse and return
-early if the check fails, otherwise make the change.
+It sits inside the class, next to `__str__`, with the same indent.
+Now the list shows the text `__repr__` returns. `print(account)` still
+uses `__str__`, so the first line does not change.
 
 </details>
 
-**8.** In your own words: what is the difference between encapsulation and
-abstraction?
+**7.** This `Pet` class has a `__str__` method, but `print(pet)` fails.
+What is wrong with it?
+
+```python
+class Pet:
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        print("Pet called " + self.name)
+
+
+pet = Pet("Rex")
+print(pet)
+```
 
 <details class="dl-answer"><summary>answer</summary>
 
-Encapsulation is keeping an object's data behind its own methods, so
-nothing outside the class touches it directly. Abstraction is what a
-caller sees from outside: `account.withdraw(50)`, with no need to know
-there is a comparison and a `self.balance -` happening underneath.
+`__str__` prints the text instead of returning it. It does print
+`Pet called Rex` first. Then it returns nothing, which in Python is
+`None`. `print()` needs a string from `__str__`, so it stops with
+`TypeError: __str__ returned non-string (type NoneType)`.
 
-They usually arrive together. Hiding the data (encapsulation) is what makes
-it possible to show a caller only the method's name and effect
-(abstraction). They still answer different questions: encapsulation is
-about where the code lives, abstraction is about what a caller has to
-know.
+The fix is to change `print(...)` to `return ...` inside `__str__`.
 
 </details>
 
-## Building on What Already Exists
+## Class attributes and instance attributes
 
 ```python exec
-id: building-on-what-already-exists-1
+id: objects-and-classes-practice-attributes-1
 class BankAccount:
+    bank_name = "Dew Bank"
+
     def __init__(self, owner, balance):
         self.owner = owner
         self.balance = balance
 
-    def deposit(self, amount):
-        self.balance = self.balance + amount
 
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
+alice = BankAccount("Alice", 100.0)
+bob = BankAccount("Bob", 250.0)
 
-
-class SavingsAccount(BankAccount):
-    def __init__(self, owner, balance, interest_rate):
-        super().__init__(owner, balance)
-        self.interest_rate = interest_rate
-
-    def add_interest(self):
-        self.balance = self.balance + self.balance * self.interest_rate
-
-
-savings = SavingsAccount("Priya", 1000.0, 0.1)
-savings.add_interest()
-print(savings.balance)
+alice.bank_name = "Alice's Bank"
+print(alice.bank_name)
+print(bob.bank_name)
+print(BankAccount.bank_name)
 ```
 
-**9.** Predict the balance above before running it. Then create a second
-`SavingsAccount` with an interest rate of `0.2` on the same starting
-balance, and predict its balance too.
+**8.** Predict all three lines before you run the cell. Did the class
+attribute change?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`1100.0` — `1000.0 + 1000.0 * 0.1`.
+`Alice's Bank`, then `Dew Bank`, then `Dew Bank`.
 
-At `0.2`: `1200.0` — `1000.0 + 1000.0 * 0.2`. The two objects never share a
-balance, the same way `account_a` and `account_b` did not in question 1.
+The class attribute did not change. `alice.bank_name = ...` made a new
+instance attribute on `alice` alone. From then on, `alice.bank_name`
+finds her own value first. `bob` has no instance attribute of that
+name, so `bob.bank_name` still reaches the class's value.
 
 </details>
 
-**10.** `savings.deposit(50.0)` works, even though `SavingsAccount` never
-defines `deposit()`. Why?
-
-<details class="dl-answer"><summary>answer</summary>
-
-`SavingsAccount(BankAccount)` inherits everything `BankAccount` defines,
-`deposit()` included. Python looks for `deposit()` on `SavingsAccount`
-first, does not find one, and uses `BankAccount`'s version instead.
-
-</details>
-
-**11.** `super().__init__(owner, balance)` appears in `SavingsAccount`'s
-constructor. What would go wrong if that line were deleted, leaving only
-`self.interest_rate = interest_rate`?
-
-<details class="dl-answer"><summary>answer</summary>
-
-`self.owner` and `self.balance` would never be set. `add_interest()` reads
-`self.balance` and would raise `AttributeError: 'SavingsAccount' object has
-no attribute 'balance'` the first time it ran.
-
-`super().__init__(...)` is what hands the owner and balance to
-`BankAccount`'s own constructor, the same way calling `BankAccount(...)`
-directly would. Skipping it skips everything that constructor sets up.
-
-</details>
-
-**12.** Write a `CheckingAccount(BankAccount)` with one new field,
-`overdraft_limit`, and no new methods yet. Create one and print its
-`overdraft_limit`.
-
-<details class="dl-answer"><summary>answer</summary>
+**9.** Someone writes the account counter like this, with `self`
+instead of `BankAccount`:
 
 ```python
-class CheckingAccount(BankAccount):
-    def __init__(self, owner, balance, overdraft_limit):
-        super().__init__(owner, balance)
-        self.overdraft_limit = overdraft_limit
+class BankAccount:
+    accounts_opened = 0
+
+    def __init__(self, owner, balance):
+        self.owner = owner
+        self.balance = balance
+        self.accounts_opened = self.accounts_opened + 1
 
 
-checking = CheckingAccount("Priya", 200.0, 100.0)
-print(checking.overdraft_limit)
+alice = BankAccount("Alice", 100.0)
+bob = BankAccount("Bob", 250.0)
+print(alice.accounts_opened)
+print(bob.accounts_opened)
+print(BankAccount.accounts_opened)
 ```
 
-`CheckingAccount` returns properly in a later tutorial, with a
-`withdraw()` of its own that actually uses this field.
+What do the three lines print? Why is the count wrong?
+
+<details class="dl-answer"><summary>answer</summary>
+
+`1`, `1`, then `0`.
+
+`self.accounts_opened + 1` reads the class's value, `0`, and adds one.
+But `self.accounts_opened = ...` stores the result as a new instance
+attribute on this one object. Each account ends up with its own count
+of `1`, and the class's count stays at `0`. Writing
+`BankAccount.accounts_opened` on both sides fixes it.
+
+</details>
+
+**10.** A `Student` class is used for every student at one college.
+Which of these should be class attributes, and which should be instance
+attributes?
+
+- the student's name
+- the college's name
+- the student's grade
+- the highest grade anyone can get, which is 100
+
+<details class="dl-answer"><summary>answer</summary>
+
+Instance attributes: the student's name and the student's grade. Each
+student has their own.
+
+Class attributes: the college's name and the highest grade. They are
+the same for every student, so one shared value is enough. If the
+college changes its name, we change it in one place.
 
 </details>

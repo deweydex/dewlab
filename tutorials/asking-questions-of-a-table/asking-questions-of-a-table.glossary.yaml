@@ -7,7 +7,7 @@
 #
 # `*` gets its entry here rather than on the first tutorial: tutorial one
 # only ever shows it as part of the fixed phrase "SELECT * FROM
-# dinosaurs"; this is the page that isolates it ("SELECT * shows every
+# dinosaur_tbl"; this is the page that isolates it ("SELECT * shows every
 # column") and then teaches what to write instead, which is the moment a
 # reader is actually taught what the symbol itself means.
 entries:
@@ -17,7 +17,7 @@ entries:
       WHERE keeps only the rows where the condition after it is true.
       Text in the condition goes in single quotes, and a number needs
       none.
-    example: "SELECT name FROM dinosaurs WHERE diet = 'Carnivore';"
+    example: "SELECT name FROM dinosaur_tbl WHERE diet = 'Carnivore';"
 
   - term: "ORDER BY"
     kind: keyword
@@ -25,11 +25,11 @@ entries:
       ORDER BY sorts a result by one of its columns. DESC puts the
       largest value first, and ASC puts the smallest value first. Leaving
       the word out gives you ASC as well.
-    example: "SELECT name, length_meters FROM dinosaurs ORDER BY length_meters DESC;"
+    example: "SELECT name, length_meters FROM dinosaur_tbl ORDER BY length_meters DESC;"
 
   - term: "*"
     kind: operator
     definition: >
       Stands for every column in a table, in place of naming them one at
       a time.
-    example: "SELECT * FROM dinosaurs;"
+    example: "SELECT * FROM dinosaur_tbl;"

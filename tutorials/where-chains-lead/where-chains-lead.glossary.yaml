@@ -1,36 +1,49 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
+  - term: state diagram
+    kind: concept
+    definition: >
+      A state diagram is a drawing of the states something can be in, as
+      circles, with arrows for the ways it can move between them. Each
+      arrow is labelled with how likely that move is.
   - term: transition matrix
     kind: concept
     definition: >
-      A matrix where each row is a probability distribution over what
-      happens next, given the current state. Every row sums to 1.
-  - term: state vector
-    kind: concept
-    definition: >
-      The current probabilities across every state, as a row — [1, 0] for
-      "definitely the first state," for instance. Multiplying it by a
-      transition matrix gives the next step's probabilities.
-  - term: stationary distribution
-    kind: concept
-    definition: >
-      The state vector a transition matrix eventually settles into,
-      regardless of where it started. A fixed point of the process — once
-      reached, multiplying by the transition matrix again changes nothing.
-    example: "pi @ P == pi"
+      A transition matrix is a matrix of probabilities. Each row belongs
+      to one state, and gives the chance of each state that can come next.
+      Every row adds up to 1.
   - term: Markov chain
     kind: concept
     definition: >
-      A process that moves between states using a transition matrix. What
-      happens next depends only on the current state, never on how it got
-      there.
+      A Markov chain is a process that moves from state to state using a
+      transition matrix. What happens next depends only on the current
+      state, and not on how the process got there.
+  - term: state vector
+    kind: concept
+    definition: >
+      A state vector is a row that holds the probability of each state.
+      [1, 0] means "certainly the first state". Multiplying it by a
+      transition matrix gives the probabilities for the next step.
+  - term: stationary distribution
+    kind: concept
+    definition: >
+      The stationary distribution is the state vector that stays the same
+      when you multiply it by the transition matrix again. For chains like
+      the ones on this page, the state vector settles on it wherever it
+      started.
+    example: "pi @ P == pi"
+  - term: random surfer
+    kind: concept
+    definition: >
+      A random surfer is an imaginary person who always clicks one of the
+      links on the page they are on, chosen at random.
   - term: PageRank
     kind: concept
     definition: >
-      Ranks pages using the stationary distribution of a random-surfer
-      Markov chain over the web's link graph. A page's rank is the share of
-      a random surfer's long-run time that it collects.
+      PageRank is a way of ranking web pages. A page's rank is the share of
+      a random surfer's time that the page gets in the long run: its entry
+      in the stationary distribution.
   - term: "random.choices()"
     kind: function
-    definition: Picks one item from a list at random, according to a list of weights.
+    definition: Picks items from a list at random, so that an item with a bigger weight is picked more often. It gives back a list.
     example: 'random.choices(states, weights=row)[0]'

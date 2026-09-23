@@ -1,5 +1,5 @@
 ---
-title: "The Fourth Number"
+title: "Homogeneous coordinates and the projection matrix"
 year: "2026-2027"
 version: 2026.09.21.1
 covers:
@@ -16,17 +16,19 @@ covers:
     touches: [MIT-4.6]
 ---
 
-# The Fourth Number
+# Homogeneous coordinates and the projection matrix
 
-Two tutorials, two kinds of step. Turning a cube was a matrix. Moving
-it was not: `move` added a number to every coordinate, and no
-multiplication does that. This tutorial fixes that with a trick that
+[The rotation matrix: turning a cube in 3D](tutorial:turning-a-cube)
+used two kinds of step. Turning the cube was a matrix. Moving it was
+not: `move` added a number to every coordinate, and no multiplication
+does that. This tutorial fixes that with a trick that
 looks like cheating. Then it uses the same trick to turn the
 perspective divide itself into a matrix. By the end, everything a
 camera does to a point is one multiplication and one division, which
 is exactly how a graphics card works.
 
-Everything from the last two tutorials, gathered into one cell. Let's
+Everything we need from the earlier tutorials in this series is
+gathered into one cell. Let's
 run it first, and then it is out of the way:
 
 ```python exec
@@ -179,8 +181,9 @@ draw(multiply(swing, cube4)[:3])
 ### Your turn
 
 Sixty frames of `swing`, with a different angle in each, is the ball's
-orbit from [A Point on the Screen](tutorial:a-point-on-the-screen)
-with a cube in place of the ball. Could you draw four of those frames,
+orbit from [3D animation: a camera and a ball in
+orbit](tutorial:a-ball-in-orbit#a-ball-in-orbit) with a cube in place
+of the ball. Could you draw four of those frames,
 at $0°$, $30°$, $60°$ and $90°$? `plt.subplots(1, 4)` and `plt.sca` are
 in the flip-book cells of the last tutorial if you want the shape of
 the loop.
@@ -209,8 +212,8 @@ point through, the corner $(2, 1, 4, 1)$:
 2. Divide everything by $w = 4$: $(0.5, 0.25, 1, 1)$.
 
 The first two numbers are $2/4$ and $1/4$: the perspective divide,
-exactly as [A Point on the
-Screen](tutorial:a-point-on-the-screen#why-dividing-works) had it.
+exactly as [Perspective projection: dividing by
+depth](tutorial:a-point-on-the-screen#why-dividing-works) had it.
 
 ```python exec
 id: the-divide-as-a-matrix-1
@@ -276,7 +279,8 @@ behind it. So it keeps a depth for each pixel, and it wants that depth
 as a number between $-1$ and $1$. The third row does the conversion. It
 uses two more numbers: the depths of the near plane and the ***far
 plane***, the nearest and the farthest anything is allowed to be. The
-near plane is the rule the first tutorial's orbit was missing.
+near plane is the rule the orbit in [3D animation: a camera and a ball
+in orbit](tutorial:a-ball-in-orbit#through-the-camera) was missing.
 
 $$P = \begin{bmatrix} f & 0 & 0 & 0 \\ 0 & f & 0 & 0 \\ 0 & 0 & \dfrac{\text{far} + \text{near}}{\text{far} - \text{near}} & \dfrac{-2 \cdot \text{far} \cdot \text{near}}{\text{far} - \text{near}} \\ 0 & 0 & 1 & 0 \end{bmatrix}$$
 
@@ -345,20 +349,19 @@ hint: Copy the loop from the cell above and change near and far. Compare the con
 
 ## Reflection
 
-Three tutorials, and the whole of a camera fits in a 4×4 matrix and a
+Four tutorials, and the whole of a camera fits in a 4×4 matrix and a
 divide. Which of the two tricks felt more like cheating: the row of
 ones that lets a matrix add, or the last row that lets a divide hide
 inside a multiplication? Both are ordinary matrix multiplication, which
-you built by hand out of the dot product in [Multiplying
-Grids](tutorial:multiplying-grids). Nothing new was added to the
+you built by hand out of the dot product in [Matrix multiplication: rows times columns](tutorial:multiplying-grids). Nothing new was added to the
 arithmetic. What changed was what the rows and columns were made to
 mean.
 
 A browser has all of this built in. CSS has a property called
 `perspective`, and it is this divide. [An orbit in pure
 CSS](tutorial:an-orbit-in-css), on the Web Authoring course, has the
-ball from the first tutorial going round with no arithmetic written
-down at all.
+ball from the second tutorial of this series going round with no
+arithmetic written down at all.
 
 ## Where to Read More
 

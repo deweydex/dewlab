@@ -1,33 +1,34 @@
 ---
-title: "Solving Systems — Practice"
+title: "Systems of equations: solving them with matrices — Practice"
 practice_for: solving-systems
 year: "2026-2027"
 version: 2026.08.24.1
 ---
 
-# Solving Systems — Practice
+# Systems of equations: solving them with matrices — Practice
 
-Every elimination problem here can be checked the same way: substitute your
-answer back into the *original* equations, not the row-reduced ones. If it
-does not satisfy those, an arithmetic slip happened somewhere in the middle.
+You can check every elimination problem on this page in the same way.
+Put your answer back into the original equations, not the ones after the
+row operations. If your answer does not make those true, there is an
+arithmetic mistake somewhere in the middle.
 
-## From Equations to a Matrix
+## From equations to a matrix
 
-**1.** Write $3x - 2y = 5$ and $x + 4y = -3$ as an augmented matrix, then
-solve it — by substitution, elimination, or the inverse, whichever you
-prefer.
+**1.** Write $3x - 2y = 5$ and $x + 4y = -3$ as an augmented matrix. Then
+solve the system. You can use substitution, elimination or the inverse,
+whichever you prefer.
 
 <details class="dl-answer"><summary>answer</summary>
 
 $\left[\begin{array}{cc|c} 3 & -2 & 5 \\ 1 & 4 & -3 \end{array}\right]$,
 and the solution is $x = 1$, $y = -1$.
 
-Checking against the originals: $3(1) - 2(-1) = 5$ and $1 + 4(-1) = -3$ —
-both correct.
+Check against the original equations: $3(1) - 2(-1) = 5$ and
+$1 + 4(-1) = -3$. Both are correct.
 
 </details>
 
-## Elimination, Start to Finish
+## Elimination, from start to finish
 
 ```python exec
 id: elimination-1
@@ -41,18 +42,20 @@ $x_1 + 2x_2 - x_3 = 2$ by Gaussian elimination.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Write the augmented matrix, and clear $x_1$ out of rows 2 and 3 using row
-   1, the same way the tutorial cleared it.
-2. That leaves a $2\times2$ system in rows 2 and 3, in $x_2$ and $x_3$ only —
-   clear $x_2$ out of row 3 using row 2.
-3. Row 3 now has one unknown in it. Solve for $x_3$.
-4. Work back up: substitute into row 2 for $x_2$, then into row 1 for $x_1$.
+1. Write the augmented matrix.
+2. Use row 1 to remove $x_1$ from rows 2 and 3, in the same way as the
+   tutorial.
+3. Rows 2 and 3 are now a $2\times2$ system, in $x_2$ and $x_3$ only. Use
+   row 2 to remove $x_2$ from row 3.
+4. Row 3 now has one unknown in it. Solve for $x_3$.
+5. Work back up. Put $x_3$ into row 2 to find $x_2$. Then put both into
+   row 1 to find $x_1$.
 
-**Think about:** the numbers here do not come out to whole numbers. Does
-that make the method any less trustworthy?
+**Think about:** the answers here are not whole numbers. Does that make
+the method any less trustworthy?
 
-**Try this next:** substitute your fractional answer back into all three
-original equations and confirm each one balances exactly.
+**Try this next:** put your answer, fractions and all, back into all
+three original equations. Does each one balance exactly?
 
 </details>
 
@@ -68,85 +71,104 @@ M[2] = [3 * v for v in M[2]]                        # [0, 3, -6, -12]
 M[2] = [M[2][k] + M[1][k] for k in range(4)]        # [0, 0, -5, -13]
 ```
 
-Row 3 says $-5x_3 = -13$, so $x_3 = 2.6$. Row 2 says $-3x_2 + x_3 = -1$, so
-$x_2 = 1.2$. Row 1 gives $x_1 = 2.2$. Not every system in real use has
-whole-number answers, and the method does not care either way — fractions
-are just numbers.
+Row 3 says $-5x_3 = -13$, so $x_3 = 2.6$. Row 2 says $-3x_2 + x_3 = -1$,
+so $x_2 = 1.2$. Row 1 then gives $x_1 = 2.2$.
+
+Many systems in real use do not have whole-number answers. The method
+works the same either way. Fractions are numbers too.
 
 </details>
 
-## Types of Solutions
+## Types of solutions
 
-**3.** $\begin{cases} x + 2y = 3 \\ 2x + 4y = 6 \end{cases}$ — solve it, or
-say why you cannot.
+**3.** Solve $\begin{cases} x + 2y = 3 \\ 2x + 4y = 6 \end{cases}$, or say
+why you cannot.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Infinitely many solutions. The second equation is exactly twice the first —
-$2(x + 2y) = 2(3)$ is $2x + 4y = 6$ — so it carries no new information at
-all. Any $(x, y)$ satisfying the first equation satisfies the second
-automatically, which leaves one equation and two unknowns: a whole line of
-solutions, not a single point.
+There are infinitely many solutions. The second equation is exactly
+twice the first: $2(x + 2y) = 2(3)$ is $2x + 4y = 6$. So it tells us
+nothing new.
+
+Any $(x, y)$ that makes the first equation true makes the second one
+true as well. That leaves one equation with two unknowns. The solutions
+form a whole line, not a single point.
 
 </details>
 
-**4.** $\begin{cases} x + 2y = 3 \\ 2x + 4y = 7 \end{cases}$ — solve it, or
-say why you cannot.
+**4.** Solve $\begin{cases} x + 2y = 3 \\ 2x + 4y = 7 \end{cases}$, or say
+why you cannot.
 
 <details class="dl-answer"><summary>answer</summary>
 
-No solution. The left-hand sides are proportional exactly as in problem 3 —
-but the right-hand sides are not: doubling the first equation's left side
-gives $6$, not $7$. Two lines with the same slope and different intercepts
-never meet, and that is exactly what "the same equation, twice, disagreeing
-about the answer" describes.
+There is no solution. As in problem 3, the second left-hand side is
+twice the first. But the right-hand sides do not follow: doubling the
+first equation gives $6$ on the right, not $7$.
+
+In a picture, these are two lines with the same slope that cross the
+$y$-axis at different places. Such lines never meet. The two equations
+have the same left-hand side, but they disagree about the answer.
 
 </details>
 
-**5.** Without fully solving it, is
-$\begin{cases} x - y + z = 2 \\ 2x - 2y + 2z = 5 \end{cases}$ solvable?
+**5.** Can we solve
+$\begin{cases} x - y + z = 2 \\ 2x - 2y + 2z = 5 \end{cases}$? Decide
+without solving it fully.
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. The second equation's left side is exactly twice the first's, so a
-consistent system would need its right side to be $2 \times 2 = 4$ — and it
-says $5$ instead. Same shape of contradiction as problem 4, one dimension up.
+No. The left-hand side of the second equation is exactly twice the first
+one. So, for the two to agree, the right-hand side would need to be
+$2 \times 2 = 4$. It is $5$. This is the same kind of disagreement as
+in problem 4, with one more unknown.
 
 </details>
 
-## Checking Your Work
+## Checking your work
 
-**6.** A friend claims $x_1 = 3, x_2 = 1, x_3 = 2$ solves
+**6.** A friend says that $x_1 = 3, x_2 = 1, x_3 = 2$ solves
 $x_1 + x_2 + x_3 = 6$, $2x_1 - x_2 + 3x_3 = 11$, $x_1 + 2x_2 - x_3 = 2$.
 Are they right?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. $3 + 1 + 2 = 6$ checks out, but $2(3) - 1 + 3(2) = 6 - 1 + 6 = 11$ also
-checks — and $3 + 2(1) - 2 = 3$, not $2$. The third equation fails, so the
-claimed answer is wrong, even though it happens to satisfy the first two.
+No. The first equation works: $3 + 1 + 2 = 6$. The second works too:
+$2(3) - 1 + 3(2) = 6 - 1 + 6 = 11$. But the third gives
+$3 + 2(1) - 2 = 3$, not $2$. The third equation fails, so the answer is
+wrong, even though it makes the first two true.
 
-This is worth noticing: a solution has to satisfy *every* equation, and
-checking only some of them — especially the ones that look easiest — is
-exactly how a wrong answer survives a quick check. (The actual solution to
-this system is the fractional one from problem 2.)
+A solution has to make every equation true. If you check only some of
+them, especially the ones that look easiest, a wrong answer can slip
+through. (The real solution to this system is the one with fractions,
+from problem 2.)
 
 </details>
 
-**7.** Write your own three-equation, three-unknown system with a whole
-number solution, by picking the answer first and working backward. Then
-solve it by elimination to confirm.
+**7.** Write your own system of three equations in three unknowns, with a
+whole-number solution.
+
+1. Pick the answer first.
+2. Work backwards to write three equations that it makes true.
+3. Solve your system by elimination, to confirm it.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Pick an answer, say $(2, -1, 3)$, and any three equations it happens to
-satisfy — for instance $x + y + z = 4$, $x - y + z = 6$, $2x + y - z = 0$.
-Check the pick first: $2 - 1 + 3 = 4$, $2 + 1 + 3 = 6$, $4 - 1 - 3 = 0$ — all
-correct by construction, and elimination on the resulting matrix has to
-recover $(2, -1, 3)$, because that is the only point where all three
-equations agree.
+Pick an answer, say $(2, -1, 3)$. Then choose left-hand sides, and work
+out each right-hand side from your answer. For example:
+$x + y + z = 4$, $x - y + z = 6$ and $2x + y - z = 0$.
 
-Working backward like this is a useful technique — it is how many
-textbook problems with clean answers get written.
+Check them first: $2 - 1 + 3 = 4$, $2 + 1 + 3 = 6$ and $4 - 1 - 3 = 0$.
+All three are true, because we built them that way. Elimination on this
+system gives back $(2, -1, 3)$, because that is the only point where all
+three equations agree.
+
+Be careful when you choose the left-hand sides. If one equation is a
+multiple of another, or the sum of multiples of the other two, you get
+the problem from problem 3: infinitely many solutions, and elimination
+cannot find a single answer. In the example above, no left-hand side
+can be made from the other two, so the system is safe.
+
+Working backwards like this is useful. Many textbook problems with tidy
+answers are written in this way.
 
 </details>

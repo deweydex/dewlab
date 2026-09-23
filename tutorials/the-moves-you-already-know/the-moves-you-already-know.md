@@ -1,5 +1,5 @@
 ---
-title: "The Moves You Already Know"
+title: "The moves you already know, inside a class"
 year: "2026-2027"
 version: 2026.09.05.1
 covers:
@@ -11,21 +11,29 @@ covers:
     covers: [FOOP-LO2]
 ---
 
-# The Moves You Already Know
+# The moves you already know, inside a class
 
-**Fundamentals of Object Oriented Programming**
+In [Classes and objects: keeping data and actions together](tutorial:objects-and-classes)
+we built our first classes. A class can look like a whole new way of
+writing code. It is not. The code inside a class is built from the same
+small set of moves you used in the Programming Foundations series:
 
-Object oriented programming sounds, at first, like a whole new way of
-writing code. It is not. Every move a program makes still comes from a
-small, familiar set. You already know it: storing a value, running
-steps in order, choosing between paths, repeating a step. This tutorial
-does not teach any of those again. It shows where they go once a
-program starts using classes.
+| Move | What it does | Example |
+|---|---|---|
+| storing | keeps a value under a name | `total = 0` |
+| sequence | runs lines in the order they are written | one line, then the next |
+| selection | chooses between paths | `if amount >= 0:` |
+| iteration | repeats a step | `for amount in amounts:` |
 
-## The Handful of Moves
+This page does not teach those moves again. It finds them inside a
+class: in the constructor, and in the methods.
 
-Here is a small program with no class in it at all: a running total,
-built from the moves you already have.
+## The handful of moves
+
+Here is a small program with no class in it at all. It adds up a running
+total, using only the moves you already know. Which lines store a value,
+which choose, and which repeat? What do you think it prints? Run it to
+check.
 
 ```python exec
 id: the-handful-of-moves-1
@@ -39,19 +47,33 @@ for amount in amounts:
 print(total)
 ```
 
-All four moves are here, each doing its usual job. `total = 0` stores
-a value.
-`for amount in amounts:` repeats a step once for each amount, an
-*iteration*. `if amount >= 0:` chooses between two paths, a
-*selection*. The lines themselves run in the order they are written, a
-*sequence*. Nothing here is new. It is the same vocabulary every program
-you have written so far is built from.
+It prints `75`. All four moves are here, each doing its usual job.
 
-## The Same Moves, Inside a Class
+- `total = 0` stores a value.
+- `for amount in amounts:` repeats a step once for each amount. An
+  *iteration* is a program repeating a step, usually with a loop.
+- `if amount >= 0:` chooses between two paths, so `-5` is skipped. A
+  *selection* is a program choosing between paths, usually with an `if`
+  statement.
+- The lines run in the order they are written. A *sequence* is a
+  program's lines running one after another, in that order.
 
-A class does not remove any of those four moves. It gives them a new
-place to live: inside `__init__` and inside a method, both reached
-through `self`.
+Nothing here is new. Every program you have written so far is built from
+these same moves.
+
+## The same moves, inside a class
+
+A class does not remove any of these four moves. It gives them a new
+place to live: inside the constructor, `__init__`, and inside the
+methods. Both reach the object's own data through `self`.
+
+The `Basket` class below stores items in a list. Each item is a name and
+a price, written together in brackets as `(name, price)`. A pair like
+that is called a *tuple*. A tuple is a fixed group of values kept
+together, and here each tuple holds one item's name and price.
+
+Three items are added to the basket, and one has a price of `-5`. What
+do you think `basket.items` will hold? Run it to check.
 
 ```python exec
 id: the-same-moves-inside-a-class-1
@@ -79,17 +101,20 @@ a name, is `self.` in front of that name where the class stores it, and is
 it missing where the error is?
 ```
 
-`self.items = []` stores a value, just like `total = 0` did above. This
-time, though, the value lives on the object instead of in a plain
-variable.
-`if price >= 0:` inside `add()` is the same selection as before, only
-now it decides whether *this object's* list should grow. The item
-priced `-5` never made it in.
+Two of the three items are in the list. Where are the moves?
 
-## One Method, Several Moves
+- `self.items = []` stores a value, like `total = 0` did above. This
+  time the value lives on the object, as a field, instead of in a plain
+  variable.
+- `if price >= 0:` inside `add()` is the same selection as before. Now
+  it decides whether *this object's* list should grow. The item priced
+  `-5` never gets in.
 
-A single method can use more than one of these moves at once, the same
-way a plain function could.
+## One method, several moves
+
+A single method can use more than one of these moves, in the same way a
+plain function can. The `total()` method below adds up the prices in the
+basket. Which move does each line of `total()` use? What will it print?
 
 ```python exec
 id: one-method-several-moves-1
@@ -114,13 +139,21 @@ basket.add("milk", 1.80)
 print(basket.total())
 ```
 
-`total()` stores a value (`running_total = 0`), then repeats a step once
-per item in the basket (iteration), adding each price in turn. It
-repeats the pattern from this tutorial's very first cell: storing, then
-iterating, now written as a method instead of a standalone block.
+It prints `4.3`. `total()` first stores a value, `running_total = 0`.
+Then it repeats a step once for each item in the basket, adding that
+item's price. That is iteration. The line
+`for name, price in self.items:` takes each tuple apart into two
+variables, `name` and `price`, one item at a time.
 
-Object orientation adds one place to put these four moves: inside a
-class, reached through `self`. Each object then keeps its own copy of
-whatever it stores. It does not add a fifth move to learn. Every method
-you write from here on, however it is built, is still storing,
-sequencing, choosing, and repeating.
+This is the pattern from the first cell on this page: store a value,
+then repeat. The only difference is that it is now written as a method.
+
+So what does object oriented programming add to these four moves? It
+adds a place to put them: inside a class, reached through `self`. Each
+object then keeps its own copy of whatever it stores. It does not add a
+fifth move to learn. Every method you write from here on is still
+built from storing, sequence, selection and iteration.
+
+Next,
+[Encapsulation: keeping an object's data behind its methods](tutorial:keeping-details-inside-an-object)
+uses selection inside methods to protect an object's data.

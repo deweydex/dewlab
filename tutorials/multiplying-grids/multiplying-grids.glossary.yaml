@@ -3,36 +3,39 @@ entries:
   - term: "zip()"
     kind: function
     definition: >
-      Pairs up two lists position by position. Stops silently at the
-      shorter one if they are different lengths — worth checking lengths
-      yourself first if that matters.
+      Pairs up two lists, position by position. If the lists have
+      different lengths, it stops at the end of the shorter one without
+      any error. Check the lengths yourself first if that matters.
     example: "list(zip([1, 2, 3], [4, 5, 6]))  # [(1, 4), (2, 5), (3, 6)]"
   - term: dot product
     kind: concept
     definition: >
-      Multiply each pair of matching entries from two same-length lists,
-      then add up the results. The building block matrix multiplication is
-      made from.
+      The dot product of two lists of the same length is the number you
+      get when you multiply each pair of matching entries and add up the
+      results. Matrix multiplication is built from dot products.
   - term: matrix multiplication
     kind: concept
     definition: >
-      Row i, column j of the result is the dot product of row i of the
-      first matrix with column j of the second.
+      Matrix multiplication combines two matrices by rows and columns. The
+      entry at row i, column j of the result is the dot product of row i
+      of the first matrix with column j of the second.
   - term: "c_ij = sum(a_ik * b_kj)"
     kind: formula
-    definition: The matrix multiplication rule, stated precisely — sum over k.
+    definition: The matrix multiplication rule, written as a formula. The sum runs over k, the position along the row and down the column.
   - term: matrix multiplication shape rule
     kind: concept
     definition: >
-      To multiply an m×n matrix by an n×p matrix, the inner dimensions
-      (the n's) have to match. The result is m×p.
+      To multiply an m×n matrix by an n×p matrix, the inner numbers (the
+      two n's) have to match. The result is m×p.
   - term: "AB is not BA"
     kind: concept
     definition: >
-      Matrix multiplication is not commutative — order genuinely matters,
-      unlike multiplying ordinary numbers.
+      For matrices, AB and BA are usually different. The order of
+      matrix multiplication matters, which is not true for ordinary
+      numbers.
   - term: identity matrix
     kind: concept
     definition: >
-      Written I. Ones down the main diagonal, zeros everywhere else —
-      multiplied by any matrix of a matching shape, it changes nothing.
+      The identity matrix is a square matrix with ones down its main
+      diagonal and zeros everywhere else. It is written I. Multiplying
+      any matrix of a matching shape by it changes nothing.

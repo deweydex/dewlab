@@ -1,5 +1,5 @@
 ---
-title: "Undoing It"
+title: "Inverse matrices: undoing a transformation"
 year: "2026-2027"
 version: 2026.08.24.1
 covers:
@@ -13,18 +13,31 @@ covers:
     covers: [CMPS-LO4]
 ---
 
-# Undoing It
+# Inverse matrices: undoing a transformation
 
-Some of the matrices in the last tutorial's gallery felt reversible — you
-could imagine sliding the sheared square back, or rotating it back the other
-way. Others did not. This tutorial asks what actually decides whether a
-matrix can be undone, and builds the tool that undoes it when it can.
+Look back at the gallery in
+[Matrix transformations: what a matrix does to a picture](tutorial:what-a-matrix-does-to-a-picture).
+Some of those matrices felt as if we could reverse them. We could
+imagine sliding the sheared square back, or turning the rotated square
+back the other way. Others did not feel reversible.
 
-## Measuring the Square
+What decides whether a matrix can be undone? On this page we:
 
-Here is a function that measures the area enclosed by a shape given as
-corner points, using the *shoelace formula* — cross-multiply consecutive
-corners, add them up, and halve the result.
+- measure how much a matrix changes the area of a shape
+- meet the determinant, one number that answers the question
+- build a function that undoes a matrix, when that is possible
+- sort some matrices into ones that can be undone and ones that cannot
+
+## Measuring the square
+
+Here is a function that measures the area inside a shape, from its
+corner points. It uses the *shoelace formula*. The shoelace formula
+finds the area of a shape in three steps:
+
+1. For each pair of neighbouring corners, cross-multiply their
+   coordinates: $x_1 y_2 - x_2 y_1$.
+2. Add up all of those results.
+3. Halve the total.
 
 ```python exec
 id: measuring-the-square-1
@@ -41,8 +54,12 @@ square = [[0, 1, 1, 0], [0, 0, 1, 1]]
 print("area of the original square:", polygon_area(square))
 ```
 
-Now transform it with `stretch = [[2, 0], [0, 1]]`, the very first matrix
-from the last tutorial, and measure the result.
+`j` is the corner after corner `i`. The `%` makes `j` go back to 0 after
+the last corner, so the last corner is paired with the first one.
+
+Now let's transform the square with `stretch = [[2, 0], [0, 1]]`, the
+first matrix from the last page. What do you think the new area will
+be? Run the cell to check.
 
 ```python exec
 id: measuring-the-square-2
@@ -62,10 +79,12 @@ transformed = multiply(stretch, square)
 print("area after stretch:", polygon_area(transformed))
 ```
 
-The area doubled. Is that because of the numbers 2 and 0 in `stretch`, and if
-so, which arithmetic on them gives 2? Try `shear = [[1, 1], [0, 1]]` — the
-one that looked most different in the last tutorial's
-gallery — and measure its area too.
+The area doubled. Does that come from the numbers 2, 0, 0 and 1 in
+`stretch`? If it does, which arithmetic on them gives 2?
+
+Now try `shear = [[1, 1], [0, 1]]`. It changed the square's shape more
+than any other matrix in the last page's gallery. Transform the square
+with it, and measure the area. What do you expect?
 
 ```python exec
 id: measuring-the-square-3
@@ -73,21 +92,31 @@ id: measuring-the-square-3
 
 ### Your turn
 
-For a 2×2 matrix $\begin{bmatrix} a & b \\ c & d \end{bmatrix}$, the quantity
-$ad - bc$ is called the *determinant*. What is $ad - bc$ by hand for `stretch`
-and for `shear`? Compare each to the area you measured for it.
+For a 2×2 matrix $\begin{bmatrix} a & b \\ c & d \end{bmatrix}$, the
+*determinant* is the number $ad - bc$.
+
+1. Work out $ad - bc$ by hand for `stretch`.
+2. Work out $ad - bc$ by hand for `shear`.
+3. Compare each one with the area you measured.
 
 ```python exec
 id: measuring-the-square-4
 hint: For stretch, a=2, b=0, c=0, d=1. For shear, a=1, b=1, c=0, d=1.
 ```
 
-The determinant of a matrix is the signed factor by which it scales area — a negative determinant means the matrix also flips the orientation of the shape.
-`shear` looked like the most extreme transformation in the gallery, and it
-changed the area not at all — a fact the picture alone does not make obvious,
-and the determinant states directly.
+What did you find? The determinant of a matrix is the factor by which
+the matrix scales area. The determinant can also be negative. A negative
+determinant means the matrix also flips the shape over, like a mirror.
 
-## When the Square Collapses
+`shear` looked like the biggest change in the gallery. Yet it did not
+change the area at all. The picture alone does not make that clear, but
+the determinant says it straight away.
+
+## When the square collapses
+
+What happens to the square when the determinant is zero? The
+determinant of the matrix below is $2(2) - 4(1) = 0$. Run the cell and
+look at the points and the area.
 
 ```python exec
 id: when-the-square-collapses-1
@@ -97,15 +126,15 @@ print(collapsed)
 print("area:", polygon_area(collapsed))
 ```
 
-Every one of those four points lies on the same straight line through the
-origin — plot them and see. The determinant of `singular` is
-$2(2) - 4(1) = 0$, and an area of zero is what a matrix with determinant zero
-always produces: not a smaller square, but a shape with no width at all.
+All four points lie on the same straight line through the origin. A
+matrix with determinant zero always gives an area of zero. The result is
+not a smaller square. It is a shape with no width at all. A matrix with
+determinant zero is called *singular*.
 
 ### Your turn
 
-Try plotting `square` and `collapsed` on the same axes to see the flattening
-directly.
+Plot `square` and `collapsed` on the same axes, to see the flattening
+for yourself.
 
 ```python exec
 id: when-the-square-collapses-2
@@ -113,24 +142,31 @@ hint: Two calls to plt.plot, one for each set of points — the same pattern as 
 import matplotlib.pyplot as plt
 ```
 
-## Undoing a Transformation
+## Undoing a transformation
 
-If a matrix scales area by some factor, undoing it ought to scale area by
-the reciprocal of that factor. For a 2×2 matrix, there is a direct formula:
+The *inverse* of a matrix $A$ is the matrix that undoes $A$. It is
+written $A^{-1}$.
+
+If a matrix scales area by some factor, its inverse should scale area by
+1 divided by that factor. For a 2×2 matrix, there is a formula for the
+inverse:
 
 $$A^{-1} = \frac{1}{\det(A)} \begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$$
 
-Notice $\det(A)$ sits in the denominator. If $\det(A) = 0$, this formula asks
-you to divide by zero — which is the algebra saying the same thing the
-collapsed square just showed as a picture: a matrix with determinant zero has
-no inverse, because there is no way to recover a flattened shape's missing
-dimension.
+Here $\det(A)$ is the determinant of $A$. Look at where it sits: under
+the fraction line. What happens when $\det(A) = 0$? The formula would
+divide by zero.
+
+The algebra says the same thing that the collapsed square showed in a
+picture. A matrix with determinant zero has no inverse. Once a shape has
+been flattened, there is no way to get back the width it lost.
 
 ### Your turn
 
-How might you write `inverse(M)` for a 2×2 matrix, following the formula
-above? Apply it to `transformed` from the `measuring-the-square` section, and
-check that you get `square` back.
+1. How might you write `inverse(M)` for a 2×2 matrix, with the formula
+   above? Write it in the first cell.
+2. The second cell applies your inverse to `transformed`, from the
+   section on measuring the square. Do you get `square` back?
 
 ```python exec
 id: undoing-a-transformation-1
@@ -143,19 +179,22 @@ id: undoing-a-transformation-2
 check(multiply(inverse(stretch), transformed), square)
 ```
 
-`AA^{-1}` should give back the identity matrix — a direct way to check an
-inverse without needing a square to transform at all.
+There is also a way to check an inverse without transforming any shape.
+A matrix times its inverse, $AA^{-1}$, should give the identity matrix.
 
 ```python exec
 id: undoing-a-transformation-3
 check(multiply(stretch, inverse(stretch)), [[1, 0], [0, 1]])
 ```
 
-## Which Ones Can Be Undone
+## Which ones can be undone?
 
-Five matrices. For each, compute the determinant first and predict whether it
-has an inverse — then confirm by trying `inverse` on it, or by transforming
-`square` and looking at the picture.
+Here are five matrices. For each one:
+
+1. Work out the determinant first.
+2. Predict whether the matrix has an inverse.
+3. Then check your prediction. You can try `inverse` on the matrix, or
+   you can transform `square` with it and look at the picture.
 
 ```python exec
 id: which-ones-can-be-undone-1
@@ -173,9 +212,9 @@ for name, M in candidates.items():
 
 ### Your turn
 
-Which of the five can be undone, on the strength of the determinants alone?
-Try one you predicted is singular, and confirm by transforming `square` with
-it and looking at whether the picture collapses.
+1. From the determinants alone, which of the five can be undone?
+2. Pick one that you predicted is singular.
+3. Transform `square` with it. Does the picture collapse?
 
 ```python exec
 id: which-ones-can-be-undone-2
@@ -183,15 +222,21 @@ id: which-ones-can-be-undone-2
 
 ## Reflection
 
-One number, computed from four entries, and it answers a question a picture
-can only illustrate: whether a matrix loses information. `ad - bc` is not a
-formula chosen to make examples work out neatly — it is the area
-scale factor, and a factor of zero means area disappears, which means two
-different starting shapes could end up as the same flattened result, which
-means there is no way back.
+One number, worked out from four entries, answers a question that a
+picture can only illustrate: does this matrix lose information?
 
-Did any of the five candidates surprise you — one that looked like it should
-be invertible from its numbers, but was not, or the reverse?
+$ad - bc$ is not a formula chosen to make the examples come out neatly.
+It is the factor by which the matrix scales area. Follow the reasoning
+one step at a time:
+
+1. A factor of zero means that the area disappears.
+2. When the area disappears, two different starting shapes can end up
+   as the same flattened result.
+3. So from the flattened result, there is no way to know which shape
+   we started with. There is no way back.
+
+Did any of the five matrices surprise you? Was there one whose numbers
+made you expect an inverse, but it had none? Or the other way round?
 
 ## Where to Read More
 

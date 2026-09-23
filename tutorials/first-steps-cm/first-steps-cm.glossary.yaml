@@ -3,17 +3,32 @@ entries:
   - term: cell
     kind: concept
     definition: >
-      A small piece of Python you can edit and run. Press Run, or hold
-      Ctrl and press Enter, and whatever the code produces appears
-      directly underneath it.
+      A cell is a small box of Python code that you can change and run on
+      the page. Press Run, or hold Ctrl and press Enter, and whatever the
+      code produces appears under it.
   - term: expression
     kind: concept
     definition: >
-      A line whose value is shown automatically, with no print needed. An
-      ordinary instruction is different: it produces nothing on its own
-      unless it prints something.
-  - term: illustrative code
+      An expression is a piece of code that has a value, such as 2 + 3.
+      When the last line of a cell is an expression, the cell shows its
+      value, with no print() needed. An instruction, such as total = 5,
+      does a job but has no value to show.
+    example: "2 ** 10"
+  - term: illustration
     kind: concept
     definition: >
-      A code block with no Run button. It is there to be read, not
-      executed — the way you can tell it apart from a cell.
+      An illustration is a block of code with no Run button. It is there
+      to be read, and you can copy it into a cell to try it.
+  - term: "//"
+    kind: operator
+    definition: Divides, then rounds the result down to a whole number.
+    example: "17 // 5 gives 3"
+  - term: "%"
+    kind: operator
+    definition: >
+      Modulo. Gives the remainder after dividing one number by another.
+    example: "17 % 5 gives 2"
+  - term: "**"
+    kind: operator
+    definition: Raises a number to a power.
+    example: "2 ** 10 gives 1024"

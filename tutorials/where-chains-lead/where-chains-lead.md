@@ -1,5 +1,5 @@
 ---
-title: "Where Chains Lead"
+title: "Markov chains: where repeated steps settle"
 year: "2026-2027"
 version: 2026.08.24.1
 covers:
@@ -15,20 +15,31 @@ covers:
     covers: [CMPS-LO4]
 ---
 
-# Where Chains Lead
+# Markov chains: where repeated steps settle
 
-Every matrix so far has done something once — added, transformed, solved.
-This tutorial is about a matrix that gets multiplied by itself, or by a
-changing state, over and over — and about the strange fact that doing this
-enough times settles down to an answer that no longer depends on where you
-started. That single idea turns out to be able to predict tomorrow's weather, rank
-every page on the web, and write sentences a machine has never seen.
+So far, every matrix has done something once. We added matrices,
+transformed pictures with them, and solved systems with them.
 
-## A Weather Machine
+On this page, we multiply by the same matrix over and over. Something
+strange happens. After enough steps, the answer settles down, and it no
+longer depends on where we started.
 
-Suppose today is either sunny or rainy, and tomorrow's weather depends only
-on today's — not on last week's. In Dublin, say sunny days are followed by
-another sunny day 70% of the time, and rainy days are followed by more rain
+This one idea can forecast the weather, rank every page on the web, and
+write sentences that nobody has written before. On this page we:
+
+- build a matrix of probabilities for tomorrow's weather
+- watch the forecast settle as the days go on
+- build the same kind of matrix from a sentence, and use it to write new
+  text
+- rank three small web pages
+
+## A weather machine
+
+Suppose each day is either sunny or rainy. Suppose also that tomorrow's
+weather depends only on today's weather, and not on last week's.
+
+Let's make up some numbers for Dublin. A sunny day is followed by
+another sunny day 70% of the time. A rainy day is followed by more rain
 60% of the time.
 
 ```python exec
@@ -42,25 +53,38 @@ for row in P:
 and one back carries 40%. Each state also has an arrow looping back to
 itself: 70% on sunny, 60% on rainy.](weather-states.svg)
 
-The picture above and the grid below are the same thing written two ways.
-Each row of the matrix is the arrows leaving one state, and *every arrow
-leaving a state* is drawn — including the one that loops back to where it
-started, which is what "the weather stays as it is" looks like. That is why
-each row adds up to 1: leaving a state, something has to happen.
+This drawing is a *state diagram*. A state diagram shows the states that
+something can be in, as circles. Each arrow is a way of moving from one
+state to another, labelled with how likely that move is. You will meet
+this kind of picture wherever something moves between a small number of
+conditions.
 
-A drawing like this is a *state diagram*. Each circle is a state the thing
-can be in, and each arrow is a way of moving between them, labelled with
-how likely that move is. You will meet the same picture again wherever
-something moves between a small number of conditions.
+The picture and the matrix `P` say the same thing in two ways. Each row
+of the matrix holds the arrows that leave one state:
 
-Row 1 is "if today is sunny": 70% sunny tomorrow, 30% rainy. Row 2 is "if
-today is rainy": 40% sunny, 60% more rain. Every row sums to 1, because
-tomorrow is certainly *something*. This is a *transition matrix*, and each
-row is a probability distribution over what happens next.
+- Row 1 is "if today is sunny": 70% sunny tomorrow, 30% rainy.
+- Row 2 is "if today is rainy": 40% sunny tomorrow, 60% rainy.
 
-Today's weather can be written as a *state vector* too — `[1, 0]` for
-"definitely sunny today", `[0, 1]` for "definitely rainy". Multiplying a
-state vector by `P` gives tomorrow's probabilities.
+The drawing shows every arrow that leaves a state. That includes the
+arrow that loops back to where it started, which means "the weather
+stays the same".
+
+Why does each row add up to 1? When we leave a state, something has to
+happen next. Tomorrow will certainly have some weather.
+
+`P` is a *transition matrix*. A transition matrix is a matrix of
+probabilities, where each row gives the chances of each thing that can
+happen next. A *Markov chain* is a process that moves from state to
+state using a transition matrix. What happens next depends only on the
+current state, and not on how the process got there.
+
+We can write today's weather as a *state vector*. A state vector is a
+row that holds the probability of each state. `[1, 0]` means "certainly
+sunny today", and `[0, 1]` means "certainly rainy today".
+
+When we multiply a state vector by `P`, we get the probabilities for
+tomorrow. If today is certainly sunny, what do you expect tomorrow's
+state vector to be? Run the cell to check.
 
 ```python exec
 id: a-weather-machine-2
@@ -82,17 +106,20 @@ print(tomorrow)
 
 ### Your turn
 
-Starting from a definitely-rainy today, `[[0, 1]]`, what does tomorrow's
-weather look like — and the day after that?
+1. Start from a day that is certainly rainy, `[[0, 1]]`. What is
+   tomorrow's weather?
+2. What about the day after that?
 
 ```python exec
 id: a-weather-machine-3
 hint: The day after tomorrow is tomorrow's state vector multiplied by P again — the state vector changes, P never does.
 ```
 
-## Watching It Settle
+## Watching it settle
 
-What happens ten days out, if today is definitely sunny?
+What will the forecast be ten days from now, if today is certainly
+sunny? Before you run the cell, guess: will the chance of sun keep
+falling, or will it stop somewhere?
 
 ```python exec
 id: watching-it-settle-1
@@ -102,29 +129,35 @@ for day in range(1, 11):
     print(day, [round(v, 4) for v in state[0]])
 ```
 
-The numbers stop moving. By day nine or so, the forecast is the same
-whichever day you check — about 57% sunny, 43% rainy — and it no longer
-matters at all that today started out definitely sunny.
+The numbers stop moving. By about day nine, the forecast is the same
+from one day to the next: about 57% sunny and 43% rainy. It no longer
+matters that today was certainly sunny.
 
 ### Your turn
 
-What happens if you run the same ten steps starting from definitely rainy,
-`[[0, 1]]`, instead? Does it settle on the same numbers?
+1. Run the same ten steps, but start from a day that is certainly rainy,
+   `[[0, 1]]`.
+2. Does the forecast settle on the same numbers?
 
 ```python exec
 id: watching-it-settle-2
 ```
 
-It does — the *stationary distribution* is a property of the transition
-matrix itself, not of where you started. Once a state vector reaches it,
-multiplying by `P` again changes nothing: $\boldsymbol{\pi} P = \boldsymbol{\pi}$,
-a fixed point of the whole process.
+It does. The numbers it settles on are the *stationary distribution*.
+The stationary distribution is the state vector that stays the same when
+we multiply it by `P` again. In symbols, $\boldsymbol{\pi} P = \boldsymbol{\pi}$,
+where $\boldsymbol{\pi}$ is the stationary distribution. It is a fixed
+point of the whole process.
 
-## Words That Follow Words
+For a chain like this weather one, the stationary distribution belongs
+to the transition matrix itself. It does not depend on where we started.
 
-A transition matrix does not need to be about weather. Here it is built from
-a sentence — treating every distinct word as a state, and the matrix entry
-for word $i$, word $j$ as how often $j$ followed $i$ in the text.
+## Words that follow words
+
+A transition matrix does not have to be about weather. The cell below
+builds one from a sentence. Every different word is a state. The entry
+for word $i$ and word $j$ is the share of times that word $j$ came
+straight after word $i$ in the text.
 
 ```python exec
 id: words-that-follow-words-1
@@ -150,10 +183,32 @@ print(len(states), "distinct words")
 print("after 'it':", dict(zip(states, [round(v, 2) for v in P_words[index["it"]]])))
 ```
 
-Filter that down to the words that actually have a non-zero chance of
-following "it" and it is one word, always: "was". The sentence this came from
-repeats "it was the ___ of ___" ten times, so from "it" the matrix has
-learned there is only ever one thing that comes next.
+There is a lot in this cell, so here it is one step at a time:
+
+1. `text.split()` cuts the text into a list of words.
+2. `set(words)` keeps one copy of each different word, and `sorted`
+   puts them in alphabetical order. These are the `states`.
+3. `index` is a dictionary that gives each word its row number. It is
+   built with a dictionary comprehension, which works like a list
+   comprehension but makes a dictionary. Comprehensions are in
+   [Lists: keeping many values in order](tutorial:lists-and-sequences),
+   and dictionaries are in
+   [Dictionaries: looking things up by name](tutorial:looking-things-up-by-name).
+4. `counts` starts as a grid of zeros, one row and one column for each
+   word.
+5. `zip(words, words[1:])` pairs each word with the word after it. For
+   each pair, we add 1 to the matching entry in `counts`.
+6. Finally, each row of counts is divided by its total, so that the row
+   adds up to 1. The last word, "despair", is never followed by anything.
+   Its row stays all zeros.
+
+Look at the words that follow "it". Only one has a chance above zero:
+"was", with a chance of 1. The text repeats "it was the ___ of ___" ten
+times. So the matrix has learned that only one word ever comes after
+"it".
+
+Which words do you think can follow "the"? The cell below prints only
+the words with a chance above zero.
 
 ```python exec
 id: words-that-follow-words-2
@@ -163,17 +218,27 @@ print({k: v for k, v in after_the.items() if v > 0})
 
 ### Your turn
 
-`"the"` is followed by several different words, each with roughly the same
-small probability. Which words are they, and why does that match the
-sentence this matrix was built from?
+"the" is followed by several different words, and each one has a small
+chance.
+
+1. Which words are they?
+2. Some have twice the chance of others. Why? Look back at the text the
+   matrix was built from.
 
 ```python exec
 id: words-that-follow-words-3
 ```
 
-Now generate new text by walking the chain: start on a word, look up its row
-of probabilities, and pick the next word randomly according to those
-weights.
+Now we can write new text by walking along the chain:
+
+1. Start on a word.
+2. Look up its row of probabilities.
+3. Pick the next word at random, using those probabilities as weights.
+4. Repeat from the new word.
+
+`random.choices(states, weights=row)` picks one word from `states` at
+random, so that a word with a bigger weight is picked more often. It
+gives back a list with one word in it, so `[0]` takes that word out.
 
 ```python exec
 id: words-that-follow-words-4
@@ -193,24 +258,40 @@ def generate(start, steps):
 print(generate("it", 12))
 ```
 
-Run that cell a few times. Every sentence it produces is a genuine
-recombination of the ten parallel clauses it was trained on — "it was the
-season of incredulity" is not anywhere in the original text, but every pair
-of adjacent words in it is. This is the entire idea behind predictive text on
-a phone keyboard, scaled up enormously: given what came just before, what is
-likely to come next?
+Run the cell a few times. What do you notice about the sentences?
 
-This chain only ever saw ten words, all from one repeated sentence. A real
-book offers thousands. A companion series, coming soon, continues from here:
-it builds the same kind of chain from an entire novel, and lets you generate
-sentences nobody has ever read before.
+Every sentence it makes is a new mix of the ten clauses in the text.
+"it was the season of incredulity" is nowhere in the original text. But
+every pair of neighbouring words in it is. When the walk reaches
+"despair", it stops, because "despair" is never followed by anything.
 
-## Ranking a Small Web
+Predictive text on a phone keyboard uses this idea, on a much bigger
+scale. It asks: given the words that came right before, what is likely to
+come next?
 
-Three web pages link to each other. Page A links equally to B and C. Page B
-links only to A. Page C links equally to A and B. Imagine a random surfer who
-always follows one of the links on whatever page they are on — that is a
-Markov chain, with the pages as states.
+This chain saw only 20 different words, all from one repeated sentence.
+A real book has thousands.
+[A Markov chain from a whole book: a dictionary of dictionaries](tutorial:a-chain-reads-a-book)
+continues from here. It builds the same kind of chain from a whole
+novel, and uses it to write sentences that nobody has read before.
+
+## Ranking a small web
+
+Three web pages link to each other:
+
+- Page A links to B and to C.
+- Page B links only to A.
+- Page C links to A and to B.
+
+Imagine a *random surfer*: a person who always clicks one of the links
+on the page they are on, chosen at random. The surfer's journey is a
+Markov chain, and the pages are its states. Each row of `P_web` below
+is one page, and it shares the chances equally between that page's
+links.
+
+Which page do you think the random surfer spends the most time on, in
+the long run? A search engine asks the same question about the whole
+web. Make a guess, then run the cell.
 
 ```python exec
 id: ranking-a-small-web-1
@@ -222,38 +303,40 @@ for step in range(20):
 print("A, B, C:", [round(v, 4) for v in visits[0]])
 ```
 
-Before running that, which page did you expect to end up with the highest
-share of a random surfer's time — the same question the search engine this
-is modelled on has to answer for the entire web? Page A is linked to by both
-of the others, and that turns out to matter more than how many outgoing
-links a page has.
+Both of the other pages link to page A. That matters more than how many
+links a page has going out.
 
 ### Your turn
 
-How would you rank the three pages from the numbers above? Does the order
-match what you predicted before running the cell?
+1. How would you rank the three pages from the numbers above?
+2. Does the order match your guess from before you ran the cell?
 
 ```python exec
 id: ranking-a-small-web-2
 ```
 
-This is a deliberately small version of *PageRank*, the algorithm Google was
-founded on: the stationary distribution of a random-surfer Markov chain over
-the entire link graph of the web, with a page's rank being nothing more than
-how much of a random surfer's long-run time it receives.
+This is a very small version of *PageRank*, the algorithm that Google
+was founded on. PageRank finds the stationary distribution of a
+random-surfer Markov chain over the links of the whole web. A page's
+rank is the share of the random surfer's time that the page gets, in the
+long run. The real PageRank adds one more detail: now and then, the
+surfer jumps to a page chosen at random, and does not follow a link.
 
 ## Reflection
 
-Three settings — weather, sentences, web pages — and one mechanism
-underneath all of them: multiply a state by a matrix of probabilities, do it
-again, and again, and watch the answer stop depending on where you started.
-That convergence is not a coincidence specific to any one of these examples;
-it is a property of the matrix, found the same way in all three, well
-before this tutorial ever used the words "stationary distribution."
+We met three settings: weather, sentences and web pages. Underneath all
+three is one mechanism. We multiply a state by a matrix of
+probabilities, then do it again, and again.
 
-Which of the three applications felt the most surprising — that weather
-forecasting, sentence generation, and ranking a search engine are, at the
-arithmetic level, the same handful of lines?
+For the weather and the web pages, we watched the answer stop depending
+on where we started. That settling is not a lucky accident of those two
+examples. It comes from the matrix. We saw it with our own eyes before
+we gave it a name, "stationary distribution". The sentence maker used
+the same kind of matrix, one random step at a time.
+
+Which of the three surprised you most? Weather forecasts, sentence
+making and ranking for a search engine are, in their arithmetic, the
+same few lines.
 
 ## Where to Read More
 

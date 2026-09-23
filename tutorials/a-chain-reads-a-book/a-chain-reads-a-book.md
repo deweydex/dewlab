@@ -1,5 +1,5 @@
 ---
-title: "A Chain Reads a Book"
+title: "A Markov chain from a whole book: a dictionary of dictionaries"
 year: "2026-2027"
 version: 2026.09.05.2
 datasets: [the-time-machine]
@@ -12,18 +12,24 @@ covers:
     covers: [CMPS-LO4]
 ---
 
-# A Chain Reads a Book
+# A Markov chain from a whole book: a dictionary of dictionaries
 
-*Words That Follow Words*, in *Where Chains Lead*, built a chain from one
-repeated sentence, ten words long. This tutorial builds the same kind of
-chain from an entire novel instead, H. G. Wells's *The Time Machine*, and
-immediately meets a real technical problem the ten-word version never had.
+In "Words that follow words", a section of [Markov chains: where
+repeated steps settle](tutorial:where-chains-lead#words-that-follow-words), we built a Markov chain from one short
+text. It was a single sentence pattern, "it was the ___ of ___", repeated
+ten times: 60 words, and only 20 different ones.
+
+On this page we build the same kind of chain from a whole novel, H. G.
+Wells's *The Time Machine*. A whole book brings a real problem that the
+short text never had. The grid we used before gets far too big. We solve
+that with a new way of storing the chain.
 
 ## Loading a Real Book
 
-This book already lives in dewlab's shared data folder. `load_text()`
-fetches it the same way `load_csv()` fetches a table — the difference is
-what comes back: a table for `load_csv()`, one long string for `load_text()`.
+The book is already in dewlab's shared data folder. `load_text()` fetches
+it in the same way that `load_csv()` fetches a table. The difference is
+what comes back. `load_csv()` gives back a table. `load_text()` gives back
+one long string.
 
 ```python exec
 id: loading-a-real-book-1
@@ -32,13 +38,15 @@ print(len(raw), "characters")
 print(raw[:300])
 ```
 
-The text you just loaded includes more than *The Time Machine* itself.
-Project Gutenberg, the library this copy comes from, adds its own header
-to the top of every file it distributes, and a long license to the bottom.
-Look near the top of what printed above: a few lines down sits
-`*** START OF THIS PROJECT GUTENBERG EBOOK THE TIME MACHINE ***`.
-Everything from there up to the matching `*** END OF...` line, further down
-in the file, is the actual novel.
+The text we just loaded holds more than *The Time Machine*. It comes from
+Project Gutenberg, a free online library. Project Gutenberg adds its own
+header to the top of every file, and a long licence to the bottom.
+
+Look at the top of what printed. The header ends with a line of its own,
+a few lines further down the file:
+`*** START OF THIS PROJECT GUTENBERG EBOOK THE TIME MACHINE ***`. The
+novel is everything between that line and a matching `*** END OF...`
+line near the bottom. The next cell keeps only that part.
 
 ```python exec
 id: loading-a-real-book-2
@@ -51,14 +59,21 @@ print(len(book), "characters of real novel")
 print(book[:200])
 ```
 
-`raw.find(start_marker)` finds where that marker line begins.
-`raw.index("\n", start)` then finds the end of that same line, so `book`
-starts on the line right after it rather than on the marker text itself.
+Here is what the cell does, one step at a time:
+
+1. `raw.find(start_marker)` gives the position where the start line
+   begins. `raw.find(end_marker)` does the same for the end line.
+2. `raw.index("\n", start)` looks for the first new line after `start`.
+   That is the end of the start line itself.
+3. The slice from there to `end` is the novel. So `book` begins on the
+   line after the marker, and the marker text is left out.
+4. `.strip()` removes the empty lines left at each end.
 
 ### Your turn
 
-Check that a phrase from the licence, `"Project Gutenberg"` itself, say,
-really is gone from `book`.
+Is the licence text really gone? The words `"Project Gutenberg"` appear
+all through it. Can you check that they no longer appear anywhere in
+`book`? What do you expect the answer to be?
 
 ```python exec
 id: loading-a-real-book-3
@@ -67,9 +82,10 @@ hint: The in operator tests whether one string sits inside another — "cat" in 
 
 ## Too Many Words for a Grid
 
-*Words That Follow Words* built a transition matrix as a grid — one row and
-one column for every distinct word, most of the grid holding a zero. That
-worked because the toy sentence had ten words. This book does not.
+In *Words That Follow Words*, the chain was a transition matrix: a grid
+with one row and one column for every different word. Most of the grid
+held zeros. A grid worked there because the text had only 20 different
+words. How many different words does a whole novel have?
 
 ```python exec
 id: too-many-words-for-a-grid-1
@@ -80,22 +96,39 @@ print(len(states), "distinct words")
 print(len(states) ** 2, "cells a dense grid would need")
 ```
 
-Picture a grid with more than 48 million cells, almost all of them holding
-a zero — one for every pair of words that never actually sits next to each
-other anywhere in the book. That is not something a browser tab can
-comfortably hold in memory, and building it would mean writing tens of
-millions of zeros before a single real count goes in.
+`book.split()` cuts the book into words at every space and new line.
+`set(words)` keeps one copy of each different word, and `sorted()` puts
+them in order. One thing to know: `split()` cuts only at spaces, so
+`"time"` and `"time,"` count as two different words.
 
-A different way to write the same idea down solves this: keep one
-dictionary for each word, with an entry only for the words that actually
-followed it somewhere in the book, instead of one row with an entry for
-every other word. A dictionary like this never has to write down a zero.
+The book has 6,991 different words. A grid with a row and a column for
+each one needs 6,991 × 6,991 cells. That is more than 48 million cells,
+and almost all of them hold a zero. There is a zero for every pair of
+words that never sit next to each other anywhere in the book.
+
+A grid that size is too big for a browser tab to hold in memory. Worse,
+building it means writing tens of millions of zeros before a single real
+count goes in.
+
+There is another way to write down the same chain. For each word, we
+keep a dictionary of only the words that really followed it somewhere in
+the book. A dictionary like this never has to store a zero.
 
 ## A Dictionary of Dictionaries
 
-One dictionary, keyed by word. Each value is itself a dictionary — every
-word that followed the key somewhere in the book, and how many times. This
-structure has a name: a *dictionary of dictionaries*.
+The chain is one big dictionary, and its keys are words. Each value is
+another dictionary. That inner dictionary holds every word that followed
+the key somewhere in the book, and how many times it did. A dictionary
+whose values are dictionaries is called a *dictionary of dictionaries*.
+
+For example, if the book held only "the cat sat on the mat", the chain
+would be:
+
+```python
+{"the": {"cat": 1, "mat": 1}, "cat": {"sat": 1}, "sat": {"on": 1}, "on": {"the": 1}}
+```
+
+Here is the chain for the whole book:
 
 ```python exec
 id: a-dictionary-of-dictionaries-1
@@ -108,17 +141,30 @@ print(len(next_words), "words have at least one dictionary of their own")
 print(len(next_words["Weena"]), "different words follow 'Weena' somewhere in the book")
 ```
 
-`"Weena"` is the one companion the Time Traveller names in the whole book,
-a good word to ask about because it appears often enough in the story to
-have many neighbours already, without being one of the few words
-("the", "and", "I") whose dictionaries grow huge from sheer repetition.
+What each line of the loop does:
 
-Each inner dictionary's values are plain counts, not probabilities — how
-many times that word actually followed. *Words That Follow Words* had to
-divide every row by its own total to turn counts into probabilities before
-`random.choices()` could use them. A dictionary does not need that step:
-`random.choices()` accepts raw counts as weights just as happily as it
-accepts probabilities that add up to one.
+- `zip(words, words[1:])` pairs every word with the word after it. We met
+  `zip` in [Matrix multiplication: rows times columns](tutorial:multiplying-grids). `words[1:]`
+  is the same list with the first word left off, so the two lists are
+  one step apart.
+- `next_words.setdefault(word, {})` gives `word` an empty inner
+  dictionary, but only if it does not have one yet.
+- The last line adds 1 to the count for `next_word` inside that inner
+  dictionary. `.get(next_word, 0)` gives 0 the first time a pair is seen,
+  so there is no need for a separate check.
+
+Why ask about `"Weena"`? Weena is the only person in the far future whom
+the Time Traveller calls by name. Her name appears often enough to have
+many different words after it. It is also not one of the very common
+words, like "the", "and" or "I", whose inner dictionaries grow huge.
+
+The values in each inner dictionary are counts: how many times that word
+followed. They are not probabilities. In *Words That Follow Words*, we
+divided every row by its total to turn counts into probabilities before
+`random.choices()` could use them. With a dictionary we can skip that
+step, because `random.choices()` accepts plain counts as weights. It
+treats a count of 4 as four times as likely as a count of 1, just as it
+would with probabilities.
 
 ```python exec
 id: a-dictionary-of-dictionaries-2
@@ -138,25 +184,30 @@ def generate(start_word, steps):
 print(generate("Weena", 20))
 ```
 
-Run that cell a few times. One run produced this:
+`for _ in range(steps)` repeats the loop `steps` times. The name `_` is
+the usual way to say "we do not need the loop variable".
+
+Run the cell a few times. Each run gives a different sentence. One run
+gave this:
 
 > Weena was Weena would still remained one by their features, I left her to
-> speak of putrefaction and grew visible. "I
+> speak of putrefaction and grew visible. “I
 
-Another produced this:
+Another gave this:
 
 > Weena lay awake most of intense relief, I was free from which I thought
 > of increasing apprehensions drew her hands, and
 
-Your own run will almost certainly read differently. Every run reshuffles
-the same 32,467 words according to what genuinely follows what, word by
-word, in this one particular book.
+Your own runs will almost certainly read differently. Every run mixes up
+the same 32,467 words, but always by what really follows what in this
+one book. Each pair of words next to each other in the output is a pair
+from the book.
 
 ### Your turn
 
-Pick a word that appears often in the book, `"Morlocks"`, say, and generate
-20 words starting from it. How many different words follow your chosen
-word somewhere in the book?
+1. Pick a word that appears often in the book, `"Morlocks"`, for example.
+2. Generate 20 words starting from it.
+3. How many different words follow your word somewhere in the book?
 
 ```python exec
 id: a-dictionary-of-dictionaries-3
@@ -165,12 +216,15 @@ hint: len(next_words["Morlocks"]) counts how many different words follow "Morloc
 
 ## Reflection
 
-A grid worked for ten words. A dictionary of dictionaries works for tens
-of thousands, because it only ever writes down what genuinely happens,
-never the millions of pairs that do not. This series bundles five other
-real books alongside this one, too: *The War of the Worlds*,
-*Frankenstein*, *A Princess of Mars*, *The Lost World*, and Jane Austen's
-*Pride and Prejudice*. The practice page lets you build a chain from any
-of them. *How Much It Remembers*, next in this series, asks a different
-question: how much of the sentence so far should the chain actually
-remember?
+A grid worked for 20 different words. A dictionary of dictionaries works
+for thousands, because it stores only the pairs that really happen. It
+never stores the millions of pairs that do not.
+
+This series comes with five other real books as well as this one: *The
+War of the Worlds*, *Frankenstein*, *A Princess of Mars*, *The Lost
+World*, and Jane Austen's *Pride and Prejudice*. On the practice page you
+can build a chain from any of them.
+
+The next tutorial, [N-grams: a Markov chain that remembers more
+words](tutorial:how-much-it-remembers), asks a different question. How
+much of the sentence so far should the chain remember?

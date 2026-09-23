@@ -1,0 +1,52 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Third tutorial of the Programming with objects series, after
+# objects-and-classes and the-moves-you-already-know. Checked against both
+# of their glossaries: no overlap. encapsulation and abstraction moved here
+# from objects-and-classes, together with the section that teaches them.
+entries:
+  - term: encapsulation
+    kind: concept
+    definition: >
+      Encapsulation is keeping an object's data behind its own methods.
+      Every change to the data passes through code that can check a rule.
+
+  - term: convention
+    kind: concept
+    definition: >
+      A convention is a habit that programmers agree to follow. Python
+      does not force it.
+    example: "self._balance"
+
+  - term: private
+    kind: concept
+    definition: >
+      A private field is one that only the class's own methods should read
+      or change. In Python, its name starts with an underscore.
+    example: "self._balance = balance"
+
+  - term: getter
+    kind: concept
+    definition: >
+      A getter is a method that returns the value of a private field, so
+      other code can read it without reaching in.
+    example: "def get_balance(self):"
+
+  - term: caller
+    kind: concept
+    definition: >
+      A caller is any code that uses an object's methods.
+    example: "account.deposit(25.0)"
+
+  - term: abstraction
+    kind: concept
+    definition: >
+      Abstraction is what a class shows the rest of a program: what each
+      method does, not how it does it inside. A caller needs only that.
+
+  - term: pass
+    kind: keyword
+    definition: >
+      Does nothing. It holds the place of code that has not been written
+      yet, so an empty method can still run.
+    example: "pass"

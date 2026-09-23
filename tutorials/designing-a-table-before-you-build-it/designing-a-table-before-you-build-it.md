@@ -13,7 +13,7 @@ covers:
 
 # Designing a Table Before You Build It
 
-The dinosaurs table on the earlier pages was already designed before you saw
+`dinosaur_tbl`, on the earlier pages, was already designed before you saw
 it: which columns it needed, and what kind of value belonged in each. A
 database with more than one table needs that decision made on paper first. A
 `CREATE TABLE` written before you know what you are storing tends to need
@@ -24,7 +24,7 @@ rewriting once you do.
 Each table holds one kind of thing. A shop's products are one kind of thing;
 its sales are another. Put them in the same table, and every sale repeats the
 product's name and price. A price change then means editing every sale that
-mentions it. Two tables joined by an id keep the price in one place.
+mentions it. Two tables joined by a key keep the price in one place.
 
 A rough test: if a column's value would repeat across many rows, that value
 probably belongs in its own table.
@@ -37,26 +37,37 @@ Every column has a name and a kind of value. `price` is a number.
 and a type.
 
 `INTEGER PRIMARY KEY` names the column that gives each row its own identity,
-the way `dinosaurs.id` did earlier. Every table needs one.
+the way `dinosaur_tbl.dinosaur_id` did earlier. Every table needs one, and
+we name it after its table: `product_id` in `product_tbl`, `sale_id` in
+`sale_tbl`.
 
 ## One row can point at many
 
 A product can appear in many sales; a sale points at exactly one product.
-That is *one-to-many*. The id lives on the `sales` side, in a column like
-`product_id`, holding the product it belongs to. [A second table and a
-join](tutorial:a-second-table-and-a-join) already showed the query side of
-this, with `sightings.dinosaur_id`.
+That is *one-to-many*. The link lives on the `sale_tbl` side, in a
+`product_id` column holding the product it belongs to. [A second table and
+a join](tutorial:a-second-table-and-a-join) already showed the query side
+of this, with `sighting_tbl.dinosaur_id`.
 
-![One products row is reached by many sales rows. The id column in products
-carries PK for primary key; the product_id column in sales carries FK for
-foreign key, and the line between them ends in three prongs on the sales
+Why is that column called `product_id`, the same as the key in
+`product_tbl`? A foreign key takes the name of the key it points at, so
+anyone reading `sale_tbl` can see where it leads. It also sits directly
+under `sale_id`, before `sold_on` and `quantity`. Put every foreign key
+there, and every table in your design has the same shape: its own key
+first, then its links, then everything else.
+
+![One product_tbl row is reached by many sale_tbl rows. The product_id
+column in product_tbl carries PK for primary key; the product_id column in
+sale_tbl, directly under sale_id, carries FK for foreign key. The line runs
+from one product_id to the other and ends in three prongs on the sale_tbl
 side, meaning many.](products-sales-erd.svg)
 
 That picture is an *entity relationship diagram*. Each box is a table, with
 its columns listed under its name. `PK` marks the column that gives a row
-its own identity, and `FK` marks a column holding a row's id from another
-table. The line joins the two, and its ends say how many: a single bar for
-one, three prongs — a crow's foot — for many. So one product, many sales.
+its own identity, and `FK` marks a column holding a row's key from another
+table. The line joins those two columns, `product_id` to `product_id`, and
+its ends say how many: a single bar for one, three prongs — a crow's foot —
+for many. So one product, many sales.
 
 ## Your turn
 
@@ -67,7 +78,9 @@ next to your notes, try answering three questions for each table:
 
 - What is one row? (One book, one borrower, one sale.)
 - What columns does that row need, and what kind of value goes in each?
-- Which column, if any, points at a row in another table?
+- Which column, if any, points at a row in another table? Give it the
+  same name as the key it points at, and list it straight after the
+  table's own key.
 
 Do this before the next page opens a real dataset and asks the same three
 questions of it. The database you design here is the one the rest of this
@@ -79,5 +92,7 @@ series builds, one page at a time.
   is the sign a table is doing two jobs.
 - **Every column needs a name and a type.** Deciding both, before writing
   `CREATE TABLE`, is what `CREATE TABLE` actually asks for.
-- **One-to-many** is a relationship where an id column, such as `product_id`,
+- **One-to-many** is a relationship where a key column, such as `product_id`,
   links one row in one table to many rows in another.
+- **A foreign key keeps the name of the key it points at**, and sits
+  directly under its own table's key.

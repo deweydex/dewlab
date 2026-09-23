@@ -1,15 +1,16 @@
 ---
-title: "Finding Everything Inside a Folder — Practice"
+title: "Recursion: finding every file in a folder tree — Practice"
 practice_for: finding-everything-inside-a-folder
 year: "2026-2027"
 version: 2026.09.05.1
 ---
 
-# Finding Everything Inside a Folder — Practice
+# Recursion: finding every file in a folder tree — Practice
 
-Answers are folded. Several of these ask you to predict an output before
-running anything. Resist checking first — being wrong and finding out why
-is worth more than being right by accident.
+The answers are hidden in folds under each problem. Several problems ask
+you to predict what the code will do before you run it. Try to answer
+before you check. Being wrong, and finding out why, teaches you more than
+being right by accident.
 
 ```python exec
 id: setup-1
@@ -38,8 +39,10 @@ def count_files(folder):
 ## The Base Case
 
 **1.** An empty folder, `{"name": "empty", "files": [], "subfolders": []}`,
-holds no files and no subfolders. Predict `count_files` on it before
-running it, and say which line in `count_files` produces that answer.
+holds no files and no subfolders.
+
+1. Predict what `count_files` gives for it, before you run it.
+2. Which line in `count_files` produces that answer?
 
 ```python exec
 id: the-base-case-1
@@ -47,17 +50,21 @@ id: the-base-case-1
 
 <details class="dl-answer"><summary>answer</summary>
 
-`0`. `total = len(folder["files"])` sets `total` to `0`, since `files` is
-empty, and the `for sub in folder["subfolders"]` loop runs zero times,
-since there are no subfolders to add. This is the base case working
-correctly: a folder with nothing branching from it answers immediately,
-with no call to `count_files` needed beyond the first.
+`0`. The line `total = len(folder["files"])` sets `total` to `0`, because
+`files` is empty. Then the loop `for sub in folder["subfolders"]` runs zero
+times, because there are no subfolders.
+
+This is the base case at work. A folder with nothing inside it answers
+at once. `count_files` is called only once, and never calls itself.
 
 </details>
 
-**2.** Try writing `deepest_level(folder, level=0)` so it returns how
-many levels down the deepest subfolder sits, matching the tutorial's own
-description. Predict `deepest_level(photos)` before running it.
+**2.** This is the tutorial's last-but-one exercise, if you have not done
+it yet.
+
+1. Write `deepest_level(folder, level=0)`. It returns how many levels
+   down the deepest subfolder is.
+2. Predict `deepest_level(photos)`, before you run it.
 
 ```python exec
 id: the-base-case-2
@@ -73,15 +80,19 @@ def deepest_level(folder, level=0):
     return max(deepest_level(sub, level + 1) for sub in folder["subfolders"])
 ```
 
-`2`. `photos` is level `0`, `"2026"` is level `1`, and `"trip"` is level
-`2`, the deepest branch. `"2025"` has no subfolders of its own, so it
-stops at level `1` without adding to the deepest total.
+`max(...)` picks the largest of the values it is given, here one value
+for each subfolder.
+
+The answer is `2`. `photos` is level `0`, `"2026"` is level `1`, and
+`"trip"` is level `2`, the deepest branch. `"2025"` has no subfolders of
+its own, so its branch stops at level `1`. That is less than `2`, so it
+does not change the answer.
 
 </details>
 
 ## A Different Tree
 
-**3.** A second folder, this time about work rather than photos:
+**3.** Here is a second folder. This one is for work, not photos.
 
 ```python exec
 id: a-different-tree-1
@@ -101,8 +112,8 @@ work = {
 }
 ```
 
-Predict `count_files(work)` by hand, adding up every file at every level,
-before checking with code.
+Predict `count_files(work)` by hand. Add up every file at every level.
+Then check with code.
 
 ```python exec
 id: a-different-tree-2
@@ -110,20 +121,26 @@ id: a-different-tree-2
 
 <details class="dl-answer"><summary>answer</summary>
 
-`6`. One file directly in `work` (`report.docx`), two in `"acme"`
-(`invoice.pdf`, `contract.pdf`), and three in `"archive"` (`old.docx`,
-`older.docx`, `oldest.docx`). `"clients"` itself holds no files directly,
-only a subfolder, so it contributes nothing on its own.
+`6`.
+
+- One file is directly in `work`: `report.docx`.
+- Two are in `"acme"`: `invoice.pdf` and `contract.pdf`.
+- Three are in `"archive"`: `old.docx`, `older.docx` and `oldest.docx`.
+
+`"clients"` holds no files of its own, only a subfolder. So it adds
+nothing by itself.
 
 </details>
 
 ## Visiting in a Different Order
 
 **4.** The tutorial's `count_files_iterative` visits the most recently
-added folder first, because `pop()` removes the last item from a list by
-default. See if you can change one line so it visits folders in the
-order they were added instead — first added, first visited — and confirm
-the total is still the same on `photos`.
+added folder first. That is because `pop()`, with nothing in the
+brackets, removes the last item from a list.
+
+1. Change one line, so that it visits folders in the order they were
+   added: first added, first visited.
+2. Check that the total for `photos` is still the same.
 
 ```python exec
 id: visiting-in-a-different-order-1
@@ -143,9 +160,9 @@ def count_files_iterative_ordered(folder):
     return total
 ```
 
-Still `5` on `photos`. Changing `pop()` to `pop(0)` is the one line that
-needed to change — everything else about which folders get visited and
-which files get counted stays the same. Only the *order* changes, and
-the tutorial already showed that the order never changes the total.
+The total for `photos` is still `5`. The one line to change is `pop()`
+to `pop(0)`. Everything else stays the same: the same folders are
+visited, and the same files are counted. Only the *order* changes. The
+tutorial already showed that the order never changes the total.
 
 </details>

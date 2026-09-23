@@ -81,7 +81,7 @@ Some code boxes are examples to read, like this one:
 
 ```sql
 SELECT name, price
-FROM products
+FROM product_tbl
 WHERE price < 20;
 ```
 

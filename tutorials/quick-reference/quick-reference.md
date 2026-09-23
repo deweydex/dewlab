@@ -108,7 +108,7 @@ Assumes a table already exists in the database you are querying.
 | `LIMIT n` | Returns at most `n` rows. |
 | `COUNT(*)` | Counts the rows. |
 | `GROUP BY col` | Puts rows with the same value in `col` together, so you can count or total each group. |
-| `JOIN other ON table.id = other.id` | Combines two tables using a column they share. |
+| `JOIN other_tbl ON this_tbl.other_id = other_tbl.other_id` | Combines two tables using a key they share. The foreign key has the same name as the key it points at. |
 | `INSERT INTO table (col1, col2) VALUES (?, ?)` | Adds one row. Use `?` placeholders for the values, never build the text of a query out of them. |
 | `UPDATE table SET col = ? WHERE …` | Changes existing rows. Always include a `WHERE`, or every row changes. |
 | `DELETE FROM table WHERE …` | Removes rows. Always include a `WHERE`, or every row is deleted. |

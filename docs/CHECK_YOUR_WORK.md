@@ -153,7 +153,7 @@ description: |
   This module is Computational Methods and Problem Solving (5N0554).
 contents:
   - title: Python fundamentals
-    tutorials: [first-steps-cm, working-with-tables]
+    tutorials: [first-steps-cm, storing-and-computing, repeating-yourself]
   - title: Matrices
     tutorials: [grid-of-numbers, multiplying-grids]
 ```

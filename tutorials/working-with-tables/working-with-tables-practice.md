@@ -1,13 +1,16 @@
 ---
-title: "Working With a Table — Practice"
+title: "A table in Python, with pandas — Practice"
 practice_for: working-with-tables
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Working With a Table — Practice
+# A table in Python, with pandas — Practice
 
-Answers are folded. The table is the same four rows the tutorial uses, so every answer here can be checked by counting on your fingers — which is exactly why it is a good table to learn on.
+The answers are hidden in folds under each problem. The table is the
+same four rows as on the tutorial page. It is small enough that you can
+check every answer by counting on your fingers, and that makes it a good
+table to learn on.
 
 ## The Table
 
@@ -17,7 +20,8 @@ id: the-table-1
 readings
 ```
 
-**1.** How many rows and columns does the table have? Find out two ways.
+**1.** How many rows and columns does the table have? Can you find out
+in two different ways?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -25,15 +29,17 @@ Four rows and three columns.
 
 ```python
 print(readings.shape)      # (4, 3)
-print(len(readings))       # 4 — len counts rows
+print(len(readings))       # 4: len counts rows
 print(readings.columns)    # the column names
 ```
 
-`len` on a DataFrame gives rows rather than columns, which is worth knowing before you rely on it.
+`shape` gives the number of rows, then the number of columns. `len()`
+on a DataFrame gives the number of rows, not columns. That is worth
+knowing before you rely on it.
 
 </details>
 
-**2.** Show just the `evening` column. What kind of thing is it?
+**2.** Show only the `evening` column. What kind of thing is it?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -41,7 +47,9 @@ print(readings.columns)    # the column names
 readings["evening"]
 ```
 
-A Series — one column with its index attached. A DataFrame is a collection of Series sharing an index, and most single-column operations give a Series back.
+It is a *Series*. A Series is one column, with the row labels down its
+left side. A DataFrame is a group of Series that share the same row
+labels. Most things you do to a single column give you a Series back.
 
 </details>
 
@@ -53,29 +61,38 @@ A Series — one column with its index attached. A DataFrame is a collection of 
 readings[readings["site"] == "Sligo"]
 ```
 
-That returns a one-row DataFrame. To get the values themselves:
+This gives a DataFrame with one row. It is like
+`SELECT * FROM readings WHERE site = 'Sligo';`. Note the two equals
+signs: in Python, `==` compares, and a single `=` gives a name to a
+value.
+
+To get Sligo's values on their own:
 
 ```python
 readings.set_index("site").loc["Sligo"]
 ```
 
-The first is filtering, the second is looking up. Both are useful and they return different shapes.
+The first way is filtering. The second way is looking up a row by its
+label. Both are useful, and they give back different shapes.
 
 </details>
 
 ## Asking Questions
 
-**4.** What does `readings["evening"] > 14` produce on its own?
+**4.** What does `readings["evening"] > 14` give on its own?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Four True/False values, one per row: True, False, False, True.
+Four True or False values, one for each row: True, False, False, True.
 
-The comparison applies to the whole column at once. That is the key idea in pandas — you write the condition once and it is evaluated for every row.
+The comparison runs on the whole column at once. This is the key idea
+in pandas: you write the condition once, and pandas tests it on every
+row.
 
 </details>
 
-**5.** Find the sites where the evening reading was above 14. Then where the morning reading was below 10.
+**5.** Find the sites where the evening reading was above 14. Then find
+the sites where the morning reading was below 10.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -84,11 +101,13 @@ readings[readings["evening"] > 14]        # Cork and Wexford
 readings[readings["morning"] < 10]        # Sligo
 ```
 
-The mask goes inside the square brackets and keeps the rows where it is True.
+The comparison goes inside the square brackets. pandas keeps the rows
+where it is True.
 
 </details>
 
-**6.** Find the sites where the morning reading was above 10 *and* the evening above 14.
+**6.** Find the sites where the morning reading was above 10 *and* the
+evening reading was above 14.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -98,11 +117,15 @@ readings[(readings["morning"] > 10) & (readings["evening"] > 14)]
 
 Cork and Wexford.
 
-Two things differ from ordinary Python. The operator is `&` rather than `and`, and each condition needs its own brackets — without them, `&` binds tighter than `>` and the whole thing fails with a confusing message about ambiguous truth values.
+In SQL you would write `AND`. pandas is different in two ways. The
+operator is `&`. And each condition needs its own round brackets.
+Without them, Python works out `&` before `>`, and the line fails with
+a confusing error message.
 
 </details>
 
-**7.** Find the sites where the temperature rose by more than 3 degrees.
+**7.** Find the sites where the temperature rose by more than 3 degrees
+from morning to evening.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -111,13 +134,16 @@ rise = readings["evening"] - readings["morning"]
 readings[rise > 3]
 ```
 
-Cork rose 3.4, Galway 3.5, Sligo 2.3, Wexford 2.9 — so Cork and Galway.
+Cork rose by 3.4, Galway by 3.5, Sligo by 2.3 and Wexford by 2.9. So
+the answer is Cork and Galway.
 
-Subtracting two columns gives a new column of the row-by-row differences. No loop anywhere.
+Subtracting one column from another gives a new column: the difference
+on each row. There is no loop anywhere.
 
 </details>
 
-**8.** Add the rise as a new column, then show the table sorted by it.
+**8.** Add the rise as a new column. Then show the table sorted by it,
+largest first.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -128,17 +154,20 @@ readings.sort_values("rise", ascending=False)
 
 Galway, Cork, Wexford, Sligo.
 
-`sort_values` returns a new table and leaves the original order alone, which is nearly always what you want.
+`ascending=False` puts the largest first, like `ORDER BY rise DESC` in
+SQL. `sort_values` gives back a new, sorted table, and leaves
+`readings` in its old order. That is nearly always what you want.
 
 </details>
 
 ## Summarising
 
-**9.** Find the mean, minimum and maximum of the morning column.
+**9.** Find the mean, the smallest value and the largest value of the
+`morning` column.
 
 <details class="dl-answer"><summary>answer</summary>
 
-10.85, 9.7, and 12.2.
+10.85, 9.7 and 12.2.
 
 ```python
 readings["morning"].mean(), readings["morning"].min(), readings["morning"].max()
@@ -146,7 +175,7 @@ readings["morning"].mean(), readings["morning"].min(), readings["morning"].max()
 
 </details>
 
-**10.** Get every summary statistic at once.
+**10.** Can you get every summary number at once?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -154,11 +183,15 @@ readings["morning"].mean(), readings["morning"].min(), readings["morning"].max()
 readings.describe()
 ```
 
-Count, mean, standard deviation, minimum, the three quartiles and the maximum, for each numeric column. It skips the `site` column, because none of those questions mean anything for text.
+For each column of numbers, this gives the count, the mean, the
+standard deviation, the smallest value, the three quartiles and the
+largest value. It leaves out the `site` column, because none of those
+questions make sense for text.
 
 </details>
 
-**11.** Which site was warmest in the evening? Answer without reading the table.
+**11.** Which site was warmest in the evening? Can you find out without
+reading the table yourself?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -168,17 +201,25 @@ readings.loc[readings["evening"].idxmax(), "site"]
 
 Wexford, at 15.1.
 
-`idxmax` gives the index of the largest value rather than the value itself, which is what lets you look up something else in the same row. Asking for `readings["evening"].max()` tells you 15.1 and not whose it is.
+`idxmax` gives the row label of the largest value, not the value
+itself. With that label, we can look up something else in the same
+row, here the site. `readings["evening"].max()` tells you 15.1, but not
+which site it belongs to.
 
 </details>
 
-**12.** What does `readings["morning"].mean()` give if one reading is missing?
+**12.** What does `readings["morning"].mean()` give if one reading is
+missing?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The mean of the values that are present. pandas skips missing values by default rather than passing them through to the result.
+The mean of the values that are there. By default, pandas skips missing
+values when it works out a mean.
 
-That is convenient and it is a decision made on your behalf. If three of four readings are missing, the mean of the fourth is reported with no warning at all, and `readings["morning"].count()` is how you find out how many went into it.
+That is handy, but it is a decision pandas makes for you. If three of
+the four readings were missing, pandas would report the fourth one as
+the mean, with no warning at all. `readings["morning"].count()` tells
+you how many values went into it.
 
 </details>
 
@@ -197,29 +238,40 @@ check(readings["evening"].mean(), 13.875)
 check((readings["evening"] - readings["morning"]).mean(), 3.025)
 ```
 
-The rises are 3.4, 3.5, 2.3 and 2.9, averaging 3.025.
+The rises are 3.4, 3.5, 2.3 and 2.9, and their mean is 3.025.
 
-Note this equals the difference of the two means — 13.875 − 10.85. Averaging is linear, so the mean of the differences is the difference of the means, and that is true for any two columns.
-
-</details>
-
-**14.** `check` compares with a tolerance rather than exactly. Why does that matter here?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Because decimals are stored in binary, and arithmetic on them does not always land exactly where it should.
-
-The mean rise in the previous question is a live example. It comes out as `3.0250000000000004`, so `== 3.025` is `False` and the correct answer would be marked wrong. The evening mean, by contrast, is exactly 13.875 — some of these come out clean and some do not, and there is no way to tell which in advance.
-
-That is the argument for a tolerance rather than an equals sign on anything measured.
+Notice that this is the same as the difference between the two means:
+13.875 − 10.85. That is true for any two columns. The mean of the
+differences is always the difference of the means.
 
 </details>
 
-**15.** Write a check that would pass for a wrong answer, and say why that is a problem.
+**14.** `check` allows a small difference, a *tolerance*, when it
+compares numbers. It does not need them to be exactly equal. Why does
+that matter here?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A tolerance wide enough to swallow the mistake:
+Computers store decimals in binary, so arithmetic on decimals does not
+always land exactly where it should.
+
+The mean rise in the last problem is a real example. Python works it
+out as `3.0250000000000004`. So `== 3.025` gives `False`, and a correct
+answer would be marked wrong. The evening mean, on the other hand, is
+exactly 13.875. Some results come out clean and some do not, and there
+is no way to tell which in advance.
+
+That is why a check on anything measured should use a tolerance, not an
+exact `==`.
+
+</details>
+
+**15.** Can you write a check that would pass for a wrong answer? Why is
+that a problem?
+
+<details class="dl-answer"><summary>answer</summary>
+
+Give it a tolerance wide enough to hide the mistake:
 
 ```python
 check(readings["morning"].mean(), 11, tolerance=1)
@@ -227,6 +279,8 @@ check(readings["morning"].mean(), 11, tolerance=1)
 
 10.85 passes, and so would 11.9.
 
-A check with a loose tolerance is worse than no check, because it reports success. The tolerance should be as small as the arithmetic allows — big enough for floating point, and no bigger.
+A check with a loose tolerance is worse than no check, because it
+reports success. Keep the tolerance as small as the arithmetic allows:
+big enough for the tiny errors in decimals, and no bigger.
 
 </details>

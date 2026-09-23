@@ -1,18 +1,21 @@
 ---
-title: "Where Chains Lead — Practice"
+title: "Markov chains: where repeated steps settle — Practice"
 practice_for: where-chains-lead
 year: "2026-2027"
 version: 2026.08.24.1
 ---
 
-# Where Chains Lead — Practice
+# Markov chains: where repeated steps settle — Practice
 
-Every stationary distribution here can be checked two ways: multiply the
-state by the matrix many times and watch it settle, or solve
-$\boldsymbol{\pi}P = \boldsymbol{\pi}$ directly. Do both at least once — they
-should always agree.
+You can check every stationary distribution on this page in two ways:
 
-## Transition Matrices
+1. Multiply the state by the matrix many times, and watch it settle.
+2. Solve $\boldsymbol{\pi}P = \boldsymbol{\pi}$ directly, by hand.
+   Problem 3 shows how.
+
+Try both at least once. They should always agree.
+
+## Transition matrices
 
 ```python exec
 id: transitions-1
@@ -30,61 +33,67 @@ def multiply(a, b):
     return [[dot(row, col) for col in bt] for row in a]
 ```
 
-**1.** A student either studies or procrastinates each hour. If studying,
-there is an 80% chance they keep studying next hour. If procrastinating,
-there is a 60% chance they start studying next hour. Write the 2×2
+**1.** Each hour, a student either studies or *procrastinates* (puts the
+work off). If they are studying, there is an 80% chance that they are
+still studying the next hour. If they are procrastinating, there is a
+60% chance that they start studying the next hour. Write the 2×2
 transition matrix, with studying as state 1.
 
 <details class="dl-answer"><summary>answer</summary>
 
 $P = \begin{bmatrix} 0.8 & 0.2 \\ 0.6 & 0.4 \end{bmatrix}$
 
-Row 1 is "currently studying": 80% studying next hour, 20% procrastinating.
-Row 2 is "currently procrastinating": 60% studying next hour, 40% still
-procrastinating. Both rows sum to 1, as any transition matrix's rows must.
+- Row 1 is "studying now": 80% studying next hour, 20% procrastinating.
+- Row 2 is "procrastinating now": 60% studying next hour, 40% still
+  procrastinating.
+
+Both rows add up to 1, as the rows of every transition matrix must.
 
 </details>
 
-**2.** Starting from definitely procrastinating, `[[0, 1]]`, what is the
-state one hour later? Two hours later?
+**2.** Start from certainly procrastinating, `[[0, 1]]`. What is the
+state one hour later? What is it two hours later?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One hour: `[0.6, 0.4]` — 60% chance of studying now, straight from row 2 of
-`P`.
+After one hour: `[0.6, 0.4]`, a 60% chance of studying. This comes
+straight from row 2 of `P`.
 
-Two hours: multiply that result by `P` again —
+After two hours: multiply that result by `P` again.
 $[0.6, 0.4] \cdot P = [0.6(0.8) + 0.4(0.6),\ 0.6(0.2) + 0.4(0.4)] = [0.72, 0.28]$.
 
 </details>
 
-## Settling Down
+## Settling down
 
-**3.** Iterate the study/procrastinate chain for 20-30 steps from any
-starting state. What does it settle on?
+**3.** Run the study chain for 20 to 30 steps, from any starting state.
+What does it settle on?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Start from any state vector you like — `[[1, 0]]` or `[[0.5, 0.5]]` both
-   work, since the whole point is that the starting point stops mattering.
-2. Loop `multiply(state, P)` some number of times, reassigning `state` each
-   time.
-3. Print the last few iterations rather than all of them, and check they
-   have stopped changing to four decimal places or so.
+1. Start from any state vector you like. `[[1, 0]]` and `[[0.5, 0.5]]`
+   both work, because the starting point stops mattering.
+2. In a loop, work out `multiply(state, P)` and store the result in
+   `state` again, many times.
+3. Print only the last few steps. Check that they have stopped changing,
+   to about four decimal places.
 
-**Think about:** does it matter whether you started from definitely
-studying, definitely procrastinating, or fifty-fifty?
+**Think about:** does it matter whether you started from certainly
+studying, certainly procrastinating, or fifty-fifty?
 
 **Try this next:** solve $\boldsymbol{\pi}P = \boldsymbol{\pi}$ by hand for
-this chain, the way the tutorial's weather section did, and confirm it
-matches what the iteration settled on.
+this chain. Write $\boldsymbol{\pi} = [p, 1 - p]$. The first entry of
+$\boldsymbol{\pi}P$ is $0.8p + 0.6(1 - p)$, and it must equal $p$. Solve
+that for $p$. Does it match what the loop settled on?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-$[0.75, 0.25]$ — 75% of the long run spent studying, regardless of where you
-started.
+$[0.75, 0.25]$. In the long run, the student spends 75% of the time
+studying, wherever they started.
+
+By hand: $0.8p + 0.6(1 - p) = p$ gives $0.6 = 0.8p$, so $p = 0.75$.
 
 ```python
 P = [[0.8, 0.2], [0.6, 0.4]]
@@ -97,51 +106,63 @@ print(state)
 </details>
 
 **4.** A chain has $P = \begin{bmatrix} 1 & 0 \\ 0.3 & 0.7 \end{bmatrix}$.
-State 1 is called *absorbing* because once entered, row 1 says there is a
-0% chance of ever leaving. Iterate this chain starting from `[[0, 1]]` for
-1, 2, 5, 10, and 20 steps. What is happening to the numbers?
+State 1 is *absorbing*. An absorbing state is a state that the chain
+never leaves once it gets there. Row 1 says there is a 0% chance of
+leaving state 1.
+
+Run this chain from `[[0, 1]]` for 1, 2, 5, 10 and 20 steps. What is
+happening to the numbers?
 
 <details class="dl-answer"><summary>answer</summary>
 
-They climb steadily toward `[1, 0]`: `[0.3, 0.7]`, `[0.51, 0.49]`,
-`[0.83, 0.17]`, `[0.97, 0.03]`, `[0.999, 0.001]` (rounded).
+They climb steadily towards `[1, 0]`. Rounded, they are `[0.3, 0.7]`,
+`[0.51, 0.49]`, `[0.83, 0.17]`, `[0.97, 0.03]` and `[0.999, 0.001]`.
 
-The chain never actually reaches `[1, 0]` exactly in a finite number of
-steps, but it gets arbitrarily close — every visit to state 2 carries a 30%
-chance of being swallowed by state 1 forever, so eventually it is a near
-certainty. This is why absorbing states are sometimes what a Markov chain is
-*for*: modeling a process that is only interesting until it stops, like a
-gambler's ruin or a customer who eventually unsubscribes.
+The chain never reaches `[1, 0]` exactly, in any number of steps. But it
+gets as close as you like. At every step in state 2, there is a 30%
+chance of moving into state 1 and staying there for ever. So in the end
+it is almost certain.
+
+Sometimes an absorbing state is the whole reason for building a Markov
+chain. It models a process that matters only until it stops. One example
+is a customer who, sooner or later, cancels their subscription. Another
+is a gambler who keeps playing until all their money is gone.
 
 </details>
 
-## Ranking Pages
+## Ranking pages
 
-**5.** Three pages: D links only to E. E links equally to D and F. F links
-only to D. Write the transition matrix and find the stationary distribution.
+**5.** Here are three pages:
+
+- D links only to E.
+- E links to D and to F.
+- F links only to D.
+
+Write the transition matrix, and find the stationary distribution.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Row D: D links only to E, so the whole row is concentrated on the "to E"
+1. Row D: D links only to E, so the whole chance of 1 goes in the "to E"
    column.
-2. Row E: split equally between "to D" and "to F".
-3. Row F: concentrated entirely on "to D".
-4. Once you have the matrix, iterate from `[[1/3, 1/3, 1/3]]` the way the
+2. Row E: the chance is shared equally between "to D" and "to F".
+3. Row F: the whole chance of 1 goes in the "to D" column.
+4. When you have the matrix, run it from `[[1/3, 1/3, 1/3]]`, as the
    tutorial's web example did.
 
-**Think about:** F only ever leads back to D. What does that do to how much
-time a random surfer spends on F compared with D and E?
+**Think about:** F only ever leads back to D. What does that do to the
+time a random surfer spends on F, compared with D and E?
 
-**Try this next:** what would change about the ranking if F linked to E
-instead of D?
+**Try this next:** how would the ranking change if F linked to E, and
+not to D?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-$P = \begin{bmatrix} 0 & 1 & 0 \\ 0.5 & 0 & 0.5 \\ 1 & 0 & 0 \end{bmatrix}$,
-and the stationary distribution is exactly $[0.4, 0.4, 0.2]$ — D and E tied
-for the highest rank, F lowest.
+$P = \begin{bmatrix} 0 & 1 & 0 \\ 0.5 & 0 & 0.5 \\ 1 & 0 & 0 \end{bmatrix}$.
+The stationary distribution is exactly $[0.4, 0.4, 0.2]$. D and E tie
+for the highest rank, and F is lowest. After 30 steps, the loop below
+prints numbers very close to these.
 
 ```python
 P = [[0, 1, 0], [0.5, 0, 0.5], [1, 0, 0]]
@@ -151,33 +172,34 @@ for _ in range(30):
 print(state)
 ```
 
-F only ever sends a visitor back to D, and never to itself or to E directly,
-so a surfer passes *through* F rather than lingering — which is exactly why
-its long-run share is the smallest, even though it is linked to just as
-often as D is.
+E and F each have only one page linking to them. E gets all of D's
+visitors, because D links only to E. F gets only half of E's visitors,
+because E shares its visitors between D and F. So F's long-run share is
+half of E's. F then sends every visitor on to D, so D collects visitors
+from both E and F.
 
 </details>
 
-**6.** In the tutorial's three-page example, page A had the highest rank
-even though it has exactly one outgoing link (to itself it has none — it
-splits between B and C). Why does the *number* of outgoing links a page has
-not straightforwardly predict its rank?
+**6.** In the tutorial's three-page example, pages A and C both have two
+outgoing links. Yet A has the highest rank and C has the lowest. Why
+does the number of outgoing links not tell us a page's rank?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because rank depends on how much traffic a page *receives*, not how much it
-sends out — and how much it receives depends on who links to it and how
-concentrated those pages' own outgoing links are.
+Rank depends on how many visitors a page receives, not on how many it
+sends out. The visitors a page receives depend on which pages link to
+it, and on how many other links those pages have.
 
-Page A ranked highest because both other pages link to it, and one of them
-(B) links to *nothing else at all* — every single visit to B sends its full
-weight straight back to A. A page's own out-degree only ever splits its
-existing weight among the pages it links to; it has no bearing on how much weight
-that page has to split in the first place.
+Page A ranked highest because both other pages link to it. One of them,
+B, links to nothing else, so every visitor to B goes straight on to A.
+
+A page's outgoing links only share out the visitors that the page
+already has. They do not change how many visitors the page has to share
+in the first place.
 
 </details>
 
-## Words and Chains
+## Words and chains
 
 ```python exec
 id: words-1
@@ -194,9 +216,11 @@ def build_chain(text):
     return states, index, P
 ```
 
-**7.** Build a chain from `"red fish blue fish one fish two fish"`, and print
-the row for `"fish"`. Why does it have three different words with a
-non-zero probability, and are they equally likely?
+**7.** Build a chain from `"red fish blue fish one fish two fish"`. Print
+the row for `"fish"`.
+
+1. Why do three different words have a chance above zero?
+2. Are they equally likely?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -205,24 +229,28 @@ states, index, P = build_chain("red fish blue fish one fish two fish")
 print(dict(zip(states, [round(v, 2) for v in P[index["fish"]]])))
 ```
 
-`"fish"` appears four times in the sentence. Three of those are followed by
-another word — `"blue"`, `"one"`, `"two"`, each exactly once — so the row
-splits evenly, $\frac{1}{3}$ each. The fourth `"fish"` is the very last word
-in the sentence and has nothing after it, so it never contributes a
-transition at all; it simply is not one of the three pairs the row is built
-from.
+`"fish"` appears four times in the sentence. Three of those times, it is
+followed by another word: `"blue"`, `"one"` and `"two"`, once each. So
+the row shares its chance equally, $\frac{1}{3}$ each.
+
+The fourth `"fish"` is the last word in the sentence, with nothing after
+it. So it adds no pair to the row. The row is built from the other three
+pairs only.
 
 </details>
 
-**8.** Using the chain from problem 7, is it possible for `generate` to
-produce the word `"red"` anywhere except as the very first word?
+**8.** Take the chain from problem 7, and a `generate` function like the
+one in the tutorial. Can `generate` ever produce the word `"red"`,
+except as the very first word?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. `"red"` never appears anywhere in the training text except at the very
-start, so no row of the matrix has a nonzero probability of transitioning
-*into* `"red"` — nothing in the text was ever followed by it. A Markov chain
-can only produce transitions it has actually seen; it cannot invent one
-because the resulting sentence would sound more natural.
+No. `"red"` appears in the text only at the very start. Nothing in the
+text is ever followed by `"red"`. So no row of the matrix has a chance
+above zero of moving to `"red"`.
+
+A Markov chain can only make moves it has seen in its text. It cannot
+invent a new move, even one that would make the sentence sound more
+natural.
 
 </details>

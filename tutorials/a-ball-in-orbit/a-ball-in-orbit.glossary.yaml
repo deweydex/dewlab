@@ -1,0 +1,67 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Second tutorial of the Computer graphics series, split out of
+# a-point-on-the-screen. The perspective divide, projection, depth and
+# similar triangles are introduced there and not repeated here.
+# `math.sin()`/`math.cos()` and radians are new to this course even
+# though the unit-circle tutorial on the maths course uses them.
+entries:
+  - term: camera position
+    kind: concept
+    definition: >
+      A camera sees every point relative to where it stands. Subtract
+      the camera's position from the point first, then divide by what is
+      left of z.
+  - term: near plane
+    kind: concept
+    definition: >
+      The near plane is the smallest depth a renderer will draw. Anything
+      closer is cut away before dividing, so the divide never meets a
+      depth of zero or a point behind the camera.
+  - term: renderer
+    kind: concept
+    definition: >
+      A renderer is the program that turns points into a picture. A game
+      engine has one, and so does a browser.
+  - term: frame
+    kind: concept
+    definition: >
+      A frame is one still picture. A screen shows many frames one after
+      another, and if they come fast enough your eye sees movement.
+  - term: frame rate
+    kind: concept
+    definition: >
+      The frame rate is how many frames are shown each second. A cinema
+      film shows 24 a second and a game usually draws 60.
+  - term: loop
+    kind: concept
+    definition: >
+      An animation loops when it starts again from its first frame after
+      showing its last one, so it keeps going for as long as the page is
+      open.
+  - term: radian
+    kind: concept
+    definition: >
+      A radian is a unit for measuring angles. A whole turn is 2π
+      radians, about 6.28, so a quarter turn is 2π × 0.25. Python's
+      math.sin() and math.cos() measure angles in radians.
+  - term: "math.sin(), math.cos()"
+    kind: function
+    definition: >
+      Give the sine and cosine of an angle measured in radians. Together
+      they turn an angle into a point on a circle of radius 1.
+    example: "x, z = radius * math.cos(angle), radius * math.sin(angle)"
+  - term: "FuncAnimation()"
+    kind: function
+    definition: >
+      Turns a figure into a moving picture. Calls the function you give it
+      once for each frame, with the frame number, and waits `interval`
+      thousandths of a second between frames. Leave it as the last line of
+      a cell and the page plays it.
+    example: "FuncAnimation(figure, draw_step, frames=48, interval=60)"
+  - term: "plt.subplots()"
+    kind: function
+    definition: >
+      Makes a grid of small plots inside one figure. Returns the figure
+      and the grid of frames, so a loop can draw one picture in each.
+    example: "figure, frames = plt.subplots(2, 5)"

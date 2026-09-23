@@ -6,45 +6,59 @@
 # tutorials' prose but never emphasised or defined there; this is their
 # first formal introduction as terms in this curriculum.
 entries:
+  - term: perceptron
+    kind: concept
+    definition: >
+      A perceptron is a model that multiplies each input by a weight,
+      adds them up with a bias, and decides by whether the total is above
+      zero. It learns by moving its weights a little after every mistake.
+
   - term: model
     kind: concept
     definition: >
       A model is a rule for turning some numbers into a decision or a
-      prediction. It stays fixed once built, unless something outside it
-      deliberately corrects it.
+      prediction. It stays fixed once it is built, unless something
+      outside it corrects it on purpose.
 
   - term: simulation
     kind: concept
     definition: >
-      A simulation is a model run forward, over and over, letting each
-      run change what the next run sees. Running a fixed formula once is
-      not a simulation; running it repeatedly, with feedback between
-      runs, is.
+      A simulation runs a model again and again, and lets each run change
+      what the next run sees. Running a fixed formula once is not a
+      simulation. Running it repeatedly, with feedback between runs, is.
 
   - term: weight
     kind: concept
     definition: >
-      A weight is the number a model multiplies one input by before
-      adding everything together. A larger weight means that input
-      matters more to the model's decision.
+      A weight is the number a model multiplies one input by, before it
+      adds everything together. A larger weight means that input matters
+      more to the model's decision.
 
   - term: bias
     kind: concept
     definition: >
-      A bias is the one extra number a model adds on top of every
-      weighted input, shifting its decision up or down regardless of
-      what came in.
+      A bias is the one extra number a model adds to the total of the
+      weighted inputs. It moves the decision up or down, whatever the
+      inputs are.
 
   - term: epoch
     kind: concept
     definition: >
-      An epoch is one full pass through every training example, checking
-      and correcting the model once against each.
+      An epoch is one full pass through every training example. The model
+      is checked, and corrected if it is wrong, once for each example.
 
   - term: learning rate
     kind: concept
     definition: >
-      The learning rate is the one number that sets how large a
-      correction a mistake produces. A larger learning rate corrects
-      faster but less precisely; a smaller one takes more epochs to
-      reach the same place.
+      The learning rate is the number that sets how large a correction
+      each mistake makes. In a perceptron whose weights all start at zero,
+      it changes the size of the weights but not the decisions. In bigger
+      models it matters much more.
+
+  - term: training examples, test examples
+    kind: concept
+    definition: >
+      Training examples are the examples a model is corrected against.
+      Test examples are kept apart, and the model never sees them while it
+      learns. A model that gets the test examples right has found a
+      general pattern, and has not only memorised its training examples.

@@ -1,12 +1,25 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Second tutorial of the series (Programming with objects), after
-# objects-and-classes. Checked its glossary as the cumulative list — none
-# of these terms overlap. "reusable" is emphasised once in the Wrapping Up
-# bullets but is ordinary English doing ordinary work here, not a new
-# named term, so it is left out (dev/curriculum_map.py's terms_of()
-# confirms it is not used anywhere else in the curriculum either).
+# Fourth tutorial of the series (Programming with objects), after
+# objects-and-classes, the-moves-you-already-know and
+# keeping-details-inside-an-object. Checked their glossaries as the
+# cumulative list: none of these terms overlap. polynomial and coefficient
+# are also in expressions-come-alive's glossary, but that page belongs to
+# the maths course, not this series, so they are defined here as well.
 entries:
+  - term: polynomial
+    kind: concept
+    definition: >
+      A polynomial is a sum of terms, where each term is a number times a
+      power of x. In code we store it as a list of its coefficients.
+    example: "[-2, 5, 3]  # 3x^2 + 5x - 2"
+
+  - term: coefficient
+    kind: concept
+    definition: >
+      A coefficient is the number in front of a power of x in a
+      polynomial. In 3x^2 + 5x - 2, the coefficients are 3, 5 and -2.
+
   - term: degree
     kind: concept
     definition: >
@@ -20,3 +33,10 @@ entries:
       A polynomial's leading coefficient is the coefficient attached to
       its highest power of x — the last entry in its coefficient list.
     example: "Polynomial([1, 0, -3, 2]).leading_coefficient()  # 2"
+
+  - term: reusable
+    kind: concept
+    definition: >
+      A reusable method is written once and works on every object of its
+      class, using the data that object already carries.
+    example: "cubic.degree()"

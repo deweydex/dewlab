@@ -4314,3 +4314,29 @@ Left undone deliberately, and worth a decision later: Database Methods has no st
 **Titles say what a page teaches**, as on Web Authoring (7.209): "Repeating steps with loops", "Searching a list: linear and binary search", and so on. Ids are unchanged, so addresses are too.
 
 *Cost to change: the order is one list in each of two course files. Moving a page back means re-checking its "earlier/later" sentences, which a sweep did once for this order.*
+
+---
+
+**7.211 — Fundamentals of OOP and Computational Methods get the same treatment as Programming: one idea per page, pages in the order they are needed, and titles that say what a page teaches. Computational Methods lists the Programming Foundations pages it depends on, and *Working With a Table* moves to Database Methods.** Josh: "Computational methods take the maths class alongside … There is no problem with linking through", and "Lets move working with a table to database methods!"
+
+**OOP.** `the-moves-you-already-know` used a class before `objects-and-classes` taught one, so it now comes second, as the bridge from the four familiar moves to methods. `objects-and-classes` taught classes, encapsulation and inheritance in one page; it now teaches classes and objects, with `__str__`/`__repr__` and class against instance attributes added, and encapsulation has a page of its own (`keeping-details-inside-an-object`), which also corrects the old claim that outside code had "no other route" to a field: in Python it does, and the page now teaches the underscore convention instead. Inheritance lives only in `one-parent-many-children`, which now teaches it from the start; composition, which was a section of that page, is `objects-inside-objects`, straight after it, with an "is a / has a" test. `a-front-end-for-a-class` gets the course's missing practice page, driven by a fake `input()` so the menu loop can be tested in a cell.
+
+**Computational Methods.** Its opening series was a page on running cells and a pandas page; from the third page on, the matrices used functions, nested lists and comprehensions nothing in the course had taught. The series now lists seven Programming Foundations pages after `first-steps-cm` (variables and f-strings, decisions, reading errors, loops, functions, lists, dictionaries), each one checked against what the course's cells use. A tutorial may sit on two courses, and a student doing both meets the same page once. Comprehensions, used on a dozen pages and taught nowhere, are a section of `lists-and-sequences`, so both courses have them. `a-point-on-the-screen` taught dividing by depth and then a camera and an orbit; the second idea is `a-ball-in-orbit`. The Algorithms pair is swapped so that recursion (`finding-everything-inside-a-folder`) comes before the page built on it (`three-ways-to-make-change`), and that page's coins are euro cents.
+
+**Checked, not assumed.** Every new or changed cell and practice answer was run, and a good number of claims failed on running: a text counted as ten words that has sixty, a learning-rate lesson that does not hold when the weights start at zero, a greedy exercise with no answer, a seed that did not show the repeat the prose promised, practice answers that contradicted their own tutorials. Each is corrected where it stood.
+
+**`working-with-tables` moves to Database Methods**, before `loading-a-real-dataset`, the first page there to use pandas. Nothing in Computational Methods built on it; in Database Methods each pandas step sits beside the SQL it matches.
+
+*Cost to change: orders are course-file lines; a page listed on two courses is one file. Undoing a split is a paste and a `covers:` edit.*
+
+---
+
+**7.212 — Every table in Database Methods follows one naming convention: singular names ending in `_tbl`, primary keys named after their table (`product_id`, never `id`), foreign keys named after the key they point at and placed directly under the primary key.** Josh, passing on his co-teacher: "tables should have _tbl at end and id should be named after table such as product_id. Would also be consistent about fk location, either under id or at bottom of table. Also on PK side I'd link from id not table name", and, on the examples: "we can keep the original topics (which are more fun) but just fit the convention … having multiple examples is better as they don't get too focused on the one thing."
+
+**Why a name should say what it is.** With every key called `id`, a join reads `ON dinosaurs.id = sightings.dinosaur_id`, and a line in an entity relationship diagram runs from a row labelled `id` that could belong to any table. Named after its table, the key reads the same at both ends, `dinosaur_tbl.dinosaur_id = sighting_tbl.dinosaur_id`, and the diagram's line runs from `dinosaur_id` to `dinosaur_id`. `_tbl` tells a reader, in a query of many names, which of them are tables. `erd.py` already drew each relationship from the parent's key row; a test now fails if it ever moves to the name band.
+
+**Foreign keys under the primary key**, the arrangement every existing table already had, is now the rule, so every table and every diagram opens the same way: its own key, then the keys it points through, then its data.
+
+**The topics stay.** Dinosaurs, students, plushies, the library, the timetable and the published datasets keep their subjects; only names changed, across every page, the quizzes' check cells, the full-stack page, the reference shelf and the four diagrams, which regenerate from the pages' own `CREATE TABLE` statements. Two exceptions, each explained on its page: a table loaded straight from a CSV keeps the CSV's column names, and `country_region_tbl` keeps `country` as its key, because the join to the income data is by country name.
+
+*Cost to change: a rename throughout the course's SQL, its quiz checks and `dev/graphics/database_methods.py`; the diagrams follow by regenerating.*

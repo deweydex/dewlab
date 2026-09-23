@@ -1,5 +1,5 @@
 ---
-title: "Counting Darts"
+title: "Monte Carlo simulation: estimating π with random darts"
 year: "2026-2027"
 version: 2026.08.30.1
 covers:
@@ -13,35 +13,45 @@ covers:
     covers: [CMPS-LO3, CMPS-LO13]
 ---
 
-# Counting Darts
+# Monte Carlo simulation: estimating π with random darts
 
-The last tutorial ended with a machine that produces unpredictable numbers on
-demand. This one spends them on something that looks, at first, like an
-absurd way to do mathematics: working out the value of π by throwing darts at
-a wall and counting where they land.
+In [Random numbers: pseudo-random numbers and seeds](tutorial:leaving-it-to-chance),
+we got the computer to give us unpredictable numbers whenever we asked.
+On this page we spend those numbers on something that seems like a
+strange way to do mathematics. We work out the value of π by throwing
+darts at a wall and counting where they land.
 
-It is absurd, and it works, and the reason it works is the foundation of an
-entire family of methods that get used on problems where nothing else does.
+It is a strange way. It also works. And the reason it works is the basis
+of a whole family of methods, called Monte Carlo methods. People use them
+on problems where nothing else works.
+
+The *Monte Carlo method* answers a question by making many random cases,
+and counting how many of them meet some condition. It is named after the
+casino in Monte Carlo, a place built on chance. When we run the method on
+a computer, we call it a *Monte Carlo simulation*.
 
 ## A Question You Can Answer by Throwing Things
 
-Picture a square, one unit on each side, with a quarter-circle drawn inside
-it from corner to corner.
+Picture a square, one unit on each side. Inside it, draw a quarter of a
+circle, with its centre at one corner and a radius of 1.
 
-The square's area is $1 \times 1 = 1$. The quarter-circle's area is a quarter
-of a full circle of radius 1, which is $\pi/4$. So if you scattered points
-across that square completely at random, the *fraction* landing inside the
-curve should be:
+The square's area is $1 \times 1 = 1$. The quarter-circle's area is a
+quarter of the area of a full circle of radius 1, which is $\pi/4$.
+
+Now suppose you scatter points across that square completely at random.
+What *fraction* of them would you expect to land inside the curve? It
+should be the quarter-circle's share of the square:
 
 $$\frac{\text{quarter-circle area}}{\text{square area}} = \frac{\pi/4}{1} = \frac{\pi}{4}$$
 
-Which rearranges to something useful. Multiply the fraction that lands inside
-by 4, and you have an estimate of π — obtained without measuring a circle,
-without a formula for its area, and without knowing π in the first place.
+We can turn that round. Take the fraction that lands inside, and multiply
+it by 4. That gives an estimate of π. We never measure a circle. We never
+use a formula for its area. And we do not need to know π at the start.
 
-The only thing needed is a way to tell whether a point is inside the curve.
-A point $(x, y)$ is inside a circle of radius 1 centred on the origin exactly
-when $x^2 + y^2 \le 1$ — which is Pythagoras, used here and nowhere else in the method.
+We only need a way to tell whether a point is inside the curve. A point
+$(x, y)$ is inside a circle of radius 1, centred on the origin, when
+$x^2 + y^2 \le 1$. This is Pythagoras' theorem. It is the only place the
+method uses it.
 
 ```python exec
 id: a-question-you-can-answer-by-throwing-things-1
@@ -55,8 +65,10 @@ print(inside_circle(0.9, 0.9))   # out past the curve
 
 ### Your turn
 
-Where does the point $(0.6, 0.8)$ fall? Work it out on paper first — $0.6^2 +
-0.8^2$ is a calculation worth doing by hand — then check.
+Where does the point $(0.6, 0.8)$ fall?
+
+1. Work out $0.6^2 + 0.8^2$ on paper first. It is worth doing by hand.
+2. Then check with `inside_circle`.
 
 ```python exec
 id: a-question-you-can-answer-by-throwing-things-2
@@ -65,9 +77,13 @@ hint: 0.36 + 0.64. The answer is exactly on the boundary, which is why this part
 
 ## One Dart at a Time
 
-Now the throwing. Each dart is a pair of random numbers between 0 and 1 —
-which is exactly what `random.random()` gives, so a dart costs two calls
-and nothing else.
+Now for the throwing. Each dart is a pair of random numbers between 0
+and 1, one for $x$ and one for $y$. That is what `random.random()`
+gives, so each dart costs two calls and nothing else.
+
+The function below throws `n` darts, counts the hits, and returns 4 times
+the fraction that landed inside. It sets its own seed, the habit from the
+last page. So every call can be repeated, whatever ran before it.
 
 ```python exec
 id: one-dart-at-a-time-1
@@ -91,19 +107,19 @@ def estimate_pi(n, seed=0):
 print(estimate_pi(100))
 ```
 
-The result is 3.04, from a hundred darts and no mathematics beyond a square
-root that was never even computed.
+The result is 3.04. It came from a hundred darts. The only mathematics was
+Pythagoras, and we never even took a square root.
 
-It is also wrong in the second decimal place, which is worth sitting with
-rather than hurrying past. The method has not made an error. There is no bug
-to find. A hundred darts genuinely does not contain enough information to
-find π more exactly than that, and no amount of care in the code would change
-it.
+The answer is also wrong in the second decimal place. Take a moment over
+that, because it matters. The method has not made an error. There is no
+bug to find. A hundred darts do not hold enough information to find π
+more exactly than this, and no amount of care in the code would change
+that.
 
 ### Your turn
 
-What happens with more darts? Try 1,000, then 10,000, and see how close each
-gets.
+What happens with more darts? Try 1,000, then 10,000. How close does each
+one get?
 
 ```python exec
 id: one-dart-at-a-time-2
@@ -112,12 +128,16 @@ hint: The function already takes n as its argument, so this is three calls. Prin
 
 ## Watching It Settle
 
-Printing three numbers tells you the answer improves. It does not show you
-*how* it improves, and the shape of that improvement is the real subject.
+Printing three numbers tells you that the answer gets better. It does
+not show you *how* it gets better, and the way it gets better is the
+most important thing on this page.
 
-So rather than throwing a batch and reporting one number, this version keeps
-a running estimate — recording, after every single dart, what π would be
-estimated as if you stopped right there.
+So this version does not throw a batch of darts and report one number.
+It keeps a *running estimate*. After every single dart, it records the
+estimate of π we would get if we stopped right there. Then it plots all
+of those estimates.
+
+Before you run it, what do you think the line will look like?
 
 ```python exec
 id: watching-it-settle-1
@@ -142,25 +162,27 @@ plt.ylabel("estimate")
 plt.legend()
 ```
 
-That picture is the tutorial. Three things in it are worth naming.
+That picture holds the main idea of this page. Here are three things to
+notice in it.
 
-The estimate is **wild at the start** — with ten darts, one dart either way
-moves it by 0.4 — and settles as the count grows, because each new dart is a
-smaller fraction of the total and can shift the average less.
+**It is wild at the start.** With ten darts, one dart more or less moves
+the estimate by 0.4. The estimate settles as the count grows. Each new
+dart is a smaller part of the total, so it can move the average less.
 
-It **never stops moving**. There is no point where it arrives at π and stays.
-It wanders around the answer, and it will still be wandering at a million
-darts, just in a narrower band.
+**It never stops moving.** There is no point where it reaches π and stays
+there. It wanders around the answer. At a million darts it will still be
+wandering, only in a narrower band.
 
-And it **approaches from no particular direction**. The estimate is not
-climbing towards π or falling towards it; it crosses the line repeatedly, and
-whether it happens to be above or below when you stop is luck.
+**It comes from no particular direction.** The estimate is not climbing
+up to π, or falling down to it. It crosses the line again and again.
+Whether it is above or below π when you stop is luck.
 
 ### Your turn
 
-What does the same plot look like with a different seed? Change `random.seed(0)`
-to another number and run it again — then say what stays the same between the
-two pictures and what does not.
+What does the same plot look like with a different seed?
+
+1. Change `random.seed(0)` to another number, and run the cell again.
+2. What stays the same between the two pictures? What changes?
 
 ```python exec
 id: watching-it-settle-2
@@ -169,8 +191,10 @@ hint: Look at the shape of the settling rather than the particular wiggles. The 
 
 ## More Is Not Reliably Better
 
-Here is the result that shows this method's real limits, and it comes out
-of a table rather than an argument.
+This method has real limits. The table below shows them. For each number
+of darts, it prints the estimate, and how far that estimate is from π.
+
+Before you run it, which row do you expect to be closest to π?
 
 ```python exec
 id: more-is-not-reliably-better-1
@@ -181,17 +205,21 @@ for n in [100, 1000, 10000, 100000]:
     print(f"n = {n:>6}   estimate = {estimate:.5f}   off by {abs(estimate - math.pi):.5f}")
 ```
 
-Read the last column downward. A hundred darts is off by about 0.10. A
-thousand darts is off by about 0.014 — a real improvement. Ten thousand gets
-to 0.006.
+Read the last column from the top down. A hundred darts are off by about
+0.10. A thousand darts are off by about 0.014, which is a real
+improvement. Ten thousand darts get to 0.006.
 
-And a hundred thousand darts is off by 0.0069, which is *worse than ten
+And a hundred thousand darts are off by 0.0069. That is *worse than ten
 thousand*.
 
-That is not a mistake in the code and it is not a bad seed. Ten times the
-work bought a slightly worse answer on this particular run, and that is a
-completely ordinary thing for this method to do. Run it with another seed and
-the numbers will differ; the pattern of a slow, unreliable improvement will not.
+This is not a mistake in the code, and it is not a bad seed. Ten times
+the work gave a slightly worse answer on this run. That is a normal thing
+for this method to do. With another seed the numbers will be different,
+but the pattern will be the same: the answer improves slowly, and not
+every time.
+
+The next cell makes four runs of a hundred thousand darts each, with four
+different seeds.
 
 ```python exec
 id: more-is-not-reliably-better-3
@@ -200,31 +228,40 @@ for seed in [0, 1, 2, 3]:
     print(f"seed = {seed}   estimate = {estimate:.5f}")
 ```
 
-Four runs, all one hundred thousand darts, produce four different second
-decimal places. This shows two separate questions worth asking about any
-model's numbers. *Accuracy* is how close an estimate is to the true
-answer — the "off by" column above. *Precision* is how much of an
-estimate stays the same if the whole thing is run again.
+The four runs give four different answers. They disagree from the second
+decimal place on: some start 3.14, and some start 3.13. This shows two
+different questions we can ask about any model's numbers.
 
-A hundred thousand darts here is reasonably accurate, off by well under a
-hundredth. It is not especially precise, since a fresh run can produce a
-different second decimal place entirely. Knowing which one is missing
-decides what fixing it actually needs: more darts, a better method, or a
-clearer sense of how far the number can be trusted.
+- *Accuracy* is how close an estimate is to the true answer. It is the
+  "off by" column in the table above.
+- *Precision* is how much of an estimate stays the same when the whole
+  thing is run again.
 
-The underlying rule, which the next tutorial takes apart properly, is that
-the typical error shrinks in proportion to $1/\sqrt{n}$. Squeezing one more
-decimal place out of the answer means about **a hundred times** the darts.
-Two more decimal places means ten thousand times. This is why nobody computes
-π this way — there are far better methods — and why it is still the first
-example everyone is shown: the arithmetic is simple, so the behaviour is what you notice.
+Here, a hundred thousand darts are fairly accurate: the estimate is off by
+well under a hundredth. But they are not very precise, because a new run
+can give a different second decimal place. Knowing which of the two is
+missing tells you what will fix it. You might need more darts, a better
+method, or a clearer idea of how far the number can be trusted.
+
+Underneath all of this is a rule. The typical error shrinks in proportion
+to $1/\sqrt{n}$, where $n$ is the number of darts. This page shows the
+rule at work, but does not prove it. Here is what it means:
+
+- One more correct decimal place needs about **a hundred times** as many
+  darts.
+- Two more decimal places need about ten thousand times as many.
+
+That is why nobody works out π this way. There are far better methods.
+But it is still the first example everyone is shown. The arithmetic is
+simple, so the behaviour is what you notice.
 
 ### Your turn
 
-If a hundred thousand darts gets you to roughly two correct decimal places,
-roughly how many would you need for four? Work it out from the rule above
-before running anything, and then decide whether running it is a good use of
-your afternoon.
+A hundred thousand darts give you roughly two correct decimal places.
+
+1. Roughly how many darts would you need for four? Work it out from the
+   rule above, before you run anything.
+2. Then decide: is running it a good use of your afternoon?
 
 ```python exec
 id: more-is-not-reliably-better-2
@@ -233,21 +270,23 @@ hint: Two more decimal places means the error has to fall by a factor of 100. If
 
 ## Reflection
 
-The method in this tutorial has no formula for π in it anywhere. It does not
-know what π is. It counts a proportion, and π falls out of the geometry of
-the question being asked.
+There is no formula for π anywhere in the method on this page. The
+method does not know what π is. It counts a fraction, and π comes out
+of the shape of the question we asked.
 
-That is the idea worth remembering, because it goes far past circles. Any quantity that can be written as "the fraction of cases where
-something is true" can be estimated by generating cases and counting — and
-plenty of real questions have that shape while having no formula at all. What
-fraction of delivery routes finish before 5pm? How often does this design
-fail under load? Those need simulation to solve, and they are exactly as easy to throw
-darts at as a quarter-circle is.
+That idea goes far beyond circles. Can you write a quantity as "the
+fraction of cases where something is true"? Then you can estimate it by
+making cases and counting them. Plenty of real questions have that
+shape, and have no formula at all. What fraction of delivery routes finish
+before 5pm? How often does this design fail when it is busy? We need
+simulation to answer questions like these, and we can throw darts at them
+as easily as at a quarter-circle.
 
-Was the wandering estimate uncomfortable to look at? Most of the mathematics
-you have met so far produces an answer that is simply correct, and a method
-whose answer is *approximately* right, by an amount you can only describe
-statistically, asks for a different kind of trust. That discomfort is the right reaction — it is what the next tutorial is for.
+Did the wandering estimate feel uncomfortable to look at? Most of the
+mathematics you have met so far gives an answer that is exactly right.
+This method gives an answer that is *roughly* right. We can only describe
+how far off it is using statistics. That asks for a different kind of
+trust, and feeling uncomfortable about it is a sensible reaction.
 
 ## Where to Read More
 

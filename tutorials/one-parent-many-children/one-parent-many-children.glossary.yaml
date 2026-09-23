@@ -1,32 +1,61 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Third tutorial of the series (Programming with objects), after
-# objects-and-classes and one-class-many-methods. Checked both earlier
-# glossaries as the cumulative list — none of these terms overlap.
-# dev/curriculum_map.py's terms_of() also found "has" and "is a" emphasised
-# here, and the other two tutorials' own titles in italics; none of those
-# are terms — the first two are grammatical emphasis contrasting
-# inheritance and composition, and the titles are ordinary cross-references
-# to earlier tutorials, not new vocabulary.
+# Inheritance page of the series (Programming with objects), after
+# objects-and-classes and one-class-many-methods. Since the 2026.09.22
+# rewrite this page teaches inheritance from the start: the short
+# "Building on What Already Exists" section left objects-and-classes, so
+# inheritance, parent class, child class and super() are defined here now
+# (objects-and-classes' glossary no longer carries them). Overriding is
+# named here for the first time.
+# Composition moved to objects-inside-objects with the Bank section.
 entries:
+  - term: inheritance
+    kind: concept
+    definition: >
+      Inheritance is a way to build a new class on an existing one. The
+      new class keeps everything the existing class does, and adds only
+      what is different.
+    example: "class SavingsAccount(BankAccount):"
+
+  - term: parent class
+    kind: concept
+    definition: >
+      A parent class is the existing class that a new class is built on.
+      It gives its fields and methods to the new class for free.
+
+  - term: child class
+    kind: concept
+    definition: >
+      A child class is a new class built on a parent class. It can add
+      fields and methods of its own, and replace methods it inherits.
+
+  - term: "super()"
+    kind: function
+    definition: >
+      Reaches the parent class from inside a child class, so the child
+      can call the parent's version of a method. It is most often used to
+      call the parent's constructor.
+    example: "super().__init__(owner, balance)"
+
+  - term: overriding
+    kind: concept
+    definition: >
+      Overriding is writing a method in a child class with the same name
+      as a method in its parent class. Objects of the child class then
+      run the child's version.
+    example: "def withdraw(self, amount):  # inside CheckingAccount"
+
   - term: overdraft
     kind: concept
     definition: >
-      An overdraft lets an account's balance go below zero, up to some
-      limit, rather than refusing a withdrawal that would empty it.
+      An overdraft lets an account's balance go below zero, up to a set
+      limit.
     example: "CheckingAccount('Ben', 200.0, 100.0)  # a 100.0 overdraft limit"
 
   - term: polymorphism
     kind: concept
     definition: >
-      Polymorphism is one method name doing a different thing depending on
-      which class the object it was called on belongs to. A caller does
-      not need to check the class first.
+      Polymorphism is one method name working across several classes.
+      Each object runs the version that fits its own class, so the caller
+      does not need to check the class first.
     example: "account.withdraw(amount)  # runs whichever withdraw() fits account"
-
-  - term: composition
-    kind: concept
-    definition: >
-      Composition builds one class out of objects of another class, held
-      as fields, rather than by inheriting from it. A `Bank` has accounts;
-      it is not a kind of account itself.

@@ -1,23 +1,48 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Second tutorial of the Algorithms series, after three-ways-to-make-change.
-# Checked against every other glossary file in computational-methods
-# (python-fundamentals, matrices, simulation, algorithms, problem-solving)
-# -- no overlap. "iterative" is used in prose but not glossaried here:
-# it is already taught, as a named term, in mit-pdp-maths-prog-integration's
-# repeating-yourself.glossary.yaml.
+# Algorithms series. Checked against every other glossary file in
+# computational-methods (python-fundamentals, matrices, simulation,
+# algorithms, problem-solving) -- no overlap. "iterative" is used in prose
+# but not glossaried here: it is already taught, as a named term, in
+# mit-pdp-maths-prog-integration's repeating-yourself.glossary.yaml.
 entries:
   - term: tree
     kind: concept
     definition: >
       A tree is a structure where each value can lead to several others,
-      and following it never leads back to where it started. A folder
-      holding files and other folders is a tree; so is a family tree, or
+      and following it never leads back to where you started. A folder
+      holding files and other folders is a tree. So is a family tree, or
       a table of contents with sections and subsections.
 
   - term: recursion
     kind: concept
     definition: >
-      Recursion is a function calling itself on a smaller version of the
-      same problem. It needs a case simple enough to answer without
-      calling itself again, or it never stops.
+      Recursion is a function calling itself, on a smaller version of the
+      same problem. It needs a base case, or it never stops.
+
+  - term: base case
+    kind: concept
+    definition: >
+      The base case is the case a recursive function can answer without
+      calling itself. For counting files, it is a folder with no
+      subfolders.
+
+  - term: call stack
+    kind: concept
+    definition: >
+      The call stack is Python's own list of the function calls that have
+      started but not yet finished. A recursive function uses it to keep
+      track of what is left to do.
+
+  - term: "pop()"
+    kind: function
+    definition: >
+      Removes an item from a list and gives it back. With nothing in the
+      brackets, it removes the last item. pop(0) removes the first.
+    example: "current = to_visit.pop()"
+
+  - term: "extend()"
+    kind: function
+    definition: >
+      Adds every item from another list to the end of a list.
+    example: "to_visit.extend(current['subfolders'])"

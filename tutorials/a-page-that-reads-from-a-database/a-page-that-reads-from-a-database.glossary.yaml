@@ -24,4 +24,4 @@ entries:
       separately rather than pasted into the query's own text. It keeps
       a value that came from a reader from ever becoming part of the
       query itself.
-    example: 'dlQuery("SELECT name FROM products WHERE name LIKE ?", ["%bag%"])'
+    example: 'dlQuery("SELECT name FROM product_tbl WHERE name LIKE ?", ["%bag%"])'

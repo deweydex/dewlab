@@ -1,15 +1,16 @@
 ---
-title: "When a Queue Never Clears — Practice"
+title: "Simulating a queue: stable and unstable queues — Practice"
 practice_for: when-a-queue-never-clears
 year: "2026-2027"
-version: 2026.09.05.1
+version: 2026.09.22.1
 ---
 
-# When a Queue Never Clears — Practice
+# Simulating a queue: stable and unstable queues — Practice
 
-Answers are folded. Several of these ask you to predict an output before
-running anything. Resist checking first — being wrong and finding out why
-is worth more than being right by accident.
+The answers are hidden in folds under each problem. Several problems ask
+you to predict what the code will do before you run it. Try to answer
+before you check. Being wrong, and finding out why, teaches you more than
+being right by accident.
 
 ```python exec
 id: setup-1
@@ -31,8 +32,10 @@ def simulate_queue(steps, arrival_prob, service_capacity):
 
 ## Predicting Before Simulating
 
-**1.** Without running anything: is a queue with `arrival_prob=0.4` and
-`service_capacity=1` stable or unstable? Then check with a 300-step run.
+**1.** A queue has `arrival_prob=0.4` and `service_capacity=1`.
+
+1. Without running anything, is it stable or unstable?
+2. Check with a 300-step run.
 
 ```python exec
 id: predicting-before-simulating-1
@@ -41,34 +44,40 @@ hint: Average arrivals per step is 2 * arrival_prob. Compare that to service_cap
 
 <details class="dl-answer"><summary>answer</summary>
 
-Stable. Average arrivals are `2 * 0.4 = 0.8`, below the service capacity
-of `1`. A 300-step run backs this up: the queue wanders but stays small,
-never climbing far past single digits.
+It is stable. Average arrivals are `2 * 0.4 = 0.8`, which is below the
+service capacity of `1`. A 300-step run agrees. The queue wanders, but it
+stays small. On most runs it never gets longer than about five, and it
+rarely reaches ten.
 
 </details>
 
-**2.** A web server handles requests arriving at random, averaging 45 a
-second, and can process 50 a second. During a traffic spike, the average
-arrival rate rises to 55 a second, capacity unchanged. Which of these two
-situations is stable, in this tutorial's sense of the word?
+**2.** Requests arrive at a web server at random, 45 a second on average.
+The server can deal with 50 a second. During a sudden busy period, the
+average rises to 55 a second, and the server's capacity stays the same.
+Which of these two situations is stable, in the tutorial's meaning of the
+word?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Only the first. `45 < 50`: average arrivals stay below capacity, so the
-queue of waiting requests stays bounded, even through a bad few seconds.
-`55 > 50`: average arrivals rise above capacity, so the queue grows
-without limit for as long as that spike lasts. Whatever buffer the
-server has fills up eventually, and requests start getting dropped or
-timing out. This is the real reason a service that was fine yesterday
-fails during a spike today: the average arrival rate crossed the one
-number that decides everything.
+Only the first.
+
+- `45 < 50`. Average arrivals stay below capacity, so the queue of waiting
+  requests stays under control, even through a bad few seconds.
+- `55 > 50`. Average arrivals are above capacity, so the queue keeps
+  growing for as long as the busy period lasts.
+
+The server has only so much room to hold waiting requests. That room
+fills up in the end. Then requests start to be dropped, or to take so
+long that they fail. This is why a service that was fine yesterday can
+fail during a busy period today. The average arrival rate crossed the
+one number that decides everything.
 
 </details>
 
 ## Changing the Shape of Arrivals
 
-**3.** Try rewriting `arrivals_this_step` to check *three* independent
-chances each step instead of two. What is the new formula for average
+**3.** Rewrite `arrivals_this_step` so that it checks *three* separate
+chances each step, instead of two. What is the new formula for average
 arrivals per step, in terms of `arrival_prob`?
 
 ```python exec
@@ -83,49 +92,52 @@ def arrivals_this_step_v2(arrival_prob):
     return sum(1 for _ in range(3) if random.random() < arrival_prob)
 ```
 
-Average arrivals per step is now `3 * arrival_prob`, not `2 *
-arrival_prob`. The stability rule does not change in spirit: compare
-average arrivals to service capacity. Only the formula for working out
-what the average actually is has changed.
+Average arrivals per step are now `3 * arrival_prob`. The stability rule
+stays the same: compare average arrivals with the service capacity. Only
+the formula for the average has changed.
 
 </details>
 
-**4.** With three chances per step (`arrivals_this_step_v2`) and
-`service_capacity=1`, is `arrival_prob=0.3` stable? Try it for 500 steps
-and look at how large the queue gets, not just its final value.
+**4.** Use three chances per step (`arrivals_this_step_v2`) and
+`service_capacity=1`. Is `arrival_prob=0.3` stable? Try it for 500 steps.
+Look at how long the queue gets during the run, not only its final
+value.
 
 ```python exec
 id: changing-the-shape-of-arrivals-2
-hint: Average arrivals = 3 * 0.3. Compare that to 1 — and notice how close the two numbers are.
+hint: Average arrivals = 3 * 0.3. Compare that with 1. How close are the two numbers?
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-Stable, but barely. Average arrivals are `3 * 0.3 = 0.9`, a hair
-below the service capacity of `1`. The rule still calls it stable, and
-over a long run it is: the queue never runs away for good. But a queue
-this close to its own boundary swings much wider than the confidently
-stable case in question 1. It reaches into the teens rather than
-staying in single digits, before eventually draining back down.
+It is stable, but only just. Average arrivals are `3 * 0.3 = 0.9`, a
+little below the service capacity of `1`. The rule still calls it stable,
+and over a long run it is: the queue never climbs away for good.
+
+But a queue this close to the boundary swings much wider than the queue
+in question 1, which was safely stable. It often gets to ten or more, and
+sometimes into the teens, before it drains back down.
 
 </details>
 
 ## Reading the Rule
 
-**5.** In your own words: why does one comparison, `arrival_prob *
-(number of chances)` against `service_capacity`, get to speak for every
-possible run, when two runs at the identical settings produce different
-queue lengths at every step?
+**5.** Two runs with exactly the same settings give different queue
+lengths at every step. So how can one comparison, `arrival_prob *
+(number of chances)` against `service_capacity`, speak for every possible
+run? Answer in your own words.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The comparison is about the long-run *average*, not about any particular
-sequence of arrivals. Two runs at the same settings really do differ
-moment to moment, exactly as two dart-throwing runs in `counting-darts`
-differed. What does not differ between them is which side of the
-average-arrivals-versus-capacity line the settings sit on. That alone
-decides whether the server catches up over a long enough run, or falls
-permanently behind. The rule predicts the *shape* every run will
-eventually take, not the specific path any one run takes to get there.
+The comparison is about the long-run *average*. It is not about any one
+set of arrivals. Two runs with the same settings do differ from moment to
+moment, in the same way as two dart-throwing runs in
+[Monte Carlo simulation: estimating π with random darts](tutorial:counting-darts).
+
+What does not differ is which side of the line the settings are on:
+average arrivals below capacity, or not. That alone decides whether the
+server catches up over a long enough run, or falls behind for good. The
+rule predicts the *shape* that every run will take in the end. It does not
+predict the exact path any one run takes to get there.
 
 </details>

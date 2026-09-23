@@ -8,7 +8,13 @@ contents:
 - title: Python fundamentals
   tutorials:
   - first-steps-cm
-  - working-with-tables
+  - storing-and-computing
+  - making-decisions
+  - reading-an-error-message
+  - repeating-yourself
+  - writing-your-own-functions
+  - lists-and-sequences
+  - looking-things-up-by-name
 - title: Matrices
   tutorials:
   - grid-of-numbers
@@ -20,6 +26,7 @@ contents:
 - title: Computer Graphics
   tutorials:
   - a-point-on-the-screen
+  - a-ball-in-orbit
   - turning-a-cube
   - the-fourth-number
 - title: Text Generation
@@ -35,8 +42,8 @@ contents:
   - when-a-queue-never-clears
 - title: Algorithms
   tutorials:
-  - three-ways-to-make-change
   - finding-everything-inside-a-folder
+  - three-ways-to-make-change
 - title: Problem Solving
   tutorials:
   - finding-where-it-went-wrong

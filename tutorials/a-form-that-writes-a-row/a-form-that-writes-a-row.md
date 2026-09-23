@@ -1,7 +1,7 @@
 ---
 title: "A Form That Writes a Row"
 year: "2026-2027"
-version: 2026.09.10.1
+version: 2026.09.23.1
 covers:
   the-row-a-submission-would-add:
     covers: [DBM-LO6]
@@ -30,19 +30,21 @@ database, run something close to this for every submission:
 
 ```sql exec
 id: income-share-insert-example
-CREATE TABLE income_share (
+CREATE TABLE income_share_tbl (
+    income_share_id INTEGER PRIMARY KEY,
     country TEXT,
     year INTEGER,
     share_extrapolated REAL
 );
 
-INSERT INTO income_share (country, year, share_extrapolated)
+INSERT INTO income_share_tbl (country, year, share_extrapolated)
 VALUES ('Ireland', 2024, 0.11);
 ```
 
 `VALUES ('Ireland', 2024, 0.11)` is exactly what three form fields become,
 in order, once their values are read. A form's job is collecting them from
-a visitor; a database's job starts where a form's ends.
+a visitor; a database's job starts where a form's ends. The form never asks
+for `income_share_id`, because the database fills in the key itself.
 
 ## What still has to happen for this to be real
 

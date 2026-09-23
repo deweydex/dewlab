@@ -1,5 +1,5 @@
 ---
-title: "What a Matrix Does to a Picture"
+title: "Matrix transformations: what a matrix does to a picture"
 year: "2026-2027"
 version: 2026.08.24.1
 covers:
@@ -12,17 +12,26 @@ covers:
     covers: [CMPS-LO4]
 ---
 
-# What a Matrix Does to a Picture
+# Matrix transformations: what a matrix does to a picture
 
-Every matrix in the last two tutorials was a grid of
-numbers you added, scaled, or multiplied by another grid. A 2×2 matrix has a
-second use that has nothing to do with any of that: it can be read as an
-instruction for moving every point in a picture somewhere else. This
-tutorial is about watching that happen.
+On the last two pages, a matrix was a grid of numbers. We added grids,
+scaled them, and multiplied one grid by another.
 
-## Where Do the Corners Go?
+A 2×2 matrix has a second use, too. We can read it as an instruction
+that moves every point in a picture to a new place. On this page we
+watch that happen.
 
-A square, drawn as four corner points, before anything is done to it:
+On this page we:
+
+- use a matrix to move the four corners of a square
+- see five effects a matrix can have on a picture
+- read a matrix's columns to know where it sends each point
+- work out a hidden matrix from the picture it made
+
+## Where do the corners go?
+
+Here is a square, drawn as four corner points, before anything has been
+done to it.
 
 ```python exec
 id: where-do-the-corners-go-1
@@ -44,10 +53,18 @@ plt.gca().set_aspect("equal")
 plt.legend()
 ```
 
-`square` holds the four corners as two rows — one row of $x$-coordinates, one
-row of $y$-coordinates — so each *column* is one point. That is a deliberate
-choice: it means a 2×2 matrix can be applied to all four corners in a single
-multiplication, using the `multiply` you built in the last tutorial.
+The first line imports `matplotlib`, the library we use to draw. The
+function `plot_shape` draws a line from corner to corner. It adds the
+first corner again at the end, so that the shape is closed.
+
+`square` holds the four corners in two rows. The first row holds the
+$x$-coordinates, and the second row holds the $y$-coordinates. So each
+*column* of `square` is one point.
+
+We chose this layout on purpose. With it, one multiplication applies a
+2×2 matrix to all four corners at once. We use the `multiply` you built
+on the last page,
+[Matrix multiplication: rows times columns](tutorial:multiplying-grids).
 
 ```python exec
 id: where-do-the-corners-go-2
@@ -71,20 +88,22 @@ print(transformed)
 
 ### Your turn
 
-How would you plot `square` and `transformed` on the same axes, in two
-different colours? What did `stretch` actually do to the picture?
+1. How would you plot `square` and `transformed` on the same axes, in
+   two different colours?
+2. Look at the picture. What did `stretch` do to the square?
 
 ```python exec
 id: where-do-the-corners-go-3
 hint: Two calls to plot_shape, one for each set of points, before the plot appears.
 ```
 
-## A Small Gallery
+## A small gallery
 
-One matrix, one effect. Predict what each of these will do to the square
-*before* you run it — stretch, squash, rotate, shear, and reflect are the
-five words you are looking for, though nothing forces you to use them until
-after you have seen the picture.
+Each matrix below has one effect on the square. Before you run each
+cell, try to predict what it will do.
+
+Five words may help you: stretch, squash, rotate, shear and reflect. You
+do not have to use them until after you have seen the pictures.
 
 ```python exec
 id: a-small-gallery-1
@@ -130,27 +149,48 @@ plt.gca().set_aspect("equal")
 plt.legend()
 ```
 
-Now look back at `rotate90` — the same matrix from the end of *Multiplying
-Grids*, where you worked out that it sends $(1,0)$ to $(0,1)$ and $(0,1)$ to
-$(-1,0)$. Those two results are the two *columns* of `rotate90`. That is not
-a coincidence: for any 2×2 matrix, the first column is where $(1,0)$ lands,
-and the second column is where $(0,1)$ lands, and that alone is enough to
-tell you what the matrix does to every other point.
+A matrix used in this way is a *transformation matrix*. A transformation
+matrix is a matrix that we read as an instruction for moving every point
+of a picture. Here are the five effects we have seen:
+
+| Matrix | Effect on the square |
+|---|---|
+| `stretch = [[2, 0], [0, 1]]` | stretch: twice as wide, same height |
+| `squash = [[1, 0], [0, 0.5]]` | squash: same width, half as tall |
+| `rotate90 = [[0, -1], [1, 0]]` | rotate: turned 90° anticlockwise |
+| `shear = [[1, 1], [0, 1]]` | shear: bottom edge stays, top edge slides sideways |
+| `reflect_x = [[1, 0], [0, -1]]` | reflect: flipped upside down, across the $x$-axis |
+
+Now look back at `rotate90`. You met the same matrix in problem 7 of the
+practice page for
+[Matrix multiplication: rows times columns](tutorial:multiplying-grids).
+There you worked out that it sends $(1,0)$ to $(0,1)$, and $(0,1)$ to
+$(-1,0)$.
+
+Can you see those two results in `rotate90`? They are its two
+*columns*. This is true for every 2×2 matrix:
+
+- the first column is where $(1,0)$ lands
+- the second column is where $(0,1)$ lands
+
+Those two columns are enough to tell you what the matrix does to every
+other point.
 
 ### Your turn
 
-What do you get if you read `shear`'s columns directly: $(1,0) \to (1,0)$,
-$(0,1) \to (1,1)$? Does that match the picture the shear cell drew — does the
-bottom edge of the square stay put, and does the top edge shift?
+1. Read the columns of `shear`. They say that $(1,0)$ goes to $(1,0)$
+   and $(0,1)$ goes to $(1,1)$.
+2. Does that match the picture from the shear cell? Does the bottom edge
+   of the square stay where it is? Does the top edge move?
 
 ```python exec
 id: a-small-gallery-5
 ```
 
-## Guess the Matrix
+## Guess the matrix
 
-Here is a square that has already been transformed by some 2×2 matrix. The
-matrix itself is not shown.
+Here is a square that some 2×2 matrix has already transformed. The
+matrix itself is hidden.
 
 ```python exec
 id: guess-the-matrix-1
@@ -161,11 +201,15 @@ plt.gca().set_aspect("equal")
 plt.legend()
 ```
 
-The bottom edge has not moved at all, and the top edge has slid sideways.
-What matrix would do that? Remember that the columns of your answer should be
-where $(1,0)$ and $(0,1)$ land — and $(0,0)$ never moves under any of these
-matrices, so the bottom-left corner staying at the origin is not a clue by
-itself.
+The bottom edge has not moved at all. The top edge has slid sideways.
+What matrix would do that?
+
+Remember that the columns of your answer are where $(1,0)$ and $(0,1)$
+land. The bottom-left corner stays at $(0,0)$, but that is not a clue on
+its own. None of these matrices ever moves $(0,0)$.
+
+1. Write your guess in the first cell, as `your_guess`.
+2. Run the second cell to check it.
 
 ```python exec
 id: guess-the-matrix-2
@@ -181,15 +225,19 @@ check(multiply(your_guess, square), mystery)
 
 ## Reflection
 
-The same handful of numbers, read two ways: as a grid you can add and
-multiply, and as an instruction for moving every point in a picture. Neither
-reading is more correct than the other. They are the same object, and which
-one is useful depends on what you are trying to do with it.
+We can read the same few numbers in two ways. They are a grid that we
+can add and multiply. They are also an instruction for moving every
+point in a picture. Neither reading is more correct than the other. They
+are the same object, and the useful reading depends on what you want to
+do with it.
 
-Which of the five words — stretch, squash, rotate, shear, reflect — matched
-your prediction before you saw the picture, and which one surprised you? The
-next tutorial asks what it takes to undo one of these, and it starts from a
-question this one leaves open: is every matrix undoable?
+Which of the five words (stretch, squash, rotate, shear, reflect)
+matched your prediction before you saw the picture? Which one surprised
+you?
+
+This page leaves a question open: can every matrix be undone? The next
+page, [Inverse matrices: undoing a transformation](tutorial:undoing-it),
+starts from that question.
 
 ## Where to Read More
 

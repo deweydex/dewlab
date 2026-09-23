@@ -4,6 +4,7 @@ practice_across:
   - objects-and-classes
   - one-class-many-methods
   - one-parent-many-children
+  - objects-inside-objects
   - testing-what-a-class-does
   - documenting-a-class
 year: "2026-2027"
@@ -64,7 +65,8 @@ morning.add_song("Here Comes the Sun")
 print(morning.songs)
 ```
 
-Same shape as `Bank` from *One Parent, Many Children*: a name, and a list
+Same shape as `Bank` from [Composition: objects inside other
+objects](tutorial:objects-inside-objects): a name, and a list
 that starts empty. It grows one item at a time through a method rather
 than being set directly.
 
@@ -86,8 +88,8 @@ test_add_song()
 print("Passed.")
 ```
 
-A fresh `Playlist` each time a test runs — the same discipline *Testing
-What a Class Does* used for `BankAccount`. Nothing is left over from an
+A fresh `Playlist` each time a test runs — the same discipline [Testing a class with
+assert](tutorial:testing-what-a-class-does) used for `BankAccount`. Nothing is left over from an
 earlier test to trip this one up.
 
 </details>
@@ -188,7 +190,7 @@ library.add_book(ReferenceBook("Atlas", "Various"))
 print(library.available_titles())
 ```
 
-`Library` *has* books — composition, the same relationship `Bank` has with
+`Library` *has* books — [composition](tutorial:objects-inside-objects), the same relationship `Bank` has with
 its accounts — rather than being a kind of `Book` itself.
 
 </details>
@@ -279,7 +281,7 @@ print("Passed.")
 ```
 
 The test reads `library.books[0].available` rather than trusting that
-nothing went wrong. That is the same habit *Testing What a Class Does*
+nothing went wrong. That is the same habit [Testing a class with assert](tutorial:testing-what-a-class-does)
 built around `assert`. Here it applies to a class made of other classes,
 rather than to one class on its own.
 

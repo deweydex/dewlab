@@ -1,7 +1,7 @@
 ---
 title: "A Table Is a List of Rows"
 year: "2026-2027"
-version: 2026.09.10.1
+version: 2026.09.23.1
 covers:
   where-databases-already-show-up:
     covers: [DBM-LO1]
@@ -35,15 +35,15 @@ every row it holds. Click Run and see what appears.
 
 ```sql exec
 id: create-dinosaurs-table
-CREATE TABLE dinosaurs (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE dinosaur_tbl (
+    dinosaur_id INTEGER PRIMARY KEY,
     name TEXT,
     diet TEXT,
     length_meters REAL,
     period TEXT
 );
 
-INSERT INTO dinosaurs (name, diet, length_meters, period) VALUES
+INSERT INTO dinosaur_tbl (name, diet, length_meters, period) VALUES
     ('Tyrannosaurus Rex', 'Carnivore', 12.3, 'Late Cretaceous'),
     ('Triceratops', 'Herbivore', 9.0, 'Late Cretaceous'),
     ('Velociraptor', 'Carnivore', 2.0, 'Late Cretaceous'),
@@ -51,7 +51,7 @@ INSERT INTO dinosaurs (name, diet, length_meters, period) VALUES
     ('Stegosaurus', 'Herbivore', 9.0, 'Late Jurassic'),
     ('Allosaurus', 'Carnivore', 9.7, 'Late Jurassic');
 
-SELECT * FROM dinosaurs;
+SELECT * FROM dinosaur_tbl;
 ```
 
 Six rows appear, one per dinosaur, each with the same five columns.
@@ -65,15 +65,36 @@ ending in a semicolon.
 
 **CREATE TABLE** names the table and lists its columns. Each column has a
 name and a type: `TEXT` for words, `REAL` for a number with a decimal
-point, `INTEGER` for a whole number. `id INTEGER PRIMARY KEY` marks `id`
-as the column that gives every row a unique number, filled in for you.
+point, `INTEGER` for a whole number. `dinosaur_id INTEGER PRIMARY KEY`
+marks `dinosaur_id` as the column that gives every row a unique number,
+filled in for you.
 
 **INSERT INTO** adds rows. Each line inside `VALUES` is one row. Its
 values follow the same order as the column names listed after the
 table's name.
 
-**SELECT \* FROM dinosaurs** asks for every column of every row in the
-`dinosaurs` table. The word after `FROM` is always a table's name.
+**SELECT \* FROM dinosaur_tbl** asks for every column of every row in the
+`dinosaur_tbl` table. The word after `FROM` is always a table's name.
+
+## Names that say what they are
+
+Why `dinosaur_tbl`, and not just `dinosaurs`? This course follows a
+*naming convention*: a rule for choosing names that everyone on a
+project agrees to use. Ours has two parts.
+
+A table's name is one row's thing, in the singular, with `_tbl` on the
+end. One row is one dinosaur, so the table is `dinosaur_tbl`. The
+`_tbl` tells a reader that the name belongs to a table. A query mixes
+table names, column names and values together, so that clue is useful.
+
+The key column takes its table's name too: `dinosaur_id`, not a bare
+`id`. Why? Soon we will have several tables, and each one has a key. If
+every key were called `id`, which table would a given `id` belong to?
+`dinosaur_id` says so in its own name. On a later page, a second table
+holds a `dinosaur_id` column of its own, and a query joins the two
+tables where `dinosaur_id` matches `dinosaur_id`. A diagram of the two
+tables draws its line from `dinosaur_id` to `dinosaur_id`. The names
+alone tell you what connects.
 
 ## Why this happens
 
@@ -93,7 +114,8 @@ and see what happens. Reset can fix anything you break here.
 
 Then let's build a table of your own, about something you know well:
 books, a sports team, a music collection. Start with three columns
-and four rows — you can always add more later.
+and four rows — you can always add more later. Try naming it the same
+way: `book_tbl`, with a `book_id` key.
 
 ```sql exec
 id: create-your-table
@@ -120,3 +142,6 @@ want one on another computer or to hand in.
 - **Column** holds one property that every row in a table has.
 - **Statement** is one instruction to the database, such as `CREATE
   TABLE`, `INSERT`, or `SELECT`.
+- **A naming convention** gives every table a singular name ending in
+  `_tbl`, such as `dinosaur_tbl`, and a key named after it, such as
+  `dinosaur_id`.

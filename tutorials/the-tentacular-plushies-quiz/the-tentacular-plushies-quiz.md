@@ -1,7 +1,7 @@
 ---
 title: "The Tentacular Plushies Quiz"
 year: "2026-2027"
-version: 2026.09.10.1
+version: 2026.09.23.1
 covers:
   task-1-a-products-table:
     covers: [DBM-LO10, DBM-LO11]
@@ -35,9 +35,10 @@ id: quiz-workspace
 
 ## Task 1: a products table
 
-Create a table called `products` with these columns:
+Create a table called `product_tbl` with these columns:
 
-- `id` is a whole number that identifies the row, filled in for you.
+- `product_id` is a whole number that identifies the row, filled in for
+  you.
 - `product_name` is text.
 - `category` is text.
 - `price` is a number with a decimal point.
@@ -46,7 +47,7 @@ Create a table called `products` with these columns:
 
 <details class="dl-hint"><summary>hint</summary>
 
-Start with `CREATE TABLE products (`, then list each column with its
+Start with `CREATE TABLE product_tbl (`, then list each column with its
 type, the way the pages before this quiz did.
 
 </details>
@@ -55,14 +56,14 @@ type, the way the pages before this quiz did.
 id: check-products-table
 # PRAGMA table_info lists a table's columns; an empty result means the
 # table does not exist yet.
-columns = {row[1] for row in db.execute("PRAGMA table_info(products)")}
-required = {"id", "product_name", "category", "price", "stock_quantity"}
+columns = {row[1] for row in db.execute("PRAGMA table_info(product_tbl)")}
+required = {"product_id", "product_name", "category", "price", "stock_quantity"}
 missing = required - columns
 if not columns:
-    print("There is no products table yet.")
+    print("There is no product_tbl table yet.")
 elif missing:
-    print("products is missing:", ", ".join(sorted(missing)) + ".")
-check(not missing, True, label="products exists, with the columns this task asks for")
+    print("product_tbl is missing:", ", ".join(sorted(missing)) + ".")
+check(not missing, True, label="product_tbl exists, with the columns this task asks for")
 ```
 
 ```hint
@@ -77,23 +78,26 @@ column name with an extra space, a different case, or a small spelling
 change is usually the reason this check still says something is
 missing, even after you create the table.
 
-**Try this:** run `PRAGMA table_info(products);` in the SQL box, and read
+**Try this:** run `PRAGMA table_info(product_tbl);` in the SQL box, and read
 the `name` column of its result against the list above.
 ```
 
 ## Task 2: a transactions table
 
-Create a second table, `transactions`, that refers to `products`:
+Create a second table, `transaction_tbl`, that refers to `product_tbl`:
 
-- `id` is a whole number that identifies the row, filled in for you.
-- `product_id` is a whole number naming a row in `products`.
+- `transaction_id` is a whole number that identifies the row, filled in
+  for you.
+- `product_id` is a whole number naming a row in `product_tbl`. It has
+  the same name as the key it points at, and it sits directly under
+  `transaction_id`.
 - `customer_name` is text.
 - `quantity` is a whole number.
 
 <details class="dl-hint"><summary>hint</summary>
 
 `product_id INTEGER` is enough for this task. If you want to go further,
-`FOREIGN KEY (product_id) REFERENCES products(id)` names the connection
+`FOREIGN KEY (product_id) REFERENCES product_tbl(product_id)` names the connection
 explicitly, the way [a second table and a
 join](tutorial:a-second-table-and-a-join) covered.
 
@@ -101,14 +105,14 @@ join](tutorial:a-second-table-and-a-join) covered.
 
 ```python exec
 id: check-transactions-table
-columns = {row[1] for row in db.execute("PRAGMA table_info(transactions)")}
-required = {"id", "product_id", "customer_name", "quantity"}
+columns = {row[1] for row in db.execute("PRAGMA table_info(transaction_tbl)")}
+required = {"transaction_id", "product_id", "customer_name", "quantity"}
 missing = required - columns
 if not columns:
-    print("There is no transactions table yet.")
+    print("There is no transaction_tbl table yet.")
 elif missing:
-    print("transactions is missing:", ", ".join(sorted(missing)) + ".")
-check(not missing, True, label="transactions exists, with the columns this task asks for")
+    print("transaction_tbl is missing:", ", ".join(sorted(missing)) + ".")
+check(not missing, True, label="transaction_tbl exists, with the columns this task asks for")
 ```
 
 ## Task 3: add products
@@ -120,24 +124,24 @@ each one a price between 10 and 60, and a stock quantity between 5 and
 <details class="dl-hint"><summary>hint</summary>
 
 Categories like `'Octopus'`, `'Squid'`, `'Cuttlefish'` and `'Nautilus'`
-work well for a shop like this. One `INSERT INTO products (...) VALUES
+work well for a shop like this. One `INSERT INTO product_tbl (...) VALUES
 (...), (...), (...), (...);` can add all four rows at once.
 
 </details>
 
 ```python exec
 id: check-products-rows
-columns = {row[1] for row in db.execute("PRAGMA table_info(products)")}
+columns = {row[1] for row in db.execute("PRAGMA table_info(product_tbl)")}
 if not columns:
-    print("products needs to exist before this check means anything.")
+    print("product_tbl needs to exist before this check means anything.")
     enough_rows = False
     enough_categories = False
 else:
-    categories = [row[0] for row in db.execute("SELECT category FROM products")]
-    print(f"products has {len(categories)} rows across {len(set(categories))} categories.")
+    categories = [row[0] for row in db.execute("SELECT category FROM product_tbl")]
+    print(f"product_tbl has {len(categories)} rows across {len(set(categories))} categories.")
     enough_rows = len(categories) >= 4
     enough_categories = len(set(categories)) >= 3
-check(enough_rows and enough_categories, True, label="products has at least four rows across at least three categories")
+check(enough_rows and enough_categories, True, label="product_tbl has at least four rows across at least three categories")
 ```
 
 ```hint
@@ -148,7 +152,7 @@ Read what the check counted: how many rows it found, and how many
 different categories among them. Both numbers are in its message.
 
 Count your own `INSERT` statements the same way. A single `INSERT INTO
-products (...) VALUES (...), (...), (...), (...);` with four rows and
+product_tbl (...) VALUES (...), (...), (...), (...);` with four rows and
 four different `category` values meets both counts in one statement.
 Adding rows one at a time, or repeating the same category, is the usual
 reason one count comes up short.
@@ -157,25 +161,25 @@ reason one count comes up short.
 ## Task 4: add transactions
 
 Insert at least three transactions. Each one needs a `product_id` that
-matches a real row in `products`.
+matches a real row in `product_tbl`.
 
 <details class="dl-hint"><summary>hint</summary>
 
-Run `SELECT id, product_name FROM products;` first, to see which `id`
-belongs to which product.
+Run `SELECT product_id, product_name FROM product_tbl;` first, to see
+which `product_id` belongs to which product.
 
 </details>
 
 ```python exec
 id: check-transactions-rows
-columns = {row[1] for row in db.execute("PRAGMA table_info(transactions)")}
+columns = {row[1] for row in db.execute("PRAGMA table_info(transaction_tbl)")}
 if not columns:
-    print("transactions needs to exist before this check means anything.")
+    print("transaction_tbl needs to exist before this check means anything.")
     row_count = 0
 else:
-    row_count = db.execute("SELECT COUNT(*) FROM transactions").fetchone()[0]
-    print(f"transactions has {row_count} rows.")
-check(row_count >= 3, True, label="transactions has at least three rows")
+    row_count = db.execute("SELECT COUNT(*) FROM transaction_tbl").fetchone()[0]
+    print(f"transaction_tbl has {row_count} rows.")
+check(row_count >= 3, True, label="transaction_tbl has at least three rows")
 ```
 
 ## Task 5: query the data
@@ -189,7 +193,7 @@ Try writing and running each of these three queries:
 
 <details class="dl-hint"><summary>hint</summary>
 
-`SELECT * FROM products WHERE price > 30 ORDER BY price DESC;` is the
+`SELECT * FROM product_tbl WHERE price > 30 ORDER BY price DESC;` is the
 first of the three.
 
 </details>
@@ -216,7 +220,7 @@ title: some steps
 2. If the note says the table has no rows, it still needs data. Go back
    and finish Task 3 or Task 4 first.
 3. If the note says the table already has rows, run `SELECT * FROM
-   products;` (or `transactions`) on its own, and compare every value
+   product_tbl;` (or `transaction_tbl`) on its own, and compare every value
    in a row against the condition you wrote.
 
 **Think about:** a filter that matches nothing is not always a mistake
@@ -232,15 +236,15 @@ way to write a `SELECT`.
 
 ```python exec
 id: check-quiz-queries
-products_columns = {row[1] for row in db.execute("PRAGMA table_info(products)")}
-transactions_columns = {row[1] for row in db.execute("PRAGMA table_info(transactions)")}
+products_columns = {row[1] for row in db.execute("PRAGMA table_info(product_tbl)")}
+transactions_columns = {row[1] for row in db.execute("PRAGMA table_info(transaction_tbl)")}
 if not products_columns or not transactions_columns:
     print("Both tables are needed before this check means anything.")
     over_30_count = 0
     under_15_count = 0
 else:
-    over_30_count = db.execute("SELECT COUNT(*) FROM products WHERE price > 30").fetchone()[0]
-    under_15_count = db.execute("SELECT COUNT(*) FROM products WHERE stock_quantity < 15").fetchone()[0]
+    over_30_count = db.execute("SELECT COUNT(*) FROM product_tbl WHERE price > 30").fetchone()[0]
+    under_15_count = db.execute("SELECT COUNT(*) FROM product_tbl WHERE stock_quantity < 15").fetchone()[0]
     if over_30_count == 0:
         print("No product has a price over 30, so the first query would return nothing.")
     if under_15_count == 0:
@@ -256,11 +260,11 @@ own to see a full example.
 
 <details class="dl-answer"><summary>a worked solution</summary>
 
-![Two tables. One transactions row names exactly one products row through product_id, and one product can be named by many transactions, so the line ends in three prongs at the transactions side.](plushies-erd.svg)
+![Two tables. The line runs from product_id in product_tbl to product_id in transaction_tbl. One transaction_tbl row names exactly one product_tbl row, and one product can be named by many transactions, so the line ends in three prongs at the transaction_tbl side.](plushies-erd.svg)
 
 ```sql
-CREATE TABLE products (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE product_tbl (
+    product_id INTEGER PRIMARY KEY,
     product_name TEXT NOT NULL,
     category TEXT NOT NULL,
     price REAL NOT NULL,
@@ -268,30 +272,30 @@ CREATE TABLE products (
     description TEXT
 );
 
-CREATE TABLE transactions (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE transaction_tbl (
+    transaction_id INTEGER PRIMARY KEY,
     product_id INTEGER NOT NULL,
     customer_name TEXT NOT NULL,
     quantity INTEGER NOT NULL,
-    FOREIGN KEY (product_id) REFERENCES products(id)
+    FOREIGN KEY (product_id) REFERENCES product_tbl(product_id)
 );
 
-INSERT INTO products (product_name, category, price, stock_quantity, description) VALUES
+INSERT INTO product_tbl (product_name, category, price, stock_quantity, description) VALUES
     ('Squishy Squid', 'Squid', 25.0, 20, 'A soft squid, six arms too many to count correctly'),
     ('Cuddly Cuttlefish', 'Cuttlefish', 35.0, 10, 'Changes colour if you believe hard enough'),
     ('Nautical Nautilus', 'Nautilus', 45.0, 8, 'A spiral shell, purely decorative'),
     ('Octo Buddy', 'Octopus', 55.0, 5, 'Eight arms of fun');
 
-INSERT INTO transactions (product_id, customer_name, quantity) VALUES
+INSERT INTO transaction_tbl (product_id, customer_name, quantity) VALUES
     (1, 'Jane Doe', 2),
     (2, 'John Smith', 1),
     (3, 'Sam Lee', 3);
 
-SELECT * FROM products WHERE price > 30 ORDER BY price DESC;
+SELECT * FROM product_tbl WHERE price > 30 ORDER BY price DESC;
 
-SELECT * FROM products WHERE stock_quantity < 15;
+SELECT * FROM product_tbl WHERE stock_quantity < 15;
 
-SELECT customer_name, quantity FROM transactions;
+SELECT customer_name, quantity FROM transaction_tbl;
 ```
 
 Only the last statement in a box like this one shows its result when

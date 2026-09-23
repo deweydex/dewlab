@@ -45,7 +45,7 @@ entries:
     definition: >
       CREATE TABLE makes a new table. It names the table and lists each
       column, along with the type of value that column holds.
-    example: "CREATE TABLE dinosaurs (id INTEGER PRIMARY KEY, name TEXT);"
+    example: "CREATE TABLE dinosaur_tbl (dinosaur_id INTEGER PRIMARY KEY, name TEXT);"
 
   - term: "INSERT INTO"
     kind: keyword
@@ -53,21 +53,22 @@ entries:
       INSERT INTO adds one or more rows to a table. Each line inside
       VALUES is one row, and its values follow the same order as the
       column names listed after the table's name.
-    example: "INSERT INTO dinosaurs (name, diet) VALUES ('Stegosaurus', 'Herbivore');"
+    example: "INSERT INTO dinosaur_tbl (name, diet) VALUES ('Stegosaurus', 'Herbivore');"
 
   - term: "SELECT"
     kind: keyword
     definition: >
       SELECT reads rows and columns from a table, without changing
       anything in it. The table's name always comes right after FROM.
-    example: "SELECT * FROM dinosaurs;"
+    example: "SELECT * FROM dinosaur_tbl;"
 
   - term: "PRIMARY KEY"
     kind: keyword
     definition: >
       PRIMARY KEY marks the column that gives each row in a table its own
-      unique number, filled in automatically when a row is added.
-    example: "id INTEGER PRIMARY KEY"
+      unique number, filled in automatically when a row is added. In this
+      course the key is named after its table, such as dinosaur_id.
+    example: "dinosaur_id INTEGER PRIMARY KEY"
 
   - term: "TEXT, REAL, INTEGER"
     kind: keyword
@@ -75,3 +76,12 @@ entries:
       TEXT, REAL and INTEGER are the three column types this course uses.
       TEXT holds words, REAL holds a number with a decimal point, and
       INTEGER holds a whole number.
+
+  - term: naming convention
+    kind: concept
+    definition: >
+      A naming convention is a rule for choosing names that everyone on a
+      project follows. In this course a table's name is singular and ends
+      in _tbl, and its key is named after it, such as dinosaur_tbl and
+      dinosaur_id.
+    example: "CREATE TABLE dinosaur_tbl (dinosaur_id INTEGER PRIMARY KEY, name TEXT);"

@@ -1,5 +1,5 @@
 ---
-title: "Multiplying Grids"
+title: "Matrix multiplication: rows times columns"
 year: "2026-2027"
 version: 2026.08.24.1
 covers:
@@ -13,17 +13,27 @@ covers:
     touches: [CMPS-LO4]
 ---
 
-# Multiplying Grids
+# Matrix multiplication: rows times columns
 
-Adding two matrices, in *A Grid of Numbers*, turned out to be exactly what
-you would guess — pair up the entries and add them. Multiplying two matrices
-is not that. Almost nobody guesses the rule for matrix multiplication on the
-first try, so today we build it slowly, out of something smaller that you
-already know how to do.
+In [Matrices: adding, scaling and transposing a grid of
+numbers](tutorial:grid-of-numbers), adding two matrices worked the way
+you would guess. We paired up the entries and added them.
 
-## The Dot Product, First
+Multiplying two matrices does not work like that. Almost nobody guesses
+the rule for matrix multiplication at the first try. So we will build it
+slowly, from something smaller that you already know how to do.
 
-Here are two ordinary Python lists of the same length.
+On this page we:
+
+- work out the dot product of two lists
+- use the dot product to multiply two matrices
+- find out whether the order of multiplication matters
+- meet the matrix that changes nothing
+
+## The dot product first
+
+Here are two ordinary Python lists of the same length. What do you think
+`zip` does with them? Run the cell to find out.
 
 ```python exec
 id: the-dot-product-first-1
@@ -34,15 +44,20 @@ paired = list(zip(a, b))
 print(paired)
 ```
 
-`zip` pairs up the two lists position by position: $1$ with $4$, $2$ with
-$5$, $3$ with $6$. Multiply each pair and add up the three results —
-$1(4) + 2(5) + 3(6)$ — and you have the *dot product* of `a` and `b`.
+`zip` pairs up the two lists, position by position: $1$ with $4$, $2$
+with $5$, and $3$ with $6$. Each pair is printed in round brackets.
+
+The *dot product* of `a` and `b` is the number we get when we multiply
+each pair and then add up the results: $1(4) + 2(5) + 3(6)$. You met
+the dot product in
+[Lists: keeping many values in order](tutorial:lists-and-sequences).
 
 ### Your turn
 
-How might you write `dot(a, b)`, returning that single number? A
-comprehension over `zip(a, b)` does it in one line, or a loop does it in
-three.
+How might you write `dot(a, b)`, so that it returns that one number?
+
+You can use a loop, in about three lines. Or you can use a comprehension
+over `zip(a, b)`, in one line.
 
 ```python exec
 id: the-dot-product-first-2
@@ -50,18 +65,21 @@ hint: sum(x * y for x, y in zip(a, b)) — or the loop version of the same idea.
 # Your dot(a, b)
 ```
 
-Try `dot(a, b)` where `a = [1, 2, 3]` and `b = [4, 5]` — one shorter than the
-other. What happens?
+Now try `dot(a, b)` with `a = [1, 2, 3]` and `b = [4, 5]`. The second
+list is one shorter than the first. What happens?
 
 ```python exec
 id: the-dot-product-first-3
 ```
 
-Nothing raises, and that is worth being suspicious of. `zip` quietly stops at
-the shorter list, so `dot` silently used only the first two entries of `a`
-and ignored the third — no error, no warning, just a wrong-shaped answer that
-looks exactly like a right one. What if you added a check at the top of `dot` — `if len(a) != len(b): raise ValueError(...)` — so that a length
-mismatch is loud instead of silent?
+Python raises no error, and that should make us suspicious. `zip` stops
+at the end of the shorter list, without a word. So `dot` used only the
+first two entries of `a` and ignored the third. There is no error and no
+warning. The answer is wrong, but it looks exactly like a right one.
+
+We can make this mistake loud. What if `dot` checked the lengths first,
+with `if len(a) != len(b): raise ValueError(...)`? Write that version
+below.
 
 ```python exec
 id: the-dot-product-first-4
@@ -69,11 +87,11 @@ hint: One line before the sum — if len(a) != len(b): raise ValueError("lengths
 # Your dot(a, b), with a length check
 ```
 
-## Multiplying Two Grids
+## Multiplying two grids
 
-To multiply matrix $A$ by matrix $B$, you take the dot product of every row
-of $A$ with every column of $B$. Row $i$, column $j$ of the result is the dot
-product of row $i$ of $A$ with column $j$ of $B$.
+To multiply matrix $A$ by matrix $B$, we take the dot product of every
+row of $A$ with every column of $B$. The entry at row $i$, column $j$ of
+the result is the dot product of row $i$ of $A$ with column $j$ of $B$:
 
 $$c_{ij} = \sum_{k} a_{ik} \, b_{kj}$$
 
@@ -82,18 +100,19 @@ first column of B is shaded, and the entry they produce in the top left of
 AB is shaded. Below, the working: one times five plus two times one equals
 seven.](row-times-column.svg)
 
-One row, one column, one entry. The shaded row and the shaded column pair
-up term by term, and what comes out goes in the one place they meet. Every
-other entry of the answer is the same move with a different row and a
-different column.
+One row and one column make one entry. The shaded row and the shaded
+column pair up, term by term. The result goes in the place where that row
+and that column meet. Every other entry of the answer is made in the
+same way, with a different row and a different column.
 
-It also shows why the shapes have to agree: a row and a column can only
-pair up term by term if they are the same length.
+The picture also shows why the shapes have to agree. A row and a column
+can only pair up term by term if they have the same length.
 
-That is the whole rule. The columns of $B$ are the awkward part to get at in
-a plain list of lists — but you already wrote something that turns columns
-into rows: `transpose`, from the last tutorial. Each page here begins with no code from previous pages,
-so here it is again, exactly as before.
+That is the whole rule. The hard part is getting at the columns of $B$,
+because a list of lists stores rows. But you have already written
+something that turns columns into rows: `transpose`, from the last page.
+No page starts with code from an earlier page, so here it is again,
+exactly as before.
 
 ```python exec
 id: multiplying-two-grids-1
@@ -104,9 +123,13 @@ def transpose(m):
 
 ### Your turn
 
-How might you write `multiply(a, b)`, using your own `dot` and `transpose`?
-For every row of `a`, and every column of `b` — which is every row of
-`transpose(b)` — the entry of the result is `dot(row, column)`.
+How might you write `multiply(a, b)`, with your own `dot` and
+`transpose`?
+
+1. Go through every row of `a`.
+2. For each row, go through every column of `b`. The columns of `b` are
+   the rows of `transpose(b)`.
+3. The entry of the result for that row and column is `dot(row, column)`.
 
 ```python exec
 id: multiplying-two-grids-2
@@ -114,7 +137,7 @@ hint: [[dot(row, col) for col in transpose(b)] for row in a] — one dot product
 # Your multiply(a, b)
 ```
 
-Try it on these two matrices, and check the shape of what comes back.
+Try it on these two matrices. What shape is the result?
 
 ```python exec
 id: multiplying-two-grids-3
@@ -123,8 +146,9 @@ B = [[5, 0], [1, -1]]
 multiply(A, B)
 ```
 
-Now try a pair that should not work — $A$ is 2×3 and this $E$ is 2×2, so the
-number of columns in $A$ does not match the number of rows in $E$.
+Now try a pair that should not work. `A3` is 2×3 and `E` is 2×2. The
+number of columns in `A3` (3) does not match the number of rows in `E`
+(2).
 
 ```python exec
 id: multiplying-two-grids-4
@@ -133,19 +157,27 @@ E = [[1, 0], [0, 1]]
 multiply(A3, E)
 ```
 
-If your `dot` from the last section checks lengths, this raises a
-`ValueError` — good, that is the point of having added the check. If it does
-not raise anything and instead returns a $2\times2$ result that quietly threw
-away the third column of `A3`, that is the exact silent failure from the
-dot-product section, one level up. It is worth going back and adding the
-check now if you skipped it, because a matrix multiplication that fails loudly is much easier to debug than
-one that returns a wrong answer that looks right.
+What happened for you?
 
-The rule this demonstrates: to multiply an $m \times n$ matrix by an
-$n \times p$ matrix, the *inner* dimensions — the $n$'s — have to match. The
-result is $m \times p$: the outer two numbers, in the order they appeared.
+- If your `dot` checks the lengths, this raises a `ValueError`. Good:
+  that is why we added the check.
+- If your `dot` has no check, you get a 2×2 result, and the third column
+  of `A3` has been thrown away without a word. This is the same silent
+  mistake as in the dot-product section, one level up.
 
-## Order Matters
+If you skipped the check, it is worth going back to add it now. A matrix
+multiplication that fails loudly is much easier to fix than one that
+gives a wrong answer that looks right.
+
+This gives us the shape rule. To multiply an $m \times n$ matrix by an
+$n \times p$ matrix, the inner numbers (the two $n$'s) have to match.
+The result is $m \times p$: the two outer numbers, in the same order.
+
+## Order matters
+
+With ordinary numbers, $3 \times 5$ is the same as $5 \times 3$. Is
+`multiply(A, B)` the same as `multiply(B, A)`? Make a guess, then run
+the cell.
 
 ```python exec
 id: order-matters-1
@@ -153,33 +185,35 @@ print("AB =", multiply(A, B))
 print("BA =", multiply(B, A))
 ```
 
-`AB` and `BA` are both defined here — both matrices are 2×2 — and they are
-not the same matrix. Order genuinely matters for matrix multiplication, which
-is not true of multiplying ordinary numbers, and it is one of the first
-places the comparison between "multiplication of numbers" and "multiplication
-of matrices" stops working.
+Both `A` and `B` are 2×2, so `AB` and `BA` both exist. But they are
+different matrices. For matrix multiplication, the order matters. This
+is one of the first places where multiplying matrices stops behaving
+like multiplying numbers.
 
 ### Your turn
 
-Pick any two 2×2 matrices of your own — does `multiply` ever give you the
-same answer both ways? Try a pair where you suspect it might, before trying a
-pair where you are sure it will not.
+1. Pick any two 2×2 matrices of your own.
+2. Multiply them in both orders. Does `multiply` ever give you the same
+   answer both ways?
+3. Try a pair where you think it might, before a pair where you are sure
+   it will not.
 
 ```python exec
 id: order-matters-2
 # Two matrices of your own, and both orders of multiply
 ```
 
-## The Matrix That Does Nothing
+## The matrix that does nothing
 
-Is there a matrix that, multiplied by any other, changes nothing at all —
-the matrix equivalent of multiplying a number by 1?
+When we multiply a number by 1, nothing changes. Is there a matrix that
+does the same? When we multiply any matrix by it, does anything change?
 
 ### Your turn
 
-What 3×3 matrix `I3` do you think should have this property? Construct it,
-and test it against some matrix `C` of your choosing: does `multiply(C, I3)`
-equal `C`? Does `multiply(I3, C)`?
+1. Which 3×3 matrix `I3` do you think has this property? Build it in the
+   first cell.
+2. Choose a matrix `C` to test it on.
+3. Does `multiply(C, I3)` equal `C`? Does `multiply(I3, C)`?
 
 ```python exec
 id: the-matrix-that-does-nothing-1
@@ -192,22 +226,31 @@ id: the-matrix-that-does-nothing-2
 check(multiply(C, I3), C)
 ```
 
-This matrix is called the *identity matrix*, usually written $I$, and every
-square shape has its own: $I_2$, $I_3$, and so on. It appears often —
-whenever a formula needs "no change", the identity matrix is what "no
-change" looks like for a matrix.
+This matrix is called the *identity matrix*. The identity matrix is a
+square matrix with ones down its main diagonal and zeros everywhere
+else. It is usually written $I$. Every square size has its own identity
+matrix: $I_2$, $I_3$, and so on.
+
+You will see the identity matrix often. Whenever a formula needs "no
+change", the identity matrix is what "no change" looks like for a
+matrix.
 
 ## Reflection
 
-Two tutorials in, and you have built five operations — add, scale, transpose,
-dot product, and now full matrix multiplication — out of nothing but nested
-Python lists. The multiplication rule in particular is one that almost nobody
-finds obvious on first meeting it, and building it out of the dot product,
-one row-column pair at a time, is the only way it starts to make sense.
+After two pages, you have built five operations from nothing but nested
+Python lists: add, scale, transpose, the dot product, and now matrix
+multiplication.
 
-Was the non-commutativity — `AB` not equal to `BA` — surprising, or did you
-expect it once you saw how the rule actually works? What made the connection
-between transpose and "getting at the columns of B" clear, if it did?
+Most people do not find the multiplication rule obvious when they first
+meet it. Building it from the dot product, one row and one column at a
+time, is what makes it start to make sense.
+
+Here are some questions to think about:
+
+- Were you surprised that `AB` is not equal to `BA`? Or did you expect
+  it, once you saw how the rule works?
+- `transpose` gave us a way to get at the columns of `B`. Did that
+  connection make sense to you? What made it clear, if it did?
 
 ## Where to Read More
 

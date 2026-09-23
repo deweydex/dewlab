@@ -20,7 +20,7 @@ loop draw a solid shape? On this page we:
 - turn every corner a little each frame
 - draw the twelve edges as lines between the corners
 
-This is the turning cube from [Turning a Cube](tutorial:turning-a-cube),
+This is the turning cube from [The rotation matrix: turning a cube in 3D](tutorial:turning-a-cube),
 on the Computational Methods course, written in JavaScript. You do not
 need that page to follow this one. The explanation below has
 everything the code uses.
@@ -159,7 +159,7 @@ results. That gives one new coordinate. With the numbers of
 `y` never changes, so every corner goes round the vertical axis at its
 own height. Multiplying a row by a point in this way, and adding up, is
 called a *dot product*. It is what `multiply` did with a row and a
-column on [Turning a Cube](tutorial:turning-a-cube).
+column on [The rotation matrix: turning a cube in 3D](tutorial:turning-a-cube).
 
 ### Drawing the edges
 

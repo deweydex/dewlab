@@ -1,5 +1,5 @@
 ---
-title: "Documenting a Class"
+title: "Documenting a class with docstrings"
 year: "2026-2027"
 version: 2026.09.04.1
 covers:
@@ -11,21 +11,30 @@ covers:
     covers: [FOOP-LO9]
 ---
 
-# Documenting a Class
+# Documenting a class with docstrings
 
-**Fundamentals of Object Oriented Programming**
+A docstring is a description written in triple quotes at the top of a
+function. We met docstrings in [Designing and testing good
+functions](tutorial:building-reusable-tools). A function's docstring says
+what the function does, what it expects, and what it returns.
 
-A function's docstring says what it does, what it expects, and what it
-returns. A class needs the same care, in two places at once: the class
-itself, and every method on it. This tutorial adds both to `BankAccount`,
-then looks at what happens when a docstring stops telling the truth.
+A class needs docstrings in two places: on the class itself, and on every
+method. On this page we:
 
-## A Class Docstring
+- add a docstring to the `BankAccount` class
+- add a docstring to each of its methods
+- see what happens when a docstring stops telling the truth
 
-A function's docstring answers "what does this compute." A class's own
-docstring answers a different question: what does one object of this class
-*represent*. It goes in the same place a function's does, right under the
-line that opens the class.
+## A class docstring
+
+A function's docstring answers the question "what does this compute?" A
+class's docstring answers a different question: "what does one object of
+this class represent?" It goes in the same place as a function's
+docstring, on the line straight after the line that opens the class.
+
+The last line of the cell calls `help()`. The `help()` function shows the
+docstrings of whatever you give it. What do you think it will show first?
+Run the cell to find out.
 
 ```python exec
 id: a-class-docstring-1
@@ -50,19 +59,21 @@ class BankAccount:
 help(BankAccount)
 ```
 
-Run the cell above. `help()` reads the docstring straight off the class and
-shows it before anything else — before the constructor, before either
-method. Anyone meeting `BankAccount` for the first time gets that one
-sentence before reading a single line of its code. `account = BankAccount(...)`
-never runs the docstring and never changes because of it. Python stores it
-on the class and leaves it there for `help()`, an editor, or a reader to
-find.
+`help()` reads the docstring from the class and shows it first, before
+the constructor and before either method. So someone who meets
+`BankAccount` for the first time reads that one sentence before any of
+its code.
+
+Creating an object, as in `account = BankAccount(...)`, never runs the
+docstring, and never changes it. Python stores the docstring on the class
+and keeps it there, for `help()`, an editor or a reader to find.
 
 ### Your turn
 
-Write a docstring for a `Polynomial` class, the one from *One Class, Many
-Methods*, describing what one object of it represents. Then check it with
-`help()`.
+1. The cell below holds the `Polynomial` class from [Reusable methods:
+   one class that does many jobs](tutorial:one-class-many-methods). Write a class docstring that
+   says what one `Polynomial` object represents.
+2. Call `help()` on `Polynomial` to check it.
 
 ```python exec
 id: a-class-docstring-2
@@ -83,20 +94,23 @@ class Polynomial:
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The docstring goes on its own line, right after `class Polynomial:`,
-   before `def __init__`.
-2. A `Polynomial` object *is* a list of coefficients acting as a
-   mathematical expression — describe that. What `evaluate()` computes
-   belongs to its own docstring, added in the next section.
+1. The docstring goes on its own line, straight after
+   `class Polynomial:` and before `def __init__`.
+2. A `Polynomial` object is a list of coefficients that represents a
+   mathematical expression. Describe that. What `evaluate()` computes
+   belongs in its own docstring, which we add in the next section.
 
 </details>
 
-## Documenting Each Method
+## Documenting each method
 
 The class docstring in the last section says what a `BankAccount` is. It
-says nothing about what `deposit()` or `withdraw()` actually do. That
-belongs to each method's own docstring, written the same way a function's
-already is.
+says nothing about what `deposit()` or `withdraw()` do. Each method gets
+its own docstring for that, written the same way as a function's.
+
+This time, `help()` is called on one method, `BankAccount.withdraw`, and
+not on the whole class. How much do you think it will show? Run the cell
+to check.
 
 ```python exec
 id: documenting-each-method-1
@@ -124,17 +138,19 @@ class BankAccount:
 help(BankAccount.withdraw)
 ```
 
-`help(BankAccount.withdraw)`, called on the method itself rather than on an
-`account` object, shows `withdraw()`'s own docstring on its own. That is
-useful the moment you already know which method you want, and only need
-reminding what it expects. `help(BankAccount)`, from the last section,
-would show all three together: the class's own docstring first, then each
-method's.
+`help(BankAccount.withdraw)` shows only the docstring of `withdraw()`. Use
+it when you already know which method you want, and need a reminder of
+what it expects. Notice that it is called on the class, `BankAccount`,
+and not on an `account` object.
+
+`help(BankAccount)`, from the last section, would show all of them: the
+class docstring first, then the docstring of each method.
 
 ### Your turn
 
-Add a docstring to `evaluate()` below, describing what it computes and what
-`x` is for. Then check it with `help()`.
+1. Add a docstring to `evaluate()` below. Say what it computes and what
+   `x` is for.
+2. Call `help()` on `Polynomial.evaluate` to check it.
 
 ```python exec
 id: documenting-each-method-2
@@ -154,11 +170,15 @@ class Polynomial:
 # Call help() on Polynomial.evaluate here
 ```
 
-## Keeping Documentation Honest
+## Keeping documentation honest
 
-A docstring is not checked against the code the way a syntax error is.
-Nothing stops one from describing a method that no longer exists, or one
-that used to work the way it says and was changed since.
+Python checks your code for syntax errors. Does it check that a docstring
+matches the code? Nothing stops a docstring from describing a method that
+no longer exists, or a method that has changed since the docstring was
+written.
+
+Read the docstring of `withdraw()` in the cell below. Then read the code
+under it. Do they agree? Run the cell to find out.
 
 ```python exec
 id: keeping-documentation-honest-1
@@ -188,18 +208,21 @@ account.withdraw(100.0)
 print(account.balance)   # still 50.0 -- the withdrawal above was refused
 ```
 
-Run the cell above. `withdraw()`'s docstring says "Always succeeds." The
-code, one line below it, refuses a withdrawal larger than the balance —
-exactly what just happened. A reader who trusted the docstring instead of
-the code would expect `account.balance` to be negative. Nothing in Python
-caught the mismatch. A docstring is a string like any other, never run and
-never checked against what the method actually does.
+The docstring of `withdraw()` says "Always succeeds." The code directly under
+it refuses a withdrawal that is larger than the balance, and that is what
+happened here. Someone who trusted the docstring would expect
+`account.balance` to be negative after the withdrawal.
+
+Python did not notice the mismatch. A docstring is a string like any
+other. Python never runs it, and never compares it with what the method
+does.
 
 ### Your turn
 
-Fix `withdraw()`'s docstring so it describes what the method actually does,
-including the refusal. Do not change the code itself — the balance should
-still be `50.0` once you are done.
+1. Fix the docstring of `withdraw()` so that it says what the method
+   really does, including the refusal.
+2. Do not change the code itself. When you run the cell, the balance
+   should still be `50.0`.
 
 ```python exec
 id: keeping-documentation-honest-2
@@ -232,36 +255,37 @@ print(account.balance)   # should still be 50.0
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Only the text between the triple quotes changes. `if amount >
-   self.balance:` and everything below it stays exactly as it was.
-2. Say what actually happens on a withdrawal larger than the balance —
-   refused, with nothing subtracted — alongside what already happens on an
-   ordinary one.
+1. Only the text between the triple quotes changes. The line
+   `if amount > self.balance:` and everything below it stay exactly as
+   they are.
+2. Say what happens to an ordinary withdrawal. Then say what happens to a
+   withdrawal larger than the balance: it is refused, and nothing is
+   subtracted.
 
-**Think about:** whose job is it to notice a docstring like this one has
-gone stale, if nothing in Python checks it automatically?
+**Think about:** nothing in Python checks docstrings for you. So whose
+job is it to notice that a docstring like this one is out of date?
 
 </details>
 
-## Wrapping Up
+## Wrapping up
 
-In this tutorial:
+On this page:
 
-- A class's own docstring says what one object of it represents. It sits
-  right under `class Name:`, the same position a function's docstring has.
-- Each method keeps its own docstring too, saying what that one method
+- A class docstring says what one object of the class represents. It goes
+  on the line straight after `class Name:`, the same place as a
+  function's docstring.
+- Each method has its own docstring too, saying what that one method
   does. `help()` on a class shows all of them together. `help()` on one
-  method shows only its own.
-- A docstring is never checked against the code it describes. Updating one
-  when the code beneath it changes is something a reader has to do on
-  purpose.
+  method shows only that method's docstring.
+- Python never checks a docstring against the code it describes. When the
+  code changes, someone has to update the docstring on purpose.
 
 ### Reflection
 
-A few sentences about this tutorial, whenever you are ready. *Keeping
-Documentation Honest* found a docstring that no longer matched its code.
-Have you read code with a comment or docstring like that before, and if
-so, what did you do about it?
+Write a few sentences about this page, whenever you are ready. In the
+last section, we found a docstring that no longer matched its code. Have
+you ever read code with a comment or docstring like that? If so, what did
+you do about it?
 
 Double-click this cell to write your thoughts:
 

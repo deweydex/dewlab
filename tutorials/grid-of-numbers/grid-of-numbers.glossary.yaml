@@ -2,48 +2,50 @@
 entries:
   - term: matrix
     kind: concept
-    definition: A grid of numbers, arranged in rows and columns.
+    definition: A matrix is a grid of numbers, arranged in rows and columns.
   - term: row
     kind: concept
-    definition: One horizontal line of a matrix. Rows are counted first — a 5×5 matrix has 5 rows.
+    definition: A row is one horizontal line of a matrix. The number of rows is said first, so a 5×3 matrix has 5 rows.
   - term: column
     kind: concept
-    definition: One vertical line of a matrix.
+    definition: A column is one vertical line of a matrix.
   - term: shape
     kind: concept
     definition: >
-      A matrix's own number of rows and columns. Two matrices need the
-      same shape before you can add them.
+      The shape of a matrix is its number of rows and its number of
+      columns. Two matrices need the same shape before you can add them.
   - term: a_ij
     kind: formula
     definition: >
-      The entry in row i and column j of a matrix. It is written a_ij in
-      maths and pixels[i][j] in Python, with the row index first and the
-      column second.
+      a_ij is the entry in row i and column j of a matrix. Maths counts
+      rows and columns from 1, so a_11 is the top-left entry. Python
+      counts from 0, so the same entry is pixels[0][0]. The row index
+      always comes first and the column index second.
   - term: matrix addition
     kind: concept
     definition: >
-      Add the numbers in matching positions. Only defined when both
-      matrices have the same shape.
+      Matrix addition adds the numbers in matching positions of two
+      matrices. It works only when both matrices have the same shape.
   - term: scalar
     kind: concept
-    definition: A single number, as opposed to a matrix.
+    definition: A scalar is a single number, used together with a matrix.
   - term: scalar multiplication
     kind: concept
-    definition: Multiplying a matrix by a scalar multiplies every entry in it by that number.
+    definition: Scalar multiplication multiplies every entry of a matrix by the same scalar.
   - term: transpose
     kind: concept
     definition: >
-      Swapping a matrix's rows and columns — the entry at row i, column j
-      moves to row j, column i. Written A^T. Rearranges only; no
-      arithmetic involved.
+      The transpose of a matrix swaps its rows and its columns. The entry
+      at row i, column j moves to row j, column i. The transpose of A is
+      written A^T. It only moves numbers; there is no arithmetic in it.
   - term: symmetric
     kind: concept
-    definition: A matrix that is its own transpose — swapping rows and columns changes nothing.
+    definition: A symmetric matrix is a matrix that is equal to its own transpose. Swapping its rows and columns changes nothing.
   - term: "ValueError"
     kind: keyword
     definition: >
-      An error you raise yourself, with a message saying what actually went
-      wrong. It is the fix for a confusing built-in error like IndexError,
-      which points at where something failed but not at why.
+      A ValueError is an error for a value that has the right type but is
+      wrong in some other way. On this page we raise one ourselves, with a
+      message that says what went wrong. That is clearer than an error
+      like IndexError, which says where something failed but not why.
     example: "raise ValueError(\"matrices must be the same shape\")"

@@ -1,35 +1,43 @@
 ---
-title: "Objects and Classes"
+title: "Classes and objects: keeping data and actions together"
 year: "2026-2027"
-version: 2026.09.04.1
+version: 2026.09.22.1
 covers:
   one-thing-many-parts:
     covers: [FOOP-LO1, FOOP-LO3]
-  keeping-details-to-itself:
+  printing-an-object:
     covers: [FOOP-LO3]
-  building-on-what-already-exists:
+  class-attributes-and-instance-attributes:
     covers: [FOOP-LO3]
+    touches: [FOOP-LO8]
 ---
 
-# Objects and Classes
-
-**Fundamentals of Object Oriented Programming**
+# Classes and objects: keeping data and actions together
 
 A program that tracks one bank account needs a balance and a couple of
-functions: one to add money, one to take it away. Track five accounts the
-same way and every one needs its own balance, with its own name to tell it
-from the rest. Every function call has to be given the right one. Get a
-name wrong and you have paid into the wrong account.
+functions: one to add money, and one to take it away. Now picture five
+accounts. Each one needs its own balance, with its own variable name to
+tell it from the others. Every function call has to be given the right
+one. If you use the wrong name, you have paid money into the wrong
+account.
 
-Object oriented programming keeps a thing's data and the operations on
-that data together, as one unit. A program can then have five accounts,
-or five hundred, without five hundred separate variable names to keep
-straight. This tutorial builds up to that idea from the version without
-it, so the problem is visible before the solution is.
+*Object oriented programming* is a way of writing programs where a
+thing's data and the actions on that data are kept together, as one
+unit. A program can then have five accounts, or five hundred, without
+five hundred variable names to keep straight.
 
-## One Thing, Many Parts
+On this page we:
 
-Here is a bank account, the way you already know how to write one: a
+- start with the version you already know how to write, and see where it
+  gets hard
+- build the same bank account as a class
+- make an object print in a way a person can read
+- see the difference between data that every object shares and data
+  that each object keeps for itself
+
+## One thing, many parts
+
+Here is a bank account the way you already know how to write one: a
 variable for the balance, and a function that changes it.
 
 ```python exec
@@ -43,8 +51,8 @@ balance = deposit(balance, 50.0)
 print(balance)
 ```
 
-That works for one account. A second account needs a second balance, with
-its own name:
+That works for one account. A second account needs a second balance,
+with its own name:
 
 ```python exec
 id: one-thing-many-parts-2
@@ -58,15 +66,19 @@ print("Alice:", alice_balance)
 print("Bob:", bob_balance)
 ```
 
-This still works, but notice what we now have to hold in our heads. We
-have to know which balance belongs to which person, and pass the right
-one into `deposit()` every single time. Nothing in the code itself
-connects `alice_balance` to Alice. The connection lives only in the name,
-and only because you were careful.
+This still works. But look at what we now have to keep in our heads. We
+have to know which balance belongs to which person. We have to pass the
+right one into `deposit()` every time. Nothing in the code connects
+`alice_balance` to Alice. That connection lives only in the name, and it
+holds only because you were careful.
 
-A *class* keeps a thing's data and the operations on it together, so that
-connection is enforced by the code rather than remembered by the person
-writing it. Here is the same bank account as a class:
+A *class* is a description of one kind of thing: the data it holds and
+the actions it can do. With a class, the code itself keeps each
+account's data together, so you no longer have to remember which
+variable goes with which person. Here is the same bank account as a
+class.
+
+What do you think the last two lines print? Run it to check.
 
 ```python exec
 id: one-thing-many-parts-3
@@ -88,34 +100,41 @@ print(alice.owner, alice.balance)
 print(bob.owner, bob.balance)
 ```
 
-Run that cell and read it against the loose-variable version above. Every
-account now carries its own balance and its own owner inside itself. So
-`alice.deposit(50.0)` can only ever change Alice's balance — there is no
-name to get wrong.
+Compare it with the loose-variable version above. Each account now
+carries its own owner and its own balance inside itself. So
+`alice.deposit(50.0)` can only ever change Alice's balance. There is no
+variable name to get wrong.
 
-Now we can name what just happened. `BankAccount` is a *class*:
-a description of what a bank account has (an owner, a balance) and what it
-can do (accept a deposit). `alice` and `bob` are *objects*: two separate things built from that one
-class, each with its own values for the fields the class describes. `owner` and `balance` are the object's
-*fields*: the data it carries around with it. `deposit()` is a *method*: a
-function that belongs to the class and acts on one particular object's own
-fields. `__init__()` is the *constructor*, the method Python runs
-automatically when a new object is built. Its job is to set up that
-object's fields from whatever was passed in.
+Now we can name the parts.
 
-Every field and method needs `self` as a reminder of *which* object it
-belongs to. `self.balance` inside `deposit()` means "the balance of
-whichever account this method was called on." That is exactly why
-`alice.deposit(50.0)` cannot touch Bob's balance. Notice too that a field
-does not have to hold a number: `owner` is a string, `balance` is a float.
-A class's fields can be any mix of data types a program needs, the same
-way a function's parameters can.
+| Part | In the code | What it is |
+|---|---|---|
+| *class* | `BankAccount` | A description of what a bank account has (an owner, a balance) and what it can do (take a deposit). |
+| *object* | `alice`, `bob` | One thing built from a class. Each object has its own values for the fields the class describes. |
+| *field* | `owner`, `balance` | A piece of data that one object carries with it. |
+| *method* | `deposit()` | A function that belongs to a class. It works on the fields of one particular object. |
+| *constructor* | `__init__()` | The method Python runs by itself each time a new object is built. It sets up that object's fields from the values passed in. |
+
+Every method has `self` as its first parameter. *self* is the name a
+method uses for the object it was called on. Inside `deposit()`,
+`self.balance` means "the balance of the account this method was called
+on". When we write `alice.deposit(50.0)`, `self` is `alice`. That is why
+`alice.deposit(50.0)` cannot touch Bob's balance.
+
+Notice too that the fields hold different types of data. `owner` is a
+string, and `balance` is a float. A class's fields can be any mix of
+types that a program needs, in the same way a function's parameters
+can.
 
 ### Your turn
 
-Add a `withdraw` method to `BankAccount` below, following the same shape as
-`deposit` — it should reduce `self.balance` by `amount`. Then create an
-account of your own and try both methods on it.
+The cell below has the `BankAccount` class again.
+
+1. Add a `withdraw` method, with the same shape as `deposit`. It should
+   take `amount` away from `self.balance`.
+2. `my_account` starts with a balance of `0.0`. Deposit some money into
+   it, then withdraw some.
+3. Print the balance. Is it what you expected?
 
 ```python exec
 id: one-thing-many-parts-4
@@ -133,18 +152,15 @@ my_account = BankAccount("You", 0.0)
 # Try deposit() and withdraw() on it, then print the balance
 ```
 
-## Keeping Details to Itself
+## Printing an object
 
-The loose-variable version and the class version store exactly the same
-numbers. What changed is who is responsible for them. With the class,
-nothing outside `BankAccount` ever touches `self.balance` directly. Every
-change goes through a method, so every deposit and withdrawal passes
-through one place a rule could be enforced. A class that refuses to let a
-balance go negative only has to check that in one method, not in every
-piece of code that happens to change a balance.
+We printed `alice.owner` and `alice.balance` one at a time. What happens
+if we print the whole object?
+
+What do you think this prints? Run it to check.
 
 ```python exec
-id: keeping-details-to-itself-1
+id: printing-an-object-1
 class BankAccount:
     def __init__(self, owner, balance):
         self.owner = owner
@@ -153,170 +169,242 @@ class BankAccount:
     def deposit(self, amount):
         self.balance = self.balance + amount
 
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-account = BankAccount("Alice", 100.0)
-account.withdraw(150.0)   # refused
-account.withdraw(40.0)    # goes through
-print(account.balance)
+alice = BankAccount("Alice", 100.0)
+print(alice)
 ```
 
-Run that and watch the first withdrawal get refused. There is no way to
-skip that check by accident, because there is no other route to
-`self.balance`. A caller can only ask the account to deposit or withdraw —
-never reach in and change the number directly. This is *encapsulation*:
-keeping an object's own data behind its own methods, so the rules about how
-that data may change live in one place, next to the data itself.
+It prints something like `<__main__.BankAccount object at 0x7f3c32721cd0>`.
+That is the name of the class and the place in the computer's memory
+where this object is stored. The number will be different on your
+screen, and it changes each time you run the cell. It tells us the
+object exists, but not much else.
 
-*Abstraction* is the other half of the same idea, seen from outside the
-class. `account.withdraw(150.0)` tells you what happens without telling
-you how. A caller does not need to know the balance is stored as a float,
-or that an `if` statement guards it, to use the account correctly. The
-class's methods are the whole interface a reader needs.
+We can tell Python how to show an object as text. We do that with a
+method called `__str__`. `__str__` is a method that returns the text
+`print()` shows for an object. Like `__init__`, its name has two
+underscores on each side. Python calls it for us: we never write
+`alice.__str__()` ourselves.
 
-### Your turn
-
-What would go wrong if `deposit()` let a caller pass a negative amount —
-`account.deposit(-50.0)`, say? Add a guard to the `deposit` method below
-that refuses a negative amount the same way `withdraw` refuses an
-over-large one.
+In the cell below, `print(alice)` and `print(bob)` now use `__str__`.
+Look at the last line too. What do you think `print([alice, bob])`
+shows? Run it to check.
 
 ```python exec
-id: keeping-details-to-itself-2
+id: printing-an-object-2
 class BankAccount:
     def __init__(self, owner, balance):
         self.owner = owner
         self.balance = balance
 
+    def __str__(self):
+        return f"{self.owner}: {self.balance}"
+
     def deposit(self, amount):
-        # Refuse a negative amount here, before changing self.balance
         self.balance = self.balance + amount
 
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
+alice = BankAccount("Alice", 100.0)
+bob = BankAccount("Bob", 250.0)
+alice.deposit(50.0)
 
-account = BankAccount("Alice", 100.0)
-account.deposit(-50.0)
-print(account.balance)   # should still be 100.0 if the guard works
+print(alice)
+print(bob)
+print([alice, bob])
 ```
 
-## Building on What Already Exists
+The first two lines are easy to read: `Alice: 150.0` and `Bob: 250.0`.
+Notice that `__str__` *returns* the text. It does not print it. `print()`
+does the printing.
 
-A savings account is a bank account that also earns interest. Writing it
-from scratch would mean copying `__init__`, `deposit` and `withdraw` all
-over again. Both copies would then need updating together by hand, every time one of
-them changed. *Inheritance* avoids the copy: a new class can
-be built on an existing one, keeping everything the original does and
-adding only what is different.
+The list still shows the long memory form. When an object is inside a
+list, Python uses a second method, `__repr__`. `__repr__` is a method
+that returns text meant for the programmer. The usual habit is to make
+it look like the code that would build the object:
 
-```python exec
-id: building-on-what-already-exists-1
-class SavingsAccount(BankAccount):
-    def __init__(self, owner, balance, interest_rate):
-        super().__init__(owner, balance)
-        self.interest_rate = interest_rate
-
-    def add_interest(self):
-        self.balance = self.balance + self.balance * self.interest_rate
-
-savings = SavingsAccount("Alice", 1000.0, 0.05)
-savings.deposit(200.0)   # inherited from BankAccount, not rewritten
-savings.add_interest()   # new, only SavingsAccount has this
-print(savings.balance)
+```python
+    def __repr__(self):
+        return f"BankAccount('{self.owner}', {self.balance})"
 ```
 
-`SavingsAccount(BankAccount)` says a savings account is a bank account,
-plus something extra. The *parent class* (`BankAccount`) supplies deposit
-and withdraw for free. The *child class* (`SavingsAccount`) adds
-`interest_rate` and `add_interest()` on top. `super().__init__(owner,
-balance)` hands the owner and balance straight to the parent's own
-constructor, rather than repeating what it already does. Run the cell
-above and check that `deposit()` still works on a `SavingsAccount`
-object. `SavingsAccount` never defines it; it is there because
-`BankAccount` already gave it one.
-
-This is only a first look. Inheritance is where object oriented programs
-get most of their real power. A later tutorial builds several classes on
-top of one another, once there is more than one kind of account to share
-code between.
+With that method added, `print([alice, bob])` shows
+`[BankAccount('Alice', 150.0), BankAccount('Bob', 250.0)]`.
 
 ### Your turn
 
-`withdraw()` on a `SavingsAccount` currently behaves exactly like it does
-on a plain `BankAccount` — inherited, unchanged. Suppose a savings account
-should charge a small fee, say `2.0`, on every withdrawal. Write a new
-`withdraw` method inside `SavingsAccount` that calls the parent's own
-`withdraw()` for the amount plus the fee, using `super().withdraw(...)`.
+The `Book` class below has a constructor but no `__str__`.
+
+1. Run the cell as it is, and look at what `print(book)` shows.
+2. Add a `__str__` method that returns the title and the author, like
+   `Dune by Frank Herbert`.
+3. Run the cell again. Does `print(book)` show your text now?
 
 ```python exec
-id: building-on-what-already-exists-2
-class SavingsAccount(BankAccount):
-    def __init__(self, owner, balance, interest_rate):
-        super().__init__(owner, balance)
-        self.interest_rate = interest_rate
+id: printing-an-object-3
+class Book:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
 
-    def add_interest(self):
-        self.balance = self.balance + self.balance * self.interest_rate
+    # Add a __str__ method here
 
-    # Override withdraw here: charge a 2.0 fee on top of the amount
-
-savings = SavingsAccount("Alice", 1000.0, 0.05)
-savings.withdraw(100.0)
-print(savings.balance)   # should be 1000 - 100 - 2 = 898.0 if the fee applied
+book = Book("Dune", "Frank Herbert")
+print(book)
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. This is called "overriding" a method: a method defined in
-   `SavingsAccount` with the same name as one in `BankAccount` replaces
-   it, for `SavingsAccount` objects.
-2. Inside the new `withdraw`, call `super().withdraw(amount + 2.0)` rather
-   than touching `self.balance` directly, so the parent's own "not enough
-   balance" check still runs on the fee-adjusted amount.
-3. The method still needs `self` and `amount` as parameters, the same as
-   any other method.
-
-**Think about:** why call `super().withdraw()` instead of just writing
-`self.balance = self.balance - amount - 2.0` here directly?
-
-**Try this next:** what happens if you withdraw more than the balance can
-cover once the fee is added? Try it and see which check catches it.
+1. `__str__` takes only `self`, the same as any method that needs
+   nothing extra.
+2. Inside it, build the text from `self.title` and `self.author`. An
+   f-string such as `f"{self.title} by {self.author}"` does this.
+3. Use `return`, not `print()`. Python gives an error if `__str__`
+   returns anything other than a string.
 
 </details>
 
-## Wrapping Up
+## Class attributes and instance attributes
 
-In this tutorial:
+An *attribute* is any name we reach with a dot after an object, such as
+`alice.balance` or `alice.deposit`. An *instance* is another word for
+an object: `alice` is an instance of `BankAccount`.
 
-- A *class* is a blueprint; an *object* is one thing built from it, with
-  its own values for the fields the blueprint describes.
-- A *field* is data an object carries; a *method* is a function that acts
-  on one object's own fields, using `self` to know which object.
-- The *constructor* (`__init__`) sets up a new object's fields when it is
-  built.
-- *Encapsulation* keeps an object's data behind its own methods, so the
-  rules about changing it live in one place.
-- *Abstraction* is what a caller sees from outside: what a method does,
-  not how.
-- *Inheritance* lets one class (the child) build on another (the parent),
-  keeping everything the parent does and adding only what differs.
+The fields we set on `self` in `__init__` are *instance attributes*. An
+instance attribute belongs to one object. Alice's balance and Bob's
+balance are two separate values.
 
-Loose variables and functions can do everything a class can — nothing here
-was impossible before. What changes is how much you have to hold in your
-head as a program grows past one account, one shape, one anything.
+Sometimes a value is the same for every object of a class. Every
+account in our program is at the same bank, for example. A *class
+attribute* is a value that belongs to the class itself, and every
+object of that class shares it. We write it inside the class but
+outside any method.
+
+In the cell below, `bank_name` is a class attribute. Near the end, we
+change it once, through the class. What do you think the last two lines
+print? Run it to check.
+
+```python exec
+id: class-attributes-and-instance-attributes-1
+class BankAccount:
+    bank_name = "Dew Bank"
+
+    def __init__(self, owner, balance):
+        self.owner = owner
+        self.balance = balance
+
+alice = BankAccount("Alice", 100.0)
+bob = BankAccount("Bob", 250.0)
+
+print(alice.bank_name, alice.balance)
+print(bob.bank_name, bob.balance)
+
+BankAccount.bank_name = "Dew Savings Bank"
+print(alice.bank_name)
+print(bob.bank_name)
+```
+
+Both accounts show `Dew Savings Bank`. There is only one `bank_name`,
+stored on the class. `alice.bank_name` and `bob.bank_name` both reach
+that one value. Their balances, though, stay separate, because each
+balance is an instance attribute.
+
+A class attribute can also keep a count across every object. Here, the
+constructor adds one to `accounts_opened` each time a new account is
+built. How many accounts does the last line report?
+
+```python exec
+id: class-attributes-and-instance-attributes-2
+class BankAccount:
+    accounts_opened = 0
+
+    def __init__(self, owner, balance):
+        self.owner = owner
+        self.balance = balance
+        BankAccount.accounts_opened = BankAccount.accounts_opened + 1
+
+alice = BankAccount("Alice", 100.0)
+bob = BankAccount("Bob", 250.0)
+carol = BankAccount("Carol", 75.0)
+print(BankAccount.accounts_opened)
+```
+
+It prints `3`. Notice that the constructor writes
+`BankAccount.accounts_opened`, not `self.accounts_opened`. The count
+belongs to the class, so we change it through the class.
+
+This matters, and it trips most people up at least once. Assigning to a
+name through an object never changes the class attribute. It makes a
+new instance attribute on that one object instead:
+
+```python
+alice.bank_name = "Alice's Bank"
+print(alice.bank_name)        # Alice's Bank
+print(bob.bank_name)          # Dew Bank
+print(BankAccount.bank_name)  # Dew Bank
+```
+
+So read a class attribute through any object, but change it through the
+class.
+
+| | Instance attribute | Class attribute |
+|---|---|---|
+| Where it is written | On `self`, usually in `__init__` | In the class, outside any method |
+| Who has it | Each object has its own value | One value, shared by every object |
+| Example | `self.balance = balance` | `bank_name = "Dew Bank"` |
+| How to change it | `alice.balance = 0.0` changes Alice's only | `BankAccount.bank_name = "..."` changes it for all |
+
+### Your turn
+
+1. Add a class attribute `currency = "EUR"` to `BankAccount` below.
+2. Print `currency` through `alice`, through `bob`, and through the
+   class itself. Do all three agree?
+3. Change it to `"USD"` through the class, and print it through `alice`
+   again. What do you see?
+
+```python exec
+id: class-attributes-and-instance-attributes-3
+class BankAccount:
+    # Add a class attribute here
+
+    def __init__(self, owner, balance):
+        self.owner = owner
+        self.balance = balance
+
+alice = BankAccount("Alice", 100.0)
+bob = BankAccount("Bob", 250.0)
+# Print currency three ways, then change it through the class
+```
+
+## Wrapping up
+
+On this page:
+
+- A *class* describes one kind of thing. An *object* is one thing built
+  from a class, with its own values for the fields the class describes.
+- A *field* is data an object carries. A *method* is a function that
+  works on one object's own fields. It uses `self` to know which object.
+- The *constructor*, `__init__`, sets up a new object's fields when the
+  object is built.
+- `__str__` returns the text `print()` shows for an object. `__repr__`
+  returns text for the programmer, which Python uses for an object
+  inside a list.
+- An *instance attribute* belongs to one object. A *class attribute*
+  belongs to the class, and every object shares it.
+
+Loose variables and functions can do everything a class can. Nothing
+here was impossible before. What changes is how much you have to hold in
+your head as a program grows past one account, one shape, one anything.
+
+Next, [The moves you already know, inside a class](tutorial:the-moves-you-already-know)
+looks inside methods and finds the same `if` statements and loops you
+already write. After that,
+[Encapsulation: keeping an object's data behind its methods](tutorial:keeping-details-inside-an-object)
+asks who should be allowed to change a field like `balance`.
 
 ### Reflection
 
-A few sentences about this tutorial, whenever you are ready. Which felt
-more natural at first, the loose-variable version or the class version?
-What made the difference click, if it did?
+Write a few sentences about this page, whenever you are ready. Which
+felt more natural at first, the loose-variable version or the class
+version? If the class version made sense in the end, what made it
+click?
 
 Double-click this cell to write your thoughts:
 

@@ -141,8 +141,7 @@ made the ball huge at the front and small at the back, and why `2000px`
 made it hardly change size. With no `perspective` at all, in step 4,
 the browser draws everything the same size, whatever its depth. The
 ball still goes round, but it slides left and right and never grows or
-shrinks. ([A Point on the
-Screen](tutorial:a-point-on-the-screen#why-dividing-works), on the
+shrinks. ([Perspective projection: dividing by depth](tutorial:a-point-on-the-screen#why-dividing-works), on the
 Computational Methods course, shows the arithmetic the browser does
 here.)
 

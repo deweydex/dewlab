@@ -1,7 +1,7 @@
 ---
 title: "Asking Questions of a Table"
 year: "2026-2027"
-version: 2026.09.10.1
+version: 2026.09.23.1
 covers:
   naming-columns:
     covers: [DBM-LO3]
@@ -19,15 +19,15 @@ dinosaur table again, then asks it three different questions.
 
 ```sql exec
 id: create-dinosaurs-table
-CREATE TABLE dinosaurs (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE dinosaur_tbl (
+    dinosaur_id INTEGER PRIMARY KEY,
     name TEXT,
     diet TEXT,
     length_meters REAL,
     period TEXT
 );
 
-INSERT INTO dinosaurs (name, diet, length_meters, period) VALUES
+INSERT INTO dinosaur_tbl (name, diet, length_meters, period) VALUES
     ('Tyrannosaurus Rex', 'Carnivore', 12.3, 'Late Cretaceous'),
     ('Triceratops', 'Herbivore', 9.0, 'Late Cretaceous'),
     ('Velociraptor', 'Carnivore', 2.0, 'Late Cretaceous'),
@@ -42,7 +42,7 @@ Run that box first; it only builds the table, so nothing appears yet.
 
 ```sql exec
 id: select-name-and-length
-SELECT name, length_meters FROM dinosaurs;
+SELECT name, length_meters FROM dinosaur_tbl;
 ```
 
 This asks for two columns instead of five. Name the columns you want,
@@ -52,7 +52,7 @@ separated by commas, in place of `*`.
 
 ```sql exec
 id: query-carnivores
-SELECT name, length_meters FROM dinosaurs WHERE diet = 'Carnivore';
+SELECT name, length_meters FROM dinosaur_tbl WHERE diet = 'Carnivore';
 ```
 
 `WHERE` keeps a row only if the condition after it is true for that row.
@@ -79,7 +79,7 @@ for: query-carnivores
 after: 5 empty results
 title: some steps
 
-1. Run `SELECT DISTINCT diet FROM dinosaurs;` on its own, to see the
+1. Run `SELECT DISTINCT diet FROM dinosaur_tbl;` on its own, to see the
    exact spellings the table holds.
 2. Compare that spelling, letter by letter, with the value after
    `WHERE diet =` in the box above.
@@ -98,7 +98,7 @@ instead, and check whether that one brings back rows.
 ```sql exec
 id: query-longest-first
 SELECT name, length_meters, diet
-FROM dinosaurs
+FROM dinosaur_tbl
 WHERE length_meters > 5
 ORDER BY length_meters DESC;
 ```

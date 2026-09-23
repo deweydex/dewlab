@@ -2,57 +2,66 @@ entries:
   - term: "Monte Carlo method"
     kind: concept
     definition: >
-      Answering a question by generating many random cases and counting how
-      many satisfy some condition, rather than by solving it. Named after the
-      casino, and used wherever a formula is unavailable or intractable.
+      The Monte Carlo method answers a question by making many random
+      cases and counting how many of them meet some condition. It is named
+      after the casino in Monte Carlo, and it is used where there is no
+      formula, or the formula is too hard to work out.
+
+  - term: "Monte Carlo simulation"
+    kind: concept
+    definition: >
+      A Monte Carlo simulation is the Monte Carlo method run on a
+      computer, with pseudo-random numbers as the random cases.
 
   - term: "Monte Carlo integration"
     kind: concept
     definition: >
-      Using that counting idea to measure an area or a volume. Throw points
-      at a region whose size you already know. The fraction landing inside
-      the part you want gives you its size.
+      Monte Carlo integration is the Monte Carlo method used to measure an
+      area or a volume. You throw points at a region whose size you
+      already know. The fraction that lands inside the part you want
+      gives you its size.
     example: "area = hits / n * area_of_the_region_you_threw_at"
 
   - term: "estimate"
     kind: concept
     definition: >
-      A number produced by a method that is approximately, not exactly,
-      right. Unlike the answers earlier in this module, an estimate carries
-      an error you can describe but not remove.
+      An estimate is a number that is roughly right, but not exactly right.
+      The answers earlier in this module were exact. An estimate carries an
+      error that you can describe, but cannot remove.
 
   - term: "1/sqrt(n) error"
     kind: formula
     definition: >
-      The rule for how a Monte Carlo estimate improves. The typical error
-      falls in proportion to one over the square root of the number of
-      samples. A hundred times the work buys one more correct decimal place.
+      This rule says how a Monte Carlo estimate improves. The typical
+      error falls in proportion to one over the square root of the number
+      of samples. A hundred times the work buys one more correct decimal
+      place.
 
   - term: "x^2 + y^2 <= 1"
     kind: formula
     definition: >
-      The test for a point lying inside a circle of radius 1 centred on the
-      origin. It is Pythagoras again, used to ask whether a point belongs
-      rather than to find a distance.
+      This is the test for whether a point lies inside a circle of radius
+      1 centred on the origin. It is Pythagoras' theorem, used to ask
+      whether a point is inside, and not to find a distance.
     example: "if x * x + y * y <= 1:"
 
   - term: "running estimate"
     kind: concept
     definition: >
-      The answer recomputed after every new sample, and kept as a list. That
-      way the path it takes as it settles can be plotted, rather than only
-      its final value read.
+      A running estimate is the answer worked out again after every new
+      sample, and kept in a list. Then you can plot the path it takes as
+      it settles, and not only read its final value.
 
   - term: "accuracy"
     kind: concept
     definition: >
-      How close an estimate is to the true answer. A model can be
-      accurate on one run and less accurate on the next, since each run
-      of a Monte Carlo method uses different random numbers.
+      Accuracy is how close an estimate is to the true answer. A model can
+      be accurate on one run and less accurate on the next, because each
+      run of a Monte Carlo method uses different random numbers.
 
   - term: "precision"
     kind: concept
     definition: >
-      How much of an estimate stays the same if the whole thing is run
-      again. A number can be precise without being accurate, accurate
-      without being precise, or neither.
+      Precision is how much of an estimate stays the same when the whole
+      thing is run again. A number can be precise without being accurate,
+      accurate without being precise, or neither.

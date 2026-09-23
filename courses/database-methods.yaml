@@ -23,6 +23,7 @@ contents:
 - title: A database with several tables
   tutorials:
   - designing-a-table-before-you-build-it
+  - working-with-tables
   - loading-a-real-dataset
   - joining-two-real-tables
   - charting-a-querys-result

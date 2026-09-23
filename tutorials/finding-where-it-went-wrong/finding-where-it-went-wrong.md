@@ -1,5 +1,5 @@
 ---
-title: "Finding Where It Went Wrong"
+title: "Debugging a wrong answer: from symptom to cause"
 year: "2026-2027"
 version: 2026.09.05.1
 covers:
@@ -10,43 +10,71 @@ covers:
     touches: [CMPS-LO10]
   the-symptom-is-not-the-cause:
     covers: [CMPS-LO10]
-  what-finding-it-actually-took:
+  what-finding-it-took:
     covers: [CMPS-LO12]
 ---
 
-# Finding Where It Went Wrong
+# Debugging a wrong answer: from symptom to cause
 
-A program can run without crashing and still be wrong. This tutorial
-builds one small pipeline and decides in advance how to know whether it
-worked. Then it follows a real wrong answer back to the one line actually
-responsible for it.
+A program can run without crashing, and still be wrong.
+
+We have met this before. In
+[Reading an error message](tutorial:reading-an-error-message), we read
+Python's error messages, and met logical errors: code that runs but gives
+the wrong answer. In
+[Finding bugs in bigger programs](tutorial:when-it-goes-wrong), we
+printed values in the middle of a program, tested small pieces on their
+own, and checked answers we already knew. If your program stops with an
+error message, those two pages are the place to start.
+
+This page is about the other case: no error message, only a wrong
+answer. We take those habits a few steps further:
+
+1. We decide how to check the answer *before* we write any code.
+2. We follow a wrong answer back, step by step, to the one line that
+   causes it.
+3. We compare two ways of responding to a bug, and see why only one of
+   them fixes it.
 
 ## Deciding What Done Means
 
-The problem: take a list of temperature readings in Fahrenheit, as text, and
-return their average in Celsius.
+Here is the problem. We have a list of temperature readings in
+Fahrenheit, stored as text. We want their average in Celsius.
 
-Before writing a line of code, decide what a correct answer looks like. A
-reading of `70.0` converted and averaged gives some plausible-looking
-number, but "plausible-looking" is not the same as "correct". Nothing
-about a single reasonable number proves the arithmetic behind it was right.
+Before we write a line of code, we decide what a correct answer looks
+like. Suppose we convert and average a reading like `70.0`. We get a
+number that looks reasonable. But a number that looks reasonable is not
+the same as a correct number. One reasonable-looking number does not
+prove that the arithmetic behind it was right.
 
-Two temperatures have a known answer nobody has to compute by hand: water
-freezes at `32°F`, which is exactly `0°C`, and boils at `212°F`, which is
-exactly `100°C`. A pipeline tested against readings of `32.0` and `212.0`
-should report an average of exactly `50.0`. Deciding on this check now,
-before any code exists to pass or fail it, is what "done" is going to mean
-for this problem.
+Two temperatures have answers everyone knows, with no working out:
+
+- Water freezes at `32°F`, which is exactly `0°C`.
+- Water boils at `212°F`, which is exactly `100°C`.
+
+So if we give the program the readings `32.0` and `212.0`, the average
+should be exactly `50.0`. We decide on this check now, before any code
+exists to pass or fail it. Passing it is what "done" will mean for this
+problem.
 
 ### Your turn
 
-Before reading the next section: what would *you* have chosen to test this
-pipeline against, if freezing and boiling point were not already suggested
-here?
+Before you read the next section: if freezing and boiling point were not
+already suggested here, what would *you* have chosen to test this
+program with?
 
 ## Building the Pipeline
 
-Three small pieces, each doing one job.
+A *pipeline* is a program made of stages, where each stage passes its
+result on to the next. Ours has three small stages, and each does one job:
+
+1. `parse_readings` turns the text readings into numbers.
+2. `fahrenheit_to_celsius` converts one reading to Celsius.
+3. `average` finds the average.
+
+`summarize` runs the three stages in order. It uses list comprehensions,
+from [Lists: keeping many values in order](tutorial:lists-and-sequences),
+to apply a stage to every reading.
 
 ```python exec
 id: building-the-pipeline-1
@@ -69,25 +97,26 @@ daily = ["70.0", "75.5", "68.2"]
 print(summarize(daily))
 ```
 
-That number looks entirely reasonable for three everyday readings. Nothing
-about it says whether it is right. Now run the check decided on before any
-of this was written.
+That number looks reasonable for three everyday readings. But nothing
+about it tells us whether it is right. Now let's run the check we decided
+on before we wrote any of this. What should it print?
 
 ```python exec
 id: building-the-pipeline-2
 print(summarize(["32.0", "212.0"]))
 ```
 
-`56.25`, not `50.0`. The pipeline runs without error and produces a
-number that looks just as reasonable as the first one. That is exactly
-why the known-answer test decided on in advance matters — without it,
-this wrong answer would have looked correct to anyone who used it.
+It prints `56.25`, not `50.0`. The program runs without an error, and
+gives a number that looks just as reasonable as the first one. This is
+why we decided on a known-answer test in advance. Without it, anyone
+using this program would have trusted a wrong answer.
 
 ### Your turn
 
-Try `summarize(["32.0"])` on its own, the freezing point alone. Does it
-also come back wrong? What does that tell you about which of the two
-readings in the combined test actually caught the bug?
+1. Try `summarize(["32.0"])`, with the freezing point on its own.
+2. Does it come back wrong too?
+3. What does that tell you about which of the two readings caught the
+   bug?
 
 ```python exec
 id: building-the-pipeline-3
@@ -103,13 +132,16 @@ number in your notes, then compare it with what comes back.
 
 ## The Symptom Is Not the Cause
 
-The symptom is clear: `summarize(["32.0", "212.0"])` should be `50.0` and
-is not. The symptom is not the cause. Something inside the pipeline
-produced a wrong number, and the wrong final average is only where that
-wrong number happened to surface.
+The *symptom* is what we can see going wrong:
+`summarize(["32.0", "212.0"])` should be `50.0`, and it is not.
 
-One response fixes the symptom directly: adjust `average` so that this
-one test passes.
+The symptom is not the *cause*. The cause is the mistake in the code
+that produced the wrong number. Something inside the pipeline made a
+wrong number. The final average is only where that wrong number came to
+the surface.
+
+One way to respond is to fix the symptom directly. We could change
+`average` so that this one test passes.
 
 ```python exec
 id: the-symptom-is-not-the-cause-1
@@ -125,19 +157,30 @@ print(summarize_patched(["32.0", "212.0"]))
 print(summarize_patched(daily))
 ```
 
-The known-answer test now passes. The everyday reading from before has
-quietly changed too, for no reason connected to anything real about those
-three temperatures. `average_patched` subtracts `6.25` from every average
-it is ever asked for, whether that particular case needed it or not.
-This is *pragmatic problem-solving*: it treats the symptom in front of
-it, and it breaks the next case that does not happen to share that
-symptom.
+The known-answer test now passes. But look at the everyday readings: their
+answer has changed too, for no reason that has anything to do with those
+three temperatures. `average_patched` takes `6.25` off every average it is
+ever asked for, whether that case needed it or not.
 
-The other response asks where, exactly, a wrong number first appears.
-Each stage of the pipeline can be checked against what it alone should
-produce. That narrows the search, the way a reader halves a search range
-in binary search. Check the middle stage, then move toward whichever
-half still disagrees with what is expected.
+This is called *pragmatic problem-solving*. Pragmatic problem-solving
+treats the symptom in front of it. It makes that one symptom go away, and
+it breaks the next case that does not share the same symptom.
+
+The other way to respond asks a different question. Where, exactly, does
+a wrong number first appear?
+
+We can check each stage of the pipeline against what that stage alone
+should give. This narrows the search, a little like binary search in
+[Searching a list: linear and binary search](tutorial:finding-things):
+
+1. Check the stage in the middle.
+2. If its output is right, the fault must be in a later stage.
+3. If its output is wrong, the fault is in that stage, or in an earlier
+   one.
+4. Check the middle of the stages that are left, and repeat until only
+   one stage is left.
+
+What should each of these two lines print, if the stage is correct?
 
 ```python exec
 id: the-symptom-is-not-the-cause-2
@@ -145,12 +188,14 @@ print(parse_readings(["212.0"]))
 print(fahrenheit_to_celsius(212.0))
 ```
 
-`parse_readings` reports `[212.0]`, exactly as it should. `212°F` converted
-to Celsius should be `100.0`. It is not. The fault is not in parsing, and
-it is not in averaging — it is on the one line inside
-`fahrenheit_to_celsius` doing the conversion itself. This is *semantic
-analysis*: not making the visible symptom disappear, but finding the
-actual cause of it.
+`parse_readings` gives `[212.0]`, exactly as it should. But `212°F` in
+Celsius should be `100.0`, and it is not. So the fault is not in parsing,
+and it is not in averaging. It is in the one line inside
+`fahrenheit_to_celsius` that does the conversion. The formula divides by
+`8`, where it should divide by `9`.
+
+This is called *semantic analysis*. Semantic analysis finds the real
+cause of a symptom, instead of only making the symptom disappear.
 
 ```python exec
 id: the-symptom-is-not-the-cause-3
@@ -166,14 +211,14 @@ print(summarize_fixed(["32.0", "212.0"]))
 print(summarize_fixed(daily))
 ```
 
-The known-answer test now passes for a real reason. The everyday reading
-changes too, because it was quietly wrong the whole time, not because
-anything was tuned to make one test happy.
+The known-answer test now passes for a real reason. The answer for the
+everyday readings changes too. It was wrong all along, and now it is
+right. Nothing was adjusted only to make one test pass.
 
 ### Your turn
 
-A second pipeline has a bug somewhere in it, and this time you are not
-told where.
+A second pipeline has a bug somewhere in it. This time, you are not told
+where.
 
 ```python exec
 id: the-symptom-is-not-the-cause-4
@@ -188,9 +233,9 @@ def summarize_v2(raw_lines):
 print(summarize_v2(["32.0", "212.0"]))
 ```
 
-See if you can use the same known-answer test to check each stage of
-`summarize_v2` in turn, until you find the one that disagrees with what
-it alone should produce.
+Use the same known-answer readings to check each stage of `summarize_v2`
+in turn. Keep going until you find the stage that disagrees with what it
+alone should give.
 
 ```python exec
 id: the-symptom-is-not-the-cause-5
@@ -220,38 +265,46 @@ value, and why the stages after it could not have been the cause.
 happens, and what does that tell you about the line inside it?
 ```
 
-## What Finding It Actually Took
+## What Finding It Took
 
-None of the steps above were difficult on their own. Reading a value off a
-function and comparing it to a hand-worked answer takes no special skill.
-What made the difference was a handful of habits, applied in order.
+None of the steps above was hard on its own. Reading a value from a
+function, and comparing it with an answer worked out by hand, needs no
+special skill. What made the difference was a handful of habits, used in
+order. Each one has a name.
 
-Choosing freezing and boiling point over three ordinary daily readings was
-a small act of *lateral thinking*. Nothing about the problem statement
-suggested it. An easier, more obvious test would have missed the bug
-entirely, as the freezing-point-only check earlier in this tutorial
-showed.
+**Lateral thinking.** We tested with freezing and boiling point, not
+with three ordinary daily readings. *Lateral thinking* is choosing a test
+or an approach that nothing in the problem suggested. An easier, more
+obvious test would have missed the bug completely. The freezing-point
+check on its own showed that.
 
-Checking each pipeline stage in turn, rather than staring at the final
-wrong number and guessing, was a *methodical approach*. The same
-question got asked, stage by stage, until one stage disagreed. Each
-answer along the way narrowed where the fault had to be. That is
-*logical reasoning* doing real work, not just sitting as a definition on
-a page.
+**A methodical approach.** We checked each stage of the pipeline in turn.
+We did not stare at the final wrong number and guess. A *methodical
+approach* asks the same question at each stage, in order, until one stage
+disagrees.
 
-*Initiative* is the reason a known-answer test existed to fail in the
-first place. Nobody required writing one, and it would have been easy to
-run the pipeline once, see a plausible-looking number, and stop there.
-*Persistence* is what stops the pragmatic patch from being the last step
-taken, once it makes the one visible test pass. None of these five
-habits are separate techniques to memorize. This tutorial's own
-walk-through already showed every one of them in action.
+**Logical reasoning.** Each answer along the way narrowed down where the
+fault could be. *Logical reasoning* is using what one check has ruled out
+to decide what to check next. On this page it did real work. It was not
+only a definition.
+
+**Initiative.** *Initiative* is starting a check that nobody asked for.
+It is the reason there was a known-answer test to fail in the first
+place. Nobody required one. It would have been easy to run the program
+once, see a reasonable-looking number, and stop there.
+
+**Persistence.** The pragmatic patch made the one visible test pass.
+*Persistence* is not stopping there, and going on until the real cause
+is found.
+
+These five habits are not separate techniques to learn by heart. You
+have already seen every one of them at work on this page.
 
 ### Your turn
 
-Recall a time you fixed something, code or otherwise, without being sure
-at first what was actually wrong. Which of the habits named above
-appears in how you got there?
+Think of a time you fixed something, in code or anywhere else, when at
+first you were not sure what was wrong. Which of these habits helped you
+get there?
 
 ## Where to Read More
 

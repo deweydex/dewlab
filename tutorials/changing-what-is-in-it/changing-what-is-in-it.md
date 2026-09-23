@@ -1,7 +1,7 @@
 ---
 title: "Updating and Deleting Rows"
 year: "2026-2027"
-version: 2026.09.10.1
+version: 2026.09.23.1
 covers:
   update-changing-a-value:
     covers: [DBM-LO4]
@@ -17,15 +17,15 @@ completely. Build the table again, then try both.
 
 ```sql exec
 id: create-dinosaurs-table
-CREATE TABLE dinosaurs (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE dinosaur_tbl (
+    dinosaur_id INTEGER PRIMARY KEY,
     name TEXT,
     diet TEXT,
     length_meters REAL,
     period TEXT
 );
 
-INSERT INTO dinosaurs (name, diet, length_meters, period) VALUES
+INSERT INTO dinosaur_tbl (name, diet, length_meters, period) VALUES
     ('Tyrannosaurus Rex', 'Carnivore', 12.3, 'Late Cretaceous'),
     ('Triceratops', 'Herbivore', 9.0, 'Late Cretaceous'),
     ('Velociraptor', 'Carnivore', 2.0, 'Late Cretaceous'),
@@ -38,9 +38,9 @@ INSERT INTO dinosaurs (name, diet, length_meters, period) VALUES
 
 ```sql exec
 id: update-velociraptor-length
-UPDATE dinosaurs SET length_meters = 2.5 WHERE name = 'Velociraptor';
+UPDATE dinosaur_tbl SET length_meters = 2.5 WHERE name = 'Velociraptor';
 
-SELECT name, length_meters FROM dinosaurs WHERE name = 'Velociraptor';
+SELECT name, length_meters FROM dinosaur_tbl WHERE name = 'Velociraptor';
 ```
 
 `SET` names the column and its new value. `WHERE` picks which rows
@@ -55,9 +55,9 @@ run this:
 
 ```sql exec
 id: delete-stegosaurus
-DELETE FROM dinosaurs WHERE name = 'Stegosaurus';
+DELETE FROM dinosaur_tbl WHERE name = 'Stegosaurus';
 
-SELECT name FROM dinosaurs;
+SELECT name FROM dinosaur_tbl;
 ```
 
 `Stegosaurus` is gone from the list. Running `SELECT` again will not

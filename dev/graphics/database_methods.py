@@ -71,23 +71,28 @@ def _schema_from_section(slug: str, heading: str) -> sqlite3.Connection:
 def products_and_sales() -> str:
     """The pair *Designing a Table Before You Build It* reasons about.
 
-    A price lives in `products` once. A sale points at it. The diagram is
+    A price lives in `product_tbl` once. A sale points at it. The diagram is
     there so a reader can see which way round that goes — one product row
-    reached by many sales rows, and not the reverse — which is the thing the
+    reached by many sale rows, and not the reverse — which is the thing the
     prose has to say twice to make stick.
+
+    The page has no cell building these two, so the schema is written here,
+    in the course's convention: `_tbl` names, a key named after its table,
+    and the foreign key directly under the key. The line runs from
+    `product_id` to `product_id`, which is the point the prose makes.
     """
     return erd.render(erd.schema_from(_database("""
-        CREATE TABLE products (
-            id INTEGER PRIMARY KEY,
-            name TEXT,
+        CREATE TABLE product_tbl (
+            product_id INTEGER PRIMARY KEY,
+            product_name TEXT,
             price REAL
         );
-        CREATE TABLE sales (
-            id INTEGER PRIMARY KEY,
+        CREATE TABLE sale_tbl (
+            sale_id INTEGER PRIMARY KEY,
             product_id INTEGER,
             sold_on TEXT,
             quantity INTEGER,
-            FOREIGN KEY (product_id) REFERENCES products(id)
+            FOREIGN KEY (product_id) REFERENCES product_tbl(product_id)
         );
     """)))
 
@@ -116,7 +121,7 @@ def plushies_solution() -> str:
 
 
 def library_solution() -> str:
-    """The library quiz's five tables, with `book_authors` between two of them.
+    """The library quiz's five tables, with `book_author_tbl` between two of them.
 
     A junction table is the thing this quiz is actually about, and it is the
     one relationship a reader cannot check by reading a single `CREATE

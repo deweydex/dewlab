@@ -1,7 +1,7 @@
 ---
 title: "A page that reads from a database"
 year: "2026-2027"
-version: 2026.09.15.1
+version: 2026.09.23.1
 ---
 
 # A page that reads from a database
@@ -19,13 +19,13 @@ This is the same small table a shop's own page will read from.
 
 ```sql exec
 id: full-stack-seed-products
-CREATE TABLE products (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE product_tbl (
+    product_id INTEGER PRIMARY KEY,
     name TEXT,
     price REAL
 );
 
-INSERT INTO products (name, price) VALUES
+INSERT INTO product_tbl (name, price) VALUES
     ('Mug', 8.5),
     ('Notebook', 3.0),
     ('Tote bag', 12.0),
@@ -64,7 +64,7 @@ th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #ccc
 id: full-stack-read-js
 app: read
 async function draw() {
-  const rows = await dlQuery("SELECT name, price FROM products ORDER BY name");
+  const rows = await dlQuery("SELECT name, price FROM product_tbl ORDER BY name");
   const tbody = root.querySelector("tbody");
   tbody.innerHTML = "";
   for (const row of rows) {
@@ -94,7 +94,7 @@ already sitting in this cell's own HTML. `root` names this cell's own
 piece of the page, so `root.querySelector("tbody")` finds the table
 inside this cell rather than some other table elsewhere on the page.
 
-Change the query to `"SELECT name, price FROM products WHERE price < 10
+Change the query to `"SELECT name, price FROM product_tbl WHERE price < 10
 ORDER BY name"` and press Run again. Three rows come back this time, not
 five. The *query* changed. The page's own HTML did not.
 
@@ -121,8 +121,8 @@ id: full-stack-search-js
 app: search
 async function draw(filter) {
   const sql = filter
-    ? "SELECT name, price FROM products WHERE name LIKE ? ORDER BY name"
-    : "SELECT name, price FROM products ORDER BY name";
+    ? "SELECT name, price FROM product_tbl WHERE name LIKE ? ORDER BY name"
+    : "SELECT name, price FROM product_tbl ORDER BY name";
   const rows = await dlQuery(sql, filter ? [`%${filter}%`] : []);
   const tbody = root.querySelector("tbody");
   tbody.innerHTML = "";

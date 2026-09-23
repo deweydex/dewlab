@@ -36,9 +36,10 @@ def schema_from(connection) -> dict:
 
     `PRAGMA foreign_key_list` reports only what a `CREATE TABLE` actually
     declared, and reports it whether or not enforcement is switched on. A
-    column called `product_id` that never said `REFERENCES products(id)` is
-    an ordinary integer as far as this is concerned, and draws no arrow —
-    which is the honest picture of what the schema says.
+    column called `product_id` that never said `REFERENCES
+    product_tbl(product_id)` is an ordinary integer as far as this is
+    concerned, and draws no arrow — which is the honest picture of what the
+    schema says.
     """
     schema = {}
     for (name,) in connection.execute(

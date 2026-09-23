@@ -1,7 +1,7 @@
 ---
 title: "Joining Two Real Tables"
 year: "2026-2027"
-version: 2026.09.10.1
+version: 2026.09.23.1
 covers:
   a-second-table-written-by-hand:
     touches: [DBM-LO9]
@@ -33,23 +33,29 @@ income_share = income_share.rename(columns={
     "p99p100_share_pretax": "share",
     "p99p100_share_pretax_extrapolated": "share_extrapolated",
 })
-income_share.to_sql("income_share", db, if_exists="replace", index=False)
+income_share.to_sql("income_share_tbl", db, if_exists="replace", index=False)
 ```
 
 ## A second table, written by hand
 
 A short table names which region each country belongs to. This one is small
-enough to type directly as SQL, the same way `sightings` was on the earlier
-page.
+enough to type directly as SQL, the same way `sighting_tbl` was on the
+earlier page.
+
+Its key is `country`, not a `country_region_id`. Why? The join matches on
+the country's name, and the income table already calls that column
+`country`, the name we gave it while cleaning. A foreign key and the key
+it points at share one name, so the key here takes the name the data
+already uses.
 
 ```sql exec
 id: create-country-regions
-CREATE TABLE country_regions (
+CREATE TABLE country_region_tbl (
     country TEXT PRIMARY KEY,
     region TEXT
 );
 
-INSERT INTO country_regions (country, region) VALUES
+INSERT INTO country_region_tbl (country, region) VALUES
     ('Ireland', 'Europe'),
     ('Sweden', 'Europe'),
     ('France', 'Europe'),
@@ -63,47 +69,48 @@ INSERT INTO country_regions (country, region) VALUES
 
 ```sql exec
 id: join-income-share-and-regions
-SELECT income_share.country, income_share.year, income_share.share_extrapolated, country_regions.region
-FROM income_share
-JOIN country_regions ON income_share.country = country_regions.country
-WHERE income_share.year = 2019
-ORDER BY income_share.country;
+SELECT income_share_tbl.country, income_share_tbl.year,
+       income_share_tbl.share_extrapolated, country_region_tbl.region
+FROM income_share_tbl
+JOIN country_region_tbl ON income_share_tbl.country = country_region_tbl.country
+WHERE income_share_tbl.year = 2019
+ORDER BY income_share_tbl.country;
 ```
 
-Six countries went into `country_regions`. Run the query above and count
-the countries that came back. One is missing. `income_share` spells that
-country "United States"; `country_regions` spells it "USA". A `JOIN`
+Seven countries went into `country_region_tbl`. Run the query above and
+count the countries that came back. One is missing. `income_share_tbl` spells that
+country "United States"; `country_region_tbl` spells it "USA". A `JOIN`
 matches on exact text, not on what a person would recognise as the same
 country, so two rows that mean the same thing with different spelling never
 meet.
 
 ## Seeing what a JOIN drops
 
-`LEFT JOIN` keeps every row from `income_share`, whether or not
-`country_regions` has a matching one. Where it does not, `region` comes back
+`LEFT JOIN` keeps every row from `income_share_tbl`, whether or not
+`country_region_tbl` has a matching one. Where it does not, `region` comes back
 empty rather than the row disappearing.
 
 ```sql exec
 id: left-join-income-share-and-regions
-SELECT income_share.country, income_share.year, country_regions.region
-FROM income_share
-LEFT JOIN country_regions ON income_share.country = country_regions.country
-WHERE income_share.year = 2019
-  AND income_share.country IN ('Ireland', 'Japan', 'United States')
-ORDER BY income_share.country;
+SELECT income_share_tbl.country, income_share_tbl.year, country_region_tbl.region
+FROM income_share_tbl
+LEFT JOIN country_region_tbl ON income_share_tbl.country = country_region_tbl.country
+WHERE income_share_tbl.year = 2019
+  AND income_share_tbl.country IN ('Ireland', 'Japan', 'United States')
+ORDER BY income_share_tbl.country;
 ```
 
 United States now appears, with `region` blank. That blank is the mismatch,
 made visible instead of silently dropped. Agreeing on one spelling is the
 fix here, not a cleverer `JOIN`. Change `'USA'` to `'United States'` in the
-`INSERT` above, then re-run both cells; the first query now returns all six
-countries.
+`INSERT` above, then re-run both cells; the first query now returns all
+seven countries.
 
 ## Your turn
 
-Add one more country to `country_regions`, using the exact spelling
-`income_share` uses for it (check with a quick `SELECT DISTINCT country
-FROM income_share` first, if you are not sure). Then write a query that
+Add one more country to `country_region_tbl`, using the exact spelling
+`income_share_tbl` uses for it (check with a quick `SELECT DISTINCT country
+FROM income_share_tbl` first, if you are not sure). Then write a query that
 joins the two tables and shows only that country's rows from the last five
 years.
 

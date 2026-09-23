@@ -40,3 +40,29 @@ entries:
       each pair of matching elements and add the results. It is used
       everywhere in machine learning and physics.
     example: "[1, 2, 3] . [4, 5, 6] = 1*4 + 2*5 + 3*6 = 32"
+  - term: list comprehension
+    kind: concept
+    definition: >
+      A list comprehension is a loop that builds a list, written on one
+      line inside square brackets. The value to add comes first, then the
+      for line without its colon.
+    example: "[i ** 2 for i in range(1, 11)]"
+  - term: filter
+    kind: concept
+    definition: >
+      A filter is an if at the end of a comprehension. It keeps only the
+      values that pass its test.
+    example: "[score for score in scores if score >= 40]"
+  - term: generator expression
+    kind: concept
+    definition: >
+      A generator expression is a comprehension without its square
+      brackets, written inside a function's brackets. It hands its values
+      to the function one at a time, without building a list first.
+    example: "sum(score for score in scores if score >= 40)"
+  - term: "join()"
+    kind: function
+    definition: >
+      Joins a group of strings into one string. The string before .join
+      goes between the pieces.
+    example: '", ".join(names)'

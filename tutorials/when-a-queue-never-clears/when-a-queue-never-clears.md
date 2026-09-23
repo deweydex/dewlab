@@ -1,7 +1,7 @@
 ---
-title: "When a Queue Never Clears"
+title: "Simulating a queue: stable and unstable queues"
 year: "2026-2027"
-version: 2026.09.05.1
+version: 2026.09.22.1
 covers:
   arrivals-you-cannot-predict-one-at-a-time:
     covers: [CMPS-LO6]
@@ -13,19 +13,30 @@ covers:
     covers: [CMPS-LO6]
 ---
 
-# When a Queue Never Clears
+# Simulating a queue: stable and unstable queues
 
-A print queue, a web server's list of waiting requests, a line of
-customers at a checkout: every one of them is the same shape. Things arrive
-at unpredictable moments, something processes them at a fixed rate, and
-a queue builds up in between. This tutorial asks the question that shape
-always raises: does the queue stay under control, or does it grow
-forever?
+Think of a print queue, a web server's list of waiting requests, or a
+line of customers at a checkout. They all work the same way:
+
+1. Things arrive at moments nobody can predict.
+2. Something deals with them at a fixed rate.
+3. A queue builds up in between.
+
+This raises one question every time. Does the queue stay under control,
+or does it grow forever? On this page we simulate a queue to find out.
 
 ## Arrivals You Cannot Predict, One at a Time
 
-An arrival is a coin flip repeated. Each time step, check twice whether
-something new has shown up, and count how many times the answer was yes.
+We split time into steps. In each step, we check twice whether something
+new has arrived, like flipping a coin twice. Then we count how many times
+the answer was yes. So each step brings 0, 1 or 2 new arrivals.
+
+The function below does this with a short form we have not used much
+yet. `sum(1 for _ in range(2) if random.random() < arrival_prob)` works
+like a list comprehension from
+[Lists: keeping many values in order](tutorial:lists-and-sequences). It
+makes a 1 for each of the two checks that comes up yes, and `sum` adds
+up the 1s.
 
 ```python exec
 id: arrivals-you-cannot-predict-one-at-a-time-1
@@ -40,12 +51,13 @@ def arrivals_this_step(arrival_prob):
 print([arrivals_this_step(0.3) for _ in range(10)])
 ```
 
-`arrival_prob` sets how likely each of the two chances is to land. Over
-many steps, the average number of arrivals per step works out to `2 *
-arrival_prob` — a number worth keeping in mind, since it decides
-everything that follows.
+`arrival_prob` is the chance that each of the two checks comes up yes.
+Over many steps, the average number of arrivals per step works out to
+`2 * arrival_prob`. Keep that number in mind. It decides everything that
+follows.
 
-A queue needs one more thing: something processing what has arrived.
+A queue needs one more thing: something that deals with what has
+arrived. We call that the *server*.
 
 ```python exec
 id: arrivals-you-cannot-predict-one-at-a-time-2
@@ -60,15 +72,22 @@ def simulate_queue(steps, arrival_prob, service_capacity):
     return history
 ```
 
-`service_capacity` is how many waiting items get cleared each step,
-however many are waiting. Each step: new arrivals join the back of the
-queue, then the server clears as many as it can, up to its capacity.
+`service_capacity` is the most items the server can clear in one step,
+however many are waiting. `min(queue, service_capacity)` picks the
+smaller of the two numbers, so the server never clears more items than
+are waiting.
+
+Each step has two parts:
+
+1. The new arrivals join the back of the queue.
+2. The server clears as many as it can, up to its capacity.
 
 ### Your turn
 
-If `arrival_prob` is `0.5` and `service_capacity` is `2`, what is the
-average number of arrivals per step, and how does it compare to what the
-server can clear?
+Suppose `arrival_prob` is `0.5` and `service_capacity` is `2`.
+
+1. What is the average number of arrivals per step?
+2. How does it compare with what the server can clear?
 
 ```python exec
 id: arrivals-you-cannot-predict-one-at-a-time-3
@@ -76,6 +95,10 @@ hint: Average arrivals per step is 2 * arrival_prob, from the paragraph above.
 ```
 
 ## A Queue That Clears
+
+Here, `arrival_prob` is `0.3` and `service_capacity` is `1`. Before you
+run the cell, work out the average number of arrivals per step. Is it
+more or less than the server can clear?
 
 ```python exec
 id: a-queue-that-clears-1
@@ -91,15 +114,18 @@ print("longest the queue ever got:", max(stable))
 print("queue length at the end:  ", stable[-1])
 ```
 
-Average arrivals here are `2 * 0.3 = 0.6` per step, against a service
-capacity of `1`. The server can clear more than what arrives, on average, so the queue never grows for long. It rises after a run of bad
-luck, then drains again once arrivals fall back below what the server
-can handle. A queue with this property is *stable*: however bad its
-luck, it never grows forever.
+Average arrivals here are `2 * 0.3 = 0.6` per step. The server can clear
+`1`. So on average, the server can clear more than arrives, and the queue
+never grows for long. It rises after a run of bad luck. Then it drains
+again, once arrivals fall back below what the server can handle.
+
+A queue like this is called *stable*. A stable queue never grows without
+limit, however bad its luck.
 
 ## A Queue That Never Clears
 
-Change one number.
+Now we change one number: `arrival_prob` goes from `0.3` to `0.6`. What
+do you think the plot will look like?
 
 ```python exec
 id: a-queue-that-never-clears-1
@@ -112,30 +138,42 @@ plt.ylabel("queue length")
 print("queue length at the end:", unstable[-1])
 ```
 
-Average arrivals are now `2 * 0.6 = 1.2` per step, against the same
-service capacity of `1`. The server is behind by `0.2` items every step,
-on average — never by much, on any one step, but never caught up either.
-The queue does not wander back down the way the first one did. It
-climbs. That is what makes a queue *unstable*: not that it grows fast,
-but that nothing about it ever goes back down.
+Average arrivals are now `2 * 0.6 = 1.2` per step. The server can still
+clear only `1`. So on average, the server falls behind by `0.2` items
+every step. That is never much on any one step, but the server never
+catches up either.
+
+This queue does not drain back down the way the first one did. It goes
+down a little now and then, but over the whole run it climbs.
+
+A queue like this is called *unstable*. An unstable queue does not have
+to grow fast. It keeps climbing over a long run, and it never drains back
+to empty for good.
 
 ### Your turn
 
-Try `simulate_queue` for 2,000 steps instead of 200, with the same
-`arrival_prob=0.6` and `service_capacity=1`. Does the queue length look
-like it is settling toward some value, or still climbing?
+1. Run `simulate_queue` for 2,000 steps instead of 200, with the same
+   `arrival_prob=0.6` and `service_capacity=1`.
+2. Is the queue length settling towards some value, or still climbing?
 
 ```python exec
 id: a-queue-that-never-clears-2
-hint: Print the queue length at a few points along the way -- step 200, step 1000, step 2000 -- rather than only the very last value.
+hint: Print the queue length at a few points along the way, such as step 200, step 1000 and step 2000. The last value alone does not show the shape.
 ```
 
 ## Predicting It Before Running It
 
-Both simulations above could have been called before either one ran.
-Compare `2 * arrival_prob` to `service_capacity`. Below it, the queue
-stays bounded. At or above it, the queue grows without limit, whatever
-the actual numbers happen to look like on any one run.
+We could have predicted both results before running either simulation.
+Compare `2 * arrival_prob` with `service_capacity`:
+
+- If average arrivals are *below* the capacity, the queue stays under
+  control.
+- If average arrivals are *at or above* the capacity, the queue has no
+  limit. On any one run, the numbers may look different, but over a long
+  run there is no length the queue stays below.
+
+Before you run the next cell, which of these settings do you expect to be
+stable?
 
 ```python exec
 id: predicting-it-before-running-it-1
@@ -148,32 +186,43 @@ for arrival_prob in [0.2, 0.3, 0.45, 0.5, 0.6, 0.8]:
     print(f"arrival_prob={arrival_prob}: predicted {'stable' if stable else 'unstable'}")
 ```
 
-This is the real value of the two simulations above, not the plots on
-their own. A plot tells you what happened on one run, seeded one
-particular way. The comparison here tells you what will happen on every
-run, before spending any computer time finding out. It is the same kind
-of prediction an engineer makes before adding a fourth checkout to a
-shop, or before deciding whether a server needs a second worker process.
+This rule is the real result of the two simulations above. The plots
+only tell us what happened on one run, with one seed. The rule tells us
+what will happen on every run, before we spend any computer time finding
+out. An engineer makes the same kind of prediction before adding a
+fourth checkout to a shop, or before deciding whether a web server needs
+a second worker.
 
-Simulation still matters here, alongside that prediction, not instead of
-it. The rule says *whether* a queue is stable. It says nothing about how
-large the queue gets before it drains on a run that is stable but
-unlucky. It also says nothing about how long an unstable queue takes to
-become a real problem. Those numbers only come from running it.
+We still need simulation, alongside the rule. The rule says *whether* a
+queue is stable. It says nothing about some other questions:
+
+- How long does a stable queue get on an unlucky run, before it drains?
+- How long does an unstable queue take to become a real problem?
+
+Only running the simulation answers those.
 
 ### Your turn
 
-The demo above already called `arrival_prob=0.5` "unstable" — average
-arrivals of exactly `1` never fall strictly below a service capacity of
-`1`, so the rule's `<` never fires. Try `simulate_queue` at this setting
-for 1,000 steps and watch the queue length over the whole run, not just
-the final value. Does it behave like the clearly stable run, the clearly
-unstable one, or something in between?
+Look at `arrival_prob=0.5` in the cell above. The rule called it
+"unstable". Average arrivals are exactly `1`, which is not *below* a
+capacity of `1`. So the rule's `<` gives `False`.
+
+1. Run `simulate_queue` at this setting for 1,000 steps.
+2. Watch the queue length over the whole run, not only the final value.
+3. Does it behave like the stable run, the unstable run, or something in
+   between?
 
 ```python exec
 id: predicting-it-before-running-it-2
-hint: Try two different seeds and compare. The clearly stable run stayed small and settled; the clearly unstable one climbed steadily. Look for which of those two shapes this one is closer to.
+hint: Try two different seeds and compare them. The stable run stayed small and settled. The unstable run climbed steadily. Which of those two shapes is this one closer to?
 ```
+
+Most runs look like something in between. The queue does not climb
+steadily, like the unstable run. It often drains back to empty. But it
+has no level that it settles around either. Some runs wander well above
+ten before they come back down, and a longer run can wander further
+still. There is no length the queue is sure to stay below, and that is
+why the rule counts this setting as unstable.
 
 ## Where to Read More
 

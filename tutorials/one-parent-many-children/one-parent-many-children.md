@@ -1,31 +1,180 @@
 ---
-title: "One Parent, Many Children"
+title: "Inheritance: one class built on another"
 year: "2026-2027"
-version: 2026.09.04.1
+version: 2026.09.22.1
 covers:
+  a-class-built-on-another-class:
+    covers: [FOOP-LO3, FOOP-LO6]
   another-kind-of-account:
     covers: [FOOP-LO6]
   many-kinds-one-loop:
     covers: [FOOP-LO6, FOOP-LO7]
-  a-bank-holds-its-accounts:
-    covers: [FOOP-LO7]
 ---
 
-# One Parent, Many Children
+# Inheritance: one class built on another
 
-**Fundamentals of Object Oriented Programming**
+A real bank offers more than one kind of account. A savings account earns
+interest. A checking account lets you spend a little more than you have.
+Both are still bank accounts: money goes in, and money comes out.
 
-*Objects and Classes* ended with a promise: a later tutorial builds several
-classes on top of one another. A real bank needs that, since it offers more
-than savings accounts. This tutorial adds a second kind of account, then
-asks what a program can do once it has more than one.
+Do we have to write each kind of account from scratch? On this page we:
 
-## Another Kind of Account
+- build a new class on top of `BankAccount`, keeping everything it
+  already does
+- give the new class its own version of a method
+- write one loop that works with every kind of account
 
-A checking account allows an *overdraft*: the balance can go below zero, up
-to some limit, rather than refusing every withdrawal that would empty it.
-That is one field and one changed method away from `BankAccount`, the same
-way `SavingsAccount` was.
+## A class built on another class
+
+Here is a question to start with. A savings account is a bank account
+that also earns interest. How much of `BankAccount` would you have to
+copy to write a `SavingsAccount` class?
+
+Copying would mean writing `__init__`, `deposit()` and `withdraw()` all
+over again. Then every change to one copy would need the same change in
+the other, by hand. Python gives us a better way.
+
+Read the cell below before you run it. `SavingsAccount` never defines
+`deposit()`. Do you think `savings.deposit(200.0)` will work? Run it to
+check.
+
+```python exec
+id: a-class-built-on-another-class-1
+class BankAccount:
+    def __init__(self, owner, balance):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance = self.balance + amount
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            print("Refused: not enough balance.")
+            return
+        self.balance = self.balance - amount
+
+
+class SavingsAccount(BankAccount):
+    def __init__(self, owner, balance, interest_rate):
+        super().__init__(owner, balance)
+        self.interest_rate = interest_rate
+
+    def add_interest(self):
+        self.balance = self.balance + self.balance * self.interest_rate
+
+
+savings = SavingsAccount("Alice", 1000.0, 0.05)
+savings.deposit(200.0)   # inherited from BankAccount, not rewritten
+savings.add_interest()   # new: only SavingsAccount has this
+print(savings.balance)
+```
+
+It works. The cell prints `1260.0`: first `1000 + 200 = 1200`, then 5%
+interest on `1200` adds `60`.
+
+The first line, `class SavingsAccount(BankAccount):`, says "a savings
+account is a bank account, plus something extra." This is *inheritance*.
+Inheritance is a way to build a new class on an existing one. The new
+class keeps everything the existing class does, and adds only what is
+different.
+
+Two names help us talk about it:
+
+- The *parent class* is the existing class. Here it is `BankAccount`. It
+  gives `deposit()` and `withdraw()` to the new class for free.
+- The *child class* is the new class. Here it is `SavingsAccount`. It
+  adds a field, `interest_rate`, and a method, `add_interest()`.
+
+What does `super().__init__(owner, balance)` do? `super()` is a way to
+reach the parent class. This line runs `BankAccount`'s own constructor,
+which sets `self.owner` and `self.balance`. The child does not repeat that
+work. Then it sets the one field that is new.
+
+When you call `savings.deposit(200.0)`, Python looks for `deposit()` in
+`SavingsAccount` first. It does not find one there, so it uses the one in
+`BankAccount`.
+
+Inheritance is one of the most useful ideas in object oriented
+programming. Most bigger programs rely on it.
+
+### Your turn
+
+Right now, `withdraw()` on a `SavingsAccount` works exactly as it does on
+a plain `BankAccount`. Suppose the bank charges a fee of `2.0` on every
+withdrawal from a savings account.
+
+1. Write a new `withdraw()` method inside `SavingsAccount`.
+2. Inside it, call the parent's `withdraw()` with the amount plus the fee,
+   using `super().withdraw(...)`.
+3. Run the cell. If the fee works, the balance is `898.0`.
+
+```python exec
+id: a-class-built-on-another-class-2
+class BankAccount:
+    def __init__(self, owner, balance):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance = self.balance + amount
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            print("Refused: not enough balance.")
+            return
+        self.balance = self.balance - amount
+
+
+class SavingsAccount(BankAccount):
+    def __init__(self, owner, balance, interest_rate):
+        super().__init__(owner, balance)
+        self.interest_rate = interest_rate
+
+    def add_interest(self):
+        self.balance = self.balance + self.balance * self.interest_rate
+
+    # Write a new withdraw() here: charge a 2.0 fee on top of the amount
+
+savings = SavingsAccount("Alice", 1000.0, 0.05)
+savings.withdraw(100.0)
+print(savings.balance)   # 1000 - 100 - 2 = 898.0 if the fee applied
+```
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. A method in `SavingsAccount` with the same name as one in
+   `BankAccount` replaces it, for `SavingsAccount` objects.
+2. The new method still needs `self` and `amount` as parameters, the same
+   as any other method.
+3. Inside it, call `super().withdraw(amount + 2.0)`. Do not change
+   `self.balance` yourself. That way, the parent's "not enough balance"
+   check still runs, on the amount with the fee added.
+
+**Think about:** why call `super().withdraw()`, when you could write
+`self.balance = self.balance - amount - 2.0` directly?
+
+**Try this next:** what happens if you try to withdraw an amount the
+balance can only cover without the fee? Try it, and see which check
+catches it.
+
+</details>
+
+## Another kind of account
+
+Your new `withdraw()` has the same name as the parent's, and it replaces
+the parent's version for `SavingsAccount` objects. This is called
+*overriding*. To override a method is to write a method in the child
+class with the same name as one in the parent class.
+
+Now for a second child class. A checking account allows an *overdraft*.
+An overdraft lets the balance go below zero, up to a set limit. A plain
+`BankAccount` refuses every withdrawal that is bigger than the balance.
+How much would we need to change to allow an overdraft? One new field,
+and one overridden method.
+
+What do you think Ben's balance will be after he withdraws `250.0` from
+`200.0`, with an overdraft limit of `100.0`? Run the cell to check.
 
 ```python exec
 id: another-kind-of-account-1
@@ -61,20 +210,34 @@ checking.withdraw(250.0)
 print(checking.balance)   # 200 - 250 = -50, allowed: within the 100 limit
 ```
 
-`CheckingAccount.withdraw()` does not call `super().withdraw()` the way the
-*Objects and Classes* fee example did. There, the parent's own check —
-"is `amount` more than `self.balance`?" — was still the right check, only
-applied to a bigger number. Here the check itself is different: an overdraft
-account compares `amount` against `self.balance + self.overdraft_limit`, not
-`self.balance` alone. `deposit()` still needs no override at all. Money
-coming in works the same way for every kind of account, so `CheckingAccount`
-keeps the one `BankAccount` already has.
+The balance is `-50.0`. That is below zero, but inside the limit of
+`100.0`.
+
+Notice that `CheckingAccount.withdraw()` does not call
+`super().withdraw()`, as your fee version did. Why not?
+
+- In the fee example, the parent's check was still the right check:
+  "is the amount more than `self.balance`?" Only the amount changed, so
+  the fee version could pass a bigger number to the parent.
+- Here the check itself is different. A checking account compares the
+  amount with `self.balance + self.overdraft_limit`, not with
+  `self.balance` alone. The parent's check would refuse Ben's withdrawal.
+  So `CheckingAccount` writes its own check.
+
+`deposit()` needs no override at all. Money comes in the same way for
+every kind of account, so `CheckingAccount` keeps the `deposit()` that
+`BankAccount` already has.
+
+A parent class can have more than one child. `SavingsAccount` and
+`CheckingAccount` both build on `BankAccount`. Each adds something
+different, and neither one changes the other.
 
 ### Your turn
 
-Add an `in_overdraft()` method to `CheckingAccount`, returning `True` when
-`self.balance` is below zero and `False` otherwise. Then check it on the
-`checking` object above, after the withdrawal already left it negative.
+1. Add an `in_overdraft()` method to `CheckingAccount`. It should return
+   `True` when `self.balance` is below zero, and `False` otherwise.
+2. Call it on `checking` at the end of the cell. The withdrawal has
+   already made the balance negative, so what should it print?
 
 ```python exec
 id: another-kind-of-account-2
@@ -113,20 +276,29 @@ checking.withdraw(250.0)
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. `in_overdraft()` needs no parameter beyond `self`, the same shape as
-   `deposit()` and `withdraw()` above it.
-2. The method body is a single comparison: `return self.balance < 0`.
-3. Call it the same way `deposit()` and `withdraw()` are already called on
-   `checking`: `checking.in_overdraft()`.
+1. `in_overdraft()` needs no parameter except `self`. It has the same
+   shape as `deposit()` and `withdraw()` above it.
+2. The body is one comparison: `return self.balance < 0`.
+3. Call it the same way `withdraw()` is already called on `checking`:
+   `print(checking.in_overdraft())`.
 
 </details>
 
-## Many Kinds, One Loop
+## Many kinds, one loop
 
-`BankAccount`, `SavingsAccount` and `CheckingAccount` all understand
-`deposit()` and `withdraw()` — every child either inherits them unchanged or
-supplies its own version. A loop that calls those methods can then treat
-every kind of account the same way, without asking first which one it has.
+`BankAccount`, `SavingsAccount` and `CheckingAccount` all have
+`deposit()` and `withdraw()` methods. Each child either inherits them
+unchanged or has its own version. So can one loop call `withdraw()` on
+every kind of account, without asking first which kind it has?
+
+The loop below withdraws `250.0` from three accounts:
+
+- Alice has a `SavingsAccount` with `500.0`.
+- Ben has a `CheckingAccount` with `200.0` and an overdraft limit of
+  `100.0`.
+- Cara has a plain `BankAccount` with `50.0`.
+
+Predict each person's balance after the loop. Then run it to check.
 
 ```python exec
 id: many-kinds-one-loop-1
@@ -175,22 +347,29 @@ for account in [savings, checking, plain]:
     print(account.owner, account.balance)
 ```
 
-The same call, `account.withdraw(250.0)`, does three things: Alice loses
-the full 250, Ben goes 50 into his overdraft, and Cara's withdrawal is
-refused outright. A plain `BankAccount` allows no overdraft at all, which is
-why only Cara's call fails. Nothing in the loop asked which kind of account
-it had. Each object already
-knows how to withdraw correctly for its own kind, and `account.withdraw()`
-runs whichever version belongs to the object making the call. This is
-*polymorphism*: one method name, several classes, each running the version
-that fits the object it was called on.
+The same line, `account.withdraw(250.0)`, did three different things:
+
+- Alice lost the full `250.0`, leaving `250.0`.
+- Ben went `50.0` into his overdraft, leaving `-50.0`.
+- Cara's withdrawal was refused. A plain `BankAccount` allows no
+  overdraft, so only Cara's call failed.
+
+The loop never asked which kind of account it had. Each object already
+knows how to withdraw for its own kind. `account.withdraw()` runs the
+version that belongs to the object it is called on.
+
+This is *polymorphism*. Polymorphism is one method name working across
+several classes, where each object runs the version that fits its own
+class.
 
 ### Your turn
 
-Create a second `BankAccount` and a second `SavingsAccount` of your own.
-Put all five accounts — the three above and your two new ones — in one
-list. Then write a loop that deposits `20.0` into every one of them and
-prints each owner's name alongside their new balance.
+1. Create a second `BankAccount` and a second `SavingsAccount` of your
+   own.
+2. Put all five accounts in one list: the three above and your two new
+   ones.
+3. Write a loop that deposits `20.0` into every account.
+4. In the same loop, print each owner's name and their new balance.
 
 ```python exec
 id: many-kinds-one-loop-2
@@ -239,147 +418,34 @@ plain = BankAccount("Cara", 50.0)
 # Build a list of all five accounts and loop over it here
 ```
 
-## A Bank Holds Its Accounts
+## Wrapping up
 
-A bank is not one account. It keeps track of many: opening new ones, and
-answering questions across all of them, such as how much money it holds in
-total. That tracking is itself a class, one whose fields are other objects
-rather than plain numbers or text.
+On this page:
 
-```python exec
-id: a-bank-holds-its-accounts-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-
-class Bank:
-    def __init__(self, name):
-        self.name = name
-        self.accounts = []
-
-    def open_account(self, account):
-        self.accounts.append(account)
-
-    def total_balance(self):
-        total = 0
-        for account in self.accounts:
-            total = total + account.balance
-        return total
-
-
-bank = Bank("First Local")
-bank.open_account(BankAccount("Alice", 500.0))
-bank.open_account(BankAccount("Ben", 200.0))
-print(bank.total_balance())
-```
-
-`Bank` never mentions `owner` or `balance` directly. It stores a list of
-account objects and asks each one for its own `balance` inside
-`total_balance()`. *One Class, Many Methods* stored a list of coefficients
-the same way, rather than five separate numbers. `SavingsAccount` and
-`CheckingAccount` objects belong on `bank.accounts` just as well as plain
-`BankAccount` ones do. `total_balance()` never checks which kind an account
-is, for the same reason the loop in the last section did not.
-
-This is a different relationship from inheritance. `SavingsAccount`
-*is a* `BankAccount` with one extra field and one extra method. `Bank` *has*
-accounts; it is not a kind of account itself, and does not extend
-`BankAccount` the way `SavingsAccount` does. Building one class out of
-objects of another, rather than by inheriting from it, is called
-*composition*. It is the other way one class is built from smaller pieces.
-
-### Your turn
-
-Add a `find_account(owner)` method to `Bank`, returning the first account in
-`self.accounts` whose `owner` matches, or `None` if none does. Then open a
-few accounts of your own and look one up by name.
-
-```python exec
-id: a-bank-holds-its-accounts-2
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-
-class Bank:
-    def __init__(self, name):
-        self.name = name
-        self.accounts = []
-
-    def open_account(self, account):
-        self.accounts.append(account)
-
-    def total_balance(self):
-        total = 0
-        for account in self.accounts:
-            total = total + account.balance
-        return total
-
-    # Add a find_account method here
-
-bank = Bank("First Local")
-bank.open_account(BankAccount("Alice", 500.0))
-bank.open_account(BankAccount("Ben", 200.0))
-
-# Call find_account() here, and print the balance of whichever account it finds
-```
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. `find_account(self, owner)` loops over `self.accounts`, the same loop
-   `total_balance()` already uses.
-2. Inside the loop, compare `account.owner == owner` — the parameter and the
-   field share a name, but they are two different things: one belongs to
-   `Bank`'s caller, the other to each account.
-3. Return the account the moment a match is found, rather than waiting for
-   the loop to finish. If the loop ends with no match, `return None` after
-   it.
-
-**Think about:** what would `find_account()` do differently if two accounts
-on the same bank had the same owner name?
-
-</details>
-
-## Wrapping Up
-
-In this tutorial:
-
+- *Inheritance* builds a child class on a parent class. The child keeps
+  everything the parent does, and adds only what is different.
+  `super().__init__(...)` lets the child reuse the parent's constructor.
 - A parent class can have more than one child. `SavingsAccount` and
   `CheckingAccount` both build on `BankAccount`, each adding something
-  different, without touching one another.
-- *Polymorphism* lets the same method call run a different version
-  depending on which class the object belongs to. `account.withdraw(amount)`
-  needs no check first to know which version is right.
-- *Composition* builds a class out of objects of another class, as fields,
-  rather than by inheriting from it. `Bank` has accounts; it is not one.
+  different, and neither one changes the other.
+- *Overriding* replaces a parent's method with a child's own version. The
+  child can still call the parent's version with `super()`, as the fee
+  did, or write a new check, as the overdraft did.
+- *Polymorphism* lets the same method call run a different version,
+  depending on the object's class. `account.withdraw(amount)` needs no
+  check first to know which version is right.
+
+Inheritance is one way to build a class from another. The next page,
+[Composition: objects inside other objects](tutorial:objects-inside-objects),
+looks at a second way: a `Bank` that holds its accounts.
 
 ### Reflection
 
-A few sentences about this tutorial, whenever you are ready. `Bank` and
-`CheckingAccount` both build on something else — one by holding objects,
-one by inheriting from a class. What is the difference between the two,
-in your own words?
+Write a few sentences about this page, whenever you are ready.
+`SavingsAccount` added a method that `BankAccount` does not have.
+`CheckingAccount` replaced a method that `BankAccount` already had. Can
+you think of another kind of account a bank might offer? Which of these
+two things would its class need to do?
 
 Double-click this cell to write your thoughts:
 
@@ -397,5 +463,5 @@ than one parent that this tutorial did not need.
 
 Real Python. *Inheritance and Composition: A Python OOP Guide*.
 <https://realpython.com/inheritance-composition-python/>. A longer look at
-exactly the choice `Bank` and `CheckingAccount` make differently in this
-tutorial.
+inheritance, and at the choice between inheritance and composition that
+the next page makes.

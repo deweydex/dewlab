@@ -1,43 +1,43 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# First tutorial of the new Algorithms series. Checked against every other
-# glossary file in computational-methods (python-fundamentals, matrices,
-# simulation) -- no overlap with brute force, cache, memoization, greedy,
-# or heuristic.
+# Algorithms series. Checked against every other glossary file in
+# computational-methods (python-fundamentals, matrices, simulation) -- no
+# overlap with brute force, cache, memoization, greedy, or heuristic.
+# "recursion" is used here but defined in
+# finding-everything-inside-a-folder's glossary, which this page links to.
 entries:
   - term: brute force
     kind: concept
     definition: >
-      Brute force solves a problem by checking every possibility rather
-      than reasoning about which ones are worth checking. It is often
-      slow, but it can never miss the real answer, because it never
-      skips one.
+      Brute force is a strategy that checks every possibility, without
+      trying to reason about which ones are worth checking. It is often
+      slow, but it can never miss the real answer, because it never skips
+      one.
 
   - term: cache
     kind: concept
     definition: >
       A cache is a place to store an answer the first time it is worked
-      out, so a repeated question can be answered by looking it up
-      instead of reworking it.
+      out. When the same question comes up again, the answer is looked up
+      instead of worked out again.
 
   - term: memoization
     kind: concept
     definition: >
-      Memoization is the practice of caching the result of each smaller
-      version of a problem, so solving a bigger version never reworks a
-      smaller one it has already solved.
+      Memoization is storing the answer to each smaller version of a
+      problem in a cache, so that solving a bigger version never works out
+      the same smaller one twice.
 
   - term: greedy (algorithm)
     kind: concept
     definition: >
-      A greedy algorithm builds an answer by making the choice that
-      looks best at each step, and never revisiting that choice
-      afterwards. It is fast, but a choice that looked best at the time
-      can turn out not to have been.
+      A greedy algorithm builds an answer by taking the choice that looks
+      best at each step, and never going back to change it. It is fast,
+      but a choice that looked best at the time can turn out to be wrong.
 
   - term: heuristic
     kind: concept
     definition: >
-      A heuristic is a rule of thumb that reaches an answer quickly
-      without checking every possibility. It trades away the guarantee
-      of correctness that brute force and caching both keep.
+      A heuristic is a rule of thumb that gets to an answer quickly,
+      without checking every possibility. It gives up the guarantee of a
+      correct answer that brute force and caching both keep.

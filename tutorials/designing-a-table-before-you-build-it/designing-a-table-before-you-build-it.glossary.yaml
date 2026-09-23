@@ -7,8 +7,8 @@
 # did.
 #
 # This tutorial leans hard on "A table of your own" (series:
-# first-database) -- CREATE TABLE, PRIMARY KEY, and dinosaurs.id are all
-# referred back to directly ("the way dinosaurs.id did earlier") rather
+# first-database) -- CREATE TABLE, PRIMARY KEY, and dinosaur_tbl.dinosaur_id are all
+# referred back to directly ("the way dinosaur_tbl.dinosaur_id did earlier") rather
 # than re-taught, and none of them are marked with emphasis here. Left
 # out on that basis, not because a cumulative list said so. The one
 # genuinely new, emphasised term is one-to-many.
@@ -19,4 +19,5 @@ entries:
       One-to-many is a relationship between two tables where one row in
       the first table can be linked to many rows in the second. Each row
       in the second table points back to exactly one row in the first,
-      usually through an id column.
+      usually through a column with the same name as the first table's
+      key, such as product_id.

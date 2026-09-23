@@ -1,26 +1,41 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
+  - term: system of equations
+    kind: concept
+    definition: >
+      A system of equations is a set of equations that must all be true at
+      the same time, for the same unknowns.
+  - term: coefficients
+    kind: concept
+    definition: >
+      The coefficients of a system are the numbers in front of the
+      unknowns. In 2x + 3y = 7, the coefficients are 2 and 3.
   - term: "Ax = b"
     kind: formula
     definition: >
-      A system of linear equations, written as a matrix equation: A holds
-      the coefficients, x the unknowns, b the right-hand sides.
+      A system of linear equations, written as one matrix equation. A holds
+      the coefficients, x the unknowns, and b the right-hand sides.
   - term: Gaussian elimination
     kind: concept
     definition: >
-      Solves a system by simplifying it one row operation at a time, until
-      the answer can be read straight off. It does not compute an inverse.
-      This is the method that scales to many unknowns, and the one computers
-      actually use.
+      Gaussian elimination is a method for solving a system of equations.
+      It simplifies the system one row operation at a time, until the
+      answer can be read straight off. It does not compute an inverse. It
+      works for any number of unknowns, and computers use a form of it.
   - term: augmented matrix
     kind: concept
-    definition: A system's coefficients with the right-hand side tacked on as one more column.
+    definition: >
+      An augmented matrix holds a system's coefficients, with the
+      right-hand sides added as one more column.
   - term: row operations
     kind: concept
     definition: >
-      Three moves that leave a system's solution unchanged: swapping two
-      rows, scaling a row by a number that is not zero, and replacing a row
-      with itself plus a multiple of another row.
+      A row operation is a change to a matrix that leaves the system's
+      solution the same. There are three: swap two rows, multiply a row by
+      a number that is not zero, and replace a row with itself plus a
+      multiple of another row.
   - term: row echelon form
     kind: concept
-    definition: A staircase shape — every row starting with more zeros than the one above it.
+    definition: >
+      A matrix is in row echelon form when each row starts with more zeros
+      than the row above it. The zeros make a staircase.

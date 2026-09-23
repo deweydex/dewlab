@@ -1,0 +1,29 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Composition page of the series (Programming with objects), straight
+# after one-parent-many-children (inheritance). Split out of that page on
+# 2026.09.22: "composition" moved here from its glossary with the Bank
+# section. "is a" and "has a" are new entries: on this page they are the
+# topic, not emphasis for contrast as they were before the split. The
+# italic title in "Where to Read More" is a bibliography entry, not a term.
+entries:
+  - term: composition
+    kind: concept
+    definition: >
+      Composition is a way to build one class from other objects, held in
+      its fields. A `Bank` has accounts, so it keeps them in a list.
+    example: "self.accounts = []  # a Bank's field that holds account objects"
+
+  - term: is a
+    kind: concept
+    definition: >
+      An "is a" relationship means one class is a special kind of another
+      class. It calls for inheritance: a savings account is a bank account.
+    example: "class SavingsAccount(BankAccount):"
+
+  - term: has a
+    kind: concept
+    definition: >
+      A "has a" relationship means one object holds other objects. It
+      calls for composition: a bank has bank accounts.
+    example: "bank.open_account(BankAccount('Alice', 500.0))"
