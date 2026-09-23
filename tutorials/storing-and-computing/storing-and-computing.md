@@ -1,5 +1,5 @@
 ---
-title: "Storing and Computing"
+title: "Variables, data types and text"
 year: "2026-2027"
 version: 2026.09.22.1
 covers:
@@ -13,11 +13,13 @@ covers:
     covers: [MIT-1.4]
   putting-it-together-a-small-program:
     covers: [PDP-LO7]
+  putting-values-into-text:
+    covers: [PDP-LO4]
 ---
 
-# Storing and Computing
+# Variables, data types and text
 
-In [First Steps](tutorial:first-steps) we did arithmetic and displayed
+In [Algorithms, pseudocode and your first Python](tutorial:first-steps) we did arithmetic and displayed
 the results. But each result was gone as soon as it was displayed. To use
 it again, we had to work it out again. What if Python could remember a
 value for us?
@@ -29,6 +31,8 @@ On this page we:
 - change a value from one type to another
 - look at how computers write numbers, which is quite different from how
   we write them on paper
+- put values into a piece of text, and show numbers to a few decimal
+  places
 
 ## Variables: Giving Names to Things
 
@@ -347,11 +351,68 @@ id: your-turn-5
 # Test it with a few values
 ```
 
+## Putting Values into Text
+
+The last line of the temperature converter is long. It needs `str()`
+twice, and a `+` between every piece. It is easy to forget a space, or
+one of the `str()` calls. Python has a shorter way to write the same
+line.
+
+An *f-string* is a string with the letter `f` straight before the
+opening quote. Inside it, Python replaces each name in curly brackets,
+such as `{celsius}`, with that variable's value. What do you think this cell
+prints? Compare it with the output of the converter above.
+
+```python exec
+id: putting-values-into-text-1
+celsius = 20
+fahrenheit = (celsius * 9 / 5) + 32
+print(f"{celsius} degrees Celsius = {fahrenheit} degrees Fahrenheit")
+```
+
+The output is the same, and we did not need `str()` at all. The
+f-string turns each value into text for us.
+
+Some results have many decimal places. A marathon is 42.195 kilometres.
+How many miles is that?
+
+```python exec
+id: putting-values-into-text-2
+kilometres = 42.195
+miles = kilometres * 0.621371
+print(f"A marathon is {miles} miles")
+print(f"A marathon is {miles:.2f} miles")
+```
+
+The second line adds `:.2f` after the name, inside the curly brackets.
+It means "show this number with 2 decimal places". The `f` asks for an
+ordinary decimal number, and the `2` is the number of places. Change
+the `2` to `1` or `3`, and run the cell again. What changes?
+
+`:.2f` changes only how the number is shown. The variable `miles` still
+holds every decimal place.
+
+### Your turn
+
+A jacket costs €19.99 before VAT. VAT at 23% makes the price 1.23 times
+bigger.
+
+1. Store the price before VAT in a variable.
+2. Work out the price with VAT, and store it in a second variable.
+3. Print one line, using an f-string, that shows both prices with 2
+   decimal places. For example: `Before VAT: €19.99, with VAT: €24.59`.
+
+```python exec
+id: putting-values-into-text-3
+# Your VAT calculation here
+```
+
 ## Reflection
 
 We have met a lot of new ideas on this page: variables, the four data
 types (`int`, `float`, `str` and `bool`), type conversion, input from the
-user, and the binary and hexadecimal number systems.
+user, the binary and hexadecimal number systems, and f-strings for
+putting values into text.
 
 The key idea is that *types matter*. The same symbols can mean different
 things, depending on the types involved. `+` adds numbers, but it joins

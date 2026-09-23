@@ -4300,3 +4300,17 @@ Left undone deliberately, and worth a decision later: Database Methods has no st
 **One outcome stays on a tutorial.** `conclusions-and-next-steps` was the only page covering WA-LO1, the history of HTML and CSS versions. A context page cannot declare `covers:`, so the full history moved to `how-html-and-css-got-here` and the conclusions page keeps a short section that carries the outcome.
 
 *Cost to change: splits are course-file lines and folders; merging two back is a paste and a `covers:` edit. Practice and context pages are independent files a course never lists, so dropping any of them touches nothing else.*
+
+---
+
+**7.210 — Programming Foundations is reordered so that no page uses what a later page teaches: functions get one page of their own, dictionaries get a page, the error page is split, and the history page moves to the end.** Josh, on the order problems a language pass surfaced: "I agree with your suggestions", and that the titles "could also use some clearer titles (almost all of them)". No student had used these pages, so cells moved freely.
+
+**What was out of order.** `how-we-got-here`, third, set decoding tasks that needed loops and functions and showed the same program in four styles. `when-it-goes-wrong`, fifth, taught `IndexError`, `KeyError` and tracebacks through functions before lists, dictionaries or functions existed. Functions were introduced three times, in `lists-and-sequences`, `finding-things` and `building-reusable-tools`. Dictionaries and f-strings were used and never taught. Each page coped with a note saying "we meet this later", which made each page readable and the series harder to trust.
+
+**The new order.** first-steps, storing-and-computing (now with f-strings), making-decisions, `reading-an-error-message` (new: syntax errors, the runtime errors a beginner can hit with variables and arithmetic, a one-step traceback), repeating-yourself, `writing-your-own-functions` (new: assembled from the three introductions, with no lists in it so that it can come before them), lists-and-sequences, `looking-things-up-by-name` (new: dictionaries), finding-things, putting-things-in-order, building-reusable-tools, `when-it-goes-wrong` (now the later half: errors from lists and dictionaries, tracebacks through several functions, logic errors, debugging habits), how-we-got-here. Functions come before lists, not after, because the lists page already writes functions for its sequences and dot product. The history page is last because it carries PDP-LO1 and LO3, so it cannot be a context page, and at the end its four-styles comparison leads into the OOP module.
+
+**Outcomes moved with their sections.** PDP-LO8 and MIT-6.2 follow the function sections to the new page; PDP-LO9 is covered on both error pages. No outcome has a dictionary in it, so the dictionaries page only touches PDP-LO4.
+
+**Titles say what a page teaches**, as on Web Authoring (7.209): "Repeating steps with loops", "Searching a list: linear and binary search", and so on. Ids are unchanged, so addresses are too.
+
+*Cost to change: the order is one list in each of two course files. Moving a page back means re-checking its "earlier/later" sentences, which a sweep did once for this order.*

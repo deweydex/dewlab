@@ -118,38 +118,41 @@ possibly not pulling its weight where it is.
 
 ```mermaid
 graph TD
-  T1["1. First Steps"]
-  T2["2. Storing and Computing"]
-  T3["3. How We Got Here"]
-  T4["4. Making Decisions"]
-  T5["5. When It Goes Wrong"]
-  T6["6. Repeating Yourself"]
-  T7["7. Lists and Sequences"]
-  T8["8. Finding Things"]
-  T9["9. Putting Things in Order"]
-  T10["10. Building Reusable Tools"]
-  T11["11. Counting Carefully"]
-  T12["12. What Are the Chances?"]
-  T13["13. Three Doors"]
-  T14["14. Making Sense of Data"]
-  T15["15. Pictures Worth Numbers"]
-  T16["16. Sets as Sorted Lists"]
-  T17["17. Logic and Truth"]
-  T18["18. Drawing Sets"]
-  T19["19. Numbers and Their Families"]
-  T20["20. Expressions Come Alive"]
-  T21["21. Rearranging Formulae"]
-  T22["22. Cracking Equations"]
-  T23["23. When There Is No Answer"]
-  T24["24. Drawing Functions"]
-  T25["25. Parabolas"]
-  T26["26. Lines and Distances"]
-  T27["27. The Unit Circle"]
-  T28["28. Sine and Cosine Waves"]
-  T29["29. Solving Triangles"]
-  T30["30. Approaching a Limit"]
-  T31["31. Rates of Change"]
-  T32["32. Bringing It All Together"]
+  T1["1. Algorithms, pseudocode and your first Python"]
+  T2["2. Variables, data types and text"]
+  T3["3. Making decisions with if, elif and else"]
+  T4["4. Reading an error message"]
+  T5["5. Repeating steps with loops"]
+  T6["6. Writing your own functions"]
+  T7["7. keeping many values in order"]
+  T8["8. looking things up by name"]
+  T9["9. linear and binary search"]
+  T10["10. bubble, insertion and selection sort"]
+  T11["11. Designing and testing good functions"]
+  T12["12. Finding bugs in bigger programs"]
+  T13["13. How programming languages came to be"]
+  T14["14. Counting Carefully"]
+  T15["15. What Are the Chances?"]
+  T16["16. Three Doors"]
+  T17["17. Making Sense of Data"]
+  T18["18. Pictures Worth Numbers"]
+  T19["19. Sets as Sorted Lists"]
+  T20["20. Logic and Truth"]
+  T21["21. Drawing Sets"]
+  T22["22. Numbers and Their Families"]
+  T23["23. Expressions Come Alive"]
+  T24["24. Rearranging Formulae"]
+  T25["25. Cracking Equations"]
+  T26["26. When There Is No Answer"]
+  T27["27. Drawing Functions"]
+  T28["28. Parabolas"]
+  T29["29. Lines and Distances"]
+  T30["30. The Unit Circle"]
+  T31["31. Sine and Cosine Waves"]
+  T32["32. Solving Triangles"]
+  T33["33. Approaching a Limit"]
+  T34["34. Rates of Change"]
+  T35["35. Bringing It All Together"]
 
   T1 --> T2
   T2 --> T3
@@ -182,41 +185,41 @@ graph TD
   T29 --> T30
   T30 --> T31
   T31 --> T32
+  T32 --> T33
+  T33 --> T34
+  T34 --> T35
 
-  T4 -.->|builds on| T1
-  T10 -.->|builds on| T7
-  T10 -.->|builds on| T8
+  T3 -.->|builds on| T1
+  T7 -.->|builds on| T5
+  T8 -.->|builds on| T2
+  T8 -.->|builds on| T5
+  T9 -.->|builds on| T6
   T11 -.->|builds on| T6
-  T16 -.->|builds on| T8
-  T16 -.->|builds on| T9
-  T17 -.->|builds on| T4
-  T18 -.->|builds on| T16
-  T21 -.->|builds on| T2
-  T22 -.->|builds on| T20
-  T23 -.->|builds on| T19
-  T24 -.->|builds on| T10
-  T24 -.->|builds on| T15
-  T24 -.->|builds on| T20
-  T24 -.->|builds on| T22
-  T25 -.->|builds on| T22
+  T12 -.->|builds on| T4
+  T13 -.->|builds on| T2
+  T21 -.->|builds on| T19
   T25 -.->|builds on| T23
-  T26 -.->|builds on| T14
-  T26 -.->|builds on| T15
-  T26 -.->|builds on| T24
-  T28 -.->|builds on| T24
+  T26 -.->|builds on| T22
+  T27 -.->|builds on| T18
+  T27 -.->|builds on| T23
+  T27 -.->|builds on| T25
   T28 -.->|builds on| T25
   T28 -.->|builds on| T26
-  T29 -.->|builds on| T24
-  T29 -.->|builds on| T26
+  T29 -.->|builds on| T17
+  T29 -.->|builds on| T18
   T29 -.->|builds on| T27
-  T30 -.->|builds on| T2
-  T31 -.->|builds on| T25
-  T31 -.->|builds on| T26
-  T32 -.->|builds on| T1
-  T32 -.->|builds on| T16
-  T32 -.->|builds on| T19
-  T32 -.->|builds on| T20
-  T32 -.->|builds on| T22
+  T31 -.->|builds on| T27
+  T31 -.->|builds on| T28
+  T31 -.->|builds on| T29
+  T32 -.->|builds on| T27
+  T32 -.->|builds on| T29
+  T32 -.->|builds on| T30
+  T34 -.->|builds on| T28
+  T34 -.->|builds on| T29
+  T35 -.->|builds on| T19
+  T35 -.->|builds on| T22
+  T35 -.->|builds on| T23
+  T35 -.->|builds on| T25
 ```
 
 ## What is missing, and where it would go
@@ -227,38 +230,41 @@ Dashed boxes are proposed. Placement is argued in
 
 ```mermaid
 graph TD
-  T1["1. First Steps"]
-  T2["2. Storing and Computing"]
-  T3["3. How We Got Here"]
-  T4["4. Making Decisions"]
-  T5["5. When It Goes Wrong"]
-  T6["6. Repeating Yourself"]
-  T7["7. Lists and Sequences"]
-  T8["8. Finding Things"]
-  T9["9. Putting Things in Order"]
-  T10["10. Building Reusable Tools"]
-  T11["11. Counting Carefully"]
-  T12["12. What Are the Chances?"]
-  T13["13. Three Doors"]
-  T14["14. Making Sense of Data"]
-  T15["15. Pictures Worth Numbers"]
-  T16["16. Sets as Sorted Lists"]
-  T17["17. Logic and Truth"]
-  T18["18. Drawing Sets"]
-  T19["19. Numbers and Their Families"]
-  T20["20. Expressions Come Alive"]
-  T21["21. Rearranging Formulae"]
-  T22["22. Cracking Equations"]
-  T23["23. When There Is No Answer"]
-  T24["24. Drawing Functions"]
-  T25["25. Parabolas"]
-  T26["26. Lines and Distances"]
-  T27["27. The Unit Circle"]
-  T28["28. Sine and Cosine Waves"]
-  T29["29. Solving Triangles"]
-  T30["30. Approaching a Limit"]
-  T31["31. Rates of Change"]
-  T32["32. Bringing It All Together"]
+  T1["1. Algorithms, pseudocode and your first Python"]
+  T2["2. Variables, data types and text"]
+  T3["3. Making decisions with if, elif and else"]
+  T4["4. Reading an error message"]
+  T5["5. Repeating steps with loops"]
+  T6["6. Writing your own functions"]
+  T7["7. keeping many values in order"]
+  T8["8. looking things up by name"]
+  T9["9. linear and binary search"]
+  T10["10. bubble, insertion and selection sort"]
+  T11["11. Designing and testing good functions"]
+  T12["12. Finding bugs in bigger programs"]
+  T13["13. How programming languages came to be"]
+  T14["14. Counting Carefully"]
+  T15["15. What Are the Chances?"]
+  T16["16. Three Doors"]
+  T17["17. Making Sense of Data"]
+  T18["18. Pictures Worth Numbers"]
+  T19["19. Sets as Sorted Lists"]
+  T20["20. Logic and Truth"]
+  T21["21. Drawing Sets"]
+  T22["22. Numbers and Their Families"]
+  T23["23. Expressions Come Alive"]
+  T24["24. Rearranging Formulae"]
+  T25["25. Cracking Equations"]
+  T26["26. When There Is No Answer"]
+  T27["27. Drawing Functions"]
+  T28["28. Parabolas"]
+  T29["29. Lines and Distances"]
+  T30["30. The Unit Circle"]
+  T31["31. Sine and Cosine Waves"]
+  T32["32. Solving Triangles"]
+  T33["33. Approaching a Limit"]
+  T34["34. Rates of Change"]
+  T35["35. Bringing It All Together"]
 
   T1 --> T2
   T2 --> T3
@@ -291,6 +297,9 @@ graph TD
   T29 --> T30
   T30 --> T31
   T31 --> T32
+  T32 --> T33
+  T33 --> T34
+  T34 --> T35
 
 
   classDef new fill:#fdf6ec,stroke:#b5651d,color:#7a4310,stroke-dasharray:4 3;
@@ -308,10 +317,10 @@ graph TD
 
 | Outcome | | Where |
 |---|---|---|
-| `MIT-1.1` Operations in N, Z, Q, R; powers (the syllabus says indices) and logarithms | 🟩 | [Making Decisions — Classifying Numbers: A Mathematical Application](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#classifying-numbers-a-mathematical-application)<br/>[Numbers and Their Families — Powers and Their Rules](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#powers-and-their-rules)<br/>[Numbers and Their Families — Logarithms: The Inverse of Powers](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#logarithms-the-inverse-of-powers) |
+| `MIT-1.1` Operations in N, Z, Q, R; powers (the syllabus says indices) and logarithms | 🟩 | [Making decisions with if, elif and else — Classifying Numbers: A Mathematical Application](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#classifying-numbers-a-mathematical-application)<br/>[Numbers and Their Families — Powers and Their Rules](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#powers-and-their-rules)<br/>[Numbers and Their Families — Logarithms: The Inverse of Powers](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#logarithms-the-inverse-of-powers) |
 | `MIT-1.2` Area and perimeter: square, rectangle, triangle, circle | 🟩 | [Numbers and Their Families — Practical Geometry: Formulas as Functions](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#practical-geometry-formulas-as-functions) |
 | `MIT-1.3` Volume and surface area: cube, cylinder, cone, sphere | 🟩 | [Numbers and Their Families — Practical Geometry: Formulas as Functions](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#practical-geometry-formulas-as-functions) |
-| `MIT-1.4` Binary and hexadecimal arithmetic and conversion | 🟩 | [Storing and Computing — Number Systems: How Computers Count](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#number-systems-how-computers-count)<br/>_used in:_ [How We Got Here — The Only Language the Machine Understands](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#the-only-language-the-machine-understands)<br/>_used in:_ [How We Got Here — Assembly, and Why Hexadecimal Exists](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#assembly-and-why-hexadecimal-exists) |
+| `MIT-1.4` Binary and hexadecimal arithmetic and conversion | 🟩 | [Variables, data types and text — Number Systems: How Computers Count](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#number-systems-how-computers-count)<br/>_used in:_ [How programming languages came to be — The Only Language the Machine Understands](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#the-only-language-the-machine-understands)<br/>_used in:_ [How programming languages came to be — Assembly, and Why Hexadecimal Exists](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#assembly-and-why-hexadecimal-exists) |
 | `MIT-1.5` Distinguish an expression from an equation | 🟦 | [Expressions Come Alive — Expressions versus Equations](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#expressions-versus-equations)<br/>**Narrowed:** not the formal expression-versus-equation distinction as an assessed item |
 | `MIT-1.6` Evaluate, expand and simplify expressions | 🟩 | [Expressions Come Alive — Representing Polynomials](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#representing-polynomials)<br/>[Expressions Come Alive — Evaluating Polynomials](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#evaluating-polynomials)<br/>[Expressions Come Alive — Displaying Polynomials](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#displaying-polynomials)<br/>[Expressions Come Alive — Adding Polynomials](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#adding-polynomials)<br/>[Expressions Come Alive — Subtracting and Scaling](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#subtracting-and-scaling)<br/>_used in:_ [Bringing It All Together — Problem 1: The Polynomial Workshop](https://deweydex.github.io/dewlab/tutorials/bringing-it-all-together.html#problem-1-the-polynomial-workshop) |
 | `MIT-1.7` Transpose formulae; operate on rational algebraic expressions | 🟩 | [Rearranging Formulae — The Same Formula, Five Ways](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#the-same-formula-five-ways)<br/>[Rearranging Formulae — The Moves](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#the-moves)<br/>[Rearranging Formulae — When the Unknown Is Underneath](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#when-the-unknown-is-underneath)<br/>[Rearranging Formulae — Checking Yourself](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#checking-yourself)<br/>_used in:_ [Cracking Equations — Solving Linear Equations](https://deweydex.github.io/dewlab/tutorials/cracking-equations.html#solving-linear-equations) |
@@ -328,14 +337,14 @@ graph TD
 | `MIT-2.1` Set language: N, Z, Q, R, C, the empty set; finite, infinite, cardinality | 🟩 | [Numbers and Their Families — The Number Domains](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#the-number-domains)<br/>[Sets as Sorted Lists — Making a Set](https://deweydex.github.io/dewlab/tutorials/sets-as-sorted-lists.html#making-a-set)<br/>[Sets as Sorted Lists — Membership Testing](https://deweydex.github.io/dewlab/tutorials/sets-as-sorted-lists.html#membership-testing)<br/>[Sets as Sorted Lists — Set Language and Notation](https://deweydex.github.io/dewlab/tutorials/sets-as-sorted-lists.html#set-language-and-notation)<br/>_used in:_ [When There Is No Answer — Inventing a Number](https://deweydex.github.io/dewlab/tutorials/complex-roots.html#inventing-a-number) |
 | `MIT-2.2` Set operations: union, intersection, complement, symmetric difference, Cartesian product, power set | 🟩 | [Sets as Sorted Lists — Set Operations: The Merge Pattern](https://deweydex.github.io/dewlab/tutorials/sets-as-sorted-lists.html#set-operations-the-merge-pattern)<br/>[Sets as Sorted Lists — Sets in Practice](https://deweydex.github.io/dewlab/tutorials/sets-as-sorted-lists.html#sets-in-practice)<br/>_used in:_ [Bringing It All Together — Problem 3: Sets of Solutions](https://deweydex.github.io/dewlab/tutorials/bringing-it-all-together.html#problem-3-sets-of-solutions) |
 | `MIT-2.3` Venn diagrams for two and three sets | 🟩 | [Drawing Sets — Two Circles, from Real Sets](https://deweydex.github.io/dewlab/tutorials/venn-diagrams.html#two-circles-from-real-sets)<br/>[Drawing Sets — The Regions Have Names You Already Know](https://deweydex.github.io/dewlab/tutorials/venn-diagrams.html#the-regions-have-names-you-already-know)<br/>[Drawing Sets — Three Sets, Which Is Where It Earns Its Place](https://deweydex.github.io/dewlab/tutorials/venn-diagrams.html#three-sets-which-is-where-it-earns-its-place)<br/>[Drawing Sets — The Same Laws, in a Different Notation](https://deweydex.github.io/dewlab/tutorials/venn-diagrams.html#the-same-laws-in-a-different-notation) |
-| `MIT-2.4` Truth tables: AND, NOT, OR, XOR | 🟩 | [Logic and Truth — Every Possible Case](https://deweydex.github.io/dewlab/tutorials/logic-and-truth.html#every-possible-case)<br/>[Logic and Truth — Exclusive Or](https://deweydex.github.io/dewlab/tutorials/logic-and-truth.html#exclusive-or)<br/>_used in:_ [Making Decisions — Boolean Operators: Combining Conditions](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#boolean-operators-combining-conditions) |
+| `MIT-2.4` Truth tables: AND, NOT, OR, XOR | 🟩 | [Logic and Truth — Every Possible Case](https://deweydex.github.io/dewlab/tutorials/logic-and-truth.html#every-possible-case)<br/>[Logic and Truth — Exclusive Or](https://deweydex.github.io/dewlab/tutorials/logic-and-truth.html#exclusive-or)<br/>_used in:_ [Making decisions with if, elif and else — Boolean Operators: Combining Conditions](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#boolean-operators-combining-conditions) |
 | `MIT-2.5` De Morgan's Laws | 🟩 | [Logic and Truth — De Morgan's Laws](https://deweydex.github.io/dewlab/tutorials/logic-and-truth.html#de-morgans-laws)<br/>[Logic and Truth — Where You Have Already Used This](https://deweydex.github.io/dewlab/tutorials/logic-and-truth.html#where-you-have-already-used-this)<br/>[Logic and Truth — The Same Shapes, on Sets](https://deweydex.github.io/dewlab/tutorials/logic-and-truth.html#the-same-shapes-on-sets) |
 
 #### 3. Functions and Calculus
 
 | Outcome | | Where |
 |---|---|---|
-| `MIT-3.1` The function and inverse function concept | 🟩 | [Drawing Functions — A Function Is a Machine](https://deweydex.github.io/dewlab/tutorials/drawing-functions.html#a-function-is-a-machine)<br/>[Drawing Functions — Undoing a Function](https://deweydex.github.io/dewlab/tutorials/drawing-functions.html#undoing-a-function)<br/>_used in:_ [Finding Things — Functions as Input-Output Machines](https://deweydex.github.io/dewlab/tutorials/finding-things.html#functions-as-input-output-machines) |
+| `MIT-3.1` The function and inverse function concept | 🟩 | [Drawing Functions — A Function Is a Machine](https://deweydex.github.io/dewlab/tutorials/drawing-functions.html#a-function-is-a-machine)<br/>[Drawing Functions — Undoing a Function](https://deweydex.github.io/dewlab/tutorials/drawing-functions.html#undoing-a-function)<br/>_used in:_ [Writing your own functions — Functions as Input-Output Machines](https://deweydex.github.io/dewlab/tutorials/writing-your-own-functions.html#functions-as-input-output-machines) |
 | `MIT-3.2` Graph linear, quadratic and cubic functions; solve from a graph | 🟩 | [Drawing Functions — A Machine Has a Picture](https://deweydex.github.io/dewlab/tutorials/drawing-functions.html#a-machine-has-a-picture)<br/>[Drawing Functions — Straight Lines](https://deweydex.github.io/dewlab/tutorials/drawing-functions.html#straight-lines)<br/>[Drawing Functions — Curves That Bend](https://deweydex.github.io/dewlab/tutorials/drawing-functions.html#curves-that-bend)<br/>[Drawing Functions — Reading an Answer Off the Picture](https://deweydex.github.io/dewlab/tutorials/drawing-functions.html#reading-an-answer-off-the-picture)<br/>_used in:_ [What a Matrix Does to a Picture — Where Do the Corners Go?](https://deweydex.github.io/dewlab/tutorials/what-a-matrix-does-to-a-picture.html#where-do-the-corners-go) |
 | `MIT-3.3` Define and graph the trigonometric functions | 🟩 | [Sine and Cosine Waves — Unrolling the Circle](https://deweydex.github.io/dewlab/tutorials/sine-and-cosine-waves.html#unrolling-the-circle)<br/>[Sine and Cosine Waves — Why It Repeats](https://deweydex.github.io/dewlab/tutorials/sine-and-cosine-waves.html#why-it-repeats)<br/>[Sine and Cosine Waves — The Four Numbers](https://deweydex.github.io/dewlab/tutorials/sine-and-cosine-waves.html#the-four-numbers)<br/>[Sine and Cosine Waves — Where a Wave Comes From](https://deweydex.github.io/dewlab/tutorials/sine-and-cosine-waves.html#where-a-wave-comes-from) |
 | `MIT-3.4` Complete the square to find roots and vertex | 🟩 | [Parabolas — Every Quadratic Is the Same Curve](https://deweydex.github.io/dewlab/tutorials/parabolas.html#every-quadratic-is-the-same-curve)<br/>[Parabolas — The Form That Tells You Where the Bottom Is](https://deweydex.github.io/dewlab/tutorials/parabolas.html#the-form-that-tells-you-where-the-bottom-is)<br/>[Parabolas — Doing the Rearrangement](https://deweydex.github.io/dewlab/tutorials/parabolas.html#doing-the-rearrangement)<br/>[Parabolas — Roots from the Same Form](https://deweydex.github.io/dewlab/tutorials/parabolas.html#roots-from-the-same-form) |
@@ -380,30 +389,30 @@ graph TD
 
 | Outcome | | Where |
 |---|---|---|
-| `MIT-6.1` The concept of an algorithm | 🟩 | [First Steps — What is an Algorithm?](https://deweydex.github.io/dewlab/tutorials/first-steps.html#what-is-an-algorithm) |
-| `MIT-6.2` An algorithm as a function on a domain of inputs | 🟩 | [Finding Things — Functions as Input-Output Machines](https://deweydex.github.io/dewlab/tutorials/finding-things.html#functions-as-input-output-machines)<br/>[Lists and Sequences — Mathematical Sequences as Functions](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#mathematical-sequences-as-functions) |
-| `MIT-6.3` Manipulate lists and arrays, including addition and multiplication | 🟩 | [Lists and Sequences — Lists: Ordered Collections](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#lists-ordered-collections)<br/>[Lists and Sequences — Building Lists with Loops](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#building-lists-with-loops)<br/>[Lists and Sequences — The Dot Product: Lists Meet Arithmetic](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#the-dot-product-lists-meet-arithmetic)<br/>_used in:_ [A Grid of Numbers — Nine Numbers That Draw a Picture](https://deweydex.github.io/dewlab/tutorials/grid-of-numbers.html#nine-numbers-that-draw-a-picture) |
-| `MIT-6.4` Index, sigma and pi notation | 🟩 | [Repeating Yourself — Sigma Notation: Mathematics Meets Loops](https://deweydex.github.io/dewlab/tutorials/repeating-yourself.html#sigma-notation-mathematics-meets-loops) |
-| `MIT-6.5` Lists and arrays applied to simple problems | 🟩 | [Lists and Sequences — Looping Over Lists](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#looping-over-lists) |
-| `MIT-6.6` Divide and conquer | 🟩 | [Finding Things — Divide and Conquer](https://deweydex.github.io/dewlab/tutorials/finding-things.html#divide-and-conquer) |
-| `MIT-6.7` Iterate over a one-dimensional array by index | 🟩 | [Lists and Sequences — Building Lists with Loops](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#building-lists-with-loops)<br/>[Lists and Sequences — Looping Over Lists](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#looping-over-lists)<br/>[Repeating Yourself — For Loops: When You Know How Many Times](https://deweydex.github.io/dewlab/tutorials/repeating-yourself.html#for-loops-when-you-know-how-many-times)<br/>[Repeating Yourself — Building Up Gradually: Counting with Conditions](https://deweydex.github.io/dewlab/tutorials/repeating-yourself.html#building-up-gradually-counting-with-conditions) |
-| `MIT-6.8` Recursion; linear and binary search; bubble, insertion, selection and shell sort | 🟩 | [Finding Things — Linear Search: The Straightforward Approach](https://deweydex.github.io/dewlab/tutorials/finding-things.html#linear-search-the-straightforward-approach)<br/>[Finding Things — Binary Search: The Power of Sorted Data](https://deweydex.github.io/dewlab/tutorials/finding-things.html#binary-search-the-power-of-sorted-data)<br/>[Putting Things in Order — Bubble Sort: Let Things Rise](https://deweydex.github.io/dewlab/tutorials/putting-things-in-order.html#bubble-sort-let-things-rise)<br/>[Putting Things in Order — Insertion Sort: Sort Like You Sort Cards](https://deweydex.github.io/dewlab/tutorials/putting-things-in-order.html#insertion-sort-sort-like-you-sort-cards)<br/>[Putting Things in Order — Selection Sort: Find the Smallest](https://deweydex.github.io/dewlab/tutorials/putting-things-in-order.html#selection-sort-find-the-smallest)<br/>[Putting Things in Order — Comparing Our Sorts](https://deweydex.github.io/dewlab/tutorials/putting-things-in-order.html#comparing-our-sorts)<br/>_used in:_ [Putting Things in Order — Optional Challenges](https://deweydex.github.io/dewlab/tutorials/putting-things-in-order.html#optional-challenges) |
+| `MIT-6.1` The concept of an algorithm | 🟩 | [Algorithms, pseudocode and your first Python — What is an Algorithm?](https://deweydex.github.io/dewlab/tutorials/first-steps.html#what-is-an-algorithm) |
+| `MIT-6.2` An algorithm as a function on a domain of inputs | 🟩 | [Lists: keeping many values in order — Mathematical Sequences as Functions](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#mathematical-sequences-as-functions)<br/>[Writing your own functions — Functions as Input-Output Machines](https://deweydex.github.io/dewlab/tutorials/writing-your-own-functions.html#functions-as-input-output-machines) |
+| `MIT-6.3` Manipulate lists and arrays, including addition and multiplication | 🟩 | [Lists: keeping many values in order — Lists: Ordered Collections](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#lists-ordered-collections)<br/>[Lists: keeping many values in order — Building Lists with Loops](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#building-lists-with-loops)<br/>[Lists: keeping many values in order — The Dot Product: Lists Meet Arithmetic](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#the-dot-product-lists-meet-arithmetic)<br/>_used in:_ [A Grid of Numbers — Nine Numbers That Draw a Picture](https://deweydex.github.io/dewlab/tutorials/grid-of-numbers.html#nine-numbers-that-draw-a-picture) |
+| `MIT-6.4` Index, sigma and pi notation | 🟩 | [Repeating steps with loops — Sigma Notation: Mathematics Meets Loops](https://deweydex.github.io/dewlab/tutorials/repeating-yourself.html#sigma-notation-mathematics-meets-loops) |
+| `MIT-6.5` Lists and arrays applied to simple problems | 🟩 | [Lists: keeping many values in order — Looping Over Lists](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#looping-over-lists) |
+| `MIT-6.6` Divide and conquer | 🟩 | [Searching a list: linear and binary search — Divide and Conquer](https://deweydex.github.io/dewlab/tutorials/finding-things.html#divide-and-conquer) |
+| `MIT-6.7` Iterate over a one-dimensional array by index | 🟩 | [Lists: keeping many values in order — Building Lists with Loops](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#building-lists-with-loops)<br/>[Lists: keeping many values in order — Looping Over Lists](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#looping-over-lists)<br/>[Repeating steps with loops — For Loops: When You Know How Many Times](https://deweydex.github.io/dewlab/tutorials/repeating-yourself.html#for-loops-when-you-know-how-many-times)<br/>[Repeating steps with loops — Building Up Gradually: Counting with Conditions](https://deweydex.github.io/dewlab/tutorials/repeating-yourself.html#building-up-gradually-counting-with-conditions) |
+| `MIT-6.8` Recursion; linear and binary search; bubble, insertion, selection and shell sort | 🟩 | [Searching a list: linear and binary search — Linear Search: The Straightforward Approach](https://deweydex.github.io/dewlab/tutorials/finding-things.html#linear-search-the-straightforward-approach)<br/>[Searching a list: linear and binary search — Binary Search: The Power of Sorted Data](https://deweydex.github.io/dewlab/tutorials/finding-things.html#binary-search-the-power-of-sorted-data)<br/>[Sorting a list: bubble, insertion and selection sort — Bubble Sort: Let Things Rise](https://deweydex.github.io/dewlab/tutorials/putting-things-in-order.html#bubble-sort-let-things-rise)<br/>[Sorting a list: bubble, insertion and selection sort — Insertion Sort: Sort Like You Sort Cards](https://deweydex.github.io/dewlab/tutorials/putting-things-in-order.html#insertion-sort-sort-like-you-sort-cards)<br/>[Sorting a list: bubble, insertion and selection sort — Selection Sort: Find the Smallest](https://deweydex.github.io/dewlab/tutorials/putting-things-in-order.html#selection-sort-find-the-smallest)<br/>[Sorting a list: bubble, insertion and selection sort — Comparing Our Sorts](https://deweydex.github.io/dewlab/tutorials/putting-things-in-order.html#comparing-our-sorts)<br/>_used in:_ [Sorting a list: bubble, insertion and selection sort — Optional Challenges](https://deweydex.github.io/dewlab/tutorials/putting-things-in-order.html#optional-challenges) |
 
 ### Programming and Design Principles 5N2927
 
 | Outcome | | Where |
 |---|---|---|
-| `PDP-LO1` The history of computer programming | 🟩 | [How We Got Here — Before There Were Computers](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#before-there-were-computers)<br/>[How We Got Here — The Only Language the Machine Understands](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#the-only-language-the-machine-understands)<br/>[How We Got Here — Assembly, and Why Hexadecimal Exists](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#assembly-and-why-hexadecimal-exists)<br/>[How We Got Here — Languages People Can Read](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#languages-people-can-read) |
-| `PDP-LO2` Algorithms and their real-world application | 🟩 | [First Steps — What is an Algorithm?](https://deweydex.github.io/dewlab/tutorials/first-steps.html#what-is-an-algorithm) |
-| `PDP-LO3` Differentiate programming languages by their characteristics | 🟩 | [How We Got Here — Languages People Can Read](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#languages-people-can-read)<br/>[How We Got Here — The Same Problem, Four Ways](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#the-same-problem-four-ways) |
-| `PDP-LO4` Procedural syntax: storage, expressions, statements, input and output, keywords, operators | 🟩 | [First Steps — A Few More Things Python Can Do](https://deweydex.github.io/dewlab/tutorials/first-steps.html#a-few-more-things-python-can-do)<br/>[Storing and Computing — Variables: Giving Names to Things](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#variables-giving-names-to-things)<br/>[Storing and Computing — Data Types: Different Kinds of Information](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#data-types-different-kinds-of-information)<br/>[Storing and Computing — Type Conversion](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#type-conversion) |
-| `PDP-LO5` The sequential nature of problem solving | 🟩 | [First Steps — Pseudocode: Planning Before Coding](https://deweydex.github.io/dewlab/tutorials/first-steps.html#pseudocode-planning-before-coding) |
-| `PDP-LO6` Structured design: pseudocode, storage, selection and iteration | 🟩 | [First Steps — Pseudocode: Planning Before Coding](https://deweydex.github.io/dewlab/tutorials/first-steps.html#pseudocode-planning-before-coding)<br/>[Making Decisions — Comparisons: True or False?](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#comparisons-true-or-false)<br/>[Making Decisions — If Statements: Choosing a Path](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#if-statements-choosing-a-path)<br/>[Making Decisions — If-Else: Two Paths](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#if-else-two-paths)<br/>[Making Decisions — Elif: Multiple Paths](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#elif-multiple-paths)<br/>[Making Decisions — Boolean Operators: Combining Conditions](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#boolean-operators-combining-conditions)<br/>[Repeating Yourself — While Loops: Repeat Until Done](https://deweydex.github.io/dewlab/tutorials/repeating-yourself.html#while-loops-repeat-until-done)<br/>[Repeating Yourself — For Loops: When You Know How Many Times](https://deweydex.github.io/dewlab/tutorials/repeating-yourself.html#for-loops-when-you-know-how-many-times)<br/>[Repeating Yourself — Nested Loops](https://deweydex.github.io/dewlab/tutorials/repeating-yourself.html#nested-loops) |
-| `PDP-LO7` Develop documented programs for familiar and unfamiliar problems | 🟩 | [Building Reusable Tools — Handling Edge Cases](https://deweydex.github.io/dewlab/tutorials/building-reusable-tools.html#handling-edge-cases)<br/>[Storing and Computing — Putting It Together: A Small Program](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#putting-it-together-a-small-program) |
-| `PDP-LO8` Modularisation: functions, procedures, scope, parameter passing | 🟩 | [Building Reusable Tools — What Makes a Good Function?](https://deweydex.github.io/dewlab/tutorials/building-reusable-tools.html#what-makes-a-good-function)<br/>[Building Reusable Tools — Functions Calling Functions](https://deweydex.github.io/dewlab/tutorials/building-reusable-tools.html#functions-calling-functions)<br/>[Building Reusable Tools — Variable Scope Revisited](https://deweydex.github.io/dewlab/tutorials/building-reusable-tools.html#variable-scope-revisited)<br/>[Finding Things — Scope: Where Variables Live](https://deweydex.github.io/dewlab/tutorials/finding-things.html#scope-where-variables-live)<br/>[Lists and Sequences — Functions: Reusable Algorithms](https://deweydex.github.io/dewlab/tutorials/lists-and-sequences.html#functions-reusable-algorithms)<br/>[Pictures Worth Numbers — Writing Reusable Plotting Functions](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#writing-reusable-plotting-functions) |
-| `PDP-LO9` Interpret compiler and linker messages and react appropriately | 🟩 | [When It Goes Wrong — Three Kinds of Wrong](https://deweydex.github.io/dewlab/tutorials/when-it-goes-wrong.html#three-kinds-of-wrong)<br/>[When It Goes Wrong — Errors Python Catches Before It Starts](https://deweydex.github.io/dewlab/tutorials/when-it-goes-wrong.html#errors-python-catches-before-it-starts)<br/>[When It Goes Wrong — Errors That Happen While It Runs](https://deweydex.github.io/dewlab/tutorials/when-it-goes-wrong.html#errors-that-happen-while-it-runs)<br/>[When It Goes Wrong — Reading a Traceback](https://deweydex.github.io/dewlab/tutorials/when-it-goes-wrong.html#reading-a-traceback)<br/>[When It Goes Wrong — The Dangerous Kind](https://deweydex.github.io/dewlab/tutorials/when-it-goes-wrong.html#the-dangerous-kind) |
-| `PDP-LO10` The testing process: structured walkthroughs and debugging tools | 🟩 | [Bringing It All Together — Problem 4: Building and Verifying](https://deweydex.github.io/dewlab/tutorials/bringing-it-all-together.html#problem-4-building-and-verifying)<br/>[Building Reusable Tools — Testing as a Habit](https://deweydex.github.io/dewlab/tutorials/building-reusable-tools.html#testing-as-a-habit) |
-| `PDP-LO11` Coding standards: comments, indentation, variable naming | 🟩 | [Building Reusable Tools — What Makes a Good Function?](https://deweydex.github.io/dewlab/tutorials/building-reusable-tools.html#what-makes-a-good-function)<br/>[Looking Back Before Moving Forward — Part 1: Reading Your Own Code](https://deweydex.github.io/dewlab/tutorials/critique-and-reflection.html#part-1-reading-your-own-code)<br/>[Looking Back Before Moving Forward — Part 2: Reading Someone Else's Code](https://deweydex.github.io/dewlab/tutorials/critique-and-reflection.html#part-2-reading-someone-elses-code)<br/>[Storing and Computing — Variables: Giving Names to Things](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#variables-giving-names-to-things) |
+| `PDP-LO1` The history of computer programming | 🟩 | [How programming languages came to be — Before There Were Computers](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#before-there-were-computers)<br/>[How programming languages came to be — The Only Language the Machine Understands](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#the-only-language-the-machine-understands)<br/>[How programming languages came to be — Assembly, and Why Hexadecimal Exists](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#assembly-and-why-hexadecimal-exists)<br/>[How programming languages came to be — Languages People Can Read](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#languages-people-can-read) |
+| `PDP-LO2` Algorithms and their real-world application | 🟩 | [Algorithms, pseudocode and your first Python — What is an Algorithm?](https://deweydex.github.io/dewlab/tutorials/first-steps.html#what-is-an-algorithm) |
+| `PDP-LO3` Differentiate programming languages by their characteristics | 🟩 | [How programming languages came to be — Languages People Can Read](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#languages-people-can-read)<br/>[How programming languages came to be — The Same Problem, Four Ways](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#the-same-problem-four-ways) |
+| `PDP-LO4` Procedural syntax: storage, expressions, statements, input and output, keywords, operators | 🟩 | [Algorithms, pseudocode and your first Python — A Few More Things Python Can Do](https://deweydex.github.io/dewlab/tutorials/first-steps.html#a-few-more-things-python-can-do)<br/>[Variables, data types and text — Variables: Giving Names to Things](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#variables-giving-names-to-things)<br/>[Variables, data types and text — Data Types: Different Kinds of Information](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#data-types-different-kinds-of-information)<br/>[Variables, data types and text — Type Conversion](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#type-conversion)<br/>[Variables, data types and text — Putting Values into Text](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#putting-values-into-text)<br/>_used in:_ [Dictionaries: looking things up by name — Making a Dictionary](https://deweydex.github.io/dewlab/tutorials/looking-things-up-by-name.html#making-a-dictionary) |
+| `PDP-LO5` The sequential nature of problem solving | 🟩 | [Algorithms, pseudocode and your first Python — Pseudocode: Planning Before Coding](https://deweydex.github.io/dewlab/tutorials/first-steps.html#pseudocode-planning-before-coding) |
+| `PDP-LO6` Structured design: pseudocode, storage, selection and iteration | 🟩 | [Algorithms, pseudocode and your first Python — Pseudocode: Planning Before Coding](https://deweydex.github.io/dewlab/tutorials/first-steps.html#pseudocode-planning-before-coding)<br/>[Making decisions with if, elif and else — Comparisons: True or False?](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#comparisons-true-or-false)<br/>[Making decisions with if, elif and else — If Statements: Choosing a Path](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#if-statements-choosing-a-path)<br/>[Making decisions with if, elif and else — If-Else: Two Paths](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#if-else-two-paths)<br/>[Making decisions with if, elif and else — Elif: Multiple Paths](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#elif-multiple-paths)<br/>[Making decisions with if, elif and else — Boolean Operators: Combining Conditions](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#boolean-operators-combining-conditions)<br/>[Repeating steps with loops — While Loops: Repeat Until Done](https://deweydex.github.io/dewlab/tutorials/repeating-yourself.html#while-loops-repeat-until-done)<br/>[Repeating steps with loops — For Loops: When You Know How Many Times](https://deweydex.github.io/dewlab/tutorials/repeating-yourself.html#for-loops-when-you-know-how-many-times)<br/>[Repeating steps with loops — Nested Loops](https://deweydex.github.io/dewlab/tutorials/repeating-yourself.html#nested-loops) |
+| `PDP-LO7` Develop documented programs for familiar and unfamiliar problems | 🟩 | [Designing and testing good functions — Handling Edge Cases](https://deweydex.github.io/dewlab/tutorials/building-reusable-tools.html#handling-edge-cases)<br/>[Variables, data types and text — Putting It Together: A Small Program](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#putting-it-together-a-small-program) |
+| `PDP-LO8` Modularisation: functions, procedures, scope, parameter passing | 🟩 | [Designing and testing good functions — What Makes a Good Function?](https://deweydex.github.io/dewlab/tutorials/building-reusable-tools.html#what-makes-a-good-function)<br/>[Designing and testing good functions — Functions Calling Functions](https://deweydex.github.io/dewlab/tutorials/building-reusable-tools.html#functions-calling-functions)<br/>[Designing and testing good functions — Variable Scope Revisited](https://deweydex.github.io/dewlab/tutorials/building-reusable-tools.html#variable-scope-revisited)<br/>[Pictures Worth Numbers — Writing Reusable Plotting Functions](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#writing-reusable-plotting-functions)<br/>[Writing your own functions — Defining a Function](https://deweydex.github.io/dewlab/tutorials/writing-your-own-functions.html#defining-a-function)<br/>[Writing your own functions — Giving a Value Back: return](https://deweydex.github.io/dewlab/tutorials/writing-your-own-functions.html#giving-a-value-back-return)<br/>[Writing your own functions — Return or Print?](https://deweydex.github.io/dewlab/tutorials/writing-your-own-functions.html#return-or-print)<br/>[Writing your own functions — Functions That Use Other Functions](https://deweydex.github.io/dewlab/tutorials/writing-your-own-functions.html#functions-that-use-other-functions)<br/>[Writing your own functions — Scope: Where Variables Live](https://deweydex.github.io/dewlab/tutorials/writing-your-own-functions.html#scope-where-variables-live) |
+| `PDP-LO9` Interpret compiler and linker messages and react appropriately | 🟩 | [Reading an error message — Three Kinds of Wrong](https://deweydex.github.io/dewlab/tutorials/reading-an-error-message.html#three-kinds-of-wrong)<br/>[Reading an error message — Errors Python Catches Before It Starts](https://deweydex.github.io/dewlab/tutorials/reading-an-error-message.html#errors-python-catches-before-it-starts)<br/>[Reading an error message — Errors That Happen While It Runs](https://deweydex.github.io/dewlab/tutorials/reading-an-error-message.html#errors-that-happen-while-it-runs)<br/>[Reading an error message — Reading a Traceback](https://deweydex.github.io/dewlab/tutorials/reading-an-error-message.html#reading-a-traceback)<br/>[Reading an error message — When Nothing Looks Wrong](https://deweydex.github.io/dewlab/tutorials/reading-an-error-message.html#when-nothing-looks-wrong)<br/>[Finding bugs in bigger programs — Errors From Lists and Dictionaries](https://deweydex.github.io/dewlab/tutorials/when-it-goes-wrong.html#errors-from-lists-and-dictionaries)<br/>[Finding bugs in bigger programs — Tracebacks Through Several Functions](https://deweydex.github.io/dewlab/tutorials/when-it-goes-wrong.html#tracebacks-through-several-functions)<br/>[Finding bugs in bigger programs — The Dangerous Kind](https://deweydex.github.io/dewlab/tutorials/when-it-goes-wrong.html#the-dangerous-kind)<br/>[Finding bugs in bigger programs — Debugging Habits](https://deweydex.github.io/dewlab/tutorials/when-it-goes-wrong.html#debugging-habits) |
+| `PDP-LO10` The testing process: structured walkthroughs and debugging tools | 🟩 | [Bringing It All Together — Problem 4: Building and Verifying](https://deweydex.github.io/dewlab/tutorials/bringing-it-all-together.html#problem-4-building-and-verifying)<br/>[Designing and testing good functions — Testing as a Habit](https://deweydex.github.io/dewlab/tutorials/building-reusable-tools.html#testing-as-a-habit)<br/>_used in:_ [Finding bugs in bigger programs — Debugging Habits](https://deweydex.github.io/dewlab/tutorials/when-it-goes-wrong.html#debugging-habits) |
+| `PDP-LO11` Coding standards: comments, indentation, variable naming | 🟩 | [Designing and testing good functions — What Makes a Good Function?](https://deweydex.github.io/dewlab/tutorials/building-reusable-tools.html#what-makes-a-good-function)<br/>[Reviewing code and reflecting on your work — Part 1: Reading Your Own Code](https://deweydex.github.io/dewlab/tutorials/critique-and-reflection.html#part-1-reading-your-own-code)<br/>[Reviewing code and reflecting on your work — Part 2: Reading Someone Else's Code](https://deweydex.github.io/dewlab/tutorials/critique-and-reflection.html#part-2-reading-someone-elses-code)<br/>[Variables, data types and text — Variables: Giving Names to Things](https://deweydex.github.io/dewlab/tutorials/storing-and-computing.html#variables-giving-names-to-things) |
 | `PDP-LO12` Team programming: design, develop, release and review over time, in teams of three to five | 🟩 | [The Team Project — What You Are Being Asked to Do](https://deweydex.github.io/dewlab/tutorials/the-team-project.html#what-you-are-being-asked-to-do)<br/>[The Team Project — Three Releases, Not One Deadline](https://deweydex.github.io/dewlab/tutorials/the-team-project.html#three-releases-not-one-deadline)<br/>[The Team Project — Working on One Thing at Once](https://deweydex.github.io/dewlab/tutorials/the-team-project.html#working-on-one-thing-at-once)<br/>[The Team Project — Reviewing Each Other's Work](https://deweydex.github.io/dewlab/tutorials/the-team-project.html#reviewing-each-others-work) |
 
 ### Computational Methods and Problem Solving 5N0554
@@ -414,7 +423,7 @@ graph TD
 | `CMPS-LO2` Elementary probability and information theory: distributions, sample statistics, dependent and independent events, conditional probability, and randomness in computing | 🟩 | [Leaving It to Chance — Asking the Machine for a Number](https://deweydex.github.io/dewlab/tutorials/leaving-it-to-chance.html#asking-the-machine-for-a-number)<br/>[Leaving It to Chance — The Same Numbers Twice](https://deweydex.github.io/dewlab/tutorials/leaving-it-to-chance.html#the-same-numbers-twice)<br/>[Leaving It to Chance — What Random Is Good Enough For](https://deweydex.github.io/dewlab/tutorials/leaving-it-to-chance.html#what-random-is-good-enough-for)<br/>[Leaving It to Chance — Choosing From a List](https://deweydex.github.io/dewlab/tutorials/leaving-it-to-chance.html#choosing-from-a-list)<br/>_used in:_ [Where Chains Lead — A Weather Machine](https://deweydex.github.io/dewlab/tutorials/where-chains-lead.html#a-weather-machine)<br/>_used in:_ [Whose Voice Is This — Investigating the Difference](https://deweydex.github.io/dewlab/tutorials/whose-voice-is-this.html#investigating-the-difference) |
 | `CMPS-LO3` Basic computational and numerical methods for computer simulation | 🟩 | [Counting Darts — A Question You Can Answer by Throwing Things](https://deweydex.github.io/dewlab/tutorials/counting-darts.html#a-question-you-can-answer-by-throwing-things)<br/>[Counting Darts — One Dart at a Time](https://deweydex.github.io/dewlab/tutorials/counting-darts.html#one-dart-at-a-time)<br/>[Counting Darts — Watching It Settle](https://deweydex.github.io/dewlab/tutorials/counting-darts.html#watching-it-settle)<br/>[Counting Darts — More Is Not Reliably Better](https://deweydex.github.io/dewlab/tutorials/counting-darts.html#more-is-not-reliably-better)<br/>_used in:_ [Leaving It to Chance — What Random Is Good Enough For](https://deweydex.github.io/dewlab/tutorials/leaving-it-to-chance.html#what-random-is-good-enough-for) |
 | `CMPS-LO4` Apply array and matrix representations to real-world computational problems | 🟩 | [A Chain Reads a Book — A Dictionary of Dictionaries](https://deweydex.github.io/dewlab/tutorials/a-chain-reads-a-book.html#a-dictionary-of-dictionaries)<br/>[A Point on the Screen — A Road of Posts](https://deweydex.github.io/dewlab/tutorials/a-point-on-the-screen.html#a-road-of-posts)<br/>[A Point on the Screen — Why Dividing Works](https://deweydex.github.io/dewlab/tutorials/a-point-on-the-screen.html#why-dividing-works)<br/>[A Point on the Screen — Where the Camera Stands](https://deweydex.github.io/dewlab/tutorials/a-point-on-the-screen.html#where-the-camera-stands)<br/>[A Point on the Screen — A Ball in Orbit](https://deweydex.github.io/dewlab/tutorials/a-point-on-the-screen.html#a-ball-in-orbit)<br/>[How Much It Remembers — Keying On More Than One Word](https://deweydex.github.io/dewlab/tutorials/how-much-it-remembers.html#keying-on-more-than-one-word)<br/>[Solving Systems — Three Unknowns, Row by Row](https://deweydex.github.io/dewlab/tutorials/solving-systems.html#three-unknowns-row-by-row)<br/>[Solving Systems — Reading Off the Answer](https://deweydex.github.io/dewlab/tutorials/solving-systems.html#reading-off-the-answer)<br/>[Solving Systems — Checking Your Work](https://deweydex.github.io/dewlab/tutorials/solving-systems.html#checking-your-work)<br/>[The Fourth Number — A Move No Matrix Can Make](https://deweydex.github.io/dewlab/tutorials/the-fourth-number.html#a-move-no-matrix-can-make)<br/>[The Fourth Number — One More Row](https://deweydex.github.io/dewlab/tutorials/the-fourth-number.html#one-more-row)<br/>[The Fourth Number — Everything in One Matrix](https://deweydex.github.io/dewlab/tutorials/the-fourth-number.html#everything-in-one-matrix)<br/>[The Fourth Number — The Divide as a Matrix](https://deweydex.github.io/dewlab/tutorials/the-fourth-number.html#the-divide-as-a-matrix)<br/>[The Fourth Number — Field of View](https://deweydex.github.io/dewlab/tutorials/the-fourth-number.html#field-of-view)<br/>[Turning a Cube — Eight Corners, Twelve Edges](https://deweydex.github.io/dewlab/tutorials/turning-a-cube.html#eight-corners-twelve-edges)<br/>[Turning a Cube — A Matrix That Turns](https://deweydex.github.io/dewlab/tutorials/turning-a-cube.html#a-matrix-that-turns)<br/>[Turning a Cube — A Flip-Book](https://deweydex.github.io/dewlab/tutorials/turning-a-cube.html#a-flip-book)<br/>[Turning a Cube — Two Turns at Once](https://deweydex.github.io/dewlab/tutorials/turning-a-cube.html#two-turns-at-once)<br/>[Undoing It — Undoing a Transformation](https://deweydex.github.io/dewlab/tutorials/undoing-it.html#undoing-a-transformation)<br/>[Undoing It — Which Ones Can Be Undone](https://deweydex.github.io/dewlab/tutorials/undoing-it.html#which-ones-can-be-undone)<br/>[What a Matrix Does to a Picture — Where Do the Corners Go?](https://deweydex.github.io/dewlab/tutorials/what-a-matrix-does-to-a-picture.html#where-do-the-corners-go)<br/>[What a Matrix Does to a Picture — A Small Gallery](https://deweydex.github.io/dewlab/tutorials/what-a-matrix-does-to-a-picture.html#a-small-gallery)<br/>[What a Matrix Does to a Picture — Guess the Matrix](https://deweydex.github.io/dewlab/tutorials/what-a-matrix-does-to-a-picture.html#guess-the-matrix)<br/>[Where Chains Lead — A Weather Machine](https://deweydex.github.io/dewlab/tutorials/where-chains-lead.html#a-weather-machine)<br/>[Where Chains Lead — Watching It Settle](https://deweydex.github.io/dewlab/tutorials/where-chains-lead.html#watching-it-settle)<br/>[Where Chains Lead — Words That Follow Words](https://deweydex.github.io/dewlab/tutorials/where-chains-lead.html#words-that-follow-words)<br/>[Where Chains Lead — Ranking a Small Web](https://deweydex.github.io/dewlab/tutorials/where-chains-lead.html#ranking-a-small-web)<br/>[Whose Voice Is This — Two Writers, Two Chains](https://deweydex.github.io/dewlab/tutorials/whose-voice-is-this.html#two-writers-two-chains)<br/>_used in:_ [A Point on the Screen — Through the Camera](https://deweydex.github.io/dewlab/tutorials/a-point-on-the-screen.html#through-the-camera)<br/>_used in:_ [A Grid of Numbers — Two Grids, Added Together](https://deweydex.github.io/dewlab/tutorials/grid-of-numbers.html#two-grids-added-together)<br/>_used in:_ [A Grid of Numbers — Scaling and the Shape Rule](https://deweydex.github.io/dewlab/tutorials/grid-of-numbers.html#scaling-and-the-shape-rule)<br/>_used in:_ [A Grid of Numbers — Turning It Sideways: the Transpose](https://deweydex.github.io/dewlab/tutorials/grid-of-numbers.html#turning-it-sideways-the-transpose)<br/>_used in:_ [Multiplying Grids — The Dot Product, First](https://deweydex.github.io/dewlab/tutorials/multiplying-grids.html#the-dot-product-first)<br/>_used in:_ [Multiplying Grids — Multiplying Two Grids](https://deweydex.github.io/dewlab/tutorials/multiplying-grids.html#multiplying-two-grids)<br/>_used in:_ [Multiplying Grids — Order Matters](https://deweydex.github.io/dewlab/tutorials/multiplying-grids.html#order-matters)<br/>_used in:_ [Multiplying Grids — The Matrix That Does Nothing](https://deweydex.github.io/dewlab/tutorials/multiplying-grids.html#the-matrix-that-does-nothing)<br/>_used in:_ [Solving Systems — A System You Can Already Solve](https://deweydex.github.io/dewlab/tutorials/solving-systems.html#a-system-you-can-already-solve)<br/>_used in:_ [Undoing It — Measuring the Square](https://deweydex.github.io/dewlab/tutorials/undoing-it.html#measuring-the-square)<br/>_used in:_ [Undoing It — When the Square Collapses](https://deweydex.github.io/dewlab/tutorials/undoing-it.html#when-the-square-collapses) |
-| `CMPS-LO5` Assess an algorithm or computational approach for speed, efficiency, and best/expected/worst-case behaviour | 🟩 | [Finding Things — Linear Search: The Straightforward Approach](https://deweydex.github.io/dewlab/tutorials/finding-things.html#linear-search-the-straightforward-approach)<br/>[Finding Things — Binary Search: The Power of Sorted Data](https://deweydex.github.io/dewlab/tutorials/finding-things.html#binary-search-the-power-of-sorted-data)<br/>[Finding Things — Putting It Together](https://deweydex.github.io/dewlab/tutorials/finding-things.html#putting-it-together)<br/>[Putting Things in Order — Comparing Our Sorts](https://deweydex.github.io/dewlab/tutorials/putting-things-in-order.html#comparing-our-sorts)<br/>_used in:_ [Three Ways to Make Change — Remembering What We Already Worked Out](https://deweydex.github.io/dewlab/tutorials/three-ways-to-make-change.html#remembering-what-we-already-worked-out)<br/>_used in:_ [Three Ways to Make Change — The Greedy Shortcut](https://deweydex.github.io/dewlab/tutorials/three-ways-to-make-change.html#the-greedy-shortcut) |
+| `CMPS-LO5` Assess an algorithm or computational approach for speed, efficiency, and best/expected/worst-case behaviour | 🟩 | [Searching a list: linear and binary search — Linear Search: The Straightforward Approach](https://deweydex.github.io/dewlab/tutorials/finding-things.html#linear-search-the-straightforward-approach)<br/>[Searching a list: linear and binary search — Binary Search: The Power of Sorted Data](https://deweydex.github.io/dewlab/tutorials/finding-things.html#binary-search-the-power-of-sorted-data)<br/>[Searching a list: linear and binary search — Putting It Together](https://deweydex.github.io/dewlab/tutorials/finding-things.html#putting-it-together)<br/>[Sorting a list: bubble, insertion and selection sort — Comparing Our Sorts](https://deweydex.github.io/dewlab/tutorials/putting-things-in-order.html#comparing-our-sorts)<br/>_used in:_ [Three Ways to Make Change — Remembering What We Already Worked Out](https://deweydex.github.io/dewlab/tutorials/three-ways-to-make-change.html#remembering-what-we-already-worked-out)<br/>_used in:_ [Three Ways to Make Change — The Greedy Shortcut](https://deweydex.github.io/dewlab/tutorials/three-ways-to-make-change.html#the-greedy-shortcut) |
 | `CMPS-LO6` Apply probability and information theory to computational approaches to real-world problems | 🟩 | [When a Queue Never Clears — Arrivals You Cannot Predict, One at a Time](https://deweydex.github.io/dewlab/tutorials/when-a-queue-never-clears.html#arrivals-you-cannot-predict-one-at-a-time)<br/>[When a Queue Never Clears — A Queue That Clears](https://deweydex.github.io/dewlab/tutorials/when-a-queue-never-clears.html#a-queue-that-clears)<br/>[When a Queue Never Clears — A Queue That Never Clears](https://deweydex.github.io/dewlab/tutorials/when-a-queue-never-clears.html#a-queue-that-never-clears)<br/>[When a Queue Never Clears — Predicting It Before Running It](https://deweydex.github.io/dewlab/tutorials/when-a-queue-never-clears.html#predicting-it-before-running-it) |
 | `CMPS-LO7` Differentiate modelling from simulation, and the abstraction that lets a machine address a real-world problem | 🟩 | [A Model That Corrects Itself — A Model That Starts Out Wrong](https://deweydex.github.io/dewlab/tutorials/a-model-that-corrects-itself.html#a-model-that-starts-out-wrong)<br/>[A Model That Corrects Itself — Running It Again and Again](https://deweydex.github.io/dewlab/tutorials/a-model-that-corrects-itself.html#running-it-again-and-again)<br/>[A Model That Corrects Itself — What the Model Actually Learned](https://deweydex.github.io/dewlab/tutorials/a-model-that-corrects-itself.html#what-the-model-actually-learned) |
 | `CMPS-LO8` Identify approaches to problem definition, solution design, testing and evaluation | 🟩 | [Finding Where It Went Wrong — Deciding What Done Means](https://deweydex.github.io/dewlab/tutorials/finding-where-it-went-wrong.html#deciding-what-done-means)<br/>[Finding Where It Went Wrong — Building the Pipeline](https://deweydex.github.io/dewlab/tutorials/finding-where-it-went-wrong.html#building-the-pipeline) |
@@ -477,7 +486,7 @@ graph TD
 
 ## Vocabulary
 
-The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **151 terms** are marked that way, and asking two questions of them is free.
+The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **165 terms** are marked that way, and asking two questions of them is free.
 
 ### Introduced more than once
 
@@ -485,25 +494,26 @@ The same word presented as new in two places. Either it is being introduced twic
 
 | Term | Introduced in tutorials |
 |---|---|
-| *cracking equations* | 20, 23, 24, 25, 32 |
-| *drawing functions* | 25, 26, 28, 29 |
-| *expressions come alive* | 21, 22, 24, 32 |
-| *function* | 1, 7, 24 |
-| *how* | 3, 5 |
-| *index* | 6, 7, 19 |
-| *iteration* | 4, 6 |
-| *lines and distances* | 27, 28, 29, 31 |
-| *making sense of data* | 15, 26 |
-| *numbers and their families* | 23, 32 |
-| *parabolas* | 28, 31 |
-| *pictures worth numbers* | 24, 26 |
-| *see* | 18, 30 |
-| *set* | 16, 22 |
-| *sets as sorted lists* | 17, 18, 32 |
-| *solve* | 20, 22 |
-| *storing and computing* | 21, 30 |
-| *what* | 3, 5 |
-| *zahlen* | 2, 19 |
+| *cracking equations* | 23, 26, 27, 28, 35 |
+| *drawing functions* | 28, 29, 31, 32 |
+| *expressions come alive* | 24, 25, 27, 35 |
+| *function* | 1, 6, 27 |
+| *how* | 12, 13 |
+| *index* | 5, 7, 22 |
+| *iteration* | 3, 5 |
+| *lines and distances* | 30, 31, 32, 34 |
+| *making sense of data* | 18, 29 |
+| *numbers and their families* | 26, 35 |
+| *parabolas* | 31, 34 |
+| *pictures worth numbers* | 27, 29 |
+| *responsible* | 4, 12 |
+| *see* | 21, 33 |
+| *set* | 19, 25 |
+| *sets as sorted lists* | 20, 21, 35 |
+| *solve* | 23, 25 |
+| *storing and computing* | 24, 33 |
+| *what* | 12, 13 |
+| *zahlen* | 2, 22 |
 
 ### Used before it was introduced
 
@@ -511,47 +521,48 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 
 | Term | First appears in | Introduced in |
 |---|---:|---:|
-| *after* | 1 | 5 |
-| *before* | 1 | 3 |
-| *between* | 1 | 29 |
-| *building reusable tools* | 3 | 24 |
-| *counting carefully* | 11 | 12 |
-| *design* | 8 | 10 |
-| *drawing functions* | 24 | 25 |
-| *equation* | 16 | 20 |
-| *expression* | 6 | 20 |
-| *expressions come alive* | 20 | 21 |
-| *finding things* | 6 | 16 |
-| *first steps* | 1 | 32 |
-| *gap* | 7 | 9 |
-| *how* | 1 | 3 |
-| *inside* | 1 | 29 |
-| *lines and distances* | 24 | 27 |
+| *after* | 1 | 4 |
+| *before* | 1 | 13 |
+| *between* | 1 | 32 |
+| *binary search* | 5 | 9 |
+| *bug* | 11 | 12 |
+| *call* | 2 | 6 |
+| *counting carefully* | 14 | 15 |
+| *design* | 9 | 11 |
+| *drawing functions* | 27 | 28 |
+| *equation* | 19 | 23 |
+| *expression* | 5 | 23 |
+| *expressions come alive* | 23 | 24 |
+| *gap* | 7 | 10 |
+| *how* | 1 | 12 |
+| *inside* | 1 | 32 |
+| *key* | 2 | 8 |
+| *lines and distances* | 27 | 30 |
 | *list* | 1 | 7 |
-| *local* | 8 | 31 |
-| *logic and truth* | 17 | 18 |
-| *making decisions* | 3 | 17 |
-| *making sense of data* | 14 | 15 |
-| *numbers and their families* | 19 | 23 |
-| *opposite* | 23 | 29 |
-| *parabolas* | 25 | 28 |
-| *pictures worth numbers* | 15 | 24 |
-| *power* | 1 | 19 |
-| *putting things in order* | 6 | 16 |
-| *reaches* | 4 | 30 |
-| *repeating yourself* | 1 | 11 |
-| *repetition* | 4 | 11 |
-| *representation* | 18 | 20 |
-| *see* | 1 | 18 |
+| *local* | 6 | 34 |
+| *logic and truth* | 20 | 21 |
+| *making decisions* | 3 | 20 |
+| *making sense of data* | 17 | 18 |
+| *new* | 1 | 6 |
+| *numbers and their families* | 22 | 26 |
+| *opposite* | 13 | 32 |
+| *parabolas* | 28 | 31 |
+| *pictures worth numbers* | 18 | 27 |
+| *power* | 1 | 22 |
+| *reaches* | 3 | 33 |
+| *repetition* | 3 | 14 |
+| *representation* | 21 | 23 |
+| *see* | 1 | 21 |
+| *selection sort* | 5 | 10 |
 | *sequence* | 3 | 7 |
-| *set* | 1 | 16 |
-| *sets as sorted lists* | 16 | 17 |
-| *solve* | 7 | 20 |
-| *storing and computing* | 1 | 21 |
-| *the unit circle* | 26 | 29 |
-| *tools* | 1 | 10 |
-| *what* | 1 | 3 |
-| *wrong* | 1 | 27 |
+| *set* | 1 | 19 |
+| *sets as sorted lists* | 19 | 20 |
+| *solve* | 6 | 23 |
+| *the unit circle* | 29 | 32 |
+| *tools* | 1 | 11 |
+| *value* | 2 | 8 |
+| *what* | 1 | 12 |
+| *wrong* | 1 | 30 |
 
 ## Scope questions, settled
 

@@ -1,11 +1,11 @@
 ---
-title: "How We Got Here — Practice"
+title: "How programming languages came to be — Practice"
 practice_for: how-we-got-here
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# How We Got Here — Practice
+# How programming languages came to be — Practice
 
 On this page we practise reading binary, hexadecimal and ASCII, and we
 look back at the history and the paradigms. Each answer is folded away
@@ -319,7 +319,11 @@ def crack_the_vault(groups):
 
 The line that sets `number` makes a choice in one line: use
 `from_binary` if the base is `"bin"`, and `int(code, 16)` if not.
-[Making Decisions](tutorial:making-decisions) explains choices like this.
+This one-line form, `a if condition else b`, gives `a` when the
+condition is true and `b` when it is not. It is the same choice as an
+`if` and `else` from
+[Making decisions with if, elif and else](tutorial:making-decisions),
+written on one line.
 
 The function is the two earlier decoders joined together, with a check
 to decide which one applies. This shape is common, and worth noticing.

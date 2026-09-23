@@ -29,24 +29,6 @@ entries:
     kind: function
     definition: Gives both the index and the value of each element as a loop goes through a list.
     example: "for index, name in enumerate(names):"
-  - term: function, def
-    kind: keyword
-    definition: >
-      A function is a named block of code that you can use again and
-      again. You define it with def and a name. You call it by writing
-      that name followed by parentheses.
-    example: "def greet(name):\n    print(\"Hello, \" + name)"
-  - term: function body
-    kind: concept
-    definition: The function body is the indented code under def. It runs each time the function is called.
-  - term: parameter, argument, return
-    kind: concept
-    definition: >
-      A parameter is a function's own placeholder name for a value it
-      expects. An argument is the actual value you pass in when you call
-      the function. return sends a value back to the code that called the
-      function, so that the value can be stored or used in more
-      calculations.
   - term: sequence
     kind: concept
     definition: In mathematics, a sequence is a list of numbers made by a rule. The rule takes a position n and gives the value at that position.
@@ -58,6 +40,3 @@ entries:
       each pair of matching elements and add the results. It is used
       everywhere in machine learning and physics.
     example: "[1, 2, 3] . [4, 5, 6] = 1*4 + 2*5 + 3*6 = 32"
-  - term: modular programming
-    kind: concept
-    definition: Modular programming is building a large program out of small pieces, each one tested on its own. Functions are the first tool for it.

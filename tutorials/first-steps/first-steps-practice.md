@@ -1,11 +1,11 @@
 ---
-title: "First Steps — Practice"
+title: "Algorithms, pseudocode and your first Python — Practice"
 practice_for: first-steps
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# First Steps — Practice
+# Algorithms, pseudocode and your first Python — Practice
 
 On this page we practise the operators, `print()`, comments, algorithms
 and pseudocode. Most of the problems are short. The aim is to use the
@@ -156,7 +156,7 @@ print("The answer is", 6 * 7)
 
 A comma between the pieces inside `print()` puts a space between them in
 the output.
-[Storing and Computing](tutorial:storing-and-computing) shows another
+[Variables, data types and text](tutorial:storing-and-computing) shows another
 way to do this, which joins pieces of text with `+`.
 
 </details>
@@ -333,7 +333,7 @@ print(100 // price)
 The last one uses `//` with a decimal number. It still gives a whole
 number of items, but written as a decimal: `13.0`. If that bothers you,
 `int(100 // price)` gives `13`.
-[Storing and Computing](tutorial:storing-and-computing) explains why
+[Variables, data types and text](tutorial:storing-and-computing) explains why
 `13` and `13.0` are different kinds of value.
 
 </details>
@@ -362,8 +362,8 @@ print(1234567 % 2)
 ```
 
 1, so it is odd. You cannot yet make Python print the word "odd". That
-needs a decision, and [Making Decisions](tutorial:making-decisions)
-teaches decisions, three pages from now. Printing the remainder and
+needs a decision, and [Making decisions with if, elif and else](tutorial:making-decisions)
+teaches decisions, two pages from now. Printing the remainder and
 reading it yourself is a good place to stop.
 
 </details>

@@ -1,5 +1,5 @@
 ---
-title: "Repeating Yourself"
+title: "Repeating steps with loops"
 year: "2026-2027"
 version: 2026.09.22.1
 covers:
@@ -15,7 +15,7 @@ covers:
     covers: [MIT-6.7]
 ---
 
-# Repeating Yourself
+# Repeating steps with loops
 
 Our programs can now run lines in order, and make decisions. One thing
 is still missing: repetition. How would we add up 100 numbers, check
@@ -107,7 +107,7 @@ Did you expect it to start at 0? `range(5)` gives the numbers 0, 1, 2, 3
 and 4: five numbers, starting from 0. This might seem strange. Starting
 from 0 turns out to be very useful in programming, and we will see why
 when we work with lists in
-[Lists and Sequences](tutorial:lists-and-sequences).
+[Lists: keeping many values in order](tutorial:lists-and-sequences).
 
 We can also give `range()` a start and a step:
 
@@ -191,7 +191,7 @@ The stopping row is the one that trips people up. Sigma stops **at** 5,
 and `range` stops **before** 6. So the two numbers differ by one, but
 they describe the same five values. The number in `range` marks a
 boundary, not an item. We will see the same idea again with slices, in
-[Lists and Sequences](tutorial:lists-and-sequences).
+[Lists: keeping many values in order](tutorial:lists-and-sequences).
 
 The last row is a real difference between the two. Sigma never writes
 down that the total starts at zero: a sum of nothing is zero, and
@@ -292,8 +292,8 @@ for row in range(1, 4):
 If the outer loop runs n times, and the inner loop runs n times for each
 of those, the total number of steps is n × n, or $n^2$. Counting how many
 steps an algorithm takes will matter a lot when we study searching and
-sorting, in [Finding Things](tutorial:finding-things) and
-[Putting Things in Order](tutorial:putting-things-in-order).
+sorting, in [Searching a list: linear and binary search](tutorial:finding-things) and
+[Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order).
 
 ```python exec
 id: your-turn-6

@@ -1,5 +1,5 @@
 ---
-title: "Looking Back Before Moving Forward"
+title: "Reviewing code and reflecting on your work"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -9,10 +9,10 @@ covers:
     covers: [PDP-LO11]
 ---
 
-# Looking Back Before Moving Forward
+# Reviewing code and reflecting on your work
 
-You have built a lot of your own work by now: functions, loops, and
-search and sort algorithms written from scratch. Before we move on,
+You have built a lot of your own work by now: functions, loops, lists
+and dictionaries, and search and sort algorithms written from scratch. Before we move on,
 let's stop and look back at it.
 
 Professional developers do this all the time, but courses rarely give
@@ -102,7 +102,7 @@ id: part-2-reading-someone-elses-code-3
 You can already write functions, use loops, and build algorithms. You
 have also seen how to design functions as tools that can be reused,
 combined, and tested one at a time. That idea is called modular design,
-and [Building Reusable Tools](tutorial:building-reusable-tools) is the
+and [Designing and testing good functions](tutorial:building-reusable-tools) is the
 page that teaches it.
 
 Next comes [The Team Project](tutorial:the-team-project). There, you

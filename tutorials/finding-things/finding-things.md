@@ -1,13 +1,8 @@
 ---
-title: "Finding Things"
+title: "Searching a list: linear and binary search"
 year: "2026-2027"
 version: 2026.09.22.1
 covers:
-  functions-as-input-output-machines:
-    covers: [MIT-6.2]
-    touches: [MIT-3.1]
-  scope-where-variables-live:
-    covers: [PDP-LO8]
   linear-search-the-straightforward-approach:
     covers: [MIT-6.8, CMPS-LO5]
   binary-search-the-power-of-sorted-data:
@@ -18,9 +13,12 @@ covers:
     covers: [CMPS-LO5]
 ---
 
-# Finding Things
+# Searching a list: linear and binary search
 
-We can now keep data in lists, and write functions that work with them.
+We can now keep data in lists and dictionaries, and write functions that
+work with them. For a reminder of how functions, `return` and scope work,
+you can look back at [Writing your own functions](tutorial:writing-your-own-functions).
+
 So here is the next question. We have a list, and we want one item in
 it. How do we find it?
 
@@ -30,97 +28,9 @@ best depends on what we know about the data.
 
 On this page we:
 
-- look at what a function is, in mathematics and in Python
-- see where a variable lives, inside or outside a function
 - write two ways to search a list, and count how much work each one does
-
-## Functions as Input-Output Machines
-
-In mathematics, a function is a rule that gives *exactly one output* for
-each input. For example, $f(x) = x^2$ takes 3 and gives 9. It takes -3
-and also gives 9. The important property is this: the same input always
-gives the same output.
-
-Our Python functions can work the same way. Here is one:
-
-```python
-def square(n):
-    return n ** 2
-```
-
-This code defines a rule that gives exactly one output for each input.
-It is a mathematical function, written in code.
-
-Not every Python function is a mathematical function. Some depend on
-things outside the function. Others use random numbers. A *pure
-function* is a function whose output depends only on its inputs. Pure
-functions are the easiest to understand, to test and to trust, so they
-are worth aiming for.
-
-## Scope: Where Variables Live
-
-A variable's *scope* is the part of the program where that variable
-exists. A variable we create inside a function has *local scope*: it
-exists only while that function is running.
-
-Look at the last line of the next cell. It is a comment, so it does not
-run. What do you think would happen if it did run?
-
-```python exec
-id: scope-where-variables-live-1
-def calculate_area(radius):
-    pi = 3.14159
-    area = pi * radius ** 2
-    return area
-
-result = calculate_area(5)
-print(result)
-
-# What happens if this line runs? Delete the # at its start to find out.
-# print(area)
-```
-
-Try it: delete the `#` at the start of the last line, and run the cell
-again. Python stops with a `NameError`. The name `area` does not exist
-outside the function.
-
-Local scope helps us. Each function has its own workspace. A variable
-inside one function cannot get mixed up with a variable in another
-function, even when the two have the same name.
-
-A variable we create outside any function has *global scope*: we can
-read it from anywhere in the program. Even so, it is better to pass
-values into a function as parameters than to rely on global variables.
-Then the function does not depend on anything outside it, so we can
-move it to another program and test it on its own.
-
-### Your turn
-
-Python lets a function return more than one value. We put a comma
-between the values:
-
-```python
-def example():
-    return 10, 20
-
-a, b = example()   # a gets 10, b gets 20
-```
-
-1. In the first cell, write a function `circle_info(radius)` that
-   returns *both* the area and the circumference of a circle. The cell
-   starts with `import math`, so you can use `math.pi`.
-2. In the second cell, test it with a radius you can check by hand.
-
-```python exec
-id: your-turn-1
-# Your circle_info function
-import math    # gives us math.pi for a more accurate value
-```
-
-```python exec
-id: your-turn-2
-# Test it
-```
+- see why sorted data can be searched much faster
+- meet divide and conquer, an idea behind many fast algorithms
 
 ## Linear Search: The Straightforward Approach
 
@@ -370,9 +280,8 @@ id: your-turn-7
 
 ## Reflection
 
-On this page we looked more closely at functions: pure functions as
-mathematical functions, scope, and returning more than one value. We
-also wrote two important search algorithms.
+On this page we wrote two important search algorithms, and counted the
+work each one does.
 
 The main lesson is this: *the way we organise data changes how fast we
 can work with it*. When data is sorted, we can use binary search. For a
@@ -380,7 +289,7 @@ large collection, binary search is much faster than linear search.
 
 Next, we look at the other side of this: how do we sort data in the
 first place? That is the subject of
-[Putting Things in Order](tutorial:putting-things-in-order).
+[Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order).
 
 What surprised you most about the difference between linear search and
 binary search?

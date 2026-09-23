@@ -1,5 +1,5 @@
 ---
-title: "Making Decisions"
+title: "Making decisions with if, elif and else"
 year: "2026-2027"
 version: 2026.09.22.1
 covers:
@@ -18,7 +18,7 @@ covers:
     covers: [MIT-1.1]
 ---
 
-# Making Decisions
+# Making decisions with if, elif and else
 
 So far, our programs have run every line from top to bottom, every time.
 Real algorithms need to make choices. "If the water has boiled, pour it.
@@ -147,7 +147,7 @@ The `else` part catches every case that the `if` condition does not.
 Between them, the two paths cover every possibility.
 
 What is the `%` doing here? We met `%`, the remainder (or modulo)
-operator, in [First Steps](tutorial:first-steps). When a number divided
+operator, in [Algorithms, pseudocode and your first Python](tutorial:first-steps). When a number divided
 by 2 leaves a remainder of 0, the number is even. Otherwise, it is odd.
 We will use `% 2 == 0` to test for "even" many more times in this
 course.
@@ -390,8 +390,9 @@ Before this page, our programs used only *sequential* execution, which
 means running every line from top to bottom, every time. Sequence and
 selection are two of the three basic building blocks of programming. The
 third is *iteration*, which means repetition. We meet it in
-[Repeating Yourself](tutorial:repeating-yourself), after a page on what
-to do [When It Goes Wrong](tutorial:when-it-goes-wrong).
+[Repeating steps with loops](tutorial:repeating-yourself). First, the next
+page, [Reading an error message](tutorial:reading-an-error-message), shows what
+to do when Python stops with an error.
 
 We also saw that sorting a number into its mathematical families needs
 exactly this kind of decision. The mathematics and the programming are

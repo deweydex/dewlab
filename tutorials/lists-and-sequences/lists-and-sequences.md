@@ -1,5 +1,5 @@
 ---
-title: "Lists and Sequences"
+title: "Lists: keeping many values in order"
 year: "2026-2027"
 version: 2026.09.22.1
 covers:
@@ -9,15 +9,13 @@ covers:
     covers: [MIT-6.3, MIT-6.7]
   looping-over-lists:
     covers: [MIT-6.5, MIT-6.7]
-  functions-reusable-algorithms:
-    covers: [PDP-LO8]
   mathematical-sequences-as-functions:
     covers: [MIT-6.2]
   the-dot-product-lists-meet-arithmetic:
     covers: [MIT-6.3]
 ---
 
-# Lists and Sequences
+# Lists: keeping many values in order
 
 So far, each variable has held one value: one number, or one string. Many
 real problems need a group of values. Think of a set of test scores, a
@@ -27,8 +25,8 @@ On this page we:
 
 - keep many values together in a list, and pick out the ones we want
 - build lists with a loop, and loop over them
-- write our first functions: named blocks of code that we can use again
-  and again
+- write functions that work with lists, and turn mathematical sequences
+  into code
 
 ## Lists: Ordered Collections
 
@@ -128,7 +126,7 @@ print(squares)
 ```
 
 Does this remind you of the accumulator pattern from
-[Repeating Yourself](tutorial:repeating-yourself)? It is the same idea.
+[Repeating steps with loops](tutorial:repeating-yourself)? It is the same idea.
 There, we added each new value to a running total. Here, we add each new
 value to a list.
 
@@ -182,79 +180,6 @@ id: your-turn-summing-a-list-1
 scores = [42, 38, 35, 47, 29, 41, 44, 33, 39, 48]
 ```
 
-## Functions: Reusable Algorithms
-
-Our code so far does useful things. But what if we want to do the same
-thing again, with different data? We would have to copy and paste the
-code.
-
-Functions solve this problem. A *function* is a named block of code. We
-can call it, which means run it, whenever we need it, and we can give it
-different inputs each time.
-
-```python exec
-id: functions-reusable-algorithms-1
-def greet(name):
-    print("Hello, " + name + "!")
-
-# Now we can call it as many times as we want
-greet("Ada")
-greet("Grace")
-greet("Alan")
-```
-
-Here is what each part does:
-
-- The `def` keyword defines a function. Here the function's name is
-  `greet`.
-- `name` is a *parameter*. A parameter is a placeholder for a value we
-  give the function when we call it.
-- The indented code under `def` is the *function body*. It runs each
-  time we call the function.
-- In `greet("Ada")`, the value `"Ada"` is the *argument*. An argument is
-  the actual value we pass in. Python puts it into the parameter `name`.
-
-A function can also *return* a value. To return a value means to send it
-back to the code that called the function. Most useful functions return
-a value, so that we can keep working with it. What do you think the next
-cell prints?
-
-```python exec
-id: functions-reusable-algorithms-2
-def square(n):
-    return n ** 2
-
-result = square(7)
-print(result)
-print(square(12))
-```
-
-The `return` statement sends the value back to the caller. We can store
-the result, print it, or use it in more calculations. That is what makes
-functions so useful.
-
-### Your turn
-
-1. Write a function called `celsius_to_fahrenheit`. It takes a
-   temperature in Celsius and returns the same temperature in Fahrenheit.
-   You can plan it in pseudocode first, in the comment lines at the top
-   of the first cell.
-2. Test it in the second cell with a few values you can check. What
-   should 0 and 100 give?
-
-```python exec
-id: your-turn-3
-# Pseudocode:
-#
-
-# Your function
-```
-
-```python exec
-id: your-turn-4
-# Test it
-```
-
 ## Mathematical Sequences as Functions
 
 In mathematics, a *sequence* is a list of numbers made by a rule. The
@@ -268,7 +193,10 @@ The triangular numbers $1, 3, 6, 10, 15, ...$ come from the rule
 $f(n) = \frac{n(n+1)}{2}$. This is the same as $\sum_{i=1}^{n} i$, the
 sum of the whole numbers from 1 to $n$.
 
-Let's write a Python function for each of these rules.
+We wrote functions like these in
+[Writing your own functions](tutorial:writing-your-own-functions): a
+parameter goes in, and `return` sends the answer back. Let's write a
+Python function for each of these rules.
 
 ```python exec
 id: mathematical-sequences-as-functions-1
@@ -347,14 +275,9 @@ id: your-turn-8
 
 On this page we met lists. We created them, read elements by index, took
 slices, and changed them. We built lists with loops, and we looped over
-them. We also wrote functions, with parameters and return values. Then
-we saw how mathematical sequences and the dot product turn straight into
-code.
-
-Functions are a big step. From now on, when we solve a problem, we will
-put the solution inside a function, so that we can use it again. This is
-the start of *modular programming*. Modular programming means building
-large programs out of small pieces, each one tested on its own.
+them. Then we saw how mathematical sequences and the dot product turn
+straight into code, as functions that take lists in and give lists or
+numbers back.
 
 What links do you see between the ideas from mathematics and the
 patterns in the code?

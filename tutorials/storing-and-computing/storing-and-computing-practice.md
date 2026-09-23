@@ -1,11 +1,11 @@
 ---
-title: "Storing and Computing — Practice"
+title: "Variables, data types and text — Practice"
 practice_for: storing-and-computing
 year: "2026-2027"
 version: 2026.09.22.1
 ---
 
-# Storing and Computing — Practice
+# Variables, data types and text — Practice
 
 On this page we practise variables, types, floating-point numbers, and
 binary and hexadecimal. Each answer is folded away under its problem.
@@ -168,7 +168,7 @@ float, even when the answer is whole: `2.0`, and not `2`.
 
 Stopping is what you want here. A wrong guess that nobody notices is much
 worse than an error. (We look at errors properly in
-[When It Goes Wrong](tutorial:when-it-goes-wrong).)
+[Reading an error message](tutorial:reading-an-error-message).)
 
 </details>
 
@@ -361,7 +361,7 @@ its value in decimal, without using `int(x, 16)`.
 <details class="dl-answer"><summary>answer</summary>
 
 This answer uses a `for` loop, which repeats a step once for each
-character. [Repeating Yourself](tutorial:repeating-yourself) explains
+character. [Repeating steps with loops](tutorial:repeating-yourself) explains
 loops properly.
 
 ```python
@@ -396,9 +396,9 @@ print(f"{total_minutes} minutes is {hours} hours and {minutes} minutes")
 
 8 hours and 20 minutes.
 
-The last line uses an f-string. An f-string is a string with an `f`
-before the opening quote. Python replaces each name in curly brackets,
-such as `{hours}`, with that variable's value.
+The last line uses an f-string, from the tutorial's section *Putting
+Values into Text*. Python replaces each name in curly brackets, such as
+`{hours}`, with that variable's value.
 
 </details>
 
@@ -434,5 +434,82 @@ print(int(x) + y)
 
 The same two values give four different answers, and the types decide
 every one. That is the main idea of the tutorial, in one cell.
+
+</details>
+
+## Putting Values into Text
+
+This cell shows the same value with an f-string three ways: as it is,
+with 2 decimal places, and with 4.
+
+```python exec
+id: putting-values-into-text-practice-1
+share = 2 / 3
+print(f"{share}")
+print(f"{share:.2f}")
+print(f"{share:.4f}")
+```
+
+**22.** Rewrite this line with an f-string. Can you do it without
+`str()`?
+
+```python
+print("Hello, " + name + ". You are " + str(age) + " years old.")
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+print(f"Hello, {name}. You are {age} years old.")
+```
+
+With `name = "Aoife"` and `age = 34`, both lines print `Hello, Aoife.
+You are 34 years old.`
+
+The f-string turns `age` into text for you, so `str()` is not needed.
+The spaces are easier to see, too, because they sit inside one string.
+
+If you forget the `f`, Python prints the curly brackets and the names
+as they are: `Hello, {name}.` There is no error, so this mistake is easy
+to miss.
+
+</details>
+
+**23.** Here `share = 2 / 3`. Predict what each line prints, then check.
+
+- (a) `print(f"{share:.2f}")`
+- (b) `print(f"{share:.4f}")`
+- (c) `print(f"{share:.0f}")`
+- (d) `print(f"{5:.2f}")`
+
+<details class="dl-answer"><summary>answer</summary>
+
+(a) `0.67`. (b) `0.6667`. (c) `1`. (d) `5.00`.
+
+Each one rounds to the number of places after the dot. With `.0f` there
+are no decimal places, so 0.666… rounds up to 1.
+
+(d) shows that `:.2f` can also add places. A whole number gets `.00`,
+which is what you want when you print prices.
+
+</details>
+
+**24.** Problem 20 stored a till's total in whole cents. The total is
+`total_cents = 1234`. Print it as `Total: €12.34`.
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+total_cents = 1234
+print(f"Total: €{total_cents / 100:.2f}")
+```
+
+Inside the curly brackets, we can write a small calculation as well as a
+name. Here Python divides by 100, and then shows the result with 2
+decimal places.
+
+The `:.2f` matters when the total is a whole number of euro. With
+`total_cents = 500`, the line prints `Total: €5.00`. Without `:.2f`, it
+would print `Total: €5.0`, which does not look like a price.
 
 </details>

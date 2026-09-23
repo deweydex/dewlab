@@ -1,11 +1,11 @@
 ---
-title: "Building Reusable Tools — Practice"
+title: "Designing and testing good functions — Practice"
 practice_for: building-reusable-tools
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Building Reusable Tools — Practice
+# Designing and testing good functions — Practice
 
 The answers are hidden in folds under each problem. Most problems ask
 you to write a function, and then to say what it does with input it was
@@ -120,7 +120,9 @@ def describe(numbers):
     print(f"range     {data_range(numbers)}")
 ```
 
-In the f-strings, `:.3f` shows a number with three decimal places.
+The f-strings work as in
+[Variables, data types and text](tutorial:storing-and-computing). Here `:.3f`
+gives three decimal places.
 
 On `[42, 38, 35, 47, 29, 41, 44, 33, 39, 48]`, it gives: mean 39.6,
 standard deviation about 5.765, range 19.
@@ -452,7 +454,8 @@ def summary(numbers):
 ```
 
 There are five small functions, each one testable on its own, and a
-sixth that puts them together.
+sixth that puts them together. In `summary`, `{name:<10}` pads each name
+with spaces to ten characters, so the values line up.
 
 Make every one of them handle the empty list in the same way. A toolkit
 whose pieces disagree about edge cases is harder to use than one that is

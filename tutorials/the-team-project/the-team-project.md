@@ -139,9 +139,10 @@ each piece of code, work through these three:
    usually a better name or one sentence of comment, not more code.
 2. **What happens if this gets something unexpected?** For example, an
    empty list, a zero, a negative number, or a word where a number was
-   expected. [When It Goes Wrong](tutorial:when-it-goes-wrong) is the
-   tutorial for this. Somebody using your program will hit every one of
-   those errors.
+   expected. [Reading an error message](tutorial:reading-an-error-message)
+   and [Finding bugs in bigger programs](tutorial:when-it-goes-wrong) are
+   the tutorials for this. Somebody using your program will hit every one
+   of those errors.
 3. **Have we already written this somewhere else?** Two people often
    solve the same problem separately. That is normal, and it is worth
    catching.

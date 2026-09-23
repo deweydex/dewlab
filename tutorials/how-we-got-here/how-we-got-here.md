@@ -1,5 +1,5 @@
 ---
-title: "How We Got Here"
+title: "How programming languages came to be"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -17,15 +17,20 @@ covers:
     covers: [PDP-LO3]
 ---
 
-# How We Got Here
+# How programming languages came to be
 
-In [Storing and Computing](tutorial:storing-and-computing) you taught
-the computer to store things. Near the end, you met binary and
-hexadecimal: two ways of writing numbers that seemed to come from
-nowhere. Where did they come from? This page tells that story.
+This is the last page of the series, so it is a good moment to look
+back. You have written programs that store values, make decisions and
+repeat steps. You have written your own functions, kept data in lists and
+dictionaries, searched and sorted, and learned to read an error message.
 
-It is also a short history of programming, the thing you are learning to
-do. Many parts of programming look like strange choices at first. Almost
+Back in [Variables, data types and text](tutorial:storing-and-computing),
+you also met binary and hexadecimal: two ways of writing numbers that
+seemed to come from nowhere. Where did they come from? This page tells
+that story.
+
+It is also a short history of programming, the thing you have been
+learning to do. Many parts of programming look like strange choices at first. Almost
 every one of them was a decision somebody made for a reason, and the
 reasons still hold today.
 
@@ -50,7 +55,8 @@ The paper was by an Italian engineer, Luigi Menabrea, and it was written
 in French. Lovelace added notes of her own. One of them described, step
 by step, how the Engine could work out a sequence of numbers, using loops
 and conditional branching. (Conditional branching means choosing which
-step to do next, depending on a result.) Her notes were longer than the
+step to do next, depending on a result, as `if` and `else` do in
+Python.) Her notes were longer than the
 paper she was translating.
 
 Most historians say this makes her the first computer programmer. She
@@ -85,17 +91,16 @@ came after it moved to binary, because two states are simpler to build
 and more reliable.)
 
 The cell below builds two tools that we will need: `to_binary` and
-`from_binary`. You met these ideas in Storing and Computing. Here they
+`from_binary`. You met these ideas in
+[Variables, data types and text](tutorial:storing-and-computing). Here they
 are as functions you can use.
 
-The cell uses some Python we have not met yet. `def` makes a new
-function, `if` makes a decision, and `while` and `for` repeat steps. You
-do not need to follow every line now:
-[Making Decisions](tutorial:making-decisions),
-[Repeating Yourself](tutorial:repeating-yourself) and
-[Building Reusable Tools](tutorial:building-reusable-tools) explain them.
-Run the cell, and after that you can use `to_binary` and `from_binary`
-the same way you use `print()`.
+You know almost everything in this cell already: `def`, `return`, `if`,
+`while`, `for` and a list. One line is new. In `to_binary`,
+`reversed(digits)` puts the digits in the opposite order, because the
+loop finds the last digit first. Then `"".join(...)` joins them into one
+string. Run the cell, and after that you can use `to_binary` and `from_binary` the same
+way you use `print()`.
 
 ```python exec
 id: the-only-language-the-machine-understands-1
@@ -144,8 +149,8 @@ How might you write `decode_binary_message(groups)`? For each group:
 
 Then remove the `#` from the last line, and run the cell.
 
-This needs a loop, which is new. If it feels too soon, you can decode
-one group at a time instead: `chr(from_binary("01001000"))` gives `H`.
+Before you write the loop, you can try one group on its own:
+`chr(from_binary("01001000"))` gives `H`.
 
 ```python exec
 id: your-turn-1
@@ -281,9 +286,11 @@ about where the logic goes and what the pieces are. Most languages
 encourage one paradigm. Some, including Python, let you use several.
 
 All four pieces of code below do the same thing: they double every
-number in a list. They use some Python you have not met yet, so do not
-worry about every word. Run the cell, then compare the four. What is
-different about each one?
+number in a list. The first one uses only a loop and a list, like the
+ones you have written. The other three use some Python this series has
+not taught: `map` and `lambda`, a `class`, and a list comprehension. So
+do not worry about every word. Run the cell, then compare the four.
+What is different about each one?
 
 ```python exec
 id: the-same-problem-four-ways-1

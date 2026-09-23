@@ -1,52 +1,34 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# The three kinds of wrong, SyntaxError, IndentationError, NameError,
+# TypeError, ValueError, ZeroDivisionError and traceback are not repeated
+# here: they moved to reading-an-error-message.glossary.yaml, which comes
+# earlier in the series. This page adds the errors that need lists and
+# dictionaries, and the words for finding bugs.
 entries:
-  - term: syntax error, runtime error, logical error
-    kind: concept
-    definition: >
-      These are the three kinds of wrong, and each is found a different
-      way. A syntax error is code that is not valid Python, and Python
-      catches it before anything runs. A runtime error is valid code that
-      tries something impossible, and it stops the program partway. A
-      logical error is code that runs to the end and gives the wrong
-      answer, and only checking against an answer you already know will
-      catch it.
-  - term: "SyntaxError"
-    kind: keyword
-    definition: >
-      Means your code is not valid Python. Python's marker often points
-      just after the real problem. Modern Python points back to an
-      unclosed bracket, but older versions report it where they gave up
-      looking for the closing one.
-  - term: "ZeroDivisionError"
-    kind: keyword
-    definition: Means you divided by zero. It nearly always means a count came out as zero when you expected it not to.
-  - term: "TypeError"
-    kind: keyword
-    definition: Means you did something to a value that its type does not allow, such as adding a number to a string.
-  - term: "ValueError"
-    kind: keyword
-    definition: >
-      Means the type is right but the content is wrong. int("hello") gives
-      int a string, which is what it wants, but not a string that means a
-      number.
   - term: "IndexError"
     kind: keyword
-    definition: Means you asked for a position that does not exist in a list.
+    definition: Means you asked for a position that does not exist in a list. It is very often off by one.
   - term: "KeyError"
     kind: keyword
-    definition: Means you asked for a name that does not exist in a dictionary.
-  - term: "NameError"
-    kind: keyword
-    definition: Means you used a variable that was never created, was created somewhere the code cannot see, or is misspelled.
+    definition: >
+      Means you asked for a key that does not exist in a dictionary. The
+      message shows the key you asked for, so check its spelling and its
+      capital letters.
   - term: "AttributeError"
     kind: keyword
     definition: >
       Means you asked a value for something it does not have. This often
       means the value is not the type you thought it was.
-  - term: traceback
+  - term: off-by-one error
     kind: concept
     definition: >
-      A traceback is the record of how a running program got to the place
-      where it broke. Read it from the bottom: the last line says what
-      went wrong, and the lines above say how the program got there. The
-      line that failed is often not the line that is responsible.
+      An off-by-one error is a mistake where a count or a position is one
+      too many or one too few. Asking for names[len(names)] is one: the
+      last position in a list is one less than its length.
+  - term: bug, debugging
+    kind: concept
+    definition: >
+      A bug is a mistake in a program. Debugging is finding the bugs and
+      fixing them. Two habits help most: print the values in the middle,
+      with labels, and test each small piece on its own.

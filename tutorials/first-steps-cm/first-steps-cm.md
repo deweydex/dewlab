@@ -63,7 +63,7 @@ above," which runs every cell before this one from the top.
 **Reload the page.** This starts Python fresh. It clears nothing you have
 saved — your work is kept in this browser, on this device.
 
-[When It Goes Wrong](tutorial:when-it-goes-wrong#reading-a-traceback) covers
+[Reading an error message](tutorial:reading-an-error-message#reading-a-traceback) covers
 what an error message is actually telling you, line by line.
 
 If none of the three explain it, click the small circle beside a cell's
