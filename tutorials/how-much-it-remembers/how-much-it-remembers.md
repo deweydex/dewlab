@@ -1,5 +1,5 @@
 ---
-title: "How Much It Remembers"
+title: "N-grams: a Markov chain that remembers more words"
 year: "2026-2027"
 version: 2026.09.05.2
 datasets: [the-time-machine]
@@ -10,16 +10,16 @@ covers:
     touches: [CMPS-LO1]
 ---
 
-# How Much It Remembers
+# N-grams: a Markov chain that remembers more words
 
-*A Chain Reads a Book* built a chain that decides what comes next by
-looking at exactly one word — whatever word came immediately before. This
-tutorial asks what happens if the chain is allowed to remember more than
-that.
+In [A Markov chain from a whole book: a dictionary of
+dictionaries](tutorial:a-chain-reads-a-book), we built a chain that
+chooses the next word by looking at one word only: the word just before
+it. What happens if the chain can remember more than that?
 
 ## Keying On More Than One Word
 
-This is the same book, loaded and cleaned the same way as before.
+Here is the same book, loaded and cleaned in the same way as before.
 
 ```python exec
 id: keying-on-more-than-one-word-1
@@ -32,9 +32,9 @@ book = raw[raw.index("\n", start):end].strip()
 words = book.split()
 ```
 
-Here is the one-word chain from the previous tutorial again, this time
-called `order1`. The name comes from a chain's *order* — how many previous
-words it looks at before choosing what comes next.
+Next is the one-word chain from the last tutorial again. This time it is
+called `order1`. The *order* of a chain is how many words before it the
+chain looks at, when it chooses what comes next. `order1` looks at one.
 
 ```python exec
 id: keying-on-more-than-one-word-2
@@ -46,9 +46,15 @@ for word, next_word in zip(words, words[1:]):
 print(len(order1["Morlocks"]), "different words have ever followed just 'Morlocks'")
 ```
 
-Nothing about a dictionary's key has to be a single word. It can just as
-easily be a pair, the last *two* words kept together as one key, and the
-chain that results remembers one more word of context than before.
+A dictionary key does not have to be a single word. It can be a pair of
+words, kept together as one key. A chain keyed on pairs remembers the
+last *two* words, one more than before.
+
+To keep two words together, we write them in round brackets:
+`("the", "Morlocks")`. A *tuple* is a group of values in round brackets,
+like this one. A tuple is like a list that cannot be changed after it is
+made. Because it cannot change, Python lets us use a tuple as a
+dictionary key. A list cannot be a key.
 
 ```python exec
 id: keying-on-more-than-one-word-3
@@ -62,19 +68,29 @@ print(len(order2), "distinct two-word keys")
 print(len(order2[("the", "Morlocks")]), "different words have ever followed 'the Morlocks' specifically")
 ```
 
-`order1["Morlocks"]` has 24 different words that have ever followed the
-bare word `"Morlocks"`: sometimes the sentence is about what they did,
-sometimes about where they live, sometimes just `"and"` or `"were"`.
-Narrow the question to `"the Morlocks"` specifically and the number drops
-to 17. The extra word of context does more than add memory: it removes
-some of the choices that only made sense after a different word than
-`"the"`.
+This loop is the one from `order1` with one more list in the `zip`. It
+walks through the book three words at a time. The first two words make
+the key. The third word is the one that followed them.
+
+What do the two cells print? `order1["Morlocks"]` has 24 different words
+that have followed `"Morlocks"`. Sometimes the sentence goes on to what
+the Morlocks did, like `"had"` or `"came"`. Sometimes it is just `"and"`
+or `"were"`. When we ask about `"the Morlocks"` instead, the number
+drops to 17. The extra word of context does more than add memory. It
+takes away some of the choices that only made sense after a different
+word.
+
+These runs of words have a name. A run of $n$ words in a row is an
+*n-gram*. A pair of words is a 2-gram, also called a *bigram*, and a run
+of three words is a 3-gram, or *trigram*. `order1` counts every bigram in
+the book. `order2` counts every trigram. A Markov chain built this way is
+often called an *n-gram model*.
 
 ### Your turn
 
-`order1` has 6,991 keys — one for every distinct word in the book.
-Predict whether `order2` has more keys, fewer keys, or the same number,
-before running the cell to check.
+`order1` has 6,991 keys, one for every different word in the book. Does
+`order2` have more keys, fewer keys, or the same number? Decide what you
+think, and why. Then run the cell to check.
 
 ```python exec
 id: keying-on-more-than-one-word-4
@@ -83,10 +99,11 @@ hint: len(order2) counts how many distinct two-word keys exist, the same way len
 
 ## Comparing What Each One Writes
 
-`generate()` from the previous tutorial walks an `order1` chain one word at
-a time. An `order2` chain needs a small change: the current key is a pair,
-and after choosing a new word, the key slides forward to keep the *last*
-two words rather than growing forever.
+`generate()` from the last tutorial walks an `order1` chain one word at a
+time. An `order2` chain needs a small change. Its key is a pair. After
+it chooses a new word, the key moves forward by one word: it drops the
+older word and adds the new one. So the key always holds the *last* two
+words, and it never grows longer.
 
 ```python exec
 id: comparing-what-each-one-writes-1
@@ -119,7 +136,12 @@ print("order1:", generate1("the", 20))
 print("order2:", generate2("the", "Morlocks", 20))
 ```
 
-Run that cell a few times. One pair of runs produced this:
+The line `current = (current[1], next_word)` is the step where the key
+moves forward. `current[1]` is the second word of the old key, and
+`next_word` is the word just chosen.
+
+Run the cell a few times. Which line reads more like real English? One
+run gave this:
 
 > order1: the machine below grew scattered, as the eyes glared at work as
 > the heavy smell, the appearances of fire. Upon these
@@ -128,21 +150,25 @@ Run that cell a few times. One pair of runs produced this:
 > meant by the Morlocks, subterranean for innumerable generations, had
 > come to
 
-The `order2` line reads far more like real English — because for long
-stretches of it, `("the", "Morlocks")` and the pairs that follow only ever
-had one recorded continuation in the whole book, so the chain is not
-really choosing at all. "the Morlocks their mechanical servants: but that"
-is not a coincidence: that exact phrase appears in the book, word for
-word. The more context an `order2` chain remembers, the more often it ends
-up reciting a piece of the book it has already seen, rather than
-combining pieces of it in new ways.
+The `order2` line reads much more like real English. Why? The first key,
+`("the", "Morlocks")`, has 17 possible next words. But most of the pairs
+after it have only one recorded next word in the whole book. For long
+stretches, the chain is not choosing at all.
+
+"the Morlocks their mechanical servants: but that" is not a coincidence.
+That exact phrase is in the book, word for word. The more context a
+chain remembers, the more often it recites a piece of the book it has
+already seen. With less context, it combines pieces of the book in new
+ways.
 
 ### Your turn
 
-Generate 20 words from `order1` and 20 words from `order2`, both starting
-from a word or pair of your own choosing. Which one reads more like a
-sentence a person might write? Which one is more likely to contain a
-run of words lifted straight from the book?
+1. Choose a word to start `order1`, and a pair of words to start
+   `order2`.
+2. Generate 20 words from each.
+3. Which one reads more like a sentence a person might write?
+4. Which one is more likely to contain a run of words copied straight
+   from the book?
 
 ```python exec
 id: comparing-what-each-one-writes-2
@@ -150,11 +176,13 @@ id: comparing-what-each-one-writes-2
 
 ## Reflection
 
-More context makes a chain sound more faithful to what it was trained on,
-at the cost of sounding less new. Less context makes it sound less
-faithful, and more its own. Neither is simply *better* — a chain
-built to write something recognizably in an author's own voice wants more
-context; a chain built to surprise wants less. *Whose Voice Is This*, next
-in this series, asks how far that faithfulness can go: whether a chain
-trained on one writer actually sounds different from a chain trained on
-another.
+More context makes a chain sound more like the book it learned from, but
+less new. Less context makes it sound less like the book, and more like
+itself. Neither is simply *better*. Suppose you want a chain that writes
+in an author's own voice. Then you want more context. For a chain that
+surprises you, you want less.
+
+The next tutorial, [Writing style: comparing two writers with Markov
+chains](tutorial:whose-voice-is-this), asks how far that can go. Does a
+chain trained on one writer sound different from a chain trained on
+another?

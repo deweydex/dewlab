@@ -3,6 +3,27 @@ entries:
   - term: order (of a chain)
     kind: concept
     definition: >
-      How many previous words a chain looks at before choosing what comes
-      next. An order-1 chain keys on one word; an order-2 chain keys on a
-      pair of words, kept together as one dictionary key.
+      The order of a chain is how many previous words it looks at before
+      it chooses what comes next. An order-1 chain keys on one word. An
+      order-2 chain keys on a pair of words, kept together as one
+      dictionary key.
+  - term: tuple
+    kind: concept
+    definition: >
+      A tuple is a group of values written in round brackets, like
+      ("the", "Morlocks"). It is like a list that cannot be changed after
+      it is made, and so, unlike a list, it can be a dictionary key.
+    example: 'order2[("the", "Morlocks")]'
+  - term: n-gram
+    kind: concept
+    definition: >
+      An n-gram is a run of n words in a row. A 2-gram, or bigram, is a
+      pair of words. A 3-gram, or trigram, is three words. An order-1
+      chain counts every bigram in a text, and an order-2 chain counts
+      every trigram.
+  - term: n-gram model
+    kind: concept
+    definition: >
+      An n-gram model is a Markov chain over words that chooses the next
+      word from the counts of the n-grams in a text. The larger n is,
+      the more of the text it copies word for word.

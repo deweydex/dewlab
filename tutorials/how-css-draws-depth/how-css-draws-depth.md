@@ -45,7 +45,7 @@ That is the same divide as `project` on the canvas pages. There, `z` is
 the distance from our eye, and `glass` is the distance to the screen:
 `glass * x / z`. The same division also moves a thing towards the
 middle of the stage as it goes away, so far things look closer
-together. [A Point on the Screen](tutorial:a-point-on-the-screen#why-dividing-works),
+together. [Perspective projection: dividing by depth](tutorial:a-point-on-the-screen#why-dividing-works),
 on the Computational Methods course, shows why one division does all of
 that.
 
@@ -118,7 +118,7 @@ At `θ = 0`, `sin θ` is `0` and `cos θ` is `1`, so the ball is straight in
 front of the sun, at depth `r`. At `θ = 90deg`, it is out at the side,
 at depth `0`. The browser does the `sin` and the `cos` for every frame.
 
-[A Point on the Screen](tutorial:a-point-on-the-screen#a-ball-in-orbit)
+[3D animation: a camera and a ball in orbit](tutorial:a-ball-in-orbit#a-ball-in-orbit)
 has the same ball, written as `x = r cos θ` and `z = 5 + r sin θ`. It
 measures the angle from a different starting place, and pushes the whole
 circle five units away from the eye. It is still the same circle.
@@ -132,12 +132,10 @@ Select `.orbit` on the orbit page, open the **Computed** tab, and find
 numbers change as the orbit turns.
 
 The order of a list matters for the same reason that the order of
-matrix multiplication matters. The section "Two Turns at Once" in [Turning a
-Cube](tutorial:turning-a-cube#two-turns-at-once), on the Computational
+matrix multiplication matters. The section "Two Turns at Once" in [The rotation matrix: turning a cube in 3D](tutorial:turning-a-cube#two-turns-at-once), on the Computational
 Methods course, has the same rule written as matrices: the matrix
 nearest the points acts first. In CSS, the transform at the
-right-hand end of the list acts first. [The Fourth
-Number](tutorial:the-fourth-number) explains why the grid needs four
+right-hand end of the list acts first. [Homogeneous coordinates and the projection matrix](tutorial:the-fourth-number) explains why the grid needs four
 rows, and not three: a push like `translateZ` cannot be written with
 three.
 

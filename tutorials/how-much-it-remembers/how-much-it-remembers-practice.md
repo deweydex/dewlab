@@ -1,11 +1,14 @@
 ---
-title: "How Much It Remembers — Practice"
+title: "N-grams: a Markov chain that remembers more words — Practice"
 practice_for: how-much-it-remembers
 year: "2026-2027"
 version: 2026.09.05.2
 ---
 
-# How Much It Remembers — Practice
+# N-grams: a Markov chain that remembers more words — Practice
+
+The cell below loads and cleans the book, then builds both chains,
+`order1` and `order2`, just as the tutorial did. Run it first.
 
 ```python exec
 id: setup-1
@@ -32,12 +35,13 @@ for w1, w2, w3 in zip(words, words[1:], words[2:]):
 ## Counting the Choices
 
 **1.** What fraction of `order1`'s keys have exactly one recorded
-follower? What fraction of `order2`'s keys do?
+follower? What fraction of `order2`'s keys do? Which fraction do you
+expect to be bigger?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. A key has exactly one recorded follower when its dictionary has exactly
-   one entry — `len(order1[key]) == 1`.
+1. A key has exactly one recorded follower when its inner dictionary has
+   exactly one entry: `len(order1[key]) == 1`.
 2. Count how many keys in `order1` meet that test, then divide by
    `len(order1)`.
 3. Do the same for `order2`.
@@ -53,32 +57,37 @@ print(len(single1) / len(order1))
 print(len(single2) / len(order2))
 ```
 
-About 67% of `order1`'s keys have only ever had one recorded follower.
-For `order2`, that climbs to about 87%. Remembering one more word of
-context does not just add detail — it turns most of the situations the
-chain has ever seen into ones with only a single recorded outcome.
+About 67% of `order1`'s keys have only one recorded follower. For
+`order2`, that rises to about 87%. Remembering one more word does more
+than add detail. For most of the pairs the chain has seen, there is only
+one word it can choose next.
 
 </details>
 
-**2.** Find three real two-word pairs in `order2` that each have exactly
-one recorded follower, appearing at least four times.
+**2.** Can you find three two-word keys in `order2` that have exactly one
+recorded follower, where that follower appears at least four times?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-common_single = {
-    k: v for k, v in order2.items()
-    if len(v) == 1 and list(v.values())[0] >= 4
-}
-print(list(common_single.items())[:5])
+common_single = [
+    (pair, followers) for pair, followers in order2.items()
+    if len(followers) == 1 and list(followers.values())[0] >= 4
+]
+print(len(common_single))
+for item in common_single:
+    print(item)
 ```
 
-`("a", "kind")` is always followed by `"of"`, 11 times: the fixed phrase
-`"a kind of"`. `("Palace", "of")` is always followed by `"Green"`, 10
-times — not an idiom this time, but a real place in the story, the
-*Palace of Green Porcelain*, named the same way every time it comes up.
-`("I", "determined")` is always followed by `"to"`, 8 times: another
-fixed phrase, `"I determined to"`.
+There are 18. Here are three of them:
+
+- `("a", "kind")` is always followed by `"of"`, 11 times. That is the
+  fixed phrase `"a kind of"`.
+- `("Palace", "of")` is always followed by `"Green"`, 10 times. This one
+  is a place in the story, the *Palace of Green Porcelain*. The book
+  names it the same way every time.
+- `("I", "determined")` is always followed by `"to"`, 8 times. That is
+  another fixed phrase, `"I determined to"`.
 
 </details>
 
@@ -113,34 +122,33 @@ def generate2(w1, w2, steps):
 ```
 
 **3.** Generate 25 words from `order1` and 25 words from `order2`, both
-starting from the same word. Which one contains a longer unbroken run of
-words that also appears, in the same order, somewhere in `book`?
+starting from the same word. Which one has a longer run of words that
+also appears, in the same order, somewhere in `book`?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Generate both, and read them side by side.
-2. To check whether a phrase you spot really is lifted from the book, test
-   it directly: `"some phrase here" in book`.
-3. A short, common phrase (two or three words) will almost always test
-   `True` by coincidence. Try a longer stretch before deciding it means
+2. To check whether a phrase you spot is copied from the book, test it:
+   `"some phrase here" in book`.
+3. A short, common phrase of two or three words will almost always test
+   `True` by chance. Try a longer stretch before you decide it means
    anything.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no single correct output, since the chain chooses at random,
-but the `order2` line should contain the longer verbatim run more often
-than not, across repeated tries. That is the whole trade-off this
-tutorial names: more context makes the chain lean more heavily on
-stretches it has literally seen before.
+There is no single correct output, because the chain chooses at random.
+Over several tries, though, the `order2` line should have the longer
+copied run more often than not. That is the trade-off from the
+tutorial: with more context, the chain leans more on stretches of the
+book it has seen before.
 
 </details>
 
 **4. Try this next:** build an `order3` chain, keyed on the last *three*
-words instead of two, and generate from it. Does it read even more like
-real sentences from the book — or does it start breaking down for a
-different reason?
+words, and generate from it. Does it read even more like real sentences
+from the book? Or does it start to break down for a different reason?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -148,11 +156,11 @@ different reason?
    `zip(words, words[1:], words[2:], words[3:])`.
 2. The key is now a triple, `(w1, w2, w3)`, and the value it maps to is
    `w4`.
-3. `generate3` needs to slide its key forward by dropping the oldest word
-   and keeping the two newest, plus the word just chosen — the same idea
-   `generate2` used, one word longer.
+3. `generate3` moves its key forward in the same way `generate2` did,
+   one word longer. It drops the oldest word, keeps the two newer ones,
+   and adds the word just chosen.
 
-**Think about:** `order2` already had 22,457 keys from one book. What do
-you expect `order3` to have — more, fewer, or about the same?
+**Think about:** `order2` already had 22,457 keys from one book. Do you
+expect `order3` to have more, fewer, or about the same?
 
 </details>

@@ -88,7 +88,7 @@ description: |
   This module is Computational Methods and Problem Solving (5N0554). …
 contents:
   - title: Python fundamentals
-    tutorials: [first-steps-cm, working-with-tables]
+    tutorials: [first-steps-cm, storing-and-computing, repeating-yourself]
   - title: Matrices
     tutorials: [grid-of-numbers, multiplying-grids, what-a-matrix-does-to-a-picture]
 ```
@@ -402,8 +402,8 @@ editor uses, `site:` swapped for `app:`:
 ````markdown
 ```sql exec
 id: seed-products
-CREATE TABLE products (name TEXT, price REAL);
-INSERT INTO products VALUES ('Mug', 8.5), ('Notebook', 3.0);
+CREATE TABLE product_tbl (product_id INTEGER PRIMARY KEY, product_name TEXT, price REAL);
+INSERT INTO product_tbl (product_name, price) VALUES ('Mug', 8.5), ('Notebook', 3.0);
 ```
 
 ```html app
@@ -421,9 +421,9 @@ td { padding: 0.3rem 0.6rem; }
 ```js app
 id: shop-js
 app: shop
-const rows = await dlQuery("SELECT name, price FROM products ORDER BY name");
+const rows = await dlQuery("SELECT product_name, price FROM product_tbl ORDER BY product_name");
 root.querySelector("tbody").innerHTML =
-  rows.map((r) => `<tr><td>${r.name}</td><td>€${r.price}</td></tr>`).join("");
+  rows.map((r) => `<tr><td>${r.product_name}</td><td>€${r.price}</td></tr>`).join("");
 ```
 ````
 
@@ -448,6 +448,24 @@ query's own result becoming part of it.
 
 ---
 
+### Naming tables and keys
+
+Every SQL table in a tutorial follows one convention, so a student meets
+the same shape on every page and in every diagram:
+
+- A table's name is singular and ends in `_tbl`: `product_tbl`,
+  `book_author_tbl`.
+- A primary key is named after its table: `product_id`, never a bare
+  `id`. A foreign key takes the same name as the key it points at, so a
+  join reads `ON product_tbl.product_id = sale_tbl.product_id`.
+- Foreign-key columns sit directly under the primary key, before the
+  other columns.
+
+A table built straight from a published CSV keeps the CSV's own column
+names; only its table name follows the convention. The reasoning is in
+DECISIONS_LOG 7.212, and `dev/graphics/erd.py` draws every relationship
+from the key's own row, which the convention makes readable.
+
 ## Sharing setup code between tutorials
 
 Boilerplate that several tutorials need — loading the same dataset, usually —
@@ -470,7 +488,7 @@ again on every page.
 ## Linking between tutorials
 
 ```markdown
-See [working with a table](tutorial:working-with-tables#the-shared-table).
+See [a table in Python](tutorial:working-with-tables#keeping-only-some-rows).
 ```
 
 The build turns that into a real relative link. If the slug or the anchor does

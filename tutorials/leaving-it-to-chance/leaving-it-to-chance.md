@@ -1,7 +1,7 @@
 ---
-title: "Leaving It to Chance"
+title: "Random numbers: pseudo-random numbers and seeds"
 year: "2026-2027"
-version: 2026.08.30.1
+version: 2026.09.22.1
 covers:
   asking-the-machine-for-a-number:
     covers: [CMPS-LO2]
@@ -14,22 +14,22 @@ covers:
     covers: [CMPS-LO2]
 ---
 
-# Leaving It to Chance
+# Random numbers: pseudo-random numbers and seeds
 
-Everything in this series is built on one instruction: give me a number I
-could not have predicted. Shuffling a deck, picking a lottery draw,
-simulating a queue, testing a design against a thousand scenarios nobody
-wrote down — all of it starts there.
+Every simulation in this series starts with one instruction: give me a
+number I could not have predicted. Shuffling a deck, drawing lottery
+numbers, simulating a queue, testing a design against a thousand
+situations nobody wrote down: all of these need that one instruction.
 
-So it is worth spending one tutorial on that instruction alone, before
-building anything on top of it. It is the foundation of every simulation in
-this series. And the machine is not doing what it appears to be doing — but
-the gap between the two turns out to be useful rather than disappointing.
+So on this page we look at that instruction on its own, before we build
+anything on top of it. We will find that the computer is not doing what
+it seems to be doing. And we will find that this is useful, not
+disappointing.
 
 ## Asking the Machine for a Number
 
-Python's `random` module is part of the standard library — nothing to
-install, and it is already there.
+Python's `random` module is part of the standard library. There is
+nothing to install. We only need to import it.
 
 ```python exec
 id: asking-the-machine-for-a-number-1
@@ -38,13 +38,15 @@ import random
 print(random.random())
 ```
 
-Run that a few times. Each click gives a different number, somewhere between
-0 and 1.
+Run the cell a few times. What do you notice about the number each time?
 
-That one function is enough to build almost everything else. A number between
-0 and 1 can be stretched, shifted, rounded or compared into whatever shape a
-problem needs — and `random` provides the common shapes directly so you do
-not have to.
+Each run gives a different number between 0 and 1. It can be 0, but it
+is always below 1.
+
+That one function is enough to build almost everything else. We can
+stretch a number between 0 and 1, shift it, round it or compare it, until
+it has whatever shape a problem needs. The `random` module gives us the
+common shapes ready-made, so we do not have to build them ourselves.
 
 ```python exec
 id: asking-the-machine-for-a-number-2
@@ -55,10 +57,18 @@ print("a number 0 to 100:", random.uniform(0, 100))
 print("heads or tails:   ", random.choice(["heads", "tails"]))
 ```
 
+Here are the three functions in that cell:
+
+| Function | What it gives back |
+|---|---|
+| `random.randint(1, 6)` | a whole number from 1 to 6, including both 1 and 6 |
+| `random.uniform(0, 100)` | a number with decimals, anywhere from 0 to 100 |
+| `random.choice(["heads", "tails"])` | one item from the list |
+
 ### Your turn
 
-How might you simulate rolling two dice and adding them? `random.randint(1, 6)`
-gives one die; you need the total of two.
+How might you simulate rolling two dice and adding them?
+`random.randint(1, 6)` gives one die, and you need the total of two.
 
 ```python exec
 id: asking-the-machine-for-a-number-3
@@ -67,7 +77,13 @@ hint: Call randint twice and add the results. Storing each roll in its own varia
 
 ## The Same Numbers Twice
 
-Now something that looks like a mistake.
+The next cell does something that looks like a mistake.
+
+It builds a list of five dice rolls with a list comprehension, which we
+met in [Lists: keeping many values in order](tutorial:lists-and-sequences).
+The loop variable is called `_`. Python programmers use the name `_` for
+a loop variable the loop never uses. Here the loop only needs to run five
+times.
 
 ```python exec
 id: the-same-numbers-twice-1
@@ -77,53 +93,62 @@ random.seed(42)
 print([random.randint(1, 6) for _ in range(5)])
 ```
 
-Run that cell again. And again.
+Run the cell again. And again. What happens?
 
-The same five numbers, every time. Change the `42` to any other whole number
-and you get a different five — but those five also repeat every time.
+You get the same five numbers every time. If you change the `42` to
+another whole number, you get a different five. But those five also
+repeat every time you run the cell.
 
 ### Your turn
 
-Before reading on: what do you think `random.seed(42)` is doing, given what
-you have just watched? And can you find a seed that makes the first roll a 6?
+1. Before you read on, what do you think `random.seed(42)` is doing?
+   Think about what you have just seen.
+2. Can you find a seed that makes the first roll a 1?
 
 ```python exec
 id: the-same-numbers-twice-2
-hint: Try a few seeds in a loop, printing the seed and its first roll, and stop when you see a 6.
+hint: Try a few seeds in a loop. For each one, set the seed, then print the seed and its first roll. Stop when you see a 1.
 ```
 
-Here is what is happening. The numbers were never random. `random.random()`
-runs an algorithm — an entirely ordinary, deterministic piece of arithmetic —
-that takes its current internal state, scrambles it thoroughly, and returns a
-number derived from the result. The scrambling is good enough that the output
-passes the statistical tests we would apply to real randomness: no pattern
-anyone can find, every value equally likely, no connection between one number
-and the next.
+Here is what is happening. The numbers were never random.
+`random.random()` runs an algorithm: an ordinary piece of arithmetic
+that gives the same result every time it starts from the same place.
+The algorithm takes its current internal state and mixes it up very
+thoroughly. Then it returns a number made from the result.
 
-But it is a calculation, and a calculation given the same starting point
-produces the same answer. `random.seed(42)` sets that starting point by hand.
-Without it, Python picks one from the operating system, which is why the
-numbers usually look different each run.
+The mixing is good enough to pass the tests we would use on real
+randomness. Nobody can find a pattern in the numbers. Every value is
+equally likely. And one number tells you nothing about the next.
 
-Numbers produced this way are called *pseudo-random*: not random, but so
-close to random that no test we use can tell the difference.
+But it is still a calculation. A calculation that starts from the same
+place gives the same answer. The *seed* is that starting place, and
+`random.seed(42)` sets it by hand. If we do not set a seed, Python gets
+one from the operating system. That is why the numbers usually look
+different on each run.
+
+Numbers made this way are called *pseudo-random*. A pseudo-random number
+comes from a calculation, but it is so close to random that no test we
+use can tell the difference.
 
 ## What Random Is Good Enough For
 
-The obvious reaction is that pseudo-random is a compromise, a second-best
-because true randomness is hard to get. For one field that is exactly
-right, and for ours it is almost the reverse.
+Your first thought might be that pseudo-random is second-best, and that
+we only use it because true randomness is hard to get. In one field that
+is true, as we will see below. For simulation, it is almost the opposite.
 
-Think about what you just did to find a seed giving a 6. You ran an
-experiment, and you could run it again and get the same result. Now imagine
-the simulation in tutorial 4 of this series produces a bizarre result — a
-queue that never clears — and you want to know why. With truly random
-numbers, that specific run is gone forever. You cannot reproduce it, cannot
-step through it, cannot show it to anyone else. With a seed, you write down
-one integer and the entire run comes back exactly.
+Think about what you did to find a seed that gives a 1. You ran an
+experiment, and you can run it again and get the same result.
 
-An experiment nobody can re-run is not much of an experiment. Reproducibility
-is why every serious piece of simulation code sets a seed and records it.
+Now imagine that a simulation, like the one in
+[Simulating a queue: stable and unstable queues](tutorial:when-a-queue-never-clears),
+gives a strange result, such as a queue that never clears. You want to
+know why. With truly random numbers, that run is gone forever. You cannot
+repeat it, step through it, or show it to anyone else. With a seed, you
+write down one whole number, and the whole run comes back exactly.
+
+An experiment that nobody can run again is not much of an experiment.
+Being able to repeat a run exactly is called *reproducibility*, and it is
+why careful simulation code always sets a seed and writes it down.
 
 ```python exec
 id: what-random-is-good-enough-for-1
@@ -140,8 +165,11 @@ for seed in [1, 2, 3]:
 print("seed 2, again:", one_experiment(2))
 ```
 
-Five numbers are easy enough to check by eye. Two thousand are not, so
-here is the same claim as a picture.
+Three numbers are easy to check by eye. Two thousand are not, so the
+next cell shows the same idea as a picture. It rolls a die 2,000 times,
+and after each roll it works out the average of all the rolls so far. It
+does this three times: with seed 7, with seed 7 again, and with seed 8.
+Before you run it, what do you expect the two seed 7 lines to look like?
 
 ```python exec
 id: what-random-is-good-enough-for-3
@@ -170,27 +198,30 @@ plt.ylabel("average so far")
 plt.legend()
 ```
 
-There are three runs on that chart and you can only see two paths. The
-first two are drawn on top of each other, exactly, for all two thousand
-rolls — the dashes are the only reason you can tell the second one is
-there at all. Same seed, same dice, every time.
+There are three runs on the chart, but you can only see two paths. The
+two seed 7 runs lie exactly on top of each other, for all 2,000 rolls.
+The dashes are the only way to tell that the second one is there at all.
+The same seed gives the same dice, every time.
 
-Seed 8 takes a visibly different path. It is not a better or worse run,
-just another one, and it settles towards the same 3.5 the others do. The
-seed decides which wander you get, not where it ends up.
+Seed 8 takes a different path. It is not a better or worse run. It is
+only another run, and it settles towards the same average of 3.5 as the
+others. The seed decides which path you get. It does not decide where
+the path ends up.
 
-The one place where this really is a compromise is security. If an attacker
-can find your seed, they can produce every "random" number you will ever
-generate — which for a session token or a password reset link is a complete
-failure. That is what Python's `secrets` module is for, and it is a different
-tool for a different job. For simulation, where nobody is trying to predict
-your dice, `random` is the right choice and reproducibility is the reason.
+There is one field where pseudo-random really is second-best: security.
+If an attacker can find your seed, they can work out every "random"
+number you will ever make. For a login code or a password reset link,
+that is a complete failure. Python's `secrets` module is the tool for
+that job. For simulation, nobody is trying to guess your dice. So
+`random` is the right choice, and reproducibility is the reason.
 
 ### Your turn
 
-Can you show the difference directly? Write a cell that calls
-`random.seed(7)` and prints five numbers, then calls `random.seed(7)` again
-and prints five more — and satisfy yourself that the two lists match.
+Can you show that a seed repeats a run?
+
+1. Call `random.seed(7)`, then print five random numbers.
+2. Call `random.seed(7)` again, then print five more.
+3. Check that the two lists match.
 
 ```python exec
 id: what-random-is-good-enough-for-2
@@ -198,9 +229,8 @@ id: what-random-is-good-enough-for-2
 
 ## Choosing From a List
 
-One more tool, because the rest of the series leans on it. Often what you
-want is not a number but a *thing*: a customer, a word, a country, a row of
-data.
+The rest of this series uses one more tool. Often we do not want a
+number. We want a thing: a customer, a word, a country, a row of data.
 
 ```python exec
 id: choosing-from-a-list-1
@@ -213,13 +243,15 @@ print("one day: ", random.choice(weather))
 print("a week:  ", [random.choice(weather) for _ in range(7)])
 ```
 
-`random.choice` picks one, with every item equally likely. Two neighbours are
-worth knowing, and the difference between them is the thing people get wrong:
+`random.choice` picks one item, and every item is equally likely. It has
+two close relatives, `random.choices` and `random.sample`. People often
+mix them up. Look at the two lines this cell prints. Can you spot a card
+that appears twice?
 
 ```python exec
 id: choosing-from-a-list-2
 import random
-random.seed(0)
+random.seed(3)
 
 deck = ["A", "K", "Q", "J", "10"]
 
@@ -227,40 +259,53 @@ print("with replacement:   ", random.choices(deck, k=4))
 print("without replacement:", random.sample(deck, k=4))
 ```
 
-`random.choices` — note the **s** — puts each card back before drawing the
-next, so the same card can come up twice. `random.sample` does not, so it
-cannot. Dealing a hand of cards is `sample`. Rolling a die four times is
-`choices`, because a die has no memory of what it just showed.
+`random.choices`, with an **s**, puts each card back before it draws the
+next one. This is called drawing *with replacement*, and the same card
+can come up twice. Here the K came up twice.
+
+`random.sample` does not put the card back. This is drawing *without
+replacement*, so no card can come up twice.
+
+| Function | Puts each item back? | Can repeat? | Example |
+|---|---|---|---|
+| `random.choices(items, k=4)` | yes | yes | rolling a die four times |
+| `random.sample(items, k=4)` | no | no | dealing a hand of cards |
+
+Rolling a die four times is `choices`, because a die has no memory of
+what it showed last time.
 
 ### Your turn
 
-Which of the two would you use to simulate drawing five names out of a hat
-for a prize draw, where nobody can win twice? Write it, and check that no
-name appears more than once.
+You want to draw five names out of a hat for a prize draw, and nobody can
+win twice.
+
+1. Which of the two functions would you use?
+2. Write the draw.
+3. Check that no name appears more than once.
 
 ```python exec
 id: choosing-from-a-list-3
-hint: Ask yourself whether a name goes back into the hat after it is drawn. Comparing len(drawn) with len(set(drawn)) is one way to confirm there are no repeats.
+hint: Ask yourself whether a name goes back into the hat after it is drawn. To check for repeats, compare len(drawn) with len(set(drawn)). A set keeps only one copy of each item.
 names = ["Aoife", "Brendan", "Ciara", "Dara", "Eimear", "Fionn", "Gráinne"]
 ```
 
 ## Reflection
 
-The word *random* changed its meaning over this tutorial. By the end it meant
-something narrower than it did at the start: not unpredictable in principle,
-but unpredictable to anyone who does not know the seed, and regular enough
-that the difference does not show up in the answer.
+The word *random* has a narrower meaning now than it had at the start of
+this page. It no longer means "impossible to predict". It means
+"impossible to predict for anyone who does not know the seed". It also
+means "regular enough that the difference never shows up in the answer".
 
-Was the discovery that the numbers repeat a disappointment when you first ran
-that cell, or did the reason for it make sense before the explanation did?
-Both are common, and the second is worth trusting — the argument for
-reproducibility is one you can build yourself from a single afternoon of
-debugging.
+When you first saw the numbers repeat, did it feel like a
+disappointment? Or did the reason make sense before you read the
+explanation? Both reactions are common. If it was the second, trust that
+feeling. You could build the whole argument for reproducibility yourself,
+from one afternoon spent chasing a bug.
 
-Where else have you met something that is technically not what it claims to
-be, but close enough that the difference never matters? Computing has many
-examples like this, and noticing them is most of what it means to understand
-a system rather than only use it.
+Where else have you met something that is not exactly what it claims to
+be, but is so close that the difference never matters? Computing has many
+examples like this. Noticing them is a large part of understanding a
+system, and not only using it.
 
 ## Where to Read More
 

@@ -1,15 +1,16 @@
 ---
-title: "Three Ways to Make Change — Practice"
+title: "Making change: brute force, memoization and greedy algorithms — Practice"
 practice_for: three-ways-to-make-change
 year: "2026-2027"
 version: 2026.09.05.1
 ---
 
-# Three Ways to Make Change — Practice
+# Making change: brute force, memoization and greedy algorithms — Practice
 
-Answers are folded. Several of these ask you to predict an output before
-running anything. Resist checking first — being wrong and finding out why
-is worth more than being right by accident.
+The answers are hidden in folds under each problem. Several problems ask
+you to predict what the code will do before you run it. Try to answer
+before you check. Being wrong, and finding out why, teaches you more than
+being right by accident.
 
 ```python exec
 id: setup-1
@@ -54,8 +55,9 @@ def fewest_tokens_greedy(amount, denominations):
 
 ## Checking the Guarantee
 
-**1.** Before running it, see if you can predict `fewest_tokens_brute_force(10, TOKENS)`: which
-three tokens from `[1, 3, 4]` add up to `10`?
+**1.** Before you run it, can you predict
+`fewest_tokens_brute_force(10, TOKENS)`? Which three tokens from
+`[1, 3, 4]` add up to `10`?
 
 ```python exec
 id: checking-the-guarantee-1
@@ -64,14 +66,13 @@ hint: 4 + 3 + 3 is one path worth trying by hand first.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`3`. One combination that reaches it is `4 + 3 + 3`; no combination of two
-tokens from `[1, 3, 4]` reaches `10` at all, so three is the fewest possible.
+`3`. One combination that makes `10` is `4 + 3 + 3`. No two tokens from
+`[1, 3, 4]` make `10` at all, so three is the fewest possible.
 
 </details>
 
-**2.** What does `fewest_tokens_cached(0, TOKENS)` return, and why does that
-particular answer matter to every other amount the function is ever asked
-about?
+**2.** What does `fewest_tokens_cached(0, TOKENS)` return? Why does that
+answer matter for every other amount the function is ever asked about?
 
 ```python exec
 id: checking-the-guarantee-2
@@ -79,19 +80,22 @@ id: checking-the-guarantee-2
 
 <details class="dl-answer"><summary>answer</summary>
 
-`0`. Zero remaining means zero tokens needed. Every other amount is worked
-out by trying a token and asking the same question about a smaller amount.
-Without this base case, the function would keep asking about smaller
-amounts forever, never handing back an actual number.
+`0`. When nothing is left to make, no tokens are needed.
+
+The function works out every other amount by trying a token, then asking
+the same question about a smaller amount. Every chain of questions ends
+at `0`. This case is the base case: the case the function answers
+without calling itself. Without it, the function would keep asking about
+smaller amounts forever, and never give back a number.
 
 </details>
 
 ## When the Shortcut Fails
 
-**3.** Try a different set of tokens, `TOKENS2 = [1, 4, 5]`, and compare
-`fewest_tokens_greedy(8, TOKENS2)` against `fewest_tokens_cached(8, TOKENS2)`.
-The tutorial's own example disagreed by one token — does this one disagree by
-more?
+**3.** Try a different set of tokens, `TOKENS2 = [1, 4, 5]`. Compare
+`fewest_tokens_greedy(8, TOKENS2)` with `fewest_tokens_cached(8, TOKENS2)`.
+With `[1, 3, 4]`, the two never disagreed by more than one token. Does
+this pair disagree by more?
 
 ```python exec
 id: when-the-shortcut-fails-1
@@ -100,16 +104,19 @@ hint: Work out the greedy choice by hand first: which token does it take at each
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes, by two. Greedy takes the `5` first, leaving `3`, then three separate
-`1`s, for `4` tokens total. The cached, guaranteed-correct answer is `2`:
-two `4`s. A greedy shortcut's mistake is not always as small as the
-tutorial's own example made it look.
+Yes, by two. Greedy takes the `5` first. That leaves `3`, which needs
+three `1`s. So greedy uses `4` tokens in total. The cached answer, which
+is always correct, is `2`: two `4`s. A greedy shortcut's mistake is not
+always as small as the tutorial's example made it look.
 
 </details>
 
-**4.** This time, call `fewest_tokens_greedy(5, [3, 4])`, where no `1` token
-is available. Predict what it returns before running it, and say why in
-terms of what the function actually does with `remaining` at the end.
+**4.** This time, call `fewest_tokens_greedy(5, [3, 4])`. There is no `1`
+token.
+
+1. Predict what it returns, before you run it.
+2. Explain why, using what the function does with `remaining` at the
+   end.
 
 ```python exec
 id: when-the-shortcut-fails-2
@@ -118,30 +125,29 @@ hint: Walk through the two coins by hand: take a 4, what is left, does a 3 fit i
 
 <details class="dl-answer"><summary>answer</summary>
 
-`None`. Taking the `4` first leaves `1` remaining, and no `3` fits into
-`1`, so the loop ends with `remaining` still `1`, not `0`. The function's
-own check, `count if remaining == 0 else None`, catches this and correctly
-reports that `5` cannot be made from `[3, 4]` at all — the same answer
-`fewest_tokens_brute_force(5, [3, 4])` would give.
+`None`. Taking the `4` first leaves `1`. A `3` does not fit into `1`, so
+the loop ends with `remaining` still at `1`, not `0`. The function's last
+line, `count if remaining == 0 else None`, catches this. It reports,
+correctly, that `5` cannot be made from `[3, 4]` at all.
+`fewest_tokens_brute_force(5, [3, 4])` gives the same answer.
 
 </details>
 
 ## Reading the Trade-Off
 
-**5.** In your own words: why does the tutorial say caching "keeps brute
-force's guarantee" while the greedy shortcut does not?
+**5.** The tutorial says that caching "keeps brute force's guarantee", and
+that the greedy shortcut does not. In your own words, why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Caching still checks every possibility that brute force would check — it
-only skips checking the *same* possibility a second time. Nothing about
-which answers get compared changes, so the guarantee that the true fewest
-gets found survives intact.
+Caching still checks every possibility that brute force checks. It only
+skips checking the *same* possibility a second time. The answers it
+compares are the same answers, so it still always finds the true fewest.
 
-The greedy shortcut never compares possibilities at all. It commits to the
-biggest token at each step and never looks back to ask whether an earlier,
-smaller choice would have opened up a better path later. That is exactly
-the choice that goes wrong with `TOKENS = [1, 3, 4]` at `amount=6`: taking
-the `4` first closes off the two-token answer, `3 + 3`, for good.
+The greedy shortcut never compares possibilities at all. At each step it
+takes the biggest token, and it never looks back. It never asks whether
+a smaller choice earlier would have led to a better answer later. That is
+the choice that goes wrong with `TOKENS = [1, 3, 4]` at `amount=6`.
+Taking the `4` first closes off the two-token answer, `3 + 3`, for good.
 
 </details>

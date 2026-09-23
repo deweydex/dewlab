@@ -14,7 +14,7 @@ entries:
       Runs a SQL query against the database and returns the result as a
       DataFrame. It does the reverse of to_sql(), which writes a
       DataFrame into the database instead.
-    example: 'result = pd.read_sql("SELECT * FROM income_share", db)'
+    example: 'result = pd.read_sql("SELECT * FROM income_share_tbl", db)'
 
   - term: "groupby()"
     kind: function

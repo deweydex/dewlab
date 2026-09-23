@@ -153,9 +153,9 @@ squares = [n ** 2 for n in range(1, 11)]
 
 Both give `[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]`.
 
-The second way is a *list comprehension*. A list comprehension is a loop
-that builds a list, written on one line inside square brackets. It does
-the same work as the first way.
+The second way is a list comprehension, from "Comprehensions: A Loop
+That Builds a List" on the tutorial page. It does the same work as the
+first way, on one line.
 
 </details>
 
@@ -222,9 +222,181 @@ harder to think about.
 
 </details>
 
+## Comprehensions
+
+```python exec
+id: comprehensions-1
+names = ["Ada", "Grace", "Alan", "Margaret", "Tim"]
+words = ["apple", "fig", "banana", "kiwi"]
+print([len(word) for word in words])
+print(sum(len(word) for word in words))
+```
+
+**10.** Predict what each of these gives. Then check them in the cell
+above.
+
+- (a) `[n * 2 for n in range(4)]`
+- (b) `[n for n in range(10) if n % 3 == 0]`
+- (c) `[word[0] for word in words]`
+- (d) `sum(n for n in range(5))`
+- (e) `"".join(str(n) for n in range(5))`
+- (f) `[[0] * 2 for _ in range(3)]`
+
+<details class="dl-answer"><summary>answer</summary>
+
+(a) `[0, 2, 4, 6]`. (b) `[0, 3, 6, 9]`. (c) `['a', 'f', 'b', 'k']`.
+(d) `10`. (e) `'01234'`. (f) `[[0, 0], [0, 0], [0, 0]]`.
+
+In (b), the filter keeps only the numbers with no remainder after
+dividing by 3. 0 is one of them, because 0 divided by 3 is 0 with
+nothing left over.
+
+(d) adds 0 + 1 + 2 + 3 + 4. (e) looks like a number, but it is a
+string: `join()` always gives back a string.
+
+(f) is a grid with 3 rows and 2 columns. The number in `range()` says
+how many rows. The number after `*` says how long each row is.
+
+</details>
+
+**11.** Write this loop as a list comprehension. Then write the
+comprehension `[len(name) * 10 for name in names]` as a loop.
+
+```python
+short_names = []
+for name in names:
+    if len(name) <= 4:
+        short_names.append(name)
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+short_names = [name for name in names if len(name) <= 4]
+```
+
+Both give `['Ada', 'Alan', 'Tim']`.
+
+And the other way round:
+
+```python
+tens = []
+for name in names:
+    tens.append(len(name) * 10)
+```
+
+Both give `[30, 50, 40, 80, 30]`.
+
+The value that was appended goes at the front of the comprehension. The
+`for` line comes next, without its colon. The `if` line goes at the end.
+Going from a comprehension back to a loop is a good way to check that
+you have read one correctly.
+
+</details>
+
+**12.** What does this print? Why?
+
+```python
+rows = [[0] * 3] * 2
+rows[1][0] = 7
+print(rows)
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+`[[7, 0, 0], [7, 0, 0]]`.
+
+We changed only the row at index 1, but both rows show the 7. That is
+because `* 2` did not make two rows. It put the same row into the outer
+list twice. It is problem 3 again: two names for one list.
+
+A comprehension runs `[0] * 3` once for each row, so each row is a new
+list:
+
+```python
+rows = [[0] * 3 for _ in range(2)]
+rows[1][0] = 7
+print(rows)    # [[0, 0, 0], [7, 0, 0]]
+```
+
+</details>
+
+**13.** Build a 4 × 4 times table as a grid, with a comprehension. Row 1
+should be `[1, 2, 3, 4]`, and row 4 should be `[4, 8, 12, 16]`.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Forget the grid for a moment. How would you write one row, the row
+   for 3, as a comprehension?
+2. That row is `[3 * column for column in range(1, 5)]`. Which part of
+   it changes from row to row?
+3. Put a second comprehension around the first one, with a loop over
+   that part.
+
+**Think about:** which loop makes the rows, and which loop makes the
+values inside one row?
+
+**Try this next:** an addition table, where each value is the row
+number plus the column number.
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+times_table = [[row * column for column in range(1, 5)] for row in range(1, 5)]
+for row in times_table:
+    print(row)
+```
+
+```
+[1, 2, 3, 4]
+[2, 4, 6, 8]
+[3, 6, 9, 12]
+[4, 8, 12, 16]
+```
+
+The inner comprehension makes one row. The outer one makes one of those
+rows for each `row` from 1 to 4.
+
+Printing the grid one row at a time, with a loop, shows it as a square.
+`print(times_table)` would put the whole grid on one long line.
+
+</details>
+
+**14.** With `words = ["apple", "fig", "banana", "kiwi"]`, use a
+generator expression for each of these.
+
+- (a) Count how many words have more than 3 letters.
+- (b) Join the first letter of each word into one string.
+- (c) Find how many letters there are in all the words together.
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+sum(1 for word in words if len(word) > 3)     # 3
+"".join(word[0] for word in words)            # 'afbk'
+sum(len(word) for word in words)              # 18
+```
+
+(a) adds 1 for each word that passes the test: apple, banana and kiwi.
+Only fig has 3 letters or fewer.
+
+(b) `word[0]` is the first letter of each word. `""` puts nothing
+between the letters.
+
+(c) adds 5 + 3 + 6 + 4.
+
+None of these builds a list. A generator expression hands each value
+straight to `sum()` or `join()`. Writing `sum([len(word) for word in
+words])`, with square brackets, gives the same answer. The only
+difference is that it builds a list first, and then adds it up.
+
+</details>
+
 ## Working Through a List
 
-**10.** Can you add up a list without `sum()`? Then find its mean.
+**15.** Can you add up a list without `sum()`? Then find its mean.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -241,7 +413,7 @@ is why most libraries raise an error, and do not choose an answer.
 
 </details>
 
-**11.** How could you count the numbers in a list that are above the mean?
+**16.** How could you count the numbers in a list that are above the mean?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -259,7 +431,7 @@ the mean depends on values we have not seen yet.
 
 </details>
 
-**12.** Multiply two lists element by element. For example, `[1, 2, 3]` and `[4, 5, 6]` give `[4, 10, 18]`.
+**17.** Multiply two lists element by element. For example, `[1, 2, 3]` and `[4, 5, 6]` give `[4, 10, 18]`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -282,7 +454,7 @@ and `zip` hides the problem without telling you.
 
 </details>
 
-**13.** Write `dot_product(a, b)`. Decide what it does when the lists have different lengths, and say why.
+**18.** Write `dot_product(a, b)`. Decide what it does when the lists have different lengths, and say why.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -307,7 +479,7 @@ and not a few functions later.
 
 ## Sequences
 
-**14.** Write functions for the square numbers and the triangular numbers. Print the first eight of each.
+**19.** Write functions for the square numbers and the triangular numbers. Print the first eight of each.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -328,7 +500,7 @@ is always even.
 
 </details>
 
-**15.** Add pairs of triangular numbers that sit next to each other: 1+3, 3+6, 6+10, 10+15. What do you get?
+**20.** Add pairs of triangular numbers that sit next to each other: 1+3, 3+6, 6+10, 10+15. What do you get?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -341,7 +513,7 @@ n(n+1)/2 + (n+1)(n+2)/2 = (n+1)².
 
 </details>
 
-**16.** Can you generate the first fifteen Fibonacci numbers?
+**21.** Can you generate the first fifteen Fibonacci numbers?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -359,7 +531,7 @@ get "the last two", we do not need to do any sums with the length.
 
 </details>
 
-**17.** Divide each Fibonacci number by the one before it. What happens?
+**22.** Divide each Fibonacci number by the one before it. What happens?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -378,7 +550,7 @@ different direction than
 
 </details>
 
-**18.** Write `generate_sequence(rule, n)`. It takes a *function* and returns the first n terms of the sequence that the function defines.
+**23.** Write `generate_sequence(rule, n)`. It takes a *function* and returns the first n terms of the sequence that the function defines.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -400,7 +572,7 @@ between those two is the whole idea.
 
 ## From the Everlearning Problem Bank
 
-**19.** Given a list of whole numbers, find the number that appears most often.
+**24.** Given a list of whole numbers, find the number that appears most often.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -426,7 +598,7 @@ nobody answered.
 
 </details>
 
-**20.** Reverse the order of the words in a sentence, but keep each word the same.
+**25.** Reverse the order of the words in a sentence, but keep each word the same.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -443,7 +615,7 @@ think about them. `split(" ")` does not do this.
 
 </details>
 
-**21.** Take a string, and return four copies of its last four characters.
+**26.** Take a string, and return four copies of its last four characters.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -461,7 +633,7 @@ problem does not say.
 
 </details>
 
-**22.** Given a list of numbers, return a new list with the repeated values removed. Keep the original order.
+**27.** Given a list of numbers, return a new list with the repeated values removed. Keep the original order.
 
 <details class="dl-answer"><summary>answer</summary>
 

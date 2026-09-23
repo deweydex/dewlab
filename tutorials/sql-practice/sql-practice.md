@@ -1,7 +1,7 @@
 ---
 title: "SQL Practice"
 year: "2026-2027"
-version: 2026.09.10.1
+version: 2026.09.23.1
 covers:
   exercise-1-naming-columns:
     touches: [DBM-LO3]
@@ -17,31 +17,31 @@ covers:
 
 # SQL Practice
 
-This page has five short exercises, using a shared table of students
-and a shared table of courses. None of this is graded; the hints and
-the solutions at the bottom are there to use freely. Getting an
-exercise wrong, then reading why, usually teaches you more than
-skipping the hint just to avoid the mistake.
+This page has five short exercises, using a shared table of students,
+`student_tbl`, and a shared table of courses, `course_tbl`. None of
+this is graded; the hints and the solutions at the bottom are there to
+use freely. Getting an exercise wrong, then reading why, usually
+teaches you more than skipping the hint just to avoid the mistake.
 
 Run this first to build both tables.
 
 ```sql exec
 id: create-students-and-courses
-CREATE TABLE students (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE student_tbl (
+    student_id INTEGER PRIMARY KEY,
     name TEXT,
     age INTEGER,
     grade INTEGER
 );
 
-CREATE TABLE courses (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE course_tbl (
+    course_id INTEGER PRIMARY KEY,
     name TEXT,
     instructor TEXT,
     credits INTEGER
 );
 
-INSERT INTO students (name, age, grade) VALUES
+INSERT INTO student_tbl (name, age, grade) VALUES
     ('Alice Johnson', 20, 88),
     ('Bob Smith', 19, 92),
     ('Carol Williams', 21, 76),
@@ -51,7 +51,7 @@ INSERT INTO students (name, age, grade) VALUES
     ('Grace Wilson', 21, 89),
     ('Henry Moore', 20, 94);
 
-INSERT INTO courses (name, instructor, credits) VALUES
+INSERT INTO course_tbl (name, instructor, credits) VALUES
     ('Introduction to Programming', 'Dr. Smith', 4),
     ('Data Structures', 'Prof. Johnson', 3),
     ('Web Development', 'Dr. Lee', 3),
@@ -61,7 +61,7 @@ INSERT INTO courses (name, instructor, credits) VALUES
 
 ## Exercise 1: naming columns
 
-Try selecting only the `name` and `age` columns from `students`.
+Try selecting only the `name` and `age` columns from `student_tbl`.
 
 ```sql exec
 id: select-name-and-age
@@ -91,7 +91,7 @@ id: students-below-75
 
 ## Exercise 3: INSERT
 
-Try adding yourself to `students`, with any age and grade you like.
+Try adding yourself to `student_tbl`, with any age and grade you like.
 
 ```sql exec
 id: insert-yourself
@@ -100,7 +100,7 @@ id: insert-yourself
 
 <details class="dl-hint"><summary>hint</summary>
 
-`INSERT INTO students (name, age, grade) VALUES ('Your Name', 20, 85);`
+`INSERT INTO student_tbl (name, age, grade) VALUES ('Your Name', 20, 85);`
 
 </details>
 
@@ -122,7 +122,7 @@ same thing.
 
 ## Exercise 5: COUNT
 
-How many courses are in `courses`? Try writing a query that counts them.
+How many courses are in `course_tbl`? Try writing a query that counts them.
 
 ```sql exec
 id: count-courses
@@ -131,7 +131,7 @@ id: count-courses
 
 <details class="dl-hint"><summary>hint</summary>
 
-`SELECT COUNT(*) FROM courses;` counts every row.
+`SELECT COUNT(*) FROM course_tbl;` counts every row.
 
 </details>
 
@@ -140,7 +140,7 @@ id: count-courses
 <details class="dl-answer"><summary>exercise 1</summary>
 
 ```sql
-SELECT name, age FROM students;
+SELECT name, age FROM student_tbl;
 ```
 
 </details>
@@ -148,21 +148,21 @@ SELECT name, age FROM students;
 <details class="dl-answer"><summary>exercise 2</summary>
 
 ```sql
-SELECT * FROM students WHERE grade < 75;
+SELECT * FROM student_tbl WHERE grade < 75;
 ```
 
-Carol Williams and Frank Miller are the two rows this matches, with the
-data above.
+Frank Miller, with a grade of 73, is the only row this matches, with the
+data above. Carol Williams is close, at 76, but 76 is not less than 75.
 
 </details>
 
 <details class="dl-answer"><summary>exercise 3</summary>
 
 ```sql
-INSERT INTO students (name, age, grade) VALUES ('Your Name', 20, 85);
+INSERT INTO student_tbl (name, age, grade) VALUES ('Your Name', 20, 85);
 ```
 
-Any name, age and grade work. Running `SELECT * FROM students;`
+Any name, age and grade work. Running `SELECT * FROM student_tbl;`
 afterward shows your new row at the end.
 
 </details>
@@ -170,7 +170,7 @@ afterward shows your new row at the end.
 <details class="dl-answer"><summary>exercise 4</summary>
 
 ```sql
-SELECT * FROM students ORDER BY name ASC;
+SELECT * FROM student_tbl ORDER BY name ASC;
 ```
 
 </details>
@@ -178,7 +178,7 @@ SELECT * FROM students ORDER BY name ASC;
 <details class="dl-answer"><summary>exercise 5</summary>
 
 ```sql
-SELECT COUNT(*) FROM courses;
+SELECT COUNT(*) FROM course_tbl;
 ```
 
 There are five, with the data above.

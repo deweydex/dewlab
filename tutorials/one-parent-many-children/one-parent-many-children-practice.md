@@ -1,17 +1,116 @@
 ---
-title: "One Parent, Many Children — Practice"
+title: "Inheritance: one class built on another — Practice"
 practice_for: one-parent-many-children
 year: "2026-2027"
-version: 2026.09.04.1
+version: 2026.09.22.1
 ---
 
-# One Parent, Many Children — Practice
+# Inheritance: one class built on another — Practice
 
-Answers are folded. Several of these ask you to predict an output before
-running anything. Resist checking first — being wrong and finding out why
-is worth more than being right by accident.
+The answers are hidden until you open them. Many of these problems ask
+you to predict an output before you run anything. Try not to check first.
+When a prediction is wrong, finding out why teaches you more than a lucky
+guess does.
 
-## Another Kind of Account
+## A class built on another class
+
+```python exec
+id: a-class-built-on-another-class-practice-1
+class BankAccount:
+    def __init__(self, owner, balance):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance = self.balance + amount
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            print("Refused: not enough balance.")
+            return
+        self.balance = self.balance - amount
+
+
+class SavingsAccount(BankAccount):
+    def __init__(self, owner, balance, interest_rate):
+        super().__init__(owner, balance)
+        self.interest_rate = interest_rate
+
+    def add_interest(self):
+        self.balance = self.balance + self.balance * self.interest_rate
+
+
+savings = SavingsAccount("Priya", 1000.0, 0.1)
+savings.add_interest()
+print(savings.balance)
+```
+
+**1.** Predict the balance the cell prints. Then create a second
+`SavingsAccount` with an interest rate of `0.2` and the same starting
+balance. What will its balance be after `add_interest()`?
+
+<details class="dl-answer"><summary>answer</summary>
+
+`1100.0`, because `1000.0 + 1000.0 * 0.1 = 1100.0`.
+
+With a rate of `0.2`: `1200.0`, because `1000.0 + 1000.0 * 0.2 = 1200.0`.
+
+The two objects never share a balance. Each `SavingsAccount` object has
+its own fields, the same as any two `BankAccount` objects.
+
+</details>
+
+**2.** `savings.deposit(50.0)` works, but `SavingsAccount` never defines
+`deposit()`. Why does it work?
+
+<details class="dl-answer"><summary>answer</summary>
+
+`SavingsAccount(BankAccount)` inherits everything `BankAccount` defines,
+including `deposit()`. Python looks for `deposit()` in `SavingsAccount`
+first. It does not find one, so it uses the version in `BankAccount`.
+
+</details>
+
+**3.** `SavingsAccount`'s constructor contains the line
+`super().__init__(owner, balance)`. Suppose you delete that line, and
+leave only `self.interest_rate = interest_rate`. What goes wrong?
+
+<details class="dl-answer"><summary>answer</summary>
+
+`self.owner` and `self.balance` are never set. The first time
+`add_interest()` runs, it reads `self.balance`, and Python stops with
+`AttributeError: 'SavingsAccount' object has no attribute 'balance'`.
+
+`super().__init__(...)` passes the owner and balance to `BankAccount`'s
+own constructor, which sets those two fields. Without that line, nothing
+sets them.
+
+</details>
+
+**4.** Write a `CheckingAccount(BankAccount)` class with one new field,
+`overdraft_limit`, and no new methods. Create one, and print its
+`overdraft_limit`.
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+class CheckingAccount(BankAccount):
+    def __init__(self, owner, balance, overdraft_limit):
+        super().__init__(owner, balance)
+        self.overdraft_limit = overdraft_limit
+
+
+checking = CheckingAccount("Priya", 200.0, 100.0)
+print(checking.overdraft_limit)   # 100.0
+```
+
+This `CheckingAccount` stores the limit, but does not use it yet. Its
+`withdraw()` is still the one it inherits from `BankAccount`. The next
+section gives it a `withdraw()` of its own.
+
+</details>
+
+## Another kind of account
 
 ```python exec
 id: another-kind-of-account-1
@@ -47,38 +146,41 @@ checking.withdraw(300.0)
 print(checking.balance)
 ```
 
-**1.** Predict the cell's output before running it. Then change `300.0` to
-`301.0` and predict again.
+**5.** Predict what the cell prints. Then change `300.0` to `301.0`, and
+predict again.
 
 <details class="dl-answer"><summary>answer</summary>
 
-At `300.0`: `-100.0`. The withdrawal is allowed since `300.0` is not more
-than `self.balance + self.overdraft_limit` (`200.0 + 100.0 = 300.0`).
+With `300.0`: `-100.0`. The withdrawal is allowed, because `300.0` is not
+more than `self.balance + self.overdraft_limit`, which is
+`200.0 + 100.0 = 300.0`.
 
-At `301.0`: `Refused: over the overdraft limit.` then `200.0` — one cent
-over the limit and the whole withdrawal is refused, balance unchanged.
+With `301.0`: `Refused: over the overdraft limit.`, then `200.0`. One
+more than the limit, and the whole withdrawal is refused. The balance does
+not change.
 
 </details>
 
-**2.** `SavingsAccount`'s fee-charging `withdraw()`, from *Objects and
-Classes*, calls `super().withdraw(amount + 2.0)`. `CheckingAccount`'s
-`withdraw()` above does not call `super().withdraw()` at all. Why not?
+**6.** The fee version of `SavingsAccount.withdraw()`, from the tutorial,
+calls `super().withdraw(amount + 2.0)`. `CheckingAccount.withdraw()` above
+does not call `super().withdraw()` at all. Why not?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The parent's own check, `amount > self.balance`, is not the check a
-`CheckingAccount` needs. It would refuse every withdrawal that dips into
-the overdraft, which is exactly what `CheckingAccount` exists to allow.
-`SavingsAccount`'s fee only changes the *amount* being checked, so the
-parent's own check still applies. `CheckingAccount` needs a different
-check entirely, so it writes its own rather than adjusting what it passes
-to the parent's.
+The parent's check, `amount > self.balance`, is the wrong check for a
+`CheckingAccount`. It would refuse every withdrawal that goes into the
+overdraft, and allowing those is the whole reason `CheckingAccount`
+exists.
+
+The savings fee only changes the *amount* that is checked, so the
+parent's check still fits. `CheckingAccount` needs a different check, so
+it writes its own. It does not pass anything to the parent's version.
 
 </details>
 
-**3.** Write a `savings_withdraw_test` cell: create a `CheckingAccount`
-with balance `50.0` and overdraft limit `0.0`. Predict what `withdraw(50.0)`
-and then `withdraw(1.0)` do, then run it and check.
+**7.** Write a cell that creates a `CheckingAccount` with balance `50.0`
+and overdraft limit `0.0`. Predict what `withdraw(50.0)` does, and then
+what `withdraw(1.0)` does. Run it to check.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -86,18 +188,19 @@ and then `withdraw(1.0)` do, then run it and check.
 checking = CheckingAccount("Ben", 50.0, 0.0)
 checking.withdraw(50.0)
 print(checking.balance)   # 0.0
-checking.withdraw(1.0)
-print(checking.balance)   # still 0.0, refused
+checking.withdraw(1.0)    # prints: Refused: over the overdraft limit.
+print(checking.balance)   # still 0.0
 ```
 
-An overdraft limit of `0.0` behaves exactly like a plain `BankAccount` —
-`amount > self.balance + 0.0` is the same comparison `BankAccount.withdraw()`
-makes. `CheckingAccount` does not need a separate case for "no overdraft
-at all"; the general formula already covers it.
+An overdraft limit of `0.0` behaves exactly like a plain `BankAccount`.
+`amount > self.balance + 0.0` is the same comparison that
+`BankAccount.withdraw()` makes. `CheckingAccount` does not need a
+separate case for "no overdraft at all", because the general rule already
+covers it.
 
 </details>
 
-## Many Kinds, One Loop
+## Many kinds, one loop
 
 ```python exec
 id: many-kinds-one-loop-1
@@ -133,34 +236,35 @@ for account in [plain, checking]:
     print(account.owner, account.balance)
 ```
 
-**4.** Predict both lines of output before running the cell.
+**8.** Predict every line the cell prints before you run it.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`Refused: not enough balance.` then `Cara 80.0` — `90.0` is more than
-`plain`'s balance, with no overdraft to allow it.
+`Refused: not enough balance.`, then `Cara 80.0`. The amount `90.0` is
+more than `plain`'s balance, and a plain account has no overdraft.
 
-`Ben -10.0` — `90.0` is within `checking`'s `80.0 + 20.0 = 100.0` limit.
+`Ben -10.0`. The amount `90.0` is within `checking`'s limit of
+`80.0 + 20.0 = 100.0`.
 
 </details>
 
-**5.** The loop above calls `account.withdraw(90.0)` without ever checking
-which class `account` actually is. In your own words: what is
-*polymorphism*, and where does it show up in this cell?
+**9.** The loop calls `account.withdraw(90.0)`, and never checks which
+class `account` belongs to. In your own words, what is *polymorphism*?
+Where does it show up in this cell?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Polymorphism is one method call running a different version of the method
-depending on which class the object actually belongs to. `account.withdraw(90.0)`
-is the same line for both objects in the loop. It runs `BankAccount`'s own
-check for `plain` and `CheckingAccount`'s own check for `checking`, with
-the loop never needing to know which.
+Polymorphism is one method call running a different version of the
+method, depending on the class of the object.
+
+`account.withdraw(90.0)` is the same line for both objects in the loop.
+For `plain`, it runs `BankAccount`'s check. For `checking`, it runs
+`CheckingAccount`'s check. The loop never needs to know which one it has.
 
 </details>
 
-**6.** Add a `SavingsAccount` (from *Objects and Classes*) to the list
-above, alongside `plain` and `checking`. Does the loop still work with no
-changes to its own code?
+**10.** Add a `SavingsAccount` to the list, next to `plain` and
+`checking`. Does the loop still work, with no change to the loop itself?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -180,83 +284,13 @@ for account in [plain, checking, savings]:
     print(account.owner, account.balance)
 ```
 
+If you run this straight after the cell above, it prints `Refused: not
+enough balance.`, `Cara 80.0`, `Refused: over the overdraft limit.`,
+`Ben -10.0` and `Priya 110.0`. Ben's second withdrawal is refused because
+he is already `10.0` into his overdraft.
+
 `SavingsAccount` inherits `withdraw()` unchanged from `BankAccount`, so it
-behaves like `plain` did. The loop's own code never mentions
-`SavingsAccount` by name and does not need to.
-
-</details>
-
-## A Bank Holds Its Accounts
-
-```python exec
-id: a-bank-holds-its-accounts-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-
-class Bank:
-    def __init__(self, name):
-        self.name = name
-        self.accounts = []
-
-    def open_account(self, account):
-        self.accounts.append(account)
-
-    def total_balance(self):
-        total = 0
-        for account in self.accounts:
-            total = total + account.balance
-        return total
-
-
-bank = Bank("First Local")
-bank.open_account(BankAccount("Alice", 300.0))
-bank.open_account(BankAccount("Ben", 150.0))
-print(bank.total_balance())
-```
-
-**7.** Predict the total before running it. Then add a third account of
-your own and predict the new total.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`450.0` — `300.0 + 150.0`.
-
-Adding a third, say `BankAccount("Cara", 100.0)`, brings the total to
-`550.0`. `total_balance()` needed no change to handle a third account,
-since it loops over however many `self.accounts` actually holds.
-
-</details>
-
-**8.** `Bank` is not a `BankAccount`, and does not inherit from it. Why
-would making `Bank(BankAccount)` be the wrong choice here?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Inheritance means "is a kind of." A bank is not a kind of account. It does
-not have its own `owner` and `balance` the way an account does. It *has*
-accounts, as a field, which is composition rather than inheritance. Making
-`Bank` inherit from `BankAccount` would hand it a `deposit()` and
-`withdraw()` that make no sense for an institution holding accounts,
-rather than being one.
-
-</details>
-
-**9.** Add an `average_balance()` method to `Bank`, returning
-`total_balance()` divided by how many accounts there are.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def average_balance(self):
-    return self.total_balance() / len(self.accounts)
-```
-
-`average_balance()` calls `self.total_balance()` rather than repeating its
-loop. A method is free to build on another already sitting on the same object.
-*One Class, Many Methods* asked the same question about `constant_term()`
-calling `self.evaluate(0)` instead.
+behaves the way `plain` does. The loop never names `SavingsAccount`, and
+it does not need to.
 
 </details>

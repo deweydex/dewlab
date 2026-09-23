@@ -257,7 +257,7 @@ still gives the pass, and the picture is theirs.
 
 **This needs foreign keys declared.** `PRAGMA foreign_key_list` reports only
 what was written. With enforcement off, a table created with
-`FOREIGN KEY (product_id) REFERENCES products(id)` reports the relationship in
+`FOREIGN KEY (product_id) REFERENCES product_tbl(product_id)` reports the relationship in
 full; `dinosaur_id INTEGER`, the module's current style, reports nothing. Only
 *The Tentacular Plushies Quiz* declares it today. It is the standard form every
 other course and tool expects, and SQLite records it without enforcing it, so
@@ -307,7 +307,7 @@ get a generated diagram instead; the two lists read together.
 
 **[A Second Table and a Join](../tutorials/a-second-table-and-a-join/a-second-table-and-a-join.md) — one foreign key, with real values in it.**
 Two small row lists holding the actual data from the cells above, and a line
-from `sightings.dinosaur_id = 1` to `dinosaurs.id = 1`, drawn twice because
+from `sighting_tbl.dinosaur_id = 1` to `dinosaur_tbl.dinosaur_id = 1`, drawn twice because
 two sighting rows point at the same dinosaur. The claim "that shared value is
 what connects one table's row to the other's" is one sentence doing a lot of
 work. Showing the same value in two places, with the duplication on the
@@ -316,8 +316,8 @@ correct side, is what makes the next page's argument about misspellings land.
 **[Designing a Table Before You Build It](../tutorials/designing-a-table-before-you-build-it/designing-a-table-before-you-build-it.md) — a crow's-foot ER diagram of products and sales.**
 The tutorial is entirely about a decision made on paper before any SQL is
 written, and there is no picture of what that paper looks like. Two entities,
-one-to-many marked with crow's feet, `PK` on `products.id`, `FK` on
-`sales.product_id`. A reader should be able to read off it that one product
+one-to-many marked with crow's feet, `PK` on `product_tbl.product_id`, `FK` on
+`sale_tbl.product_id`. A reader should be able to read off it that one product
 row connects to many sales rows and not the reverse. This is where the
 notation is introduced, so it wants a sentence naming it and saying they will
 see it again.
@@ -388,7 +388,7 @@ that is answerable by looking.
 
 ### Object-oriented programming
 
-**[One Parent, Many Children](../tutorials/one-parent-many-children/one-parent-many-children.md) — a UML class diagram.**
+**[Composition: objects inside other objects](../tutorials/objects-inside-objects/objects-inside-objects.md) — a UML class diagram.** (Placed here since the 7.211 split: its "Is a, or has a?" section is about exactly this contrast, and the inheritance half now lives on [Inheritance: one class built on another](../tutorials/one-parent-many-children/one-parent-many-children.md).)
 `BankAccount` above, `SavingsAccount` and `CheckingAccount` beneath it with
 hollow-triangle inheritance arrows, and `Bank` holding accounts as a different
 relationship entirely. It carries content the code makes you scroll to see:

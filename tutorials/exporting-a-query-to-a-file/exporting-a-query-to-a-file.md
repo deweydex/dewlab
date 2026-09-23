@@ -1,7 +1,7 @@
 ---
 title: "Exporting a Query to a File"
 year: "2026-2027"
-version: 2026.09.10.1
+version: 2026.09.23.1
 covers:
   saving-it-as-a-file:
     covers: [DBM-LO7]
@@ -29,7 +29,7 @@ income_share = income_share.rename(columns={
     "p99p100_share_pretax": "share",
     "p99p100_share_pretax_extrapolated": "share_extrapolated",
 })
-income_share.to_sql("income_share", db, if_exists="replace", index=False)
+income_share.to_sql("income_share_tbl", db, if_exists="replace", index=False)
 ```
 
 ## Building the file you want to keep
@@ -40,7 +40,7 @@ table's worth by accident.
 
 ```sql exec
 id: query-ireland-income-share
-SELECT year, share_extrapolated FROM income_share
+SELECT year, share_extrapolated FROM income_share_tbl
 WHERE country = 'Ireland'
 ORDER BY year;
 ```
@@ -55,7 +55,7 @@ id: ireland-income-share-as-dataframe
 import pandas as pd
 
 ireland = pd.read_sql(
-    "SELECT year, share_extrapolated FROM income_share WHERE country = 'Ireland' ORDER BY year",
+    "SELECT year, share_extrapolated FROM income_share_tbl WHERE country = 'Ireland' ORDER BY year",
     db,
 )
 ireland.head()
@@ -86,7 +86,7 @@ browser tab that ran the query.
 
 ## Your turn
 
-Write a query of your own against `income_share`: perhaps a different
+Write a query of your own against `income_share_tbl`: perhaps a different
 country, or every country in one particular year. Pull it into a DataFrame
 the same way as above, then print its `to_csv()` text to see the file it
 would become.

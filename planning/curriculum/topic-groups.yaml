@@ -112,7 +112,6 @@ groups:
       choosing a chart that tells the truth about it rather than just
       looking impressive, are their own skill.
     tutorials:
-      - working-with-tables
       - making-sense-of-data
       - pictures-worth-numbers
       - mixed-data
@@ -128,8 +127,8 @@ groups:
       - grid-of-numbers
       - multiplying-grids
       - what-a-matrix-does-to-a-picture
-      - solving-systems
       - undoing-it
+      - solving-systems
       - where-chains-lead
 
   - key: computer-graphics
@@ -142,6 +141,7 @@ groups:
       canvas.
     tutorials:
       - a-point-on-the-screen
+      - a-ball-in-orbit
       - turning-a-cube
       - the-fourth-number
       - an-orbit-in-css
@@ -183,8 +183,8 @@ groups:
       - reading-an-error-message
       - finding-things
       - putting-things-in-order
-      - three-ways-to-make-change
       - finding-everything-inside-a-folder
+      - three-ways-to-make-change
       - building-reusable-tools
       - when-it-goes-wrong
       - mixed-programming
@@ -197,11 +197,13 @@ groups:
       characters — without a separate variable name for every one of
       them.
     tutorials:
-      - the-moves-you-already-know
       - objects-and-classes
-      - the-tools-around-your-code
+      - the-moves-you-already-know
+      - keeping-details-inside-an-object
       - one-class-many-methods
+      - the-tools-around-your-code
       - one-parent-many-children
+      - objects-inside-objects
       - testing-what-a-class-does
       - documenting-a-class
       - a-front-end-for-a-class
@@ -264,6 +266,7 @@ groups:
       double-booked room or teacher.
     tutorials:
       - designing-a-table-before-you-build-it
+      - working-with-tables
       - loading-a-real-dataset
       - joining-two-real-tables
       - charting-a-querys-result

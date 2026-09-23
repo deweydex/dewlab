@@ -1,17 +1,19 @@
 title: Fundamentals of Object Oriented Programming
 code: 5N0541 · QQI Level 5
 status: beta
-card: We build classes, objects and inheritance, from first principles.
+card: We build classes, objects, encapsulation, inheritance and composition, from first principles.
 description: This module is Fundamentals of Object-Oriented Programming (5N0541).
-  We build classes, objects and inheritance, from first principles.
+  We build classes, objects, encapsulation, inheritance and composition, from first principles.
 contents:
 - title: Programming with objects
   tutorials:
-  - the-moves-you-already-know
   - objects-and-classes
-  - the-tools-around-your-code
+  - the-moves-you-already-know
+  - keeping-details-inside-an-object
   - one-class-many-methods
+  - the-tools-around-your-code
   - one-parent-many-children
+  - objects-inside-objects
   - testing-what-a-class-does
   - documenting-a-class
   - a-front-end-for-a-class

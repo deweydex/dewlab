@@ -1,12 +1,13 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# First tutorial of its series (Programming with objects) and its module
-# (Fundamentals of Object Oriented Programming), so there is no cumulative
-# glossary to check against yet. sequence/selection/iteration are all
-# emphasised in the PDP module's own tutorials too (repeating-yourself,
-# making-decisions), but fundamentals-of-oop has no series.yaml pulling
-# that module's vocabulary forward — same as objects-and-classes'
-# class/object, these are taught fresh here as this module's own terms.
+# Second tutorial of its series (Programming with objects), after
+# objects-and-classes. Checked against that glossary: no overlap.
+# sequence/selection/iteration are emphasised in the PDP module's own
+# tutorials too (repeating-yourself, making-decisions), but
+# fundamentals-of-oop has no series.yaml pulling that module's vocabulary
+# forward, so they are named here as this module's own terms. tuple is
+# not taught in the Programming Foundations tutorials, so it is defined
+# here where Basket first stores (name, price) pairs.
 entries:
   - term: sequence
     kind: concept
@@ -25,3 +26,10 @@ entries:
     definition: >
       An iteration is a program repeating one step more than once,
       usually with a loop.
+
+  - term: tuple
+    kind: concept
+    definition: >
+      A tuple is a fixed group of values kept together, written in round
+      brackets.
+    example: "(\"bread\", 2.50)"

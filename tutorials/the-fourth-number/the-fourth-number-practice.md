@@ -1,11 +1,11 @@
 ---
-title: "The Fourth Number — Practice"
+title: "Homogeneous coordinates and the projection matrix — Practice"
 practice_for: the-fourth-number
 year: "2026-2027"
 version: 2026.09.21.1
 ---
 
-# The Fourth Number — Practice
+# Homogeneous coordinates and the projection matrix — Practice
 
 Keep track of $w$. In every problem here, ask what the fourth number
 is before and after the multiplication, because that is where the

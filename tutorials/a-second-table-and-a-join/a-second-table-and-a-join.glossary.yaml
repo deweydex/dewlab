@@ -10,9 +10,11 @@ entries:
   - term: foreign key
     kind: concept
     definition: >
-      A foreign key is a column in one table that stores the id of a row
-      in another table. `sightings.dinosaur_id` is a foreign key: it
-      stores the same value as one row's `id` in `dinosaurs`.
+      A foreign key is a column in one table that stores the key of a row
+      in another table. It has the same name as the key it points at, and
+      sits directly under its own table's key. `sighting_tbl.dinosaur_id`
+      is a foreign key: it stores one row's `dinosaur_id` from
+      `dinosaur_tbl`.
 
   - term: "JOIN"
     kind: keyword
@@ -20,12 +22,12 @@ entries:
       JOIN combines rows from two tables into one result, matched on a
       column they share. The ON that follows it names which column in
       each table holds that shared value.
-    example: "SELECT dinosaurs.name, sightings.location FROM sightings JOIN dinosaurs ON sightings.dinosaur_id = dinosaurs.id;"
+    example: "SELECT dinosaur_tbl.name, sighting_tbl.location FROM sighting_tbl JOIN dinosaur_tbl ON sighting_tbl.dinosaur_id = dinosaur_tbl.dinosaur_id;"
 
   - term: "table.column"
     kind: operator
     definition: >
       Names a column using both its table and its own name, such as
-      `dinosaurs.name`. Needed when two tables in the same query might
-      otherwise share a column name.
-    example: "sightings.dinosaur_id"
+      `dinosaur_tbl.name`. Needed when two tables in the same query
+      share a column name.
+    example: "sighting_tbl.dinosaur_id"

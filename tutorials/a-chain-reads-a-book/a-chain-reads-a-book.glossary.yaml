@@ -3,16 +3,17 @@ entries:
   - term: "load_text()"
     kind: function
     definition: >
-      Fetches a plain-text file — from dewlab's shared data folder, or a
-      full web address — and returns its contents as one string.
+      Fetches a plain-text file from dewlab's shared data folder, or from
+      a full web address, and gives back its contents as one string.
     example: 'book = await load_text("the-time-machine.txt")'
   - term: dictionary of dictionaries
     kind: concept
     definition: >
-      One dictionary, keyed by word. Each value is itself a dictionary,
-      holding every word that followed the key somewhere in the source
-      text and how many times. Never has to record a pair of words that
-      never actually happened next to each other, unlike a dense grid.
+      A dictionary of dictionaries is a dictionary whose values are
+      dictionaries. In a chain built from a book, the keys are words, and
+      each inner dictionary holds every word that followed the key and
+      how many times. It stores only pairs that really happen, so it
+      never has to store a zero the way a grid does.
   - term: "dict.setdefault()"
     kind: function
     definition: >
@@ -31,7 +32,7 @@ entries:
   - term: "str.index()"
     kind: function
     definition: >
-      Works like str.find(), searching for the first place another string
-      appears — but raises an error instead of returning -1 when the
-      search text is not found at all.
+      Works like str.find(): it searches for the first place another
+      string appears. When the search text is not there at all, it raises
+      an error, where str.find() would give back -1.
     example: 'raw.index("\n", start)'

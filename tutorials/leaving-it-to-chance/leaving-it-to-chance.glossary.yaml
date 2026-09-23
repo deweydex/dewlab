@@ -2,54 +2,78 @@ entries:
   - term: "pseudo-random"
     kind: concept
     definition: >
-      Produced by an ordinary calculation rather than by chance, but scrambled
-      thoroughly enough that no statistical test tells the difference. Every
-      number Python's random module gives you is pseudo-random.
+      A pseudo-random number is a number made by an ordinary calculation,
+      mixed so thoroughly that no statistical test can tell it from a
+      random one. Every number Python's random module gives you is
+      pseudo-random.
 
   - term: "seed"
     kind: concept
     definition: >
-      The starting point a pseudo-random sequence is calculated from. The same
-      seed always produces the same sequence, which is what makes a run with
-      randomness in it repeatable.
+      A seed is the starting point a pseudo-random sequence is calculated
+      from. The same seed always gives the same sequence, so a run with
+      randomness in it can be repeated.
+
+  - term: "reproducibility"
+    kind: concept
+    definition: >
+      Reproducibility is being able to repeat a run exactly. In a
+      simulation, you get it by setting a seed and writing it down.
+
+  - term: "with replacement, without replacement"
+    kind: concept
+    definition: >
+      Drawing with replacement puts each item back before the next draw,
+      so an item can come up twice. Drawing without replacement does not
+      put it back, so no item can come up twice.
 
   - term: "random.seed()"
     kind: function
     definition: >
-      Sets the starting point by hand, so the numbers that follow come out the
-      same every time. Without it Python picks one from the clock.
+      Sets the starting point by hand, so the numbers that follow come out
+      the same every time. Without it, Python gets a seed from the
+      operating system.
     example: "random.seed(42)"
 
   - term: "random.random()"
     kind: function
     definition: >
-      One number between 0 and 1, every value equally likely. The function
-      underneath most of the others.
+      Gives one number from 0 up to, but not including, 1. Every value is
+      equally likely. Most of the other functions are built on this one.
     example: "x = random.random()"
 
   - term: "random.randint()"
     kind: function
     definition: >
-      A whole number between two bounds. Unlike range(), it includes both ends
-      — randint(1, 6) can return 6.
+      Gives a whole number between two bounds. It includes both ends, so
+      randint(1, 6) can return 6. range() is different, and stops before
+      the end.
     example: "die = random.randint(1, 6)"
 
   - term: "random.uniform()"
     kind: function
-    definition: "A number with decimals, anywhere between two bounds."
+    definition: "Gives a number with decimals, anywhere between two bounds."
     example: "score = random.uniform(0, 100)"
 
   - term: "random.choice()"
     kind: function
     definition: >
-      Picks one item from a list, every item equally likely. For a thing
-      rather than a number.
+      Picks one item from a list, with every item equally likely. Use it
+      when you want a thing, such as a word or a name, and not a number.
     example: 'today = random.choice(["sunny", "cloudy", "rain"])'
+
+  - term: "random.choices()"
+    kind: function
+    definition: >
+      Picks several items with replacement. Each item goes back before
+      the next draw, so the same item can come up more than once, as with
+      rolling a die several times.
+    example: "rolls = random.choices([1, 2, 3, 4, 5, 6], k=4)"
 
   - term: "random.sample()"
     kind: function
     definition: >
-      Picks several items with no repeats, as dealing cards does — each one
-      taken out before the next is drawn. The counterpart of random.choices(),
-      which puts each back.
+      Picks several items without replacement, as dealing cards does. Each
+      item is taken out before the next one is drawn, so there are no
+      repeats.
     example: "hand = random.sample(deck, k=5)"

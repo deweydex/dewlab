@@ -1,7 +1,7 @@
 ---
 title: "Charting a Query's Result"
 year: "2026-2027"
-version: 2026.09.10.1
+version: 2026.09.23.1
 covers:
   from-select-to-dataframe:
     touches: [DBM-LO5]
@@ -31,7 +31,7 @@ income_share = income_share.rename(columns={
     "p99p100_share_pretax": "share",
     "p99p100_share_pretax_extrapolated": "share_extrapolated",
 })
-income_share.to_sql("income_share", db, if_exists="replace", index=False)
+income_share.to_sql("income_share_tbl", db, if_exists="replace", index=False)
 ```
 
 ## Checking what names the data uses
@@ -42,7 +42,7 @@ already holds.
 
 ```sql exec
 id: list-income-share-countries
-SELECT DISTINCT country FROM income_share ORDER BY country;
+SELECT DISTINCT country FROM income_share_tbl ORDER BY country;
 ```
 
 ## From SELECT to DataFrame
@@ -60,7 +60,7 @@ countries = ["Ireland", "Sweden", "United States", "Japan"]
 # each name needs quotes of its own, so SQL reads it as text, not as code
 placeholders = ", ".join(f"'{country}'" for country in countries)
 result = pd.read_sql(
-    f"SELECT country, year, share_extrapolated FROM income_share "
+    f"SELECT country, year, share_extrapolated FROM income_share_tbl "
     f"WHERE country IN ({placeholders}) AND year >= 1980 ORDER BY country, year",
     db,
 )

@@ -1,17 +1,18 @@
 ---
-title: "One Class, Many Methods — Practice"
+title: "Reusable methods: one class that does many jobs — Practice"
 practice_for: one-class-many-methods
 year: "2026-2027"
 version: 2026.09.04.1
 ---
 
-# One Class, Many Methods — Practice
+# Reusable methods: one class that does many jobs — Practice
 
-Answers are folded. A few of these ask you to predict an output before
-running anything. Resist checking first — being wrong and finding out why
-is worth more than being right by accident.
+The answers are hidden in folds under each problem. A few problems ask
+you to predict what a piece of code prints. Try to answer before you
+run anything. Being wrong and finding out why teaches you more than
+being right by luck.
 
-## From Loose Functions to One Class
+## From loose functions to one class
 
 ```python exec
 id: from-loose-functions-to-one-class-1
@@ -30,13 +31,13 @@ quadratic = Polynomial([-2, 5, 3])
 print(quadratic.evaluate(1))
 ```
 
-**1.** Create a `Polynomial` for $x^2 - 4$ above (coefficients `[-4, 0,
-1]`), called `difference_of_squares`. Predict `difference_of_squares.evaluate(2)`
-before running it.
+**1.** In the cell above, create a `Polynomial` for $x^2 - 4$, called
+`difference_of_squares`. Its coefficients are `[-4, 0, 1]`. Predict
+`difference_of_squares.evaluate(2)` before you run it.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`0`. $2^2 - 4 = 0$.
+It prints `0`, because $2^2 - 4 = 0$.
 
 ```python
 difference_of_squares = Polynomial([-4, 0, 1])
@@ -45,34 +46,35 @@ print(difference_of_squares.evaluate(2))
 
 </details>
 
-**2.** Two `Polynomial` objects, `quadratic` and `difference_of_squares`,
-both exist at once. Why does `quadratic.evaluate(2)` never need to be told
-which coefficients to use?
+**2.** Two `Polynomial` objects, `quadratic` and
+`difference_of_squares`, exist at the same time. Why does
+`quadratic.evaluate(2)` never need to be told which coefficients to use?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because `evaluate()` is called *on* `quadratic`, `self` inside it refers to
-that one object, and `self.coeffs` is already sitting there. The same
-method call on `difference_of_squares` would read a completely different
-`self.coeffs`, with nothing in the method itself needing to change.
+`evaluate()` is called *on* `quadratic`. So inside it, `self` is that
+one object, and `self.coeffs` is its own list. The same call on
+`difference_of_squares` reads a different `self.coeffs`. Nothing in the
+method has to change.
 
 </details>
 
 **3.** Before `Polynomial` existed, `evaluate(coeffs, x)` took the
-coefficient list as a parameter. What problem does that create once a
-program tracks several polynomials, that the class version does not have?
+coefficient list as a parameter. Once a program tracks several
+polynomials, what problem does that cause? Why does the class version
+not have it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Every call has to be handed the right list by name: `evaluate(quadratic,
-2)`, `evaluate(cubic, 2)`. Passing the wrong one by mistake is a bug the
-function itself has no way to catch. `Polynomial.evaluate()` has no such
-mix-up to make, since each object only ever has its own coefficients to
-read.
+Every call has to be given the right list by name, as in
+`evaluate(quadratic, 2)` and `evaluate(cubic, 2)`. If you pass the wrong
+one by mistake, the function has no way to notice. The class version
+cannot mix them up, because each object has only its own coefficients
+to read.
 
 </details>
 
-## Giving It More to Do
+## Giving it more to do
 
 ```python exec
 id: giving-it-more-to-do-1
@@ -97,20 +99,19 @@ cubic = Polynomial([1, 0, -3, 2])
 print(cubic.degree(), cubic.leading_coefficient())
 ```
 
-**4.** Predict `degree()` and `leading_coefficient()` for `Polynomial([5,
-0, 0, 0, -1])` before running it.
+**4.** Predict `degree()` and `leading_coefficient()` for
+`Polynomial([5, 0, 0, 0, -1])` before you run it.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`4` and `-1`. Four coefficients above index 0 means the highest power is
-$x^4$, and the coefficient attached to it, the last entry in the list, is
-`-1`.
+`4` and `-1`. The list has five items, at indexes 0 to 4, so the highest
+power is $x^4$. Its coefficient is the last item in the list, `-1`.
 
 </details>
 
-**5.** Add a `num_terms()` method, returning how many of a `Polynomial`'s
-coefficients are not zero. `Polynomial([5, 0, 0, 0, -1])` should report
-`2`.
+**5.** Add a `num_terms()` method. It should return how many of a
+`Polynomial`'s coefficients are not zero. For `Polynomial([5, 0, 0, 0, -1])`
+it should return `2`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -123,25 +124,25 @@ def num_terms(self):
     return count
 ```
 
-Needs nothing beyond `self`, the same shape as `degree()` and
-`leading_coefficient()` above it. Every new method reaches `self.coeffs`
-the same way the first one did.
+It needs nothing except `self`, like `degree()` and
+`leading_coefficient()`. Every new method reaches `self.coeffs` in the
+same way the first one did.
 
 </details>
 
-**6.** In your own words: what does "modular, reusable code" mean for
-`Polynomial`, using `degree()` as the example?
+**6.** In your own words, what does "modular, reusable code" mean for
+`Polynomial`? Use `degree()` as your example.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`degree()` works on any `Polynomial` object, using whatever coefficients
-that particular object already carries. Nothing about `degree()` itself
-needed to change to work on `cubic` instead of `quadratic` — the object it
-is called on supplies the rest.
+`degree()` works on any `Polynomial` object, using the coefficients
+that object already carries. We did not change `degree()` to make it
+work on `cubic` instead of `quadratic`. The object it is called on
+supplies the data.
 
 </details>
 
-## Data That Belongs Together
+## Data that belongs together
 
 ```python exec
 id: data-that-belongs-together-1
@@ -164,19 +165,19 @@ for polynomial in [cost, height]:
     print(polynomial.label, "at x=3:", polynomial.evaluate(3))
 ```
 
-**7.** Predict the cell's two lines of output before running it.
+**7.** Predict the two lines of output before you run the cell.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`cost at x=3: 56` — $50 + 2(3) = 56$.
+`cost at x=3: 56`, because $50 + 2(3) = 56$.
 
-`height at x=3: 15` — $20(3) - 5(3)^2 = 60 - 45 = 15$.
+`height at x=3: 15`, because $20(3) - 5(3)^2 = 60 - 45 = 15$.
 
 </details>
 
-**8.** Create a third `Polynomial`, `profit`, with your own coefficients
-and label. Add it to the list in the loop above and confirm all three
-print correctly.
+**8.** Create a third `Polynomial`, called `profit`, with your own
+coefficients and label. Add it to the list in the loop above. Do all
+three print correctly?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -187,23 +188,26 @@ for polynomial in [cost, height, profit]:
     print(polynomial.label, "at x=3:", polynomial.evaluate(3))
 ```
 
-Nothing about the loop itself changes. It was never written to expect
-exactly two polynomials, only to run its body once per item in whatever
-list it is given.
+The loop itself does not change. It was never written for exactly two
+polynomials. It runs its body once for each item in whatever list it is
+given.
 
 </details>
 
-**9.** Before `label` was added, `cost` and `height` would have needed two
-separate lists kept in step by hand: one of coefficients, one of labels.
-What goes wrong with two lists like that, that a single list of
-`Polynomial` objects avoids?
+**9.** Without the `label` field, `cost` and `height` would need two
+separate lists kept in step by hand: one of coefficients and one of
+labels. What can go wrong with two lists like that? How does one list of
+`Polynomial` objects avoid it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The two lists have to stay the same length and in the same order by
-convention alone — nothing enforces it. Insert a new polynomial into one
-list and forget the other. A label ends up next to the wrong coefficients,
-with no error to say so. Sorting one list without sorting the other the
-same way breaks it just as quietly.
+The two lists must stay the same length and in the same order, and
+nothing in the code makes sure of that. Suppose you add a new polynomial
+to one list and forget the other. A label now sits next to the wrong
+coefficients, and no error tells you. Sorting one list but not the other
+breaks it just as quietly.
+
+A list of `Polynomial` objects avoids this. Each object carries its own
+label and its own coefficients, so they cannot come apart.
 
 </details>

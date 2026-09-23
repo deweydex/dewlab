@@ -1,17 +1,18 @@
 ---
-title: "Documenting a Class — Practice"
+title: "Documenting a class with docstrings — Practice"
 practice_for: documenting-a-class
 year: "2026-2027"
 version: 2026.09.04.1
 ---
 
-# Documenting a Class — Practice
+# Documenting a class with docstrings — Practice
 
-Answers are folded. A few of these ask you to predict an output before
-running anything. Resist checking first — being wrong and finding out why
-is worth more than being right by accident.
+The answers are hidden until you open them. A few of these problems ask
+you to predict an output before you run anything. Try not to check first.
+When a prediction is wrong, finding out why teaches you more than a lucky
+guess does.
 
-## A Class Docstring
+## A class docstring
 
 ```python exec
 id: a-class-docstring-1
@@ -26,20 +27,25 @@ class Book:
 help(Book)
 ```
 
-**1.** `Book` above has a class docstring but no docstring on `__init__`.
-Predict whether `help(Book)` still runs, and what it shows for `__init__`.
+**1.** `Book` above has a class docstring, but `__init__` has no
+docstring. Does `help(Book)` still run? What does it show for `__init__`?
 
 <details class="dl-answer"><summary>answer</summary>
 
 It still runs. `__init__(self, title, author)` is listed under "Methods
-defined here," with no description under it. A docstring is optional, not
-required, and Python has nothing to show when one is missing rather than
-raising an error.
+defined here". Under it, Python shows a general line of its own:
+`Initialize self.  See help(type(self)) for accurate signature.` That
+line comes from Python itself, and says nothing about books. A method
+with no docstring and no such built-in text, like `citation()` below
+without its docstring, shows nothing under its name.
+
+A docstring is optional. When one is missing, Python does not raise an
+error.
 
 </details>
 
-**2.** Write a class docstring for `Polynomial`, saying what one object of
-it represents, then check it with `help()`.
+**2.** Write a class docstring for `Polynomial` that says what one object
+of the class represents. Then check it with `help()`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -54,23 +60,24 @@ class Polynomial:
 help(Polynomial)
 ```
 
-The docstring goes on its own line right after `class Polynomial:`, before
-`def __init__`, the same position `Book`'s and `BankAccount`'s both use.
+The docstring goes on its own line, straight after `class Polynomial:` and
+before `def __init__`. `Book` and `BankAccount` put theirs in the same
+place.
 
 </details>
 
-**3.** Does writing `book = Book("Dune", "Frank Herbert")` run `Book`'s
-docstring in any way?
+**3.** Does `book = Book("Dune", "Frank Herbert")` run the docstring of
+`Book` in any way?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. A docstring is stored on the class for `help()`, an editor, or a
-reader to find. Creating an object never touches it, the same way running
-a function never touches its own docstring either.
+No. Python stores a docstring on the class, for `help()`, an editor or a
+reader to find. Creating an object never uses it. In the same way,
+calling a function never runs the function's docstring.
 
 </details>
 
-## Documenting Each Method
+## Documenting each method
 
 ```python exec
 id: documenting-each-method-1
@@ -90,20 +97,21 @@ class Book:
 help(Book.citation)
 ```
 
-**4.** Predict what `help(Book.citation)` shows, compared to what
-`help(Book)` would show.
+**4.** Predict what `help(Book.citation)` shows. How is that different
+from what `help(Book)` would show?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`help(Book.citation)` shows only `citation()`'s own docstring: `Returns
-"title, by author" as one string.` `help(Book)` would show all three
-instead. The order would be the class's own docstring, `__init__`'s, then
-`citation()`'s.
+`help(Book.citation)` shows only the docstring of `citation()`:
+`Returns "title, by author" as one string.`
+
+`help(Book)` would show all three docstrings. First the class docstring,
+then the docstring of `__init__`, then the docstring of `citation()`.
 
 </details>
 
-**5.** Add a docstring to `evaluate()` below, saying what it computes and
-what `x` is for.
+**5.** Add a docstring to `evaluate()` below. Say what it computes and what
+`x` is for.
 
 ```python exec
 id: documenting-each-method-2
@@ -133,13 +141,13 @@ def evaluate(self, x):
     return result
 ```
 
-A one-sentence docstring is enough here. It says what the method returns
-and names its one parameter, the same shape `Book.citation()`'s own
-docstring above used.
+One sentence is enough here. It says what the method returns, and it
+names the one parameter. The docstring of `Book.citation()` above has the
+same shape.
 
 </details>
 
-## Keeping Documentation Honest
+## Keeping documentation honest
 
 ```python exec
 id: keeping-documentation-honest-1
@@ -163,20 +171,20 @@ book.borrow()
 print(book.available)
 ```
 
-**6.** Run the cell above. What does `borrow()`'s docstring claim, and what
-does the code actually do on the second call?
+**6.** Run the cell above. What does the docstring of `borrow()` say? What
+does the code do on the second call?
 
 <details class="dl-answer"><summary>answer</summary>
 
 The docstring says "Always succeeds." The second `book.borrow()` prints
-`Refused: already borrowed.` and changes nothing, since the book is already
-unavailable. `book.available` ends up `False`, which is correct — the
-docstring is the part that is wrong.
+`Refused: already borrowed.` and changes nothing, because the book is
+already out. `book.available` ends up `False`, which is correct. The code
+is right, and the docstring is wrong.
 
 </details>
 
-**7.** Fix `borrow()`'s docstring so it describes what the method actually
-does, without changing the code beneath it.
+**7.** Fix the docstring of `borrow()` so that it says what the method
+really does. Do not change the code under it.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -189,19 +197,21 @@ def borrow(self):
     self.available = False
 ```
 
-Only the words between the triple quotes change. `if not self.available:`
-and everything below it stays exactly as it was.
+Only the words between the triple quotes change. The line
+`if not self.available:` and everything below it stay exactly as they
+were.
 
 </details>
 
-**8.** Does Python raise any warning or error when a docstring like the
-original `"Always succeeds."` no longer matches what a method does?
+**8.** The original docstring said `"Always succeeds."`, and that no
+longer matches what the method does. Does Python give a warning or an
+error about it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. A docstring is a plain string, never run and never compared against
-the code around it. Nothing in Python checks whether "Always succeeds" is
-still true. Noticing a stale docstring, and fixing it, is entirely on
-whoever reads the method next.
+No. A docstring is a plain string. Python never runs it, and never
+compares it with the code around it. Nothing in Python checks whether
+"Always succeeds" is still true. Whoever reads the method next has to
+notice the out-of-date docstring, and fix it.
 
 </details>

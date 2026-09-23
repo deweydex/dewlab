@@ -1,18 +1,24 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Sixth tutorial of the series (Programming with objects). Checked all
-# five earlier glossaries as the cumulative list — no overlap.
-# dev/curriculum_map.py's terms_of() also found "first" (ordinary
-# emphasis on a word, not a term) and "Storing and Computing" (a
-# cross-reference to another tutorial's title, in italics); neither is
-# new vocabulary. "front end" is genuinely new to the whole curriculum
-# (checked term_findings() against every tutorial). input() itself is
-# reused from mit-pdp-maths-prog-integration/storing-and-computing,
-# without a repeat entry.
+# Last tutorial of the series (Programming with objects). Checked every
+# earlier glossary in the series as the cumulative list — no overlap.
+# "front end" is new to the whole curriculum (checked term_findings()
+# against every tutorial). "input validation" was added on 2026.09.22,
+# when the tutorial named it and its new practice page practised it.
+# input() itself is reused from storing-and-computing, without a repeat
+# entry.
 entries:
   - term: front end
     kind: concept
     definition: >
-      A front end is what lets somebody use a finished program without
-      reading or writing its code. A menu, driven by input() and print(),
-      is the simplest one there is.
+      A front end is the part of a program that lets somebody use it
+      without reading or writing its code. A text menu, driven by input()
+      and print(), is the simplest kind.
+
+  - term: input validation
+    kind: concept
+    definition: >
+      Input validation is checking that what a person typed makes sense,
+      before the program uses it. A menu that refuses "abc" as an amount
+      of money is doing input validation.
+    example: "if not text.isdigit(): return None"

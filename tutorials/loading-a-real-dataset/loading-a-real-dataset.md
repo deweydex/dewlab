@@ -1,7 +1,7 @@
 ---
 title: "Loading a Real Dataset"
 year: "2026-2027"
-version: 2026.09.10.1
+version: 2026.09.23.1
 covers:
   fetching-a-csv-from-a-python-cell:
     covers: [DBM-LO8]
@@ -80,9 +80,14 @@ A DataFrame becomes a database table only once you put it into one.
 `pandas.DataFrame.to_sql` does that, writing into `db`, the same shared
 connection a `` ```sql exec `` block on this page already uses.
 
+Notice the two names. In Python, the DataFrame is still `income_share`.
+The table it becomes is `income_share_tbl`, following the same naming
+convention as `dinosaur_tbl`. The columns keep the names we gave them
+while cleaning.
+
 ```python exec
 id: income-share-to-sql
-income_share.to_sql("income_share", db, if_exists="replace", index=False)
+income_share.to_sql("income_share_tbl", db, if_exists="replace", index=False)
 ```
 
 `if_exists="replace"` means running this cell again starts the table fresh,
@@ -96,7 +101,7 @@ You can query the table with `SELECT`, the same as any other table.
 ```sql exec
 id: query-income-share-by-country
 SELECT country, year, share_extrapolated
-FROM income_share
+FROM income_share_tbl
 WHERE country IN ('Ireland', 'Sweden', 'United States')
   AND year >= 1990
 ORDER BY country, year

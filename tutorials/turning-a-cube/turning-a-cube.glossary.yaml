@@ -1,6 +1,6 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Second tutorial of Computer graphics. `multiply`, `transpose` and the
+# Third tutorial of Computer graphics. `multiply`, `transpose` and the
 # dot product are inherited from Matrices; `rotate90` and reading a
 # matrix's columns come from what-a-matrix-does-to-a-picture. Neither
 # is repeated here.

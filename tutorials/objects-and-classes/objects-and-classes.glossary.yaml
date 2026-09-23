@@ -1,17 +1,17 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Second tutorial of its series (Programming with objects) and its module
-# (Fundamentals of Object Oriented Programming) — the-moves-you-already-know
-# comes first, but introduces only sequence/selection/iteration, none of
-# which this tutorial's own terms below overlap with. None of these terms
-# are emphasised anywhere else in the curriculum either (checked via
-# dev/curriculum_map.py's terms_of()).
+# First tutorial of its series (Programming with objects) and its module
+# (Fundamentals of Object Oriented Programming), so there is no cumulative
+# glossary to check against yet. Encapsulation and abstraction moved to
+# keeping-details-inside-an-object; inheritance, parent class, child class
+# and super() moved out with the inheritance section, to be taught in
+# one-parent-many-children.
 entries:
   - term: class
     kind: concept
     definition: >
-      A class is a blueprint that says what an object of that kind has and
-      what it can do, without being an object itself.
+      A class is a description of one kind of thing: the data it holds
+      and the actions it can do. It is not an object itself.
     example: "class BankAccount:"
 
   - term: object
@@ -31,8 +31,8 @@ entries:
   - term: method
     kind: concept
     definition: >
-      A method is a function that belongs to a class and acts on one
-      particular object's own fields.
+      A method is a function that belongs to a class. It works on the
+      fields of one particular object.
     example: "account.deposit(50.0)"
 
   - term: constructor
@@ -49,40 +49,52 @@ entries:
       so a line inside the method can reach that object's own fields.
     example: "self.balance = self.balance + amount"
 
-  - term: encapsulation
+  - term: object oriented programming
     kind: concept
     definition: >
-      Encapsulation is keeping an object's own data behind its methods, so
-      every change to it passes through code that can enforce a rule.
+      Object oriented programming is a way of writing programs where a
+      thing's data and the actions on that data are kept together, as one
+      unit.
 
-  - term: abstraction
-    kind: concept
-    definition: >
-      Abstraction is what a class shows the rest of a program: what each
-      method does, not how it does it inside.
-
-  - term: inheritance
-    kind: concept
-    definition: >
-      Inheritance lets one class reuse everything another class already
-      does, and add only what is different.
-    example: "class SavingsAccount(BankAccount):"
-
-  - term: parent class
-    kind: concept
-    definition: >
-      The parent class is the existing class a new class is built on. It
-      supplies its own fields and methods to the new class for free.
-
-  - term: child class
-    kind: concept
-    definition: >
-      The child class is the new class built on a parent. It can add
-      fields or methods of its own on top of what it inherits.
-
-  - term: "super()"
+  - term: "__str__"
     kind: function
     definition: >
-      Calls a method from the parent class instead of writing it again,
-      most often the parent's own constructor.
-    example: "super().__init__(owner, balance)"
+      Returns the text that print() shows for an object. Python calls it
+      for you when you print the object.
+    example: "return f\"{self.owner}: {self.balance}\""
+
+  - term: "__repr__"
+    kind: function
+    definition: >
+      Returns text about an object meant for the programmer. Python uses
+      it for an object inside a list. It usually looks like the code that
+      would build the object.
+    example: "BankAccount('Alice', 150.0)"
+
+  - term: attribute
+    kind: concept
+    definition: >
+      An attribute is any name reached with a dot after an object, such
+      as a field or a method.
+    example: "alice.balance"
+
+  - term: instance
+    kind: concept
+    definition: >
+      An instance is another word for an object built from a class. alice
+      is an instance of BankAccount.
+
+  - term: instance attribute
+    kind: concept
+    definition: >
+      An instance attribute is a value that belongs to one object. It is
+      usually set on self in the constructor, and each object has its own.
+    example: "self.balance = balance"
+
+  - term: class attribute
+    kind: concept
+    definition: >
+      A class attribute is a value that belongs to the class itself. Every
+      object of that class shares the one value. Change it through the
+      class, not through an object.
+    example: "bank_name = \"Dew Bank\""

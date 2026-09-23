@@ -1,17 +1,18 @@
 ---
-title: "Testing What a Class Does — Practice"
+title: "Testing a class with assert — Practice"
 practice_for: testing-what-a-class-does
 year: "2026-2027"
 version: 2026.09.04.1
 ---
 
-# Testing What a Class Does — Practice
+# Testing a class with assert — Practice
 
-Answers are folded. Several of these ask you to predict an output before
-running anything. Resist checking first — being wrong and finding out why
-is worth more than being right by accident.
+The answers are hidden until you open them. Many of these problems ask
+you to predict an output before you run anything. Try not to check first.
+When a prediction is wrong, finding out why teaches you more than a lucky
+guess does.
 
-## A Bug That Hides in Another Class
+## A bug that hides in another class
 
 ```python exec
 id: a-bug-that-hides-in-another-class-1
@@ -29,46 +30,48 @@ account.deposit(50.0)
 print(account.balance)
 ```
 
-**1.** `deposit()` above has a bug: `-` where it should be `+`. Predict the
-cell's output before running it. Does anything crash?
+**1.** `deposit()` above has a bug: it uses `-` where it should use `+`.
+Predict what the cell prints before you run it. Does anything crash?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`50.0`, not `150.0`. Nothing crashes — a deposit that subtracts instead of
-adding is still valid Python, just the wrong arithmetic.
+It prints `50.0`, not `150.0`. Nothing crashes. A deposit that subtracts
+is still valid Python. The arithmetic is wrong, but Python cannot know
+that.
 
-Fix it by changing `self.balance = self.balance - amount` to `self.balance
-= self.balance + amount`.
+To fix it, change `self.balance = self.balance - amount` to
+`self.balance = self.balance + amount`.
 
 </details>
 
-**2.** A reader glances at the cell above, sees no error and no red text,
-and moves on. What made this bug easy to miss?
+**2.** Someone looks at the cell above quickly. They see no error and no
+red text, and they move on. Why was this bug easy to miss?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Nothing about running the cell looks wrong. `deposit()` still runs to
-completion and prints a number — just the wrong one. A bug has to announce
-itself somehow to be noticed, and this one produces ordinary-looking output
-instead of a traceback.
+Nothing about the run looks wrong. `deposit()` runs to the end and a
+number is printed. The number is wrong, but it looks ordinary. We notice
+a bug only when something shows us it is there, and this bug shows no
+traceback at all.
 
 </details>
 
-**3.** A `withdraw()` with a similar bug (`+` instead of `-`) would let a
-balance grow every time money left the account. Would `Bank.total_balance()`,
-from *One Parent, Many Children*, raise an error because of a bug like
-this?
+**3.** Suppose `withdraw()` had a similar bug, with `+` instead of `-`.
+Then a balance would grow every time money left the account. Would
+`Bank.total_balance()`, from [Composition: objects inside other
+objects](tutorial:objects-inside-objects), raise an error because of a
+bug like this?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. `total_balance()` only adds up whatever `balance` each account
-currently holds — it has no way to know a withdrawal should have lowered
-one of them. The wrong total it reports looks like an ordinary number,
-with nothing about it flagged as suspicious.
+No. `total_balance()` adds up whatever `balance` each account holds right
+now. It has no way to know that a withdrawal should have lowered one of
+them. The wrong total looks like an ordinary number, and nothing marks it
+as strange.
 
 </details>
 
-## Writing a Test for One Method
+## Writing a test for one method
 
 ```python exec
 id: writing-a-test-for-one-method-1
@@ -91,27 +94,27 @@ assert account.balance == 150.0, "deposit should raise the balance"
 <details class="dl-answer"><summary>answer</summary>
 
 `AssertionError: deposit should raise the balance`. `account.balance` is
-`50.0`, not the `150.0` the `assert` expects, so the claim is false and the
-program stops right there.
+`50.0`, but the `assert` expects `150.0`. The claim is false, so the
+program stops on that line.
 
 </details>
 
-**5.** What would the cell above show instead if the `assert` had no
-message — just `assert account.balance == 150.0`?
+**5.** Suppose the `assert` had no message: only
+`assert account.balance == 150.0`. What would the cell show then?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Still `AssertionError`, but with no text after it — just the line number
-where the check failed. The message argument is what turns "something on
-this line is false" into "here is what that line was actually checking."
-That matters most once enough time has passed that the code itself no
-longer explains it at a glance.
+It would still show `AssertionError`, but with no text after it. The
+traceback still shows the line where the check failed. Without a message,
+you only learn "something on this line is false". With a message, you
+learn what that line was checking. That matters most weeks later, when
+you no longer remember the code.
 
 </details>
 
-**6.** Write an `assert` that checks a fresh `BankAccount("Ben", 0.0)`
-starts with a balance of exactly `0.0`, with a message saying what it
-checks.
+**6.** Write an `assert` that checks that a new `BankAccount("Ben", 0.0)`
+starts with a balance of exactly `0.0`. Give it a message that says what
+it checks.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -120,13 +123,13 @@ account = BankAccount("Ben", 0.0)
 assert account.balance == 0.0, "a new account should start at the balance it was given"
 ```
 
-This one passes silently on a correct `BankAccount`, the same way every
-`assert` does when its claim holds. No output at all is what "the check
-passed" looks like.
+On a correct `BankAccount`, this `assert` passes and prints nothing. Every
+`assert` behaves this way when its claim is true. No output means the
+check passed.
 
 </details>
 
-## A Few Tests, Run Together
+## A few tests, run together
 
 ```python exec
 id: a-few-tests-run-together-1
@@ -162,9 +165,9 @@ test_withdraw_refuses_too_much()
 print("All tests passed.")
 ```
 
-**7.** Write `test_withdraw_leaves_balance_at_zero()`, checking that
-withdrawing an account's exact balance leaves it at `0.0`. Add a call to
-it alongside the two calls above.
+**7.** Write `test_withdraw_leaves_balance_at_zero()`. It should check
+that withdrawing an account's exact balance leaves it at `0.0`. Add a call
+to it next to the two calls above.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -181,37 +184,41 @@ test_withdraw_leaves_balance_at_zero()
 print("All tests passed.")
 ```
 
-Same shape as the two tests already there: build a fresh account, act on
-it, `assert` what should be true afterward.
+It has the same shape as the two tests already there. First create a new
+account. Then use it. Then `assert` what should be true afterwards.
 
 </details>
 
-**8.** Each `test_` function above builds its own `BankAccount("Alice",
-100.0)`, rather than sharing one account across all three. What would go
-wrong if `test_deposit()` and `test_withdraw_refuses_too_much()` shared a
-single account instead?
+**8.** Each `test_` function above creates its own
+`BankAccount("Alice", 100.0)`. The tests do not share one account. What
+would go wrong if `test_deposit()` and `test_withdraw_refuses_too_much()`
+shared a single account?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Whichever test ran second would start from whatever balance the first one
-left behind, not `100.0`. `test_withdraw_refuses_too_much()`, run after `test_deposit()` on a shared
-account, would check against a starting balance of `150.0` rather than
-`100.0`. Its own `assert` would need rewriting just because of what ran
-before it.
+The second test would start from the balance the first test left behind,
+not from `100.0`. If `test_withdraw_refuses_too_much()` ran after
+`test_deposit()` on a shared account, the starting balance would be
+`150.0`. Withdrawing `150.0` would then succeed and leave `0.0`, so its
+`assert` would fail. You would have to rewrite that test because of what
+ran before it.
 
 </details>
 
-**9.** Suppose `withdraw()` had the `>=` bug from *A Bug That Hides in
-Another Class*, refusing a withdrawal that exactly empties the account.
-Which of the three tests above would fail, and which would still pass?
+**9.** Suppose `withdraw()` had the `>=` bug from the first section of the
+tutorial. It refuses a withdrawal that would leave exactly `0.0`. Which
+of the three tests would fail, and which would still pass?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`test_withdraw_leaves_balance_at_zero()` would fail — it withdraws the
-exact balance and expects `0.0`, which the `>=` bug refuses.
-`test_deposit()` and `test_withdraw_refuses_too_much()` would still pass,
-since neither withdraws an amount equal to the balance. `"All tests
-passed."` would never print, since one `assert` failing stops the program
-before reaching it.
+`test_withdraw_leaves_balance_at_zero()` would fail. It withdraws the
+exact balance and expects `0.0`, and the `>=` bug refuses that
+withdrawal.
+
+`test_deposit()` and `test_withdraw_refuses_too_much()` would still pass.
+Neither one withdraws an amount equal to the balance.
+
+`"All tests passed."` would never print. The failing `assert` stops the
+program before it reaches that line.
 
 </details>

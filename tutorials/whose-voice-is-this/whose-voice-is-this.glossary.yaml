@@ -1,5 +1,12 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
-# Nothing new: this tutorial reuses load_text(), dictionaries of
-# dictionaries, and str.find()/str.index() as already introduced in
-# A Chain Reads a Book, this series' first tutorial.
-entries: []
+# This tutorial reuses load_text(), dictionaries of dictionaries, and
+# str.find()/str.index() as already introduced in the series' first
+# tutorial. The one new thing is a lambda, used to sort followers by
+# their counts.
+entries:
+  - term: lambda
+    kind: function
+    definition: >
+      Makes a small function in one line, with no name. It is handy as
+      the key= of sorted() or max(), to say what to sort or compare by.
+    example: "sorted(followers.items(), key=lambda kv: -kv[1])"

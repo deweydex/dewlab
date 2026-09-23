@@ -1,15 +1,15 @@
 ---
-title: "Undoing It — Practice"
+title: "Inverse matrices: undoing a transformation — Practice"
 practice_for: undoing-it
 year: "2026-2027"
 version: 2026.08.24.1
 ---
 
-# Undoing It — Practice
+# Inverse matrices: undoing a transformation — Practice
 
-Compute each determinant by hand before you run anything — it is two
-multiplications and a subtraction, and the whole point of this page is to
-make that arithmetic automatic.
+Work out each determinant by hand before you run anything. It is two
+multiplications and a subtraction. The aim of this page is to make that
+arithmetic automatic.
 
 ## Determinants
 
@@ -40,8 +40,8 @@ def multiply(a, b):
     return [[dot(row, col) for col in bt] for row in a]
 ```
 
-**1.** Compute $\det\begin{bmatrix} 3 & 2 \\ 1 & 4 \end{bmatrix}$ by hand,
-then check it.
+**1.** Work out $\det\begin{bmatrix} 3 & 2 \\ 1 & 4 \end{bmatrix}$ by hand.
+Then check it.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -49,26 +49,29 @@ $3(4) - 2(1) = 10$.
 
 </details>
 
-**2.** Compute $\det\begin{bmatrix} 5 & -1 \\ 10 & -2 \end{bmatrix}$. Look at
-the two rows — is there a relationship between them that could have told you
-the answer before multiplying anything?
+**2.** Work out $\det\begin{bmatrix} 5 & -1 \\ 10 & -2 \end{bmatrix}$. Now look
+at the two rows. Is there a link between them that could have told you
+the answer before you multiplied anything?
 
 <details class="dl-answer"><summary>answer</summary>
 
 $5(-2) - (-1)(10) = -10 + 10 = 0$.
 
-Row 2 is exactly row 1 doubled: $[10, -2] = 2 \times [5, -1]$. Whenever one
-row of a 2×2 matrix is a multiple of the other, the determinant is zero —
-which makes sense once you remember the determinant measures area, and two
-proportional rows describe a "square" that has already been flattened
-before you even multiply anything by it.
+Row 2 is exactly row 1 doubled: $[10, -2] = 2 \times [5, -1]$. Whenever
+one row of a 2×2 matrix is a multiple of the other, the determinant is
+zero.
+
+This makes sense, because the determinant measures area. When one row is
+a multiple of the other, the matrix sends every point onto the same line
+through the origin. So it flattens the square, and the area is zero.
 
 </details>
 
 ## Inverses
 
 **3.** Find the inverse of $\begin{bmatrix} 3 & 2 \\ 1 & 4 \end{bmatrix}$
-using the formula, then verify by multiplying the two together.
+with the formula. Then check it by multiplying the two matrices
+together.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -79,37 +82,42 @@ A = [[3, 2], [1, 4]]
 print(multiply(A, inverse(A)))
 ```
 
-Running that does not print a perfectly clean
-`[[1.0, 0.0], [0.0, 1.0]]` — one of the off-diagonal entries typically comes
-out as something like `-1.11e-16` instead of exactly `0`. That is not a bug
-in `inverse`; it is ordinary floating-point rounding, the same kind of noise
-behind `0.1 + 0.2 != 0.3`. It is small enough to be worth checking with
-`check()` — which allows a tiny tolerance for exactly this reason — rather
-than an exact `==`.
+This does not print a perfectly clean `[[1.0, 0.0], [0.0, 1.0]]`. It
+prints `[[1.0000000000000002, -1.1102230246251565e-16], [0.0, 1.0]]`.
+`-1.11e-16` means $-1.11 \times 10^{-16}$, a tiny number very close to
+`0`.
+
+This is not a bug in `inverse`. It is ordinary rounding in
+floating-point numbers, the same kind of small error that makes
+`0.1 + 0.2 == 0.3` come out `False`. So it is better to check the result
+with `check()`, which allows a tiny difference for exactly this reason.
+An exact `==` would say `False`.
 
 </details>
 
-**4.** A system $A\mathbf{x} = \mathbf{b}$:
+**4.** Here is a system of equations, $A\mathbf{x} = \mathbf{b}$:
 
 $$A = \begin{bmatrix} 2 & 1 \\ 5 & 3 \end{bmatrix}, \quad
 \mathbf{b} = \begin{bmatrix} 4 \\ 9 \end{bmatrix}$$
 
-Solve it by computing $\mathbf{x} = A^{-1}\mathbf{b}$.
+Solve it by working out $\mathbf{x} = A^{-1}\mathbf{b}$. The next page,
+[Systems of equations: solving them with matrices](tutorial:solving-systems),
+looks at systems like this one in more detail.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Find $\det(A)$ first — you will need it whether or not the formula asks
-   for it explicitly, because `inverse` divides by it internally.
-2. Compute $A^{-1}$ with the formula, or with your `inverse` function.
-3. `b` needs to be a column, not a plain list — `[[4], [9]]`, matching the
-   shape `multiply` expects.
-4. `multiply(inverse(A), b)` gives $\mathbf{x}$ as a column too.
+1. Find $\det(A)$ first. You need it either way, because `inverse`
+   divides by it.
+2. Work out $A^{-1}$ with the formula, or with your `inverse` function.
+3. Write `b` as a column: `[[4], [9]]`. That is the shape `multiply`
+   expects. A plain list `[4, 9]` will not work.
+4. `multiply(inverse(A), b)` gives $\mathbf{x}$, as a column too.
 
-**Think about:** how would you check your answer without recomputing
-anything — using $A$ and $\mathbf{x}$ rather than $A^{-1}$?
+**Think about:** how could you check your answer without working it all
+out again? Use $A$ and $\mathbf{x}$, not $A^{-1}$.
 
-**Try this next:** solve the same system by writing it as two ordinary
-simultaneous equations and eliminating a variable by hand. Do you get the
+**Try this next:** write the same system as two ordinary simultaneous
+equations. Solve them by hand, by removing one unknown. Do you get the
 same $\mathbf{x}$?
 
 </details>
@@ -123,27 +131,27 @@ $A^{-1} = \begin{bmatrix} 3 & -1 \\ -5 & 2 \end{bmatrix}$, and
 $A^{-1}\mathbf{b} = \begin{bmatrix} 3(4) + (-1)(9) \\ -5(4) + 2(9) \end{bmatrix}
 = \begin{bmatrix} 3 \\ -2 \end{bmatrix}$.
 
-Checking without recomputing: substitute back into the original system.
-$2(3) + 1(-2) = 4$ and $5(3) + 3(-2) = 9$ — both match $\mathbf{b}$, so the
-answer is right regardless of whether the inverse arithmetic was.
+To check without working it all out again, put the answer back into the
+original system: $2(3) + 1(-2) = 4$ and $5(3) + 3(-2) = 9$. Both match
+$\mathbf{b}$. So the answer is right, even if you made a mistake in the
+inverse along the way.
 
 </details>
 
-## Which Can Be Undone
+## Which can be undone
 
-**5.** $\det(A) = 5$ and $\det(B) = 3$, for two 2×2 matrices. What is
+**5.** Two 2×2 matrices have $\det(A) = 5$ and $\det(B) = 3$. What is
 $\det(AB)$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$15$. Determinants multiply: $\det(AB) = \det(A)\det(B)$, always, for square
-matrices of the same size.
+$15$. Determinants multiply: $\det(AB) = \det(A)\det(B)$. This is always
+true for square matrices of the same size.
 
-This is worth thinking about: it says the *area-scaling factor*
-of doing two transformations one after another is the product of their
-individual factors — which is exactly what you would want "scale by 5, then
-scale by 3" to mean, and it turns out to be true even when the two
-transformations are not simple scalings at all.
+Think about what this says. Doing two transformations one after the
+other scales area by the product of their two factors. That is exactly
+what you would want "scale by 5, then scale by 3" to mean. It stays true
+even when the two transformations are not simple scalings at all.
 
 </details>
 
@@ -151,13 +159,13 @@ transformations are not simple scalings at all.
 
 <details class="dl-answer"><summary>answer</summary>
 
-No — only that *at least one* of them is zero. $\det(AB) = \det(A)\det(B)$,
-and a product of two ordinary numbers is zero exactly when one of the two
-factors is, not both.
+No. It means only that at least one of them is zero. We know that
+$\det(AB) = \det(A)\det(B)$. A product of two ordinary numbers is zero
+when at least one of the two numbers is zero. Both do not have to be.
 
-Geometrically: if either transformation on its own flattens the square,
-applying the other one afterward (or beforehand) cannot un-flatten it. One
-collapse is enough to make the whole chain uninvertible.
+In pictures: if either transformation flattens the square on its own,
+the other one cannot unflatten it, whether it comes before or after. One
+collapse is enough, and then the whole chain has no inverse.
 
 </details>
 
@@ -165,16 +173,16 @@ collapse is enough to make the whole chain uninvertible.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes. The only determinant value that rules out an inverse is exactly zero —
-a negative determinant is completely fine, and just means the transformation
-flips orientation (left-handed becomes right-handed) as well as scaling area
-by a factor of 4.
+Yes. The only determinant that rules out an inverse is exactly zero. A
+negative determinant is fine. It means that the transformation flips the
+shape over, like a mirror, as well as scaling its area by a factor of
+4. After the flip, a left hand would look like a right hand.
 
 </details>
 
-## Writing It
+## Writing it
 
-**8.** Write `inverse(M)` from scratch, for a 2×2 matrix.
+**8.** Write `inverse(M)` for a 2×2 matrix, from the beginning.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -188,28 +196,30 @@ def inverse(M):
     return [[e / d, -b / d], [-c / d, a / d]]
 ```
 
-Adding the `if d == 0` check turns "divide by zero, eventually, somewhere in
-the return statement" into an error that names the actual problem — the same
-shape-check instinct from *A Grid of Numbers*, applied to a different kind of
-invalid input.
+Without the `if d == 0` check, the function would divide by zero
+somewhere in the `return` line. With the check, the error names the real
+problem. This is the same idea as the shape check in
+[Matrices: adding, scaling and transposing a grid of numbers](tutorial:grid-of-numbers),
+used for a different kind of bad input.
 
 </details>
 
-## Thinking About It
+## Thinking about it
 
-**9.** A matrix has determinant $0.0001$ — not zero, so it technically has an
-inverse. Why might a computer still have trouble using it reliably?
+**9.** A matrix has determinant $0.0001$. That is not zero, so the matrix
+does have an inverse. Why might a computer still have trouble using it
+reliably?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because the inverse formula divides by the determinant, and dividing by a
-very small number produces very large numbers — small errors already present
-in the data get multiplied up enormously by that division.
+The inverse formula divides by the determinant. Dividing by a very small
+number gives very large numbers. So any small errors already in the data
+get multiplied up enormously.
 
-This is called being *ill-conditioned*: technically invertible, but close
-enough to singular that ordinary floating-point rounding can move the
-answer by more than the answer is worth trusting. It comes up often in
-practice — fitting a model to data that is nearly, but not quite, repeating
-itself in two different measurements.
+A matrix like this is *ill-conditioned*. An ill-conditioned matrix has
+an inverse, but it is so close to singular that ordinary rounding can
+change the answer by more than we can trust. This happens often in real
+work. One example is fitting a model to data where two different
+measurements almost repeat each other, but not quite.
 
 </details>

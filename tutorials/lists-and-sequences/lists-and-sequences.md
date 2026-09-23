@@ -9,6 +9,8 @@ covers:
     covers: [MIT-6.3, MIT-6.7]
   looping-over-lists:
     covers: [MIT-6.5, MIT-6.7]
+  comprehensions-a-loop-that-builds-a-list:
+    covers: [MIT-6.3]
   mathematical-sequences-as-functions:
     covers: [MIT-6.2]
   the-dot-product-lists-meet-arithmetic:
@@ -25,6 +27,8 @@ On this page we:
 
 - keep many values together in a list, and pick out the ones we want
 - build lists with a loop, and loop over them
+- write those loops on one line, as comprehensions, and build grids
+  with them
 - write functions that work with lists, and turn mathematical sequences
   into code
 
@@ -180,6 +184,220 @@ id: your-turn-summing-a-list-1
 scores = [42, 38, 35, 47, 29, 41, 44, 33, 39, 48]
 ```
 
+## Comprehensions: A Loop That Builds a List
+
+In "Building Lists with Loops", above, we built a list of squares in
+three steps. First we made an empty list. Then a loop worked out each
+value. Then `append()` added each value to the list.
+
+This shape comes up so often that Python has a shorter way to write it.
+The cell below builds the same list twice: once with the loop, and once
+on a single line. Do you think the two lists will be the same? Run it to
+check.
+
+```python exec
+id: list-comprehensions-1
+squares = []
+for i in range(1, 11):
+    squares.append(i ** 2)
+print(squares)
+
+squares_again = [i ** 2 for i in range(1, 11)]
+print(squares_again)
+print(squares == squares_again)
+```
+
+Both lists hold the same ten squares, and `==` gives `True`: the two
+lists are equal.
+
+The one-line version is a *list comprehension*. A list comprehension is
+a loop that builds a list, written on one line inside square brackets.
+Here are the two versions again, one above the other:
+
+```python
+squares = []
+for i in range(1, 11):
+    squares.append(i ** 2)
+
+squares = [i ** 2 for i in range(1, 11)]
+```
+
+To turn the loop into a comprehension:
+
+1. Write the value you would append: `i ** 2`.
+2. After it, write the `for` line, without its colon:
+   `for i in range(1, 11)`.
+3. Put square brackets around the whole thing.
+
+We can read it out loud as "a list of `i ** 2`, for each `i` in
+`range(1, 11)`".
+
+A comprehension can go through any list, and the value at the front can
+be any calculation. What do you think each line will show? Run the cell
+to check.
+
+```python exec
+id: list-comprehensions-2
+temperatures = [12, 15, 9, 20, 17]
+print([celsius * 9 / 5 + 32 for celsius in temperatures])
+
+names = ["Ada", "Grace", "Alan", "Margaret"]
+print([len(name) for name in names])
+```
+
+The first list holds the same temperatures in Fahrenheit. It uses the
+formula from
+[Algorithms, pseudocode and your first Python](tutorial:first-steps).
+The second list holds the length of each name.
+
+### Keeping only some values
+
+Sometimes we want only some of the values. In a loop, we put an `if`
+inside the loop, as in
+[Making decisions with if, elif and else](tutorial:making-decisions).
+In a comprehension, the `if` goes at the end.
+
+Which scores will each version keep? Run the cell to check.
+
+```python exec
+id: list-comprehensions-3
+scores = [42, 38, 35, 47, 29, 41, 44, 33, 39, 48]
+
+high_scores = []
+for score in scores:
+    if score >= 40:
+        high_scores.append(score)
+print(high_scores)
+
+print([score for score in scores if score >= 40])
+```
+
+Both versions keep the same five scores. An `if` at the end of a
+comprehension is a *filter*. A filter keeps only the values that pass a
+test. Here the test is `score >= 40`.
+
+### A grid is a list of lists
+
+A list can hold other lists. A list of lists is a good way to store a
+grid of numbers, with one inner list for each row. The matrices pages,
+starting with
+[Matrices: adding, scaling and transposing a grid of numbers](tutorial:grid-of-numbers),
+store every grid like this.
+
+Two small tools help us build a grid:
+
+- `[0] * 4` repeats a list. It makes `[0, 0, 0, 0]`.
+- When a loop does not use its loop variable, Python programmers often
+  name the variable `_`, an underscore. The name tells the reader "this
+  value is not used".
+
+```python exec
+id: list-comprehensions-4
+print([0] * 4)
+
+size = 3
+grid = [[0] * size for _ in range(size)]
+print(grid)
+
+times_table = [[row * column for column in range(1, 4)] for row in range(1, 4)]
+print(times_table)
+print(times_table[1][2])
+```
+
+How does `grid` get three rows? The comprehension runs `[0] * size` once
+on each pass of the loop, so it makes a new row of zeros three times.
+
+`times_table` has a comprehension inside a comprehension. The inner one,
+`[row * column for column in range(1, 4)]`, builds one row. The outer
+one does that once for each `row` from 1 to 3.
+
+To read one value from a grid, we give two indexes: the row first, then
+the column. Counting from 0, `times_table[1][2]` is row 1, column 2, and
+that value is 6.
+
+Why not write `[[0] * 3] * 3`? It looks like a shorter way to get the
+same grid. The cell below changes one value in each version. What do you
+think each `print` will show? Run it to check.
+
+```python exec
+id: list-comprehensions-5
+shortcut = [[0] * 3] * 3
+shortcut[0][0] = 5
+print(shortcut)
+
+grid = [[0] * 3 for _ in range(3)]
+grid[0][0] = 5
+print(grid)
+```
+
+This one trips up most people who try it. In `shortcut`, changing one
+value changed all three rows. That is because `* 3` did not make three
+rows. It put the *same* row into the outer list three times. There is
+only one row, seen from three places. The practice page shows the same
+thing with two names for one list, in problem 3: `b = a`.
+
+In `grid`, the comprehension ran `[0] * 3` three times, so it made three
+separate rows. Changing one row leaves the other two alone. So when you
+build a grid, use a comprehension.
+
+### Inside sum(), max() and join()
+
+In "Your turn: Summing a list" you wrote a loop that adds up a list.
+From here on, we can use Python's own `sum()`, which adds up
+the values it is given. `max()` gives the largest value it is given.
+
+What do you think each line will show? The first two lines look almost
+the same. What is different about them?
+
+```python exec
+id: list-comprehensions-6
+print(sum([score for score in scores if score >= 40]))
+print(sum(score for score in scores if score >= 40))
+print(sum(1 for score in scores if score >= 40))
+print(max(len(name) for name in names))
+
+digits = [2, 0, 2, 6]
+print("".join(str(digit) for digit in digits))
+print(", ".join(names))
+```
+
+The first two lines give the same answer, 222. The second line has no
+square brackets. When a comprehension is the only thing inside a
+function's brackets, we can leave its square brackets out. It is then a
+*generator expression*. A generator expression makes its values one at
+a time and hands each one to the function, without building a list
+first. The answer is the same.
+
+The third line counts. It adds 1 for each score of 40 or more, so the
+total is the number of scores that pass the test: 5.
+
+The fourth line gives the length of the longest name, 8.
+
+The last two lines build text. `join()` joins a group of strings into
+one string. The string before `.join` goes between the pieces: `""`
+puts nothing between them, and `", "` puts a comma and a space.
+`join()` works only with strings, so the first of these lines uses
+`str()` to turn each digit into a string.
+
+### Your turn
+
+Can you do each of these with a comprehension? Use the cell below.
+
+1. Make a list of the cubes of the numbers from 1 to 10. A cube is a
+   number to the power of 3.
+2. From `scores`, make a list of the scores below 35.
+3. Use `sum()` and a generator expression to count how many scores are
+   even. A number `n` is even when `n % 2 == 0`.
+4. Make a 4 × 4 grid where each value is its row index plus its column
+   index. Row 0 should be `[0, 1, 2, 3]`.
+
+```python exec
+id: your-turn-comprehensions
+hint: For step 4, build one row first: [row + column for column in range(4)]. Then put a second comprehension around it, for each row.
+# Your comprehensions here
+scores = [42, 38, 35, 47, 29, 41, 44, 33, 39, 48]
+```
+
 ## Mathematical Sequences as Functions
 
 In mathematics, a *sequence* is a list of numbers made by a rule. The
@@ -221,7 +439,7 @@ useful idea.
 1. Write a function `generate_sequence(func, n)`. Its first argument,
    `func`, is a function. Its second argument, `n`, is a whole number.
 2. Make it return a list of the first `n` terms of the sequence that
-   `func` makes.
+   `func` makes. A comprehension can do this in one line.
 3. In the second cell, try it with `square_number` and with
    `triangular_number`.
 
@@ -275,8 +493,9 @@ id: your-turn-8
 
 On this page we met lists. We created them, read elements by index, took
 slices, and changed them. We built lists with loops, and we looped over
-them. Then we saw how mathematical sequences and the dot product turn
-straight into code, as functions that take lists in and give lists or
+them. We wrote the same loops on one line, as comprehensions, and used
+them to build grids and to feed `sum()` and `join()`. Then we saw how
+mathematical sequences and the dot product turn straight into code, as functions that take lists in and give lists or
 numbers back.
 
 What links do you see between the ideas from mathematics and the

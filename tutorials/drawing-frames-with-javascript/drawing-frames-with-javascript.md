@@ -24,8 +24,7 @@ This is the first JavaScript on this course. JavaScript is the language
 that makes a web page do things after it has loaded, and this page is
 a first taste of it. Nothing here needs to be memorised. Read the code
 alongside the explanation below it, then change something and press
-Run. The ball in orbit is the same one as on [A Point on the
-Screen](tutorial:a-point-on-the-screen#a-ball-in-orbit), on the
+Run. The ball in orbit is the same one as on [3D animation: a camera and a ball in orbit](tutorial:a-ball-in-orbit#a-ball-in-orbit), on the
 Computational Methods course, written in a different language.
 
 ## Let's try it

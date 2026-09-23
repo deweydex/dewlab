@@ -1,58 +1,70 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# First tutorial of the new Problem Solving series. Checked against every
+# First tutorial of the Problem Solving series. Checked against every
 # other glossary file in computational-methods (python-fundamentals,
 # matrices, simulation, algorithms) -- no overlap. "binary search" is
 # reused, already taught in mit-pdp-maths-prog-integration's
 # finding-things.glossary.yaml, so it is used in prose here without
-# emphasis rather than re-glossaried.
+# emphasis and not glossaried again. "bug", "debugging" and "logical
+# error" are taught in when-it-goes-wrong and reading-an-error-message.
 entries:
+  - term: pipeline
+    kind: concept
+    definition: >
+      A pipeline is a program made of stages, where each stage passes its
+      result on to the next one.
+
+  - term: symptom, cause
+    kind: concept
+    definition: >
+      A symptom is what you can see going wrong, such as a wrong final
+      answer. The cause is the mistake in the code that produced it. The
+      cause is often in a different place from the symptom.
+
   - term: pragmatic problem-solving
     kind: concept
     definition: >
-      Pragmatic problem-solving fixes whatever a symptom points at
-      directly, without asking why the symptom appeared. It can make one
-      failing case pass while leaving the actual fault untouched, ready
-      to surface differently somewhere else.
+      Pragmatic problem-solving treats the symptom directly, without
+      asking why it appeared. It can make one failing case pass while the
+      real fault stays in place, ready to show up somewhere else.
 
   - term: semantic analysis
     kind: concept
     definition: >
-      Semantic analysis traces a wrong result back to the specific step
-      that produced it, rather than adjusting whatever step the result
-      happened to come out of. It answers why something went wrong, not
-      only where it became visible.
+      Semantic analysis traces a wrong result back to the step that
+      produced it. It answers why something went wrong, and not only
+      where the problem became visible.
 
   - term: initiative
     kind: concept
     definition: >
-      Initiative is starting a check nobody required, such as testing
-      against a known answer before anything has gone visibly wrong.
+      Initiative is starting a check that nobody asked for, such as
+      testing against a known answer before anything has visibly gone
+      wrong.
 
   - term: methodical approach
     kind: concept
     definition: >
-      A methodical approach checks the same kind of question at each
-      stage of a problem, in order, rather than jumping straight to a
-      guess.
+      A methodical approach asks the same kind of question at each stage
+      of a problem, in order, instead of jumping straight to a guess.
 
   - term: logical reasoning
     kind: concept
     definition: >
-      Logical reasoning is using what one check ruled out to decide what
-      to check next, so each step narrows down where a fault can still
-      be.
+      Logical reasoning is using what one check has ruled out to decide
+      what to check next, so that each step narrows down where a fault
+      can be.
 
   - term: persistence
     kind: concept
     definition: >
-      Persistence is continuing past the point where a quick fix would
-      already look finished, until the actual cause is found.
+      Persistence is going on past the point where a quick fix already
+      looks finished, until the real cause is found.
 
   - term: lateral thinking
     kind: concept
     definition: >
-      Lateral thinking is choosing a test or an approach nothing in the
-      problem statement suggested, the way testing at freezing and
-      boiling point is not an obvious first choice for a temperature
-      pipeline, and yet turns out to be the one worth having.
+      Lateral thinking is choosing a test or an approach that nothing in
+      the problem suggested. Testing a temperature program at freezing
+      and boiling point is an example: it is not the obvious first choice,
+      but it is the test that catches the bug.

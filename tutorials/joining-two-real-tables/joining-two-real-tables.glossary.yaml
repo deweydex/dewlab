@@ -14,4 +14,4 @@ entries:
       matching row exists in the second. Where there is no match, the
       second table's columns come back empty instead of the row
       disappearing.
-    example: "SELECT income_share.country, country_regions.region FROM income_share LEFT JOIN country_regions ON income_share.country = country_regions.country;"
+    example: "SELECT income_share_tbl.country, country_region_tbl.region FROM income_share_tbl LEFT JOIN country_region_tbl ON income_share_tbl.country = country_region_tbl.country;"

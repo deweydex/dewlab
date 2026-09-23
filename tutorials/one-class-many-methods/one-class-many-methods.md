@@ -1,5 +1,5 @@
 ---
-title: "One Class, Many Methods"
+title: "Reusable methods: one class that does many jobs"
 year: "2026-2027"
 version: 2026.09.04.1
 covers:
@@ -11,20 +11,29 @@ covers:
     covers: [FOOP-LO8]
 ---
 
-# One Class, Many Methods
+# Reusable methods: one class that does many jobs
 
-**Fundamentals of Object Oriented Programming**
+So far our classes have had only a few methods. What happens when a
+class has many jobs to do? On this page we build one class step by
+step, and give it a new method each time.
 
-*Expressions Come Alive* represented a polynomial as a list of
-coefficients. Index `i` holds the coefficient of $x^i$, so $3x^2 + 5x - 2$
-becomes `[-2, 5, 3]`. *Objects and Classes* wrapped one piece of data and
-one operation together, as a class. This tutorial asks what happens once
-there is more than one operation to wrap.
+The class is for polynomials. A *polynomial* is a sum of terms, where
+each term is a number times a power of $x$. For example, $3x^2 + 5x - 2$
+is a polynomial. The number in front of each power is its
+*coefficient*: here, 3, 5 and −2.
 
-## From Loose Functions to One Class
+We can store a polynomial as a list of its coefficients. The item at
+index `i` is the coefficient of $x^i$. So $3x^2 + 5x - 2$ becomes
+`[-2, 5, 3]`: first the number on its own ($x^0$), then $x^1$, then
+$x^2$. If you have done
+[Expressions Come Alive](tutorial:expressions-come-alive), you have
+seen this list before.
 
-Here is a polynomial and a function that evaluates it, the way you already
-know how to write one.
+## From loose functions to one class
+
+Here is a polynomial and a function that works out its value for a
+given $x$, written the way you already know. What do you think the two
+lines print? Run it to check.
 
 ```python exec
 id: from-loose-functions-to-one-class-1
@@ -39,8 +48,10 @@ print(evaluate(quadratic, 1))
 print(evaluate(quadratic, 4))
 ```
 
-A program that tracks two polynomials needs two lists, and `evaluate()`
-has to be given the right one every time.
+It prints `6` and `66`. For $x = 1$: $3 + 5 - 2 = 6$.
+
+A program that tracks two polynomials needs two lists. Each time we call
+`evaluate()`, we have to give it the right one.
 
 ```python exec
 id: from-loose-functions-to-one-class-2
@@ -51,9 +62,10 @@ print(evaluate(quadratic, 2))
 print(evaluate(cubic, 2))
 ```
 
-This is the same shape of problem *Objects and Classes* found in a bank
-balance. We can fix it the same way: wrap the coefficients and the
-operation on them into one class.
+This is the same problem we met with bank balances in
+[Classes and objects: keeping data and actions together](tutorial:objects-and-classes).
+We can fix it the same way. We put the coefficients and the operation on
+them together, in one class.
 
 ```python exec
 id: from-loose-functions-to-one-class-3
@@ -74,14 +86,16 @@ print(quadratic.evaluate(2))
 print(cubic.evaluate(2))
 ```
 
-`quadratic` and `cubic` each carry their own coefficients. Neither
-`evaluate()` call needs to be told which list to use — it already knows,
-because it is being asked of one particular object.
+`quadratic` and `cubic` each carry their own coefficients. Neither call
+to `evaluate()` needs to be told which list to use. Each call is made on
+one particular object, and `self.coeffs` is that object's own list.
 
 ### Your turn
 
-Create a `Polynomial` for $x^2 - 1$ below (the coefficients are `[-1, 0,
-1]`), then evaluate it at a few values of your own choosing.
+1. Create a `Polynomial` for $x^2 - 1$ in the cell below. Its
+   coefficients are `[-1, 0, 1]`.
+2. Evaluate it at a few values of $x$ that you choose.
+3. Can you find a value of $x$ where it gives `0`?
 
 ```python exec
 id: from-loose-functions-to-one-class-4
@@ -98,13 +112,16 @@ class Polynomial:
 # Create your own Polynomial here, and evaluate it at a few values
 ```
 
-## Giving It More to Do
+## Giving it more to do
 
-A polynomial has more than one useful question to answer. Its *degree* is
-the highest power in it — two for a quadratic, three for a cubic. Its
-*leading coefficient* is the coefficient attached to that highest power.
-Both are easy to add as methods, once the coefficients already live on
-`self`.
+A polynomial can answer more than one useful question.
+
+- Its *degree* is the highest power of $x$ in it. A quadratic has
+  degree 2, and a cubic has degree 3.
+- Its *leading coefficient* is the coefficient of that highest power.
+
+Once the coefficients live on `self`, both are short methods. What do
+you think this cell prints for the cubic $2x^3 - 3x^2 + 1$?
 
 ```python exec
 id: giving-it-more-to-do-1
@@ -129,19 +146,24 @@ print(cubic.degree())
 print(cubic.leading_coefficient())
 ```
 
-Notice what did not have to change. `degree()` and `leading_coefficient()`
-needed no new parameter for the coefficients, and no care at the call site
-about which polynomial's list to pass. Both already have `self`, and
-`self.coeffs` is right there. This is what "modular, reusable code" means
-for a class. Every new capability is a method that can call on everything
-the object already carries. A stand-alone function cannot do that — it
-needs the same data given to it every time.
+It prints `3`, then `2`.
+
+Look at what did not have to change. `degree()` and
+`leading_coefficient()` needed no new parameter for the coefficients.
+The call `cubic.degree()` does not pass in a list at all. Both methods
+already have `self`, and `self.coeffs` is there for them.
+
+This is what *reusable* code means for a class. Each new job is a
+method that can use everything the object already carries. A method
+written once works on every object of its class. A stand-alone function
+cannot do that. It needs the same data given to it every time.
 
 ### Your turn
 
-Add a `constant_term()` method below, returning the coefficient of $x^0$
-— the value a polynomial takes when $x$ is 0. Then try it on a
-`Polynomial` of your own.
+1. Add a `constant_term()` method to the class below. It should return
+   the coefficient of $x^0$. That is the value a polynomial takes when
+   $x$ is 0.
+2. Try it on `my_polynomial`, or on a `Polynomial` of your own.
 
 ```python exec
 id: giving-it-more-to-do-2
@@ -169,27 +191,30 @@ my_polynomial = Polynomial([-1, 0, 1])
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. `constant_term()` needs no parameters beyond `self` — the same shape
-   as `degree()` and `leading_coefficient()` above it.
+1. `constant_term()` needs no parameters except `self`. It has the same
+   shape as `degree()` and `leading_coefficient()` above it.
 2. The coefficient of $x^0$ is the first entry in the list, at index 0.
-3. Compare your answer against `evaluate(0)` on the same polynomial. They
-   should always agree: every term except the constant one multiplies by
-   a positive power of 0, which is 0 itself, so only the constant term
-   survives.
+3. Compare your answer with `evaluate(0)` on the same polynomial. They
+   should always agree. Every term except the constant one is multiplied
+   by a positive power of 0, such as $0^1$ or $0^2$, and each of those
+   is 0. So only the constant term is left.
 
-**Think about:** could `constant_term()` have been written as
-`self.evaluate(0)` instead of reading `self.coeffs[0]` directly? Try it
-and see if it gives the same answer.
+**Think about:** could `constant_term()` return `self.evaluate(0)`
+instead of reading `self.coeffs[0]`? Try it. Does it give the same
+answer?
 
 </details>
 
-## Data That Belongs Together
+## Data that belongs together
 
-A `Polynomial` so far carries one field: its coefficients. A field can be
-anything else a program needs tracked alongside it, too. Suppose a
-program keeps several polynomials at once — a company's cost function, a
-projectile's height over time. Each one needs its own label kept right
-next to its own coefficients.
+So far a `Polynomial` has one field, its coefficients. An object can
+carry as many fields as a program needs.
+
+Suppose a program keeps several polynomials at once: a company's costs,
+and the height of a ball thrown in the air. Each one needs a label, and
+the label must stay with the right coefficients. Here, the constructor
+takes a label too. Predict the two lines of output, then run it to
+check.
 
 ```python exec
 id: data-that-belongs-together-1
@@ -211,18 +236,23 @@ for polynomial in [cost, height]:
     print(polynomial.label, "at x=3:", polynomial.evaluate(3))
 ```
 
-Run that and notice what the loop does not need: a second list of labels,
-kept in step by hand with a first list of coefficients. Each
-`Polynomial` object already carries both, so asking for one's label and
-its coefficients together is just asking that one object. *Objects and
-Classes* introduced a field as one piece of data. Here the same idea
-applies to more than one piece, on the same object at once.
+Now look at what the loop does not need. There is no second list of
+labels to keep in step with a list of coefficients. Each `Polynomial`
+object carries both. To get one polynomial's label and its value
+together, we ask that one object.
+
+`BankAccount`, on the
+[Classes and objects](tutorial:objects-and-classes) page, already had
+two fields: an owner and a balance. The same idea works for any data
+that belongs together. Put it on the same object, and it stays together.
 
 ### Your turn
 
-Create two `Polynomial` objects of your own, each with a coefficient list
-and a label. Put them in a list and, like the cell above, print each
-one's label alongside its `degree()`.
+1. Create two `Polynomial` objects of your own in the cell below. Give
+   each one a list of coefficients and a label.
+2. Put the two objects in a list.
+3. Loop over the list, as the cell above does. For each one, print its
+   label and its `degree()`.
 
 ```python exec
 id: data-that-belongs-together-2
@@ -243,25 +273,24 @@ class Polynomial:
 # Create two Polynomial objects here, then print each label and degree
 ```
 
-## Wrapping Up
+## Wrapping up
 
-In this tutorial:
+On this page:
 
-- Wrapping data and an operation into a class scales past one operation.
-  A method added later reaches `self`'s fields the same way the first one
-  did, with nothing new to pass in.
-- That is what makes a method *reusable* in the object oriented sense: it
-  works on any object of its class, using whatever that particular object
-  already carries.
-- A class's fields are not limited to the one piece of data it started
-  with. Two fields that belong together — coefficients and a label, a
-  balance and an owner — travel together automatically once they live on
-  the same object.
+- Putting data and its operations into a class works for many
+  operations, not only one. A method added later uses the fields on
+  `self` in the same way the first method did, with nothing new to pass
+  in.
+- That is what makes a method *reusable*: it works on any object of its
+  class, using the data that object already carries.
+- An object can have as many fields as it needs. Fields that belong
+  together, such as coefficients and a label, or a balance and an owner,
+  stay together once they live on the same object.
 
 ### Reflection
 
-A few sentences about this tutorial, whenever you are ready. Which method
-felt most natural to add once `Polynomial` already existed?
+Write a few sentences about this page, whenever you are ready. Once
+`Polynomial` existed, which method felt most natural to add?
 
 Double-click this cell to write your thoughts:
 

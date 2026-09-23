@@ -31,4 +31,4 @@ entries:
       Writes a DataFrame into the page's shared database connection as a
       new table. Passing if_exists="replace" lets the same cell run
       again without failing because the table already exists.
-    example: 'income_share.to_sql("income_share", db, if_exists="replace", index=False)'
+    example: 'income_share.to_sql("income_share_tbl", db, if_exists="replace", index=False)'

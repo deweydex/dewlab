@@ -1,5 +1,5 @@
 ---
-title: "Turning a Cube"
+title: "The rotation matrix: turning a cube in 3D"
 year: "2026-2027"
 version: 2026.09.21.1
 covers:
@@ -14,15 +14,17 @@ covers:
     covers: [CMPS-LO4]
 ---
 
-# Turning a Cube
+# The rotation matrix: turning a cube in 3D
 
-[A Point on the Screen](tutorial:a-point-on-the-screen) projected posts
-and a ball, one point at a time. A cube is eight points. The
+[Perspective projection: dividing by
+depth](tutorial:a-point-on-the-screen) projected a road of posts, and
+[3D animation: a camera and a ball in orbit](tutorial:a-ball-in-orbit)
+projected a ball, one point at a time. A cube is eight points. The
 interesting part is not the points but the lines between them, and what
 happens to the whole shape when it turns. Every 3D game turns things
 thousands of times a second: a wheel, a door, a whole world as the
 player looks round. Every one of those turns is a matrix, and the
-`multiply` you built in [Multiplying Grids](tutorial:multiplying-grids)
+`multiply` you built in [Matrix multiplication: rows times columns](tutorial:multiplying-grids)
 does all the work.
 
 ## Eight Corners, Twelve Edges
@@ -53,15 +55,14 @@ Two lists, and it is worth being clear what each holds:
   joins corner 0 to corner 1. A cube has twelve edges: four round the
   front, four round the back, and four joining the two.
 
-This is the layout the square had in [What a Matrix Does to a
-Picture](tutorial:what-a-matrix-does-to-a-picture), with a third row
+This is the layout the square had in [Matrix transformations: what a matrix does to a picture](tutorial:what-a-matrix-does-to-a-picture), with a third row
 because each point now has a depth. That layout lets a matrix be
 applied to every corner in a single multiplication.
 
 The cube is sitting exactly where the camera stands, so before anything
 can be projected it has to be pushed out in front. `move` adds a fixed
-amount to every coordinate. `project` is the divide from the last
-tutorial, done to a whole row of points at once:
+amount to every coordinate. `project` is the divide from the first
+tutorial of this series, done to a whole row of points at once:
 
 ```python exec
 id: eight-corners-twelve-edges-2
@@ -199,8 +200,9 @@ draw(multiply(rotate_y(math.radians(15)), move(cube, 0, 0, 5)))
 Now the cube moves off to the side. It is being turned about the
 camera, not about its own centre. Keep going, a few degrees at a time,
 and it would go all the way round the camera and come back. That is the
-ball's orbit from the last tutorial, done with a matrix instead of with
-$\cos$ and $\sin$ written out by hand. The ball was a single point being
+ball's orbit from [the last
+tutorial](tutorial:a-ball-in-orbit#a-ball-in-orbit), done with a matrix
+instead of with $\cos$ and $\sin$ written out by hand. The ball was a single point being
 turned about the camera.
 
 ### Your turn
@@ -345,9 +347,11 @@ noticing, because nothing changed in the numbers at that moment.
 
 Turning was a matrix. Moving was not: `move` added a number to every
 coordinate, and there is no 3×3 matrix that does that, because every
-one of them leaves the origin where it is. The next tutorial fixes that
-with a trick that looks like cheating, and then uses the same trick on
-the perspective divide itself.
+one of them leaves the origin where it is. The next tutorial,
+[Homogeneous coordinates and the projection
+matrix](tutorial:the-fourth-number), fixes that with a trick that looks
+like cheating. Then it uses the same trick on the perspective divide
+itself.
 
 ## Where to Read More
 

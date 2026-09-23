@@ -1,15 +1,14 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Fifth tutorial of the series (Programming with objects). Checked all four
-# earlier glossaries as the cumulative list — none overlap. "docstring"
+# Tutorial of the series (Programming with objects) after testing a class.
+# Checked every earlier glossary in the series as the cumulative list —
+# none overlap. "docstring"
 # itself is not a new entry here: it is already taught in
 # mit-pdp-maths-prog-integration/building-reusable-tools (PDP-LO7, a
 # FOOP-LO9 prerequisite) for functions, and this tutorial only extends it
 # to classes and methods without redefining the term. dev/curriculum_map.py's
-# terms_of() found *represent* emphasised once, for contrast ("what does
-# one object *represent*", against a function's "what does it compute") —
-# not a term, the same kind of emphasis tutorial 3's own glossary excluded
-# for "is"/"has". help() is added from a manual read: never emphasised
+# terms_of() used to find *represent* emphasised once, for contrast; the
+# 2026.09.22 language pass dropped that emphasis. help() is added from a manual read: never emphasised
 # (referenced in code style, the same convention other function/keyword
 # entries in the curriculum follow), genuinely new to the whole curriculum
 # (checked term_findings() for "help" and "help()" against every tutorial).

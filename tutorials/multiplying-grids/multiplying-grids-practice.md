@@ -1,16 +1,16 @@
 ---
-title: "Multiplying Grids — Practice"
+title: "Matrix multiplication: rows times columns — Practice"
 practice_for: multiplying-grids
 year: "2026-2027"
 version: 2026.08.24.1
 ---
 
-# Multiplying Grids — Practice
+# Matrix multiplication: rows times columns — Practice
 
-Work out the shape of the answer before you work out its entries — that
-catches more mistakes than the arithmetic itself does.
+Work out the shape of the answer before you work out its entries. The
+shape catches more mistakes than the arithmetic does.
 
-## Dot Products
+## Dot products
 
 ```python exec
 id: dot-1
@@ -23,39 +23,42 @@ def dot(a, b):
 print(dot([2, -3, 1], [4, 0, -2]))
 ```
 
-**1.** Compute `dot([1, 2, 3], [1, 2, 3])` by hand. What does the dot product
-of a vector with itself tell you?
+**1.** Work out `dot([1, 2, 3], [1, 2, 3])` by hand. What does the dot
+product of a vector with itself tell you?
 
 <details class="dl-answer"><summary>answer</summary>
 
 $1 + 4 + 9 = 14$.
 
-A vector dotted with itself is the sum of its entries squared — which is the
-square of its length (its *magnitude*), a fact that matters
-once vectors represent points or directions rather than lists of
-numbers.
+A vector dotted with itself gives the sum of its entries squared. That
+sum is the square of the vector's length. The length of a vector is also
+called its *magnitude*. This fact matters when a vector stands for a
+point or a direction, and not only for a list of numbers.
 
 </details>
 
-**2.** `dot([1, 0, 0], [0, 5, 9])` — compute it, then say in one sentence why
-the answer came out that way.
+**2.** Work out `dot([1, 0, 0], [0, 5, 9])`. Then say in one sentence
+why the answer came out that way.
 
 <details class="dl-answer"><summary>answer</summary>
 
-$0$. Every pair of entries has at least one zero in it — $1 \times 0$,
-$0 \times 5$, $0 \times 9$ — so every term in the sum is zero before the
-sum even happens.
+The answer is $0$. Every pair of entries has a zero in it:
+$1 \times 0$, $0 \times 5$ and $0 \times 9$. So every term in the sum is
+zero, before we add anything up.
 
-Two vectors with a dot product of zero are called *orthogonal*, which for
-ordinary geometric vectors means at right angles. `[1, 0, 0]` and
-`[0, 5, 9]` never share a direction to multiply against, which is the
-arithmetic reason they turn out to be perpendicular.
+Two vectors are *orthogonal* when their dot product is zero. For
+ordinary vectors in space, orthogonal means at right angles, or
+perpendicular. `[1, 0, 0]` has a number only in the first position, and
+`[0, 5, 9]` has a zero there. They never have a number in the same
+position to multiply together. That is the arithmetic reason they are at
+right angles.
 
 </details>
 
-## Shapes First
+## Shapes first
 
-**3.** State whether each product is defined, and if so, its shape:
+**3.** For each pair, can we multiply left by right? If we can, what
+shape is the result?
 
 | Left | Right |
 |---|---|
@@ -66,19 +69,18 @@ arithmetic reason they turn out to be perpendicular.
 
 <details class="dl-answer"><summary>answer</summary>
 
-2×3 by 3×4: defined, result 2×4 — inner dimensions (3 and 3) match, outer
-dimensions (2 and 4) become the shape.
-
-3×2 by 3×2: **not** defined — the first matrix has 2 columns, the second has
-3 rows, and $2 \neq 3$.
-
-4×1 by 1×3: defined, result 4×3. This is a column vector times a row vector —
-the smallest possible inner dimension, 1 — and it produces the largest result
-relative to its inputs of anything in this table.
-
-1×4 by 4×1: defined, result 1×1 — a single number. This is the dot product
-in disguise: a row vector times a column vector of the same length *is* the
-dot product, just written as a 1×1 matrix instead of a plain number.
+- 2×3 by 3×4: yes, and the result is 2×4. The inner numbers (3 and 3)
+  match. The outer numbers (2 and 4) give the shape.
+- 3×2 by 3×2: **no**. The first matrix has 2 columns, the second has 3
+  rows, and $2 \neq 3$.
+- 4×1 by 1×3: yes, and the result is 4×3. This is a *column vector* (a
+  matrix with one column) times a *row vector* (a matrix with one row).
+  The inner number is 1, the smallest it can be. Yet the result is the
+  largest in this table compared with its inputs: 12 entries from 7.
+- 1×4 by 4×1: yes, and the result is 1×1, a single number. This is the
+  dot product in another form. A row vector times a column vector of the
+  same length is the dot product, written as a 1×1 matrix instead of a
+  plain number.
 
 </details>
 
@@ -101,36 +103,37 @@ B = [[1, 4], [0, -2], [3, 1]]
 print(multiply(A, B))
 ```
 
-**4.** Verify the result of `multiply(A, B)` above by computing entry $c_{11}$
-by hand — row 1 of `A` dotted with column 1 of `B`.
+**4.** Check the result of `multiply(A, B)` above. Work out the entry
+$c_{11}$ by hand: row 1 of `A`, dotted with column 1 of `B`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-$c_{11} = 2(1) + 0(0) + 1(3) = 5$, which matches the top-left entry printed
-above.
+$c_{11} = 2(1) + 0(0) + 1(3) = 5$. This matches the top-left entry
+printed above.
 
 </details>
 
-**5.** A neural network layer computes $\mathbf{y} = W\mathbf{x} + \mathbf{b}$:
+**5.** A layer of a neural network works out $\mathbf{y} = W\mathbf{x} + \mathbf{b}$:
 
 $$W = \begin{bmatrix} 0.2 & 0.8 \\ -0.5 & 0.3 \\ 0.1 & 0.6 \end{bmatrix}, \quad
 \mathbf{x} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}, \quad
 \mathbf{b} = \begin{bmatrix} 0.1 \\ -0.2 \\ 0.3 \end{bmatrix}$$
 
-Compute $W\mathbf{x}$, then $\mathbf{y} = W\mathbf{x} + \mathbf{b}$.
+First work out $W\mathbf{x}$. Then work out $\mathbf{y} = W\mathbf{x} + \mathbf{b}$.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Check the shapes first: $W$ is 3×2, $\mathbf{x}$ is 2×1. Is the product
-   defined, and what shape does it come out?
+1. Check the shapes first: $W$ is 3×2 and $\mathbf{x}$ is 2×1. Can we
+   multiply them? What shape is the result?
 2. Each entry of $W\mathbf{x}$ is one row of $W$ dotted with the single
    column of $\mathbf{x}$.
 3. Row 1 of $W$ is $[0.2, 0.8]$. Dot it with $[1, 2]$.
-4. Repeat for rows 2 and 3, then add $\mathbf{b}$ entry by entry — that part
-   is the addition from the last tutorial, not multiplication.
+4. Do the same for rows 2 and 3.
+5. Then add $\mathbf{b}$, entry by entry. This part is the matrix
+   addition from the last page, not multiplication.
 
 **Think about:** $\mathbf{x}$ has 2 entries and $\mathbf{b}$ has 3. Why is
-that not a contradiction?
+that not a problem?
 
 **Try this next:** if the next layer needs to take this 3-entry output and
 produce 2 numbers, what shape would its own weight matrix need to be?
@@ -142,19 +145,25 @@ produce 2 numbers, what shape would its own weight matrix need to be?
 $W\mathbf{x} = \begin{bmatrix} 1.8 \\ 0.1 \\ 1.3 \end{bmatrix}$,
 so $\mathbf{y} = \begin{bmatrix} 1.9 \\ -0.1 \\ 1.6 \end{bmatrix}$.
 
-$W\mathbf{x}$: row 1 is $0.2(1) + 0.8(2) = 1.8$; row 2 is
-$-0.5(1) + 0.3(2) = 0.1$; row 3 is $0.1(1) + 0.6(2) = 1.3$. Adding
-$\mathbf{b}$'s three entries to those gives $\mathbf{y}$.
+For $W\mathbf{x}$:
 
-$\mathbf{x}$ has 2 entries because the *previous* layer had 2 outputs;
-$\mathbf{b}$ has 3 because *this* layer has 3 outputs. The two counts belong
-to different layers and have no reason to match — only $W$'s columns (2) and
-$\mathbf{x}$'s length (2) have to agree, because those are the inner
-dimensions of the multiplication.
+- row 1 is $0.2(1) + 0.8(2) = 1.8$
+- row 2 is $-0.5(1) + 0.3(2) = 0.1$
+- row 3 is $0.1(1) + 0.6(2) = 1.3$
+
+Then we add the three entries of $\mathbf{b}$ to those, and that gives
+$\mathbf{y}$.
+
+$\mathbf{x}$ has 2 entries because the layer before this one had 2
+outputs. $\mathbf{b}$ has 3 entries because this layer has 3 outputs.
+The two numbers belong to different layers, so there is no reason for
+them to match. Only two numbers have to agree: the number of columns of
+$W$ (2) and the length of $\mathbf{x}$ (2). Those are the inner numbers
+of the multiplication.
 
 </details>
 
-## Order and the Identity
+## Order and the identity
 
 ```python exec
 id: order-1
@@ -168,46 +177,51 @@ print("SR =", multiply(S, R))
 
 <details class="dl-answer"><summary>answer</summary>
 
-No — `RS` is `[[7, -2], [19, -4]]` and `SR` is `[[5, 10], [-2, -2]]`,
-different in every entry.
+No. `RS` is `[[7, -2], [19, -4]]` and `SR` is `[[5, 10], [-2, -2]]`.
+Every entry is different.
 
 </details>
 
-**7.** A rotation matrix $R = \begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}$
-turns vectors 90° anticlockwise. Apply it to $\begin{bmatrix} 1 \\ 0 \end{bmatrix}$
-and to $\begin{bmatrix} 0 \\ 1 \end{bmatrix}$.
+**7.** The *rotation matrix* $R = \begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}$
+turns vectors 90° anticlockwise. Multiply it by $\begin{bmatrix} 1 \\ 0 \end{bmatrix}$
+and by $\begin{bmatrix} 0 \\ 1 \end{bmatrix}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
 $R\begin{bmatrix} 1 \\ 0 \end{bmatrix} = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$,
 and $R\begin{bmatrix} 0 \\ 1 \end{bmatrix} = \begin{bmatrix} -1 \\ 0 \end{bmatrix}$.
 
-Picture it on a compass: "point right" rotated 90° anticlockwise becomes
-"point up", and "point up" becomes "point left" — which is exactly what both
-answers say. The next tutorial builds an entire gallery of matrices this way,
-reading off where they send the two simplest vectors.
+Picture it on a compass. "Point right", turned 90° anticlockwise,
+becomes "point up". "Point up" becomes "point left". The two answers say
+exactly this.
+
+The next page,
+[Matrix transformations: what a matrix does to a picture](tutorial:what-a-matrix-does-to-a-picture),
+builds a whole gallery of matrices in this way. For each matrix, it
+reads off where the matrix sends these two simplest vectors.
 
 </details>
 
-**8.** True or false, with a one-sentence reason: matrix multiplication is
-associative — $(AB)C = A(BC)$ for any matrices where the shapes work out.
+**8.** True or false? Give a one-sentence reason. Matrix multiplication
+is *associative*: $(AB)C = A(BC)$ for any matrices whose shapes fit.
 
 <details class="dl-answer"><summary>answer</summary>
 
-True. Unlike commutativity, associativity does hold for matrix
-multiplication — the order the matrices appear in never changes, only which
-adjacent pair is multiplied first, and both groupings compute the exact same
-sum of products underneath.
+True. The order of the matrices can matter, as problem 6 showed. But
+the grouping does not. In $(AB)C$ and $A(BC)$, the matrices stay in the
+same order. Only the pair we multiply first changes. Both groupings work
+out the same sums of products in the end.
 
-This is why a chain of network layers, or a chain of transformations, can be
-composed in advance into a single matrix — the grouping is a free choice.
+This is why a chain of network layers, or a chain of transformations,
+can be multiplied together ahead of time into a single matrix. We are
+free to choose the grouping.
 
 </details>
 
-## Writing Multiply
+## Writing multiply
 
-**9.** Write `multiply(a, b)` from scratch, using a `dot` and a `transpose`
-you also write.
+**9.** Write `multiply(a, b)` from the beginning. Write the `dot` and the
+`transpose` it uses as well.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -228,13 +242,13 @@ def multiply(a, b):
     return [[dot(row, col) for col in bt] for row in a]
 ```
 
-The length check inside `dot` is what makes a shape mismatch in `multiply`
-raise cleanly instead of silently dropping entries — see the tutorial's own
-`E` example if that is not immediately obvious why.
+The length check inside `dot` matters. When the shapes do not fit,
+`multiply` raises a clear error, and does not drop entries without a
+word. The tutorial's `E` example shows why, if it is not clear yet.
 
 </details>
 
-**10.** Construct `I3`, the 3×3 identity matrix, and verify `multiply(I3, I3)`
+**10.** Build `I3`, the 3×3 identity matrix. Check that `multiply(I3, I3)`
 equals `I3`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -244,20 +258,21 @@ I3 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 print(multiply(I3, I3) == I3)   # True
 ```
 
-The identity multiplied by itself is itself — which has to be true, since
-multiplying by the identity changes nothing, including when what it is
-multiplying is another identity.
+The identity times itself is itself. This has to be true. Multiplying
+by the identity changes nothing, even when the other matrix is also the
+identity.
 
 </details>
 
-## Thinking About It
+## Thinking about it
 
-**11.** If $A$ is $m \times n$ and $B$ is $n \times m$, both $AB$ and $BA$
-are defined — but are they the same *shape*?
+**11.** Suppose $A$ is $m \times n$ and $B$ is $n \times m$. Then we can
+work out both $AB$ and $BA$. Are they the same shape?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Write down the shape rule again: (rows of left) × (columns of right).
+1. Write down the shape rule again. The result has the rows of the left
+   matrix and the columns of the right matrix.
 2. For $AB$: $A$ is $m \times n$, $B$ is $n \times m$. What shape is the
    result?
 3. For $BA$: $B$ is $n \times m$, $A$ is $m \times n$. What shape is *that*
@@ -267,37 +282,37 @@ are defined — but are they the same *shape*?
 **Think about:** if $m \neq n$, can `AB == BA` possibly be true, even before
 checking a single entry?
 
-**Try this next:** pick a genuinely rectangular $A$ (say 2×3) and a matching
-$B$ (3×2), and confirm both products in a cell.
+**Try this next:** pick an $A$ that is not square (say 2×3) and a
+matching $B$ (3×2). Check both products in a cell.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-$AB$ comes out $m \times m$, and $BA$ comes out $n \times n$ — different
-shapes whenever $m \neq n$.
+$AB$ is $m \times m$, and $BA$ is $n \times n$. When $m \neq n$, these
+are different shapes.
 
-So two matrices that are not even square can still both be multiplied both
-ways, and the two results cannot possibly be equal if their shapes differ —
-no need to compute a single entry to know that. It is only when $A$ and $B$
-are both square, and the same size, that `AB == BA` is even a question worth
-asking about the entries.
+So two matrices that are not square can still be multiplied in both
+orders. But when the two results have different shapes, they cannot be
+equal. We do not need to work out a single entry to know that. Only when
+$A$ and $B$ are both square, and the same size, is it worth comparing
+the entries of `AB` and `BA`.
 
 </details>
 
-**12.** Why does the rule check the *inner* dimensions rather than, say,
-requiring both matrices to be the same shape?
+**12.** The shape rule checks the inner numbers. Why does it not ask for
+both matrices to be the same shape, as addition does?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because multiplication pairs up a *row* of the left matrix with a *column*
-of the right one, and a dot product only needs its two lists to be the same
-length — it does not care how many rows or columns either matrix has beyond
+Multiplication pairs a row of the left matrix with a column of the right
+matrix. A dot product needs only its two lists to be the same length. It
+does not care how many rows or columns either matrix has apart from
 that.
 
-Requiring the same shape entirely, the way addition does, would rule out
-every genuinely useful case here — a dataset matrix times a weight vector,
-a rotation matrix times a point, none of these have matching left and right
-shapes, and all of them are exactly what matrix multiplication is for.
+If both matrices had to be the same shape, we would lose the most useful
+cases. A table of data times a vector of weights, or a rotation matrix
+times a point: in none of these do the two shapes match. Yet these are
+exactly what matrix multiplication is for.
 
 </details>

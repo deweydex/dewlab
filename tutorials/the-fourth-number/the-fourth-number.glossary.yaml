@@ -1,8 +1,9 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Third tutorial of Computer graphics. The perspective divide and the
-# near plane were introduced in a-point-on-the-screen and are not
-# repeated; this page only gives the divide its matrix form.
+# Fourth tutorial of Computer graphics. The perspective divide was
+# introduced in a-point-on-the-screen and the near plane in
+# a-ball-in-orbit, and neither is repeated; this page only gives the
+# divide its matrix form.
 entries:
   - term: scene
     kind: concept

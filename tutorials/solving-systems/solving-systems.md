@@ -1,5 +1,5 @@
 ---
-title: "Solving Systems"
+title: "Systems of equations: solving them with matrices"
 year: "2026-2027"
 version: 2026.08.24.1
 covers:
@@ -14,20 +14,38 @@ covers:
     covers: [CMPS-LO4]
 ---
 
-# Solving Systems
+# Systems of equations: solving them with matrices
 
-Two unknowns, solved by substitution, is something you have done since long
-before this series started. This tutorial does two things: shows that the
-inverse from the last tutorial gets the same answer a different way, and then
-extends the method to three unknowns and beyond, where writing down an
-inverse formula the way we did for 2×2 stops being practical and something
-else has to replace it.
+A *system of equations* is a set of equations that must all be true at
+the same time, for the same unknowns. You may have solved systems with
+two unknowns at school, by substitution.
 
-## A System You Can Already Solve
+On this page we:
+
+- solve a system with two unknowns using the inverse from
+  [Inverse matrices: undoing a transformation](tutorial:undoing-it), and
+  see that it gives the same answer as substitution
+- solve a system with three unknowns, one row at a time
+- check an answer against the original equations
+
+Why do we need a second method? For a 2×2 matrix, we could write down a
+formula for the inverse. With three unknowns or more, writing down an
+inverse formula stops being practical, and we need something else.
+
+## A system you can already solve
+
+Here is a system with two unknowns, $x$ and $y$:
 
 $$\begin{cases} 2x + 3y = 7 \\ x - y = 1 \end{cases}$$
 
-As a matrix equation, this is $A\mathbf{x} = \mathbf{b}$:
+We can write it as one matrix equation, $A\mathbf{x} = \mathbf{b}$:
+
+- $A$ holds the numbers in front of the unknowns, the *coefficients*
+- $\mathbf{x}$ holds the unknowns, $x$ and $y$
+- $\mathbf{b}$ holds the numbers on the right-hand side
+
+To find $\mathbf{x}$, we multiply $\mathbf{b}$ by the inverse of $A$:
+$\mathbf{x} = A^{-1}\mathbf{b}$.
 
 ```python exec
 id: a-system-you-can-already-solve-1
@@ -57,32 +75,37 @@ x = multiply(inverse(A), b)
 print(x)
 ```
 
-`x = 2, y = 1` — solve the same system by substitution, the way you learned
-long before this series, and you should land on exactly the same pair of
-numbers.
+The cell prints `[[2.0], [1.0]]`, a column. It says that $x = 2$ and
+$y = 1$.
 
 ### Your turn
 
-Can you confirm it? Solve $2x + 3y = 7$ and $x - y = 1$ by substitution, on
-paper, and check that it agrees with the cell above.
+Can you confirm it?
+
+1. On paper, solve $2x + 3y = 7$ and $x - y = 1$ by substitution.
+2. Do you get the same pair of numbers as the cell above?
 
 ```python exec
 id: a-system-you-can-already-solve-2
 ```
 
-## Three Unknowns, Row by Row
+## Three unknowns, row by row
+
+Here is a system with three unknowns:
 
 $$\begin{cases} x + y + z = 6 \\ 2x - y + z = 3 \\ x + 2y - z = 2 \end{cases}$$
 
-A third unknown means a third column, and the 2×2 inverse formula from the
-last tutorial has nothing to say about a 3×3 matrix — there is a version of
-it, but it gets complicated fast. *Gaussian elimination* avoids the
-question entirely: rather than inverting anything, it simplifies the system
-itself, one row operation at a time, until the answer can be read straight
-off.
+A third unknown means a third column. The 2×2 inverse formula from the
+last page does not work for a 3×3 matrix. There is a 3×3 version of it,
+but it gets complicated fast.
 
-Written as an *augmented matrix* — the coefficients, with the right-hand side
-added as one more column — the system above is:
+*Gaussian elimination* is a method that avoids inverses completely. It
+simplifies the system itself, one step at a time, until we can read the
+answer straight off.
+
+First we write the system as an *augmented matrix*. An augmented matrix
+holds the coefficients, with the right-hand sides added as one more
+column:
 
 ```python exec
 id: three-unknowns-row-by-row-1
@@ -91,10 +114,21 @@ for row in M:
     print(row)
 ```
 
-Three legal moves on a matrix like this leave its solution unchanged:
-swapping two rows, scaling a row by a non-zero number, and replacing a row
-with itself plus a multiple of another row. The goal is to use them to get
-zeros into the bottom-left corner, one column at a time.
+There are three *row operations*. A row operation is a change to the
+matrix that leaves the solution the same:
+
+1. swap two rows
+2. multiply a row by a number that is not zero
+3. replace a row with itself plus a multiple of another row
+
+Our goal is to use these moves to put zeros into the bottom-left corner,
+one column at a time.
+
+The cell below uses the third move twice. It takes 2 × row 1 away from
+row 2, and row 1 away from row 3. Each line uses a list comprehension,
+from [Lists: keeping many values in order](tutorial:lists-and-sequences),
+to change all four numbers in the row at once. What will the first
+number in each new row be?
 
 ```python exec
 id: three-unknowns-row-by-row-2
@@ -105,8 +139,11 @@ M[2] = [M[2][k] - 1 * M[0][k] for k in range(4)]
 print("R3 = R3 - R1:", M[2])
 ```
 
-Both rows now start with 0 — $x$ has been eliminated from them. One column
-of zeros to go: use row 2 to clear the $y$ out of row 3 as well.
+Both rows now start with 0. We have removed $x$ from them.
+
+One more zero to go. Next, we use row 2 to remove the $y$ from row 3.
+Row 3 has $1$ in front of $y$ and row 2 has $-3$. So we first multiply
+row 3 by 3, and then add row 2.
 
 ```python exec
 id: three-unknowns-row-by-row-3
@@ -117,8 +154,7 @@ M[2] = [M[2][k] + M[1][k] for k in range(4)]
 print("R3 = R3 + R2:", M[2])
 ```
 
-Print `M` now. Every row starts with more zeros than the one above it — a
-staircase, called *row echelon form*.
+Now print `M`. What shape do the zeros make?
 
 ```python exec
 id: three-unknowns-row-by-row-4
@@ -126,15 +162,21 @@ for row in M:
     print(row)
 ```
 
-## Reading Off the Answer
+Each row starts with more zeros than the row above it. The zeros make a
+staircase. A matrix in this shape is in *row echelon form*.
+
+## Reading off the answer
 
 The last row now says one thing about one unknown: $-7z = -21$.
 
 ### Your turn
 
-How would you work back up the staircase? Solve the last row for $z$,
-substitute that into row 2 — which now only has $y$ and $z$ in it — to get
-$y$, then substitute both into row 1 to get $x$.
+How would you work back up the staircase?
+
+1. Solve the last row for $z$.
+2. Row 2 now has only $y$ and $z$ in it. Put your $z$ into row 2, and
+   solve for $y$.
+3. Put $y$ and $z$ into row 1, and solve for $x$.
 
 ```python exec
 id: reading-off-the-answer-1
@@ -147,42 +189,46 @@ id: reading-off-the-answer-2
 check([x, y, z], [1, 2, 3])
 ```
 
-## Checking Your Work
+## Checking your work
 
-The real test is not whether the elimination steps look right — it is
-whether $x$, $y$, $z$ actually satisfy the *original* three equations, before
-any row operation touched them.
+The elimination steps may look right, but that is not the real test.
+The real test is this: do $x$, $y$ and $z$ make the original three
+equations true? We mean the equations as they were before any row
+operation changed them.
 
 ### Your turn
 
-What happens when you substitute your answer into all three of the original
-equations — $x+y+z$, $2x-y+z$, and $x+2y-z$? Confirm each gives the
-right-hand side it is supposed to: 6, 3, and 2.
+1. Put your answer into each of the three original left-hand sides:
+   $x+y+z$, $2x-y+z$ and $x+2y-z$.
+2. Do you get the right-hand sides, 6, 3 and 2?
 
 ```python exec
 id: checking-your-work-1
 ```
 
-This is the same technique that would handle four unknowns, or forty — the
-row operations do not care how many columns are in front of the one being
-cleared. That scalability is the whole reason this is the method computers
-actually use, in preference to computing an inverse: an inverse for a large
-matrix is expensive to compute and can make rounding errors worse, and
-elimination avoids both problems by never forming one at all.
+The same method works for four unknowns, or forty. A row operation does
+not care how many columns come before the one we are clearing.
+
+This is the main reason computers solve systems with a form of
+elimination, and do not work out an inverse. For a large matrix, an
+inverse takes a lot of work to compute, and it can make rounding errors
+worse. Elimination never forms an inverse, so it avoids both problems.
 
 ## Reflection
 
-Two routes to the same answer for two unknowns — inverse and elimination —
-and only one route once a third unknown showed up, because the other route
-no longer worked. That is usually the pattern with a special-case
-tool: useful exactly where it applies, and a general method waiting
-for everywhere else.
+With two unknowns, we had two routes to the same answer: the inverse
+and elimination. When a third unknown came in, we had only one route,
+because the 2×2 inverse formula no longer worked.
 
-Which part of the elimination felt more like bookkeeping than mathematics —
-tracking which row to subtract from which? That feeling is worth noticing:
-it is exactly the part a computer does without getting tired or making an
-arithmetic mistake, which is why this, and not the 2×2 formula, is the version
-that works at any size.
+This often happens with a tool made for a special case. It is useful
+where it applies, and a general method is needed everywhere else.
+
+Did some of the elimination feel more like bookkeeping than
+mathematics, such as keeping track of which row to subtract from which?
+That feeling is worth noticing. That part is exactly what a computer
+does without getting tired or making an arithmetic mistake. It is why
+elimination, and not the 2×2 formula, is the version that works at any
+size.
 
 ## Where to Read More
 

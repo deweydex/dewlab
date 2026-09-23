@@ -1,9 +1,9 @@
 ---
-title: "A Grid of Numbers"
+title: "Matrices: adding, scaling and transposing a grid of numbers"
 year: "2026-2027"
 version: 2026.08.24.1
 covers:
-  nine-numbers-that-draw-a-picture:
+  a-grid-that-draws-a-picture:
     touches: [CMPS-LO1, MIT-6.3]
   two-grids-added-together:
     touches: [CMPS-LO4]
@@ -13,24 +13,39 @@ covers:
     touches: [CMPS-LO4]
 ---
 
-# A Grid of Numbers
+# Matrices: adding, scaling and transposing a grid of numbers
 
-A spreadsheet is a grid of numbers. So is a small black-and-white image, a
-table of exam results, and the weights inside a neural network. Once numbers
-sit in a grid rather than a single row, a few new questions become possible —
-how do you add two grids together, what does scaling one mean, and what
-happens if you turn one sideways? Those questions are what this tutorial and
-the four after it are about.
+A spreadsheet is a grid of numbers. A small black-and-white image is a
+grid of numbers too. So is a table of exam results, and so are the
+weights inside a neural network.
 
-A grid of numbers, arranged in rows and columns, is called a *matrix*. We are
-going to build one using only a plain Python list of lists, and do every
-operation on it ourselves before any library does it for us. That is slower
-than importing NumPy on the first line, and it is the only way to watch the
-arithmetic happen rather than trust that it did.
+When numbers sit in a grid, and not in a single row, we can ask some new
+questions:
 
-## Nine Numbers That Draw a Picture
+- How do you add two grids together?
+- What does it mean to scale a grid?
+- What happens if you turn a grid sideways?
 
-Here is a small grid of numbers. Run it before reading any further.
+This page and the five pages after it answer questions like these.
+
+A *matrix* is a grid of numbers, arranged in rows and columns. We will
+build matrices from plain Python lists of lists, and we will write every
+operation ourselves before any library does it for us. A library such as
+NumPy would be faster to use. Writing the code ourselves is slower, but
+it lets us watch the arithmetic happen, so we do not have to trust that
+it did.
+
+On this page we:
+
+- read a matrix, one number at a time
+- add two matrices, and multiply a matrix by a number
+- check that two matrices have the same shape before we add them
+- turn a matrix sideways, with the transpose
+
+## A grid that draws a picture
+
+Here is a small grid of numbers. What do you think it will draw? Run it
+to find out.
 
 ```python exec
 id: nine-numbers-that-draw-a-picture-1
@@ -48,16 +63,31 @@ for row in pixels:
     print("".join(ramp[value] for value in row))
 ```
 
-Five rows of numbers, and a diamond appears. Each number stands for
-how dark one square is — 0 is blank, 9 is solid — and `ramp` is a string used as a lookup table from a number to a character. This is the same
-idea behind every image on a screen: a grid of numbers, and a rule for turning
-each number into something you can see.
+Five rows of numbers make a diamond. Each number says how dark one
+square is: 0 is blank and 9 is solid. `ramp` is a string that we use as
+a lookup table. `ramp[value]` turns a number into a character.
 
-`pixels` is our matrix. It has 5 *rows* and 5 *columns*, so we call it a 5×5
-matrix — rows first, always. The number in row $i$ and column $j$ is usually
-written $a_{ij}$, and in Python that is `pixels[i][j]`. Try reading off
-`pixels[2][2]` below, the very centre of the diamond, and `pixels[0]`, the
-whole first row.
+The last line builds the text for one row. The part inside the brackets,
+`ramp[value] for value in row`, works like a list comprehension: it
+makes one character for each number in the row. `"".join(...)` glues
+those characters into a single string. Comprehensions are in
+[Lists: keeping many values in order](tutorial:lists-and-sequences).
+
+Every image on a screen works in the same way. It is a grid of numbers,
+with a rule that turns each number into something you can see.
+
+`pixels` is our matrix. It has 5 *rows* and 5 *columns*, so we call it a
+5×5 matrix. We always say the number of rows first.
+
+In maths, the number in row $i$ and column $j$ is written $a_{ij}$. Maths
+counts rows and columns from 1, so $a_{11}$ is the top-left number.
+Python counts from 0, so the same number is `pixels[0][0]`. In Python,
+the row index always comes first and the column index second:
+`pixels[row][column]`.
+
+The cell below reads two things: `pixels[2][2]`, the number in the
+centre of the diamond, and `pixels[0]`, the whole first row. What do you
+expect each one to print?
 
 ```python exec
 id: nine-numbers-that-draw-a-picture-2
@@ -67,23 +97,27 @@ print(pixels[0])
 
 ### Your turn
 
-What is `pixels[4][2]`, without running anything? Check your prediction, then
-try `pixels[1][3]` as well.
+1. What is `pixels[4][2]`? Decide before you run anything.
+2. Check your prediction in the cell below.
+3. Then try `pixels[1][3]` as well.
 
 ```python exec
 id: nine-numbers-that-draw-a-picture-3
 hint: Row index first, then column — pixels[row][column].
 ```
 
-## Two Grids, Added Together
+## Two grids, added together
 
-A single picture is nice; two pictures you can combine is more interesting.
-Adding two matrices together works exactly the way you might guess: add the
-numbers that are in the same position.
+One picture is nice. Two pictures that we can combine are more
+interesting. How would you add two matrices together?
+
+*Matrix addition* works the way you might guess. We add the numbers that
+are in the same position:
 
 $$\begin{bmatrix} a & b \\ c & d \end{bmatrix} + \begin{bmatrix} e & f \\ g & h \end{bmatrix} = \begin{bmatrix} a+e & b+f \\ c+g & d+h \end{bmatrix}$$
 
-Here are three small matrices to work with for the rest of this section.
+Here are three small matrices. We will use them for the rest of this
+section.
 
 ```python exec
 id: two-grids-added-together-1
@@ -97,9 +131,10 @@ print("C =", C)
 
 ### Your turn
 
-How might `add(a, b)` return the sum of two matrices of the same shape? A
-nested loop — rows on the outside, columns on the inside — visits every
-position exactly once.
+How might `add(a, b)` return the sum of two matrices of the same shape?
+
+A nested loop visits every position exactly once. The outer loop goes
+through the rows, and the inner loop goes through the columns.
 
 ```python exec
 id: two-grids-added-together-2
@@ -109,11 +144,11 @@ hint: Two nested loops. The outer one picks a row index, the inner one a column 
 ```
 
 ```hint
-What does the last line of the error name: a variable Python has not met
-yet, an index past the end of a list, or something about the shape of a
-line? Which line of your `add` is it pointing at? Before you change that
-line, write down what you expected `a[0]` to be there. Is it one number,
-or a whole row?
+What does the last line of the error name? Is it a variable Python has
+not met yet, an index past the end of a list, or something about the
+shape of a line? Which line of your `add` does it point at? Before you
+change that line, write down what you expected `a[0]` to be there. Is it
+one number, or a whole row?
 ```
 
 ```hint
@@ -131,32 +166,39 @@ outer one from `len(a)`.
 two entries.
 ```
 
-Once `add` works, what is `A + B` by hand, and does your function agree? Try
-`A + B + C` as well — you should be able to call `add` twice.
+When `add` works, try these:
+
+1. Work out `A + B` by hand.
+2. Does `add(A, B)` agree with you?
+3. Now find `A + B + C`. You can do this by calling `add` twice.
 
 ```python exec
 id: two-grids-added-together-3
 # Check add(A, B), and add(add(A, B), C)
 ```
 
-Is `add(A, B)` the same as `add(B, A)`? Try it and see — addition of ordinary
-numbers does not care about order, and it is worth checking whether matrices behave the same way.
+For ordinary numbers, the order of addition does not matter: $3 + 5$ is
+the same as $5 + 3$. Do matrices behave in the same way? Is `add(A, B)`
+the same as `add(B, A)`? Try it and see.
 
 ```python exec
 id: two-grids-added-together-4
 # Compare add(A, B) with add(B, A)
 ```
 
-## Scaling and the Shape Rule
+## Scaling and the shape rule
 
-Multiplying a matrix by a single number — a *scalar* — multiplies every entry
-by it. $k\begin{bmatrix} a & b \\ c & d \end{bmatrix} = \begin{bmatrix} ka & kb \\ kc & kd \end{bmatrix}$.
+A *scalar* is a single number, used together with a matrix. *Scalar
+multiplication* multiplies every entry of a matrix by the same scalar:
+
+$$k\begin{bmatrix} a & b \\ c & d \end{bmatrix} = \begin{bmatrix} ka & kb \\ kc & kd \end{bmatrix}$$
 
 ### Your turn
 
-How might you write `scale(k, m)`? Use it together with `add` (or a
-`subtract` you write the same way) to work out `3A` and `2B - A` from the
-matrices above.
+1. How might you write `scale(k, m)`? Write it in the first cell below.
+2. Write a `subtract(a, b)` in the same way as `add`, if you want one.
+3. In the second cell, use `scale` together with `add` or `subtract` to
+   work out `3A` and `2B - A`, with the matrices from above.
 
 ```python exec
 id: scaling-and-the-shape-rule-1
@@ -176,8 +218,8 @@ id: scaling-and-the-shape-rule-2
 # 3A and 2B - A
 ```
 
-Now try something that should not work. Here is a matrix with a different
-shape from `A` entirely — one row instead of two.
+Now let's try something that should not work. The matrix `D` below has a
+different shape from `A`. It has one row, and `A` has two.
 
 ```python exec
 id: scaling-and-the-shape-rule-3
@@ -185,19 +227,31 @@ D = [[1, 2, 3]]
 add(A, D)
 ```
 
-This is meant to fail, so if you see a traceback, nothing is broken. What it
-raises depends on how you wrote `add` — probably an `IndexError`, complaining
-about a position partway through the loop that does not exist in `D`. That
-error is truthful but not exactly helpful: it points at the *symptom*, deep
-inside a loop, rather than the actual problem, which is that the two matrices
-were never addable in the first place.
+This cell is meant to fail. If you see a traceback, nothing is broken.
 
-A matrix has a *shape* — its number of rows and columns — and addition is only
-defined when both matrices have the same shape. What if you added one line to
-the top of your `add` that checks `len(a) == len(b) and len(a[0]) == len(b[0])`,
-and raises a `ValueError` with a message that says what actually went wrong if
-it does not? Then `add(A, D)` fails immediately, with an error that tells you
-why instead of where.
+What error you see depends on how you wrote `add`. It is probably an
+`IndexError`, about a position that does not exist in `D`. That error is
+true, but it does not help much. It points at a symptom, deep inside a
+loop. The real problem is that these two matrices could never be added.
+
+The *shape* of a matrix is its number of rows and its number of columns.
+Addition works only when both matrices have the same shape.
+
+So what if `add` checked the shapes first? This condition is `True` when
+the shapes match:
+
+```python
+len(a) == len(b) and len(a[0]) == len(b[0])
+```
+
+When the condition is `False`, `add` can stop with an error of its own.
+The line `raise ValueError("a message")` stops the function at once and
+reports a `ValueError` with your message. Then `add(A, D)` fails
+straight away, and the error says why it failed, not only where.
+[Reading an error message](tutorial:reading-an-error-message) has more
+on `ValueError` and `IndexError`.
+
+Write a new `add` with this check in the cell below.
 
 ```python exec
 id: scaling-and-the-shape-rule-4
@@ -213,10 +267,10 @@ else, which line is it pointing at, and does that line run before the
 loops or inside them?
 ```
 
-## Turning It Sideways: the Transpose
+## Turning it sideways: the transpose
 
-One more operation, and this one has no arithmetic in it at all — nothing is
-added or multiplied, only rearranged.
+Here is one more operation. It has no arithmetic in it at all. Nothing
+is added or multiplied. The numbers only move to new places.
 
 ```python exec
 id: turning-it-sideways-the-transpose-1
@@ -228,15 +282,18 @@ M = [[1, 2, 3], [4, 5, 6]]
 show_grid(M)
 ```
 
-`M` is 2 rows by 3 columns. What would it look like with the rows and columns
-swapped — the first *column* of `M` written out as the first *row*?
+`M` has 2 rows and 3 columns. What would it look like if we swapped the
+rows and the columns? The first *column* of `M` would become the first
+*row*.
 
 ### Your turn
 
-How might you write `transpose(m)`, returning a new matrix where row $i$,
-column $j$ holds what used to be at row $j$, column $i$? Try it on `M` above,
-and check the shape of the result — it should come out 3 rows by 2 columns,
-the other way round from `M`.
+1. How might you write `transpose(m)`? It returns a new matrix. The
+   number at row $i$, column $j$ of the new matrix is the number that was
+   at row $j$, column $i$ of `m`.
+2. Try it on `M` above.
+3. Check the shape of the result. It should have 3 rows and 2 columns,
+   the other way round from `M`.
 
 ```python exec
 id: turning-it-sideways-the-transpose-2
@@ -266,9 +323,12 @@ and the result.
 **Try this next:** transpose the transpose. What comes back, and why?
 ```
 
-This flip-the-shape operation is called the *transpose*, written $A^T$. A
-matrix that is its own transpose — where swapping rows and columns changes
-nothing — is called *symmetric*. Try your `transpose` on this one:
+This operation is called the *transpose*. The transpose of a matrix
+swaps its rows and its columns. The transpose of $A$ is written $A^T$.
+
+A *symmetric* matrix is a matrix that is equal to its own transpose. If
+you swap its rows and columns, nothing changes. Try your `transpose` on
+this one:
 
 ```python exec
 id: turning-it-sideways-the-transpose-3
@@ -278,14 +338,19 @@ check(transpose(S), S)
 
 ## Reflection
 
-Four operations now, all of them a handful of lines: add, scale, a shape
-check that turns a confusing error into a clear one, and a transpose that
-rearranges without any arithmetic at all. None of them needed a library —
-which is worth noticing, because the next tutorial gets to the one matrix
-operation that genuinely surprises people, and it is worth having built
-everything up to it yourself first.
+We now have four operations, and each one is only a few lines long:
 
-What surprised you about any of these? Was it obvious in advance that
+- `add`, which adds numbers in matching positions
+- `scale`, which multiplies every number by the same scalar
+- a shape check, which turns a confusing error into a clear one
+- `transpose`, which moves numbers around with no arithmetic at all
+
+None of them needed a library. The next page,
+[Matrix multiplication: rows times columns](tutorial:multiplying-grids),
+brings in the one matrix operation that surprises most people. It helps
+to have built everything before it yourself.
+
+What surprised you on this page? Did you know in advance that
 `add(A, B)` would equal `add(B, A)`, or did you expect to have to check?
 
 ## Where to Read More
