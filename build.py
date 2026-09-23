@@ -2672,6 +2672,40 @@ def glossary_path(tutorial: Tutorial) -> Path:
     return tutorial.path.parent / f"{tutorial.slug}.glossary.yaml"
 
 
+def python_signatures() -> dict[str, str]:
+    """`assets/python-signatures.json`: each signature Python itself gives
+    for a built-in, standard-library or `tutorial_tools` name a glossary
+    entry declares with `python:`, written by `dev/glossary_python.py`
+    (which also checks every such name exists and every example calls it
+    the way its signature allows). Read at call time, like the glossary
+    files themselves, and `{}` when the file is not there."""
+    path = ASSETS / "python-signatures.json"
+    if not path.is_file():
+        return {}
+    return json.loads(path.read_text()).get("signatures") or {}
+
+
+def with_python(entries: list[dict], path: Path) -> list[dict]:
+    """Each entry's declared `python:` names checked for shape, and the
+    signatures Python gives for them attached as `signatures`, for the
+    reference to show under the definition. An entry whose names have no
+    signature (a keyword, an exception, a pandas method) carries none."""
+    signatures = python_signatures()
+    for entry in entries:
+        names = entry.get("python")
+        if names is None:
+            continue
+        if isinstance(names, str):
+            names = [names]
+        if not isinstance(names, list) or not all(isinstance(n, str) for n in names):
+            fail(path, f'glossary entry "{entry.get("term")}" has a `python:` that is '
+                       "not a dotted name or a list of them.")
+        shown = [signatures[name] for name in names if name in signatures]
+        if shown:
+            entry["signatures"] = shown
+    return entries
+
+
 def own_glossary(tutorial: Tutorial) -> list[dict]:
     """This tutorial's own contribution — what it introduces, not what it
     inherits from earlier in its series. A missing file means none written
@@ -2688,7 +2722,7 @@ def own_glossary(tutorial: Tutorial) -> list[dict]:
                        f'{entry.get("kind")!r}, not one of {GLOSSARY_KINDS}.')
         if not entry.get("term") or not entry.get("definition"):
             fail(path, "a glossary entry is missing a term or a definition.")
-    return entries
+    return with_python(entries, path)
 
 
 def series_chain(
@@ -2814,6 +2848,7 @@ def _load_basics(path: Path, kind: str) -> list[dict]:
         for entry in entries:
             if not entry.get("term") or not entry.get("definition"):
                 fail(path, f"a {kind} entry is missing a term or a definition.")
+        with_python(entries, path)
     return groups
 
 
@@ -5929,6 +5964,8 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
                 record["groups"] = facet["groups"]
             if entry.get("example"):
                 record["example"] = entry["example"]
+            if entry.get("signatures"):
+                record["signatures"] = entry["signatures"]
             seen[key] = record
 
     entries = sorted(seen.values(), key=lambda e: e["term"].lower())

@@ -71,6 +71,30 @@ jobs:
       - name: Fail if a document points at a file that is not there
         run: python3 dev/check_doc_links.py
 
+  # The reference shows each Python name's signature as Python itself gives
+  # it (dev/glossary_python.py), and a signature depends on the Python
+  # version. This job runs the one Pyodide does, 3.13 for Pyodide 0.28.3, so
+  # a signature file written under anything else fails here. numpy and pandas
+  # are pinned to the versions that Pyodide ships; matplotlib is not, since
+  # its Pyodide version has no wheel for this Python, and only its names are
+  # checked, never its signatures.
+  glossary-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml numpy==2.2.5 pandas==2.3.1 matplotlib
+
+      - name: Fail if a glossary entry's Python is wrong or a signature is stale
+        run: python dev/glossary_python.py --check
+
   # dewmark lives in its own folder with its own dependencies and tests, so it
   # gets its own job: a dewmark change cannot break the tutorials' job and a
   # tutorials change cannot break this one. The browser rehearsals

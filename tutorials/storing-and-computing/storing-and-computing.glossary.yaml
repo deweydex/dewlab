@@ -51,6 +51,7 @@ entries:
       False, and the type is named after George Boole. The function bool(x)
       changes x into a bool.
   - term: "type()"
+    python: type
     kind: function
     definition: Tells you which type a value is.
     example: "type(42)  # int"
@@ -60,6 +61,7 @@ entries:
       To concatenate is to join pieces of text end to end. For strings, +
       concatenates: "40" + "2" gives "402".
   - term: "input()"
+    python: input
     kind: function
     definition: >
       Asks the person using the program to type something, and gives back
@@ -83,10 +85,12 @@ entries:
       to F. One hex digit matches exactly four binary digits. Python writes
       it with a 0x in front: 0x2A.
   - term: "bin()"
+    python: bin
     kind: function
     definition: Changes a number into its binary form, as text.
     example: "bin(42)  # '0b101010'"
   - term: "hex()"
+    python: hex
     kind: function
     definition: Changes a number into its hexadecimal form, as text.
     example: "hex(42)  # '0x2a'"

@@ -1062,6 +1062,19 @@ kbd {
   background: var(--dl-cell-bg);
   overflow-x: auto;
 }
+/* A signature from Python itself: outlined rather than filled, so it
+   never reads as an example to copy. */
+.dm-term-signature {
+  margin: 0.3rem 0 0;
+  font-size: max(0.72rem, 12px);
+  color: var(--dl-muted);
+}
+.dm-reference-group dd .dm-term-signature code {
+  margin-top: 0.15rem;
+  background: none;
+  border: 1px solid var(--dl-rule);
+  color: var(--dl-fg);
+}
 .dm-term-origin {
   margin: 0.2rem 0 0;
   font-size: max(0.72rem, 12px);

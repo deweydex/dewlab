@@ -27,6 +27,7 @@ entries:
       its name followed by brackets, like print(). What a function is made
       of comes later.
   - term: "print()"
+    python: print
     kind: function
     definition: Displays whatever is inside its brackets.
     example: 'print("Hello, world!")'

@@ -65,6 +65,7 @@ entries:
       the near and far planes before the divide. It is how a renderer
       never divides by a depth of zero.
   - term: "math.tan()"
+    python: math.tan
     kind: function
     definition: "Gives the tangent of an angle measured in radians."
     example: "f = 1 / math.tan(math.radians(60) / 2)"

@@ -18,14 +18,17 @@ entries:
     kind: concept
     definition: A mutable value is one that can be changed after it is created. A list is mutable, so you can replace, add or remove its elements.
   - term: "append()"
+    python: list.append
     kind: function
     definition: Adds one element to the end of a list, changing that list.
     example: "scores.append(50)"
   - term: "len()"
+    python: len
     kind: function
     definition: Gives the number of elements in a list, or the number of characters in a string.
     example: "len(scores)"
   - term: "enumerate()"
+    python: enumerate
     kind: function
     definition: Gives both the index and the value of each element as a loop goes through a list.
     example: "for index, name in enumerate(names):"
@@ -61,6 +64,7 @@ entries:
       to the function one at a time, without building a list first.
     example: "sum(score for score in scores if score >= 40)"
   - term: "join()"
+    python: str.join
     kind: function
     definition: >
       Joins a group of strings into one string. The string before .join

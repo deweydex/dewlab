@@ -46,12 +46,14 @@ entries:
       radians, about 6.28, so a quarter turn is 2π × 0.25. Python's
       math.sin() and math.cos() measure angles in radians.
   - term: "math.sin(), math.cos()"
+    python: [math.sin, math.cos]
     kind: function
     definition: >
       Give the sine and cosine of an angle measured in radians. Together
       they turn an angle into a point on a circle of radius 1.
     example: "x, z = radius * math.cos(angle), radius * math.sin(angle)"
   - term: "FuncAnimation()"
+    python: matplotlib.animation.FuncAnimation
     kind: function
     definition: >
       Turns a figure into a moving picture. Calls the function you give it
@@ -60,6 +62,7 @@ entries:
       a cell and the page plays it.
     example: "FuncAnimation(figure, draw_step, frames=48, interval=60)"
   - term: "plt.subplots()"
+    python: matplotlib.pyplot.subplots
     kind: function
     definition: >
       Makes a grid of small plots inside one figure. Returns the figure

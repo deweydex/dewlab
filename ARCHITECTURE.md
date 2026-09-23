@@ -281,6 +281,12 @@ from `<slug>.glossary.yaml` files (produced by
 course the reader is following in the course file's order, and every
 earlier series of that course — so a tutorial's manifest only ever
 carries what it and everything before it on that course actually taught.
+An entry that names something in Python declares it (`python:
+list.append`), and `dev/glossary_python.py` checks the name and the
+entry's example against Python itself and writes the signatures
+(`assets/python-signatures.json`) that `with_python()` attaches, so the
+reference shows each built-in or standard-library function's signature as
+Python gives it (DECISIONS_LOG.md 7.215).
 
 ---
 

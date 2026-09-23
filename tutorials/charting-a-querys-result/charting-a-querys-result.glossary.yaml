@@ -9,6 +9,7 @@
 # functions this page actually teaches are listed.
 entries:
   - term: "read_sql()"
+    python: pandas.read_sql
     kind: function
     definition: >
       Runs a SQL query against the database and returns the result as a
@@ -17,6 +18,7 @@ entries:
     example: 'result = pd.read_sql("SELECT * FROM income_share_tbl", db)'
 
   - term: "groupby()"
+    python: pandas.DataFrame.groupby
     kind: function
     definition: >
       Splits a table into a smaller table for each distinct value in a

@@ -441,6 +441,30 @@ class TestContent:
         assert headings == ["Concepts", "Functions"]
         context.close()
 
+    def test_a_python_entry_shows_the_signature_python_gives(self, site, browser, site_url):
+        """dev/glossary_python.py writes the signature from the real
+        function; the panel shows it under the definition, labelled, and
+        apart from the example, so a reader never mistakes one for the
+        other."""
+        import json
+        expected = json.loads((DEWLAB / "assets" / "python-signatures.json").read_text())
+        _tutorial(site, "one", "One")
+        _glossary(site, "one", [{"term": "len()", "kind": "function",
+                                 "definition": "Counts the items.",
+                                 "example": "len(scores)", "python": "len"}])
+        _set_order(site, ["one"])
+        b.build()
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(f"{site_url}/tutorials/one.html")
+        _open_panel(page, "#dl-reference-toggle")
+        line = page.locator("#dl-reference-groups .dl-term-signature")
+        assert line.count() == 1
+        assert line.locator("span").inner_text() == "Signature"
+        assert line.locator("code").inner_text() == expected["signatures"]["len"]
+        assert "len(scores)" in page.inner_text("#dl-reference-groups dd")
+        context.close()
+
 
 class TestNotes:
     """Pedagogical notes surfacing in the reference panel."""

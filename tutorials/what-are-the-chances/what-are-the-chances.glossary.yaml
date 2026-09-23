@@ -23,10 +23,12 @@ entries:
     kind: concept
     definition: The more trials a random process is simulated, the closer the observed proportion gets to the true probability.
   - term: "random.choice()"
+    python: random.choice
     kind: function
     definition: Picks one item at random from a list.
     example: 'random.choice(["heads", "tails"])'
   - term: "random.shuffle()"
+    python: random.shuffle
     kind: function
     definition: Shuffles a list in place.
     example: "random.shuffle(deck)"

@@ -16,6 +16,7 @@ entries:
       answer, and only checking against an answer you already know will
       catch it.
   - term: "SyntaxError"
+    python: SyntaxError
     kind: keyword
     definition: >
       Means your code is not valid Python. Python's marker often points
@@ -23,24 +24,29 @@ entries:
       unclosed bracket, but older versions report it where they gave up
       looking for the closing one.
   - term: "IndentationError"
+    python: IndentationError
     kind: keyword
     definition: >
       Means a line is not indented the way Python expects, such as the
       line after an if that is not pushed in. It is a special kind of
       SyntaxError.
   - term: "NameError"
+    python: NameError
     kind: keyword
     definition: Means you used a variable that was never created, or whose name is misspelled.
   - term: "TypeError"
+    python: TypeError
     kind: keyword
     definition: Means you did something to a value that its type does not allow, such as adding a number to a string.
   - term: "ValueError"
+    python: ValueError
     kind: keyword
     definition: >
       Means the type is right but the content is wrong. int("hello") gives
       int a string, which is what it wants, but not a string that means a
       number.
   - term: "ZeroDivisionError"
+    python: ZeroDivisionError
     kind: keyword
     definition: Means you divided by zero. It nearly always means a value came out as zero when you expected it not to.
   - term: traceback

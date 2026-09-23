@@ -14,10 +14,12 @@ entries:
       equation has a solution in C.
     example: "z = 3 + 2j"
   - term: "z.real, z.imag"
+    python: [complex.real, complex.imag]
     kind: function
     definition: The real and imaginary parts of a complex number, as plain numbers.
     example: "(3 + 2j).real  # 3.0"
   - term: "cmath.sqrt()"
+    python: cmath.sqrt
     kind: function
     definition: >
       Like math.sqrt(), but takes the square root of a negative number

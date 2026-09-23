@@ -35,6 +35,7 @@ entries:
       track of what is left to do.
 
   - term: "pop()"
+    python: list.pop
     kind: function
     definition: >
       Removes an item from a list and gives it back. With nothing in the
@@ -42,6 +43,7 @@ entries:
     example: "current = to_visit.pop()"
 
   - term: "extend()"
+    python: list.extend
     kind: function
     definition: >
       Adds every item from another list to the end of a list.

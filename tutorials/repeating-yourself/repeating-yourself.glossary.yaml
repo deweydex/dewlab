@@ -1,6 +1,7 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
   - term: while loop
+    python: while
     kind: keyword
     definition: >
       Repeats its body for as long as a condition stays True. It needs a
@@ -8,9 +9,11 @@ entries:
       inside the body that in the end makes the condition False. Without
       that update, the loop never stops.
   - term: for loop
+    python: for
     kind: keyword
     definition: Repeats its body once for each item in a sequence. It is simpler than a while loop when you know in advance how many times to repeat.
   - term: "range()"
+    python: range
     kind: function
     definition: >
       Makes a sequence of numbers. range(5) gives 0 to 4. range(start,

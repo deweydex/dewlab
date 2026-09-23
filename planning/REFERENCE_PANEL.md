@@ -219,6 +219,29 @@ and a regex can't tell "set a seed" from set theory (7.94 has the
 measurement). The obstacle was sense disambiguation, not matching, so a
 stemmer or a `forms:` list would not have helped.
 
+## 6d. Signatures from Python itself
+
+Built — `DECISIONS_LOG.md` 7.215. An entry that names something in Python
+says what, with `python:` (`list.append`, `[math.sin, math.cos]`,
+`tutorial_tools.check`). `dev/glossary_python.py` checks every such name
+against Python: that it exists, and that the entry's example calls it the
+way the real signature allows. It writes `assets/python-signatures.json`,
+and `with_python()` in `build.py` attaches each entry's signatures, which
+`appendSignatures()` shows under the definition, labelled **Signature**,
+outlined rather than filled so it never reads as an example to copy.
+
+Only built-ins, the standard library and `tutorial_tools` get a
+signature. pandas' `to_csv()` runs to twenty-odd parameters and
+matplotlib's `plot()` ends in `**kwargs`; the check still covers them.
+Signatures are written with the Python Pyodide runs (3.13), and a CI job on
+that version fails when the file is stale.
+
+The definitions stay hand-written. Python's own docstrings are for
+programmers (`super()`'s begins "super() -> same as super(__class__,
+<first argument>)"), and the reference's rule that it shows only what a
+reader has met is course order, which Python cannot know. The docstrings
+still reach a reader: hovering a name in a cell shows the real one.
+
 ## 7. What ships in what order
 
 Roughly: schema + a couple of hand-written example glossaries to prove the

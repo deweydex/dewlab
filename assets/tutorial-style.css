@@ -1974,6 +1974,22 @@ p code, li code {
   border-radius: 3px;
   padding: 0.2rem 0.4rem;
 }
+/* A signature from Python itself (appendSignatures() in the runtime):
+   outlined rather than filled, so it never reads as an example to copy. */
+.dl-term-signature {
+  margin: 0.3rem 0 0;
+  font-size: 0.72rem;
+  color: var(--dl-muted);
+}
+.dl-term-signature code,
+.dl-reference-group dd .dl-term-signature code {
+  display: block;
+  margin-top: 0.15rem;
+  background: none;
+  border: 1px solid var(--dl-rule);
+  color: var(--dl-fg);
+  overflow-x: auto;
+}
 
 /* What Python currently holds — Variables, Functions and Packages in the
    Python panel, one row per describe_globals() entry (tutorial_tools.py).

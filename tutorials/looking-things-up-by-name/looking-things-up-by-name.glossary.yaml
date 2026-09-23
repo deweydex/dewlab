@@ -19,16 +19,19 @@ entries:
       dictionary.
     example: "prices[\"coffee\"]  # 3.2"
   - term: in
+    python: in
     kind: operator
     definition: >
       Checks whether a key is in a dictionary, and gives True or False. It
       checks the keys, not the values. not in gives the opposite answer.
     example: "\"tea\" in prices  # True"
   - term: ".items()"
+    python: dict.items
     kind: function
     definition: Gives each pair of a dictionary as a key and a value together, so a loop can use both.
     example: "for name, mark in marks.items():"
   - term: ".get(), default"
+    python: dict.get
     kind: function
     definition: >
       Looks up a key, and gives back a default value if the key is not
@@ -36,6 +39,7 @@ entries:
       there. With no default, .get() gives back None.
     example: "prices.get(\"cake\", 0)  # 0"
   - term: ".split()"
+    python: str.split
     kind: function
     definition: Breaks a string into a list of words, cutting it wherever there is a space.
     example: "\"the cat sat\".split()  # ['the', 'cat', 'sat']"

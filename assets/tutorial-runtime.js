@@ -747,6 +747,7 @@ function renderReference(manifest) {
       dt.textContent = entry.term;
       const dd = document.createElement("dd");
       dd.append(document.createTextNode(entry.definition));
+      appendSignatures(dd, entry);
       if (entry.example) {
         const code = document.createElement("code");
         code.textContent = entry.example;
@@ -866,6 +867,23 @@ function renderMathBasics(manifest) {
   }
 }
 
+/* A glossary entry's `signatures` (build.py's with_python()): each one as
+ * Python itself gives it, written by dev/glossary_python.py from the real
+ * function, so the reference never carries a hand-copied parameter list.
+ * Labelled, since a signature is not an example of a call. */
+function appendSignatures(dd, entry) {
+  for (const signature of entry.signatures || []) {
+    const line = document.createElement("p");
+    line.className = "dl-term-signature";
+    const label = document.createElement("span");
+    label.textContent = "Signature";
+    const code = document.createElement("code");
+    code.textContent = signature;
+    line.append(label, code);
+    dd.append(line);
+  }
+}
+
 /* Python Basics: the same shape and site-wide source (build.py's
  * load_python_basics()) as renderMathBasics() above, except an entry
  * here may also carry a short `example` — rendered the same way
@@ -890,6 +908,7 @@ function renderPythonBasics(manifest) {
       dt.textContent = entry.term;
       const dd = document.createElement("dd");
       dd.append(document.createTextNode(entry.definition));
+      appendSignatures(dd, entry);
       if (entry.example) {
         const code = document.createElement("code");
         code.textContent = entry.example;

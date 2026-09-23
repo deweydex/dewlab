@@ -5,6 +5,7 @@
 # from charting-a-querys-result without being redefined.
 entries:
   - term: "to_csv()"
+    python: pandas.DataFrame.to_csv
     kind: function
     definition: >
       Turns a DataFrame back into the same plain-text shape a CSV file

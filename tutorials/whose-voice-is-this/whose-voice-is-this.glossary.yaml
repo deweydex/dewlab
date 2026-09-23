@@ -5,6 +5,7 @@
 # their counts.
 entries:
   - term: lambda
+    python: lambda
     kind: function
     definition: >
       Makes a small function in one line, with no name. It is handy as

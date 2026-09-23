@@ -4375,3 +4375,23 @@ The tutorial cells and dewmini's cell and file editors share the wiring. Four ne
 They ran green four times in a row against the self-hosted Pyodide.
 
 *Cost to change: one Python helper in three copies, one engine function in two, and `pythonCompletion()` in the editor entry. Turning Jedi completion off is leaving out `getJediCompletions`, which restores the old sources exactly.*
+
+---
+
+**7.215 — The glossary's Python entries are checked against Python itself, and the reference shows each function's signature as Python gives it; the definitions stay hand-written.** Josh asked whether Jedi could take over the glossary and reference panel "so we can simplify that". Having seen what it would replace, he chose two narrower steps: "let's do 1 and 2".
+
+**Why not replace the glossary.** Of 688 entries, 437 are concepts and 52 are formulas, and many of the functions and keywords are CSS, HTML or SQL. At most about one in ten names something Jedi can describe, and for those, Python's docstrings are written for programmers. `len()`'s is plain enough. `super()`'s begins "super() -> same as super(__class__, <first argument>)", and pandas' `to_csv()` runs to several pages. The panel's own rule, that it shows only what a reader has met, is course order, which Python cannot know. The real docstrings already reach a reader: hovering a name in a cell shows them (7.76).
+
+**What changed.** An entry that names something in Python says exactly what, with `python:`: `list.append`, `[math.sin, math.cos]`, `tutorial_tools.check`, `elif`. Eighty entries, and two in Python Basics, now carry one; 87 names in all.
+
+`dev/glossary_python.py` checks each against the real thing:
+- **The name exists.** It is a keyword, or it imports and every attribute is there.
+- **The example fits the signature.** Every call in the example to that function is bound against its own signature, without running anything, so too many arguments, too few, or a keyword it does not take all fail. An example that is not Python, such as CSS in a Web Authoring entry, is left alone.
+
+Injected mistakes were each caught by name: `list.apend`, `len(scores, 2)`, and `random.sample(deck, size=5)`, whose `k` is required. The script also writes `assets/python-signatures.json`. `with_python()` in `build.py` attaches each entry's signatures, and the tutorial reference, Python Basics and dewmini's reference all show them under the definition, labelled **Signature** and outlined rather than filled, so a signature never reads as an example to copy.
+
+**What gets a signature.** Built-ins, the standard library and the course's own `tutorial_tools` do, the last under its bare names (`check(...)`), since that is how a cell calls them. Third-party libraries are checked but show no signature, because twenty-odd parameters or a trailing `**kwargs` does not help a beginner. Signatures keep Python's `/` and `*` markers. They carry rules: in `random.choices(population, weights=None, *, cum_weights=None, k=1)` the `*` is why `k` must be given by name, and deleting it would teach a call that fails. Python Basics gains a **Signature** entry that says how to read one.
+
+**Versions.** A signature depends on the Python version, so the file is written with the one Pyodide runs (3.13). A new CI job, `glossary-python`, runs the check on 3.13, with numpy and pandas pinned to Pyodide 0.28.3's versions, and fails on a stale file. The unit job's pytest module checks names and examples on 3.12.
+
+*Cost to change: a `python:` line per entry, one script, one build helper and three renderers. Dropping the signatures is deleting the JSON file; the build treats a missing file as none.*

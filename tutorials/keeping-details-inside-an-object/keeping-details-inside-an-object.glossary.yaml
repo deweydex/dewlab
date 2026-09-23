@@ -45,6 +45,7 @@ entries:
       method does, not how it does it inside. A caller needs only that.
 
   - term: pass
+    python: pass
     kind: keyword
     definition: >
       Does nothing. It holds the place of code that has not been written

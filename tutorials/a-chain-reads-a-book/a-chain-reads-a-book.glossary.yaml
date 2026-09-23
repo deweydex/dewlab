@@ -1,6 +1,7 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
   - term: "load_text()"
+    python: tutorial_tools.load_text
     kind: function
     definition: >
       Fetches a plain-text file from dewlab's shared data folder, or from
@@ -15,6 +16,7 @@ entries:
       how many times. It stores only pairs that really happen, so it
       never has to store a zero the way a grid does.
   - term: "dict.setdefault()"
+    python: dict.setdefault
     kind: function
     definition: >
       Returns a key's existing value if it has one, or sets and returns a
@@ -22,6 +24,7 @@ entries:
       the first time a word is seen, without a separate check first.
     example: "next_words.setdefault(word, {})"
   - term: "str.find()"
+    python: str.find
     kind: function
     definition: >
       Searches a string for the first place another string appears inside
@@ -30,6 +33,7 @@ entries:
       of the first one. Returns -1 if the search text is not found at all.
     example: 'raw.find("*** START")'
   - term: "str.index()"
+    python: str.index
     kind: function
     definition: >
       Works like str.find(): it searches for the first place another
