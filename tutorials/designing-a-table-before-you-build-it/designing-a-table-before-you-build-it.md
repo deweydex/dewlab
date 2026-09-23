@@ -1,5 +1,5 @@
 ---
-title: "Designing a Table Before You Build It"
+title: "Designing tables: columns, types and one-to-many links"
 year: "2026-2027"
 version: 2026.09.10.1
 covers:
@@ -11,7 +11,7 @@ covers:
     covers: [DBM-LO9]
 ---
 
-# Designing a Table Before You Build It
+# Designing tables: columns, types and one-to-many links
 
 `dinosaur_tbl`, on the earlier pages, was already designed before you saw
 it: which columns it needed, and what kind of value belonged in each. A

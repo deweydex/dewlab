@@ -1,11 +1,11 @@
 ---
-title: "Parabolas — Practice"
+title: "Parabolas: completing the square — Practice"
 practice_for: parabolas
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Parabolas — Practice
+# Parabolas: completing the square — Practice
 
 Answers are hidden. Do the algebra before you unfold it.
 
@@ -195,6 +195,6 @@ This is the standard shape of an optimization problem, and the parabola does all
 
 Because a parabola has exactly one turning point and you can find it exactly — either by completing the square, or by taking the midpoint of the roots.
 
-Most curves are not that obliging, which is what *Rates of Change* is for. The quadratic is the case where a general method is not needed.
+Most curves are not that obliging, which is what *Derivatives: the rate of change of a curve* is for. The quadratic is the case where a general method is not needed.
 
 </details>

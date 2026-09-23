@@ -83,8 +83,7 @@ Look at what `Bank` does and does not do:
 - `total_balance()` loops over that list and asks each account for its
   own `balance`.
 
-This is like the `Polynomial` class in [Reusable methods: one class that
-does many jobs](tutorial:one-class-many-methods). It stored one list of
+This is like the `Polynomial` class in [A class with many methods: building a polynomial class](tutorial:one-class-many-methods). It stored one list of
 coefficients, and did not need five separate numbers. `Bank` stores one
 list of accounts, however many there are.
 

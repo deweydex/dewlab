@@ -95,8 +95,7 @@ While the condition is true, both rules match. When two rules with the
 same selector set the same property, the one further down the
 stylesheet wins. That is why the `@media` block comes after the
 ordinary `.msg` rule. Media queries usually sit at the bottom of a
-stylesheet, below the rules they change. [Which rule
-wins](tutorial:which-rule-wins) looks at this more closely.
+stylesheet, below the rules they change. [The cascade: which CSS rule wins](tutorial:which-rule-wins) looks at this more closely.
 
 ## Now in your own site
 
@@ -110,8 +109,11 @@ wins](tutorial:which-rule-wins) looks at this more closely.
    block at the bottom.
 5. Just below it, a second breakpoint for very small screens is
    already waiting, switched off inside a comment. It starts with
-   `/* → Exercise 24` and ends with `*/`. Delete those two comment
-   markers to switch it on. The block looks like this:
+   the line `/* → Exercise 24: Try adding this smaller breakpoint` and
+   ends with a line holding only `*/`. Delete both of those whole
+   lines to switch it on. If you delete only the `/*`, the words after
+   it stay in the file, and the browser skips the whole block without
+   saying why. The block looks like this:
 
    ```css
    @media (max-width: 480px) {

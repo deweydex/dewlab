@@ -1,5 +1,5 @@
 ---
-title: "A grid gallery"
+title: "A grid gallery that chooses its own columns"
 year: "2026-2027"
 version: 2026.09.11.1
 covers:
@@ -9,7 +9,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# A grid gallery
+# A grid gallery that chooses its own columns
 
 Can a grid choose its own number of columns, to suit the screen? On this
 page we try a gallery grid, then change the one in your own site.

@@ -56,7 +56,7 @@ returned:
     was: >
       Trigonometric ratios in surd form previously considered a hand-calculation skill.
     now: >
-      Restored as a core component of *The Unit Circle*. Exact values in surd
+      Restored as a core component of *The unit circle: sine, cosine and tangent*. Exact values in surd
       form represent geometric landmark coordinates on the unit circle derived
       directly via the Pythagorean theorem. See planning/outlines/the-unit-circle.md.
 
@@ -65,7 +65,7 @@ returned:
     was: >
       Venn diagrams previously excluded as pen-and-paper notation.
     now: >
-      Restored as a dedicated modular tutorial (*Drawing Sets*), computing diagrams
+      Restored as a dedicated modular tutorial (*Venn diagrams: drawing sets and their overlaps*), computing diagrams
       directly from Python set operations via Matplotlib. See planning/outlines/venn-diagrams.md.
 
 # Historical scope resolutions

@@ -6,7 +6,7 @@
 
 The pages are "CSS rules and stylesheets", "Colours, and naming them
 with variables", "Text size, units and alignment", "Choosing what to
-style: selectors and classes", and the context page "Which rule wins".
+style: selectors and classes", and the context page "The cascade: which CSS rule wins".
 Each diagram shows how one piece of CSS reaches, or fails to reach, an
 element: a file shared by two pages, a variable read by two rules, a
 unit measured against the root, lines of text lined up four ways, a
@@ -394,7 +394,7 @@ USER_AGENT_P = ["display: block;", "margin-block-start: 1em;", "margin-block-end
 
 
 def inspector_crossed_out() -> str:
-    """The Styles pane for the boxed paragraph in "Which rule wins".
+    """The Styles pane for the boxed paragraph in "The cascade: which CSS rule wins".
 
     The two author rules come from the page's own cell, in the order the
     inspector lists them: the winner first. The losing `color` line is

@@ -1,5 +1,5 @@
 ---
-title: "The Tentacular Plushies Quiz"
+title: "The Tentacular Plushies quiz: products and transactions"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
@@ -13,7 +13,7 @@ covers:
     touches: [DBM-LO5]
 ---
 
-# The Tentacular Plushies Quiz
+# The Tentacular Plushies quiz: products and transactions
 
 You are the new database administrator for Tentacular Plushies, a shop
 that sells stuffed toys of octopuses, squid, and other tentacled sea

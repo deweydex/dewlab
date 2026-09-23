@@ -23,11 +23,8 @@ ad-hoc sketch would explain the immediate point just as well.
 
 ### What does not earn one
 
-**A tutorial that already draws its own figure from data.** *Drawing Sets*,
-*The Unit Circle*, *Solving Triangles*, *Pictures Worth Numbers*, *Sine and
-Cosine Waves*, *Approaching a Limit*, *Rates of Change*, *Parabolas*, *Drawing
-Functions*, *What a Matrix Does to a Picture*, *Counting Darts* and *Charting
-a Query's Result* build their pictures in matplotlib from numbers the reader
+**A tutorial that already draws its own figure from data.** *Venn diagrams: drawing sets and their overlaps*,
+*The unit circle: sine, cosine and tangent*, *Solving triangles: the sine rule and the cosine rule*, *Charts: choosing the right chart for your data*, *Sine and cosine waves: amplitude, period and shift*, *Limits: getting closer without arriving*, *Derivatives: the rate of change of a curve*, *Parabolas: completing the square: completing the square*, *Functions and their graphs*, *What a Matrix Does to a Picture*, *Counting Darts* and *Charting a query's result: one line per country* build their pictures in matplotlib from numbers the reader
 can change. A static version is strictly worse: it cannot be poked. The same
 holds for CSS tutorials whose live preview is the demonstration — *hover and
 focus*, *transitions and transforms*, *media queries*.
@@ -259,13 +256,12 @@ still gives the pass, and the picture is theirs.
 what was written. With enforcement off, a table created with
 `FOREIGN KEY (product_id) REFERENCES product_tbl(product_id)` reports the relationship in
 full; `dinosaur_id INTEGER`, the module's current style, reports nothing. Only
-*The Tentacular Plushies Quiz* declares it today. It is the standard form every
+*The Tentacular Plushies quiz: products and transactions* declares it today. It is the standard form every
 other course and tool expects, and SQLite records it without enforcing it, so
 no existing cell changes behaviour.
 
-*A Second Table and a Join* stays bare — its point is the shared value, not the
-syntax that declares it. `REFERENCES` arrives in *Designing a Table Before You
-Build It*, where the design vocabulary already lives and "which column points
+*Joining two tables: foreign keys and JOIN* stays bare — its point is the shared value, not the
+syntax that declares it. `REFERENCES` arrives in *Designing tables: columns, types and one-to-many links*, where the design vocabulary already lives and "which column points
 at another table" is already the third question, and is declared from there on.
 
 ---
@@ -274,14 +270,14 @@ at another table" is already the third question, and is declared from there on.
 
 | Page | Visual | Kind |
 |---|---|---|
-| [A Table Is a List of Rows](../tutorials/a-table-is-a-list-of-rows/a-table-is-a-list-of-rows.md) | The existing grid diagram, normalised, and given real `alt` text | Drawn (exists) |
-| [A Second Table and a Join](../tutorials/a-second-table-and-a-join/a-second-table-and-a-join.md) | One foreign key with the actual values in it, the duplication on the correct side | Drawn |
+| [Tables in SQL: CREATE TABLE, INSERT and SELECT](../tutorials/a-table-is-a-list-of-rows/a-table-is-a-list-of-rows.md) | The existing grid diagram, normalised, and given real `alt` text | Drawn (exists) |
+| [Joining two tables: foreign keys and JOIN](../tutorials/a-second-table-and-a-join/a-second-table-and-a-join.md) | One foreign key with the actual values in it, the duplication on the correct side | Drawn |
 | [Designing a Table](../tutorials/designing-a-table-before-you-build-it/designing-a-table-before-you-build-it.md) | Crow's-foot ER diagram of products and sales; the notation introduced | Drawn |
 | [Designing a Table](../tutorials/designing-a-table-before-you-build-it/designing-a-table-before-you-build-it.md) — "your turn" | Nothing. It asks for paper and should keep asking for paper | Neither |
-| [Joining Two Real Tables](../tutorials/joining-two-real-tables/joining-two-real-tables.md) | Inner versus left join as row matching | Drawn |
-| [The Tentacular Plushies Quiz](../tutorials/the-tentacular-plushies-quiz/the-tentacular-plushies-quiz.md) | ER diagram generated from the student's own schema | Student-produced |
-| [The Library Loans Quiz](../tutorials/the-library-loans-quiz/the-library-loans-quiz.md) | The same, and the junction table is the point of it | Student-produced |
-| [A College Timetable](../tutorials/a-college-timetable/a-college-timetable.md) | Five-table ER diagram, generated; plus a drawn overlap timeline | Both |
+| [Joining real tables: the rows a JOIN drops](../tutorials/joining-two-real-tables/joining-two-real-tables.md) | Inner versus left join as row matching | Drawn |
+| [The Tentacular Plushies quiz: products and transactions](../tutorials/the-tentacular-plushies-quiz/the-tentacular-plushies-quiz.md) | ER diagram generated from the student's own schema | Student-produced |
+| [The library loans quiz: books, authors and loans](../tutorials/the-library-loans-quiz/the-library-loans-quiz.md) | The same, and the junction table is the point of it | Student-produced |
+| [A college timetable: five tables and finding clashes](../tutorials/a-college-timetable/a-college-timetable.md) | Five-table ER diagram, generated; plus a drawn overlap timeline | Both |
 
 The plushies quiz introduces the generated diagram, because it already
 declares `FOREIGN KEY … REFERENCES` and already reads `PRAGMA table_info` for
@@ -305,7 +301,7 @@ get a generated diagram instead; the two lists read together.
 
 ### Databases
 
-**[A Second Table and a Join](../tutorials/a-second-table-and-a-join/a-second-table-and-a-join.md) — one foreign key, with real values in it.**
+**[Joining two tables: foreign keys and JOIN](../tutorials/a-second-table-and-a-join/a-second-table-and-a-join.md) — one foreign key, with real values in it.**
 Two small row lists holding the actual data from the cells above, and a line
 from `sighting_tbl.dinosaur_id = 1` to `dinosaur_tbl.dinosaur_id = 1`, drawn twice because
 two sighting rows point at the same dinosaur. The claim "that shared value is
@@ -313,7 +309,7 @@ what connects one table's row to the other's" is one sentence doing a lot of
 work. Showing the same value in two places, with the duplication on the
 correct side, is what makes the next page's argument about misspellings land.
 
-**[Designing a Table Before You Build It](../tutorials/designing-a-table-before-you-build-it/designing-a-table-before-you-build-it.md) — a crow's-foot ER diagram of products and sales.**
+**[Designing tables: columns, types and one-to-many links](../tutorials/designing-a-table-before-you-build-it/designing-a-table-before-you-build-it.md) — a crow's-foot ER diagram of products and sales.**
 The tutorial is entirely about a decision made on paper before any SQL is
 written, and there is no picture of what that paper looks like. Two entities,
 one-to-many marked with crow's feet, `PK` on `product_tbl.product_id`, `FK` on
@@ -322,7 +318,7 @@ row connects to many sales rows and not the reverse. This is where the
 notation is introduced, so it wants a sentence naming it and saying they will
 see it again.
 
-**[Joining Two Real Tables](../tutorials/joining-two-real-tables/joining-two-real-tables.md) — inner versus left join, as row matching. Not a Venn diagram.**
+**[Joining real tables: the rows a JOIN drops](../tutorials/joining-two-real-tables/joining-two-real-tables.md) — inner versus left join, as row matching. Not a Venn diagram.**
 The overlapping-circles picture of join types is everywhere online and is a
 poor model: it implies joins are set operations on rows, which mispredicts
 what happens when a key repeats on one side, and it hides which table's rows
@@ -332,7 +328,7 @@ line and is gone; once under `LEFT JOIN`, where it survives carrying an empty
 `region`. That empty cell is what the section is about, and the Venn picture
 cannot show it at all.
 
-**[A College Timetable](../tutorials/a-college-timetable/a-college-timetable.md#finding-a-clash) — an overlap timeline.**
+**[A college timetable: five tables and finding clashes](../tutorials/a-college-timetable/a-college-timetable.md#finding-a-clash) — an overlap timeline.**
 Three bars on a shared time axis: A at 10:00–12:00, B at 11:00–13:00
 overlapping it, and C at 11:00–13:00 sitting back to back with a 09:00–11:00
 session. The rule `s1.start < s2.end AND s2.start < s1.end` is a statement
@@ -365,7 +361,7 @@ picked out, an arrow to the single result cell they produce, and the three
 products written underneath. Why the shapes have to agree, and why the
 transpose is the convenient way at the columns, both follow from that picture.
 
-**[Numbers and Their Families](../tutorials/numbers-and-their-families/numbers-and-their-families.md#the-number-domains) — nested number sets.**
+**[Number types, powers and logarithms](../tutorials/numbers-and-their-families/numbers-and-their-families.md#the-number-domains) — nested number sets.**
 $\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}$ as
 nested regions, with example values placed in the right ring rather than
 listed: $3$ innermost, $-5$ in $\mathbb{Z}$ only, $\tfrac{2}{3}$ in
@@ -431,15 +427,15 @@ Worth starting once the generators and the normaliser have stopped moving.
 
 **[Finding Things](../tutorials/finding-things/finding-things.md#binary-search-the-power-of-sorted-data)** — the search range collapsing: four or five rows of the same sorted list, live range shaded and shrinking, `low`, `mid` and `high` marked. The halving is the whole efficiency claim, and the picture also debugs the off-by-one the pseudocode invites.
 
-**[Sets as Sorted Lists](../tutorials/sets-as-sorted-lists/sets-as-sorted-lists.md#set-operations-the-merge-pattern)** — the two-pointer walk, three or four steps, each showing which pointer advanced and what was appended. Three of the reader's own functions are variations on this shape.
+**[Sets: building them from sorted lists](../tutorials/sets-as-sorted-lists/sets-as-sorted-lists.md#set-operations-the-merge-pattern)** — the two-pointer walk, three or four steps, each showing which pointer advanced and what was appended. Three of the reader's own functions are variations on this shape.
 
-**[What Are the Chances?](../tutorials/what-are-the-chances/what-are-the-chances.md#compound-events)** — a probability tree for two draws without replacement, $\tfrac{4}{52}$ then $\tfrac{3}{51}$ on the branches; and a two-way table for aces against hearts showing the one cell subtracted in the general addition rule. That overlap cell is what students double-count.
+**[Probability: simple, compound and conditional](../tutorials/what-are-the-chances/what-are-the-chances.md#compound-events)** — a probability tree for two draws without replacement, $\tfrac{4}{52}$ then $\tfrac{3}{51}$ on the branches; and a two-way table for aces against hearts showing the one cell subtracted in the general addition rule. That overlap cell is what students double-count.
 
-**[Counting Carefully](../tutorials/counting-carefully/counting-carefully.md#combinations-order-does-not-matter)** — permutations and combinations off one tree: pick three from four, then the same picture with the orderings of each set grouped. The $r!$ you divide by becomes the size of a group.
+**[Counting: factorials, permutations and combinations](../tutorials/counting-carefully/counting-carefully.md#combinations-order-does-not-matter)** — permutations and combinations off one tree: pick three from four, then the same picture with the orderings of each set grouped. The $r!$ you divide by becomes the size of a group.
 
 **[Repeating Yourself](../tutorials/repeating-yourself/repeating-yourself.md#sigma-notation-mathematics-meets-loops)** — sigma notation and a `for` loop mapped part to part: index variable, lower bound, upper bound, body, accumulator, with lines between corresponding pieces.
 
-**[Logic and Truth](../tutorials/logic-and-truth/logic-and-truth.md#de-morgans-laws)** — De Morgan's laws twice: two shaded set pictures that come out identical, and two gate arrangements that do. The claim is about two pictures landing on the same region, which is why *Drawing Sets* drawing its own from data does not cover it.
+**[Logic: truth tables, XOR and De Morgan's laws](../tutorials/logic-and-truth/logic-and-truth.md#de-morgans-laws)** — De Morgan's laws twice: two shaded set pictures that come out identical, and two gate arrangements that do. The claim is about two pictures landing on the same region, which is why *Venn diagrams: drawing sets and their overlaps* drawing its own from data does not cover it.
 
 **[How We Got Here](../tutorials/how-we-got-here/how-we-got-here.md#the-only-language-the-machine-understands)** — the abstraction stack: hardware, machine code, assembly, a language people read, each band carrying what it hides. The tutorial walks up this ladder historically; the vertical picture makes "higher level" a spatial fact rather than a phrase.
 
@@ -459,7 +455,7 @@ Two, not four.
 
 **ER notation, in Database Methods.** Crow's foot, `PK` and `FK`, one-to-many
 and many-to-many, on the products-and-sales example. It sits with or just
-before *Designing a Table Before You Build It*, the first page where design
+before *Designing tables: columns, types and one-to-many links*, the first page where design
 vocabulary arrives and the first asking a reader to plan on paper. Everything
 after it points back rather than re-explaining, and the student-generated
 diagrams later have a notation to be read against.
@@ -478,7 +474,7 @@ mathematical notation they already introduce in place. What is missing is two
 specific pictures — row-by-column in *Multiplying Grids*, the unit square in
 *Undoing It* — both already listed.
 
-**Not sets.** *Drawing Sets* already is the set notation page: it builds two-
+**Not sets.** *Venn diagrams: drawing sets and their overlaps* already is the set notation page: it builds two-
 and three-circle diagrams from real sets, names every region, and says where
 the picture stops helping at four sets. What it lacks is small and belongs
 inside it — a panel putting $\cup$, $\cap$, $\setminus$, $\subset$, $\in$ and

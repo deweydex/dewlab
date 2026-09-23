@@ -1,11 +1,11 @@
 ---
-title: "The moves you already know, inside a class — Practice"
+title: "Sequence, selection and iteration inside a class — Practice"
 practice_for: the-moves-you-already-know
 year: "2026-2027"
 version: 2026.09.05.1
 ---
 
-# The moves you already know, inside a class — Practice
+# Sequence, selection and iteration inside a class — Practice
 
 The answers are hidden in folds under each problem. Several problems ask
 you to predict what a piece of code prints. Try to answer before you

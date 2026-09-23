@@ -24,8 +24,8 @@ entries:
     kind: operator
     definition: >
       A real set, written {1, 2, 3}. | is union, & is intersection, - is
-      difference — the same operations built from scratch in Sets as
-      Sorted Lists, now via Python's own type.
+      difference. These are the operations we built from sorted lists
+      on the Sets page, now done by Python's own type.
     example: "a | b   # union;  a & b   # intersection"
   - term: complement (of a set)
     kind: concept

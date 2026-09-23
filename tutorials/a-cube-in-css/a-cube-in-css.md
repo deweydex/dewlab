@@ -1,5 +1,5 @@
 ---
-title: "A cube in CSS"
+title: "A 3D cube in CSS"
 year: "2026-2027"
 version: 2026.09.21.1
 covers:
@@ -10,7 +10,7 @@ covers:
     touches: [WA-LO9]
 ---
 
-# A cube in CSS
+# A 3D cube in CSS
 
 On [An orbit in pure CSS](tutorial:an-orbit-in-css), one flat ball
 went round in depth. Can flat squares make a solid shape? Six of them

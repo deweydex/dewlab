@@ -1,11 +1,11 @@
 ---
-title: "Approaching a Limit — Practice"
+title: "Limits: getting closer without arriving — Practice"
 practice_for: approaching-a-limit
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Approaching a Limit — Practice
+# Limits: getting closer without arriving — Practice
 
 Answers are hidden. Where a question asks you to find a limit, try it with numbers *and* say what the algebra gives — the two together are what makes the answer trustworthy.
 

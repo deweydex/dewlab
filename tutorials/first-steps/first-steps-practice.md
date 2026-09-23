@@ -125,7 +125,7 @@ the power 0.5 gives the square root. (d) 0.5, because a negative power
 gives the reciprocal, one divided by the number.
 
 The last two are the main ideas of
-[Numbers and Their Families](tutorial:numbers-and-their-families),
+[Number types, powers and logarithms](tutorial:numbers-and-their-families),
 arriving early.
 
 </details>

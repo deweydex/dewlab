@@ -1,5 +1,5 @@
 ---
-title: "Sets as Sorted Lists"
+title: "Sets: building them from sorted lists"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -15,9 +15,7 @@ covers:
     covers: [MIT-2.2]
 ---
 
-# Sets as Sorted Lists
-
-**Programming Design Principles / Maths for IT**
+# Sets: building them from sorted lists
 
 A *set* is a collection of distinct elements where order does not matter and duplicates are not allowed. The set {3, 1, 4, 1, 5} is the same as {1, 3, 4, 5} -- the duplicate is removed and the order is irrelevant.
 

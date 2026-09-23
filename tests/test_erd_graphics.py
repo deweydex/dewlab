@@ -102,7 +102,7 @@ class TestTheDrawing:
         would run through whatever sits between, so it drops below every box
         instead — which shows up as a turn beneath the tallest of them."""
         schema = erd.schema_from(database(TIMETABLE))
-        placed = erd._layout(schema)
+        placed, _ = erd._arrange(schema)
         boxes_bottom = placed["height"]
         svg = erd.render(schema)
         ys = [
@@ -121,7 +121,7 @@ class TestTheDrawing:
         import re
 
         schema = erd.schema_from(database(TIMETABLE))
-        placed = erd._layout(schema)
+        placed, _ = erd._arrange(schema)
         boxes = placed["boxes"]
         parent, child = boxes["programme_tbl"], boxes["module_tbl"]
         key_row = erd._row_centre(parent, schema["programme_tbl"], 0)
@@ -136,6 +136,28 @@ class TestTheDrawing:
         assert edge[0] == pytest.approx((parent["x"] + parent["w"], key_row))
         assert edge[-1][1] == pytest.approx(foreign_row)
 
+
+    def test_crossing_lines_are_counted(self):
+        """The count the arrangement minimises has to see a plain crossing,
+        and has to leave alone two lines forking from the same key row."""
+        across = [(0, 5), (10, 5)]
+        down = [(5, 0), (5, 10)]
+        assert erd._crossings([across, down]) == 1
+        fork_one = [(0, 0), (8, 0), (8, 10)]
+        fork_two = [(0, 0), (8, 0), (8, -10)]
+        assert erd._crossings([fork_one, fork_two]) == 0
+
+    def test_the_timetable_draws_with_no_lines_crossing(self):
+        """Alphabetically, room_tbl sits between programme_tbl and
+        teacher_tbl, and its line to session_tbl crossed both of theirs.
+        Stacked in the order session_tbl names them, nothing crosses."""
+        schema = erd.schema_from(database(TIMETABLE))
+        placed, routes = erd._arrange(schema)
+        assert erd._crossings(routes) == 0
+        left = sorted(
+            (box["y"], name) for name, box in placed["boxes"].items()
+            if box["column"] == 0)
+        assert [name for _, name in left] == ["programme_tbl", "teacher_tbl", "room_tbl"]
 
 try:
     import tree as tree_renderer

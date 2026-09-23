@@ -153,7 +153,7 @@ About 7.485, and about 9.788.
 It never settles. The harmonic series grows without limit, but so slowly
 that it needs more than 10^43 terms to reach 100. This shows that "the
 terms are getting smaller" is not enough to make a sum finite.
-[Approaching a Limit](tutorial:approaching-a-limit) comes back to this
+[Limits: getting closer without arriving](tutorial:approaching-a-limit) comes back to this
 point.
 
 </details>
@@ -337,7 +337,7 @@ Each line adds 1 for every `i` that passes the test, so it counts them.
 
 Notice that 33 + 14 is 47, not 43. The four multiples of 21 were counted
 twice. Taking them away once is called inclusion–exclusion, and
-[Drawing Sets](tutorial:venn-diagrams) turns it into a picture.
+[Venn diagrams: drawing sets and their overlaps](tutorial:venn-diagrams) turns it into a picture.
 
 </details>
 

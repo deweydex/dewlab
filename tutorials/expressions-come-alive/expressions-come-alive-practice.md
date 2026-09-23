@@ -1,11 +1,11 @@
 ---
-title: "Expressions Come Alive — Practice"
+title: "Polynomials: representing and combining them in Python — Practice"
 practice_for: expressions-come-alive
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Expressions Come Alive — Practice
+# Polynomials: representing and combining them in Python — Practice
 
 Answers are hidden. Expand by hand first and use the cell to check — the point of the checking cell is to settle disputes, not to do the work.
 
@@ -98,7 +98,7 @@ Squaring does not distribute over addition. Neither does the square root: $\sqrt
 
 $x^2 + 2x + 1$, then $x^3 + 3x^2 + 3x + 1$, then $x^4 + 4x^3 + 6x^2 + 4x + 1$.
 
-1 2 1, then 1 3 3 1, then 1 4 6 4 1 — Pascal's triangle. Each row is built by adding neighboring pairs from the row above, and the same numbers count how many ways there are to choose k things from n, which is why *Counting Carefully* meets them again.
+1 2 1, then 1 3 3 1, then 1 4 6 4 1 — Pascal's triangle. Each row is built by adding neighboring pairs from the row above, and the same numbers count how many ways there are to choose k things from n, which is why *Counting: factorials, permutations and combinations* meets them again.
 
 </details>
 

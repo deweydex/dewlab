@@ -12,7 +12,7 @@ Right-triangle trigonometry (`MIT-4.4`, `MIT-4.9`), radians and the unit circle 
 
 ## 4. Complex Roots — **Dedicated Module & Non-Real Solutions**
 
-Tutorial 15 maintains its focused treatment of quadratic real roots, linking directly to a dedicated unit on complex numbers and the imaginary unit $i$ (*When There Is No Answer*, `MIT-1.10`).
+Tutorial 15 maintains its focused treatment of quadratic real roots, linking directly to a dedicated unit on complex numbers and the imaginary unit $i$ (*Complex numbers: roots that are not real*, `MIT-1.10`).
 
 ## 5. Sequence & Numbering — **Decouple Numbering from Files, Implement Editor**
 
@@ -22,8 +22,8 @@ Numbered titles and filenames were eliminated across the curriculum:
 
 ## 6. Calculus — **Two Focused Tutorials and Application Synthesis**
 
-- *Approaching a Limit* (computational limits, secant slopes).
-- *Rates of Change* (power rule differentiation, polynomial integration, constant of integration).
+- *Limits: getting closer without arriving* (computational limits, secant slopes).
+- *Derivatives: the rate of change of a curve* (power rule differentiation, polynomial integration, constant of integration).
 - Specialized algebraic manipulations (quotient rule, integration by parts) are excluded in favor of computational applications.
 
 ## 7. Modular Scope Decomposition

@@ -1,5 +1,5 @@
 ---
-title: "Mixed Problems — Data, Chance and Logic"
+title: "Mixed problems: data, chance and logic"
 practice_across:
   - counting-carefully
   - what-are-the-chances
@@ -12,7 +12,7 @@ year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Mixed Problems — Data, Chance and Logic
+# Mixed problems: data, chance and logic
 
 Counting, probability, sets and logic keep turning out to be the same subject seen from four sides. These problems move between them on purpose.
 
@@ -270,7 +270,7 @@ About 96.9%.
 
 Out of 1,000 messages: 400 spam, of which 380 are flagged; 600 real, of which 12 are flagged. So 380 of 392 flagged messages are spam.
 
-Compare with the disease example in *What Are the Chances*, where the same-sounding numbers gave 1%. The difference is entirely the base rate: spam is common and the disease is rare. The test is not what decides the answer.
+Compare with the disease example in *Probability: simple, compound and conditional*, where the same-sounding numbers gave 1%. The difference is entirely the base rate: spam is common and the disease is rare. The test is not what decides the answer.
 
 </details>
 

@@ -15,10 +15,10 @@ Restructuring Venn diagrams as a computational visualization module resolves thi
 
 ## Modular Isolation vs Composite Merging
 
-Rather than folding Venn diagrams into *Logic and Truth* or *Sets as Sorted Lists*, keeping *Drawing Sets* as a dedicated, focused module provides clear modular boundaries:
-- *Sets as Sorted Lists* focuses on algorithmic data structures (sorted lists, membership, operations from scratch).
-- *Logic and Truth* focuses on Boolean truth tables and formal proofs.
-- *Drawing Sets* focuses on visual set verification and Venn region plotting in Python.
+Rather than folding Venn diagrams into *Logic: truth tables, XOR and De Morgan's laws* or *Sets: building them from sorted lists*, keeping *Venn diagrams: drawing sets and their overlaps* as a dedicated, focused module provides clear modular boundaries:
+- *Sets: building them from sorted lists* focuses on algorithmic data structures (sorted lists, membership, operations from scratch).
+- *Logic: truth tables, XOR and De Morgan's laws* focuses on Boolean truth tables and formal proofs.
+- *Venn diagrams: drawing sets and their overlaps* focuses on visual set verification and Venn region plotting in Python.
 
 This adheres to the core architecture pattern: **explicit connections between focused modules rather than overloaded composite tutorials**.
 

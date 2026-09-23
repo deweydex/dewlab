@@ -466,3 +466,12 @@ class TestEmphasisReadsBoldItalics:
         prose = "One *frame* and a ***frame rate***, but not **bold** alone."
         found = [plain or bold for plain, bold in cm.EMPHASIS_RE.findall(prose)]
         assert found == ["frame", "frame rate"]
+
+
+def test_a_node_label_keeps_the_words_before_a_colon():
+    """A title's topic often comes before its colon. Only the old
+    "Tutorial N: " numbering is dropped, since the node is numbered."""
+    assert cm.node_label("Lists: keeping many values in order") == \
+        "Lists: keeping many values in order"
+    assert cm.node_label("Tutorial 14: Expressions Come Alive") == \
+        "Expressions Come Alive"

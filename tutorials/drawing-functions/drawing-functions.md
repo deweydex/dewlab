@@ -1,5 +1,5 @@
 ---
-title: "Drawing Functions"
+title: "Functions and their graphs"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -17,15 +17,13 @@ covers:
     covers: [MIT-3.1]
 ---
 
-# Drawing Functions
+# Functions and their graphs
 
-**Maths for IT**
-
-You have written functions since *Building Reusable Tools*, and you have plotted data since *Pictures Worth Numbers*. Nobody has yet asked you to plot a *function* — and that is the habit almost everything after this depends on.
+You have written functions since *Building Reusable Tools*, and you have plotted data since *Charts: choosing the right chart for your data*. Nobody has yet asked you to plot a *function* — and that is the habit almost everything after this depends on.
 
 Trigonometry is a graph. A limit is a graph. A derivative is the slope of a graph. Once you can put a function on a pair of axes and read an answer off it, all three of those stop being abstract.
 
-There is also something slightly odd about the series so far that this fixes. *Pictures Worth Numbers* taught you to plot data and never came back to it, and *Expressions Come Alive* built a polynomial evaluator that never got drawn. Those two have been waiting for each other.
+There is also something slightly odd about the series so far that this fixes. *Charts: choosing the right chart for your data* taught you to plot data and never came back to it, and *Polynomials: representing and combining them in Python* built a polynomial evaluator that never got drawn. Those two have been waiting for each other.
 
 ## A Function Is a Machine
 
@@ -189,7 +187,7 @@ id: your-turn-2
 # Your prediction as a comment, then plot all three on one pair of axes.
 ```
 
-Slope, and what it means to say two lines are perpendicular, gets a tutorial of its own — [Lines and Distances](tutorial:lines-and-distances), which comes after this one. Here a line is just one more function to draw.
+Slope, and what it means to say two lines are perpendicular, gets a tutorial of its own — [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances), which comes after this one. Here a line is just one more function to draw.
 
 ## Curves That Bend
 
@@ -230,7 +228,7 @@ ax.set_title("Cubics")
 
 There is a pattern here that holds generally: **the highest power tells you how many times the curve can turn.** A line (`x¹`) does not turn. A quadratic (`x²`) turns once. A cubic (`x³`) turns at most twice. It is a good rule of thumb for sketching something before you plot it.
 
-Use your polynomial evaluator from *Expressions Come Alive* if you still have it — it does exactly what the functions above do, and it was written before you had anywhere to draw its output.
+Use your polynomial evaluator from *Polynomials: representing and combining them in Python* if you still have it — it does exactly what the functions above do, and it was written before you had anywhere to draw its output.
 
 ## Reading an Answer Off the Picture
 
@@ -246,7 +244,7 @@ ax.set_ylim(-2, 8)
 ax.set_title("Where does it cross?")
 ```
 
-It crosses at 2 and at 3. Check that against the solver from *Cracking Equations* and you will get the same two numbers.
+It crosses at 2 and at 3. Check that against the solver from *Solving equations: linear, quadratic and simultaneous* and you will get the same two numbers.
 
 Two different methods, one answer. That is worth doing at least once for something you already know, because it is what tells you the picture can be trusted for something you do not.
 

@@ -23,11 +23,11 @@
 # real SQL and Python instead, since that is what dewlab teaches everywhere
 # else — DBM-LO3, DBM-LO6 and DBM-LO7 below are the clearest cases of the
 # descriptor's own vocabulary and dewlab's parting ways, not a disagreement
-# about what the outcome means. "A Form That Writes a Row" covers DBM-LO6
+# about what the outcome means. "From a form to a database row" covers DBM-LO6
 # with the query side of a data-entry form — the `INSERT` a submission would
 # run — and says plainly that reading an HTML form's own fields is Web
-# Authoring's job, not yet joined to this page. "Exporting a Query to a File"
-# and "Charting a Query's Result" cover DBM-LO7's reports as a CSV export and
+# Authoring's job, not yet joined to this page. "Exporting a query's result to a CSV file"
+# and "Charting a query's result: one line per country" cover DBM-LO7's reports as a CSV export and
 # a matplotlib chart. Ten of the eleven are covered. DBM-LO1 (typical uses for
 # databases) has a topics.yaml entry but no page of its own yet — see
 # planning/CURRICULUM_MAP.md for the current state of every code.

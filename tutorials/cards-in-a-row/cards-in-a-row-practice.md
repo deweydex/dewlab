@@ -1,11 +1,11 @@
 ---
-title: "Cards in a row — Practice"
+title: "Cards in a row: grow, shrink and basis in Flexbox — Practice"
 practice_for: cards-in-a-row
 year: "2026-2027"
 version: 2026.09.22.1
 ---
 
-# Cards in a row — Practice
+# Cards in a row: grow, shrink and basis in Flexbox — Practice
 
 On this page we practise the three parts of `flex`: *flex-grow*,
 *flex-shrink* and *flex-basis*, in that order. There are three kinds of

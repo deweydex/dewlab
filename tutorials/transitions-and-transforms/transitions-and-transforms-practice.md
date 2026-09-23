@@ -257,8 +257,15 @@ word `all` means every property that changes, so a change to
 
 The **Send Me an Email** button lifts too. It has the class `btn`, so
 `.btn:hover` matches it. The `.contact-section .btn:hover` rule changes
-its colours, but it does not set a `transform`, so the lift from
-`.btn:hover` still applies. The buttons can take a transform because
-`.btn` sets `display: inline-block`.
+its background and border, but it does not set a `transform`, so the
+lift from `.btn:hover` still applies. The buttons can take a transform
+because `.btn` sets `display: inline-block`.
+
+Did the button's words almost disappear as it lifted? That is a small
+bug in the starter. `.btn:hover` makes the text white, and
+`.contact-section .btn:hover` makes the background nearly white, but
+nothing sets the text back to a dark colour. Adding
+`color: var(--primary-color);` to `.contact-section .btn:hover` fixes
+it.
 
 </details>

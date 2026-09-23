@@ -1,5 +1,5 @@
 ---
-title: "Mixed Problems — Programming"
+title: "Mixed problems: programming"
 practice_across:
   - first-steps
   - storing-and-computing
@@ -13,7 +13,7 @@ year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Mixed Problems — Programming
+# Mixed problems: programming
 
 Every problem here needs more than one tutorial. None of them says which, and that is the point: knowing that a problem wants a loop with a condition inside it, or a sort followed by a search, is a different skill from being able to write either.
 

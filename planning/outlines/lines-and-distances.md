@@ -21,7 +21,7 @@ Pythagoras serves as a critical gateway unlocking seven downstream topics in
 the topic tree. A gateway requires a dedicated tutorial rather than an embedded
 subsection within graphing.
 
-Furthermore, downstream trigonometry (*The Unit Circle*, *Solving Triangles*)
+Furthermore, downstream trigonometry (*The unit circle: sine, cosine and tangent*, *Solving triangles: the sine rule and the cosine rule*)
 assumes coordinate geometry: the unit circle is a coordinate-geometry object
 (a locus of points at distance 1 from the origin). Having a dedicated tutorial
 prevents trigonometry from having to introduce Cartesian coordinates in passing.
@@ -199,4 +199,4 @@ keeping the names.
 
 ## Open Questions
 - **Title Finalization**: Evaluate "Lines and Distances" versus alternatives against reader accessibility criteria.
-- **Hook Effectiveness**: Evaluate whether the closing geometric circle construction effectively motivates *The Unit Circle*.
+- **Hook Effectiveness**: Evaluate whether the closing geometric circle construction effectively motivates *The unit circle: sine, cosine and tangent*.

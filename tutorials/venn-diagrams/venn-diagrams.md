@@ -1,5 +1,5 @@
 ---
-title: "Drawing Sets"
+title: "Venn diagrams: drawing sets and their overlaps"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -13,15 +13,13 @@ covers:
     covers: [MIT-2.3]
 ---
 
-# Drawing Sets
-
-**Maths for IT**
+# Venn diagrams: drawing sets and their overlaps
 
 Two overlapping circles with numbers in them. You have almost certainly seen one, and you may have been asked to fill one in at school.
 
 This tutorial is short, and it is not really about the diagram. It is about the point at which a set expression stops fitting in your head, and about having something to reach for when that happens.
 
-In *Sets as Sorted Lists* you built union, intersection and difference and used them on real data. Everything here is drawn from those. **A Venn diagram is a plot of things you already computed** — no new operations, and nothing new to define.
+In *Sets: building them from sorted lists* you built union, intersection and difference and used them on real data. Everything here is drawn from those. **A Venn diagram is a plot of things you already computed** — no new operations, and nothing new to define.
 
 ## Two Circles, from Real Sets
 
@@ -100,7 +98,7 @@ print("car - bike :", sorted(car - bike))
 print("bike | car :", sorted(bike | car))
 ```
 
-Nothing new is being defined here. The diagram is giving the operations from *Sets as Sorted Lists* somewhere to sit.
+Nothing new is being defined here. The diagram is giving the operations from *Sets: building them from sorted lists* somewhere to sit.
 
 ### Your turn
 
@@ -117,7 +115,7 @@ everyone = {"Aoife", "Ben", "Cara", "Dara", "Eoin", "Fiona", "Gearoid", "Hannah"
 # neither = ...
 ```
 
-The first of those is exclusive or, which you met in [Logic and Truth](tutorial:logic-and-truth) as a fact about true and false. Python spells it `^` for sets too, and for the same reason.
+The first of those is exclusive or, which you met in [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth) as a fact about true and false. Python spells it `^` for sets too, and for the same reason.
 
 ## Three Sets, Which Is Where It Earns Its Place
 
@@ -191,7 +189,7 @@ second = python & (sql | javascript)
 
 ## The Same Laws, in a Different Notation
 
-In *Logic and Truth* you proved De Morgan's Laws by looping over four rows. Here they are again, shaded.
+In *Logic: truth tables, XOR and De Morgan's laws* you proved De Morgan's Laws by looping over four rows. Here they are again, shaded.
 
 ```python exec
 id: the-same-laws-in-a-different-notation-1
@@ -212,7 +210,7 @@ print("(not A) or (not B):  ", sorted(complement(a) | complement(b)))
 
 Identical, both times.
 
-*Logic and Truth* proved this by checking four rows. That proof is complete -- there really are only four cases. This one is a different kind of thing: you can *see* that the region outside both circles is the same region as the overlap of the two outsides, and once you have seen it you do not need to check.
+*Logic: truth tables, XOR and De Morgan's laws* proved this by checking four rows. That proof is complete -- there really are only four cases. This one is a different kind of thing: you can *see* that the region outside both circles is the same region as the overlap of the two outsides, and once you have seen it you do not need to check.
 
 **Neither proof is better.** They are the same claim in two notations, which is exactly why the pairing is worth having. If the truth table version did not land, this one might, and they are not two facts to learn.
 

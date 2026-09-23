@@ -153,7 +153,7 @@ leaves the reader something to do with their own thinking rather than a
 fact to accept. Reach for a question before reaching for an assertion
 wherever the reader could plausibly answer it themselves.
 
-**Plain titles.** *Lines and Distances*, not *Coordinate Geometry*. A title
+**Plain titles.** *Straight lines: slope, midpoint and distance*, not *Coordinate Geometry*. A title
 names what the reader gets, in words they already have.
 
 **Define every technical term where it first appears**, and mark it in

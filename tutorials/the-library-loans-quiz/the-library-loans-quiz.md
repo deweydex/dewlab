@@ -1,5 +1,5 @@
 ---
-title: "The Library Loans Quiz"
+title: "The library loans quiz: books, authors and loans"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
@@ -17,7 +17,7 @@ covers:
     touches: [DBM-LO5]
 ---
 
-# The Library Loans Quiz
+# The library loans quiz: books, authors and loans
 
 You are building a database for a small library: which books it holds,
 who wrote each one, who has borrowed what, and what is overdue. Six

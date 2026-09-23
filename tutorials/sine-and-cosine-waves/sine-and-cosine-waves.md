@@ -1,5 +1,5 @@
 ---
-title: "Sine and Cosine Waves"
+title: "Sine and cosine waves: amplitude, period and shift"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -13,9 +13,7 @@ covers:
     covers: [MIT-3.3]
 ---
 
-# Sine and Cosine Waves
-
-**Maths for IT**
+# Sine and cosine waves: amplitude, period and shift
 
 The last tutorial defined sine and cosine. This one is about what they look like when you draw them, and what you can do to that shape.
 
@@ -178,7 +176,7 @@ ax.set_title("Lift: sliding it up and down")
 
 Four numbers, four completely separate effects, none of them interfering with the others.
 
-This is the same "one coefficient, one visible change" pattern you met with lines in *Drawing Functions* and with quadratics in *Parabolas*. Third time — it is worth noticing as a habit of mathematics rather than a coincidence, because it is how families of curves are usually built.
+This is the same "one coefficient, one visible change" pattern you met with lines in *Functions and their graphs* and with quadratics in *Parabolas: completing the square*. Third time — it is worth noticing as a habit of mathematics rather than a coincidence, because it is how families of curves are usually built.
 
 A note on the names. **Amplitude** is how far it swings from the middle, not top to bottom — a wave of amplitude 2 is 4 tall in total. **Phase** is the usual word for what is called `shift` here.
 
@@ -313,7 +311,7 @@ ax.set_title("Tangent is not a wave")
 
 It repeats — twice as often as sine — but it does not swing between two limits. It runs away to infinity at every quarter turn and comes back from the other side.
 
-Those red lines are where the point on the circle is straight up or straight down, so the across value is zero, and a slope of "up over nothing" has no value. Same fact as the vertical line in *Lines and Distances*, showing up for the third time.
+Those red lines are where the point on the circle is straight up or straight down, so the across value is zero, and a slope of "up over nothing" has no value. Same fact as the vertical line in *Straight lines: slope, midpoint and distance*, showing up for the third time.
 
 ## Reflection
 

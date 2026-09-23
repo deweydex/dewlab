@@ -8,8 +8,7 @@ context_for: [drawing-frames-with-javascript, an-orbit-in-css, a-cube-in-css, a-
 # How a browser draws each frame
 
 Every page in the series "Movement and depth" moves something: [An
-orbit in pure CSS](tutorial:an-orbit-in-css), [A cube in
-CSS](tutorial:a-cube-in-css), [A ball that keeps facing
+orbit in pure CSS](tutorial:an-orbit-in-css), [A 3D cube in CSS](tutorial:a-cube-in-css), [A ball that keeps facing
 you](tutorial:a-ball-that-faces-you), [Drawing frames with
 JavaScript](tutorial:drawing-frames-with-javascript) and [A turning cube
 drawn on a canvas](tutorial:a-cube-on-a-canvas). How does a browser
@@ -259,8 +258,7 @@ is **Animation effects** in the **Visual effects** settings, under
 
 A page can answer with a media query,
 `@media (prefers-reduced-motion: reduce)`, which applies its CSS only
-when the visitor has asked for less motion. [Movement, focus and the
-people who use your page](tutorial:movement-focus-and-keyboards) has
+when the visitor has asked for less motion. [Accessibility: keyboards, focus and movement](tutorial:movement-focus-and-keyboards) has
 more about it. For the orbit, it could stop both animations:
 
 ```css

@@ -1,11 +1,11 @@
 ---
-title: "Counting Carefully — Practice"
+title: "Counting: factorials, permutations and combinations — Practice"
 practice_for: counting-carefully
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Counting Carefully — Practice
+# Counting: factorials, permutations and combinations — Practice
 
 Answers are hidden. For each problem, decide first whether order matters and whether repeats are allowed — those two questions pick the formula, and getting them wrong is the only real difficulty here.
 

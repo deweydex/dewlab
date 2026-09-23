@@ -301,9 +301,12 @@ Add this rule next to `.contact-section .btn:hover`:
 from `.btn:focus`. When two rules set the same property, the one with
 the more exact selector wins. `.contact-section .btn:focus` names the
 section as well as the button, so it wins over `.btn:focus`, the same
-way `.contact-section .btn:hover` already wins over `.btn:hover`. The
-other buttons on
-your site keep their dark outline, which shows well on a light
-background.
+way `.contact-section .btn:hover` already wins over `.btn:hover`.
+
+Is this the only button with the problem? The **Learn More About Me**
+button sits in the hero, and `.hero` has the same dark background. Press
+Tab until it has focus: its outline is hidden too. The same fix works
+there, with `.hero .btn:focus` as the selector. Buttons on a light
+background keep their dark outline, which shows well.
 
 </details>

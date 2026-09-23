@@ -1,5 +1,5 @@
 ---
-title: "A Second Table and a Join"
+title: "Joining two tables: foreign keys and JOIN"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
@@ -8,7 +8,7 @@ covers:
     touches: [DBM-LO9]
 ---
 
-# A Second Table and a Join
+# Joining two tables: foreign keys and JOIN
 
 Real data rarely fits in one table. A dinosaur is one record. Where its
 fossils were found is a different kind of record, and one dinosaur can

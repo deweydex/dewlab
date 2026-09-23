@@ -1,5 +1,5 @@
 ---
-title: "Mixed Problems — Algebra and Functions"
+title: "Mixed problems: algebra and functions"
 practice_across:
   - numbers-and-their-families
   - expressions-come-alive
@@ -12,7 +12,7 @@ year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Mixed Problems — Algebra and Functions
+# Mixed problems: algebra and functions
 
 Each of these needs at least two of the algebra tutorials, and several want a picture as well as a calculation. Nothing here is harder than what those tutorials covered; what is harder is that nobody is telling you which one to use.
 

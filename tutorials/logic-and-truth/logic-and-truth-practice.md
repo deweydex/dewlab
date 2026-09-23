@@ -1,11 +1,11 @@
 ---
-title: "Logic and Truth — Practice"
+title: "Logic: truth tables, XOR and De Morgan's laws — Practice"
 practice_for: logic-and-truth
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Logic and Truth — Practice
+# Logic: truth tables, XOR and De Morgan's laws — Practice
 
 Answers are hidden. Several of these ask you to predict a table before generating it — the prediction is the exercise.
 

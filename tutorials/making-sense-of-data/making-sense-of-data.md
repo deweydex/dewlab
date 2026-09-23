@@ -1,5 +1,5 @@
 ---
-title: "Making Sense of Data"
+title: "Statistics: averages, spread and frequency"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -17,9 +17,7 @@ covers:
     covers: [MIT-5.13]
 ---
 
-# Making Sense of Data
-
-**Programming Design Principles / Maths for IT**
+# Statistics: averages, spread and frequency
 
 We have learned to count possibilities and calculate probabilities. Now we turn to actual data: numbers that have been collected, measured, or observed. Statistics gives us tools to summarize, describe, and interpret data -- and every one of those tools translates into a function we can write.
 

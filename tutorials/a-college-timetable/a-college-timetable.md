@@ -1,5 +1,5 @@
 ---
-title: "A College Timetable"
+title: "A college timetable: five tables and finding clashes"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
@@ -18,7 +18,7 @@ covers:
     touches: [DBM-LO10, DBM-LO11]
 ---
 
-# A College Timetable
+# A college timetable: five tables and finding clashes
 
 A further education college runs on a timetable: which room, which
 teacher, which module, on which date, between which two times. Every

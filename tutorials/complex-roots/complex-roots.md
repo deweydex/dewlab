@@ -1,7 +1,7 @@
 ---
-title: "When There Is No Answer"
+title: "Complex numbers: roots that are not real"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.23.1
 covers:
   the-cliff-edge:
     covers: [MIT-1.10]
@@ -14,11 +14,9 @@ covers:
     covers: [MIT-1.10]
 ---
 
-# When There Is No Answer
+# Complex numbers: roots that are not real
 
-**Maths for IT**
-
-In *Cracking Equations* you wrote a solver for quadratics. It computes the discriminant, and when that comes out negative it prints something like "no real solutions" and stops.
+In *Solving equations: linear, quadratic and simultaneous* you wrote a solver for quadratics. It computes the discriminant, and when that comes out negative it prints something like "no real solutions" and stops.
 
 This tutorial is about what is on the other side of that stop.
 
@@ -33,7 +31,7 @@ id: the-cliff-edge-1
 import math
 
 def solve(a, b, c):
-    """The solver from Cracking Equations."""
+    """The quadratic solver from the Solving equations page."""
     discriminant = b ** 2 - 4 * a * c
     if discriminant < 0:
         return "No real solutions."
@@ -72,7 +70,7 @@ The third curve never comes down to the axis. That is what "no real solutions" l
 
 ## Inventing a Number
 
-In *Numbers and Their Families* you took a tour of the number systems: the naturals ℕ, the integers ℤ, the rationals ℚ, and the reals ℝ. It is worth noticing what drove each step of that tour, because it is the same thing every time.
+In *Number types, powers and logarithms* you took a tour of the number systems: the naturals ℕ, the integers ℤ, the rationals ℚ, and the reals ℝ. It is worth noticing what drove each step of that tour, because it is the same thing every time.
 
 **ℕ** -- the counting numbers. You can add them. But `3 − 5` has no answer.
 
@@ -206,7 +204,7 @@ id: your-turn-2
 
 ## Reflection
 
-The stopping point in *Cracking Equations* was accurate and it was not the end. "No real solutions" is a statement about which numbers you are willing to use, and there is a larger set where the answer has been waiting.
+The stopping point in *Solving equations: linear, quadratic and simultaneous* was accurate and it was not the end. "No real solutions" is a statement about which numbers you are willing to use, and there is a larger set where the answer has been waiting.
 
 Three things to take.
 

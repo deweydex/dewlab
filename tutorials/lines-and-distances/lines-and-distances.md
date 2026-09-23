@@ -1,5 +1,5 @@
 ---
-title: "Lines and Distances"
+title: "Straight lines: slope, midpoint and distance"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -17,19 +17,17 @@ covers:
     covers: [MIT-4.3, MIT-4.4]
 ---
 
-# Lines and Distances
-
-**Maths for IT**
+# Straight lines: slope, midpoint and distance
 
 Two questions, and the whole tutorial is about them: **how do you describe a line**, and **how far apart are two things**.
 
 Both sound like they should be easy, and the first one has three different answers, each better than the others at something. The second one turns out to be a theorem you have heard of, arriving from a direction that makes it obvious.
 
-This is not called "coordinate geometry", though that is the name in the syllabus. Geometry is a word that, for a lot of people, means a thing they did at fifteen with a compass and did not enjoy. There is no compass here. There is a pair of axes, which you have been using since *Pictures Worth Numbers*, and there are two questions somebody might have.
+This is not called "coordinate geometry", though that is the name in the syllabus. Geometry is a word that, for a lot of people, means a thing they did at fifteen with a compass and did not enjoy. There is no compass here. There is a pair of axes, which you have been using since *Charts: choosing the right chart for your data*, and there are two questions somebody might have.
 
 ## A Line You Have Already Written
 
-You have written straight lines as functions since *Drawing Functions*. Here is one again.
+You have written straight lines as functions since *Functions and their graphs*. Here is one again.
 
 ```python exec
 id: a-line-you-have-already-written-1
@@ -134,7 +132,7 @@ id: your-turn-1
 # Your code here.
 ```
 
-Hold on to the rate-of-change description. When [Rates of Change](tutorial:rates-of-change) arrives and asks for the slope of something that is *not* straight, it will be the same question with the answer changing as you move.
+Hold on to the rate-of-change description. When [Derivatives: the rate of change of a curve](tutorial:rates-of-change) arrives and asks for the slope of something that is *not* straight, it will be the same question with the answer changing as you move.
 
 ## Parallel and Perpendicular
 
@@ -324,7 +322,7 @@ ax.annotate("midpoint", m, textcoords="offset points", xytext=(10, -12))
 ax.set_title("Halfway is the average")
 ```
 
-Average the x values, average the y values. It is the same "average" you used on marks in *Making Sense of Data*, done twice.
+Average the x values, average the y values. It is the same "average" you used on marks in *Statistics: averages, spread and frequency*, done twice.
 
 ### Your turn
 
@@ -453,7 +451,7 @@ for t in [0, 7, 15, 33, 48]:
 
 Exactly 1, every time, by the formula you just wrote.
 
-That circle is where [The Unit Circle](tutorial:the-unit-circle) starts, and the fact that every point on it is distance 1 from the center is the only rule that whole tutorial rests on.
+That circle is where [The unit circle: sine, cosine and tangent](tutorial:the-unit-circle) starts, and the fact that every point on it is distance 1 from the center is the only rule that whole tutorial rests on.
 
 ## Reflection
 

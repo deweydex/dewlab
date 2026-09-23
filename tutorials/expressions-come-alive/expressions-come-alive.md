@@ -1,5 +1,5 @@
 ---
-title: "Expressions Come Alive"
+title: "Polynomials: representing and combining them in Python"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -19,9 +19,7 @@ covers:
     covers: [MIT-1.6]
 ---
 
-# Expressions Come Alive
-
-**Programming Design Principles / Maths for IT**
+# Polynomials: representing and combining them in Python
 
 Today we take on one of the most satisfying challenges in these tutorials: representing algebraic expressions as data structures and computing with them. A polynomial like $3x^2 + 5x - 2$ will become a list of numbers that our functions can evaluate, add, and multiply. The algebra becomes tangible.
 
@@ -31,7 +29,7 @@ An important distinction first. An *expression* is a mathematical phrase that ha
 
 An *equation* is a statement that two expressions are equal: $3x + 7 = 22$, $x^2 - 4 = 0$. An equation asserts something and can be true or false depending on x.
 
-We *evaluate* expressions. We *solve* equations. Today is about evaluation; solving comes in *Cracking Equations*.
+We *evaluate* expressions. We *solve* equations. Today is about evaluation; solving comes in *Solving equations: linear, quadratic and simultaneous*.
 
 ## Representing Polynomials
 
@@ -240,7 +238,7 @@ Two more operations before we finish: subtracting polynomials and multiplying by
 
 ### Your turn
 
-Let's write `subtract_poly(a, b)` and `scale_poly(coeffs, scalar)` — think about how each relates to what you have already built. If you want to push further, try a `poly_derivative(coeffs)` function too; differentiating a polynomial turns out to be its own simple rule about coefficients and exponents, one you will meet properly in *Rates of Change*.
+Let's write `subtract_poly(a, b)` and `scale_poly(coeffs, scalar)` — think about how each relates to what you have already built. If you want to push further, try a `poly_derivative(coeffs)` function too; differentiating a polynomial turns out to be its own simple rule about coefficients and exponents, one you will meet properly in *Derivatives: the rate of change of a curve*.
 
 ```python exec
 id: your-turn-11

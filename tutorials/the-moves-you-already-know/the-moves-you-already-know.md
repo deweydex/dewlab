@@ -1,5 +1,5 @@
 ---
-title: "The moves you already know, inside a class"
+title: "Sequence, selection and iteration inside a class"
 year: "2026-2027"
 version: 2026.09.05.1
 covers:
@@ -11,7 +11,7 @@ covers:
     covers: [FOOP-LO2]
 ---
 
-# The moves you already know, inside a class
+# Sequence, selection and iteration inside a class
 
 In [Classes and objects: keeping data and actions together](tutorial:objects-and-classes)
 we built our first classes. A class can look like a whole new way of

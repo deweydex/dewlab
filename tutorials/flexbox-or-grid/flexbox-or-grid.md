@@ -120,8 +120,7 @@ Your own site uses flexbox four times, and grid not at all. In
 at the bottom; on `.header-content`, the logo and the menu; on
 `.main-nav ul`, the links in the menu; and on `.cta-buttons`, the two
 buttons near the bottom of `about.html`. The project starter, in the
-series A site with several pages, uses grid for its gallery. [A grid
-gallery](tutorial:a-grid-gallery) looks at it.
+series A site with several pages, uses grid for its gallery. [A grid gallery that chooses its own columns](tutorial:a-grid-gallery) looks at it.
 
 ## Before flexbox and grid
 

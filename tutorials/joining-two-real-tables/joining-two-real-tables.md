@@ -1,5 +1,5 @@
 ---
-title: "Joining Two Real Tables"
+title: "Joining real tables: the rows a JOIN drops"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
@@ -9,7 +9,7 @@ covers:
     covers: [DBM-LO5]
 ---
 
-# Joining Two Real Tables
+# Joining real tables: the rows a JOIN drops
 
 [A second table and a join](tutorial:a-second-table-and-a-join) showed what
 a `JOIN` does, on two tables built by hand, with no messy edges. Real tables

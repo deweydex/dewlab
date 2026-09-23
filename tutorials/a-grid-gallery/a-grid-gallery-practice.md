@@ -1,11 +1,11 @@
 ---
-title: "A grid gallery — Practice"
+title: "A grid gallery that chooses its own columns — Practice"
 practice_for: a-grid-gallery
 year: "2026-2027"
 version: 2026.09.22.1
 ---
 
-# A grid gallery — Practice
+# A grid gallery that chooses its own columns — Practice
 
 On this page we practise a grid that chooses its own number of columns:
 `grid-template-columns: repeat(auto-fit, minmax(120px, 1fr))`. There are

@@ -1,5 +1,5 @@
 ---
-title: "Asking Questions of a Table"
+title: "Filtering and sorting rows: WHERE and ORDER BY"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
@@ -11,7 +11,7 @@ covers:
     touches: [DBM-LO5]
 ---
 
-# Asking Questions of a Table
+# Filtering and sorting rows: WHERE and ORDER BY
 
 `SELECT *` shows every column. Most questions worth asking need only some
 of the rows and some of their columns. This page builds the same

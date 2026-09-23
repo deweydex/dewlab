@@ -1,5 +1,5 @@
 ---
-title: "Approaching a Limit"
+title: "Limits: getting closer without arriving"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -13,9 +13,7 @@ covers:
     covers: [MIT-3.5]
 ---
 
-# Approaching a Limit
-
-**Maths for IT**
+# Limits: getting closer without arriving
 
 A limit is the answer to a question of the form: *what would this be, if I could get there?*
 

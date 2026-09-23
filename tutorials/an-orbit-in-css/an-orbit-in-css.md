@@ -209,8 +209,7 @@ The editor above is ours to change. Try each of these on its own.
    `transform: translateZ(-100px);`. The later rule wins, so only the
    new ball is pushed away from us.
 3. Now look down on the orbit from a little above. `rotateX()` turns an
-   element about a horizontal axis, and we meet it properly on [A cube
-   in CSS](tutorial:a-cube-in-css). Change the `turn` keyframes so that
+   element about a horizontal axis, and we meet it properly on [A 3D cube in CSS](tutorial:a-cube-in-css). Change the `turn` keyframes so that
    both lines start with `rotateX(-30deg)`:
    `from { transform: rotateX(-30deg) rotateY(0deg); }` and
    `to { transform: rotateX(-30deg) rotateY(360deg); }`.

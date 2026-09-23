@@ -1,11 +1,11 @@
 ---
-title: "Rearranging Formulae — Practice"
+title: "Rearranging formulae: changing the subject — Practice"
 practice_for: rearranging-formulae
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Rearranging Formulae — Practice
+# Rearranging formulae: changing the subject — Practice
 
 Answers are hidden. Rearrange by hand first — the checking cell will tell you whether you got it right, but only after you have committed to something.
 
@@ -192,7 +192,7 @@ Because these are floating-point numbers, and two calculations that should agree
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. It is strong evidence and not a proof — the same distinction as in *Logic and Truth*, where four rows *were* a proof because there were only four cases.
+No. It is strong evidence and not a proof — the same distinction as in *Logic: truth tables, XOR and De Morgan's laws*, where four rows *were* a proof because there were only four cases.
 
 Here the space of inputs is infinite, so a check can only fail to find a problem. In practice it finds every mistake you are likely to make, which is worth a great deal even though it is not certainty.
 

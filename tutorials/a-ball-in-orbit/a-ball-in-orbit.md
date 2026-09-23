@@ -122,7 +122,7 @@ To place the ball we need a point on a circle, and $\cos$ and $\sin$
 are the tools for that. For a circle of radius 1, the point at angle
 $\theta$ round from the right-hand side is at $(\cos\theta, \sin\theta)$:
 $\cos\theta$ is how far across, $\sin\theta$ is how far up. That is all
-you need here. [The Unit Circle](tutorial:the-unit-circle), on the
+you need here. [The unit circle: sine, cosine and tangent](tutorial:the-unit-circle), on the
 maths course, has the full story if you want it. Our hoop has radius
 $r$, and it lies flat, so the two coordinates that change are $x$ and
 $z$:

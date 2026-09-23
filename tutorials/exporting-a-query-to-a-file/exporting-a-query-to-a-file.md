@@ -1,5 +1,5 @@
 ---
-title: "Exporting a Query to a File"
+title: "Exporting a query's result to a CSV file"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
@@ -7,7 +7,7 @@ covers:
     covers: [DBM-LO7]
 ---
 
-# Exporting a Query to a File
+# Exporting a query's result to a CSV file
 
 Every table on the pages in this series lives only inside this browser tab.
 A query's result can also leave as a file of its own: something you could

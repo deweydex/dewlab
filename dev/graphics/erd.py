@@ -13,7 +13,9 @@ Tables sit in columns by how far they are from one that points at nothing,
 so an arrow always runs left to right and a reader can follow "this names a
 row over there" in one direction. Edges are routed through the gutter
 between two columns, never across a column, because a line crossing a box
-reads as though it connects to it.
+reads as though it connects to it. Inside a column, tables are stacked in
+whichever order leaves the fewest lines crossing one another (`_arrange`),
+since a crossing is where a reader loses track of which line is which.
 """
 
 from __future__ import annotations
@@ -93,12 +95,23 @@ def _depth(schema: dict) -> dict:
     return depth
 
 
-def _layout(schema: dict) -> dict:
-    """Place every table, and say how big the drawing came out."""
+def _columns(schema: dict) -> dict[int, list[str]]:
+    """Which tables share a column, alphabetically within it."""
     depth = _depth(schema)
     columns: dict[int, list[str]] = {}
     for name in sorted(schema, key=lambda n: (depth[n], n)):
         columns.setdefault(depth[name], []).append(name)
+    return columns
+
+
+def _layout(schema: dict, columns: dict[int, list[str]] | None = None) -> dict:
+    """Place every table, and say how big the drawing came out.
+
+    `columns` fixes the top-to-bottom order inside each column; left out,
+    it is alphabetical, and `_arrange` is what chooses a better one.
+    """
+    if columns is None:
+        columns = _columns(schema)
 
     boxes, x = {}, 0.0
     for column in sorted(columns):
@@ -158,38 +171,10 @@ def _single_bar(drawing, group, x: float, y: float, size: float = 7.0) -> None:
         stroke=INK, stroke_width=2.0, stroke_linecap="round"))
 
 
-def render(schema: dict, title: str | None = None) -> str:
-    placed = _layout(schema)
-    boxes = placed["boxes"]
-    # Every edge that has to drop below the boxes needs a lane of its own down
-    # there, and the canvas has to be tall enough to hold them.
-    spans = [
-        (boxes[c["references"][0]]["column"], boxes[n]["column"])
-        for n, t in schema.items()
-        for c in t["columns"]
-        if c["references"] and c["references"][0] in boxes and c["references"][0] != n
-    ]
-    dropped = sum(1 for parent, child in spans if child - parent > 1)
-    # Measured before the canvas grows to hold them, or each lane would be
-    # placed relative to the room already made for it and end up outside.
-    boxes_bottom = placed["height"]
-    placed["height"] += (GAP_Y + LANE * dropped) if dropped else 0
-    margin = 14
-    drawing = svgwrite.Drawing(
-        size=(f"{placed['width'] + margin * 2:.0f}px",
-              f"{placed['height'] + margin * 2:.0f}px"),
-        viewBox=f"0 0 {placed['width'] + margin * 2:.0f} {placed['height'] + margin * 2:.0f}",
-        debug=False,   # so a `var(--dl-…)` reaches the file instead of raising
-    )
-    drawing.attribs["fill"] = INK      # `fill` inherits: text with none still shows
-    drawing.attribs["font-family"] = SANS
-    if title:
-        drawing.set_desc(title=title)
-    root = drawing.g(transform=f"translate({margin},{margin})")
-
-    # Edges first, so a box always sits over a line rather than under it.
-    gutter_lanes: dict[float, int] = {}
-    below_lanes = 0
+def _edges(schema: dict, boxes: dict) -> list[dict]:
+    """Every foreign key as a pair of points: the parent's key row, where
+    the line leaves, and the child's foreign-key row, where it arrives."""
+    edges = []
     for name, table in schema.items():
         for index, column in enumerate(table["columns"]):
             if not column["references"]:
@@ -205,36 +190,177 @@ def render(schema: dict, title: str | None = None) -> str:
             target = column["references"][1]
             parent_index = next(
                 (i for i, c in enumerate(parent_columns) if c["name"] == target), 0)
-            start = (parent_box["x"] + parent_box["w"],
-                     _row_centre(parent_box, schema[parent], parent_index))
-            end = (child_box["x"], _row_centre(child_box, table, index))
-            meet = (end[0] - 14.4, end[1])   # where the foot's toes converge
+            edges.append({
+                "key": (name, column["name"]),
+                "parent_box": parent_box, "child_box": child_box,
+                "start": (parent_box["x"] + parent_box["w"],
+                          _row_centre(parent_box, schema[parent], parent_index)),
+                "end": (child_box["x"], _row_centre(child_box, table, index)),
+                "reach": child_box["column"] - parent_box["column"],
+            })
+    return edges
 
-            def lane_after(box) -> float:
-                edge = box["x"] + box["w"]
-                gutter_lanes[edge] = gutter_lanes.get(edge, 0) + 1
-                return edge + LANE * gutter_lanes[edge]
 
-            if child_box["column"] - parent_box["column"] <= 1:
-                # Neighbours: out into the gutter between them, along, and in.
-                turn = lane_after(parent_box)
-                points = [start, (turn, start[1]), (turn, end[1]), meet]
-            else:
-                # A reach across a column has no clear gutter to turn in — the
-                # straight run would cross whatever sits between. It drops
-                # below every box instead, travels there, and comes back up in
-                # the gutter immediately before the table it points at.
-                below_lanes += 1
-                floor = boxes_bottom + GAP_Y * 0.5 + LANE * below_lanes
-                out = lane_after(parent_box)
-                back = child_box["x"] - LANE * below_lanes
-                points = [start, (out, start[1]), (out, floor),
-                          (back, floor), (back, end[1]), meet]
-            root.add(drawing.polyline(
-                points=points, fill="none", stroke=INK, stroke_width=1.6,
-                stroke_linejoin="round"))
-            _single_bar(drawing, root, start[0] + 7, start[1])
-            _crows_foot(drawing, root, end[0], end[1], -1)
+def _route(schema: dict, placed: dict, dropped_first: bool = True) -> list[list]:
+    """The polyline for every edge, each in a lane of its own.
+
+    Lanes are handed out by rule rather than in the order edges are met,
+    because the order decides whether two lines cross. In the gutter a line
+    leaves by, the one leaving highest takes the lane furthest out, so
+    no line below has to cross it on the way out. A line that reaches past
+    a column (below) drops under every box; the one furthest out drops
+    least deep, and comes back up furthest from the table it points at,
+    so the lines under the boxes nest rather than cross.
+    `dropped_first` says whether those lines take the lanes nearer the
+    parent or the ones beyond its neighbours'; `_arrange` tries both.
+    """
+    boxes = placed["boxes"]
+    boxes_bottom = placed["height"]
+    edges = sorted(_edges(schema, boxes), key=lambda e: e["key"])
+    dropped = [e for e in edges if e["reach"] > 1]
+    near = [e for e in edges if e["reach"] <= 1]
+
+    # Highest start first: furthest out, shallowest floor, furthest back.
+    dropped.sort(key=lambda e: (e["start"][1], e["key"]))
+    for rank, edge in enumerate(dropped, 1):
+        edge["floor"] = boxes_bottom + GAP_Y * 0.5 + LANE * rank
+    for edge in dropped:
+        sharing = [e for e in dropped if e["child_box"]["x"] == edge["child_box"]["x"]]
+        edge["back"] = (edge["child_box"]["x"] - 14.4
+                        - LANE * sum(1 for e in sharing if e["floor"] >= edge["floor"]))
+
+    # Lanes out of each gutter, nearest the parent first.
+    gutters: dict[float, list] = {}
+    for edge in dropped + near:
+        gutters.setdefault(edge["start"][0], []).append(edge)
+    for edge_x, leaving in gutters.items():
+        falling = [e for e in leaving if e["reach"] > 1]
+        falling.sort(key=lambda e: (-e["start"][1], e["key"]))
+        down = [e for e in leaving if e["reach"] <= 1 and e["end"][1] >= e["start"][1]]
+        up = [e for e in leaving if e["reach"] <= 1 and e["end"][1] < e["start"][1]]
+        down.sort(key=lambda e: (-e["start"][1], e["key"]))
+        up.sort(key=lambda e: (e["start"][1], e["key"]))
+        order = falling + down + up if dropped_first else down + up + falling
+        # The first lane starts clear of the "one" bar drawn just outside
+        # the box, so no line turns a corner on top of it.
+        for lane, edge in enumerate(order, 1):
+            edge["lane"] = edge_x + 7 + LANE * lane
+
+    routes = []
+    for edge in edges:
+        start, end = edge["start"], edge["end"]
+        meet = (end[0] - 14.4, end[1])   # where the foot's toes converge
+        if edge["reach"] <= 1:
+            # Neighbours: out into the gutter between them, along, and in.
+            turn = edge["lane"]
+            points = [start, (turn, start[1]), (turn, end[1]), meet]
+        else:
+            # A reach across a column has no clear gutter to turn in — the
+            # straight run would cross whatever sits between. It drops
+            # below every box instead, travels there, and comes back up in
+            # the gutter immediately before the table it points at.
+            out, floor, back = edge["lane"], edge["floor"], edge["back"]
+            points = [start, (out, start[1]), (out, floor),
+                      (back, floor), (back, end[1]), meet]
+        routes.append(points)
+    return routes
+
+
+def _crossings(routes: list[list]) -> int:
+    """How many times one line crosses or runs along another.
+
+    Two lines leaving the same key row share their first stretch on
+    purpose — that reads as a fork — so an overlap starting from one
+    shared point is not counted.
+    """
+    def segments(points):
+        return list(zip(points, points[1:]))
+
+    count = 0
+    for i, first in enumerate(routes):
+        for second in routes[i + 1:]:
+            for a, b in segments(first):
+                for c, d in segments(second):
+                    count += _meets(a, b, c, d)
+    return count
+
+
+def _meets(a, b, c, d) -> int:
+    horizontal_1, horizontal_2 = a[1] == b[1], c[1] == d[1]
+    if horizontal_1 != horizontal_2:
+        (h1, h2), (v1, v2) = ((a, b), (c, d)) if horizontal_1 else ((c, d), (a, b))
+        x, y = v1[0], h1[1]
+        return int(min(h1[0], h2[0]) < x < max(h1[0], h2[0])
+                   and min(v1[1], v2[1]) < y < max(v1[1], v2[1]))
+    if a == c:
+        return 0
+    axis = 0 if horizontal_1 else 1
+    if a[1 - axis] != c[1 - axis]:
+        return 0
+    low = max(min(a[axis], b[axis]), min(c[axis], d[axis]))
+    high = min(max(a[axis], b[axis]), max(c[axis], d[axis]))
+    return int(high > low)
+
+
+def _arrange(schema: dict) -> tuple[dict, list[list]]:
+    """The layout, and its routes, with the fewest crossing lines.
+
+    Tries every top-to-bottom order of the tables in each column, which is
+    few for the schemas a student writes: three tables in a column is six
+    orders. Past a few thousand it keeps the alphabetical one. A tie keeps
+    the earlier candidate, so alphabetical wins when nothing beats it.
+    """
+    from itertools import permutations, product
+    from math import factorial, prod
+
+    columns = _columns(schema)
+    keys = sorted(columns)
+    if prod(factorial(len(columns[k])) for k in keys) > 2000:
+        candidates = [columns]
+    else:
+        candidates = [
+            dict(zip(keys, (list(order) for order in orders)))
+            for orders in product(*(permutations(columns[k]) for k in keys))
+        ]
+    best = None
+    for candidate in candidates:
+        placed = _layout(schema, candidate)
+        for dropped_first in (True, False):
+            routes = _route(schema, placed, dropped_first)
+            score = _crossings(routes)
+            if best is None or score < best[0]:
+                best = (score, placed, routes)
+    return best[1], best[2]
+
+
+def render(schema: dict, title: str | None = None) -> str:
+    placed, routes = _arrange(schema)
+    boxes = placed["boxes"]
+    # Every edge that has to drop below the boxes needs a lane of its own down
+    # there, and the canvas has to be tall enough to hold them.
+    dropped = sum(1 for points in routes if len(points) > 4)
+    placed["height"] += (GAP_Y + LANE * dropped) if dropped else 0
+    margin = 14
+    drawing = svgwrite.Drawing(
+        size=(f"{placed['width'] + margin * 2:.0f}px",
+              f"{placed['height'] + margin * 2:.0f}px"),
+        viewBox=f"0 0 {placed['width'] + margin * 2:.0f} {placed['height'] + margin * 2:.0f}",
+        debug=False,   # so a `var(--dl-…)` reaches the file instead of raising
+    )
+    drawing.attribs["fill"] = INK      # `fill` inherits: text with none still shows
+    drawing.attribs["font-family"] = SANS
+    if title:
+        drawing.set_desc(title=title)
+    root = drawing.g(transform=f"translate({margin},{margin})")
+
+    # Edges first, so a box always sits over a line rather than under it.
+    for points in routes:
+        root.add(drawing.polyline(
+            points=points, fill="none", stroke=INK, stroke_width=1.6,
+            stroke_linejoin="round"))
+        start, end = points[0], points[-1]
+        _single_bar(drawing, root, start[0] + 7, start[1])
+        _crows_foot(drawing, root, end[0] + 14.4, end[1], -1)
 
     for name, box in boxes.items():
         root.add(drawing.rect(

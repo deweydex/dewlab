@@ -1,5 +1,5 @@
 ---
-title: "What Are the Chances?"
+title: "Probability: simple, compound and conditional"
 year: "2026-2027"
 version: 2026.08.23.2
 covers:
@@ -13,9 +13,7 @@ covers:
     covers: [MIT-5.8]
 ---
 
-# What Are the Chances?
-
-**Programming Design Principles / Maths for IT**
+# Probability: simple, compound and conditional
 
 Probability is the mathematics of uncertainty. It gives us a precise language for talking about how likely things are, and it underpins everything from weather forecasts to medical diagnosis to machine learning. Today we build the foundations, and we will use an approach that is unique to programming: we can *simulate* random events to verify our calculations.
 
@@ -100,7 +98,7 @@ what *not independent* means — the first draw changed the second one.
 
 ### Your turn
 
-Using your `probability` function and the combination functions from *Counting Carefully*, here are five card questions. The reasoning is worth writing down before the computing — it is where the mistakes are visible.
+Using your `probability` function and the combination functions from *Counting: factorials, permutations and combinations*, here are five card questions. The reasoning is worth writing down before the computing — it is where the mistakes are visible.
 
 1. What is the probability of drawing a face card (Jack, Queen, or King)?
 2. What is the probability of drawing a card that is red *and* a face card?

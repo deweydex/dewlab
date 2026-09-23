@@ -1,5 +1,5 @@
 ---
-title: "The Unit Circle"
+title: "The unit circle: sine, cosine and tangent"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
@@ -15,13 +15,11 @@ covers:
     covers: [MIT-4.6]
 ---
 
-# The Unit Circle
-
-**Maths for IT**
+# The unit circle: sine, cosine and tangent
 
 A circle of radius one, centred on the origin. That is the whole subject of this tutorial, and three separate-looking pieces of trigonometry turn out to be three things you can read off it.
 
-At the end of *Lines and Distances* you drew this circle and checked that every point on it really was distance 1 from the center. That check is the only rule everything here rests on.
+At the end of *Straight lines: slope, midpoint and distance* you drew this circle and checked that every point on it really was distance 1 from the center. That check is the only rule everything here rests on.
 
 Sine, cosine, radians and the exact values are usually taught as four things to learn. They are one drawing, described four ways.
 
@@ -329,7 +327,7 @@ id: your-turn-3
 
 There is a third name, and it is not a third coordinate — the point only has two.
 
-**Tangent is the up divided by the across.** And the up divided by the across of a line from the origin is exactly what *Lines and Distances* called the slope.
+**Tangent is the up divided by the across.** And the up divided by the across of a line from the origin is exactly what *Straight lines: slope, midpoint and distance* called the slope.
 
 ```python exec
 id: tangent-which-is-a-slope-1
@@ -380,7 +378,7 @@ One circle, and everything else was a description of it.
 
 **Tangent is a slope**, and it has no value at 90 degrees for the same reason a vertical line has no slope.
 
-Next, [Sine and Cosine Waves](tutorial:sine-and-cosine-waves) takes this circle and unrolls it flat.
+Next, [Sine and cosine waves: amplitude, period and shift](tutorial:sine-and-cosine-waves) takes this circle and unrolls it flat.
 
 In a few sentences, before this tutorial, what did you think sine and cosine were? Has that changed, and if so, when in the tutorial did it change?
 

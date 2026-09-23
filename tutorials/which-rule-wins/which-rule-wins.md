@@ -1,11 +1,11 @@
 ---
-title: "Which rule wins"
+title: "The cascade: which CSS rule wins"
 year: "2026-2027"
 version: 2026.09.22.1
 context_for: [a-rule-and-where-it-lives, variables-and-colour, text-and-units, selectors-and-classes]
 ---
 
-# Which rule wins
+# The cascade: which CSS rule wins
 
 What happens when two CSS rules set the same property on the same
 element? Four pages each meet a piece of the answer: [CSS rules and
