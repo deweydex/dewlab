@@ -153,8 +153,13 @@ leaves the reader something to do with their own thinking rather than a
 fact to accept. Reach for a question before reaching for an assertion
 wherever the reader could plausibly answer it themselves.
 
-**Plain titles.** *Straight lines: slope, midpoint and distance*, not *Coordinate Geometry*. A title
-names what the reader gets, in words they already have.
+**Plain titles.** *Straight lines: slope, midpoint and distance*, not
+*Coordinate Geometry*. A title names what the reader gets, in words they
+already have. The usual shape is the term a student would search for,
+then a colon and what the page does with it: *Inheritance: one class
+built on another*, *Solving equations: linear, quadratic and
+simultaneous*. Titles are in sentence case, and a practice page's title
+is its tutorial's with " — Practice" added (see `DECISIONS_LOG.md` 7.213).
 
 **Define every technical term where it first appears**, and mark it in
 italics the first time it means something particular. The build's
