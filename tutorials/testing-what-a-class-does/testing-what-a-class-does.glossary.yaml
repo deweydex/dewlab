@@ -10,9 +10,9 @@
 # does not surface it — added from a manual read instead, since the whole
 # tutorial teaches it and no earlier PDP or FOOP tutorial defines it
 # (checked term_findings() for "assert" and "traceback" against the whole
-# curriculum; "traceback" is already taught in
-# mit-pdp-maths-prog-integration/when-it-goes-wrong, a FOOP-LO10
-# prerequisite, so it is used here without a repeat entry).
+# curriculum; "traceback" is already taught in reading-an-error-message,
+# in the Programming Foundations series and a FOOP-LO10 prerequisite, so
+# it is used here without a repeat entry).
 entries:
   - term: assert
     kind: keyword

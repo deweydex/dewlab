@@ -1,11 +1,11 @@
 ---
-title: "Making Decisions — Practice"
+title: "Making decisions with if, elif and else — Practice"
 practice_for: making-decisions
 year: "2026-2027"
 version: 2026.09.22.1
 ---
 
-# Making Decisions — Practice
+# Making decisions with if, elif and else — Practice
 
 The answers are hidden until you open them. Before you write an `if`,
 work out which values its condition is True for. When a conditional is
@@ -172,7 +172,7 @@ zero.
 ## Boolean Operators
 
 This cell prints every result of `and` and `or`. It uses a loop, which we
-meet in [Repeating Yourself](tutorial:repeating-yourself). For now, you
+meet in [Repeating steps with loops](tutorial:repeating-yourself). For now, you
 only need its output.
 
 ```python exec
@@ -217,7 +217,7 @@ everything, the operator is often the part that is wrong.
 contains a digit. Write the condition. You have `password`, and a
 variable `has_digit` that is `True` or `False`. (`len(password)` gives
 the number of characters in `password`. We meet `len()` properly in
-[Lists and Sequences](tutorial:lists-and-sequences).)
+[Lists: keeping many values in order](tutorial:lists-and-sequences).)
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -301,7 +301,7 @@ the division by zero. Swap the two conditions, and the program crashes.
 These problems come from the shared problem bank, written again for this
 page. The answers are written as small functions, using `def` and
 `return`. We meet these properly in
-[Lists and Sequences](tutorial:lists-and-sequences). For now, you can
+[Writing your own functions](tutorial:writing-your-own-functions). For now, you can
 read `def opposite_signs(a, b):` as "here is a rule called
 `opposite_signs` that takes two values", and `return` as "give back this
 answer". You can also answer each problem with an ordinary `if`.
@@ -399,10 +399,10 @@ for v in [7, -3, 0, 0.5, -3.5]:
     print(classify(v))
 ```
 
-Two new pieces of Python appear here. A string with `f` in front of it,
-such as `f"{value} is natural"`, puts the value of whatever is inside
-`{ }` into the text. The last two lines use a loop to try five values in
-turn; we meet loops in [Repeating Yourself](tutorial:repeating-yourself).
+The strings with `f` in front are f-strings, from
+[Variables, data types and text](tutorial:storing-and-computing). The last two
+lines use a loop to try five values in turn; we meet loops in
+[Repeating steps with loops](tutorial:repeating-yourself).
 
 The families sit one inside the next, and that gives the code its shape.
 Each family contains the ones before it, so the first test that comes

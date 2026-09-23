@@ -1,180 +1,45 @@
 ---
-title: "When It Goes Wrong"
+title: "Finding bugs in bigger programs"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.22.1
 covers:
-  three-kinds-of-wrong:
+  errors-from-lists-and-dictionaries:
     covers: [PDP-LO9]
-  errors-python-catches-before-it-starts:
-    covers: [PDP-LO9]
-  errors-that-happen-while-it-runs:
-    covers: [PDP-LO9]
-  reading-a-traceback:
+  tracebacks-through-several-functions:
     covers: [PDP-LO9]
   the-dangerous-kind:
     covers: [PDP-LO9]
+  debugging-habits:
+    covers: [PDP-LO9]
+    touches: [PDP-LO10]
 ---
 
-# When It Goes Wrong
+# Finding bugs in bigger programs
 
-By now, you have written code that did not work. Everyone has, all the
-time, and it never stops happening. What changes with experience is how
-long it takes to find out why.
+In [Reading an error message](tutorial:reading-an-error-message), we
+broke small programs on purpose. We met the three kinds of wrong: syntax
+errors, runtime errors and logical errors. We learned to read a short
+traceback from the bottom. And we saw that the line that failed is not
+always the line that is responsible.
 
-That is what this page is about, and it may be the most useful hour in
-the whole series. An error message is your computer trying to help you.
-Most people never learn to read one. They see a wall of red text, feel a
-moment of panic, and start changing things at random.
+Since then, our programs have grown. They repeat steps with loops, keep
+values in lists and dictionaries, and split their work into functions.
+Everything on that page still holds. But bigger programs bring a few new
+errors, longer tracebacks, and logical errors that hide much better.
 
-The red text describes what happened, and where. It is hard to read at
-first, for three reasons:
+That is what this page is about. Most cells below are meant to fail, or
+to give a wrong answer. Finding out why is the exercise.
 
-1. It is written in an unfamiliar style.
-2. It puts the most useful line at the bottom.
-3. It often points a little to the side of the real problem.
+If a message makes your heart sink, that is normal. It happens to people
+who have programmed for thirty years. An error is a fact about this line,
+on this run. It is not a fact about whether you can program.
 
-We can learn to handle all three.
+## Errors From Lists and Dictionaries
 
-So on this page, we break things on purpose. Every cell below is meant
-to fail. Reading its failure is the exercise.
+A list holds values in order, and a dictionary holds values under names.
+Both give us new ways to ask for something that is not there.
 
-We might feel frustrated here, or unsure what to do next. That is
-something to expect, not something to fix. Every profession with this
-much left to discover feels this way sometimes, and so does every real
-attempt to learn something new. We do not always want to stop something
-from breaking. Sometimes we need it to break, to see how it works.
-
-An error here is a fact about this line, on this run. It is not a fact
-about whether you can learn to program.
-
-**A note before we start.** Some cells on this page use parts of Python
-we have not met yet: lists, such as `[85, 90, 78]`; functions made with
-`def`; and a `for` loop. You do not need to understand them fully to read
-their errors. We meet loops in
-[Repeating Yourself](tutorial:repeating-yourself), and lists and
-functions in [Lists and Sequences](tutorial:lists-and-sequences).
-
-## Three Kinds of Wrong
-
-Before we look at the messages, it helps to know that there are three
-kinds of error. Each kind fails in a different way, and we find each
-kind in a different way. Knowing which kind you have will save you a lot
-of time.
-
-A *syntax error* is code that is not valid Python at all. It is like a
-sentence with no verb. Python notices it before it runs a single line,
-so nothing happens. That is frustrating, but it is also the best case,
-because you find out straight away.
-
-A *runtime error* is valid Python that tries to do something
-impossible, such as dividing by zero, or asking for the tenth item of a
-list of three. The program runs until it reaches that line. Then it
-stops, and it tells you exactly where it stopped.
-
-A *logical error* is valid code that runs to the end with no complaint
-and gives you the wrong answer. Nothing is red. Nothing stops. This is
-the dangerous kind, and we come back to it at the end of the page.
-
-| Kind | What happens | Who catches it |
-|---|---|---|
-| syntax error | nothing runs | Python, before it starts |
-| runtime error | the program stops partway | Python, while it runs |
-| logical error | the program finishes with a wrong answer | only you |
-
-## Errors Python Catches Before It Starts
-
-Run this cell. It will not work, and that is the point. Read what comes
-back before you read on.
-
-```python exec
-id: errors-python-catches-before-it-starts-1
-hours = 12
-if hours > 10
-    print("That is a long day")
-```
-
-What is Python complaining about? Can you find the missing colon? Now
-look for three things in the message:
-
-1. the **line number**, which tells you where to look first
-2. **the line itself**, often with a marker under one position in it
-3. the **kind** of problem, here `SyntaxError`, with a short
-   description
-
-In recent versions of Python, these descriptions have become much more
-helpful. They often name the exact fix.
-
-Now the tricky part. The marker often points *after* the real error.
-Python reads from left to right, and it complains at the moment it
-becomes sure that something is wrong. That can be a character or two
-later, or even on the next line. If the marked spot looks fine, look at
-what comes just before it.
-
-### Your turn
-
-Here are four broken lines. Can you fix them, one at a time and in
-order? For each one:
-
-1. Run it.
-2. Read the message. How is it different from the last one?
-3. Fix the line.
-4. Run it again.
-
-(The first and third cells use `def`, which makes a function. We meet
-`def` properly later. For now, the error is what matters.)
-
-```python exec
-id: your-turn-1
-# 1. A misspelled keyword
-deff greet(name):
-    return "Hello, " + name
-```
-
-```python exec
-id: your-turn-2
-# 2. A string that is never closed
-name = "Alice
-print(name)
-```
-
-```python exec
-id: your-turn-3
-# 3. Indentation that does not line up
-def check():
-print("checking")
-```
-
-```python exec
-id: your-turn-4
-# 4. A bracket that is opened and not closed
-result = (5 + 3
-print(result)
-```
-
-Did the third one say `IndentationError`? That is a special kind of
-`SyntaxError`, for lines that are not indented the way Python expects.
-
-Look again at the fourth one. Python is doing something clever there.
-When a bracket is opened and not closed, Python keeps reading past it,
-looking for the closing bracket. It only gives up further along, so the
-error shows up well after the place where the bracket was opened. Older
-versions of Python reported the error where they gave up, which was
-often a line that looked completely fine.
-
-Modern Python tracks the bracket back to where it was opened, and says
-so: *'(' was never closed*, pointing at the opening bracket. That is a
-big improvement. Older versions of Python, and other languages, will
-not always do this for you.
-
-## Errors That Happen While It Runs
-
-A runtime error is different in one important way: your code was fine,
-but the data was not. The program starts, does some work, and stops
-when it reaches something impossible.
-
-This cell uses a list, `scores`. A list holds several values in order,
-and `scores[0]` means the first value in it. What do you think happens
-when it asks for the tenth?
+What do you think happens when this cell asks for the tenth score?
 
 ```python exec
 id: errors-that-happen-while-it-runs-1
@@ -183,21 +48,28 @@ print("The first score is", scores[0])
 print("The tenth score is", scores[10])
 ```
 
-The first `print` worked. The second did not. Every runtime error has
-this shape: some of your program ran before it stopped.
+The first `print` worked. The second did not. As with every runtime
+error, some of the program ran before it stopped.
 
-Here are the runtime errors you will meet most often, and what each one
-is telling you.
+A dictionary fails in a similar way. What happens here?
+
+```python exec
+id: errors-from-lists-and-dictionaries-1
+marks = {"Aoife": 72, "Ben": 65}
+print("Aoife scored", marks["Aoife"])
+print("Cara scored", marks["Cara"])
+```
+
+Here are the runtime errors that come with the tools we have met since
+[Reading an error message](tutorial:reading-an-error-message), and what
+each one is telling you.
 
 | Error | What it means |
 |---|---|
-| `ZeroDivisionError` | You divided by zero. This nearly always means a count came out as zero when you expected it not to. |
-| `TypeError` | You did something to a value that its type does not allow. Adding a number to a string is the classic example. |
-| `ValueError` | The type is right, but the content is wrong. `int("hello")` gives `int` a string, which is what `int` wants, but not a string that means anything as a number. |
 | `IndexError` | You asked for a position that does not exist in a list. |
-| `KeyError` | You asked for a name that does not exist in a dictionary. (A dictionary is a way of storing values under names. We meet it later in the course.) |
-| `NameError` | You used a variable that was never created, or that was created somewhere this code cannot see, or whose name is misspelled. |
+| `KeyError` | You asked for a key that does not exist in a dictionary. The message shows the key you asked for. |
 | `AttributeError` | You asked a value for something it does not have. This often means the value is not the type you thought it was. |
+| `NameError` | We met this one before. It also happens when a variable was created inside a function, and the code that uses it is outside that function. |
 
 ### Your turn
 
@@ -205,38 +77,64 @@ Each cell below raises one of the errors above. For each one:
 
 1. Before you run it, decide which error it will raise.
 2. Run it. Were you right?
-3. If not, work out what you expected the values to be.
+3. Read the last line of the message. What does it tell you that you
+   did not know?
 
 ```python exec
-id: your-turn-5
-number = "10"
-print(number + 2)
+id: errors-from-lists-and-dictionaries-2
+names = ["Aoife", "Ben", "Cara"]
+print(names[len(names)])
 ```
 
 ```python exec
-id: your-turn-6
-count = int("not a number")
-print(count)
+id: errors-from-lists-and-dictionaries-3
+stock = {"apples": 12, "pears": 5}
+print(stock["Apples"])
 ```
 
 ```python exec
-id: your-turn-7
-print(total_marks)
+id: errors-from-lists-and-dictionaries-4
+scores = [85, 90]
+scores.add(78)
+print(scores)
 ```
 
-Look at the middle one. `int("10")` works, and `int("not a number")`
-does not, but both are strings. The type is fine, and the content is
-not. That is exactly the difference between `TypeError` and
-`ValueError`, and it is the pair people mix up most.
+```python exec
+id: errors-from-lists-and-dictionaries-5
+def total_price(price, quantity):
+    total = price * quantity
+    return total
 
-## Reading a Traceback
 
-The next cell has one function that calls another. (A function is a
-named piece of code that we can run again and again. `def` makes one.)
-When an error happens inside a function that was called by another
-function, Python shows you the whole chain. That record is a
-*traceback*: it shows how the program got to the place where things
-went wrong.
+total_price(4, 3)
+print(total)
+```
+
+Look at the first one. The list has three names, so `len(names)` is 3.
+But the positions are 0, 1 and 2. The last position is always one less
+than the length. This mistake is so common that it has a name: an
+*off-by-one error*.
+
+In the second one, the key `"Apples"` has a capital A, and the key in
+the dictionary does not. To Python, those are two different keys. The
+message shows the key you asked for, so compare it letter by letter with
+the keys you have.
+
+In the third one, the message says `'list' object has no attribute
+'add'`. A list has no `add` method. To put a value at the end of a list,
+we use `append`.
+
+In the fourth one, `total` exists only inside `total_price`. The
+function gives back its value, but this code never stores it anywhere.
+`result = total_price(4, 3)` would keep it.
+
+## Tracebacks Through Several Functions
+
+In [Reading an error message](tutorial:reading-an-error-message), every
+traceback had one step, in the main part of the program. Now the next
+cell has one function that calls another. When an error happens inside
+a function that was called by another function, Python shows you the
+whole chain, one step for each call.
 
 ```python exec
 id: reading-a-traceback-1
@@ -256,13 +154,17 @@ The first call worked. The second call produced several lines of
 traceback, and they come in a deliberate order.
 
 **Read it from the bottom.** The last line names the error and
-describes it. That is what went wrong. Above it, the lines run from the
+describes it. That is what went wrong. Above it, the steps run from the
 outermost call down to the innermost one. So the place where the error
 happened is nearest the bottom.
 
 This order confuses a lot of people. The top of a traceback is where
 your program started, and the bottom is where it broke. When someone
 sends you an error and asks what it means, look at the last line first.
+
+Each step names a place. `in <module>` is the main part of the program,
+as before. `in report` and `in average` mean the line is inside that
+function.
 
 Now look closer. Where is the error? It is in `average`, on the
 division. But is `average` wrong? It divides by the length of the list,
@@ -320,7 +222,10 @@ print(split_bill(60, []))
 
 ## The Dangerous Kind
 
-Every error so far has announced itself. What about this one?
+In [Reading an error message](tutorial:reading-an-error-message), a
+logical error hid in one line of arithmetic. In bigger programs, logical
+errors hide much better: inside a function, a loop, or a condition that
+somebody wrote weeks ago. What is wrong here?
 
 ```python exec
 id: the-dangerous-kind-1
@@ -372,9 +277,8 @@ print("Predicted mark:", prediction)
 **This is why we check answers we already know.** Before you trust a
 function on data you cannot check, give it data you can check. The
 average of 80, 90 and 70 is 80. If your function says 81, you have found
-something. This habit is often worth more than any debugging tool.
-[Building Reusable Tools](tutorial:building-reusable-tools) takes it
-further, into testing code properly.
+something. We wrote test functions for exactly this in
+[Designing and testing good functions](tutorial:building-reusable-tools).
 
 ### Your turn
 
@@ -411,34 +315,145 @@ set of numbers that few people think to test. The second one depends on
 which value you meant to put where. The code cannot answer that for
 you, so its mistake is hard to see.
 
+## Debugging Habits
+
+A mistake in a program is often called a *bug*. *Debugging* is finding
+the bugs in a program and fixing them. When a program gives a wrong
+answer and no error, where do we start? Two habits help more than any
+others.
+
+**The first habit: print the values in the middle.** This function
+should add up some prices, then take off a discount. The prices add up
+to 60, and 10% off 60 is 54. What does it print?
+
+```python exec
+id: debugging-habits-1
+def shop_total(prices, discount):
+    total = 0
+    for price in prices:
+        total = price
+    return total - total * discount
+
+
+print(shop_total([10, 20, 30], 0.1))
+```
+
+The answer is wrong, but where does it go wrong? We cannot see inside
+the loop. So let's make the loop tell us. The next cell is the same
+function, with one extra `print`.
+
+```python exec
+id: debugging-habits-2
+def shop_total(prices, discount):
+    total = 0
+    for price in prices:
+        total = price
+        print("after adding", price, "the total is", total)
+    return total - total * discount
+
+
+print(shop_total([10, 20, 30], 0.1))
+```
+
+Now we can see it. After 10 the total is 10, which is right. After 20
+it should be 30, but it is 20. The loop replaces the total each time,
+when it should add to it. The line should be `total = total + price`.
+
+Give each `print` a label, as this one does. A column of bare numbers is
+hard to read. When the bug is fixed, take the extra `print` lines out
+again.
+
+**The second habit: test the small pieces.** A long function can go
+wrong in many places. Two short functions, each tested on its own, can
+only go wrong in two. Here is the same work split into two pieces:
+
+```python exec
+id: debugging-habits-3
+def add_up(prices):
+    total = 0
+    for price in prices:
+        total = total + price
+    return total
+
+
+def apply_discount(amount, discount):
+    return amount - amount * discount
+
+
+# Test each piece on its own, with answers we know.
+print(add_up([10, 20, 30]), "should be 60")
+print(apply_discount(100, 0.1), "should be 90")
+print(apply_discount(add_up([10, 20, 30]), 0.1), "should be 54")
+```
+
+Each test uses numbers we can check in our heads. If a piece fails its
+test, we know which piece to look at. If both pieces pass, and the whole
+program still goes wrong, the bug is in how the pieces are joined.
+
+### Your turn
+
+This program gives each student a grade from the average of their
+marks. A grade of Distinction needs 70 or more, Merit needs 50 or more,
+and Pass needs 40 or more. Something is wrong.
+
+1. Work out each student's average and grade by hand.
+2. Run the cell. Which results are wrong?
+3. Test `average` on its own, with a list whose average you know.
+4. Test `grade` on its own, with 75, 55, 45 and 30.
+5. Which function has the bug? Fix it, and run the cell again.
+
+```python exec
+id: debugging-habits-4
+def average(marks):
+    total = 0
+    for mark in marks:
+        total = total + mark
+    return total / len(marks)
+
+
+def grade(mark):
+    if mark >= 40:
+        return "Pass"
+    elif mark >= 50:
+        return "Merit"
+    elif mark >= 70:
+        return "Distinction"
+    else:
+        return "Fail"
+
+
+def student_result(name, marks):
+    return name + ": " + grade(average(marks))
+
+
+print(student_result("Aoife", [72, 68, 80]))
+print(student_result("Ben", [45, 50, 40]))
+print(student_result("Cara", [30, 35, 20]))
+```
+
 ## Reflection
 
-There are three kinds of wrong, and we find each one in a different way.
+Bigger programs bring the same three kinds of wrong, in new places.
 
-**Syntax errors** stop the program before it starts. Read the line
-number, look just before the marked spot, and expect an unclosed bracket
-to be reported late.
+**New runtime errors** come with new tools. An `IndexError` asks for a
+position a list does not have, and it is very often off by one. A
+`KeyError` asks for a key a dictionary does not have, and the message
+shows the key, so check its spelling and its capitals.
 
-**Runtime errors** stop the program partway through. The last line of
-the traceback says what happened. The lines above say how the program
-got there. And the line that failed is often not the line that is
-responsible.
+**Long tracebacks** have one step for each function call. Read the last
+line first. Then read upwards to see how the program got there. The
+function where it broke is often correct, and the bad value came from a
+line higher up.
 
-**Logical errors** do not stop the program at all. Only one thing will
-find them for you: checking against an answer you already know. That is
-a habit you build, more than a technique you learn.
+**Logical errors** hide better in bigger programs. Check against answers
+you already know, and test the exact boundary of every condition.
 
-There is one more thing to say, and it is about the feeling more than
-the technique. An error message is the most exact and most patient help
-you will get from anything all day. It gives an exact place, an exact
-kind of error, and often a description of the fix. It is not a
-telling-off. Reading one calmly is a real skill. You can practise it on
-purpose, the way this page did: by breaking things when nothing is at
-stake.
+**Debugging habits** turn a hunt into a search. Print the values in the
+middle, with labels, to see where they stop being right. Test each small
+piece on its own, so that a failing test points at one piece.
 
-In a few sentences: which of the three kinds do you expect to give you
-the most trouble? What could you do while you write code to catch it
-earlier?
+In a few sentences: think of a bug you have met in your own code on an
+earlier page. Which of these habits would have found it fastest?
 
 ## Where to Read More
 

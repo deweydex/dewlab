@@ -1,11 +1,11 @@
 ---
-title: "Repeating Yourself — Practice"
+title: "Repeating steps with loops — Practice"
 practice_for: repeating-yourself
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Repeating Yourself — Practice
+# Repeating steps with loops — Practice
 
 The answers are hidden until you open them. Before you write any loop
 on this page, ask yourself three questions:
@@ -159,7 +159,10 @@ point.
 </details>
 
 **8.** Find the largest number in `[3, 17, 4, 22, 8]` with a loop,
-without using `max()`.
+without using `max()`. The square brackets make a *list*, which we meet
+properly in [Lists: keeping many values in order](tutorial:lists-and-sequences).
+For now, `for n in numbers:` takes each number in turn, and
+`numbers[0]` is the first one.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -279,7 +282,7 @@ by 100?
 
 Two nested loops of n steps each do n² steps. That squaring is what
 separates a fast algorithm from a slow one later, in
-[Putting Things in Order](tutorial:putting-things-in-order). It is also
+[Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order). It is also
 why a sort that compares every pair of items struggles on a large list.
 
 </details>
@@ -391,8 +394,8 @@ print(total)
 ```
 
 This answer uses `def` to make a function, `is_prime`, and `return` to
-give back its answer. We meet these in
-[Lists and Sequences](tutorial:lists-and-sequences). The line
+give back its answer. We meet these on the next page,
+[Writing your own functions](tutorial:writing-your-own-functions). The line
 `total, found, n = 0, 0, 1` sets three variables at once.
 
 There are two things to notice here:

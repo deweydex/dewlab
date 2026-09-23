@@ -1,5 +1,5 @@
 ---
-title: "First Steps"
+title: "Algorithms, pseudocode and your first Python"
 year: "2026-2027"
 version: 2026.09.22.1
 covers:
@@ -11,7 +11,7 @@ covers:
     covers: [PDP-LO4]
 ---
 
-# First Steps
+# Algorithms, pseudocode and your first Python
 
 Welcome. This is the first programming page, and everyone starts here.
 You do not need to know anything about computers or maths to begin.
@@ -128,7 +128,7 @@ Step 3 is different from the others. "While the water has not boiled,
 wait" repeats the waiting until the water boils. This is a *loop*. A loop
 is a step, or a group of steps, that repeats until a condition is met.
 We will write loops in Python in
-[Repeating Yourself](tutorial:repeating-yourself).
+[Repeating steps with loops](tutorial:repeating-yourself).
 
 Programming is writing algorithms carefully enough for a computer to
 follow them. A computer is very fast, but it cannot guess what you meant.
@@ -168,7 +168,7 @@ DISPLAY the result
 
 Here is the same plan in Python. The cell uses two names, `celsius` and
 `fahrenheit`, to hold numbers. The next page,
-[Storing and Computing](tutorial:storing-and-computing), explains how
+[Variables, data types and text](tutorial:storing-and-computing), explains how
 names like these work.
 
 What do you expect 20 degrees Celsius to be in Fahrenheit? Run the cell
@@ -294,7 +294,7 @@ On this page we have:
 - used pseudocode to plan before writing code
 
 That is a good start. On the next page,
-[Storing and Computing](tutorial:storing-and-computing), we will learn
+[Variables, data types and text](tutorial:storing-and-computing), we will learn
 about *variables*: how to store information, and how to work with
 different types of data. We will also start to explore the number
 systems that computers use.

@@ -1,8 +1,8 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
 # "modular design"/"modular programming" is not repeated here — it was
-# already introduced in lists-and-sequences.glossary.yaml, earlier in this
-# series.
+# already introduced in writing-your-own-functions.glossary.yaml, earlier in
+# this series.
 entries:
   - term: docstring
     kind: concept

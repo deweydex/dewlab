@@ -3,26 +3,6 @@ entries:
   - term: search problem
     kind: concept
     definition: The search problem is the task of finding one item in a collection, such as one value in a list.
-  - term: pure function
-    kind: concept
-    definition: >
-      A pure function is a function whose output depends only on its
-      inputs. The same inputs always give the same output, and nothing
-      outside the function, such as random numbers, changes the answer.
-      Pure functions are the easiest kind to understand, test and trust.
-  - term: scope, local scope, global scope
-    kind: concept
-    definition: >
-      A variable's scope is the part of the program where it exists. A
-      variable created inside a function has local scope: it exists only
-      while that function is running, so each function has its own
-      workspace. A variable created outside any function has global scope:
-      it can be read from anywhere. Passing values in as parameters is
-      usually the better habit.
-  - term: multiple return values
-    kind: concept
-    definition: A function can return more than one value at once, with commas between them. The code that calls it can unpack them the same way.
-    example: "def example():\n    return 10, 20\n\na, b = example()"
   - term: linear search
     kind: concept
     definition: Linear search is a way of searching that checks each element in turn, from the start, until it finds the target or reaches the end of the list. It works on data in any order.

@@ -1,11 +1,11 @@
 ---
-title: "Putting Things in Order — Practice"
+title: "Sorting a list: bubble, insertion and selection sort — Practice"
 practice_for: putting-things-in-order
 year: "2026-2027"
 version: 2026.08.23.1
 ---
 
-# Putting Things in Order — Practice
+# Sorting a list: bubble, insertion and selection sort — Practice
 
 The answers are hidden in folds under each problem. Try tracing the
 short ones by hand before you run anything. To *trace* a sort is to
@@ -94,6 +94,11 @@ number.
 </details>
 
 ## Counting
+
+The last line of this cell uses an f-string, from
+[Variables, data types and text](tutorial:storing-and-computing). Inside it,
+`{size:<4}` pads the number with spaces to four characters wide, so the
+columns line up.
 
 ```python exec
 id: counting-1

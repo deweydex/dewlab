@@ -1,5 +1,5 @@
 ---
-title: "Putting Things in Order"
+title: "Sorting a list: bubble, insertion and selection sort"
 year: "2026-2027"
 version: 2026.09.22.1
 covers:
@@ -15,9 +15,9 @@ covers:
     touches: [MIT-6.8]
 ---
 
-# Putting Things in Order
+# Sorting a list: bubble, insertion and selection sort
 
-In [Finding Things](tutorial:finding-things) we saw that binary search is
+In [Searching a list: linear and binary search](tutorial:finding-things) we saw that binary search is
 very fast, but it needs sorted data. So how do we sort a list?
 
 Sorting is one of the most studied problems in computer science. It is
@@ -335,7 +335,7 @@ shell sort has become an ordinary insertion sort. But by then the list
 is nearly in order, and insertion sort is at its fastest on a list that
 is nearly in order. It is a satisfying one to build.
 
-**Recursive binary search.** In [Finding Things](tutorial:finding-things)
+**Recursive binary search.** In [Searching a list: linear and binary search](tutorial:finding-things)
 we wrote binary search with a `while` loop. Can you rewrite it so that
 the function calls itself, each time with a smaller range? A function
 that calls itself is using *recursion*. Recursion is a neat way to write
@@ -368,7 +368,7 @@ id: optional-challenges-2
 
 We have now built three sorting algorithms from nothing. We also know how
 to compare how fast they are, by counting the steps they take. Together
-with the search algorithms from [Finding Things](tutorial:finding-things),
+with the search algorithms from [Searching a list: linear and binary search](tutorial:finding-things),
 we now have a good set of tools for putting data in order and finding
 things in it.
 

@@ -16,14 +16,17 @@ contents:
   tutorials:
   - first-steps
   - storing-and-computing
-  - how-we-got-here
   - making-decisions
-  - when-it-goes-wrong
+  - reading-an-error-message
   - repeating-yourself
+  - writing-your-own-functions
   - lists-and-sequences
+  - looking-things-up-by-name
   - finding-things
   - putting-things-in-order
   - building-reusable-tools
+  - when-it-goes-wrong
+  - how-we-got-here
 - title: Data, Chance and Logic
   tutorials:
   - counting-carefully

@@ -1,0 +1,65 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# "function" on its own is already in first-steps.glossary.yaml, as a named
+# tool you use. This page is where the reader first writes one, so the
+# entries below cover def and what a function is made of.
+entries:
+  - term: def, call
+    kind: keyword
+    definition: >
+      def defines a function: a named block of code that you can use again
+      and again. Defining a function does not run it. To call a function
+      means to run it, by writing its name followed by brackets.
+    example: "def greet(name):\n    print(\"Hello, \" + name)\n\ngreet(\"Ada\")"
+  - term: function body
+    kind: concept
+    definition: The function body is the indented code under def. It runs each time the function is called.
+  - term: parameter, argument
+    kind: concept
+    definition: >
+      A parameter is a function's own placeholder name for a value it
+      expects. An argument is the actual value you pass in when you call
+      the function. Python matches arguments to parameters by their
+      position.
+    example: 'describe_pet("Rex", "dog")'
+  - term: return
+    kind: keyword
+    definition: >
+      return sends a value back to the code that called the function, so
+      that the value can be stored or used in more calculations. It also
+      ends the function straight away. A function can return more than one
+      value, with commas between them.
+    example: "def square(n):\n    return n ** 2"
+  - term: None
+    kind: concept
+    definition: >
+      None is Python's value for "no value here". A function without a
+      return gives back None, so a function that only prints its answer
+      gives back None.
+  - term: pure function
+    kind: concept
+    definition: >
+      A pure function is a function whose output depends only on its
+      inputs. The same inputs always give the same output, and nothing
+      outside the function, such as a global variable or random numbers,
+      changes the answer. Pure functions are the easiest kind to
+      understand, test and trust.
+  - term: domain
+    kind: concept
+    definition: The domain of a function is the set of inputs it is meant to take. The domain of a function that divides by its input is every number except 0.
+  - term: inverse
+    kind: concept
+    definition: A function's inverse is a function that undoes it.
+    example: "fahrenheit_to_celsius(celsius_to_fahrenheit(20)) gives 20.0"
+  - term: scope, local scope, global scope
+    kind: concept
+    definition: >
+      A variable's scope is the part of the program where it exists. A
+      variable created inside a function, or a parameter, has local scope:
+      it exists only while that function is running, so each function has
+      its own workspace. A variable created outside any function has
+      global scope: it can be read from anywhere. Passing values in as
+      parameters is usually the better habit.
+  - term: modular programming
+    kind: concept
+    definition: Modular programming is building a large program out of small pieces, each one tested on its own. Functions are the first tool for it.

@@ -90,3 +90,16 @@ entries:
     kind: function
     definition: Changes a number into its hexadecimal form, as text.
     example: "hex(42)  # '0x2a'"
+  - term: f-string
+    kind: concept
+    definition: >
+      An f-string is a string with the letter f before the opening quote.
+      Python replaces each name in curly brackets with that variable's
+      value, so you do not need str() or +.
+    example: "f\"{celsius} degrees Celsius\""
+  - term: ":.2f"
+    kind: operator
+    definition: >
+      Shows a number in an f-string with 2 decimal places. Change the 2 to
+      show a different number of places. The value itself is not changed.
+    example: "f\"{miles:.2f} miles\"  # '26.22 miles'"

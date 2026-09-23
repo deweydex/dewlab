@@ -176,8 +176,11 @@ groups:
       - first-steps-cm
       - storing-and-computing
       - lists-and-sequences
+      - looking-things-up-by-name
       - repeating-yourself
+      - writing-your-own-functions
       - making-decisions
+      - reading-an-error-message
       - finding-things
       - putting-things-in-order
       - three-ways-to-make-change

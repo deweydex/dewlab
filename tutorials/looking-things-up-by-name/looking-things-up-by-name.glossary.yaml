@@ -1,0 +1,41 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# KeyError is left out: the error table in when-it-goes-wrong (or the page
+# that takes that table in the reorder) already defines it. None is used
+# here only in passing, as what .get() gives back with no default.
+entries:
+  - term: dictionary
+    kind: concept
+    definition: >
+      A dictionary is a collection of pairs, written inside curly
+      brackets. Each pair joins a key to a value, and you look a value up
+      by its key.
+    example: "prices = {\"tea\": 2.5, \"coffee\": 3.2}"
+  - term: key, value
+    kind: concept
+    definition: >
+      A key is the name you look something up by in a dictionary. A value
+      is what is stored under that key. Each key appears only once in a
+      dictionary.
+    example: "prices[\"coffee\"]  # 3.2"
+  - term: in
+    kind: operator
+    definition: >
+      Checks whether a key is in a dictionary, and gives True or False. It
+      checks the keys, not the values. not in gives the opposite answer.
+    example: "\"tea\" in prices  # True"
+  - term: ".items()"
+    kind: function
+    definition: Gives each pair of a dictionary as a key and a value together, so a loop can use both.
+    example: "for name, mark in marks.items():"
+  - term: ".get(), default"
+    kind: function
+    definition: >
+      Looks up a key, and gives back a default value if the key is not
+      there. A default is the value you choose to get when nothing else is
+      there. With no default, .get() gives back None.
+    example: "prices.get(\"cake\", 0)  # 0"
+  - term: ".split()"
+    kind: function
+    definition: Breaks a string into a list of words, cutting it wherever there is a space.
+    example: "\"the cat sat\".split()  # ['the', 'cat', 'sat']"

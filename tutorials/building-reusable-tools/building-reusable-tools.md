@@ -1,5 +1,5 @@
 ---
-title: "Building Reusable Tools"
+title: "Designing and testing good functions"
 year: "2026-2027"
 version: 2026.09.22.1
 covers:
@@ -15,7 +15,7 @@ covers:
     covers: [PDP-LO10]
 ---
 
-# Building Reusable Tools
+# Designing and testing good functions
 
 In the tutorials so far, we learned to write functions, and then used
 them to build algorithms. On this page we think more carefully about how
@@ -25,9 +25,9 @@ designed well solves only one problem, once.
 
 This page is about the craft of writing good functions. It builds on the
 idea of modular programming from
-[Lists and Sequences](tutorial:lists-and-sequences). Programmers also
-call this modular design: building large programs from small, separate
-pieces, each one well tested.
+[Writing your own functions](tutorial:writing-your-own-functions).
+Programmers also call this modular design: building large programs from
+small, separate pieces, each one well tested.
 
 On this page we:
 
@@ -80,7 +80,9 @@ be there.
 ## Functions Calling Functions
 
 Modular design becomes really useful when functions use other functions
-as building blocks.
+as building blocks. We did this in a small way in
+[Writing your own functions](tutorial:writing-your-own-functions), when
+`hypotenuse` used `sum_of_squares`. Here the pieces are bigger.
 
 The next function works out the *standard deviation* of a list of
 numbers. The standard deviation is a measure of how spread out the
@@ -193,7 +195,8 @@ id: your-turn-4
 ## Variable Scope Revisited
 
 Our functions now call other functions, so let's check that we
-understand scope, which we met in [Finding Things](tutorial:finding-things).
+understand scope, which we met in
+[Writing your own functions](tutorial:writing-your-own-functions).
 Each function has its own workspace. The variables created inside a
 function disappear when the function finishes.
 
@@ -318,9 +321,11 @@ we write functions:
 These habits are the difference between code that works once and code
 that people can rely on.
 
-If your course goes on to counting, probability and statistics, we use
-these habits there to build more tools. Each one is a function with a
-docstring and tests, and each one joins our growing toolkit.
+Next, [Finding bugs in bigger programs](tutorial:when-it-goes-wrong)
+puts these habits to work when something does go wrong. If your course
+goes on to counting, probability and statistics, we use them there too,
+to build more tools. Each one is a function with a docstring and tests,
+and each one joins our growing toolkit.
 
 What feels different about thinking of functions as *tools*, and not as
 *answers to homework problems*?

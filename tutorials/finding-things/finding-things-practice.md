@@ -1,102 +1,19 @@
 ---
-title: "Finding Things — Practice"
+title: "Searching a list: linear and binary search — Practice"
 practice_for: finding-things
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.22.1
 ---
 
-# Finding Things — Practice
+# Searching a list: linear and binary search — Practice
 
 The answers are hidden in folds under each problem. Several problems ask
 you to count comparisons, and not to write code. Those are the ones to
 try on paper first.
 
-## Scope
-
-```python exec
-id: scope-1
-count = 0
-
-def bump():
-    count = 10          # a new, local count
-    return count
-
-
-print(bump(), count)
-```
-
-**1.** What does the cell above print? Why is `count` still 0 afterwards?
-
-<details class="dl-answer"><summary>answer</summary>
-
-`10 0`.
-
-The line `count = 10` inside the function created a *new* variable. That
-variable exists only while the function is running. An assignment inside
-a function never changes a variable outside it, unless you use the word
-`global`. If you find you need `global`, that is usually a sign that the
-function should return a value instead.
-
-</details>
-
-**2.** What does this print?
-
-```python
-def add_item(items):
-    items.append("new")
-
-
-things = ["a", "b"]
-add_item(things)
-print(things)
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-`['a', 'b', 'new']`.
-
-This looks like it goes against the previous question, but it does not.
-The function did not *assign* anything to `items`. It changed the list
-that `items` refers to, and that is the same list that `things` refers
-to.
-
-So there are two different actions. Giving a name a new value, with
-`=`, stays local to the function. Changing a list in place, with
-something like `append`, is seen everywhere that list is used.
-
-A function that changes its arguments without saying so often surprises
-people. So decide on purpose whether a function returns a new list or
-changes the list it was given, and make its name say which.
-
-</details>
-
-**3.** What is a pure function? Which of these are pure?
-
-- (a) `def double(x): return x * 2`
-- (b) `def add_to_log(msg): log.append(msg)`
-- (c) `def roll(): return random.randint(1, 6)`
-- (d) `def area(r): return 3.14159 * r * r`
-
-<details class="dl-answer"><summary>answer</summary>
-
-A pure function is one that depends only on its arguments, and changes
-nothing outside itself. The same input always gives the same output. It
-has no *side effects*: a side effect is any change a function makes
-outside itself, such as adding to a list elsewhere in the program.
-
-(a) and (d) are pure. (b) changes something outside itself. (c) gives a
-different answer each time.
-
-Pure functions are easy to test and easy to think about. Their answers
-can also be saved and reused, because the answer to the same question
-never changes. Still, the goal is to know which kind you are writing.
-The two functions here that are not pure are useful and needed too.
-
-</details>
-
 ## Linear Search
 
-**4.** Write `linear_search(items, target)`. It returns the index of the target, or −1 if the target is not there.
+**1.** Write `linear_search(items, target)`. It returns the index of the target, or −1 if the target is not there.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -113,7 +30,7 @@ the function would return −1 after checking only the first item.
 
 </details>
 
-**5.** Why use −1 for "not found", and not 0?
+**2.** Why use −1 for "not found", and not 0?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -128,7 +45,7 @@ no error at all.
 
 </details>
 
-**6.** Linear search looks through a list of 100 items. How many comparisons does it make when the target is first? When it is last? When it is not there? On average?
+**3.** Linear search looks through a list of 100 items. How many comparisons does it make when the target is first? When it is last? When it is not there? On average?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -141,7 +58,7 @@ is why it is often worth building a quick way to answer "not here".
 
 </details>
 
-**7.** Can you find the *last* place a target appears, and not the first?
+**4.** Can you find the *last* place a target appears, and not the first?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -185,7 +102,7 @@ print(binary_search(data, 750))
 print(binary_search(data, 751))
 ```
 
-**8.** Trace binary search for 31 in `[3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]`. Write down each `mid` it looks at.
+**5.** Trace binary search for 31 in `[3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]`. Write down each `mid` it looks at.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -198,7 +115,7 @@ That takes four comparisons.
 
 </details>
 
-**9.** What goes wrong if the list is not sorted?
+**6.** What goes wrong if the list is not sorted?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -218,7 +135,7 @@ or in the note that describes the function.
 
 </details>
 
-**10.** Why write `mid = (low + high) // 2`, and not `(low + high) / 2`?
+**7.** Why write `mid = (low + high) // 2`, and not `(low + high) / 2`?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -234,7 +151,7 @@ need to, so this does not happen in Python.
 
 </details>
 
-**11.** What is the largest number of comparisons binary search needs on 1,000 items? On 1,000,000?
+**8.** What is the largest number of comparisons binary search needs on 1,000 items? On 1,000,000?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -250,7 +167,7 @@ big the data gets.
 
 </details>
 
-**12.** I am thinking of a whole number from 1 to 100. You may ask "Is it greater than X?". How many questions do you need to be sure of finding it?
+**9.** I am thinking of a whole number from 1 to 100. You may ask "Is it greater than X?". How many questions do you need to be sure of finding it?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -266,7 +183,7 @@ also the reason a 7-bit code has 128 values.
 
 </details>
 
-**13.** Binary search needs sorted data, and sorting takes longer than one linear search. When is sorting worth it?
+**10.** Binary search needs sorted data, and sorting takes longer than one linear search. When is sorting worth it?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -276,8 +193,11 @@ Sorting costs about n log n, once. Each linear search costs n. Each
 binary search costs log n. So sorting pays for itself after about log n
 searches. For a million items, that is after about twenty searches.
 
-Every lookup table, index or dictionary you have used has already made
-this trade for you.
+Every lookup table and index makes this trade for you: it does work
+once, up front, so that each search after it is fast. A
+[dictionary](tutorial:looking-things-up-by-name) makes a similar trade.
+It does not sort its keys, but it files each one when it is added, so
+finding it again is quick.
 
 If the data changes all the time and you search it only rarely, linear
 search wins.
@@ -286,7 +206,7 @@ search wins.
 
 ## Putting It Together
 
-**14.** Change binary search so that, when the target is not there, it returns the place where the target *would* go.
+**11.** Change binary search so that, when the target is not there, it returns the place where the target *would* go.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -314,7 +234,7 @@ carefully, and not changing a version you half remember.
 
 </details>
 
-**15.** Use a list of 334 items. Count the comparisons each search makes when the target is at the start, in the middle, at the end, and not there.
+**12.** Use a list of 334 items. Count the comparisons each search makes when the target is at the start, in the middle, at the end, and not there.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -339,7 +259,7 @@ search pays its full worst case for every missing target, every time.
 
 </details>
 
-**16.** Write a function that finds *all* the indexes where a target appears.
+**13.** Write a function that finds *all* the indexes where a target appears.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -357,7 +277,7 @@ doing only when the list is large and there are few matches.
 
 </details>
 
-**17.** Search a list of names for a name that is not there. Can you make the function report the closest match, and not only fail?
+**14.** Search a list of names for a name that is not there. Can you make the function report the closest match, and not only fail?
 
 <details class="dl-answer"><summary>answer</summary>
 

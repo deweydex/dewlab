@@ -1,11 +1,11 @@
 ---
-title: "Lists and Sequences — Practice"
+title: "Lists: keeping many values in order — Practice"
 practice_for: lists-and-sequences
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.22.1
 ---
 
-# Lists and Sequences — Practice
+# Lists: keeping many values in order — Practice
 
 The answers are hidden in folds under each problem. With indexing and
 slicing, trying things out teaches more than working them out in your
@@ -84,7 +84,40 @@ and strings cannot.
 
 </details>
 
-**4.** After `xs[1] = 99`, what is `xs`? What happens if you try the same thing with a string?
+**4.** What does this print? Compare it with the last question.
+
+```python
+def add_item(items):
+    items.append("new")
+
+
+things = ["a", "b"]
+add_item(things)
+print(things)
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+`['a', 'b', 'new']`.
+
+In [Writing your own functions](tutorial:writing-your-own-functions) we
+saw that giving a name a new value inside a function never changes a
+variable outside it. This looks like it goes against that, but it does
+not. The function did not *assign* anything to `items`. It changed the
+list that `items` refers to, and that is the same list that `things`
+refers to. It is the same thing that happened with `b = a` above.
+
+So there are two different actions. Giving a name a new value, with
+`=`, stays local to the function. Changing a list in place, with
+something like `append`, is seen everywhere that list is used.
+
+A function that changes its arguments without saying so often surprises
+people. So decide on purpose whether a function returns a new list or
+changes the list it was given, and make its name say which.
+
+</details>
+
+**5.** After `xs[1] = 99`, what is `xs`? What happens if you try the same thing with a string?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -102,7 +135,7 @@ noticing, through another name, and a string cannot.
 
 ## Building Lists
 
-**5.** Can you build a list of the first ten square numbers in two different ways?
+**6.** Can you build a list of the first ten square numbers in two different ways?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -126,7 +159,7 @@ the same work as the first way.
 
 </details>
 
-**6.** Given a list called `numbers` that holds a mix of numbers, build a list of only the even ones.
+**7.** Given a list called `numbers` that holds a mix of numbers, build a list of only the even ones.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -144,7 +177,7 @@ positions shift under the loop as you delete.
 
 </details>
 
-**7.** Here `words = ["apple", "fig", "banana", "kiwi"]`. Can you build a list of the lengths of the words, and then find the longest word?
+**8.** Here `words = ["apple", "fig", "banana", "kiwi"]`. Can you build a list of the lengths of the words, and then find the longest word?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -164,7 +197,7 @@ easier to read that line after you have written the loop yourself once.
 
 </details>
 
-**8.** Can you reverse a list without using `reverse()` or `[::-1]`?
+**9.** Can you reverse a list without using `reverse()` or `[::-1]`?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -191,7 +224,7 @@ harder to think about.
 
 ## Working Through a List
 
-**9.** Can you add up a list without `sum()`? Then find its mean.
+**10.** Can you add up a list without `sum()`? Then find its mean.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -208,7 +241,7 @@ is why most libraries raise an error, and do not choose an answer.
 
 </details>
 
-**10.** How could you count the numbers in a list that are above the mean?
+**11.** How could you count the numbers in a list that are above the mean?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -226,7 +259,7 @@ the mean depends on values we have not seen yet.
 
 </details>
 
-**11.** Multiply two lists element by element. For example, `[1, 2, 3]` and `[4, 5, 6]` give `[4, 10, 18]`.
+**12.** Multiply two lists element by element. For example, `[1, 2, 3]` and `[4, 5, 6]` give `[4, 10, 18]`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -249,7 +282,7 @@ and `zip` hides the problem without telling you.
 
 </details>
 
-**12.** Write `dot_product(a, b)`. Decide what it does when the lists have different lengths, and say why.
+**13.** Write `dot_product(a, b)`. Decide what it does when the lists have different lengths, and say why.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -274,7 +307,7 @@ and not a few functions later.
 
 ## Sequences
 
-**13.** Write functions for the square numbers and the triangular numbers. Print the first eight of each.
+**14.** Write functions for the square numbers and the triangular numbers. Print the first eight of each.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -295,7 +328,7 @@ is always even.
 
 </details>
 
-**14.** Add pairs of triangular numbers that sit next to each other: 1+3, 3+6, 6+10, 10+15. What do you get?
+**15.** Add pairs of triangular numbers that sit next to each other: 1+3, 3+6, 6+10, 10+15. What do you get?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -308,7 +341,7 @@ n(n+1)/2 + (n+1)(n+2)/2 = (n+1)².
 
 </details>
 
-**15.** Can you generate the first fifteen Fibonacci numbers?
+**16.** Can you generate the first fifteen Fibonacci numbers?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -326,7 +359,7 @@ get "the last two", we do not need to do any sums with the length.
 
 </details>
 
-**16.** Divide each Fibonacci number by the one before it. What happens?
+**17.** Divide each Fibonacci number by the one before it. What happens?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -345,7 +378,7 @@ different direction than
 
 </details>
 
-**17.** Write `generate_sequence(rule, n)`. It takes a *function* and returns the first n terms of the sequence that the function defines.
+**18.** Write `generate_sequence(rule, n)`. It takes a *function* and returns the first n terms of the sequence that the function defines.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -367,7 +400,7 @@ between those two is the whole idea.
 
 ## From the Everlearning Problem Bank
 
-**18.** Given a list of whole numbers, find the number that appears most often.
+**19.** Given a list of whole numbers, find the number that appears most often.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -393,7 +426,7 @@ nobody answered.
 
 </details>
 
-**19.** Reverse the order of the words in a sentence, but keep each word the same.
+**20.** Reverse the order of the words in a sentence, but keep each word the same.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -410,7 +443,7 @@ think about them. `split(" ")` does not do this.
 
 </details>
 
-**20.** Take a string, and return four copies of its last four characters.
+**21.** Take a string, and return four copies of its last four characters.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -428,7 +461,7 @@ problem does not say.
 
 </details>
 
-**21.** Given a list of numbers, return a new list with the repeated values removed. Keep the original order.
+**22.** Given a list of numbers, return a new list with the repeated values removed. Keep the original order.
 
 <details class="dl-answer"><summary>answer</summary>
 
