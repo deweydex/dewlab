@@ -8,6 +8,7 @@ let builtinsModule = null; // Python's `builtins` module, for e.g. `len`
 
 let jediHoverFn = null; // the _dewlab_hover_doc Python function, defined below
 let jediSignatureFn = null; // the _dewlab_signature Python function, defined below
+let jediCompleteFn = null; // the _dewlab_complete Python function, defined below
 
 /* A tiny wrapper around the Worker's own global postMessage() — just
  * gives the rest of this file one consistent name to call. */
@@ -66,6 +67,20 @@ function jediDoc(source, line, col) {
   if (!jediHoverFn) return null;
   try {
     return jediHoverFn(source, line, col) || null;
+  } catch {
+    return null;
+  }
+}
+
+/* Completions at a cursor, from Jedi: the page's live names and their
+ * attributes, the cell's own names, builtins and keywords. Null until
+ * Jedi has loaded, so the editor's own completion sources answer alone
+ * until then. */
+function jediComplete(source, line, col) {
+  if (!jediCompleteFn) return null;
+  try {
+    const found = jediCompleteFn(source, line, col);
+    return found ? JSON.parse(found) : null;
   } catch {
     return null;
   }
@@ -142,6 +157,36 @@ def _dewlab_signature(source, line, col):
     except Exception:
         pass
     return None
+
+import json as _dewlab_json
+import re as _dewlab_re
+
+def _dewlab_complete(source, line, col):
+    """Jedi's completions at (line, col), as JSON [[name, type], ...].
+
+    An Interpreter, not a Script: it reads the page's live namespace as
+    well as the text, so after a cell has run, a name bound there
+    completes its own attributes (a DataFrame's columns and methods, not
+    just a guess from source). Private and dunder names wait until the
+    reader types an underscore, and file paths inside strings are left
+    out: neither is what a beginner reaching for a name wants first.
+    """
+    try:
+        import tutorial_tools
+        typed = _dewlab_re.search(r"\\w*$", source.split(chr(10))[line - 1][:col]).group()
+        found = jedi.Interpreter(source, [tutorial_tools._page_globals]).complete(line, col)
+        names = []
+        for completion in found:
+            if completion.type == "path":
+                continue
+            if completion.name.startswith("_") and not typed.startswith("_"):
+                continue
+            names.append([completion.name, completion.type])
+            if len(names) == 100:
+                break
+        return _dewlab_json.dumps(names)
+    except Exception:
+        return None
 `;
 
 async function loadJedi() {
@@ -150,6 +195,7 @@ async function loadJedi() {
     await pyodide.runPythonAsync(JEDI_HELPER_SOURCE);
     jediHoverFn = pyodide.globals.get("_dewlab_hover_doc");
     jediSignatureFn = pyodide.globals.get("_dewlab_signature");
+    jediCompleteFn = pyodide.globals.get("_dewlab_complete");
     post({ type: "jedi-ready" });
   } catch (err) {
     console.warn("dewlab worker: Jedi failed to load; pre-run tooltips stay live-only", err);
@@ -319,6 +365,8 @@ self.onmessage = async (ev) => {
       respond(signatureHelp(msg.name, msg.source, msg.line, msg.col));
     } else if (msg.type === "page-names") {
       respond(pageNames());
+    } else if (msg.type === "jedi-complete") {
+      respond(jediComplete(msg.source, msg.line, msg.col));
     } else if (msg.type === "describe-globals") {
       respond(describeGlobals());
     } else if (msg.type === "query-rows") {

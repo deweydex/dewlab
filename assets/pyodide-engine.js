@@ -160,6 +160,7 @@ let inspectModuleMT = null; // Python's own `inspect` module, for hover docs
 let builtinsModuleMT = null; // Python's `builtins` module, for looking up e.g. `len`
 let jediHoverFnMT = null; // the _dewlab_hover_doc Python function defined below
 let jediSignatureFnMT = null; // the _dewlab_signature Python function defined below
+let jediCompleteFnMT = null; // the _dewlab_complete Python function
 
 const JEDI_HELPER_SOURCE = `
 import jedi
@@ -182,6 +183,36 @@ def _dewlab_signature(source, line, col):
     except Exception:
         pass
     return None
+
+import json as _dewlab_json
+import re as _dewlab_re
+
+def _dewlab_complete(source, line, col):
+    """Jedi's completions at (line, col), as JSON [[name, type], ...].
+
+    An Interpreter, not a Script: it reads the page's live namespace as
+    well as the text, so after a cell has run, a name bound there
+    completes its own attributes (a DataFrame's columns and methods, not
+    just a guess from source). Private and dunder names wait until the
+    reader types an underscore, and file paths inside strings are left
+    out: neither is what a beginner reaching for a name wants first.
+    """
+    try:
+        import tutorial_tools
+        typed = _dewlab_re.search(r"\\w*$", source.split(chr(10))[line - 1][:col]).group()
+        found = jedi.Interpreter(source, [tutorial_tools._page_globals]).complete(line, col)
+        names = []
+        for completion in found:
+            if completion.type == "path":
+                continue
+            if completion.name.startswith("_") and not typed.startswith("_"):
+                continue
+            names.append([completion.name, completion.type])
+            if len(names) == 100:
+                break
+        return _dewlab_json.dumps(names)
+    except Exception:
+        return None
 `;
 
 async function loadJediMT() {
@@ -190,6 +221,7 @@ async function loadJediMT() {
     await pyodideMT.runPythonAsync(JEDI_HELPER_SOURCE);
     jediHoverFnMT = pyodideMT.globals.get("_dewlab_hover_doc");
     jediSignatureFnMT = pyodideMT.globals.get("_dewlab_signature");
+    jediCompleteFnMT = pyodideMT.globals.get("_dewlab_complete");
   } catch (err) {
     console.warn("pyodide-engine: Jedi failed to load; pre-run tooltips stay live-only", err);
   }
@@ -255,6 +287,17 @@ function jediSignatureMT(source, line, col) {
   if (!jediSignatureFnMT) return null;
   try {
     return jediSignatureFnMT(source, line, col) || null;
+  } catch {
+    return null;
+  }
+}
+
+/* The main-thread counterpart to the worker's jediComplete. */
+function jediCompleteMT(source, line, col) {
+  if (!jediCompleteFnMT) return null;
+  try {
+    const found = jediCompleteFnMT(source, line, col);
+    return found ? JSON.parse(found) : null;
   } catch {
     return null;
   }
@@ -440,6 +483,7 @@ export function restart() {
   builtinsModuleMT = null;
   jediHoverFnMT = null;
   jediSignatureFnMT = null;
+  jediCompleteFnMT = null;
 
   mode = null;
   bootPromise = null;
@@ -480,6 +524,14 @@ async function signatureHelp(name, source, line, col, argIndex) {
 }
 
 export { hoverDoc, signatureHelp };
+
+/* Jedi's completions at a cursor, as [[name, type], ...], or null while
+ * Jedi is still loading, so the editor's own sources answer alone. */
+export async function jediCompletions(source, line, col) {
+  if (mode === "main-thread") return jediCompleteMT(source, line, col);
+  if (!worker || !jediReadyWorker) return null;
+  return workerRequest("jedi-complete", { source, line, col });
+}
 
 export async function pageNamesCompletion(context) {
   const word = context.matchBefore(/\w+/);

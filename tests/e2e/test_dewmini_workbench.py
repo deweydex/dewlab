@@ -1879,3 +1879,27 @@ def test_go_to_line_selects_the_failing_line(dewmini):
     dewmini.locator(".dm-siteview-goto").first.wait_for()
     dewmini.locator(".dm-siteview-goto").first.click()
     assert dewmini.evaluate("() => window.getSelection().toString()") == "nope();"
+
+
+def test_jedi_completes_a_modules_attributes(dewmini):
+    """dewmini's editors take the same Jedi completion as a tutorial's
+    cells. Jedi loads in the background once Python has booted, so this
+    runs a cell first, then asks until Jedi is there to answer: `sqrt`
+    after `math.` can only come from Jedi, since none of the editor's own
+    sources looks inside a module."""
+    add_python_cell(dewmini, "import math\nmath.pi")
+    dewmini.locator(".dm-cell .dm-icon-run").first.click()
+    dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
+    editor = dewmini.locator(".dm-cell-python .cm-content").first
+    editor.click()
+    dewmini.keyboard.press("Control+End")
+    dewmini.keyboard.type("\nmath.sq")
+    for _ in range(30):
+        dewmini.keyboard.press("Control+Space")
+        dewmini.wait_for_timeout(1000)
+        labels = dewmini.eval_on_selector_all(
+            ".cm-tooltip-autocomplete .cm-completionLabel", "els => els.map(e => e.textContent)")
+        if "sqrt" in labels:
+            break
+        dewmini.keyboard.press("Escape")
+    assert "sqrt" in labels

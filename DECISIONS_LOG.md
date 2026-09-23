@@ -4353,3 +4353,25 @@ Left undone deliberately, and worth a decision later: Database Methods has no st
 - The transitions practice has students hover the contact button, whose label turns white on near-white. Its answer now says so, and gives the fix.
 
 *Cost to change: a title is one frontmatter line plus a text sync. The arrangement is one function, and returning to alphabetical is `_arrange` returning its first candidate.*
+
+---
+
+**7.214 — Completion asks Jedi first, in the tutorial cells and in dewmini, and it reads the live namespace as well as the text.** Josh: "Can you check that pyodide is using Jedi and that Jedi is used in dewmini and the Python cells themselves?"
+
+**What the check found.** Jedi was loaded in both engines (7.76, 7.77), but only for hover docs and signature help. `vendor-src/codemirror-entry.js` had a `jediCompletionSource` and a `getJediCompletions` option, but no editor passed one and no engine could answer one, so completion never reached Jedi. Its four sources were keywords and builtins, names typed in the cell, and names on the page. None of them looks inside an object. In a real cell, `math.sq` and `word.up` offered nothing, before or after a run.
+
+**What changed.** A third Jedi helper, `_dewlab_complete`, sits beside the other two in the worker and in both main-thread engines. It is a `jedi.Interpreter`, not a `jedi.Script`: it reads `_page_globals` as well as the cell's text. So after a cell has run, a name completes the attributes its live object has, including ones no reading of the source could find. While a definition is still in the same cell, Jedi reads that text in preference to the live object, so the live answer shows from the next cell on. Names starting with an underscore wait until the reader types one, and file paths inside strings are left out. Both are noise for a beginner reaching for `upper`.
+
+In the editor, Jedi answers first and the older sources are each gated behind it, so nothing is listed twice. They answer as before when Jedi is silent: still loading, a Worker busy with a long cell, or nothing to offer here. A keystroke waits at most 400ms for Jedi.
+
+**The first answer is slow, and is kept.** Jedi's first look at a module reads its stubs. In the self-hosted Pyodide, a first `math.` took 461ms and a first string method list took 729ms; after that, 13 to 50ms. Those first answers would have been lost behind the 400ms patience. They are kept instead, and the list reopens with them if the cursor has not moved. The alternatives were worse. A longer patience makes every keystroke wait behind a busy Worker. Warming Jedi up at boot would block the first Run for about a second.
+
+The tutorial cells and dewmini's cell and file editors share the wiring. Four new e2e tests cover it:
+- a module's attribute before any run;
+- an attribute only the live object has;
+- underscore names waiting for an underscore;
+- dewmini's own editor.
+
+They ran green four times in a row against the self-hosted Pyodide.
+
+*Cost to change: one Python helper in three copies, one engine function in two, and `pythonCompletion()` in the editor entry. Turning Jedi completion off is leaving out `getJediCompletions`, which restores the old sources exactly.*

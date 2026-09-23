@@ -414,7 +414,11 @@ hasn't run yet). This combination happens on whichever thread Python is
 actually running on — inside the Worker for the hosted site, or right
 here on the main thread for the offline export — which is why there are
 two near-identical implementations of the same lookup functions
-(`docFor`-style vs. `docForMT`-style) rather than one.
+(`docFor`-style vs. `docForMT`-style) rather than one. Completion is the
+one place Jedi goes first: `jediCompletions()` asks it for attributes and
+names together, reading the live namespace as well as the text, and
+`pageNamesCompletion()` answers only when Jedi is silent (see
+`vendor-src/codemirror-entry.js`'s `pythonCompletion()`).
 
 ---
 
