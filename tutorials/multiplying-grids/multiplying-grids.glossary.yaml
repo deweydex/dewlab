@@ -1,6 +1,7 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
   - term: "zip()"
+    python: zip
     kind: function
     definition: >
       Pairs up two lists, position by position. If the lists have

@@ -50,9 +50,11 @@ entries:
       a key exists with "in".
     example: 'counts = {}\ncounts["apples"] = 5\n"oranges" in counts'
   - term: "sorted()"
+    python: sorted
     kind: function
     definition: Returns a new list with the elements in order, leaving the original list unchanged.
   - term: "plt.hist()"
+    python: matplotlib.pyplot.hist
     kind: function
     definition: Bins a list of values and draws them as a histogram.
     example: "plt.hist(scores, bins=5)"

@@ -11,6 +11,7 @@ entries:
       datasets arrive in before they become a table.
 
   - term: "load_csv()"
+    python: tutorial_tools.load_csv
     kind: function
     definition: >
       Fetches a CSV from a web address and returns it as a table ready
@@ -26,6 +27,7 @@ entries:
       are missing.
 
   - term: "to_sql()"
+    python: pandas.DataFrame.to_sql
     kind: function
     definition: >
       Writes a DataFrame into the page's shared database connection as a

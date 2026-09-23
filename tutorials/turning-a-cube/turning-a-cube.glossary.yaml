@@ -46,12 +46,14 @@ entries:
       product. The matrix nearest the points acts first, so AB means B
       first, then A.
   - term: "math.radians(), math.degrees()"
+    python: [math.radians, math.degrees]
     kind: function
     definition: >
       Convert an angle from degrees to radians, and back. The rotation
       functions in math want radians.
     example: "rotate_y(math.radians(30))"
   - term: "plt.sca()"
+    python: matplotlib.pyplot.sca
     kind: function
     definition: >
       Chooses which frame of a figure the next plotting commands draw

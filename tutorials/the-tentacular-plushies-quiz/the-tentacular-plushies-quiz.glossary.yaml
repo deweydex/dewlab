@@ -35,6 +35,7 @@
 # module.
 entries:
   - term: "check()"
+    python: tutorial_tools.check
     kind: function
     definition: "Tells you whether your work meets what a task asks for. Not graded, not recorded anywhere."
     example: "check(row_count >= 3, True)"

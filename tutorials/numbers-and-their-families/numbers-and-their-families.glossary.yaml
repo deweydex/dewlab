@@ -31,6 +31,7 @@ entries:
       times you can halve something.
     example: "log2(1024) = 10, since 2**10 = 1024"
   - term: "math.log2(), math.log10()"
+    python: [math.log2, math.log10]
     kind: function
     definition: The base-2 and base-10 logarithm of a number.
     example: "math.log2(1024)  # 10.0"

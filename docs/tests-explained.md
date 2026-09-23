@@ -37,6 +37,7 @@ If you're not sure which one a new test belongs in, ask "does this call
 | `test_report_patterns.py` | `report_patterns.py`/`label_report.py` — pattern-matching over report-doors issues |
 | `test_pair_results.py` | `pair_results.py` — the pair-game judgement report generator |
 | `test_curriculum_map.py` | `curriculum_map.py` — the topic-tree/curriculum-map data generator |
+| `test_glossary_python.py` | `dev/glossary_python.py` — every glossary entry naming Python exists and its example fits the real signature; the signatures file is current; the build attaches signatures |
 
 **`tests/build/` — one file per slice of `build.py`'s output:**
 

@@ -13,19 +13,23 @@ entries:
       One equals sign, =, is assignment. Mixing the two up is one of the
       most common mistakes in programming.
   - term: if statement
+    python: if
     kind: keyword
     definition: Runs its indented body only when a condition is True. The code after the body runs every time.
     example: 'if temperature > 30:\n    print("hot")'
   - term: if-else
+    python: [if, else]
     kind: keyword
     definition: Runs one body when the condition is True, and the other when it is False. Between them, the two cover every case.
   - term: elif
+    python: elif
     kind: keyword
     definition: >
       Adds another condition to an if statement. Its name is short for
       "else if". Python checks each condition from top to bottom, runs
       the first one that is True and skips the rest, so the order matters.
   - term: and, or, not
+    python: [and, or, not]
     kind: operator
     definition: >
       Combine True and False values, or change one. These are the Boolean

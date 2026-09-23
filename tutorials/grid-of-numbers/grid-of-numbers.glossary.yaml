@@ -42,6 +42,7 @@ entries:
     kind: concept
     definition: A symmetric matrix is a matrix that is equal to its own transpose. Swapping its rows and columns changes nothing.
   - term: "ValueError"
+    python: ValueError
     kind: keyword
     definition: >
       A ValueError is an error for a value that has the right type but is

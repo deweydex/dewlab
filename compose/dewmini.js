@@ -2793,6 +2793,18 @@ function renderReference() {
       term.textContent = entry.term;
       const definition = document.createElement("dd");
       definition.textContent = entry.definition;
+      // Each signature as Python itself gives it (build.py's
+      // with_python()), labelled, since it is not an example of a call.
+      for (const signature of entry.signatures || []) {
+        const line = document.createElement("p");
+        line.className = "dm-term-signature";
+        const label = document.createElement("span");
+        label.textContent = "Signature";
+        const code = document.createElement("code");
+        code.textContent = signature;
+        line.append(label, code);
+        definition.appendChild(line);
+      }
       if (entry.example) {
         const example = document.createElement("code");
         example.textContent = entry.example;

@@ -85,6 +85,25 @@ one file.
 
 ---
 
+## `dev/glossary_python.py`
+
+Checks every glossary entry that names something in Python (a `python:`
+field: `list.append`, `math.sin`, `elif`) against Python itself, and
+writes `assets/python-signatures.json`, the signatures the reference
+shows beside those entries. Three steps: `resolve()` turns a dotted name
+into the real object (or a keyword), `example_problems()` binds each call
+in the entry's example against that object's signature without running
+anything, and `display()` formats the signature as Python gives it, type
+hints and a method's `self` left out.
+
+`--check` writes nothing and fails on a missing name, an example Python
+would reject, or a stale signatures file. Signatures depend on the Python
+version, so the file is written with the one Pyodide runs (3.13), and a
+CI job on that version runs the check; under another version it checks
+names and examples and says it skipped the signatures.
+
+---
+
 ## `dev/label_report.py`
 
 Called once, right after a report issue opens

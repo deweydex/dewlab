@@ -26,6 +26,7 @@ entries:
       unstable. It only has to have no length it is sure to stay below.
 
   - term: "min()"
+    python: min
     kind: function
     definition: >
       Gives back the smallest of the values it is given.

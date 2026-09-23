@@ -14,6 +14,7 @@
 # (checked term_findings() for "help" and "help()" against every tutorial).
 entries:
   - term: "help()"
+    python: help
     kind: function
     definition: >
       Shows a class's own docstring, then each of its methods' docstrings

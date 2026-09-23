@@ -7,15 +7,18 @@
 # dictionaries, and the words for finding bugs.
 entries:
   - term: "IndexError"
+    python: IndexError
     kind: keyword
     definition: Means you asked for a position that does not exist in a list. It is very often off by one.
   - term: "KeyError"
+    python: KeyError
     kind: keyword
     definition: >
       Means you asked for a key that does not exist in a dictionary. The
       message shows the key you asked for, so check its spelling and its
       capital letters.
   - term: "AttributeError"
+    python: AttributeError
     kind: keyword
     definition: >
       Means you asked a value for something it does not have. This often

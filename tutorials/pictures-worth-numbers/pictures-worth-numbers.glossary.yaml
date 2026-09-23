@@ -13,14 +13,17 @@ entries:
       whole, and is best used sparingly, because a bar chart is usually
       clearer.
   - term: "plt.bar()"
+    python: matplotlib.pyplot.bar
     kind: function
     definition: Draws a bar chart from category labels and their values.
     example: 'plt.bar(languages, counts)'
   - term: "plt.plot()"
+    python: matplotlib.pyplot.plot
     kind: function
     definition: Draws a line chart connecting a sequence of points.
     example: "plt.plot(hours, temperatures, marker='o')"
   - term: "plt.scatter()"
+    python: matplotlib.pyplot.scatter
     kind: function
     definition: Draws a scatter plot, one point per (x, y) pair.
     example: "plt.scatter(study_hours, test_scores)"

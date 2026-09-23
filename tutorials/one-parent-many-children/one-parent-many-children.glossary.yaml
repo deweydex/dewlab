@@ -30,6 +30,7 @@ entries:
       fields and methods of its own, and replace methods it inherits.
 
   - term: "super()"
+    python: super
     kind: function
     definition: >
       Reaches the parent class from inside a child class, so the child

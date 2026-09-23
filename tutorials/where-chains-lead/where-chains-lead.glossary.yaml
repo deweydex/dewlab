@@ -44,6 +44,7 @@ entries:
       a random surfer's time that the page gets in the long run: its entry
       in the stationary distribution.
   - term: "random.choices()"
+    python: random.choices
     kind: function
     definition: Picks items from a list at random, so that an item with a bigger weight is picked more often. It gives back a list.
     example: 'random.choices(states, weights=row)[0]'

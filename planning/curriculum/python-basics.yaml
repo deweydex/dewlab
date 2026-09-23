@@ -30,6 +30,7 @@ groups:
       - term: Boolean
         definition: A value that is either True or False.
       - term: None
+        python: None
         definition: A value that means nothing is there.
 
   - label: Variables
@@ -59,9 +60,17 @@ groups:
         definition: >-
           The name a function gives to an argument, inside the
           function's own definition.
+      - term: Signature
+        definition: >-
+          A function's name and the parameters it takes, as Python shows
+          them, with each default value after an equals sign; parameters
+          after a * must be given by name, and parameters before a /
+          cannot be.
+        example: "random.choices(population, weights=None, *, cum_weights=None, k=1)"
       - term: Return value
         definition: The result a function sends back after it finishes running.
       - term: print()
+        python: print
         definition: Displays whatever is inside its parentheses.
         example: 'print("hi")'
 

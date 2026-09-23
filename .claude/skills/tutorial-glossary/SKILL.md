@@ -148,6 +148,34 @@ entries:
 - `example` — optional. Include it when a short code fragment says more
   than another sentence would (an operator, a function's call shape); skip
   it for a pure concept.
+- `python` — for an entry that names something in Python: the exact
+  object, as a dotted name or a list of them, owner included, since the
+  term alone rarely says which type a method belongs to.
+
+  ```yaml
+  - term: "append()"
+    python: list.append
+  - term: "math.sin(), math.cos()"
+    python: [math.sin, math.cos]
+  - term: "elif"
+    python: elif
+  - term: "check()"
+    python: tutorial_tools.check
+  ```
+
+  Give one to every Python function, method, keyword and built-in
+  exception, including third-party ones (`pandas.DataFrame.to_csv`,
+  `matplotlib.pyplot.hist`). Leave it off anything that is not Python (a
+  CSS function, a SQL keyword), off an operator (`+` is not a name), and
+  off a special method such as `__str__`, whose entry is about defining
+  it rather than calling it.
+
+  Then run `python3.13 dev/glossary_python.py`. It checks each name exists
+  in Python and that the entry's `example` calls it the way Python's own
+  signature allows, and it writes the signatures the reference shows under
+  the definition (built-ins, the standard library and `tutorial_tools`
+  only). Do not write a signature into the definition yourself: the
+  reference already shows Python's.
 - A tutorial that introduces nothing new gets `entries: []`, not a missing
   file — a missing file and an empty list mean the same thing to build.py,
   but an explicit empty list says this tutorial was actually checked,

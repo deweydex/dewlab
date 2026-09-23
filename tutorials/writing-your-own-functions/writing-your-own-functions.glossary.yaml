@@ -5,6 +5,7 @@
 # entries below cover def and what a function is made of.
 entries:
   - term: def, call
+    python: def
     kind: keyword
     definition: >
       def defines a function: a named block of code that you can use again
@@ -23,6 +24,7 @@ entries:
       position.
     example: 'describe_pet("Rex", "dog")'
   - term: return
+    python: return
     kind: keyword
     definition: >
       return sends a value back to the code that called the function, so

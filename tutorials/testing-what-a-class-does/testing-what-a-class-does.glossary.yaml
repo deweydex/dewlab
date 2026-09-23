@@ -18,6 +18,7 @@
 # it is used here without a repeat entry).
 entries:
   - term: assert
+    python: assert
     kind: keyword
     definition: >
       Checks a claim, and stops the program with an AssertionError the
