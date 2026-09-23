@@ -91,7 +91,8 @@ of the file: two engines, one dispatcher, one shared public interface.
 5. **The dispatcher** — `boot()`, `ensureBooted()`, `restart()`,
    `engineMode()`, `canStop()`.
 6. **The exported API** — `runCell()`, `hoverDoc()`, `signatureHelp()`,
-   `pageNamesCompletion()`, `resetPageState()` (clears and reseeds the
+   `pageNamesCompletion()`, `jediCompletions()` (Jedi's completions at a
+   cursor, or null while Jedi is still loading), `resetPageState()` (clears and reseeds the
    shared namespace — what a page's own "Run all" calls between cells
    instead of a full restart), then the filesystem functions
    (`mountNative()` through `mkdir()`) that the calling page's own
@@ -136,7 +137,11 @@ registers a COI service worker.
   ask Python's own `inspect` module about it; `jediDocMT()`/
   `jediSignatureMT()` fall back to Jedi's static analysis for names in
   code that hasn't run yet. The worker path does the same two-step lookup
-  inside `pyodide-worker.js` and just returns the answer.
+  inside `pyodide-worker.js` and just returns the answer. Completion is
+  Jedi first (`jediCompletions()`, a `jedi.Interpreter` over the text and
+  the live namespace, so `df.` offers what the DataFrame really has), and
+  `pageNamesCompletion()` plus CodeMirror's own sources only when Jedi has
+  nothing to say.
 - **"How does a folder actually get connected to Python?"** — the
   `mount*` functions at the bottom, and their `fs*MT` counterparts
   earlier in the file. The calling page's own filesystem module (for

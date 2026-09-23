@@ -893,6 +893,7 @@ function renderFileView() {
       fileParseTimer = setTimeout(() => commitFileText(text), 400);
     },
     completeNames: engine.pageNamesCompletion,
+    getJediCompletions: engine.jediCompletions,
     getDoc: engine.hoverDoc,
     getSignature: engine.signatureHelp,
   });
@@ -1517,6 +1518,7 @@ function createCellElement(cell) {
         updateCellChrome(cell.id);
       },
       completeNames: engine.pageNamesCompletion,
+      getJediCompletions: engine.jediCompletions,
       getDoc: engine.hoverDoc,
       getSignature: engine.signatureHelp,
     });

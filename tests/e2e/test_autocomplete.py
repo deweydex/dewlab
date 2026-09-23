@@ -211,3 +211,59 @@ class TestPreRunTooltips:
         run(page, "plain-python")
         doc = page.evaluate("dewlab.hoverDoc('labelled', '', 1, 0)")
         assert "post-run docstring" in doc
+
+
+def wait_for_label(page, label: str, timeout: int = 20_000) -> None:
+    page.wait_for_function(
+        f"[...document.querySelectorAll('.cm-completionLabel')].some(e => e.textContent === {js_string(label)})",
+        timeout=timeout,
+    )
+
+
+class TestJediCompletion:
+    """Completion asks Jedi first. The editor's own sources only know bare
+    names; none of them looks inside an object, so an attribute offered
+    after a dot can only have come from Jedi."""
+
+    def test_a_modules_attribute_is_offered_before_anything_runs(self, page):
+        page.wait_for_function("dewlab.jediReady()", timeout=30_000)
+        cell = cell_content(page, "plain-python")
+        cell.click()
+        page.keyboard.press("Control+End")
+        page.keyboard.type("\nimport math\nmath.sq")
+        wait_for_label(page, "sqrt")
+
+    def test_an_attribute_only_the_live_object_knows_is_offered_after_a_run(self, page):
+        """Built from a dict at run time, so no reading of the source could
+        find `celsius_value`: this is jedi.Interpreter reading the page's
+        live namespace, not jedi.Script reading text. The name is then used
+        with its definition gone from the cell, as it would be in the next
+        cell; while the definition is still in view, Jedi reads that text
+        in preference to the live object."""
+        page.wait_for_function("dewlab.jediReady()", timeout=30_000)
+        cell = cell_content(page, "plain-python")
+        cell.click()
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text(
+            "\nfrom types import SimpleNamespace\n"
+            "reading = SimpleNamespace(**{'celsius' + '_value': 21})\n"
+        )
+        run(page, "plain-python")
+        cell.click()
+        page.keyboard.press("Control+A")
+        page.keyboard.type("reading.cel")
+        wait_for_label(page, "celsius_value")
+
+    def test_underscore_names_wait_for_an_underscore(self, page):
+        """A beginner reaching for a string's methods should see `upper`,
+        not a screenful of `__add__` first."""
+        page.wait_for_function("dewlab.jediReady()", timeout=30_000)
+        cell = cell_content(page, "plain-python")
+        cell.click()
+        page.keyboard.press("Control+End")
+        page.keyboard.type("\nword = 'hi'\nword.")
+        page.keyboard.press("Control+Space")
+        wait_for_label(page, "upper")
+        assert not [label for label in completion_labels(page) if label.startswith("_")]
+        page.keyboard.type("__le")
+        wait_for_label(page, "__len__")

@@ -259,6 +259,19 @@ interpreter at call time, so a page left open through a boot starts
 offering real completions and docs without being reconfigured. Python
 builtins are out of scope for `docFor`.
 
+Completion asks **Jedi** first (`getJediCompletions`, answered by
+`_dewlab_complete` in the worker or the main-thread engine). It is a
+`jedi.Interpreter` over the cell's text and `_page_globals` together, so
+it offers attributes as well as names: `math.` offers `sqrt`, and a name
+bound by a cell that has run offers what the live object really has. The
+three sources above answer only when Jedi is silent: before it has
+loaded, while a Worker is busy with a long cell (a keystroke waits at
+most 400ms for it), or where it has nothing to offer. Jedi's first look
+at a module can take most of a second; an answer that arrives after the
+older sources have been shown is kept, and the list reopens with it if
+the cursor has not moved. The tutorial cells and dewmini's editors take
+the same wiring. DECISIONS_LOG.md 7.214.
+
 **The reference** (`planning/REFERENCE_PANEL.md`) is the settings panel's
 sibling — same floating-card positioning and open/close mechanics, mutually
 exclusive with it since both anchor to the same corner. Its content isn't

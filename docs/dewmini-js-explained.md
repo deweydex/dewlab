@@ -174,8 +174,9 @@ for `load_csv()`).
    `setRunLineQueued`), and
    `createCellElement` (the big one — builds a cell's entire DOM tree:
    header, collapsible body, footer bar, output — and wires
-   `completeNames`/`getDoc`/`getSignature` straight to the shared
-   engine's own `pageNamesCompletion`/`hoverDoc`/`signatureHelp`).
+   `completeNames`/`getJediCompletions`/`getDoc`/`getSignature` straight
+   to the shared engine's own `pageNamesCompletion`/`jediCompletions`/
+   `hoverDoc`/`signatureHelp`).
 4. **Execution** — `ensurePyodide` (boots the shared engine, then mounts
    the filesystem — `dfs.init()` — once it has), `executeCell` (runs one
    cell through `engine.runCell()`, records `ranContent`/`lastRunMs`/

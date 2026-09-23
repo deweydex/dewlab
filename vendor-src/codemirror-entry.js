@@ -14,7 +14,7 @@ import { syntaxHighlighting, defaultHighlightStyle, indentOnInput,
          bracketMatching, indentUnit } from "@codemirror/language";
 import { search, searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { closeBrackets, closeBracketsKeymap,
-         autocompletion, completionKeymap, snippetCompletion } from "@codemirror/autocomplete";
+         autocompletion, completionKeymap, snippetCompletion, startCompletion } from "@codemirror/autocomplete";
 import { oneDark } from "@codemirror/theme-one-dark";
 
 /* Theme lives in a compartment so the texture panel can swap light/dark
@@ -27,65 +27,97 @@ const baseTheme = EditorView.theme({
   ".cm-activeLine, .cm-activeLineGutter": { backgroundColor: "transparent" },
 });
 
+/* How long a keystroke's completion waits for Jedi before the editor's
+ * own sources answer instead: a Worker busy running a long cell cannot
+ * reply until the cell finishes, and typing must not wait on that. */
+const JEDI_PATIENCE_MS = 400;
+
+/* Jedi's kinds of name, as the icons CodeMirror draws beside an option. */
+const JEDI_TYPES = {
+  module: "namespace", class: "class", function: "function",
+  instance: "variable", statement: "variable", param: "variable",
+  property: "property", keyword: "keyword",
+};
+
+/* Jedi first: it knows the page's live names and their attributes
+ * (`math.` offers `sqrt`, `word.` offers `upper`), the cell's own names,
+ * builtins and keywords. When it has nothing to say — still loading, a
+ * Worker busy with a long cell, or no answer at this spot — the three
+ * older sources answer instead, as they did before Jedi was wired in.
+ * Each source is gated rather than all of them merged, since every one
+ * of them would list the same names again. CodeMirror hands every source
+ * the same context object for one query, so Jedi is asked once per
+ * keystroke however many sources wait on it. */
 function pythonCompletion(completeNames, getJediCompletions = null) {
-  const sources = [completeNames, localCompletionSource, globalCompletion].filter(Boolean);
-  
-  // Add Jedi-based completion if available
-  if (getJediCompletions) {
-    sources.unshift(jediCompletionSource(getJediCompletions));
-  }
-  
-  return autocompletion({ override: sources, activateOnTyping: true });
+  const fallbacks = [completeNames, localCompletionSource, globalCompletion].filter(Boolean);
+  if (!getJediCompletions) return autocompletion({ override: fallbacks, activateOnTyping: true });
+
+  const jedi = jediCompletionSource(getJediCompletions);
+  const answers = new WeakMap();
+  // An answer that came after the older sources had already been shown,
+  // kept for the moment the list reopens with the cursor where it was.
+  let late = null;
+  const askJedi = (context) => {
+    if (answers.has(context)) return answers.get(context);
+    const doc = context.state.doc.toString();
+    const pos = context.pos;
+    let answer;
+    if (late && late.doc === doc && late.pos === pos) {
+      answer = Promise.resolve(late.result);
+      late = null;
+    } else {
+      let gaveUp = false;
+      const asked = jedi(context).catch(() => null);
+      const patience = new Promise((resolve) => setTimeout(() => {
+        gaveUp = true;
+        resolve(null);
+      }, JEDI_PATIENCE_MS));
+      // Jedi's first look at a module reads its stubs, which can take most
+      // of a second, and an answer that slow would otherwise be lost. If
+      // the reader has not moved on, reopen the list: the question comes
+      // straight back here, and this time the answer is waiting.
+      asked.then((result) => {
+        const view = context.view;
+        if (!gaveUp || !result || !view) return;
+        if (view.state.doc.toString() !== doc || view.state.selection.main.head !== pos) return;
+        late = { doc, pos, result };
+        startCompletion(view);
+      });
+      answer = Promise.race([asked, patience]);
+    }
+    answers.set(context, answer);
+    return answer;
+  };
+  const unlessJediAnswered = (source) => async (context) =>
+    ((await askJedi(context)) ? null : source(context));
+  return autocompletion({
+    override: [askJedi, ...fallbacks.map(unlessJediAnswered)],
+    activateOnTyping: true,
+  });
 }
 
+/* Asks Jedi about the whole cell with the cursor at a 1-based line and a
+ * 0-based column, which is how Jedi counts. Only after a word has been
+ * started, after a dot, or when the reader asked (Ctrl+Space): an empty
+ * position otherwise would offer every name in scope to someone who has
+ * not yet typed anything. */
 function jediCompletionSource(getJediCompletions) {
-  return (context) => {
-    const { state } = context;
-    const { doc } = state;
-    const cursorPos = context.pos;
-    
-    // Get the text up to the cursor
-    const textBeforeCursor = doc.sliceString(0, cursorPos);
-    const line = doc.lineAt(cursorPos);
-    const lineText = line.text;
-    const linePos = cursorPos - line.from;
-    
-    // Find the word at cursor
-    let start = linePos;
-    let end = linePos;
-    while (start > 0 && /[a-zA-Z0-9_]/.test(lineText[start - 1])) start--;
-    while (end < lineText.length && /[a-zA-Z0-9_]/.test(lineText[end])) end++;
-    
-    if (start === end) {
-      // No word at cursor, try to get completions for empty string
-      return getJediCompletions(textBeforeCursor, linePos).then(completions => {
-        return {
-          from: cursorPos,
-          options: completions.map(c => ({ label: c.name, type: c.type })),
-          validFor: /^[a-zA-Z_]$/
-        };
-      });
-    }
-    
-    const word = lineText.slice(start, end);
-    
-    // Get completions from Jedi
-    return getJediCompletions(textBeforeCursor, linePos, word).then(completions => {
-      if (!completions || completions.length === 0) {
-        return null;
-      }
-      
-      return {
-        from: line.from + start,
-        to: line.from + end,
-        options: completions.map(c => ({
-          label: c.name,
-          type: c.type,
-          detail: c.description || ''
-        })),
-        validFor: /^[a-zA-Z0-9_]$/
-      };
-    });
+  return async (context) => {
+    const word = context.matchBefore(/\w*/);
+    const afterDot = context.state.sliceDoc(word.from - 1, word.from) === ".";
+    if (word.from === word.to && !afterDot && !context.explicit) return null;
+    const line = context.state.doc.lineAt(context.pos);
+    const found = await getJediCompletions(
+      context.state.doc.toString(), line.number, context.pos - line.from);
+    if (!found || !found.length) return null;
+    return {
+      from: word.from,
+      options: found.map(([label, type]) => ({ label, type: JEDI_TYPES[type] || "variable" })),
+      // Narrowed as the reader types, without asking again, except when
+      // an underscore starts the word: the list left underscore names
+      // out, so only a fresh question can offer them.
+      validFor: word.text.startsWith("_") ? /^\w*$/ : /^(?!_)\w*$/,
+    };
   };
 }
 

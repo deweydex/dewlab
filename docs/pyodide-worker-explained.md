@@ -36,16 +36,21 @@ for how that's wired up).
    and what changed by moving Pyodide off the main thread — read that
    first.
 2. **Module state** — `pyodide`, `tools`, `inspectModule`,
-   `builtinsModule`, `jediHoverFn`, `jediSignatureFn`: everything this
+   `builtinsModule`, `jediHoverFn`, `jediSignatureFn`, `jediCompleteFn`: everything this
    worker keeps alive between messages.
 3. **Code intelligence** — `lookupLiveName`, `docFor`, `signatureFor`
    (looking things up that have already run), `jediDoc`/`jediSignature`
    (looking things up in code that hasn't run yet), and `hoverDoc`/
    `signatureHelp`, which combine the two — live always wins, Jedi only
    fills the gap live can't reach.
-4. **`pageNames`** — the list behind autocomplete.
-5. **Jedi setup** — `JEDI_HELPER_SOURCE` (real Python source defining two
-   small helpers) and `loadJedi()`, which runs it.
+4. **`pageNames`** — the page's names, the list completion falls back on
+   while Jedi is loading or has nothing to say; and `jediComplete`, which
+   answers a `"jedi-complete"` message with Jedi's own completions at a
+   cursor: attributes as well as names, read from the cell's text and the
+   live namespace together (`jedi.Interpreter`).
+5. **Jedi setup** — `JEDI_HELPER_SOURCE` (real Python source defining
+   three small helpers: hover docs, signatures and completions) and
+   `loadJedi()`, which runs it.
 6. **`boot()`** — starts Pyodide, loads packages, loads
    `tutorial_tools.py`, sets up the shared namespace (`RESEED_GLOBALS_SOURCE`),
    and, only if the boot message set `msg.seedDb`, seeds the `db` global too
