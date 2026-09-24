@@ -4411,7 +4411,7 @@ Many terms the maths pages had always used were never defined anywhere: *correla
 **Errors the pass found**, each checked by running it or by hand:
 - *Three doors* stated its own conclusion backwards: the 50/50 argument is right for a careless host and wrong for the original game.
 - Four cells contradicted their pages or failed. The "exactly a half: False" cell was one. A sine fit peaked in July while its comment said June. Pay data meant to lie on a line had slopes 12.5, 12.79, 12.5. Two cells in *Solving equations* called helpers defined only on the polynomials page, and raised `NameError`.
-- The two-cell counting answer said four passphrase words give "slightly fewer" choices than a 10-character password; it is about 370 times fewer.
+- A counting answer said four passphrase words give "slightly fewer" choices than a 10-character password; it is about 370 times fewer.
 - Other corrections:
   - a 3% difference on a cut-off axis "looks threefold" (it looks fourfold);
   - ⊂ written for "is a subset of";
@@ -4427,6 +4427,6 @@ Many terms the maths pages had always used were never defined anywhere: *correla
 - *range* on the functions page now says it differs from the statistics range;
 - the statistics page refers back to where *standard deviation* was first taught, in place of introducing it again.
 
-Headings renamed in the pass (four in *Complex numbers*, *Rearranging formulae*, *Limits*) carry their `covers:` keys with them, and the curriculum map is regenerated. The glossary check now covers 92 Python names, since the inverse trigonometric functions, `lambda` and `import` gained entries.
+The five headings the pass renamed (three in *Complex numbers*, one each in *Rearranging formulae* and *Limits*) carry their `covers:` keys with them, and the curriculum map is regenerated. The glossary check now covers 92 Python names, since the inverse trigonometric functions, `lambda` and `import` gained entries.
 
 *Cost to change: prose only, page by page; the cells that changed carry version 2026.09.24.1.*
