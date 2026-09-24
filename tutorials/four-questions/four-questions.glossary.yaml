@@ -1,0 +1,56 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# The first page of the Plot Twist track, so nothing comes before it in its
+# series. The four questions' short names (name, function, sequence,
+# environment) are entries because the page defines them; the questions
+# themselves are the page's point, and each definition leads with one.
+entries:
+  - term: name
+    kind: concept
+    definition: >
+      A name is a word or number that points at one thing, so that we can
+      talk about it. The question to ask is "what is named here?".
+  - term: function
+    kind: concept
+    definition: >
+      A function is a promise: give it something, and it gives you
+      something back. The question to ask is "what is promised?".
+  - term: sequence
+    kind: concept
+    definition: >
+      A sequence is the order things happen in. The question to ask is
+      "what happens when?".
+  - term: environment
+    kind: concept
+    definition: >
+      The environment is the space we are working in: what is there, and
+      which moves are allowed. The question to ask is "what does this space
+      let us do?", and it is always allowed.
+  - term: algorithm
+    kind: concept
+    definition: >
+      An algorithm is a list of clear steps that completes a task. A good
+      recipe is one.
+  - term: cell
+    kind: concept
+    definition: >
+      A cell is a small box of Python code on a page. You can run it,
+      change it and run it again, and its reset button brings back the
+      code it started with.
+  - term: string
+    kind: concept
+    definition: >
+      A string is text in quote marks, like "pancake". Python treats it as
+      text, not as a name.
+    example: '"pancake "'
+  - term: "print()"
+    python: print
+    kind: function
+    definition: Shows whatever is inside its brackets.
+    example: "print(3 * 250)"
+  - term: "*"
+    kind: operator
+    definition: >
+      Multiplies two numbers. With a string and a whole number, it repeats
+      the string that many times.
+    example: 'print(3 * "ha ")'

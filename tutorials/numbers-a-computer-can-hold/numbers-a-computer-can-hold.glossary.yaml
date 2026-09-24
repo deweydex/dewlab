@@ -1,0 +1,192 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Comes after four-questions and recipes-are-algorithms in the Plot Twist
+# track. "*", "=", "def", "variable" and "parameter" were introduced there.
+# split_bill is the course's own toolkit function, not a Python name, so
+# it has no python: line.
+entries:
+  - term: "/"
+    kind: operator
+    definition: "Divides. The answer is always a float: 7 / 2 is 3.5, and 6 / 3 is 2.0."
+    example: "7 / 2"
+  - term: "//"
+    kind: operator
+    definition: >
+      Divides, and keeps only the whole number part, rounding down. This is
+      floor division: 7 // 2 is 3, and -7 // 2 is -4.
+    example: "7 // 2"
+  - term: "%"
+    kind: operator
+    definition: >
+      Gives the remainder after floor division: 7 % 2 is 1. Programmers
+      often call it modulo, or mod.
+    example: "25 % 4"
+  - term: natural numbers
+    kind: concept
+    definition: >
+      The natural numbers, written N, are the counting numbers 0, 1, 2, 3
+      and so on. In N you cannot always subtract: 3 - 5 has no answer.
+  - term: integers
+    kind: concept
+    definition: >
+      The integers, written Z, are the whole numbers, with the negative
+      ones added. In Z you can always subtract, but 7 ÷ 2 has no answer.
+  - term: rational numbers
+    kind: concept
+    definition: >
+      The rational numbers, written Q, are the numbers you can write as one
+      integer divided by another, like 7/2. You can divide by anything
+      except 0.
+  - term: real numbers
+    kind: concept
+    definition: >
+      The real numbers, written R, are all the points on the number line.
+      They include numbers that are not fractions, like the square root of
+      2 and pi.
+  - term: int
+    python: int
+    kind: concept
+    definition: >
+      An int is a whole number in Python, like 7 or -2. Ints are exact, and
+      they never run out of room, however big they get.
+  - term: float
+    python: float
+    kind: concept
+    definition: >
+      A float is a number with a decimal point in Python, like 3.5. Floats
+      are very close to the true value, but often not exactly equal:
+      0.1 + 0.2 gives 0.30000000000000004.
+  - term: "type()"
+    python: type
+    kind: function
+    definition: Tells you what kind of value something is, such as int or float.
+    example: "type(7 / 2)"
+  - term: order of operations
+    kind: concept
+    definition: >
+      The order of operations is the order Python works through one line:
+      brackets first, then powers, then multiplying and dividing, then
+      adding and subtracting. At school it may have been BIMDAS or BODMAS.
+  - term: expression
+    kind: concept
+    definition: >
+      An expression is a piece of code that Python works out to one value,
+      like 3 * 6 + 14.
+  - term: operator
+    kind: concept
+    definition: >
+      An operator is a symbol that does one job in an expression, like +,
+      *, // or %.
+  - term: statement
+    kind: concept
+    definition: >
+      A statement is one complete instruction, usually one line, like
+      total = 32 or print(total).
+  - term: keyword
+    kind: concept
+    definition: >
+      A keyword is a word Python keeps for its own use, like def, return or
+      import. You cannot use a keyword as a name.
+  - term: power, base, exponent
+    kind: concept
+    definition: >
+      A power is a number multiplied by itself a number of times. In 2^10,
+      the base is 2, the number being multiplied, and the exponent is 10,
+      how many times.
+    example: "2 ** 10  # 1024"
+  - term: "**"
+    kind: operator
+    definition: "Raises a number to a power: 2 ** 10 is 1024."
+    example: "2 ** 10"
+  - term: logarithm
+    kind: formula
+    definition: >
+      A logarithm is the number of times you multiply a base to reach a
+      number. log2(16) = 4, because 2^4 = 16. It is a power, read
+      backwards.
+  - term: module
+    kind: concept
+    definition: >
+      A module is a collection of extra tools that Python keeps on the
+      shelf until you ask for them with import.
+    example: "import math"
+  - term: "import"
+    python: import
+    kind: keyword
+    definition: Brings a module into the page, so its tools can be used.
+    example: "import math"
+  - term: "math.log2(), math.log10()"
+    python: [math.log2, math.log10]
+    kind: function
+    definition: >
+      Give the logarithm base 2 and base 10: how many times you multiply by
+      2, or by 10, to reach a number.
+    example: "math.log2(1024)  # 10.0"
+  - term: "round()"
+    python: round
+    kind: function
+    definition: >
+      Rounds a number to the nearest whole number, or to a number of
+      decimal places given second.
+    example: "round(23.456, 2)  # 23.46"
+  - term: "return"
+    python: return
+    kind: keyword
+    definition: >
+      Hands a value back from a function to the code that called it.
+    example: "return total / people"
+  - term: docstring
+    kind: concept
+    definition: >
+      A docstring is the text in three quote marks under a def line. It says
+      in words what the function promises. Python does not check it.
+  - term: "assert"
+    python: assert
+    kind: keyword
+    definition: >
+      Checks that something is true. If it is, nothing happens; if it is
+      not, Python stops with an AssertionError.
+    example: "assert share_of(84, 4) == 21"
+  - term: AssertionError
+    python: AssertionError
+    kind: keyword
+    definition: >
+      The error Python raises when an assert finds something false. It
+      means a promise was not kept, on the line it names.
+  - term: "=="
+    kind: operator
+    definition: >
+      Asks whether two values are equal, and gives True or False. It is
+      different from =, which makes a name point at a value.
+    example: "7 // 2 == 3"
+  - term: default value
+    kind: concept
+    definition: >
+      A default value is the value a parameter takes when a call does not
+      give one. In def split_bill(total, people, tip_percent=0), the tip is
+      0 unless you say otherwise.
+  - term: input, output
+    kind: concept
+    definition: >
+      Input is a value a program is given, often typed by a person. Output
+      is what a program shows or hands back.
+  - term: "input()"
+    python: input
+    kind: function
+    definition: >
+      Waits for someone to type, and gives back what they typed, as a
+      string. It needs a keyboard, so the cells on these pages do not use
+      it.
+    example: 'input("What is the bill? ")'
+  - term: toolkit
+    kind: concept
+    definition: >
+      Your toolkit is the set of functions you build across this course.
+      Later pages can use them without you writing them again.
+  - term: "split_bill(total, people, tip_percent=0)"
+    kind: function
+    definition: >
+      Returns each person's share of a bill, in euro, rounded to the cent,
+      with an optional tip as a percentage. It is the first function in your
+      toolkit.
+    example: "split_bill(84, 4, 10)  # 23.1"

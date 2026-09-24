@@ -1,0 +1,62 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: bit
+    kind: concept
+    definition: >
+      A bit is one binary digit, a 0 or a 1. A computer keeps everything as
+      rows of bits, because a switch is either off or on.
+  - term: binary, base 2
+    kind: concept
+    definition: >
+      Binary is a way of writing numbers with only two digits, 0 and 1.
+      Each column is worth twice the column to its right: 1, 2, 4, 8 and so on.
+    example: "1101₂ = 8 + 4 + 0 + 1 = 13"
+  - term: byte
+    kind: concept
+    definition: >
+      A byte is eight bits together. It holds 256 different values, from 0
+      to 255.
+  - term: hexadecimal, base 16
+    kind: concept
+    definition: >
+      Hexadecimal is a way of writing numbers with sixteen digits, 0 to 9
+      and then A to F. One hex digit stands for exactly four bits, so a
+      byte is always two hex digits.
+    example: "FF = 15 × 16 + 15 = 255"
+  - term: "0b, 0x"
+    kind: concept
+    definition: >
+      These are prefixes that tell Python how a number is written. 0b means
+      binary, and 0x means hexadecimal.
+    example: "0b1101 == 13 and 0xFF == 255"
+  - term: "format()"
+    python: format
+    kind: function
+    definition: >
+      Writes a number as text in a chosen form. "b" asks for binary, and
+      "X" asks for hexadecimal with capital letters.
+    example: 'format(255, "X")'
+  - term: pixel
+    kind: concept
+    definition: >
+      A pixel is one dot of a screen. Each pixel is three tiny lights, red,
+      green and blue, and each light has a brightness from 0 to 255.
+  - term: "hex colour, #RRGGBB"
+    kind: concept
+    definition: >
+      A hex colour is three bytes in a row, written in hexadecimal: the
+      brightness of red, then green, then blue, each from 00 to FF.
+    example: "#FF8800 is full red, some green and no blue: orange"
+  - term: "to_binary(), to_hex()"
+    kind: function
+    definition: >
+      Write a whole number of 0 or more as a string of binary digits, or
+      of hexadecimal digits, with no 0b or 0x in front. Both are tools in
+      your own toolkit.
+    example: 'to_hex(255) gives "FF"'
+  - term: binary fraction
+    kind: concept
+    definition: >
+      A binary fraction is a number after the point written in binary, with
+      columns worth a half, a quarter, an eighth and so on. A tenth has no
+      exact binary form, which is why 0.1 + 0.2 is not exactly 0.3 in Python.
