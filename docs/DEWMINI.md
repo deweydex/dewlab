@@ -114,9 +114,12 @@ The rest is left to you.
 **Practice** adds a problem from dewlab's own practice bank.
 
 To add a cell, use the seam. The thin line between any two cells, and
-above the first, carries **Python** and **Text** buttons. That is the
-only place those buttons live. A cell therefore arrives where you were
-looking, rather than at the bottom of a page you then scroll back up.
+above the first, carries **Python** and **Text** buttons. A cell
+therefore arrives where you were looking, rather than at the bottom of a
+page you then scroll back up. An empty notebook also shows **Python
+cell** and **Text cell** buttons in its "Nothing here yet" box, because
+a seam with nothing above or below it reads as a divider rather than a
+control.
 
 ---
 

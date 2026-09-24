@@ -4600,3 +4600,17 @@ Everything the page writers had flagged as unsure checked out. Every changed num
 **The course description** now says all ten units are written and in beta.
 
 *Cost to change: the course file and ten folders.*
+
+---
+
+**7.223 — dewmini: a first cell from an empty notebook, a delete that deletes, and both workspaces on the home page.** Josh reported: "there is no way to start from nothing and just add a cell", and "delete cell wasn't working", and asked for "an easy card to access dewmini and dewmini web on the front page".
+
+**Starting from nothing.** The toolbar's own Python and Text buttons were removed as duplicates of the insert seams. That left the seam over an empty notebook, a faint line of small buttons at 40% opacity, as the only way to add a blank cell. On a page with nothing above or below it, the seam reads as a divider rather than a control. The empty notebook's "Nothing here yet" box now has **Python cell** and **Text cell** buttons of its own. The toolbar still has no duplicate. Once there is a cell, the box hides and the seams take over.
+
+**Delete.** A cell's delete is arm-then-confirm: the first press arms it, the second deletes. The outside-click listener that disarms it compared `e.target` to the button. The button holds an icon and a label, so a second press almost always lands on one of them. The listener then disarmed the button in the capture phase, just before its own click handler ran, and the second press armed it again instead of deleting. Delete worked only on the button's padding. The listener now uses `btn.contains(e.target)`, with a test that presses the icon and then the label. That was the only comparison of its kind in `compose/` and `assets/`.
+
+**The home page** gains two cards beside "What dewlab can do": dewmini, a blank notebook, and dewmini web, a blank web workspace. Adjacent cards inside the hero came out as a grid each. Inside an `md_in_html` wrapper their placeholders are one newline apart, not two, and `CARD_RUN_RE` wanted two. It now takes any whitespace, with a test case for cards inside a wrapper.
+
+**Also.** `docs/WRITING_TUTORIALS.md` said all four widgets fail on a hosted page. `text_input` and `dropdown` work there; only `button` and `image_input` need the main thread, as `tests/e2e/test_phase0_golden_path.py` has shown since the round trip was built.
+
+*Cost to change: small and local; the empty-state buttons can go if the seam is made visible enough on its own.*

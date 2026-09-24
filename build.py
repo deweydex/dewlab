@@ -236,7 +236,9 @@ MARKDOWN_WRAPPER_RE = re.compile(
     r'|<aside class="dl-note" id="[^"]+">'
 )
 # A run of one or more adjacent card placeholders — see place_page_cards().
-CARD_RUN_RE = re.compile(r"<!--dewlab-page-card-\d+-->(?:\n\n<!--dewlab-page-card-\d+-->)*")
+# Whitespace only between them: inside an md_in_html wrapper (the home
+# page's dl-hero) adjacent cards come out one newline apart, not two.
+CARD_RUN_RE = re.compile(r"<!--dewlab-page-card-\d+-->(?:\s*<!--dewlab-page-card-\d+-->)*")
 
 
 class BuildError(Exception):

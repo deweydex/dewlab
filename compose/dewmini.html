@@ -132,19 +132,30 @@
       </div>
     </div>
 
+    <!-- The empty notebook's own way to start from nothing. The seam below
+         does the same job, but on an empty page it reads as a divider, not
+         a control (DECISIONS_LOG 7.223), so the first cell has buttons of
+         its own here. Once there is a cell, the seams take over. -->
     <div class="dm-empty" id="dm-empty" hidden>
       <p>Nothing here yet.</p>
+      <div class="dm-empty-actions">
+        <button type="button" class="dm-tool dm-tool-accent" id="dm-empty-add-python">
+          <span class="dm-tool-icon dm-tool-icon-python" aria-hidden="true"></span>Python cell
+        </button>
+        <button type="button" class="dm-tool" id="dm-empty-add-text">
+          <span class="dm-tool-icon dm-tool-icon-text" aria-hidden="true"></span>Text cell
+        </button>
+      </div>
       <p class="dm-panel-note">
         Cells share one namespace top to bottom, the way a notebook does —
         write something in the first cell and the next one can use it.
       </p>
       <p class="dm-panel-note">
-        <strong>Python</strong> or <strong>Text</strong> on the seam below adds
-        a blank cell — and every seam between cells does the same, so you can
-        always add one where you are looking. <strong>See an example</strong>
-        above fills this with a short worked notebook, and
-        <strong>Start with imports</strong> opens a cell with numpy, pandas and
-        matplotlib ready.
+        After the first cell, <strong>Python</strong> and <strong>Text</strong>
+        on the line between any two cells add another where you are looking.
+        <strong>See an example</strong> above fills this with a short worked
+        notebook, and <strong>Start with imports</strong> opens a cell with
+        numpy, pandas and matplotlib ready.
       </p>
     </div>
 

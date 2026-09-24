@@ -192,6 +192,7 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 }
 .dm-empty p:first-child { margin: 0 0 0.5rem; color: var(--dl-heading); font-size: 1.05rem; }
 .dm-empty .dm-panel-note { max-width: 30rem; margin-inline: auto; }
+.dm-empty-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem; margin: 0.9rem 0 1rem; }
 
 .dm-import-notice {
   text-align: left;
