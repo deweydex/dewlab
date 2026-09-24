@@ -1,0 +1,49 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Comes after code-other-people-can-read, the last page of the Plot Twist
+# track. pseudocode was introduced on recipes-are-algorithms; structured
+# walkthrough, test suite and step_through on does-it-work; code review,
+# reviewer and refactoring on code-other-people-can-read, so none is
+# repeated here. route_length, hits_player and random_throw are starter
+# code for the projects, not Python names and not toolkit functions, so
+# they have no entry. random.uniform is used once in a starter cell and
+# not taught, so it is left out.
+entries:
+  - term: design
+    kind: concept
+    definition: >
+      A program's design is the four questions answered in writing before
+      any code: what it keeps, what each function promises, what happens
+      when, and what the program assumes.
+  - term: interface
+    kind: concept
+    definition: >
+      An interface is the set of promises one part of a program makes to
+      the other parts: each function's name, its inputs and its result.
+      A team agrees its interfaces before anyone writes a function body.
+  - term: "release, version number"
+    kind: concept
+    definition: >
+      A release is a version of a program that someone outside the team
+      could use on the day it comes out. Each release has a version
+      number, such as 0.1 or 1.0, and a date, and old ones are kept.
+  - term: release notes
+    kind: concept
+    definition: >
+      Release notes are a few lines that come with a release. They say
+      what is new, what changed, and what is known not to work yet.
+  - term: retrospective
+    kind: concept
+    definition: >
+      A retrospective is a meeting after a piece of work, where the team
+      looks back at how it worked together, to learn from it.
+  - term: definition of done
+    kind: concept
+    definition: >
+      A definition of done is a short list, agreed at the start, of what
+      must be true before any piece of work counts as finished.
+  - term: rubric
+    kind: concept
+    definition: >
+      A rubric is a table that says what a piece of work is judged on, and
+      what each level of it looks like.

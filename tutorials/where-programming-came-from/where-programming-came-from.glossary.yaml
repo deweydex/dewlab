@@ -1,0 +1,51 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: Analytical Engine
+    kind: concept
+    definition: >
+      The Analytical Engine was a computer made of gears, designed by Charles
+      Babbage from 1834. It was never finished. Its instructions were to come
+      on punched cards.
+  - term: "store, mill"
+    kind: concept
+    definition: >
+      The store was the part of the Analytical Engine that held numbers while
+      it worked. The mill was the part that did the arithmetic. Every computer
+      today still has parts that do these two jobs.
+  - term: Note G
+    kind: concept
+    definition: >
+      Note G is the last of Ada Lovelace's notes, published in 1843. It sets
+      out every step the Analytical Engine would take to work out the
+      Bernoulli numbers, and it is often called the first published program.
+  - term: Bernoulli numbers
+    kind: concept
+    definition: >
+      The Bernoulli numbers are a sequence of fractions that appear in
+      formulas for sums of powers, such as 1² + 2² + ... + n². Each one can be
+      found from the ones before it. They begin 1, −1/2, 1/6, 0, −1/30.
+  - term: "Fraction()"
+    python: fractions.Fraction
+    kind: function
+    definition: >
+      Makes an exact fraction from a whole number on top and a whole number
+      underneath. Arithmetic on fractions gives exact fractions back, with no
+      rounding.
+    example: "Fraction(1, 3) + Fraction(1, 6)"
+  - term: high-level language
+    kind: concept
+    definition: >
+      A high-level language is a way of writing a program in words and
+      symbols that people can read. A compiler or an interpreter turns it into
+      the machine's own instructions. FORTRAN, BASIC and Python are examples.
+  - term: BASIC
+    kind: concept
+    definition: >
+      BASIC is a programming language made in 1964 at Dartmouth College so
+      that beginners could program. Its lines are numbered. Many home
+      computers of the 1980s had it built in.
+  - term: JavaScript
+    kind: concept
+    definition: >
+      JavaScript is the programming language that web browsers run. Brendan
+      Eich wrote its first version at Netscape in 1995.

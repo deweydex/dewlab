@@ -243,6 +243,7 @@ groups:
       - kinds-of-data-and-honest-charts
       - collections-without-repeats
       - circles-that-overlap
+      - sets-in-databases
       - mixed-many-values
       - finding-things-fast
       - sorting-a-hand-of-cards
@@ -272,6 +273,24 @@ groups:
       - waves
       - how-tall-is-that-tree
       - mixed-shapes-angles-and-waves
+
+  - key: plot-twist-change-and-people
+    name: "Plot Twist: change, and programs for people"
+    intro: >
+      Limits, the derivative, the rules of change, and solving by computing
+      with bisection and Newton's method; then where programming came from,
+      one idea in many languages, code other people can read, and a team
+      project that uses everything.
+    tutorials:
+      - getting-closer
+      - how-fast-right-now
+      - rules-for-change
+      - solving-by-computing
+      - mixed-change
+      - where-programming-came-from
+      - many-languages-one-idea
+      - code-other-people-can-read
+      - building-it-together
 
   - key: object-oriented-programming
     name: Objects, classes, and building bigger programs

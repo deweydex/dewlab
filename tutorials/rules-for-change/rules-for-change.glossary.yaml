@@ -1,0 +1,50 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: differentiating
+    kind: concept
+    definition: >
+      Differentiating is finding the derivative of a rule. The result is a
+      new rule, f′(x), that gives the slope of the first rule at every x.
+  - term: "power rule, xⁿ → n xⁿ⁻¹"
+    kind: formula
+    definition: >
+      The power rule says the slope of xⁿ is n xⁿ⁻¹: multiply by the power,
+      then take one off the power. It holds for any power, including
+      fractions and negative numbers.
+    example: "the slope of x ** 4 is 4 * x ** 3"
+  - term: "a number in front, a number alone"
+    kind: formula
+    definition: >
+      A number in front stays in front: the slope of 5x³ is 15x². A number
+      on its own, such as 7, has slope 0, because its graph is flat.
+  - term: "sum rule, (f + g)′ = f′ + g′"
+    kind: formula
+    definition: >
+      The sum rule says the slope of a sum is the sum of the slopes. With
+      the power rule, it gives the slope of any polynomial, one term at a
+      time.
+  - term: "product rule, (fg)′ = f g′ + g f′"
+    kind: formula
+    definition: >
+      The product rule gives the slope of one rule times another: the
+      first times the slope of the second, plus the second times the slope
+      of the first. Multiplying the two slopes does not work.
+  - term: "quotient rule, (f / g)′ = (g f′ − f g′) / g²"
+    kind: formula
+    definition: >
+      The quotient rule gives the slope of one rule divided by another: the
+      bottom times the slope of the top, minus the top times the slope of
+      the bottom, all over the bottom squared. The order matters, and the
+      bottom must not be 0.
+  - term: "chain rule, f(g(x))′ = f′(g(x)) × g′(x)"
+    kind: formula
+    definition: >
+      The chain rule gives the slope of a rule inside a rule: the slope of
+      the outside rule, worked out at the inside value, times the slope of
+      the inside rule. Here the rates multiply.
+  - term: slope 0 at a top or bottom
+    kind: concept
+    definition: >
+      At the top or bottom of a smooth curve, the tangent line is flat, so
+      the slope is 0. Solving f′(x) = 0 finds the places where a curve can
+      turn.

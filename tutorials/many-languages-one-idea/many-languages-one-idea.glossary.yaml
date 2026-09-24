@@ -1,0 +1,42 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: SQL
+    kind: concept
+    definition: >
+      SQL is a language for asking a database questions. A database keeps its
+      data in tables, and a SQL query says which rows and columns you want.
+      It grew out of SEQUEL, described at IBM in 1974.
+  - term: "AVG()"
+    kind: function
+    definition: >
+      Gives the average of a column in SQL: the sum of its values shared out
+      over the rows.
+    example: "SELECT AVG(rainfall_mm) FROM rain_tbl;"
+  - term: "COUNT(*)"
+    kind: function
+    definition: Counts the rows a SQL query finds.
+    example: "SELECT COUNT(*) FROM rain_tbl WHERE rainfall_mm > 5;"
+  - term: a query inside a query
+    kind: concept
+    definition: >
+      A SQL query can hold a second query in brackets. The one in brackets
+      runs first, and the outer query uses its answer.
+    example: "WHERE rainfall_mm > (SELECT AVG(rainfall_mm) FROM rain_tbl)"
+  - term: declarative
+    kind: concept
+    definition: >
+      A declarative language lets a program say what result it wants, and
+      the language decides the steps. SQL is declarative. Python is step by
+      step: the program says each step, in order.
+  - term: interpreter
+    kind: concept
+    definition: >
+      An interpreter is a program that reads another program and carries out
+      its instructions as it goes. Being compiled or interpreted is a fact
+      about the tool that runs a language, not about the language itself.
+  - term: characteristics of a programming language
+    kind: concept
+    definition: >
+      The characteristics of a language are the ways it can differ from
+      others: its syntax, how it treats types, how it is run, where it runs,
+      whether it is step by step or declarative, and what it was made for.
