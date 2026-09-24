@@ -222,8 +222,9 @@ that is made, and whose answer is never used.
 </details>
 
 **7. Fix.** Before a game of tag, a child counts down in twos: 5, 3,
-1, Go! This version never says "Go!", and stops with a
-`RecursionError`. Find the mistake, and fix it.
+1, Go! This version never says "Go!". The cell is meant to fail: it
+prints a long column of numbers, then stops with a `RecursionError`.
+The first few numbers are the clue. Find the mistake, and fix it.
 
 ```python exec
 id: calls-itself-practice-fix-twos

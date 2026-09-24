@@ -237,8 +237,8 @@ This is the *inclusion–exclusion principle*, for two sets. The name says
 what it does: include each set, then exclude what was counted twice. For
 the club it gives $10 + 11 - 7 = 14$.
 
-It has one more job. With the union we can count the fourth region,
-outside both circles, without looking at a single name: $20 - 14 = 6$.
+It also counts the fourth region, outside both circles, without looking
+at a single name: $20 - 14 = 6$.
 
 A rule that holds for one club is not yet a rule for every pair of sets.
 Let's test it on a thousand pairs. `random.sample(values, k)` picks `k`
@@ -259,10 +259,9 @@ for trial in range(1000):
 print(broken, "pairs of sets broke the rule")
 ```
 
-None of them. A thousand checks do not make a proof, but the picture
-does: every member of $A \cup B$ is counted once by the formula, whichever
-of the three regions they stand in. The checks tell us we wrote the
-picture's idea down correctly.
+None of them. A thousand checks are not a proof. The picture is the
+proof: whichever of the three regions a person stands in, the formula
+counts them once. The checks tell us we wrote that idea down correctly.
 
 You have met this rule before, in a different space. On
 [Chances that combine](tutorial:chances-that-combine#when-both-can-happen)
@@ -417,10 +416,8 @@ print(exactly_two == set(two_yes))
 names from the loop. Two different methods, one answer. That is the
 kind of check this course keeps coming back to.
 
-Which route is better? The loop asks about one person at a time, and it
-would work for four questions, or ten, with no change but the list of
-groups. The regions give a picture, and they show at a glance where
-everyone stands.
+The loop would work for four questions, or ten, with no change but the
+list of groups. The regions give a picture of where everyone stands.
 
 ### Your turn
 
@@ -489,8 +486,7 @@ for trial in range(1000):
 print(broken, "sets of three broke the rule")
 ```
 
-Zero again. The picture says why the rule holds, and the loop checks
-that we wrote it down without a mistake.
+Zero again.
 
 ## Filling a diagram from the totals
 

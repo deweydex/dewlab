@@ -109,8 +109,8 @@ while people_who_know < population:
 print(hours, "hours, and", people_who_know, "people could know")
 ```
 
-It takes 23 hours. After 22 hours, 4,194,304 people know, which is not
-quite everyone. One more doubling passes the whole population. (The
+It takes 23 hours. After 22 hours, 4,194,304 people know, which is
+about four people in every five. One more doubling passes the whole population. (The
 rumour runs out of new people before the last hour ends, so 8,388,608
 is what the rule would give, not what could happen.)
 
@@ -138,8 +138,8 @@ plt.ylabel("people who know")
 
 For most of the day the line lies flat along the bottom. After 13 hours,
 only 8,192 people know, and the country has not noticed. Then the line
-rises very steeply. In the last hour, more people hear the rumour than in all the
-hours before it put together.
+rises very steeply. By the rule, more people hear the rumour in each
+hour than in all the hours before it put together.
 
 Growth like this, where a number is multiplied by the same amount each
 step, is called *exponential growth*. The name comes from the exponent:
@@ -190,8 +190,8 @@ You met the start of this on
 with cents. Now let's fill the whole board. Square 1 has $2^0 = 1$ grain,
 square 2 has $2^1 = 2$, and square $k$ has $2^{k-1}$. The power is one
 less than the square's number, because the first square has had no
-doublings yet. Nothing multiplied together gives 1, as a product
-started at 1 on
+doublings yet. Multiplying no 2s at all leaves 1, in the same way that
+a running product started at 1 on
 [Doing it again](tutorial:doing-it-again#pi-multiplying-instead-of-adding).
 So $2^0 = 1$.
 
@@ -424,7 +424,7 @@ remainder each time, while $\log_2 1000$ is about 9.97. So counting
 halvings gives the logarithm rounded down: the number of whole halvings
 that fit.
 
-We have now counted halvings three times, so it is time for a tool.
+We have now counted halvings several times, so it is time for a tool.
 It is the last tool of this unit. Here is its promise, and its body is
 yours to write. It is the tennis cell, with `n` in place of `players`.
 
@@ -492,16 +492,16 @@ What would `halvings(8)` give with `n > 0`?
 ```
 
 `math.floor` rounds down, the partner of `math.ceil`. The fifth test says
-something worth a second look. Five million halves 22 times to reach 1,
-while the rumour needed 23 doublings to pass five million. Halvings round
+something worth a second look. 5,149,139 halves 22 times to reach 1,
+while the rumour needed 23 doublings to pass it. Halvings round
 down and doublings round up, because 5,149,139 sits between $2^{22}$ and
 $2^{23}$.
 
 There is one more way to see `halvings`. On
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#from-a-number-to-its-bits),
-the recipe for binary halved a number again and again. Each `// 2` drops
-the last binary digit of a number, so the halvings of $n$ are one fewer than its
-number of binary digits. What do you expect `to_binary(1000)` to look
+the recipe for binary halved a number again and again. Each `// 2`
+drops the last binary digit of a number, so the halvings of $n$ are one
+fewer than its number of binary digits. What do you expect `to_binary(1000)` to look
 like, and how long?
 
 ```python exec
