@@ -7,9 +7,15 @@ version: 2026.08.23.1
 
 # Venn diagrams: drawing sets and their overlaps — Practice
 
-Answers are hidden. Where a question asks about three sets, sketch the diagram before you reason about it — that is what the diagram is for.
+Each answer is hidden until you open it. When a question is about three
+sets, sketch the diagram first, and then work out the answer. Helping
+you think is what the diagram is for.
 
 ## Tools
+
+This cell sets up the whole class, `everyone`, and the three sets of
+students from the tutorial. It also defines `complement()`. Run it
+before you try the problems, and use it to check your answers.
 
 ```python exec
 id: tools-1
@@ -29,13 +35,13 @@ print("python | sql :", sorted(python | sql))
 print("python ^ sql :", sorted(python ^ sql))
 ```
 
-## Two Sets
+## Two sets
 
 **1.** Using the sets above, who knows Python but not SQL?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`python - sql` = Aoife, Ben, Fiona.
+`python - sql` gives Aoife, Ben and Fiona.
 
 </details>
 
@@ -43,65 +49,74 @@ print("python ^ sql :", sorted(python ^ sql))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`python ^ sql` = Aoife, Ben, Fiona, Gearoid, Hannah.
+`python ^ sql` gives Aoife, Ben, Fiona, Gearoid and Hannah.
 
-That is symmetric difference, which is XOR for sets: in one or the other but not both.
-
-</details>
-
-**3.** Who knows neither?
-
-<details class="dl-answer"><summary>answer</summary>
-
-`everyone - (python | sql)` = Iarla.
+This is the symmetric difference, which is XOR for sets: the people in
+one set or the other, but not in both.
 
 </details>
 
-**4.** In a two-circle diagram, how many regions are there, counting the outside?
+**3.** Who knows neither Python nor SQL?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Four: only left, only right, both, and neither.
-
-The outside region is easy to forget and is often the one a question is about.
+`everyone - (python | sql)` gives Iarla.
 
 </details>
 
-**5.** A class of 30 has 18 doing Maths and 15 doing Physics, and 7 doing both. How many do neither?
+**4.** How many regions does a two-circle diagram have, if you count the outside?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Doing at least one: 18 + 15 − 7 = 26. So 4 do neither.
+It has four: only in the left circle, only in the right circle, in both,
+and in neither.
 
-Subtracting the 7 is the whole trick — adding 18 and 15 counts the seven twice, once in each subject.
+The outside region is easy to forget, and it is often the one a
+question asks about.
 
 </details>
 
-**6.** Why does `|A ∪ B| = |A| + |B| − |A ∩ B|` need that last term?
+**5.** In a class of 30, 18 students take Maths and 15 take Physics. 7 of them take both. How many take neither?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because anyone in both sets has been counted twice, once in each, so the overlap must be taken off once.
+The number taking at least one subject is $18 + 15 - 7 = 26$. So
+$30 - 26 = 4$ take neither.
 
-This is the inclusion-exclusion principle, and the diagram makes it obvious in a way the formula does not.
+Taking away the 7 is the key step. When we add 18 and 15, we count
+those seven students twice, once in each subject.
 
 </details>
 
-## Three Sets
-
-**7.** How many regions does a three-circle diagram have, counting the outside?
+**6.** Why does $|A \cup B| = |A| + |B| - |A \cap B|$ need that last term?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Eight. Each set is either in or out, so `2³`.
+Anyone in both sets is counted twice in $|A| + |B|$, once in each set.
+So we take the overlap away once.
+
+This is the inclusion-exclusion principle. On the diagram you can see
+why it works: the overlap sits inside both circles. The formula alone
+does not show that.
 
 </details>
 
-**8.** Who knows Python or SQL but not JavaScript?
+## Three sets
+
+**7.** How many regions does a three-circle diagram have, if you count the outside?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`(python | sql) - javascript` = Aoife, Ben, Cara, Gearoid.
+It has eight. For each of the three sets, a person is either in it or
+out of it. That gives $2 \times 2 \times 2 = 2^3 = 8$ combinations.
+
+</details>
+
+**8.** Who knows Python or SQL, but not JavaScript?
+
+<details class="dl-answer"><summary>answer</summary>
+
+`(python | sql) - javascript` gives Aoife, Ben, Cara and Gearoid.
 
 </details>
 
@@ -109,7 +124,7 @@ Eight. Each set is either in or out, so `2³`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`python & sql & javascript` = Dara, Eoin.
+`python & sql & javascript` gives Dara and Eoin.
 
 </details>
 
@@ -117,112 +132,143 @@ Eight. Each set is either in or out, so `2³`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes. Both give Cara, Dara, Eoin, Fiona.
+Yes. Both give Cara, Dara, Eoin and Fiona.
 
-This is the distributive law, and it is exactly the same shape as `(a and b) or (a and c)` being the same as `a and (b or c)` in *Logic: truth tables, XOR and De Morgan's laws*.
+This is the distributive law. You met it in problem 6 of
+[Sets: building them from sorted lists — Practice](tutorial:sets-as-sorted-lists-practice).
+It has the same shape as
+a rule about `True` and `False`: `(a and b) or (a and c)` is the same as
+`a and (b or c)`. You could check that rule with a loop over every case,
+as in [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth).
 
 </details>
 
-**11.** Shade, on a three-circle diagram, the region for `A − (B ∪ C)`. Describe it in words.
+**11.** On a three-circle diagram, shade the region for $A \setminus (B \cup C)$. Describe it in words.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The part of A that overlaps neither of the others — the leftmost of the three outer petals.
+It is the part of circle A that does not overlap either of the other
+circles. That is A's outer region, the one that belongs to A alone.
 
 In words: in A only.
 
 </details>
 
-**12.** A survey of 100 people: 60 use email, 45 use messaging, 30 use both. How many use at least one?
+**12.** In a survey of 100 people, 60 use email, 45 use messaging, and 30 use both. How many use at least one?
 
 <details class="dl-answer"><summary>answer</summary>
 
-60 + 45 − 30 = 75.
+$60 + 45 - 30 = 75$.
 
 </details>
 
-**13.** Same survey, with a third option: 60 email, 45 messaging, 40 phone, 30 email+messaging, 20 email+phone, 15 messaging+phone, 10 all three. How many use at least one?
+**13.** The same survey adds a third option, the phone. Now 60 use email, 45 use messaging and 40 use the phone. 30 use email and messaging, 20 use email and the phone, and 15 use messaging and the phone. 10 use all three. How many use at least one?
 
 <details class="dl-answer"><summary>answer</summary>
 
-60 + 45 + 40 − 30 − 20 − 15 + 10 = 90.
+$60 + 45 + 40 - 30 - 20 - 15 + 10 = 90$.
 
-Add the singles, subtract the pairs, add the triple back. The last step is there because the ten who use all three were added three times and then subtracted three times, leaving them at zero.
+There are three steps: add the single sets, take away the pairs, then
+add the triple back. Why add the triple back? The ten people who use all
+three were added three times, once for each single set. Then they were
+taken away three times, once for each pair. That leaves them counted
+zero times, so we add them back once.
 
-Doing this without a diagram is hard, which is the argument for the diagram.
+This is hard to do without a diagram. That is the argument for drawing
+one.
 
 </details>
 
-## De Morgan on Sets
+## De Morgan on sets
 
-**14.** Is the complement of `A ∪ B` the same as the intersection of the complements?
+**14.** Is the complement of $A \cup B$ the same as the intersection of the two complements?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes. Being outside both circles is the same as being outside the first and outside the second.
+Yes. Being outside both circles is the same as being outside the first
+circle and outside the second.
 
-Shade it and the two descriptions land on exactly the same region.
+Shade both descriptions on a diagram, and they cover exactly the same
+region.
 
 </details>
 
-**15.** Is the complement of `A ∩ B` the same as the union of the complements?
+**15.** Is the complement of $A \cap B$ the same as the union of the two complements?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes. Being outside the overlap means missing at least one of the two, which is being outside the first or outside the second.
+Yes. Being outside the overlap means missing at least one of the two
+circles. That is the same as being outside the first circle or outside
+the second.
 
 </details>
 
-**16.** How does this proof differ from the truth-table one in *Logic: truth tables, XOR and De Morgan's laws*?
+**16.** How is this proof different from the truth-table proof in [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth)?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The truth table checks four cases exhaustively and is complete for that reason.
+The truth table checks all four cases. It is complete because there are
+no other cases.
 
-The diagram convinces you by showing that two descriptions pick out the same region, which is a different kind of seeing.
+The diagram convinces you in a different way. It shows you that two
+descriptions pick out the same region, so you see the answer.
 
-Neither is better. They are the same claim in two notations, which is why the pairing is worth having — if one of them did not land, the other might.
+Neither proof is better. They are the same claim in two notations, and
+that is why it helps to have both. If one of them did not make sense to
+you, the other might.
 
 </details>
 
-## Where It Runs Out
+## Where it runs out
 
-**17.** Four sets would need how many regions? Can four circles produce them?
+**17.** How many regions would four sets need? Can four circles make them?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Fifteen, plus the outside. And no: no arrangement of four circles in a plane gives all sixteen regions.
+Four sets need fifteen regions, plus the outside, which makes sixteen.
+And no: no arrangement of four circles on a flat page gives all sixteen
+regions.
 
-Diagrams for four sets exist, using ellipses or stranger shapes, and they stop being readable, which rather defeats the point.
+Diagrams for four sets do exist. They use ovals or stranger shapes, and
+they get much harder to read, which defeats the purpose of drawing
+them.
 
 </details>
 
-**18.** What still works fine at four sets?
+**18.** What still works well at four sets?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The set operations. `A & B & C & D` is no harder to compute than `A & B`, and inclusion-exclusion generalizes to any number of sets.
+The set operations. `A & B & C & D` is no harder to compute than
+`A & B`. Inclusion-exclusion also works for any number of sets.
 
-Every representation runs out somewhere, and knowing where is part of knowing it. A picture that helps enormously at three and not at all at four is still a good tool.
+Every way of showing an idea stops working somewhere, and part of
+knowing a tool is knowing where. A picture that helps a lot at three
+sets and not at all at four is still a good tool.
 
 </details>
 
-## One Longer One
+## One longer one
 
-**19.** A support team logs tickets by category: 120 hardware, 95 software, 60 network. 30 are both hardware and software, 25 hardware and network, 20 software and network, and 10 are all three. There are 250 tickets in total.
+**19.** A support team sorts its tickets by category. There are 120 hardware tickets, 95 software tickets and 60 network tickets. 30 tickets are both hardware and software, 25 are hardware and network, and 20 are software and network. 10 are in all three categories. There are 250 tickets in total.
 
-- (a) How many are in at least one category?
+- (a) How many tickets are in at least one category?
 - (b) How many are in none?
 - (c) How many are hardware only?
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) 120 + 95 + 60 − 30 − 25 − 20 + 10 = 210.
+(a) $120 + 95 + 60 - 30 - 25 - 20 + 10 = 210$.
 
-(b) 250 − 210 = 40.
+(b) $250 - 210 = 40$.
 
-(c) Start with 120, remove those also in software (30) and those also in network (25) — but that removed the ten in all three twice, so add ten back: 120 − 30 − 25 + 10 = 75.
+(c) Start with the 120 hardware tickets. Take away the ones that are
+also software (30) and the ones that are also network (25). But that
+takes away the ten tickets in all three categories twice, so add ten
+back: $120 - 30 - 25 + 10 = 75$.
 
-Part (c) is where a diagram becomes useful. The all-three region being subtracted twice is nearly impossible to keep track of without one, and nearly obvious with one.
+Part (c) is where a diagram becomes useful. Without one, it is very hard
+to notice that the all-three region was taken away twice. With one, it
+is easy to see.
 
 </details>

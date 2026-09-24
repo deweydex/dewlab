@@ -7,9 +7,17 @@ version: 2026.08.23.1
 
 # Logic: truth tables, XOR and De Morgan's laws — Practice
 
-Answers are hidden. Several of these ask you to predict a table before generating it — the prediction is the exercise.
+Each answer is hidden until you open it. Several of these problems ask
+you to predict a truth table before you generate it. The prediction is
+the real exercise, so try it first.
 
 ## Tools
+
+This cell defines `table()`, which prints the truth table for any
+operation on two inputs. The last line shows how to call it. There,
+`lambda a, b: a and b` is a short way to write a small function with no
+name: it takes `a` and `b`, and gives back `a and b`. To see another
+table, change the part after the colon.
 
 ```python exec
 id: tools-1
@@ -25,75 +33,87 @@ def table(expression, names=("A", "B")):
 table(lambda a, b: a and b)
 ```
 
-## Truth Tables
+## Truth tables
 
-**1.** Write the table for `A and (not B)` before generating it.
-
-<details class="dl-answer"><summary>answer</summary>
-
-True only when A is true and B is false — one row out of four.
-
-</details>
-
-**2.** How many rows does a truth table have for three inputs? For n?
+**1.** Write down the truth table for `A and (not B)`. Then generate it, and compare.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Eight, and `2ⁿ`.
-
-Each input doubles the number of cases, which is why exhaustive checking stops being practical quite quickly — twenty inputs is over a million rows.
+It is true only when A is true and B is false. That is one row out of
+four.
 
 </details>
 
-**3.** `A or B` is true in how many of the four rows? And `A and B`?
+**2.** How many rows does a truth table have for three inputs? For $n$ inputs?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Three and one.
+Three inputs give eight rows, and $n$ inputs give $2^n$ rows.
 
-`or` is the generous one: it only fails when both fail. `and` is the strict one.
+Each new input doubles the number of cases. That is why checking every
+case stops being practical quite quickly. Twenty inputs give over a
+million rows.
 
 </details>
 
-**4.** How does the logical `or` differ from the everyday one?
+**3.** In how many of the four rows is `A or B` true? What about `A and B`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The logical `or` is true when both are true. "Tea or coffee?" usually means one or the other and not both.
+`A or B` is true in three rows, and `A and B` in one.
 
-The everyday meaning is exclusive or, which is a different operation and does not have a keyword in Python.
+`or` is the generous one: it is false only when both inputs are false.
+`and` is the strict one: it is true only when both inputs are true.
 
 </details>
 
-## Exclusive Or
+**4.** How is the logical `or` different from the everyday one?
+
+<details class="dl-answer"><summary>answer</summary>
+
+The logical `or` is true when both inputs are true. In everyday English,
+"Tea or coffee?" usually means one or the other, and not both.
+
+The everyday meaning is exclusive or. That is a different operation,
+and Python has no keyword for it.
+
+</details>
+
+## Exclusive or
 
 **5.** Write XOR using only `and`, `or` and `not`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`(a or b) and not (a and b)` — at least one, but not both.
+`(a or b) and not (a and b)`. This says "at least one, but not both".
 
-Or equivalently `(a and not b) or (b and not a)`, which lists the two true rows directly.
-
-</details>
-
-**6.** Why does `a != b` do the same job for booleans?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Because "exactly one is true" and "they are different" are the same condition when there are only two possible values.
-
-It is one idea named twice by people who came at it from different directions, not a coincidence.
+Another way is `(a and not b) or (b and not a)`. This one lists the two
+rows where XOR is true.
 
 </details>
 
-**7.** What is `a ^ a` for any boolean a? And `a ^ False`?
+**6.** Why does `a != b` do the same job for `True` and `False` values?
 
 <details class="dl-answer"><summary>answer</summary>
 
-False, and a.
+When there are only two possible values, "exactly one is true" and "they
+are different" are the same condition.
 
-Anything XOR itself is false, and XOR with false leaves things alone. Both of those get used in simple encryption: XOR a message with a key and then XOR again with the same key, and you get the message back.
+It is not a coincidence. It is one idea with two names, because people
+came to it from different directions.
+
+</details>
+
+**7.** What is `a ^ a`, for either value of `a`? And what is `a ^ False`?
+
+<details class="dl-answer"><summary>answer</summary>
+
+`a ^ a` is `False`, and `a ^ False` is `a`.
+
+Anything XOR itself is false, and XOR with false leaves a value
+unchanged. Simple encryption uses both of these facts. XOR a message
+with a key, then XOR the result again with the same key, and you get the
+message back.
 
 </details>
 
@@ -105,7 +125,7 @@ Anything XOR itself is false, and XOR with false leaves things alone. Both of th
 
 `(not A) or (not B)`.
 
-Push the `not` inside and the `and` becomes an `or`.
+Move the `not` inside the bracket, and the `and` becomes an `or`.
 
 </details>
 
@@ -123,7 +143,9 @@ Push the `not` inside and the `and` becomes an `or`.
 
 `a and b`.
 
-Apply De Morgan to the inside: `not(not a or not b)` is `not(not a) and not(not b)`, which is `a and b`.
+Use De Morgan's law on the whole expression. `not(not a or not b)` is
+`not(not a) and not(not b)`. Two `not`s cancel each other, so this is
+`a and b`.
 
 </details>
 
@@ -141,19 +163,26 @@ Apply De Morgan to the inside: `not(not a or not b)` is `not(not a) and not(not 
 
 `(not a) and (not b or c)`.
 
-Push the outer `not` in: `not a and not(b and not c)`. Then push the inner one: `not b or c`.
+First, move the outer `not` in. That gives `not a and not(b and not c)`.
+Then move the inner `not` in. `not(b and not c)` becomes `not b or c`.
 
-That is two steps, working outwards in. Check it by looping over all eight combinations.
+That is two steps, working from the outside in. With three inputs there
+are eight combinations, so check your answer with a loop over all
+eight.
 
 </details>
 
-**13.** Why is looping over four rows a *proof* here, when "I tested it and it worked" usually is not?
+**13.** Why is a loop over four rows a *proof* here, when "I tested it and it worked" usually is not?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because the space of possible inputs has exactly four things in it and the loop visited all of them. There is nothing left untested.
+There are exactly four possible inputs, and the loop tried all of them.
+Nothing is left untested.
 
-For almost anything else — a function of integers, say — the space is unbounded and a test can only fail to find a problem. Exhaustive checking is a proof when the space is small enough to exhaust, and almost never otherwise.
+For almost anything else, such as a function that takes whole numbers,
+the possible inputs never run out. A test can then only fail to find a
+problem. Checking every case is a proof when there are few enough cases
+to check them all, and almost never otherwise.
 
 </details>
 
@@ -165,78 +194,98 @@ For almost anything else — a function of integers, say — the space is unboun
 
 `attended and submitted`.
 
-Nobody writes the first version deliberately. They arrive at it by adding a condition, negating the whole thing later, and adding another — the tangle grows a bit at a time, which is why knowing the rule matters.
+People rarely write the first version on purpose. It grows a little at a
+time: someone adds a condition, later puts a `not` around the whole
+thing, then adds another condition. That is why knowing the rule
+matters.
 
 </details>
 
-**15.** A system logs an error when `not (status == "ok" and errors == 0)`. Rewrite it so a reader can see what triggers a log.
+**15.** A system logs an error when `not (status == "ok" and errors == 0)`. Rewrite the condition so that a reader can see what causes a log entry.
 
 <details class="dl-answer"><summary>answer</summary>
 
 `status != "ok" or errors != 0`.
 
-Now it reads as what it is: something is wrong with the status, or there are errors.
+Now it reads as what it means: either something is wrong with the
+status, or there are errors.
 
 </details>
 
-**16.** `not (age >= 18 and has_id)` — rewrite it.
+**16.** Rewrite `not (age >= 18 and has_id)`.
 
 <details class="dl-answer"><summary>answer</summary>
 
 `age < 18 or not has_id`.
 
-Note that `not (age >= 18)` becomes `age < 18` rather than `age <= 18`. Getting the boundary wrong here is the single most common off-by-one in condition logic.
+Look at the first part. `not (age >= 18)` becomes `age < 18`, and not
+`age <= 18`. Getting a boundary wrong by one, like this, is called an
+*off-by-one error*. It is one of the most common mistakes in
+conditions.
 
 </details>
 
 ## Sets
 
-**17.** Given `everyone = {1..8}`, `A = {1,2,3,4}` and `B = {3,4,5,6}`, compute the complement of `A ∪ B`, and the intersection of the two complements.
+**17.** Take everyone $= \{1, 2, 3, 4, 5, 6, 7, 8\}$, $A = \{1, 2, 3, 4\}$ and $B = \{3, 4, 5, 6\}$. Find the complement of $A \cup B$. Then find the intersection of the two complements, of $A$ and of $B$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`A ∪ B = {1,2,3,4,5,6}`, so its complement is `{7,8}`.
+$A \cup B = \{1, 2, 3, 4, 5, 6\}$, so its complement is $\{7, 8\}$.
 
-`complement(A) = {5,6,7,8}` and `complement(B) = {1,2,7,8}`, and their intersection is `{7,8}`.
+The complement of $A$ is $\{5, 6, 7, 8\}$, and the complement of $B$ is
+$\{1, 2, 7, 8\}$. Their intersection is $\{7, 8\}$.
 
-They are the same, which is De Morgan on sets.
+The two answers are the same. This is De Morgan's law, on sets.
 
 </details>
 
-**18.** Which set operation corresponds to `and`? To `or`? To `not`?
+**18.** Which set operation matches `and`? Which matches `or`? Which matches `not`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Intersection, union, and complement.
+Intersection matches `and`, union matches `or`, and complement matches
+`not`.
 
-An item being in a set and a statement being true are the same question asked about different things, which is why the same two laws hold for both.
+"Is this item in the set?" and "Is this statement true?" are the same
+kind of question, asked about different things. That is why the same two
+laws hold for both.
 
 </details>
 
-**19.** What is the set equivalent of XOR?
+**19.** What is the set version of XOR?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Symmetric difference: everything in exactly one of the two sets. Python spells it `A ^ B`, using the same operator as for booleans, and for the same reason.
+The symmetric difference: everything that is in exactly one of the two
+sets. Python writes it `A ^ B`. It uses the same operator as XOR on
+`True` and `False`, for the same reason.
 
 </details>
 
-## One Longer One
+## One longer one
 
-**20.** A door unlocks when: the card is valid, AND it is either during working hours or the person is a manager, AND the door is not in lockdown.
+**20.** A door unlocks when all three of these hold: the card is valid; it is during working hours, or the person is a manager; and the door is not in lockdown.
 
-- (a) Write it as a Python expression.
+- (a) Write this as a Python expression.
 - (b) A colleague writes the "does not unlock" case as `not valid or not (hours or manager) or lockdown`. Is that right?
-- (c) Simplify their middle term.
+- (c) Simplify the middle part of their expression.
 
 <details class="dl-answer"><summary>answer</summary>
 
 (a) `valid and (hours or manager) and not lockdown`.
 
-(b) Yes. De Morgan on a three-way `and` gives a three-way `or` of the negations, and `not (not lockdown)` is `lockdown`.
+(b) Yes. De Morgan's law turns a `not` around three things joined by
+`and` into three `not`s joined by `or`. And `not (not lockdown)` is
+`lockdown`.
 
-(c) `not (hours or manager)` becomes `not hours and not manager` — outside working hours and not a manager.
+(c) `not (hours or manager)` becomes `not hours and not manager`. In
+words: outside working hours, and not a manager.
 
-So the whole thing reads: it fails to unlock if the card is invalid, or it is out of hours and you are not a manager, or the door is locked down. Which is a sentence somebody could check against the actual policy — and that is the point of the rewriting.
+So the whole expression reads: the door does not unlock if the card is
+invalid, or it is outside working hours and the person is not a
+manager, or the door is in lockdown. Somebody could check that sentence
+against the real rules for the door, and that is the point of
+rewriting it.
 
 </details>
