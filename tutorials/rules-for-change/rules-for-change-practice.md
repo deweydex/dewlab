@@ -27,11 +27,11 @@ id: rules-for-practice-warm-up
 def slopes_agree(rule, slope_rule, points):
     """Return True when slope_rule(x) and derivative_at(rule, x) agree at every x in points.
 
-    derivative_at is an estimate, so agree means within 0.00001.
+    derivative_at is an estimate, so agree means within 0.000001, as in its own tests.
     Prints the first x where they disagree.
     """
     for x in points:
-        if not close_enough(derivative_at(rule, x), slope_rule(x), tolerance=1e-5):
+        if not close_enough(derivative_at(rule, x), slope_rule(x), tolerance=1e-6):
             print("they disagree at", x)
             return False
     return True

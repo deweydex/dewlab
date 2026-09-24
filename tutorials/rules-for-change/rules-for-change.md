@@ -44,8 +44,8 @@ On this page we:
 > multiplied, divided and put inside each other, over the real numbers.
 > Every rule on this page is checked against `derivative_at` from
 > [How fast, right now?](tutorial:how-fast-right-now), which is an
-> estimate. So "agrees" means "agrees to within 0.00001", with
-> `close_enough` from
+> estimate. So "agrees" means "agrees to within $10^{-6}$", the
+> tolerance its own tests used, with `close_enough` from
 > [Does it work?](tutorial:does-it-work#close-enough). One thing
 > usually goes unsaid: a rule for slopes is a promise about every $x$,
 > and checking 40 points does not prove it. It does catch almost every
@@ -135,11 +135,11 @@ id: rules-for-power-2
 def slopes_agree(rule, slope_rule, points):
     """Return True when slope_rule(x) and derivative_at(rule, x) agree at every x in points.
 
-    derivative_at is an estimate, so agree means within 0.00001.
+    derivative_at is an estimate, so agree means within 0.000001, as in its own tests.
     Prints the first x where they disagree.
     """
     for x in points:
-        if not close_enough(derivative_at(rule, x), slope_rule(x), tolerance=1e-5):
+        if not close_enough(derivative_at(rule, x), slope_rule(x), tolerance=1e-6):
             print("they disagree at", x)
             return False
     return True
@@ -469,7 +469,11 @@ slope at a point.
 At the top of a curve, the curve is neither going up nor going down.
 Its
 [tangent line](tutorial:how-fast-right-now#the-tangent-line) is flat,
-so the slope there is 0. By the power rule and the
+so the slope there is 0. The tests on
+[How fast, right now?](tutorial:how-fast-right-now#a-tool-for-the-slope-at-a-point)
+checked this for the kicked ball, at a top we already knew from its
+graph. Now we turn it round: set the slope to 0, and find the top with
+no graph at all. By the power rule and the
 sum rule, the slope of the profit is $-40p + 140$. Where is that 0?
 That is a linear equation, and your toolkit's `solve_linear` from
 [Solving for x](tutorial:solving-for-x#a-tool-for-any-straight-line-equation)
@@ -489,9 +493,9 @@ print(vertex(-20, 140, -120))
 The slope is $140 - 40p$, it is 0 at €3.50, and the profit there is
 €125. It is the same answer as `vertex` gives, found by a new route.
 
-This works for every quadratic. The slope of $ax^2 + bx + c$ is
-$2ax + b$, and that is 0 when $x = -\frac{b}{2a}$: the formula from
-Unit 7, found again. The difference is what comes next. Completing the
+This works for every quadratic, with no graph and no completing the
+square. The slope of $ax^2 + bx + c$ is $2ax + b$, and that is 0 when
+$x = -\frac{b}{2a}$: the formula from Unit 7, found again. The difference is what comes next. Completing the
 square only works on a quadratic. A slope of 0 finds the tops and
 bottoms of any curve whose slope we can work out, and the four rules on
 this page can work out a great many.
