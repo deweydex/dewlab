@@ -59,7 +59,7 @@ confirms that it was never for them.
 6. **Nothing is taught once.** Every page starts with two short warm-up
    questions from earlier units, and every unit ends with a mixed practice
    page drawing on everything so far.
-7. **The toolkit.** Readers build one module of their own, `toolkit.py`,
+7. **The toolkit.** Readers build one module of their own, toolkit.py,
    across the whole track: `mean`, `distance`, `solve_quadratic`,
    `derivative_at` and about thirty more, each with its own tests. Later
    units call the functions earlier units built. The capstone is "use your
@@ -155,7 +155,7 @@ Unit product: a password-strength checker. Toolkit gains `factorial`,
 | 4.4 | Does it work? Testing your tools | How do you know your function is right? | PDP-LO10, PDP-LO11 |
 | 4.5 | What a function can see | Why can't the function see my variable? | PDP-LO8 |
 
-4.4 starts `toolkit.py` properly: every function in it gets `assert` tests,
+4.4 starts toolkit.py properly: every function in it gets `assert` tests,
 and the reader learns walkthroughs (tracing a function by hand) and the
 debugger's step-through. Unit product: a unit converter with tested
 conversions both ways.
@@ -304,7 +304,7 @@ fallback if it proves fragile.
    from the agreed pilot, with the same checks as every other pass: every
    cell run, every answer run, `check.py`, the build.
 3. **Unit 10 and the context pages last**, since they draw on everything.
-4. **The course file** `courses/plot-twist.yaml`, a topic-tree group, and a
+4. **The course file**, plot-twist.yaml in the courses folder, a topic-tree group, and a
    decisions-log entry. The course starts as `status: beta`.
 
 ## 7. Coverage check
