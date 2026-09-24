@@ -41,11 +41,12 @@ On this page we:
 > **The space we're in.** Sets of names, from
 > [Collections without repeats](tutorial:collections-without-repeats):
 > a set holds each value once, in no order, and Python works out unions,
-> intersections and differences for us. New on this page: every set here
-> sits inside one bigger set, the people who were asked. That usually
-> goes unsaid, and it matters. "Everyone who does not swim" means
-> nothing until we say *everyone out of whom*. Every survey on this page
-> is made up, so that the numbers stay small enough to check by eye.
+> intersections and differences for us. Every set on this page sits
+> inside one universal set, the people who were asked. That usually goes
+> unsaid on a survey report, and it matters: "everyone who does not
+> swim" means nothing until we say everyone out of whom. Every survey on
+> this page is made up, so that the numbers stay small enough to check
+> by eye.
 
 ## Warm-up
 
@@ -109,9 +110,10 @@ circles, only in the cycle circle, or outside both.
 A *Venn diagram* is a picture of sets as circles inside a box, where
 each circle holds one set, and where two circles overlap the sets share
 members. It is named after John Venn, who drew them in 1880. The box is
-the *universal set*: everything we are talking about at the moment,
-here the 20 members. It is often written $U$. The four places are the
-diagram's *regions*.
+the universal set, $U$, from
+[Collections without repeats](tutorial:collections-without-repeats#everything-else-the-complement):
+everything we are talking about at the moment, here the 20 members. The
+four places are the diagram's *regions*.
 
 Before you run the next cell, guess how many people are in each of the
 four regions. The four numbers must add to 20.
@@ -162,25 +164,26 @@ already know. The circles are $S$ for swimmers and $C$ for cyclists.
 | right only | cycle, and do not swim | $C \setminus S$ | `cyclists - swimmers` |
 | outside both | neither | $(S \cup C)'$ | `members - (swimmers \| cyclists)` |
 
-The last row needs a new word. The *complement* of a set is everything
-in the universal set that is not in it. We write the complement of $A$
-as $A'$, said "A dash" or "not A". On
-[Chances that combine](tutorial:chances-that-combine) the complement was
-"everything that can happen except this". It is the same idea, with the
-box as "everything". In Python, it is the universal set minus the set:
-`members - swimmers` is everyone who does not swim.
+The last row is a complement: everything in the box that is not in
+either circle. On
+[Collections without repeats](tutorial:collections-without-repeats#everything-else-the-complement)
+the complement of $A$, written $A'$, was everything in the universal set
+that is not in $A$. In Python it is the box minus the set:
+`members - swimmers` is everyone in the club who does not swim.
 
-This is where the box matters. The complement of the swimmers is 10
+In a diagram, the complement is the part of the box outside a circle,
+so you can see where it lives. The complement of the swimmers is 10
 people if the box is the club. If the box were everyone in Ireland, it
 would be more than five million people. The same move gives a different
 answer in a different space, so a Venn diagram always draws its box.
 
 ### Exactly one of the two
 
-One more region is worth a name. Who does exactly one of swimming and
-cycling, but not both? That is the two outer parts of the circles
-together, without the overlap. It is the *symmetric difference*, written
-$S \triangle C$, and Python writes it `^`:
+Who does exactly one of swimming and cycling, but not both? In the
+diagram, that is the two outer parts of the circles together, without
+the overlap. It is the symmetric difference from
+[Collections without repeats](tutorial:collections-without-repeats#on-one-list-only-difference),
+$S \triangle C$, which Python writes `^`:
 
 ```python exec
 id: circles-exactly-one
@@ -189,11 +192,12 @@ print((swimmers | cyclists) - (swimmers & cyclists))
 ```
 
 Both lines give the same 7 names, perhaps in a different order, since a
-set keeps no order. If `^` looks familiar, it should. On
-[True, false and every case](tutorial:true-false-and-every-case#exclusive-or-exactly-one)
-it was exclusive or: exactly one of two things is true. A name is in
-`swimmers ^ cyclists` when exactly one of "swims" and "cycles" is true
-for them.
+set keeps no order. The picture shows why the two lines agree: the
+union is all three parts inside the circles, and taking away the
+overlap leaves the two outer parts. A name is in `swimmers ^ cyclists`
+when exactly one of "swims" and "cycles" is true for them, the
+exclusive or of
+[True, false and every case](tutorial:true-false-and-every-case#exclusive-or-exactly-one).
 
 ### Your turn
 
@@ -226,8 +230,9 @@ circles counts each circle once, and the 7 people in the overlap are in
 both circles, so they were counted twice. To count them once, take the
 overlap away once.
 
-We write the number of values in a set $A$ as $|A|$. So $|S| = 10$, and
-$|S \cap C| = 7$. In words: the number in either set is the number in
+The cardinality of a set, $|A|$, is the number of its elements, as on
+[Collections without repeats](tutorial:collections-without-repeats#two-playlists).
+So $|S| = 10$, and $|S \cap C| = 7$. In words: the number in either set is the number in
 the first, plus the number in the second, minus the number in both. In
 symbols:
 
@@ -395,8 +400,8 @@ for name in sorted(members):
 print(len(two_yes), two_yes)
 ```
 
-`sorted()` puts the names in alphabetical order, so the loop visits them
-in the same order every time. The inner loop asks the three questions of
+`sorted(members)` gives the names as a list in alphabetical order, so
+the loop visits them in the same order every time. The inner loop asks the three questions of
 one person. The same eight names come out: the two routes agree.
 
 Now the first route, written in Python. Each "exactly two" region is a
@@ -603,17 +608,14 @@ already seen, not a set of rules for filling in circles.
 | Venn diagram | sets drawn as circles in a box; overlapping circles share members |
 | universal set, $U$ | everything we are talking about at the moment: the box |
 | region | one part of the diagram; everyone in it gave the same yes and no answers |
-| complement, $A'$ | everything in the universal set that is not in $A$; `members - swimmers` |
-| symmetric difference, $A \triangle B$ | in exactly one of the two sets; `a ^ b` in Python |
-| $\lvert A \rvert$ | the number of values in the set $A$; `len(a)` in Python |
+| complement, symmetric difference | the box outside a circle; the two outer parts of two circles |
 | inclusion–exclusion, two sets | $\lvert A \cup B \rvert = \lvert A \rvert + \lvert B \rvert - \lvert A \cap B \rvert$ |
 | inclusion–exclusion, three sets | add the sets, take away the pairs, add back the middle |
 | exactly two, from totals | the three pairs added, minus 3 times the middle |
 | `random.sample(values, k)` | picks `k` different values from `values` |
-| `sorted(values)` | a new list of the values, in order |
 
 The practice page is next, and after it the mixed problems for this
-unit, where the club's survey and the rest of Unit 5 meet in one report.
+unit, where everything in Unit 5 meets in one report on real data.
 
 For another route through the same ideas, the integrated course has
 [Venn diagrams: drawing sets and their overlaps](tutorial:venn-diagrams).

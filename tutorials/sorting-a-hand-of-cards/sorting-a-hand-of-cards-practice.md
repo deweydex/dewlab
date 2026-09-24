@@ -401,10 +401,10 @@ print(selection_comparisons(board), insertion_comparisons(board))
 
 The board has 101 scores. Selection sort makes 5,050 comparisons, which
 is $\frac{101 \times 100}{2}$: the same as for any list of 101, because
-it always looks at everything that is left. Insertion sort makes 151.
-Each of the first 100 scores looks once to its left and stays. The new
-score, 505, slides left past the 50 scores above it, and one more
-comparison finds 500: $100 + 51 = 151$.
+it always looks at everything that is left. Insertion sort makes 150.
+Each of the first 100 scores, after the very first, looks once to its
+left and stays: that is 99. The new score, 505, slides left past the
+50 scores above it, and one more comparison finds 500: $99 + 51 = 150$.
 
 When a list is nearly in order, insertion sort does very little work.
 That is why it is often the sort used for adding a few new items to a
@@ -490,7 +490,7 @@ these:
 
 - **What the reader already knows.** Selection and insertion sort
   match what hands already do with cards, so each line of code has a
-  move to match. Nobody sorts cards by bubble sort, so it has to be
+  move to match. Hardly anyone sorts cards by bubble sort, so it has to be
   learned as a new idea.
 - **How short the code is.** Bubble sort has two plain loops and one
   swap of neighbours, with no `while` loop and no index kept by name.
@@ -580,7 +580,7 @@ search, sorting pays for itself after about 510 searches.
 
 So for a phone book you search once, sorting is not worth it. For one
 you search every day, it is. The next page,
-[Racing the sorts](tutorial:racing-the-sorts), finds a much faster
-sort, which makes the answer much smaller.
+[Racing the sorts](tutorial:racing-the-sorts), races a faster sort,
+and a faster sort makes the answer smaller.
 
 </details>

@@ -471,7 +471,7 @@ customer's id, and keeps what they have in common, as an intersection
 does. A `CROSS JOIN` makes every pair of rows from two tables, as
 `all_pairs` does.
 
-The *Database Methods* course builds real tables with SQL. Its page
+The Database Methods course builds real tables with SQL. Its page
 [Joining two tables: foreign keys and JOIN](tutorial:a-second-table-and-a-join)
 is where the JOIN is taught.
 

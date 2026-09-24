@@ -1,9 +1,9 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
 # Comes after collections-without-repeats in the Plot Twist track, which
-# introduced sets, union, intersection and difference. Complement in the
-# sense of chances was introduced on chances-that-combine; the entry here is
-# the set version, drawn as everything in the box outside a circle.
+# introduced sets, cardinality, union, intersection, difference, symmetric
+# difference, the universal set, the complement and sorted(). This page
+# draws those and counts with them; it adds only what is below.
 entries:
   - term: Venn diagram
     kind: concept
@@ -11,34 +11,12 @@ entries:
       A Venn diagram draws sets as circles inside a box. Where two circles
       overlap, the sets share members. Each number in a region is how many
       values stand there.
-  - term: "universal set, U"
-    kind: concept
-    definition: >
-      The universal set is everything we are talking about at the moment.
-      It is the box around the circles of a Venn diagram, such as all the
-      people who were asked a survey's questions.
   - term: region
     kind: concept
     definition: >
       A region is one part of a Venn diagram. Two circles make four regions,
       and three circles make eight. Everyone in one region gave the same
       yes and no answers.
-  - term: "complement of a set, A′"
-    kind: concept
-    definition: >
-      The complement of a set A is everything in the universal set that is
-      not in A. In Python it is the universal set minus A.
-    example: "members - swimmers"
-  - term: "symmetric difference, A △ B"
-    kind: operator
-    definition: >
-      Gives the values in exactly one of two sets, and not in both. Python
-      writes it with ^, the same sign as exclusive or.
-    example: "swimmers ^ cyclists"
-  - term: "size of a set, |A|"
-    kind: concept
-    definition: >
-      |A| is the number of values in the set A. Python gives it with len().
   - term: "inclusion–exclusion, two sets"
     kind: formula
     definition: >
@@ -65,11 +43,3 @@ entries:
       Picks k different values from a list or range, at random, and gives
       them back as a list.
     example: "random.sample(range(1, 31), 12)"
-  - term: "sorted()"
-    python: sorted
-    kind: function
-    definition: >
-      Gives a new list of the values, in order from smallest to largest, or
-      in alphabetical order for words. The values it was given are left as
-      they were.
-    example: "sorted({\"Kate\", \"Ben\", \"Wei\"})"

@@ -420,7 +420,7 @@ plt.title("Life expectancy in 2016 (Our World in Data)")
 ```
 
 Compare the heights with the table you just printed. They are the same
-seven numbers. The histogram shows the *shape* of the data: most places
+seven numbers. The histogram shows the shape of the data: most places
 are in the 70s, and the bars get shorter towards 50. A table of 226
 numbers would never show that at a glance.
 
@@ -551,7 +551,7 @@ quarter of a year. On the right, the axis starts at 0, and the bars are
 almost the same, because the numbers are almost the same.
 
 Here is the rule underneath. In a bar chart, the reader reads the
-*length* of each bar as its value. If the axis does not start at 0, the
+length of each bar as its value. If the axis does not start at 0, the
 lengths are wrong, even when every number on the axis is right. That is
 why a line chart may zoom in and a bar chart may not: a line shows
 change, and a bar shows an amount.
