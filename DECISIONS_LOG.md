@@ -4467,3 +4467,26 @@ Every practice page mixes predict, make, fix, explain and "another way" problems
 **The rule on words.** The Programming and maths passes banned a list of words (7.210, 7.216). For this track Josh asked whether to keep the ban. The part that stays is the part that protects a reader who expects to fail: a page never says how easy or obvious something is. That rules out "simply", "obviously", "clearly", "of course", "trivially", "easy", "as you can see" and "it's straightforward". Words that were banned only as filler ("just", "actually") are allowed where they mean something: "the cell you just ran"; "Python actually prints 0.30000000000000004", marking the surprise predict-run-explain depends on. The plan's principle 8 says so; the earlier series are not reopened for it.
 
 *Cost to change: the course file and eleven folders; nothing else depends on them.*
+
+---
+
+**7.219 — Plot Twist Units 3 and 4 are written; toolkit entries load like modules; a long toolkit line becomes a count and a list; and the track will show its choices.** Josh, after the pilot: "lets carry on and keep going!"
+
+**The pages.** Ten tutorials, each with a practice page and a glossary, and a mixed page for each unit:
+- *Again and again: loops, counting and chance*, from *Doing it again* to *Chances that combine*, whose mixed page builds a password-strength checker;
+- *Making your own tools*, from *Machines that take a number* to *What a function can see*, whose mixed page builds a unit converter tested both ways.
+
+They add 28 functions to the toolkit, from `total` and `product` to `close_enough`. Every page was run through the real loader twice, as for the pilot, and only the cells the pages mean to fail fail. *Does it work?* defines a small `step_through()` on `sys.settrace`, since the browser has no debugger. It was checked in Pyodide, where it matches the page's hand trace row for row.
+
+**Each toolkit entry runs in a namespace of its own.** Two page writers found the same fault on their own. *Untangling a condition*'s toolkit cell does `from itertools import product`; *Doing it again*'s defines `product(values)`. With every entry run into the page's one namespace, the second replaced the first, and `same_rule()` raised a `TypeError` on every later page. Editing 2.3's cell would not have helped a reader whose saved copy still had the import. `_load_toolkit()` now runs each entry in a copy of the page's namespace and copies back only the names the entry defines, never the names its `import` lines bind. A later entry still sees the earlier ones. A page cell that reuses a helper's name (`RATE = …`) no longer changes what a toolkit function sees. A page cell can still hide a toolkit function by reusing its name, as `total = 0` hides `total()`; `docs/WRITING_TUTORIALS.md` says to avoid that. The 2.3 glossary term is now `itertools.product()`, so the Reference panel doesn't show two entries called `product()`.
+
+**A long toolkit line.** By *Does it work?* the line named 34 functions in one paragraph, and by Unit 10 it would name about a hundred. Past eight it gives a count ("Your toolkit has 34 functions. They come from 14 earlier pages."), and a closed list under it names them page by page. The list marks the functions that came from the reference when the reader wrote some of their own. Eight or fewer are still named in the sentence.
+
+**Show the choices.** Josh asked whether the four ideas could open a window on why the course is built as it is, as "participatory and transparent teaching": a student sees the choices made, what the alternatives would mean, and what larger ideas are at stake. The plan gains principle 10:
+- a page on how the course is built, next to *Four questions*;
+- a closed "Why this way?" box on every tutorial, naming one choice the page made and the alternative it turned down;
+- Explain problems that ask the reader which way they would have taught something.
+
+Josh: "lets go for all of those suggestions". These are written after this entry, across Units 1–4 at once so that they share one voice.
+
+*Cost to change: the course file and twelve folders; the loader change is internal, and a toolkit that relied on one entry's import reaching the page would now need its own import.*

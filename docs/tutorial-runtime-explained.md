@@ -458,7 +458,11 @@ The line above the first cell (`buildToolkitLine()`,
 `renderToolkitLine()`, `.dl-toolkit` in `tutorial-style.css`) says what
 will load before Python has booted, what did load afterwards, and which
 functions came from the reference and why ("You have not written … yet",
-"… your version raised an error"). Its two radio buttons write
+"… your version raised an error"). Past `TOOLKIT_NAMES_INLINE` (eight)
+functions it gives a count instead of naming each one, and a closed
+`.dl-toolkit-list` under it lists them page by page
+(`toolkitListHtml()`), marking the ones that came from the reference
+when the reader wrote some of their own. Its two radio buttons write
 the mode; if Python is running, the toolkit reloads straight away, or,
 when a cell is running, as soon as it finishes
 (`reloadToolkitIfPending()`).

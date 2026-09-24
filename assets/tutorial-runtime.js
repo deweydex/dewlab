@@ -3813,8 +3813,37 @@ function toolkitNames(names) {
   return `${quoted.slice(0, -1).join(", ")} and ${quoted[quoted.length - 1]}`;
 }
 
+// Past this many functions a sentence naming each one stops being a line
+// and becomes a paragraph, so the line gives a count and the names move
+// into a closed list, page by page.
+const TOOLKIT_NAMES_INLINE = 8;
+
+function toolkitCount(count) {
+  return count === 1 ? "1 function" : `${count} functions`;
+}
+
+// The closed list under a long toolkit line: each earlier page's title and
+// the functions it gave, with the ones that came from the reference marked
+// when the reader wrote some of their own.
+function toolkitListHtml(entries, markReference) {
+  const pages = new Map();
+  for (const done of entries) {
+    if (!done.names.length) continue;
+    const fromReference = new Set(done.from_reference.map((item) => item.name));
+    const names = done.names.map((name) =>
+      `<code>${escapeHtml(name)}</code>${markReference && fromReference.has(name) ? " (reference)" : ""}`);
+    const title = done.title || done.tutorial;
+    pages.set(title, (pages.get(title) || []).concat(names));
+  }
+  const items = [...pages].map(([title, names]) =>
+    `<li><span class="dl-toolkit-page">${escapeHtml(title)}</span>: ${names.join(", ")}</li>`);
+  return `<summary>Show them, page by page</summary><ul>${items.join("")}</ul>`;
+}
+
 function renderToolkitLine() {
   if (!toolkitEl) return;
+  const list = toolkitEl.querySelector(".dl-toolkit-list");
+  list.hidden = true;
   const toolkit = currentManifest.toolkit;
   const pages = new Set(toolkit.map((entry) => entry.tutorial)).size;
   const fromPages = pages === 1 ? "1 earlier page" : `${pages} earlier pages`;
@@ -3825,9 +3854,17 @@ function renderToolkitLine() {
     lines.push("Your toolkit could not be loaded. Restarting Python may fix it.");
   } else {
     const { names, entries } = toolkitResult;
-    lines.push(names.length
-      ? `Your toolkit has ${toolkitNames(names)}. It comes from ${fromPages}.`
-      : `Your toolkit from ${fromPages} is loaded.`);
+    const long = names.length > TOOLKIT_NAMES_INLINE;
+    // A long list is written as a count; a short one names each function.
+    const named = (some) => (long && some.length > TOOLKIT_NAMES_INLINE
+      ? `${some.length} of them` : toolkitNames(some));
+    if (!names.length) {
+      lines.push(`Your toolkit from ${fromPages} is loaded.`);
+    } else if (long) {
+      lines.push(`Your toolkit has ${toolkitCount(names.length)}. They come from ${fromPages}.`);
+    } else {
+      lines.push(`Your toolkit has ${toolkitNames(names)}. It comes from ${fromPages}.`);
+    }
     const unwritten = [];
     const raised = [];
     for (const done of entries) {
@@ -3841,10 +3878,17 @@ function renderToolkitLine() {
     if (unwritten.length && unwritten.length === names.length && !raised.length) {
       lines.push("You have not written any of these yet, so the reference ones are loaded.");
     } else if (unwritten.length) {
-      lines.push(`You have not written ${toolkitNames(unwritten)} yet, so ${theReference(unwritten)} loaded.`);
+      lines.push(`You have not written ${named(unwritten)} yet, so ${theReference(unwritten)} loaded.`);
     }
     if (raised.length) {
-      lines.push(`${toolkitNames(raised)}: your version raised an error, so ${theReference(raised)} loaded.`);
+      lines.push(`${named(raised)}: your version raised an error, so ${theReference(raised)} loaded.`);
+    }
+    if (long) {
+      const allUnwritten = unwritten.length === names.length && !raised.length;
+      const open = list.open;
+      list.innerHTML = toolkitListHtml(entries, !allUnwritten);
+      list.open = open;
+      list.hidden = false;
     }
     for (const done of entries) {
       if (done.error) {
@@ -3872,7 +3916,8 @@ function buildToolkitLine(manifest) {
     '<span class="dl-toolkit-mode" role="radiogroup" aria-label="Which toolkit to load">' +
     '<label><input type="radio" name="dl-toolkit-mode" value="mine"> My code</label>' +
     '<label><input type="radio" name="dl-toolkit-mode" value="reference"> Reference</label>' +
-    "</span>";
+    "</span>" +
+    '<details class="dl-toolkit-list" hidden></details>';
   for (const input of toolkitEl.querySelectorAll("input[name='dl-toolkit-mode']")) {
     input.addEventListener("change", () => {
       if (!input.checked) return;

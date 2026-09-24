@@ -356,12 +356,21 @@ Nine lines, then `gives back 0`. They are the nine rows of the trace
 table, in the same order, with the same values. The debugger also shows
 `readings` on every line, because the function can see that name too.
 
-Now step through your fixed `warmest` from the last section. Before you
-run it, in which steps will `warmest_so_far` change?
+Here is the same function with the fix from the last section: it starts
+from the first reading, `readings[0]`. Before you run it, in which steps
+will `warmest_so_far` change?
 
 ```python exec
 id: does-it-debugger-3
-step_through(warmest, [-3, -1, -4])
+def warmest_second_try(readings):
+    """Return the highest temperature in readings, a list of at least one number."""
+    warmest_so_far = readings[0]
+    for reading in readings:
+        if reading > warmest_so_far:
+            warmest_so_far = reading
+    return warmest_so_far
+
+step_through(warmest_second_try, [-3, -1, -4])
 ```
 
 It starts at −3, the first reading, and changes once, when −1 arrives.
@@ -374,8 +383,9 @@ programmers use both.
 
 ### Your turn
 
-1. Step through `warmest` with the summer readings, `[12, 15, 9]`. Do
-   the steps match your trace table from the last section?
+1. Step through `warmest_second_try` with the summer readings,
+   `[12, 15, 9]`. Do the steps match your trace table from the last
+   section?
 2. Step through `celsius_to_fahrenheit` with 20. How many lines does it
    run? A debugger steps a whole line at a time, so what can it not show
    you about the order of `*`, `/` and `+` inside that line?
