@@ -233,7 +233,7 @@ favourite is left, out of 9 songs. So the chance is
 
 $$\frac{2}{10} \times \frac{1}{9} = \frac{2}{90} \approx 0.022$$
 
-We still multiply, but the second number is the chance *after* the
+We still multiply, but the second number is the chance after the
 first song has played. These two events are not independent.
 
 So $P(A) \times P(B)$, with both chances as they were at the start,
