@@ -91,7 +91,7 @@ substantial on its own.
 counterpart, what the tutorials it writes actually build into, is
 `tests/build/test_tutorial.py`.
 
-*dewmini (the standalone tool):* `test_dewminiweb.py`, `test_dewmini_workbench.py`.
+*The Notebook and the Workspace (dewmini and dewmini web in the code):* `test_dewminiweb.py`, `test_dewmini_workbench.py`, and `test_old_compose_addresses.py` for the redirects at their old addresses.
 
 *My Notes:* `test_my_notes.py` — the cross-tutorial notes/highlights page.
 

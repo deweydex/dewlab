@@ -27,7 +27,7 @@ Run `python3 build.py`, and here's roughly what happens, in order:
    URLs — or the build fails, naming exactly which link is broken.
 3. Extra pages are built from that same data: the **topic tree**, the
    **knowledge map**, the **contents page**, the **about page**, and
-   dewmini's offline download.
+   the Notebook's offline download (`download/notebook.zip`).
 4. Every page is **written** to `site/`, including — for a tutorial page
    — a JSON manifest describing its cells for `tutorial-runtime.js` to
    read, and (unless `--no-standalone` is passed) a downloadable,

@@ -257,11 +257,16 @@ series at once, as a zip. That is the one to use if you are filling a USB drive 
 
 ## When you want Python without a tutorial
 
-**[dewmini](DEWMINI.md)** comes with dewlab for when you just want somewhere
-to write code: a blank page, add a cell, run it. Good for testing an idea,
-working a problem on its own, or a project that needs more than a few cells.
-It comes with a file manager, a real SQL database, a way to import a notebook
-or a `.py` file, and a Stop button that can interrupt code that is stuck.
+**The [dewlab Notebook](DEWMINI.md)** comes with dewlab for when you just
+want somewhere to write code: a blank page, add a cell, run it. Good for
+testing an idea, working a problem on its own, or a project that needs more
+than a few cells. It comes with a file manager, a real SQL database, a way to
+import a notebook or a `.py` file, and a Stop button that can interrupt code
+that is stuck.
+
+**The dewlab Workspace** is the same idea for web pages. You write HTML, CSS
+and JavaScript, and a live preview shows the page as you type. Both are on
+the home page.
 
 ---
 

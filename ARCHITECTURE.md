@@ -165,7 +165,7 @@ so neither CI nor a local preview needs Node.
 
 ## 2. The runtime: what a student's browser does
 
-`assets/tutorial-runtime.js` loads on every tutorial page (dewmini is
+`assets/tutorial-runtime.js` loads on every tutorial page (the Notebook is
 separate — §4) and owns three things: the settings panel, the CodeMirror
 editors for cells, and booting Pyodide to run one. Rendering a cell's
 *output* is decided in `assets/tutorial_tools.py`, in Python, so those rules
@@ -175,9 +175,9 @@ A site editor (`buildSiteEditors()`) sits beside this rather than inside it —
 no Pyodide, no cells: an `html site`/`css site`/`js site` fence group
 becomes a live HTML/CSS/JS editor with a sandboxed preview `<iframe>`,
 mounted through `assets/site-relay.js`'s `mountSitePreview()`, the same
-engine `compose/dewmini.js`'s Site tab and the standalone `dewmini web`
-workspace (§4) both use. A page with one of these but no cells never boots
-Pyodide.
+engine `compose/dewmini.js`'s Site tab and the standalone Workspace
+(`compose/workspace.html`, §4) both use. A page with one of these but no
+cells never boots Pyodide.
 
 **A full-stack cell (`buildAppCells()`) reuses that fence shape for the
 opposite purpose.** An `html app`/`css app`/`js app` group renders straight
@@ -397,9 +397,28 @@ undefined.
 
 ---
 
-## 4. dewmini: a Python workspace outside any tutorial
+## 4. The Notebook and the Workspace: working outside any tutorial
 
-`compose/dewmini.html` is not a tutorial — no markdown source, nothing
+**Two names for each.** A reader sees the *dewlab Notebook*
+(`compose/notebook.html`) and the *dewlab Workspace*
+(`compose/workspace.html`). Their code still calls them dewmini and
+dewmini web — `dewmini.js`, `dewmini-fs.js`, `dewmini-style.css`,
+`dewminiweb.js`, `write_dewmini_bundle()`, the `dm-` and `dl-ws-` class
+prefixes — and so does the rest of this section. The code kept the old
+names because the saved work is keyed on them: every `dewmini:*` and
+`dewminiweb:*` `localStorage` key, the `dewmini-fs` IndexedDB database, the
+`/mnt/dewmini` mount point, the `dewmini` OPFS folder, the `# dewmini
+export` header a `.py` export starts with, and the `dewmini` metadata an
+`.ipynb` export carries. Renaming any of those would strand what a student
+already has. `compose/dewmini.html` and `compose/dewminiweb.html` are
+hand-written redirects to the new pages (`location.replace()` keeping the
+query string and hash, a `<meta http-equiv="refresh">` and a plain link
+without JavaScript); `COMPOSE_REDIRECTS` in `build.py` names them so the
+offline bundle leaves them out. They are not in `courses/redirects.yaml`,
+whose stubs only point at pages the build wrote and drop the query and
+hash.
+
+`compose/notebook.html` is not a tutorial — no markdown source, nothing
 `build.py` generates from `tutorials/`. It's a plain page giving a student
 somewhere to write and run Python that isn't tied to one lesson. It shares
 `tutorial_tools.py` with every tutorial page (§2), so `show`/`show_table`/
@@ -461,16 +480,18 @@ the worker/main-thread split, or
 [`docs/dewmini-js-explained.md`](docs/dewmini-js-explained.md) for the rest
 of dewmini (cell CRUD, drag reorder, the standalone HTML export).
 
-**dewmini has a downloadable, offline-capable copy**
+**The Notebook has a downloadable, offline-capable copy**
 (`write_dewmini_bundle()`, `build.py`) — it mirrors the hosted site's
 `compose/`/`assets/`/`data/` folder shape rather than flattening, since
-`compose/dewmini.html`'s relative paths assume that shape. The bundle ships
+`compose/notebook.html`'s relative paths assume that shape. It is written to
+`download/notebook/` and zipped as `download/notebook.zip`. The bundle ships
 a *serve.py*: a zero-dependency wrapper around `http.server`, since a
 browser blocks the JavaScript's `import` statements when a page is opened
 straight off disk (no origin for a CORS check to approve).
 
-**`compose/dewminiweb.html` is a separate product, not another dewmini
-tab.** dewmini is a Python-and-SQL notebook; `dewmini web` is a
+**The Workspace (`compose/workspace.html`) is a separate product, not
+another Notebook tab.** The Notebook is a Python-and-SQL notebook; the
+Workspace is a
 multi-file HTML/CSS/JS workspace with no notebook cells at all, shaped
 like dewstack's own `workspace.js`. `compose/dewminiweb.js` owns the part
 that differs — several named sites in one `localStorage` record, which one is
@@ -543,15 +564,15 @@ PR that touches the runtime or the editor.
 | What a cell can do (a new tutorial-facing function) | `assets/tutorial_tools.py` |
 | The toolkit: which earlier cells a page loads, how, and the line that says so | `toolkit_for()` in `build.py`; `loadToolkit()`/`renderToolkitLine()` in `assets/tutorial-runtime.js`; `_load_toolkit()` in `assets/tutorial_tools.py` |
 | What a cell *looks like*, or the settings panel, save/restore behaviour | `assets/tutorial-runtime.js` |
-| The live HTML/CSS/JS site editor's engine (preview, console, friendly errors) — shared by dewmini's Site tab, a tutorial's own site editor, and `dewmini web` | `assets/site-relay.js` |
+| The live HTML/CSS/JS site editor's engine (preview, console, friendly errors) — shared by the Notebook's Site tab, a tutorial's own site editor, and the Workspace | `assets/site-relay.js` |
 | A tutorial page's own site editor: mounting, Run/Reset wiring, save/restore | `assets/tutorial-runtime.js`'s `buildSiteEditors()` |
 | A full-stack cell: mounting, `@scope`-scoped preview, Run/Clear wiring, save/restore | `assets/tutorial-runtime.js`'s `buildAppCells()` |
 | The full-stack `dlQuery` bridge (Python side, the Worker message, the JS dispatcher) | `tutorial_tools._query_rows()`, `pyodide-worker.js`'s `"query-rows"` branch, `assets/tutorial-runtime.js`'s `queryRows()`/`queryRowsMT()` |
-| `dewmini web`'s own sites: the list, New/Delete/Load files/Download, per-site storage | `compose/dewminiweb.js` |
-| dewmini's file manager, uploads, or storage backend | `compose/dewmini-fs.js` |
+| The Workspace's own sites: the list, New/Delete/Load files/Download, per-site storage | `compose/dewminiweb.js` |
+| The Notebook's file manager, uploads, or storage backend | `compose/dewmini-fs.js` |
 | The Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/pyodide-engine.js` |
-| dewmini's cells, toolbar, or downloads | `compose/dewmini.js` |
-| The offline, downloadable bundle (what's included, the local-server workaround) | `write_dewmini_bundle()` and `SERVE_SCRIPT` in `build.py` |
+| The Notebook's cells, toolbar, or downloads | `compose/dewmini.js` |
+| The Notebook's offline, downloadable bundle (what's included, the local-server workaround) | `write_dewmini_bundle()` and `SERVE_SCRIPT` in `build.py` |
 | The topic tree or knowledge map's layout | `assets/tree.js` and `build.py`'s `tree_data()`/`render_knowledge_map()` |
 | The authoring editor's structural checks, release logic, GitHub calls | `assets/editor.js` |
 | The authoring editor's prose-editing surface itself | `vendor-src/milkdown-entry.js` |
