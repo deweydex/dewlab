@@ -456,3 +456,30 @@ comes last. A mistake Python finds while reading always comes first.
 After that, running mistakes come in the order of the lines.
 
 </details>
+
+**15. Explain.** This page on error messages comes in the first
+unit of the course. Some courses leave errors until later, and deal with
+each one as it comes up. If you were planning a course for people who are
+new to programming, where would you put a page like this one: in the first
+week, after a few weeks, or nowhere, with errors met one at a time? Give a
+reason, and say what your choice costs.
+
+<details class="dl-answer"><summary>answer</summary>
+
+There is no one right answer. A good answer weighs a few things.
+
+- **In the first week.** Errors arrive on the first day anyway, and a
+  reader who expects to fail may read red text as a mark against them.
+  Reading it early changes that. The cost: with little code written,
+  most of the examples have to be made up.
+- **After a few weeks.** By then a reader has made real mistakes of their
+  own, and the page can use them. The cost: those first weeks of red
+  text go unexplained.
+- **Nowhere, one error at a time.** Each error is met in a real place,
+  when it matters. The cost: the routine that works for every error,
+  last line first, may never be said out loud.
+
+A strong answer says who the course is for, because that changes which
+cost matters most.
+
+</details>

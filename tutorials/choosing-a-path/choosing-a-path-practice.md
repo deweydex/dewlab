@@ -540,3 +540,30 @@ Ireland. $2^{24}$ is 16,777,216, which is enough. Four bytes hold
 function allows: the promise only covers up to four bytes.
 
 </details>
+
+**16. Explain.** The tutorial page taught solving an inequality and
+choosing a path with `if` on one page. In many schools they would belong to
+two subjects. Think of one person: someone who likes maths and not
+computers, or someone who likes computers and not maths. It can be you. For
+that person, would one page with both, or two separate pages, work better?
+Why?
+
+<details class="dl-answer"><summary>answer</summary>
+
+There is no one right answer, and your own experience counts as
+evidence here. A good answer weighs a few things.
+
+- **One page with both.** Each side explains the other: the number line
+  makes sense of `<=`, and the code checks the algebra. The cost: two new
+  things arrive at once, and the page is longer. Someone who dislikes one
+  side meets it anyway.
+- **Two separate pages.** Each one can go at its own speed, and a reader
+  who is nervous about one subject can take it on its own. The cost: the
+  link between the two may never be made, and one of them can feel like a
+  topic with no use.
+
+For the maths lover, the code may be a way to check their work. For the
+computer lover, the maths may be the reason `elif` needs its order. A
+strong answer says which of these fits the person you chose.
+
+</details>

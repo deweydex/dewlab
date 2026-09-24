@@ -572,3 +572,27 @@ the middle, like age 10, would never have found this bug. Bugs like this
 one live at the edges, so the edges are where tests go.
 
 </details>
+
+**16. Explain.** The tutorial page had you write a trace table by hand
+before it showed you `step_through`. Some teachers would show the debugger
+first, and skip the hand trace. For a short function you have never seen
+before, which would you do first, and why? Is there a function where you
+would skip the hand trace altogether?
+
+<details class="dl-answer"><summary>answer</summary>
+
+There is no one right answer. A good answer weighs a few things.
+
+- **By hand first.** You have to predict each value before you see it,
+  and a wrong prediction shows you exactly what you misunderstood. The
+  cost: it is slow, and it is possible to copy a value wrongly.
+- **Debugger first.** It is fast, and it never makes a copying mistake.
+  The cost: the values appear before you have thought about them, so it
+  is possible to watch without learning much.
+
+A loop that runs 1,000 times is one place to skip the hand trace: nobody
+can write 1,000 rows. A function you already trust, like `total`, is
+another. A strong answer might say: trace a short, new function by hand,
+and use the debugger for long runs, or to check a hand trace.
+
+</details>

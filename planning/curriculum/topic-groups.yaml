@@ -197,6 +197,7 @@ groups:
       page starting from a question in the world.
     tutorials:
       - four-questions
+      - how-this-course-is-built
       - recipes-are-algorithms
       - numbers-a-computer-can-hold
       - everything-is-ones-and-zeros

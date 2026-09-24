@@ -565,7 +565,9 @@ print("The solid-shape tools keep their promises.")
 ```
 
 The fifth test is Archimedes: a sphere of radius 3 fits inside a
-cylinder of radius 3 and height 6, and fills two thirds of it. The
+cylinder of radius 3 and height 6, and fills two thirds of it. The test
+checks that our two formulas agree with what Archimedes found. It does
+not show why he was right. The
 cone test uses a cone with radius 3 and height 4, whose slant is
 exactly 5, so its area is $9\pi + 15\pi = 24\pi$.
 

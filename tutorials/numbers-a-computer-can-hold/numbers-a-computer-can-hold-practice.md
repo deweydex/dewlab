@@ -503,3 +503,38 @@ is fine on a kitchen scale, and it is a float, because `/` always gives
 one.
 
 </details>
+
+**17. Explain.** The tutorial page met logarithms as a
+question, "how many times do I multiply?". Another course might teach the
+rules first, such as $\log_2(a \times b) = \log_2 a + \log_2 b$. For
+someone meeting logarithms for the first time, which would you start with,
+the question or the rules? Say why, and say what a learner who met only
+your choice would be missing.
+
+<details class="dl-answer"><summary>answer</summary>
+
+There is no one right answer. A good answer weighs a few things.
+
+- **The question first** gives the idea something to be about. A learner
+  knows what a logarithm is for before they learn its rules. What they
+  miss, for now, is a way to work with logarithms on paper, which exams
+  often ask for.
+- **The rules first** are quick to use, and they are what a calculator
+  and many exam questions need. What a learner can miss is what the rules
+  mean, which makes them hard to rebuild if they are forgotten.
+
+The question can even explain a rule. Multiplying 8 by 4 means doubling 3
+times and then 2 more times, 5 doublings in all:
+
+```python
+import math
+
+print(math.log2(8 * 4))
+print(math.log2(8) + math.log2(4))
+```
+
+Both lines show `5.0`. So a strong answer might start with the question,
+and let the rules arrive as facts about it. Someone who chose the rules
+first, with good reasons about exams, has a fair answer too.
+
+</details>

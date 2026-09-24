@@ -533,3 +533,39 @@ the square root gives the one answer. And a BMI of 0 would divide by
 zero, so the rearranged formula needs a BMI above 0.
 
 </details>
+
+**17. Explain.** Many people learned "change sides,
+change signs" at school. The tutorial page used "the same move on both
+sides" instead. Take $F = \frac{9}{5}C + 32$ and make $C$ the subject, once
+each way. Then say which way you would teach to someone meeting
+rearranging for the first time, and why.
+
+<details class="dl-answer"><summary>answer</summary>
+
+**The same move on both sides.** Subtract 32 from both sides:
+$F - 32 = \frac{9}{5}C$. Then multiply both sides by $\frac{5}{9}$:
+$C = \frac{5}{9}(F - 32)$.
+
+**Change sides, change signs.** The $+32$ moves across and becomes
+$-32$: $F - 32 = \frac{9}{5}C$. Then the "times $\frac{9}{5}$" moves
+across and becomes "divide by $\frac{9}{5}$", which is the same as
+multiplying by $\frac{5}{9}$: $C = \frac{5}{9}(F - 32)$.
+
+Both give the same answer. Substitute it back to check:
+
+```python
+fahrenheit = 68
+print((fahrenheit - 32) * 5 / 9)
+```
+
+It shows `20.0`.
+
+Which to teach has no single right answer. A good answer weighs a few
+things. The short rule is quick, and many people use it well. But it does
+not say which part moves first. A common slip is to move the
+$\frac{9}{5}$ first, and get $C = \frac{5}{9}F - 32$, which is wrong. The balance is slower, and
+it explains itself: each step is a move you can say out loud. A strong
+answer might teach the balance first, and then show the short rule as the
+balance with the middle steps left out.
+
+</details>

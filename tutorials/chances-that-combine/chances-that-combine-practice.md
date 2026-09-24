@@ -547,3 +547,29 @@ days are independent. Real weather is a different space, and the first
 step is to notice that.
 
 </details>
+
+**16. Explain.** This page opened with the birthday problem, a
+question most people get wrong. Picture teaching a friend who is sure they
+are "bad at maths". Would you open with a question they will probably get
+wrong, or one they will probably get right? What could go wrong with each
+choice?
+
+<details class="dl-answer"><summary>answer</summary>
+
+There is no one right answer. A good answer weighs a few things.
+
+- **A question they will get wrong.** The surprise makes people want to
+  know why, and it shows that a feeling about chance can be checked. What
+  can go wrong: to someone who expects to fail, a wrong answer can look
+  like more proof. It helps to say that most people guess the same way,
+  and that the guess is not marked.
+- **A question they will get right.** It builds confidence, and it gives
+  the friend a first success. What can go wrong: if the point of the
+  lesson is a surprise, starting safely can make the surprise feel like
+  a trick later.
+
+What makes a wrong guess safe is how it is treated: nobody marks it, and
+the answer is used to find out which way the guess leaned. A strong answer
+says what you would do to make it safe, whichever question you chose.
+
+</details>

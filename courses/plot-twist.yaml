@@ -18,6 +18,7 @@ contents:
 - title: Instructions for a machine
   tutorials:
   - four-questions
+  - how-this-course-is-built
   - recipes-are-algorithms
   - numbers-a-computer-can-hold
   - everything-is-ones-and-zeros
