@@ -1,0 +1,81 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for collections-without-repeats
+# and circles-that-overlap, declared with `context_for:`. Checked against the
+# union of those pages' glossaries and every earlier Plot Twist glossary.
+# Union, intersection, difference, symmetric difference, complement,
+# universal set and the Cartesian product are used here but defined
+# earlier, so they stay there. Every entry below is SQL, not Python, so
+# none has a `python:` line.
+entries:
+  - term: "database, table, row"
+    kind: concept
+    definition: >
+      A database is a store of data, kept in tables. A table is a grid of
+      named columns, and each row is one record in it.
+  - term: "SQL, query"
+    kind: concept
+    definition: >
+      SQL is the language most databases use for questions. A question
+      written in it is a query.
+    example: "SELECT title FROM my_song_tbl;"
+  - term: primary key
+    kind: concept
+    definition: >
+      A primary key is a column whose value is different on every row, so
+      each row can be named. Two rows with the same title are still two
+      rows, because their keys differ.
+  - term: SELECT DISTINCT
+    kind: keyword
+    definition: >
+      Keeps each different value once. It does for a column what set()
+      does for a list.
+    example: "SELECT DISTINCT title FROM my_song_tbl;"
+  - term: compound query
+    kind: concept
+    definition: >
+      A compound query is two queries joined by UNION, UNION ALL, INTERSECT
+      or EXCEPT. Both sides must give rows with the same number of columns.
+  - term: UNION
+    kind: keyword
+    definition: >
+      Gives the rows of two queries, each different row once. It is the
+      union, A ∪ B, and Python's |.
+    example: "SELECT title FROM my_song_tbl UNION SELECT title FROM your_song_tbl;"
+  - term: UNION ALL
+    kind: keyword
+    definition: >
+      Gives every row of two queries, repeats included. It is closer to
+      adding two lists with + than to a set operation.
+  - term: INTERSECT
+    kind: keyword
+    definition: >
+      Gives the rows that both queries give, each once. It is the
+      intersection, A ∩ B, and Python's &.
+  - term: EXCEPT
+    kind: keyword
+    definition: >
+      Gives the rows of the first query that are not in the second. It is
+      the difference, A ∖ B, and Python's -.
+  - term: "COUNT(*)"
+    kind: function
+    definition: Gives the number of rows in a result.
+    example: "SELECT COUNT(*) FROM my_song_tbl;"
+  - term: CROSS JOIN
+    kind: keyword
+    definition: >
+      Pairs every row of one table with every row of another. It is the
+      Cartesian product, A × B, so its row count is the two tables' row
+      counts multiplied.
+  - term: "JOIN ... ON"
+    kind: keyword
+    definition: >
+      Pairs the rows of two tables where the condition after ON is true.
+      It gives the same rows as a CROSS JOIN with only the matching pairs
+      kept.
+    example: "FROM my_song_tbl JOIN your_song_tbl ON my_song_tbl.title = your_song_tbl.title"
+  - term: relation
+    kind: concept
+    definition: >
+      A relation is Codd's name for a table seen as a set of rows, all with
+      the same columns. Relational databases are named after it.
