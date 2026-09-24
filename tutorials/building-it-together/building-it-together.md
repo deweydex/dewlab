@@ -115,7 +115,7 @@ it getting better?
   [Kinds of data, and honest charts](tutorial:kinds-of-data-and-honest-charts#a-chart-that-tells-the-truth)
 - Unit 6: `insertion_sort` for a table of best times
 - Unit 7 or 8: `line_through`, for a trend line through the weeks
-- Unit 9, if you want it: `derivative_at`, for speed at one moment
+- Unit 9, if you want it: `derivative_at`, for speed at one moment (see [How fast, right now?](tutorial:how-fast-right-now#a-tool-for-the-slope-at-a-point))
 
 The starter uses a made-up week. Before you run it, add up the week's
 distance in your head. What do you expect?

@@ -13,7 +13,8 @@ description: >-
   a toolkit of your own functions, and later pages use them.
 
 
-  This course is new, and only its first eight units are written so far.
+  This course is new, and in beta: all ten units are written, and they
+  will change as classes use them.
 contents:
 - title: Instructions for a machine
   tutorials:
@@ -72,6 +73,18 @@ contents:
   - going-round-in-circles
   - waves
   - how-tall-is-that-tree
+- title: Change
+  tutorials:
+  - getting-closer
+  - how-fast-right-now
+  - rules-for-change
+  - solving-by-computing
+- title: Programs for people
+  tutorials:
+  - where-programming-came-from
+  - many-languages-one-idea
+  - code-other-people-can-read
+  - building-it-together
 mixed:
 - mixed-instructions-for-a-machine
 - mixed-decisions-and-logic
@@ -81,3 +94,4 @@ mixed:
 - mixed-algorithms-that-scale
 - mixed-algebra-you-can-run
 - mixed-shapes-angles-and-waves
+- mixed-change

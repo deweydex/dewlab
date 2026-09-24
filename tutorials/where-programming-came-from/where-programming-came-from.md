@@ -328,7 +328,7 @@ Meanwhile, in December 1989, a Dutch programmer, Guido van Rossum,
 wanted a hobby project for the week around Christmas. He worked at CWI,
 a research centre in Amsterdam, and he began a new language that grew
 out of an earlier one called ABC. He named it after the comedy show
-*Monty Python's Flying Circus*, not the snake. *Python* 0.9.0 was
+Monty Python's Flying Circus, not the snake. Python 0.9.0 was
 published on 20 February 1991. Your cells on this page run a version of
 the same language, grown up.
 
