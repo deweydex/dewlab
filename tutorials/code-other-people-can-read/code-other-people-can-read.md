@@ -33,7 +33,7 @@ On this page we:
 
 - read a badly written function the way a stranger would
 - review it with a checklist built from the four questions
-- rewrite it without changing what it does, with tests keeping watch
+- rewrite it without changing what it does, with tests checking each step
 - write docstrings a stranger can rely on, and let one check itself
 - meet the rules a team agrees on, and a small tool that checks some
   of them
@@ -108,11 +108,11 @@ caller's own list, as `hand.sort()` did in the warm-up.
 A change a function makes outside itself, beyond the value it gives
 back, is called a *side effect*. Printing is a side effect too. Some
 side effects are the whole point of a function, like `plot_rule`
-drawing. This one is a surprise, and a surprise side effect is one of
-the most expensive bugs there is, because it shows up somewhere else,
+drawing. This one is a surprise. A surprise side effect is often an
+expensive bug to find, because the damage shows up somewhere else,
 later.
 
-It took us a whole paragraph to find out what five short lines do.
+It took us a whole paragraph to find out what nine short lines do.
 Nothing in the function helped: not its name, not the names inside it,
 and not its one comment.
 
@@ -120,7 +120,7 @@ and not its one comment.
 
 A *code review* is one person reading another person's code, to find
 problems before they reach anyone who uses it. The person who reads is
-the *reviewer*. Reviewers use a checklist, so that nothing depends on
+the *reviewer*. Many reviewers use a checklist, so that nothing depends on
 what they happen to notice that day.
 
 Here is one, built from the four questions. Each question asks about
@@ -194,7 +194,7 @@ check_median_tool(m)
 ```
 
 Every answer matches, and the last test fails with its message: the
-list handed in was changed. The tests now pin down what the function
+list handed in was changed. The tests now record what the function
 does, the good and the bad.
 
 Here is the rewrite, with each finding from the review dealt with.
@@ -321,7 +321,7 @@ that matter most in a toolkit.
   `has_tickets`. Write `if is_sorted:`, never `if is_sorted == True:`.
 - **Short lines.** PEP 8 asks for lines under 80 characters, so code
   fits beside a second window, or on a phone.
-- **Two blank lines between functions**, so each one stands apart.
+- **Two blank lines between functions**, so each one is separate on the screen.
 
 Above every rule, PEP 8 puts one more: code in one project should look
 the same. A team that follows its own agreed rules has done better than
@@ -359,7 +359,7 @@ makes none.
 
 ## Your toolkit, read by a stranger
 
-Now let's point the tool at your own toolkit, one or two tools from
+Now let's run the tool on your own toolkit, one or two tools from
 each unit. Before you run it, which of your tools do you expect to get
 a note?
 
@@ -418,7 +418,7 @@ standard arrives: written down, before you write a line.
 
 We started from a bad function because a rule only makes sense to
 someone who has felt the problem it solves. Reading `m` cost you a
-paragraph, and the side effect cost the street its order. The cost of
+paragraph, and the side effect lost the order of the houses. The cost of
 our way is that PEP 8 appeared in pieces, across two pages, and it
 has many more rules than you have met.
 
@@ -429,7 +429,7 @@ has many more rules than you have met.
 | The question | On this page |
 |---|---|
 | What is named here? | names that say what they hold; a named constant in capitals in place of a magic number |
-| What is promised? | a docstring says what comes out, what goes in, and the edges; `doctest` runs its examples; tests pin down a promise before a refactor |
+| What is promised? | a docstring says what comes out, what goes in, and the edges; `doctest` runs its examples; tests record a promise before a refactor |
 | What happens when? | tests first, then one change at a time, with the tests run after each; review before the code reaches anyone else |
 | What does this space let us do? | Python ignores names and layout, so they are for people; `.sort()` changes the list it was handed, and `sorted()` does not |
 

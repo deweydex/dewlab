@@ -1,0 +1,46 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: sign change
+    kind: concept
+    definition: >
+      A sign change is a pair of inputs where a rule is negative at one and
+      positive at the other. If the graph has no gap between them, the rule
+      has a root somewhere in between.
+  - term: bisection
+    kind: concept
+    definition: >
+      Bisection finds a root by halving the gap around a sign change, again
+      and again, and keeping the half where the sign still changes. It is
+      binary search on a number line.
+  - term: "bisection steps, 2ᵏ ≥ gap / tolerance"
+    kind: formula
+    definition: >
+      Each bisection step halves the gap, so k steps shrink it by 2ᵏ. From a
+      gap of 1, about 30 steps reach a billionth, because 2³⁰ is about a
+      billion.
+  - term: "bisect_root()"
+    kind: function
+    definition: >
+      Your toolkit's function that finds a root of a rule between low and
+      high by bisection. It needs a sign change and no gap between them. It
+      is your own tool, not part of Python.
+    example: "bisect_root(square_gap, 1, 2)   # about 1.41421356"
+  - term: "Newton's method, g − f(g) / f′(g)"
+    kind: formula
+    definition: >
+      Newton's method follows the tangent line at a guess g down to where it
+      meets 0, and uses that as the next guess. Near a root, the number of
+      correct digits roughly doubles at each step.
+  - term: "newton()"
+    kind: function
+    definition: >
+      Your toolkit's function that finds a root of a rule by Newton's
+      method, from a starting guess, using derivative_at for each slope. It
+      is your own tool, not part of Python.
+    example: "newton(square_gap, 1)   # about 1.41421356"
+  - term: a flat tangent
+    kind: concept
+    definition: >
+      A flat tangent line has slope 0 and never meets 0, so Newton's method
+      has nowhere to go from there. Dividing by that slope raises a
+      ZeroDivisionError.

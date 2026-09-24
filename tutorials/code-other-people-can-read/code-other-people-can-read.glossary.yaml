@@ -1,0 +1,71 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Comes after many-languages-one-idea in the Plot Twist track. docstring
+# was introduced on numbers-a-computer-can-hold; coding standard, PEP 8,
+# bug and test suite on does-it-work; hidden input on
+# what-a-function-can-see; sorted() on what-is-typical and .sort() on
+# sorting-a-hand-of-cards, so none is repeated here. quick_review and
+# check_median_tool are helpers written on this page, not Python names and
+# not toolkit functions, so they have no entry. __doc__ and __code__ are
+# used in passing inside quick_review and not taught, so they are left out.
+entries:
+  - term: side effect
+    kind: concept
+    definition: >
+      A side effect is a change a function makes outside itself, beyond
+      the value it gives back. Changing a list it was handed, or printing,
+      are side effects.
+  - term: "code review, reviewer"
+    kind: concept
+    definition: >
+      A code review is one person reading another person's code, to find
+      problems before it reaches anyone who uses it. The person who reads
+      is the reviewer.
+  - term: review checklist
+    kind: concept
+    definition: >
+      A review checklist is a list of questions a reviewer asks of every
+      piece of code. This course builds one from the four questions: names,
+      promises, order of steps, and what the space allows.
+  - term: refactoring
+    kind: concept
+    definition: >
+      Refactoring is changing how code is written without changing what it
+      does. Tests are written first, and run again after each change.
+  - term: a docstring for a stranger
+    kind: concept
+    definition: >
+      A docstring a stranger can rely on says what comes out, what must go
+      in, what happens at the edges, and gives an example. PEP 257 asks for
+      one summary line, a blank line, then the details.
+  - term: "help()"
+    kind: function
+    python: help
+    definition: >
+      Shows a function's name, its inputs and its docstring.
+    example: "help(split_bill)"
+  - term: doctest
+    kind: function
+    python: doctest.run_docstring_examples
+    definition: >
+      Runs each line starting with >>> in a docstring and compares the
+      result with the line under it. It reports every example that does
+      not match.
+    example: 'doctest.run_docstring_examples(pace, globals(), name="pace")'
+  - term: magic number
+    kind: concept
+    definition: >
+      A magic number is a number in code with no name to say what it
+      means, like the 1.23 in price * 1.23.
+  - term: named constant
+    kind: concept
+    definition: >
+      A named constant is a name for a value that never changes while the
+      program runs. PEP 8 writes it in capitals, at the top of the file.
+    example: "VAT_RATE = 0.23"
+  - term: linter
+    kind: concept
+    definition: >
+      A linter is a program that reads code without running it and reports
+      lines that break a coding standard. flake8, pylint and Ruff are
+      linters for Python.

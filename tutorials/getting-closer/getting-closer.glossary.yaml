@@ -1,0 +1,56 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: limit of a sequence
+    kind: concept
+    definition: >
+      The limit of a sequence is the number its values get as close to as we
+      like, and stay that close, if we go far enough along. Walking half the
+      way to a door, again and again, has the door as its limit.
+  - term: "infinity, ∞"
+    kind: concept
+    definition: >
+      Infinity is not a number we reach. "k goes to infinity" means k keeps
+      growing, past any number you name.
+  - term: a hole in a graph
+    kind: concept
+    definition: >
+      A hole is a single x where a rule has no value, while the values all
+      around it are fine. It is drawn as an open circle.
+  - term: "limit of a function, lim x→a f(x)"
+    kind: concept
+    definition: >
+      The limit of f(x) as x approaches a is the number f(x) gets as close
+      to as we like, when x is close enough to a, from either side. The
+      value at a itself plays no part.
+    example: "the limit of (x² − 4)/(x − 2) as x approaches 2 is 4"
+  - term: "one-sided limit, x → a⁻ and x → a⁺"
+    kind: concept
+    definition: >
+      A one-sided limit is the number a rule heads for from one side only:
+      from the left (a⁻) or from the right (a⁺). A limit from both sides
+      exists only when the two one-sided limits exist and agree.
+  - term: a limit and a value
+    kind: concept
+    definition: >
+      A limit and a value answer two different questions. A rule can have a
+      limit at a point and no value there, like a hole, or a value and no
+      limit, like a jump.
+  - term: "limit at infinity, lim x→∞"
+    kind: concept
+    definition: >
+      A limit at infinity is the number a rule heads for as x grows past any
+      number. The limit of 1/x at infinity is 0.
+  - term: "e, math.e"
+    kind: concept
+    python: math.e
+    definition: >
+      e is the limit of (1 + 1/n)ⁿ as n goes to infinity, about 2.71828. It
+      is what €1 grows to in a year at 100%, paid all the time. Python keeps
+      it as math.e.
+    example: "math.e   # 2.718281828459045"
+  - term: floats and limits
+    kind: concept
+    definition: >
+      A float has a smallest gap, about 2.2 × 10⁻¹⁶ near 1. A step smaller
+      than that is lost, so a table of values closing in works only while
+      the step is well above the gaps.

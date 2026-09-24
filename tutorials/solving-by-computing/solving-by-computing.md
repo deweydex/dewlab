@@ -48,8 +48,9 @@ On this page we:
 > [How a computer stores a number](tutorial:how-a-computer-stores-a-number#the-square-root-of-2)
 > showed. So we change the question. "What is the answer?" becomes
 > "Which float is close enough?". One thing usually goes unsaid: every
-> method on this page gives a sequence of guesses, and stops when a
-> guess is good enough, not when it is exact.
+> method on this page gives a sequence of guesses, like the sequences
+> on [Getting closer](tutorial:getting-closer), and stops when a guess
+> is good enough, not when it is exact.
 
 ## Warm-up
 
@@ -174,6 +175,19 @@ print(halvings(10 ** 9) + 1)
 
 Thirty steps. $10^9$ is $1000^3$, and each thousand is about 10
 halvings. Every step gives us about one more correct binary digit.
+
+### Your turn
+
+1. In the cell below, write a rule `three_gap` for $x^2 - 3$. Which
+   `low` and `high` give a sign change?
+2. Copy the bisection loop into the cell, using `three_gap`. What are
+   the first two decimal places of $\sqrt{3}$?
+3. How many steps would a gap of 1 need to get below 0.001?
+
+```python exec
+id: solving-by-bisect-your-turn
+# Your square root of 3
+```
 
 ## A tool that halves
 
@@ -310,9 +324,10 @@ Bisection is sure, but slow: it takes about 30 steps for 9 decimal
 places. It only uses the sign of the rule, never its size or its
 shape. Can a guess use more?
 
-On [How fast, right now?](tutorial:how-fast-right-now), a *tangent*
-was the straight line that touches a curve at one point, with the
-curve's slope there. Close to that point, the curve and its tangent are
+On
+[How fast, right now?](tutorial:how-fast-right-now#the-tangent-line),
+the tangent line was the straight line that touches a curve at one
+point, with the curve's slope there. Close to that point, the curve and its tangent are
 nearly the same. And a straight line is a rule we can solve.
 
 So here is a plan. Start with a guess. Draw the tangent at the guess.
@@ -328,7 +343,7 @@ guess = 1
 height = square_gap(guess)
 tangent_slope = derivative_at(square_gap, guess)
 next_guess = guess - height / tangent_slope
-print("slope", tangent_slope, " next guess", next_guess)
+print("slope", round(tangent_slope, 6), " next guess", round(next_guess, 6))
 
 plot_rule(square_gap, 0.5, 2)
 plt.plot([guess, next_guess], [height, 0], "--o")
@@ -358,9 +373,11 @@ for step in range(1, 7):
     print(step, guess, "error:", guess - math.sqrt(2))
 ```
 
-The errors go 0.09, 0.002, 0.000002, 0.0000000000016, and then 0. After
-four steps the guess is right to 11 decimal places. The number of
-correct digits roughly doubles at every step, once the guess is close.
+The errors go 0.09, 0.002, 0.000002, 0.0000000000016, and then 0.
+After four steps the guess is right to 11 decimal places, and after
+five it is the float `math.sqrt` gives. The sixth step moves it by one
+float's width, about $2 \times 10^{-16}$. The number of correct digits
+roughly doubles at every step, once the guess is close.
 
 For $x^2 - 2$, the slope is $2x$, as
 [Rules for change](tutorial:rules-for-change#a-pattern-in-the-slopes-the-power-rule)

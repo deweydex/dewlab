@@ -1,0 +1,55 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: chord
+    kind: concept
+    definition: >
+      A chord is a straight line that joins two points of a curve.
+  - term: average rate of change
+    kind: concept
+    definition: >
+      The average rate of change of a rule between two inputs is the slope
+      of the chord between them. It says how much the output changes for
+      each step of the input, on average. Average speed is one.
+  - term: "derivative, f′(a)"
+    kind: formula
+    definition: >
+      The derivative of f at a is the limit of the chord slopes
+      (f(a + h) − f(a)) / h as the step h gets close to 0. It is the slope
+      of the curve at the single point a. It is also written dy/dx.
+    example: "f′(a) = lim h→0 (f(a + h) − f(a)) / h"
+  - term: instantaneous rate of change
+    kind: concept
+    definition: >
+      An instantaneous rate of change is the rate of change at a single
+      moment, not averaged over a stretch. Every derivative is one. Speed
+      at one instant is the instantaneous rate of change of distance.
+  - term: "centred chord, (f(a + h) − f(a − h)) / 2h"
+    kind: formula
+    definition: >
+      A centred chord runs from a − h to a + h, so the point sits in its
+      middle. Its slope settles on the derivative faster than a chord from
+      one side, because the errors on the two sides mostly cancel.
+  - term: "derivative_at(rule, x, step=1e-6)"
+    kind: function
+    definition: >
+      Gives back the slope of a rule at x, from a centred chord with a very
+      short step. It is your own toolkit tool, and its answer is close to
+      the derivative, not exact.
+    example: "derivative_at(squared, 3)   # about 6"
+  - term: step size for a derivative
+    kind: concept
+    definition: >
+      A long step makes a chord bend away from the curve. A very short step
+      loses the answer in float rounding. A step of 10⁻⁶ is a good middle
+      for rules whose values are of ordinary size.
+  - term: tangent line
+    kind: concept
+    definition: >
+      A tangent line touches a curve at one point and has the same slope as
+      the curve there. Close up, a smooth curve and its tangent line look
+      like one line.
+  - term: "math.exp()"
+    kind: function
+    python: math.exp
+    definition: "Gives back e to the power of its input."
+    example: "math.exp(1)   # 2.718281828459045"
