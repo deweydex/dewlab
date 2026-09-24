@@ -39,7 +39,39 @@ A reader who arrives sure they are "not a maths person" or "not a computer
 person" is the one this hurts most: a topic met once and never needed again
 confirms that it was never for them.
 
-## 2. Principles
+## 2. Four ideas under everything
+
+Josh's framing, and the spine of the track. Maths and programming rest on
+the same few ideas, and a reader who can ask four questions of any
+situation can reason in either:
+
+| Idea | The question a reader asks | In programming | In maths |
+|---|---|---|---|
+| **Naming** | What is named here, and what does the name point at? | variables, references; two names for one list; renaming changes nothing, repointing changes everything | letters for numbers; substitution; "let *u* stand for…"; a value used as a name (an index, a key) |
+| **Functions** | What is promised, given what? | a function as a named promise: inputs in, a result that keeps the promise out; small promises composed into big ones; tests that check the promise | a formula; a rule; an inverse that undoes the promise |
+| **Sequence** | What happens when, and after what? | order of lines; repeating; choosing a path ("control flow" is said once and not leaned on) | order of operations; the steps of rearranging; a proof's lines; a limit's approach |
+| **Environment** | What does this space let us do, and what does it assume? | what comes free (`print`, making a new name); what a function can see; ints that never overflow and floats that round | the number families, each a bigger space with moves the last one forbade; a flat plane where a triangle's angles make 180°, and a sphere where three right angles make 270° |
+
+Students meet these as the four questions, not as vocabulary to learn. The
+fourth matters most to readers who have been told they are bad at maths: a
+move that "doesn't work" is usually a move from a different space, and
+naming the space turns the mistake into a discovery. School maths tends to
+penalise the move; this track asks which space it belongs to.
+
+How the track carries them:
+
+- **A first page, "Four questions"**, asks them of a board game (pieces are
+  names, moves are functions, turns are sequence, the board and its rules
+  are the environment), then of a recipe, then of one line of Python.
+- **"The space we're in"**, a short box near the top of every page, says
+  out loud the assumptions and the moves allowed: "whole numbers only",
+  "a flat plane", "Python gives you `print` without asking".
+- **Each unit leans on one idea**, and uses all four: naming in Units 1
+  and 5, functions in 4 and 7, sequence in 3 and 6, environment in 2, 8
+  and 9. Unit 7's complex numbers are "building a bigger space"; Unit 8
+  puts triangles on a sphere beside the 180° rule.
+
+## 3. Principles
 
 1. **A question first, from the world.** Every page opens with something a
    person might want to know: *Is this password safe? Which queue should I
@@ -63,11 +95,11 @@ confirms that it was never for them.
    across the whole track: `mean`, `distance`, `solve_quadratic`,
    `derivative_at` and about thirty more, each with its own tests. Later
    units call the functions earlier units built. The capstone is "use your
-   toolkit". See §5 for how this works in the browser.
+   toolkit". See §6 for how this works in the browser.
 8. **Low floor, high ceiling.** The first task on a page is one every reader
    can finish. The last is one a confident reader will enjoy.
 
-## 3. Practice
+## 4. Practice
 
 Every tutorial has a practice page, and every unit a mixed practice page.
 Problems come in four kinds and three levels:
@@ -78,6 +110,7 @@ Problems come in four kinds and three levels:
 | Make | Write a small function or calculation to a clear target |
 | Fix | Find and repair one realistic mistake in working-looking code |
 | Explain | Answer in words: why does this work, when would it fail |
+| Another way | Reach the same answer by a second route, or find the space where a "wrong" answer is right |
 
 Levels: **Warm-up** (one step, anyone can do it), **Core** (what the page
 teaches), **Stretch** (combines it with an earlier unit). Every problem has
@@ -89,11 +122,11 @@ money and rent, travel and maps, health and fitness, games, weather and
 climate, Irish data (rainfall, bus times, the census), art and colour. A
 context is chosen because the maths genuinely fits it, never as decoration.
 
-## 4. The units
+## 5. The units
 
-Forty-seven tutorials of roughly an hour each, in ten units. Outcome codes are
+Forty-eight tutorials of roughly an hour each, in ten units. Outcome codes are
 from `planning/curriculum/outcomes.yaml`. Every PDP and MIT outcome appears
-at least once (checked by a script: see §7).
+at least once (checked by a script: see §8).
 
 ### Unit 1 — Instructions for a machine
 
@@ -102,6 +135,7 @@ can it hold?*
 
 | # | Tutorial | Question it opens with | Outcomes |
 |---|---|---|---|
+| 1.0 | Four questions | What do a board game, a recipe and a line of Python have in common? | PDP-LO5, MIT-6.1 |
 | 1.1 | Recipes are algorithms | How would you teach a robot to make tea? | PDP-LO2, PDP-LO5, PDP-LO6, MIT-6.1 |
 | 1.2 | Numbers a computer can hold | Why does Python say `7 / 2` is `3.5` but `7 // 2` is `3`? | PDP-LO4, MIT-1.1 |
 | 1.3 | Everything is ones and zeros | How does `#FF8800` make orange? | MIT-1.4 |
@@ -274,7 +308,7 @@ Background reading, linked from the pages that need it:
   trilateration, why Google ranks pages with a Markov chain. Linked from
   whichever unit each belongs to.
 
-## 5. The toolkit in the browser
+## 6. The toolkit in the browser
 
 Every page is its own Python session, so a reader's functions do not carry
 over today. Two ways to make them carry over, and which I recommend:
@@ -291,12 +325,15 @@ over today. Two ways to make them carry over, and which I recommend:
    functions, but later pages use the author's versions. Simpler, and it
    loses the point.
 
-Option 1 costs about a day of runtime work and is worth it. Option 2 is the
-fallback if it proves fragile.
+**Decided: both.** A toolkit cell carries the reader's own code from page to
+page; a reader can switch to the reference version at any time, and a
+function the reader has not written, or whose version raises an error, loads
+from the reference. So "my code" and "the reference" are two modes of one
+feature, and no later page breaks either way.
 
-## 6. How it gets built
+## 7. How it gets built
 
-1. **Pilot: Units 1 and 2.** Eight tutorials, eight practice pages, one mixed
+1. **Pilot: Units 1 and 2.** Nine tutorials, eight practice pages, one mixed
    practice page and glossaries, plus the toolkit cell. Built, checked in a
    browser, and read by you before anything else is written, so the voice,
    the warm-ups and the practice format are agreed on real pages.
@@ -307,7 +344,7 @@ fallback if it proves fragile.
 4. **The course file**, plot-twist.yaml in the courses folder, a topic-tree group, and a
    decisions-log entry. The course starts as `status: beta`.
 
-## 7. Coverage check
+## 8. Coverage check
 
 Every outcome code in the tables above, against the full lists:
 
@@ -319,10 +356,11 @@ Every outcome code in the tables above, against the full lists:
 When the course file exists, `dev/curriculum_map.py` checks the same thing
 from the pages' own `covers:` frontmatter, so the claim above cannot drift.
 
-## 8. Decisions for Josh
+## 9. Decisions
 
-1. **The name.** *Plot Twist*, or one of the alternatives.
-2. **The toolkit cell** (§5, option 1): yes or no.
-3. **Where it sits.** Beside the existing integrated course as a beta track,
-   or as the recommended starting point on the contents page once it is
-   finished.
+Made by Josh on 24 September 2026:
+
+1. **The name:** *Plot Twist*, for now; it can change without touching a page.
+2. **The toolkit:** both modes, the reader's own code and the reference (§6).
+3. **Where it sits:** beside the existing integrated course, as a beta track.
+4. **The four ideas** (§2) are the spine of the track.
