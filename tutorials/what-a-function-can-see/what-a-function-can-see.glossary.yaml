@@ -1,0 +1,70 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Comes after does-it-work in the Plot Twist track. "parameter" was
+# introduced on recipes-are-algorithms; "argument", "keyword argument",
+# "procedure", "None" and "modularisation" on machines-that-take-a-number;
+# "NameError" on when-python-says-no; "append()" on
+# true-false-and-every-case. They are used here, not introduced.
+entries:
+  - term: local name
+    kind: concept
+    definition: >
+      A local name is a name made inside a function, as a parameter or
+      with =. It exists only inside that function, and only while one
+      call is running.
+  - term: scope
+    kind: concept
+    definition: >
+      The scope of a name is the part of a program where the name can be
+      seen. A local name's scope is the inside of its function.
+  - term: global name
+    kind: concept
+    definition: >
+      A global name is a name made on the page, outside every function.
+      Every function on the page can read it.
+  - term: hidden input
+    kind: concept
+    definition: >
+      A hidden input is something a function needs that is not one of its
+      parameters, such as a global name it reads. The same call can then
+      give different answers at different times.
+  - term: UnboundLocalError
+    python: UnboundLocalError
+    kind: concept
+    definition: >
+      An UnboundLocalError means a local name was used before it had a
+      value. It often happens when a function uses = on a name that was
+      made on the page.
+  - term: global
+    python: global
+    kind: keyword
+    definition: >
+      Tells a function to use the page's name, so that = inside the
+      function changes the page's name. Programmers use it rarely: a
+      parameter and a return line keep the promise in plain sight.
+    example: "global score"
+  - term: parameter passing
+    kind: concept
+    definition: >
+      Parameter passing is what happens when a call starts. Each
+      parameter, in the call's new space, is made to point at its
+      argument.
+  - term: "= and append()"
+    kind: concept
+    definition: >
+      The two moves are different. = makes one name point at a new value,
+      in one space only. append() changes the list itself, so every name
+      pointing at that list sees the change.
+  - term: closure
+    kind: concept
+    definition: >
+      A closure is a function that keeps the space it was made in. A
+      function made inside another function can still use that function's
+      names after its call has ended.
+    example: "to_sterling = rate_converter(0.85)"
+  - term: where Python looks for a name
+    kind: concept
+    definition: >
+      Python looks first in the call's own space, then in the function it
+      was made inside, then on the page, then in Python's own names. The
+      first space that has the name wins.

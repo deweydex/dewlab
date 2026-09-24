@@ -1,0 +1,53 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: arrangement
+    kind: concept
+    definition: >
+      An arrangement is one order of a group of things, from first to last.
+      Three songs have 6 arrangements.
+  - term: "factorial, n!"
+    kind: formula
+    definition: >
+      The factorial of a whole number n is the product of every whole number
+      from 1 up to n. It counts the arrangements of n different things.
+      By agreement, 0! is 1.
+    example: "4! = 4 × 3 × 2 × 1 = 24"
+  - term: "permutation, P(n, r)"
+    kind: formula
+    definition: >
+      A permutation is an arrangement of r things chosen from n, where the
+      order matters. There are n! / (n − r)! of them. A podium of 3 from 8
+      runners is one permutation.
+    example: "P(8, 3) = 8 × 7 × 6 = 336"
+  - term: "combination, C(n, r)"
+    kind: formula
+    definition: >
+      A combination is a choice of r things from n, where the order does not
+      matter. There are n! / (r! (n − r)!) of them. It is also written as n
+      over r in round brackets, and said "n choose r".
+    example: "C(8, 5) = 56"
+  - term: "itertools.combinations(), itertools.permutations()"
+    kind: function
+    python: [itertools.combinations, itertools.permutations]
+    definition: >
+      List every choice, or every order, of r things from a group. Wrap the
+      result in list() to count it with len().
+    example: "len(list(itertools.combinations(players, 5)))"
+  - term: "factorial()"
+    kind: function
+    definition: >
+      Gives n!, the number of orders of n different things. It is a toolkit
+      function you wrote yourself.
+    example: "factorial(4)  # 24"
+  - term: "permutations()"
+    kind: function
+    definition: >
+      Gives P(n, r), the orders of r things chosen from n different things.
+      It is a toolkit function you wrote yourself.
+    example: "permutations(8, 3)  # 336"
+  - term: "combinations()"
+    kind: function
+    definition: >
+      Gives C(n, r), the ways to choose r things from n different things when
+      the order does not matter. It is a toolkit function you wrote yourself.
+    example: "combinations(8, 5)  # 56"
