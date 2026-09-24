@@ -132,9 +132,10 @@ building in Ireland counts its floors the same way: the ground floor is
 
 Maths usually counts from 1. On
 [Doing it again](tutorial:doing-it-again#sigma-a-loop-written-by-mathematicians)
-we wrote a list of numbers as $x_1, x_2, x_3$, and so on. A list of
-values in order, written this way, is called a *sequence*. So the same
-week can be written two ways:
+we wrote a list of numbers as $x_1, x_2, x_3$, and so on. Maths calls a
+list of values in order a sequence. It is the word from our third
+question, "what happens when?", because the values come one after
+another. So the same week can be written two ways:
 
 | Day | Mon | Tue | Wed | Thu | Fri | Sat | Sun |
 |---|---|---|---|---|---|---|---|
@@ -448,7 +449,7 @@ temperatures. So in the toolkit it gets a name for any list: `largest`.
 It is written for you below.
 
 `smallest` is a stub. It has the same shape as `largest`, with one sign
-turned round. `count_if` is a stub too. It is given a list and a *test*,
+turned round. `count_if` is a stub too. It is given a list and a test:
 a function that returns True or False for one value. It counts the
 values for which the test gives True. You handed a function to a
 function on [How likely is it?](tutorial:how-likely-is-it#a-tool-that-runs-it-many-times),

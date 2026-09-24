@@ -172,7 +172,7 @@ box as "everything". In Python, it is the universal set minus the set:
 
 This is where the box matters. The complement of the swimmers is 10
 people if the box is the club. If the box were everyone in Ireland, it
-would be about five million people. The same move gives a different
+would be more than five million people. The same move gives a different
 answer in a different space, so a Venn diagram always draws its box.
 
 ### Exactly one of the two
@@ -545,14 +545,15 @@ dart_only = dart - bus_dart_only - luas_dart_only - all_three
 inside = (all_three + bus_luas_only + bus_dart_only + luas_dart_only
           + bus_only + luas_only + dart_only)
 print("only one:", bus_only, luas_only, dart_only)
-print("exactly two:", bus_luas_only + bus_dart_only + luas_dart_only)
+print("exactly two:", bus_luas_only, bus_dart_only, luas_dart_only)
+print("exactly two, together:", bus_luas_only + bus_dart_only + luas_dart_only)
 print("at least one:", inside, " none:", asked - inside)
 ```
 
 The line `bus, luas, dart = 34, 25, 18` names three values at once, in
 order: the first name gets the first value. Then the answers: 17, 10 and
-7 used only one service, 17 used exactly two, 54 used at least one, and
-6 used none of them.
+7 used only one service; 9, 5 and 3 used exactly two, which makes 17;
+54 used at least one, and 6 used none of them.
 
 There are two checks here. The first is the three-set formula:
 $34 + 25 + 18 - 12 - 8 - 6 + 3 = 54$, the same as `inside`. The second

@@ -1,0 +1,103 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "list index, week[i]"
+    kind: operator
+    definition: >
+      Gives the value at one position in a list. Python counts positions
+      from 0, so week[0] is the first value and week[3] is the fourth.
+    example: "week[3]   # the fourth value"
+  - term: "sequence in maths, x₁, x₂, …"
+    kind: concept
+    definition: >
+      In maths, a sequence is a list of values in order, counted from 1.
+      The value x_i in maths is week[i - 1] in Python.
+  - term: IndexError
+    kind: keyword
+    python: IndexError
+    definition: >
+      IndexError is the error Python gives when we ask for a position a
+      list does not have. A list of 7 values has indexes 0 to 6.
+    example: "week[7]   # IndexError: list index out of range"
+  - term: negative index
+    kind: concept
+    definition: >
+      A negative index counts from the end of a list. week[-1] is the last
+      value, and week[-2] is the one before it.
+    example: "week[-1]"
+  - term: "slice, week[start:stop]"
+    kind: operator
+    definition: >
+      Gives a new list from index start up to index stop, with stop left
+      out. Leave out start to begin at the front, or stop to go to the end.
+    example: "week[0:5]   # the first five values"
+  - term: "week[i] = value"
+    kind: operator
+    definition: >
+      Points one position of a list at a new value. The rest of the list
+      stays as it was.
+    example: "week[2] = 15"
+  - term: going through by index
+    kind: concept
+    definition: >
+      Going through by index means looping over the positions of a list,
+      not its values. Each step can then reach a value's neighbours, or the
+      same position in a second list.
+    example: "for i in range(1, len(week)):"
+  - term: "empty list, []"
+    kind: concept
+    definition: >
+      An empty list is a list with no values in it. A new list often starts
+      empty before a loop, and grows by append each time round.
+    example: "week_fahrenheit = []"
+  - term: "+ and * on lists"
+    kind: operator
+    definition: >
+      Join two lists into one longer list, or repeat a list a whole number
+      of times. They do not add or multiply the values inside.
+    example: "[8, 6] + [7, 9]   # [8, 6, 7, 9]"
+  - term: adding element by element
+    kind: concept
+    definition: >
+      Adding element by element means adding each pair of values in the
+      same position of two lists of the same length. It is the maths
+      meaning of adding two rows of numbers.
+  - term: "numpy array"
+    kind: function
+    python: numpy.array
+    definition: >
+      Makes an array from a list. An array is numpy's row of numbers, where
+      + and * work element by element, the maths way.
+    example: "np.array([3.20, 4.50]) * 1.135"
+  - term: two names for one list
+    kind: concept
+    definition: >
+      Writing b = a ties a second name to the same list. It does not make a
+      new list, so a change through one name is seen through the other.
+    example: "forecast = week"
+  - term: "copy()"
+    kind: function
+    python: list.copy
+    definition: >
+      Gives back a new list with the same values in it. Changing the copy
+      does not change the original.
+    example: "forecast = week.copy()"
+  - term: "load_csv()"
+    kind: function
+    python: tutorial_tools.load_csv
+    definition: >
+      Loads a data file from the course's data folder as a table. Write
+      await in front of it, which means "wait until the file has arrived".
+    example: 'df = await load_csv("life-expectancy.csv")'
+  - term: "largest(), smallest()"
+    kind: function
+    definition: >
+      Give the biggest and the smallest number in a list of at least one
+      number. They are toolkit functions you wrote yourself.
+    example: "largest([11, 13, 9])   # 13"
+  - term: "count_if()"
+    kind: function
+    definition: >
+      Counts the values in a list for which a test gives True. The test is
+      a function handed over by its name, without brackets. It is a toolkit
+      function you wrote yourself.
+    example: "count_if(week, is_cold)"

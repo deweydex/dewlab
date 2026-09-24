@@ -166,8 +166,9 @@ print(half_root_two ** 2 - 0.5)
 The square is `0.5000000000000001`, and the difference from 0.5 is about
 $1.1 \times 10^{-16}$. Python kept the nearest float to $\sqrt{2}$, which
 was very slightly off. Squaring it carried that tiny error into the
-answer, which landed on the float just above 0.5. This is the same number you meet
-in trigonometry, as the sine of 45°, so this surprise will come back.
+answer, which landed on the float just above 0.5. You will meet this
+number again in trigonometry, as the sine of 45°, so this surprise will
+come back.
 
 ## How big can a number be?
 
@@ -226,7 +227,7 @@ the wrong question. The right question is "how far apart are these?".
 
 On [Does it work?](tutorial:does-it-work#close-enough) you wrote
 `close_enough`, which says two numbers are equal when the distance
-between them is no bigger than a small *tolerance*. Here is the same
+between them is no bigger than a small tolerance. Here is the same
 test, written out in one line, so that it runs on this page too. What
 will each line print?
 
