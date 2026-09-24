@@ -1938,3 +1938,190 @@ def test_jedi_completes_a_modules_attributes(dewmini):
             break
         dewmini.keyboard.press("Escape")
     assert "sqrt" in labels
+
+
+# The hunt that followed DECISIONS_LOG 7.223's two-press delete: controls
+# that break when the page redraws under them, keyboard paths that do not
+# match the mouse, and a touch screen that could not reach a note's header.
+
+SLOW_CELL = "import time\nprint('start')\ntime.sleep(2)\nprint('done')"
+
+
+def _start_slow_cell(page):
+    """Boots Python on a quick run first, so the slow run that follows is
+    measured from a running interpreter, not from a cold start."""
+    add_python_cell(page, "print('booted')")
+    run_first_cell_and_wait(page)
+    page.locator(".dm-cell-python .cm-content").first.click()
+    page.keyboard.press("Control+a")
+    page.keyboard.insert_text(SLOW_CELL)
+    page.locator(".dm-cell .dm-icon-run").first.click()
+    page.wait_for_function(
+        "() => document.querySelector('.dm-cell-runline').textContent.startsWith('Running')")
+
+
+def _wait_until_ran(page):
+    page.wait_for_function(
+        "() => document.querySelector('.dm-cell-runline').textContent.startsWith('Ran')",
+        timeout=30_000)
+
+
+@pytest.mark.parametrize("redraw", ["add a cell", "switch tabs"])
+def test_a_cells_output_survives_a_redraw_while_it_runs(dewmini, redraw):
+    """renderCells() built every cell a fresh, empty output element, so a
+    cell still running when the notebook was redrawn wrote the rest of its
+    output into an element hidden as empty, and saved only what the old one
+    had caught. A tab switch was worse: its output had nowhere to go."""
+    _start_slow_cell(dewmini)
+    if redraw == "add a cell":
+        dewmini.locator(".dm-insert-btn", has_text="Text").last.click()
+        assert dewmini.locator(".dm-cell .dm-icon-run .dl-btn-label").first.inner_text() == "Stop", \
+            "the redrawn Run button still reads Stop while the cell runs"
+    else:
+        dewmini.click("#new-notebook")
+        dewmini.wait_for_timeout(2500)
+        dewmini.locator(".dm-tab-label").first.click()
+    _wait_until_ran(dewmini)
+
+    output = dewmini.locator(".dm-cell-python .dm-cell-output").first
+    expect(output).to_be_visible()
+    assert output.inner_text().split() == ["start", "done"]
+    dewmini.reload()
+    dewmini.wait_for_selector(".dm-cell")
+    assert dewmini.locator(".dm-cell-output").first.inner_text().split() == ["start", "done"]
+
+
+def test_new_and_close_leave_the_view_switch_on_the_notebook_shown(dewmini):
+    """openNotebook() and closeNotebook() never repainted the Cells/File
+    switch, so New from the File view left File pressed over a notebook of
+    cells, and Cells, already that notebook's view, did nothing."""
+    add_python_cell(dewmini, "x = 1")
+    switch_view(dewmini, "file")
+
+    dewmini.click("#new-notebook")
+    assert dewmini.locator("#dm-view-cells").get_attribute("aria-pressed") == "true"
+    assert dewmini.locator("#dm-view-file").get_attribute("aria-pressed") == "false"
+
+    dewmini.click("#new-notebook")  # a third, so closing one lands on a cells tab
+    dewmini.locator(".dm-tab-label").first.click()
+    assert dewmini.locator("#dm-view-file").get_attribute("aria-pressed") == "true"
+    dewmini.once("dialog", lambda dialog: dialog.accept())
+    dewmini.locator(".dm-tab-close").first.click()
+    assert dewmini.locator(".dm-fileview").count() == 0
+    assert dewmini.locator("#dm-view-cells").get_attribute("aria-pressed") == "true"
+
+
+def test_typing_in_the_file_view_then_pressing_new_keeps_the_edit(dewmini):
+    """The File view reads its text back into cells 400 ms after the last
+    key. New redrew the page inside that window without reading it first."""
+    add_python_cell(dewmini, "x = 1")
+    switch_view(dewmini, "file")
+    dewmini.locator(".dm-fileview-editor .cm-content").click()
+    dewmini.keyboard.press("Control+End")
+    dewmini.keyboard.insert_text("\ny = 2")
+    dewmini.click("#new-notebook")
+
+    dewmini.locator(".dm-tab-label").first.click()
+    assert "y = 2" in dewmini.locator(".dm-fileview-editor .cm-content").inner_text()
+
+
+def test_a_notes_header_can_be_tapped_on_a_touch_screen(browser, dewmini_url):
+    """A rendered note hides its header until hovered. The (hover: none)
+    rule meant to undo that on a phone had the lower specificity and never
+    applied, so Delete, Duplicate and Edit were invisible and untappable."""
+    context = browser.new_context(viewport={"width": 390, "height": 844},
+                                  is_mobile=True, has_touch=True)
+    page = context.new_page()
+    try:
+        page.goto(dewmini_url)
+        page.evaluate("localStorage.clear()")
+        page.goto(dewmini_url)
+        page.locator("#dm-empty-add-text").tap()
+        page.locator(".dm-textarea").fill("A note")
+        page.locator("h1").tap()  # away, so the note renders and loses focus
+
+        cell = page.locator(".dm-cell-text")
+        expect(cell.locator(".dm-cell-head")).to_have_css("opacity", "1")
+        cell.locator(".dm-icon-preview .dl-btn-label").tap()
+        assert cell.locator(".dm-textarea").is_visible(), "Edit reopens the note"
+
+        page.locator("h1").tap()
+        cell.locator(".dm-icon-delete .dl-btn-icon").tap()
+        cell.locator(".dm-icon-delete .dl-btn-label").tap()
+        assert page.locator(".dm-cell").count() == 0
+    finally:
+        context.close()
+
+
+def test_escape_closes_a_suggestion_list_without_closing_the_panel(dewmini):
+    dewmini.click("#dm-library-toggle")
+    add_python_cell(dewmini, "pri")
+    dewmini.wait_for_selector(".cm-tooltip-autocomplete")
+    dewmini.keyboard.press("Escape")
+    expect(dewmini.locator(".cm-tooltip-autocomplete")).to_have_count(0)
+    assert dewmini.locator("#dm-library").is_visible()
+
+
+def test_escape_from_inside_a_panel_returns_focus_to_its_toggle(dewmini):
+    """The close button already did this; Escape dropped focus to <body>."""
+    dewmini.click("#dm-workbench-toggle")
+    dewmini.click("#dm-notes")
+    dewmini.keyboard.press("Escape")
+    assert dewmini.locator("#dm-workbench").is_hidden()
+    assert dewmini.evaluate("document.activeElement.id") == "dm-workbench-toggle"
+
+
+def test_a_panel_closed_by_its_neighbour_says_so_on_its_toggle(dewmini):
+    dewmini.click("#dm-library-toggle")
+    dewmini.click("#dl-settings-toggle")
+    assert dewmini.locator("#dm-library").is_hidden()
+    assert dewmini.get_attribute("#dm-library-toggle", "aria-expanded") == "false"
+
+
+def test_escape_closes_a_cells_run_menu(dewmini):
+    add_python_cell(dewmini, "x = 1")
+    dewmini.locator(".dm-icon-more .dl-btn-icon").click()
+    menu = dewmini.locator(".dm-cell-run-menu")
+    assert menu.is_visible()
+    dewmini.keyboard.press("Escape")
+    assert menu.is_hidden()
+    assert dewmini.evaluate("document.activeElement.classList.contains('dm-icon-more')")
+
+
+def test_a_collapsed_cell_opens_from_the_keyboard_with_space_too(dewmini):
+    add_python_cell(dewmini, "x = 1")
+    dewmini.locator(".dm-collapse-toggle").click()
+    summary = dewmini.locator(".dm-cell-collapsed-summary")
+    assert summary.get_attribute("role") == "button"
+    summary.focus()
+    dewmini.keyboard.press(" ")
+    assert summary.is_hidden()
+    assert dewmini.evaluate("document.activeElement.classList.contains('dm-collapse-toggle')")
+
+
+def test_clear_output_clears_the_file_views_output_too(dewmini):
+    add_python_cell(dewmini, "print('hi')")
+    switch_view(dewmini, "file")
+    dewmini.locator(".dm-fileview-run").click()
+    dewmini.wait_for_function(
+        "() => document.querySelector('.dm-fileview-output').innerText.trim() === 'hi'",
+        timeout=120_000)
+    dewmini.click("#clear-output")
+    assert dewmini.locator(".dm-fileview-output").is_hidden()
+
+
+def test_a_dataset_on_a_site_tab_says_why_it_adds_no_cell(dewmini):
+    """A site tab shows files, not cells, so a cell added there was saved
+    but never seen, while the status said it had been added."""
+    write_workspace_file(dewmini, "index.html", "<h1>Hi</h1>")
+    open_files_panel(dewmini)
+    dewmini.locator(".dm-filelist-item-name", has_text="index.html").click()
+    dewmini.wait_for_selector(".dm-siteview")
+
+    dewmini.click("#dm-library-toggle")
+    dewmini.locator(".dm-dataset button").first.click()
+    assert "website" in dewmini.locator("#dm-status").inner_text()
+    site_cells = dewmini.evaluate(
+        "() => JSON.parse(localStorage.getItem('dewmini:notebooks:v1'))"
+        ".notebooks.find(nb => nb.view === 'site').cells.length")
+    assert site_cells == 0

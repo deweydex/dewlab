@@ -67,6 +67,7 @@ top down to this one. That is what you want once an earlier cell's
 output has gone stale. **Run below** runs this cell and everything after
 it, and keeps whatever the cells above it already defined. That lets you
 redo the rest of a notebook without paying again for a slow first step.
+Click anywhere else, or press **Esc**, and the menu closes.
 
 Settings' **Restart & run all** goes further. It throws Python away
 completely, then reruns every cell from a fresh start. This is the real test of whether a notebook works for somebody opening
@@ -200,7 +201,8 @@ The two behave differently when you run them, and that difference is the
 point. In the cells view, Run works on one cell, and the output appears
 under that cell. In the file view, **Run the file** works through
 the whole thing from the top, the way running a file at a command line
-does. The output appears in one place at the end.
+does. The output appears in one place at the end. **Clear output**
+clears that too.
 
 A notebook runs in the order you press Run. A file runs in the order it
 is written. Moving between the two views is how you find out whether your
@@ -248,8 +250,10 @@ left, so the habit carries over.
 On a wide enough screen, opening a panel shrinks the working area rather
 than covering it, so your cells stay visible. Drag a panel's inner edge
 to resize it. Whatever you leave open is still open when you come back.
-**Esc** closes a panel. Clicking your own code never closes one, so a
-reference you opened to read while writing stays put.
+**Esc** closes a panel. If a list of suggestions is open in a cell, the
+first Esc closes only that list, and the panel stays. Clicking your own
+code never closes one, so a reference you opened to read while writing
+stays put.
 
 On a phone, panels slide up from the bottom instead.
 
@@ -329,7 +333,9 @@ A `.py` opens as a file, so you see the thing you are learning to write.
 A `.ipynb` opens as cells, because that format carries the results each
 one produced. A `.html` opens as a small website. Its matching `.css` and
 `.js` files open beside it, and the page updates as you type. Editing any
-of these saves straight back to its file. Other kinds of file stay in the
+of these saves straight back to its file. A website has no cells, so
+the Library's **Add a cell that loads it** asks you to switch to a
+notebook tab first. Other kinds of file stay in the
 list for a cell to read, since dewmini would have to guess how to show
 them as code.
 

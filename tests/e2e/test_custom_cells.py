@@ -153,6 +153,34 @@ class TestAddingACustomCell:
         page.wait_for_timeout(150)
         assert bar.evaluate("el => getComputedStyle(el).opacity") == "1"
 
+    def test_a_rendered_text_cells_chrome_shows_on_a_touch_screen(self, browser, base_url):
+        """With no hover there is nothing to reveal it, so a phone shows the
+        header outright. The (hover: none) override once lost to the quiet
+        rule's :not() selectors, leaving Edit and Delete untappable."""
+        from conftest import PAGE
+        context = browser.new_context(viewport={"width": 390, "height": 844},
+                                      has_touch=True, is_mobile=True)
+        try:
+            page = context.new_page()
+            page.goto(f"{base_url}/{PAGE}")
+            page.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
+            page.evaluate("localStorage.clear()")
+            add_via_trailing_divider(page, "Text")
+            page.wait_for_selector(".dl-cell-text", timeout=5_000)
+            page.fill(".dl-cell-text .dl-doc-editor", "A note for the reader.")
+            page.locator(".dl-cell-text .dl-doc-editor").blur()
+            page.wait_for_selector(".dl-cell-text .dl-doc-render:not([hidden])", timeout=5_000)
+            # A tap leaves :hover on what it touched; tap the title so the
+            # note is neither hovered nor focused, as when a reader scrolls to it.
+            page.locator("#dl-body p").first.tap()
+            page.wait_for_timeout(150)
+            assert page.evaluate("matchMedia('(hover: none)').matches")
+            bar = page.locator(".dl-cell-text .dl-cell-head")
+            assert bar.evaluate("el => getComputedStyle(el).opacity") == "1"
+            assert bar.evaluate("el => getComputedStyle(el).pointerEvents") != "none"
+        finally:
+            context.close()
+
     def test_the_view_edit_button_toggles_while_the_textarea_is_still_focused(self, clean_storage):
         """Clicking straight from the textarea to the button used to blur it
         first (auto-rendering), so the handler saw the already-flipped state

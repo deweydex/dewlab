@@ -314,6 +314,10 @@ function showNotebook(id) {
 /* Adds a notebook and switches to it — the shared tail of "+ New", an
  * import, and anything else that arrives as a whole notebook. */
 function openNotebook(notebook) {
+  // The same two steps showNotebook() takes when leaving a tab: keep what
+  // was typed in the File view in the last 400 ms, and point the Cells/File
+  // switch and the toolbar at the notebook now on screen.
+  flushFileEditor();
   cells.forEach(destroyCellEditors);
   notebooks.push(notebook);
   activeNotebookId = notebook.id;
@@ -322,6 +326,7 @@ function openNotebook(notebook) {
   renderTabs();
   renderCells();
   updateFilenameField();
+  updateViewSwitch();
 }
 
 function closeNotebook(id) {
@@ -339,6 +344,7 @@ function closeNotebook(id) {
     cells = next.cells;
     renderCells();
     updateFilenameField();
+    updateViewSwitch();
   }
   saveState();
   renderTabs();
@@ -403,16 +409,28 @@ function renderTabs() {
   }
 }
 
+// A site tab shows its three files, not cells, so a cell added to it would
+// be saved but never seen. The Library's dataset buttons and its "Load the
+// example" link are still in reach from one.
+const SITE_TAB_HAS_NO_CELLS = "This tab is a website, so it has no cells. "
+  + "To add one, switch to a notebook tab, or open a new one with New.";
+
 function insertCellAt(index, type, content = "", style = "") {
+  if (currentView() === VIEWS.SITE) { updateStatus(SITE_TAB_HAS_NO_CELLS, "error"); return false; }
+  // A cell can arrive while the File view is open (Start with imports, a
+  // dataset): take in what was just typed there first, or renderCells()
+  // below throws it away.
+  flushFileEditor();
   const cell = { id: generateId(), type, content, style, output: "", error: false };
   cells.splice(index, 0, cell);
   saveState();
   renderCells();
   focusCell(cell.id);
+  return true;
 }
 
 function addCell(type, content = "", style = "") {
-  insertCellAt(cells.length, type, content, style);
+  return insertCellAt(cells.length, type, content, style);
 }
 
 const EXAMPLE_CELLS = [
@@ -435,6 +453,7 @@ function destroyCellEditors(cell) {
 }
 
 async function loadExampleCells() {
+  if (currentView() === VIEWS.SITE) { updateStatus(SITE_TAB_HAS_NO_CELLS, "error"); return; }
   if (cells.length && !confirm("Replace the current cells with the example? This can't be undone.")) return;
   cells.forEach(destroyCellEditors);
   setCells(EXAMPLE_CELLS.map((c) => ({ id: generateId(), type: c.type, content: c.content, style: c.style || "", output: "", error: false })));
@@ -729,7 +748,6 @@ async function openWorkspaceFile(name) {
                                 isPy ? VIEWS.FILE : VIEWS.CELLS);
   notebook.path = name;
   openNotebook(notebook);
-  updateViewSwitch();
   updateStatus(`Opened ${name}. Edits here save back to the workspace.`, "ok");
 }
 
@@ -763,7 +781,6 @@ async function openSiteFile(name) {
   notebook.siteCss = css;
   notebook.siteJs = js;
   openNotebook(notebook);
-  updateViewSwitch();
   updateStatus(`Opened ${name}. Edits here save back to the workspace.`, "ok");
 }
 
@@ -1228,6 +1245,14 @@ function createRunMoreMenu(cell) {
     e.stopPropagation();
     if (menu.hidden) openMenu(); else closeMenu();
   });
+  // Escape does what a click outside does. preventDefault() keeps the same
+  // press from also closing an open panel (wirePanel()).
+  wrap.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || menu.hidden) return;
+    e.preventDefault();
+    closeMenu();
+    moreBtn.focus();
+  });
 
   const addItem = (label, title, which, onRun) => {
     const item = document.createElement("button");
@@ -1485,8 +1510,17 @@ function createCellElement(cell) {
   const collapsedSummary = document.createElement("div");
   collapsedSummary.className = "dm-cell-collapsed-summary";
   collapsedSummary.tabIndex = 0;
+  // A button in all but tag, so it answers to Space as well as Enter and
+  // says what it is to a screen reader.
+  collapsedSummary.setAttribute("role", "button");
+  collapsedSummary.title = "Expand this cell";
   collapsedSummary.addEventListener("click", () => setCollapsed(false));
-  collapsedSummary.addEventListener("keydown", (e) => { if (e.key === "Enter") setCollapsed(false); });
+  collapsedSummary.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    setCollapsed(false);
+    collapseBtn.focus(); // the summary has just hidden itself
+  });
 
   function setCollapsed(collapsed) {
     cell.collapsed = collapsed;
@@ -1817,12 +1851,24 @@ function createCellElement(cell) {
     footbar.appendChild(runLineEl);
     cell.runLineEl = runLineEl;
     renderCellRunLine(cell);
+    // Redrawn mid-run (a cell added or deleted, a tab switched away and
+    // back): the new Run button has to still read Stop.
+    if (runningCellId === cell.id) {
+      setRunButtonRunning(runBtn, canStopFor(cell));
+      startRunLineTicker(cell);
+    }
   }
 
-  const outputEl = document.createElement("div");
-  outputEl.className = "dm-cell-output";
-  if (cell.output) outputEl.innerHTML = cell.output;
-  else outputEl.classList.add("dm-empty");
+  // A running cell keeps its output element across a redraw. The engine is
+  // still writing into it, and executeCell() saves what it holds once the
+  // run ends; a fresh, empty one here lost the whole run's output.
+  const reuseOutput = runningCellId === cell.id && cell.outputEl;
+  const outputEl = reuseOutput || document.createElement("div");
+  if (!reuseOutput) {
+    outputEl.className = "dm-cell-output";
+    if (cell.output) outputEl.innerHTML = cell.output;
+    else outputEl.classList.add("dm-empty");
+  }
   cell.outputEl = outputEl;
 
   main.append(head, bodyRow);
@@ -1848,9 +1894,11 @@ async function getToolsSource() {
 }
 
 engine.configure({
+  // Every notebook, not only the one on screen: a cell keeps running after
+  // its tab is switched away from, and its output still belongs to it.
   getOutputEl: (cellId) => (cellId === FILE_RUN_ID
     ? fileRunOutputEl
-    : cells.find((c) => c.id === cellId)?.outputEl ?? null),
+    : notebooks.flatMap((nb) => nb.cells).find((c) => c.id === cellId)?.outputEl ?? null),
   onStatus: updateStatus,
   packages: DM_PACKAGES,
   dataBase: "../data/",
@@ -1983,6 +2031,12 @@ function resetCellOutput(id) {
 
 function clearAllOutputs() {
   cells.forEach((cell) => { if (RUNS_AGAINST_SESSION.has(cell.type)) resetCellOutput(cell.id); });
+  // The File view's one output belongs to no cell, so the loop above
+  // never reaches it.
+  if (fileRunOutputEl && !running) {
+    fileRunOutputEl.replaceChildren();
+    fileRunOutputEl.classList.add("dm-empty");
+  }
   updateStatus("Output cleared.");
 }
 
@@ -2884,8 +2938,7 @@ function renderDataset(dataset) {
   use.className = "dm-tool";
   use.textContent = "Add a cell that loads it";
   use.addEventListener("click", () => {
-    addCell(CELL_TYPES.PYTHON, dataset.code);
-    updateStatus(`Added a cell loading ${dataset.title}.`, "ok");
+    if (addCell(CELL_TYPES.PYTHON, dataset.code)) updateStatus(`Added a cell loading ${dataset.title}.`, "ok");
   });
   card.appendChild(use);
 
@@ -3040,6 +3093,7 @@ async function addPracticeProblem() {
     };
     const codeCell = { id: generateId(), type: CELL_TYPES.PYTHON, content: problem.stub, output: "", error: false };
 
+    flushFileEditor(); // same reason as insertCellAt()
     cells.push(docCell, codeCell);
     saveState();
     renderCells();
@@ -3744,7 +3798,10 @@ function wirePanel(panel, toggle, closeBtn, conflicts = [], onOpen = null) {
     toggle?.setAttribute("aria-expanded", String(open));
     if (!open) return;
     for (const other of conflicts) {
-      if (other && !other.hidden) other.hidden = true;
+      if (other && !other.hidden) {
+        other.hidden = true;
+        document.getElementById(PANEL_TOGGLES[other.id])?.setAttribute("aria-expanded", "false");
+      }
     }
     // After the panel is visible, not before: a panel that only draws
     // itself while open (the variable inspector) needs its own "you are
@@ -3758,7 +3815,14 @@ function wirePanel(panel, toggle, closeBtn, conflicts = [], onOpen = null) {
     toggle?.focus();
   });
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !panel.hidden) setOpen(false);
+    // defaultPrevented: an editor already used this Escape to close its
+    // suggestion list, and one press should not also close the panel.
+    if (e.key !== "Escape" || panel.hidden || e.defaultPrevented) return;
+    // Focus inside a panel that is about to hide would drop to <body>;
+    // back to the toggle instead, the way the close button does.
+    const hadFocus = panel.contains(document.activeElement);
+    setOpen(false);
+    if (hadFocus) toggle?.focus();
   });
 }
 
