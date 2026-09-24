@@ -369,8 +369,21 @@ class TestPageCardsAndSections:
                 "```\n",
                 1,
             ),
+            (
+                '<div class="dl-hero">\n\n'
+                "```card\n"
+                "url: a.html\n"
+                "### A\n"
+                "```\n\n"
+                "```card\n"
+                "url: b.html\n"
+                "### B\n"
+                "```\n\n"
+                "</div>\n",
+                1,
+            ),
         ],
-        ids=["separated-by-prose", "adjacent"],
+        ids=["separated-by-prose", "adjacent", "adjacent-inside-a-wrapper"],
     )
     def test_cards_share_one_grid_only_while_adjacent(self, repo, body, expected_grids):
         self.home(repo, body)

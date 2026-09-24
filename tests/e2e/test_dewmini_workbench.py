@@ -372,6 +372,41 @@ def test_the_toolbar_offers_openings_not_a_second_way_to_add_a_cell(dewmini):
     assert "import pandas" in dewmini.locator(".dm-cell-python .cm-content").last.inner_text()
 
 
+def test_an_empty_notebook_offers_its_own_first_cell_buttons(dewmini):
+    """A seam with nothing above or below it read as a divider, not a
+    control, so a reader starting from nothing found no way to add a blank
+    cell. The empty box carries two buttons; once there is a cell it hides,
+    and the seams take over."""
+    assert dewmini.locator(".dm-cell").count() == 0
+    assert dewmini.locator("#dm-empty").is_visible()
+    dewmini.click("#dm-empty-add-python")
+    assert dewmini.locator(".dm-cell").count() == 1
+    assert dewmini.locator(".dm-cell-python .cm-content").inner_text().strip() == ""
+    assert dewmini.locator("#dm-empty").is_hidden()
+
+    dewmini.once("dialog", lambda dialog: dialog.accept())
+    dewmini.click("#clear-all")
+    assert dewmini.locator("#dm-empty").is_visible()
+    dewmini.click("#dm-empty-add-text")
+    assert dewmini.locator(".dm-cell").count() == 1
+    assert dewmini.locator(".dm-cell-python").count() == 0
+
+
+def test_delete_takes_two_presses_on_the_icon_or_the_label(dewmini):
+    """The second press lands on the button's icon or label, not the
+    button itself; the outside-click check once treated that as outside
+    and disarmed the button just before it could delete."""
+    dewmini.click("#dm-empty-add-python")
+    dewmini.locator(".dm-insert-btn", has_text="Python").last.click()
+    assert dewmini.locator(".dm-cell").count() == 2
+    first = dewmini.locator(".dm-cell").first
+    first.hover()
+    first.locator(".dm-icon-delete .dl-btn-icon").click()
+    assert dewmini.locator(".dm-cell").count() == 2, "the first press only arms it"
+    first.locator(".dm-icon-delete .dl-btn-label").click(force=True)
+    assert dewmini.locator(".dm-cell").count() == 1
+
+
 def test_a_dataset_writes_the_code_to_load_it(dewmini):
     dewmini.click("#dm-library-toggle")
     dewmini.wait_for_selector(".dm-dataset")

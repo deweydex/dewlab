@@ -454,8 +454,13 @@ function armDeleteButton(btn, onConfirm) {
   btn.classList.add("dm-armed");
   btn.title = "Click again to delete this cell";
   btn._disarmTimer = setTimeout(() => disarmDeleteButton(btn), 3000);
+  // contains(), not ===: the button holds an icon and a label, so a
+  // second press almost always lands on one of them. Comparing the target
+  // to the button itself disarmed it in the capture phase, just before its
+  // own click handler ran, so the second press armed it again instead of
+  // deleting (DECISIONS_LOG 7.223).
   const disarmOnOutsideClick = (e) => {
-    if (e.target !== btn) disarmDeleteButton(btn);
+    if (!btn.contains(e.target)) disarmDeleteButton(btn);
   };
   // Added after this very click has already finished bubbling —
   // otherwise the same click that arms the button would immediately
@@ -4239,6 +4244,10 @@ function wireToolbar() {
   });
   document.getElementById("add-practice")?.addEventListener("click", () => addPracticeProblem());
   document.getElementById("dm-add-imports")?.addEventListener("click", () => addCell(CELL_TYPES.PYTHON, IMPORTS_SNIPPET));
+  // An empty notebook's own buttons for a first, blank cell (the seam does
+  // the same, but reads as a divider when nothing is above or below it).
+  document.getElementById("dm-empty-add-python")?.addEventListener("click", () => addCell(CELL_TYPES.PYTHON));
+  document.getElementById("dm-empty-add-text")?.addEventListener("click", () => addCell(CELL_TYPES.TEXT));
   document.getElementById("dm-show-example")?.addEventListener("click", () => loadExampleCells());
   document.getElementById("dm-help-example-link")?.addEventListener("click", (e) => {
     e.preventDefault();

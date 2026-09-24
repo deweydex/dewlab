@@ -20,6 +20,21 @@ The technologies you can learn, the tools built into every page, and how it
 works offline.
 ```
 
+```card
+url: compose/dewmini.html
+meta: A blank notebook
+### dewmini
+Start from nothing: write Python, run it, and keep notes, with no tutorial
+around it.
+```
+
+```card
+url: compose/dewminiweb.html
+meta: A blank web workspace
+### dewmini web
+Build web pages in HTML, CSS and JavaScript, each with its own live preview.
+```
+
 </div>
 
 <div class="dl-audience">
