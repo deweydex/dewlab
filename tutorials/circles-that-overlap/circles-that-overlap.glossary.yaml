@@ -1,0 +1,75 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Comes after collections-without-repeats in the Plot Twist track, which
+# introduced sets, union, intersection and difference. Complement in the
+# sense of chances was introduced on chances-that-combine; the entry here is
+# the set version, drawn as everything in the box outside a circle.
+entries:
+  - term: Venn diagram
+    kind: concept
+    definition: >
+      A Venn diagram draws sets as circles inside a box. Where two circles
+      overlap, the sets share members. Each number in a region is how many
+      values stand there.
+  - term: "universal set, U"
+    kind: concept
+    definition: >
+      The universal set is everything we are talking about at the moment.
+      It is the box around the circles of a Venn diagram, such as all the
+      people who were asked a survey's questions.
+  - term: region
+    kind: concept
+    definition: >
+      A region is one part of a Venn diagram. Two circles make four regions,
+      and three circles make eight. Everyone in one region gave the same
+      yes and no answers.
+  - term: "complement of a set, A′"
+    kind: concept
+    definition: >
+      The complement of a set A is everything in the universal set that is
+      not in A. In Python it is the universal set minus A.
+    example: "members - swimmers"
+  - term: "symmetric difference, A △ B"
+    kind: operator
+    definition: >
+      Gives the values in exactly one of two sets, and not in both. Python
+      writes it with ^, the same sign as exclusive or.
+    example: "swimmers ^ cyclists"
+  - term: "size of a set, |A|"
+    kind: concept
+    definition: >
+      |A| is the number of values in the set A. Python gives it with len().
+  - term: "inclusion–exclusion, two sets"
+    kind: formula
+    definition: >
+      The number in either of two sets is the two sizes added, minus the
+      size of the overlap: |A ∪ B| = |A| + |B| − |A ∩ B|. Taking the overlap
+      away stops it being counted twice.
+    example: "len(a) + len(b) - len(a & b)"
+  - term: "inclusion–exclusion, three sets"
+    kind: formula
+    definition: >
+      Add the three sizes, take away the three overlaps of two sets, then
+      add back the overlap of all three. The middle was taken away three
+      times, so it needs to be added back once.
+  - term: "exactly two of three, from totals"
+    kind: formula
+    definition: >
+      The number in exactly two of three sets is the three pair overlaps
+      added, minus three times the overlap of all three.
+    example: "7 + 3 + 4 - 3 * 2   # 8"
+  - term: "random.sample()"
+    python: random.sample
+    kind: function
+    definition: >
+      Picks k different values from a list or range, at random, and gives
+      them back as a list.
+    example: "random.sample(range(1, 31), 12)"
+  - term: "sorted()"
+    python: sorted
+    kind: function
+    definition: >
+      Gives a new list of the values, in order from smallest to largest, or
+      in alphabetical order for words. The values it was given are left as
+      they were.
+    example: "sorted({\"Kate\", \"Ben\", \"Wei\"})"

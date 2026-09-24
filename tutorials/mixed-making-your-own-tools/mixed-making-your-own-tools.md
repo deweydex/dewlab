@@ -161,7 +161,8 @@ assert miles_to_km(0) == 0 and km_to_miles(0) == 0
 print(miles_to_km(60))
 ```
 
-60 mph is about 96.6 km/h. The new signs rounded it to 100 km/h.
+60 mph is about 96.6 km/h. On national roads the new signs rounded it
+to 100 km/h. On regional and local roads the new limit was 80 km/h.
 
 `KM_PER_MILE` is a global name, and both functions read it. That is not
 a hidden input in the sense of the tutorial, because it never changes:

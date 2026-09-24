@@ -282,7 +282,7 @@ fast way to the same count.
 </details>
 
 **9. Make.** The Chevalier had a second bet: at least one double six in
-24 rolls of two dice. He reasoned that $24 \times \frac{1}{36} =
+24 rolls of two dice. The story says he reasoned that $24 \times \frac{1}{36} =
 \frac{2}{3}$, so he should win. Work out the real chance with
 `at_least_one`. Should he have taken the bet?
 
@@ -300,8 +300,8 @@ His reasoning added chances, but 24 rolls are not mutually exclusive:
 two of them can both be double sixes. The complement gets it right: no
 double six in 24 rolls is $\left(\frac{35}{36}\right)^{24}$. The story
 goes that he asked the mathematician Blaise Pascal why he was losing
-money, and that letters between Pascal and Pierre de Fermat about this
-kind of question helped start probability as a branch of maths.
+money, and that letters between Pascal and Pierre de Fermat in 1654
+about this kind of question helped start probability as a branch of maths.
 
 </details>
 

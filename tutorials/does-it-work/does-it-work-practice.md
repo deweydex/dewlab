@@ -495,7 +495,7 @@ not bring a temperature back, and the tool catches it.
 **14. Explain.** `close_enough` uses a tolerance of a billionth. Two
 lab results are 0.000000001 grams and 0.000000002 grams, and
 `close_enough` says they are equal. A GPS says two points are
-384,400,000.0 and 384,400,000.1 metres from a satellite, and
+20,200,000.0 and 20,200,000.1 metres from a satellite, and
 `close_enough` says they are not equal. Is `close_enough` wrong? When
 would you change its tolerance?
 

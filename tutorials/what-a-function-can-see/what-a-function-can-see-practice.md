@@ -125,8 +125,9 @@ assert league_points(10, 4, points_per_win=2) == 24
 print("league_points keeps its promise.")
 ```
 
-Many leagues gave 2 points for a win until the 1990s, so the old rule
-is a real one. With the rate as a parameter, the function can answer
+Most football leagues gave 2 points for a win until the 1980s or
+1990s: England changed in 1981, and most of Europe by 1995. So the old
+rule is a real one. With the rate as a parameter, the function can answer
 for either rule, and the page's `points_per_win` no longer matters to
 it.
 

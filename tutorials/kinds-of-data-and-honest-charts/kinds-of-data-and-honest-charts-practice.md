@@ -290,12 +290,12 @@ chart was?
 Not in the same way. A line chart shows change, and a reader reads its
 height against the numbers on the axis, not as a length from 0. Zooming
 in shows a change that matters: a rise from 4.2% to 5.1% is a real
-story for thousands of people. So it can be honest, if the axis is
-labelled clearly.
+story for thousands of people. So it can be honest, if the axis has
+labels a reader can find and read.
 
 It can still mislead a hasty reader, who sees "steep" and thinks
-"huge". A careful chart says the numbers in its title, or shows the
-axis clearly, so that nobody has to guess. A bar chart with the same
+"huge". A careful chart says the numbers in its title, or marks the
+axis with large numbers, so that nobody has to guess. A bar chart with the same
 axis would be dishonest, because a bar's length is its value.
 
 </details>

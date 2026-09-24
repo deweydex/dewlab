@@ -247,7 +247,7 @@ function reached its end without a `return`.
 
 ## Only the first few places
 
-At a parkrun, eight runners are close together in the last 200 metres.
+At a club race, eight runners are close together in the last 200 metres.
 Prizes go to the first three: gold, silver and bronze. How many
 different top threes are possible?
 
@@ -260,7 +260,7 @@ $$8 \times 7 \times 6 = 336$$
 
 A *permutation* is an arrangement of some of a group of things, where
 the order matters. The number of permutations of $r$ things chosen from
-$n$ is written $P(n, r)$. Some books write it $^{n}P_{r}$. So the parkrun
+$n$ is written $P(n, r)$. Some books write it $^{n}P_{r}$. So the club race
 question asks for $P(8, 3)$.
 
 The loop below tries every runner in every place, and counts the rows

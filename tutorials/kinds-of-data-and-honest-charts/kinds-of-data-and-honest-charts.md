@@ -208,7 +208,9 @@ frequency, as on
 2. Add an answer nobody else gave, such as "tram". What does the loop do
    with it?
 3. Try `print(counts["boat"])`. Before you run it, what do you think
-   Python will say? Read the last line of the error.
+   Python will say: 0, or an error? If it is an error, its last line
+   names the kind, a `KeyError`, and the key that is not in the
+   dictionary.
 
 ## A tool for counting
 

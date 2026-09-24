@@ -327,10 +327,11 @@ that can happen except that event. Its chance is
 $$P(\text{not } A) = 1 - P(A)$$
 
 The complement turns out to be very useful for questions with "at
-least" in them. Here is one from 1654. A French gambler, the Chevalier
-de Méré, liked to bet that he would roll at least one six in four rolls
-of a die. His reasoning went like this: one roll gives a six with chance
-$\frac{1}{6}$, so four rolls give $4 \times \frac{1}{6} = \frac{2}{3}$.
+least" in them. A story told about the Chevalier de Méré, a French
+gambler of the 1650s: he liked to bet that he would roll at least one six
+in four rolls of a die. The story says he reasoned like this: one roll
+gives a six with chance $\frac{1}{6}$, so four rolls give
+$4 \times \frac{1}{6} = \frac{2}{3}$.
 
 Is he right? Here is a warning sign. With seven rolls, his reasoning
 gives $\frac{7}{6}$, and no chance can be more than 1. Adding is the
@@ -366,8 +367,8 @@ print("simulate:   ", simulate(six_in_four, 100000))
 ```
 
 The complement gives about 0.518, and the simulation agrees. The bet
-wins a little more often than it loses, which is why the gambler did well
-from it, but far less often than his $\frac{2}{3}$.
+wins a little more often than it loses, which is why, in the story, the
+gambler did well from it, but far less often than his $\frac{2}{3}$.
 
 In general, when one try succeeds with chance $p$, and the tries are
 independent, the chance of at least one success in $n$ tries is

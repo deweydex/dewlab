@@ -78,7 +78,7 @@ values can 3 bits hold?
 On the last page, every condition had an answer, `True` or `False`. A
 *Boolean value* is a value that is either True or False, and nothing
 else. The name comes from George Boole, who worked out the rules of
-these values in the 1850s. He was the first professor of mathematics at
+these values in the 1840s and 1850s. He was the first professor of mathematics at
 Queen's College Cork, now University College Cork.
 
 Boole's idea was that True and False can be combined, the way numbers

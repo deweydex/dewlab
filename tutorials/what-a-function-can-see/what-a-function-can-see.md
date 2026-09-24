@@ -227,8 +227,9 @@ The first place that has the name wins. Your toolkit functions, like
 `split_bill`, are in the page's space too. They were loaded there before
 the first cell ran.
 
-Now a question about sequence. The rate changes to 13.5%, Ireland's
-lower rate for some services. The function was written when the rate was
+Now a question about sequence. The rate changes to 13.5%, one of
+Ireland's reduced VAT rates, used for things like building work and
+heating fuel. The function was written when the rate was
 23. What will it give now?
 
 ```python exec

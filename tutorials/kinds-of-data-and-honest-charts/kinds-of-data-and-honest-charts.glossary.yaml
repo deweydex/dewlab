@@ -1,0 +1,106 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: data
+    kind: concept
+    definition: >
+      Data is facts collected so that we can learn from them, such as the
+      answers to a survey. The kind of data decides what we can do with it.
+  - term: "categorical data: nominal, ordinal"
+    kind: concept
+    definition: >
+      Categorical data is data where each answer is a group, such as "bus".
+      Nominal data has no order, like ways to travel. Ordinal data has an
+      order, like "disagree, not sure, agree", but no measured gaps.
+  - term: "numerical data: discrete, continuous"
+    kind: concept
+    definition: >
+      Numerical data is data where each answer is a number that counts or
+      measures. Discrete data is counted in whole steps, like cups of
+      coffee. Continuous data is measured, and can take any value in
+      between, like a journey time.
+  - term: "dictionary, key"
+    kind: concept
+    python: dict
+    definition: >
+      A dictionary is a collection of names, called keys, each pointing at
+      a value. We look a value up by its key, in square brackets.
+    example: 'counts = {"bus": 7, "car": 6}; counts["bus"]'
+  - term: ".keys(), .values()"
+    kind: function
+    python: [dict.keys, dict.values]
+    definition: >
+      Give a dictionary's keys without their values, or its values without
+      their keys. list() turns either into an ordinary list.
+    example: "list(counts.values())"
+  - term: KeyError
+    kind: keyword
+    python: KeyError
+    definition: >
+      The error Python gives when we ask a dictionary for a key it does not
+      have. The last line of the error names the missing key.
+  - term: "frequency, frequency table"
+    kind: concept
+    definition: >
+      The frequency of a value is how often it appears. A frequency table
+      lists each value with its frequency, and the frequencies add up to
+      the number of values.
+  - term: "class interval, bin; grouped frequency table"
+    kind: concept
+    definition: >
+      A class interval, or bin, is a group of numbers of equal width, such
+      as 70 to 75. A grouped frequency table gives the frequency of each
+      bin. It suits continuous data, where almost every value is different.
+  - term: "frequency_table()"
+    kind: function
+    definition: >
+      Gives a dictionary from each value in a list to how often it appears.
+      It is a toolkit function you wrote yourself.
+    example: 'frequency_table(["bus", "car", "bus"])'
+  - term: "bar chart, plt.bar()"
+    kind: function
+    python: matplotlib.pyplot.bar
+    definition: >
+      Draws one bar for each category, with gaps between them. Each bar's
+      length shows its value, so the vertical axis must start at 0.
+    example: 'plt.bar(["bus", "car"], [7, 6])'
+  - term: "pie chart, plt.pie()"
+    kind: function
+    python: matplotlib.pyplot.pie
+    definition: >
+      Draws each value as a slice of a circle, sized by its share of the
+      whole. It suits a few slices that make up one whole.
+    example: 'plt.pie([7, 6], labels=["bus", "car"])'
+  - term: "histogram, plt.hist()"
+    kind: function
+    python: matplotlib.pyplot.hist
+    definition: >
+      Draws a grouped frequency table as touching bars on a number line.
+      bins gives the edges of the class intervals.
+    example: "plt.hist(ages, bins=range(50, 90, 5))"
+  - term: stem-and-leaf plot
+    kind: concept
+    definition: >
+      A stem-and-leaf plot splits each value into a stem, such as the tens
+      digit, and a leaf, such as the units digit. It shows the shape of the
+      data and keeps every value readable.
+    example: "3 | 0 1 2 5   is 30, 31, 32 and 35"
+  - term: "line chart, plt.plot()"
+    kind: function
+    python: matplotlib.pyplot.plot
+    definition: >
+      Draws points joined in order by a line. It suits data where the order
+      means something, usually time.
+    example: "plt.plot(years, ireland)"
+  - term: "plt.subplots(), set_ylim()"
+    kind: function
+    python: [matplotlib.pyplot.subplots, matplotlib.axes.Axes.set_ylim]
+    definition: >
+      plt.subplots(1, 2) makes one figure with two charts side by side.
+      set_ylim sets where a chart's vertical axis starts and ends.
+    example: "figure, (left, right) = plt.subplots(1, 2)"
+  - term: honest chart
+    kind: concept
+    definition: >
+      An honest chart lets a reader see the data truly. Its bar axis starts
+      at 0, its pie is flat, its axes have labels, and its kind suits the
+      kind of data.

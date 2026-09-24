@@ -420,7 +420,7 @@ bigger than `high`.
 
 </details>
 
-**13. Make.** Many restaurants add a 12.5% service charge for a group of
+**13. Make.** Some restaurants add a 12.5% service charge for a group of
 6 or more. Use `split_bill` from your toolkit to write
 `share_for(total, people)`: each person's share, with 12.5% added for a
 group of 6 or more, and nothing added for a smaller group. A bill of

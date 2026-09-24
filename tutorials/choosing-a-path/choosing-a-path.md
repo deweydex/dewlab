@@ -181,8 +181,8 @@ id: choosing-your-turn-1
 ## Solving an inequality
 
 Many travellers have a choice. They can pay €2.00 for each single
-journey, or buy a weekly pass for €25.00. For how many journeys in a week
-is the pass the cheaper choice?
+journey, or buy a weekly pass for €25.00. (The weekly price is made up.)
+For how many journeys in a week is the pass the cheaper choice?
 
 Let's say it in words first. The pass is cheaper when the singles would
 cost more than €25.

@@ -331,7 +331,7 @@ The last line says what Python expected. Where on the line does the
 
 ## Compilers, linkers and Python
 
-In many languages, such as C or Java, a program goes through two tools
+In many languages, such as C or C++, a program goes through two tools
 before it runs.
 
 A *compiler* reads the whole program first and translates it into
