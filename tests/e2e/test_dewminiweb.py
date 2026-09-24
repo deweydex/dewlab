@@ -156,3 +156,95 @@ def test_a_js_error_shows_a_friendly_hint(page):
     html = page.inner_html("#dl-ws-console")
     assert "dl-error-hint" in html
     assert "dl-site-goto" in html
+
+
+def _html_pane_text(page):
+    return page.eval_on_selector(
+        '.dl-site-pane[data-lang="html"] .cm-content', "el => el.innerText"
+    )
+
+
+def test_undo_after_switching_sites_cannot_bring_back_the_other_sites_code(page):
+    page.click('.dl-site-pane[data-lang="html"] .cm-content')
+    page.keyboard.press("Control+a")
+    page.keyboard.insert_text("<h1>Site one's own</h1>")
+    # Past CodeMirror's 500ms undo grouping, as a reader's pause would be;
+    # sooner, one Ctrl+Z would undo the typing along with the switch.
+    page.wait_for_timeout(700)
+
+    page.click(".dl-ws-new")
+    page.wait_for_function("document.querySelectorAll('.dl-ws-list button').length === 2")
+    page.click('.dl-site-pane[data-lang="html"] .cm-content')
+    page.keyboard.press("Control+z")
+    page.wait_for_timeout(400)  # past the 150ms debounced save
+
+    assert "Site one's own" not in _html_pane_text(page)
+    saved = page.evaluate(
+        "JSON.parse(localStorage.getItem('dewminiweb:sites:v1')).sites.map(s => s.html)"
+    )
+    assert "Site one's own" not in saved[1]
+
+
+def test_switching_sites_never_runs_the_previous_sites_script(page):
+    page.click('.dl-site-pane[data-lang="js"] .cm-content')
+    page.keyboard.press("Control+a")
+    page.keyboard.insert_text('console.log("site one script");')
+    page.click(".dl-btn-site-run")
+    page.wait_for_function(
+        "document.getElementById('dl-ws-console').textContent.includes('site one script')"
+    )
+    page.evaluate(
+        """() => {
+            window.__docs = [];
+            const f = document.getElementById('dl-ws-frame');
+            new MutationObserver(() => window.__docs.push(f.srcdoc))
+                .observe(f, { attributes: true, attributeFilter: ['srcdoc'] });
+        }"""
+    )
+    page.click(".dl-ws-new")
+    page.wait_for_function(
+        "document.getElementById('dl-ws-console').textContent.includes('The script ran')",
+        timeout=5_000,
+    )
+    docs = page.evaluate("window.__docs")
+    assert docs and not any("site one script" in d for d in docs)
+
+
+def test_picking_a_site_from_the_keyboard_keeps_focus_on_it(page):
+    page.click(".dl-ws-new")
+    page.wait_for_function("document.querySelectorAll('.dl-ws-list button').length === 2")
+    page.focus(".dl-ws-list li:first-child button")
+    page.keyboard.press("Enter")
+    page.wait_for_function("document.querySelector('.dl-ws-current').textContent === 'Site 1'")
+    assert page.evaluate(
+        "document.activeElement === document.querySelector('.dl-ws-current')"
+    )
+
+
+def test_an_emptied_name_box_shows_the_name_the_site_kept(page):
+    page.fill("#dl-ws-name", "")
+    page.focus(".dl-ws-new")  # leaving the box
+    assert page.input_value("#dl-ws-name") == "Site 1"
+    assert page.inner_text(".dl-ws-list button") == "Site 1"
+
+
+def test_delete_removes_the_site_on_screen_even_if_the_saved_open_id_is_stale(
+    page, dewminiweb_url
+):
+    page.wait_for_timeout(400)  # let the first visit's own save land first
+    page.evaluate(
+        """localStorage.setItem('dewminiweb:sites:v1', JSON.stringify({
+            active: 'gone',
+            sites: [
+                {id: 'a', name: 'Shown', html: '', css: '', js: ''},
+                {id: 'b', name: 'Kept', html: '', css: '', js: ''},
+            ],
+        }))"""
+    )
+    page.goto(dewminiweb_url)
+    page.wait_for_selector(".dl-ws-current", timeout=5_000)
+    assert page.input_value("#dl-ws-name") == "Shown"
+    page.click(".dl-ws-delete")
+    page.click(".dl-ws-delete")
+    page.wait_for_function("document.querySelectorAll('.dl-ws-list button').length === 1")
+    assert page.inner_text(".dl-ws-list button") == "Kept"

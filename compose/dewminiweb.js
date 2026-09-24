@@ -86,18 +86,25 @@ function activeSite() {
   return state.sites.find((s) => s.id === state.active) || state.sites[0];
 }
 
+/* Each site opens in fresh editors rather than setValue() into the last
+ * site's: setValue() is an undoable edit, so Ctrl+Z after a switch brought
+ * the previous site's code back (and saved it into this one), and its change
+ * event re-rendered the new site's HTML with the previous site's script. */
 const panes = {};
-for (const lang of ["html", "css", "js"]) {
-  const host = editorEl.querySelector(`.dl-site-pane[data-lang="${lang}"] .dl-editor`);
-  panes[lang] = createCodeEditor(host, "", {
-    dark: isDark(),
-    language: lang === "js" ? "javascript" : lang,
-    onChange: (text) => {
-      activeSite()[lang] = text;
-      saveState(state);
-      if (lang !== "js") render();
-    },
-  });
+function mountEditors(site) {
+  for (const lang of ["html", "css", "js"]) {
+    panes[lang]?.destroy();
+    const host = editorEl.querySelector(`.dl-site-pane[data-lang="${lang}"] .dl-editor`);
+    panes[lang] = createCodeEditor(host, site[lang], {
+      dark: isDark(),
+      language: lang === "js" ? "javascript" : lang,
+      onChange: (text) => {
+        activeSite()[lang] = text;
+        saveState(state);
+        if (lang !== "js") render();
+      },
+    });
+  }
 }
 
 function selectPaneLine(lang, n) {
@@ -165,6 +172,9 @@ widthInput.addEventListener("input", () => {
 });
 
 function renderList() {
+  // Rebuilding drops the focused button, so a keyboard reader who has just
+  // picked a site would otherwise be sent back to the top of the page.
+  const hadFocus = listEl.contains(document.activeElement);
   listEl.innerHTML = "";
   state.sites.forEach((s) => {
     const li = document.createElement("li");
@@ -177,14 +187,18 @@ function renderList() {
     li.appendChild(button);
     listEl.appendChild(li);
   });
+  if (hadFocus) listEl.querySelector(".dl-ws-current")?.focus();
 }
 
 function openSite(id) {
+  // A saved id that no longer matches a site falls back to the first one,
+  // and state.active has to follow it: Delete looks the open site up by id.
   state.active = id;
   const s = activeSite();
+  state.active = s.id;
   nameEl.value = s.name;
   editorEl.dataset.siteName = fileBase(s.name);
-  for (const lang of ["html", "css", "js"]) panes[lang].setValue(s[lang]);
+  mountEditors(s);
   run();
   renderList();
   disarmDelete();
@@ -198,6 +212,9 @@ nameEl.addEventListener("input", () => {
   renderList();
   saveState(state);
 });
+// An emptied name keeps the old one (above); put it back in the box too, so
+// the box never disagrees with the list once the reader moves on.
+nameEl.addEventListener("change", () => { nameEl.value = activeSite().name; });
 
 newButton.addEventListener("click", () => {
   const s = newSite(nextName(state));
