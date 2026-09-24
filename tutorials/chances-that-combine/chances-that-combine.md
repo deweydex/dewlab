@@ -27,8 +27,8 @@ covers:
 
 There are 23 people in a room. How likely is it that two of them share
 a birthday? Make a guess now, as a percentage, and keep it in mind.
-Most people guess something small, like 5% or 10%. By the end of this
-page we will know the real answer, and why it surprises nearly everyone.
+Many people guess something small, like 5% or 10%. By the end of this
+page we will know the real answer, and why it surprises so many people.
 
 On this page we:
 
@@ -124,14 +124,15 @@ the chance of the other. Dice, coins and spinners are independent from
 one roll to the next, because they have no memory.
 
 For independent events, the chance that both happen is the two chances
-multiplied. This is the *multiplication rule*. We write $P(A)$ for "the
-probability of A", so the rule is
+multiplied. This is the *multiplication rule*. With $P(A)$ for the
+probability of A, as on [How likely is it?](tutorial:how-likely-is-it),
+the rule is
 
 $$P(A \text{ and } B) = P(A) \times P(B)$$
 
-Now let's check it a second way, with `simulate` from your toolkit. The
-function `random.randint(1, 6)` gives a whole number from 1 to 6, each
-one equally likely. What do you expect the three lines to show? Will the
+Now let's check it a second way, with `simulate` from your toolkit.
+`random.randint(1, 6)` gives a whole number from 1 to 6, each one
+equally likely. What do you expect the three lines to show? Will the
 last two match the first exactly?
 
 ```python exec
@@ -150,10 +151,11 @@ print("100,000 games:  ", simulate(two_sixes, 100000))
 The exact answer is about 0.0278. The simulated answers are close to
 it, but almost never equal to it, and they change each time you run the
 cell. Why? A simulation is a sample. In 1,000 games, luck can give 20
-double sixes or 35. The more games we play, the smaller a part luck
-plays, so 100,000 games usually lands much nearer 0.0278. The exact
-answer tells us where the simulation is heading, and the simulation
-checks our reasoning.
+double sixes or 35. This is the law of large numbers from
+[How likely is it?](tutorial:how-likely-is-it#why-the-two-answers-differ):
+the more games we play, the smaller the wobble, so 100,000 games usually
+lands much nearer 0.0278. The exact answer tells us where the simulation
+is heading, and the simulation checks our reasoning.
 
 ### Your turn
 
@@ -253,7 +255,10 @@ chances added. This is the *addition rule*:
 
 $$P(A \text{ or } B) = P(A) + P(B)$$
 
-So the chance she does not score is $0.2 + 0.1 = 0.3$.
+So the chance she does not score is $0.2 + 0.1 = 0.3$. This is the
+chance version of "and multiplies, or adds" from
+[Counting every outfit](tutorial:counting-every-outfit#and-multiplies-or-adds),
+and it needs the same care: the two groups must not overlap.
 
 ```question
 id: chances-or-1
@@ -551,9 +556,9 @@ most people expect, for exactly the birthday problem's reason.
 
 ### A picture of every room size
 
-What happens to the chance as the room grows? `matplotlib` is the module
-Python uses to draw charts, and `plt.plot` joins a row of points with a
-line. The grey line marks a chance of one half. Where do you expect the
+What happens to the chance as the room grows? The chart uses `plt.plot`
+and `plt.axhline`, as on [How likely is it?](tutorial:how-likely-is-it).
+The grey line marks a chance of one half. Where do you expect the
 curve to cross it?
 
 ```python exec

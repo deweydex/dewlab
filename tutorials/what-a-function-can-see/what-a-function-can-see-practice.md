@@ -392,7 +392,7 @@ second `pick_up`, but the line responsible was the first, as on
 </details>
 
 **12. Explain.** Rainfall is measured in millimetres. Fill in a
-walkthrough table for this cell, with one column for the page's space
+trace table for this cell, with one column for the page's space
 and one for the call's space. What is `week` at the end?
 
 ```python

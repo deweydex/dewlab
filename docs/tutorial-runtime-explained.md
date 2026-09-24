@@ -447,7 +447,9 @@ always sends the reference. Everything else — running each entry with
 its output thrown away, taking each function the reader left out or left
 as a stub from the reference (`_functions_in()`/`_is_placeholder()`),
 undoing a reader's version that raised and running the reference in its
-place, and naming the functions and classes the toolkit defined — is
+place, running each entry in a namespace of its own and copying back
+only the names it defines (never those its `import` lines bind), and
+naming the functions and classes the toolkit defined — is
 `tutorial_tools._load_toolkit()`,
 reached through a `"load-toolkit"` worker message or `toolsMT` directly,
 the same fork as every other dual-path call here.

@@ -485,10 +485,11 @@ The Irish Lotto draws 6 numbers from 1 to 47. A ticket wins the jackpot
 when its six numbers match, in any order. So the order does not matter,
 and no number can come up twice.
 
-Our unit is building towards a password-strength checker, so the second
-line looks at passwords of 8 small letters. There, the order matters,
-and a letter can appear again. What do you expect the third line to
-show: more passwords, or fewer? Run it to check. This cell uses your
+Our unit is building towards a password-strength checker. The last
+page counted $26^8$ passwords of 8 small letters, where the order
+matters and a letter can appear again. The third line counts them with
+one more rule: no letter used twice. What do you expect it to show: more
+passwords, or fewer? Run it to check. This cell uses your
 `combinations` and `permutations`, so it shows `None` for any of them
 you have not written yet.
 

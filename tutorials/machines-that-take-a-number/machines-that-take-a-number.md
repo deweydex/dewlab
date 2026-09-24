@@ -393,8 +393,9 @@ The answers are `10.0`, `7.0` and `31.0`. Going forward and then back
 lands where we started, whichever way round we go. Notice that the
 domain of `distance_for` is the range of `fare`. A fare of €2 is not in
 that range, and `distance_for(2)` gives a negative distance, which means
-nothing. A later page in this unit runs formulas backwards in general,
-one step at a time.
+nothing. A later page in this unit,
+[Running a formula backwards](tutorial:running-a-formula-backwards),
+undoes formulas in general, one step at a time.
 
 Does every function have an inverse? Try squaring. What will each line
 show?
@@ -549,8 +550,9 @@ $f^{-1}(f(x)) = x$ for every $x$ in the domain. The last test is the
 square root failing to undo squaring: −3 went in, and 3 came out.
 
 One thing may seem strange. `both` is made inside `compose`, and still
-knows `outer` and `inner` after `compose` has finished. A later page
-in this unit, "What a function can see", explains how.
+knows `outer` and `inner` after `compose` has finished. A later page in
+this unit, [What a function can see](tutorial:what-a-function-can-see),
+explains how.
 
 ### Your turn
 

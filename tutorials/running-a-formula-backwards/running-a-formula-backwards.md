@@ -502,8 +502,7 @@ print(circle_area(radius))
 ```
 
 The radius is about 14.9 cm, so the pizza is about 30 cm across.
-Putting the radius back into `circle_area` gives 700 again, or a float
-very close to it.
+Putting the radius back into `circle_area` gives `700.0` again.
 
 ```question
 id: running-a-way-back-3

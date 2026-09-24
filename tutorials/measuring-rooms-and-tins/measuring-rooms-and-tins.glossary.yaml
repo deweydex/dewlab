@@ -1,0 +1,110 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Comes after machines-that-take-a-number in the Plot Twist track.
+# "math.sqrt()", "square root", "composition" and "compose()" were
+# introduced there, and "base" (of a power) on numbers-a-computer-can-hold,
+# so the triangle's base is explained inside the triangle entry. The shape
+# tools are the course's own toolkit functions, not Python names, so they
+# have no python: line.
+entries:
+  - term: perimeter
+    kind: concept
+    definition: >
+      The perimeter of a shape is the distance all the way round its edge.
+      A rectangle's perimeter is P = 2(l + w), and a square's is P = 4s.
+  - term: "area, square metre (m²)"
+    kind: concept
+    definition: >
+      The area of a shape is how much flat surface it covers. It is counted
+      in squares: a square metre is a square 1 m long on each side.
+  - term: "area of a rectangle, A = lw"
+    kind: formula
+    definition: >
+      A rectangle's area is its length times its width. A square's area is
+      its side times itself, s².
+    example: "4 m × 3.5 m = 14 m²"
+  - term: "area of a triangle, A = ½bh"
+    kind: formula
+    definition: >
+      A triangle's area is half its base times its height. The base is the
+      side it stands on. The height is measured at a right angle to the
+      base, not along a sloping side.
+    example: "½ × 4 × 1.8 = 3.6 m²"
+  - term: "radius, diameter"
+    kind: concept
+    definition: >
+      The radius of a circle is the distance from its centre to its edge.
+      The diameter is the distance right across, through the centre, so it
+      is twice the radius.
+  - term: circumference
+    kind: concept
+    definition: >
+      The circumference of a circle is its perimeter: the distance all the
+      way round. It is C = 2πr, or πd.
+  - term: "pi, π"
+    kind: concept
+    definition: >
+      Pi is the circumference of any circle divided by its diameter. It is
+      about 3.14159, and its digits never end or repeat.
+  - term: "math.pi"
+    python: math.pi
+    kind: concept
+    definition: >
+      math.pi is Python's value for π, correct to about 16 digits. It is in
+      the math module, so it needs import math.
+    example: "math.pi * 20 ** 2"
+  - term: "area of a circle, A = πr²"
+    kind: formula
+    definition: >
+      A circle's area is π times the radius squared. Doubling the radius
+      makes the area four times bigger.
+  - term: "volume, cubic centimetre (cm³), litre"
+    kind: concept
+    definition: >
+      The volume of a solid is how much space it takes up, counted in
+      cubes. A cubic centimetre is a cube 1 cm on each side. A litre is
+      1,000 cm³.
+  - term: "cuboid, cylinder, cone, sphere"
+    kind: concept
+    definition: >
+      A cuboid is a box shape. A cylinder has two equal circles at its
+      ends, like a tin. A cone has a circle for a base and comes to a
+      point. A sphere is a perfect ball.
+  - term: "volume formulas"
+    kind: formula
+    definition: >
+      A cuboid's volume is V = lwh, and a cube's is s³. A cylinder's is
+      V = πr²h, the base circle times the height. A cone's is a third of
+      that, V = ⅓πr²h. A sphere's is V = ⁴⁄₃πr³.
+  - term: surface area
+    kind: concept
+    definition: >
+      The surface area of a solid is the total area of its outside. It is
+      what you would paint, or wrap in paper.
+  - term: "surface area formulas"
+    kind: formula
+    definition: >
+      A cube's surface area is 6s². A closed cylinder's is 2πr² + 2πrh:
+      two circles and a label. A cone's is πr² + πrl, with l the slant
+      height. A sphere's is 4πr², four circles.
+  - term: slant height
+    kind: concept
+    definition: >
+      The slant height of a cone is the distance from its point, down its
+      side, to the edge of its base. It is l = √(r² + h²).
+  - term: "math.ceil()"
+    python: math.ceil
+    kind: function
+    definition: >
+      Rounds a number up to the next whole number. Use it when only whole
+      things can be bought, like tins of paint.
+    example: "math.ceil(2.21)"
+  - term: "shape tools"
+    kind: function
+    definition: >
+      Your toolkit's functions for shapes: rectangle_perimeter,
+      rectangle_area, triangle_area, circle_circumference, circle_area,
+      cuboid_volume, cylinder_volume, cone_volume, sphere_volume, and the
+      surface areas of the cube, cylinder, cone and sphere. They are your
+      own tools, not part of Python.
+    example: "cylinder_volume(8, 14)"

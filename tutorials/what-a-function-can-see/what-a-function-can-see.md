@@ -409,8 +409,8 @@ print(bill)
 ```
 
 The first line shows `92.4`, the bill with the tip added. The second
-shows `84`: `bill` did not change. A walkthrough table, like the ones on
-[Does it work?](tutorial:does-it-work), shows why. This one has a column
+shows `84`: `bill` did not change. A trace table, like the ones on
+[Does it work?](tutorial:does-it-work#a-walkthrough-by-hand), shows why. This one has a column
 for each space.
 
 | Step | The page's space | `add_tip`'s space |

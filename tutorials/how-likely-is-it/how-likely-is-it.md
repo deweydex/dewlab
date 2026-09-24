@@ -117,11 +117,11 @@ You roll an ordinary die once. Which of these has probability 0?
 
 ## Counting equally likely outcomes
 
-To find a probability, we need some words for what happens. An
-*experiment* is something we do whose result is left to chance, like
-rolling a die. An *outcome* is one possible result: rolling a 4. An
-*event* is a group of outcomes we care about: "rolling an even number"
-is the event made of the outcomes 2, 4 and 6.
+On [Counting every outfit](tutorial:counting-every-outfit#outcomes-of-an-experiment)
+we met an experiment, like rolling a die, and its outcomes, like
+rolling a 4. The sample space was the list of every outcome. We need one
+more word. An *event* is a group of outcomes we care about: "rolling an
+even number" is the event made of the outcomes 2, 4 and 6.
 
 When every outcome is equally likely, a probability is a count:
 
@@ -131,9 +131,7 @@ In words: count the outcomes you want, and divide by all the outcomes.
 For an even number on one die, that is $\frac{3}{6} = 0.5$.
 
 Now two dice, as in many board games. What is the chance that the two
-add up to 7? Your `all_pairs` from
-[Counting every outfit](tutorial:counting-every-outfit) lists all 36
-outcomes, and a loop counts the ones we want. Guess first: is 7 more
+add up to 7? Your toolkit's `all_pairs` lists all 36 outcomes, and a loop counts the ones we want. Guess first: is 7 more
 likely than, say, 12?
 
 ```python exec
@@ -149,6 +147,10 @@ for red, blue in outcomes:
 print(sevens, "of", len(outcomes))
 print(sevens / len(outcomes))
 ```
+
+The line `for red, blue in outcomes:` takes each pair apart as the
+loop goes round: `red` points at the pair's first value, and `blue` at
+its second.
 
 Six of the 36 outcomes add up to 7: 1 and 6, 2 and 5, and so on, up to
 6 and 1. So $P(\text{7}) = \frac{6}{36} = \frac{1}{6}$, about 0.167.
@@ -463,7 +465,7 @@ that something about the coin is not fair.
 
 | The question | On this page |
 |---|---|
-| What is named here? | probability, $P(A)$; experiment, outcome and event; each trial, such as `heads` and `seven_or_more`; your toolkit function `simulate` |
+| What is named here? | probability, $P(A)$; an event, a group of outcomes; each trial, such as `heads` and `seven_or_more`; your toolkit function `simulate` |
 | What is promised? | $P(A)$ is from 0 to 1; with equally likely outcomes, $P$ is a count divided by a count; `simulate` promises the fraction of runs that gave True |
 | What happens when? | each run of a trial is new and left to chance; a simulation's answer settles as the runs grow |
 | What does this space let us do? | fair coins and dice, where every outcome is equally likely; `random` once we import it; numbers that are pseudo-random, and good enough |
@@ -473,7 +475,7 @@ that something about the coin is not fair.
 | Term or tool | What it means |
 |---|---|
 | probability, $P(A)$ | a number from 0 (impossible) to 1 (certain) for how likely A is |
-| experiment, outcome, event | something left to chance; one result; a group of results we care about |
+| event | a group of outcomes we care about, such as "an even number" |
 | equally likely outcomes | $P(\text{event})$ = outcomes in the event ÷ all outcomes |
 | `random.choice`, `random.randint`, `random.random` | pick from a list; a whole number in a range; a decimal from 0 to 1 |
 | pseudo-random | made by a formula, but behaving like chance |

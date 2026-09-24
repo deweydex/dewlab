@@ -542,6 +542,16 @@ What a later page loads, and in what order:
   loads on a later page, and a slow cell slows every page after it. Write
   a stub as a real `def` with a docstring and `...` in its body, so the
   reference can stand in for it until the reader writes it.
+- **What the page gets.** Each toolkit cell runs in a space of its own,
+  the way a module does: it sees the page's starting names and every
+  toolkit cell loaded before it, and only the names it defines come back
+  to the page. Its own `import` lines stay inside it, so one cell's
+  `from itertools import product` cannot collide with a later cell's
+  `def product(values)`, and a page cell that reuses a toolkit function's
+  helper name (`RATE = ...`) does not change what the function sees. A
+  page cell can still hide a toolkit function by giving its name to
+  something else, as `total = 0` hides `total()`: pick cell names that
+  leave the toolkit's alone.
 
 The cell's `id:` and the tutorial's id are the key the reader's version is
 found under, so the usual rule — never rename a cell id once students have

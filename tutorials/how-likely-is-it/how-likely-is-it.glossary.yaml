@@ -1,0 +1,66 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "probability, P(A)"
+    kind: concept
+    definition: >
+      The probability of an event is a number from 0 to 1 that says how
+      likely it is. 0 means impossible, and 1 means certain. We write the
+      probability of an event A as P(A).
+    example: "P(heads) = 0.5"
+  - term: event
+    kind: concept
+    definition: >
+      An event is a group of outcomes we care about. Rolling an even number
+      is the event made of the outcomes 2, 4 and 6.
+  - term: equally likely outcomes
+    kind: formula
+    definition: >
+      When every outcome is equally likely, the probability of an event is
+      the number of outcomes in the event divided by the number of outcomes
+      in all.
+    example: "P(even) = 3 / 6 = 0.5"
+  - term: "random.choice(), random.randint(), random.random()"
+    kind: function
+    python: [random.choice, random.randint, random.random]
+    definition: >
+      Pick one value from a list; pick a whole number from a to b, with both
+      ends included; give a decimal from 0 up to, but not including, 1.
+      They live in the random module.
+    example: "random.randint(1, 6)"
+  - term: pseudo-random
+    kind: concept
+    definition: >
+      Pseudo-random numbers are made by a formula, but mixed so well that
+      they behave like chance. Python's random module makes them.
+  - term: relative frequency
+    kind: concept
+    definition: >
+      The relative frequency of an event is how often it happened, divided
+      by how many times we tried. It changes a little every time we try
+      again.
+    example: "493 heads in 1000 tosses gives 0.493"
+  - term: "simulation, trial"
+    kind: concept
+    definition: >
+      A simulation is a program that acts out an experiment many times, to
+      see what usually happens. One run of the experiment is a trial. On
+      this course a trial is a function that returns True or False.
+  - term: law of large numbers
+    kind: concept
+    definition: >
+      The law of large numbers says that as an experiment is repeated more
+      times, its relative frequency tends to get closer to the probability.
+      It never promises to hit it exactly.
+  - term: "abs()"
+    kind: function
+    python: abs
+    definition: >
+      Gives the size of a number without its sign, so abs(-0.3) and
+      abs(0.3) are both 0.3.
+    example: "abs(0.47 - 0.5)"
+  - term: "simulate()"
+    kind: function
+    definition: >
+      Runs a trial many times, and gives the fraction of runs where it
+      returned True. It is a toolkit function you wrote yourself.
+    example: "simulate(heads, 10000)"

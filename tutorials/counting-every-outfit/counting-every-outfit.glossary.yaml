@@ -1,0 +1,54 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: experiment
+    kind: concept
+    definition: >
+      An experiment is any action that can end in more than one way, such
+      as tossing a coin, rolling a die or picking an outfit.
+  - term: outcome
+    kind: concept
+    definition: >
+      An outcome is one way an experiment can end. Heads, and a 4, is one
+      outcome of tossing a coin and rolling a die.
+    example: '("H", 4)'
+  - term: sample space
+    kind: concept
+    definition: >
+      The sample space is the list of every outcome of an experiment, with
+      none left out and none written twice. Maths writes it in curly
+      brackets and often calls it S.
+    example: "S = {1, 2, 3, 4, 5, 6}"
+  - term: tree diagram
+    kind: concept
+    definition: >
+      A tree diagram draws every outcome of choices made one after another.
+      It has a branch for each first choice, and each branch splits into a
+      twig for each second choice. Counting the twig ends counts the
+      outcomes.
+  - term: pair
+    kind: concept
+    definition: >
+      A pair is two values in round brackets, in a fixed order. It is a
+      tuple with two values in it.
+    example: '("white shirt", "jeans")'
+  - term: fundamental principle of counting
+    kind: formula
+    definition: >
+      If one choice can be made in m ways, and then a second in n ways
+      whatever the first was, the two together can be made in m × n ways.
+      More choices multiply in the same way. It is often called the counting
+      principle.
+    example: "3 tops × 2 trousers × 2 shoes = 12 outfits"
+  - term: and multiplies, or adds
+    kind: concept
+    definition: >
+      Choices made one after the other multiply: soup and a sandwich from 3
+      and 4 is 12 lunches. One choice from two separate groups adds: soup
+      or a sandwich is 3 + 4 = 7 lunches.
+  - term: "all_pairs()"
+    kind: function
+    definition: >
+      Gives every pair (a, b) with a from first and b from second, as a
+      list of tuples. Its length is always the length of first times the
+      length of second. It is a toolkit function you wrote yourself.
+    example: 'all_pairs(["H", "T"], [1, 2])'

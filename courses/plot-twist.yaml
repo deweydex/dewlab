@@ -13,7 +13,7 @@ description: >-
   a toolkit of your own functions, and later pages use them.
 
 
-  This course is new, and only its first two units are written so far.
+  This course is new, and only its first four units are written so far.
 contents:
 - title: Instructions for a machine
   tutorials:
@@ -28,6 +28,22 @@ contents:
   - true-false-and-every-case
   - untangling-a-condition
   - bits-that-flip
+- title: "Again and again: loops, counting and chance"
+  tutorials:
+  - doing-it-again
+  - counting-every-outfit
+  - orders-and-choices
+  - how-likely-is-it
+  - chances-that-combine
+- title: Making your own tools
+  tutorials:
+  - machines-that-take-a-number
+  - measuring-rooms-and-tins
+  - running-a-formula-backwards
+  - does-it-work
+  - what-a-function-can-see
 mixed:
 - mixed-instructions-for-a-machine
 - mixed-decisions-and-logic
+- mixed-loops-counting-and-chance
+- mixed-making-your-own-tools

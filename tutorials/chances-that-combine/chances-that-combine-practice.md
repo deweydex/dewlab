@@ -337,7 +337,7 @@ $\frac{17}{20} \times \frac{16}{19} \approx 0.716$, so at least one is
 yours with chance about $1 - 0.716 = 0.284$.
 
 ```python
-tickets = list(range(1, 21))
+tickets = range(1, 21)
 mine = [1, 2, 3]
 
 draws = []

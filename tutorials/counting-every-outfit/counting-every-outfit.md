@@ -314,7 +314,8 @@ two lists you give `all_pairs`, the number of pairs is the length of one
 times the length of the other.
 
 A pair can itself go into a pair. What do you think this cell prints
-last? Run it to check.
+last? It needs your `all_pairs`, so until that is written it stops with
+an error. Run it to check.
 
 ```python exec
 id: counting-every-toolkit-2
@@ -400,9 +401,9 @@ print(62 ** 8)
 print(26 ** 12)
 ```
 
-Python actually prints 95,428,956,661,682,176 for the 12 small letters.
-That is more than 400 times as many as the 8-character passwords with
-capitals and digits. Say an attacker's computer can try a billion
+Twelve small letters win by a long way: 95,428,956,661,682,176
+passwords, more than 400 times as many as 8 characters with capitals
+and digits. Length beats variety. Say an attacker's computer can try a billion
 passwords a second. It would try every 8-letter password in about three
 and a half minutes, every 8-character mixed one in about two and a half
 days, and every 12-letter one in about three years.
