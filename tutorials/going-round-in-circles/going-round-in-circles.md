@@ -17,11 +17,8 @@ covers:
   drawing-the-clock:
     covers: [MIT-4.6]
   exact-values-with-pythagoras:
-    covers: [MIT-4.7]
-    touches: [MIT-4.3]
-  a-third-name-tangent:
-    covers: [MIT-4.6]
-    touches: [MIT-4.1]
+    covers: [MIT-4.7, MIT-4.6]
+    touches: [MIT-4.3, MIT-4.1]
 ---
 
 # Going round in circles: angles, radians and the unit circle
@@ -506,8 +503,9 @@ circle. Many courses start with a right-angled triangle instead: the
 sine is the opposite side over the longest side, and so on.
 
 The triangle route is quick for measuring heights and distances, which
-is what the ratios were first made for, and it is where
-[Solving triangles](tutorial:how-tall-is-that-tree) begins. Its cost is
+is what the ratios were first made for, and
+[Solving triangles](tutorial:how-tall-is-that-tree) uses them that way,
+after naming the sides inside this page's circle. Its cost is
 that it stops at $90^\circ$: the other two corners of a right-angled
 triangle are always smaller than that, so the ratios say nothing about
 $120^\circ$ until they are stretched to fit.
