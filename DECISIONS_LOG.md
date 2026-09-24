@@ -4430,3 +4430,40 @@ Many terms the maths pages had always used were never defined anywhere: *correla
 The five headings the pass renamed (three in *Complex numbers*, one each in *Rearranging formulae* and *Limits*) carry their `covers:` keys with them, and the curriculum map is regenerated. The glossary check now covers 92 Python names, since the inverse trigonometric functions, `lambda` and `import` gained entries.
 
 *Cost to change: prose only, page by page; the cells that changed carry version 2026.09.24.1.*
+
+---
+
+**7.217 — A reader's own functions travel from page to page: toolkit cells, with the reference as a fallback per function.** The Plot Twist plan (§6) asked for both the reader's own code and a reference version. Josh: "lets do both a 'student code' and a 'no student code' version".
+
+**Authoring.** A Python exec cell carries `toolkit: yes`. An optional `python toolkit-reference` fence (`for: <cell id>`) holds the complete version and is never shown; a cell without one is its own reference. The build fails on a `for:` that names a missing or non-toolkit cell, and on two reference fences for one cell.
+
+**Which pages get what.** `toolkit_for()` in `build.py` lists every toolkit cell on an earlier tutorial of the course, walking `series_chain()` as the glossary does, and never the page's own. A practice page gets its own tutorial's toolkit and everything before it. A mixed page gets all its tutorials' toolkits and everything before the latest. A page on several courses takes the first course with a toolkit.
+
+**Whose code.** In "My code" mode (`dewlab:toolkit-mode`, site-wide), each entry runs the reader's saved code from `dewlab:progress:<tutorial>`, and each function the reference defines is taken from the reference where the reader's code leaves it out or unwritten. Unwritten means a body of only a docstring, `...`, `pass` or `raise NotImplementedError`, read with `ast`. If the reader's code raises, the whole reference replaces it. "Reference" mode runs the references only; a downloaded page always does. The toolkit loads after the namespace is seeded at boot and again after every reset, through a `"load-toolkit"` worker message or the main-thread path, with its output discarded. One line above the first cell says what loaded and why, and holds the switch.
+
+**Why per function.** Pilot pages leave stubs that define without error. A per-cell rule would have loaded empty functions and broken every later page for a reader who skipped one exercise. The page writers found this before it shipped.
+
+*Cost to change: additive. The manifest key and the worker message can be ignored or removed; renaming a toolkit cell's id sends later pages to the reference, the usual rule about ids.*
+
+---
+
+**7.218 — Plot Twist's first two units are written, and its rule on words is "never measure the reader".** The plan, `planning/PLOT_TWIST_PLAN.md`, called for a pilot of Units 1 and 2 before the rest is written.
+
+**The pilot.**
+- Nine tutorials, each with a practice page and a glossary, and a mixed practice page for each unit.
+- Units: *Instructions for a machine* and *Decisions and the logic under them*.
+- Pages run from *Four questions for any puzzle* to *Bits that flip*.
+- The course file `courses/plot-twist.yaml` lists them as a beta course, second on the contents page.
+
+Every page follows the plan:
+- a question from the world first;
+- a "space we're in" box;
+- two warm-up questions from earlier pages;
+- predict, run, explain;
+- a closing look back through the four questions.
+
+Every practice page mixes predict, make, fix, explain and "another way" problems across three levels. Seven toolkit functions are built across the two units, and later pages use them: `split_bill`, `to_binary`, `to_hex`, `between`, `truth_table`, `same_rule` and `parity_bit`. Every cell was run through the real toolkit loader twice: as given, with the stubs unfinished, and finished, with the references in place. Only the cells the pages mean to fail fail.
+
+**The rule on words.** The Programming and maths passes banned a list of words (7.210, 7.216). For this track Josh asked whether to keep the ban. The part that stays is the part that protects a reader who expects to fail: a page never says how easy or obvious something is. That rules out "simply", "obviously", "clearly", "of course", "trivially", "easy", "as you can see" and "it's straightforward". Words that were banned only as filler ("just", "actually") are allowed where they mean something: "the cell you just ran"; "Python actually prints 0.30000000000000004", marking the surprise predict-run-explain depends on. The plan's principle 8 says so; the earlier series are not reopened for it.
+
+*Cost to change: the course file and eleven folders; nothing else depends on them.*

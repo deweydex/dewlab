@@ -96,7 +96,13 @@ How the track carries them:
    `derivative_at` and about thirty more, each with its own tests. Later
    units call the functions earlier units built. The capstone is "use your
    toolkit". See §6 for how this works in the browser.
-8. **Low floor, high ceiling.** The first task on a page is one every reader
+8. **Never measure the reader.** A page never says how easy or obvious
+   something is: not "simply", "obviously", "clearly", "of course",
+   "trivially", "easy", "as you can see" or "it's straightforward". A reader
+   who expects to fail reads those as proof. Every other word is allowed
+   when it means something: "the cell you just ran", "Python actually
+   prints 0.30000000000000004".
+9. **Low floor, high ceiling.** The first task on a page is one every reader
    can finish. The last is one a confident reader will enjoy.
 
 ## 4. Practice
