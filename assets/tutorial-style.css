@@ -694,14 +694,15 @@ p code, li code {
 
 .dl-cell-text .dl-cell-head,
 .dl-cell-text .dl-cell-collapse-col { transition: opacity 0.1s ease; }
-.dl-cell-text:not(:hover):not(:focus-within) .dl-cell-head,
-.dl-cell-text:not(:hover):not(:focus-within) .dl-cell-collapse-col {
-  opacity: 0;
-  pointer-events: none;
-}
-@media (hover: none) {
-  .dl-cell-text .dl-cell-head,
-  .dl-cell-text .dl-cell-collapse-col { opacity: 1; pointer-events: auto; }
+/* Quiet until hovered, on devices that can hover. A (hover: none) override
+   of this rule never applied: the :not() selectors outrank it, so a note's
+   header was invisible and untappable on a phone (DECISIONS_LOG 7.224). */
+@media (hover: hover) {
+  .dl-cell-text:not(:hover):not(:focus-within) .dl-cell-head,
+  .dl-cell-text:not(:hover):not(:focus-within) .dl-cell-collapse-col {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 .dl-doc-editor {

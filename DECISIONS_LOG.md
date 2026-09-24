@@ -4614,3 +4614,35 @@ Everything the page writers had flagged as unsure checked out. Every changed num
 **Also.** `docs/WRITING_TUTORIALS.md` said all four widgets fail on a hosted page. `text_input` and `dropdown` work there; only `button` and `image_input` need the main thread, as `tests/e2e/test_phase0_golden_path.py` has shown since the round trip was built.
 
 *Cost to change: small and local; the empty-state buttons can go if the seam is made visible enough on its own.*
+
+---
+
+**7.224 — dewmini: controls that broke under a redraw, a keyboard or a finger.** After 7.223's two-press delete, Josh asked to "see if there are other similar bugs". A hunt for the same kinds of fault found ten, each with an e2e test that fails on the old code.
+
+**A running cell's output.** `createCellElement()` gave every cell a fresh, empty output element. A cell still running when the notebook was redrawn (a cell added or deleted, a tab left and come back to) wrote the rest of its output into an element hidden as empty. `executeCell()` then saved what the old element held, and the Run button came back reading Run rather than Stop. A running cell now keeps its output element through a redraw and gets its Stop state back. The engine's `getOutputEl` looks through every notebook, because a cell keeps running after its tab is left.
+
+**Switching notebooks.** `openNotebook()` and `closeNotebook()` never repainted the Cells/File switch or the toolbar. New from the File view left File pressed over a notebook of cells, and New from a site tab left Run all hidden. Both now call `updateViewSwitch()`. They also call `flushFileEditor()` first, as `insertCellAt()` and Practice now do, so text typed in the File view in the last 400 ms is kept.
+
+**Touch.** A rendered note's header (Edit, Delete, Duplicate and the rest) was quiet until hovered. The `(hover: none)` rule meant to undo that on a phone had the lower specificity and never applied, so the header was invisible and could not be tapped. The quiet rule now sits inside `(hover: hover)`. `assets/tutorial-style.css` had the same fault for a tutorial page's own notes and is fixed the same way, with a touch-screen test in `tests/e2e/test_custom_cells.py`.
+
+**Keyboard.**
+- Escape now closes a cell's ⋯ menu.
+- When Escape closes an editor's suggestion list, it no longer also closes the open panel.
+- Escape from inside a panel returns focus to that panel's toggle, as its close button does.
+- A collapsed cell's summary is `role="button"` and opens on Space as well as Enter.
+- A panel closed by its neighbour sets its own toggle's `aria-expanded` to false.
+
+**Smaller.** Clear output also clears the File view's output. On a site tab, the Library's dataset button and "Load the example" say why they add no cell, rather than saving a cell nobody can see.
+
+*Cost to change: small and local; each fix is a few lines with its own test.*
+
+---
+
+**7.225 — dewmini web: fresh editors per site, focus kept on the site list, and three smaller state fixes.** The same hunt, in dewmini web, found five faults, each with an e2e test that fails on the old code.
+
+- **Switching sites.** `openSite()` loaded each site into the same three CodeMirror editors with `setValue()`, which is an undoable edit. So Ctrl+Z after a switch brought the previous site's code into the new one, and the debounced save kept it. Its change event also re-rendered the new site with the previous site's last-run script before `run()` replaced it. Each switch now builds fresh editors holding the site's code (`mountEditors()`). The bundle does not export `Transaction`, so an edit that skips undo history would have meant changing `vendor-src`. Load files still uses `setValue()`, so undoing a load still works.
+- **Keyboard.** `renderList()` rebuilt the list and dropped the focused button, so choosing a site with Enter sent focus to `<body>`. Focus now returns to the current site's button.
+- **Also.** An emptied Name box is refilled with the name the site kept. `openSite()` records the site it actually shows: with a stale saved id, Delete's `findIndex` returned −1 and `splice(-1, 1)` removed the last site instead of the one on screen.
+- **Left for Josh.** A download gives separate `.html`, `.css` and `.js` files, and the HTML does not link the other two, so the downloaded page opens unstyled.
+
+*Cost to change: local to `compose/dewminiweb.js`.*
