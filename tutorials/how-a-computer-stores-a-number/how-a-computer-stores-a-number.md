@@ -90,7 +90,7 @@ need the top number to be 3602879701896396.8, and a fraction of this
 kind must have a whole number on top. Compare `0.75`: it is
 $\frac{3}{4}$, and 4 is a power of 2, so it is kept exactly.
 
-## Why 0.1 + 0.2 lands next door
+## Why 0.1 + 0.2 lands on a neighbour
 
 Here is the kept value of each number, written out to 30 decimal places.
 Before you run it, think about the last section. Will each kept value be
@@ -165,8 +165,8 @@ print(half_root_two ** 2 - 0.5)
 
 The square is `0.5000000000000001`, and the difference from 0.5 is about
 $1.1 \times 10^{-16}$. Python kept the nearest float to $\sqrt{2}$, which
-was very slightly off. Squaring it doubled the tiny error, and the
-answer landed on the neighbour of 0.5. This is the same number you meet
+was very slightly off. Squaring it carried that tiny error into the
+answer, which landed on the float just above 0.5. This is the same number you meet
 in trigonometry, as the sine of 45°, so this surprise will come back.
 
 ## How big can a number be?
@@ -191,10 +191,11 @@ print(1e308 * 10)
 
 `10 ** 400` is fine. But `1e308 * 10` gives `inf`, short for infinity.
 Going past the largest value a space can hold is called *overflow*. In
-some languages, an int that overflows wraps round to a negative number
-without a word of warning. Python's ints never overflow. Its floats do,
-and when they do, Python gives the answer `inf`: a float that means
-"bigger than any float".
+Java, for example, an ordinary int stops at 2,147,483,647, and one more
+wraps round to a large negative number, without any warning. Python's
+ints never overflow. Its floats do. Usually Python then gives the answer
+`inf`, a float that means "bigger than any float". (A few moves, such as
+`2.0 ** 1024`, stop with an `OverflowError` instead.)
 
 So each space has its own promise. Ints promise to be exact, however
 large. Floats promise to be very close, over a huge range, and to stay
