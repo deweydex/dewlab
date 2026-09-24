@@ -601,6 +601,24 @@ id: chances-birthday-your-turn
 print(chance_of_shared(23))
 ```
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page asked you to guess the birthday answer at the very start, and
+it chose a question where most people guess far too low. A page could
+open with a question people tend to get right, so that everyone starts
+with a success.
+
+Starting with a success matters, most of all to someone who expects to
+fail. Most pages in this course start that way.
+
+Here we chose the surprise. The page is about how chances combine, and
+the way they combine is hard to believe until your own guess has been
+wrong. A wrong guess is information: it shows which way your sense of
+chance leans. Your guess was never marked. It was there to be compared
+with the answer.
+
+</details>
+
 ## Four questions, looking back
 
 | Question | On this page |

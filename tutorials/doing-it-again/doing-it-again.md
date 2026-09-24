@@ -627,6 +627,24 @@ and the tool is gone from that page. That is why the loops on this page
 used names like `spent`, `jar` and `grown` for the numbers they built
 up.
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page had you write `total` and `product` yourself. Python already
+has `sum()`, and `math.prod()` in its `math` module, and they do the same
+jobs.
+
+Using Python's own tools is what most programmers do, for good reasons:
+they are tested, they are fast, and every Python reader knows them. A
+course could show `sum()` and move on.
+
+We wrote our own because a running total is the idea this page teaches,
+and `sum()` hides it. Writing `total` shows what happens inside: a
+starting value, a loop, and one line that runs again and again. It also
+shows why a product starts at 1. Once you have written one, `sum()` is
+not a mystery, and you can choose either.
+
+</details>
+
 ## Four questions, looking back
 
 | The question | On this page |

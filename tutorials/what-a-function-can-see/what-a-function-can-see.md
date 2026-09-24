@@ -590,6 +590,24 @@ title: some steps
 why did it not raise an error on its own?
 ```
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page ended with closures: a function made inside another one, which
+keeps the space it was made in. Many courses at this level leave
+closures out. A programmer can go a long time without needing one.
+
+Leaving them out is a reasonable choice. The page is long already, and
+that section is the hardest on it.
+
+We kept it because [Machines that take a number](tutorial:machines-that-take-a-number)
+made a promise. Its `compose` gave back a function that still knew
+`outer` and `inner`, and that page said a later page would explain how.
+A course that asks you to check promises should keep its own. The
+section is last on the page, so you can stop before it and come back to
+it another day.
+
+</details>
+
 ## Four questions, looking back
 
 | Question | On this page |

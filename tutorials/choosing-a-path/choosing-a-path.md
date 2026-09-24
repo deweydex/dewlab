@@ -516,6 +516,24 @@ id: choosing-your-turn-4
 # Your ice warning
 ```
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page put two topics side by side: solving an inequality, from
+algebra, and choosing a path with `if`, from programming. In most
+courses they belong to different subjects, often in different terms,
+with different teachers.
+
+Keeping them apart has good points. Each subject can go at its own
+speed, and you always know which kind of class you are in.
+
+We joined them because they are one question asked two ways. "For how
+many journeys is the pass cheaper?" is an inequality, and a ticket
+machine answers it with `if`. The number line works for both, and the
+code checks the algebra. When each subject needs the other, neither one
+is a topic you learn once and put away.
+
+</details>
+
 ## Four questions, looking back
 
 | Question | On this page |

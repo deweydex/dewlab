@@ -537,6 +537,24 @@ id: orders-which-your-turn
 # The meal deal, then the horse race
 ```
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page told you the answers, 56 and 6,720, in its second paragraph,
+before you had worked anything out. Most pages in this course ask you to
+guess first.
+
+Asking for a guess is usually the better choice. A guess gives you
+something to compare with, and a wrong guess shows you where your
+thinking went.
+
+Here we gave the answers away on purpose. Counting teams and line-ups is
+a long road, with three formulas on the way. Knowing where it ends lets
+you check each step as you go: when $P(8, 5)$ comes out as 6,720, you
+know that part is right. An answer named at the start is a promise, and
+the rest of the page keeps it.
+
+</details>
+
 ## Four questions, looking back
 
 | The question | On this page |

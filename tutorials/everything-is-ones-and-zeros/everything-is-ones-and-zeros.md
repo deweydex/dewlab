@@ -455,6 +455,25 @@ money in whole cents, where binary has no trouble at all. There will be
 a separate page about how a computer stores a number, for anyone who
 wants the full story.
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+To turn a number into binary, this page did the halving by hand, then
+gave the job to Python's `format()`. Your toolkit's `to_binary` is one
+line that calls it. A common exercise is to write the whole halving
+recipe as a loop of your own.
+
+That exercise is a good one. It shows every step, and it practises
+loops.
+
+But loops come in Unit 3, so the choice was to wait, or to use the tool
+Python already has. "What does this space let us do?" includes what the
+space gives us without asking, and knowing when to use a tool that is
+already there is part of programming too. The halving recipe is still on
+the page, in words and done by hand, so nothing about how it works is
+hidden.
+
+</details>
+
 ## Four questions, looking back
 
 | Question | On this page |

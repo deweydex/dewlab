@@ -428,6 +428,24 @@ id: counting-every-your-turn
 # Your PIN and lock counts here
 ```
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+We counted every outfit with a loop before we gave you the formula. Most
+textbooks do it the other way round: the counting principle first,
+$m \times n$, and then examples that use it.
+
+Formula first is quicker. A reader who is comfortable with symbols can
+start using it at once.
+
+We listed first because a formula is a promise, and a list is how we
+check it. The loop met every outfit, so its count cannot be wrong, and
+$m \times n$ agreed with it. For $26^{12}$ passwords no loop could
+finish, and there we trust the formula because we checked it everywhere
+we could. A formula you have tested is one you can believe, not only
+remember.
+
+</details>
+
 ## Four questions, looking back
 
 | The question | On this page |

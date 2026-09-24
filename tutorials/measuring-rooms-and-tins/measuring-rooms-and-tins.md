@@ -639,6 +639,25 @@ id: measuring-rooms-paint-your-turn
 # Your tins_for_ceiling, and the whole job
 ```
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+Most formulas on this page came with a reason: the walls unfolded into a
+strip, the pizza cut into slices, the cone poured three times into a
+cylinder. The sphere did not. Its volume and its surface area arrived
+with a story about Archimedes, and no reason.
+
+A page could leave the sphere out until the reason can be given. That
+reason slices the ball into very thin pieces and adds them all up, which
+needs more than this unit has.
+
+We kept the sphere because footballs, planets and scoops of ice cream
+are spheres, and your toolkit needs it now. So, to be honest about it:
+these two formulas are taken on trust, for the moment. The test with
+Archimedes' two thirds checks that two facts agree. It does not say why
+either one is true.
+
+</details>
+
 ## Four questions, looking back
 
 | The question | On this page |

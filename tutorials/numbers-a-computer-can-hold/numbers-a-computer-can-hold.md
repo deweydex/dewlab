@@ -505,6 +505,24 @@ There is no keyboard for the Python on this page to listen to, so here
 we give values by editing the cell instead. `float()` turns the typed
 text into a number, because whatever someone types arrives as a string.
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page met logarithms as a question, "how many times do I multiply?",
+and asked it about folded paper and octaves. A textbook usually meets
+them much later, as rules: the logarithm of a product is the sum of the
+logarithms, and so on.
+
+The rules are useful. They let you work with logarithms on paper, and
+exams often ask for them.
+
+We started with the question because a rule means little until you know
+what it is a rule about. Here a logarithm is a power, read backwards.
+`math.log2` answers the question for us, and the next page uses the same
+question to count the bits a number needs. The rules can come when a
+page needs them.
+
+</details>
+
 ## Four questions, looking back
 
 | The question | On this page |

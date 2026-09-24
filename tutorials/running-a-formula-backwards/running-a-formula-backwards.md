@@ -597,6 +597,25 @@ Both lines give 2.4.
 
 </details>
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page rearranged every formula with one rule: do the same move to
+both sides. Many people learned a shorter rule at school: "change sides,
+change signs". A number moves across the equals sign, and a plus becomes
+a minus, a times becomes a divide.
+
+The short rule is fast, and it gives the right answer when it is used
+with care. Many people who are good at algebra use it every day.
+
+We used the balance because the short rule hides why it works, and a
+rule you cannot explain is hard to repair. "The same
+move on both sides" is one promise that covers every case, including the
+ones where the short rule often fails, like the brackets in the
+temperature formula. The short rule is the balance, with the middle
+steps left out.
+
+</details>
+
 ## Four questions, looking back
 
 | The question | On this page |
