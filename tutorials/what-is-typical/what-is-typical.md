@@ -400,7 +400,10 @@ the routes are not. What differs is the *spread*: how far apart the
 values are.
 
 The simplest measure of spread is the *range*: the largest value minus
-the smallest. Your toolkit has both parts.
+the smallest. The word has a second meaning here. On
+[Machines that take a number](tutorial:machines-that-take-a-number#what-goes-in-and-what-comes-out),
+a function's range was the outputs it can give. Your toolkit has both
+parts of this one.
 
 ```python exec
 id: typical-spread-2

@@ -416,7 +416,7 @@ print(round(statistics.stdev(rents), 2))     # 849.25
 ```
 
 `pstdev` matches yours, because both divide by $n$. The `p` stands for
-*population*: the list is the whole group we care about. `stdev`
+population: the list is the whole group we care about. `stdev`
 divides by $n - 1 = 10$ instead of 11, so its answer is a little
 bigger. It is meant for a sample, a few values picked from a bigger
 group, where dividing by $n$ would tend to give too small an answer.
@@ -493,7 +493,7 @@ for rent_list in [rents, plus_fifty, plus_ten_percent]:
     print(round(mean(rent_list), 2), round(median(rent_list), 2), round(std_dev(rent_list), 2))
 # 1645.45 1300 809.73
 # 1695.45 1350 809.73
-# 1809.99 1430.0 890.7
+# 1810.0 1430.0 890.7
 ```
 
 Adding €50 to every rent adds €50 to the mean and to the median, and

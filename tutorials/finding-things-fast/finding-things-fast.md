@@ -287,20 +287,22 @@ print(binary_steps(in_order, "Aoife"))
 Now a real list. The file from
 [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950)
 has one row for every country and every year. If we keep the rows for
-2016 and take the `country` column, we get each country once, in
-alphabetical order. How many looks will it take to find Ireland?
+2016 and take the `country` column, we get each name once, in
+alphabetical order. Most names are countries, and a few are regions,
+such as "World" and "Western Europe". How many looks will it take to
+find Ireland?
 
 ```python exec
 id: finding-fast-binary-2
 df = await load_csv("life-expectancy.csv")
 countries = df[df.year == 2016]["country"].tolist()
-print(len(countries), "countries")
+print(len(countries), "names")
 
 print("Ireland is at index", binary_steps(countries, "Ireland"))
 print(linear_looks(countries, "Ireland"), "looks for a linear search")
 ```
 
-There are 226 countries. The binary search looked at Lesotho, Djibouti,
+There are 226 names. The binary search looked at Lesotho, Djibouti,
 Guinea and then Ireland: four looks. The linear search needed 98,
 because Ireland is at index 97. Four looks was a little lucky, and the
 worst case for 226 names is 8. That is still far fewer than 98.

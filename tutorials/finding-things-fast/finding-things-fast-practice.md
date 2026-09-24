@@ -547,11 +547,12 @@ thing, or a search that knows they mean the opposite.
 
 </details>
 
-**15. Make.** Over all 226 countries, how many looks does each search
+**15. Make.** Over all 226 names in `countries`, how many looks does each search
 need on average? Write two small counting functions, or copy
 `linear_looks` and `binary_looks` from the tutorial. Search for every
 country in turn, keep the counts in two lists, and use `mean` from your
-toolkit. Use the `countries` list from problem 8.
+toolkit. Use the `countries` list from problem 8, which holds a few
+regions as well as countries.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -605,10 +606,11 @@ print(mean(linear_counts), largest(linear_counts))
 print(round(mean(binary_counts), 2), largest(binary_counts))
 ```
 
-The linear search needs 113.5 looks on average, and 226 at most. A
-country is equally likely to be anywhere, so on average the search
-goes about halfway along. The binary search needs about 6.9 looks on
-average, and 8 at most: most countries sit near the bottom of the
-halving, where there are the most of them.
+The linear search needs 113.5 looks on average, and 226 at most. Each
+name is searched for once, so on average the search goes about
+halfway along. The binary search needs about 6.9 looks on
+average, and 8 at most: most names are found on the last two or
+three looks, because each halving has twice as many places to end as
+the one before.
 
 </details>

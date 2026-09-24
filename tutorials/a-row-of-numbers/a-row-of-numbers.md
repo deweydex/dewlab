@@ -645,8 +645,9 @@ We used the label because the box gives the wrong answer for lists.
 If `forecast` were a box, `forecast = week` would copy the week into
 it, and changing the forecast could never change the week. Python
 does not work that way. With labels, one list with two names is
-something you can picture. The same picture will explain later pages,
-where a function is handed a list and changes it.
+something you can picture. The same picture explains the playlist on
+What a function can see, where a function was handed a list and
+changed it.
 
 </details>
 

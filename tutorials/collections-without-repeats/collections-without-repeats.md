@@ -312,10 +312,25 @@ print(len(set()))
 print(type({}))
 ```
 
-`{}` makes an empty dictionary, from
+The first line prints `set()`, which is how Python writes the empty
+set. The last line says `dict`: `{}` makes an empty dictionary, from
 [Kinds of data, and honest charts](tutorial:kinds-of-data-and-honest-charts#counting-a-frequency-table).
 Dictionaries came to Python before sets did, so they got the curly
 brackets first. An empty set needs its own name, `set()`.
+
+An empty set is often where a set begins. `.add(value)` puts one more
+element into a set, and does nothing if it is already there.
+
+```python exec
+id: collections-empty-2
+favourites = set()
+favourites.add("Zombie")
+favourites.add("Dreams")
+favourites.add("Zombie")
+print(sorted(favourites))
+```
+
+Two elements: the second "Zombie" changed nothing.
 
 At the other end, some sets never stop. A *finite set* has a number of
 elements we could count, even if it is large: the songs in a library,
@@ -494,7 +509,7 @@ meaning, not mechanics.
 | Term or tool | What it means |
 |---|---|
 | set, element | a collection of different values, with no order; a value in it |
-| `set(values)`, `set()` | a set made from a list; the empty set |
+| `set(values)`, `set()`, `.add()` | a set made from a list; the empty set; put one more element in |
 | cardinality, $\lvert A \rvert$ | the number of elements; `len` in Python |
 | $\in$, $\notin$ | is an element of; is not an element of: `in`, `not in` |
 | intersection, $A \cap B$ | in both: `&` |
