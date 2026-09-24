@@ -222,14 +222,18 @@ that is made, and whose answer is never used.
 </details>
 
 **7. Fix.** Before a game of tag, a child counts down in twos: 5, 3,
-1, Go! This version never says "Go!". The cell is meant to fail: it
-prints a long column of numbers, then stops with a `RecursionError`.
-The first few numbers are the clue. Find the mistake, and fix it.
+1, Go! This version never says "Go!". The cell is meant to fail. Left
+alone, it would print about a thousand numbers before Python stopped
+it, so we added a safety net: it stops with a `RecursionError` once the
+count goes below −10. The numbers it prints are the clue. Find the
+mistake, and fix it.
 
 ```python exec
 id: calls-itself-practice-fix-twos
 def count_in_twos(number):
     """Count down in twos from number, then say Go!"""
+    if number < -10:  # a safety net, so the cell stops early
+        raise RecursionError("the count went below -10 and never said Go!")
     if number == 0:
         print("Go!")
         return

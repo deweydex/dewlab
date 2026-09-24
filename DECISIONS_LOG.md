@@ -4490,3 +4490,51 @@ They add 28 functions to the toolkit, from `total` and `product` to `close_enoug
 Josh: "lets go for all of those suggestions". These are written after this entry, across Units 1–4 at once so that they share one voice.
 
 *Cost to change: the course file and twelve folders; the loader change is internal, and a toolkit that relied on one entry's import reaching the page would now need its own import.*
+
+---
+
+**7.220 — Plot Twist shows its choices; Units 5 and 6 are written; two context pages; Units 1–4 fact-checked.** Josh on principle 10: "lets go for all of those suggestions". Then: "lets continue with as much as we can".
+
+**Show the choices.**
+- "How this course is built" is the second page of the course. It is a letter covering:
+  - the usual shape of a course like this, and what that shape does to a reader who expects to fail;
+  - eight choices this course makes instead, each with its reason;
+  - what those choices cost;
+  - how to say when the approach is not working.
+- Each of the 19 tutorials in Units 1–4 has a closed "Why this way?" fold (`dl-why`, a third fold class the build accepts and styles). It names one choice the page made and the alternative it turned down. No choice repeats.
+- Ten practice pages gained an Explain problem that asks the reader to judge a choice. Its answer fold says what a good answer weighs, not what to conclude.
+- Units 5 and 6 were written with their folds from the start.
+
+**Units 5 and 6.**
+- *Many values: lists, sets and data*: lists taught properly, as Unit 3 promised; averages and spread built up step by step; kinds of data and honest charts; sets; Venn diagrams. It uses the Irish rows of `life-expectancy.csv`, and its mixed page builds a report on a dataset.
+- *Algorithms that scale*: searching, sorting, a race between sorts measured by counted steps, recursion, and doubling and halving. Its mixed page builds a phone-book search that stays fast at 100,000 names.
+- Both units add 16 toolkit functions.
+- Every page ran through the real loader both ways. The heaviest four also ran cell by cell in Pyodide in a browser.
+- `data/co2-emissions.csv` gained the attribution file every declared dataset needs. The file came from Our World in Data under CC BY 4.0, as the entry that added it records.
+- Two headings used an en dash, which the build's slug drops, so each page's own `covers:` key no longer matched its heading. They now use a hyphen.
+
+**Context pages.**
+- "How a computer stores a number" sits beside the four pages where a float surprises.
+- "Maths that runs the world" sits beside four pages: Monty Hall (linking to *Three doors*), birthday collisions in hashes, Hamming codes through to QR codes and Voyager, and running out of IPv4 addresses.
+
+**The fact check.** A read-only pass checked every real-world claim in Units 1–4 against sources. Two claims were wrong:
+- a parkrun with prizes;
+- a GPS satellite placed at the Moon's distance.
+
+About seventeen more needed a fix or a hedge, among them:
+- Java named as having a separate linker step;
+- the 2005 metric limits on regional roads;
+- the 13.5% VAT rate after July 2026;
+- Met Éireann's wind thresholds;
+- the de Méré story told as history;
+- the YouTube counter;
+- two pages that disagreed on the distance from Dublin to Galway.
+
+Everything the page writers had flagged as unsure checked out. Every changed number was followed through its cells and answers.
+
+**Still open.**
+- Several pages are 2,700–3,500 words against a 2,600 target. *Doing it again* teaches `for` and `while` on one page, and by 7.208's rule it should be split.
+- Units 3 and 4 use list indexing and `append` before Unit 5 teaches lists. The letter names this as a cost.
+- The diagrams the page writers asked for (about thirty) wait for a single pass.
+
+*Cost to change: the course file, the new folders and one attribution file; `dl-why` is additive.*

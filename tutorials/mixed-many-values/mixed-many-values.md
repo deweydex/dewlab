@@ -53,11 +53,12 @@ print(len(temps), len(set(temps)), mode(temps), temps[-2:])
 
 <details class="dl-answer"><summary>answer</summary>
 
-`6 3 12 [15, 14]`.
+`6 3 12 [14, 12]`.
 
 The list has six values. The set keeps each value once, so it holds 12,
 14 and 15: three values. The mode is 12, which appears three times.
-`temps[-2:]` is a slice from the second-last value to the end, as on
+`temps[-2:]` is a slice from the second-last value to the end: the
+last two days, 14 and 12. Slices are on
 [A row of numbers](tutorial:a-row-of-numbers#a-slice-of-the-week).
 
 </details>
@@ -371,7 +372,7 @@ for name, values in [("Ireland", ireland), (other_country, other)]:
     table = five_year_bins(values)
     print(name)
     for start in sorted(table):
-        print(" ", start, "to", start + 5, ":", table[start], "years")
+        print(" ", start, "to", start + 5, "years:", table[start])
 ```
 
 For Ireland, the bins from 60 up hold 1, 11, 29, 19 and 7 years. For
@@ -480,7 +481,7 @@ plt.title("Life expectancy, 1950 to 2016 (Our World in Data)")
 plt.legend()
 ```
 
-The lines cross in the early 1960s, when Spain overtook Ireland, and the
+The lines cross in the mid-1960s, when Spain overtook Ireland, and the
 gap widens until about 1980. A line chart suits it: the order of the
 years means something, and each point comes after the one before.
 
@@ -541,13 +542,13 @@ def report(name, values, first_year):
     """Print a one-page report on a list of yearly life expectancies for one country."""
     last_year = first_year + len(values) - 1
     print("Life expectancy at birth in", name, "(Our World in Data)")
-    print(f"  {first_year}: {values[0]} years   {last_year}: {values[-1]} years")
+    print(" ", first_year, ":", values[0], "years   ", last_year, ":", values[-1], "years")
     print("  mean:", round(mean(values), 2), "  median:", median(values))
     print("  range:", round(largest(values) - smallest(values), 2),
           "  standard deviation:", round(std_dev(values), 2))
     table = five_year_bins(values)
     for start in sorted(table):
-        print(f"  {start} to {start + 5}: {table[start]} years")
+        print("  ", start, "to", start + 5, "years:", table[start])
     print()
 
 
@@ -559,22 +560,19 @@ The report for Ireland begins:
 
 ```text
 Life expectancy at birth in Ireland (Our World in Data)
-  1950: 65.61 years   2016: 81.14 years
+  1950 : 65.61 years    2016 : 81.14 years
   mean: 73.79   median: 73.26
   range: 16.36   standard deviation: 4.18
-  60 to 65: 1 years
-  ...
+   60 to 65 years: 1
+   65 to 70 years: 11
+   ...
 ```
 
 Your two sentences will be your own. For Spain, a good pair might be:
 "Life expectancy rose in both countries between 1950 and 2016, by
 about 15.5 years in Ireland and about 21 years in Spain. Spain started
-lower, passed Ireland in the early 1960s, and has stayed ahead, though
+lower, passed Ireland in the mid-1960s, and has stayed ahead, though
 by 2016 the gap was under two years."
-
-An `f"..."` string, met here for the first time on this course, puts
-the value of each name in curly brackets into the text. Plain `print`
-with commas, as everywhere else on this course, works just as well.
 
 </details>
 
@@ -609,8 +607,8 @@ from_table = weighted / total(table.values())
 print(from_table, mean(whole_years(ireland)))
 ```
 
-Both give 73.8059… (the rounded values have a slightly different mean
-from the raw values, 73.79). Adding 71 eight times is the same as
+Both give 73.8208…. That is a little different from the mean of the
+raw values, 73.79, because rounding moved each value a little. Adding 71 eight times is the same as
 adding $71 \times 8$ once, so a frequency table holds everything a mean
 needs. In symbols, with $f$ for each value's frequency:
 $\bar{x} = \frac{\sum f x}{\sum f}$. This is how a mean is found when a

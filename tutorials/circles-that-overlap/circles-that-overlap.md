@@ -213,7 +213,7 @@ id: circles-your-turn-1
 # The complement of runners, inside the club
 ```
 
-## Counting either: inclusion–exclusion
+## Counting either: inclusion-exclusion
 
 How many members swim or cycle, or both? Here is a first try. Before you
 run it, look at the first line and guess whether it is right.
@@ -432,7 +432,7 @@ list of groups. The regions give a picture of where everyone stands.
 2. Change it again to find the people who said yes to none. Check your
    answer against the corner of the three-circle diagram.
 
-## Inclusion–exclusion for three sets
+## Inclusion-exclusion for three sets
 
 How many members said yes to at least one question? The union has the
 answer: `len(swimmers | cyclists | runners)`. But a survey report often
@@ -581,8 +581,8 @@ Only at the end did it give totals and ask for the regions. Most
 textbooks start the other way: a puzzle of totals, filled in from the
 middle out, because that is the question an exam usually asks.
 
-Starting from totals is good practice for that kind of question. It is
-also closer to how survey results reach most people, as a report.
+Starting from totals is good practice for that question, and it is how
+survey results reach most people.
 
 We began with names because a region is not a number to begin with. It
 is a set of people, and its number comes from counting them. With the
