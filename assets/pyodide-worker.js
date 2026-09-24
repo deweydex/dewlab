@@ -359,6 +359,10 @@ self.onmessage = async (ev) => {
     } else if (msg.type === "reset-page-state") {
       await resetPageState();
       respond("ok");
+    } else if (msg.type === "load-toolkit") {
+      /* A tutorial page's toolkit (earlier pages' functions), as the JSON
+       * string tutorial_tools._load_toolkit() takes and gives back. */
+      respond(tools._load_toolkit(msg.entries));
     } else if (msg.type === "hover-doc") {
       respond(hoverDoc(msg.name, msg.source, msg.line, msg.col));
     } else if (msg.type === "signature-help") {

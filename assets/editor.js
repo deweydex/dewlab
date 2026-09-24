@@ -205,10 +205,12 @@ export function restoreExecTag(markdown) {
   // grouping key is what a bare `html`/`css`/`js` fence would otherwise
   // lose. Order between the two header lines isn't fixed (build.py's
   // parse_site_pane()/parse_app_pane() read them as an unordered pair),
-  // so both orders are matched.
+  // so both orders are matched. A `python toolkit-reference` fence
+  // recovers from its `for:` line, the one header it carries.
   const two = (key) => `(?=(?:id|${key}):\\s*\\S[^\\n]*\\n(?:id|${key}):\\s*\\S[^\\n]*\\n)`;
   return markdown
     .replace(/^```(python|sql)\n(?=id:\s*\S)/gm, "```$1 exec\n")
+    .replace(/^```python\n(?=for:\s*\S)/gm, "```python toolkit-reference\n")
     .replace(new RegExp("^```(html|css|js)\\n" + two("site"), "gm"), "```$1 site\n")
     .replace(new RegExp("^```(html|css|js)\\n" + two("app"), "gm"), "```$1 app\n");
 }

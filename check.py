@@ -232,6 +232,8 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
     practice = folder / f"{ident}-practice.md"
     if context_for is not None:
         pass  # a context page has no practice page of its own
+    elif fields and "practice_across" in fields:
+        pass  # a mixed problem set is itself practice
     elif practice.is_file():
         pf, _, perr = split_frontmatter(practice.read_text())
         if perr:

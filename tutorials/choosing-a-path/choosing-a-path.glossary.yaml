@@ -1,0 +1,72 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# "selection" is named here but was introduced on recipes-are-algorithms,
+# and def, return, assert and docstring on numbers-a-computer-can-hold, so
+# none of them is repeated. "toolkit" likewise.
+entries:
+  - term: inequality
+    kind: concept
+    definition: >
+      An inequality is a statement that one amount is bigger or smaller
+      than another, written with <, ≤, > or ≥. On a number line, an empty
+      circle marks an end that is left out, and a filled circle marks an
+      end that is included.
+    example: "age ≥ 18"
+  - term: "<, <=, >, >=, ==, !="
+    kind: operator
+    definition: >
+      Compare two values and give back True or False. <= is Python's ≤,
+      and >= is Python's ≥. == asks "are these equal?", while one = gives
+      a name to a value. != asks "are these different?".
+    example: "age >= 18"
+  - term: condition
+    kind: concept
+    definition: >
+      A condition is a question with exactly two possible answers, True or
+      False. Its answer is a value, so it can be given a name.
+    example: "is_adult = age >= 18"
+  - term: "True, False"
+    python: ["True", "False"]
+    kind: keyword
+    definition: >
+      These are the two answers a condition can have. They are values,
+      like numbers, and they start with a capital letter.
+  - term: solving an inequality
+    kind: formula
+    definition: >
+      We solve an inequality with the same moves as an equation. When we
+      multiply or divide both sides by a negative number, the sign turns
+      round, because the order of the numbers turns round.
+    example: "-5h > -60 becomes h < 12"
+  - term: "if, else"
+    python: [if, else]
+    kind: keyword
+    definition: >
+      Choose between two paths. The lines under if run when its condition
+      is True, and the lines under else run when it is False.
+    example: 'if age >= 18:\n    print("Adult fare")\nelse:\n    print("Child fare")'
+  - term: elif
+    python: elif
+    kind: keyword
+    definition: >
+      Adds another condition to an if, and is short for "else if". Python
+      checks the conditions from the top, takes the first path whose
+      condition is True, and skips the rest. So the order of the checks
+      matters.
+  - term: branch
+    kind: concept
+    definition: >
+      A branch is a group of lines pushed in under if, elif or else. The
+      program runs exactly one branch of each choice.
+  - term: "low <= value <= high"
+    kind: operator
+    definition: >
+      Checks two comparisons in one line, the way maths writes "between".
+      It is True when both comparisons are True.
+    example: "120 <= heart_rate <= 150"
+  - term: "between()"
+    kind: function
+    definition: >
+      Gives True when a value is from low to high, with both ends
+      included. It is a tool in your own toolkit, not part of Python.
+    example: "between(135, 120, 150)"

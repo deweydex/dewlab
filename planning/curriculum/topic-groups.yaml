@@ -189,6 +189,25 @@ groups:
       - when-it-goes-wrong
       - mixed-programming
 
+  - key: plot-twist-first-steps
+    name: "Plot Twist: first steps in maths and code"
+    intro: >
+      Four questions you can ask of any puzzle, then numbers, bits, error
+      messages and the logic under every decision a program makes, each
+      page starting from a question in the world.
+    tutorials:
+      - four-questions
+      - recipes-are-algorithms
+      - numbers-a-computer-can-hold
+      - everything-is-ones-and-zeros
+      - when-python-says-no
+      - choosing-a-path
+      - true-false-and-every-case
+      - untangling-a-condition
+      - bits-that-flip
+      - mixed-instructions-for-a-machine
+      - mixed-decisions-and-logic
+
   - key: object-oriented-programming
     name: Objects, classes, and building bigger programs
     intro: >

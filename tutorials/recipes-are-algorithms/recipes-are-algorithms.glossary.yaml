@@ -1,0 +1,73 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Comes after four-questions in the Plot Twist track. "algorithm",
+# "sequence" and "function" were introduced there and are not repeated;
+# this page sharpens them (what makes steps clear; a Python function as a
+# name for a list of steps) without redefining them.
+entries:
+  - term: selection
+    kind: concept
+    definition: >
+      Selection is a step that happens only if something is true, such as
+      "if they take milk, add milk". The algorithm chooses one path or
+      another.
+  - term: repetition
+    kind: concept
+    definition: >
+      Repetition is doing the same steps again, such as "for each cup" or
+      "stir until the sugar is gone". A repeat needs a way to stop.
+  - term: iteration
+    kind: concept
+    definition: >
+      Iteration is another word for repetition. Programmers use it often.
+  - term: control flow
+    kind: concept
+    definition: >
+      Control flow is the order in which a program's steps run, including
+      its choosing and repeating. It is the programmer's word for "what
+      happens when?".
+  - term: pseudocode
+    kind: concept
+    definition: >
+      Pseudocode is a plan for a program, written in plain words but laid
+      out like a program. No computer runs it. Lines pushed in to the right
+      belong to the line above them.
+    example: "REPEAT for each cup:\n    PUT one tea bag in the cup"
+  - term: comment
+    kind: concept
+    definition: >
+      A comment is a note for the people who read the code. In Python it
+      starts with #, and Python skips everything after the # on that line.
+    example: "# SET slices TO 4"
+  - term: variable
+    kind: concept
+    definition: >
+      A variable is a name that points at a value. In Python you make one
+      with =, which you can read as "becomes".
+    example: "cups = 3"
+  - term: "="
+    kind: operator
+    definition: >
+      Makes the name on the left point at the value on the right. It is a
+      step done once, when its line runs, not a rule that stays true.
+    example: "water_ml = cups * 250"
+  - term: "def"
+    python: def
+    kind: keyword
+    definition: >
+      Defines a function: a name for a list of steps. The steps are the
+      lines pushed in to the right under it. Defining a function does not
+      run its steps.
+    example: "def make_tea():\n    print(\"Boil the kettle.\")"
+  - term: calling a function
+    kind: concept
+    definition: >
+      Calling a function means writing its name with brackets after it.
+      That runs its steps, in order, from the top.
+    example: "make_tea()"
+  - term: parameter
+    kind: concept
+    definition: >
+      A parameter is a name in a function's brackets. It stands for
+      whatever value the function is given when it is called.
+    example: "def make_tea_for(cups):"

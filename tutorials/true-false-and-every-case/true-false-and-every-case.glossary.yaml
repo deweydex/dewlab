@@ -1,0 +1,81 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# The order Python uses for not, and, or with no brackets is left to
+# untangling-a-condition, which teaches it. This page only says that
+# brackets decide what is worked out first.
+entries:
+  - term: Boolean value
+    kind: concept
+    definition: >
+      A Boolean value is a value that is either True or False, and nothing
+      else. The name comes from George Boole, who worked in Cork.
+  - term: and
+    python: and
+    kind: operator
+    definition: >
+      Gives True only when both sides are True. Maths writes it as ∧.
+    example: "paid_up and dock_working"
+  - term: or
+    python: or
+    kind: operator
+    definition: >
+      Gives True when at least one side is True, including when both are.
+      This is inclusive or. Maths writes it as ∨.
+    example: "birthday or ten_stamps"
+  - term: not
+    python: not
+    kind: operator
+    definition: >
+      Gives the other value: not True is False, and not False is True.
+      Maths writes it as ¬.
+    example: "go_ahead = not raining"
+  - term: "exclusive or, XOR"
+    kind: concept
+    definition: >
+      Exclusive or is True when exactly one of its two inputs is True, and
+      False when both are. Maths writes it as ⊕. For Boolean values, != does
+      the same job in Python.
+    example: "bottom_up != top_up"
+  - term: truth table
+    kind: concept
+    definition: >
+      A truth table lists every combination of True and False inputs to a
+      rule, with the rule's result for each one.
+  - term: "2ⁿ rows"
+    kind: formula
+    definition: >
+      A rule with n True/False inputs has 2ⁿ rows in its truth table. With
+      False as 0 and True as 1, the rows count in binary from 0 to 2ⁿ − 1.
+    example: "3 inputs give 2 ** 3 = 8 rows"
+  - term: for loop
+    python: for
+    kind: keyword
+    definition: >
+      Repeats the lines pushed in under it, once for each value in a list.
+      A loop inside another loop runs all the way through for each value
+      of the outer one.
+    example: 'for raining in [False, True]:\n    print(raining, not raining)'
+  - term: "len()"
+    python: len
+    kind: function
+    definition: Gives how many values a list holds.
+    example: 'len(["paid_up", "dock_working"]) gives 2'
+  - term: "append()"
+    python: list.append
+    kind: function
+    definition: Adds one value to the end of a list.
+    example: "results.append(result)"
+  - term: passing a function
+    kind: concept
+    definition: >
+      A function is a value too, so we can hand it to another function.
+      We write its name without brackets, so that it is not called
+      straight away.
+    example: 'truth_table(unlock, ["paid_up", "dock_working"])'
+  - term: "truth_table()"
+    kind: function
+    definition: >
+      Prints the truth table of a rule with one, two or three inputs, and
+      gives back the result column as a list. It is a tool in your own
+      toolkit, not part of Python.
+    example: 'truth_table(unlock, ["paid_up", "dock_working"])'

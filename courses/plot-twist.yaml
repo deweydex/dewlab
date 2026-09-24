@@ -1,0 +1,33 @@
+title: Plot Twist
+code: 5N2927 + 5N18396 · QQI Level 5
+status: beta
+card: Maths and programming for people who are sure they hate both. Every page starts with a question from the world, and the maths and the code arrive because the question needs them.
+description: >-
+  Plot Twist teaches Programming and Design Principles (5N2927) and
+  Mathematics for Information Technology (5N18396) as one subject.
+
+
+  Every page opens with a question a person might want to answer, and four
+  questions come back on every page: what is named here, what is promised,
+  what happens when, and what this space lets us do. Along the way you build
+  a toolkit of your own functions, and later pages use them.
+
+
+  This course is new, and only its first two units are written so far.
+contents:
+- title: Instructions for a machine
+  tutorials:
+  - four-questions
+  - recipes-are-algorithms
+  - numbers-a-computer-can-hold
+  - everything-is-ones-and-zeros
+  - when-python-says-no
+- title: Decisions and the logic under them
+  tutorials:
+  - choosing-a-path
+  - true-false-and-every-case
+  - untangling-a-condition
+  - bits-that-flip
+mixed:
+- mixed-instructions-for-a-machine
+- mixed-decisions-and-logic
