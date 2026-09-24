@@ -1,0 +1,47 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "^"
+    kind: operator
+    definition: >
+      Gives the exclusive or, XOR, of two values. On single bits, 1 ^ 1 and
+      0 ^ 0 are 0, and 1 ^ 0 and 0 ^ 1 are 1. On whole numbers, it works on
+      each column of bits separately. Maths often writes XOR as ⊕.
+    example: "12 ^ 10   # 6, because 1100 ^ 1010 is 0110"
+  - term: toggle
+    kind: concept
+    definition: >
+      A toggle is an action that switches between two states each time you
+      do it. XOR with 1 toggles a bit: it flips it, and doing it again flips
+      it back.
+    example: "shuffle = shuffle ^ 1"
+  - term: bitwise
+    kind: concept
+    definition: >
+      A bitwise operation works on each column of bits separately, as if
+      each column were its own small problem. The ^ operator on whole
+      numbers is bitwise.
+  - term: mask
+    kind: concept
+    definition: >
+      A mask is a number whose bits are used as instructions. With XOR, a 1
+      in the mask means "flip this bit", and a 0 means "leave it".
+    example: "0xFF8800 ^ 0xFFFFFF   # every bit flipped"
+  - term: parity
+    kind: concept
+    definition: >
+      The parity of a row of bits says whether it has an even or an odd
+      number of 1s. XOR all the bits together, and you get 1 for odd and 0
+      for even.
+  - term: parity bit
+    kind: concept
+    definition: >
+      A parity bit is one extra bit sent with a message. It is chosen so
+      that the number of 1s, message and parity bit together, is even. If
+      any one bit flips on the way, the count becomes odd, and the mistake
+      shows. Two flips cancel out and are not caught.
+  - term: "parity_bit()"
+    kind: function
+    definition: >
+      Gives the bit, 0 or 1, that makes the number of 1s in a row of bits
+      even. It is a toolkit function you wrote yourself.
+    example: "parity_bit(\"1011\")   # 1"

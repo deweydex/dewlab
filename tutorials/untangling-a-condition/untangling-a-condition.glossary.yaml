@@ -1,0 +1,56 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: equivalent rules
+    kind: concept
+    definition: >
+      Two rules are equivalent when they give the same answer on every row
+      of their truth table. They may be written differently and still be
+      the same rule.
+  - term: De Morgan's laws
+    kind: formula
+    definition: >
+      De Morgan's laws say how a not moves inside brackets. Put a not on
+      each part, then swap the joining word: and becomes or, and or becomes
+      and. So not (a and b) is the same as not a or not b, and not (a or b)
+      is the same as not a and not b.
+    example: "not (is_open and has_stock)  ==  not is_open or not has_stock"
+  - term: double negation
+    kind: concept
+    definition: >
+      Double negation is the fact that two nots cancel. Flipping a value and
+      then flipping it back gives the value you started with, so not not a
+      is the same as a.
+  - term: order of not, and, or
+    kind: concept
+    definition: >
+      Python works out not first, then and, then or. Brackets change the
+      order, the same way they do in arithmetic.
+    example: "not a or b   # means (not a) or b"
+  - term: tuple
+    kind: concept
+    python: tuple
+    definition: >
+      A tuple is a few values written together in round brackets, such as
+      (True, False). Each row that product() makes is a tuple.
+  - term: "product()"
+    kind: function
+    python: itertools.product
+    definition: >
+      Makes every combination of the values it is given. With [False, True]
+      and repeat set to a number of inputs, it gives every row of a truth
+      table.
+    example: "product([False, True], repeat=2)"
+  - term: "*row"
+    kind: operator
+    definition: >
+      Spreads the values of a tuple out in a function call, one value for
+      each input. rule(*row) with row = (True, False) is the same as
+      rule(True, False).
+    example: "rule(*row)"
+  - term: "same_rule()"
+    kind: function
+    definition: >
+      Gives True when two rules agree on every row of count True/False
+      inputs, and False as soon as one row differs. It is a toolkit
+      function you wrote yourself.
+    example: "same_rule(grey_out_a, grey_out_b, 2)"
