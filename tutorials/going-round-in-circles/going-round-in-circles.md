@@ -81,7 +81,10 @@ $\sqrt{0.6^2 + 0.8^2}$.
 
 A whole turn is split into 360 equal pieces, called *degrees*, and
 written $360^\circ$. A quarter turn is $90^\circ$, a right angle. Half a
-turn is $180^\circ$.
+turn is $180^\circ$. (On
+[Rules with letters in them](tutorial:rules-with-letters-in-them), a
+polynomial's degree was its highest power. Here the same word means a
+piece of a turn.)
 
 In one hour, a clock's minute hand makes a whole turn: 360 degrees in 60
 minutes. So each minute moves it $360 \div 60 = 6$ degrees. The hour

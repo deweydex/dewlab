@@ -1,0 +1,71 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: sine wave
+    kind: concept
+    definition: >
+      A sine wave is the shape of the graph of y = sin θ. It is the height of
+      a point going round a circle, drawn against how far it has turned.
+  - term: periodic
+    kind: concept
+    definition: >
+      A function is periodic when its graph repeats the same piece for ever.
+      The sine wave repeats every 360°, and the tangent every 180°.
+  - term: amplitude
+    kind: concept
+    definition: >
+      The amplitude of a wave is the largest distance it goes from its middle
+      line. For a sound, a bigger amplitude is a louder sound.
+  - term: "frequency, hertz (Hz)"
+    kind: concept
+    definition: >
+      The frequency of a wave is how many times it repeats each second. It is
+      measured in hertz: 1 Hz is once a second.
+  - term: "period, T = 1 / f"
+    kind: formula
+    definition: >
+      The period of a wave is the time one repeat takes. It is 1 divided by
+      the frequency, so a 50 Hz wave has a period of 1/50 of a second.
+  - term: "y = A sin(2πft)"
+    kind: formula
+    definition: >
+      This is the height of a wave with amplitude A and frequency f, at time
+      t seconds. The wave makes f × t turns, and each turn is 2π radians.
+  - term: "wave()"
+    kind: function
+    definition: >
+      Your toolkit's function that gives the height of a sine wave at a time
+      in seconds, from its amplitude and its frequency. It is your own tool,
+      not part of Python.
+    example: "wave(1, 1, 0.25)   # 1.0"
+  - term: pitch
+    kind: concept
+    definition: >
+      Pitch is how high or low a note sounds. A higher frequency is a higher
+      pitch. Bands tune to the A at 440 Hz.
+  - term: octave
+    kind: concept
+    definition: >
+      Two notes are an octave apart when one frequency is double the other.
+      They sound so alike that music gives them the same letter.
+  - term: "semitone, 2^(1/12)"
+    kind: concept
+    definition: >
+      A semitone is one of the 12 equal steps a piano makes in each octave.
+      Each step multiplies the frequency by 2 to the power 1/12, about
+      1.0595, so 12 steps make a doubling.
+  - term: "phase, phase shift"
+    kind: concept
+    definition: >
+      The phase of a wave is how far along it starts, as a part of a turn. A
+      phase shift moves a wave along. Two waves half a turn apart cancel each
+      other out.
+  - term: "cos θ = sin(θ + 90°)"
+    kind: formula
+    definition: >
+      The cosine wave is the sine wave a quarter turn ahead. They have the
+      same shape, moved along by 90°.
+  - term: graph of the tangent
+    kind: concept
+    definition: >
+      The graph of y = tan θ repeats every 180°. It has no top and no bottom,
+      and no value at 90° or 270°, where the cosine is 0.

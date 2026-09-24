@@ -44,7 +44,7 @@ On this page we:
 > We say angles in degrees, and Python's `math` works in radians, as on
 > [Going round in circles](tutorial:going-round-in-circles). On a flat
 > plane, a triangle's three angles add up to 180°. On
-> [a globe](tutorial:going-round-in-circles#triangles-on-a-globe) they
+> [a ball](tutorial:going-round-in-circles#triangles-on-a-ball) they
 > do not. One thing usually goes unsaid: a person measured every angle
 > and distance here, so every answer is only as good as the measuring.
 
@@ -119,8 +119,9 @@ print(top)
 The top corner sits on the circle. We name the sides from the 35° angle
 at your eye:
 
-- the *hypotenuse* is the longest side, across from the right angle:
-  your line of sight;
+- the hypotenuse, from
+  [How far apart?](tutorial:how-far-apart#squares-on-the-sides-pythagoras),
+  is the longest side, across from the right angle: your line of sight;
 - the *opposite* side is the side across the triangle from the angle:
   the tree;
 - the *adjacent* side is the short side that touches the angle: the
@@ -129,10 +130,10 @@ at your eye:
 From the treetop, looking down at you, the names would swap.
 
 The adjacent side is the point's x, the hypotenuse times the cosine. The
-opposite side is its y, the hypotenuse times the sine. A third ratio,
-opposite over adjacent, is the *tangent* of the angle. It is rise over
-run, the slope from [Straight lines](tutorial:straight-lines): the
-tangent of an angle is the slope of a line that climbs at that angle.
+opposite side is its y, the hypotenuse times the sine. And on
+[Going round in circles](tutorial:going-round-in-circles#a-third-name-tangent),
+the tangent was the slope of the line out to the point, rise over run.
+In the triangle, that is opposite over adjacent.
 
 Will the three ratios match `math.sin`, `math.cos` and `math.tan`?
 
@@ -228,12 +229,14 @@ Python calls it `math.atan`. The inverses of sine and cosine are
 ```python exec
 id: how-tall-back-1
 print(math.degrees(math.atan(120 / 100)))
-print(math.degrees(math.atan(1 / 12)))
+print(math.degrees(math.atan(1 / 10)))
 ```
 
 About 50°: more than 45°, because the Spire is taller than you are far
-from it. The second line is a ramp that rises 1 m for every 12 m along
-the ground, a slope of $\frac{1}{12}$. Its angle is under 5°.
+from it. The second line is the café's ramp from
+[Straight lines](tutorial:straight-lines#how-steep-is-a-ramp), a slope
+of 1:10. Its angle is under 6°, and still too steep for a ramp that
+long.
 
 ### Bearings
 
@@ -320,7 +323,9 @@ Most triangles have no right angle. From where you stand by a lake, one
 end of it is 300 m away and the other end is 250 m away, and the angle
 between the two directions is 70°. How long is the lake?
 
-For a right angle, Pythagoras says $c^2 = a^2 + b^2$. Other angles need
+For a right angle,
+[Pythagoras](tutorial:how-far-apart#squares-on-the-sides-pythagoras)
+says $c^2 = a^2 + b^2$. Other angles need
 a correction, and the correction uses the cosine. In words: the square of
 the third side is the squares of the other two, added, minus twice their
 product times the cosine of the angle between them.
@@ -521,19 +526,18 @@ in the integrated course.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
-This page met sine, cosine and tangent as the x, the y and the slope of a
-point on a circle, and SOH-CAH-TOA came afterwards, as a way to remember
-them.
+This page built `angle_between` from three distances and the cosine rule
+run backwards. It needed a line to keep a cosine inside −1 to 1.
 
-Many courses start the other way: three ratios, defined on a
-right-angled triangle, learned with the word and practised on many
-triangles. That route is quick, it needs no circle, and it is enough for
-most exam questions about right angles.
+A game programmer would more often use `math.atan2` twice: once for the
+direction from `q` to `p`, once for the direction from `q` to `r`, and
+then take the difference. That route never leaves the domain of a
+function, and it can say which way the angle turns, left or right,
+which a game needs to steer a player.
 
-We started from the circle because it was already there, from
-[Going round in circles](tutorial:going-round-in-circles), and because
-it keeps one idea in place of two. The cost is a longer path to the
-first tree.
+We chose the cosine rule because the page had just taught it, and a tool
+built from its own rule is a check on that rule. The cost is a tool
+that only says how big an angle is, never which side it is on.
 
 </details>
 
@@ -544,15 +548,15 @@ first tree.
 | What is named here? | a triangle's sides, named from one angle: opposite, adjacent, hypotenuse |
 | What is promised? | SOH-CAH-TOA for a right angle; the cosine and sine rules for any triangle; `angle_between` promises the angle at a corner |
 | What happens when? | at the river, the angles first, then the sine rule, then SOH; a cosine is put back in range before `acos` |
-| What does this space let us do? | a flat triangle's angles make 180°, and a globe's need not; `atan2` keeps the signs a division throws away |
+| What does this space let us do? | a flat triangle's angles make 180°, and a triangle on a ball need not; `atan2` keeps the signs a division throws away |
 
 ## What we have now
 
 | Term or tool | What it means |
 |---|---|
-| hypotenuse, opposite, adjacent | the longest side; the side across from the angle; the short side touching it |
+| opposite, adjacent | from one angle: the side across from it; the short side touching it |
 | SOH-CAH-TOA | $\sin = \frac{\text{opp}}{\text{hyp}}$, $\cos = \frac{\text{adj}}{\text{hyp}}$, $\tan = \frac{\text{opp}}{\text{adj}}$ |
-| tangent, `math.tan` | opposite over adjacent: the slope of a line at that angle |
+| tangent in a triangle | opposite over adjacent: rise over run |
 | angle of elevation | the angle up from level ground to something above you |
 | `math.asin`, `math.acos`, `math.atan` | the inverses: from a ratio back to an angle, in radians |
 | `math.atan2(y, x)` | the angle from two sides, keeping their signs |

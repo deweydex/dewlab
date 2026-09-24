@@ -1,0 +1,75 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "imaginary unit, i"
+    kind: concept
+    definition: >
+      The imaginary unit i is a number with one promise: i² = −1. No real
+      number keeps that promise, so i lives in a bigger space than the real
+      numbers.
+  - term: "1j"
+    kind: concept
+    definition: >
+      Python writes i as 1j, and 2i as 2j. The letter j is the one
+      electrical engineers use. On its own, j is a name, not a number, so
+      the 1 is needed.
+    example: "1j * 1j   # (-1+0j)"
+  - term: "complex number, a + bi"
+    kind: concept
+    definition: >
+      A complex number is a number of the form a + bi, where a and b are
+      real numbers. Python writes 3 + 2i as 3 + 2j.
+  - term: "real part, imaginary part"
+    kind: concept
+    definition: >
+      In a + bi, the real part is a and the imaginary part is b. Python gives
+      them as z.real and z.imag.
+    example: "(3 + 2j).real, (3 + 2j).imag   # 3.0, 2.0"
+  - term: complex
+    kind: concept
+    python: complex
+    definition: >
+      complex is Python's type for complex numbers. Every number written
+      with a j in it, such as 2j or 3 + 2j, has this type.
+    example: "type(2j)   # <class 'complex'>"
+  - term: "ℂ, the complex numbers"
+    kind: concept
+    definition: >
+      ℂ is the space of all complex numbers. Every real number is a complex
+      number whose imaginary part is 0, so ℝ sits inside ℂ.
+  - term: multiplying complex numbers
+    kind: concept
+    definition: >
+      To multiply two complex numbers, multiply out the brackets, then write
+      −1 wherever i² appears. Adding them adds the real parts and the
+      imaginary parts separately.
+    example: "(2 + 3i)(4 − i) = 8 + 10i − 3i² = 11 + 10i"
+  - term: complex plane
+    kind: concept
+    definition: >
+      The complex plane is a picture of the complex numbers. The number
+      a + bi is drawn as the point (a, b): a across and b up.
+  - term: multiplying by i
+    kind: concept
+    definition: >
+      Multiplying by i turns a point a quarter turn about 0, against the
+      clock. Two quarter turns make a half turn, which is why i² = −1.
+    example: "(3 + 2j) * 1j   # (-2+3j)"
+  - term: "cmath.sqrt()"
+    kind: function
+    python: cmath.sqrt
+    definition: >
+      Gives the square root of a number as a complex number. Unlike
+      math.sqrt, it accepts negative numbers.
+    example: "cmath.sqrt(-4)   # 2j"
+  - term: conjugates
+    kind: concept
+    definition: >
+      Two complex numbers are conjugates when they have the same real part
+      and opposite imaginary parts, like 1 + 2i and 1 − 2i. The complex
+      roots of a quadratic with real coefficients come as a conjugate pair.
+  - term: no order in ℂ
+    kind: concept
+    definition: >
+      Complex numbers have no order that keeps the rules of the real
+      numbers. So Python has no < for them, and a list of them cannot be
+      sorted.

@@ -1,0 +1,90 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "degree, °"
+    kind: concept
+    definition: >
+      A degree is one 360th of a whole turn. A quarter turn is 90°, and half
+      a turn is 180°. This is a second meaning of the word: a polynomial's
+      degree is its highest power.
+  - term: unit circle
+    kind: concept
+    definition: >
+      The unit circle is the circle with radius 1 and its centre at (0, 0).
+      Angles on it are measured from (1, 0), going anticlockwise.
+  - term: "cosine and sine, cos θ and sin θ"
+    kind: concept
+    definition: >
+      The cosine of an angle θ is the x of the point at angle θ on the unit
+      circle, and the sine is its y. So the point is (cos θ, sin θ), and both
+      are always between −1 and 1.
+  - term: "cos²θ + sin²θ = 1"
+    kind: formula
+    definition: >
+      Every point on the unit circle is 1 from the centre. Pythagoras says
+      this for the point (cos θ, sin θ), for every angle θ.
+  - term: radian
+    kind: concept
+    definition: >
+      A radian is a way to measure an angle by the distance walked round the
+      unit circle. A whole turn is 2π radians, and 180° is π radians. One
+      radian is about 57.3°.
+  - term: "degrees to radians, × π / 180"
+    kind: formula
+    definition: >
+      To turn degrees into radians, multiply by π and divide by 180. To go
+      back, multiply by 180 and divide by π.
+  - term: "math.sin(), math.cos()"
+    kind: function
+    python: [math.sin, math.cos]
+    definition: >
+      Give the sine and the cosine of an angle. The angle must be in radians,
+      not degrees.
+    example: "math.sin(math.radians(30))   # 0.49999999999999994"
+  - term: "math.radians(), math.degrees()"
+    kind: function
+    python: [math.radians, math.degrees]
+    definition: >
+      Turn an angle in degrees into radians, and an angle in radians into
+      degrees.
+    example: "math.radians(180)   # 3.141592653589793"
+  - term: "point_on_circle()"
+    kind: function
+    definition: >
+      Your toolkit's function that gives the point (x, y) at an angle in
+      degrees on a circle centred at (0, 0). It is your own tool, not part of
+      Python.
+    example: "point_on_circle(2, 90)   # about (0, 2)"
+  - term: "surd, surd form"
+    kind: concept
+    definition: >
+      A surd is a root left as a root, such as √2 or √3, because it has no
+      exact decimal. Writing cos 45° as √2 / 2 is surd form, and it is exact.
+  - term: "exact values at 30°, 45° and 60°"
+    kind: formula
+    definition: >
+      cos 30° = √3 / 2 and sin 30° = 1 / 2. cos 45° = sin 45° = √2 / 2.
+      cos 60° = 1 / 2 and sin 60° = √3 / 2.
+  - term: "tangent, tan θ = sin θ / cos θ"
+    kind: formula
+    definition: >
+      The tangent of an angle is its sine divided by its cosine. It is the
+      slope of the line from the centre out to the point on the unit circle.
+      At 90° it has no value.
+  - term: "math.tan()"
+    kind: function
+    python: math.tan
+    definition: >
+      Gives the tangent of an angle in radians.
+    example: "math.tan(math.radians(45))   # 0.9999999999999999"
+  - term: great circle
+    kind: concept
+    definition: >
+      A great circle is a circle on a ball that is as big as the ball itself,
+      like the equator. It is the straightest path on the ball. Any two great
+      circles meet, so a ball has no parallel lines.
+  - term: angles of a triangle on a ball
+    kind: concept
+    definition: >
+      On a flat plane, a triangle's three angles add up to 180°. On a ball
+      they add up to more. A triangle from the North Pole to the equator,
+      a quarter of the way round, has three right angles: 270°.
