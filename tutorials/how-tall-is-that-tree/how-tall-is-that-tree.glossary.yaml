@@ -1,0 +1,69 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "opposite side, adjacent side"
+    kind: concept
+    definition: >
+      In a right-angled triangle, the opposite side is the side across from
+      the angle you are looking at. The adjacent side is the short side that
+      touches that angle. From the other angle, the two names swap.
+  - term: "SOH-CAH-TOA"
+    kind: formula
+    definition: >
+      SOH-CAH-TOA is a made-up word for three ratios in a right-angled
+      triangle. Sine is opposite over hypotenuse, cosine is adjacent over
+      hypotenuse, and tangent is opposite over adjacent.
+    example: "height = distance * math.tan(math.radians(35))"
+  - term: angle of elevation
+    kind: concept
+    definition: >
+      The angle of elevation is the angle up from level ground to your line
+      of sight to something above you, such as the top of a tree.
+  - term: "math.asin(), math.acos(), math.atan()"
+    kind: function
+    python: [math.asin, math.acos, math.atan]
+    definition: >
+      Go backwards from a sine, a cosine or a tangent to the angle it came
+      from. The answer is in radians, so math.degrees() turns it into
+      degrees.
+    example: "math.degrees(math.atan(1))   # 45.0"
+  - term: "math.atan2(y, x)"
+    kind: function
+    python: math.atan2
+    definition: >
+      Gives the angle of a direction from its two sides, taken separately.
+      It keeps their signs, so it gives the right angle in any direction,
+      from −π to π radians.
+    example: "math.degrees(math.atan2(-4, -3))"
+  - term: bearing
+    kind: concept
+    definition: >
+      A bearing is a direction given as an angle, measured clockwise from
+      north, from 0° up to 360°. East is 90° and west is 270°.
+    example: "math.degrees(math.atan2(east, north)) % 360"
+  - term: "triangle area, ½ab sin C"
+    kind: formula
+    definition: >
+      A triangle's area is half of one side, times another side, times the
+      sine of the angle between them. It is half the base times the height,
+      with the height worked out as b sin C.
+    example: "0.5 * a * b * math.sin(math.radians(angle_c))"
+  - term: "cosine rule, c² = a² + b² − 2ab cos C"
+    kind: formula
+    definition: >
+      The cosine rule finds the third side of any triangle from two sides
+      and the angle between them. It is Pythagoras' theorem with a
+      correction, and the correction is 0 at a right angle. Run backwards,
+      it finds an angle from three sides.
+  - term: "sine rule, a / sin A = b / sin B = c / sin C"
+    kind: formula
+    definition: >
+      In any triangle, each side divided by the sine of the angle across
+      from it gives the same number. Use it when you know a side and the
+      angle opposite it.
+  - term: "angle_between()"
+    kind: function
+    definition: >
+      Your toolkit's function that gives the angle at the middle point of
+      three points, in degrees, from 0 to 180. It is your own tool, not
+      part of Python.
+    example: "angle_between((1, 0), (0, 0), (0, 1))   # 90.0"

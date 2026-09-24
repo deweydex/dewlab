@@ -1,0 +1,50 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: profit
+    kind: concept
+    definition: >
+      Profit is the money a seller keeps: the money taken in, minus what
+      the goods cost. For one kind of item, it is the profit on each one
+      times the number sold.
+  - term: vertex
+    kind: concept
+    definition: >
+      The vertex of a parabola is its one turning point. It is the highest
+      point when the parabola opens downwards, and the lowest point when it
+      opens upwards.
+  - term: "maximum, minimum"
+    kind: concept
+    definition: >
+      A maximum is the highest value a function reaches, and a minimum is
+      the lowest. A quadratic has a maximum when its x² coefficient is
+      negative, and a minimum when it is positive.
+  - term: axis of symmetry
+    kind: concept
+    definition: >
+      The axis of symmetry of a parabola is the vertical line through its
+      vertex. The two halves of the curve are mirror images across it, so
+      the vertex is halfway between any two points at the same height.
+  - term: completing the square
+    kind: concept
+    definition: >
+      Completing the square is rewriting ax² + bx + c as a squared bracket
+      plus a number. For x² − 6x + 13, halve −6 to get (x − 3)², then add
+      what is missing: (x − 3)² + 4.
+  - term: "vertex form, a(x − h)² + k"
+    kind: formula
+    definition: >
+      A quadratic written as a(x − h)² + k has its vertex at (h, k). A
+      real square is never negative, so the rule's top or bottom value is
+      k, reached when x is h.
+  - term: "x = −b / 2a"
+    kind: formula
+    definition: >
+      The vertex of ax² + bx + c is at x = −b / 2a. Its height is the rule
+      worked out at that x.
+    example: "-140 / (2 * -20)   # 3.5"
+  - term: "vertex()"
+    kind: function
+    definition: >
+      Your toolkit's function that gives the vertex of y = ax² + bx + c as
+      a pair (x, y). It is your own tool, not part of Python.
+    example: "vertex(1, -6, 13)   # (3.0, 4.0)"

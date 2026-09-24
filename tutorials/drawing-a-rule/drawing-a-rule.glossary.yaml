@@ -1,0 +1,84 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "coordinates, (x, y)"
+    kind: concept
+    definition: >
+      Coordinates are a pair of numbers that place a point. The first says
+      how far across, and the second how far up. A negative number means
+      left, or down.
+  - term: "x-axis, y-axis, origin"
+    kind: concept
+    definition: >
+      The x-axis is the line across a graph, and the y-axis is the line up.
+      They cross at the origin, the point (0, 0).
+  - term: graph of a function
+    kind: concept
+    definition: >
+      The graph of a function is the picture of every pair (x, f(x)), for
+      every x in its domain. We write y = f(x), so y names the output.
+  - term: "plot_rule()"
+    kind: function
+    definition: >
+      Your toolkit's tool that draws the graph of a rule from low to high,
+      from 401 points, with the axes through 0 where 0 is in view. It is
+      your own tool, not part of Python.
+    example: "plot_rule(square_minus_four, -3, 3)"
+  - term: root
+    kind: concept
+    definition: >
+      A root of a function is an x where its value is 0. On a graph, it is a
+      place where the graph meets the x-axis.
+  - term: solving from a graph
+    kind: concept
+    definition: >
+      Solving from a graph means reading an answer off a picture, such as a
+      root or the place where two graphs meet. The reading is rough, so we
+      check it by substituting.
+  - term: "linear function, y = mx + c"
+    kind: formula
+    definition: >
+      A linear function is a function whose graph is a straight line. In
+      y = mx + c, the number m says how steep the line is, and c is where
+      it crosses the y-axis.
+  - term: where two graphs meet
+    kind: concept
+    definition: >
+      Two graphs meet at an x where the two rules give the same value. That
+      x answers the equation that sets the two rules equal.
+  - term: parabola
+    kind: concept
+    definition: >
+      A parabola is the graph of a quadratic. It opens upwards, like a U,
+      when the x² term has a positive coefficient, and downwards when it is
+      negative.
+  - term: "the graph of a cubic"
+    kind: concept
+    definition: >
+      A cubic's graph can turn twice, so it can cross the x-axis up to three
+      times. A parabola crosses at most twice, and a straight line that is
+      not flat crosses once.
+  - term: a gap in a graph
+    kind: concept
+    definition: >
+      A graph has a gap at an x that is outside the function's domain. The
+      graph of 1/x has a gap at 0, because 1/0 has no value.
+  - term: "plt.legend()"
+    kind: function
+    python: matplotlib.pyplot.legend
+    definition: >
+      Adds a key to a chart that shows which line is which, using the label
+      each line was drawn with.
+    example: "plt.legend()"
+  - term: "plt.figure()"
+    kind: function
+    python: matplotlib.pyplot.figure
+    definition: >
+      Starts a new, empty picture. Whatever is drawn next goes on it, and
+      the pictures before it are kept.
+    example: "plt.figure()"
+  - term: "__name__ of a function"
+    kind: concept
+    definition: >
+      Every Python function knows the name it was given with def, as
+      rule.__name__. plot_rule uses it to label each line.
+    example: "square_minus_four.__name__   # 'square_minus_four'"

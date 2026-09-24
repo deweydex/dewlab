@@ -4538,3 +4538,37 @@ Everything the page writers had flagged as unsure checked out. Every changed num
 - The diagrams the page writers asked for (about thirty) wait for a single pass.
 
 *Cost to change: the course file, the new folders and one attribution file; `dl-why` is additive.*
+
+---
+
+**7.221 — Plot Twist Units 7 and 8 are written.** They follow 7.220 and the plan's §5.
+
+**Pages.**
+- *Algebra you can run*:
+  - letters as names;
+  - polynomials as coefficient lists, with expanding as a nested loop;
+  - drawing a rule;
+  - linear and quadratic equations, with factorising by inspection;
+  - complex numbers, as a bigger space where $x^2 = -1$ has an answer, at the cost of order;
+  - the top of a curve, with completing the square;
+  - simultaneous equations in two and three unknowns.
+
+  Every answer is checked by substituting it back. The mixed page builds a phone-plan chooser and a shop's best price.
+- *Shapes, angles and waves*:
+  - slope, with a ramp whose gradients come from Technical Guidance Document M;
+  - distance and Pythagoras, proved by rearranging four triangles, and collisions;
+  - the unit circle and radians;
+  - waves and octaves;
+  - solving triangles, with bearings.
+
+  The mixed page builds a collision checker for a 2D game.
+- The triangle on a sphere that the plan promised is on 8.3: three right angles make 270°. The page names parallel lines as the move the plane gives and the sphere does not.
+- 13 toolkit functions are added.
+
+**Length.** The brief held pages to 1,800–2,600 words of prose, and asked writers to report a page that would not fit rather than write past the limit. Every page landed at or near it. 7.3 is the one over the plain count, at about 2,600.
+
+**One word, one definition.** When one writer defined a term, the writers still working were told to link back to it rather than define it again: *root* and *parabola* on 7.2, *hypotenuse* on 8.2.
+
+**Coverage on subsections.** The curriculum map counts only `##` headings as sections, so 8.3's coverage for its tangent subsection moved to the section that holds it.
+
+*Cost to change: the course file and thirteen folders.*

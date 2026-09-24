@@ -1,0 +1,74 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "rise, run (going)"
+    kind: concept
+    definition: >
+      The rise is how far a line goes up between two points. The run is how
+      far it goes along. Builders call the run of a ramp its going.
+  - term: "slope, gradient, m"
+    kind: concept
+    definition: >
+      The slope of a line is its rise divided by its run: how far it goes up
+      for each step along. Gradient is another word for the same thing. A
+      bigger slope is a steeper line.
+  - term: "slope formula, m = (y₂ − y₁) / (x₂ − x₁)"
+    kind: formula
+    definition: >
+      The slope of the line through two points is the change in y divided by
+      the change in x. It does not matter which point comes first.
+    example: "(4 - 2) / (5 - 1)   # 0.5"
+  - term: "gradient as a ratio, 1:12"
+    kind: concept
+    definition: >
+      A gradient written 1:12, said "one in twelve", means 1 up for every 12
+      along. It is a slope of 1/12. Building guidance writes ramp gradients
+      this way.
+  - term: negative slope
+    kind: concept
+    definition: >
+      A negative slope belongs to a line that goes down as you read it from
+      left to right. Its rise is below 0.
+  - term: vertical line
+    kind: concept
+    definition: >
+      A vertical line goes straight up, like x = 2. Its run is 0, so it has
+      no slope among the real numbers.
+  - term: "y = mx + c"
+    kind: formula
+    definition: >
+      This writes a straight line as a rule: multiply x by the slope m, then
+      add c. It can write every straight line except a vertical one.
+    example: "fare = 1.5 * km + 4"
+  - term: y-intercept
+    kind: concept
+    definition: >
+      The y-intercept is where a line crosses the y axis, at x = 0. In
+      y = mx + c it is the number c.
+  - term: "general form, ax + by + c = 0"
+    kind: formula
+    definition: >
+      The general form writes any straight line, vertical lines included. A
+      point is on the line when its x and y make ax + by + c equal 0. The
+      slope is −a / b when b is not 0.
+    example: "1x + 0y - 2 = 0   # the vertical line x = 2"
+  - term: "perpendicular lines, m₁ × m₂ = −1"
+    kind: formula
+    definition: >
+      Perpendicular lines meet at a right angle. When neither is vertical,
+      their slopes multiply to −1, so each slope is −1 divided by the other.
+      Parallel lines have the same slope.
+    example: "0.5 * -2 == -1"
+  - term: "slope()"
+    kind: function
+    definition: >
+      Your toolkit's function that gives the slope of the straight line
+      through two points. The points must have different x values. It is
+      your own tool, not part of Python.
+    example: "slope((1, 2), (5, 4))   # 0.5"
+  - term: "line_through()"
+    kind: function
+    definition: >
+      Your toolkit's function that gives the pair (m, c) of the line
+      y = mx + c through two points. It is your own tool, not part of
+      Python.
+    example: "line_through((0, 4), (10, 19))   # (1.5, 4.0)"

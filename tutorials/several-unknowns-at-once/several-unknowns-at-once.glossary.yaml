@@ -1,0 +1,52 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: simultaneous equations
+    kind: concept
+    definition: >
+      Simultaneous equations are equations that must all be true at the
+      same time, for the same unknowns. Two facts about two unknowns can
+      pin down one answer.
+  - term: solution
+    kind: concept
+    definition: >
+      The solution of a set of equations is the values that make every one
+      of them true at once. We check a solution by substituting it back
+      into each equation.
+  - term: elimination
+    kind: concept
+    definition: >
+      Elimination is a way to solve simultaneous equations. Multiply the
+      equations so that one unknown has the same number in front of it in
+      both, then take one from the other, and that unknown cancels out.
+  - term: "Cramer's rule"
+    kind: formula
+    definition: >
+      Cramer's rule gives the solution of a₁x + b₁y = c₁ and a₂x + b₂y = c₂
+      as x = (c₁b₂ − c₂b₁) / (a₁b₂ − a₂b₁) and y = (a₁c₂ − a₂c₁) / (a₁b₂ − a₂b₁).
+      It is elimination, done once with letters.
+  - term: determinant
+    kind: concept
+    definition: >
+      The determinant of two equations is a₁b₂ − a₂b₁, the bottom of both
+      fractions in Cramer's rule. When it is 0, there is no single
+      solution: the lines are parallel or the same line.
+  - term: parallel lines
+    kind: concept
+    definition: >
+      Parallel lines are straight lines with the same steepness. They never
+      meet, so two equations whose lines are parallel have no solution.
+  - term: "solve_simultaneous()"
+    kind: function
+    definition: >
+      Your toolkit's function that gives the pair (x, y) where
+      a1x + b1y = c1 and a2x + b2y = c2, or None when there is no single
+      answer. It is your own tool, not part of Python.
+    example: "solve_simultaneous(1, 1, 230, 12, 5, 2060)   # (130.0, 100.0)"
+  - term: "np.linalg.solve()"
+    kind: function
+    python: numpy.linalg.solve
+    definition: >
+      Solves several equations in several unknowns at once. It takes the
+      numbers in front of the unknowns, one row for each equation, and the
+      list of totals.
+    example: "np.linalg.solve([[2, 1, 1], [1, 2, 1], [1, 1, 2]], [12.5, 11.5, 12])"
