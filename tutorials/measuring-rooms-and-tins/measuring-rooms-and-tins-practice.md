@@ -441,3 +441,29 @@ the formula for the side alone, $\pi r l$, with
 $l = \sqrt{15^2 + 45^2}$: it gives the same 2,235 cm².
 
 </details>
+
+**16. Explain.** The sphere's volume,
+$\frac{4}{3}\pi r^3$, came with no reason on the tutorial page. Some
+teachers would leave a formula out until they can explain it. Others would
+give it now, and explain it later. Which would you choose, and why? Does it
+matter that a sphere is a shape people meet every day?
+
+<details class="dl-answer"><summary>answer</summary>
+
+There is no one right answer. A good answer weighs a few things.
+
+- **Leave it out until it can be explained.** Every formula then comes
+  with its reason, and a reader never has to take one on trust. The cost:
+  a common shape is missing for a long time, and footballs, planets and
+  scoops of ice cream are all spheres.
+- **Give it now.** The formula is useful at once, and the toolkit is
+  complete. The cost: a formula without a reason is harder to remember,
+  and harder to rebuild if it is forgotten.
+
+Whichever you choose, it helps to say out loud which formulas are taken on
+trust, so a reader does not think they were meant to see why. A strong
+answer might also say that the tests can check a formula agrees with other
+facts, as Archimedes' two thirds did, even when they cannot say why it is
+true.
+
+</details>

@@ -429,3 +429,30 @@ $2 \times 4 = 8$. These are the 8 rows of a truth table with three
 inputs. A truth table is the sample space of its inputs.
 
 </details>
+
+**16. Explain.** On the tutorial page, the loop came first and
+the formula $m \times n$ came second. A friend says: "Listing all the
+outfits was a waste of time. Tell me to multiply, and I'll multiply." What
+would you say to them? Is there a kind of problem where they are right?
+
+<details class="dl-answer"><summary>answer</summary>
+
+There is no single right answer. A good answer agrees with the friend
+where they are right, and also says what the list is for.
+
+- **Where the friend is right.** When the choices do not change each
+  other, and there are too many to list, the formula is the only way. No
+  loop will list $26^{12}$ passwords. In an exam, multiplying is faster
+  too.
+- **What the list gives.** The list is how we know the formula can be
+  trusted. It also catches a problem the formula cannot see. If the
+  choices do change each other, $m \times n$ gives the wrong count, and
+  only a list, or careful thought, will show it. Three songs in a
+  playlist are an example: $3 \times 3 \times 3$ is 27, but only 6
+  orders play each song once, as the next page,
+  [Orders and choices](tutorial:orders-and-choices), shows.
+
+A strong answer might say: multiply when you are sure the choices do not
+change each other, and list a small case when you are not sure.
+
+</details>

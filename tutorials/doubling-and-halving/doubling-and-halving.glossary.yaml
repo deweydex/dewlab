@@ -1,0 +1,81 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: exponential growth
+    kind: concept
+    definition: >
+      Exponential growth is growth where a number is multiplied by the same
+      amount at every step. After k doublings, 1 has grown to 2 to the power
+      k. It starts slowly and then rises very steeply.
+    example: "people_who_know = people_who_know * 2"
+  - term: "2⁰ = 1"
+    kind: formula
+    definition: >
+      Any number to the power 0 is 1. No doublings have happened yet, and
+      multiplying nothing at all leaves 1.
+  - term: "law of powers, 2ᵃ × 2ᵇ = 2ᵃ⁺ᵇ"
+    kind: formula
+    definition: >
+      To multiply two powers of the same base, add the exponents. Doubling
+      10 times and then 5 more times is doubling 15 times.
+    example: "2 ** 10 * 2 ** 5 == 2 ** 15"
+  - term: "2¹⁰ ≈ 1000"
+    kind: formula
+    definition: >
+      2 to the power 10 is 1,024, which is close to a thousand. So 20
+      doublings is about a million, and 30 doublings is about a billion.
+  - term: "law of logarithms, log₂(ab) = log₂ a + log₂ b"
+    kind: formula
+    definition: >
+      The logarithm of a product is the sum of the logarithms. The doublings
+      needed to reach a × b are the doublings to reach a, then the doublings
+      to reach b more.
+  - term: compound growth
+    kind: concept
+    definition: >
+      Compound growth is growth where each step's increase is added in, and
+      then earns its own increase the next time. Savings at 4% a year grow
+      this way: the amount is multiplied by 1.04 each year.
+  - term: doubling time
+    kind: concept
+    definition: >
+      The doubling time is how long a growing amount takes to double. It
+      depends on the rate of growth, not on the amount you start with.
+  - term: rule of 72
+    kind: formula
+    definition: >
+      The rule of 72 is a rough way to find a doubling time. Divide 72 by
+      the growth rate in percent. At 4% a year, money doubles in about
+      72 ÷ 4 = 18 years.
+  - term: "math.log(x, base)"
+    kind: function
+    python: math.log
+    definition: >
+      Gives the logarithm of x with any base: how many times you multiply by
+      base to reach x. The answer need not be a whole number.
+    example: "math.log(2, 1.04)   # about 17.7"
+  - term: "math.floor()"
+    kind: function
+    python: math.floor
+    definition: >
+      Rounds a number down to the whole number at or below it. It is the
+      partner of math.ceil(), which rounds up.
+    example: "math.floor(9.97)   # 9"
+  - term: "halvings()"
+    kind: function
+    definition: >
+      Your toolkit's function that counts how many times a whole number can
+      be halved, rounding down, before it reaches 1. It is log₂ n rounded
+      down. It is your own tool, not part of Python.
+    example: "halvings(1000)   # 9"
+  - term: "negative exponent, 2⁻ᵏ"
+    kind: formula
+    definition: >
+      A negative exponent counts halvings of 1, in the same way a positive
+      one counts doublings. 2⁻³ is 1 halved three times, which is 1/8.
+    example: "2 ** -3   # 0.125"
+  - term: "2ᵏ = n and k = log₂ n"
+    kind: formula
+    definition: >
+      These say one fact from two ends. Doubling 1 k times reaches n, and
+      halving n k times reaches 1. Powers of 2 and log₂ are inverse
+      functions.

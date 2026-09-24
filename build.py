@@ -214,7 +214,7 @@ ID_RE = re.compile(r'\bid="([^"]+)"')
 IMG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
 ALT_RE = re.compile(r"\balt\s*=", re.IGNORECASE)
 DETAILS_RE = re.compile(r"<details\b[^>]*>", re.IGNORECASE)
-FOLD_CLASSES = ("dl-hint", "dl-answer")
+FOLD_CLASSES = ("dl-hint", "dl-answer", "dl-why")
 NOTE_RE = re.compile(
     r'<aside class="dl-note" id="(?P<id>[^"]+)">\s*(?P<html>.*?)\s*</aside>\n?',
     re.DOTALL,
@@ -231,7 +231,7 @@ ESCAPED_DOLLAR = "\x00dldollar\x00"
 # which ones to look inside — see mark_markdown_wrappers(). Scoped to these
 # known tag/class pairs rather than to any element a page happens to write.
 MARKDOWN_WRAPPER_RE = re.compile(
-    r'<details class="(?:dl-hint|dl-answer)">'
+    r'<details class="(?:dl-hint|dl-answer|dl-why)">'
     r'|<(?:div|ul) class="(?:dl-hero|dl-audience|dl-attribution|dl-feature-list)">'
     r'|<aside class="dl-note" id="[^"]+">'
 )
@@ -852,7 +852,7 @@ def no_footnotes_in(text: str, path: Path, what: str) -> None:
 
     Both are silent: the build succeeds and the page looks wrong. So the
     fence bodies are the one place a footnote is refused outright. Prose,
-    a `dl-hint`/`dl-answer` fold and a `dl-note` aside are all part of the
+    a `dl-hint`/`dl-answer`/`dl-why` fold and a `dl-note` aside are all part of the
     page's own single conversion pass (mark_markdown_wrappers()), so a
     footnote works in any of those.
     """
@@ -3757,7 +3757,8 @@ def check_folds(tutorial: Tutorial) -> None:
         if not any(name in tag for name in FOLD_CLASSES):
             fail(tutorial.path,
                  f"a fold names no style: {tag} — use "
-                 f'class="dl-hint" for steps or class="dl-answer" for an answer')
+                 f'class="dl-hint" for steps, class="dl-answer" for an answer, or '
+                 f'class="dl-why" for why a page chose as it did')
 
 
 DATASET_ATTRIBUTION_FIELDS = ("source", "license", "description")

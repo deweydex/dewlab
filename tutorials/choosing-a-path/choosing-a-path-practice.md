@@ -420,7 +420,7 @@ bigger than `high`.
 
 </details>
 
-**13. Make.** Many restaurants add a 12.5% service charge for a group of
+**13. Make.** Some restaurants add a 12.5% service charge for a group of
 6 or more. Use `split_bill` from your toolkit to write
 `share_for(total, people)`: each person's share, with 12.5% added for a
 group of 6 or more, and nothing added for a smaller group. A bill of
@@ -538,5 +538,32 @@ This prints `1`, `2` and `3`. $2^{16}$ is 65,536, far too few for
 Ireland. $2^{24}$ is 16,777,216, which is enough. Four bytes hold
 4,294,967,296 values, so 8 billion people would need more than this
 function allows: the promise only covers up to four bytes.
+
+</details>
+
+**16. Explain.** The tutorial page taught solving an inequality and
+choosing a path with `if` on one page. In many schools they would belong to
+two subjects. Think of one person: someone who likes maths and not
+computers, or someone who likes computers and not maths. It can be you. For
+that person, would one page with both, or two separate pages, work better?
+Why?
+
+<details class="dl-answer"><summary>answer</summary>
+
+There is no one right answer, and your own experience counts as
+evidence here. A good answer weighs a few things.
+
+- **One page with both.** Each side explains the other: the number line
+  makes sense of `<=`, and the code checks the algebra. The cost: two new
+  things arrive at once, and the page is longer. Someone who dislikes one
+  side meets it anyway.
+- **Two separate pages.** Each one can go at its own speed, and a reader
+  who is nervous about one subject can take it on its own. The cost: the
+  link between the two may never be made, and one of them can feel like a
+  topic with no use.
+
+For the maths lover, the code may be a way to check their work. For the
+computer lover, the maths may be the reason `elif` needs its order. A
+strong answer says which of these fits the person you chose.
 
 </details>

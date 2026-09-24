@@ -460,3 +460,30 @@ score 9 of 10 in a lucky season. After 100 or 200 penalties, the
 relative frequency would be a much better guide to her real chance.
 
 </details>
+
+**17. Explain.** The tutorial page answered "is this coin unfair?"
+without the words "hypothesis test" or "p-value", which a statistics book
+would use. Would you have given the reader those names? If yes, where on
+the page: before the question, or after the answer? If no, when would you
+bring them in?
+
+<details class="dl-answer"><summary>answer</summary>
+
+There is no one right answer. A good answer weighs a few things.
+
+- **Why give the names.** They are the words used in news reports, in
+  research, and in later courses. A reader who has them can search for
+  them and read more.
+- **Before the question.** The reader gets a label before there is
+  anything to put it on, and it can feel like something to memorise.
+- **After the answer.** The name is a label for something the reader has
+  already done. Many pages in this course name a thing after you have
+  used it.
+- **Not yet.** The idea is fresh and has room to settle. The cost: a
+  reader may not recognise the same idea when they meet it under its
+  name.
+
+A strong answer might put the names after the answer, in one or two
+sentences, so they label the idea without taking its place.
+
+</details>

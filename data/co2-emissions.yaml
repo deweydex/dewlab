@@ -1,0 +1,18 @@
+# Attribution for data/co2-emissions.csv.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the numbers they are working with back to their source.
+
+source: >
+  Our World in Data, "CO₂ and Greenhouse Gas Emissions" — their compilation
+  of the Global Carbon Project, Maddison Project, UN population and other
+  series. https://github.com/owid/co2-data
+
+license: >
+  CC BY 4.0. https://creativecommons.org/licenses/by/4.0/
+
+description: >
+  Emissions by country and year. co2 is in millions of tonnes, co2_per_capita
+  in tonnes per person, gdp in international dollars; the columns ending in
+  _co2 split co2 by source (coal, oil, gas, cement). Trimmed from the fuller
+  Our World in Data release to the countries, years and columns worth
+  teaching with.

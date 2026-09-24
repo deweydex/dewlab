@@ -168,8 +168,8 @@ as the fee table.
 </details>
 
 **7. Fix.** A weather app gives a wind warning. It should say "orange" for
-wind over 80 km/h, and "yellow" for wind over 50 km/h. For 90 km/h it says
-"yellow". Find the mistake, and fix it.
+wind over 80 km/h, and "yellow" for wind over 50 km/h. (The limits here
+are made up.) For 90 km/h it says "yellow". Find the mistake, and fix it.
 
 ```python exec
 id: mixed-decisions-fix-wind

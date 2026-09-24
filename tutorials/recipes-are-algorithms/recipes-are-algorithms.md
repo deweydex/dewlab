@@ -429,6 +429,23 @@ If you would like another view of the same ideas, the page
 [Algorithms, pseudocode and your first Python](tutorial:first-steps)
 covers them in a different way.
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page wrote a function with `def` on only the second page of the
+course. Most courses wait until names, `if` and loops are all in place,
+and teach functions some weeks later.
+
+Waiting has a good reason. By then a function has more to hold, and the
+steps inside it can do real work.
+
+We brought `def` in early because a function is the second of our four
+questions: what is promised? A recipe card with a name on it is a
+promise, and you can use one before you can write a long one. Every later
+page adds a function to your toolkit, and that plan needs the idea from
+the start.
+
+</details>
+
 ## Four questions, looking back
 
 | The question | On this page |

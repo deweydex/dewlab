@@ -1,0 +1,45 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Comes after collections-without-repeats in the Plot Twist track, which
+# introduced sets, cardinality, union, intersection, difference, symmetric
+# difference, the universal set, the complement and sorted(). This page
+# draws those and counts with them; it adds only what is below.
+entries:
+  - term: Venn diagram
+    kind: concept
+    definition: >
+      A Venn diagram draws sets as circles inside a box. Where two circles
+      overlap, the sets share members. Each number in a region is how many
+      values stand there.
+  - term: region
+    kind: concept
+    definition: >
+      A region is one part of a Venn diagram. Two circles make four regions,
+      and three circles make eight. Everyone in one region gave the same
+      yes and no answers.
+  - term: "inclusion–exclusion, two sets"
+    kind: formula
+    definition: >
+      The number in either of two sets is the two sizes added, minus the
+      size of the overlap: |A ∪ B| = |A| + |B| − |A ∩ B|. Taking the overlap
+      away stops it being counted twice.
+    example: "len(a) + len(b) - len(a & b)"
+  - term: "inclusion–exclusion, three sets"
+    kind: formula
+    definition: >
+      Add the three sizes, take away the three overlaps of two sets, then
+      add back the overlap of all three. The middle was taken away three
+      times, so it needs to be added back once.
+  - term: "exactly two of three, from totals"
+    kind: formula
+    definition: >
+      The number in exactly two of three sets is the three pair overlaps
+      added, minus three times the overlap of all three.
+    example: "7 + 3 + 4 - 3 * 2   # 8"
+  - term: "random.sample()"
+    python: random.sample
+    kind: function
+    definition: >
+      Picks k different values from a list or range, at random, and gives
+      them back as a list.
+    example: "random.sample(range(1, 31), 12)"

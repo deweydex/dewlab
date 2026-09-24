@@ -567,6 +567,24 @@ id: machines-compose-your-turn
 # Your add_vat, and both orders
 ```
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page showed a function as a machine with a slot and a tray.
+Mathematicians define a function another way: as a set of pairs, each
+input paired with exactly one output, with no machine in sight.
+
+The set of pairs is the definition a university course would use. It
+covers functions no machine could ever run, and it makes proofs exact.
+
+We used the machine because it answers "what is promised?" with a
+picture you can keep in your head. It also fits Python, where `def` does
+build something you put values into. The picture has a cost. It hides
+the fact that a function is only its pairs, and that fact is why two
+different machines, the loop and Gauss's formula, could be one
+function.
+
+</details>
+
 ## Four questions, looking back
 
 | The question | On this page |

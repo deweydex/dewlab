@@ -177,7 +177,7 @@ $C(5, 2) = 10$.
 
 </details>
 
-**8. Another way.** In the tutorial, the parkrun podium was
+**8. Another way.** In the tutorial, the club race podium was
 $P(8, 3) = 336$, found with `factorial`. Find the same 336 a second way,
 with `product` from
 [Doing it again](tutorial:doing-it-again).

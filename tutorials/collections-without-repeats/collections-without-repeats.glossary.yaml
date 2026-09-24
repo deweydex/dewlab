@@ -1,0 +1,100 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "set, element"
+    kind: concept
+    python: set
+    definition: >
+      A set is a collection of different values, where the order does not
+      matter and each value counts once. A value in a set is one of its
+      elements, or members.
+    example: 'set(["Zombie", "Linger", "Zombie"])'
+  - term: "set(), .add()"
+    kind: function
+    python: [set, set.add]
+    definition: >
+      set() on its own makes the empty set, and set(values) makes a set
+      from a list. .add(value) puts one more element into a set, and does
+      nothing if it is already there. {} is an empty dictionary, not a set.
+    example: 'favourites = set(); favourites.add("Dreams")'
+  - term: "cardinality, |A|"
+    kind: concept
+    definition: >
+      The cardinality of a set is the number of elements in it, written
+      with a straight line on each side. In Python it is len.
+    example: "len({1, 2, 3})"
+  - term: "∈, ∉"
+    kind: operator
+    definition: >
+      Say "is an element of" and "is not an element of". Python writes them
+      in and not in.
+    example: '"Zombie" in my_songs'
+  - term: "intersection, A ∩ B, &"
+    kind: operator
+    definition: >
+      Gives the set of elements that are in both sets. Say it "A intersect
+      B", or "A and B".
+    example: "my_songs & your_songs"
+  - term: "union, A ∪ B, |"
+    kind: operator
+    definition: >
+      Gives the set of elements that are in either set, or in both. Each
+      element appears once, even when both sets have it.
+    example: "my_songs | your_songs"
+  - term: "difference, A ∖ B, -"
+    kind: operator
+    definition: >
+      Gives the set of elements that are in A and not in B. The order
+      matters: A ∖ B and B ∖ A are usually different.
+    example: "my_songs - your_songs"
+  - term: "symmetric difference, A △ B, ^"
+    kind: operator
+    definition: >
+      Gives the set of elements that are in exactly one of the two sets.
+      It is exclusive or, for sets.
+    example: "my_songs ^ your_songs"
+  - term: universal set, U
+    kind: concept
+    definition: >
+      The universal set is everything we are talking about in one
+      question. A complement is always taken inside it.
+  - term: "complement of a set, A′"
+    kind: formula
+    definition: >
+      The complement of a set A is every element of the universal set that
+      is not in A. It is written A′ or Aᶜ, and A′ = U ∖ A.
+    example: "library - my_songs"
+  - term: "empty set, ∅"
+    kind: concept
+    definition: >
+      The empty set is the set with no elements at all. Its cardinality is
+      0. Python writes it set().
+  - term: "finite set, infinite set"
+    kind: concept
+    definition: >
+      A finite set has a number of elements that could be counted. An
+      infinite set never ends, like the natural numbers. A Python set is
+      always finite, so an infinite set needs a rule instead.
+  - term: "subset, A ⊆ B, <="
+    kind: operator
+    definition: >
+      Says that every element of A is also in B. The natural numbers are a
+      subset of the integers.
+    example: "needed <= in_gym"
+  - term: "set-builder notation, {x ∈ Z : x ≥ 0}"
+    kind: formula
+    definition: >
+      Set-builder notation describes a set by a rule instead of a list.
+      Say {x ∈ Z : x ≥ 0} as "the set of every x in Z such that x is 0 or
+      more".
+  - term: "Cartesian product, A × B"
+    kind: formula
+    definition: >
+      The Cartesian product of two sets is the set of every pair (a, b),
+      with a from A and b from B. Its size is |A| × |B|. Your all_pairs
+      makes it.
+    example: "all_pairs(drinks, sizes)"
+  - term: "power set, 𝒫(A)"
+    kind: formula
+    definition: >
+      The power set of a set is the set of all its subsets, including the
+      empty set and the whole set. A set of n elements has 2ⁿ subsets.

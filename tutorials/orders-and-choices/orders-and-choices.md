@@ -247,7 +247,7 @@ function reached its end without a `return`.
 
 ## Only the first few places
 
-At a parkrun, eight runners are close together in the last 200 metres.
+At a club race, eight runners are close together in the last 200 metres.
 Prizes go to the first three: gold, silver and bronze. How many
 different top threes are possible?
 
@@ -260,7 +260,7 @@ $$8 \times 7 \times 6 = 336$$
 
 A *permutation* is an arrangement of some of a group of things, where
 the order matters. The number of permutations of $r$ things chosen from
-$n$ is written $P(n, r)$. Some books write it $^{n}P_{r}$. So the parkrun
+$n$ is written $P(n, r)$. Some books write it $^{n}P_{r}$. So the club race
 question asks for $P(8, 3)$.
 
 The loop below tries every runner in every place, and counts the rows
@@ -536,6 +536,24 @@ gives the number of different groups that could go?
 id: orders-which-your-turn
 # The meal deal, then the horse race
 ```
+
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page told you the answers, 56 and 6,720, in its second paragraph,
+before you had worked anything out. Most pages in this course ask you to
+guess first.
+
+Asking for a guess is usually the better choice. A guess gives you
+something to compare with, and a wrong guess shows you where your
+thinking went.
+
+Here we gave the answers away on purpose. Counting teams and line-ups is
+a long road, with three formulas on the way. Knowing where it ends lets
+you check each step as you go: when $P(8, 5)$ comes out as 6,720, you
+know that part is right. An answer named at the start is a promise, and
+the rest of the page keeps it.
+
+</details>
 
 ## Four questions, looking back
 

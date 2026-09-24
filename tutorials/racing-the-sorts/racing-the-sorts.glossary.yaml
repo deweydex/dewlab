@@ -1,0 +1,41 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "quadratic growth, O(n²)"
+    kind: concept
+    definition: >
+      Quadratic growth is growth with the square of the size. Ten times the
+      values means about a hundred times the work. Selection sort and
+      insertion sort grow this way, and programmers write it O(n²).
+    example: "1,000 values: 499,500 comparisons; 10,000 values: 49,995,000"
+  - term: gap
+    kind: concept
+    definition: >
+      The gap is the distance between the values Shell sort compares. With
+      a gap of 4, each value is compared with the value 4 places before it.
+  - term: Shell sort
+    kind: concept
+    definition: >
+      Shell sort is insertion sort done several times, first on values a
+      large gap apart and then with smaller gaps, ending with a gap of 1.
+      The long jumps first leave the list nearly in order for the last pass.
+  - term: "shell_sort(values)"
+    kind: function
+    definition: >
+      Gives back a new list with the items of values in ascending order,
+      found by Shell sort, and leaves values unchanged. It is a toolkit
+      function you wrote yourself.
+    example: "shell_sort([13, 12, 9, 8])   # [8, 9, 12, 13]"
+  - term: "time.perf_counter()"
+    kind: function
+    python: time.perf_counter
+    definition: >
+      Gives a reading of a clock inside the computer, in seconds. Take a
+      reading before a job and another after it, and the difference is how
+      long the job took.
+    example: "start = time.perf_counter()"
+  - term: Timsort
+    kind: concept
+    definition: >
+      Timsort is the method inside Python's sorted(). It sorts short pieces
+      of a list with insertion sort, among other steps. It needs about
+      8,600 comparisons for 1,000 random numbers.

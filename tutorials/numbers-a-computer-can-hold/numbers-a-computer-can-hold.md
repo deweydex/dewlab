@@ -291,14 +291,15 @@ print(round(0.1 * 2 ** 42 / 1000 / 1000))
 
 After 10 folds, the paper is 102.4 mm thick, about the width of your
 hand. After 42 folds, it is about 439,805 km thick, which is further
-than from here to the Moon. (Nobody can fold real paper more than a
-handful of times. The maths does not mind.) The function `round()`
+than from here to the Moon. (Real paper cannot be folded much more
+than about a dozen times, and even that needs a very long, thin sheet.
+The maths does not mind.) The function `round()`
 rounds a number to the nearest whole number; `round(x, 2)` rounds it to
 two decimal places.
 
 Now let's turn the question round. Music gives a good example. When a
 note goes up by one octave, its frequency doubles. A low A on a bass
-guitar is 55 Hz, and a high A is 880 Hz. How many octaves apart are
+guitar is 55 Hz, and a high A, on a flute or a piano, is 880 Hz. How many octaves apart are
 they? That is: how many times do we double 55 to reach 880?
 
 $55 \to 110 \to 220 \to 440 \to 880$, so the answer is 4.
@@ -504,6 +505,24 @@ print(split_bill(total, 4, 10))
 There is no keyboard for the Python on this page to listen to, so here
 we give values by editing the cell instead. `float()` turns the typed
 text into a number, because whatever someone types arrives as a string.
+
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page met logarithms as a question, "how many times do I multiply?",
+and asked it about folded paper and octaves. A textbook usually meets
+them much later, as rules: the logarithm of a product is the sum of the
+logarithms, and so on.
+
+The rules are useful. They let you work with logarithms on paper, and
+exams often ask for them.
+
+We started with the question because a rule means little until you know
+what it is a rule about. Here a logarithm is a power, read backwards.
+`math.log2` answers the question for us, and the next page uses the same
+question to count the bits a number needs. The rules can come when a
+page needs them.
+
+</details>
 
 ## Four questions, looking back
 

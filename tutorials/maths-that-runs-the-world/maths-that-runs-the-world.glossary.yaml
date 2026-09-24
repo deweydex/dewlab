@@ -1,0 +1,43 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A context page: optional background reading for how-likely-is-it,
+# chances-that-combine, counting-every-outfit and bits-that-flip, declared
+# with `context_for:`. Checked against the union of those pages' glossaries
+# and every earlier Plot Twist glossary. `parity bit`, `birthday problem`,
+# `simulation` and the counting principle are used here but defined
+# earlier, so they stay there.
+entries:
+  - term: hash
+    kind: concept
+    definition: >
+      A hash is a short code worked out from a piece of data, such as a
+      file. The same data always gives the same hash, so programs compare
+      hashes in place of whole files.
+  - term: collision
+    kind: concept
+    definition: >
+      A collision is two different pieces of data with the same hash. By
+      the birthday problem, collisions become likely at about the square
+      root of the number of possible hashes.
+  - term: error-correcting code
+    kind: concept
+    definition: >
+      An error-correcting code adds extra bits to a message so that the
+      receiver can find a flipped bit and flip it back. A parity bit only
+      notices a flip; a code like this also fixes it.
+  - term: majority vote
+    kind: concept
+    definition: >
+      In a code that sends each bit several times, the majority vote is the
+      bit that appears most often in a group. With three copies, one flipped
+      copy is outvoted by the other two.
+  - term: Reed–Solomon codes
+    kind: concept
+    definition: >
+      Reed–Solomon codes are a family of error-correcting codes. QR codes,
+      music CDs and deep-space probes use them.
+  - term: ".count()"
+    python: str.count
+    kind: function
+    definition: Gives how many times a piece of text appears inside a string.
+    example: '"011".count("1") gives 2'

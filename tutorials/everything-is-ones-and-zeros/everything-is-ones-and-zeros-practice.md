@@ -333,7 +333,7 @@ print("Is it 0.3 mm?", round(total_rain, 2) == 0.3)
 
 This prints `Is it 0.3 mm? True`. The total is kept as
 `0.30000000000000004`, because 0.1 and 0.2 have no exact binary form.
-Rounding to 2 places, which is as precise as a rain gauge is anyway,
+Rounding to 2 places, which is more precise than a rain gauge reads,
 asks "is it close enough?" instead of "is it exactly equal?".
 
 </details>
@@ -392,7 +392,7 @@ your answer with powers of 2.
 than the counter can hold?
 
 **Try this next:** how many bits would a counter for every person in
-Ireland need, about 5.4 million?
+Ireland need, about 5.5 million?
 
 </details>
 
@@ -412,25 +412,27 @@ have.
 
 </details>
 
-**15. Explain.** In 2014, a music video passed 2,147,483,647 views on
-YouTube, and the view counter had to be changed. That number is
-$2^{31} - 1$. The counter kept each number in 32 bits, and one of those
-bits said whether the number was positive or negative. Why did the
-counter stop there? Would Python's own whole numbers have had the same
-problem?
+**15. Explain.** In 2014 a music video passed 2,147,483,647 views.
+YouTube had already moved its view counter to 64 bits, because 32 bits
+stop at 2,147,483,647. That number is $2^{31} - 1$. A 32-bit counter
+keeps each number in 32 bits, and one of those bits says whether the
+number is positive or negative. Why does a 32-bit counter stop there?
+Would Python's own whole numbers have had the same problem?
 
 <details class="dl-answer"><summary>answer</summary>
 
 With one bit used for the sign, 31 bits were left for the count. The
 biggest number 31 bits can hold is 31 ones, which is $2^{31} - 1 =
 2{,}147{,}483{,}647$, in the same way the biggest 8-bit number is
-$2^8 - 1 = 255$. One more view needs a bit the counter did not have.
+$2^8 - 1 = 255$. One more view needs a bit the 32-bit counter does not
+have.
 
 Python's whole numbers would have been fine. Python grows a whole
 number to as many bits as it needs, so `print(2 ** 31)` and even
 `print(2 ** 100)` work. That is part of the space Python gives us, and
-it is not true of every language. The fix YouTube made was to give the
-counter 64 bits.
+it is not true of every language. A counter with a fixed size needs
+room planned ahead, which is why YouTube gave its counter 64 bits before
+the video got there.
 
 </details>
 

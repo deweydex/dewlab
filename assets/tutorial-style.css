@@ -3635,6 +3635,30 @@ p code, li code {
 .dl-hint > summary:hover { color: var(--dl-fg); }
 .dl-hint > :not(summary) { font-size: 0.95rem; }
 
+/* "Why this way?": one choice a page made and the one it turned down.
+   Quieter than a hint: it is there for a reader who is curious, and
+   finishing the page never needs it. */
+.dl-why {
+  max-width: var(--dl-line-width);
+  margin: 1.6rem 0 1.2rem;
+  border-left: 2px solid var(--dl-cell-border);
+  padding-left: 0.8rem;
+}
+.dl-why > summary {
+  cursor: pointer;
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  list-style: none;
+}
+.dl-why > summary::-webkit-details-marker { display: none; }
+.dl-why > summary::before { content: "▸ "; }
+.dl-why[open] > summary::before { content: "▾ "; }
+.dl-why > summary:hover { color: var(--dl-fg); }
+.dl-why[open] { border-left-color: var(--dl-orange); }
+.dl-why > :not(summary) { font-size: 0.95rem; }
+
 .dl-hint-staged[hidden] { display: none; }
 .dl-hint-arrived { animation: dl-hint-arrive 0.5s ease-out; }
 @keyframes dl-hint-arrive {

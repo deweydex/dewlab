@@ -327,10 +327,11 @@ that can happen except that event. Its chance is
 $$P(\text{not } A) = 1 - P(A)$$
 
 The complement turns out to be very useful for questions with "at
-least" in them. Here is one from 1654. A French gambler, the Chevalier
-de Méré, liked to bet that he would roll at least one six in four rolls
-of a die. His reasoning went like this: one roll gives a six with chance
-$\frac{1}{6}$, so four rolls give $4 \times \frac{1}{6} = \frac{2}{3}$.
+least" in them. A story told about the Chevalier de Méré, a French
+gambler of the 1650s: he liked to bet that he would roll at least one six
+in four rolls of a die. The story says he reasoned like this: one roll
+gives a six with chance $\frac{1}{6}$, so four rolls give
+$4 \times \frac{1}{6} = \frac{2}{3}$.
 
 Is he right? Here is a warning sign. With seven rolls, his reasoning
 gives $\frac{7}{6}$, and no chance can be more than 1. Adding is the
@@ -366,8 +367,8 @@ print("simulate:   ", simulate(six_in_four, 100000))
 ```
 
 The complement gives about 0.518, and the simulation agrees. The bet
-wins a little more often than it loses, which is why the gambler did well
-from it, but far less often than his $\frac{2}{3}$.
+wins a little more often than it loses, which is why, in the story, the
+gambler did well from it, but far less often than his $\frac{2}{3}$.
 
 In general, when one try succeeds with chance $p$, and the tries are
 independent, the chance of at least one success in $n$ tries is
@@ -600,6 +601,24 @@ very close to 1. Very few people guess that shape before they see it.
 id: chances-birthday-your-turn
 print(chance_of_shared(23))
 ```
+
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page asked you to guess the birthday answer at the very start, and
+it chose a question where most people guess far too low. A page could
+open with a question people tend to get right, so that everyone starts
+with a success.
+
+Starting with a success matters, most of all to someone who expects to
+fail. Most pages in this course start that way.
+
+Here we chose the surprise. The page is about how chances combine, and
+the way they combine is hard to believe until your own guess has been
+wrong. A wrong guess is information: it shows which way your sense of
+chance leans. Your guess was never marked. It was there to be compared
+with the answer.
+
+</details>
 
 ## Four questions, looking back
 

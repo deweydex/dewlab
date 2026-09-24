@@ -306,6 +306,24 @@ id: four-q-your-turn
 print(3 * "ha ")
 ```
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page started with a board game and a recipe, and came to Python
+last. Many courses start the other way round: the first page shows a line
+of code, and the words for it come later.
+
+Starting with code is a good choice for someone who came to learn
+programming. They see the computer do something in the first minute, and
+that can be exciting.
+
+We started with a game because the four questions are not about
+computers. They work on anything that has names, promises, an order and
+rules. Most people have played a board game long before they meet any
+Python. If the questions work on something you know, you have a reason
+to trust them on something new.
+
+</details>
+
 ## Four questions, looking back
 
 Here are the four questions again, asked of all three things on this

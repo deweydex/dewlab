@@ -696,6 +696,14 @@ class TestFolds:
         for name in b.FOLD_CLASSES:
             assert f".{name} " in css or f".{name}{{" in css or f".{name}[" in css
 
+    def test_a_why_fold_builds_and_its_body_is_markdown(self, repo):
+        write(repo, '<details class="dl-why"><summary>Why this way?</summary>\n\n'
+                    "We counted with a **loop** first.\n\n</details>\n")
+        b.build()
+        page = built(repo)
+        assert '<details class="dl-why">' in page
+        assert "<strong>loop</strong>" in page
+
     def test_maths_works_inside_a_hand_written_fold(self, repo):
         # mark_markdown_wrappers() marks a fold for md_in_html, so its
         # body parses as part of the page's one markdown pass —

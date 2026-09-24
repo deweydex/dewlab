@@ -1,0 +1,80 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: nested list
+    kind: concept
+    definition: >
+      A nested list is a list with other lists inside it. Each list inside
+      another is one level deeper. A folder of folders can be kept as a
+      nested list.
+    example: 'holidays = ["sunset.jpg", ["kerry-1.jpg", "kerry-2.jpg"]]'
+  - term: "isinstance()"
+    kind: function
+    python: isinstance
+    definition: >
+      Gives True when a value is of the kind named, and False when it is
+      not. isinstance(item, list) tells a list from anything else.
+    example: 'isinstance(["a", "b"], list)   # True'
+  - term: recursion
+    kind: concept
+    definition: >
+      Recursion is solving a problem by using the same promise on a
+      smaller problem. It needs a place to stop, the base case.
+  - term: recursive function
+    kind: concept
+    definition: >
+      A recursive function is a function that calls itself. Each call
+      hands a smaller problem to the next, until one call reaches the base
+      case.
+    example: "return n * factorial_again(n - 1)"
+  - term: base case
+    kind: concept
+    definition: >
+      The base case is an input small enough to answer straight away, with
+      no more calls. It is where a recursion stops. For factorial, it is
+      0! = 1.
+  - term: recursive case
+    kind: concept
+    definition: >
+      The recursive case is every input that is not the base case. It hands
+      a smaller problem to the same function, and builds its own answer
+      from what comes back.
+  - term: "factorial as a recursion"
+    kind: formula
+    definition: >
+      The factorial of n is n times the factorial of the number one
+      smaller, and the factorial of 0 is 1.
+    example: "n! = n × (n − 1)!,   0! = 1"
+  - term: call stack
+    kind: concept
+    definition: >
+      The call stack is the list of calls that have started and not yet
+      finished, with the newest on top. Only the call on top runs. When it
+      gives back its answer, it comes off, and the call under it goes on.
+  - term: RecursionError
+    kind: keyword
+    python: RecursionError
+    definition: >
+      RecursionError is the error Python gives when too many calls are
+      waiting at once. It usually means a recursion never reaches its base
+      case.
+  - term: "sys.getrecursionlimit()"
+    kind: function
+    python: sys.getrecursionlimit
+    definition: >
+      Gives back how many calls Python lets wait at once. It is usually
+      1000.
+    example: "sys.getrecursionlimit()   # 1000"
+  - term: "pop()"
+    kind: function
+    python: list.pop
+    definition: >
+      Takes the last item off a list, and gives it back. The list is one
+      item shorter afterwards.
+    example: "folder = to_open.pop()"
+  - term: "count_items(nested)"
+    kind: function
+    definition: >
+      Counts every item inside a nested list, at any depth. A list inside
+      counts for what it holds, not as an item itself. It is a toolkit
+      function you wrote yourself.
+    example: 'count_items(["a", ["b", "c"], []])   # 3'

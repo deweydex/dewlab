@@ -682,8 +682,8 @@ Two folds, opened in order, so a stuck student gets a route rather than an
 answer. The reflection and the follow-on question at the end matter as much as
 the steps: a hint that ends at the answer teaches the answer, and one that ends
 in a related question teaches the method. The build fails if a `<details>`
-appears without one of these two classes, so a fold cannot be added without the
-styling that makes it work.
+appears without one of these classes (or `dl-why`, below), so a fold cannot be
+added without the styling that makes it work.
 
 Write toward a few tools per section rather than a cell per problem — one
 `python exec` cell holding the helpers a section needs, rather than sixty
@@ -691,6 +691,24 @@ editors on a page. **Every number in an answer gets run before it is published**
 not reasoned about. See
 [`../planning/PEDAGOGICAL_STYLE_GUIDE.md`](../planning/PEDAGOGICAL_STYLE_GUIDE.md#6-practice-pages)
 for the full shape of a good practice page.
+
+### Why this way?
+
+A tutorial can say why it teaches as it does, in a fold of a third kind:
+
+```html
+<details class="dl-why"><summary>Why this way?</summary>
+
+The one choice this page made, the alternative it turned down and what
+that alternative is good for, and what is at stake.
+
+</details>
+```
+
+One choice, a few short paragraphs, closed until the reader opens it, so
+a curious reader can see the reasoning and nobody has to read it to
+finish the page. Plot Twist puts one on every tutorial, just before "Four
+questions, looking back"; its plan's principle 10 has the reasoning.
 
 ---
 

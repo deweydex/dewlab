@@ -331,7 +331,7 @@ The last line says what Python expected. Where on the line does the
 
 ## Compilers, linkers and Python
 
-In many languages, such as C or Java, a program goes through two tools
+In many languages, such as C or C++, a program goes through two tools
 before it runs.
 
 A *compiler* reads the whole program first and translates it into
@@ -421,6 +421,24 @@ title: some steps
 
 **Think about:** why a SyntaxError is always reported before the others.
 ```
+
+<details class="dl-why"><summary>Why this way?</summary>
+
+A whole page on error messages came in the first unit, before most of
+the code in this course. Many courses leave errors until later, or deal
+with each one when it happens.
+
+Leaving them until later has a real reason. With little code there is
+little to go wrong, and a beginner can spend the first weeks writing
+things that work.
+
+We put this page early because the red text comes anyway, usually on the
+first day. If nobody has said what it is, it can look like a mark against
+you. Read early, a traceback is Python answering one of the four
+questions: which move is not allowed here, and where. A mistake becomes
+information about one line.
+
+</details>
 
 ## Four questions, looking back
 

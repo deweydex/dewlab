@@ -1,0 +1,80 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "mean, x̄"
+    kind: formula
+    definition: >
+      The mean is the total of the values, divided by how many values there
+      are. It is what each value would be if the total were shared out
+      equally.
+    example: "x̄ = (x₁ + x₂ + … + xₙ) / n"
+  - term: median
+    kind: concept
+    definition: >
+      The median is the middle value when the values are put in order.
+      With an even count, it is halfway between the two middle values.
+  - term: "sorted()"
+    kind: function
+    python: sorted
+    definition: >
+      Gives back a new list with the same values, in order from smallest
+      to largest. The old list is not changed.
+    example: "sorted([3, 1, 2])   # [1, 2, 3]"
+  - term: mode
+    kind: concept
+    definition: >
+      The mode is the most common value in a list. It is the only one of
+      the three averages that works for words as well as numbers.
+  - term: "count()"
+    kind: function
+    python: list.count
+    definition: >
+      Gives how many times one value appears in a list.
+    example: "rents.count(1250)"
+  - term: outlier
+    kind: concept
+    definition: >
+      An outlier is a value far away from the rest of the values in a list.
+      A few outliers can pull the mean a long way, and barely move the
+      median.
+  - term: skewed
+    kind: concept
+    definition: >
+      A list is skewed when most of its values are bunched on one side, with
+      a tail of a few values stretching out to the other. The mean moves
+      towards the tail.
+  - term: "spread, range of a list"
+    kind: concept
+    definition: >
+      Spread is how far apart the values in a list are. The range is the
+      simplest measure of it: the largest value minus the smallest.
+    example: "largest(route_b) - smallest(route_b)"
+  - term: deviation
+    kind: concept
+    definition: >
+      A deviation is a value minus the mean of its list. The deviations of
+      any list always add up to 0.
+  - term: mean absolute deviation
+    kind: concept
+    definition: >
+      The mean absolute deviation is how far the values are from their
+      mean, on average. It is the mean of the deviations, each taken
+      without its sign.
+  - term: "standard deviation, σ"
+    kind: formula
+    definition: >
+      The standard deviation is the square root of the mean of the squared
+      deviations. It measures spread, in the same units as the values.
+    example: "σ = √( (1/n) Σ (xᵢ − x̄)² )"
+  - term: "mean(), median(), mode()"
+    kind: function
+    definition: >
+      Give the mean, the median and the most common value of a list. In a
+      tie, mode gives the value that comes first. They are toolkit
+      functions you wrote yourself.
+    example: "median([4, 1, 3, 2])   # 2.5"
+  - term: "std_dev()"
+    kind: function
+    definition: >
+      Gives the standard deviation of a list, dividing by n. It is a
+      toolkit function you wrote yourself.
+    example: "std_dev([5, 5, 5])   # 0.0"

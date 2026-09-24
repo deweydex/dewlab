@@ -426,6 +426,24 @@ To flip three bits, the mask needs three 1s in it, for example
 `0b00000111`. How many 1s did the byte have before, and after?
 ```
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page did not stop when the parity bit worked. It went on to flip
+two bits, and showed the check saying "looks right" about a wrong
+message. The page could have shown the check catching one flipped bit,
+and ended there, on a success.
+
+Ending on a success is a fair choice. It keeps the page shorter, and you
+leave with a tool that works.
+
+We showed the failure because a promise is only as good as the space it
+was made in. The parity bit promises to catch one flip, and says nothing
+about two. Naming the assumption, "at most one bit flips", is the fourth
+question at work. A tool whose limits you know is a tool you can trust,
+inside those limits.
+
+</details>
+
 ## Four questions, looking back
 
 | Question | On this page |

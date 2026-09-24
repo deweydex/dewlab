@@ -282,7 +282,7 @@ fast way to the same count.
 </details>
 
 **9. Make.** The Chevalier had a second bet: at least one double six in
-24 rolls of two dice. He reasoned that $24 \times \frac{1}{36} =
+24 rolls of two dice. The story says he reasoned that $24 \times \frac{1}{36} =
 \frac{2}{3}$, so he should win. Work out the real chance with
 `at_least_one`. Should he have taken the bet?
 
@@ -300,8 +300,8 @@ His reasoning added chances, but 24 rolls are not mutually exclusive:
 two of them can both be double sixes. The complement gets it right: no
 double six in 24 rolls is $\left(\frac{35}{36}\right)^{24}$. The story
 goes that he asked the mathematician Blaise Pascal why he was losing
-money, and that letters between Pascal and Pierre de Fermat about this
-kind of question helped start probability as a branch of maths.
+money, and that letters between Pascal and Pierre de Fermat in 1654
+about this kind of question helped start probability as a branch of maths.
 
 </details>
 
@@ -545,5 +545,31 @@ than 0.918.
 The formula is not wrong. It answers the question for a space where the
 days are independent. Real weather is a different space, and the first
 step is to notice that.
+
+</details>
+
+**16. Explain.** This page opened with the birthday problem, a
+question most people get wrong. Picture teaching a friend who is sure they
+are "bad at maths". Would you open with a question they will probably get
+wrong, or one they will probably get right? What could go wrong with each
+choice?
+
+<details class="dl-answer"><summary>answer</summary>
+
+There is no one right answer. A good answer weighs a few things.
+
+- **A question they will get wrong.** The surprise makes people want to
+  know why, and it shows that a feeling about chance can be checked. What
+  can go wrong: to someone who expects to fail, a wrong answer can look
+  like more proof. It helps to say that most people guess the same way,
+  and that the guess is not marked.
+- **A question they will get right.** It builds confidence, and it gives
+  the friend a first success. What can go wrong: if the point of the
+  lesson is a surprise, starting safely can make the surprise feel like
+  a trick later.
+
+What makes a wrong guess safe is how it is treated: nobody marks it, and
+the answer is used to find out which way the guess leaned. A strong answer
+says what you would do to make it safe, whichever question you chose.
 
 </details>

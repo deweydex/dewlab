@@ -422,3 +422,30 @@ own. Look for the rules that people only mention when somebody breaks
 them.
 
 </details>
+
+**17. Explain.** The tutorial page started with a board game and a recipe,
+and came to Python last. Picture a friend who has never written any code,
+and who asks you to teach them. Would you start with a game, or with a line
+of Python? Give one reason for your choice, and one thing the other way
+would do better. There is no single right answer. The "Why this way?" box
+on the tutorial page says what this course chose, and why.
+
+<details class="dl-answer"><summary>answer</summary>
+
+There is no one right answer. A good answer weighs a few things.
+
+- **Who your friend is.** Someone who came to learn programming may want
+  to see the computer do something in the first minute. Someone who is
+  nervous about computers may be glad to start with something they
+  already know.
+- **What the first lesson is for.** If it is the four questions, a game
+  shows that they work on anything, not only on code. If it is how to run
+  a cell, starting with code gets there sooner.
+- **What each way gives up.** Game first is slower to reach Python. Code
+  first can make the four questions look like computer words, when they
+  are questions for any situation.
+
+A strong answer names the person it is for, and says what the other way
+would have done better. Either choice can work.
+
+</details>

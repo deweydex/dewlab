@@ -85,8 +85,8 @@ mixed in with the number we multiply, and we would get the wrong answer.
 
 </details>
 
-**4. Predict.** In the novel *Fahrenheit 451*, 451 °F is the
-temperature at which paper burns. What do these two lines print? Will
+**4. Predict.** The novel *Fahrenheit 451* takes 451 °F as the
+temperature at which book paper catches fire. What do these two lines print? Will
 the second one give back exactly 451?
 
 ```python
@@ -114,7 +114,8 @@ id: running-a-practice-core
 # Your working for problems 5 to 12
 ```
 
-**5. Make.** On a trip to New York, one euro buys 1.08 US dollars.
+**5. Make.** On a trip to New York, say one euro buys 1.08 US dollars
+(rates change every day).
 Write `euro_to_dollars(euro)` and its inverse, `dollars_to_euro(dollars)`.
 Test each with a known value, then test the round trip for €50, €200 and
 €1,234.56.
@@ -479,8 +480,9 @@ inverse of a composition is the inverses, composed in reverse order.
 
 </details>
 
-**15. Make.** A bus goes from Dublin to Athlone, 125 km, at an average
-of 100 km/h, then from Athlone to Galway, 95 km, at 80 km/h. Use
+**15. Make.** A bus goes from Dublin to Athlone, about 120 km, at an
+average of 100 km/h, then from Athlone to Galway, about 88 km, at
+80 km/h. Use
 `travel_time` and `total` to find the time for the whole trip, then
 `speed` to find the average speed for the whole trip. Is it the average
 of 100 and 80?
@@ -488,15 +490,15 @@ of 100 and 80?
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-leg_times = [travel_time(125, 100), travel_time(95, 80)]
+leg_times = [travel_time(120, 100), travel_time(88, 80)]
 whole_time = total(leg_times)
 print(whole_time)
-print(speed(125 + 95, whole_time))
+print(speed(120 + 88, whole_time))
 ```
 
-This prints `2.4375`, then about `90.26`. The trip takes 2.4375 hours,
-which is 2 hours and about 26 minutes. The average speed is about
-90.26 km/h, not 90. The two legs are different lengths and take
+This prints `2.3`, then about `90.43`. The trip takes 2.3 hours,
+which is 2 hours and 18 minutes. The average speed is about
+90.43 km/h, not 90. The two legs are different lengths and take
 different times, so the speeds do not count equally.
 
 </details>
@@ -531,5 +533,41 @@ Both $1.75$ and $-1.75$ square to $3.0625$, but a height is a length,
 and lengths are never negative. In the space of numbers from 0 upwards,
 the square root gives the one answer. And a BMI of 0 would divide by
 zero, so the rearranged formula needs a BMI above 0.
+
+</details>
+
+**17. Explain.** Many people learned "change sides,
+change signs" at school. The tutorial page used "the same move on both
+sides" instead. Take $F = \frac{9}{5}C + 32$ and make $C$ the subject, once
+each way. Then say which way you would teach to someone meeting
+rearranging for the first time, and why.
+
+<details class="dl-answer"><summary>answer</summary>
+
+**The same move on both sides.** Subtract 32 from both sides:
+$F - 32 = \frac{9}{5}C$. Then multiply both sides by $\frac{5}{9}$:
+$C = \frac{5}{9}(F - 32)$.
+
+**Change sides, change signs.** The $+32$ moves across and becomes
+$-32$: $F - 32 = \frac{9}{5}C$. Then the "times $\frac{9}{5}$" moves
+across and becomes "divide by $\frac{9}{5}$", which is the same as
+multiplying by $\frac{5}{9}$: $C = \frac{5}{9}(F - 32)$.
+
+Both give the same answer. Substitute it back to check:
+
+```python
+fahrenheit = 68
+print((fahrenheit - 32) * 5 / 9)
+```
+
+It shows `20.0`.
+
+Which to teach has no single right answer. A good answer weighs a few
+things. The short rule is quick, and many people use it well. But it does
+not say which part moves first. A common slip is to move the
+$\frac{9}{5}$ first, and get $C = \frac{5}{9}F - 32$, which is wrong. The balance is slower, and
+it explains itself: each step is a move you can say out loud. A strong
+answer might teach the balance first, and then show the short rule as the
+balance with the middle steps left out.
 
 </details>

@@ -78,7 +78,7 @@ values can 3 bits hold?
 On the last page, every condition had an answer, `True` or `False`. A
 *Boolean value* is a value that is either True or False, and nothing
 else. The name comes from George Boole, who worked out the rules of
-these values in the 1850s. He was the first professor of mathematics at
+these values in the 1840s and 1850s. He was the first professor of mathematics at
 Queen's College Cork, now University College Cork.
 
 Boole's idea was that True and False can be combined, the way numbers
@@ -491,6 +491,23 @@ is not on silent, or the message is from a favourite contact.
 id: true-false-your-turn-2
 # Your notification rule
 ```
+
+<details class="dl-why"><summary>Why this way?</summary>
+
+On this page, Python wrote every truth table for us, with a short loop.
+The more usual way is to fill the table in on paper, one row at a time.
+
+Filling a table by hand is slower, and that is its strength. You look at
+every row yourself, and the rule starts to feel familiar.
+
+We let the computer write the rows because the page's question was "can
+we list every case, and be sure we missed none?". A loop over
+`[False, True]` never forgets a row, and it writes 1,024 rows as
+readily as 4. The cost was meeting a loop a unit before loops are
+taught. The page said so, and used only as much of the loop as it
+needed.
+
+</details>
 
 ## Four questions, looking back
 

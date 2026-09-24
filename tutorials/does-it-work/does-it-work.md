@@ -518,6 +518,24 @@ a stranger would.
    of some promise, such as `split_bill` with one person, or
    `to_binary(0)`. Run it again.
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page gave you `step_through`, a small tool built for the page, in
+place of a real debugger. Editors such as Thonny and VS Code have
+debuggers with breakpoints and step buttons, and they do much more.
+
+A real debugger is what you would use at work, and learning one is worth
+the time. Thonny is free, and made for learners.
+
+The Python on this page runs in your browser, where those buttons do not
+exist. We could have asked you to install an editor, which not every
+reader can do on the computer they have. `step_through` shows what a
+debugger shows: each line, and every name's value before it runs. And
+you wrote the trace table by hand first, because a debugger shows you
+the values, while a hand trace asks you to predict them.
+
+</details>
+
 ## Four questions, looking back
 
 | The question | On this page |

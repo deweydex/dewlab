@@ -181,8 +181,8 @@ id: choosing-your-turn-1
 ## Solving an inequality
 
 Many travellers have a choice. They can pay €2.00 for each single
-journey, or buy a weekly pass for €25.00. For how many journeys in a week
-is the pass the cheaper choice?
+journey, or buy a weekly pass for €25.00. (The weekly price is made up.)
+For how many journeys in a week is the pass the cheaper choice?
 
 Let's say it in words first. The pass is cheaper when the singles would
 cost more than €25.
@@ -515,6 +515,24 @@ A weather warning for ice goes out when the temperature is from $-2$ to
 id: choosing-your-turn-4
 # Your ice warning
 ```
+
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page put two topics side by side: solving an inequality, from
+algebra, and choosing a path with `if`, from programming. In most
+courses they belong to different subjects, often in different terms,
+with different teachers.
+
+Keeping them apart has good points. Each subject can go at its own
+speed, and you always know which kind of class you are in.
+
+We joined them because they are one question asked two ways. "For how
+many journeys is the pass cheaper?" is an inequality, and a ticket
+machine answers it with `if`. The number line works for both, and the
+code checks the algebra. When each subject needs the other, neither one
+is a topic you learn once and put away.
+
+</details>
 
 ## Four questions, looking back
 

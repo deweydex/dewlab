@@ -470,6 +470,25 @@ title: some steps
 **Think about:** what does Python do first, `and` or `or`?
 ```
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page proved De Morgan's laws by checking every row with
+`same_rule`. A maths book usually proves them another way: with Venn
+diagrams, or with the rules of Boolean algebra, each line following from
+the one before.
+
+Those proofs are worth knowing. They show why the laws hold, and an
+algebra proof still works when a rule has too many inputs to check row
+by row.
+
+We checked every row because it is a proof you can run, read and trust
+without taking anyone's word for it. A promise that has been checked is
+stronger than a promise that is believed. Checking also shows its own
+limit: every extra input doubles the rows. The practice page asks where
+that limit starts to matter.
+
+</details>
+
 ## Four questions, looking back
 
 | Question | On this page |

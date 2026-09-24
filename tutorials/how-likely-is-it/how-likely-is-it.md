@@ -461,6 +461,23 @@ that something about the coin is not fair.
 3. Try the simulation with 1,000 runs and then 100,000 runs. Which one
    is closer to the exact answer?
 
+<details class="dl-why"><summary>Why this way?</summary>
+
+This page asked whether a coin was unfair, and answered: a fair coin
+gives 7 heads or more in about 1 test in 6. A statistics book would call
+that a "hypothesis test", and it would call the 0.17 a "p-value". The
+page used neither name.
+
+Giving the names has real value. They are the words in a news report on
+a medical study, and in any later course on statistics.
+
+We left them out because the question does the work, not the name. "How
+often would a fair coin do this?" is a question you can ask in words,
+then answer by counting and by simulating. Once you can ask it, the
+names are labels for something you already know how to do.
+
+</details>
+
 ## Four questions, looking back
 
 | The question | On this page |

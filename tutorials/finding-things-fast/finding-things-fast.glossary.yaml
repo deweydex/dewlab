@@ -1,0 +1,70 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "search, target"
+    kind: concept
+    definition: >
+      A search is a way of finding where a value sits in a list. The value
+      we are looking for is the target. A search gives back the target's
+      index, or -1 when it is not there.
+  - term: linear search
+    kind: concept
+    definition: >
+      A linear search looks at each item in turn, from the front, until it
+      finds the target or runs out of items. It works on any list, in any
+      order.
+  - term: "best case, worst case"
+    kind: concept
+    definition: >
+      The best case is the fewest steps a method can need, and the worst
+      case is the most. For a linear search, the worst case is one look for
+      every item.
+  - term: divide and conquer
+    kind: concept
+    definition: >
+      Divide and conquer solves a problem by splitting it into smaller
+      problems of the same kind, and solving those. Binary search is one
+      example.
+  - term: binary search
+    kind: concept
+    definition: >
+      A binary search looks at the middle item of a sorted list, and throws
+      away the half the target cannot be in. It does that again and again.
+      It only keeps its promise when the list is in order.
+  - term: "< on words"
+    kind: operator
+    definition: >
+      Compares two words letter by letter, the way a dictionary orders
+      them. Every capital letter comes before every small letter.
+    example: '"Aoife" < "Kwame"'
+  - term: "log₂ n as halvings"
+    kind: formula
+    definition: >
+      The number of times n can be halved, rounding down, before 1 is left
+      is log₂ n, rounded down. A binary search of n items needs about that
+      many looks, and one more.
+    example: "1000 → 500 → 250 → … → 1 is 9 halvings; log₂ 1000 ≈ 9.97"
+  - term: "in proportion, logarithmic growth"
+    kind: concept
+    definition: >
+      A count grows in proportion when twice the items means twice the
+      steps, like a linear search. It grows logarithmically when twice the
+      items means one more step, like a binary search.
+  - term: "O(n), O(log n)"
+    kind: concept
+    definition: >
+      O(n) and O(log n) are how programmers write those two kinds of
+      growth. They are said "order n" and "order log n".
+  - term: "list.index()"
+    kind: function
+    python: list.index
+    definition: >
+      Gives the index of the first item equal to a value, by a linear
+      search. It stops with a ValueError when the value is not there.
+    example: 'contacts.index("Niamh")'
+  - term: "linear_search(), binary_search()"
+    kind: function
+    definition: >
+      Give back the index of target in a list, or -1 when it is not there.
+      binary_search needs a sorted list. They are toolkit functions you
+      wrote yourself.
+    example: 'binary_search(sorted(contacts), "Priya")'
