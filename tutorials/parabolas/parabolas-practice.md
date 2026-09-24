@@ -7,7 +7,11 @@ version: 2026.08.23.1
 
 # Parabolas: completing the square — Practice
 
-Answers are hidden. Do the algebra before you unfold it.
+Each answer is hidden until you open it. Try the algebra on paper first,
+then open the answer to compare.
+
+The cell below has `complete_the_square` and a `draw` helper, for
+checking your work.
 
 ## Tools
 
@@ -38,163 +42,229 @@ def draw(f, low=-8, high=8, label=None, ax=None):
 print(complete_the_square(6, 5))
 ```
 
-## Completing the Square
+## Completing the square
 
-**1.** Complete the square on each.
+**1.** Complete the square on each quadratic.
 
-- (a) `x² + 8x + 3`
-- (b) `x² − 2x + 6`
-- (c) `x² + 5x`
-- (d) `x² − 12x + 36`
+- (a) $x^2 + 8x + 3$
+- (b) $x^2 - 2x + 6$
+- (c) $x^2 + 5x$
+- (d) $x^2 - 12x + 36$
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) `(x + 4)² − 13`. (b) `(x − 1)² + 5`. (c) `(x + 2.5)² − 6.25`. (d) `(x − 6)²`.
+(a) $(x + 4)^2 - 13$
 
-The last one has nothing left over, because it was already a perfect square — 36 is exactly the square of half of 12.
+(b) $(x - 1)^2 + 5$
+
+(c) $(x + 2.5)^2 - 6.25$
+
+(d) $(x - 6)^2$
+
+The last one has nothing left over, because it was already a perfect
+square. 36 is exactly the square of half of 12.
 
 </details>
 
-**2.** Where is the vertex of each of the four above?
+**2.** Where is the vertex of each of the four quadratics above?
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) `(−4, −13)`. (b) `(1, 5)`. (c) `(−2.5, −6.25)`. (d) `(6, 0)`.
+(a) $(-4, -13)$
 
-The sign flip on the first coordinate catches everybody at least once: `(x + 4)²` is smallest when `x = −4`.
+(b) $(1, 5)$
+
+(c) $(-2.5, -6.25)$
+
+(d) $(6, 0)$
+
+The sign flip on the first coordinate catches almost everybody at least
+once. $(x + 4)^2$ is smallest when $x = -4$.
 
 </details>
 
-**3.** Why is halving the middle coefficient the right move?
+**3.** Why is halving the middle number the right step?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because `(x + h)²` expands to `x² + 2hx + h²`. The middle term of the expansion is `2h`, so to match a middle term of `b` you need `h = b/2`.
+Because $(x + h)^2$ multiplies out to $x^2 + 2hx + h^2$. The middle term
+is $2h$ times $x$. To match a middle number $b$, we need $2h = b$, so
+$h = b/2$.
 
-Expand the bracket once and the rule stops being arbitrary.
+Multiply out the bracket once, and the rule has a clear reason.
 
 </details>
 
-**4.** Complete the square on `2x² + 12x + 5`. (The leading coefficient is not 1.)
+**4.** Complete the square on $2x^2 + 12x + 5$. Here the number in front
+of $x^2$ is not 1.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Take the 2 out of the first two terms first: `2(x² + 6x) + 5`. Complete the square inside: `2((x + 3)² − 9) + 5`. Multiply out: `2(x + 3)² − 18 + 5 = 2(x + 3)² − 13`.
+1. Take the 2 out of the first two terms: $2(x^2 + 6x) + 5$.
+2. Complete the square inside the bracket: $2\big((x + 3)^2 - 9\big) + 5$.
+3. Multiply out: $2(x + 3)^2 - 18 + 5 = 2(x + 3)^2 - 13$.
 
-Vertex at `(−3, −13)`. The 2 stretches the curve but does not move where the bottom is horizontally.
+The vertex is at $(-3, -13)$. The 2 stretches the curve, but it does
+not change the $x$ value of the vertex.
 
 </details>
 
-## Vertex and Roots
+## Vertex and roots
 
-**5.** Find the vertex and the roots of `x² − 6x + 5`, using the completed form for both.
+**5.** Find the vertex and the roots of $x^2 - 6x + 5$. Use the
+completed form for both.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`(x − 3)² − 4`, so the vertex is at `(3, −4)`.
+The completed form is $(x - 3)^2 - 4$, so the vertex is at $(3, -4)$.
 
-Setting it to zero: `(x − 3)² = 4`, so `x − 3 = ±2`, so `x = 5` or `x = 1`.
+For the roots, set it to zero: $(x - 3)^2 = 4$, so $x - 3 = \pm 2$.
+That gives $x = 5$ or $x = 1$.
 
 </details>
 
-**6.** Which of these have real roots? Decide from the completed form alone.
+**6.** Which of these have real roots? Decide from the completed form
+alone.
 
-- (a) `x² − 4x + 3`
-- (b) `x² + 2x + 9`
-- (c) `x² − 10x + 25`
+- (a) $x^2 - 4x + 3$
+- (b) $x^2 + 2x + 9$
+- (c) $x^2 - 10x + 25$
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) `(x − 2)² − 1` — the vertex is below the axis, so two roots.
+(a) $(x - 2)^2 - 1$. The vertex is below the axis, so there are two
+roots.
 
-(b) `(x + 1)² + 8` — the vertex is 8 above the axis and the curve opens upwards, so none. A squared thing plus 8 is never zero.
+(b) $(x + 1)^2 + 8$. The vertex is 8 above the axis and the curve opens
+upwards, so there are no real roots. A square plus 8 is never zero.
 
-(c) `(x − 5)²` — the vertex sits exactly on the axis, so one root, at 5.
+(c) $(x - 5)^2$. The vertex sits exactly on the axis, so there is one
+root, at 5.
 
 </details>
 
-**7.** The vertex of a parabola is at `(2, −9)` and it opens upwards with `a = 1`. Write it in both forms.
+**7.** A parabola has its vertex at $(2, -9)$. It opens upwards, with
+$a = 1$. Write it in both forms.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`(x − 2)² − 9`, which expands to `x² − 4x − 5`.
+The completed form is $(x - 2)^2 - 9$. Multiplied out, it is
+$x^2 - 4x - 5$.
 
-Its roots are at 5 and −1, which you can read off the first form in one step.
+Its roots are 5 and $-1$. From the completed form, this takes one step:
+$(x - 2)^2 = 9$, so $x - 2 = \pm 3$.
 
 </details>
 
-**8.** Two parabolas have vertices at `(0, 3)` and `(0, −3)`, both with `a = 1`. How many roots does each have?
+**8.** Two parabolas both have $a = 1$. One has its vertex at $(0, 3)$,
+and the other at $(0, -3)$. How many roots does each one have?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first has none — its lowest point is 3 above the axis. The second has two, at ±√3.
+The first has no real roots, because its lowest point is 3 above the
+axis. The second has two roots, at $\pm\sqrt{3}$.
 
-Which is the whole story of the discriminant, told as a picture: whether the vertex is above, on, or below the axis.
+This is the discriminant's story told as a picture. It depends on
+whether the vertex is above the axis, on it, or below it.
 
 </details>
 
-## Where the Formula Comes From
+## Where the formula comes from
 
-**9.** Complete the square on `x² + bx + c` using letters rather than numbers, and see what falls out when you set it to zero.
+**9.** Complete the square on $x^2 + bx + c$ with letters instead of
+numbers. Then set it to zero. What do you get?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`x² + bx + c = (x + b/2)² − b²/4 + c`.
+Completing the square:
 
-Setting that to zero: `(x + b/2)² = b²/4 − c`, so `x + b/2 = ±√(b²/4 − c)`, so `x = −b/2 ± √(b²/4 − c)`.
+$$x^2 + bx + c = \left(x + \frac{b}{2}\right)^2 - \frac{b^2}{4} + c$$
 
-Multiply through by 2 inside the root and it is the familiar formula with `a = 1`. **The quadratic formula is this, done once in general.**
+Setting that to zero and undoing it one step at a time:
+
+$$
+\begin{aligned}
+\left(x + \frac{b}{2}\right)^2 &= \frac{b^2}{4} - c = \frac{b^2 - 4c}{4} \\
+x + \frac{b}{2} &= \pm \frac{\sqrt{b^2 - 4c}}{2} \\
+x &= \frac{-b \pm \sqrt{b^2 - 4c}}{2}
+\end{aligned}
+$$
+
+This is the quadratic formula with $a = 1$. **The quadratic formula is
+completing the square, done once with letters.**
 
 </details>
 
-**10.** In the formula, where does the `±` come from?
+**10.** In the formula, where does the $\pm$ come from?
 
 <details class="dl-answer"><summary>answer</summary>
 
-From taking the square root of both sides. Both `2` and `−2` square to 4, so `(x + 3)² = 4` has two solutions and not one.
+It comes from taking the square root of both sides. Both $2$ and $-2$
+square to 4, so $(x + 3)^2 = 4$ has two solutions, not one.
 
-That is why a quadratic has two roots — the two branches of the square root, carried through.
+That is why a quadratic can have two roots. They are the two square
+roots, $+$ and $-$, carried through.
 
 </details>
 
-## Reading the Picture
+## Reading the picture
 
-**11.** Plot `x² − 6x + 5` and mark its vertex and its roots. Confirm that the vertex sits exactly halfway between the roots.
+**11.** Plot $x^2 - 6x + 5$, and mark its vertex and its roots. Is the
+vertex exactly halfway between the roots?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Vertex at `(3, −4)`, roots at 1 and 5, and 3 is halfway between them.
+The vertex is at $(3, -4)$ and the roots are 1 and 5. 3 is halfway
+between 1 and 5.
 
-That is always true, because a parabola is symmetric about a vertical line through its vertex. It is also a fast way to find a vertex when you already know the roots.
+This is always true, because a parabola is symmetric about a vertical
+line through its vertex. It is also a fast way to find the vertex when
+you already know the roots.
 
 </details>
 
-**12.** A ball is thrown and its height is `h(t) = −5t² + 20t`. When is it highest, and how high?
+**12.** A ball is thrown upwards. Its height in metres after $t$ seconds
+is $h(t) = -5t^2 + 20t$. When is it highest, and how high does it go?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The roots are at t = 0 and t = 4, so the peak is halfway, at t = 2. Then `h(2) = −20 + 40 = 20` metres.
+The roots are $t = 0$ and $t = 4$, so the peak is halfway, at $t = 2$.
+The height there is $h(2) = -20 + 40 = 20$ metres.
 
 </details>
 
-**13.** A rectangular pen is to be made against a wall with 40 m of fencing on three sides. Write the area as a quadratic in the width, and find the dimensions that give the most area.
+**13.** A farmer builds a rectangular pen against a wall. The wall is
+one side, and 40 m of fencing makes the other three sides.
+
+1. Write the area as a quadratic in the width.
+2. Find the width and length that give the largest area.
 
 <details class="dl-answer"><summary>answer</summary>
 
-If the width (the two sides at right angles to the wall) is `w`, the remaining side is `40 − 2w`, so the area is `A = w(40 − 2w) = −2w² + 40w`.
+1. Let the width be $w$. The width is each of the two sides at right
+   angles to the wall. The side along the wall is then $40 - 2w$. So the
+   area is $A = w(40 - 2w) = -2w^2 + 40w$.
+2. The roots are $w = 0$ and $w = 20$, so the peak is at $w = 10$. The
+   area there is $10 \times 20 = 200$ m². The pen is 10 m deep and 20 m
+   along the wall.
 
-Roots at w = 0 and w = 20, so the peak is at w = 10, giving an area of 200 m². The pen is 10 m deep and 20 m along the wall.
-
-This is the standard shape of an optimization problem, and the parabola does all the work.
+This is the usual shape of an optimisation problem: find the largest or
+smallest value. Here the parabola does all the work.
 
 </details>
 
-**14.** Why can you find the maximum of a quadratic without any calculus?
+**14.** Why can we find the largest value of a quadratic without any
+calculus?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because a parabola has exactly one turning point and you can find it exactly — either by completing the square, or by taking the midpoint of the roots.
+A parabola has exactly one turning point, and we can find it exactly.
+We can complete the square, or we can take the point halfway between
+the roots.
 
-Most curves are not that obliging, which is what *Derivatives: the rate of change of a curve* is for. The quadratic is the case where a general method is not needed.
+Most curves are harder than this. That is what
+[Derivatives: the rate of change of a curve](tutorial:rates-of-change)
+is for, later in the course. The quadratic is a case where we do not
+need a general method.
 
 </details>

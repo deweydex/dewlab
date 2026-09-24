@@ -1,53 +1,103 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
+  - term: statistics
+    kind: concept
+    definition: >
+      Statistics is the part of mathematics that summarizes, describes and
+      explains data.
+  - term: dataset
+    kind: concept
+    definition: >
+      A dataset is one collection of data that belongs together, such as
+      the quiz scores of one class.
+  - term: measure of central tendency
+    kind: concept
+    definition: >
+      A measure of central tendency is a single number that describes the
+      center, or typical value, of a dataset. The mean, the median and the
+      mode are the three common ones.
   - term: mean
     kind: formula
-    definition: The arithmetic average — add everything up and divide by the count.
+    definition: >
+      The mean is the ordinary average. Add up all the values, then divide
+      by how many values there are.
     example: "x-bar = (1/n) * sum(x)"
   - term: median
     kind: concept
-    definition: The middle value once the data is sorted. With an even count, the average of the two middle values.
+    definition: >
+      The median is the middle value once the data is sorted. With an even
+      number of values, it is the average of the two middle values.
   - term: mode
     kind: concept
-    definition: The value that appears most frequently in the data.
+    definition: The mode is the value that appears most often in the data.
   - term: outlier, robust
     kind: concept
     definition: >
-      An outlier is a value far from the rest of the data. A statistic is
-      robust when an outlier barely changes it — the median is robust to
-      outliers; the mean is not.
+      An outlier is a value far away from the rest of the data. A measure
+      is robust when an outlier hardly changes it. The median is robust to
+      outliers, and the mean is not.
+  - term: skewed
+    kind: concept
+    definition: >
+      Data is skewed when it has a long tail of values on one side.
+      Incomes are skewed, with a few very large values.
+  - term: measure of spread
+    kind: concept
+    definition: >
+      A measure of spread is a number that describes how spread out the
+      values of a dataset are. The range and the standard deviation are
+      two of them.
   - term: data range
     kind: concept
     definition: >
-      The simplest measure of spread — maximum minus minimum. (Not the
-      same thing as Python's range() function.)
+      The range of a dataset is the largest value minus the smallest
+      value. It is the simplest measure of spread. It is a different thing
+      from Python's range() function.
   - term: standard deviation
     kind: formula
     definition: >
-      How far, on average, each data point sits from the mean. Find each
-      value's distance from the mean, square it, average those squares, then
-      take the square root.
-    example: "sigma = sqrt((1/N) * sum((x - x_bar)**2))"
+      The standard deviation measures how far the values are from the
+      mean, on average. Find each value's distance from the mean, square
+      it, average those squares, then take the square root.
+    example: "sigma = sqrt((1/n) * sum((x - x_bar)**2))"
+  - term: sample standard deviation
+    kind: formula
+    definition: >
+      The sample standard deviation divides by n - 1 in place of n. It
+      gives a slightly larger answer than the standard deviation that
+      divides by n.
   - term: categorical, ordinal, discrete, continuous
     kind: concept
     definition: >
-      Four kinds of data. Categorical has no order, like favorite color.
-      Ordinal has an order but no consistent spacing, like star ratings.
-      Discrete is countable, like bugs in a program. Continuous can take any
-      value in a range, like temperature. Which kind a value is decides
-      which summary measures make sense for it.
-  - term: frequency distribution, bins
+      These are four kinds of data. Categorical (or nominal) data is labels
+      with no order, like favourite colour. Ordinal data has an order but
+      unequal steps, like star ratings. Discrete data is counted, like bugs
+      in a program. Continuous data is measured and can take any value in a
+      range, like temperature. The kind of data decides which summary
+      measures make sense for it.
+  - term: frequency, frequency distribution, bins
     kind: concept
     definition: >
-      Shows how often each value, or each range of values (a bin), occurs
-      in the data — often more informative than any single summary
-      number.
+      The frequency of a value is how many times it appears in the data. A
+      frequency distribution lists the values, or groups of values called
+      bins, with how often each one appears. It often tells us more than
+      any single summary number.
+  - term: histogram
+    kind: concept
+    definition: >
+      A histogram is a chart of a frequency distribution. It has one bar
+      for each bin, and the height of each bar is the count.
+  - term: symmetric, unimodal
+    kind: concept
+    definition: >
+      A histogram is symmetric when its left and right halves are roughly
+      mirror images. It is unimodal when it has a single peak.
   - term: dictionary
     kind: concept
     definition: >
-      Stores values under keys you choose, rather than under numbered
-      positions like a list. Look one up the same way, and check whether
-      a key exists with "in".
+      A dictionary stores values under keys that you choose. A list stores
+      them under numbered positions. Look a value up by its key, and check
+      whether a key exists with "in".
     example: 'counts = {}\ncounts["apples"] = 5\n"oranges" in counts'
   - term: "sorted()"
     python: sorted
@@ -56,5 +106,5 @@ entries:
   - term: "plt.hist()"
     python: matplotlib.pyplot.hist
     kind: function
-    definition: Bins a list of values and draws them as a histogram.
+    definition: Splits a list of values into bins and draws them as a histogram.
     example: "plt.hist(scores, bins=5)"

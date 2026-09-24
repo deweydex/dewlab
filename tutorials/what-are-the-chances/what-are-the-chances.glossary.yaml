@@ -1,27 +1,95 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
+  - term: probability
+    kind: concept
+    definition: >
+      Probability is a number from 0 to 1 that measures how likely an
+      event is. 0 means impossible, and 1 means certain.
+  - term: outcome
+    kind: concept
+    definition: >
+      An outcome is one possible result of a random event, such as
+      rolling a 4 on a die.
+  - term: event
+    kind: concept
+    definition: >
+      An event is a group of outcomes we are interested in, such as
+      rolling an even number.
+  - term: favorable outcome
+    kind: concept
+    definition: >
+      A favorable outcome is an outcome that makes the event happen.
   - term: "P(A), basic probability"
     kind: formula
     definition: >
-      Number of favorable outcomes divided by total outcomes, when every
-      outcome is equally likely. A number between 0 (impossible) and 1
-      (certain).
+      When every outcome is equally likely, P(A) is the number of
+      favorable outcomes divided by the total number of outcomes. It is a
+      number between 0 (impossible) and 1 (certain).
     example: "P(heads) = 1 / 2"
+  - term: simulate
+    kind: concept
+    definition: >
+      To simulate a random event is to write code that makes the event
+      happen many times, at random, and count the results.
+  - term: trial
+    kind: concept
+    definition: >
+      A trial is one run of a random event, such as one flip of a coin in
+      a simulation.
+  - term: compound event
+    kind: concept
+    definition: >
+      A compound event is an event made by joining two or more events with
+      words such as "or", "and" and "not".
   - term: complement rule
     kind: formula
-    definition: "The probability an event does not happen: 1 - P(A)."
+    definition: >
+      The complement of an event A is the event that A does not happen.
+      Its probability is 1 - P(A).
+    example: "P(no rain) = 1 - 0.3 = 0.7"
+  - term: mutually exclusive
+    kind: concept
+    definition: >
+      Two events are mutually exclusive when they cannot both happen at
+      the same time, such as rolling a 2 and rolling a 5 on one die.
   - term: "addition rule (P(A or B))"
     kind: formula
     definition: >
-      For mutually exclusive events (cannot both happen), P(A) + P(B). If
-      they can overlap, subtract the overlap: P(A) + P(B) - P(A and B).
+      For mutually exclusive events, P(A or B) = P(A) + P(B). If the
+      events can overlap, subtract the overlap: P(A) + P(B) - P(A and B).
+  - term: independent events
+    kind: concept
+    definition: >
+      Two events are independent when one happening does not change the
+      probability of the other. Two flips of a coin are independent.
   - term: "multiplication rule (P(A and B))"
     kind: formula
-    definition: For independent events, P(A) x P(B). If not independent, the second probability depends on what already happened.
+    definition: >
+      For independent events, P(A and B) = P(A) x P(B). If the events are
+      not independent, the second probability must take the first event
+      into account.
     example: "P(two aces in a row) = 4/52 * 3/51"
+  - term: without replacement
+    kind: concept
+    definition: >
+      Drawing without replacement means we do not put an item back before
+      the next draw. So the first draw changes what is left for the
+      second.
   - term: law of large numbers
     kind: concept
-    definition: The more trials a random process is simulated, the closer the observed proportion gets to the true probability.
+    definition: >
+      The law of large numbers says that the more trials we run, the
+      closer the proportion we see usually gets to the true probability.
+  - term: module
+    kind: concept
+    definition: >
+      A module is a collection of ready-made Python functions, such as
+      random or math. We load one with import.
+  - term: import
+    python: import
+    kind: keyword
+    definition: Loads a module, so that the program can use its functions.
+    example: "import random"
   - term: "random.choice()"
     python: random.choice
     kind: function
@@ -30,14 +98,18 @@ entries:
   - term: "random.shuffle()"
     python: random.shuffle
     kind: function
-    definition: Shuffles a list in place.
+    definition: Shuffles a list. It changes the list itself and gives back nothing.
     example: "random.shuffle(deck)"
   - term: "conditional probability, P(B|A)"
     kind: formula
     definition: >
-      The probability of B given that A has already happened — different
-      from P(B) alone whenever A changes what remains possible.
+      A conditional probability is the probability of an event B when we
+      know that another event A has happened. It can differ from P(B)
+      alone, because A can change what is still possible.
     example: "P(B|A) = P(A and B) / P(A)"
-  - term: Monte Carlo
+  - term: Monte Carlo simulation
     kind: concept
-    definition: Estimating an answer by simulating a random process many times, rather than calculating it exactly — used when an exact calculation gets too tangled.
+    definition: >
+      Monte Carlo simulation is a way to estimate an answer by simulating
+      a random process many times and counting the results. People use it
+      when an exact calculation is too complicated.

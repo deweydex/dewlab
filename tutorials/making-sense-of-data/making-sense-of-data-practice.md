@@ -7,11 +7,13 @@ version: 2026.08.23.1
 
 # Statistics: averages, spread and frequency — Practice
 
-Answers are hidden. Compute the statistics by hand on the small sets — five numbers is quick, and doing it once is what makes the formulae stop being formulae.
+Each answer is hidden until you open it. On the small datasets, try working out the statistics by hand. Five numbers do not take long. Doing it by hand once helps a formula make sense, so that it feels like more than symbols.
 
 Adapted in part from the statistics and probability worksheet in the Mathematics repository.
 
 ## Tools
+
+This cell uses Python's `statistics` module, which has the measures from the tutorial built in. Run it to check your own functions against it. `pstdev` is the standard deviation that divides by $n$, and `stdev` is the one that divides by $n - 1$.
 
 ```python exec
 id: tools-1
@@ -27,37 +29,37 @@ print("pop sd  ", round(statistics.pstdev(data), 4))
 print("samp sd ", round(statistics.stdev(data), 4))
 ```
 
-## Central Tendency
+## Central tendency
 
-**1.** For `[4, 8, 6, 5, 3, 8, 2]`, find the mean, median and mode.
+**1.** What are the mean, median and mode of `[4, 8, 6, 5, 3, 8, 2]`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Mean 5.143, median 5, mode 8.
+The mean is about 5.143, the median is 5, and the mode is 8.
 
-Sorted: 2, 3, 4, 5, 6, 8, 8. Seven values, so the median is the fourth.
+The values add up to 36, and there are 7 of them, so the mean is $\frac{36}{7} \approx 5.143$. Sorted, the values are 2, 3, 4, 5, 6, 8, 8. There are seven values, so the median is the fourth one.
 
 </details>
 
-**2.** For `[10, 12, 14, 16]`, find the median.
+**2.** What is the median of `[10, 12, 14, 16]`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-13 — the mean of the two middle values.
+13, which is the mean of the two middle values, 12 and 14.
 
-An even-length list has no single middle, so the convention is to average the pair. The median need not be a value that occurs in the data.
+A list with an even number of values has no single middle value, so we agree to take the average of the middle two. So the median does not have to be one of the values in the data.
 
 </details>
 
-**3.** Nine people in an office earn €30,000 and the director earns €500,000. Find the mean and median salary. Which describes the office better?
+**3.** Nine people in an office earn €30,000 each, and the director earns €500,000. What are the mean and median salaries? Which one describes the office better?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Mean €77,000, median €30,000.
+The mean is €77,000, and the median is €30,000.
 
-The median. Not a single person earns anything near the mean, and quoting it would be technically true and actively misleading.
+The median describes the office better. Nobody in the office earns anything near the mean. Quoting the mean would be true, but it would mislead people.
 
-The mean is dragged by outliers because every value contributes its full size. The median only cares about position, so one enormous value moves it by at most one place.
+An outlier pulls the mean a long way, because every value adds its full size to the total. The median depends only on position, so one very large value moves it by at most one place.
 
 </details>
 
@@ -65,45 +67,45 @@ The mean is dragged by outliers because every value contributes its full size. T
 
 <details class="dl-answer"><summary>answer</summary>
 
-When the data is roughly symmetric with no extreme values, and when the total matters.
+The mean is the better summary when the data is roughly symmetric with no outliers. It is also the right choice when the total matters.
 
-If you want to know how much the office costs in salary, the mean is exactly right — it is the total divided by the count. If you want to know what a typical person earns, it is not.
+Say you want to know how much the office costs in salaries. Then the mean is exactly right, because it is the total divided by the count. But if you want to know what a typical person earns, the mean is the wrong choice.
 
-The right question is not which is better but which question is being asked.
+So first ask which question you are trying to answer. That tells you which measure is better.
 
 </details>
 
-**5.** Give a dataset where the mode is useless, and one where it is the only sensible measure.
+**5.** Can you think of a dataset where the mode is useless? And one where the mode is the only sensible measure?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Useless: any set of measured values where every reading is distinct — heights to the millimetre, say. Every value occurs once and the "mode" is whichever happens to repeat by accident, or none.
+**Useless:** any set of measured values where every value is different, such as heights measured to the millimetre. Every value appears once. So the "mode" is whichever value happens to repeat by chance, or there is none.
 
-Essential: categorical data. The mean of `["red", "blue", "red"]` does not exist, and the mode does — it is the most common category, and that is the only average available.
+**The only sensible measure:** categorical data. The list `["red", "blue", "red"]` has no mean. But it has a mode, "red", which is the most common category. It is the only average we can use.
 
 </details>
 
 ## Spread
 
-**6.** For `[2, 4, 4, 4, 5, 5, 7, 9]`, compute the mean, then the population standard deviation by hand.
+**6.** For `[2, 4, 4, 4, 5, 5, 7, 9]`, can you work out the mean by hand, and then the standard deviation that divides by $n$? (This is also called the population standard deviation.)
 
 <details class="dl-answer"><summary>answer</summary>
 
-Mean 5, standard deviation 2.
+The mean is 5, and the standard deviation is 2.
 
-The deviations are −3, −1, −1, −1, 0, 0, 2, 4. Squared: 9, 1, 1, 1, 0, 0, 4, 16, which sum to 32. Divide by 8 to get the variance, 4, and take the square root.
+The distances from the mean, called deviations, are −3, −1, −1, −1, 0, 0, 2 and 4. Their squares are 9, 1, 1, 1, 0, 0, 4 and 16, which add up to 32. Divide by 8 to get 4. This number, the average of the squared deviations, is called the variance. Its square root is 2.
 
-This dataset is chosen so the numbers come out whole, which almost never happens with real data.
+These numbers were chosen so that everything comes out whole. That almost never happens with real data.
 
 </details>
 
-**7.** Why square the deviations rather than just adding them?
+**7.** Why do we square the deviations? What goes wrong if we add them up as they are?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because they sum to zero, always. The mean is exactly the point where the positives and negatives cancel.
+The deviations always add up to zero. The mean is exactly the point where the positive and negative deviations cancel out.
 
-Squaring makes everything positive, and it also weights large deviations much more heavily — which is a choice, not a necessity. Taking absolute values instead gives the mean absolute deviation, which is a perfectly good measure and is harder to do algebra with.
+Squaring makes every deviation positive. It also gives large deviations much more weight. That is a choice, and other choices are possible. We could take the absolute value of each deviation instead, which means dropping its minus sign. That gives the mean absolute deviation. It is a perfectly good measure, but it is harder to work with in algebra.
 
 </details>
 
@@ -111,41 +113,46 @@ Squaring makes everything positive, and it also weights large deviations much mo
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first class is uniform; the second has both strong and struggling students in it.
+In the first class, almost everyone scored close to 65%. The second class has both strong students and students who are struggling.
 
-Same mean, completely different teaching problem. This is the argument for never reporting an average alone — a center without a spread describes almost nothing.
+The mean is the same, but the two classes need very different teaching. This is why we should never report an average alone. A center without a spread tells us very little.
 
 </details>
 
-**9.** What is the difference between dividing by n and by n − 1?
+**9.** What is the difference between dividing by $n$ and dividing by $n - 1$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Dividing by n gives the population standard deviation: the actual spread of the numbers you have.
+Dividing by $n$ gives the population standard deviation. It measures the spread of the numbers you have.
 
-Dividing by n − 1 gives the sample standard deviation: an estimate of the spread of a larger population that these numbers were drawn from.
+Dividing by $n - 1$ gives the sample standard deviation. Sometimes our numbers are a sample: a few values taken from a much larger group, called the population. The sample standard deviation is an estimate of the spread of that whole population.
 
-The n − 1 is a correction. A sample's own mean sits closer to the sample than the true mean does, so the deviations come out slightly too small, and dividing by a slightly smaller number compensates.
+The $n - 1$ is a correction. A sample's own mean is never further from the sample's values than the true population mean is. So the deviations come out a little too small. Dividing by a slightly smaller number makes up for that.
 
-For n = 100 the difference is half a percent. For n = 5 it is over 10%, which is exactly when people are most tempted to ignore it.
+For $n = 100$, the two answers differ by about half a percent. For $n = 5$, they differ by more than 10%. Small samples are exactly when people are most tempted to ignore the difference.
 
 </details>
 
-**10.** Add 10 to every value in a dataset. What happens to the mean, the median, the range and the standard deviation?
+**10.** Suppose we add 10 to every value in a dataset. What happens to the mean, the median, the range and the standard deviation?
 
 <details class="dl-answer"><summary>answer</summary>
 
 The mean and median both go up by 10. The range and standard deviation do not change at all.
 
-Measures of center shift with the data; measures of spread do not, because every deviation from the mean is the same as it was.
+Measures of center move with the data. Measures of spread do not move, because every distance from the mean stays the same.
 
-Multiply everything by 3 instead and all four triple — the spread measures scale even though they do not shift.
+What if we multiply every value by 3 instead? Then all four measures are multiplied by 3. The spread measures do not move when we add, but they do grow when we multiply.
 
 </details>
 
-## Data Types
+## Data types
 
-**11.** Classify each as nominal, ordinal, interval or ratio.
+**11.** This question uses two new words. They split numerical data into two kinds, by what zero means:
+
+- Interval data is numbers where zero is a chosen point, not "none". Temperature in Celsius is an example.
+- Ratio data is numbers where zero means "none of it". Height is an example.
+
+Is each of these nominal, ordinal, interval or ratio?
 
 - (a) Eye color
 - (b) Exam grade (Pass, Merit, Distinction)
@@ -155,95 +162,101 @@ Multiply everything by 3 instead and all four triple — the spread measures sca
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) Nominal. (b) Ordinal. (c) Interval. (d) Ratio. (e) Nominal, despite being a number.
+(a) Nominal. (b) Ordinal. (c) Interval. (d) Ratio. (e) Nominal, even though it is a number.
 
-(c) and (d) differ over whether zero means "none". 20 °C is not twice as hot as 10 °C, because 0 °C is a chosen point rather than an absence of heat. 20 cm is twice 10 cm.
+(c) and (d) differ in whether zero means "none". 20 °C is not twice as hot as 10 °C, because 0 °C is a chosen point. It does not mean there is no heat. But 20 cm is twice 10 cm, because 0 cm really means no height.
 
-(e) is the trap. Averaging shirt numbers is arithmetically possible and meaningless, and a program will do it without complaint.
-
-</details>
-
-**12.** Which averages make sense for each type?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Nominal: mode only. Ordinal: mode and median — you can put them in order, so a middle exists. Interval and ratio: all three.
-
-The measure has to respect what the numbers mean, and there is nothing in the data itself that will stop you.
+(e) is the trap. We can work out the average of shirt numbers, but the answer means nothing. A program will do it without any warning.
 
 </details>
 
-## Frequency and Shape
-
-**13.** Build a frequency table for `[1, 2, 2, 3, 3, 3, 4, 4, 4, 4]`, and describe the shape.
+**12.** Which averages make sense for each kind of data in question 11?
 
 <details class="dl-answer"><summary>answer</summary>
 
-1 appears once, 2 twice, 3 three times, 4 four times.
+- Nominal: the mode only.
+- Ordinal: the mode and the median. We can put the values in order, so there is a middle.
+- Interval and ratio: all three.
+
+The measure has to fit what the numbers mean. Nothing in the data itself will stop you from choosing the wrong one.
+
+</details>
+
+## Frequency and shape
+
+**13.** Can you build a frequency table for `[1, 2, 2, 3, 3, 3, 4, 4, 4, 4]`? How would you describe its shape?
+
+<details class="dl-answer"><summary>answer</summary>
+
+1 appears once, 2 appears twice, 3 appears three times, and 4 appears four times.
+
+Python's `collections` module has a `Counter` that makes the table for you:
 
 ```python
 from collections import Counter
-print(Counter(data))
+print(Counter([1, 2, 2, 3, 3, 3, 4, 4, 4, 4]))
 ```
 
-The shape rises steadily to the right — skewed left, in the standard and confusing terminology, because the *tail* is on the left. The name refers to the tail, not to where the bulk sits.
+The shape rises steadily to the right. Its name is "skewed left", which confuses many people. The name describes the *tail*, the thin end of the shape, and here the tail is on the left. The name does not describe where most of the data is.
 
 </details>
 
-**14.** For a right-skewed distribution — a long tail of large values — how do the mean, median and mode compare?
+**14.** A right-skewed distribution has a long tail of large values. How do its mean, median and mode compare?
 
 <details class="dl-answer"><summary>answer</summary>
 
 Mode < median < mean.
 
-The tail pulls the mean furthest, the median a little, the mode not at all. Income distributions are the standard example, and it is why "average income" and "typical income" are different numbers in every country.
+The tail pulls the mean furthest, the median a little, and the mode not at all. Incomes are the usual example. That is why the mean income and the typical income are different numbers in every country.
 
 </details>
 
-**15.** Sketch a distribution where the mean and median are equal but the data is not symmetric.
+**15.** Can you make a dataset where the mean and the median are equal, but the data is not symmetric?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Any distribution with balanced tails of different shapes will do. `[1, 5, 6, 7, 11]` has mean and median both 6, and is not symmetric.
+Any dataset with tails of different shapes that balance each other will do. `[2, 3, 6, 8, 11]` has a mean of 6 and a median of 6. It is not symmetric: below 6 the values are 3 and 4 away, and above 6 they are 2 and 5 away.
 
-Equal mean and median is a hint of symmetry, not a proof of it. Every summary statistic loses information, and the only reliable way to know the shape is to look at it.
+When the mean and the median are equal, the data might be symmetric, but it does not have to be. Every summary number loses some information. The only sure way to know the shape is to look at it.
 
 </details>
 
-## Putting It Together
+## Putting it together
 
-**16.** Ten exam marks: `[45, 52, 68, 71, 71, 74, 78, 82, 89, 95]`. Compute a full summary and describe the class.
+**16.** Here are ten exam marks: `[45, 52, 68, 71, 71, 74, 78, 82, 89, 95]`. Can you work out a full summary, and describe the class?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Mean 72.5, median 72.5, mode 71, range 50, population standard deviation about 14.5.
+The mean is 72.5, the median is 72.5, the mode is 71, the range is 50, and the population standard deviation is 14.5.
 
-The mean and median agreeing suggests a fairly symmetric spread. A standard deviation of 14 on a mean of 72 means most marks fall roughly between 58 and 87, which the data bears out.
+The mean and median are equal, which suggests the marks are spread fairly evenly on both sides. The mean is about 72 and the standard deviation about 14, so most marks should be between about 58 and 87. The data agrees: 6 of the 10 marks are in that range.
 
-The range of 50 is the least informative number here: it depends entirely on two students.
+The range of 50 tells us the least. It depends on only two students, the highest and the lowest.
 
 </details>
 
-**17.** Add a mark of 12 to that list. What changes most?
+**17.** Now add a mark of 12 to that list. What changes most?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Mean drops to 67, median only to 71, and the standard deviation jumps to about 22.2.
+The mean drops to 67, the median drops only to 71, and the standard deviation jumps to about 22.2.
 
-One value in eleven moved the mean by 5.5 marks and the median by 1.5. The standard deviation rose by half, because the deviation is squared and 55 squared is a large number.
+One value out of eleven moved the mean by 5.5 marks and the median by 1.5. The standard deviation grew by half. Why so much? The new mark is 55 below the new mean, and that deviation is squared: $55^2 = 3025$.
 
-Standard deviation is even more outlier-sensitive than the mean, which is worth remembering before using it to decide anything.
+So the standard deviation is even more sensitive to outliers than the mean. Remember this before you use it to decide anything.
 
 </details>
 
 **18.** Two datasets have the same mean, median, standard deviation and correlation. Can they look different?
 
+(Correlation is a number that measures how closely pairs of values lie along a straight line. We meet it properly in the next tutorial, [Charts: choosing the right chart for your data](tutorial:pictures-worth-numbers).)
+
 <details class="dl-answer"><summary>answer</summary>
 
-Completely.
+Yes. They can look completely different.
 
-Anscombe's quartet is four datasets agreeing on all of those to two decimal places: one is a clean line, one is a curve, one is a line with a single outlier, and one is a vertical stack with one point far off. The Datasaurus dozen extends the trick to a picture of a dinosaur.
+Anscombe's quartet is a famous example that comes very close. It is four datasets of points with the same means, standard deviations and correlation, to about two decimal places. (Their medians differ a little, but the lesson is the same.) When we plot them, one is a clean line, one is a curve, one is a line with a single outlier, and one is a vertical stack with one point far away. The Datasaurus dozen takes the same idea further: one of its datasets draws a dinosaur.
 
-This is the strongest available argument for the next tutorial. **Plot the data.** Summary statistics answer the questions you thought to ask, and a picture answers the one you did not.
+This is the best reason for the next tutorial. **Plot the data.** Summary numbers answer the questions you thought to ask. A picture answers the question you did not think of.
 
 </details>

@@ -15,15 +15,36 @@ covers:
 
 # Parabolas: completing the square
 
-A quadratic makes a curve with one turn in it, and that curve has a name: a **parabola**. Every quadratic makes one, and — this is the surprising part — they are all the same shape.
+A quadratic makes a curve with one turn in it. A *parabola* is the curve
+that a quadratic makes.
 
-In *Solving equations: linear, quadratic and simultaneous* you solved quadratics with the formula. In *Functions and their graphs* you plotted them. This tutorial is about a third thing you can do to one: **rewrite it into a form that tells you where the curve turns, just by looking at it.**
+In [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations)
+we solved quadratics with the formula. In
+[Functions and their graphs](tutorial:drawing-functions) we drew them.
+On this page we do a third thing with a quadratic. We rewrite it in a
+form that shows where the curve turns, so that we can read it straight
+from the expression.
 
-The rewriting is called completing the square. Most people meet it as a trick with no obvious purpose, which is a shame, because its purpose is the best reason to learn it.
+This rewriting is called completing the square. Many people learn it as
+a trick, without being told what it is for. Its purpose is the best
+reason to learn it, so we start there.
 
-## Every Quadratic Is the Same Curve
+On this page we:
 
-Start with something worth being surprised by.
+- see that many different quadratics are one curve, moved around
+- rewrite a quadratic so that its turning point shows
+- learn the steps for doing that rewriting
+- find the roots from the same form, and see where the quadratic formula
+  comes from
+
+Every quadratic on this page starts with $x^2$, so the number in front
+of $x^2$ is 1. If it is another number, we first take that number out as
+a factor, for example $2x^2 + 8x + 6 = 2(x^2 + 4x + 3)$. Then we work on
+the part inside the bracket.
+
+## Every quadratic is the same curve
+
+Here are three quadratics. How are the three curves different?
 
 ```python exec
 id: every-quadratic-is-the-same-curve-1
@@ -53,7 +74,9 @@ ax.set_ylim(-6, 20)
 ax.set_title("Three quadratics")
 ```
 
-Three different curves. Now slide each one so its lowest point sits at the origin.
+The three curves sit in different places. Now let's slide each one, so
+that its lowest point sits at the origin, $(0, 0)$. What do you expect
+to see?
 
 ```python exec
 id: every-quadratic-is-the-same-curve-2
@@ -70,15 +93,24 @@ ax2.legend()
 ax2.set_title("All three, moved on top of each other")
 ```
 
-They land on each other exactly.
+The three curves land exactly on top of each other.
 
-**There is one parabola.** Every quadratic with the same `a` is that curve, slid sideways and up or down. Change `a` and it stretches, but the shape underneath is still the same.
+**They are one parabola.** Every quadratic with the same $a$ (the number
+in front of $x^2$) is the same curve, slid sideways and up or down. A
+different $a$ stretches the curve, or turns it upside down if $a$ is
+negative. The shape underneath stays the same.
 
-That means a quadratic really only has two interesting facts about it: **where its turning point is**, and **how wide it is**. Everything else follows.
+So a quadratic has only a few facts that matter:
 
-## The Form That Tells You Where the Bottom Is
+- **where its turning point is**
+- **how wide it is**, and which way it opens
 
-Here is the same function written two ways.
+Everything else follows from those.
+
+## The form that tells you where the bottom is
+
+Here is the same function written in two ways. Do the two columns
+agree?
 
 ```python exec
 id: the-form-that-tells-you-where-the-bottom-is-1
@@ -94,9 +126,11 @@ for value in [-6, -3, 0, 2, 7]:
     print(f"x = {value:>3}    standard: {standard(value):>4}    completed: {completed(value):>4}")
 ```
 
-Identical, every time. They are the same function.
+The two columns are the same every time, because they are the same
+function.
 
-Now plot the second one and look at where the two numbers in it went.
+Now we plot the second form. Can you find its two numbers, 3 and $-4$,
+in the picture?
 
 ```python exec
 id: the-form-that-tells-you-where-the-bottom-is-2
@@ -107,23 +141,44 @@ ax.set_ylim(-6, 20)
 ax.set_title("The turning point is written in the expression")
 ```
 
-The turning point is at `(−3, −4)`, and the expression is `(x + 3)² − 4`.
+The turning point is at $(-3, -4)$, and the expression is
+$(x + 3)^2 - 4$.
 
-**The two numbers in the completed form are the two coordinates of the turning point** — the first with its sign flipped, which is the one thing to watch. `(x + 3)²` puts the bottom at `x = −3`, because `x = −3` is what makes the bracket zero.
+**The two numbers in the completed form give the two coordinates of the
+turning point.** Watch the first one: its sign flips. The bracket
+$(x + 3)^2$ puts the turning point at $x = -3$, because $x = -3$ is the
+value that makes the bracket zero.
 
-And it has to be the bottom, because a square is never negative. `(x + 3)²` is zero at `x = −3` and positive everywhere else, so `−4` is the smallest this function ever gets.
+Why is this point the bottom of the curve? Because a square is never
+negative. $(x + 3)^2$ is zero at $x = -3$ and positive everywhere else.
+So $-4$ is the smallest value this function ever gives.
 
-That last sentence is the whole idea. **Completing the square is worth doing because it makes the answer visible**, and the reason it works is that a squared thing cannot be negative.
+That is the whole idea. Completing the square is worth doing because it
+makes the answer visible. It works because a squared number cannot be
+negative.
 
-The name for that turning point is the **vertex**.
+The *vertex* of a parabola is its turning point. It is the lowest point
+when the parabola opens upwards, and the highest point when it opens
+downwards.
 
-## Doing the Rearrangement
+## Doing the rearrangement
 
-The mechanics, once, slowly.
+Let's go through the steps once, slowly.
 
-Start with `x² + 6x + 5`. The goal is a squared bracket plus a number.
+We start with $x^2 + 6x + 5$. The goal is a squared bracket plus a
+number.
 
-Begin by asking what bracket would give you the `x²` and the `6x`. Expanding `(x + h)²` gives `x² + 2hx + h²`, so the middle term is `2h` — which means **halving the middle coefficient tells you what goes in the bracket.** Half of 6 is 3, so the bracket is `(x + 3)`.
+First, which bracket would give us the $x^2$ and the $6x$? Multiplying
+out $(x + h)^2$ gives
+
+$$(x + h)^2 = x^2 + 2hx + h^2$$
+
+The middle term is $2h$ times $x$. So **half of the middle number tells
+us what goes in the bracket.** Half of 6 is 3, so the bracket is
+$(x + 3)$.
+
+What does $(x + 3)^2$ multiply out to? The cell compares it with
+$x^2 + 6x + 9$ for a few values of $x$.
 
 ```python exec
 id: doing-the-rearrangement-1
@@ -133,13 +188,25 @@ for x in [0, 1, 2, 5]:
     print(f"   x={x}:  {(x + h) ** 2}   and   x^2 + 6x + 9 = {x**2 + 6*x + 9}")
 ```
 
-`(x + 3)²` is `x² + 6x + 9`. That is nearly what we want — it has the right `x²` and the right `6x`, but a 9 where we wanted a 5.
+So $(x + 3)^2 = x^2 + 6x + 9$. This is close to what we want. It has the
+right $x^2$ and the right $6x$, but it has a 9 where we want a 5.
 
-So subtract the difference:
+So we take away the 9 and add the 5:
 
-`x² + 6x + 5 = (x + 3)² − 9 + 5 = (x + 3)² − 4`
+$$x^2 + 6x + 5 = (x + 3)^2 - 9 + 5 = (x + 3)^2 - 4$$
 
-Three steps: halve the middle number, square it and take it away again, then add on whatever was there originally.
+Here are the steps for $x^2 + bx + c$:
+
+1. Halve the middle number $b$. Call the result $h$. This gives the
+   bracket $(x + h)^2$.
+2. Square $h$, and take $h^2$ away, because the bracket added it.
+3. Add the number $c$ that was there at the start.
+
+In the example, $h = 3$, so we take away $3^2 = 9$ and add 5. The
+number at the end is $k = c - h^2 = 5 - 9 = -4$.
+
+The next cell does the same steps in code. In its output,
+`(x + -2.0)^2` means $(x - 2)^2$.
 
 ```python exec
 id: doing-the-rearrangement-2
@@ -154,6 +221,9 @@ for b, c in [(6, 5), (-4, 1), (2, 7), (-10, 21)]:
     h, k = complete_the_square(b, c)
     print(f"x^2 + {b}x + {c}  =  (x + {h})^2 + {k}     vertex at ({-h}, {k})")
 ```
+
+Do the two forms really agree for every $x$? This cell tries 200 random
+values of $x$ for each quadratic.
 
 ```python exec
 id: doing-the-rearrangement-3
@@ -174,14 +244,19 @@ print(all(agree(b, c) for b, c in [(6, 5), (-4, 1), (2, 7), (-10, 21), (0, 0)]))
 
 ### Your turn
 
-Let's complete the square on these four by hand, then check each against the function above.
+Here are four quadratics:
 
-- `x² + 8x + 3`
-- `x² − 2x + 6`
-- `x² + 5x`
-- `x² − 12x + 36`
+- $x^2 + 8x + 3$
+- $x^2 - 2x + 6$
+- $x^2 + 5x$
+- $x^2 - 12x + 36$
 
-The last one is worth thinking about before you compute it.
+1. Complete the square on each one by hand. Write your answers as
+   comments in the cell.
+2. Check each answer with `complete_the_square`.
+
+Look at the last one before you work it out. What do you notice about
+it?
 
 ```python exec
 id: your-turn-1
@@ -189,20 +264,27 @@ id: your-turn-1
 # print(complete_the_square(8, 3))
 ```
 
-## Roots from the Same Form
+## Roots from the same form
 
-The completed form also hands you the roots, and it hands them over more clearly than the formula does.
+The completed form also gives us the roots. Many people find the roots
+easier to see this way than with the formula.
 
-A root is where the function is zero. So set the completed form to zero and unwrap it:
+A root is a value of $x$ where the function is zero. So we set the
+completed form equal to zero and undo it one step at a time:
 
-```
-(x + 3)² − 4 = 0
-(x + 3)²     = 4
- x + 3       = ±2
- x           = −3 ± 2
-```
+$$
+\begin{aligned}
+(x + 3)^2 - 4 &= 0 \\
+(x + 3)^2 &= 4 \\
+x + 3 &= \pm 2 \\
+x &= -3 \pm 2
+\end{aligned}
+$$
 
-which is `−1` and `−5`.
+That gives $x = -1$ and $x = -5$.
+
+The next cell finds roots in two ways: by completing the square, and by
+the formula. Do you expect the two methods to agree?
 
 ```python exec
 id: roots-from-the-same-form-1
@@ -229,19 +311,30 @@ for b, c in [(6, 5), (-4, 1), (2, 7), (-10, 21)]:
     print("   the formula:          ", roots_by_formula(b, c))
 ```
 
-The same answers, both ways.
+Both methods give the same answers.
 
-They are the same answers because **the quadratic formula is completing the square, done once in general so nobody has to do it again.** Somebody worked through the steps above with letters instead of numbers, and what fell out was the formula you have been using.
+Why? **The quadratic formula is completing the square, done once with
+letters so that nobody has to do it again.** Somebody went through the
+steps above with $a$, $b$ and $c$ in place of numbers. The result was
+the formula we have been using.
 
-That is worth knowing for its own sake. A formula that arrives from nowhere is a thing to memorize; a formula you have seen derived is a thing you could rebuild if you forgot it.
+This is worth knowing. A formula that seems to come from nowhere is
+something to memorise. A formula you have seen built is something you
+could build again if you forgot it.
 
-### The ± is not decoration
+### The ± matters
 
-Look at the step `(x + 3)² = 4`. The next line is `x + 3 = ±2`, because both `2² ` and `(−2)²` are 4.
+Look at the step $(x + 3)^2 = 4$. The next line is $x + 3 = \pm 2$,
+because $2^2 = 4$ and $(-2)^2 = 4$ as well.
 
-That is where the two roots come from, and it is why a quadratic has two of them. The `±` in the formula is the same `±`, carried through.
+That is where the two roots come from, and it is why a quadratic can
+have two of them. The $\pm$ in the quadratic formula is the same $\pm$,
+carried through.
 
-## When There Is Nothing to Find
+## When there is nothing to find
+
+Where is the vertex of $x^2 + 2x + 7$? Does the curve reach the
+horizontal axis?
 
 ```python exec
 id: when-there-is-nothing-to-find-1
@@ -253,15 +346,32 @@ ax.set_ylim(-2, 30)
 ax.set_title("A parabola with no roots")
 ```
 
-The vertex is at `(−1, 6)`, which is above the axis, and the curve opens upwards. So it never comes down to zero and there are no real roots — and you can see that from the completed form without computing anything, because `(x + 1)² + 6` is a non-negative thing plus 6.
+The vertex is at $(-1, 6)$, above the axis, and the curve opens
+upwards. So the curve never comes down to zero, and there are no real
+roots.
 
-The formula says the same by giving a negative discriminant. The completed form says it in a way you can picture.
+We can see this from the completed form, $(x + 1)^2 + 6$, without
+working anything out. The square $(x + 1)^2$ is never negative, so the
+whole expression is always at least 6.
 
-And [Complex numbers: roots that are not real](tutorial:complex-roots) is where those roots have gone. They exist; they are just not on this line.
+The formula tells us the same thing with a negative discriminant. The
+completed form says it in a way we can picture.
+
+And [Complex numbers: roots that are not real](tutorial:complex-roots)
+showed where those roots have gone. They exist, but they are not on
+this line.
 
 ### Your turn
 
-Without plotting: which of these have real roots? Use the completed form to decide.
+Here are three quadratics:
+
+- a: $x^2 - 6x + 5$
+- b: $x^2 + 4x + 9$
+- c: $x^2 - 2x + 1$
+
+1. Without plotting, use the completed form to decide which of them
+   have real roots. Write your answers as comments.
+2. Check with `complete_the_square`.
 
 ```python exec
 id: your-turn-2
@@ -274,17 +384,28 @@ id: your-turn-2
 
 ## Reflection
 
-One curve, moved around, and one rearrangement that tells you where it has been moved to.
+There is one curve, moved around. One rearrangement tells us where it
+has been moved to.
 
-**Completing the square is rewriting, not solving.** `x² + 6x + 5` and `(x + 3)² − 4` are the same function; the second one just has the answer written on the outside.
+Here are four ideas to take with you.
 
-**The trick is halving, and it is not arbitrary.** `(x + h)²` has `2h` in the middle, so halving the middle coefficient is how you find `h`. Expand the bracket once and the step stops being a rule to remember.
+**Completing the square is rewriting, not solving.** $x^2 + 6x + 5$ and
+$(x + 3)^2 - 4$ are the same function. The second one has the turning
+point written on the outside.
 
-**The quadratic formula is this, done in general.** If you ever forget it, you can rebuild it.
+**The halving step has a reason.** $(x + h)^2$ has $2h$ in the middle,
+so halving the middle number finds $h$. Multiply out the bracket once,
+and the step stops being a rule to remember.
 
-**No roots is a fact about the picture.** The vertex is above the axis and the curve opens upwards, so nothing crosses. No amount of algebra will produce a real answer, and that is not a failure.
+**The quadratic formula is completing the square, done with letters.**
+If you ever forget the formula, you can build it again.
 
-In a few sentences, for `x² − 6x + 5`, which of the two forms would you rather be given, and for what question?
+**No real roots is a fact about the picture.** The vertex is above the
+axis and the curve opens upwards, so the curve never crosses. No amount
+of algebra will give a real answer, and that is not a failure.
+
+Think about $x^2 - 6x + 5$. Which of the two forms would you prefer to
+be given, and for which question? Write a few sentences.
 
 ## Where to Read More
 

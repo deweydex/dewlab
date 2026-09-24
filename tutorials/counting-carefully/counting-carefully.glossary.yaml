@@ -6,19 +6,22 @@ entries:
   - term: "permutation, P(n, r)"
     kind: formula
     definition: >
-      The number of ways to choose and arrange r objects from n distinct
-      ones, where order matters. n! / (n-r)!.
+      A permutation is an arrangement of r objects chosen from n
+      different objects, where the order matters. P(n, r) counts them,
+      and equals n! / (n-r)!.
     example: "P(8, 3) = 8! / 5! = 336"
   - term: "combination, C(n, r)"
     kind: formula
     definition: >
-      The number of ways to choose r objects from n when the order does not
-      matter. It is a permutation count divided by r!, since each
-      combination can be arranged r! ways. Written (n choose r).
+      A combination is a choice of r objects from n different objects,
+      where the order does not matter. C(n, r) counts them. It is the
+      permutation count divided by r!, because each combination can be
+      arranged in r! ways. It is also written (n choose r).
     example: "C(52, 5) = 52! / (5! * 47!) = 2,598,960"
   - term: multiplication principle
     kind: concept
     definition: >
-      If there are k choices at each of r steps, and repetition is
-      allowed, the total number of outcomes is k^r.
+      The multiplication principle says that if there are k choices at
+      each of r steps, the total number of outcomes is k^r. We use it
+      when the same thing can be chosen more than once.
     example: "26 ** 4  # four-letter sequences from 26 letters"

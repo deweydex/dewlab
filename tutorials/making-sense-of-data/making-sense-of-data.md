@@ -19,11 +19,21 @@ covers:
 
 # Statistics: averages, spread and frequency
 
-We have learned to count possibilities and calculate probabilities. Now we turn to actual data: numbers that have been collected, measured, or observed. Statistics gives us tools to summarize, describe, and interpret data -- and every one of those tools translates into a function we can write.
+In the last three tutorials we counted possibilities and worked out probabilities. Now we turn to real data. Data is a collection of numbers or labels that somebody has counted, measured or observed.
 
-## A Dataset to Work With
+*Statistics* is the part of mathematics that summarizes, describes and explains data. Every tool on this page can become a Python function that we write ourselves.
 
-Let's start with something concrete. Here are the scores of 30 students on a programming quiz, marked out of 50:
+On this page we:
+
+- find the "typical" value of a dataset in three ways: the mean, the median and the mode
+- measure how spread out the data is
+- sort data into kinds, and see which tools suit each kind
+- count how often values appear, and draw the counts as a histogram
+- look at how a summary can mislead
+
+## A dataset to work with
+
+A *dataset* is one collection of data that belongs together. Here is ours: the scores of 30 students on a programming quiz, marked out of 50.
 
 ```python exec
 id: a-dataset-to-work-with-1
@@ -35,27 +45,48 @@ print("Number of students:", len(scores))
 print("First few scores:", scores[:5])
 ```
 
-Looking at a raw list of 30 numbers does not tell us very much. We need to summarize. The most fundamental question is: what is a "typical" value?
+A list of 30 numbers on its own does not tell us very much. We need to summarize it. The first question to ask is: what is a "typical" score?
 
-## Measures of Central Tendency
+## Measures of central tendency
 
-There are three classic ways to define the "center" of a dataset.
+A *measure of central tendency* is a single number that describes the center, or typical value, of a dataset. There are three common ones.
 
-**Mean** (arithmetic average): add everything up and divide by the count.
+The *mean* is the ordinary average. To find it, we add up all the values and divide by how many values there are. In symbols, with $n$ values $x_1, x_2, \ldots, x_n$:
 
 $$\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i$$
 
-**Median**: the middle value when the data is sorted. If there is an even number of values, take the average of the two middle ones.
+We write the mean as $\bar{x}$ and say "x bar". The $\sum$ sign means "add up". For example, the mean of 2, 4 and 9 is $\frac{2 + 4 + 9}{3} = \frac{15}{3} = 5$.
 
-**Mode**: the value that appears most frequently.
+The *median* is the middle value when the data is sorted. The median of 2, 4 and 9 is 4. If there is an even number of values, there are two middle values, and the median is their average. The median of 2, 4, 9 and 11 is $\frac{4 + 9}{2} = 6.5$.
 
-Each captures a different notion of "typical," and they can give quite different answers.
+The *mode* is the value that appears most often. The mode of 3, 5, 5 and 8 is 5.
+
+| Measure | How to find it | Example |
+|---|---|---|
+| Mean | Add up the values, then divide by how many there are | 2, 4, 9 gives 5 |
+| Median | Sort the values, then take the middle one | 2, 4, 9 gives 4 |
+| Mode | Find the value that appears most often | 3, 5, 5, 8 gives 5 |
+
+Each one describes "typical" in a different way, and they can give quite different answers.
 
 ### Your turn
 
-Let's write three functions: `mean(data)`, `median(data)`, and `mode(data)`.
+1. Write `mean(data)`. You wrote a `mean` function in
+   [Designing and testing good functions](tutorial:building-reusable-tools),
+   so you can copy it here or write it again.
+2. Write `median(data)`. You need to sort the data first. Python's
+   built-in `sorted()` gives back a new sorted list, and leaves the old
+   list as it was. We wrote our own sorts in
+   [Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order),
+   so now we can use Python's.
+3. Write `mode(data)`. For this, you need to count how many times each
+   value appears.
+4. Give each function a docstring.
+5. Run the last cell, which uses all three on the scores.
 
-For `mean`, you have already written this -- bring it forward or rewrite it. For `median`, you will need to sort the data first (use Python's built-in `sorted()` -- we earned that right after building our own sorts). For `mode`, think about how to count how many times each value appears. A dictionary is a natural tool here:
+A dictionary, from
+[Dictionaries: looking things up by name](tutorial:looking-things-up-by-name),
+is a good tool for counting. Here is a short reminder of how one works:
 
 ```python exec
 id: your-turn-1
@@ -99,15 +130,19 @@ print("Mode:", mode(scores))
 
 ### Interpreting the results
 
-Do your three measures agree? Are they close together or far apart? When they differ, what does that tell us about the shape of the data?
+Do your three measures agree? Are they close together or far apart?
 
-What's your interpretation?
+Look at your mode. Did your function find one mode, or several? What does that tell you about how useful the mode is for these scores?
+
+When the three measures differ, what might that tell us about the shape of the data?
 
 ### When measures disagree
 
-Consider this dataset of salaries (in thousands): [30, 32, 33, 35, 35, 36, 38, 40, 250].
+Here is a small dataset of salaries, in thousands of euro: 30, 32, 33, 35, 35, 36, 38, 40 and 250.
 
-The mean will be pulled up dramatically by the outlier (250). The median will barely notice it. This is why the median is often preferred for skewed data like income distributions: it is *robust* to outliers.
+One of these values is very different from the others. An *outlier* is a value that is far away from the rest of the data. Here, 250 is an outlier.
+
+What do you think the outlier will do to the mean? What will it do to the median? Make a guess, then run the cell.
 
 ```python exec
 id: when-measures-disagree-1
@@ -119,23 +154,42 @@ print("Mode:", mode(salaries))
 # Which one best represents a "typical" salary?
 ```
 
-## Measures of Spread
+The outlier pulls the mean up a long way, to nearly 59. The median is 35, and the outlier hardly changes it. The median only depends on which value is in the middle, so one very large value moves it by at most one place.
 
-Knowing the center is only half the story. Two datasets can have the same mean but very different shapes: one might be tightly clustered, the other wildly spread out.
+A measure is *robust* when an outlier hardly changes it. The median is robust, and the mean is not. Data is *skewed* when it has a long tail of values on one side. Incomes are skewed: most people earn a middle amount, and a few earn very large amounts. This is why people often use the median for skewed data such as incomes.
 
-**Range**: the simplest measure of spread. It is the maximum minus the minimum.
+## Measures of spread
 
-**Standard deviation**: measures how far, on average, each data point is from the mean.
+The center tells us only part of what we want to know. Two datasets can have the same mean but look very different. In one, the values might be close together. In the other, they might be spread far apart.
 
-$$\sigma = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(x_i - \bar{x})^2}$$
+A *measure of spread* is a number that describes how spread out the values are. We look at two.
 
-The formula looks complicated, but the idea is straightforward: find each value's distance from the mean, square those distances (to make them all positive), average them, and take the square root to get back to the original units.
+The *range* is the largest value minus the smallest value. It is the simplest measure of spread. The range of 2, 4 and 9 is $9 - 2 = 7$.
+
+The *standard deviation* measures how far the values are from the mean, on average. Here is the idea in four steps:
+
+1. Find how far each value is from the mean.
+2. Square each of those distances. This makes them all positive.
+3. Find the average of the squares.
+4. Take the square root. This brings the answer back to the same units as the data.
+
+The formula writes those four steps in symbols:
+
+$$\sigma = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})^2}$$
+
+We write the standard deviation as $\sigma$, the Greek letter sigma.
+
+Let's try it on 2, 4 and 9, whose mean is 5. The distances from the mean are $-3$, $-1$ and $4$. Their squares are 9, 1 and 16. The average of the squares is $\frac{9 + 1 + 16}{3} = \frac{26}{3} \approx 8.67$. The square root of 8.67 is about 2.94, so the standard deviation is about 2.94.
+
+Some books and calculators divide by $n - 1$ in place of $n$. That version is called the *sample standard deviation*, and it gives a slightly larger answer. On this page we divide by $n$, as the formula shows.
 
 ### Your turn
 
-Let's write `data_range(data)` and `std_dev(data)`. For `std_dev`, break the calculation into steps:
+1. Write `data_range(data)`.
+2. Write `std_dev(data)`. Use your `mean` function inside it.
+3. Run the third cell to use both on the scores.
 
-**Pseudocode:**
+Here are the steps for `std_dev`, in pseudocode:
 ```
 COMPUTE the mean of the data
 FOR each value:
@@ -162,32 +216,41 @@ print("Range:", data_range(scores))
 print("Standard deviation:", round(std_dev(scores), 2))
 ```
 
-A standard deviation of about 5-6 on data with a mean around 38 tells us that most scores are within 5-6 points of the mean. If the standard deviation were 15, the scores would be much more spread out. If it were 1, they would be tightly clustered.
+What does your standard deviation tell you? The scores have a mean of about 38 and a standard deviation of about 5 or 6. So most of the scores are within 5 or 6 points of the mean: 18 of the 30 scores are between about 32 and 44.
+
+If the standard deviation were 15, the scores would be much more spread out. If it were 1, they would all be very close to the mean.
 
 ### Your turn
 
-See if you can create two artificial datasets with the same mean but very different standard deviations, then verify using your functions.
+Can you make up two datasets that have the same mean, but very different standard deviations? Use your functions to check.
 
 ```python exec
 id: your-turn-9
 # Two datasets with the same mean but different spreads
 ```
 
-## Data Types
+## Data types
 
-Not all data is the same. Before applying statistical tools, we need to know what kind of data we are working with:
+Data comes in different kinds. Before we use a statistical tool, we need to know what kind of data we have, because not every tool suits every kind. (These kinds are different from Python's data types, such as `int` and `str`, from [Variables, data types and text](tutorial:storing-and-computing).)
 
-**Categorical (nominal)**: labels with no inherent order. Favourite programming language, color of car, type of pet. You can count the mode but the mean is meaningless.
+*Categorical* data, also called *nominal* data, is made of labels with no natural order. Examples are a favourite programming language, the colour of a car, or a type of pet. We can find the mode, but a mean has no meaning.
 
-**Ordinal**: categories with a natural order but no consistent spacing. Skill level (beginner, intermediate, advanced), satisfaction rating (1-5 stars). The median makes sense but the mean is debatable.
+*Ordinal* data is made of labels that have a natural order, but the steps between them are not equal. Examples are a skill level (beginner, intermediate, advanced) or a satisfaction rating from 1 to 5 stars. The median makes sense. People disagree about whether the mean does.
 
-**Discrete numerical**: countable values. Number of bugs in a program, number of students in a class. All our statistical tools work.
+*Discrete* numerical data is made of values we count, so they are whole numbers. Examples are the number of bugs in a program, or the number of students in a class. All our tools work.
 
-**Continuous numerical**: values that can take any real number in a range. Temperature, time, weight. All our statistical tools work.
+*Continuous* numerical data is made of values we measure, and they can be any number in a range. Examples are temperature, time and weight. All our tools work.
+
+| Kind of data | Example | Mode | Median | Mean |
+|---|---|---|---|---|
+| Categorical (nominal) | colour of a car | yes | no | no |
+| Ordinal | star rating | yes | yes | people disagree |
+| Discrete numerical | number of bugs | yes | yes | yes |
+| Continuous numerical | temperature | yes | yes | yes |
 
 ### Your turn
 
-For each of the following, what data type is it, and which measures of central tendency (mean, median, mode) would be appropriate?
+What kind of data is each of these? Which measures of central tendency (mean, median, mode) make sense for it? Write your answers as comments in the cell.
 
 1. The brands of laptops in a classroom
 2. Student satisfaction ratings (1 to 5)
@@ -203,17 +266,24 @@ id: your-turn-10
 # 4. Time to complete:
 ```
 
-## Frequency Distributions
+## Frequency distributions
 
-A frequency distribution shows how often each value (or range of values) occurs. This is often more informative than any single summary number.
+The *frequency* of a value is how many times it appears in the data. A *frequency distribution* is a list of the values, or groups of values, with how often each one appears. It often tells us more than any single summary number.
 
-For discrete data with few unique values, we can count each one directly. For continuous data or discrete data with many unique values, we group the data into *bins* (ranges) and count how many values fall in each bin.
+Some data has only a few different values, such as a dice score from 1 to 6. Then we can count each value on its own.
+
+Other data has many different values, such as our quiz scores or any continuous data. Then we split the range of the data into equal groups. A *bin* is one of those groups, such as the scores from 27 to 31. We count how many values fall in each bin.
 
 ### Your turn
 
-How might you write a function `frequency_table(data, num_bins)` that divides the range of the data into `num_bins` equal-width bins and counts how many values fall in each? Return the result as a list of tuples, where each tuple contains the bin range and the count.
+How might you write a function `frequency_table(data, num_bins)`?
 
-**Pseudocode:**
+1. Split the range of the data into `num_bins` bins of equal width.
+2. Count how many values fall in each bin.
+3. Return a list with one pair for each bin. Each pair holds the bin's range and its count, such as `((27, 31.2), 5)`. A pair in round brackets like this is a tuple, as in
+   [Probability: simple, compound and conditional](tutorial:what-are-the-chances).
+
+Here are the steps in pseudocode. The notation `[lower, upper)` means "from `lower` up to `upper`, including `lower` but not `upper`".
 ```
 FIND the minimum and maximum of the data
 COMPUTE bin_width = (max - min) / num_bins
@@ -240,7 +310,9 @@ for bin_range, count in table:
 
 ## Visualization with matplotlib
 
-Numbers are good but pictures can reveal patterns that are hard to see otherwise. Let's make a histogram of our scores:
+Numbers are useful, but a picture can show patterns that are hard to see in numbers. A *histogram* is a chart of a frequency distribution. It has one bar for each bin, and the height of the bar is the count.
+
+To draw one, we use matplotlib, a Python module for drawing charts. The line `import matplotlib.pyplot as plt` loads it, and lets us call it by the short name `plt`. Run the cell to draw a histogram of our scores.
 
 ```python exec
 id: visualisation-with-matplotlib-1
@@ -254,11 +326,13 @@ plt.title('Distribution of Quiz Scores')
 plt.show()
 ```
 
-The `hist()` function does the binning and plotting for us. The `edgecolor` makes the bars distinct, and `alpha` controls transparency.
+The `hist()` function splits the data into bins and draws the bars for us. `edgecolor='black'` draws a black line around each bar, so we can see where one bar ends and the next begins. `alpha` sets how see-through the bars are, from 0 (invisible) to 1 (solid).
 
 ### Your turn
 
-What happens when you create a histogram with different numbers of bins (try 3, 5, 8, and 12)? Too few bins hides detail; too many bins creates noise. Finding the right balance is part of the art of data analysis.
+What happens when you draw the histogram with a different number of bins? Try 3, 5, 8 and 12.
+
+Which number of bins shows the shape of the scores best? With too few bins, what do you lose? With too many, what gets in the way? Choosing the number of bins is a judgement, and part of the skill of working with data.
 
 ```python exec
 id: your-turn-13
@@ -267,26 +341,33 @@ id: your-turn-13
 
 ### Interpreting the shape
 
-When you look at a histogram, consider:
+A histogram is *symmetric* when its left half and right half are roughly mirror images of each other. A histogram with one peak is called *unimodal*.
+
+When you look at a histogram, ask yourself:
+
 - Is it roughly symmetric, or is it skewed to one side?
-- Is there a single peak (unimodal) or multiple peaks?
+- Does it have a single peak, or several peaks?
 - Are there gaps or outliers?
 
 What do you observe about the score distribution?
 
 ## A note on limitations
 
-Statistical summaries are powerful but they can also mislead. The mean of [0, 0, 0, 0, 100] is 20, but 20 is not "typical" of anything in that dataset. A histogram can look very different depending on the bin width. Always look at the data from multiple angles, and be clear about what the numbers do and do not tell you.
+Summaries are useful, but they can also mislead. The mean of 0, 0, 0, 0 and 100 is 20. But 20 is not typical of anything in that dataset.
 
-This critical awareness -- knowing when a statistical tool is appropriate and when it might mislead -- is as important as knowing how to compute the statistic in the first place.
+A histogram can also look very different when the bin width changes. So it helps to look at the data in several ways, and to be clear about what the numbers tell you and what they do not.
+
+Knowing when a tool suits the data, and when it might mislead, is as important as knowing how to work it out.
 
 ## Reflection
 
-We have built a complete set of descriptive statistics tools: mean, median, mode, range, standard deviation, frequency distributions, and histograms. Each one is a function we wrote and tested ourselves.
+We have built a full set of tools that describe data: mean, median, mode, range, standard deviation, frequency tables and histograms. We wrote and tested each of the functions ourselves.
 
-The progression matters: we started with individual numbers (central tendency), then measured spread, then looked at the full distribution. Each level gives us more information. Together they give us a rich picture of a dataset.
+The order matters. First we found a single typical value (central tendency). Then we measured the spread. Then we looked at the whole distribution. Each step gives us more information, and together they give us a full picture of a dataset.
 
-You now have everything you need to build these tools yourself, from nothing, and turn them on real probability and data analysis problems.
+You can now build these tools yourself, starting from nothing, and use them on real problems in probability and data analysis. In the next tutorial,
+[Charts: choosing the right chart for your data](tutorial:pictures-worth-numbers),
+we look at more ways to draw data.
 
 What surprised you about working with data?
 

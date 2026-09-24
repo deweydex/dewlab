@@ -19,19 +19,46 @@ covers:
 
 # Functions and their graphs
 
-You have written functions since *Building Reusable Tools*, and you have plotted data since *Charts: choosing the right chart for your data*. Nobody has yet asked you to plot a *function* — and that is the habit almost everything after this depends on.
+We have written functions since
+[Writing your own functions](tutorial:writing-your-own-functions). We
+have drawn charts of data since
+[Charts: choosing the right chart for your data](tutorial:pictures-worth-numbers).
+In [Complex numbers: roots that are not real](tutorial:complex-roots) we
+drew three curves, to see why a quadratic can have no real roots.
 
-Trigonometry is a graph. A limit is a graph. A derivative is the slope of a graph. Once you can put a function on a pair of axes and read an answer off it, all three of those stop being abstract.
+On this page we put those two skills together, on purpose. We draw a
+function, and we learn to read answers from the picture. Much of the
+rest of the course depends on this habit. Trigonometry, limits and
+derivatives all use graphs. Once you can draw a function and read an
+answer from it, those topics become much less abstract.
 
-There is also something slightly odd about the series so far that this fixes. *Charts: choosing the right chart for your data* taught you to plot data and never came back to it, and *Polynomials: representing and combining them in Python* built a polynomial evaluator that never got drawn. Those two have been waiting for each other.
+In [Polynomials: representing and combining them in Python](tutorial:expressions-come-alive)
+we wrote a function that works out a polynomial's value. We never drew
+its output. Now we can.
 
-## A Function Is a Machine
+On this page we:
 
-The word "function" has been doing two jobs and nobody has separated them.
+- see what makes something a function in mathematics
+- draw any function as a curve
+- see what each number in a line and in a quadratic does to the picture
+- solve equations by reading where curves cross
+- undo a function, and see when that is not possible
 
-In Python, a function is a piece of code with a name. In mathematics, a function is a rule that takes an input and gives back exactly one output. **They are the same idea**, and the mathematical definition is the stricter of the two.
+## A function is a machine
 
-"Exactly one output" is the part that matters. Given the same input, a function must give the same answer every time — otherwise it is not a function, it is just a thing that happens.
+The word "function" has two meanings in this course, one in Python and
+one in mathematics. How are they related?
+
+In Python, a function is a piece of code with a name. In mathematics, a
+function is a rule that takes an input and gives back exactly one
+output. These are the same idea, and the mathematical meaning is the
+stricter of the two.
+
+The important part is "exactly one output". A function must give the
+same answer every time we give it the same input. If it does not, it is
+not a function in the mathematical sense.
+
+Look at the last three rows in the output. What do you notice?
 
 ```python exec
 id: a-function-is-a-machine-1
@@ -47,7 +74,9 @@ for value in [-2, 0, 3, 3, 3]:
     print(f"double({value}) = {double(value):>4}    square({value}) = {square(value)}")
 ```
 
-Notice the three 3s at the end. Same input, same output, three times. That sounds too obvious to mention until you meet something that does not do it:
+The input 3 appears three times, and it gives the same output each time.
+That may sound too obvious to mention. Now look at something that does
+not behave that way. What do you think `roll(1)` will print each time?
 
 ```python exec
 id: a-function-is-a-machine-2
@@ -61,9 +90,19 @@ for _ in range(4):
     print("roll(1) =", roll(1))
 ```
 
-`roll` is a perfectly good piece of Python and it is not a function in the mathematical sense. Feed it 1 four times and you get four different answers. **It has no graph** — you could not draw it, because there is no single height above `x = 1`.
+`roll` is good Python code, but it is not a function in the mathematical
+sense. We give it 1 each time, and the answers change. Run the cell
+again and you will probably see a different list.
 
-The mathematical word for the set of inputs a function will accept is its **domain**, and for the set of outputs it can produce, its **range**.
+**`roll` has no graph.** A graph shows one height above each $x$. There
+is no single height above $x = 1$ for `roll`, so we cannot draw it.
+
+In [Writing your own functions](tutorial:writing-your-own-functions) we
+met the domain of a function: the set of inputs it can accept. The
+*range* of a function is the set of outputs it can give.
+
+Here are two functions with a limited domain. Each one has a line you
+can uncomment to see what happens outside it.
 
 ```python exec
 id: a-function-is-a-machine-3
@@ -86,13 +125,17 @@ print(square_root(9))
 # print(square_root(-1))
 ```
 
-A domain is the answer to "what am I allowed to put in?", not a technicality, and the error you get from putting in something else is the function telling you so.
+The domain answers the question "what am I allowed to put in?". It
+matters. When we put in something outside the domain, Python gives an
+error, and that error is the function telling us so.
 
-## A Machine Has a Picture
+## A machine has a picture
 
-Now the connection this tutorial exists for.
+This is the connection this page is about.
 
-A function turns one number into another. Do that for a lot of numbers, keep the pairs, and plot them — and the machine has a shape.
+A function turns one number into another. Suppose we do that for many
+numbers, keep each (input, output) pair, and plot the pairs. Then we
+can see the function's shape.
 
 ```python exec
 id: a-machine-has-a-picture-1
@@ -123,13 +166,26 @@ def square(x):
 draw(square, label="x squared")
 ```
 
-Look at what `draw` does, because there is no magic in it. It makes a list of x values, calls your function on each one, and plots the pairs. **The list of (x, y) pairs and the curve are the same thing** — the curve is just what a very long list of pairs looks like from a distance.
+There is no magic inside `draw`. It does three things:
 
-That is worth saying because a graph can feel like a separate object that a function somehow has. It is the function's output, written down in a different medium, not a separate object the function has.
+1. It makes a list of 201 $x$ values, spread evenly from `low` to `high`.
+2. It calls your function on each one, to get the $y$ values.
+3. It plots the $(x, y)$ pairs.
+
+**The list of $(x, y)$ pairs and the curve are the same thing.** The
+curve is what a very long list of pairs looks like from far away.
+
+This is worth saying, because a graph can feel like a separate object
+that a function somehow owns. The *graph* of a function is its outputs,
+drawn as points above its inputs.
 
 ### Your turn
 
-What happens when you plot `f(x) = x**3 - 4*x`? Before you run it, how many times do you think it will cross the horizontal axis?
+Here is the function $f(x) = x^3 - 4x$.
+
+1. Before you plot it, predict: how many times will the curve cross the
+   horizontal axis?
+2. Remove the `#` from the last line in the cell, and run it to check.
 
 ```python exec
 id: your-turn-1
@@ -140,9 +196,15 @@ def cubic(x):
 # draw(cubic, label="x^3 - 4x")
 ```
 
-## Straight Lines
+## Straight lines
 
-The simplest interesting function is a straight line, and it has exactly two things you can change about it.
+A straight line is the simplest interesting function. We write it as
+
+$$y = mx + c$$
+
+There are two numbers we can change, $m$ and $c$. The next two cells
+change them one at a time. As you run them, what does $m$ do to the
+line? What does $c$ do?
 
 ```python exec
 id: straight-lines-1
@@ -168,15 +230,40 @@ draw(line(1, -3), label="m=1, c=-3", ax=ax)
 ax.set_title("Changing c, keeping m at 1")
 ```
 
-Two numbers, two completely separate effects. **`m` tilts the line and `c` slides it up and down**, and neither one interferes with the other.
+The two numbers have two separate effects:
 
-`line` is doing something you have not seen before: it is a function that returns a function. `line(2, 0)` hands you back a new function that multiplies by 2. That pattern is useful whenever you want a family of similar functions, and you will use it repeatedly from here on.
+| Number | Name | What it does to the line |
+|---|---|---|
+| $m$ | slope | tilts the line |
+| $c$ | intercept | slides the line up or down |
 
-The names are conventional rather than meaningful — `m` for the slope, `c` for where it crosses the vertical axis. Different countries use different letters for the same two things.
+Changing one does not change what the other does.
+
+The *slope* $m$ tells us how steep the line is: for each step of 1 to the
+right, the line goes up by $m$. The *intercept* $c$ is where the line
+crosses the vertical axis. For example, $y = 2x + 1$ has slope 2 and
+crosses the vertical axis at 1.
+
+The letters are a habit, not a rule. Different countries use different
+letters for these same two numbers. In the United States, for example,
+the line is often written $y = mx + b$.
+
+The function `line` does something new: it is a function that returns a
+function. `line(2, 0)` gives us back a new function, and that new
+function multiplies its input by 2. This pattern is useful whenever we
+want a family of similar functions, and we use it again in the next
+section.
 
 ### Your turn
 
-Which of these three lines are parallel? Make a prediction, then plot them to check.
+Here are three lines:
+
+- a: $y = 3x + 1$
+- b: $y = -3x + 1$
+- c: $y = 3x - 4$
+
+1. Which of these lines are parallel? Write your prediction as a comment.
+2. Plot all three on one pair of axes to check.
 
 ```python exec
 id: your-turn-2
@@ -187,11 +274,18 @@ id: your-turn-2
 # Your prediction as a comment, then plot all three on one pair of axes.
 ```
 
-Slope, and what it means to say two lines are perpendicular, gets a tutorial of its own — [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances), which comes after this one. Here a line is just one more function to draw.
+Slope has a page of its own later, together with what it means for two
+lines to be perpendicular:
+[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances).
+Here, a line is one more function to draw.
 
-## Curves That Bend
+## Curves that bend
 
-A quadratic has an `x²` in it. That single change turns the straight line into a curve with a turning point.
+A quadratic has an $x^2$ in it. That one change turns the straight line
+into a curve with a turning point.
+
+What does the number $a$ in $ax^2$ do? Run the cell and compare the four
+curves.
 
 ```python exec
 id: curves-that-bend-1
@@ -209,9 +303,12 @@ ax.set_ylim(-10, 10)
 ax.set_title("What the a in ax^2 does")
 ```
 
-A bigger `a` makes it narrower; a negative `a` turns it upside down. Same "one coefficient, one visible change" pattern as the line.
+A bigger $a$ makes the curve narrower. A negative $a$ turns it upside
+down. This is the same pattern we saw with the line: one number, one
+visible change.
 
-And a cubic bends twice.
+A cubic has an $x^3$ in it, and it can bend twice. Look at the two
+cubics below. Which one turns, and which one does not?
 
 ```python exec
 id: curves-that-bend-2
@@ -226,15 +323,37 @@ draw(cubic(1, 0, -4, 0), low=-3, high=3, label="x^3 - 4x", ax=ax)
 ax.set_title("Cubics")
 ```
 
-There is a pattern here that holds generally: **the highest power tells you how many times the curve can turn.** A line (`x¹`) does not turn. A quadratic (`x²`) turns once. A cubic (`x³`) turns at most twice. It is a good rule of thumb for sketching something before you plot it.
+The curve $x^3 - 4x$ turns twice. The curve $x^3$ flattens out for a
+moment at 0, but it keeps going up, so it never turns.
 
-Use your polynomial evaluator from *Polynomials: representing and combining them in Python* if you still have it — it does exactly what the functions above do, and it was written before you had anywhere to draw its output.
+There is a general pattern here. **The highest power tells us how many
+times the curve can turn: at most one less than that power.**
 
-## Reading an Answer Off the Picture
+| Function | Highest power | Turns at most |
+|---|---|---|
+| line | $x^1$ | 0 |
+| quadratic | $x^2$ | 1 |
+| cubic | $x^3$ | 2 |
 
-Here is the habit everything after this depends on.
+This is a useful rule for sketching a curve before you plot it.
 
-**Where a curve crosses the horizontal axis, the function is zero.** So solving `f(x) = 0` and finding where the curve crosses are the same question.
+If you still have your polynomial evaluator from
+[Polynomials: representing and combining them in Python](tutorial:expressions-come-alive),
+try drawing with it. It does the same job as the functions above. We
+wrote it before we had any way to draw its output.
+
+## Reading an answer off the picture
+
+Here is the habit that much of the rest of the course depends on.
+
+**Where a curve crosses the horizontal axis, the function is zero.** So
+two questions are the same question:
+
+- What values of $x$ solve $f(x) = 0$?
+- Where does the curve cross the horizontal axis?
+
+Where does this curve cross? Run the cell and read the answer from the
+picture.
 
 ```python exec
 id: reading-an-answer-off-the-picture-1
@@ -244,11 +363,16 @@ ax.set_ylim(-2, 8)
 ax.set_title("Where does it cross?")
 ```
 
-It crosses at 2 and at 3. Check that against the solver from *Solving equations: linear, quadratic and simultaneous* and you will get the same two numbers.
+The curve crosses at 2 and at 3. The solver from
+[Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations)
+gives the same two numbers.
 
-Two different methods, one answer. That is worth doing at least once for something you already know, because it is what tells you the picture can be trusted for something you do not.
+That gives us two methods and one answer. It is worth doing this once
+for a question where we already know the answer. Then we can trust the
+picture for questions where we do not.
 
-The picture also answers questions the formula does not obviously answer:
+The picture can also answer questions that are harder to answer with a
+formula. Where do these two curves meet?
 
 ```python exec
 id: reading-an-answer-off-the-picture-2
@@ -258,11 +382,25 @@ ax.set_ylim(-3, 8)
 ax.set_title("Where are these two equal?")
 ```
 
-Two curves cross where the two functions are equal. Reading those two points off the graph solves `x² − 5x + 6 = x − 1` without doing any algebra at all — and it works just as well for equations that have no tidy algebraic method.
+Two curves cross where the two functions are equal. The two crossing
+points solve
+
+$$x^2 - 5x + 6 = x - 1$$
+
+without any algebra. From the picture, the crossings are near
+$x = 1.6$ and $x = 4.4$. The exact answers are $3 - \sqrt{2}$ and
+$3 + \sqrt{2}$, about 1.59 and 4.41.
+
+This method works equally well for equations that have no neat
+algebraic method.
 
 ### Your turn
 
-How might you find, from a picture, roughly where `x³ − 4x = 1`?
+Where is $x^3 - 4x = 1$? We can find the answer, roughly, from a
+picture.
+
+1. Plot $x^3 - 4x$ and the flat line $y = 1$ on one pair of axes.
+2. Read off the $x$ values where they cross.
 
 ```python exec
 id: your-turn-3
@@ -270,11 +408,16 @@ id: your-turn-3
 # then read off the crossings.
 ```
 
-## Undoing a Function
+## Undoing a function
 
-The last idea, and the one that needs the most care with the least mathematics.
+This is the last idea on the page. It needs the least mathematics, but
+the most care.
 
-An **inverse function** undoes what a function did. If `f` turns 3 into 6, its inverse turns 6 back into 3.
+In [Writing your own functions](tutorial:writing-your-own-functions) we
+met the inverse of a function. An inverse function undoes what a
+function did. If $f$ turns 3 into 6, its inverse turns 6 back into 3.
+
+What do you expect at the end of each line below?
 
 ```python exec
 id: undoing-a-function-1
@@ -290,9 +433,16 @@ for value in [1, 5, -3, 0]:
     print(f"{value} -> double -> {double(value)} -> halve -> {halve(double(value))}")
 ```
 
-Every one comes back to where it started. That round trip is what "inverse" means, and it is a test you can run rather than a definition to accept.
+Every value comes back to where it started. That round trip is what
+"inverse" means. It is also a test we can run for ourselves.
 
-The picture of an inverse is a reflection. Swapping the inputs and outputs swaps the axes, so the graph flips across the diagonal line `y = x`.
+The picture of an inverse is a mirror image. The inverse swaps inputs
+and outputs, so it swaps the two axes. The graph flips across the
+diagonal line $y = x$.
+
+The next cell uses `lambda x: x ** 2`. A `lambda` is a short way to
+write a small function without giving it a name. Here it means the same
+as our `square` function.
 
 ```python exec
 id: undoing-a-function-2
@@ -308,7 +458,8 @@ ax.set_title("A function and its inverse, mirrored in y = x")
 
 ### When you cannot undo it
 
-Not every function has an inverse, and the reason is the "exactly one output" rule biting from the other end.
+Not every function has an inverse. The reason is the "exactly one
+output" rule again, this time seen from the other side.
 
 ```python exec
 id: undoing-a-function-3
@@ -320,15 +471,24 @@ print("square(3) =", square(3))
 print("square(-3) =", square(-3))
 ```
 
-Both 3 and −3 give 9. So what should the inverse of 9 be? There is no single right answer, and a function must give exactly one.
+Both 3 and $-3$ give 9. So what should the inverse give for 9? There is
+no single right answer, and a function must give exactly one.
 
-This is why `math.sqrt(9)` returns 3 and not −3: somebody made a decision to keep only the positive half, so that the square root could be a function at all. The plot above only goes from 0 upwards for the same reason.
+This is why `math.sqrt(9)` gives 3, and not $-3$. Mathematicians agreed
+to keep only the positive answer, so that the square root can be a
+function. For the same reason, the plot above starts at 0.
 
-**A function can only be undone if it never sends two different inputs to the same output.** Doubling can. Squaring cannot, unless you restrict what you will feed it.
+**A function can be undone only if it never sends two different inputs
+to the same output.** Doubling can be undone. Squaring cannot, unless we
+limit the inputs, for example to numbers that are 0 or more.
 
 ### Your turn
 
-Does `f(x) = x³` have an inverse over all the numbers? Answer by thinking about whether two different inputs can give the same output — then check with a plot.
+Does $f(x) = x^3$ have an inverse over all the numbers?
+
+1. Think about it first: can two different inputs give the same output?
+   Write your reasoning as a comment.
+2. Check with a plot.
 
 ```python exec
 id: your-turn-4
@@ -337,19 +497,28 @@ id: your-turn-4
 
 ## Reflection
 
-A function is a rule with exactly one output per input, and that rule has a shape.
+A function is a rule with exactly one output for each input, and that
+rule has a shape.
 
-Here is what to take from this.
+Here are four ideas to take with you.
 
-**A graph is output, not decoration.** It is a long list of (x, y) pairs seen from a distance, and everything you can compute you can also draw.
+**A graph is the function's output, drawn.** It is a long list of
+$(x, y)$ pairs seen from far away. Anything we can compute, we can also
+draw.
 
-**One coefficient makes one visible change.** Lines have two numbers, quadratics have three, and each of them does a separate thing to the picture. That pattern comes back in every family of curves in the rest of the course.
+**One number makes one visible change.** A line has two numbers and a
+quadratic has three. Each one does a separate thing to the picture. We
+will see this pattern again with every family of curves in the course.
 
-**Crossing the axis is solving the equation.** Once you believe that, a picture becomes a way of answering questions, including questions with no tidy algebraic route.
+**Crossing the axis is solving the equation.** Once we trust that, a
+picture becomes a way to answer questions, including questions with no
+neat algebraic method.
 
-**An inverse is a round trip, and not everything has one.** Whether a function can be undone is a question about whether two inputs ever collide.
+**An inverse is a round trip, and not every function has one.** A
+function can be undone only if no two inputs give the same output.
 
-In a few sentences, which did you find easier for `x² − 5x + 6 = 0` — the formula or the picture? What would change your answer?
+For $x^2 - 5x + 6 = 0$, which did you find easier: the formula or the
+picture? What would change your answer? Write a few sentences.
 
 ## Where to Read More
 

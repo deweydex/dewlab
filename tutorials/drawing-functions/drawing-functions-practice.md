@@ -7,7 +7,11 @@ version: 2026.08.23.1
 
 # Functions and their graphs — Practice
 
-Answers are hidden. The prediction is the exercise and the plot is the marking, so several of these ask you to predict before plotting.
+Each answer is hidden until you open it.
+
+Several questions ask you to predict before you plot. The prediction is
+the exercise, and the plot tells you whether you were right. The cell
+below has the `draw` helper you need.
 
 ## Tools
 
@@ -31,7 +35,7 @@ def draw(f, low=-5, high=5, steps=300, label=None, ax=None):
 draw(lambda x: x ** 2, label="x^2")
 ```
 
-## Is It a Function?
+## Is it a function?
 
 **1.** Which of these are functions in the mathematical sense?
 
@@ -42,182 +46,255 @@ draw(lambda x: x ** 2, label="x^2")
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) and (c) are functions. Each input gives exactly one output, every time.
+(a) and (c) are functions. Each input gives exactly one output, every
+time.
 
-(b) is not — the same input gives different answers.
+(b) is not a function. The same input can give different answers.
 
-(d) is a perfectly good function to a *set* of people, which is the usual fix: change what the output is allowed to be. It is not a function to a *person*, because a date has many.
-
-</details>
-
-**2.** What is the domain of each?
-
-- (a) `f(x) = 1/(x - 3)`
-- (b) `g(x) = sqrt(x + 4)`
-- (c) `h(x) = x**2`
-- (d) `k(x) = 1/sqrt(x)`
-
-<details class="dl-answer"><summary>answer</summary>
-
-(a) Everything except 3. (b) Everything from −4 upwards. (c) Everything. (d) Everything strictly above 0 — zero is excluded because you cannot divide by the square root of zero.
+(d) is not a function if the output must be one person, because many
+people are born on the same date. It becomes a function if the output
+is a *set* of people. That is the usual fix: change what the output is
+allowed to be.
 
 </details>
 
-**3.** A function has domain "all real numbers" and range "everything from 2 upwards". Sketch something it could be.
+**2.** What is the domain of each function?
+
+- (a) $f(x) = \dfrac{1}{x - 3}$
+- (b) $g(x) = \sqrt{x + 4}$
+- (c) $h(x) = x^2$
+- (d) $k(x) = \dfrac{1}{\sqrt{x}}$
 
 <details class="dl-answer"><summary>answer</summary>
 
-Anything with a minimum of 2 and no maximum. `x² + 2` is the obvious one. So is `|x| + 2`.
+(a) Every number except 3.
+
+(b) Every number from $-4$ upwards.
+
+(c) Every number.
+
+(d) Every number greater than 0. Zero is left out because
+$\sqrt{0} = 0$, and we cannot divide by zero.
+
+</details>
+
+**3.** A function has domain "all real numbers" and range "every number
+from 2 upwards". Sketch a function that fits.
+
+<details class="dl-answer"><summary>answer</summary>
+
+Any function with a lowest value of 2 and no highest value fits.
+$x^2 + 2$ is one example. $|x| + 2$ is another.
 
 </details>
 
 ## Lines
 
-**4.** For each, say the slope and where it crosses the vertical axis, then predict which is steepest.
+**4.** For each line, give the slope and the point where it crosses the
+vertical axis. Then predict: which line is steepest?
 
-- (a) `y = 3x - 2`
-- (b) `y = -5x + 1`
-- (c) `y = 0.5x + 4`
+- (a) $y = 3x - 2$
+- (b) $y = -5x + 1$
+- (c) $y = 0.5x + 4$
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) slope 3, crosses at −2. (b) slope −5, crosses at 1. (c) slope 0.5, crosses at 4.
+(a) Slope 3, crosses at $-2$.
 
-(b) is steepest. Steepness is about the size of the slope, not its sign — a slope of −5 is steeper than one of 3, it just goes the other way.
+(b) Slope $-5$, crosses at 1.
+
+(c) Slope 0.5, crosses at 4.
+
+(b) is steepest. Steepness depends on the size of the slope, and the
+sign does not matter. A slope of $-5$ is steeper than a slope of 3. It
+goes down instead of up.
 
 </details>
 
-**5.** Which of these pass through the origin?
+**5.** Which of these lines pass through the origin?
 
-`y = 2x`, `y = 2x + 1`, `y = -7x`, `y = 4`
+$y = 2x$, $\quad y = 2x + 1$, $\quad y = -7x$, $\quad y = 4$
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first and third. A line passes through the origin exactly when its intercept is zero.
+The first and the third. A line passes through the origin exactly when
+its intercept is zero.
 
-`y = 4` is horizontal at height 4 and never comes near it.
+$y = 4$ is a flat line at height 4. It never reaches the origin.
 
 </details>
 
-**6.** Plot `y = 2x + 1` and `y = -x + 7` on one pair of axes and read off where they cross. Then check by solving.
+**6.** Plot $y = 2x + 1$ and $y = -x + 7$ on one pair of axes.
+
+1. Read off the point where they cross.
+2. Check your answer by solving the equation.
 
 <details class="dl-answer"><summary>answer</summary>
 
-They cross at `(2, 5)`.
+They cross at $(2, 5)$.
 
-By algebra: `2x + 1 = −x + 7`, so `3x = 6` and `x = 2`, and then `y = 5`.
+By algebra: $2x + 1 = -x + 7$, so $3x = 6$ and $x = 2$. Then
+$y = 2(2) + 1 = 5$.
 
-The picture is trustworthy, because the two methods agree, so it can be used where the algebra is harder.
+The two methods agree, so we can trust the picture. That means we can
+use it where the algebra is harder.
 
 </details>
 
 ## Curves
 
-**7.** Before plotting: how many times does each cross the horizontal axis?
+**7.** Before you plot: how many times does each curve cross the
+horizontal axis?
 
-- (a) `y = x**2 - 4`
-- (b) `y = x**2 + 4`
-- (c) `y = x**3 - x`
-- (d) `y = x**3`
+- (a) $y = x^2 - 4$
+- (b) $y = x^2 + 4$
+- (c) $y = x^3 - x$
+- (d) $y = x^3$
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) Twice, at −2 and 2. (b) Never — it sits entirely above the axis. (c) Three times, at −1, 0 and 1. (d) Once, at 0.
+(a) Twice, at $-2$ and 2.
+
+(b) Never. The curve sits completely above the axis.
+
+(c) Three times, at $-1$, 0 and 1.
+
+(d) Once, at 0.
 
 </details>
 
-**8.** What is the most times a cubic can cross the axis? And a quartic (`x⁴`)?
+**8.** What is the largest number of times a cubic can cross the axis?
+What about a quartic, which has an $x^4$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Three and four. In general, a polynomial of degree n crosses at most n times, because it has at most n roots.
+Three for a cubic, and four for a quartic. In general, a polynomial of
+degree $n$ crosses the axis at most $n$ times, because it has at most
+$n$ real roots.
 
-It can cross fewer times — `x³` crosses once and `x² + 4` not at all — but never more.
+It can cross fewer times. $x^3$ crosses once, and $x^2 + 4$ does not
+cross at all. But it never crosses more than $n$ times.
 
 </details>
 
-**9.** Plot `y = x**2`, `y = 3*x**2` and `y = 0.2*x**2` together. What does the coefficient do, and what does it not do?
+**9.** Plot $y = x^2$, $y = 3x^2$ and $y = 0.2x^2$ together. What does
+the coefficient in front of $x^2$ do? What does it not do?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It stretches the curve vertically — bigger means narrower-looking.
+It stretches the curve up and down. A bigger coefficient makes the
+curve look narrower.
 
-What it does not do is move the curve. All three still have their lowest point at the origin, and all three still cross the axis exactly once, at zero.
+It does not move the curve. All three curves still have their lowest
+point at the origin. All three still meet the axis at only one point,
+0, where they touch it.
 
 </details>
 
-**10.** Plot `y = x**3` and `y = -x**3`. Describe the difference in one sentence.
+**10.** Plot $y = x^3$ and $y = -x^3$. Describe the difference in one
+sentence.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The second is the first flipped upside down — a reflection in the horizontal axis.
+The second curve is the first one turned upside down: a reflection in
+the horizontal axis.
 
-`x³` climbs from bottom left to top right; `−x³` falls from top left to bottom right.
+$x^3$ climbs from bottom left to top right. $-x^3$ falls from top left
+to bottom right.
 
 </details>
 
-## Reading Answers Off the Picture
+## Reading answers off the picture
 
-**11.** Plot `y = x**2 - 3*x - 4` and read off its roots. Then check with the quadratic formula.
+**11.** Plot $y = x^2 - 3x - 4$ and read off its roots. Then check them
+with the quadratic formula.
 
 <details class="dl-answer"><summary>answer</summary>
 
-It crosses at −1 and 4.
+The curve crosses at $-1$ and 4.
 
-By formula: discriminant is 9 + 16 = 25, so the roots are (3 ± 5)/2, which is 4 and −1.
+With the formula: the discriminant is $9 + 16 = 25$, so the roots are
+$\dfrac{3 \pm 5}{2}$, which gives 4 and $-1$.
 
 </details>
 
-**12.** Solve `x**3 - 2*x = 1` from a picture, to one decimal place.
+**12.** Solve $x^3 - 2x = 1$ from a picture, to one decimal place.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Plot `y = x³ − 2x` and the horizontal line `y = 1`, and read off the crossings: roughly −1.0, −0.6 and 1.6.
+Plot $y = x^3 - 2x$ and the flat line $y = 1$. Read off the crossings:
+about $-1.0$, $-0.6$ and 1.6.
 
-More precisely: −1, −0.618 and 1.618. The exact answers involve the golden ratio, and there is no straightforward algebraic route to them — which is the argument for the picture.
+More exactly, the answers are $-1$, $-0.618$ and 1.618. The last two are
+$\dfrac{1 \pm \sqrt{5}}{2}$, which are linked to the golden ratio.
+Finding them with algebra needs a trick: you first have to spot that
+$-1$ is a root. The picture needs no trick, and that is the argument
+for using it.
 
 </details>
 
-**13.** Where do `y = x**2` and `y = x + 2` cross? Read it off, then verify.
+**13.** Where do $y = x^2$ and $y = x + 2$ cross? Read it off the
+picture, then check.
 
 <details class="dl-answer"><summary>answer</summary>
 
-At `(-1, 1)` and `(2, 4)`.
+At $(-1, 1)$ and $(2, 4)$.
 
-Setting them equal: `x² = x + 2`, so `x² − x − 2 = 0`, which factorizes as `(x − 2)(x + 1)`.
+To check, set them equal: $x^2 = x + 2$, so $x^2 - x - 2 = 0$. This
+factorises as $(x - 2)(x + 1) = 0$, so $x = 2$ or $x = -1$.
 
 </details>
 
-**14.** A projectile's height in metres after `t` seconds is `h = 20t - 4.9t**2`. Plot it and answer: when does it land, and how high does it get?
+**14.** A ball is thrown upwards. Its height in metres after $t$ seconds
+is $h = 20t - 4.9t^2$. Plot it, then answer:
+
+1. When does the ball land?
+2. How high does it go?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It lands when the height returns to zero, at about t = 4.08 seconds. (Setting `20t − 4.9t² = 0` gives `t(20 − 4.9t) = 0`, so t = 0 or t = 20/4.9.)
+1. It lands when the height comes back to zero, at about $t = 4.08$
+   seconds. To see this with algebra, set $20t - 4.9t^2 = 0$. That gives
+   $t(20 - 4.9t) = 0$, so $t = 0$ or $t = 20/4.9$.
+2. The highest point is halfway between the two roots, at
+   $t \approx 2.04$. There the height is about 20.4 m.
 
-The highest point is halfway between the two roots, at t ≈ 2.04, where the height is about 20.4 m.
-
-The curve is symmetric about its peak, which is why halfway between the roots is the right place to look.
+The curve is symmetric about its peak. That is why the peak is halfway
+between the roots.
 
 </details>
 
 ## Inverses
 
-**15.** What is the inverse of each?
+**15.** What is the inverse of each function?
 
-- (a) `f(x) = x + 7`
-- (b) `f(x) = 5x`
-- (c) `f(x) = 3x - 2`
-- (d) `f(x) = x**3`
+- (a) $f(x) = x + 7$
+- (b) $f(x) = 5x$
+- (c) $f(x) = 3x - 2$
+- (d) $f(x) = x^3$
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) `x − 7`. (b) `x/5`. (c) `(x + 2)/3`. (d) the cube root, `x**(1/3)`.
+(a) $x - 7$
 
-Each one undoes the operations in reverse order, which is the same unwrapping as in *Rearranging formulae: changing the subject*.
+(b) $\dfrac{x}{5}$
+
+(c) $\dfrac{x + 2}{3}$
+
+(d) The cube root, $\sqrt[3]{x}$, which is $x^{1/3}$.
+
+Each inverse undoes the steps in reverse order. This is the same
+unwrapping as in
+[Rearranging formulae: changing the subject](tutorial:rearranging-formulae).
+
+A warning for (d) in Python: `x ** (1/3)` works for positive `x`, but
+for a negative `x` it gives a complex number. Try `(-8) ** (1/3)` to
+see.
 
 </details>
 
-**16.** Check one of your answers by round-tripping several values through both.
+**16.** Check one of your answers with a round trip: send several values
+through the function and then through its inverse.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -227,47 +304,66 @@ g = lambda x: (x + 2) / 3
 print(all(abs(g(f(x)) - x) < 1e-9 for x in [-10, 0, 1.5, 7, 100]))
 ```
 
-Both directions are worth checking: `f(g(x))` should also come back to x.
+This prints `True`. It is worth checking the other direction too:
+`f(g(x))` should also come back to `x`.
 
 </details>
 
-**17.** Why does `x**2` have no inverse over all the numbers, while `x**3` does?
+**17.** Why does $x^2$ have no inverse over all the numbers, when $x^3$
+does?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because 3 and −3 both square to 9, so the inverse of 9 has two candidates and a function may only give one.
+Both 3 and $-3$ square to 9. So the inverse of 9 has two possible
+answers, and a function may give only one.
 
-Cubing does not collide: no two different numbers have the same cube, because the sign survives. So the cube root is a function everywhere.
+Cubing never sends two numbers to the same place. The sign stays: the
+cube of a negative number is negative. No two different numbers have the
+same cube, so the cube root is a function for every number.
 
-The usual fix for squaring is to restrict the domain to non-negative numbers, which is exactly what `math.sqrt` does by returning only the positive root.
+The usual fix for squaring is to limit the domain to numbers that are 0
+or more. That is what `math.sqrt` does: it gives only the positive root.
 
 </details>
 
-**18.** Plot `y = 2x + 1`, its inverse, and `y = x` on one pair of axes. What do you notice?
+**18.** Plot $y = 2x + 1$, its inverse, and $y = x$ on one pair of axes.
+What do you notice?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The inverse is `(x − 1)/2`, and the two curves are mirror images in the line `y = x`.
+The inverse is $\dfrac{x - 1}{2}$. The two lines are mirror images in
+the line $y = x$.
 
-That is what inverting does geometrically: swapping the inputs and outputs swaps the axes, which reflects everything across the diagonal.
+This is what an inverse does to a picture. Swapping the inputs and
+outputs swaps the axes, and that reflects everything across the
+diagonal.
 
 </details>
 
-## One Longer One
+## One longer problem
 
-**19.** A shop's profit on selling `n` items is `P(n) = -0.5*n**2 + 30*n - 200` euro.
+**19.** A shop's profit, in euro, from selling $n$ items is
+$P(n) = -0.5n^2 + 30n - 200$.
 
-- (a) Plot it for n from 0 to 60.
-- (b) How many items must they sell to break even?
-- (c) How many items gives the most profit, and how much is it?
-- (d) What happens beyond about 52 items, and does that make sense?
+1. Plot it for $n$ from 0 to 60.
+2. How many items must the shop sell to break even?
+3. How many items give the most profit, and how much is that profit?
+4. What happens after about 52 items? Does that make sense?
 
 <details class="dl-answer"><summary>answer</summary>
 
-(b) Break-even is where the curve crosses zero: at about n = 7.6 and n = 52.4. Since items are whole, they need 8 to move into profit.
+2. The shop breaks even where the curve crosses zero: at about
+   $n = 7.6$ and $n = 52.4$. Items are whole, so the shop needs to sell
+   8 to start making a profit.
+3. The peak is halfway between the roots, at $n = 30$. There the profit
+   is €250.
+4. After 52 items, the model says the profit goes below zero and keeps
+   falling. That is a feature of the model, not of the shop. A quadratic
+   falls forever, but a real business would not keep making items at a
+   loss.
 
-(c) The peak is halfway between the roots, at n = 30, where the profit is €250.
-
-(d) Past 52 the model says profit goes negative and keeps falling. That is the model rather than the shop — a quadratic falls forever, and a real business would not keep making items at a loss. **A model is trustworthy over the range it was built for and not beyond it**, which is worth knowing before you extrapolate anything.
+**A model can be trusted over the range it was built for, and not
+beyond it.** This is worth knowing before you extend any model past its
+data.
 
 </details>

@@ -3,30 +3,36 @@ entries:
   - term: imaginary unit (i, written 1j in Python)
     kind: concept
     definition: >
-      Defined by i^2 = -1 — invented the same way negatives, fractions,
-      and irrationals were, because "no real solution" was a smaller
-      claim than it sounded.
+      The imaginary unit i is a number whose square is -1, so i^2 = -1.
+      It was invented the same way negatives, fractions and irrationals
+      were: to give an answer where there was none.
   - term: "complex number (C)"
     kind: concept
     definition: >
-      A number with a real part and an imaginary part, like 3 + 2i. The
-      fifth number family, and the last one needed — every polynomial
-      equation has a solution in C.
+      A complex number is a number with a real part and an imaginary part,
+      like 3 + 2i. The complex numbers C are the fifth number family. Every
+      polynomial equation of degree 1 or more has a solution in C.
     example: "z = 3 + 2j"
+  - term: real part, imaginary part
+    kind: concept
+    definition: >
+      In the complex number 3 + 2i, the real part is 3 and the imaginary
+      part is 2. The imaginary part is the number that multiplies i.
   - term: "z.real, z.imag"
     python: [complex.real, complex.imag]
     kind: function
-    definition: The real and imaginary parts of a complex number, as plain numbers.
+    definition: Give the real and imaginary parts of a complex number, as plain numbers.
     example: "(3 + 2j).real  # 3.0"
   - term: "cmath.sqrt()"
     python: cmath.sqrt
     kind: function
     definition: >
-      Like math.sqrt(), but takes the square root of a negative number
-      too, returning a complex result instead of raising an error.
+      Takes a square root, like math.sqrt(). It also works for a negative
+      number, and gives a complex result instead of an error.
   - term: conjugate
     kind: concept
     definition: >
-      Two complex numbers with the same real part and opposite imaginary
-      parts, like 2 + 3i and 2 - 3i. A quadratic with real coefficients
-      always produces its complex roots in a conjugate pair.
+      The conjugate of a complex number has the same real part and the
+      opposite imaginary part: the conjugate of 2 + 3i is 2 - 3i. A
+      quadratic with real coefficients has its complex roots in a
+      conjugate pair.
