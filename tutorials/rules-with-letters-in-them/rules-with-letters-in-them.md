@@ -495,7 +495,12 @@ shows a rule works for the numbers you tried.
 | `evaluate(coefficients, x)` | your toolkit function: a polynomial's value at $x$ |
 | like terms, collecting, simplifying | terms with the same power; add their coefficients; fewer parts, same value |
 | expanding brackets | multiply every term of one bracket by every term of the other, then collect |
-| $(x + a)^2 = x^2 + 2ax + a^2$ | the square of a bracket has two strips in the middle, not just two corners |
+| $(x + a)^2 = x^2 + 2ax + a^2$ | a squared bracket: the big square, two strips of $ax$, and the small corner |
+
+For more, the page
+[Polynomials: representing and combining them in Python](tutorial:expressions-come-alive),
+from another course, builds tools that print, add, subtract and scale
+polynomials kept as lists.
 
 The practice page is next. On the next page,
 [Drawing a rule](tutorial:drawing-a-rule), we draw $(x - 2)(x + 2)$ as a

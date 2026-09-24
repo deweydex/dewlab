@@ -316,7 +316,7 @@ is
 The taxi test passed because its first point has $x_1 = 0$, so
 $m x_1$ is 0, and adding it or taking it away gives the same answer.
 Putting both points back into the line, as the tutorial's tests did,
-would have caught it straight away.
+would have caught it at once.
 
 </details>
 

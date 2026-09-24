@@ -481,6 +481,11 @@ is only as good as the points behind it.
 | a cubic's graph | turns up to twice, crosses the x-axis up to three times |
 | a gap in a graph | an $x$ outside the domain, like 0 for $\frac{1}{x}$ |
 | `plt.legend()` | shows which line is which, using each line's label |
+| `plt.figure()` | starts a new picture; what comes next is drawn on it |
+
+For more, the page
+[Functions and their graphs](tutorial:drawing-functions), from another
+course, draws more curves and reads answers off them.
 
 The practice page is next. On the next page,
 [Solving for x](tutorial:solving-for-x), we find where the phone plans

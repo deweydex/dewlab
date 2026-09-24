@@ -264,7 +264,7 @@ So if we can find two numbers $p$ and $q$ that add to make 3 and
 multiply to make $-40$, then $w^2 + 3w - 40$ is $(w + p)(w + q)$.
 Writing an expression as brackets multiplied together is called
 *factorising*. It is expanding, run backwards. Finding the two numbers
-by looking and thinking is factorising *by inspection*.
+by looking and thinking is *factorising by inspection*.
 
 Can you find the pair in your head? Then the cell tries every pair of
 whole numbers from −40 to 40, and prints the ones that work.
