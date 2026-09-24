@@ -219,7 +219,7 @@ def area(a, b, angle_degrees):
 print(area(7, 5, 50))
 print("and by base times height:", 0.5 * 7 * (5 * math.sin(math.radians(50))))
 
-# The right-angled case, where the old formula obviously works too.
+# The right-angled case, where the old formula works too.
 print()
 print("a right angle:", area(6, 4, 90), "and half base times height:", 0.5 * 6 * 4)
 ```
