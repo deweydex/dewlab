@@ -494,7 +494,7 @@ these:
   learned as a new idea.
 - **How short the code is.** Bubble sort has two plain loops and one
   swap of neighbours, with no `while` loop and no index kept by name.
-  For a reader new to nested loops, that may be easier to write.
+  For a reader new to nested loops, that is less to hold in mind at once.
 - **What comes next.** Insertion sort is used in real programs for
   short or nearly sorted lists, and it is part of shell sort on the
   next page. Bubble sort is mostly met in courses and exams.

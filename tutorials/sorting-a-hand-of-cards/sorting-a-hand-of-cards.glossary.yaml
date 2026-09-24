@@ -1,0 +1,63 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "sort, ascending order"
+    kind: concept
+    definition: >
+      To sort a list is to put its values in order. Ascending order goes
+      from smallest to largest.
+  - term: sorting algorithm
+    kind: concept
+    definition: >
+      A sorting algorithm is a way of sorting, written as clear steps.
+      Selection sort and insertion sort are two of them.
+  - term: "swap, a[i], a[j] = a[j], a[i]"
+    kind: concept
+    definition: >
+      A swap makes two values change places. Python works out both values
+      on the right first, and only then moves them, so nothing is lost.
+    example: "hand[0], hand[3] = hand[3], hand[0]"
+  - term: selection sort
+    kind: concept
+    definition: >
+      Selection sort finds the smallest value in the part not yet sorted,
+      and swaps it to the front of that part. It repeats until the whole
+      list is sorted.
+  - term: insertion sort
+    kind: concept
+    definition: >
+      Insertion sort takes each value in turn and slides it left into its
+      place among the sorted values before it. It does little work on a
+      list that is nearly in order.
+  - term: comparison
+    kind: concept
+    definition: >
+      A comparison is one look at two values, to see which is smaller. It
+      is the step we count when we measure a sort.
+  - term: "n(n − 1) / 2 comparisons"
+    kind: formula
+    definition: >
+      Selection sort makes n(n − 1) / 2 comparisons on n values, whatever
+      their order. It is also insertion sort's worst case, a list in
+      reverse order.
+    example: "5 cards: 4 + 3 + 2 + 1 = 10"
+  - term: "list.sort()"
+    kind: function
+    python: list.sort
+    definition: >
+      Sorts a list in place, changing the list itself, and gives back None.
+      Use sorted() when you want a new list and the old one unchanged.
+    example: "hand.sort()"
+  - term: "range() with a step"
+    kind: function
+    python: range
+    definition: >
+      A third number in range is the step between values. A step of -1
+      counts down.
+    example: "range(13, 0, -1)"
+  - term: "selection_sort(), insertion_sort()"
+    kind: function
+    definition: >
+      Give back a new list with the values in ascending order, and leave
+      the list they were given unchanged. They are toolkit functions you
+      wrote yourself.
+    example: "selection_sort([7, 3, 12, 1, 9])"

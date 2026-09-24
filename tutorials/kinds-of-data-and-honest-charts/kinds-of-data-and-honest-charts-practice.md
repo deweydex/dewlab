@@ -324,8 +324,9 @@ print(frequency_table(journeys)["bus"])
 
 Both print 7. `count_if` answers one question, "how many buses?", and
 `frequency_table` answers it for every value at once. When you need
-only one count, `count_if` is enough. Python lists also have their own
-`journeys.count("bus")`, which gives 7 too.
+only one count, `count_if` is enough. A third route is the list's own
+`.count()`, from [What is typical?](tutorial:what-is-typical):
+`journeys.count("bus")` gives 7 too.
 
 </details>
 

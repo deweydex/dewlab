@@ -13,7 +13,7 @@ description: >-
   a toolkit of your own functions, and later pages use them.
 
 
-  This course is new, and only its first four units are written so far.
+  This course is new, and only its first six units are written so far.
 contents:
 - title: Instructions for a machine
   tutorials:
@@ -43,8 +43,24 @@ contents:
   - running-a-formula-backwards
   - does-it-work
   - what-a-function-can-see
+- title: "Many values: lists, sets and data"
+  tutorials:
+  - a-row-of-numbers
+  - what-is-typical
+  - kinds-of-data-and-honest-charts
+  - collections-without-repeats
+  - circles-that-overlap
+- title: Algorithms that scale
+  tutorials:
+  - finding-things-fast
+  - sorting-a-hand-of-cards
+  - racing-the-sorts
+  - a-function-that-calls-itself
+  - doubling-and-halving
 mixed:
 - mixed-instructions-for-a-machine
 - mixed-decisions-and-logic
 - mixed-loops-counting-and-chance
 - mixed-making-your-own-tools
+- mixed-many-values
+- mixed-algorithms-that-scale

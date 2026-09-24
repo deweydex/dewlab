@@ -201,6 +201,7 @@ groups:
       - recipes-are-algorithms
       - numbers-a-computer-can-hold
       - everything-is-ones-and-zeros
+      - how-a-computer-stores-a-number
       - when-python-says-no
       - choosing-a-path
       - true-false-and-every-case
@@ -221,6 +222,7 @@ groups:
       - orders-and-choices
       - how-likely-is-it
       - chances-that-combine
+      - maths-that-runs-the-world
       - mixed-loops-counting-and-chance
       - machines-that-take-a-number
       - measuring-rooms-and-tins
@@ -228,6 +230,26 @@ groups:
       - does-it-work
       - what-a-function-can-see
       - mixed-making-your-own-tools
+
+  - key: plot-twist-data-and-algorithms
+    name: "Plot Twist: data, and algorithms that scale"
+    intro: >
+      Lists, averages and spread, honest charts, sets and Venn diagrams on
+      real data; then searching, sorting, recursion, and the doubling and
+      halving that decide how fast an algorithm stays as the data grows.
+    tutorials:
+      - a-row-of-numbers
+      - what-is-typical
+      - kinds-of-data-and-honest-charts
+      - collections-without-repeats
+      - circles-that-overlap
+      - mixed-many-values
+      - finding-things-fast
+      - sorting-a-hand-of-cards
+      - racing-the-sorts
+      - a-function-that-calls-itself
+      - doubling-and-halving
+      - mixed-algorithms-that-scale
 
   - key: object-oriented-programming
     name: Objects, classes, and building bigger programs

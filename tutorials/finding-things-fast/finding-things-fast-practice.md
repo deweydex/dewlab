@@ -432,7 +432,7 @@ print(math.floor(math.log2(people)) + 1)
 $\log_2 5{,}100{,}000$ is about 22.3. Rounded down that is 22
 halvings, and one more look at the last name gives 23 looks at most. A
 linear search could need 5.1 million. (Python lets us write
-`5_100_000` with underscores, to make a long number easier to read.)
+`5_100_000` with underscores, so that a long number reads in groups of three.)
 
 </details>
 

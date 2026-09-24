@@ -211,7 +211,9 @@ instead?
 
 Now the same trick on the contacts. For it to work, the list must be
 in order, so that "after the middle" means "later in the alphabet".
-Python's `sorted()` gives back a new list in order. The next page,
+Python's `sorted()`, from
+[What is typical?](tutorial:what-is-typical), gives back a new list in
+order. The next page,
 [Sorting a hand of cards](tutorial:sorting-a-hand-of-cards), shows how
 sorting works inside. For now we let Python do it.
 
@@ -642,7 +644,6 @@ it looks fewer times, and you can see why it looks fewer times.
 | best case, worst case | the fewest looks a search can need; the most it can need |
 | divide and conquer | split a problem into smaller problems of the same kind, and solve those |
 | binary search | look at the middle of a sorted list, and throw away the half the target cannot be in |
-| `sorted()` | Python's way to get a new list in order (the next page shows how) |
 | `<` on words | compares letter by letter, the way a dictionary orders words |
 | $\log_2 n$ as halvings | how many times $n$ can be halved before 1 is left: about the worst case of a binary search |
 | in proportion, logarithmic | twice the items, twice the looks; twice the items, one more look |

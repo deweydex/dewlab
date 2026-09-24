@@ -414,7 +414,7 @@ hundreds of times a day.
 
 For one search, sorting first does not pay. A linear search costs at
 most 100,000 looks. Even Python's `sorted()` needs far more comparisons
-than that to sort 100,000 names, around 1.7 million, and then the
+than that to sort 100,000 names, well over a million, and then the
 binary search is 17 looks on top.
 
 For many searches, it pays many times over. The sorting is done once,
@@ -439,7 +439,6 @@ search need? Predict first, then check with `halvings`.
 
 ```python
 customers = 1000 * 2 ** 10
-print(customers)
 print(customers, halvings(customers) + 1)
 ```
 
@@ -530,7 +529,7 @@ print("set   ", milliseconds_per_lookup(by_set, last_ten * 1000))
 
 Your times will be different from anyone else's, and a little different
 each run. The order is the same: the linear search takes several
-milliseconds for each lookup, the binary search takes about a
+milliseconds for each lookup, the binary search takes less than a
 thousandth of that, and the set is faster again. The binary search is
 our own Python, 17 looks at most. The set, like `sorted()`, runs as
 the computer's own instructions, and its trick is not halving at all.

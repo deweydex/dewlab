@@ -466,8 +466,9 @@ and it gives back 1.
 **14. Another way.** On
 [Finding things fast](tutorial:finding-things-fast), binary search
 looked at the middle of a sorted list, then kept only the half that
-could hold the target. Keeping half is the same search on a smaller
-problem, so binary search can be written as a recursion. Finish this
+could hold the target. That page called this divide and conquer:
+keeping half is the same search on a smaller problem, so binary search
+can be written as a recursion. Finish this
 version, which searches between the places `low` and `high`, and prints
 each part it looks at. How many parts does it look at to find the last
 of 1,000 ticket numbers?

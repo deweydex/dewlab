@@ -194,7 +194,9 @@ usually written with a row for each value:
 | bike | 2 |
 | train | 2 |
 
-The most common value is the mode, from
+On What is typical?, `journeys.count("bus")` would have counted one
+value. A frequency table counts every value at once, in one pass
+through the list. The most common value is the mode, from
 [What is typical?](tutorial:what-is-typical). A frequency table shows
 it at a glance: the bus. And each frequency divided by 20 is a relative
 frequency, as on
@@ -466,7 +468,9 @@ for stem in range(1, 5):
 4 | 1 5
 ```
 
-Read the row `3 | 0 1 2 3 5 8` as the times 30, 31, 32, 33, 35 and 38.
+`sorted(times)`, from [What is typical?](tutorial:what-is-typical),
+puts the times in order first, so each row's leaves come out smallest
+first. Read the row `3 | 0 1 2 3 5 8` as the times 30, 31, 32, 33, 35 and 38.
 Turn your head to the left, and the rows become bars: a histogram, with
 every value still readable. The `*leaves` hands `print` each leaf on its
 own, as `*row` did on
