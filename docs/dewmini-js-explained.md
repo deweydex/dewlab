@@ -24,7 +24,11 @@ flag), `lastRunMs`, and `ranOrder` (this session's own running count,
 `runSequenceCounter`, behind the run-line's "Ran Nth") — and, once it's
 actually drawn on the page, a few DOM-referencing properties
 (`.outputEl`, `.runBtn`, `.runLineEl`) — the rule is: change the data,
-then make the page match it, never the other way around.
+then make the page match it, never the other way around. One element
+is the exception: a cell that is still running keeps its `.outputEl`
+through a redraw, because the engine is still writing into it and
+`executeCell()` saves what it holds once the run ends. A fresh, empty
+element there lost the whole run's output (DECISIONS_LOG.md 7.224).
 `ranContent`/`lastRunMs`/`ranOrder` are deliberately *not* among the
 fields `saveState()`/`readCells()` carry to
 and from `localStorage`: they describe a live Python session, and no
@@ -37,7 +41,9 @@ the collapse triangle (every cell type, not only code-bearing ones),
 the header-end group (Edit for text, Duplicate, Delete), and a text
 cell's chrome going quiet — `opacity: 0; pointer-events: none` on
 `.dm-cell-head`/`.dm-cell-collapse-col` — until a reader hovers or
-focuses the cell (DECISIONS_LOG.md 7.115). Tutorial and practice pages
+focuses the cell (DECISIONS_LOG.md 7.115). That rule sits inside
+`@media (hover: hover)`; a touch screen, with no hover to reveal it,
+always shows the header (7.224). Tutorial and practice pages
 carry this same anatomy now too (7.113–7.115), by way of `build.py`'s
 `render_cell()` and `assets/tutorial-runtime.js` rather than this file —
 see `docs/tutorial-runtime-explained.md` for that side.
@@ -129,7 +135,9 @@ The important word is *points*: `cells` is the same array object the
 active notebook holds, not a copy. That is what let tabs arrive without
 rewriting every function in this file — they all still work on `cells`
 and neither know nor care that there are others. Switching tabs
-re-points one variable and re-renders.
+re-points one variable and re-renders. The one exception is the engine's
+`getOutputEl`, which looks through every notebook: a cell keeps running
+after its tab is switched away from, and its output still belongs to it.
 
 The cost of that trick is one hazard worth knowing about, and it is why
 `setCells()` exists. Assigning `cells = something` on its own would

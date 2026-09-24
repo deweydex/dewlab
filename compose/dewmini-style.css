@@ -351,15 +351,15 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 :is(.dm-cell-text, .dm-cell-web) :is(.dm-cell-head, .dm-cell-collapse-col) {
   transition: opacity 0.1s ease;
 }
-:is(.dm-cell-text, .dm-cell-web):not(:hover):not(:focus-within)
-  :is(.dm-cell-head, .dm-cell-collapse-col) {
-  opacity: 0;
-  pointer-events: none;
-}
-@media (hover: none) {
-  :is(.dm-cell-text, .dm-cell-web) :is(.dm-cell-head, .dm-cell-collapse-col) {
-    opacity: 1;
-    pointer-events: auto;
+/* Quiet only where there is a hover to reveal it. This used to be
+ * unconditional, with a (hover: none) rule to undo it, but that rule had
+ * the lower specificity and never won: on a phone a note's Delete,
+ * Duplicate and Edit buttons stayed invisible and untappable. */
+@media (hover: hover) {
+  :is(.dm-cell-text, .dm-cell-web):not(:hover):not(:focus-within)
+    :is(.dm-cell-head, .dm-cell-collapse-col) {
+    opacity: 0;
+    pointer-events: none;
   }
 }
 
