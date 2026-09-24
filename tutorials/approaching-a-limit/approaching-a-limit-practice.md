@@ -7,9 +7,21 @@ version: 2026.08.23.1
 
 # Limits: getting closer without arriving — Practice
 
-Answers are hidden. Where a question asks you to find a limit, try it with numbers *and* say what the algebra gives — the two together are what makes the answer trustworthy.
+Each answer is hidden in a fold under its question. Try the question
+first, then open the fold to check.
+
+When a question asks you to find a limit, try two things:
+
+1. Try it with numbers, from both sides.
+2. Say what the algebra gives.
+
+When the two agree, you can trust the answer.
 
 ## Tools
+
+This cell defines `approach`, a helper that prints a function's values
+as the input comes closer to a target. It then tries it on
+$\dfrac{x^2 - 1}{x - 1}$ near 1, the example from the tutorial.
 
 ```python exec
 id: tools-1
@@ -30,189 +42,254 @@ print("from above:")
 approach(f, 1, from_below=False)
 ```
 
-## Finding a Limit
+## Finding a limit
 
-**1.** Find the limit of `(x² − 4)/(x − 2)` as x approaches 2.
+**1.** What is the limit of $\dfrac{x^2 - 4}{x - 2}$ as $x$ approaches 2?
 
 <details class="dl-answer"><summary>answer</summary>
 
 4.
 
-The top factorizes as `(x − 2)(x + 2)`, so away from x = 2 the function is just `x + 2` — and at 2 that would be 4.
+The top factorizes as $(x - 2)(x + 2)$. So away from $x = 2$, the
+function is the same as $x + 2$. At 2, that would be $2 + 2 = 4$.
 
-The function itself has no value at 2: the bottom is zero there and the canceling is not allowed. The limit says what it would be, and that is a different statement.
+The function itself has no value at 2. The bottom is zero there, so we
+are not allowed to cancel. The limit says what the value *would* be, and
+that is a different statement.
 
 </details>
 
-**2.** Find the limit of `(x² − 9)/(x − 3)` as x approaches 3.
+**2.** What is the limit of $\dfrac{x^2 - 9}{x - 3}$ as $x$ approaches 3?
 
 <details class="dl-answer"><summary>answer</summary>
 
-6, by the same factorizing: `(x − 3)(x + 3)` over `(x − 3)` leaves `x + 3`.
+6.
+
+Factorize in the same way: $\dfrac{(x - 3)(x + 3)}{x - 3}$ leaves
+$x + 3$. At 3, that is $3 + 3 = 6$.
 
 </details>
 
-**3.** Find the limit of `(x³ − 1)/(x − 1)` as x approaches 1.
+**3.** What is the limit of $\dfrac{x^3 - 1}{x - 1}$ as $x$ approaches 1?
 
 <details class="dl-answer"><summary>answer</summary>
 
 3.
 
-`x³ − 1` factorizes as `(x − 1)(x² + x + 1)`, and at x = 1 that second bracket is 1 + 1 + 1 = 3.
+$x^3 - 1$ factorizes as $(x - 1)(x^2 + x + 1)$. The $(x - 1)$ cancels,
+leaving $x^2 + x + 1$. At $x = 1$ that is $1 + 1 + 1 = 3$.
 
 </details>
 
-**4.** Find the limit of `(√x − 2)/(x − 4)` as x approaches 4.
+**4.** What is the limit of $\dfrac{\sqrt{x} - 2}{x - 4}$ as $x$
+approaches 4?
 
 <details class="dl-answer"><summary>answer</summary>
 
-1/4.
+$\dfrac{1}{4}$.
 
-Write the bottom as `(√x − 2)(√x + 2)`. The `(√x − 2)` cancels, leaving `1/(√x + 2)`, which at x = 4 is 1/4.
+Write the bottom as $(\sqrt{x} - 2)(\sqrt{x} + 2)$. The $(\sqrt{x} - 2)$
+cancels, leaving $\dfrac{1}{\sqrt{x} + 2}$. At $x = 4$ that is
+$\dfrac{1}{2 + 2} = \dfrac{1}{4}$.
 
-Numerically it heads for 0.25 from both sides, which is worth checking.
+It is worth checking with numbers too. The values head for 0.25 from
+both sides.
 
 </details>
 
-**5.** Does `|x|/x` have a limit as x approaches 0?
+**5.** Does $\dfrac{|x|}{x}$ have a limit as $x$ approaches 0?
 
 <details class="dl-answer"><summary>answer</summary>
 
 No.
 
-From the right it is 1 (a positive number over itself); from the left it is −1. The two sides disagree, so there is no single value it is heading for.
+From the right, it is 1, because a positive number divided by itself is
+1. From the left, it is −1. The two sides disagree, so there is no
+single value it is heading for.
 
-This is the step function from the tutorial, wearing different notation.
+This is the step function from the tutorial, written in different
+notation.
 
 </details>
 
-## Limits That Do Not Exist
+## Limits that do not exist
 
-**6.** What happens to `1/x²` as x approaches 0? Is that a limit?
+**6.** What happens to $\dfrac{1}{x^2}$ as $x$ approaches 0? Is that a
+limit?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It grows without bound from *both* sides, because squaring removes the sign.
+It grows without end from *both* sides, because squaring removes the
+minus sign.
 
-Strictly there is no limit — no number is being approached. It is common to write "the limit is infinity", which is shorthand for "it grows without bound", not a claim that infinity is a value.
+Strictly, there is no limit, because no number is being approached.
+People often write "the limit is infinity". That is a short way of
+saying "it grows without end". It does not claim that infinity is a
+number.
 
 </details>
 
-**7.** How does `1/x` differ from `1/x²` near zero?
+**7.** How is $\dfrac{1}{x}$ different from $\dfrac{1}{x^2}$ near zero?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`1/x` goes to positive infinity from the right and negative infinity from the left. `1/x²` goes to positive infinity from both.
+$\dfrac{1}{x}$ goes to positive infinity from the right and to negative
+infinity from the left. $\dfrac{1}{x^2}$ goes to positive infinity from
+both sides.
 
-Neither has a limit, but the second at least does the same thing on both sides.
+Neither one has a limit. But the second one at least does the same thing
+on both sides.
 
 </details>
 
-**8.** Find the limit of `1/x` as x grows without bound.
+**8.** What is the limit of $\dfrac{1}{x}$ as $x$ grows without end?
 
 <details class="dl-answer"><summary>answer</summary>
 
 0.
 
-The values shrink towards zero and never reach it, which is the same kind of statement as before — approached, not attained.
+The values shrink towards zero and never reach it. This is the same kind
+of statement as before: the value is approached, but never reached.
 
 </details>
 
-**9.** Find the limit of `(3n + 5)/(n + 2)` as n grows without bound.
+**9.** What is the limit of $\dfrac{3n + 5}{n + 2}$ as $n$ grows without
+end?
 
 <details class="dl-answer"><summary>answer</summary>
 
 3.
 
-Divide top and bottom by n: `(3 + 5/n)/(1 + 2/n)`. Both of the small terms head for 0, leaving 3/1.
+Divide the top and the bottom by $n$:
+$\dfrac{3 + \frac{5}{n}}{1 + \frac{2}{n}}$. As $n$ grows, both small
+terms, $\frac{5}{n}$ and $\frac{2}{n}$, head for 0. That leaves
+$\dfrac{3}{1} = 3$.
 
-The rule of thumb: for large n only the highest powers matter, so the answer is the ratio of the leading coefficients.
-
-</details>
-
-**10.** Find the limit of `(2n² + n)/(5n² − 3)` as n grows without bound.
-
-<details class="dl-answer"><summary>answer</summary>
-
-2/5.
-
-Same reasoning — the `n²` terms dominate and everything else becomes negligible.
+A useful rule of thumb: for large $n$, only the highest powers matter.
+So the answer is the ratio of the numbers in front of the highest powers
+(the leading coefficients).
 
 </details>
 
-## Why Any of This Matters
-
-**11.** A ball falls `4.9t²` metres in t seconds. Find its speed at t = 3, by shrinking the interval.
+**10.** What is the limit of $\dfrac{2n^2 + n}{5n^2 - 3}$ as $n$ grows
+without end?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The average speed from 3 to 3 + h is `(4.9(3+h)² − 4.9(9))/h`, which simplifies to `29.4 + 4.9h`. As h shrinks, that heads for **29.4 m/s**.
+$\dfrac{2}{5}$.
 
-Which is `9.8 × 3` — the speed after t seconds of falling is `9.8t`.
+The reasoning is the same. The $n^2$ terms are much bigger than
+everything else, so everything else stops mattering. What is left is
+$\dfrac{2n^2}{5n^2} = \dfrac{2}{5}$.
 
 </details>
 
-**12.** What is the ball's speed at t = 0, and does the answer make sense?
+## Why limits matter
+
+**11.** A ball falls $4.9t^2$ metres in $t$ seconds. What is its speed at
+$t = 3$? Find it by making the time interval smaller and smaller.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Zero, which is right: at the instant it is released it has not started moving.
+The average speed from $t = 3$ to $t = 3 + h$ is
 
-Its *acceleration* is not zero — it is 9.8 m/s² throughout — which is why the speed does not stay at zero.
+$$\frac{4.9(3 + h)^2 - 4.9 \times 9}{h}.$$
+
+Expand the top: $4.9(9 + 6h + h^2) - 44.1 = 29.4h + 4.9h^2$. Divide by
+$h$ to get $29.4 + 4.9h$.
+
+As $h$ shrinks, that heads for **29.4 m/s**.
+
+That is $9.8 \times 3$. The speed after $t$ seconds of falling is
+$9.8t$.
 
 </details>
 
-**13.** Why can you not just set the gap to zero and compute the answer directly?
+**12.** What is the ball's speed at $t = 0$? Does the answer make sense?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because that gives `0/0`. The distance traveled in no time is zero, divided by no time.
+Zero. That is right: at the instant the ball is let go, it has not
+started moving.
 
-`0/0` is the arithmetic saying the question needs a different method — not a number, and not a shorthand for one. The limit is that method.
+Its *acceleration*, how fast its speed is changing, is not zero. It is
+9.8 m/s² the whole time. That is why the speed does not stay at zero.
 
 </details>
 
-## Where Numbers Stop Helping
-
-**14.** Compute `(x² − 1)/(x − 1)` at x = 1 + 1e-16. What happens, and why?
+**13.** Why can we not set the gap to zero and compute the answer
+directly?
 
 <details class="dl-answer"><summary>answer</summary>
 
-You get something unhelpful — often 0, sometimes an error.
+Because that gives $\dfrac{0}{0}$: a distance of zero, travelled in no
+time, divided by no time.
 
-`1 + 1e-16` is not a different number from 1 in double-precision floating point, so the subtraction on the bottom gives exactly zero.
-
-The mathematics is fine; the arithmetic ran out. The same thing that made two supposedly equal floats differ in *Storing and Computing*.
+$\dfrac{0}{0}$ is not a number, and it is not a short way of writing
+one. It is the arithmetic telling us that the question needs a different
+method. The limit is that method.
 
 </details>
 
-**15.** Given that, what should you use numbers for and what should you use algebra for?
+## Where numbers stop helping
+
+**14.** Compute $\dfrac{x^2 - 1}{x - 1}$ in Python at `x = 1 + 1e-16`.
+What happens, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Numbers to *see* what the answer is — a column marching towards 2 is convincing and immediate.
+Python stops with a `ZeroDivisionError`. (Some other tools, such as
+NumPy, give `nan`, "not a number", instead. Either way, the answer is
+no help.)
 
-Algebra to *know* it. Cancelling `(x − 1)` proves the answer is exactly 2, with no approximation anywhere and no floating-point floor.
+In double-precision floating point, `1 + 1e-16` is the same number as
+`1`. So the subtraction on the bottom gives exactly zero.
 
-Neither is a substitute for the other, and using the numbers alone will eventually mislead you.
+The mathematics is fine; the arithmetic ran out. This is the same limit
+that makes `0.1 + 0.2 == 0.3` come out `False`, on the practice page for
+[Variables, data types and text](tutorial:storing-and-computing).
 
 </details>
 
-## One Longer One
-
-**16.** The perimeter of a regular n-sided polygon inscribed in a circle of radius 1 is `2n sin(π/n)`.
-
-- (a) Compute it for n = 3, 6, 12, 100, 10000.
-- (b) What is it approaching, and why?
-- (c) What does that tell you about π?
+**15.** So what should we use numbers for, and what should we use algebra
+for?
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) About 5.196, 6.000, 6.211, 6.282, 6.28319.
+We use numbers to *see* what the answer is. A column of values moving
+towards 2 is convincing, and quick to produce.
 
-(b) It approaches `2π ≈ 6.28319`, the circumference of the circle. As n grows the polygon gets closer to the circle, so its perimeter gets closer to the circle's.
+We use algebra to *know* it. Cancelling $(x - 1)$ proves that the answer
+is exactly 2, with no approximation anywhere and no floating-point
+floor.
 
-(c) It gives you a way to compute π: take the perimeter of a many-sided polygon and halve it. This is essentially Archimedes' method from around 250 BCE, and it is a limit argument two thousand years before limits were defined.
+Neither one can replace the other. Using the numbers alone will
+eventually mislead you.
+
+</details>
+
+## One longer one
+
+**16.** A regular polygon with $n$ equal sides fits inside a circle of
+radius 1, with its corners on the circle. Its perimeter is
+$2n \sin\left(\dfrac{\pi}{n}\right)$.
+
+1. Compute the perimeter for $n$ = 3, 6, 12, 100 and 10000.
+2. What is it approaching, and why?
+3. What does that tell you about $\pi$?
+
+<details class="dl-answer"><summary>answer</summary>
+
+1. About 5.196, 6.000, 6.212, 6.282 and 6.28319.
+
+2. It approaches $2\pi \approx 6.28319$, the circumference of the
+   circle. As $n$ grows, the polygon gets closer to the circle, so its
+   perimeter gets closer to the circle's circumference.
+
+3. It gives us a way to compute $\pi$: take the perimeter of a polygon
+   with many sides and halve it. This is close to Archimedes' method from
+   around 250 BCE. It is a limit argument, made two thousand years
+   before limits were defined.
 
 ```python
 import math
@@ -220,16 +297,24 @@ for n in [3, 6, 12, 100, 10000]:
     print(n, 2 * n * math.sin(math.pi / n))
 ```
 
-The circularity is worth noticing — using `math.pi` to compute π proves nothing. Archimedes worked the side lengths out geometrically instead, by repeatedly bisecting.
+Notice the circle in the reasoning here: this code uses `math.pi` to
+compute $\pi$, so it proves nothing. Archimedes worked out the side
+lengths with geometry instead, by cutting angles in half again and
+again.
 
 </details>
 
-**17.** In your own words: what is the difference between "f(2) = 4" and "the limit of f as x approaches 2 is 4"?
+**17.** In your own words: what is the difference between "$f(2) = 4$"
+and "the limit of $f(x)$ as $x$ approaches 2 is 4"?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first is a statement about the function *at* 2. The second is a statement about its behavior *near* 2, and it does not require the function to have a value there at all.
+The first is a statement about the function *at* 2. The second is a
+statement about what it does *near* 2. The second does not need the
+function to have a value at 2 at all.
 
-The interesting cases are precisely the ones where the first is untrue and the second is — which is every derivative you will ever compute.
+The interesting cases are exactly the ones where the first statement is
+false and the second is true. Every derivative you will ever compute is
+one of those cases.
 
 </details>
