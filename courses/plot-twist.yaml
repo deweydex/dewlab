@@ -13,7 +13,7 @@ description: >-
   a toolkit of your own functions, and later pages use them.
 
 
-  This course is new, and only its first six units are written so far.
+  This course is new, and only its first eight units are written so far.
 contents:
 - title: Instructions for a machine
   tutorials:
@@ -57,6 +57,21 @@ contents:
   - racing-the-sorts
   - a-function-that-calls-itself
   - doubling-and-halving
+- title: Algebra you can run
+  tutorials:
+  - rules-with-letters-in-them
+  - drawing-a-rule
+  - solving-for-x
+  - when-there-is-no-real-answer
+  - the-top-of-the-curve
+  - several-unknowns-at-once
+- title: Shapes, angles and waves
+  tutorials:
+  - straight-lines
+  - how-far-apart
+  - going-round-in-circles
+  - waves
+  - how-tall-is-that-tree
 mixed:
 - mixed-instructions-for-a-machine
 - mixed-decisions-and-logic
@@ -64,3 +79,5 @@ mixed:
 - mixed-making-your-own-tools
 - mixed-many-values
 - mixed-algorithms-that-scale
+- mixed-algebra-you-can-run
+- mixed-shapes-angles-and-waves

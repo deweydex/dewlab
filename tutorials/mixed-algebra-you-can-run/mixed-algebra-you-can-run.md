@@ -105,9 +105,9 @@ print(vertex(0.1, -1.2, 2))
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first line gives the roots, about 2 and 10. The second gives the
-vertex, about $(6, -1.6)$. (Floats may show a tiny error in the last
-digits.)
+The first line gives the roots, `[2.0, 10.0]`. The second gives the
+vertex, $(6, -1.6)$, printed with a tiny float error in the last
+digits.
 
 A root is a time when the temperature is exactly 0 °C: at about 2 am it
 drops below freezing, and at about 10 am it climbs back above. The
@@ -207,7 +207,7 @@ for gigabytes in [0, 4, 8, 12, 16]:
 ```text
 [0, 8, 15.0, 30]
 [4, 20, 20.0, 30]
-[8, 32, 23.0, 30]
+[8, 32, 25.0, 30]
 [12, 44, 30.0, 30]
 [16, 56, 35.0, 30]
 ```
@@ -366,6 +366,9 @@ $1.75$ as $b$, so it solves $-7g + 1.75 = 0$, a different equation.
 The fix swaps them:
 
 ```python
+def break_even_first_try(first, second):
+    """Return the gigabytes where two plans [fee, per gigabyte] cost the same."""
+    difference = [first[0] - second[0], first[1] - second[1]]
     return solve_linear(difference[1], difference[0])
 ```
 
@@ -422,7 +425,7 @@ for gigabytes in [2, 8, 20]:
 
 ```text
 2 Basic 14
-8 Flex 23.0
+8 Flex 25.0
 20 Unlimited 30
 ```
 
@@ -690,9 +693,8 @@ can make is €260.10, from problem 14, so no real price reaches €300. The
 discriminant says the same: $316^2 - 4 \times (-40) \times (-664)$ is
 $-6384$.
 
-The complex roots are about $3.95 - 1.0i$ and $3.95 + 1.0i$ (Python
-prints them as `(3.95+...j)`, in the order the formula gives them). Their
-real part is 3.95, the best price. That is no accident. The formula is
+The complex roots are about $3.95 + 0.999i$ and $3.95 - 0.999i$, a
+pair of conjugates. Their real part is 3.95, the best price. That is no accident. The formula is
 $-\frac{b}{2a}$, plus or minus a square root over $2a$, and
 $-\frac{b}{2a}$ is the vertex. When the discriminant is negative, the
 plus-or-minus part is imaginary, and the real part is left pointing at

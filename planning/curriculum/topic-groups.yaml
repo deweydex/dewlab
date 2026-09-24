@@ -251,6 +251,28 @@ groups:
       - doubling-and-halving
       - mixed-algorithms-that-scale
 
+  - key: plot-twist-algebra-and-geometry
+    name: "Plot Twist: algebra you can run, and shapes, angles and waves"
+    intro: >
+      Letters as names for numbers, graphs, equations, complex numbers, the
+      top of a curve and two unknowns at once, every answer checked by
+      putting it back; then slopes, distance, circles, waves and triangles,
+      on a flat plane and on a ball.
+    tutorials:
+      - rules-with-letters-in-them
+      - drawing-a-rule
+      - solving-for-x
+      - when-there-is-no-real-answer
+      - the-top-of-the-curve
+      - several-unknowns-at-once
+      - mixed-algebra-you-can-run
+      - straight-lines
+      - how-far-apart
+      - going-round-in-circles
+      - waves
+      - how-tall-is-that-tree
+      - mixed-shapes-angles-and-waves
+
   - key: object-oriented-programming
     name: Objects, classes, and building bigger programs
     intro: >
