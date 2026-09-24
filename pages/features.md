@@ -58,10 +58,10 @@ The lists below are grouped by who you are. Choose the one that fits you.
   line width, contrast and link colour.
 - **Find the right material.** Search directly, follow a course in order,
   browse by topic or use the topic tree.
-- **Use dewmini without a tutorial.** [dewmini](compose/dewmini.html) is a
-  small workspace for Python, notebooks, files, uploads, SQLite and web
-  pages. [dewmini web](compose/dewminiweb.html) provides a focused HTML,
-  CSS and JavaScript workspace.
+- **Work without a tutorial.** The [dewlab Notebook](compose/notebook.html)
+  is a small space for Python, notebooks, files, uploads, SQLite and web
+  pages. The [dewlab Workspace](compose/workspace.html) is a focused place
+  for HTML, CSS and JavaScript.
 
 </ul>
 
@@ -79,8 +79,8 @@ The lists below are grouped by who you are. Choose the one that fits you.
   topic or use the topic tree when course order is not the right route.
 - **Teach when the connection is unreliable.** Download a tutorial, series
   or complete module before class.
-- **Demonstrate freely in dewmini.** Use [the blank
-  workspace](compose/dewmini.html) for examples, files, notebooks, SQLite
+- **Demonstrate freely in the Notebook.** Use [the blank
+  Notebook](compose/notebook.html) for examples, files, notebooks, SQLite
   and small web pages without attaching them to a tutorial.
 
 </ul>

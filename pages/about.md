@@ -27,8 +27,8 @@ Most tutorials come with a practice page. It holds more problems on the same
 idea, and the answer usually sits right below each one. We are not trying to
 hide the right answer. What we are learning is the steps that get us there.
 
-[dewmini](compose/dewmini.html) is an open Python workspace with no tutorial
-attached. Open it when you just want to try something out.
+The [dewlab Notebook](compose/notebook.html) is an open Python notebook with
+no tutorial attached. Open it when you just want to try something out.
 
 New here, or stuck on something?
 [Using dewlab](https://github.com/deweydex/dewlab/blob/main/docs/FOR_STUDENTS.md)

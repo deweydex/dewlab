@@ -4447,7 +4447,7 @@ The five headings the pass renamed (three in *Complex numbers*, one each in *Rea
 
 ---
 
-**7.218 — Plot Twist's first two units are written, and its rule on words is "never measure the reader".** The plan, `planning/PLOT_TWIST_PLAN.md`, called for a pilot of Units 1 and 2 before the rest is written.
+**7.218 — Plot Twist's first two units are written, and its rule on words is "never measure the reader".** The plan, `planning/DEWEY_TRACK_PLAN.md`, called for a pilot of Units 1 and 2 before the rest is written.
 
 **The pilot.**
 - Nine tutorials, each with a practice page and a glossary, and a mixed practice page for each unit.
@@ -4646,3 +4646,15 @@ Everything the page writers had flagged as unsure checked out. Every changed num
 - **Left for Josh.** A download gives separate `.html`, `.css` and `.js` files, and the HTML does not link the other two, so the downloaded page opens unstyled.
 
 *Cost to change: local to `compose/dewminiweb.js`.*
+
+---
+
+**7.226 — Plot Twist is now the Dewey Track.** Josh: "for the series let's call it the Dewey Track and the tagline can involve python and math for those who want something different: learn by dewing".
+
+- **The name.** John Dewey argued that people learn by doing. The tagline, "learn by dewing", is his idea with the site's name in it. Second-language readers may not catch the pun, so the course description says where it comes from in plain words.
+- **The card:** "Python and maths for people who want something different. Learn by dewing — every page starts with a question from the world, and the maths and the code arrive because the question needs them."
+- **The address.** The course id moved from `plot-twist` to `dewey-track`, so the course page is now `dewey-track.html`. `courses/redirects.yaml` sends `plot-twist.html` there. A course id is not a key for anyone's saved work (tutorial and cell ids are), and a reader's remembered course falls back to the page's first course when the id is no longer listed.
+- **The plan** is now `planning/DEWEY_TRACK_PLAN.md`, and its name section says why. The topic groups show "Dewey Track:" in their names. Their keys stay `plot-twist-…`, since the generated topic game and editor are keyed on them and no reader sees them. One practice question that named the course now says "This course".
+- **Earlier entries keep the old name.** They describe what was done under it. Only the plan's file path in them was updated.
+
+*Cost to change: the title and card are text; changing the id again means another redirect line.*

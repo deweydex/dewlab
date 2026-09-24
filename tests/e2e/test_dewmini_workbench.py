@@ -12,7 +12,7 @@ import pytest
 from conftest import _open_panel
 from playwright.sync_api import expect
 
-DEWMINI = "compose/dewmini.html"
+DEWMINI = "compose/notebook.html"
 
 
 # A resize handle is a sibling of <body>, not a child of the panel it

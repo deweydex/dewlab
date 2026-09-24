@@ -190,7 +190,7 @@ groups:
       - mixed-programming
 
   - key: plot-twist-first-steps
-    name: "Plot Twist: first steps in maths and code"
+    name: "Dewey Track: first steps in maths and code"
     intro: >
       Four questions you can ask of any puzzle, then numbers, bits, error
       messages and the logic under every decision a program makes, each
@@ -211,7 +211,7 @@ groups:
       - mixed-decisions-and-logic
 
   - key: plot-twist-loops-and-tools
-    name: "Plot Twist: loops, chance and tools of your own"
+    name: "Dewey Track: loops, chance and tools of your own"
     intro: >
       Repeating a step until a job is done, counting every way something
       can happen and how likely it is, then writing functions as promises,
@@ -232,7 +232,7 @@ groups:
       - mixed-making-your-own-tools
 
   - key: plot-twist-data-and-algorithms
-    name: "Plot Twist: data, and algorithms that scale"
+    name: "Dewey Track: data, and algorithms that scale"
     intro: >
       Lists, averages and spread, honest charts, sets and Venn diagrams on
       real data; then searching, sorting, recursion, and the doubling and
@@ -253,7 +253,7 @@ groups:
       - mixed-algorithms-that-scale
 
   - key: plot-twist-algebra-and-geometry
-    name: "Plot Twist: algebra you can run, and shapes, angles and waves"
+    name: "Dewey Track: algebra you can run, and shapes, angles and waves"
     intro: >
       Letters as names for numbers, graphs, equations, complex numbers, the
       top of a curve and two unknowns at once, every answer checked by
@@ -275,7 +275,7 @@ groups:
       - mixed-shapes-angles-and-waves
 
   - key: plot-twist-change-and-people
-    name: "Plot Twist: change, and programs for people"
+    name: "Dewey Track: change, and programs for people"
     intro: >
       Limits, the derivative, the rules of change, and solving by computing
       with bisection and Newton's method; then where programming came from,

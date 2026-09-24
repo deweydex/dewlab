@@ -1,6 +1,6 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Comes after how-likely-is-it in the Plot Twist track, which introduced
+# Comes after how-likely-is-it in the Dewey Track, which introduced
 # probability, equally likely outcomes, simulation and the random module.
 # at_least_one is the course's own toolkit function, not a Python name, so
 # it has no python: line.

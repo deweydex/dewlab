@@ -1,6 +1,6 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Comes after Units 1-3 of the Plot Twist track. "function", "parameter",
+# Comes after Units 1-3 of the Dewey Track. "function", "parameter",
 # "def", "return", "docstring", "assert", "TypeError", "module", "import"
 # and "passing a function" were introduced there, so they are not repeated.
 # compose is the course's own toolkit function, not a Python name, so it

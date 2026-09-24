@@ -23,7 +23,7 @@ A *development environment* is the set of tools around your code: an
 editor to write it in, a way to run it and see what happened, and help
 with finding out why it broke. On this page we look at what a
 development environment gives you. dewlab's own pages are a small one.
-dewmini is a larger one, for a real project.
+The dewlab Notebook is a larger one, for a real project.
 
 ## An environment you are already in
 
@@ -32,10 +32,10 @@ development environment. The page lets you edit your code, run it, and
 see what happened, all in one place. It is small on purpose: one script,
 one job.
 
-`compose/dewmini.html` has the same editor and the same Python. It adds
-several cells, several files, and work that is still there when you come
-back. Because the tool underneath is the same, what you learn about this
-page is also true of dewmini.
+The Notebook, at `compose/notebook.html`, has the same editor and the
+same Python. It adds several cells, several files, and work that is still
+there when you come back. Because the tool underneath is the same, what
+you learn about this page is also true of the Notebook.
 
 ## Errors worth reading
 
@@ -104,9 +104,9 @@ attention to what you are writing, and it helps.
 A page like this one holds one script, and it does not remember your
 work between visits. A real project grows past that. It has several
 files, with a class in one file used from another, and work you want to
-find again next week. dewmini is made for that.
+find again next week. The Notebook is made for that.
 
-Three parts of dewmini do that work.
+Three parts of the Notebook do that work.
 
 - **Files** is a real set of files and folders. Write `shapes.py` there,
   and a cell elsewhere can `import shapes`. Real Python programs are

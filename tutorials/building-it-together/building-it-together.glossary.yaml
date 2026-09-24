@@ -1,7 +1,7 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Comes after code-other-people-can-read, the last page of the Plot Twist
-# track. pseudocode was introduced on recipes-are-algorithms; structured
+# Comes after code-other-people-can-read, the last page of the Dewey
+# Track. pseudocode was introduced on recipes-are-algorithms; structured
 # walkthrough, test suite and step_through on does-it-work; code review,
 # reviewer and refactoring on code-other-people-can-read, so none is
 # repeated here. route_length, hits_player and random_throw are starter

@@ -1,7 +1,7 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Comes after four-questions and recipes-are-algorithms in the Plot Twist
-# track. "*", "=", "def", "variable" and "parameter" were introduced there.
+# Comes after four-questions and recipes-are-algorithms in the Dewey
+# Track. "*", "=", "def", "variable" and "parameter" were introduced there.
 # split_bill is the course's own toolkit function, not a Python name, so
 # it has no python: line.
 entries:

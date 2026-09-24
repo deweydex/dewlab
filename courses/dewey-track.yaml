@@ -1,10 +1,16 @@
-title: Plot Twist
+title: The Dewey Track
 code: 5N2927 + 5N18396 · QQI Level 5
 status: beta
-card: Maths and programming for people who are sure they hate both. Every page starts with a question from the world, and the maths and the code arrive because the question needs them.
+card: Python and maths for people who want something different. Learn by dewing — every page starts with a question from the world, and the maths and the code arrive because the question needs them.
 description: >-
-  Plot Twist teaches Programming and Design Principles (5N2927) and
-  Mathematics for Information Technology (5N18396) as one subject.
+  The Dewey Track teaches Programming and Design Principles (5N2927) and
+  Mathematics for Information Technology (5N18396) as one subject, in
+  Python.
+
+
+  It is named after John Dewey, an educator who argued that people learn
+  by doing: by working on real questions, not by memorising answers first.
+  Here you learn by dewing. You try a move, run it, and see what happens.
 
 
   Every page opens with a question a person might want to answer, and four

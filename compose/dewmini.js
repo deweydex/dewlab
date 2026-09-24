@@ -434,7 +434,7 @@ function addCell(type, content = "", style = "") {
 }
 
 const EXAMPLE_CELLS = [
-  { type: CELL_TYPES.PYTHON, content: 'print("Hello from dewmini!")\nanswer = 6 * 7\nanswer' },
+  { type: CELL_TYPES.PYTHON, content: 'print("Hello from the Notebook!")\nanswer = 6 * 7\nanswer' },
   { type: CELL_TYPES.PYTHON, content: "import numpy as np\nreadings = np.array([4, 8, 15, 16, 23, 42])\nreadings.mean()" },
   {
     type: CELL_TYPES.TEXT,
@@ -719,7 +719,7 @@ async function openWorkspaceFile(name) {
   const isIpynb = lower.endsWith(".ipynb");
   const isHtml = lower.endsWith(".html") || lower.endsWith(".htm");
   if (!isPy && !isIpynb && !isHtml) {
-    updateStatus(`dewmini opens .py, .ipynb and .html files. ${name} stays in the workspace for a cell to read.`, "error");
+    updateStatus(`The Notebook opens .py, .ipynb and .html files. ${name} stays in Files for a cell to read.`, "error");
     return;
   }
 
@@ -748,7 +748,7 @@ async function openWorkspaceFile(name) {
                                 isPy ? VIEWS.FILE : VIEWS.CELLS);
   notebook.path = name;
   openNotebook(notebook);
-  updateStatus(`Opened ${name}. Edits here save back to the workspace.`, "ok");
+  updateStatus(`Opened ${name}. Edits here save back to its file.`, "ok");
 }
 
 async function readFileIfExists(name) {
@@ -781,7 +781,7 @@ async function openSiteFile(name) {
   notebook.siteCss = css;
   notebook.siteJs = js;
   openNotebook(notebook);
-  updateStatus(`Opened ${name}. Edits here save back to the workspace.`, "ok");
+  updateStatus(`Opened ${name}. Edits here save back to its file.`, "ok");
 }
 
 let workspaceWriteTimer = null;
@@ -2260,16 +2260,16 @@ async function reloadStaleImports() {
 
 function getFilenameBase() {
   let name = (activeNotebook()?.name || "").trim();
-  if (!name) name = "dewmini-notebook";
+  if (!name) name = "notebook";
   name = name.replace(/\.(py|html?|ipynb)$/i, "");
   name = name.replace(/[\\/:*?"<>|]+/g, "-").trim();
-  return name || "dewmini-notebook";
+  return name || "notebook";
 }
 
 function updateFilenameField() {
   const el = document.getElementById("dm-filename");
   if (el) el.value = activeNotebook()?.name || "";
-  document.title = `${getFilenameBase()} — dewmini`;
+  document.title = `${getFilenameBase()} — dewlab Notebook`;
 }
 
 /* Wires the filename box to rename the notebook it belongs to. */
@@ -2281,7 +2281,7 @@ function initFilename() {
     const notebook = activeNotebook();
     if (!notebook) return;
     notebook.name = el.value.trim().slice(0, 40) || notebook.name;
-    document.title = `${getFilenameBase()} — dewmini`;
+    document.title = `${getFilenameBase()} — dewlab Notebook`;
     saveState();
     renderTabs();
   });
@@ -2597,7 +2597,7 @@ async function downloadAsHtml() {
 }
 
 function buildStandaloneHtml(toolsSource, cellsData, dark, title) {
-  const safeTitle = escapeHtml(title || "dewmini notebook");
+  const safeTitle = escapeHtml(title || "dewlab Notebook");
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -2670,7 +2670,7 @@ async function main() {
     for (const { cell, out } of runnable) {
       await tools.run_cell(cell.id, out, cell.content);
     }
-    statusEl.textContent = "Ready — this is a read-only copy; edit the source cell in dewmini to change it.";
+    statusEl.textContent = "Ready — this is a read-only copy; edit the source cell in the Notebook to change it.";
   } catch (err) {
     statusEl.textContent = "Python failed to load: " + err.message;
   }
@@ -3175,7 +3175,7 @@ function scanPyodideCompatibility(importedCells) {
     warnings.push(`Jupyter "magic" commands like \`%matplotlib\` or \`%%time\` (${describeCells(magicCells)}) aren't valid Python here and will raise an error if run as-is.`);
   }
   if (shellCells.length) {
-    warnings.push(`Lines starting with \`!\` (${describeCells(shellCells)}) run a shell command in Jupyter — there's no shell here, and dewmini's packages are already loaded, so these aren't needed anyway.`);
+    warnings.push(`Lines starting with \`!\` (${describeCells(shellCells)}) run a shell command in Jupyter — there's no shell here, and the Notebook's packages are already loaded, so these aren't needed anyway.`);
   }
   return warnings;
 }
@@ -3722,7 +3722,7 @@ function initStorageSection() {
   });
 
   document.getElementById("settings-forget-folder")?.addEventListener("click", async () => {
-    if (!confirm("Stop using that folder? dewmini switches back to this browser's private storage — nothing in the folder itself is deleted.")) return;
+    if (!confirm("Stop using that folder? The Notebook switches back to this browser's private storage — nothing in the folder itself is deleted.")) return;
     await dfs.forgetFolder();
     updateStatus("Stopped using that folder. Reload the page to switch storage.");
     updateStorageStatus();

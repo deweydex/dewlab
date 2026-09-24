@@ -401,7 +401,7 @@ class TestTheCrossTutorialReference:
         ])
         b.build(standalone=True)
 
-        bundled = (repo_with_assets / "site" / "download" / "dewmini"
+        bundled = (repo_with_assets / "site" / "download" / "notebook"
                    / "assets" / "reference-index.json")
         assert bundled.is_file()
         assert json.loads(bundled.read_text())[0]["term"] == "x"

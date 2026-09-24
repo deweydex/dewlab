@@ -15,12 +15,12 @@ right by luck.
 ## An environment you are already in
 
 **1.** In your own words, what does a page like this one have in
-common with dewmini?
+common with the dewlab Notebook?
 
 <details class="dl-answer"><summary>answer</summary>
 
 They have the same editor and the same Python underneath. This page
-runs one script and forgets it when you leave. dewmini is the same
+runs one script and forgets it when you leave. The Notebook is the same
 tool, with more room: several cells and several files, which are still
 there when you come back.
 
@@ -111,7 +111,7 @@ next to a built-in name like `print`.
 ## Where a bigger project lives
 
 **6.** A classmate writes a `Shape` class in `shapes.py`, using
-dewmini's Files panel. Then they import it into a notebook with
+the Notebook's Files panel. Then they import it into a notebook with
 `import shapes`. `Shape` has an `area()` method. What would they type to
 create a `Shape` object and check its area?
 
@@ -131,7 +131,7 @@ imported module: the module name, a dot, then the class name.
 </details>
 
 **7.** A cell has been running for over a minute, stuck in a loop that
-never ends. What in dewmini stops it, without closing the tab?
+never ends. What in the Notebook stops it, without closing the tab?
 
 <details class="dl-answer"><summary>answer</summary>
 

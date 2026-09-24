@@ -1,4 +1,4 @@
-"""dewmini web runs no Python, so these serve the repo's source tree directly rather than a build.py output — compose/dewminiweb.html's links already resolve against the real assets/ folder."""
+"""The Workspace (dewmini web) runs no Python, so these serve the repo's source tree directly rather than a build.py output — compose/workspace.html's links already resolve against the real assets/ folder."""
 from __future__ import annotations
 
 import functools
@@ -24,7 +24,7 @@ def dewminiweb_url():
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
-        yield f"http://127.0.0.1:{port}/compose/dewminiweb.html"
+        yield f"http://127.0.0.1:{port}/compose/workspace.html"
     finally:
         server.shutdown()
         thread.join(timeout=5)
