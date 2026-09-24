@@ -4572,3 +4572,31 @@ Everything the page writers had flagged as unsure checked out. Every changed num
 **Coverage on subsections.** The curriculum map counts only `##` headings as sections, so 8.3's coverage for its tangent subsection moved to the section that holds it.
 
 *Cost to change: the course file and thirteen folders.*
+
+---
+
+**7.222 — Plot Twist Units 9 and 10 are written, and so is the last context page. All ten units of the plan now exist.**
+
+**Pages.**
+- *Change*:
+  - limits as a sequence closing in, with a hole in a graph, one-sided limits and e;
+  - the derivative as a sprinter's speed right now, and why the chord's step can be neither 0 nor too small;
+  - the four rules, the quotient rule included, which the existing course leaves out. Each rule is found from tables of slopes before it is written, and checked against `derivative_at`. The page closes 7.5's promise by setting the slope to 0.
+  - bisection as binary search on a number line, and Newton's method, with the case where it fails.
+
+  The mixed page builds a best-moment finder on Ireland's CO₂ data.
+- *Programs for people*:
+  - the history from Lovelace and Note G to Python, every claim checked against a named source and anything unconfirmed left out;
+  - one job in Python, SQL, JavaScript and BASIC. The first two run on the page. The other two are to read, and were run elsewhere to check them.
+  - reviewing the reader's own toolkit as a stranger would: a checklist, refactoring under tests, docstrings as promises, a small linter;
+  - the team project for three to five people (PDP-LO12). It offers three projects that name the toolkit functions they draw on, roles that change at each release, a definition of done and a rubric.
+
+  Unit 10 has no mixed page: the project is its practice.
+- *Sets in databases*, the third context page, sits beside 5.4 and 5.5. It shows union, intersection, difference and the Cartesian product as `UNION`, `INTERSECT`, `EXCEPT` and `CROSS JOIN`, with a `JOIN` as the matching pairs.
+- Units 9 and 10 add 3 toolkit functions: `derivative_at`, `bisect_root` and `newton`.
+
+**A stub no longer blocks the rest of a page.** On earlier pages every cell after a toolkit stub waits for the reader to write it. From Unit 9 on, each stub's reference code sits in an answer fold directly under its tests, and the next cell that needs the tool says to copy it in. It is a content-only change. The earlier pages could take the same fold, or the runtime could fall back to the reference on the reader's own page; that choice is still open.
+
+**The course description** now says all ten units are written and in beta.
+
+*Cost to change: the course file and ten folders.*
