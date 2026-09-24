@@ -91,4 +91,4 @@ entries:
     definition: >
       Counts along a list as a loop goes through it, giving each value
       with its number.
-    example: "for number, passed in enumerate(tests, start=1):"
+    example: "enumerate(tests, start=1)"
