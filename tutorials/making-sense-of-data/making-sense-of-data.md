@@ -166,7 +166,7 @@ A *measure of spread* is a number that describes how spread out the values are. 
 
 The *range* is the largest value minus the smallest value. It is the simplest measure of spread. The range of 2, 4 and 9 is $9 - 2 = 7$.
 
-The *standard deviation* measures how far the values are from the mean, on average. Here is the idea in four steps:
+We met the standard deviation in [Designing and testing good functions](tutorial:building-reusable-tools), where we wrote a function for it. It measures how far the values are from the mean, on average. Here is the idea again, in four steps:
 
 1. Find how far each value is from the mean.
 2. Square each of those distances. This makes them all positive.

@@ -99,7 +99,10 @@ is no single height above $x = 1$ for `roll`, so we cannot draw it.
 
 In [Writing your own functions](tutorial:writing-your-own-functions) we
 met the domain of a function: the set of inputs it can accept. The
-*range* of a function is the set of outputs it can give.
+*range* of a function is the set of outputs it can give. This is a
+different meaning from the range in
+[Statistics: averages, spread and frequency](tutorial:making-sense-of-data),
+where the range is the largest value minus the smallest.
 
 Here are two functions with a limited domain. Each one has a line you
 can uncomment to see what happens outside it.

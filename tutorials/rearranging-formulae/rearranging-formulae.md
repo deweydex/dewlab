@@ -215,7 +215,7 @@ side (in parallel). $R$ is their total resistance:
 $$\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$$
 
 We want $R$, and $R$ is in a denominator. Here is the trick: $\frac{1}{R}$
-is easy to find, because it is just the right-hand side. So we find
+is easy to find, because it equals the right-hand side. So we find
 $\frac{1}{R}$ first, and then flip it over:
 
 $$R = \frac{1}{\frac{1}{a} + \frac{1}{b}}$$

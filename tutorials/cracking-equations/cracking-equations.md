@@ -230,7 +230,7 @@ string showing the factorised form?
 2. Build the string from the roots. Be careful with the leading
    coefficient $a$: it goes in front.
 3. If the quadratic has no real roots, the function should say so
-   clearly, and not guess at an answer.
+   in plain words, and not guess at an answer.
 4. Test it in the second cell with the three cases in the comments.
 
 ```python exec
@@ -350,7 +350,7 @@ Can you write a function `solve_simultaneous(eq1, eq2)`?
 
 1. Each equation is a list `[a, b, c]`, which means $ax + by = c$.
 2. The function returns the values of $x$ and $y$.
-3. If there is no single solution, it says so clearly.
+3. If there is no single solution, it says so in plain words.
 4. Test it in the second cell with the three systems in the comments.
 
 If you want to go further, try extending it to three equations with
