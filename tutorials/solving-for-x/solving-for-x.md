@@ -131,8 +131,8 @@ print(8 + 2 * gigabytes, 15 + 1.2 * gigabytes)
 `8.75`, and both plans cost €25.50 there. Below 8.75 gigabytes plan A
 is cheaper, and above it plan C is. Each side of this equation has
 degree 1, so it is a *linear equation*: the unknown is only multiplied
-by a number and added to. Its graph, as on the last page, is a straight
-line.
+by a number and added to. Each side, drawn as on the last page, is a
+straight line, and the answer is where the two lines cross.
 
 ## A tool for any straight-line equation
 
@@ -194,7 +194,8 @@ assert solve_linear(0.8, -7) == 8.75
 assert solve_linear(2, 6) == -3
 assert solve_linear(0, 5) is None
 
-for a, b in [(0.8, -7), (2, -12), (5, -35), (3, 7), (-2.5, 4)]:
+# the plans, the band's weekend from Rules with letters in them, and more
+for a, b in [(0.8, -7), (2, -12), (200, -500), (5, -35), (3, 7), (-2.5, 4)]:
     x = solve_linear(a, b)
     assert close_enough(evaluate([b, a], x), 0), (a, b, x)
 print("solve_linear keeps its promise.")

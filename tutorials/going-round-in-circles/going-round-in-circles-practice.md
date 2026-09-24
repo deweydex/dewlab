@@ -274,8 +274,8 @@ A good answer weighs a few things, and can land on either side.
 - **How far it reaches.** The triangle only has angles less than
   $90^\circ$. The circle gives a sine for every angle, even a negative
   one.
-- **The picture.** Some people see a triangle more easily than a point
-  moving. Others find the moving point easier to hold.
+- **The picture.** Some people picture a triangle better than a point
+  moving. Others hold the moving point in mind better.
 - **What comes next.** The next page, on waves, needs the circle. The
   page after, on solving triangles, starts from the triangle.
 

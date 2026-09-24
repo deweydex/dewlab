@@ -141,9 +141,9 @@ $30 + 0.10d = 20 + 0.25d$. Subtract $20 + 0.25d$ from both sides:
 $-0.15d + 10 = 0$.
 
 ```python
-distance = solve_linear(-0.15, 10)
-print(distance)
-print(30 + 0.10 * distance, 20 + 0.25 * distance)
+kilometres = solve_linear(-0.15, 10)
+print(kilometres)
+print(30 + 0.10 * kilometres, 20 + 0.25 * kilometres)
 print(30 + 0.10 * 50, 20 + 0.25 * 50)
 ```
 

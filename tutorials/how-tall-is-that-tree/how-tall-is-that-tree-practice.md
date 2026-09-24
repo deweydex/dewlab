@@ -442,26 +442,29 @@ top corner's y. The first route never needed the height at all.
 
 </details>
 
-**16. Explain.** The tutorial met sine, cosine and tangent first as the
-x, the y and the slope of a point on a circle, and SOH-CAH-TOA came
-after. Many courses start with SOH-CAH-TOA on a right-angled triangle
-and never draw the circle. If you were teaching a friend, which would
-you start with, and why?
+**16. Explain.** The tutorial found the tree's height from an angle
+and the tangent. There is an older way, with no angles at all. On a
+sunny day, stand a 1 m stick upright and measure its shadow, then
+measure the tree's shadow. The stick and the tree make two triangles of
+the same shape, so the tree is as many times taller than the stick as
+its shadow is longer. If you were teaching a friend to measure a tree,
+which way would you start with, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
 There is no one right answer. A good answer weighs a few things:
 
-- **Speed.** SOH-CAH-TOA gets to the first tree faster, and for right
-  angles it is all you need.
-- **What comes next.** Angles over 90°, waves, and a clock's hands all
-  need the circle. A reader who met the circle first has one idea;
-  a reader who met the triangle first meets a second idea later.
-- **Your friend.** Someone who likes pictures may prefer the circle.
-  Someone who has an exam next week about right angles may prefer the
-  ratios.
+- **What it needs.** Shadows need sun, a tape and a stick, and no
+  sines or tangents. Angles need a way to measure an angle, but work
+  on a cloudy day, and across a river with the sine rule.
+- **What it leads to.** The shadow method is two triangles of the same
+  shape, and stops there. Angles lead on to the sine and cosine rules,
+  for triangles with no right angle at all.
+- **Your friend.** Someone meeting triangles for the first time may
+  trust a shadow they can see. Someone who needs bearings for a map, or
+  angles for a game, needs the tangent sooner or later.
 
-A strong answer says who the friend is and what they need the trigonometry
-for, and chooses from that.
+A strong answer says who the friend is and what they will use it for,
+and chooses from that.
 
 </details>

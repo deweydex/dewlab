@@ -416,8 +416,8 @@ Why?
 
 To cancel a sound, the headphones must play its opposite, half a turn
 out of phase, at the same moment the sound arrives. An engine's hum
-repeats steadily at low frequencies, so its next repeat is easy to
-predict, and there is time to make its opposite. A cry changes
+repeats steadily at low frequencies, so the headphones can predict its
+next repeat, and there is time to make its opposite. A cry changes
 all the time, in pitch and in loudness, and has many high frequencies.
 Each repeat is short, so a small delay is a large part of a turn, and
 the opposite wave arrives out of step. Closed ear cups still block

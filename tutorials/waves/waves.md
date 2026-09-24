@@ -271,8 +271,9 @@ a higher frequency. A higher frequency is a higher note. The word
 musicians use for how high or low a note sounds is *pitch*.
 
 Bands tune to one agreed note: the A above middle C, at 440 Hz. Here is
-that A beside the A below it, at 220 Hz, over 10 milliseconds. How many
-repeats will each one make?
+that A beside the A below it, at 220 Hz, over 10 milliseconds. The
+cells from here on use your `wave`, so write it first. How many repeats
+will each one make?
 
 ```python exec
 id: waves-notes-1
@@ -319,7 +320,9 @@ for step in range(13):
     print(names[step], round(440 * semitone ** step, 2))
 ```
 
-Twelve steps of 1.0595 end at 880.0, one octave up. Middle C is 9
+The first line shows that $2^{1/12}$, multiplied by itself 12 times,
+makes `2.000000000000001`: 2, give or take a float's rounding. Twelve
+steps up from 440 end at 880.0, one octave up. Middle C is 9
 semitones below the A, at $440 \times 2^{-9/12} \approx 261.63$ Hz. A
 negative power counts halvings, as $2^{-3}$ did on
 [Doubling and halving](tutorial:doubling-and-halving#halving-down-to-1).
@@ -377,7 +380,7 @@ plt.legend()
 The two waves are mirror images, and their sum is a flat line at 0.
 Half a turn is $\pi$ radians, so adding $\pi$ inside the sine moved the
 wave half a repeat along. Real headphones cancel low, steady sounds best,
-such as an engine's hum, because those are the easiest to predict.
+such as an engine's hum, because each repeat is like the one before.
 
 ## Tangent repeats but is not a wave
 

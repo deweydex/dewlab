@@ -39,8 +39,9 @@ On this page we:
 
 > **The space we're in.** This page starts in the real numbers,
 > $\mathbb{R}$, and builds a bigger space around them, the complex
-> numbers. Every real number is still there, and every move we could
-> make before still works. One thing usually goes unsaid: the name
+> numbers. Every real number is still there, and almost every move we
+> could make before still works: the last section finds the one that
+> does not. One thing usually goes unsaid: the name
 > "imaginary", which we will meet, is a name from history. It is not a
 > sign that these numbers are less useful than the others. Your toolkit
 > is loaded, with `evaluate`, `solve_quadratic` and `close_enough`.
@@ -92,8 +93,8 @@ your `solve_quadratic` gives back an empty list.
 
 We have been here before. On
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#families-of-numbers),
-$3 - 5$ had no answer in $\mathbb{N}$. People did not decide the
-question was foolish. They built a bigger space, $\mathbb{Z}$, with new
+$3 - 5$ had no answer in $\mathbb{N}$. The answer was not to call the
+question foolish. It was to build a bigger space, $\mathbb{Z}$, with new
 numbers in it, −1, −2 and so on, where $3 - 5$ has an answer. The old
 numbers stayed, and adding and multiplying them worked as before.
 
@@ -153,8 +154,8 @@ unfinished.
 ## The old moves in the new space
 
 To add two complex numbers, add the real parts, then add the imaginary
-parts. To multiply them, multiply out the brackets as on
-[Rules with letters in them](tutorial:rules-with-letters-in-them), and
+parts. To multiply them, expand the brackets as on
+[Rules with letters in them](tutorial:rules-with-letters-in-them#expanding-brackets-is-a-loop), and
 wherever $i^2$ appears, write −1. That is the only new rule.
 
 Let's try $(2 + 3i)(4 - i)$ by hand first:
@@ -193,7 +194,7 @@ numbers $i$, $2i$, $3i$ go straight up from 0. This picture is called
 the *complex plane*.
 
 Now look at what multiplying by $i$ does. Start at 1 and multiply by
-$i$ again and again. Predict the four answers before you run the cell.
+$i$ again and again. Predict what it prints before you run the cell.
 
 ```python exec
 id: no-real-plane-1
@@ -296,12 +297,12 @@ print(solve_quadratic_complex(1, 3, -40))
 
 There is no `if`. Nothing can fail now, so there is no case to leave
 out. $x^2 + 1 = 0$ has roots $-i$ and $i$. $x^2 - 2x + 5 = 0$ has roots
-$1 - 2i$ and $1 + 2i$. And the patio from the last page still has its
+$1 - 2i$ and $1 + 2i$. And the allotment from the last page still has its
 roots, −8 and 5, now written with `+0j`.
 
 Look at the two roots of $x^2 - 2x + 5$. They have the same real part,
 and imaginary parts that are opposites. Two such numbers are called
-*conjugates*. The $\pm$ in the formula is the reason: the root of the
+*conjugates*. The $\pm$ in the formula is the reason: the square root of the
 discriminant is added once and taken away once. On the plane, the two
 roots are mirror images across the line of real numbers.
 
@@ -356,15 +357,16 @@ print(1j < 2)
 The first line prints `1.0 2`: the distances from 0. The second stops
 with `TypeError: '<' not supported between instances of 'complex' and
 'int'`. Nothing was mistyped. The message says that `<` is a move this
-space does not have. Points on a plane have no
-one order, left to right, that keeps the rules of $\mathbb{R}$. Is $i$
-bigger than 1, or smaller? Both answers break a rule somewhere, so
-mathematicians give neither.
+space does not have. Points on a plane have no one order, left to
+right, that keeps the rules of $\mathbb{R}$. Is $i$ bigger than 0, or
+smaller? Either answer breaks a rule: in $\mathbb{R}$, a number above
+0 or below 0 always squares to more than 0, and $i^2$ is −1. So
+mathematicians give neither answer.
 
 That is why your toolkit's `solve_quadratic` promised real roots,
 smallest first. "Smallest first" means nothing in $\mathbb{C}$.
 
-So which space should we work in? It depends on the question. A patio
+So which space should we work in? It depends on the question. An allotment's
 width must be real, and the order matters: $\mathbb{R}$ is the right
 space, and "no real roots" is the honest answer. A question about a
 turning shape, or a signal that swings, is better asked in

@@ -186,7 +186,7 @@ The tree is about 15.6 m tall. The angle you look up at is called the
 *angle of elevation*: the angle between level ground and your line of
 sight to something above you.
 
-How good is that answer? A phone held by hand can easily be off by 2°.
+How good is that answer? A phone held by hand can be off by 2° or so.
 Here is the same sum for 33° and for 37°:
 
 ```python exec
@@ -498,7 +498,7 @@ tall. Nobody crossed the river.
 
 Does the sine rule hold here? The cell puts the triangle on a map, with B
 at $(0, 0)$ and A 15 m behind it, and measures every angle with your
-`angle_between`.
+`angle_between`, so write that first.
 
 ```python exec
 id: how-tall-sine-2
