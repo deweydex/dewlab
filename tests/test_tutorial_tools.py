@@ -1040,8 +1040,9 @@ class TestAppCellQueriesCommit:
 
 
 class TestLoadToolkit:
-    """`_load_toolkit()`: earlier pages' toolkit cells, run into the shared
-    namespace before a page's first cell. The reader's version where there
+    """`_load_toolkit()`: earlier pages' toolkit cells, each run in a
+    namespace of its own and exported to the shared one before a page's
+    first cell. The reader's version where there
     is one, the reference where there is not or where theirs raises, and
     nothing either prints reaches any cell."""
 
@@ -1084,6 +1085,34 @@ class TestLoadToolkit:
         assert result["entries"][1]["names"] == ["Point", "split_bill"]
         assert "loading" not in capsys.readouterr().out
         assert tt._current is None
+
+    def test_an_entrys_imports_stay_inside_it(self):
+        # Untangling a condition imports itertools.product; Doing it again
+        # later defines a toolkit product() of its own. Each keeps its own.
+        self.load(
+            {"tutorial": "one", "cell": "a", "mine": None,
+             "reference": "from itertools import product\n"
+                          "def rows(count):\n    return len(list(product([0, 1], repeat=count)))"},
+            {"tutorial": "two", "cell": "b", "mine": None,
+             "reference": "def product(values):\n    result = 1\n"
+                          "    for value in values:\n        result *= value\n    return result"})
+        assert tt._page_globals["rows"](3) == 8
+        assert tt._page_globals["product"]([2, 3]) == 6
+
+    def test_a_page_that_reuses_a_name_does_not_break_the_toolkit(self):
+        self.load({"tutorial": "one", "cell": "a", "mine": None,
+                   "reference": "RATE = 10\ndef tip(total):\n    return total * RATE / 100"})
+        assert tt._page_globals["RATE"] == 10
+        tt._page_globals["RATE"] = "a page's own RATE"
+        assert tt._page_globals["tip"](50) == 5
+
+    def test_a_later_entry_sees_the_earlier_ones(self):
+        self.load(
+            {"tutorial": "one", "cell": "a", "mine": None,
+             "reference": "def factorial(n):\n    return 1 if n < 2 else n * factorial(n - 1)"},
+            {"tutorial": "one", "cell": "b", "mine": None,
+             "reference": "def permutations(n, r):\n    return factorial(n) // factorial(n - r)"})
+        assert tt._page_globals["permutations"](5, 2) == 20
 
     def test_a_reference_that_raises_is_reported(self):
         result = self.load({"tutorial": "one", "cell": "c", "reference": "1 / 0", "mine": None})

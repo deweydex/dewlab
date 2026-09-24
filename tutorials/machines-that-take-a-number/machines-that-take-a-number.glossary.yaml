@@ -1,0 +1,110 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Comes after Units 1-3 of the Plot Twist track. "function", "parameter",
+# "def", "return", "docstring", "assert", "TypeError", "module", "import"
+# and "passing a function" were introduced there, so they are not repeated.
+# compose is the course's own toolkit function, not a Python name, so it
+# has no python: line.
+entries:
+  - term: "function notation, f(x)"
+    kind: concept
+    definition: >
+      Function notation is the maths way to write a rule with a name. In
+      f(x) = 4 + 1.5x, f is the name, x is the input, and f(10) means the
+      rule used on 10.
+    example: "f(10) = 4 + 1.5 × 10 = 19"
+  - term: argument
+    kind: concept
+    definition: >
+      An argument is the value put into a parameter when a function is
+      called. In fare(10), the parameter is km and the argument is 10.
+    example: "fare(10)"
+  - term: "domain, range"
+    kind: concept
+    definition: >
+      The domain of a function is the set of inputs it accepts. The range
+      is the set of outputs it can give. A taxi fare's domain is every
+      distance from 0 up.
+  - term: square root
+    kind: concept
+    definition: >
+      The square root of a number is the number that, multiplied by
+      itself, makes it. The square root of 16 is 4. In the real numbers, a
+      negative number has no square root.
+  - term: "math.sqrt()"
+    python: math.sqrt
+    kind: function
+    definition: >
+      Gives the square root of a number, as a float. A negative number is
+      outside its domain, so math.sqrt(-4) stops with a ValueError.
+    example: "math.sqrt(16)"
+  - term: ValueError
+    python: ValueError
+    kind: concept
+    definition: >
+      A ValueError is the error Python gives when a value is the right kind
+      of thing, but outside what a function accepts. math.sqrt(-4) gives
+      "ValueError: math domain error".
+  - term: "assert with a message"
+    python: assert
+    kind: keyword
+    definition: >
+      Checks a condition, and shows the message after the comma if the
+      check fails. It is a way for a function to say which inputs it
+      accepts.
+    example: 'assert km >= 0, "a trip cannot be shorter than 0 km"'
+  - term: algorithm as a function
+    kind: concept
+    definition: >
+      An algorithm gives one output for each input in its domain, so it is
+      a function. The function says what comes out, and the algorithm says
+      how. Two different algorithms can be the same function.
+  - term: None
+    python: None
+    kind: keyword
+    definition: >
+      None is Python's value for "nothing here". A function with no return
+      line gives back None when it finishes.
+  - term: procedure
+    kind: concept
+    definition: >
+      A procedure is a function that does a job, such as printing, instead
+      of giving back a value. In Python it is written with def, and it
+      gives back None.
+  - term: modularisation
+    kind: concept
+    definition: >
+      Modularisation is splitting a program into small functions, each with
+      one job. A change to one job then needs a change in one place.
+  - term: keyword argument
+    kind: concept
+    definition: >
+      A keyword argument names the parameter it goes into, in the call. It
+      helps most when a function has several parameters.
+    example: "split_bill(22.0, people=3, tip_percent=10)"
+  - term: "inverse function, f⁻¹"
+    kind: concept
+    definition: >
+      The inverse of a function is a function that undoes it. If f takes x
+      to y, then f⁻¹ takes y back to x, so f⁻¹(f(x)) = x. The −1 is a name,
+      not a power.
+    example: "distance_for(fare(7)) gives 7.0"
+  - term: one-to-one
+    kind: concept
+    definition: >
+      A function is one-to-one when each output comes from exactly one
+      input. Only a one-to-one function has an inverse. Squaring is not
+      one-to-one, because 3 and −3 both give 9.
+  - term: "composition, g ∘ f"
+    kind: formula
+    definition: >
+      Composition joins two functions, so that the output of the first
+      goes into the second. (g ∘ f)(x) means g(f(x)), and f runs first.
+      The order can change the answer.
+    example: "take_ten_percent_off(add_delivery(50))"
+  - term: "compose()"
+    kind: function
+    definition: >
+      Gives back a new function that runs inner on its input, then outer on
+      the result. It is a tool in your own toolkit, not part of Python.
+    example: "compose(outer, inner)(x)"

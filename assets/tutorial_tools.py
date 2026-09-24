@@ -37,6 +37,7 @@ import os
 import re
 import sys
 import traceback
+import types
 import warnings
 
 os.environ.setdefault("MPLBACKEND", "AGG")
@@ -907,6 +908,23 @@ def _functions_in(code: str) -> dict[str, bool]:
     }
 
 
+def _imported_names(code: str) -> set[str]:
+    """The names `code`'s top-level `import` and `from ... import` lines
+    bind. Empty for code that does not parse."""
+    import ast  # noqa: PLC0415
+
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return set()
+    names = set()
+    for node in tree.body:
+        if isinstance(node, (ast.Import, ast.ImportFrom)):
+            for alias in node.names:
+                names.add(alias.asname or alias.name.split(".")[0])
+    return names
+
+
 def _load_toolkit(entries_json: str) -> str:
     """Load the toolkit earlier pages built into this page's namespace.
 
@@ -914,6 +932,16 @@ def _load_toolkit(entries_json: str) -> str:
     reference, mine}`: `mine` is the reader's own saved code for that
     cell, or null to use the reference (with `unsaved` true when that is
     because the reader has nothing saved). Output is discarded.
+
+    Each entry runs in a namespace of its own, like a module: a copy of
+    the page's namespace as it stands, so it sees the seeded tools and
+    every earlier entry. Only what it defines comes back to the page:
+    every public name it bound, except the names its own `import` lines
+    bound (`_imported_names()`) and modules. So an entry's
+    `from itertools import product` stays inside it, and a later entry
+    or a page cell that makes its own `product` cannot break the
+    functions that relied on the first one: their globals are their own
+    entry's namespace.
 
     The fallback is per function. The reader's code runs; then every
     function the reference defines is taken from the reference where the
@@ -940,46 +968,51 @@ def _load_toolkit(entries_json: str) -> str:
     report = []
     for entry in entries:
         before = dict(_page_globals)
+        space = dict(before)
         label = f"toolkit {entry.get('tutorial', '')} {entry.get('cell', '')}".strip()
         reference = entry.get("reference") or ""
         reference_functions = list(_functions_in(reference))
         mine = entry.get("mine")
         used, fell_back, error = "reference", False, None
         from_reference: list[dict] = []
+        imported: set[str] = set()
 
         if mine is not None:
             written = _functions_in(mine)
-            if _run_toolkit_code(label, mine, _page_globals) is None:
+            if _run_toolkit_code(label, mine, space) is None:
                 used = "mine"
+                imported = _imported_names(mine)
                 missing = [
                     name for name in reference_functions
-                    if not written.get(name, name in _page_globals
-                                       and _page_globals[name] is not before.get(name))
+                    if not written.get(name, name in space
+                                       and space[name] is not before.get(name))
                 ]
                 if missing:
                     scratch = dict(before)
                     error = _run_toolkit_code(label, reference, scratch)
                     for name in missing:
                         if name in scratch:
-                            _page_globals[name] = scratch[name]
+                            space[name] = scratch[name]
                             from_reference.append({"name": name, "why": "unwritten"})
             else:
                 fell_back = True
-                _page_globals.clear()
-                _page_globals.update(before)
+                space = dict(before)
 
         if used == "reference":
-            error = _run_toolkit_code(label, reference, _page_globals)
+            error = _run_toolkit_code(label, reference, space)
+            imported = _imported_names(reference)
             if fell_back or entry.get("unsaved"):
                 why = "raised" if fell_back else "unwritten"
                 from_reference = [{"name": name, "why": why} for name in reference_functions]
 
-        names = [
-            name for name, value in _page_globals.items()
-            if not name.startswith("_") and callable(value)
-            and getattr(value, "__module__", None) == home
-            and before.get(name) is not value
-        ]
+        names = []
+        for name, value in space.items():
+            if (name.startswith("_") or name in imported or isinstance(value, types.ModuleType)
+                    or before.get(name) is value):
+                continue
+            _page_globals[name] = value
+            if callable(value) and getattr(value, "__module__", None) == home:
+                names.append(name)
         for name in names:
             if name not in all_names:
                 all_names.append(name)

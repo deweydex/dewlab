@@ -234,7 +234,10 @@ where theirs raises, or where the reader chose the reference
 reference defines and the reader's code leaves out, or leaves as a stub
 (a body of only a docstring, `...`, `pass` or `raise
 NotImplementedError`, read with `ast`), comes from the reference while
-the reader's other functions stay theirs. A downloaded page always loads
+the reader's other functions stay theirs. Each entry runs in a namespace
+of its own (a copy of `_page_globals` as it stands), and only the names it
+defines, not the names its `import` lines bind, are copied back, so one
+entry's imports cannot collide with another's functions. A downloaded page always loads
 the reference. `tutorial_tools._load_toolkit()` does the running and
 names what was defined, through a `"load-toolkit"` Worker message or directly on the
 main thread; a quiet line above the first cell (`renderToolkitLine()`)

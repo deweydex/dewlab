@@ -447,7 +447,9 @@ always sends the reference. Everything else — running each entry with
 its output thrown away, taking each function the reader left out or left
 as a stub from the reference (`_functions_in()`/`_is_placeholder()`),
 undoing a reader's version that raised and running the reference in its
-place, and naming the functions and classes the toolkit defined — is
+place, running each entry in a namespace of its own and copying back
+only the names it defines (never those its `import` lines bind), and
+naming the functions and classes the toolkit defined — is
 `tutorial_tools._load_toolkit()`,
 reached through a `"load-toolkit"` worker message or `toolsMT` directly,
 the same fork as every other dual-path call here.
@@ -456,7 +458,11 @@ The line above the first cell (`buildToolkitLine()`,
 `renderToolkitLine()`, `.dl-toolkit` in `tutorial-style.css`) says what
 will load before Python has booted, what did load afterwards, and which
 functions came from the reference and why ("You have not written … yet",
-"… your version raised an error"). Its two radio buttons write
+"… your version raised an error"). Past `TOOLKIT_NAMES_INLINE` (eight)
+functions it gives a count instead of naming each one, and a closed
+`.dl-toolkit-list` under it lists them page by page
+(`toolkitListHtml()`), marking the ones that came from the reference
+when the reader wrote some of their own. Its two radio buttons write
 the mode; if Python is running, the toolkit reloads straight away, or,
 when a cell is running, as soon as it finishes
 (`reloadToolkitIfPending()`).

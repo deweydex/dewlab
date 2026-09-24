@@ -1,0 +1,100 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: list
+    kind: concept
+    python: list
+    definition: >
+      A list is a row of values in square brackets, kept in order. A for
+      loop can go through it one value at a time. Unit 5 has much more
+      about lists.
+    example: "week = [3.20, 0, 3.50]"
+  - term: loop body
+    kind: concept
+    definition: >
+      The loop body is the lines pushed in under a for or while line. They
+      are the lines that run again each time round the loop.
+  - term: loop variable
+    kind: concept
+    definition: >
+      The loop variable is the name on a for line. Each time round the
+      loop, it points at the next value.
+    example: "for price in week:   # price is the loop variable"
+  - term: running total
+    kind: concept
+    definition: >
+      A running total is a name that holds the total so far. It starts at 0
+      before the loop, and each time round the loop the next value is added
+      to it.
+    example: "spent = spent + price"
+  - term: "+="
+    kind: operator
+    definition: >
+      Adds a value to a name and points the name at the result. spent +=
+      price is short for spent = spent + price.
+    example: "spent += price"
+  - term: "range()"
+    kind: function
+    python: range
+    definition: >
+      Gives the whole numbers from a start up to a stop, with the stop
+      itself left out. A for loop can count through them.
+    example: "range(1, 8)   # 1, 2, 3, 4, 5, 6, 7"
+  - term: storage
+    kind: concept
+    definition: >
+      Storage is keeping a value under a name, so that later steps can use
+      it or change it. A running total is storage.
+  - term: structured design
+    kind: concept
+    definition: >
+      Structured design is planning a program from three shapes of step:
+      one after another, choosing with if, and repeating with a loop. The
+      values it keeps under names are its storage.
+  - term: index
+    kind: concept
+    definition: >
+      An index is the small number written low beside a letter, as in x₃.
+      It says which value in a row we mean. x_i means the value in place i.
+  - term: sigma notation
+    kind: formula
+    definition: >
+      Sigma notation, written with the Greek capital Σ, means "add up".
+      The index starts at the number underneath and stops at the number on
+      top, and the part after Σ is what is added each time. It is a loop,
+      written by mathematicians.
+    example: "Σ from i=1 to 7 of xᵢ  =  x₁ + x₂ + … + x₇"
+  - term: pi notation
+    kind: formula
+    definition: >
+      Pi notation, written with the Greek capital Π, means "multiply
+      together". It works like sigma notation, with multiplying in place of
+      adding. A running product starts at 1, not 0.
+    example: "Π from i=1 to 4 of rᵢ  =  r₁ × r₂ × r₃ × r₄"
+  - term: sum of 1 to n
+    kind: formula
+    definition: >
+      The whole numbers from 1 to n add up to n times n + 1, halved. Writing
+      the numbers forwards and backwards makes every column add to n + 1.
+    example: "1 + 2 + … + 365 = 365 × 366 / 2 = 66795"
+  - term: "sum()"
+    kind: function
+    python: sum
+    definition: >
+      Adds up a row of values, such as a list or a range, and gives back
+      the total.
+    example: "sum(range(1, 366))   # 66795"
+  - term: while loop
+    kind: keyword
+    python: while
+    definition: >
+      A while loop runs its body again and again, for as long as its
+      condition is True. It checks the condition before every round, and
+      stops as soon as the condition is False.
+    example: "while jar < 10000:"
+  - term: "total(values), product(values)"
+    kind: function
+    definition: >
+      Give the sum and the product of every number in values. With no
+      values, total gives 0 and product gives 1. They are toolkit functions
+      you wrote yourself. This product is not the product() from itertools.
+    example: "product([2, 3, 4])   # 24"

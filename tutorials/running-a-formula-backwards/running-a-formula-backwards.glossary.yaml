@@ -1,0 +1,70 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Comes after machines-that-take-a-number and measuring-rooms-and-tins in
+# the Plot Twist track. The inverse, f⁻¹, one-to-one, domain, math.sqrt()
+# and compose() were introduced on machines-that-take-a-number, so they are
+# not repeated here. The toolkit functions are the course's own, not Python
+# names, so they have no python: line.
+entries:
+  - term: "speed, distance and time"
+    kind: formula
+    definition: >
+      The average speed is the distance divided by the time: s = d / t.
+      Rearranged, the distance is d = s × t, and the time is t = d / s.
+    example: "s = d / t"
+  - term: subject of a formula
+    kind: concept
+    definition: >
+      The subject of a formula is the letter on its own on one side. In
+      s = d / t, the subject is s.
+  - term: "transposing, changing the subject"
+    kind: concept
+    definition: >
+      Transposing a formula is rearranging it so that a different letter
+      is its subject. Each step does the same move to both sides, so the
+      formula stays true.
+  - term: the same move on both sides
+    kind: concept
+    definition: >
+      A formula stays true when we do the same move to both of its sides,
+      such as multiplying both by t. This is the one rule for rearranging.
+  - term: undoing in reverse order
+    kind: concept
+    definition: >
+      To undo several steps, undo the last step first. To undo "multiply by
+      9/5, then add 32", subtract 32 first, then multiply by 5/9.
+  - term: substituting back
+    kind: concept
+    definition: >
+      Substituting back is putting an answer into the formula it came from,
+      to check that the formula still holds.
+  - term: "Celsius and Fahrenheit"
+    kind: formula
+    definition: >
+      A temperature in degrees Fahrenheit is F = 9/5 × C + 32, where C is
+      the temperature in degrees Celsius. The way back is C = 5/9 × (F − 32).
+    example: "F = 9 / 5 * C + 32"
+  - term: algebraic fraction
+    kind: concept
+    definition: >
+      An algebraic fraction is a fraction with a letter in it, like d / 20.
+      We add algebraic fractions the same way as number fractions.
+  - term: "denominator, common denominator"
+    kind: concept
+    definition: >
+      The denominator is the bottom number of a fraction. A common
+      denominator is one bottom number that several fractions can share, so
+      that their tops can be added: d/20 + d/30 = 3d/60 + 2d/60.
+  - term: "speed(), travel_time(), distance_travelled()"
+    kind: function
+    definition: >
+      Your toolkit's three forms of s = d / t. speed(distance, time) gives
+      the average speed, travel_time(distance, speed) the time, and
+      distance_travelled(speed, time) the distance.
+    example: "travel_time(60, 20)"
+  - term: "celsius_to_fahrenheit(), fahrenheit_to_celsius()"
+    kind: function
+    definition: >
+      Your toolkit's temperature converter. Each one turns a temperature
+      from one scale into the other, and each undoes the other.
+    example: "fahrenheit_to_celsius(68)"

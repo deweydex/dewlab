@@ -85,6 +85,31 @@ print(to_hex(255))
 id: second-cell
 print("second")
 ```
+
+```python exec
+id: many-tools
+toolkit: yes
+{MANY}
+```
+"""
+
+MANY = "\n".join(f"def tool_{i}(n):\n    return n + {i}\n" for i in range(1, 9))
+SECOND = SECOND.replace("{MANY}", MANY)
+
+# A third page, so its toolkit (two from the first page and eight from the
+# second) is long enough for the line to give a count and a list.
+THIRD = """---
+title: "Many tools"
+year: "2026-2027"
+version: 2026.09.24.1
+---
+
+# Many tools
+
+```python exec
+id: use-many
+print(tool_8(1), to_binary(2))
+```
 """
 
 MINE = ('def to_binary(n):\n    return "mine:" + format(n, "b")\n\n'
@@ -99,7 +124,8 @@ def site(tmp_path, monkeypatch):
     (tmp_path / "tutorials").mkdir(parents=True)
     write_tutorial(tmp_path, "tk-first", FIRST)
     write_tutorial(tmp_path, "tk-second", SECOND)
-    write_course(tmp_path, COURSE, "Toolkit", ["tk-first", "tk-second"])
+    write_tutorial(tmp_path, "tk-third", THIRD)
+    write_course(tmp_path, COURSE, "Toolkit", ["tk-first", "tk-second", "tk-third"])
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
     monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
@@ -111,7 +137,7 @@ def site(tmp_path, monkeypatch):
     b.build()
 
     (tmp_path / "site" / "pyodide").symlink_to(PYODIDE)
-    for slug in ("tk-first", "tk-second"):
+    for slug in ("tk-first", "tk-second", "tk-third"):
         page_path = tmp_path / "site" / "tutorials" / f"{slug}.html"
         html = page_path.read_text()
         found = re.search(
@@ -168,8 +194,9 @@ def _saved_on_first(code: str) -> str:
     })
 
 
-def _open_second(tab, site_url, saved: str | None = None, mode: str | None = None):
-    tab.goto(f"{site_url}/tutorials/tk-second.html")
+def _open_second(tab, site_url, saved: str | None = None, mode: str | None = None,
+                 slug: str = "tk-second"):
+    tab.goto(f"{site_url}/tutorials/{slug}.html")
     tab.evaluate("localStorage.clear()")
     if saved is not None:
         tab.evaluate("(v) => localStorage.setItem('dewlab:progress:tk-first', v)", saved)
@@ -269,3 +296,30 @@ def test_the_toolkit_survives_run_all_and_a_restart(tab, site_url):
         ".textContent.includes('second')", timeout=240_000)
     assert tab.text_content('.dl-cell[data-cell-id="use-binary"] .dl-output').strip() == "mine:101"
     assert _line(tab).startswith("Your toolkit has to_binary and to_hex.")
+
+
+def test_a_long_toolkit_gives_a_count_and_a_list_page_by_page(tab, site_url):
+    _open_second(tab, site_url, slug="tk-third")
+    assert _run_and_read(tab, "use-many") == "9 ref:10"
+    assert _line(tab) == ("Your toolkit has 10 functions. They come from 2 earlier pages. "
+                          "You have not written any of these yet, so the reference ones "
+                          "are loaded.")
+    listed = tab.locator(".dl-toolkit-list")
+    assert listed.is_visible() and not listed.evaluate("el => el.open")
+    items = [" ".join(t.split()) for t in listed.locator("li").all_text_contents()]
+    assert items == ["Numbers in binary: to_binary, to_hex",
+                     "Using binary: " + ", ".join(f"tool_{i}" for i in range(1, 9))]
+
+
+def test_a_long_toolkit_marks_what_came_from_the_reference(tab, site_url):
+    # The reader wrote to_binary; to_hex and the eight tools are the reference's.
+    _open_second(tab, site_url, saved=_saved_on_first(MINE), slug="tk-third")
+    assert _run_and_read(tab, "use-many") == "9 mine:10"
+    assert "You have not written 9 of them yet, so the reference ones are loaded." in _line(tab)
+    items = [" ".join(t.split()) for t in tab.locator(".dl-toolkit-list li").all_text_contents()]
+    assert items[0] == "Numbers in binary: to_binary, to_hex (reference)"
+
+
+def test_a_short_toolkit_has_no_list(tab, site_url):
+    _open_second(tab, site_url)
+    assert tab.locator(".dl-toolkit-list").is_hidden()

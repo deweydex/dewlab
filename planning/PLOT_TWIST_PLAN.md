@@ -104,6 +104,23 @@ How the track carries them:
    prints 0.30000000000000004".
 9. **Low floor, high ceiling.** The first task on a page is one every reader
    can finish. The last is one a confident reader will enjoy.
+10. **Show the choices.** The reader sees why the course is built as it
+    is, what the usual alternative is, and what each costs, so they can
+    judge the approach and say when it is not working for them. Three
+    layers, each small:
+    - **A page on how this course is built**, beside *Four questions* at
+      the start: the usual shape of a course like this and what it does to
+      a reader who expects to fail, what this track does instead, what that
+      costs (slower in places; some things arrive later than a textbook
+      puts them), and an invitation to say when it is not working. Written
+      as a letter from the people who made it, not a mission statement.
+    - **"Why this way?"** on every tutorial: a closed fold near the end
+      that names one choice the page made and the alternative it turned
+      down, in a few sentences. One choice per page, so the explaining
+      never becomes the lesson.
+    - **The reader as judge**, where it fits: an Explain problem in the
+      practice asking which way the reader would have taught something,
+      and why.
 
 ## 4. Practice
 

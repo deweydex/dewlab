@@ -1,0 +1,94 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Comes after running-a-formula-backwards in the Plot Twist track. assert,
+# docstring and AssertionError were introduced on
+# numbers-a-computer-can-hold, "assert with a message" on
+# machines-that-take-a-number, and abs() on how-likely-is-it, so they are
+# not repeated here. step_through is a helper written on this page for the
+# reader to use, not a Python name and not a toolkit function, so it has no
+# entry. close_enough is the course's own toolkit function, so it has no
+# python: line.
+entries:
+  - term: bug
+    kind: concept
+    definition: >
+      A bug is a mistake in code that makes it break its promise. Code with
+      a bug can run with no error and still give a wrong answer.
+  - term: "testing, test case"
+    kind: concept
+    definition: >
+      Testing is running code on inputs where we already know what the
+      promise says it should give, and comparing. A test case is one input
+      with its expected output.
+  - term: where test cases come from
+    kind: concept
+    definition: >
+      Good test cases come from facts known outside the code, from a second
+      route such as going there and back, and from the edges of the promise.
+  - term: tolerance
+    kind: concept
+    definition: >
+      A tolerance is the largest difference between two numbers that still
+      counts as equal. Floats are compared within a tolerance, not with ==.
+  - term: "1e-9"
+    kind: concept
+    definition: >
+      1e-9 is Python's way of writing 1 × 10⁻⁹, which is 0.000000001. The
+      e means "times 10 to the power".
+    example: "1e-9 == 0.000000001"
+  - term: "close_enough(a, b, tolerance=1e-9)"
+    kind: function
+    definition: >
+      Your toolkit's test for floats. Gives True when a and b differ by no
+      more than tolerance, in either order.
+    example: "close_enough(0.1 + 0.2, 0.3)"
+  - term: "walkthrough, trace"
+    kind: concept
+    definition: >
+      A walkthrough, or trace, is running code by hand, one line at a
+      time, writing down each name's value as it changes.
+  - term: trace table
+    kind: concept
+    definition: >
+      A trace table is the table a walkthrough is written in. Each row is
+      one step, with the line about to run and the value of each name.
+  - term: structured walkthrough
+    kind: concept
+    definition: >
+      A structured walkthrough is a meeting where the person who wrote some
+      code talks a small group through it, line by line. The others ask
+      questions and look for mistakes.
+  - term: debugger
+    kind: concept
+    definition: >
+      A debugger is a tool that runs a program one line at a time, pausing
+      so you can see the value of every name.
+  - term: "breakpoint, step-through"
+    kind: concept
+    definition: >
+      A breakpoint is a line where a debugger pauses the program. Stepping
+      through means running one more line at a time from there, watching
+      the names change.
+  - term: "coding standard, PEP 8"
+    kind: concept
+    definition: >
+      A coding standard is a set of agreed rules for how code is written:
+      names, comments, indentation and layout. PEP 8 is Python's own.
+  - term: good names and comments
+    kind: concept
+    definition: >
+      A good name is a word that says what a value is, like total_minutes.
+      A good comment says why, not what. A comment that no longer matches
+      the code is worse than none.
+  - term: test suite
+    kind: concept
+    definition: >
+      A test suite is a set of tests kept together and run all at once,
+      again after every change.
+  - term: "enumerate()"
+    python: enumerate
+    kind: function
+    definition: >
+      Counts along a list as a loop goes through it, giving each value
+      with its number.
+    example: "enumerate(tests, start=1)"

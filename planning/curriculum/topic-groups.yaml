@@ -208,6 +208,26 @@ groups:
       - mixed-instructions-for-a-machine
       - mixed-decisions-and-logic
 
+  - key: plot-twist-loops-and-tools
+    name: "Plot Twist: loops, chance and tools of your own"
+    intro: >
+      Repeating a step until a job is done, counting every way something
+      can happen and how likely it is, then writing functions as promises,
+      testing them, and running a formula backwards.
+    tutorials:
+      - doing-it-again
+      - counting-every-outfit
+      - orders-and-choices
+      - how-likely-is-it
+      - chances-that-combine
+      - mixed-loops-counting-and-chance
+      - machines-that-take-a-number
+      - measuring-rooms-and-tins
+      - running-a-formula-backwards
+      - does-it-work
+      - what-a-function-can-see
+      - mixed-making-your-own-tools
+
   - key: object-oriented-programming
     name: Objects, classes, and building bigger programs
     intro: >

@@ -2711,6 +2711,11 @@ p code, li code {
 .dl-toolkit-mode { display: inline-flex; gap: 0.8rem; white-space: nowrap; }
 .dl-toolkit-mode label { cursor: pointer; }
 .dl-toolkit-mode input { accent-color: var(--dl-orange); margin: 0 0.25rem 0 0; vertical-align: -0.1em; }
+.dl-toolkit-list { flex: 1 1 100%; }
+.dl-toolkit-list summary { cursor: pointer; width: fit-content; }
+.dl-toolkit-list ul { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.dl-toolkit-list li { margin: 0.15rem 0; }
+.dl-toolkit-page { color: var(--dl-fg); }
 
 /* KaTeX display math may be wider than the measure. */
 .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }

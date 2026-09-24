@@ -32,7 +32,7 @@ entries:
     definition: >
       A tuple is a few values written together in round brackets, such as
       (True, False). Each row that product() makes is a tuple.
-  - term: "product()"
+  - term: "itertools.product()"
     kind: function
     python: itertools.product
     definition: >

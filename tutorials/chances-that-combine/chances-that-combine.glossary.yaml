@@ -1,0 +1,69 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Comes after how-likely-is-it in the Plot Twist track, which introduced
+# probability, equally likely outcomes, simulation and the random module.
+# at_least_one is the course's own toolkit function, not a Python name, so
+# it has no python: line.
+entries:
+  - term: independent events
+    kind: concept
+    definition: >
+      Two events are independent when one happening does not change the
+      chance of the other. Two rolls of a die are independent, because a
+      die has no memory.
+  - term: multiplication rule
+    kind: formula
+    definition: >
+      For independent events, the chance that both happen is their two
+      chances multiplied: P(A and B) = P(A) × P(B). When the first event
+      changes the second, multiply by the second's chance after the first.
+    example: "1 / 6 * 1 / 6   # two sixes on two dice: 1/36"
+  - term: mutually exclusive events
+    kind: concept
+    definition: >
+      Events are mutually exclusive when they cannot both happen at once.
+      One roll of a die cannot show both a 1 and a 2.
+  - term: addition rule
+    kind: formula
+    definition: >
+      For mutually exclusive events, the chance that one or the other
+      happens is their two chances added: P(A or B) = P(A) + P(B).
+    example: "1 / 6 + 1 / 6   # a 1 or a 2 on one die: 2/6"
+  - term: "P(A or B), with an overlap"
+    kind: formula
+    definition: >
+      When both events can happen at once, adding counts the overlap twice.
+      Take it away once: P(A or B) = P(A) + P(B) − P(A and B).
+    example: "3 / 6 + 2 / 6 - 1 / 6   # even, or more than 4: 4/6"
+  - term: complement
+    kind: formula
+    definition: >
+      The complement of an event is everything that can happen except that
+      event. Its chance is 1 minus the event's chance: P(not A) = 1 − P(A).
+  - term: at least once
+    kind: formula
+    definition: >
+      The chance that something happens at least once in n independent
+      tries is 1 − (1 − p)ⁿ, where p is its chance on one try. It is the
+      complement of "it never happens".
+    example: "1 - (5 / 6) ** 4   # at least one six in four rolls"
+  - term: "in"
+    python: in
+    kind: operator
+    definition: >
+      Asks whether a value is one of the values in a list. It gives True
+      or False.
+    example: "day in seen"
+  - term: birthday problem
+    kind: concept
+    definition: >
+      The birthday problem asks how likely it is that two people in a room
+      share a birthday. With 23 people the chance is about 0.507, because
+      23 people make 253 pairs, and any pair can match.
+  - term: "at_least_one()"
+    kind: function
+    definition: >
+      Gives the chance that something with chance `chance` on one try
+      happens at least once in `tries` independent tries. It is a toolkit
+      function you wrote yourself.
+    example: "at_least_one(1 / 6, 4)   # about 0.518"
