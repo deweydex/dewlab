@@ -17,15 +17,40 @@ covers:
 
 # Charts: choosing the right chart for your data
 
-In the last tutorial we built statistical tools and made our first histogram. Today we go deeper into data visualization: how to choose the right type of chart, how to make charts that communicate clearly, and how to use visualization as a tool for understanding rather than just decoration.
+In [Statistics: averages, spread and frequency](tutorial:making-sense-of-data)
+we wrote functions for the mean, the median, the mode and the standard
+deviation. We also drew our first histogram. On this page we look more
+closely at charts. A good chart does more than make a report look nice.
+It helps us understand the data.
 
-This is also an opportunity to practice writing clean, modular code -- wrapping common plotting tasks into reusable functions.
+On this page we:
 
-## Why Visualize?
+- see how summary numbers can hide what a dataset looks like
+- match five kinds of chart to the jobs they do well
+- wrap plotting code in functions we can use again
+- put summary numbers and a chart side by side
+- collect a few rules that make any chart easier to read
 
-Consider Anscombe's Quartet: four datasets that have nearly identical statistical properties (same mean, same standard deviation, same correlation) but look completely different when plotted. The statistics alone cannot distinguish them. The plots make the differences obvious.
+Along the way we practise writing clean code, in small functions that
+each do one job.
 
-Let's see this in action:
+## Why visualize?
+
+Can four datasets have the same averages and the same spread, and still
+look nothing like each other?
+
+*Anscombe's Quartet* is a set of four small datasets, made by the
+statistician Francis Anscombe in 1973. The four datasets have nearly
+the same mean and the same standard deviation. They also have the same
+correlation. *Correlation* is a number between $-1$ and $1$ that
+measures how closely two lists of numbers follow a straight line. A
+correlation near $1$ means the points lie close to a line that goes up;
+a correlation near $0$ means there is no straight-line pattern. We will
+not calculate it on this page.
+
+For the four datasets, every one of those numbers is about the same. So
+the numbers cannot tell the datasets apart. What happens when we plot
+them? Run the cell to see.
 
 ```python exec
 id: why-visualise-1
@@ -53,25 +78,36 @@ plt.tight_layout()
 plt.show()
 ```
 
-The statistics are the same; the stories are wildly different. This is why visualization matters: it shows you what numbers cannot.
+The four summaries are the same, but the four pictures tell very
+different stories. One is a loose cloud around a line. One is a smooth
+curve. One is a neat line with a single point far away from it. One is
+a column of points with one point far off to the right. This is why
+charts matter: they show us what the numbers alone cannot.
 
-## Choosing the Right Chart
+## Choosing the right chart
 
-Different types of data call for different types of charts:
+Different kinds of data need different kinds of chart. Each chart type
+answers its own kind of question:
 
-**Histogram**: shows the distribution of a single numerical variable. How often does each range of values occur?
+| Chart | What it shows | A question it answers |
+|---|---|---|
+| **Histogram** | How the values of one numerical variable are spread out | How often does each range of values occur? |
+| **Bar chart** | Amounts compared across categories | How many students prefer each programming language? |
+| **Line chart** | A trend over time, or along some other ordered sequence | How did the temperature change during the day? |
+| **Scatter plot** | The relationship between two numerical variables | Do students who study for more hours get higher test scores? |
+| **Pie chart** | The parts of a whole | What fraction of students passed, got a merit, or got a distinction? |
 
-**Bar chart**: compares quantities across categories. How many students prefer each programming language?
+Use pie charts rarely. A bar chart usually shows the same information
+more clearly, because people compare the lengths of bars more easily
+than the sizes of slices.
 
-**Line chart**: shows trends over time or across an ordered sequence. How did temperature change throughout the day?
-
-**Scatter plot**: shows the relationship between two numerical variables. Is there a connection between hours studied and test scores?
-
-**Pie chart**: shows proportions of a whole. What fraction of students passed, got merit, or got distinction? (Use sparingly -- bar charts are usually clearer.)
+We made a histogram on the statistics page. Here are the other three
+most useful types.
 
 ### Making a bar chart
 
-Let's say we surveyed students about their favorite programming language:
+Suppose we asked a class of students for their favourite programming
+language, and counted the answers:
 
 ```python exec
 id: making-a-bar-chart-1
@@ -87,6 +123,10 @@ plt.show()
 ```
 
 ### Making a line chart
+
+This chart shows the temperature at each hour of one day, from midnight
+(hour 0) to the next midnight (hour 24). The hours are in order, so a
+line joining them makes sense.
 
 ```python exec
 id: making-a-line-chart-1
@@ -104,6 +144,12 @@ plt.show()
 ```
 
 ### Making a scatter plot
+
+Each point in a scatter plot is one student: how many hours they studied,
+and the score they got. The cell makes up data for 20 students, using
+`random` as we did in
+[Probability: simple, compound and conditional](tutorial:what-are-the-chances).
+Before you run it, what shape do you expect the points to make?
 
 ```python exec
 id: making-a-scatter-plot-1
@@ -126,22 +172,32 @@ plt.show()
 
 ### Your turn
 
-For each of the following scenarios, what's the most appropriate chart type, and why? Then pick one and build it using matplotlib.
+Here are five situations:
 
-1. Showing how your daily step count varied over a month
-2. Comparing the number of bugs found in five different modules
-3. Showing the distribution of response times for a web server
-4. Exploring whether there is a relationship between coffee consumption and productivity
-5. Showing what percentage of a project's budget went to each department
+- (a) Showing how your daily step count changed over a month
+- (b) Comparing the number of bugs found in five different modules of a
+  program
+- (c) Showing the distribution of response times for a web server
+- (d) Looking for a relationship between how much coffee people drink
+  and how much work they get done
+- (e) Showing what percentage of a project's budget went to each
+  department
+
+1. For each situation, choose the chart type you think fits best.
+2. Write down why, as a comment in the cell.
+3. Pick one of the five, and build its chart with matplotlib. You can
+   make up the data.
 
 ```python exec
 id: your-turn-1
 # Your chart type choices (in comments) and one implementation
 ```
 
-## Writing Reusable Plotting Functions
+## Writing reusable plotting functions
 
-Just as we wrapped statistical calculations in functions, we can wrap plotting patterns:
+On the statistics page we wrapped each calculation in a function. We can
+do the same with plotting code that we keep writing again. Here is a
+function that draws a labelled histogram:
 
 ```python exec
 id: writing-reusable-plotting-functions-1
@@ -162,9 +218,19 @@ scores = [42, 38, 35, 47, 29, 41, 44, 33, 39, 48,
 plot_histogram(scores, 'Quiz Score Distribution', 'Score', num_bins=6)
 ```
 
+The last line draws a whole labelled chart. The details, like the colour
+and the axis labels, live inside the function. `num_bins` and `colour`
+have default values, so we only give them when we want something
+different.
+
 ### Your turn
 
-Let's write a reusable function `plot_bar_chart(categories, values, title, xlabel, ylabel)` and another `plot_scatter(x, y, title, xlabel, ylabel)`, each with a docstring. Test them with the data from earlier in this tutorial.
+1. Write a function `plot_bar_chart(categories, values, title, xlabel, ylabel)`
+   that draws a labelled bar chart. Give it a docstring.
+2. Write a function `plot_scatter(x, y, title, xlabel, ylabel)` that
+   draws a labelled scatter plot. Give it a docstring too.
+3. Test both functions with data from earlier on this page: the
+   favourite languages, and the study hours and test scores.
 
 ```python exec
 id: your-turn-2
@@ -181,9 +247,12 @@ id: your-turn-4
 # Test them
 ```
 
-## Combining Statistics and Visualization
+## Combining statistics and visualization
 
-The most informative approach is to combine numerical summaries with visual displays. Let's write a function that gives us the full picture:
+We learn the most about a dataset when we look at summary numbers and a
+chart together. Here is the start of a function that does both. It
+prints a few numbers, and then it draws a histogram with our
+`plot_histogram()` function.
 
 ```python exec
 id: combining-statistics-and-visualisation-1
@@ -205,7 +274,17 @@ def analyse_dataset(data, title):
 
 ### Your turn
 
-How might you complete the `analyse_dataset` function, adding calls to your statistical functions from *Statistics: averages, spread and frequency*? Use it on the quiz scores — and if you want a challenge, create a second dataset and compare the two analyses side by side.
+The function is not finished yet. How might you complete it?
+
+1. Bring in your `mean()`, `median()`, `mode()` and `std_dev()`
+   functions from
+   [Statistics: averages, spread and frequency](tutorial:making-sense-of-data).
+   You can copy them from your earlier work, or write them again.
+2. Add calls to them inside `analyse_dataset()`, where the comment says.
+3. Run `analyse_dataset()` on the quiz scores.
+4. If you want a challenge, make a second dataset of your own. Analyse
+   both, and compare the two results side by side. What does each chart
+   show that its numbers do not?
 
 ```python exec
 id: your-turn-5
@@ -217,23 +296,42 @@ id: your-turn-6
 # Apply it
 ```
 
-## Good Practices for Visualization
+## Good practices for visualization
 
-A few principles that will serve you well:
+Here are a few rules that help with almost any chart:
 
-Every chart should have a clear title and labeled axes. If someone sees the chart without any surrounding text, they should understand what it shows. Colours should be chosen for clarity, not decoration. If you are showing categories, use distinct colours; if you are showing a continuous variable, use a gradient. Avoid chart junk: decorative elements that do not convey information. Simplicity aids understanding. When comparing groups, use the same scales so differences are not exaggerated or hidden.
+- **Title and labels.** Give every chart a clear title, and label both
+  axes. Imagine someone sees the chart with no text around it. They
+  should still understand what it shows.
+- **Colour.** Choose colours to make the chart clearer, not to decorate
+  it. For separate categories, use colours that are easy to tell apart.
+  For a quantity that changes smoothly, use a *gradient*: one colour
+  that goes smoothly from light to dark.
+- **No chart junk.** *Chart junk* is anything on a chart that is only
+  decoration and carries no information. A simple chart is easier to
+  understand.
+- **The same scale.** When you compare groups in separate charts, use
+  the same scale on each one. Different scales can make a difference
+  look bigger or smaller than it is.
 
 ### Your turn
 
-Can you find a chart online (in a news article, a textbook, or a website) that communicates well, and one that communicates poorly? What makes each one effective or ineffective?
+Can you find a chart online, in a news article, a textbook or a website,
+that communicates well? Can you find one that communicates badly? What
+makes each one work, or fail?
 
 ## Reflection
 
-Visualization is part of the same process of understanding data as statistics, not a separate skill. A good analyst moves fluidly between numbers and pictures, using each to check and complement the other.
+Drawing charts and calculating statistics are two parts of the same
+job: understanding data. A good analyst moves between numbers and
+pictures all the time, and uses each one to check the other.
 
-We now have a complete toolkit for exploratory data analysis: counting, probability, summary statistics, and visualization. From here on they get used together rather than one at a time.
+We now have a complete set of tools for exploring a dataset: counting,
+probability, summary statistics and charts. From here on, we use them
+together.
 
-What is the most important thing you have learned about presenting data?
+What is the most important thing you have learned about presenting
+data?
 
 ## Where to Read More
 

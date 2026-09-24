@@ -15,15 +15,37 @@ covers:
 
 # Venn diagrams: drawing sets and their overlaps
 
-Two overlapping circles with numbers in them. You have almost certainly seen one, and you may have been asked to fill one in at school.
+You have probably seen two overlapping circles with numbers in them.
+You may even have filled one in at school. A *Venn diagram* is a picture
+of sets: each set is a circle, and the circles overlap where the sets
+share elements.
 
-This tutorial is short, and it is not really about the diagram. It is about the point at which a set expression stops fitting in your head, and about having something to reach for when that happens.
+This page is short, and the diagram itself is not the main point. The
+main point is this: at some size, a set expression stops fitting in
+your head. When that happens, a picture gives you something to reach
+for.
 
-In *Sets: building them from sorted lists* you built union, intersection and difference and used them on real data. Everything here is drawn from those. **A Venn diagram is a plot of things you already computed** — no new operations, and nothing new to define.
+In [Sets: building them from sorted lists](tutorial:sets-as-sorted-lists)
+we built union, intersection and difference ourselves. In
+[Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth)
+we met Python's own `set` type, with `|` for union, `&` for intersection
+and `-` for difference. Everything on this page is drawn from those
+operations. A Venn diagram is a plot of things you can already compute.
+There are no new operations here.
 
-## Two Circles, from Real Sets
+On this page we:
 
-Here are two sets of students: the ones who own a bike, and the ones who own a car.
+- draw a two-circle diagram from real sets
+- match each region of the diagram to an operation we know
+- move to three sets, where the picture starts to help
+- see De Morgan's laws again, on the diagram
+- find the point where circles stop working
+
+## Two circles, from real sets
+
+Here are two sets of students: the ones who own a bike, and the ones who
+own a car. The function `draw_two()` works out how many students are in
+each region, and then draws the circles.
 
 ```python exec
 id: two-circles-from-real-sets-1
@@ -58,9 +80,16 @@ def draw_two(left, right, left_name, right_name):
 draw_two(bike, car, "bike", "car")
 ```
 
-Three numbers, and every one of them came out of a set operation. Nothing was placed by hand.
+There are three numbers, and every one of them came from a set
+operation. Nobody placed them by hand.
 
-That is the thing to hold onto. **The diagram is output.** It is drawn from the sets, so it cannot disagree with them, and if you change the data the picture changes with it.
+This is the idea to hold on to: the diagram is output. It is drawn from
+the sets, so it cannot disagree with them. If you change the data, the
+picture changes with it.
+
+What do you think the diagram will look like for two sets with no
+students in common? What about one set that sits completely inside the
+other? Run the next two cells to check.
 
 ```python exec
 id: two-circles-from-real-sets-2
@@ -74,18 +103,24 @@ id: two-circles-from-real-sets-3
 draw_two({"Aoife", "Ben", "Cara"}, {"Aoife", "Ben"}, "students", "first years")
 ```
 
-The picture changed; the code did not. The middle number going to zero, or one of the outer ones going to zero, is the diagram telling you something true about the sets rather than the drawing being wrong.
+The picture changed, but the code did not. Sometimes the middle number
+goes to zero, or one of the outer numbers does. That is not the drawing
+going wrong. It is the diagram telling you something true about the
+sets.
 
-## The Regions Have Names You Already Know
+## The regions have names you already know
 
-Three regions, three operations you wrote two weeks ago.
+Each region of the diagram matches an operation from the sets page:
 
 | Region | Operation | Python |
 |---|---|---|
 | Only in the left circle | difference | `bike - car` |
 | The overlap | intersection | `bike & car` |
 | Only in the right circle | difference the other way | `car - bike` |
-| All three together | union | `bike \| car` |
+| All three regions together | union | `bike \| car` |
+
+Can you predict who is in each region, from the two sets above? Run the
+cell to check.
 
 ```python exec
 id: the-regions-have-names-you-already-know-1
@@ -98,14 +133,20 @@ print("car - bike :", sorted(car - bike))
 print("bike | car :", sorted(bike | car))
 ```
 
-Nothing new is being defined here. The diagram is giving the operations from *Sets: building them from sorted lists* somewhere to sit.
+We have not defined anything new here. The diagram gives the operations
+from the sets page a place to sit.
 
 ### Your turn
 
-Using the two sets above, how would you write the expression for each of these? Check what it gives.
+Use the two sets above. How would you write an expression for each of
+these groups?
 
-- People who own exactly one of the two (a bike or a car, but not both).
-- People who own neither, given that everybody in the class is `{"Aoife", "Ben", "Cara", "Dara", "Eoin", "Fiona", "Gearoid", "Hannah"}`.
+1. The people who own exactly one of the two: a bike or a car, but not
+   both.
+2. The people who own neither. For this one you need the whole class,
+   which is `{"Aoife", "Ben", "Cara", "Dara", "Eoin", "Fiona", "Gearoid", "Hannah"}`.
+   The cell stores it as `everyone`.
+3. Run each expression, and check that the result matches the diagram.
 
 ```python exec
 id: your-turn-1
@@ -115,13 +156,19 @@ everyone = {"Aoife", "Ben", "Cara", "Dara", "Eoin", "Fiona", "Gearoid", "Hannah"
 # neither = ...
 ```
 
-The first of those is exclusive or, which you met in [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth) as a fact about true and false. Python spells it `^` for sets too, and for the same reason.
+The first group is exclusive or. You met it in
+[Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth)
+as a fact about true and false. Python writes it `^` for sets too, for
+the same reason.
 
-## Three Sets, Which Is Where It Earns Its Place
+## Three sets, which is where it earns its place
 
-Two sets are easy to hold in your head. You can work out `bike − car` without drawing anything.
+With two sets, you can keep the picture in your head. You can work out
+`bike - car` without drawing anything.
 
-Three is where that stops.
+With three sets, that stops working. Here are three sets of students:
+the ones who know Python, the ones who know SQL, and the ones who know
+JavaScript.
 
 ```python exec
 id: three-sets-which-is-where-it-earns-its-place-1
@@ -163,20 +210,31 @@ def draw_three(a, b, c, names):
 draw_three(python, sql, javascript, ["Python", "SQL", "JavaScript"])
 ```
 
-Seven regions now, and each one is a different combination of in and out. Try holding all seven in your head at once -- most people cannot, and there is no reason they should.
+Now there are seven regions. Each one is a different combination of
+being in or out of each circle. Try holding all seven in your head at
+once. Most people cannot, and there is no reason they should.
 
-Here is a question that is awkward in symbols and easy on the picture: **who knows Python or SQL, but not JavaScript?**
+Here is a question that is awkward in symbols but easy on the picture:
+who knows Python or SQL, but not JavaScript? Before you run the cell,
+which regions of the diagram do you think hold those people?
 
 ```python exec
 id: three-sets-which-is-where-it-earns-its-place-2
 print(sorted((python | sql) - javascript))
 ```
 
-Find those people on the diagram above. They are the two top regions and the one between them, and not the bottom circle. Now try to convince yourself of the same answer from the expression alone.
+Find those four people on the diagram. They are in the two top regions,
+and in the region between those two, and nowhere in the bottom circle.
+Now try to convince yourself of the same answer from the expression
+alone. Which way was easier?
 
 ### Your turn
 
-Two expressions that look different. Are they the same set? Predict from the picture first, then check.
+Here are two expressions that look different. Do they give the same set?
+
+1. Look at the diagram, and predict the answer. Write your prediction as
+   a comment.
+2. Remove the `#` from the `print` line, and run the cell to check.
 
 ```python exec
 id: your-turn-2
@@ -187,9 +245,12 @@ second = python & (sql | javascript)
 # print(first == second)
 ```
 
-## The Same Laws, in a Different Notation
+## The same laws, in a different notation
 
-In *Logic: truth tables, XOR and De Morgan's laws* you proved De Morgan's Laws by looping over four rows. Here they are again, shaded.
+In [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth)
+we proved De Morgan's laws by looping over four rows. Here they are
+again, on sets. As you read the output, picture the two-circle diagram:
+which region does each line describe?
 
 ```python exec
 id: the-same-laws-in-a-different-notation-1
@@ -208,17 +269,29 @@ print("not (A and B):       ", sorted(complement(a & b)))
 print("(not A) or (not B):  ", sorted(complement(a) | complement(b)))
 ```
 
-Identical, both times.
+The two lines in each pair are the same.
 
-*Logic: truth tables, XOR and De Morgan's laws* proved this by checking four rows. That proof is complete -- there really are only four cases. This one is a different kind of thing: you can *see* that the region outside both circles is the same region as the overlap of the two outsides, and once you have seen it you do not need to check.
+The logic page proved this by checking four rows. That proof is
+complete, because there are only four cases. The diagram gives a
+different kind of proof. You can *see* that the region outside both
+circles is the same region as the overlap of the two outsides. Once you
+have seen it, you do not need to check.
 
-**Neither proof is better.** They are the same claim in two notations, which is exactly why the pairing is worth having. If the truth table version did not land, this one might, and they are not two facts to learn.
+Neither proof is better than the other. They are the same claim in two
+notations, and that is why it helps to have both. If the truth table
+version did not make sense to you, this one might. And they are one
+fact, not two facts to learn.
 
-## Where the Picture Stops Helping
+## Where the picture stops helping
 
-One more thing, and it is the most interesting item in the tutorial.
+There is one more thing, and it is the most interesting idea on the
+page.
 
-Three circles give seven regions, which is every combination of in and out for three sets. Four sets would need fifteen. **Four circles cannot do it.**
+Three circles give seven regions. That is every combination of in and
+out for three sets, apart from "in none of them", which is the space
+outside all the circles. In general, $n$ sets need $2^n - 1$ regions
+inside the circles. For three sets that is $2^3 - 1 = 7$. How many
+regions do you expect four sets to need? Run the cell to check.
 
 ```python exec
 id: where-the-picture-stops-helping-1
@@ -228,25 +301,39 @@ for n in (2, 3, 4, 5):
     print(f"{n} sets need {2 ** n - 1} regions")
 ```
 
-That is a fact about circles in a plane, not a limitation of the drawing code: no arrangement of four of them produces all fifteen regions. Diagrams for four sets exist, but they use ellipses or stranger shapes and stop being readable, which rather defeats the purpose.
+Four sets need fifteen regions, and four circles cannot make them. This
+is a fact about circles on a flat page. It is not a weakness of the
+drawing code: no arrangement of four circles produces all fifteen
+regions. Diagrams for four sets do exist, but they use ovals or stranger
+shapes, and they get much harder to read. That defeats the purpose of
+drawing them.
 
-Meanwhile the set operations keep working perfectly for four sets, or forty.
+Meanwhile, the set operations keep working perfectly, for four sets or
+for forty.
 
-**Every representation runs out somewhere, and knowing where is part of knowing it.** A picture that helps enormously at three and not at all at four is still a good tool — you just have to know which of those you are holding.
+Every way of showing an idea stops working somewhere, and part of
+knowing a tool is knowing where. A picture that helps a lot at three
+sets and not at all at four is still a good tool. You need to know
+which of the two cases you are in.
 
 ## Reflection
 
-The diagram is a plot of set operations you already had, not a notation to learn, and its job is to take over at the point where the expressions stop fitting in your head.
+A Venn diagram is a plot of set operations you already had. It is not a
+new notation to learn. Its job is to take over at the point where the
+expressions stop fitting in your head.
 
-Three things:
+Three things to keep:
 
-**It is drawn from the data**, so it cannot lie about the data. Change the sets and the picture changes.
+- **It is drawn from the data**, so it cannot lie about the data. Change
+  the sets, and the picture changes.
+- **Two sets rarely need it, and three often do.** Three sets is the
+  size where it becomes useful.
+- **It stops working at four**, because of a fact about circles, not
+  because the drawing is bad. The set operations continue to work.
 
-**Two sets rarely need it; three often do.** That is the size at which it becomes useful.
-
-**It runs out at four**, because of a fact about circles, not because the drawing is bad — and the operations carry on regardless.
-
-In a few sentences, think of three overlapping groups you belong to. Which regions of that diagram have people in them, and which are empty?
+Think of three overlapping groups that you belong to. In a few
+sentences, say which regions of their diagram have people in them, and
+which are empty.
 
 ## Where to Read More
 

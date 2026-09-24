@@ -3,31 +3,40 @@ entries:
   - term: truth table
     kind: concept
     definition: >
-      Every possible combination of True/False inputs to a logical operator,
-      and what it outputs for each. It is not a fact to memorize; it is what
-      a loop over every case produces.
+      A truth table lists every possible combination of True and False
+      inputs to a logical operator, with the result for each one. A loop
+      over every case produces it, so there is no need to memorise it.
   - term: exclusive or, XOR
     kind: concept
     definition: >
-      True when exactly one of its two inputs is true, not both — the
-      "or" ordinary English usually means. The same operation as "not
-      equal to" for True/False values.
+      Exclusive or is true when exactly one of its two inputs is true, and
+      false when both are. It is the "or" that everyday English usually
+      means. For True and False values, it is the same operation as "not
+      equal to".
     example: "a ^ b   # Python's bitwise XOR, also works on booleans"
   - term: De Morgan's Laws
     kind: formula
     definition: >
-      Pushing a not inside a bracket flips and to or, and or to and. So not
-      (A and B) equals (not A) or (not B), and not (A or B) equals (not A)
-      and (not B). The same two laws hold for sets, with union for or,
-      intersection for and, and complement for not.
+      De Morgan's laws say what happens when you move a not inside a
+      bracket: and becomes or, and or becomes and. So not (A and B) equals
+      (not A) or (not B), and not (A or B) equals (not A) and (not B). The
+      same two laws hold for sets, with union for or, intersection for
+      and, and complement for not.
   - term: "Python's built-in set: |, &, -"
     kind: operator
     definition: >
-      A real set, written {1, 2, 3}. | is union, & is intersection, - is
-      difference. These are the operations we built from sorted lists
-      on the Sets page, now done by Python's own type.
+      Python's own set type, written {1, 2, 3}. | is union, & is
+      intersection, and - is difference. These are the operations we built
+      from sorted lists on the Sets page, now done by Python's own type.
     example: "a | b   # union;  a & b   # intersection"
+  - term: universal set
+    kind: concept
+    definition: >
+      The universal set is the set of everything we are talking about in a
+      problem. A complement is always taken inside it.
   - term: complement (of a set)
     kind: concept
-    definition: Everything in the universal set that is not in this one.
+    definition: >
+      The complement of a set is everything in the universal set that is
+      not in that set.
     example: "everyone - s"

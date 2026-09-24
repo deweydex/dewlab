@@ -15,21 +15,36 @@ covers:
 
 # Probability: simple, compound and conditional
 
-Probability is the mathematics of uncertainty. It gives us a precise language for talking about how likely things are, and it underpins everything from weather forecasts to medical diagnosis to machine learning. Today we build the foundations, and we will use an approach that is unique to programming: we can *simulate* random events to verify our calculations.
+*Probability* is the part of mathematics that measures how likely something is to happen. It gives us exact words and numbers for talking about chance. Weather forecasts use it. So do medical tests, and so does machine learning.
 
-## Basic Probability
+A program gives us a second way to find a probability. To *simulate* a random event is to write code that makes the event happen many times, at random, and count the results. We can then compare the count with our calculation.
 
-The probability of an event is a number between 0 (impossible) and 1 (certain). When all outcomes are equally likely, the probability of an event A is:
+On this page we:
+
+- work out the probability of a single event
+- combine events with "or", "and" and "not"
+- check our answers by simulating coins and cards in Python
+- see how knowing one thing changes the probability of another
+
+## Basic probability
+
+An *outcome* is one possible result, such as rolling a 4 on a die. An *event* is a group of outcomes we are interested in, such as rolling an even number.
+
+The probability of an event is a number from 0 to 1. A probability of 0 means the event is impossible. A probability of 1 means it is certain.
+
+A *favorable outcome* is an outcome that makes the event happen. When every outcome is equally likely, we find the probability of an event A in two steps. First, count the favorable outcomes. Then divide by the number of all possible outcomes:
 
 $$P(A) = \frac{\text{number of favorable outcomes}}{\text{total number of outcomes}}$$
 
-Flip a fair coin: there are 2 equally likely outcomes and 1 favorable outcome (heads), so $P(\text{heads}) = \frac{1}{2} = 0.5$.
+Let's try it with a fair coin. There are 2 equally likely outcomes, heads and tails. If the event is "heads", there is 1 favorable outcome. So $P(\text{heads}) = \frac{1}{2} = 0.5$.
 
-Roll a fair die: $P(\text{rolling a 4}) = \frac{1}{6}$. $P(\text{rolling an even number}) = \frac{3}{6} = \frac{1}{2}$.
+Now a fair die. There are 6 equally likely outcomes. Only one of them is a 4, so $P(\text{rolling a 4}) = \frac{1}{6}$. Three of them are even (2, 4 and 6), so $P(\text{rolling an even number}) = \frac{3}{6} = \frac{1}{2}$.
 
 ### Your turn
 
-Let's try a function `probability(favorable, total)` for a basic probability, with a docstring. Two edge cases are worth deciding about before writing it: what should happen when the total is 0, and what should happen when the favorable count is larger than the total?
+1. Before you write any code, decide what your function should do in two special cases. What should happen when the total is 0? What should happen when the favorable count is larger than the total?
+2. Write a function `probability(favorable, total)` that works out a basic probability. Give it a docstring.
+3. Try it on the three test cases in the second cell.
 
 ```python exec
 id: your-turn-1
@@ -44,23 +59,32 @@ id: your-turn-2
 # probability(4, 52)    -> drawing an ace
 ```
 
-## Compound Events
+## Compound events
 
-Things get interesting when we combine events. There are a few key rules.
+A *compound event* is an event made by joining two or more events with words such as "or", "and" and "not". Four rules help us work out compound events. The table below gives all four; we look at each one in turn.
 
-**The complement rule**: the probability that an event does *not* happen is $1 - P(A)$. If there is a 30% chance of rain, there is a 70% chance of no rain.
+| Rule | When we use it | The formula |
+|---|---|---|
+| Complement rule | "not A" | $1 - P(A)$ |
+| Addition rule | "A or B", when A and B cannot both happen | $P(A) + P(B)$ |
+| General addition rule | "A or B", when A and B can both happen | $P(A) + P(B) - P(A \text{ and } B)$ |
+| Multiplication rule | "A and B", when A and B are independent | $P(A) \times P(B)$ |
 
-**The addition rule**: for two events that cannot both happen at the same time (*mutually exclusive* events):
+**The complement rule.** The complement of an event is the event that it does not happen. Its probability is $1 - P(A)$. For example, if there is a 30% chance of rain, there is a $100\% - 30\% = 70\%$ chance of no rain.
+
+**The addition rule.** Two events are *mutually exclusive* when they cannot both happen at the same time. Rolling a 2 and rolling a 5 on one die are mutually exclusive. For mutually exclusive events, we add the probabilities:
 
 $$P(A \text{ or } B) = P(A) + P(B)$$
 
-Rolling a 2 or a 5 on a die: $P = \frac{1}{6} + \frac{1}{6} = \frac{2}{6} = \frac{1}{3}$
+For example, the probability of rolling a 2 or a 5 on a die is $\frac{1}{6} + \frac{1}{6} = \frac{2}{6} = \frac{1}{3}$.
 
-**The general addition rule**: when events *can* overlap:
+**The general addition rule.** Some events *can* happen together. A card can be an ace and a heart at the same time: the ace of hearts. We say these events overlap. For events that can overlap, the rule is:
 
 $$P(A \text{ or } B) = P(A) + P(B) - P(A \text{ and } B)$$
 
-We subtract the overlap to avoid counting it twice.
+Why do we subtract? The ace of hearts is counted once among the aces and once among the hearts. Subtracting $P(A \text{ and } B)$ once means it is counted only once.
+
+What do you think the probability of drawing an ace or a heart is? Make a guess, then run the cell to check.
 
 ```python exec
 id: compound-events-1
@@ -74,31 +98,39 @@ print("P(Ace or Heart):", p_ace_or_heart)
 print("That's", round(p_ace_or_heart, 4), "or about", round(p_ace_or_heart * 100, 1), "%")
 ```
 
-**The multiplication rule**: for *independent* events (one happening does not affect the other):
+There are 4 aces and 13 hearts, but the ace of hearts is in both groups, so there are $4 + 13 - 1 = 16$ cards that are an ace or a heart. $\frac{16}{52}$ is about 30.8%.
+
+**The multiplication rule.** Two events are *independent* when one happening does not change the probability of the other. Two flips of a coin are independent: the coin does not remember the first flip. For independent events, we multiply the probabilities:
 
 $$P(A \text{ and } B) = P(A) \times P(B)$$
 
-Flipping heads twice in a row: $P = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}$
+For example, the probability of flipping heads twice in a row is $\frac{1}{2} \times \frac{1}{2} = \frac{1}{4}$.
 
-When events are *not* independent (like drawing cards without replacement), the second probability depends on the first:
+Some events are not independent. Suppose we draw a card and keep it out of the deck, then draw a second card. Drawing *without replacement* means we do not put a card back before the next draw. Now the first draw changes what is left for the second one. We still multiply, but the second probability must take the first draw into account:
 
 $$P(\text{two aces in a row}) = \frac{4}{52} \times \frac{3}{51}$$
 
-After drawing one ace, there are 3 aces left among 51 remaining cards.
+After drawing one ace, there are 3 aces left among the 51 cards that remain. So the probability is $\frac{4}{52} \times \frac{3}{51} = \frac{12}{2652} = \frac{1}{221}$, which is about 0.0045.
 
 ![A tree from 52 cards. The first draw branches into ace, 4 over 52, and
 other, 48 over 52. Under ace the next draw is 3 over 51; under other it is
 4 over 51. The ace then ace path is marked.](two-aces-tree.svg)
 
-The formula says $\frac{4}{52} \times \frac{3}{51}$, and the tree says
-where each of those numbers comes from. Both second-level branches have 51
-underneath, because one card is gone whichever one it was. What differs is
-the top: 3 aces left if you drew one, 4 if you did not. That difference is
-what *not independent* means — the first draw changed the second one.
+The formula says $\frac{4}{52} \times \frac{3}{51}$. The tree shows
+where each of those numbers comes from.
+
+Look at the two branches of the second draw. Both have 51 on the bottom,
+because one card has gone, whichever card it was. The top number is
+different: 3 aces are left if the first card was an ace, and 4 if it was
+not. That difference is what "not independent" means. The first draw
+changed the probabilities for the second one.
 
 ### Your turn
 
-Using your `probability` function and the combination functions from *Counting: factorials, permutations and combinations*, here are five card questions. The reasoning is worth writing down before the computing — it is where the mistakes are visible.
+Here are five questions about one ordinary deck of 52 cards. It has 4 suits of 13 cards: hearts and diamonds are red, and clubs and spades are black. You can use your `probability` function, and the combination functions from
+[Counting: factorials, permutations and combinations](tutorial:counting-carefully).
+
+For each question, write your reasoning as a comment first, then the calculation. Mistakes are much easier to see in the reasoning than in the numbers.
 
 1. What is the probability of drawing a face card (Jack, Queen, or King)?
 2. What is the probability of drawing a card that is red *and* a face card?
@@ -122,11 +154,13 @@ id: your-turn-3
 #    how many total 5-card hands are possible?)
 ```
 
-## Simulation: Testing Probability with Code
+## Simulation: testing probability with code
 
-One of the wonderful things about having programming skills: we can *simulate* random events to verify our calculations. If we flip a simulated coin 10,000 times, we should see heads about 50% of the time.
+Now we can check our calculations with a simulation. If we flip a simulated coin 10,000 times, how often do you expect to see heads?
 
-Python's `random` module provides the tools:
+Python's `random` module has the tools we need. A *module* is a collection of ready-made functions. The line `import random` loads the `random` module, so that we can use its functions. `random.choice()` picks one item at random from a list.
+
+Run the cell to see how close the result is.
 
 ```python exec
 id: simulation-testing-probability-with-code-1
@@ -147,11 +181,18 @@ print("Proportion:", round(proportion, 4))
 print("Expected:   0.5")
 ```
 
-The simulated proportion will not be exactly 0.5, but it should be close. The more trials we run, the closer it gets. This is the *law of large numbers* in action.
+Did you get exactly 0.5? Probably not, but it should be close. Run the cell again: the result changes each time.
+
+A *trial* is one run of a random event. Here, one trial is one flip of the coin.
+
+The more trials we run, the closer the proportion usually gets to the true probability. This is called the *law of large numbers*.
 
 ### Your turn
 
-How might you write `simulate_coin_flips(num_trials)`, returning the proportion of heads? Calling it with 100, then 1000, then 10000, then 100000 trials is the interesting part. What happens to the proportion as the number of trials grows, and how fast?
+1. Write a function `simulate_coin_flips(num_trials)` that returns the proportion of heads.
+2. Call it with 100 trials, then 1,000, then 10,000, then 100,000.
+
+What happens to the proportion as the number of trials grows? How fast does it change?
 
 ```python exec
 id: your-turn-4
@@ -165,7 +206,9 @@ id: your-turn-5
 
 ### Simulating card draws
 
-Let's simulate the card probabilities we calculated earlier. We will represent a deck of cards and draw from it:
+Next we simulate the card probabilities we worked out earlier. First we need a deck of cards in Python.
+
+In the cell below, each card is a pair of values in round brackets, such as `("A", "Hearts")`. Python calls a pair like this a tuple. A tuple works like a list, but we cannot change it after we make it. What do you think the first five cards will be?
 
 ```python exec
 id: simulating-card-draws-1
@@ -187,9 +230,13 @@ print("Last 5 cards:", deck[-5:])
 
 ### Your turn
 
-A function `simulate_draw(num_trials)` could draw a single card from a shuffled deck many times over, counting how often it is an Ace or a Heart. How close does the simulated proportion get to the probability you calculated earlier?
+1. Write a function `simulate_draw(num_trials)`. Each trial shuffles the deck and looks at the top card.
+2. Count how often the top card is an ace or a heart, and return the proportion.
+3. Compare it with the probability you worked out earlier.
 
-Hint: `random.shuffle(deck)` shuffles a list in place, and `deck[0]` gives the top card.
+How close does the simulation get?
+
+**Hint:** `random.shuffle(deck)` shuffles the list. It changes the list itself, and gives back nothing. `deck[0]` is the top card. The card's rank is `deck[0][0]` and its suit is `deck[0][1]`.
 
 ```python exec
 id: your-turn-6
@@ -203,9 +250,9 @@ id: your-turn-7
 
 ### A more complex simulation
 
-What would it take to simulate drawing two cards *without replacement* and count how often both are hearts? The phrase without replacement is the whole difficulty. How close does it come to your calculation?
+How could you simulate drawing two cards *without replacement*, and count how often both are hearts? The hard part is the "without replacement": the second card must come from the cards that are left. How close does your simulation come to your calculation?
 
-Then, if there is time, dealing 5-card hands and counting the royal flushes is worth trying. It takes millions of trials to see even one, and watching a simulation fail to find something is its own lesson about how rare that something is.
+If you have time, try dealing 5-card hands and counting the royal flushes. A royal flush is so rare that it takes millions of trials to see even one. When a simulation finds nothing, that tells you something too: it shows how rare the event is.
 
 ```python exec
 id: a-more-complex-simulation-1
@@ -217,19 +264,24 @@ id: a-more-complex-simulation-2
 # Optional: royal flush simulation (this may take a while to run!)
 ```
 
-## Conditional Probability
+## Conditional probability
 
-Sometimes the probability of an event depends on what has already happened. The probability of drawing a heart *given that* we already drew a heart (without replacement) is $\frac{12}{51}$, not $\frac{13}{52}$.
+Sometimes the probability of an event depends on something we already know. Suppose we have drawn one heart and kept it out of the deck. What is the probability that the next card is a heart? There are 12 hearts left among 51 cards, so it is $\frac{12}{51}$. It is no longer $\frac{13}{52}$.
 
-This is called *conditional probability*, written $P(B|A)$ and read as "the probability of B given A":
+A *conditional probability* is the probability of an event B when we know that another event A has happened. We write it $P(B|A)$, and read it as "the probability of B given A". In words, the formula says: out of the times when A happens, what share of them does B happen too?
 
 $$P(B|A) = \frac{P(A \text{ and } B)}{P(A)}$$
 
-We will not go deep into this today, but it is worth knowing the concept because it is foundational in machine learning (where Bayes' theorem, which builds on conditional probability, is everywhere).
+Here is one worked number. Two cards are drawn without replacement. Let A be "the first card is a heart" and B be "the second card is a heart". Then $P(A \text{ and } B) = \frac{13}{52} \times \frac{12}{51}$ and $P(A) = \frac{13}{52}$. Dividing gives $P(B|A) = \frac{12}{51}$, the same answer as before.
+
+We only meet the idea here, without going deeper. It is still worth knowing. A rule called Bayes' theorem is built on conditional probability, and machine learning uses it all the time.
 
 ### Your turn
 
-If you draw one card and see that it is red, what is the probability that it is a heart? Think about this intuitively first, then verify with the formula.
+You draw one card and see that it is red. What is the probability that it is a heart?
+
+1. First, make a guess without the formula. How many red cards are there, and how many of them are hearts?
+2. Then check your guess with the formula.
 
 ```python exec
 id: your-turn-8
@@ -238,9 +290,13 @@ id: your-turn-8
 
 ## Reflection
 
-We have covered the fundamental rules of probability — complement, addition, multiplication — and used simulation to check the calculations. Simulation is not only a teaching device here. When a problem gets too tangled for an exact answer, running it a million times is what people do, and the method has a name: Monte Carlo.
+We have met the main rules of probability: the complement rule, the addition rules and the multiplication rule. We have also used simulation to check our calculations.
 
-The combination of mathematical reasoning and computational verification is powerful: we calculate an expected probability, then simulate to check. If they agree, we have confidence in both. If they disagree, we have a bug to find -- and finding bugs is learning.
+Simulation is more than a way to learn. Sometimes a problem is too complicated to work out exactly. Then people run it a million times and count. This method has a name: *Monte Carlo simulation*.
+
+Calculation and simulation work well together. First we calculate a probability, then we simulate to check it. If the two agree, we can trust both. If they disagree, there is a mistake to find, and finding it teaches us something.
+
+In the next tutorial, [The Monty Hall problem: three doors and a simulation](tutorial:three-doors), we use both on a famous puzzle.
 
 What was most surprising about the relationship between calculation and simulation?
 

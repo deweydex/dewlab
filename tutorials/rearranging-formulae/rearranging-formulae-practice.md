@@ -7,9 +7,15 @@ version: 2026.08.23.1
 
 # Rearranging formulae: changing the subject — Practice
 
-Answers are hidden. Rearrange by hand first — the checking cell will tell you whether you got it right, but only after you have committed to something.
+The answers are hidden in folds under each problem. Try each
+rearrangement by hand first, and write your answer down. The checking
+cell below can then tell you whether it is right.
 
 ## Tools
+
+This cell holds a `check` function. It feeds random numbers to the
+original formula and to your rearrangement, and tells you whether they
+ever disagree. The example at the bottom checks $t = \frac{v - u}{a}$.
 
 ```python exec
 id: tools-1
@@ -36,125 +42,164 @@ print(check(lambda u, a, t: u + a * t,
             {"u": (1, 100), "a": (1, 100), "t": (1, 100)}))
 ```
 
-## The Moves
+## The moves
 
-**1.** Make `P` the subject of `I = PRT/100`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`P = 100I/(RT)`.
-
-Multiply both sides by 100, then divide by R and by T.
-
-</details>
-
-**2.** Make `C` the subject of `F = 9C/5 + 32`.
+**1.** Make $P$ the subject of $I = \frac{PRT}{100}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`C = 5(F − 32)/9`.
+$P = \frac{100I}{RT}$.
 
-Subtract 32 first, because it is the outermost operation, then undo the multiplication.
+Multiply both sides by 100. Then divide both sides by $R$ and by $T$.
 
 </details>
 
-**3.** Make `h` the subject of `A = (a + b)h/2`.
+**2.** Make $C$ the subject of $F = \frac{9C}{5} + 32$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`h = 2A/(a + b)`.
+$C = \frac{5(F - 32)}{9}$.
+
+Subtract 32 first, because adding 32 was the last operation done (the
+outermost one). Then undo the multiplication by $\frac{9}{5}$: multiply
+by 5 and divide by 9.
 
 </details>
 
-**4.** Make `r` the subject of `A = πr²`.
+**3.** Make $h$ the subject of $A = \frac{(a + b)h}{2}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`r = √(A/π)`.
+$h = \frac{2A}{a + b}$.
 
-Divide by π, then take the square root. Strictly there is a ± — but a radius is a length, so the negative answer is discarded. That is a decision about the situation, not about the algebra.
+Multiply both sides by 2, then divide both sides by $(a + b)$.
 
 </details>
 
-**5.** Make `t` the subject of `s = ut + ½at²`, given that `u = 0`.
+**4.** Make $r$ the subject of $A = \pi r^2$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-With u = 0 it is `s = ½at²`, so `t = √(2s/a)`.
+$r = \sqrt{\frac{A}{\pi}}$.
 
-With u not zero it is a quadratic in t and needs the formula — which is worth noticing, because whether a rearrangement is easy often depends on what else you know.
+Divide by $\pi$, then take the square root. Strictly, the square root
+gives $\pm$, a positive and a negative answer. But a radius is a length,
+so we drop the negative answer. That is a decision about the situation,
+not about the algebra.
 
 </details>
 
-**6.** Why does unwrapping go outside in, when evaluating goes inside out?
+**5.** Make $t$ the subject of $s = ut + \frac{1}{2}at^2$, when $u = 0$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-To evaluate `u + at` you multiply first and add last. To undo it you have to remove the last thing that was done first — so subtract, then divide.
+With $u = 0$ the formula is $s = \frac{1}{2}at^2$, so $t = \sqrt{\frac{2s}{a}}$.
 
-It is the same order you would take off a coat and a sweater: last on, first off.
+When $u$ is not zero, the formula is a quadratic in $t$, and you need
+the quadratic formula from
+[Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations).
+This is worth noticing: whether a rearrangement is easy often depends on
+what else you know.
 
 </details>
 
-## Unknowns Underneath
-
-**7.** Make `R` the subject of `1/R = 1/a + 1/b`.
+**6.** Why does undoing go from the outside in, when evaluating goes
+from the inside out?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`R = 1/(1/a + 1/b)`, or equivalently `R = ab/(a + b)`.
+To evaluate $u + at$, you multiply first and add last. To undo it, you
+must first remove the last thing that was done. So you subtract first,
+then divide.
 
-Find `1/R` first, then flip. The second form comes from putting the right-hand side over a common denominator.
+It is the same order as taking off a coat and a jumper: the last thing
+you put on is the first thing you take off.
 
 </details>
 
-**8.** Two resistors of 10 Ω in parallel — what is the combined resistance? And 100 Ω beside 1 Ω?
+## Unknowns underneath
+
+**7.** Make $R$ the subject of $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$.
+
+<details class="dl-answer"><summary>answer</summary>
+
+$R = \frac{1}{\frac{1}{a} + \frac{1}{b}}$. Another way to write the same
+thing is $R = \frac{ab}{a + b}$.
+
+Find $\frac{1}{R}$ first, then flip it. The second form comes from
+putting the right-hand side over a common denominator:
+$\frac{1}{a} + \frac{1}{b} = \frac{b + a}{ab}$.
+
+</details>
+
+**8.** What is the combined resistance of two 10 Ω resistors in
+parallel? And of 100 Ω beside 1 Ω?
 
 <details class="dl-answer"><summary>answer</summary>
 
 5 Ω, and about 0.99 Ω.
 
-Two equal resistors give exactly half of one. A large one beside a small one gives slightly *less* than the small one — the 100 barely matters, because current goes the easy way.
+Two equal resistors give exactly half the resistance of one. A large one
+beside a small one gives a little *less* than the small one. The 100
+hardly matters, because the current takes the easy path.
 
-Both of those are readable off `R = ab/(a+b)` and neither is obvious from `1/R = 1/a + 1/b`. That is what rearranging is for.
-
-</details>
-
-**9.** Make `u` the subject of the lens formula `1/f = 1/u + 1/v`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`1/u = 1/f − 1/v`, so `u = 1/(1/f − 1/v)`, or `u = fv/(v − f)`.
-
-Get the reciprocal of what you want on its own, then flip. The second form makes something visible: when `v = f` the bottom is zero and there is no answer, which physically means the object is infinitely far away.
+Both facts are easy to read from $R = \frac{ab}{a + b}$, and neither is
+easy to see in $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$. That is what
+rearranging is for.
 
 </details>
 
-**10.** In `R = ab/(a + b)`, what happens when `b = 0`, and what does that mean?
+**9.** Make $u$ the subject of the lens formula
+$\frac{1}{f} = \frac{1}{u} + \frac{1}{v}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`R = 0`. A resistance of zero is a plain wire, and a wire beside a resistor carries all the current — so the pair has no resistance worth speaking of.
+$\frac{1}{u} = \frac{1}{f} - \frac{1}{v}$, so
+$u = \frac{1}{\frac{1}{f} - \frac{1}{v}}$, which is the same as
+$u = \frac{fv}{v - f}$.
 
-Notice the original form `1/R = 1/a + 1/b` fails outright at b = 0, because `1/0` is undefined. The rearranged form gives a sensible answer. **The two forms are equivalent everywhere they are both defined, and one of them is defined in more places.**
+Get the reciprocal of the letter you want on its own, then flip it. The
+second form shows something new. When $v = f$, the bottom is zero and
+there is no answer. In physics, this means the object is infinitely far
+away.
 
 </details>
 
-**11.** Make `x` the subject of `y = (x + 1)/(x − 1)`.
+**10.** In $R = \frac{ab}{a + b}$, what happens when $b = 0$? What does
+that mean?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Multiply out: `y(x − 1) = x + 1`, so `yx − y = x + 1`.
+$R = 0$. A resistance of zero is a plain wire. A wire beside a resistor
+carries all the current, so the pair has almost no resistance at all.
 
-Collect the x terms: `yx − x = y + 1`, so `x(y − 1) = y + 1`, so `x = (y + 1)/(y − 1)`.
+Notice that the original form, $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$,
+fails completely at $b = 0$, because $\frac{1}{0}$ is undefined. The
+rearranged form gives a sensible answer. **The two forms agree
+everywhere they both work, and one of them works in more places.**
 
-The rearrangement is its own inverse, which is a pleasant surprise and worth checking.
+</details>
+
+**11.** Make $x$ the subject of $y = \frac{x + 1}{x - 1}$.
+
+<details class="dl-answer"><summary>answer</summary>
+
+1. Multiply both sides by $(x - 1)$: $y(x - 1) = x + 1$, so
+   $yx - y = x + 1$.
+2. Collect the $x$ terms on one side: $yx - x = y + 1$.
+3. Take out $x$ as a common factor: $x(y - 1) = y + 1$.
+4. Divide by $(y - 1)$: $x = \frac{y + 1}{y - 1}$.
+
+The answer has the same shape as the question, with $x$ and $y$ swapped.
+That is a nice surprise, and worth checking with a number: $x = 3$ gives
+$y = \frac{4}{2} = 2$, and $y = 2$ gives $x = \frac{3}{1} = 3$.
 
 </details>
 
 ## Checking
 
-**12.** Write a check for your answer to question 2, and then deliberately break it to make sure the check catches the break.
+**12.** Can you write a check for your answer to question 2? Then break
+your answer on purpose, to make sure the check catches the mistake.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -174,70 +219,98 @@ def broken(f):
 print(all(abs(broken(to_fahrenheit(c)) - c) < 1e-9 for c in [-40, 0, 20, 37, 100]))
 ```
 
-The first prints True and the second False. **A test that has never failed has not been tested.**
+The first prints True and the second prints False. **A test that has
+never failed has not really been tested.**
 
 </details>
 
-**13.** Why is `abs(a - b) < 1e-9` better than `a == b` when checking a rearrangement?
+**13.** Why is `abs(a - b) < 1e-9` better than `a == b` when you check
+a rearrangement?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because these are floating-point numbers, and two calculations that should agree exactly can differ in the last decimal place.
+Because these are floats. Two calculations that should agree exactly can
+differ in the last decimal place.
 
-`0.1 + 0.2 == 0.3` is False in Python, and that is not a bug. Asking "are these equal?" of two floats is nearly always the wrong question; "are these closer than I care about?" is the right one.
+In Python, `0.1 + 0.2 == 0.3` is False, and that is not a bug. With
+floats, "are these equal?" is nearly always the wrong question. The
+right one is "are these closer together than I care about?"
 
 </details>
 
-**14.** Does agreeing on 200 random values prove a rearrangement is correct?
+**14.** If a rearrangement agrees with the original on 200 random
+values, does that prove it is correct?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. It is strong evidence and not a proof — the same distinction as in *Logic: truth tables, XOR and De Morgan's laws*, where four rows *were* a proof because there were only four cases.
+No. It is strong evidence, but it is not a proof. Compare
+[Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth).
+There, checking four rows *was* a proof, because there were only four
+cases.
 
-Here the space of inputs is infinite, so a check can only fail to find a problem. In practice it finds every mistake you are likely to make, which is worth a great deal even though it is not certainty.
+Here there are infinitely many possible inputs. So a check can only fail
+to find a problem. In practice, it finds every mistake you are likely to
+make. That is very useful, even though it is not certainty.
 
 </details>
 
-## In Use
+## In use
 
-**15.** The formula for compound interest is `A = P(1 + r)ⁿ`. Make `P` the subject, and then make `r` the subject.
+**15.** The formula for compound interest is $A = P(1 + r)^n$. Make $P$
+the subject. Then make $r$ the subject.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`P = A/(1 + r)ⁿ`.
+$P = \frac{A}{(1 + r)^n}$.
 
-For r: `(1 + r)ⁿ = A/P`, so `1 + r = (A/P)^(1/n)`, so `r = (A/P)^(1/n) − 1`.
+For $r$: $(1 + r)^n = \frac{A}{P}$, so $1 + r = \left(\frac{A}{P}\right)^{1/n}$,
+so $r = \left(\frac{A}{P}\right)^{1/n} - 1$.
 
-The second one needs an nth root, which is a fractional power — the same move as taking a square root, generalized.
+The second one needs an $n$th root, which is a fractional power. It is
+the same move as taking a square root, for any $n$.
 
 </details>
 
-**16.** You want €10,000 in 8 years and the rate is 3%. How much do you need to invest now?
+**16.** You want €10,000 in 8 years, and the interest rate is 3% a year.
+How much do you need to invest now?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`P = 10000/(1.03)⁸ ≈ €7,894.09`.
+$P = \frac{10000}{1.03^8} \approx$ €7,894.09.
 
 </details>
 
-**17.** Bandwidth, file size and time are related by `time = size/rate`. Make `rate` the subject, and work out what rate you need to move 4 GB in 90 seconds.
+**17.** Download time, file size and rate are related by
+$\text{time} = \frac{\text{size}}{\text{rate}}$. Make rate the subject.
+What rate do you need to move 4 GB in 90 seconds?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`rate = size/time`, so `4 GB / 90 s ≈ 0.0444 GB/s`, which is about 45.5 MB/s or roughly 364 Mbit/s.
+$\text{rate} = \frac{\text{size}}{\text{time}}$. So the rate is
+$\frac{4 \text{ GB}}{90 \text{ s}} \approx 0.0444$ GB/s. That is about
+44.4 MB/s, or about 356 Mbit/s, since there are 8 bits in a byte. (If
+you count a GB as 1024 MB, the answer is about 45.5 MB/s, or 364
+Mbit/s.)
 
-Watching the units is most of the work in this kind of question — bytes and bits differ by a factor of eight and the mistake is very common.
+Watching the units is most of the work in a question like this. Bytes
+and bits differ by a factor of eight, and mixing them up is a very
+common mistake.
 
 </details>
 
-**18.** The formula for the period of a pendulum is `T = 2π√(L/g)`. Make `L` the subject, then find the length that gives a period of exactly one second, with g = 9.81.
+**18.** The period of a pendulum (the time for one full swing, there and
+back) is $T = 2\pi\sqrt{\frac{L}{g}}$. Make $L$ the subject. Then find
+the length that gives a period of exactly one second, with $g = 9.81$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`T/(2π) = √(L/g)`, so `T²/(4π²) = L/g`, so `L = gT²/(4π²)`.
+1. Divide by $2\pi$: $\frac{T}{2\pi} = \sqrt{\frac{L}{g}}$.
+2. Square both sides: $\frac{T^2}{4\pi^2} = \frac{L}{g}$.
+3. Multiply by $g$: $L = \frac{gT^2}{4\pi^2}$.
 
-With T = 1 and g = 9.81: `L ≈ 0.2485 m`, about 25 cm.
+With $T = 1$ and $g = 9.81$: $L \approx 0.2485$ m, about 25 cm.
 
-A pendulum with a two-second period — one second each way — is about a metre, which is why grandfather clocks are the height they are.
+A pendulum with a period of two seconds (one second each way) is about
+a metre long. That is why grandfather clocks are as tall as they are.
 
 </details>

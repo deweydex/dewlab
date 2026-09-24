@@ -4395,3 +4395,38 @@ Injected mistakes were each caught by name: `list.apend`, `len(scores, 2)`, and 
 **Versions.** A signature depends on the Python version, so the file is written with the one Pyodide runs (3.13). A new CI job, `glossary-python`, runs the check on 3.13, with numpy and pandas pinned to Pyodide 0.28.3's versions, and fails on a stale file. The unit job's pytest module checks names and examples on 3.12.
 
 *Cost to change: a `python:` line per entry, one script, one build helper and three renderers. Dropping the signatures is deleting the JSON file; the build treats a missing file as none.*
+
+---
+
+**7.216 — The maths pages had the same language pass as Programming: plain, inviting prose, terms defined where they are first used, worked numbers after formulas, and pages that only lean on what came before them.** Josh: "Let's Continue!", after the Programming pass (7.210) had named maths as the next series.
+
+**What the pass did.** Twenty-two tutorials and the three mixed-problem pages, with their practice pages and glossaries, went through the brief the Programming pass used, with rules added for maths:
+- Every formula is said in words first, then shown, then followed by one worked number.
+- "Simply", "obviously", "clearly" and "trivially" are gone, since they tell a struggling reader they are slow.
+- Old numbered references ("Tutorial 14", "the last four tutorials") became links by title.
+- Each page leans only on what the course has taught before it.
+
+Many terms the maths pages had always used were never defined anywhere: *correlation*, *polynomial*, *coefficient*, *degree*, *hypotenuse*, *chord*. They are now defined in italics where they first matter, with glossary entries. The pages are 20–55% longer, almost all of it definitions, worked numbers, tables and numbered steps rather than more explanation.
+
+**Errors the pass found**, each checked by running it or by hand:
+- *Three doors* stated its own conclusion backwards: the 50/50 argument is right for a careless host and wrong for the original game.
+- Four cells contradicted their pages or failed. The "exactly a half: False" cell was one. A sine fit peaked in July while its comment said June. Pay data meant to lie on a line had slopes 12.5, 12.79, 12.5. Two cells in *Solving equations* called helpers defined only on the polynomials page, and raised `NameError`.
+- A counting answer said four passphrase words give "slightly fewer" choices than a 10-character password; it is about 370 times fewer.
+- Other corrections:
+  - a 3% difference on a cut-off axis "looks threefold" (it looks fourfold);
+  - ⊂ written for "is a subset of";
+  - *not* given four truth-table rows;
+  - "four extensions" of the number system, where there are three;
+  - a tangent line said to touch a curve at only one point;
+  - a pen puzzle whose fence arithmetic needed 80 m, not 60;
+  - 2^x said to lead x³ a thousandfold at x = 20 (it is about 131);
+  - one radian of the Earth set at Ireland to the Sahara;
+  - seven wrongly rounded answers.
+
+**Integration.** No page gained a failing cell: every page was run old and new in one shared namespace, and the only difference is the `NameError` now fixed. The cells that still stop are the deliberate division-by-zero lessons, and cells that wait on a student's own "Your turn" function. Two terms the vocabulary report found introduced twice were resolved:
+- *range* on the functions page now says it differs from the statistics range;
+- the statistics page refers back to where *standard deviation* was first taught, in place of introducing it again.
+
+The five headings the pass renamed (three in *Complex numbers*, one each in *Rearranging formulae* and *Limits*) carry their `covers:` keys with them, and the curriculum map is regenerated. The glossary check now covers 92 Python names, since the inverse trigonometric functions, `lambda` and `import` gained entries.
+
+*Cost to change: prose only, page by page; the cells that changed carry version 2026.09.24.1.*

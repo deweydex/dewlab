@@ -1,7 +1,7 @@
 ---
 title: "Solving triangles: the sine rule and the cosine rule"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.24.1
 covers:
   when-there-is-a-right-angle:
     covers: [MIT-4.9]
@@ -17,23 +17,41 @@ covers:
 
 # Solving triangles: the sine rule and the cosine rule
 
-Given some of a triangle, find the rest. That is the whole tutorial.
+We know some of a triangle's sides and angles. Can we find the rest?
+That question is what this whole page is about.
 
-"Solving a triangle" is a strange phrase the first time you hear it, because until now solving has meant finding an unknown in an equation. Here it means filling in the missing measurements: you are told three things about a triangle and asked for the other three.
+"Solving a triangle" may sound strange the first time you hear it. Until
+now, solving has meant finding an unknown in an equation. *Solving a
+triangle* means finding its missing measurements. A triangle has three
+sides and three angles. You are told three of these six things, and you
+find the other three.
 
-There are three cases and they come in the order a person would try them.
+There are three cases. They come in the order you would try them:
 
 1. **Is there a right angle?** Then you need nothing new.
-2. **No right angle, but you know two sides and the angle between them, or all three sides?** The Cosine Rule.
-3. **No right angle, but you know a side and the angle opposite it?** The Sine Rule.
+2. **There is no right angle, but you know two sides and the angle
+   between them, or all three sides?** Use the cosine rule.
+3. **There is no right angle, but you know a side and the angle opposite
+   it?** Use the sine rule.
 
-The area formula falls out of the second one on the way past.
+On the way, we also find a formula for a triangle's area. It uses the
+same information as case 2: two sides and the angle between them.
 
-## When There Is a Right Angle
+## When there is a right angle
 
-The easy case, and it uses only what you already have: Pythagoras from *Straight lines: slope, midpoint and distance*, and the ratios from *The unit circle: sine, cosine and tangent*.
+This is the easiest case. It uses only what you already have: Pythagoras
+from [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances),
+and sine, cosine and tangent from
+[The unit circle: sine, cosine and tangent](tutorial:the-unit-circle).
 
-The unit circle had radius 1. A right-angled triangle is the same picture scaled up — which is why the ratios do not care how big the triangle is.
+The unit circle had radius 1. A right-angled triangle is the same picture
+made bigger: the hypotenuse is a radius of a bigger circle. That is why
+the ratios do not depend on how big the triangle is.
+
+The cell below draws a right-angled triangle from its two short sides.
+It uses `math.atan2(opposite, adjacent)` to find the angle from those two
+sides. We look at going from sides back to angles below, in "Going
+backwards".
 
 ```python exec
 id: when-there-is-a-right-angle-1
@@ -63,7 +81,13 @@ print("hypotenuse:", h)
 print("angle at the origin:", a, "degrees")
 ```
 
-The three ratios have names, and they are the same three from the circle.
+We name the sides from the point of view of the angle we are looking at.
+The *opposite* side is the side across the triangle from that angle. The
+*adjacent* side is the short side next to the angle. The hypotenuse is
+the longest side, as before.
+
+Three ratios of these sides have names. Are they the same three as on
+the circle? Run the cell to compare.
 
 ```python exec
 id: when-there-is-a-right-angle-2
@@ -79,13 +103,36 @@ print("opposite / adjacent   =", opposite / adjacent,
       "   and tan of the angle =", math.tan(angle))
 ```
 
-They match, and the reason is the circle. Scale the unit circle up by the length of the hypotenuse and the coordinates scale with it, so the *ratios* stay exactly what they were.
+They match, and the reason is the circle. Make the unit circle bigger, by
+the length of the hypotenuse. The coordinates grow by the same amount, so
+the *ratios* stay exactly what they were.
 
-The mnemonic is SOH-CAH-TOA — Sine is Opposite over Hypotenuse, Cosine is Adjacent over Hypotenuse, Tangent is Opposite over Adjacent. It is a memory aid rather than an idea, and the idea is that a triangle is a piece of a circle.
+| Ratio | Name | In a formula |
+|---|---|---|
+| opposite ÷ hypotenuse | sine | $\sin\theta = \frac{\text{opposite}}{\text{hypotenuse}}$ |
+| adjacent ÷ hypotenuse | cosine | $\cos\theta = \frac{\text{adjacent}}{\text{hypotenuse}}$ |
+| opposite ÷ adjacent | tangent | $\tan\theta = \frac{\text{opposite}}{\text{adjacent}}$ |
+
+For example, in the 3-4-5 triangle above, the angle at the origin has
+opposite 3, adjacent 4 and hypotenuse 5, so its sine is
+$\frac{3}{5} = 0.6$.
+
+Many people remember the table with the memory aid SOH-CAH-TOA: Sine is
+Opposite over Hypotenuse, Cosine is Adjacent over Hypotenuse, Tangent is
+Opposite over Adjacent. It helps you remember, but it is not the idea.
+The idea is that a right-angled triangle is a piece of a circle.
 
 ### Going backwards
 
-If you know the ratio and want the angle, you need the inverse — the reflection idea from *Functions and their graphs*.
+Suppose you know the ratio and want the angle. Then you need the
+inverse: the reflection idea from
+[Functions and their graphs](tutorial:drawing-functions). The *inverse
+sine*, written $\sin^{-1}$ or arcsin, takes a sine and gives back an
+angle. In Python it is `math.asin`. The inverse cosine and inverse
+tangent are `math.acos` and `math.atan`. All three give their answer in
+radians, so we use `math.degrees` to turn it into degrees.
+
+What angle do you expect to have a sine of 0.5? Run the cell to check.
 
 ```python exec
 id: when-there-is-a-right-angle-3
@@ -93,18 +140,27 @@ print("The angle whose sine is 0.5:", math.degrees(math.asin(0.5)))
 print("The angle whose tangent is 1:", math.degrees(math.atan(1)))
 ```
 
+The first answer prints as `30.000000000000004`. That tiny extra is a
+rounding effect of decimals in Python. Read it as 30.
+
 ### Your turn
 
-A robot arm segment is 40 cm long and is raised at 35 degrees from horizontal. How far out from its base does the tip reach, and how high is it?
+A robot arm segment is 40 cm long. It is raised at 35 degrees from the
+horizontal.
+
+1. How far out from its base does the tip reach?
+2. How high is the tip?
 
 ```python exec
 id: your-turn-1
 # Your code here.
 ```
 
-## Area, and the Height Nobody Drew
+## Area, and the height nobody drew
 
-The area of a triangle is half the base times the height. That is easy when somebody has drawn the height in for you, and most of the time nobody has.
+The area of a triangle is half the base times the height. That is easy
+when somebody has drawn the height in for you. Most of the time, nobody
+has.
 
 ```python exec
 id: area-and-the-height-nobody-drew-1
@@ -113,7 +169,9 @@ base, height = 6, 4
 print("Half base times height:", 0.5 * base * height)
 ```
 
-Now a triangle described the way triangles usually are: **two sides and the angle between them**.
+Now here is a triangle described the way triangles usually are: by **two
+sides and the angle between them**. The dashed orange line is the height.
+How could we find its length?
 
 ```python exec
 id: area-and-the-height-nobody-drew-2
@@ -140,9 +198,17 @@ print("The height is:", height)
 print("b sin C is:   ", 5 * math.sin(math.radians(50)))
 ```
 
-There it is. **The height is `b sin C`** — the second side, times the sine of the angle between them. Which is just SOH-CAH-TOA applied to the little right triangle the dashed line makes.
+There it is. The height is $b\sin C$: the second side times the sine of
+the angle between the two sides. This is SOH-CAH-TOA again, used on the
+small right-angled triangle that the dashed line makes. In that small
+triangle, $b$ is the hypotenuse and the height is the side opposite $C$.
 
-So the area is:
+So the area is half the base times the height:
+
+$$\text{area} = \tfrac{1}{2}ab\sin C$$
+
+For the triangle above, that is
+$\frac{1}{2} \times 7 \times 5 \times \sin 50^\circ \approx 13.41$.
 
 ```python exec
 id: area-and-the-height-nobody-drew-3
@@ -153,27 +219,33 @@ def area(a, b, angle_degrees):
 print(area(7, 5, 50))
 print("and by base times height:", 0.5 * 7 * (5 * math.sin(math.radians(50))))
 
-# The right-angled case, where the old formula obviously works too.
+# The right-angled case, where the old formula works too.
 print()
 print("a right angle:", area(6, 4, 90), "and half base times height:", 0.5 * 6 * 4)
 ```
 
-**`½ab sin C` is half base times height, not a new fact.** The height is worked out for you from the information you were given.
+The formula $\frac{1}{2}ab\sin C$ is not a new fact. It is half the base
+times the height, with the height worked out for you from the
+information you were given.
 
 ### Your turn
 
-A triangular plot of land has two sides of 30 m and 45 m with an angle of 62 degrees between them. What is its area?
+A plot of land is a triangle. Two of its sides are 30 m and 45 m, with
+an angle of 62 degrees between them. What is its area?
 
 ```python exec
 id: your-turn-2
 # Your code here.
 ```
 
-## The Cosine Rule
+## The cosine rule
 
-Now the case with no right angle at all.
+Now we look at the case with no right angle at all.
 
-Start from Pythagoras and watch it stop working.
+We start from Pythagoras, $c^2 = a^2 + b^2$, and watch it stop working.
+The next cell builds triangles with sides 5 and 4 and different angles
+between them. It measures the third side, $c$, and compares $c^2$ with
+$a^2 + b^2$. At which angle do you think the difference will be zero?
 
 ```python exec
 id: the-cosine-rule-1
@@ -192,9 +264,11 @@ for angle in [30, 60, 90, 120, 150]:
           f"     {a**2 + b**2 - c**2:>10.3f}")
 ```
 
-At 90 degrees the difference is zero — that is Pythagoras, and it only holds there.
+At 90 degrees the difference is zero. That is Pythagoras, and it only
+holds for a right angle.
 
-Everywhere else there is a gap, and the gap is what the Cosine Rule is.
+At every other angle there is a gap. What is the gap? The next cell draws
+it, next to a guess: $2ab\cos C$.
 
 ```python exec
 id: the-cosine-rule-2
@@ -212,11 +286,17 @@ ax.set_xlabel("angle between the two sides, in degrees")
 ax.set_title("The gap, and what it turns out to be")
 ```
 
-The two curves are the same curve. So:
+The two curves are the same curve. So the gap is $2ab\cos C$, and:
 
-`c² = a² + b² − 2ab·cos C`
+$$c^2 = a^2 + b^2 - 2ab\cos C$$
 
-**The Cosine Rule is Pythagoras with a correction term**, and the correction is `2ab cos C`. At 90 degrees the cosine is zero, the correction vanishes, and you are left with Pythagoras exactly.
+This is the *cosine rule*. In words: it is Pythagoras with a correction,
+and the correction is $2ab\cos C$. At 90 degrees the cosine is zero, so
+the correction disappears, and Pythagoras is left exactly.
+
+For example, with $a = 5$, $b = 4$ and $C = 60^\circ$:
+$c^2 = 25 + 16 - 2 \times 5 \times 4 \times 0.5 = 21$, so
+$c = \sqrt{21} \approx 4.583$.
 
 ```python exec
 id: the-cosine-rule-3
@@ -238,13 +318,25 @@ print()
 print("and backwards:", cosine_rule_angle(5, 4, cosine_rule_side(5, 4, 60)))
 ```
 
-The rule works in both directions: two sides and the angle between gives the third side, and three sides gives any angle.
+The rule works in both directions:
+
+- two sides and the angle between them give the third side
+- three sides give any angle
 
 ### The drone
 
-A drone flies 200 m on a bearing of 040 degrees, turns, and flies 150 m on a bearing of 110 degrees. How far is it from home?
+A drone flies 200 m on a bearing of 040 degrees. Then it turns and flies
+150 m on a bearing of 110 degrees. How far is it from home?
 
-Bearings are measured clockwise from north, which is not how the unit circle measures angles — so the first job is to work out the angle *inside* the triangle. Turning from 040 to 110 is a turn of 70 degrees, and the interior angle of the triangle is what is left of a straight line: 180 − 70 = 110 degrees.
+A *bearing* is an angle measured clockwise from north. The unit circle
+measures angles in a different way, so the first job is to find the angle
+*inside* the triangle:
+
+1. Turning from 040 to 110 is a turn of 70 degrees.
+2. The drone's path would be a straight line, 180 degrees, if it did not
+   turn.
+3. So the angle inside the triangle is what is left of the straight
+   line: $180 - 70 = 110$ degrees.
 
 ```python exec
 id: the-cosine-rule-4
@@ -259,9 +351,13 @@ print("Distance from home:", round(cosine_rule_side(first_leg, second_leg, inter
 
 ### Your turn
 
-Two vectors from the origin: one to `(4, 1)` and one to `(1, 4)`. What is the angle between them? The Cosine Rule will get you there.
+A vector here is an arrow from the origin to a point. Take two vectors:
+one to $(4, 1)$ and one to $(1, 4)$. What is the angle between them? The
+cosine rule can find it.
 
-You have all three sides already — two from `distance` and one between the two tips.
+You already have all three sides of the triangle. Two sides are the
+lengths of the vectors, which `distance` gives you. The third side is the
+distance between the two tips.
 
 ```python exec
 id: your-turn-3
@@ -272,11 +368,18 @@ def distance(p, q):
 # Your code here.
 ```
 
-That question — the angle between two lists of numbers — is one a recommendation system asks constantly. Two people's ratings are two vectors, and how similar their taste is comes out as the angle between them.
+The angle between two lists of numbers is a question that recommendation
+systems ask all the time. Two people's ratings are two vectors. How
+similar their taste is comes out as the angle between them.
 
-## The Sine Rule, and Its Two Answers
+## The sine rule, and its two answers
 
-The Cosine Rule needs the angle *between* two known sides. When what you have instead is a side and the angle *opposite* it, there is a different relationship.
+The cosine rule needs the angle *between* two known sides. Sometimes you
+know a side and the angle *opposite* it instead. Then a different
+relationship helps.
+
+The next cell builds a triangle and then divides each side by the sine of
+the angle opposite it. What do you notice?
 
 ```python exec
 id: the-sine-rule-and-its-two-answers-1
@@ -297,9 +400,17 @@ for side, angle in zip(sides, angles):
     print(f"side {side:>7.3f}  /  sin(angle) = {side / math.sin(math.radians(angle)):.6f}")
 ```
 
-The same number, all three times.
+We get the same number, all three times.
 
-That is the Sine Rule: **each side divided by the sine of the angle opposite it gives the same value**, for every side of the triangle.
+That is the *sine rule*: in any triangle, each side divided by the sine
+of the angle opposite it gives the same value.
+
+$$\frac{a}{\sin A} = \frac{b}{\sin B} = \frac{c}{\sin C}$$
+
+Here a small letter is a side, and the capital letter is the angle
+opposite it. For example, if a side of 10 is opposite an angle of 40°,
+the ratio is $\frac{10}{\sin 40^\circ} \approx 15.557$. A side opposite
+75° is then $15.557 \times \sin 75^\circ \approx 15.03$.
 
 ```python exec
 id: the-sine-rule-and-its-two-answers-2
@@ -316,9 +427,12 @@ print(sine_rule_side(10, 40, 65))
 
 ### Two answers, both right
 
-Here is the interesting part, and it is the first time in this course that a correct calculation gives you two correct answers.
+Here is something new. You have seen two correct answers before, with
+quadratic equations. Now it happens with a triangle: one correct
+calculation gives two correct triangles.
 
-Suppose you know a side of 8, another side of 6, and that the angle opposite the 6 is 40 degrees. Where is the third corner?
+Suppose you know a side of 8, another side of 6, and that the angle
+opposite the 6 is 40 degrees. Where is the third corner?
 
 ```python exec
 id: the-sine-rule-and-its-two-answers-3
@@ -328,7 +442,8 @@ known_angle = 40
 known_opposite = 6
 other_side = 8
 
-# The angle opposite the 8 comes from the sine rule — and asin has two answers.
+# The angle opposite the 8 comes from the sine rule. asin gives one angle,
+# and 180 minus that angle has the same sine, so it is a second answer.
 ratio = known_opposite / math.sin(math.radians(known_angle))
 sine_of_other = other_side / ratio
 first = math.degrees(math.asin(sine_of_other))
@@ -354,9 +469,14 @@ ax.axis("off")
 ax.set_title("Two triangles, both fitting the same three facts")
 ```
 
-Both triangles have a side of 8, a side of 6, and a 40-degree angle opposite the 6. Neither is wrong.
+Both triangles have a side of 8, a side of 6, and a 40-degree angle
+opposite the 6. Neither of them is wrong.
 
-The cause is that **sine gives the same value for an angle and for 180 minus that angle** — which you can see on the wave from the last tutorial, where every height between 0 and 1 is reached twice on the way up and over.
+Why does this happen? Sine gives the same value for an angle and for 180
+minus that angle. You can see this on the wave from
+[Sine and cosine waves: amplitude, period and shift](tutorial:sine-and-cosine-waves):
+on the way up and over the top, the wave reaches every height between 0
+and 1 twice.
 
 ```python exec
 id: the-sine-rule-and-its-two-answers-4
@@ -364,22 +484,32 @@ for angle in [30, 150, 50, 130]:
     print(f"sin({angle:>4}) = {math.sin(math.radians(angle)):.6f}")
 ```
 
-**Two correct answers from one correct calculation is a feature of the method, not a failure.** Deciding which one you meant is your job, and it usually comes from something you know about the situation that the three numbers did not capture.
+This is called the *ambiguous case*: two correct answers from one
+correct calculation. It is part of the method, not a mistake. Deciding
+which triangle you meant is your job. The answer usually comes from
+something you know about the real situation, which the three numbers did
+not include.
 
-This does not happen with the Cosine Rule, because cosine is negative for obtuse angles and positive for acute ones — so it can tell them apart and sine cannot.
+The cosine rule does not have this problem. Cosine is negative for obtuse
+angles (between 90° and 180°) and positive for acute ones (less than
+90°). So cosine can tell them apart, and sine cannot.
 
 ### Your turn
 
-Given a side of 12, a side of 9, and an angle of 35 degrees opposite the 9: is this case ambiguous? Work it out before computing.
+You know a side of 12, a side of 9, and an angle of 35 degrees opposite
+the 9. Is this case ambiguous?
+
+1. Think it through first, and write your reasoning as a comment.
+2. Then do the calculation, and check both possible angles.
 
 ```python exec
 id: your-turn-4
 # Your reasoning as a comment, then the calculation.
 ```
 
-## Putting It Together
+## Putting it together
 
-One function that picks the right rule for what you were given.
+Here is one function that picks the right rule for what you were given.
 
 ```python exec
 id: putting-it-together-1
@@ -411,13 +541,18 @@ print(solve(a=3, b=4, c=5))
 print(solve(a=10, A=40, B=75))
 ```
 
-The middle one should have a 90 in it, and it does — a 3-4-5 triangle is right-angled, which the Cosine Rule works out without being told.
+Look at the middle result. A 3-4-5 triangle is right-angled, so there
+should be a 90 in it. Is there? The cosine rule worked out the right
+angle without being told.
 
 ### Your turn
 
-A surveyor stands at point A and measures the angle to a mast as 32 degrees. She walks 50 m directly towards it and measures again: 47 degrees. How tall is the mast?
+A surveyor stands at a point and measures the angle up to the top of a
+mast: 32 degrees. She walks 50 m straight towards the mast and measures
+again: 47 degrees. How tall is the mast?
 
-Try drawing it first — there is a triangle in there with one side of 50 and two angles you can work out.
+It helps to draw it first. There is a triangle in the drawing with one
+side of 50 m and two angles you can work out.
 
 ```python exec
 id: your-turn-5
@@ -426,17 +561,25 @@ id: your-turn-5
 
 ## Reflection
 
-Given some of a triangle, find the rest — and which tool you reach for depends on which parts you were given.
+We know some of a triangle and we find the rest. Which tool we use
+depends on which parts we were given.
 
-**A right angle needs nothing new.** Pythagoras and the three ratios, which are the unit circle scaled up.
+**A right angle needs nothing new.** We use Pythagoras and the three
+ratios, and the ratios are the unit circle made bigger.
 
-**`½ab sin C` is half base times height**, with `b sin C` being the height that nobody drew in.
+**$\frac{1}{2}ab\sin C$ is half base times height.** $b\sin C$ is the
+height that nobody drew in.
 
-**The Cosine Rule is Pythagoras with a correction**, and the correction is zero at 90 degrees. That is why it looks like Pythagoras with something extra bolted on: it is.
+**The cosine rule is Pythagoras with a correction.** The correction is
+zero at 90 degrees. That is why the rule looks like Pythagoras with
+something extra added: it is.
 
-**The Sine Rule can give two answers**, because sine cannot tell an angle from 180 minus that angle. Both triangles are real. Choosing between them is not arithmetic.
+**The sine rule can give two answers**, because sine gives the same value
+for an angle and for 180 minus that angle. Both triangles are real.
+Choosing between them is not a matter of arithmetic.
 
-In a few sentences, of the three situations at the top of this tutorial, which do you think you would meet most often, and in what?
+Look back at the three cases at the top of this page. Which one do you
+think you would meet most often, and where? Write a few sentences.
 
 ## Where to Read More
 

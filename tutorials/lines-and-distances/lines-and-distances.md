@@ -1,7 +1,7 @@
 ---
 title: "Straight lines: slope, midpoint and distance"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.24.1
 covers:
   a-line-you-have-already-written:
     covers: [MIT-4.1]
@@ -19,15 +19,38 @@ covers:
 
 # Straight lines: slope, midpoint and distance
 
-Two questions, and the whole tutorial is about them: **how do you describe a line**, and **how far apart are two things**.
+This page is about two questions:
 
-Both sound like they should be easy, and the first one has three different answers, each better than the others at something. The second one turns out to be a theorem you have heard of, arriving from a direction that makes it obvious.
+- How do we describe a line?
+- How far apart are two points?
 
-This is not called "coordinate geometry", though that is the name in the syllabus. Geometry is a word that, for a lot of people, means a thing they did at fifteen with a compass and did not enjoy. There is no compass here. There is a pair of axes, which you have been using since *Charts: choosing the right chart for your data*, and there are two questions somebody might have.
+Both questions sound easy. The first one has three different answers,
+and each answer is better than the others at something. The answer to
+the second one is a theorem you may have heard of. Here it comes from a
+direction that makes it make sense.
 
-## A Line You Have Already Written
+The course plan calls this topic "coordinate geometry". For many
+people, geometry means something they did at school with a compass,
+and did not enjoy. There is no compass here. There is a pair of axes,
+which we have used since
+[Charts: choosing the right chart for your data](tutorial:pictures-worth-numbers),
+and there are two questions.
 
-You have written straight lines as functions since *Functions and their graphs*. Here is one again.
+On this page we:
+
+- look again at the two numbers that make a straight line
+- see slope as a rate: how fast one thing changes when another does
+- find when two lines are parallel, and when they meet at a right angle
+- meet the one line that $y = mx + c$ cannot describe, and a form that can
+- find the point halfway between two points
+- find the distance between two points, and see Pythagoras' theorem
+  appear
+
+## A line you have already written
+
+We have written straight lines as functions since
+[Functions and their graphs](tutorial:drawing-functions). Here is one
+again.
 
 ```python exec
 id: a-line-you-have-already-written-1
@@ -57,7 +80,8 @@ draw_line(ax, 2, 1, label="y = 2x + 1")
 ax.set_title("Two numbers make a line")
 ```
 
-Two numbers: the 2 and the 1. Change either and see what happens.
+The line $y = 2x + 1$ has two numbers in it, 2 and 1. What happens when
+we change each one? The next two cells change them one at a time.
 
 ```python exec
 id: a-line-you-have-already-written-2
@@ -75,17 +99,35 @@ for c in [4, 1, -2, -5]:
 ax.set_title("Changing the second number slides it")
 ```
 
-Everything in this tutorial is about those two numbers and what you can do with them.
+Changing the first number tilts the line. Changing the second number
+slides it up or down. Everything on this page is about those two
+numbers, and what we can do with them.
 
-## Slope, as How Fast Something Changes
+## Slope, as how fast something changes
 
-The first number has a name — the **slope** — and it is worth being careful about what it means, because the careless version costs you three tutorials later.
+The first number, $m$, is the slope, which we met in
+[Functions and their graphs](tutorial:drawing-functions). It is worth
+being careful about what the slope means. We will need the careful
+meaning later, in
+[Derivatives: the rate of change of a curve](tutorial:rates-of-change).
 
-You will hear it called "rise over run". That is a way of remembering the calculation. The more useful description is a sentence about the world:
+You may hear slope called "rise over run". That phrase helps us
+remember the calculation. A sentence about the world is more useful:
 
-> **The slope answers: if x goes up by one, what happens to y?**
+> **The slope answers the question: if $x$ goes up by one, how much does
+> $y$ change?**
 
-Here is that, computed from two points on a line.
+To find the slope from two points, we divide the change in $y$ by the
+change in $x$:
+
+$$m = \frac{y_2 - y_1}{x_2 - x_1}$$
+
+For example, from $(0, 1)$ to $(1, 3)$, $y$ goes up by 2 while $x$ goes
+up by 1, so the slope is $2 \div 1 = 2$.
+
+The next cell finds the slope between three different pairs of points on
+the line $y = 2x + 1$. Do you expect three different answers, or the
+same one?
 
 ```python exec
 id: slope-as-how-fast-something-changes-1
@@ -102,41 +144,62 @@ print("from b to c:", slope(b, c))
 print("from a to c:", slope(a, c))
 ```
 
-The same number, all three times, from three different pairs of points.
+We get the same number all three times, from three different pairs of
+points.
 
-**That agreement is what "straight" means.** A line is straight precisely because the slope you measure does not depend on which two points you measure it between. If it did, the thing would be bending.
+**That agreement is what "straight" means.** A line is straight because
+its slope is the same between any two of its points. If the slope
+changed from one pair to another, the line would be bending.
 
 ### A number about the world
 
-The point of naming slope as a rate rather than as a ratio of gaps is that it survives leaving the graph.
+Why describe slope as a rate, and not as a picture of a triangle on a
+graph? Because a rate still makes sense away from the graph.
+
+Here are four records of hours worked and the pay received. What will
+the slope between each pair mean?
 
 ```python exec
 id: slope-as-how-fast-something-changes-2
 # Hours worked, and pay received. No axes anywhere in sight.
-records = [(0, 20), (5, 82.5), (12, 172), (20, 272)]
+records = [(0, 20), (5, 82.5), (12, 170), (20, 270)]
 
 for i in range(len(records) - 1):
     print(f"between {records[i]} and {records[i+1]}:  {slope(records[i], records[i+1])} per hour")
 ```
 
-The slope is the hourly rate. And the `20` at zero hours — the intercept — is whatever you get paid for turning up.
+The slope is the hourly rate: €12.50 per hour. The 20 at zero hours is
+the intercept. It is the amount you are paid for arriving, before you
+work any hours at all.
 
-Nobody had to mention geometry for that to be useful.
+We did not need any geometry for that to be useful.
 
 ### Your turn
 
-A phone plan costs €15 a month plus 8 cent a minute. How would you write it as a line? Plot it, and confirm that computing the slope from any two points on your plot gives you back the 8 cent.
+A phone plan costs €15 a month, plus 8 cent a minute.
+
+1. Write the cost as a line, $y = mx + c$. What are $m$ and $c$?
+2. Plot the line.
+3. Pick any two points on your line, and compute the slope between them.
+   Do you get 8 cent back?
 
 ```python exec
 id: your-turn-1
 # Your code here.
 ```
 
-Hold on to the rate-of-change description. When [Derivatives: the rate of change of a curve](tutorial:rates-of-change) arrives and asks for the slope of something that is *not* straight, it will be the same question with the answer changing as you move.
+Keep the "rate of change" meaning in mind. In
+[Derivatives: the rate of change of a curve](tutorial:rates-of-change)
+we ask for the slope of something that is *not* straight. It is the
+same question, but the answer changes as we move along the curve.
 
-## Parallel and Perpendicular
+## Parallel and perpendicular
 
-Two lines are **parallel** when they never meet, and that needs no rule at all: they are parallel when they have the same slope.
+Two lines are *parallel* when they go in the same direction and never
+meet. The rule for this is short: two different lines are parallel when
+they have the same slope.
+
+Which two of these three lines are parallel?
 
 ```python exec
 id: parallel-and-perpendicular-1
@@ -147,13 +210,20 @@ draw_line(ax, -0.5, 1, label="y = -0.5x + 1")
 ax.set_title("Two of these are parallel")
 ```
 
-**Perpendicular** — meeting at a right angle — has a rule that is famously hard to believe:
+Two lines are *perpendicular* when they meet at a right angle. The rule
+for perpendicular lines surprises many people:
 
-> two lines are perpendicular when their slopes multiply to −1
+> Two lines are perpendicular when their slopes multiply to $-1$.
 
-Multiply to −1. Why would that be?
+For example, slopes 2 and $-\tfrac{1}{2}$ give $2 \times (-\tfrac{1}{2}) = -1$,
+so those two lines are perpendicular.
 
-Do not take it on faith. Draw it.
+The rule needs both lines to have a slope. A vertical line has no slope,
+as we will see in the next section. A vertical line and a flat line are
+also perpendicular.
+
+Why would the slopes multiply to $-1$? Let's not take it on trust.
+Let's draw it.
 
 ```python exec
 id: parallel-and-perpendicular-2
@@ -172,11 +242,16 @@ slope_triangle(ax, 0, 0, -2, 3, "tab:orange")
 ax.set_title("The same triangle, turned a quarter turn")
 ```
 
-Look at the two triangles. The second is the first, rotated by a right angle. And when you turn a triangle a quarter turn, **the run and the rise swap places, and one of them changes sign.**
+Look at the two triangles. The second one is the first one, turned
+through a right angle (a quarter turn). What happens to the run and the
+rise?
 
-Run 3, rise 2 becomes run −2, rise 3.
+**When we turn a triangle a quarter turn, the run and the rise swap
+places, and one of them changes sign.** Run 3 and rise 2 become run
+$-2$ and rise 3.
 
-So the slopes are `2/3` and `3/−2`. Multiply them:
+So the slopes are $\tfrac{2}{3}$ and $\tfrac{3}{-2}$. What do you get
+when you multiply them? Run the cell to check.
 
 ```python exec
 id: parallel-and-perpendicular-3
@@ -185,7 +260,11 @@ second = 3 / -2
 print(first, "*", second, "=", first * second)
 ```
 
-The rule is the picture written down. Swap two numbers and negate one of them, and the product of the before and after is always −1, because the swapping cancels and the negation is all that is left.
+The rule is the picture, written down. The two numbers swap, so they
+cancel when we multiply: $\tfrac{2}{3} \times \tfrac{3}{2} = 1$. The
+change of sign is all that is left, and that makes $-1$.
+
+Here are the two lines, drawn in full. Do they meet at a right angle?
 
 ```python exec
 id: parallel-and-perpendicular-4
@@ -197,18 +276,24 @@ ax.set_title("And they do meet at a right angle")
 
 ### Your turn
 
-Given the line `y = 4x − 1` and the point `(2, 3)`, what is the line through that point at right angles to it? Plot both to check.
+Here is the line $y = 4x - 1$ and the point $(2, 3)$.
+
+1. What slope does a line at right angles to $y = 4x - 1$ have?
+2. Find the line with that slope that passes through $(2, 3)$.
+3. Plot both lines to check.
 
 ```python exec
 id: your-turn-2
 # Your code here.
 ```
 
-## The Line That Breaks the Formula
+## The line that breaks the formula
 
-Now try to draw the vertical line through `x = 3`.
+Now let's try to draw the vertical line through $x = 3$. This line goes
+straight up. It is not only very steep.
 
-This is a line that goes straight up, not merely one that is very steep.
+The cell draws lines that get steeper and steeper. Can any of them be
+vertical?
 
 ```python exec
 id: the-line-that-breaks-the-formula-1
@@ -218,9 +303,12 @@ for m in [1, 3, 10, 50, 200]:
 ax.set_title("Getting steeper, and never getting there")
 ```
 
-Every one of those crosses the axis at 3 and leans a little closer to vertical. None of them is vertical, and no value of `m` will do it — you would need `y = mx + c` to produce a line where x never changes, and there is no slope that does that.
+Every one of those lines crosses the horizontal axis at 3, and each one
+is a little closer to vertical. None of them is vertical, and no value
+of $m$ will make one. On a vertical line, $x$ never changes, and
+$y = mx + c$ cannot make a line like that.
 
-Try to compute one and the arithmetic says so.
+What happens if we try to compute the slope of the vertical line?
 
 ```python exec
 id: the-line-that-breaks-the-formula-2
@@ -232,15 +320,20 @@ def slope(p, q):
 print(slope((3, 0), (3, 5)))
 ```
 
-Divide by zero. The two points have the same x, so the run is nothing, and "how much does y change when x goes up by one" is a question with no answer — x never goes up by one on this line.
+Python gives a `ZeroDivisionError`. The two points have the same $x$,
+so the run is zero, and we cannot divide by zero. The slope asks "how
+much does $y$ change when $x$ goes up by one?" On this line, $x$ never
+goes up by one, so the question has no answer.
 
 ### The form that can
 
-This is why the third way of writing a line exists:
+This is why a third way of writing a line exists. The *general form* of
+a line is
 
-**`ax + by + c = 0`**
+$$ax + by + c = 0$$
 
-It looks worse than `y = mx + c`, and for most lines it is worse. It is worth having for exactly one case.
+For most lines it looks worse than $y = mx + c$, and it is worse. We
+need it for one case.
 
 ```python exec
 id: the-line-that-breaks-the-formula-3
@@ -262,9 +355,18 @@ general_line(ax, 1, 0, -3, label="x - 3 = 0  (that is x = 3)")
 ax.set_title("One form, both lines")
 ```
 
-The vertical line is `1x + 0y − 3 = 0`. The `b` is zero, which is allowed, and it is what makes the whole thing possible: **`y = mx + c` has y on its own, so y must depend on x. The general form does not, so it does not have to.**
+The vertical line is $1x + 0y - 3 = 0$. Here $b$ is zero. That is
+allowed, and it is what makes the vertical line possible.
 
-That is the entire reason this form is in the syllabus: it describes one more line than the other two can, not tidiness and not tradition.
+In $y = mx + c$, $y$ is on its own, so $y$ must depend on $x$. The
+general form does not have $y$ on its own, so $y$ does not have to
+depend on $x$.
+
+This is the main reason we need the general form here. It describes one
+kind of line that the other two ways cannot: a vertical line.
+
+The next cell turns one form into the other, when that is possible. What
+do you expect for the vertical line, $(1, 0, -3)$?
 
 ```python exec
 id: the-line-that-breaks-the-formula-4
@@ -287,22 +389,34 @@ print(to_slope_intercept(1, 0, -3))
 
 ### Your turn
 
-How would you convert these to `ax + by + c = 0`? Say which of them could not have been written as `y = mx + c`.
+Here are three lines:
 
-- The line through `(0, 4)` with slope `−2`
-- The vertical line through `(−5, 0)`
-- The horizontal line through `(0, 7)`
+- the line through $(0, 4)$ with slope $-2$
+- the vertical line through $(-5, 0)$
+- the horizontal line through $(0, 7)$
+
+1. Write each one in the form $ax + by + c = 0$.
+2. Which of them could not be written as $y = mx + c$?
 
 ```python exec
 id: your-turn-3
 # Your answers here.
 ```
 
-The third one is worth a moment: horizontal is fine in both forms, because a horizontal line has a slope — it is zero. Only vertical breaks.
+The third line is worth a moment. A horizontal line works in both forms,
+because it has a slope: its slope is zero. Only a vertical line breaks
+$y = mx + c$.
 
-## Midpoint, Which Needs No Theory
+## Midpoint, which needs no theory
 
-The halfway point between two points is the average of them. That is the whole of it.
+The *midpoint* of two points is the point halfway between them. It is
+the average of the two points. We average the $x$ values, and we
+average the $y$ values:
+
+$$\text{midpoint} = \left(\frac{x_1 + x_2}{2}, \frac{y_1 + y_2}{2}\right)$$
+
+For example, the midpoint of $(1, 2)$ and $(7, 6)$ is
+$\left(\frac{1 + 7}{2}, \frac{2 + 6}{2}\right) = (4, 4)$.
 
 ```python exec
 id: midpoint-which-needs-no-theory-1
@@ -322,24 +436,28 @@ ax.annotate("midpoint", m, textcoords="offset points", xytext=(10, -12))
 ax.set_title("Halfway is the average")
 ```
 
-Average the x values, average the y values. It is the same "average" you used on marks in *Statistics: averages, spread and frequency*, done twice.
+This is the same average we used for marks in
+[Statistics: averages, spread and frequency](tutorial:making-sense-of-data),
+done twice: once for $x$ and once for $y$.
 
 ### Your turn
 
-Two towns are at `(12, 40)` and `(48, 16)` on a map grid. A meeting point halfway between them — where?
-
-And a harder one: the midpoint of a segment is `(3, 1)`, and one end of it is `(7, 4)`. Where is the other end?
+1. Two towns are at $(12, 40)$ and $(48, 16)$ on a map grid. Where is
+   the meeting point halfway between them?
+2. A harder one: the midpoint of a line segment is $(3, 1)$, and one end
+   of it is $(7, 4)$. Where is the other end?
 
 ```python exec
 id: your-turn-4
 # Your code here.
 ```
 
-## How Far Apart, and the Theorem That Answers It
+## How far apart, and the theorem that answers it
 
-Two points. How far apart are they?
+Here are two points. How far apart are they?
 
-Start with the easy part. The horizontal gap and the vertical gap are just subtractions.
+Let's start with the easy part. The gap across and the gap up are each
+one subtraction.
 
 ```python exec
 id: how-far-apart-and-the-theorem-that-answers-it-1
@@ -351,9 +469,12 @@ print("across:", across)
 print("up:    ", up)
 ```
 
-Four across and three up. But that is not how far apart they are — nobody walks four east and then three north and calls it four, or seven.
+The gaps are 4 across and 3 up. But neither of those is the distance
+between the points. If you walk 4 east and then 3 north, you walk 7 in
+total. The straight line from start to finish is shorter than 7, and
+longer than 4.
 
-Try to get the direct distance and you will find you have no method.
+How long is the straight line? Can you think of a way to work it out?
 
 ```python exec
 id: how-far-apart-and-the-theorem-that-answers-it-2
@@ -364,7 +485,8 @@ ax.annotate("B", b, textcoords="offset points", xytext=(8, 2))
 ax.set_title("How long is that line?")
 ```
 
-Now draw the two gaps as a triangle.
+Now let's draw the two gaps as well. What shape do they make with the
+line?
 
 ```python exec
 id: how-far-apart-and-the-theorem-that-answers-it-3
@@ -378,13 +500,25 @@ ax.annotate("?", (2.8, 3.8), color="tab:blue", fontsize=14)
 ax.set_title("The gaps make a right-angled triangle")
 ```
 
-The distance you want is the long side of a right-angled triangle whose short sides you already know.
+The two gaps and the line make a right-angled triangle. The distance we
+want is the long side of that triangle, and we already know the two
+short sides.
 
-And there is a rule for that, which you may have met before without a reason for it:
+There is a rule for this. You may have met it before, perhaps without a
+reason for it. The *Pythagorean theorem* (Pythagoras' theorem) says:
 
-> **In a right-angled triangle, the two short sides squared, added together, give the long side squared.**
+> **In a right-angled triangle, square the two short sides and add them.
+> The result is the square of the long side.**
 
-That is the Pythagorean theorem. `3² + 4² = 9 + 16 = 25`, and `√25 = 5`.
+$$a^2 + b^2 = c^2$$
+
+Here $c$ is the long side. For our triangle,
+$3^2 + 4^2 = 9 + 16 = 25$, and $\sqrt{25} = 5$. So the two points are 5
+apart.
+
+Written with coordinates, this is the *distance formula*:
+
+$$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
 
 ```python exec
 id: how-far-apart-and-the-theorem-that-answers-it-4
@@ -402,11 +536,18 @@ print(distance((0, 0), (3, 4)))
 print(distance((0, 0), (1, 1)))
 ```
 
-**The distance formula and Pythagoras are the same thing seen from two directions.** Neither is a special case of the other. You wanted a distance, you drew the triangle the two gaps make, and the theorem is the answer to the question you were already asking.
+**The distance formula and Pythagoras' theorem are the same thing, seen
+from two directions.** Neither one is a special case of the other. We
+wanted a distance. We drew the triangle that the two gaps make. The
+theorem is the answer to the question we were already asking.
 
-That is worth having in that order. Taught the other way round — theorem first, distance as an application — Pythagoras is a fact to accept and the formula is a second thing to remember.
+The order matters. If we learn the theorem first and the distance
+second, the theorem is a fact to accept, and the formula is a second
+thing to remember. In this order, they are one idea.
 
 ### Checking it
+
+Does $a^2 + b^2$ always equal $c^2$? The cell tries five triangles.
 
 ```python exec
 id: how-far-apart-and-the-theorem-that-answers-it-5
@@ -419,16 +560,27 @@ for a_side, b_side in [(3, 4), (5, 12), (8, 15), (1, 1), (2.5, 6)]:
 
 ### Your turn
 
-Three points: `(0, 0)`, `(6, 0)` and `(3, 4)`. Is the triangle they make isosceles — that is, does it have two sides the same length?
+Here are three points: $(0, 0)$, $(6, 0)$ and $(3, 4)$. They make a
+triangle.
+
+A triangle is *isosceles* when two of its sides have the same length.
+
+1. Use `distance` to find the length of each side.
+2. Is the triangle isosceles?
 
 ```python exec
 id: your-turn-5
 # Your code here.
 ```
 
-## Where You Will Meet This Again
+## Where you will meet this again
 
-One last picture, and nothing is being taught by it.
+Here is one last picture. It does not teach anything new. It shows
+where this page leads.
+
+The cell uses `math.cos` and `math.sin` to place 61 points around a
+circle. We meet these two functions properly on the next page. Here we
+only need the points.
 
 ```python exec
 id: where-you-will-meet-this-again-1
@@ -441,6 +593,9 @@ ax.plot([p[0] for p in points], [p[1] for p in points], linewidth=2)
 ax.set_title("Every point on this is distance 1 from the center")
 ```
 
+Is every point on this circle really 1 away from the centre? Let's
+check a few with our `distance` function.
+
 ```python exec
 id: where-you-will-meet-this-again-2
 # Check that claim on a few of them.
@@ -449,23 +604,43 @@ for t in [0, 7, 15, 33, 48]:
     print(f"({p[0]:>6.3f}, {p[1]:>6.3f})   distance from origin: {distance((0, 0), p):.6f}")
 ```
 
-Exactly 1, every time, by the formula you just wrote.
+The distance is 1 every time, from the formula we wrote above.
 
-That circle is where [The unit circle: sine, cosine and tangent](tutorial:the-unit-circle) starts, and the fact that every point on it is distance 1 from the center is the only rule that whole tutorial rests on.
+That circle is where
+[The unit circle: sine, cosine and tangent](tutorial:the-unit-circle)
+starts. That whole page rests on one fact: every point on the circle is
+1 away from the centre.
 
 ## Reflection
 
-Two questions, and both of them turned out to be about the same right-angled triangle.
+We started with two questions, and both of them turned out to be about
+the same right-angled triangle.
 
-**A line has three descriptions and you now have all three.** A function, which is what you had; `y = mx + c`, which names the two numbers; and `ax + by + c = 0`, which exists because it can describe a vertical line and the other two cannot.
+Here are four ideas to take with you.
 
-**Slope is a rate of change.** How much y moves when x moves by one. Keep that phrasing — it is the one the derivative needs.
+**A line has three descriptions, and now you have all three.**
 
-**The perpendicular rule is a picture.** Turn the triangle a quarter turn, the rise and run swap, one of them goes negative, and the product is −1.
+| Form | What it is good for |
+|---|---|
+| a Python function | drawing and computing, as in [Functions and their graphs](tutorial:drawing-functions) |
+| $y = mx + c$ | naming the slope and the intercept |
+| $ax + by + c = 0$ | describing every line, including a vertical line |
 
-**Distance is Pythagoras, and Pythagoras is distance.** You did not learn a theorem and apply it; you asked how far apart two things were and the theorem is what the answer looks like.
+**Slope is a rate of change.** It is how much $y$ changes when $x$ goes
+up by one. Keep that meaning: derivatives need it.
 
-In a few sentences, of the three ways to write a line, which would you use to describe the edge of a building on a map, and why?
+**The perpendicular rule is a picture.** Turn the slope triangle a
+quarter turn. The rise and the run swap, one of them changes sign, and
+the product of the two slopes is $-1$.
+
+**Distance is Pythagoras' theorem, and Pythagoras' theorem is
+distance.** We did not learn a theorem and then apply it. We asked how
+far apart two points were, and the theorem is what the answer looks
+like.
+
+Think about the three ways to write a line. Which one would you use to
+describe the edge of a building on a map, and why? Write a few
+sentences.
 
 ## Where to Read More
 

@@ -5,33 +5,51 @@
 # Same word, unrelated meaning; keeping them as distinct terms avoids
 # one silently shadowing the other.
 entries:
+  - term: chord
+    kind: concept
+    definition: >
+      A chord is a straight line that joins two points on a curve. As the
+      two points move closer together, the chord's slope heads for the
+      derivative.
   - term: derivative
     kind: concept
     definition: >
-      The slope of a curve at a single point. You find it by taking the
-      slope between two nearby points and letting the gap shrink to a limit.
-      The same number has three names: a limit of chords, the slope of the
-      tangent line, and a rate of change.
+      The derivative of a function at a point is the slope of its curve at
+      that one point. We find it as a limit: the slope of a chord, as the
+      gap between its two points shrinks. The same number is also the
+      slope of the tangent line and the rate of change.
   - term: tangent line
     kind: concept
     definition: >
-      The straight line that touches a curve at one point and matches its
-      steepness there. Its slope is the derivative at that point.
+      The tangent line at a point is the straight line that touches a curve
+      at that point and has the same steepness as the curve there. Its
+      slope is the derivative at that point.
   - term: derivative is a function
     kind: concept
     definition: >
-      The derivative is not one number but a rule that gives the slope at
-      any x. The derivative of x^2, for example, is the function 2x rather
-      than a single value.
+      The derivative is a rule that gives the slope at any x, and not a
+      single number. For example, the derivative of x^2 is the function
+      2x.
+  - term: "f' (f prime)"
+    kind: formula
+    definition: >
+      This notation, said "f prime", means the derivative of f. If
+      f(x) = x^2, then f'(x) = 2x.
+  - term: differentiate
+    kind: concept
+    definition: >
+      To differentiate a function means to find its derivative.
   - term: "power rule: d/dx(x^n) = n*x^(n-1)"
     kind: formula
-    definition: Bring the exponent down to the front, and reduce it by one.
+    definition: >
+      The power rule gives the derivative of x^n. Bring the power down to
+      the front, and reduce the power by one.
     example: "power_rule(3) is the function lambda x: 3 * x ** 2"
   - term: "sum rule: d/dx(f + g) = f' + g'"
     kind: formula
     definition: >
-      Differentiate a sum term by term — which is why a polynomial can be
-      differentiated one power at a time.
+      The derivative of a sum is the sum of the derivatives. That is why a
+      polynomial can be differentiated one term at a time.
   - term: "product rule: d/dx(f * g) = f'*g + f*g'"
     kind: formula
     definition: >
@@ -41,14 +59,14 @@ entries:
   - term: "chain rule: d/dx(f(g(x))) = f'(g(x)) * g'(x)"
     kind: formula
     definition: >
-      For a function nested inside another, differentiate the outside while
-      leaving the inside alone, then multiply by the derivative of the
-      inside. Rates stack. If u changes three times as fast as x, and y
-      twice as fast as u, then y changes six times as fast as x.
+      The chain rule is for one function inside another. Differentiate the
+      outside and leave the inside alone, then multiply by the derivative
+      of the inside. Rates multiply: if u changes three times as fast as x,
+      and y twice as fast as u, then y changes six times as fast as x.
   - term: turning point is where the derivative is zero
     kind: concept
     definition: >
-      A curve is momentarily flat at its turning points, so its slope —
-      the derivative — is zero exactly there. Confirms the vertex found
-      by completing the square in Parabolas by a completely different
-      method.
+      A curve is flat for a moment at a turning point, so its derivative is
+      zero there. This gives the same vertex as completing the square in
+      Parabolas. A zero slope does not always mean a turning point: x^3 is
+      flat at 0 but keeps climbing.

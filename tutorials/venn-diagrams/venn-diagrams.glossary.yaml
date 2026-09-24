@@ -7,12 +7,13 @@ entries:
   - term: Venn diagram
     kind: concept
     definition: >
-      Overlapping circles, one per set, where each region shows what belongs
-      to exactly that combination of sets. Draw it from the actual set
-      operations rather than placing the regions by hand. It is most useful
-      at three sets, where the expressions stop fitting in your head. It
-      stops working at four: no arrangement of four circles produces all
-      fifteen regions.
+      A Venn diagram is a picture of sets as overlapping circles, one per
+      set. Each region shows what belongs to exactly that combination of
+      sets. Draw it from the set operations, so it always matches the data.
+      It is most useful at three sets. Circles stop working at four sets,
+      because no arrangement of four circles makes all fifteen regions.
   - term: "2^n - 1 regions"
     kind: formula
-    definition: How many distinct regions n overlapping sets divide a picture into.
+    definition: >
+      A diagram of n sets needs 2^n - 1 regions inside the circles, one for
+      each combination of in and out except "in none of them".

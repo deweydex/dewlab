@@ -3,26 +3,32 @@ entries:
   - term: limit
     kind: concept
     definition: >
-      What a function is heading towards as the input gets closer to some
-      value, whether or not the function actually has a value there. A
-      statement about the neighborhood of a point, not about the point
-      itself.
+      A limit is the value a function gets closer and closer to as its
+      input gets closer to some point. The function does not need to have
+      a value at that point. A limit is about the numbers near a point,
+      not the point itself.
+  - term: neighborhood
+    kind: concept
+    definition: >
+      The neighborhood of a point is the set of numbers very close to it,
+      on both sides. A limit describes what a function does in the
+      neighborhood of a point.
   - term: "lim(x -> a) f(x)"
     kind: formula
     definition: >
-      The notation for "the limit of f(x) as x approaches a". It is the
-      single number f(x) gets arbitrarily close to as x gets arbitrarily
-      close to a, from either side.
+      This notation means "the limit of f(x) as x approaches a". It is the
+      single number that f(x) gets as close to as we like, when x gets
+      close enough to a, from either side.
   - term: one-sided limits must agree
     kind: concept
     definition: >
-      A limit only exists if approaching from below and from above head for
-      the same number. If the two sides approach different numbers, or one
-      side does not settle at all, the limit does not exist. The function
-      may still be perfectly well defined nearby.
+      A limit exists only if the values from below and the values from
+      above head for the same number. If the two sides head for different
+      numbers, or one side does not settle at all, there is no limit. The
+      function may still have values at every point nearby.
   - term: limit at infinity
     kind: concept
     definition: >
-      What a function settles on as the input grows without bound, rather
-      than as it approaches a specific point. Written the same way, with
+      A limit at infinity is the value a function settles on as its input
+      grows without end. It is written the same way as other limits, with
       x approaching infinity instead of a number.

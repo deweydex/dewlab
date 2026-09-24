@@ -9,21 +9,37 @@ covers:
     covers: [MIT-3.5]
   when-there-is-no-limit:
     covers: [MIT-3.5]
-  why-anybody-needs-this:
+  why-we-need-limits:
     covers: [MIT-3.5]
 ---
 
 # Limits: getting closer without arriving
 
-A limit is the answer to a question of the form: *what would this be, if I could get there?*
+A limit answers a question of this kind: *what would this value be, if
+we could get there?*
 
-That sounds evasive, and for two hundred years mathematicians were uneasy about it for exactly that reason. It turns out to be one of the most useful ideas in the subject, and it is the one thing standing between you and being able to talk about how fast something is changing at a single instant.
+That can sound like a way of avoiding the question. For about two
+hundred years, mathematicians were uneasy about limits for exactly that
+reason. But limits turned out to be one of the most useful ideas in
+mathematics. They are the one idea we still need before we can say how
+fast something is changing at a single instant.
 
-The good news is that computers make limits obvious in a way that paper does not. You can just try it, with numbers, and watch.
+The good news is that a computer makes limits easy to see. We can try
+numbers and watch what happens.
 
-## A Hole in a Line
+On this page we:
 
-Here is a function that is completely ordinary except at one point.
+- look at a function with a hole in it, and ask what belongs in the hole
+- get closer and closer to a point, from both sides
+- meet functions that have no limit, and a limit "at infinity"
+- use a limit to find the speed of a falling ball at one instant
+- see where trying numbers stops working, and why
+
+## A hole in a line
+
+Here is a function that behaves normally everywhere except at one point.
+Look at the values in the loop. Can you guess a short rule for the
+answers before you run it?
 
 ```python exec
 id: a-hole-in-a-line-1
@@ -35,16 +51,24 @@ for value in [0, 0.5, 2, 3, 10]:
     print(f"f({value}) = {f(value)}")
 ```
 
-Every answer is `x + 1`. And that makes sense: `x² − 1` factorizes into `(x − 1)(x + 1)`, and the `(x − 1)` on top cancels the one underneath.
+Each answer is one more than the input: $x + 1$. There is a reason. The
+top, $x^2 - 1$, factorizes into $(x - 1)(x + 1)$. The $(x - 1)$ on the
+top then cancels the $(x - 1)$ on the bottom, and $x + 1$ is left.
 
-Except at one place.
+That works everywhere except at one place. What do you think happens at
+$x = 1$? Run the cell to check.
 
 ```python exec
 id: a-hole-in-a-line-2
 print(f(1))
 ```
 
-At `x = 1` the bottom is zero, so the canceling is not allowed and the function has no value there at all. The domain of `f` is every number except 1.
+Python stops with a `ZeroDivisionError`. At $x = 1$ the bottom is zero,
+so we are not allowed to cancel, and the function has no value there at
+all. Remember that the domain of a function is the set of inputs it
+accepts. The domain of `f` is every number except 1.
+
+Here is the graph. The empty circle marks the missing point.
 
 ```python exec
 id: a-hole-in-a-line-3
@@ -61,13 +85,16 @@ ax.grid(alpha=0.3)
 ax.set_title("A straight line with one point missing")
 ```
 
-A perfectly good line with a hole punched in it.
+It is a normal straight line with a hole in it.
 
-Now the question that limits answer. **The function has no value at 1. But if it did, what would it obviously have to be?**
+This leads to the question that limits answer. **The function has no
+value at 1. But if it did have one, what would that value have to be?**
 
-## Getting Closer Without Arriving
+## Getting closer without arriving
 
-You cannot ask for `f(1)`. You can ask for `f` of things very close to 1, from both sides, and watch.
+We cannot ask for `f(1)`. But we can ask for `f` of numbers very close
+to 1, from below and from above. What do you expect to see? Run the cell
+and watch the answers.
 
 ```python exec
 id: getting-closer-without-arriving-1
@@ -83,17 +110,35 @@ for step in [0.1, 0.01, 0.001, 0.0001, 0.00001]:
     print(f"   f({x:<10}) = {f(x)}")
 ```
 
-From below the answers march up towards 2. From above they march down towards 2. Neither side ever *reaches* 2, because neither side ever reaches 1.
+From below, the answers climb towards 2. From above, they fall towards
+2. Neither side ever *reaches* 2, because neither side ever reaches 1.
 
-**The limit of `f(x)` as `x` approaches 1 is 2.** Written down, that is:
+(You may notice long tails of digits, such as `1.990000000000001`. Those
+are tiny rounding errors in the computer's arithmetic. We come back to
+them at the end of the page.)
 
-`lim(x→1) f(x) = 2`
+A *limit* is the value a function gets closer and closer to as its
+input gets closer to some point. Here, **the limit of $f(x)$ as $x$
+approaches 1 is 2.** In symbols, we write:
 
-And the sentence it stands for is: *you can get the output as close to 2 as you like, by getting the input close enough to 1.*
+$$\lim_{x \to 1} f(x) = 2$$
 
-Notice what that sentence does not say. It does not say the function equals 2 at 1 — it does not, it has no value there. **A limit is a statement about the neighborhood, not about the point.** That distinction is the whole idea, and it is why limits can talk about places a function cannot go.
+The sentence those symbols stand for is: *we can make the output as
+close to 2 as we like, by taking the input close enough to 1.*
+
+Look at what that sentence does *not* say. It does not say that the
+function equals 2 at 1. The function has no value at 1.
+
+**A limit is about the numbers near a point. It says nothing about the
+point itself.** Mathematicians call the numbers near a point its
+*neighborhood*. This is the whole idea, and it is why a limit can
+describe places a function cannot reach.
 
 ### Both sides have to agree
+
+Here is a function that jumps: it gives −1 for every negative number,
+and 1 for zero and every positive number. What happens as we come
+towards 0 from each side?
 
 ```python exec
 id: getting-closer-without-arriving-2
@@ -110,13 +155,21 @@ for step in [0.1, 0.01, 0.001]:
     print(f"   step_function({step}) = {step_function(step)}")
 ```
 
-Approaching zero from the left, the answers sit at −1. From the right, at 1. They do not agree, and there is no single number the function is heading for.
+Coming towards zero from the left, the answers stay at −1. From the
+right, they stay at 1. The two sides do not agree, so there is no single
+number the function is heading for.
 
-So **this limit does not exist**, because the question has two different answers depending on which way you come at it, not because the calculation is hard.
+So **this limit does not exist.** The calculation is not hard. The
+question has two different answers, depending on which side we come
+from, and a limit needs one.
 
 ### Your turn
 
-What is the limit of `(x² − 4)/(x − 2)` as `x` approaches 2? Try values from both sides, then factorize the top and see whether the answer makes sense.
+What is the limit of $\dfrac{x^2 - 4}{x - 2}$ as $x$ approaches 2?
+
+1. Try values of `g` just below 2 and just above 2.
+2. Then factorize the top, $x^2 - 4$, and cancel.
+3. Does the algebra agree with your numbers?
 
 ```python exec
 id: your-turn-1
@@ -127,9 +180,11 @@ def g(x):
 # Your investigation here.
 ```
 
-## When There Is No Limit
+## When there is no limit
 
-Not every hole is fillable. Sometimes getting closer makes things worse.
+Not every hole can be filled. Sometimes getting closer makes things
+worse. Here is $h(x) = \dfrac{1}{x}$, near 0. What do you think happens
+to the answers as the step gets smaller?
 
 ```python exec
 id: when-there-is-no-limit-1
@@ -141,7 +196,9 @@ for step in [0.1, 0.01, 0.001, 0.0001]:
     print(f"h({step}) = {h(step):>12.1f}     h({-step}) = {h(-step):>12.1f}")
 ```
 
-From the right it grows without bound; from the left it plunges without bound. There is no number it is approaching, in either direction.
+From the right, the answers grow bigger and bigger, with no end. From
+the left, they fall lower and lower, with no end. There is no number
+they are getting close to, from either side.
 
 ```python exec
 id: when-there-is-no-limit-2
@@ -157,11 +214,19 @@ ax.grid(alpha=0.3)
 ax.set_title("No limit at zero, in either direction")
 ```
 
-You have met this shape twice already. It is the tangent function's behavior at 90 degrees, and it is the vertical line that has no slope, and it is the same underlying fact each time: dividing by something that is shrinking to nothing.
+You have met this shape twice before. In
+[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances),
+a vertical line had no slope. In
+[The unit circle: sine, cosine and tangent](tutorial:the-unit-circle),
+the tangent function had no value at 90 degrees. The same fact sits
+under all three: we are dividing by something that is shrinking to
+nothing.
 
-### A limit that exists at infinity
+### A limit at infinity
 
-The other useful direction is asking what happens as `x` gets very large rather than very close.
+We can also ask what happens as $x$ gets very *large*, instead of very
+close to a point. What do you think happens to $\dfrac{1}{x}$ as $x$
+grows?
 
 ```python exec
 id: when-there-is-no-limit-3
@@ -169,7 +234,15 @@ for x in [1, 10, 100, 1000, 100000, 10000000]:
     print(f"1/{x:<10} = {1 / x}")
 ```
 
-As `x` grows, `1/x` heads for 0 and never gets there. That is a limit too — the limit as `x` approaches infinity is 0.
+As $x$ grows, $\dfrac{1}{x}$ heads for 0 and never gets there. That is a
+limit too. A *limit at infinity* is the value a function settles on as
+its input grows without end. Here, the limit as $x$ approaches infinity
+is 0:
+
+$$\lim_{x \to \infty} \frac{1}{x} = 0$$
+
+Here is a more interesting one: $\dfrac{3n + 5}{n + 2}$. What number do
+you think it settles on as $n$ grows? Make a guess, then run the cell.
 
 ```python exec
 id: when-there-is-no-limit-4
@@ -182,17 +255,25 @@ for n in [1, 10, 100, 1000, 100000]:
     print(f"n = {n:<8} -> {ratio(n)}")
 ```
 
-It settles on 3. Which you could have guessed: for large `n` the `+5` and the `+2` stop mattering, and what is left is `3n/n`.
+It settles on 3. We could have guessed this. When $n$ is very large, the
+$+5$ and the $+2$ are tiny next to $3n$ and $n$. What is left is
+$\dfrac{3n}{n}$, which is 3.
 
-## Why Anybody Needs This
+## Why we need limits
 
-Now the reason this tutorial exists, which is a question you cannot ask without it.
+Here is the question that this page has been building towards. We
+cannot answer it without a limit:
 
 **How fast is something changing at one instant?**
 
-Speed is distance over time — but that needs two moments to work with. "Distance traveled in no time at all, divided by no time at all" is `0/0`, which is not a number.
+Speed is distance divided by time. To measure it, we need two moments:
+a start and an end. At a single instant, the distance travelled is 0
+and the time taken is 0. That gives $\dfrac{0}{0}$, which is not a
+number.
 
-Here is a ball dropped from a height. Distance fallen after `t` seconds is about `4.9t²` metres.
+Here is a ball dropped from a height. After $t$ seconds, it has fallen
+about $4.9t^2$ metres. For example, after 2 seconds it has fallen
+$4.9 \times 2^2 = 4.9 \times 4 = 19.6$ metres.
 
 ```python exec
 id: why-anybody-needs-this-1
@@ -206,9 +287,13 @@ print()
 print("Average speed over that second:", fallen(2) - fallen(1), "m/s")
 ```
 
-That is the average over a whole second, and the ball was speeding up the whole time, so it is not the speed at any particular moment.
+That is the *average* speed over a whole second. The ball was speeding
+up the whole time, so this is not its speed at any one moment.
 
-Make the interval smaller.
+So let's make the time interval smaller. The function `average_speed`
+below divides the distance fallen by the length of the interval, which
+we call the `gap`. What do you think happens to the answers as the gap
+shrinks?
 
 ```python exec
 id: why-anybody-needs-this-2
@@ -221,9 +306,15 @@ for gap in [1, 0.5, 0.1, 0.01, 0.001, 0.0001, 0.00001]:
     print(f"   gap of {gap:<9} : {average_speed(1, gap)}")
 ```
 
-The numbers are heading for 9.8, and they never arrive — you cannot set the gap to zero, because that is `0/0`.
+The numbers are heading for 9.8, and they never arrive. We cannot set
+the gap to zero, because that gives $\dfrac{0}{0}$.
 
-**But the limit exists, and it is 9.8 m/s.** That is the speed at the instant `t = 1`, and it is a real answer to a question that had no arithmetic.
+**But the limit exists, and it is 9.8 m/s.** That is the speed at the
+instant $t = 1$. It is a real answer to a question that ordinary
+arithmetic could not answer.
+
+The graph shows the same thing. The gap gets smaller as we move to the
+right, and the average speed closes in on the red line at 9.8.
 
 ```python exec
 id: why-anybody-needs-this-3
@@ -242,18 +333,25 @@ ax.set_title("Closing in on the speed at one instant")
 
 ### Your turn
 
-What speed is the ball traveling at three seconds in? Try the same approach at `t = 3`.
-
-Then try `t = 0` — does the answer make sense for a ball that has just been let go?
+1. How fast is the ball travelling three seconds after it is let go? Use
+   `average_speed` with `t = 3` and smaller and smaller gaps.
+2. Now try `t = 0`. Does your answer make sense for a ball that has only
+   just been let go?
 
 ```python exec
 id: your-turn-2
 # Your code here.
 ```
 
-## A Warning About Trying It With Numbers
+## A warning about trying it with numbers
 
-Everything above worked by computing values and looking. That is an excellent way to *see* a limit, and it is not a proof — and floating-point arithmetic will eventually lie to you.
+Everything above worked by computing values and looking at them. That is
+an excellent way to *see* a limit. It is not a proof. And there is a
+point where floating-point arithmetic, the way a computer stores
+decimals, starts to give wrong answers.
+
+Here is the first function again, much closer to 1 than before. What do
+you think happens as the step gets tiny?
 
 ```python exec
 id: a-warning-about-trying-it-with-numbers-1
@@ -269,33 +367,58 @@ for step in [1e-10, 1e-13, 1e-15, 1e-16]:
         print(f"f(1 + {step:<8}) = the arithmetic gave up")
 ```
 
-The first three are fine. The fourth stops being arithmetic at all.
+(`1e-16` is Python's way of writing $10^{-16}$, which is
+0.0000000000000001.)
 
-`1 + 1e-16` is **not a different number from 1** in double-precision floating point — there is no room left to record the difference. So `x - 1` on the bottom is exactly zero, and the division fails.
+The first three lines print 2.0. The fourth line is not a number at all.
 
-Notice what did *not* happen. The answers did not drift or degrade gracefully; they were exactly right and then the calculation died. That is characteristic: floating point usually fails suddenly rather than gradually, at whichever step first asks it to represent a difference smaller than it can hold.
+In double-precision floating point, **`1 + 1e-16` is the same number as
+`1`**. There is no room left to record such a small difference. So
+`x - 1` on the bottom is exactly zero, and the division fails.
 
-**The mathematics is fine and the arithmetic ran out.** The limit is still 2 — nothing about the function changed at `1e-16`. What changed is that the computer stopped being able to tell `1 + 1e-16` from `1`.
+Look at *how* it failed. The answers did not slowly drift away from 2.
+They printed 2.0, and then the calculation stopped. Floating point often
+fails suddenly like this. The failure comes at the first step that asks
+it to store a difference smaller than it can hold.
 
-You met the same floor in *Storing and Computing*, where two floats that should have been equal were not.
+**The mathematics is fine. The arithmetic ran out.** The limit is still
+2. Nothing about the function changed at `1e-16`. What changed is that
+the computer could no longer tell `1 + 1e-16` apart from `1`.
 
-So use the numbers to see what the answer is, and use algebra to know it. In the very first example, canceling `(x − 1)` tells you the answer is `x + 1` and therefore 2 — with no approximation anywhere.
+You met the same floor on the practice page for
+[Variables, data types and text](tutorial:storing-and-computing). There,
+`0.1 + 0.2 == 0.3` came out `False`, because two floats that should have
+been equal were not.
+
+So we use the numbers to *see* what the answer is, and we use algebra to
+*know* it. In the very first example, cancelling $(x - 1)$ tells us that
+the function is $x + 1$, so the limit is exactly 2, with no
+approximation anywhere.
 
 ## Reflection
 
-A limit is what a function is heading towards, whether or not it ever gets there.
+A limit is the value a function is heading towards, whether or not it
+ever gets there.
 
-**It is a statement about the neighborhood, not the point.** The function need not have a value where you are asking, and often the interesting cases are exactly the ones where it does not.
+**A limit is about the numbers near a point, not the point itself.** The
+function does not need a value where we are asking. Often the
+interesting cases are exactly the ones where it has none.
 
 **Both sides have to agree**, or there is no limit.
 
-**Some limits do not exist**, and running away to infinity is the usual reason.
+**Some limits do not exist.** The usual reason is that the values run
+away to infinity.
 
-**The point of all this is the next tutorial.** "How fast is it changing right now?" is `0/0` if you ask it directly, and a limit is the thing that makes it answerable.
+**Limits are what make the next tutorial possible.** "How fast is it
+changing right now?" is $\dfrac{0}{0}$ if we ask it directly. A limit
+makes it a question we can answer. That is the subject of
+[Derivatives: the rate of change of a curve](tutorial:rates-of-change).
 
-**Numbers show you the answer; algebra proves it.** And past about fifteen decimal places, the numbers stop showing you anything at all.
+**Numbers show you the answer; algebra proves it.** And past about
+fifteen decimal places, the numbers stop showing you anything at all.
 
-In a few sentences and in your own words, what is the difference between "f(1) = 2" and "the limit of f as x approaches 1 is 2"?
+In a few sentences, in your own words: what is the difference between
+"$f(1) = 2$" and "the limit of $f(x)$ as $x$ approaches 1 is 2"?
 
 ## Where to Read More
 

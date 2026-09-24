@@ -3,21 +3,55 @@ entries:
   - term: expression, equation
     kind: concept
     definition: >
-      An expression is a mathematical phrase with a value (3x + 7) — it
-      asserts nothing. An equation states two expressions are equal
-      (3x + 7 = 22) and can be true or false depending on x. You evaluate
-      an expression; you solve an equation.
+      An expression is a piece of mathematics that has a value, such as
+      3x + 7. An equation is a statement that two expressions are equal,
+      such as 3x + 7 = 22, and it can be true or false depending on x.
+      You evaluate an expression; you solve an equation.
+  - term: evaluate
+    kind: concept
+    definition: >
+      To evaluate an expression is to work out its value for one chosen
+      value of x. At x = 4, 3x^2 + 5x - 2 evaluates to 66.
+  - term: polynomial, term, coefficient
+    kind: concept
+    definition: >
+      A polynomial is an expression made by adding up terms. Each term is
+      a number times a whole-number power of x, such as 3x^2. The number
+      in front, here 3, is the term's coefficient.
+  - term: constant term
+    kind: concept
+    definition: >
+      The constant term is the term of a polynomial with no x in it. In
+      3x^2 + 5x - 2 it is -2, which we can think of as -2 * x^0.
+  - term: degree (linear, quadratic, cubic)
+    kind: concept
+    definition: >
+      The degree of a polynomial is the highest power of x in it. Degree 1
+      is called linear, degree 2 quadratic, and degree 3 cubic. So
+      3x^2 + 5x - 2 is a quadratic.
   - term: polynomial (as a coefficient list)
     kind: concept
     definition: >
-      A polynomial like 3x^2 + 5x - 2 stored as a list of coefficients.
-      Index i holds the coefficient of x^i, so the list index matches the
+      We store a polynomial as a Python list of its coefficients. Index i
+      holds the coefficient of x^i, so the list index matches the
       exponent.
     example: "3x^2 + 5x - 2  <->  [-2, 5, 3]"
-  - term: FOIL method
+  - term: expanding the brackets, FOIL method
     kind: concept
     definition: >
-      When multiplying two polynomials, distribute each term of the first
-      across every term of the second. For two two-term expressions the
-      order is First, Outer, Inner, Last.
+      To expand brackets, multiply each term of the first polynomial by
+      every term of the second, then add the results. For two two-term
+      brackets, the FOIL method gives the order: First, Outer, Inner,
+      Last.
     example: "(2x + 3)(x + 4) = 2x^2 + 8x + 3x + 12"
+  - term: scaling (a polynomial)
+    kind: concept
+    definition: >
+      Scaling a polynomial means multiplying every coefficient by the
+      same number. Scaling 3x^2 + 5x - 2 by 2 gives 6x^2 + 10x - 4.
+  - term: representation
+    kind: concept
+    definition: >
+      A representation is the way we choose to store something as data.
+      Storing a polynomial as a coefficient list turns adding polynomials
+      into adding list items.

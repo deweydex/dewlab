@@ -3,7 +3,7 @@ title: "Rearranging formulae: changing the subject"
 year: "2026-2027"
 version: 2026.08.23.1
 covers:
-  the-same-formula-five-ways:
+  the-same-formula-four-ways:
     covers: [MIT-1.7]
   the-moves:
     covers: [MIT-1.7]
@@ -15,17 +15,46 @@ covers:
 
 # Rearranging formulae: changing the subject
 
-A formula is usually written with one particular letter on the left, and that letter is whichever one the person who first wrote it down happened to care about. `v = u + at` is written for somebody who wants the final speed. If you know the final speed and want the time, the formula is still true -- it is just facing the wrong way.
+A formula usually has one letter on its own on the left. That letter is
+called the *subject* of the formula. It is the quantity that the person
+who first wrote the formula wanted to find.
 
-Turning it round is called **transposing** a formula, and it is one of those skills every other subject assumes you already have. Physics assumes it, electronics assumes it, statistics assumes it, and none of them teach it.
+For example, $v = u + at$ is written for somebody who wants the final
+speed, $v$. But what if you know the final speed and want the time, $t$?
+The formula is still true. It is only facing the wrong way for your
+question.
 
-You have already been doing the hard half of it. In *Polynomials: representing and combining them in Python* you built expressions and evaluated them; here you take the same expression apart and rebuild it pointing a different way.
+*Transposing* a formula means rearranging it so that a different letter
+is the subject. This is also called *changing the subject*. Physics,
+electronics and statistics all expect you to be able to do it, and
+usually none of them teach it.
 
-## The Same Formula, Five Ways
+You have already done half of the work. In
+[Polynomials: representing and combining them in Python](tutorial:expressions-come-alive)
+we built expressions and evaluated them. Here we take an expression
+apart, and build it again so that it answers a different question.
 
-Here is a formula from mechanics: `v = u + a*t`. Final speed is starting speed plus acceleration times time.
+On this page we:
 
-There are four letters in it, so there are four questions you might be asking. Run this and read the four functions against each other.
+- see one formula written four ways, as four Python functions
+- learn the one rule behind every rearrangement
+- rearrange formulae where the letter we want is under a fraction line
+- write code that checks a rearrangement for us
+
+## The same formula, four ways
+
+Here is a formula from mechanics, the part of physics about motion:
+
+$$v = u + at$$
+
+In words: the final speed $v$ is the starting speed $u$, plus the
+acceleration $a$ times the time $t$.
+
+There are four letters in the formula. So there are four questions you
+might ask, one for each letter. The cell below has one function for each
+question. Read the four functions and compare them. The first line
+works out a final speed. Can you predict what the other three lines
+print, as they work backwards from that answer? Run it to check.
 
 ```python exec
 id: the-same-formula-five-ways-1
@@ -55,13 +84,25 @@ print("Acceleration:", acceleration(v, 5, 4))
 print("Time taken:", time_taken(v, 5, 2))
 ```
 
-Every one of those four is the same fact about the world. Writing the four functions *is* transposing the formula -- you have done the algebra already, in a language where you can check it.
+The final speed is 13 m/s. Working backwards from 13, we get back the
+starting speed 5, the acceleration 2 and the time 4 that we put in.
 
-That is worth saying plainly, because textbooks tend to present the original form as the real one and the rearrangements as derived. They are all equally real. `v = u + at` and `t = (v − u)/a` are the same sentence with a different word emphasized.
+All four functions describe the same fact about the world. Writing the
+four functions *is* transposing the formula. You have done the algebra
+already, in a language where you can check it.
+
+Textbooks often show the first form as the "real" one, and the
+rearrangements as copies made from it. In fact they are all equally
+true. $v = u + at$ and $t = \frac{v - u}{a}$ say the same thing, with a
+different letter in the spotlight.
 
 ### Your turn
 
-The area of a circle is `A = pi * r**2`. How would you write the function that goes the other way: given an area, what was the radius?
+The area of a circle is $A = \pi r^2$. How would you write the function
+that goes the other way: given an area, what was the radius?
+
+1. Fill in `radius(a)` in the cell below.
+2. Remove the `#` from the last line, and run the cell.
 
 ```python exec
 id: your-turn-1
@@ -79,20 +120,30 @@ def radius(a):
 # print(radius(area(3)))   # should come back as 3.0
 ```
 
-That last line is the whole test. Put a number in one direction, take it out the other, and see whether you get what you started with.
+That last line is the whole test. Put a number through the formula one
+way, then back through the other way. Do you get the number you started
+with?
 
-## The Moves
+## The moves
 
-There is exactly one rule, and everything else is an application of it.
+There is one rule, and every step of a rearrangement uses it.
 
-**Whatever you do to one side, do to the other.** The equals sign is a statement that two things are the same size; anything you do to both of them equally keeps that true.
+**Whatever you do to one side, do to the other.** The equals sign says
+that two things are the same size. If you do the same thing to both of
+them, they stay the same size.
 
-In practice that means working backwards through the operations, undoing each one. To get `t` out of `v = u + at`:
+In practice, we work backwards through the operations, and undo them
+one at a time. To make $t$ the subject of $v = u + at$:
 
-1. `u` is being **added**, so subtract it from both sides: `v − u = at`
-2. `a` is **multiplying** `t`, so divide both sides by it: `(v − u)/a = t`
+1. $u$ is being **added**, so subtract $u$ from both sides:
+   $v - u = at$.
+2. $a$ is **multiplying** $t$, so divide both sides by $a$:
+   $\frac{v - u}{a} = t$.
 
-Two steps, each one undoing the outermost thing in your way. Here is that on screen, with a check after each step.
+That takes two steps. Each step undoes the operation that is furthest
+out, the last one done. The cell below does the same steps with numbers,
+and prints both sides after each step. What do you expect to see? Run
+it to check.
 
 ```python exec
 id: the-moves-1
@@ -108,13 +159,26 @@ step_two = step_one / a
 print("Divide by a:   (v - u)/a =", step_two, " and  t =", t)
 ```
 
-Each line prints both sides. They agree at every step, which is what "doing the same thing to both sides" means made visible.
+Each line prints both sides, and the two sides agree at every step: 8
+and 8, then 4.0 and 4. That is what "doing the same thing to both sides"
+looks like.
 
-The order matters and it is the reverse of how you would evaluate. To work out `u + a*t` you would multiply first, then add. To undo it you subtract first, then divide. **Unwrapping goes outside in.**
+The order of the steps matters. It is the reverse of the order we use
+to evaluate. To work out $u + at$, we multiply first, then add. To undo
+it, we subtract first, then divide. **Undoing goes from the outside in.**
 
 ### Your turn
 
-Three formulae, each with something to make the subject.
+Here are three formulae. In each one, can you make the named letter the
+subject?
+
+1. Rearrange each formula on paper first.
+2. Fill in the three functions in the cell.
+3. Remove the `#` from the last three lines, and run the cell.
+
+Two checks you can do in your head: water boils at 212 °F, which is
+100 °C, and a trapezium with parallel sides 4 and 6 and area 30 has
+height 6.
 
 ```python exec
 id: your-turn-2
@@ -138,15 +202,30 @@ def height(area, a, b):
 # print(height(30, 4, 6))
 ```
 
-## When the Unknown Is Underneath
+## When the unknown is underneath
 
-Everything so far had the letter you wanted somewhere on top. The awkward case is when it is in a denominator, and the move that fixes it is the same rule applied to a fraction.
+So far, the letter we wanted was always on top, never in the bottom of
+a fraction. The bottom of a fraction is called the *denominator*. When
+the letter we want is in a denominator, it looks harder. But the same
+rule still works.
 
-Two resistors in parallel:
+Here is the formula for two resistors, $a$ and $b$, connected side by
+side (in parallel). $R$ is their total resistance:
 
-`1/R = 1/a + 1/b`
+$$\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$$
 
-You want `R`, and `R` is underneath. The trick is that you can find `1/R` easily -- so find that first, and then flip it.
+We want $R$, and $R$ is in a denominator. Here is the trick: $\frac{1}{R}$
+is easy to find, because it equals the right-hand side. So we find
+$\frac{1}{R}$ first, and then flip it over:
+
+$$R = \frac{1}{\frac{1}{a} + \frac{1}{b}}$$
+
+For example, with $a = 10$ and $b = 10$:
+$\frac{1}{10} + \frac{1}{10} = \frac{2}{10}$, and flipping it gives
+$R = \frac{10}{2} = 5$.
+
+What do you think `parallel(100, 1)` will give: more than 1, or less
+than 1? Run the cell to check.
 
 ```python exec
 id: when-the-unknown-is-underneath-1
@@ -159,13 +238,23 @@ print(parallel(10, 10))
 print(parallel(100, 1))
 ```
 
-Two things worth noticing in those answers.
+There are two things to notice in those answers.
 
-Two equal resistors in parallel give exactly half of one of them. And a small one beside a large one gives *slightly less than the small one* -- the 1 dominates completely and the 100 barely matters.
+- Two equal resistors in parallel give exactly half the resistance of
+  one of them: 10 and 10 give 5.
+- A small resistor beside a large one gives a little *less than the
+  small one*: 100 and 1 give about 0.99. The 1 controls the answer, and
+  the 100 hardly matters.
 
-Both of those are readable straight off the formula once it is the right way round, and neither is obvious from `1/R = 1/a + 1/b`. **That is what rearranging is for.** It is putting the thing you want to understand where you can see it, not tidying.
+Both facts are easy to read from the formula once $R$ is the subject.
+Neither one is easy to see in $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$.
+**That is what rearranging is for.** It puts the thing you want to
+understand where you can see it. It is more than tidying up.
 
 ### The denominator that is not allowed
+
+What do you think happens when one resistance is 0? Run the cell to
+find out.
 
 ```python exec
 id: when-the-unknown-is-underneath-2
@@ -173,15 +262,26 @@ print(parallel(10, 5))
 print(parallel(10, 0))
 ```
 
-The second one fails, and the algebra warned you before the code did: `1/b` with `b = 0` is not a number. A zero resistance is a wire, and a wire beside a resistor carries all the current -- there is no resistance left to speak of.
+The first line works. The second one fails with an error. The algebra
+warned us before the code did: $\frac{1}{b}$ with $b = 0$ is not a
+number. In real life, a resistance of zero is a plain wire. A wire
+beside a resistor carries all the current, so there is no resistance
+left to measure.
 
-This is worth a habit. **When you divide by something, ask what happens when that something is zero**, because the formula is telling you about a real situation where something breaks.
+This is a good habit to build. **When you divide by something, ask what
+happens when that something is zero.** A division by zero in a formula
+often points to a real situation where something breaks.
 
 ### Your turn
 
-The lens formula is `1/f = 1/u + 1/v`. How would you make `f` the subject? And `u`?
+The lens formula is $\frac{1}{f} = \frac{1}{u} + \frac{1}{v}$.
 
-The second one is harder: you will need to get `1/u` on its own first, and then flip.
+1. How would you make $f$ the subject? Write `focal_length(u, v)`.
+2. How would you make $u$ the subject? Write `object_distance(f, v)`.
+3. Remove the `#` from the last two lines, and run the cell.
+
+The second one is harder. First get $\frac{1}{u}$ on its own, and then
+flip it.
 
 ```python exec
 id: your-turn-3
@@ -197,11 +297,22 @@ def object_distance(f, v):
 # print(object_distance(10, 15))
 ```
 
-## Checking Yourself
+## Checking yourself
 
-Here is the part that makes this a programming tutorial rather than an algebra worksheet.
+Here is where programming helps with the algebra.
 
-A rearrangement is correct if it agrees with the original for every input. You cannot try every input, but you can try a few hundred random ones, which in practice finds any mistake you are likely to make.
+A rearrangement is correct if it agrees with the original formula for
+every input. We cannot try every input. But we can try a few hundred
+random ones, and in practice that finds almost any mistake you are
+likely to make.
+
+The cell below uses `lambda`, which we have not used before. A `lambda`
+is a short way to write a small function on one line, without giving it
+a name. For example, `lambda u, a, t: u + a * t` is a function that
+takes `u`, `a` and `t`, and returns `u + a * t`.
+
+The cell checks two rearrangements of $v = u + at$. The second one has a
+mistake in it. Can you spot it before you run the cell?
 
 ```python exec
 id: checking-yourself-1
@@ -228,15 +339,26 @@ print(check(lambda u, a, t: u + a * t,
             lambda v, u, a: (v + u) / a))
 ```
 
-The second one has a `+` where it should have a `−`, and the check finds it immediately.
+The second rearrangement has a `+` where it should have a `-`, and the
+check finds it on the first try.
 
-The `1e-9` is there because these are floating-point numbers and two calculations that should agree exactly can differ in the last decimal place. You met that in *Storing and Computing*. Asking "are these equal?" of two floats is nearly always the wrong question; asking "are these closer together than I care about?" is the right one.
+Why is the `1e-9` there? `1e-9` means $10^{-9}$, or 0.000000001. In
+[Variables, data types and text](tutorial:storing-and-computing) we saw
+that floats cannot store every number exactly. So two calculations that
+should agree exactly can differ in the last decimal place. With floats,
+"are these exactly equal?" is nearly always the wrong question. The
+right question is: "are these closer together than I care about?"
 
 ### Your turn
 
-How might you write a check for one of the formulae you rearranged earlier? Then deliberately break your rearrangement and make sure the check catches it.
+How might you write a check for one of the formulae you rearranged
+earlier?
 
-A test that has never failed has not been tested.
+1. Write a check for one formula, in the style of the cell above.
+2. Run it, and make sure it agrees.
+3. Now break your rearrangement on purpose. Does the check catch it?
+
+A test that has never failed has not really been tested.
 
 ```python exec
 id: your-turn-4
@@ -245,17 +367,29 @@ id: your-turn-4
 
 ## Reflection
 
-One rule -- do the same thing to both sides -- applied outside in, undoing the operations in the reverse of the order you would carry them out.
+Everything on this page used one rule: do the same thing to both sides.
+We applied it from the outside in, undoing the operations in the reverse
+of the order we would do them.
 
-Three things worth taking away.
+Here are three things worth remembering.
 
-**No arrangement of a formula is more correct than another.** The one it was written in tells you what the person writing it wanted to know, and nothing more.
+**No arrangement of a formula is more correct than another.** The form
+a formula was written in only tells you what its writer wanted to know.
 
-**Rearranging is for seeing.** `R = 1/(1/a + 1/b)` tells you things that `1/R = 1/a + 1/b` hides, and the reason to do the work is to get to the version where the answer is visible.
+**Rearranging is for seeing.** $R = \frac{1}{\frac{1}{a} + \frac{1}{b}}$
+shows things that $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$ hides. We do
+the work to reach the form where the answer is easy to see.
 
-**You can check.** Put numbers through both versions and compare, rather than re-reading your algebra and hoping. That habit will outlast every formula in this tutorial.
+**You can check.** Put numbers through both versions and compare them.
+That is better than reading your algebra again and hoping. You will use
+this habit long after you have forgotten the formulas on this page.
 
-In a few sentences, which of the rearrangements above did you find hardest, and what specifically made it harder than the others?
+Next, in
+[Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations),
+we use the same rule to find the value of an unknown.
+
+In a few sentences: which of the rearrangements above did you find
+hardest? What exactly made it harder than the others?
 
 ## Where to Read More
 

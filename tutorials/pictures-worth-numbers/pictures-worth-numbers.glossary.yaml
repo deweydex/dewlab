@@ -34,6 +34,21 @@ entries:
       standard deviation and a correlation, that look completely different
       when plotted. It is the classic argument for why data has to be drawn,
       not only summarized.
+  - term: correlation
+    kind: concept
+    definition: >
+      Correlation is a number between -1 and 1 that measures how closely
+      two lists of numbers follow a straight line. A value near 0 means
+      there is no straight-line pattern.
   - term: chart junk
     kind: concept
-    definition: Decorative elements on a chart that do not convey information — worth avoiding, since simplicity aids understanding.
+    definition: >
+      Chart junk is anything on a chart that is only decoration and carries
+      no information. Leave it out, because a simple chart is easier to
+      understand.
+  - term: gradient
+    kind: concept
+    definition: >
+      A gradient is a colour scale that goes smoothly from light to dark.
+      Use it for a quantity that changes smoothly, and use clearly
+      different colours for separate categories.

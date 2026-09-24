@@ -13,8 +13,10 @@ entries:
   - term: "wave formula: amplitude, period, phase, lift"
     kind: formula
     definition: >
-      y = amplitude * sin((x - phase) / period * 2*pi) + lift. Four numbers,
-      four separate effects. Amplitude is how far the wave swings from the
-      middle, not top to bottom. Period is how long one repeat takes. Phase
-      slides it sideways, and lift slides it up or down. All four can be
-      read straight off real periodic data by eye.
+      y = A sin(B(x - C)) + D has four numbers, and each has its own
+      separate effect. The amplitude A is how far the wave swings from its
+      middle line, not top to bottom. B sets the period, which is 2*pi/B
+      when x is in radians. The phase C slides the wave sideways, and the
+      lift D slides it up or down. You can read all four off real periodic
+      data by eye.
+    example: "y = amplitude * sin((x - phase) / period * 2*pi) + lift"

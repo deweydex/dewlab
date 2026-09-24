@@ -8,14 +8,33 @@
 # spawned follow-up task about it). What follows is what this tutorial adds
 # beyond the names themselves.
 entries:
-  - term: closure (number domains)
+  - term: closed (under an operation)
     kind: concept
     definition: >
-      Which operations stay inside a number family. N is closed under
-      addition but not subtraction, since 3 - 5 is not a natural number. Z
-      is closed under addition and subtraction, but not always division. Q
-      is closed under all four operations, apart from dividing by zero. R
-      fills the remaining gaps with irrationals like sqrt(2) and pi.
+      A number family is closed under an operation when using that
+      operation on two of its numbers always gives an answer in the same
+      family. N is closed under addition but not subtraction, since 3 - 5
+      is not a natural number. Q is closed under all four operations,
+      apart from dividing by zero.
+  - term: irrational number
+    kind: concept
+    definition: >
+      An irrational number is a real number that cannot be written as a
+      fraction of two integers. Examples are sqrt(2) and pi. The
+      irrationals fill the gaps between the rational numbers.
+  - term: exponent, base
+    kind: concept
+    definition: >
+      In a power a^n, the base is a and the exponent is n. The exponent
+      says how many copies of the base are multiplied together, so 2^3 =
+      2 * 2 * 2 = 8.
+    example: "2 ** 3  # base 2, exponent 3, gives 8"
+  - term: reciprocal
+    kind: concept
+    definition: >
+      The reciprocal of a number is one divided by that number. The
+      reciprocal of 4 is 1/4. A negative exponent means the reciprocal:
+      a^-n = 1/a^n.
   - term: laws of indices (powers)
     kind: formula
     definition: >
@@ -26,14 +45,14 @@ entries:
   - term: logarithm
     kind: formula
     definition: >
-      The inverse of a power — log_a(x) = n means a^n = x. Fundamental to
-      algorithm analysis: binary search's O(log n) is counting how many
-      times you can halve something.
+      A logarithm is a power read backwards: log_a(x) = n means a^n = x.
+      It answers "what power of a gives x?". Binary search's O(log n)
+      counts how many times you can halve n before you reach 1.
     example: "log2(1024) = 10, since 2**10 = 1024"
   - term: "math.log2(), math.log10()"
     python: [math.log2, math.log10]
     kind: function
-    definition: The base-2 and base-10 logarithm of a number.
+    definition: Gives the base-2 and the base-10 logarithm of a number.
     example: "math.log2(1024)  # 10.0"
   - term: geometry formulas
     kind: formula

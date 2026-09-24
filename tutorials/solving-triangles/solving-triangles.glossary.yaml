@@ -1,34 +1,62 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# sine, cosine, tangent are not repeated here — already introduced in
-# the-unit-circle.glossary.yaml, earlier in this series.
+# sine, cosine, tangent and hypotenuse are not repeated here — already
+# introduced in the-unit-circle.glossary.yaml, earlier in this series.
 entries:
+  - term: solving a triangle
+    kind: concept
+    definition: >
+      Solving a triangle means finding its missing sides and angles. You
+      know three of its six measurements, and you find the other three.
+  - term: opposite, adjacent
+    kind: concept
+    definition: >
+      These name the sides of a right-angled triangle from the point of
+      view of one angle. The opposite side is across the triangle from the
+      angle. The adjacent side is the short side next to it.
+  - term: "SOH-CAH-TOA"
+    kind: formula
+    definition: >
+      This memory aid gives the three ratios in a right-angled triangle.
+      Sine is opposite over hypotenuse, cosine is adjacent over hypotenuse,
+      and tangent is opposite over adjacent.
+  - term: "inverse sine, cosine, tangent: math.asin(), math.acos(), math.atan()"
+    kind: function
+    python: [math.asin, math.acos, math.atan]
+    definition: >
+      Gives back the angle that has a given sine, cosine or tangent. The
+      answer is in radians, so wrap it in math.degrees() to get degrees.
+    example: "math.degrees(math.asin(0.5))"
   - term: "triangle area: (1/2) * a * b * sin(C)"
     kind: formula
     definition: >
-      The area of a triangle from two sides and the angle between them,
-      rather than from a base and a height. That is useful because the
-      height often is not known directly. When C is 90 degrees, sin(90) = 1,
-      and this reduces to the familiar (1/2) * base * height.
+      This formula gives the area of a triangle from two sides and the
+      angle between them. It is half base times height, with b*sin(C) as
+      the height. When C is 90 degrees, sin(90) = 1, and it becomes the
+      familiar (1/2) * base * height.
     example: "area = 0.5 * a * b * math.sin(C)"
-  - term: "Cosine Rule: c^2 = a^2 + b^2 - 2ab*cos(C)"
+  - term: "cosine rule: c^2 = a^2 + b^2 - 2ab*cos(C)"
     kind: formula
     definition: >
-      Finds a missing side or angle in any triangle, not just right-angled
-      ones. It is the Pythagorean theorem with a correction term for angles
-      that are not 90 degrees. When C is 90 degrees, cos(90) = 0, so the
-      -2ab*cos(C) term disappears and Pythagoras is left exactly.
-  - term: "Sine Rule: a / sin(A) = b / sin(B) = c / sin(C)"
+      The cosine rule finds a missing side or angle in any triangle, not
+      only right-angled ones. It is Pythagoras with a correction term. When
+      C is 90 degrees, cos(90) = 0, so the correction disappears and
+      Pythagoras is left exactly.
+  - term: "sine rule: a / sin(A) = b / sin(B) = c / sin(C)"
     kind: formula
     definition: >
       In any triangle, each side divided by the sine of its opposite angle
-      gives the same constant. Used to find a missing side or angle when
-      the Cosine Rule is not the natural fit.
+      gives the same number. We use it when we know a side and the angle
+      opposite it.
+  - term: bearing
+    kind: concept
+    definition: >
+      A bearing is an angle measured clockwise from north, usually written
+      with three digits, such as 040.
   - term: ambiguous case
     kind: concept
     definition: >
-      Given two sides and an angle that is not between them, the Sine Rule
-      can produce two different valid triangles. That happens because an
-      angle and its supplement have the same sine. Check and report both,
-      rather than taking the single answer a calculator's inverse sine
-      returns.
+      The ambiguous case is when two sides and an angle that is not between
+      them fit two different triangles. It happens because an angle and 180
+      minus that angle have the same sine. Check both answers, because
+      math.asin() gives only one of them.

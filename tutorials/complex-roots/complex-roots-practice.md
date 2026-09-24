@@ -7,7 +7,11 @@ version: 2026.08.23.1
 
 # Complex numbers: roots that are not real — Practice
 
-Answers are hidden. The checking cell will confirm a root by substituting it back — which is the argument, not just a convenience.
+Each answer is hidden until you open it. Try the question first.
+
+The cell below has the solver and a checking function. The checking
+function puts a root back into the quadratic. If the result is zero, the
+number is a root. That check is more than a convenience: it is the proof.
 
 ## Tools
 
@@ -32,125 +36,147 @@ for coefficients in [(1, 0, 1), (1, -5, 6), (1, 2, 5)]:
     print(f"   substituted back: {evaluate(a, b, c, first)}  {evaluate(a, b, c, second)}")
 ```
 
-## Imaginary Arithmetic
+## Arithmetic with i
 
-**1.** Simplify: `i²`, `i³`, `i⁴`, `i⁵`.
+**1.** Simplify $i^2$, $i^3$, $i^4$ and $i^5$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-−1, −i, 1, i.
+$-1$, $-i$, $1$ and $i$.
 
-The powers cycle every four, because `i⁴ = 1` and multiplying by 1 changes nothing. So `i¹⁰⁰` is 1 and `i¹⁰¹` is i.
+The powers repeat every four steps. This is because $i^4 = 1$, and
+multiplying by 1 changes nothing. So $i^{100}$ is 1 and $i^{101}$ is $i$.
 
 </details>
 
-**2.** Compute `(3 + 2i) + (1 − 5i)` and `(3 + 2i) − (1 − 5i)`.
+**2.** Work out $(3 + 2i) + (1 - 5i)$ and $(3 + 2i) - (1 - 5i)$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`4 − 3i` and `2 + 7i`.
+$4 - 3i$ and $2 + 7i$.
 
-Real parts with real parts, imaginary with imaginary — exactly like collecting like terms.
+We combine real parts with real parts, and imaginary parts with
+imaginary parts. This is the same as collecting like terms.
 
 </details>
 
-**3.** Compute `(3 + 2i)(1 − 4i)`.
+**3.** Work out $(3 + 2i)(1 - 4i)$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`3 − 12i + 2i − 8i²`. The last term is `−8 × (−1) = +8`, so it comes to `11 − 10i`.
+Multiplying out gives $3 - 12i + 2i - 8i^2$. The last term is
+$-8 \times (-1) = +8$, so the answer is $11 - 10i$.
 
-The `i²` collapsing into a real number is the only unusual step, and it is the definition doing its work.
+The $i^2$ turning into a real number is the only unusual step. That is
+the definition $i^2 = -1$ doing its work.
 
 </details>
 
-**4.** Compute `(2 + 3i)(2 − 3i)`.
+**4.** Work out $(2 + 3i)(2 - 3i)$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`4 − 6i + 6i − 9i² = 4 + 9 = 13`.
+$4 - 6i + 6i - 9i^2 = 4 + 9 = 13$.
 
-A number multiplied by its conjugate always gives a real answer — the imaginary parts cancel. That is the trick for dividing complex numbers: multiply top and bottom by the bottom's conjugate.
+A complex number multiplied by its conjugate always gives a real answer,
+because the imaginary parts cancel. This is the trick for dividing
+complex numbers: multiply the top and the bottom by the conjugate of the
+bottom.
 
 </details>
 
-**5.** What is the conjugate of `5 − 7i`? Of `4`? Of `2i`?
+**5.** What is the conjugate of $5 - 7i$? Of $4$? Of $2i$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`5 + 7i`, `4`, and `−2i`.
+$5 + 7i$, $4$ and $-2i$.
 
-A real number is its own conjugate, because there is no imaginary part to flip.
+A real number is its own conjugate, because it has no imaginary part to
+change.
 
 </details>
 
 ## Solving
 
-**6.** Solve `x² + 4 = 0`.
+**6.** Solve $x^2 + 4 = 0$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`x² = −4`, so `x = ±2i`.
+$x^2 = -4$, so $x = \pm 2i$.
 
 </details>
 
-**7.** Solve `x² − 2x + 5 = 0`.
+**7.** Solve $x^2 - 2x + 5 = 0$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Discriminant: 4 − 20 = −16, so `√(−16) = 4i`.
+The discriminant is $4 - 20 = -16$, so its square root is
+$\sqrt{-16} = 4i$.
 
-`x = (2 ± 4i)/2 = 1 ± 2i`.
+$x = \dfrac{2 \pm 4i}{2} = 1 \pm 2i$.
 
 </details>
 
-**8.** Solve `x² + 6x + 13 = 0`.
+**8.** Solve $x^2 + 6x + 13 = 0$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Discriminant: 36 − 52 = −16.
+The discriminant is $36 - 52 = -16$.
 
-`x = (−6 ± 4i)/2 = −3 ± 2i`.
+$x = \dfrac{-6 \pm 4i}{2} = -3 \pm 2i$.
 
 </details>
 
-**9.** Check one of your answers by substituting it back into the original.
+**9.** Check one of your answers by putting it back into the original
+equation.
 
 <details class="dl-answer"><summary>answer</summary>
 
-For `x = 1 + 2i` in `x² − 2x + 5`:
+Here is $x = 1 + 2i$ in $x^2 - 2x + 5$:
 
-`(1 + 2i)² = 1 + 4i + 4i² = 1 + 4i − 4 = −3 + 4i`.
-`−2(1 + 2i) = −2 − 4i`.
-Adding: `−3 + 4i − 2 − 4i + 5 = 0`.
+1. $(1 + 2i)^2 = 1 + 4i + 4i^2 = 1 + 4i - 4 = -3 + 4i$
+2. $-2(1 + 2i) = -2 - 4i$
+3. Adding everything: $-3 + 4i - 2 - 4i + 5 = 0$
 
-**That substitution is the argument.** A root is a number that makes the expression zero; this makes it zero; so it is a root, whatever it looks like.
+**This substitution is the argument.** A root is a number that makes the
+expression zero. This number makes it zero. So it is a root, however it
+looks.
 
 </details>
 
-**10.** `x² − 6x + 25 = 0` has a root at `3 + 4i`. What is the other, and how do you know without computing?
+**10.** The equation $x^2 - 6x + 25 = 0$ has a root at $3 + 4i$. What is
+the other root? How can you know without working it out?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`3 − 4i`, the conjugate.
+$3 - 4i$, the conjugate.
 
-For a quadratic with real coefficients, the only place an `i` can enter is the square root of a negative discriminant, and it enters once with a `+` and once with a `−`. So complex roots always arrive in conjugate pairs.
+In a quadratic with real coefficients, the only place an $i$ can come
+in is the square root of a negative discriminant. It appears once with a
+$+$ and once with a $-$. So complex roots always come in conjugate
+pairs.
 
 </details>
 
-## Understanding the Discriminant
+## Understanding the discriminant
 
-**11.** For each, say how many real roots without solving.
+**11.** How many real roots does each quadratic have? Answer without
+solving.
 
-- (a) `x² − 7x + 12`
-- (b) `x² + x + 1`
-- (c) `4x² − 12x + 9`
+- (a) $x^2 - 7x + 12$
+- (b) $x^2 + x + 1$
+- (c) $4x^2 - 12x + 9$
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) Discriminant 49 − 48 = 1, positive: two real roots.
-(b) 1 − 4 = −3, negative: none — two complex ones.
-(c) 144 − 144 = 0: one repeated real root, at 1.5.
+(a) The discriminant is $49 - 48 = 1$. It is positive, so there are two
+real roots.
+
+(b) The discriminant is $1 - 4 = -3$. It is negative, so there are no
+real roots. There are two complex roots.
+
+(c) The discriminant is $144 - 144 = 0$, so there is one repeated real
+root, at 1.5.
 
 </details>
 
@@ -158,75 +184,109 @@ For a quadratic with real coefficients, the only place an `i` can enter is the s
 
 <details class="dl-answer"><summary>answer</summary>
 
-The parabola misses the horizontal axis entirely — it sits wholly above it, or wholly below.
+The parabola misses the horizontal axis completely. It sits all above
+the axis, or all below it.
 
-The roots still exist; they are just not on the real line. "No real solutions" is a statement about which numbers you are willing to consider.
-
-</details>
-
-**13.** Can a quadratic with real coefficients have exactly one complex root and one real one?
-
-<details class="dl-answer"><summary>answer</summary>
-
-No. They come in conjugate pairs, so either both are real or both are complex.
-
-The picture says the same: a parabola crosses the axis twice, touches once, or misses. There is no shape that crosses once and stops.
+The roots still exist, but they are not on the real number line. "No
+real solutions" tells us which numbers we are willing to use.
 
 </details>
 
-## Why Any of This Exists
-
-**14.** Each extension of the number system was made because something had no answer. Match each to the question that forced it: ℤ, ℚ, ℝ, ℂ.
+**13.** Can a quadratic with real coefficients have exactly one complex
+root and one real root?
 
 <details class="dl-answer"><summary>answer</summary>
 
-ℤ — `3 − 5`, because subtraction escaped the counting numbers.
-ℚ — `3 ÷ 5`, because division escaped the integers.
-ℝ — `√2`, because roots escaped the fractions.
-ℂ — `√−1`, because roots of negatives escaped the reals.
+No. Complex roots come in conjugate pairs, so either both roots are real
+or both are complex.
 
-Each one was resisted when it was new, and each is now taught to children.
+The picture says the same thing. A parabola crosses the axis twice,
+touches it once, or misses it. No parabola crosses once and stops.
 
 </details>
 
-**15.** Adding complex numbers made the solver *shorter*. Why is that a good sign?
+## Why complex numbers exist
+
+**14.** Each new family of numbers was made because a question had no
+answer. Match each family to the question that made it necessary:
+$\mathbb{Z}$, $\mathbb{Q}$, $\mathbb{R}$, $\mathbb{C}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because the `if discriminant < 0` special case disappeared. The three separate situations — two roots, one root, none — turned out to be one situation seen from somewhere you can see all of it.
+- $\mathbb{Z}$: $3 - 5$. Subtracting can give an answer that is not a
+  counting number.
+- $\mathbb{Q}$: $3 \div 5$. Dividing can give an answer that is not an
+  integer.
+- $\mathbb{R}$: $\sqrt{2}$. A square root can give an answer that is not
+  a fraction.
+- $\mathbb{C}$: $\sqrt{-1}$. The square root of a negative number is not
+  a real number.
 
-A generalisation that removes special cases is usually the right generalisation. One that adds them is usually a patch.
+Several of these were resisted when they were new, and all of them are
+now taught in school.
 
 </details>
 
-**16.** Does every polynomial equation have a solution in ℂ?
+**15.** Using complex numbers made the solver *shorter*. Why is that a
+good sign?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes — that is the Fundamental Theorem of Algebra, and it is why ℂ is the last extension you need for this purpose.
+The `if discriminant < 0` special case disappeared. Two roots, one root
+and no real roots turned out to be one situation. We see all of it once
+we work in $\mathbb{C}$.
 
-A polynomial of degree n has exactly n roots in ℂ, counting repeats. No such statement is true of ℝ, ℚ, ℤ or ℕ.
+A new idea that removes special cases is usually the right one. An idea
+that adds special cases is usually a patch.
 
 </details>
 
-## In Use
-
-**17.** Where do complex numbers turn up outside a math class?
+**16.** Does every polynomial equation have a solution in $\mathbb{C}$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Alternating current, where a complex number carries both the size and the timing of a signal at once. Signal processing, where the Fourier transform is built on them. Control systems, where where the roots sit tells you whether a system is stable. Computer graphics, where their bigger cousins the quaternions handle rotation without the failure modes of angles.
+Yes, as long as it has degree 1 or more. This is the Fundamental Theorem
+of Algebra. It is why $\mathbb{C}$ is the last family we need for
+solving polynomial equations.
 
-In every one of those the complex number is doing real work — it is not decorative notation.
+A polynomial of degree $n$ has exactly $n$ roots in $\mathbb{C}$, if we
+count repeated roots. No statement like this is true in $\mathbb{R}$,
+$\mathbb{Q}$, $\mathbb{Z}$ or $\mathbb{N}$.
 
 </details>
 
-**18.** A circuit's behavior is governed by `x² + 2x + 5 = 0`, where a root with a negative real part means it settles down. Does this one?
+## In use
+
+**17.** Where are complex numbers used outside a maths class?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Roots are `−1 ± 2i`, so the real part is −1, which is negative. It settles.
+- **Alternating current.** One complex number holds both the size and
+  the timing of a signal.
+- **Signal processing.** The Fourier transform is built on complex
+  numbers.
+- **Control systems.** Where the roots sit tells engineers whether a
+  system is stable.
+- **Computer graphics.** Quaternions, a larger relative of complex
+  numbers, handle rotation without the problems that angles can cause.
 
-The real part governs whether the oscillation grows or dies away; the imaginary part gives how fast it oscillates. A positive real part would mean it runs away — which in a physical system means something breaks.
+In each of these, the complex numbers do real work. They are not
+decoration.
+
+</details>
+
+**18.** A circuit's behaviour is described by $x^2 + 2x + 5 = 0$. If a
+root has a negative real part, the circuit settles down. Does this one
+settle?
+
+<details class="dl-answer"><summary>answer</summary>
+
+The roots are $-1 \pm 2i$, so the real part is $-1$. That is negative,
+so the circuit settles.
+
+The real part decides whether the oscillation grows or dies away. The
+imaginary part gives how fast it oscillates. A positive real part would
+mean the oscillation keeps growing. In a physical system, that can mean
+something breaks.
 
 </details>

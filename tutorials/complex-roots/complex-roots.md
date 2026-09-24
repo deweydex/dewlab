@@ -3,28 +3,40 @@ title: "Complex numbers: roots that are not real"
 year: "2026-2027"
 version: 2026.09.23.1
 covers:
-  the-cliff-edge:
+  where-the-solver-stops:
     covers: [MIT-1.10]
-  inventing-a-number:
+  inventing-a-new-number:
     covers: [MIT-1.10]
     touches: [MIT-2.1]
   roots-that-are-not-real:
     covers: [MIT-1.10]
-  they-come-in-pairs:
+  complex-roots-come-in-pairs:
     covers: [MIT-1.10]
 ---
 
 # Complex numbers: roots that are not real
 
-In *Solving equations: linear, quadratic and simultaneous* you wrote a solver for quadratics. It computes the discriminant, and when that comes out negative it prints something like "no real solutions" and stops.
+In [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations)
+we wrote a solver for quadratic equations. It works out the discriminant.
+When the discriminant is negative, the solver says "no real solutions"
+and stops.
 
-This tutorial is about what is on the other side of that stop.
+On this page we ask what lies past that stop. The answer was there all
+along. Mathematicians found it with the same idea they had used three
+times before, and that idea matters more than the arithmetic.
 
-It is a good story rather than a gap to be plugged quietly, because the answer was there the whole time and you were told it was not. And the way mathematicians got to it is the same move they had already made four times before -- which is the part worth having, more than the arithmetic.
+On this page we:
 
-## The Cliff Edge
+- look again at the quadratics our solver cannot answer
+- invent a new number, $i$, whose square is $-1$
+- use it to find roots that are not on the number line
+- see why those roots always come in pairs
 
-Start with the simplest quadratic that fails.
+## Where the solver stops
+
+Here is a short version of our solver, with three quadratics to try. The
+first is a quadratic with two roots, and the second has one. The third,
+$x^2 + 1 = 0$, is the simplest quadratic that has no real roots.
 
 ```python exec
 id: the-cliff-edge-1
@@ -44,9 +56,10 @@ print("x^2 - 4x + 4 = 0  ->", solve(1, -4, 4))
 print("x^2 + 1 = 0       ->", solve(1, 0, 1))
 ```
 
-Three quadratics, three different kinds of answer. Two roots, one root, and a refusal.
+We get three kinds of answer: two roots, one root, and a refusal.
 
-Here is what the refusal looks like as a picture.
+What does the refusal look like as a picture? The next cell draws all
+three curves.
 
 ```python exec
 id: the-cliff-edge-2
@@ -64,25 +77,41 @@ ax.legend()
 ax.set_title("Crossing the axis twice, once, and never")
 ```
 
-The third curve never comes down to the axis. That is what "no real solutions" looks like, and it is a completely accurate description of the situation -- as long as the only numbers you are willing to consider are the ones on that horizontal line.
+The first curve crosses the horizontal axis twice, and the second
+touches it once. The third curve never comes down to the axis at all.
 
-**"No real solutions" is a true statement about the real numbers, and it is a smaller claim than it sounds.** It says there is no answer *on this line*, not that there is no answer at all.
+That is what "no real solutions" looks like. It is a true description,
+as long as we only accept numbers that sit on that horizontal line.
 
-## Inventing a Number
+So "no real solutions" says less than it seems to. It says there is no
+answer *on this line*. It does not say there is no answer anywhere.
 
-In *Number types, powers and logarithms* you took a tour of the number systems: the naturals ℕ, the integers ℤ, the rationals ℚ, and the reals ℝ. It is worth noticing what drove each step of that tour, because it is the same thing every time.
+## Inventing a new number
 
-**ℕ** -- the counting numbers. You can add them. But `3 − 5` has no answer.
+In [Number types, powers and logarithms](tutorial:numbers-and-their-families)
+we met the families of numbers: the naturals $\mathbb{N}$, the integers
+$\mathbb{Z}$, the rationals $\mathbb{Q}$ and the reals $\mathbb{R}$.
+What made each new family appear? Look at the pattern in the list below.
 
-**ℤ** -- so negatives were invented, and now subtraction always works. But `3 ÷ 5` has no answer.
+- $\mathbb{N}$ is the counting numbers. We can always add them. But
+  $3 - 5$ has no answer in $\mathbb{N}$.
+- $\mathbb{Z}$ adds the negative numbers, so now subtraction always
+  works. But $3 \div 5$ has no answer in $\mathbb{Z}$.
+- $\mathbb{Q}$ adds the fractions, so now division always works (except
+  division by zero). But $\sqrt{2}$ has no answer in $\mathbb{Q}$.
+- $\mathbb{R}$ fills in the irrational numbers, so now most things work.
+  But $\sqrt{-1}$ has no answer in $\mathbb{R}$.
 
-**ℚ** -- so fractions were invented, and now division always works. But `√2` has no answer.
+Each step happened because somebody would not accept "there is no
+answer". They invented the number that makes an answer. People resisted
+several of these inventions when they were new, and negative numbers
+and irrational numbers met strong resistance. Today all of them are
+taught in school.
 
-**ℝ** -- so the irrationals were filled in, and now most things work. But `√−1` has no answer.
+So the next step is not a special trick. It is the same move, one more
+time.
 
-Each step is somebody refusing to accept "there is no answer" and inventing the number that makes it one. Every one of those inventions was resisted, and every one of them is now taught to children.
-
-So the next step is the same move, one more time, not a special trick.
+What do you think $i$ squared will be? Run the cell to check.
 
 ```python exec
 id: inventing-a-number-1
@@ -95,9 +124,27 @@ print("i squared =", i ** 2)
 print("So the square root of -1 is:", i)
 ```
 
-`i² = −1`. That is the whole definition. There is no more to it than that, and everything else follows.
+Python writes $-1$ as `(-1+0j)`, which is $-1$ plus zero lots of $i$.
 
-A number with a real part and an imaginary part -- `3 + 2i` -- is a **complex number**, and the set of them is called **ℂ**. That is the fifth family, and it is the last one you will need: every polynomial equation has an answer in ℂ, which is not true of any of the four before it.
+The *imaginary unit* $i$ is a number whose square is $-1$:
+
+$$i^2 = -1$$
+
+That is the whole definition, and everything else on this page follows
+from it. (The number $-i$ is also a square root of $-1$, because
+$(-i)^2 = i^2 = -1$ as well.)
+
+A *complex number* is a number with a real part and an imaginary part,
+such as $3 + 2i$. Here the *real part* is 3 and the *imaginary part* is
+2. The set of all complex numbers is called $\mathbb{C}$.
+
+$\mathbb{C}$ is the fifth family of numbers, and it is the last one we
+need for solving equations. Every polynomial equation of degree 1 or
+more has an answer in $\mathbb{C}$. That is not true of any of the four
+families before it.
+
+Python works with complex numbers directly. What do you expect for
+`z + w`? Run the cell and compare.
 
 ```python exec
 id: inventing-a-number-2
@@ -111,11 +158,27 @@ print("real part of z:", z.real)
 print("imaginary part of z:", z.imag)
 ```
 
-Notice `z * w`. Multiply it out by hand and you get `3 − 12i + 2i − 8i²`, and the last term is `−8 × (−1) = +8`. The `i²` collapsing back into a real number is the only unusual step, and it is the definition doing its work.
+To add, Python adds the real parts together and the imaginary parts
+together: $(3 + 1) + (2 - 4)i = 4 - 2i$.
 
-## Roots That Are Not Real
+Now look at `z * w`. We can multiply it out by hand, the same way we
+multiply out two brackets:
 
-Now the solver again, with one line changed.
+$$(3 + 2i)(1 - 4i) = 3 - 12i + 2i - 8i^2$$
+
+The last term is where the definition does its work. Since $i^2 = -1$,
+the term $-8i^2$ is $-8 \times (-1) = +8$. So the total is
+$3 + 8 - 10i = 11 - 10i$, which matches Python's `(11-10j)`.
+
+The $i^2$ turning back into a real number is the only unusual step.
+
+## Roots that are not real
+
+Here is the solver again, with one change. It uses Python's `cmath`
+module in place of `math`. The `cmath` module works with complex
+numbers, and `cmath.sqrt` will take the square root of a negative number.
+
+Compare this code with the first solver. What is missing?
 
 ```python exec
 id: roots-that-are-not-real-1
@@ -133,13 +196,22 @@ print("x^2 - 4x + 4 = 0  ->", solve(1, -4, 4))
 print("x^2 + 1 = 0       ->", solve(1, 0, 1))
 ```
 
-Look at what happened to the code, not just to the output. **The `if` is gone.** There is no special case any more, because there is no failure to handle. `cmath.sqrt` will take the square root of a negative number, so the same three lines answer all three questions.
+**The `if` is gone.** There is no special case any more, because
+nothing can fail. The same three lines answer all three questions. The
+roots of $x^2 + 1 = 0$ are $i$ and $-i$.
 
-That is a real thing about mathematics and not a fact about Python. Extending the number system removed a special case rather than adding one. The three separate situations -- two roots, one root, no roots -- turn out to be one situation looked at from a place where you can see all of it.
+This is a fact about mathematics, not only about Python. Making the
+number system bigger removed a special case. It did not add one. Two
+roots, one root and no real roots turn out to be one situation. We can
+see all of it once we stand in $\mathbb{C}$.
 
 ### Does it work?
 
-A definition is only worth having if the answers it produces survive being checked. So check.
+An answer is only worth having if it survives a check. Remember that a
+root is a number that makes the expression equal zero. So we can put each root
+back into its quadratic and see what comes out.
+
+What do you expect to see in the last line for each quadratic?
 
 ```python exec
 id: roots-that-are-not-real-2
@@ -156,17 +228,26 @@ for coefficients in [(1, 0, 1), (1, 2, 5), (2, -3, 4)]:
           "and", evaluate(a, b, c, second))
 ```
 
-Every one comes back to zero, or to something like `(4.44e-16+0j)`, which is zero with floating-point dust on it.
+Every root gives zero. For the last quadratic we see
+`(4.440892098500626e-16+0j)`. The `e-16` means "times $10^{-16}$", so
+this number is about 0.000000000000000444. It is zero plus a tiny
+rounding error from the computer's arithmetic.
 
-**That is the argument.** A root is a number that makes the expression zero, these numbers make the expression zero, so these are roots. Nothing about the definition has to be taken on trust.
+This check is the whole argument. A root is a number that makes the
+expression zero. These numbers make the expression zero. So they are
+roots. We do not have to take the definition on trust.
 
 ### Your turn
 
-How would you solve these three by hand, in `a + bi` form, using the quadratic formula? Check each one with the solver.
+Here are three quadratics:
 
-- `x² + 4 = 0`
-- `x² − 2x + 5 = 0`
-- `x² + 6x + 13 = 0`
+- $x^2 + 4 = 0$
+- $x^2 - 2x + 5 = 0$
+- $x^2 + 6x + 13 = 0$
+
+1. Solve each one by hand with the quadratic formula. Write each answer
+   in the form $a + bi$.
+2. Check each answer with the solver in the cell below.
 
 ```python exec
 id: your-turn-1
@@ -174,9 +255,10 @@ id: your-turn-1
 # print(solve(1, 0, 4))
 ```
 
-## They Come in Pairs
+## Complex roots come in pairs
 
-Look back at those printed roots and something should stand out before it is named.
+Look at the roots below. Before we give it a name, what do you notice
+about each pair?
 
 ```python exec
 id: they-come-in-pairs-1
@@ -186,15 +268,35 @@ for coefficients in [(1, 0, 1), (1, 2, 5), (1, 6, 13), (1, -2, 10)]:
     print(f"{first}   and   {second}")
 ```
 
-Every pair has the same real part and opposite imaginary parts. `2 + 3i` comes with `2 − 3i`, always. Those two are called **conjugates**, and for a quadratic with ordinary real coefficients the complex roots always arrive as a conjugate pair.
+In every pair, the two roots have the same real part and opposite
+imaginary parts. For example, $1 + 3i$ comes with $1 - 3i$.
 
-The reason is visible in the formula. The only place an `i` can enter is the `√` of a negative discriminant, and it enters once with a `+` and once with a `−` in front of it. Nothing else in the formula can produce one.
+The *conjugate* of a complex number is the number with the same real
+part and the opposite imaginary part. So the conjugate of $2 + 3i$ is
+$2 - 3i$. When a quadratic has ordinary real coefficients, its complex
+roots always come as a conjugate pair.
 
-And the picture says the same thing. A parabola crosses the axis twice, touches it once, or misses it -- there is no shape it can be that crosses once and stops. So the roots come two at a time, and if one of them has left the real line the other must have gone with it.
+Why? The reason is in the quadratic formula:
+
+$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+
+The only place an $i$ can come in is the square root of a negative
+discriminant. That square root appears once with a $+$ in front of it,
+and once with a $-$. Nothing else in the formula can make an $i$.
+
+The picture tells the same story. A parabola crosses the axis twice,
+touches it once, or misses it. It cannot cross once and stop. So the
+roots come two at a time. If one of them has left the real line, the
+other one has left too.
 
 ### Your turn
 
-Without computing anything: `x² − 6x + 25 = 0` has a root at `3 + 4i`. What is the other one, and how do you know?
+The equation $x^2 - 6x + 25 = 0$ has a root at $3 + 4i$. Without
+working anything out, can you say what the other root is? How do you
+know?
+
+Write your answer as a comment in the cell, then check it with the
+solver.
 
 ```python exec
 id: your-turn-2
@@ -204,17 +306,29 @@ id: your-turn-2
 
 ## Reflection
 
-The stopping point in *Solving equations: linear, quadratic and simultaneous* was accurate and it was not the end. "No real solutions" is a statement about which numbers you are willing to use, and there is a larger set where the answer has been waiting.
+In [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations)
+our solver stopped at "no real solutions". That was accurate, but it
+was not the end. "No real solutions" tells us which numbers we were
+willing to use. In a larger set, the answer was waiting.
 
-Three things to take.
+Here are three ideas to take with you.
 
-**Every extension of the number system was invented for the same reason** -- somebody refused to accept that a perfectly reasonable question had no answer. ℂ is the fifth and last of those, and it is where every polynomial equation finally has a solution.
+**Each new family of numbers was invented for the same reason.**
+Somebody would not accept that a sensible question had no answer.
+$\mathbb{C}$ is the fourth of these extensions and the last one. In
+$\mathbb{C}$, every polynomial equation of degree 1 or more has a
+solution.
 
-**Extending the numbers removed a special case.** The solver got shorter, not longer. That is often the sign that a generalisation is the right one.
+**Making the numbers bigger removed a special case.** The solver got
+shorter, not longer. That is often a sign that a new idea is the right
+one.
 
-**You can check an answer you do not fully believe.** Put the root back into the equation. If it gives zero, it is a root, whatever it looks like.
+**You can check an answer you do not fully believe.** Put the root back
+into the equation. If it gives zero, it is a root, however strange it
+looks.
 
-In a few sentences, before this tutorial, what did you think "no solution" meant? Has that changed?
+Before this page, what did you think "no solution" meant? Has that
+changed? Write a few sentences.
 
 ## Where to Read More
 

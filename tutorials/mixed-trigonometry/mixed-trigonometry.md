@@ -11,11 +11,25 @@ version: 2026.08.23.1
 
 # Mixed problems: trigonometry and geometry
 
-Coordinates, angles, triangles and waves are four views of the same circle. These problems move between them, usually without saying so.
+Coordinates, angles, triangles and waves are four views of the same
+circle. These problems move between them, often without saying so.
 
-Answers are hidden. Draw the situation before you calculate — in this topic more than any other, the picture is where the mistakes become visible.
+Each answer is hidden in a fold under its question. Some problems also
+have a hint fold, to open first if you get stuck. Draw the situation
+before you calculate. In this topic more than any other, the picture is
+where mistakes become visible.
 
 ## Tools
+
+This cell defines two helpers:
+
+- `distance(p, q)` gives the straight-line distance between two points.
+- `angle_between(p, q)` gives the direction of the line from `p` to `q`,
+  in degrees, measured anticlockwise from east (the positive $x$
+  direction).
+
+The last line tries them. The distance from $(0, 0)$ to $(3, 4)$ is 5,
+and the line from $(0, 0)$ to $(1, 1)$ points at 45°.
 
 ```python exec
 id: tools-1
@@ -36,17 +50,22 @@ def angle_between(p, q):
 print(distance((0, 0), (3, 4)), angle_between((0, 0), (1, 1)))
 ```
 
-## Coordinates and Angles
+## Coordinates and angles
 
-**1.** A point sits at $(3, 4)$. How far is it from the origin, and at what angle?
+**1.** A point is at $(3, 4)$. How far is it from the origin, and at what
+angle?
 
 <details class="dl-answer"><summary>answer</summary>
 
 5 units, at about 53.13°.
 
-The distance is Pythagoras. The angle is $\arctan(4/3)$.
+The distance comes from Pythagoras: $\sqrt{3^2 + 4^2} = \sqrt{25} = 5$.
+The angle is $\arctan\left(\dfrac{4}{3}\right) \approx 53.13°$.
 
-These two numbers are the polar coordinates of the point, and converting between $(x, y)$ and $(r, \theta)$ is the same arithmetic as converting between a triangle's sides and its angles. They are the same problem.
+These two numbers, the distance $r$ and the angle $\theta$, are called
+the *polar coordinates* of the point. Converting between $(x, y)$ and
+$(r, \theta)$ uses the same arithmetic as converting between a right
+triangle's sides and its angles. They are the same problem.
 
 </details>
 
@@ -56,83 +75,125 @@ These two numbers are the polar coordinates of the point, and converting between
 
 $(8.66, 5)$.
 
-$x = r\cos\theta$, $y = r\sin\theta$. With $\cos 30° = \frac{\sqrt3}{2}$ and $\sin 30° = \frac12$, that is $5\sqrt3$ and 5 exactly.
+Use $x = r\cos\theta$ and $y = r\sin\theta$. Since
+$\cos 30° = \dfrac{\sqrt{3}}{2}$ and $\sin 30° = \dfrac{1}{2}$, that
+gives exactly $x = 5\sqrt{3} \approx 8.66$ and $y = 5$.
 
-This is the unit circle scaled by 10 — which is what the unit circle is for.
+This is the unit circle, made 10 times bigger. That is what the unit
+circle is for.
 
 </details>
 
-**3.** Why is `atan2(y, x)` preferred to `atan(y/x)`?
+**3.** Why do we use `atan2(y, x)` instead of `atan(y/x)`?
 
 <details class="dl-answer"><summary>answer</summary>
 
 Because dividing loses the quadrant.
 
-$\frac{4}{3}$ and $\frac{-4}{-3}$ are the same number, so `atan` cannot tell $(3, 4)$ from $(-3, -4)$ — it returns 53.13° for both, and one of them is at 233.13°.
+$\dfrac{4}{3}$ and $\dfrac{-4}{-3}$ are the same number. So `atan`
+cannot tell $(3, 4)$ from $(-3, -4)$. It returns 53.13° for both, but
+$(-3, -4)$ is really at 233.13°.
 
-`atan2` takes the two values separately and keeps the signs, so it returns the correct angle anywhere in the circle. It also survives $x = 0$, which the division does not.
+`atan2` takes the two values separately, and keeps their signs. So it
+returns the correct angle anywhere on the circle. It also works when
+$x = 0$, where the division fails.
 
 </details>
 
-**4.** A robot at $(2, 3)$ must face a target at $(7, 15)$. What heading, and how far?
+**4.** A robot at $(2, 3)$ must turn to face a target at $(7, 15)$. What
+direction should it face, and how far away is the target?
 
 <details class="dl-answer"><summary>answer</summary>
 
 About 67.38°, and 13 units.
 
-The gaps are 5 across and 12 up — a 5-12-13 triangle, which is worth recognizing alongside 3-4-5.
+The gaps are 5 across and 12 up. That makes a 5-12-13 triangle, which is
+worth knowing, like 3-4-5. The angle is
+$\arctan\left(\dfrac{12}{5}\right) \approx 67.38°$.
 
 </details>
 
 ## Triangles
 
-**5.** A triangle has sides 7 and 9 with an angle of 40° between them. Find the third side and the remaining angles.
+**5.** A triangle has sides 7 and 9, with an angle of 40° between them.
+Find the third side, and the other two angles.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Draw the triangle. You have two sides and the angle *between* them, which rules out the sine rule as a starting point.
-2. The cosine rule takes exactly that arrangement: two sides and the included angle give you the third side.
+1. Draw the triangle. You have two sides and the angle *between* them.
+   The sine rule cannot start from that.
+2. The cosine rule fits exactly this arrangement: two sides and the
+   angle between them give you the third side.
 3. Once you have all three sides, the sine rule will give you an angle.
-4. Use it on the *shorter* of the two remaining sides. That matters — see the reflection.
+4. Use it on the *shorter* of the two sides you started with. That
+   matters; see "Think about" below.
 
-**Think about:** the sine rule cannot tell an acute angle from its obtuse partner, because both have the same sine. The angle opposite the shorter side is always acute, so choosing it removes the ambiguity rather than gambling on it.
+**Think about:** the sine rule cannot tell an acute angle from the
+obtuse angle that pairs with it, because both have the same sine. The
+angle opposite the shorter side is always acute. So choosing it removes
+the doubt, and you do not have to guess.
 
-**Try this next:** find the third angle by subtracting from 180 instead, and check it agrees. Which method would you trust if the numbers were measured rather than given?
+**Try this next:** find the third angle by subtracting from 180°
+instead, and check that it agrees. Which method would you trust if the
+numbers were measured, not given?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-Third side about 5.80; the other angles about 51.0° and 89.0°.
+The third side is about 5.79. The other angles are about 51.0° and
+89.0°.
 
-The cosine rule gives the side: $c^2 = 49 + 81 - 2(7)(9)\cos 40°$.
+The cosine rule gives the side:
+$c^2 = 49 + 81 - 2(7)(9)\cos 40° \approx 33.48$, so $c \approx 5.79$.
 
-Then the sine rule gives an angle — but use it on the *shorter* remaining side. The sine rule cannot tell an acute angle from its obtuse partner, and taking the smaller side guarantees the acute one is right.
+Then the sine rule gives an angle. Use it on the *shorter* of the two
+remaining sides, the 7. The sine rule cannot tell an acute angle from
+the obtuse angle with the same sine. The angle opposite the shorter side
+must be acute, so the acute answer is the right one.
 
 </details>
 
-**6.** A triangle has sides 5, 12 and 13. Is it right-angled? What is its area?
+**6.** A triangle has sides 5, 12 and 13. Is it right-angled? What is its
+area?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes: $25 + 144 = 169$. The area is 30.
+Yes, because $5^2 + 12^2 = 25 + 144 = 169 = 13^2$. The area is 30.
 
-For a right triangle the area is half the product of the two short sides. Heron's formula gives the same 30 without knowing it is right-angled, which is the point of Heron's formula.
+For a right triangle, the area is half the product of the two short
+sides: $\dfrac{5 \times 12}{2} = 30$.
+
+*Heron's formula* gives the area of any triangle from its three sides
+alone. First find $s$, half the perimeter. Then the area is
+$\sqrt{s(s - a)(s - b)(s - c)}$. Here $s = \dfrac{5 + 12 + 13}{2} = 15$,
+and the area is $\sqrt{15 \times 10 \times 3 \times 2} = \sqrt{900} = 30$.
+It gives the same 30 without knowing that the triangle is right-angled.
+That is what Heron's formula is for.
 
 </details>
 
-**7.** Two sides of a triangle are 8 and 5, and the angle opposite the 5 is 30°. Find the third side.
+**7.** Two sides of a triangle are 8 and 5. The angle opposite the 5 is
+30°. Find the third side.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. You have two sides and an angle *not* between them. Sketch it: put the 8 down, mark the 30° at one end, and swing the 5 from the far end.
-2. The sine rule gives you the angle opposite the 8. Work out its sine first, before taking an inverse.
-3. Now stop. Your calculator gives one angle. Is there another angle between 0° and 180° with the same sine?
-4. Each of those two angles gives a different third angle, and so a different third side.
+1. You have two sides and an angle that is *not* between them. Sketch
+   it: draw the 8, mark the 30° at one end, and swing the 5 from the
+   other end.
+2. The sine rule gives you the angle opposite the 8. Work out its sine
+   first, before you take an inverse.
+3. Now stop. Your calculator gives one angle. Is there another angle
+   between 0° and 180° with the same sine?
+4. Each of those two angles gives a different third angle, and so a
+   different third side.
 
-**Think about:** the picture shows this directly — swinging the 5 crosses the base in two places. This is why the arrangement is called the ambiguous case.
+**Think about:** the picture shows this directly. When you swing the 5,
+it crosses the base line in two places. This is why this arrangement is
+called the ambiguous case.
 
-**Try this next:** change the 5 to a 3 and try again. What happens, and what does the picture look like now?
+**Try this next:** change the 5 to a 3, and try again. What happens?
+What does the picture look like now?
 
 </details>
 
@@ -140,90 +201,132 @@ For a right triangle the area is half the product of the two short sides. Heron'
 
 There are two answers: about 9.93 and about 3.93.
 
-$\sin \theta = \frac{8 \sin 30°}{5} = 0.8$, so the angle opposite the 8 is either 53.13° or 126.87° — both have a sine of 0.8.
+$\sin \theta = \dfrac{8 \sin 30°}{5} = \dfrac{8 \times 0.5}{5} = 0.8$. So
+the angle opposite the 8 is either 53.13° or 126.87°. Both have a sine
+of 0.8.
 
-This is the ambiguous case, and it is ambiguous: two different triangles satisfy everything you were told. Drawing it shows why — swinging the 5 from the end of the 8 crosses the base twice.
+This is the ambiguous case, and it really is ambiguous: two different
+triangles fit everything you were told. A drawing shows why. Swinging
+the 5 from the end of the 8 crosses the base line twice.
 
-The unit circle explains it in one line: sine is symmetric about 90°, so $\sin\theta$ never says which side of it you are on.
+The unit circle explains it in one line. Sine is symmetric about 90°,
+so $\sin\theta$ never tells you which side of 90° you are on.
 
 </details>
 
-**8.** Find the area of a triangle with corners $(0,0)$, $(6,0)$ and $(2,5)$, three ways.
+**8.** Find the area of the triangle with corners $(0, 0)$, $(6, 0)$ and
+$(2, 5)$, in three different ways.
 
 <details class="dl-answer"><summary>answer</summary>
 
 15, every time.
 
-Base times height over two: the base is 6 along the axis, the height is 5.
+**Base times height, over two.** The base is 6, along the $x$-axis. The
+height is 5. So the area is $\dfrac{6 \times 5}{2} = 15$.
 
-Heron: sides are 6, $\sqrt{29}$ and $\sqrt{41}$; $s \approx 8.89$, and the formula gives 15.
+**Heron's formula** (see question 6). The sides are 6, $\sqrt{29}$ and
+$\sqrt{41}$, so $s \approx 8.89$. The formula gives 15.
 
-The coordinate formula: $\frac12|x_1(y_2-y_3) + x_2(y_3-y_1) + x_3(y_1-y_2)| = \frac12|0 + 6(5) + 2(0)| = 15$.
+**The coordinate formula.**
+$\frac{1}{2}|x_1(y_2 - y_3) + x_2(y_3 - y_1) + x_3(y_1 - y_2)| = \frac{1}{2}|0 + 6(5) + 2(0)| = 15$.
 
-Three routes agreeing is the sort of check worth building the habit of.
+When three routes agree, you can trust the answer. Checking like this is
+a good habit to build.
 
 </details>
 
 ## Waves
 
-**9.** For $y = 3\sin(2x)$, give the amplitude, period and where it first crosses zero going upwards after $x = 0$.
+**9.** For $y = 3\sin(2x)$, what is the amplitude? What is the period?
+Where does it first cross zero going upwards, from $x = 0$ on?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Amplitude 3, period $\pi$, and it crosses upwards at $x = 0$ itself and again at $\pi$.
+The amplitude is 3 and the period is $\pi$. It crosses zero going
+upwards at $x = 0$ itself, and again at $x = \pi$.
 
-The 3 stretches vertically; the 2 squashes horizontally, halving the period from $2\pi$ to $\pi$. The number inside does the opposite of what it looks like it should, which catches everybody once.
+The 3 stretches the wave upwards and downwards. The 2 squashes it from
+side to side, and halves the period from $2\pi$ to $\pi$. The number
+inside does the opposite of what it looks like it should do. That
+catches everybody at least once.
 
 </details>
 
-**10.** Sketch $y = \sin x$ and $y = \cos x$ together. How far apart are they?
+**10.** Sketch $y = \sin x$ and $y = \cos x$ together. How far apart are
+they?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A quarter turn: $\cos x = \sin(x + \frac{\pi}{2})$.
+A quarter turn: $\cos x = \sin\left(x + \dfrac{\pi}{2}\right)$.
 
-They are the same wave started at a different point — which is what the unit circle says, since cosine is the across value and sine the up value of the same rotating point.
+They are the same wave, started at a different point. That is what the
+unit circle says: cosine is the across value, and sine is the up value,
+of the same turning point.
 
 </details>
 
-**11.** The tide at a harbour is roughly $h = 3 + 2\sin\left(\frac{2\pi t}{12.4}\right)$ metres, with $t$ in hours. Find the high and low water depths and the time between successive high waters.
+**11.** The depth of water at a harbour is roughly
+$h = 3 + 2\sin\left(\dfrac{2\pi t}{12.4}\right)$ metres, with $t$ in
+hours.
+
+1. What is the depth at high water?
+2. What is the depth at low water?
+3. How long is it from one high water to the next?
 
 <details class="dl-answer"><summary>answer</summary>
 
-High 5 m, low 1 m, and 12.4 hours between highs.
+High water is 5 m, low water is 1 m, and there are 12.4 hours between
+high waters.
 
-The 3 is the mean level, the 2 is the amplitude, and the period is $\frac{2\pi}{2\pi/12.4}$.
+The 3 is the middle level, and the 2 is the amplitude. So the depth
+goes from $3 - 2 = 1$ up to $3 + 2 = 5$. The period is
+$\dfrac{2\pi}{2\pi/12.4} = 12.4$ hours.
 
-12.4 hours rather than 12 is why high tide drifts about 50 minutes later each day: the tide follows the moon, and the moon is not on a 24-hour cycle.
+The period is 12.4 hours, not 12. That is why high tide comes about 50
+minutes later each day. The tide follows the moon, and the moon is not
+on a 24-hour cycle.
 
 </details>
 
-**12.** A boat needs 4 m of water. Using the tide above, for how long each cycle can it enter?
+**12.** A boat needs at least 4 m of water. Using the tide above, for how
+long in each cycle can it enter the harbour?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Write down the inequality the question is asking for, using the tide formula.
+1. Use the tide formula to write the inequality that the question asks
+   about.
 2. Rearrange it until the sine is on its own on one side.
-3. You now need the angles whose sine is at least that value. On the unit circle, which arc is that?
-4. That arc is a fraction of a full turn. The same fraction of the period is your answer.
+3. Now you need the angles whose sine is at least that value. On the
+   unit circle, which arc is that?
+4. That arc is a fraction of a full turn. The same fraction of the
+   period is your answer.
 
-**Think about:** you never needed to work out an actual time. The answer came out as a proportion of the cycle, which means it is the same for any harbour with this amplitude.
+**Think about:** you never needed to work out an actual clock time. The
+answer came out as a fraction of the cycle. So it is the same for any
+harbour with this middle level and amplitude.
 
-**Try this next:** a boat needing 4.5 m. Then one needing 5.5 m. At what depth does the answer become zero, and why does that make sense?
+**Try this next:** try a boat that needs 4.5 m, and then one that needs
+5.5 m. At what depth does the answer become zero? Why does that make
+sense?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-About 4.13 hours per cycle.
+About 4.13 hours in each cycle.
 
-Solve $3 + 2\sin(\frac{2\pi t}{12.4}) \ge 4$, so $\sin(\cdot) \ge 0.5$, so the angle is between 30° and 150° — a third of a full turn.
+Solve $3 + 2\sin\left(\dfrac{2\pi t}{12.4}\right) \ge 4$. Subtract 3 and
+divide by 2: the sine must be at least 0.5. That is true when the angle
+is between 30° and 150°. That is 120°, a third of a full turn.
 
-A third of 12.4 is 4.13. The answer came from the unit circle rather than from any calculation about boats, which is the useful part.
+A third of 12.4 hours is about 4.13 hours. The answer came from the unit
+circle, and not from any calculation about boats. That is the useful
+part.
 
 </details>
 
-**13.** Show that $\sin^2\theta + \cos^2\theta = 1$ for several angles, and say why it must be true.
+**13.** Check that $\sin^2\theta + \cos^2\theta = 1$ for several angles.
+Why must it be true?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -233,89 +336,152 @@ for d in [0, 17, 45, 90, 137, 250, 359]:
     print(d, round(math.sin(a) ** 2 + math.cos(a) ** 2, 12))
 ```
 
-All 1.0.
+Every line prints 1.0.
 
-It is Pythagoras on the unit circle. The point is at distance 1 from the center, and its two coordinates are the two short sides of a right triangle with hypotenuse 1.
+It is Pythagoras on the unit circle. The point is at distance 1 from
+the center. Its two coordinates are the two short sides of a right
+triangle whose longest side is 1.
 
-Every trigonometric identity is a fact about that circle written in a different notation, and this is the one the rest are built from.
+Every trigonometric identity is a fact about that circle, written in a
+different notation. This is the one the rest are built from.
 
 </details>
 
-## Longer Ones
+## Longer ones
 
-**14.** Three phone masts are at $(0,0)$, $(10,0)$ and $(4,8)$, in kilometres. A phone is 6 km from the first and 7 km from the second. Where might it be, and does the third mast settle it?
+**14.** Three phone masts are at $(0, 0)$, $(10, 0)$ and $(4, 8)$, in
+kilometres. A phone is 6 km from the first mast and 7 km from the
+second. Where might it be? Does the third mast settle it?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Two distances from two known points. Write each as an equation — the set of points at a fixed distance from a point is a circle.
-2. Subtracting one circle equation from the other kills the $x^2$ and $y^2$ terms. What is left is a straight line.
-3. That line is where the two circles cross. Substitute back into either circle to find the two points on it.
-4. Now use the third mast: compute the distance from each candidate to $(4, 8)$.
+1. You have two distances from two known points. Write each one as an
+   equation. The set of points at a fixed distance from a point is a
+   circle.
+2. Subtract one circle's equation from the other. The $x^2$ and $y^2$
+   terms cancel, and what is left is a straight line.
+3. That line goes through the points where the two circles cross.
+   Substitute back into either circle to find those two points.
+4. Now use the third mast. Compute the distance from each possible
+   point to $(4, 8)$.
 
-**Think about:** two measurements always leave two candidates, and no amount of accuracy fixes that. The third measurement is about which side you are on, not about precision.
+**Think about:** two measurements always leave two possible points, and
+more accuracy does not fix that. The third measurement tells you which
+side you are on. It is not about precision.
 
-**Try this next:** what if the third mast were at $(4, 0)$ instead — on the line between the other two? Would it still settle the question?
+**Try this next:** what if the third mast were at $(4, 0)$ instead, on
+the line between the other two? Would it still settle the question?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-Two possible positions: about $(4.35, 4.13)$ and $(4.35, -4.13)$.
+There are two possible positions: about $(4.35, 4.13)$ and
+$(4.35, -4.13)$.
 
-Two circles cross at two points, so two distances are never enough. The third mast picks one: the phone is 3.88 km from $(4, 8)$ if it is above the axis and 12.14 km if below, and those are very different measurements.
+The circles are $x^2 + y^2 = 36$ and $(x - 10)^2 + y^2 = 49$.
+Subtracting gives $20x - 100 = -13$, so $x = 4.35$. Then
+$y^2 = 36 - 4.35^2 \approx 17.08$, so $y \approx \pm 4.13$.
 
-This is trilateration, and it is how satellite positioning works. Three satellites give a position on the surface; a fourth is needed because the receiver's clock is also unknown.
+Two circles cross at two points, so two distances are never enough. The
+third mast picks one. The phone is 3.88 km from $(4, 8)$ if it is above
+the axis, and 12.14 km if it is below. Those are very different
+measurements.
+
+This method is called *trilateration*, and satellite positioning (GPS)
+works this way. Three satellites give a position on the Earth's
+surface. A fourth is needed, because the receiver's clock is also
+unknown.
 
 </details>
 
-**15.** A ladder 6 m long leans against a wall at 70° to the ground. How high does it reach, and how far out is its foot? If the foot slips out 0.5 m, what angle is it at then?
+**15.** A ladder 6 m long leans against a wall, at 70° to the ground.
+
+1. How high up the wall does it reach?
+2. How far from the wall is its foot?
+3. If the foot slips 0.5 m further out, what angle is the ladder at
+   then?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It reaches 5.64 m up, with its foot 2.05 m out.
+It reaches $6 \sin 70° \approx 5.64$ m up the wall. Its foot is
+$6 \cos 70° \approx 2.05$ m out.
 
-After slipping to 2.55 m out, the angle is $\arccos(2.55/6) \approx 64.8°$ and it now reaches 5.43 m.
+After slipping, the foot is 2.55 m out. The angle is
+$\arccos\left(\dfrac{2.55}{6}\right) \approx 64.8°$, and the ladder now
+reaches 5.43 m.
 
-Half a metre of slip costs five degrees and twenty centimetres of height. The relationship is not linear, and it gets much worse as the angle drops — which is the argument for the 4-to-1 rule about ladders.
+Half a metre of slip costs five degrees, and twenty centimetres of
+height. The relationship is not a straight line, and each extra slip
+costs more height as the angle drops. That is the reason for the
+4-to-1 rule for ladders: 1 m out from the wall for every 4 m up, which
+is an angle of about 76°.
 
 </details>
 
-**16.** A wheel of radius 0.35 m turns at 60 revolutions per minute. How fast is a point on the rim moving, and how far does the wheel travel in a minute?
+**16.** A wheel of radius 0.35 m turns at 60 revolutions per minute.
+How fast is a point on the rim moving? How far does the wheel roll in a
+minute?
 
 <details class="dl-answer"><summary>answer</summary>
 
-About 2.20 m/s, and about 132 m per minute.
+About 2.20 m/s, and about 132 m in a minute.
 
-One revolution is $2\pi$ radians, so 60 rpm is $2\pi$ radians per second. Then $v = r\omega = 0.35 \times 2\pi \approx 2.199$ m/s.
+One revolution is $2\pi$ radians. So 60 revolutions per minute is one
+revolution per second, which is $2\pi$ radians per second. This is the
+*angular speed*, written $\omega$ (the Greek letter omega): the angle
+turned per second.
 
-Rolling without slipping means the rim speed and the ground speed are the same, which is the whole reason $s = r\theta$ is useful for anything mechanical.
+A radian is the angle where the arc equals the radius. So an angle of
+$\theta$ radians gives an arc of length $s = r\theta$. In one second
+the rim moves $v = r\omega = 0.35 \times 2\pi \approx 2.199$ m. In a
+minute, that is $2.199 \times 60 \approx 132$ m.
+
+When the wheel rolls without slipping, the rim speed and the ground
+speed are the same. That is why $s = r\theta$ is so useful for anything
+mechanical.
 
 </details>
 
-**17.** Two points on a circle of radius 5 are 6 apart in a straight line. What is the angle between them at the center, and how far apart are they along the arc?
+**17.** Two points on a circle of radius 5 are 6 apart in a straight
+line. What is the angle between them at the center? How far apart are
+they along the arc?
 
 <details class="dl-answer"><summary>answer</summary>
 
 About 1.287 radians (73.7°), and about 6.44 along the arc.
 
-The chord, the radius and the radius form an isosceles triangle. Half of it is a right triangle with hypotenuse 5 and opposite side 3, so half the angle is $\arcsin(0.6) \approx 0.6435$.
+The straight line between the points (the chord) and the two radii form
+an isosceles triangle. Cut it in half, and you get a right triangle
+with longest side 5 and opposite side 3. So half the angle is
+$\arcsin(0.6) \approx 0.6435$, and the whole angle is about 1.287.
 
-The arc is $r\theta = 5 \times 1.287$. It is longer than the chord, as it must be — the straight line is the short way.
+The arc is $r\theta = 5 \times 1.287 \approx 6.44$. It is longer than
+the chord, as it must be: the straight line is the shortest way.
 
 </details>
 
-**18.** Write a function that takes three points and returns the three interior angles of the triangle they form. Test it on an equilateral one.
+**18.** Write a function that takes three points and returns the three
+inside angles of the triangle they make. Test it on an equilateral
+triangle.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. You have three points, so start by turning them into three side lengths.
-2. To get an angle from three sides, rearrange the cosine rule so that the cosine is on its own.
-3. Be careful about which side is opposite which angle. For the angle at $p$, the opposite side is the one joining $q$ and $r$.
-4. `math.acos` returns radians; convert.
+1. You have three points. Start by turning them into three side
+   lengths.
+2. To get an angle from three sides, rearrange the cosine rule so that
+   the cosine is on its own.
+3. Be careful about which side is opposite which angle. For the angle
+   at `p`, the opposite side is the one joining `q` and `r`.
+4. `math.acos` returns radians, so convert to degrees.
 
-**Think about:** the cosine rule works from three sides and never meets the ambiguous case, because `acos` only returns angles between 0° and 180° — exactly the range an interior angle can occupy.
+**Think about:** the cosine rule works from three sides, and it never
+meets the ambiguous case. `acos` only returns angles between 0° and
+180°, and that is exactly the range an inside angle can have.
 
-**Try this next:** assert that your three angles sum to 180°. Then try three points in a straight line and see what the function does.
+**Try this next:** use `assert` to check that your three angles add up
+to 180°. Then try three points in a straight line, and see what the
+function does.
 
 </details>
 
@@ -331,10 +497,15 @@ def angles(p, q, r):
     )
 ```
 
-For $(0,0)$, $(1,0)$ and $(0.5, \sqrt{3}/2)$ it gives 60, 60, 60 — to within floating-point noise.
+For $(0, 0)$, $(1, 0)$ and $\left(0.5, \dfrac{\sqrt{3}}{2}\right)$, it
+gives 60, 60 and 60, apart from tiny floating-point errors.
 
-The cosine rule rearranged is the right tool, because it works from three sides and never runs into the ambiguous case. `acos` returns a value between 0 and 180°, which is exactly the range an interior angle can occupy — so the ambiguity that plagues the sine rule cannot arise here.
+The rearranged cosine rule is the right tool, because it works from
+three sides and never runs into the ambiguous case. `acos` returns a
+value between 0° and 180°, and that is exactly the range an inside angle
+can have. So the doubt that troubles the sine rule cannot happen here.
 
-Checking that the three sum to 180 is a free test, and it is worth asserting rather than eyeballing.
+Checking that the three angles add up to 180° is a free test. It is
+worth an `assert`, instead of checking by eye.
 
 </details>

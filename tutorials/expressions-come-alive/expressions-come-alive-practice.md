@@ -7,9 +7,12 @@ version: 2026.08.23.1
 
 # Polynomials: representing and combining them in Python — Practice
 
-Answers are hidden. Expand by hand first and use the cell to check — the point of the checking cell is to settle disputes, not to do the work.
+The answers are hidden in folds under each problem. Try each expansion
+by hand first. Then use the cell to check your answer. The cell is there
+to settle a doubt, not to do the work for you.
 
-The expansion problems are adapted from the FOIL worksheet in the Mathematics repository.
+The expansion problems are adapted from the FOIL worksheet in the
+Mathematics repository.
 
 ## Expanding
 
@@ -28,7 +31,7 @@ def multiply_poly(a, b):
 print(multiply_poly([3, 1], [2, 1]))
 ```
 
-**1.** Expand each.
+**1.** Expand each one.
 
 - (a) $(t + 2)(t + 5)$
 - (b) $(p + 6)(p + 3)$
@@ -39,17 +42,25 @@ print(multiply_poly([3, 1], [2, 1]))
 
 (a) $t^2 + 7t + 10$. (b) $p^2 + 9p + 18$. (c) $m^2 + 11m + 28$. (d) $k^2 + 10k + 16$.
 
-In every one, the middle number is the sum of the two constants and the last is their product. That is not a coincidence and it is what makes factorizing possible.
+Look at the numbers. In every answer, the middle number is the sum of
+the two constants, and the last number is their product. In (a),
+$2 + 5 = 7$ and $2 \times 5 = 10$. This is not a coincidence. It is what
+makes factorising possible: going backwards from the expanded form to
+the brackets. You will do that in
+[Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations).
 
 </details>
 
-**2.** Expand $(n + 5)(n + 5)$ and $(w + 3)(w + 3)$. What is the general rule?
+**2.** Expand $(n + 5)(n + 5)$ and $(w + 3)(w + 3)$. Can you see a
+general rule?
 
 <details class="dl-answer"><summary>answer</summary>
 
 $n^2 + 10n + 25$ and $w^2 + 6w + 9$.
 
-$(x + a)^2 = x^2 + 2ax + a^2$. The middle term is *twice* the constant, because it appears from both the outer and the inner product.
+The rule is $(x + a)^2 = x^2 + 2ax + a^2$. The middle coefficient is
+twice the constant, because the $ax$ term appears twice: once from the
+Outer product and once from the Inner product.
 
 </details>
 
@@ -57,15 +68,19 @@ $(x + a)^2 = x^2 + 2ax + a^2$. The middle term is *twice* the constant, because 
 
 <details class="dl-answer"><summary>answer</summary>
 
-No, and this is the single most common mistake in algebra.
+No. This is the most common mistake in algebra, so do not worry if you
+thought yes.
 
-$(a + b)^2 = a^2 + 2ab + b^2$. Try it with numbers: $(3 + 4)^2 = 49$, while $3^2 + 4^2 = 25$. The missing 24 is the $2ab$.
+$(a + b)^2 = a^2 + 2ab + b^2$. Try it with numbers: $(3 + 4)^2 = 49$,
+but $3^2 + 4^2 = 25$. The missing 24 is the $2ab$ term:
+$2 \times 3 \times 4 = 24$.
 
-Squaring does not distribute over addition. Neither does the square root: $\sqrt{9 + 16}$ is 5, not 7.
+We cannot square each part of a sum separately. The same is true for
+square roots: $\sqrt{9 + 16} = \sqrt{25} = 5$, not $3 + 4 = 7$.
 
 </details>
 
-**4.** Expand with the negatives.
+**4.** Expand each one. Watch the minus signs.
 
 - (a) $(x - 3)(x + 5)$
 - (b) $(x - 4)(x - 6)$
@@ -76,11 +91,13 @@ Squaring does not distribute over addition. Neither does the square root: $\sqrt
 
 (a) $x^2 + 2x - 15$. (b) $x^2 - 10x + 24$. (c) $x^2 - 49$. (d) $x^2 - 10x + 25$.
 
-(c) is the difference of two squares — the middle terms cancel exactly, and it is worth recognizing instantly in both directions.
+(c) is called the *difference of two squares*: $(x + a)(x - a) = x^2 - a^2$.
+The two middle terms, $-7x$ and $+7x$, cancel out. It is worth learning
+to spot this pattern quickly, in both directions.
 
 </details>
 
-**5.** Expand with coefficients.
+**5.** Expand each one. This time the $x$ terms have coefficients.
 
 - (a) $(2x + 3)(x + 4)$
 - (b) $(3x - 1)(2x + 5)$
@@ -92,13 +109,19 @@ Squaring does not distribute over addition. Neither does the square root: $\sqrt
 
 </details>
 
-**6.** Expand $(x + 1)^2$, $(x + 1)^3$, $(x + 1)^4$. What are the coefficients?
+**6.** Expand $(x + 1)^2$, $(x + 1)^3$ and $(x + 1)^4$. What do you notice
+about the coefficients?
 
 <details class="dl-answer"><summary>answer</summary>
 
 $x^2 + 2x + 1$, then $x^3 + 3x^2 + 3x + 1$, then $x^4 + 4x^3 + 6x^2 + 4x + 1$.
 
-1 2 1, then 1 3 3 1, then 1 4 6 4 1 — Pascal's triangle. Each row is built by adding neighboring pairs from the row above, and the same numbers count how many ways there are to choose k things from n, which is why *Counting: factorials, permutations and combinations* meets them again.
+The coefficients are 1 2 1, then 1 3 3 1, then 1 4 6 4 1. These are the
+rows of Pascal's triangle. Each row is built by adding pairs of
+neighbours from the row above: in 1 3 3 1, $1 + 3 = 4$, $3 + 3 = 6$ and
+$3 + 1 = 4$ give the 4 6 4 of the next row. The same numbers count how
+many ways there are to choose $k$ things from $n$. You met them there in
+[Counting: factorials, permutations and combinations](tutorial:counting-carefully).
 
 </details>
 
@@ -108,13 +131,17 @@ $x^2 + 2x + 1$, then $x^3 + 3x^2 + 3x + 1$, then $x^4 + 4x^3 + 6x^2 + 4x + 1$.
 
 $x^3 + 5x^2 + 7x + 2$.
 
-FOIL only names the four products of two binomials. The actual rule is that every term multiplies every term — six products here — and that generalizes where FOIL does not.
+A *binomial* is a polynomial with two terms, such as $x + 2$. FOIL only
+names the four products you get from two binomials. The real rule is
+that every term multiplies every term. Here that gives six products,
+since $2 \times 3 = 6$. That rule works for any polynomials, where FOIL
+does not.
 
 </details>
 
-## Polynomials as Lists
+## Polynomials as lists
 
-**8.** Write these as coefficient lists, constant first.
+**8.** Write each one as a coefficient list, with the constant first.
 
 - (a) $3x^2 + 5x - 2$
 - (b) $2x^3 - 3x^2 + 1$
@@ -125,11 +152,13 @@ FOIL only names the four products of two binomials. The actual rule is that ever
 
 (a) `[-2, 5, 3]`. (b) `[1, 0, -3, 2]`. (c) `[7]`. (d) `[0, 0, 0, 0, 0, 1]`.
 
-Index i holds the coefficient of x^i, so a missing power is a zero coefficient, and the position has to be kept in (b) and (d). The zeros there are not padding.
+Index $i$ holds the coefficient of $x^i$. So a missing power has a
+coefficient of zero, and in (b) and (d) its place must stay in the list.
+Those zeros carry meaning: they say "no term with this power".
 
 </details>
 
-**9.** Write `evaluate_poly(coeffs, x)`.
+**9.** Can you write `evaluate_poly(coeffs, x)`?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -142,17 +171,20 @@ def evaluate_poly(coeffs, x):
     return total
 ```
 
-`evaluate_poly([-2, 5, 3], 4)` is 66, and at x = 0 it is −2, which is a free test: a polynomial at zero is always its constant term.
+`evaluate_poly([-2, 5, 3], 4)` is 66. At $x = 0$ it is −2. That gives
+you an easy test: at zero, a polynomial always equals its constant term.
 
 </details>
 
-**10.** How many multiplications does that do for a degree-10 polynomial? Can it be done in fewer?
+**10.** How many multiplications does that function do for a polynomial
+of degree 10? Can it be done with fewer?
 
 <details class="dl-answer"><summary>answer</summary>
 
-About 55, because `x ** i` costs i multiplications and those add up.
+About 55 for the powers alone. Working out `x ** i` by hand takes $i$
+multiplications, and $0 + 1 + 2 + \ldots + 10 = 55$.
 
-Horner's method does it in 10:
+A method called Horner's method does it with 10:
 
 ```python
 def evaluate_poly(coeffs, x):
@@ -162,11 +194,15 @@ def evaluate_poly(coeffs, x):
     return total
 ```
 
-It works by nesting: $3x^2 + 5x - 2 = ((3)x + 5)x - 2$. Each step is one multiply and one add, and there is no power operation anywhere. It is also more accurate in floating point, which is why numerical libraries use it.
+It works by nesting the brackets: $3x^2 + 5x - 2 = ((3)x + 5)x - 2$.
+Each step is one multiplication and one addition, and there are no
+powers anywhere. It is also more accurate with floats, which is why
+libraries for numerical work use it.
 
 </details>
 
-**11.** Write `add_poly(a, b)`, handling lists of different lengths.
+**11.** Can you write `add_poly(a, b)` so that it works for lists of
+different lengths?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -182,11 +218,13 @@ def add_poly(a, b):
     return result
 ```
 
-The different lengths are the whole problem, and treating a missing coefficient as 0 is exactly right — a polynomial of lower degree *does* have zero coefficients up there.
+The different lengths are the hard part. Treating a missing coefficient
+as 0 is exactly right, because a polynomial of lower degree does have
+zero coefficients for the higher powers.
 
 </details>
 
-**12.** Write `multiply_poly(a, b)`. What is the degree of the result?
+**12.** Can you write `multiply_poly(a, b)`? What is the degree of the result?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -199,13 +237,17 @@ def multiply_poly(a, b):
     return result
 ```
 
-The degree is the sum of the two degrees, so the list length is `len(a) + len(b) - 1`.
+The degree of the result is the sum of the two degrees. So the list
+length is `len(a) + len(b) - 1`.
 
-`result[i + j]` is the line worth staring at: multiplying $x^i$ by $x^j$ gives $x^{i+j}$, so the exponents add and the indices add with them. The list representation was chosen so that this would be true.
+The line worth looking at closely is `result[i + j]`. Multiplying $x^i$
+by $x^j$ gives $x^{i+j}$, so the exponents add, and the indexes add with
+them. We chose the list representation so that this would be true.
 
 </details>
 
-**13.** Write `poly_to_string(coeffs)` producing something a person would write.
+**13.** Can you write `poly_to_string(coeffs)` so that it gives the form a
+person would write?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -235,17 +277,29 @@ def poly_to_string(coeffs):
 
 `[-2, 5, 3]` gives `3x^2 + 5x - 2`.
 
-Six edge cases in one function: zero coefficients, the constant term, x¹, coefficients of 1 and −1, the leading sign, and the zero polynomial. Testing it is more work than writing it, which is a fair description of most formatting code.
+This one function handles six special cases:
+
+1. zero coefficients
+2. the constant term
+3. the $x^1$ term
+4. coefficients of 1 and −1
+5. the sign of the first term
+6. the zero polynomial, which prints as `0`
+
+Testing it is more work than writing it. That is true of most
+formatting code.
 
 </details>
 
 ## Verification
 
-**14.** How can you check that your `multiply_poly` is right, without checking by hand?
+**14.** How can you check that your `multiply_poly` is right, without
+working it out by hand?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Evaluate. If $c = a \times b$ as polynomials, then $c(x) = a(x) \times b(x)$ for *every* x.
+Evaluate both sides. If $c = a \times b$ as polynomials, then
+$c(x) = a(x) \times b(x)$ for every value of $x$.
 
 ```python
 for x in [-3, -1, 0, 0.5, 2, 7]:
@@ -253,62 +307,90 @@ for x in [-3, -1, 0, 0.5, 2, 7]:
                - evaluate_poly(a, x) * evaluate_poly(b, x)) < 1e-9
 ```
 
-Two polynomials of degree n that agree at n + 1 points are the same polynomial, so a handful of test values is a proof, not a spot check, as long as you use enough of them.
+Two polynomials of degree at most $n$ that agree at $n + 1$ points are
+the same polynomial. So a few test values are more than a spot check.
+If you use enough of them, they are a proof.
 
 </details>
 
-**15.** `[1, 2, 1]` times `[1, 1]` should be `[1, 3, 3, 1]`. Verify by evaluating both at x = 10.
+**15.** `[1, 2, 1]` times `[1, 1]` should be `[1, 3, 3, 1]`. Can you
+check this by evaluating both sides at $x = 10$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$(1 + 2 \cdot 10 + 100) = 121$ and $(1 + 10) = 11$; $121 \times 11 = 1331$.
+The left side: $1 + 2 \cdot 10 + 100 = 121$ and $1 + 10 = 11$, and
+$121 \times 11 = 1331$.
 
-The product at 10 is $1 + 30 + 300 + 1000 = 1331$. They agree.
+The right side: $1 + 30 + 300 + 1000 = 1331$. They agree.
 
-Evaluating at 10 has a pleasant side effect: the coefficients appear as the digits, as long as none of them reaches 10. $11^2 = 121$ and $11^3 = 1331$ are Pascal's triangle in disguise, and $11^5 = 161051$ is where the carrying starts and the disguise fails.
+Evaluating at 10 has a nice side effect. The coefficients appear as the
+digits of the answer, as long as none of them is 10 or more. So
+$11^2 = 121$ and $11^3 = 1331$ are rows of Pascal's triangle in
+disguise. At $11^5 = 161051$ the pattern breaks, because the
+coefficients 10 carry into the next digit.
 
 </details>
 
 ## Applications
 
-**16.** A rectangle is $(x + 3)$ by $(x + 5)$. Write its area, and its perimeter.
+**16.** A rectangle measures $(x + 3)$ by $(x + 5)$. What are its area
+and its perimeter?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Area $x^2 + 8x + 15$, perimeter $4x + 16$.
+The area is $x^2 + 8x + 15$, and the perimeter is $4x + 16$.
 
-Area multiplies and grows quadratically; perimeter adds and grows linearly. That difference is why doubling a room's dimensions doubles the baseboard and quadruples the carpet.
+The area comes from multiplying, so it is quadratic. The perimeter comes
+from adding, so it is linear. That is why, if you double the length and
+width of a room, the length of its walls doubles, but you need four
+times as much carpet.
 
 </details>
 
-**17.** A square lawn of side $x$ has a 2 m path around the outside. Write the path's area.
+**17.** A square lawn has sides of length $x$. A path 2 m wide runs
+around the outside. What is the area of the path?
 
 <details class="dl-answer"><summary>answer</summary>
 
 $(x + 4)^2 - x^2 = 8x + 16$.
 
-The path is 4 m wider than the lawn, not 2 — the border is on both sides. Getting that wrong is the point of the problem, and the linear answer is a small surprise: the path's area does not grow quadratically with the lawn.
+The lawn and path together are $x + 4$ wide, not $x + 2$, because the
+path is on both sides. Most people get this wrong the first time, and
+that is the point of the problem. The answer is a small surprise too: it
+is linear, so the path's area does not grow quadratically with the
+lawn.
 
 </details>
 
-**18.** €1000 grows at 5% a year. Write the amount after n years as a polynomial in the growth factor, and find the amount after 3 years.
+**18.** €1000 grows at 5% a year. Can you write the amount after $n$
+years as a polynomial in the growth factor? What is the amount after 3
+years?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$1000(1 + r)^n$ with $r = 0.05$, so $1000 \times 1.05^3 = 1157.63$.
+The amount is $1000(1 + r)^n$ with $r = 0.05$. After 3 years it is
+$1000 \times 1.05^3 = 1157.63$ (to the nearest cent).
 
-Expanding $(1 + r)^3 = 1 + 3r + 3r^2 + r^3$ gives 1000 + 150 + 7.50 + 0.125. The first two terms are the simple-interest answer; everything after is interest on interest, and for small r the later terms shrink fast. That is why $(1 + r)^n \approx 1 + nr$ is a decent approximation for one year and a bad one for thirty.
+Expanding $(1 + r)^3 = 1 + 3r + 3r^2 + r^3$ and multiplying by 1000
+gives $1000 + 150 + 7.50 + 0.125$. The first two terms are the
+simple-interest answer. Everything after them is interest on interest.
+For a small $r$, those later terms shrink fast. That is why
+$(1 + r)^n \approx 1 + nr$ is a good approximation over a year or two,
+and a bad one over thirty years.
 
 </details>
 
-**19.** Expand $(x + y)^2$, $(x - y)^2$ and $(x + y)(x - y)$, and say what each is useful for.
+**19.** Expand $(x + y)^2$, $(x - y)^2$ and $(x + y)(x - y)$. What is
+each one useful for?
 
 <details class="dl-answer"><summary>answer</summary>
 
 $x^2 + 2xy + y^2$, $x^2 - 2xy + y^2$, and $x^2 - y^2$.
 
-The third is the useful one for mental arithmetic: $37 \times 43$ is $(40 - 3)(40 + 3) = 1600 - 9 = 1591$.
+The third is useful for mental arithmetic:
+$37 \times 43 = (40 - 3)(40 + 3) = 1600 - 9 = 1591$.
 
-The first two are the ones that turn up when you square a distance or a difference from a mean, which is exactly what the standard deviation does.
+The first two turn up whenever you square a distance, or a difference
+from a mean. The standard deviation does exactly that.
 
 </details>

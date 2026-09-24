@@ -1,7 +1,7 @@
 ---
 title: "The unit circle: sine, cosine and tangent"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.24.1
 covers:
   going-round-in-circles:
     covers: [MIT-4.6]
@@ -17,15 +17,28 @@ covers:
 
 # The unit circle: sine, cosine and tangent
 
-A circle of radius one, centred on the origin. That is the whole subject of this tutorial, and three separate-looking pieces of trigonometry turn out to be three things you can read off it.
+This whole page is about one drawing. The *unit circle* is a circle with
+radius 1, with its center at the origin, $(0, 0)$.
 
-At the end of *Straight lines: slope, midpoint and distance* you drew this circle and checked that every point on it really was distance 1 from the center. That check is the only rule everything here rests on.
+You have met this circle before. At the end of
+[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances)
+you drew it, and you checked that every point on it is at distance 1 from
+the center. That one rule is all we need here.
 
-Sine, cosine, radians and the exact values are usually taught as four things to learn. They are one drawing, described four ways.
+Sine, cosine, radians and the exact values are often taught as four
+separate things to learn. In fact they are one drawing, described in four
+ways. On this page we:
 
-## Going Round in Circles
+- walk a point around the circle and write down where it is
+- give the two coordinates of that point their names, sine and cosine
+- measure angles in a new way, called radians
+- work out some points on the circle exactly, with Pythagoras
+- meet a third name, tangent, and see that it is a slope
 
-Walk a point around the circle and write down where it is.
+## Going round in circles
+
+Let's start at the right-hand side of the circle, walk a point around it,
+and write down where the point is after each eighth of a turn.
 
 ```python exec
 id: going-round-in-circles-1
@@ -45,7 +58,15 @@ for step in range(9):
     print(f"      {turns:>5.3f}           {x:>7.3f}   {y:>7.3f}")
 ```
 
-Two columns of numbers. No vocabulary yet, and none needed — this is just a record of where a point got to.
+We get two columns of numbers: how far across the point is, and how far
+up. There is no new vocabulary yet, and we do not need any. The table is a
+record of where the point went.
+
+You may notice a `-0.000` in the table. That is a very small negative
+number, which rounds to zero when we show three decimal places. You can
+read it as 0.
+
+Here are the same eight places, drawn on the circle:
 
 ```python exec
 id: going-round-in-circles-2
@@ -65,7 +86,10 @@ ax.grid(alpha=0.3)
 ax.set_title("Eight places on the circle")
 ```
 
-Every one of those orange lines is the same length, and you can check that with the distance function you wrote last tutorial.
+Are all the orange lines the same length? We can check with the
+`distance` function from
+[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances).
+What do you expect it to print?
 
 ```python exec
 id: going-round-in-circles-3
@@ -79,13 +103,26 @@ for step in range(8):
     print(f"({p[0]:>7.3f}, {p[1]:>7.3f})   distance from center: {distance((0, 0), p):.10f}")
 ```
 
-Exactly 1, every time. **That is the whole of it.** Everything below is a consequence of those two columns coming from a point that stays 1 away from the middle.
+The distance is exactly 1, every time. That is the key fact. Everything
+on the rest of this page follows from it: the two columns come from a
+point that always stays at distance 1 from the middle.
 
-## The Names for Those Two Columns
+## The names for those two columns
 
-The across column is called **cosine**. The up column is called **sine**.
+The across column has a name: it is called *cosine*. The up column is
+called *sine*.
 
-That is all those two words mean: the two coordinates of a point on a circle of radius one, not a formula and not an operation on a triangle.
+So, for a point on the unit circle:
+
+- the cosine of the angle is the point's across value, its $x$
+  coordinate
+- the sine of the angle is the point's up value, its $y$ coordinate
+
+That is all the two words mean. Each one is a coordinate of a point on a
+circle of radius 1. We do not need a triangle or a formula to say what
+they are.
+
+Python calls them `math.cos` and `math.sin`. Do the columns match?
 
 ```python exec
 id: the-names-for-those-two-columns-1
@@ -98,15 +135,28 @@ for step in range(5):
           f" {y:>8.4f} {math.sin(angle):>9.4f}")
 ```
 
-The columns match because `unit_point` was built out of `cos` and `sin` in the first place. The point is the direction of the definition: **cosine and sine were named after the coordinates, not the other way round.**
+The columns match, because we built `unit_point` out of `cos` and `sin`
+in the first place. What matters is the order of the ideas. The
+coordinates came first, and cosine and sine are the names we gave them.
 
 ### The identity, discovered
 
-There is a fact about sine and cosine that gets written on classroom walls:
+In maths we often write the angle with the Greek letter $\theta$, called
+"theta". Here is a fact about sine and cosine that many classrooms have
+on the wall:
 
-`sin²θ + cos²θ = 1`
+$$\sin^2\theta + \cos^2\theta = 1$$
 
-You already have it. Every point is distance 1 from the center, and distance is Pythagoras, so `x² + y² = 1` for every point on this circle. Substitute the names in and there it is.
+The small 2 means "squared": $\sin^2\theta$ is $(\sin\theta)^2$.
+
+Can you see why this is true, using what you already know? Every point on
+the circle is at distance 1 from the center. The distance formula comes
+from Pythagoras, so every point on this circle has $x^2 + y^2 = 1$. Now
+put in the names: $x$ is $\cos\theta$ and $y$ is $\sin\theta$. That gives
+the identity.
+
+For example, at an eighth of a turn both coordinates are about $0.7071$,
+and $0.7071^2 + 0.7071^2 \approx 0.5 + 0.5 = 1$.
 
 ```python exec
 id: the-names-for-those-two-columns-2
@@ -116,11 +166,17 @@ for step in range(9):
     print(f"sin^2 + cos^2 = {s ** 2 + c ** 2:.12f}")
 ```
 
-**Nothing new was needed to get that.** It is the distance formula from the previous tutorial, applied to a circle of radius 1, with the coordinates renamed.
+We did not need anything new for this. It is the distance formula from
+[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances),
+used on a circle of radius 1, with new names for the coordinates.
 
 ### Your turn
 
-What sign would you predict for the across value and the up value in each of the four quarters of the circle? Check your predictions below.
+The circle has four quarters. In each quarter, is the across value
+positive or negative? What about the up value?
+
+1. Write your prediction for each quarter in the comments below.
+2. Check each one with `unit_point` at 0.1, 0.35, 0.6 and 0.85 of a turn.
 
 ```python exec
 id: your-turn-1
@@ -132,26 +188,33 @@ id: your-turn-1
 # Check with unit_point at 0.1, 0.35, 0.6, 0.85 of a turn.
 ```
 
-## Measuring the Walk
+## Measuring the walk
 
-So far angles have been fractions of a turn, which is accurate but not how anyone writes them. There are two standard ways, and one of them will look strange.
+So far we have measured angles as fractions of a turn. That is accurate,
+but people do not usually write angles that way. There are two standard
+ways, and one of them will look strange at first.
 
-Start with the strangeness, because it is the reason the second one exists.
+We start with something strange, because it is the reason the second way
+exists. A quarter turn is 90 degrees, and at a quarter turn the up value
+is exactly 1. So what do you think `math.sin(90)` gives?
 
 ```python exec
 id: measuring-the-walk-1
 print("math.sin(90) =", math.sin(90))
 ```
 
-Ninety degrees is a quarter turn, and the up value there is exactly 1. Python said 0.894.
-
-Python is answering a different question, because `math.sin` does not take degrees — it is not wrong.
+Python says about 0.894, not 1. Python is not wrong. It is answering a
+different question, because `math.sin` does not take degrees. It takes
+radians.
 
 ### What a radian is
 
-**A radian is a distance walked around the edge.**
+A *radian* is a way to measure an angle by a distance walked around the
+edge of the circle.
 
-Take the circle of radius 1 and walk along its edge. When you have walked a distance of 1 — the same as the radius — you have turned through one radian.
+Take the circle of radius 1 and walk along its edge. When you have walked
+a distance of 1, the same as the radius, you have turned through one
+radian.
 
 ```python exec
 id: measuring-the-walk-2
@@ -172,9 +235,13 @@ ax.set_aspect("equal")
 ax.set_title("One radian: the angle where the arc equals the radius")
 ```
 
-The orange arc and the blue radius are the same length. The angle between the two blue lines is one radian.
+The orange arc and the blue radius have the same length. The angle
+between the two blue lines is one radian.
 
-That definition immediately tells you how many there are in a full turn. The whole way round a circle of radius 1 is a distance of `2π` — that is what π is for — so **a full turn is `2π` radians.**
+How many radians are there in a full turn? The distance all the way round
+a circle is $2\pi r$, so for a circle of radius 1 it is $2\pi$. That is
+what $\pi$ is for. So a full turn is $2\pi$ radians, which is about
+$6.28$.
 
 ```python exec
 id: measuring-the-walk-3
@@ -187,11 +254,21 @@ print("sin of a quarter turn:", math.sin(math.pi / 2))
 
 There is the 1 that was missing.
 
-`2π` is the distance round the circle, and the circle has radius 1, so it is also the number of radians in a turn — not a magic constant that appears in trigonometry for mysterious reasons.
+The $2\pi$ here is not a magic number that turns up in trigonometry for a
+mysterious reason. It is the distance round the circle. Because the
+circle has radius 1, that distance is also the number of radians in a
+turn.
 
 ### Converting
 
-A full turn is 360 degrees and `2π` radians, so those two are equal, and everything follows by proportion.
+A full turn is 360 degrees, and it is also $2\pi$ radians. So 360 degrees
+and $2\pi$ radians are the same angle, and we can convert any angle by
+proportion:
+
+$$\text{radians} = \text{degrees} \times \frac{\pi}{180} \qquad \text{degrees} = \text{radians} \times \frac{180}{\pi}$$
+
+For example, 90 degrees is $90 \times \frac{\pi}{180} = \frac{\pi}{2}$
+radians, which is about $1.5708$.
 
 ```python exec
 id: measuring-the-walk-4
@@ -212,40 +289,52 @@ print()
 print("One radian is about", round(to_degrees(1), 2), "degrees.")
 ```
 
-That last number is worth remembering as a sanity check. A radian is a bit under 60 degrees, so if you convert something and the answer is wildly off that scale, you have multiplied where you should have divided.
+That last number is a useful check to remember. One radian is a little
+under 60 degrees. If you convert an angle and the answer is very far from
+that scale, you have probably multiplied where you should have divided.
 
 ### Your turn
 
-How would you convert these without using `math.radians`? Work them out, then check.
+How would you convert these without using `math.radians`? Work each one
+out first, then check it in the cell.
 
-- 270 degrees
-- 135 degrees
-- `π/6` radians into degrees
-- 2 radians into degrees
+1. Convert 270 degrees to radians.
+2. Convert 135 degrees to radians.
+3. Convert $\pi/6$ radians to degrees.
+4. Convert 2 radians to degrees.
 
 ```python exec
 id: your-turn-2
 # Your answers here.
 ```
 
-## The Landmark Points
+## The landmark points
 
-Some angles land on coordinates you can work out exactly, with no calculator and no decimals — and the working is Pythagoras again.
+At some angles, we can work out the coordinates exactly, with no
+calculator and no decimals. The working is Pythagoras again.
 
-These are worth having because a decimal is an approximation and sometimes that matters.
+Why do we want exact values? A decimal is an approximation, and
+sometimes the difference matters. We will see an example below.
 
 ### Forty-five degrees
 
-At 45 degrees you are going diagonally, which means **you have gone as far across as you have gone up**. So `x = y`.
+At 45 degrees the point moves diagonally. It has gone as far across as it
+has gone up, so $x = y$.
 
-And you know `x² + y² = 1`, because every point on this circle does. Two facts, one unknown:
+We also know that $x^2 + y^2 = 1$, because that is true for every point
+on this circle. So we have two facts and one unknown. Put $x$ in place of
+$y$ and solve:
 
-```
-x² + x² = 1
-2x²     = 1
-x²      = 1/2
-x       = 1/√2 = √2/2
-```
+$$
+\begin{aligned}
+x^2 + x^2 &= 1 \\
+2x^2 &= 1 \\
+x^2 &= \tfrac{1}{2} \\
+x &= \tfrac{1}{\sqrt{2}} = \tfrac{\sqrt{2}}{2}
+\end{aligned}
+$$
+
+Is that the same as the point `unit_point` finds? Run the cell to check.
 
 ```python exec
 id: the-landmark-points-1
@@ -260,7 +349,16 @@ print("Do they agree?", abs(exact - point[0]) < 1e-12)
 
 ### Thirty and sixty degrees
 
-These come from half an equilateral triangle. An equilateral triangle with sides of 1 has all angles 60 degrees; cut it down the middle and you get a right-angled triangle with a hypotenuse of 1, a short side of 1/2, and a third side you can get from Pythagoras.
+These two angles come from half of an equilateral triangle.
+
+1. Start with an equilateral triangle with sides of length 1. All its
+   angles are 60 degrees.
+2. Cut it down the middle. Each half is a right-angled triangle.
+3. The *hypotenuse* of a right-angled triangle is its longest side, the
+   one opposite the right angle. Each half has a hypotenuse of 1 and a
+   short side of $\frac{1}{2}$.
+4. We find the third side with Pythagoras:
+   $\sqrt{1 - \left(\frac{1}{2}\right)^2} = \sqrt{\frac{3}{4}} = \frac{\sqrt{3}}{2}$.
 
 ```python exec
 id: the-landmark-points-2
@@ -276,41 +374,62 @@ for degrees in [30, 45, 60]:
     print(f"{degrees} degrees:  across {x:.6f}   up {y:.6f}")
 ```
 
-So the whole first-quarter table is:
+Here is the whole table for the first quarter of the circle:
 
-| Angle | across (cos) | up (sin) |
+| Angle | across ($\cos$) | up ($\sin$) |
 |---|---|---|
-| 0° | 1 | 0 |
-| 30° | √3⁄2 | 1⁄2 |
-| 45° | √2⁄2 | √2⁄2 |
-| 60° | 1⁄2 | √3⁄2 |
-| 90° | 0 | 1 |
+| 0° | $1$ | $0$ |
+| 30° | $\frac{\sqrt{3}}{2}$ | $\frac{1}{2}$ |
+| 45° | $\frac{\sqrt{2}}{2}$ | $\frac{\sqrt{2}}{2}$ |
+| 60° | $\frac{1}{2}$ | $\frac{\sqrt{3}}{2}$ |
+| 90° | $0$ | $1$ |
 
-Notice that 30 and 60 are each other's, swapped. That is the same triangle looked at from its other corner.
+Look at the rows for 30° and 60°. What do you notice? The two values are
+swapped. That is because they come from the same triangle, seen from its
+other corner.
 
 ### Why the exact form matters
 
-The decimal is not the same as the exact value, and here is a case where the difference shows.
+The decimal is not the same number as the exact value. Here is a case
+where we can see the difference.
+
+We know that $\left(\frac{\sqrt{2}}{2}\right)^2 = \frac{2}{4} = \frac{1}{2}$
+exactly. What happens when we square a decimal version instead? Which
+answer do you think will be closer to a half?
 
 ```python exec
 id: the-landmark-points-3
 exact = math.sqrt(2) / 2
 rounded = 0.7071
 
-print("exact squared:  ", exact ** 2)
-print("rounded squared:", rounded ** 2)
+print("Python's value squared:", exact ** 2)
+print("0.7071 squared:        ", rounded ** 2)
 print()
-print("exact is exactly a half:  ", exact ** 2 == 0.5)
-print("rounded is exactly a half:", rounded ** 2 == 0.5)
+print("Python's value misses a half by:", abs(exact ** 2 - 0.5))
+print("0.7071 misses a half by:        ", abs(rounded ** 2 - 0.5))
 ```
 
-`√2⁄2` squared is exactly `1/2`. `0.7071` squared is `0.49999`, which is close and is not the same number.
+An ending such as `e-16` means "times $10^{-16}$". So Python's value
+misses a half by about $0.0000000000000001$, and $0.7071$ misses by about
+$0.00001$.
 
-**That is the point of surd form.** It is not a tidier way of writing a decimal — the decimal is *wrong*, by a small amount, and there are places where a small amount accumulates.
+$0.7071$ squared is $0.49999\ldots$. That is close to a half, but it is a
+different number. Even Python's own `math.sqrt(2) / 2` is a decimal with
+about 16 digits, so its square misses a half by a very tiny amount.
+
+Only the exact form $\frac{\sqrt{2}}{2}$ squares to exactly $\frac{1}{2}$.
+That is why we use *surd form*: a surd is a root such as $\sqrt{2}$ that
+we leave as a root, without turning it into a decimal. It is more than a
+tidier way to write the decimal. The decimal is wrong by a small amount,
+and in some calculations small amounts add up.
 
 ### Your turn
 
-What are the exact values for 120°, 135° and 150°? Use the first-quarter table and the signs you worked out earlier.
+What are the exact values for 120°, 135° and 150°?
+
+1. Use the first-quarter table above.
+2. Use the signs you worked out for each quarter earlier.
+3. Fill in the comments, then run the check.
 
 ```python exec
 id: your-turn-3
@@ -323,11 +442,24 @@ id: your-turn-3
 #     print(d, unit_point(d / 360))
 ```
 
-## Tangent, Which Is a Slope
+## Tangent, which is a slope
 
-There is a third name, and it is not a third coordinate — the point only has two.
+There is a third name. It is not a third coordinate, because the point
+has only two.
 
-**Tangent is the up divided by the across.** And the up divided by the across of a line from the origin is exactly what *Straight lines: slope, midpoint and distance* called the slope.
+The *tangent* of an angle is the up value divided by the across value:
+
+$$\tan\theta = \frac{\sin\theta}{\cos\theta} = \frac{y}{x}$$
+
+Now think about the line from the origin out to the point. Its rise is
+$y$ and its run is $x$. In
+[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances)
+we called rise divided by run the slope. So the tangent is the slope of
+the line from the origin to the point.
+
+For example, at 60 degrees the point is
+$\left(\frac{1}{2}, \frac{\sqrt{3}}{2}\right)$, so
+$\tan 60^\circ = \frac{\sqrt{3}}{2} \div \frac{1}{2} = \sqrt{3} \approx 1.732$.
 
 ```python exec
 id: tangent-which-is-a-slope-1
@@ -337,9 +469,14 @@ for d in [0, 30, 45, 60, 80, 89]:
     print(f"   {d:>3}      {y / x:>10.5f}    {math.tan(to_radians(d)):>12.5f}")
 ```
 
-So tangent is the slope of the line from the origin out to that point. At 45 degrees it is 1, which is the slope of `y = x`, and that should feel right.
+At 45 degrees the tangent is 1. That is the slope of the line $y = x$,
+which also goes out at 45 degrees. Does that match your picture of the
+line?
 
 ### The place it breaks
+
+What happens to the tangent as the angle gets close to 90 degrees? Make a
+guess, then run the cell.
 
 ```python exec
 id: tangent-which-is-a-slope-2
@@ -347,9 +484,19 @@ for d in [80, 85, 89, 89.9, 89.99]:
     print(f"tan({d:>6}) = {math.tan(to_radians(d)):>16.3f}")
 ```
 
-It runs away to infinity as the angle approaches 90 degrees. At exactly 90 there is no answer at all — and you have met this before.
+The tangent grows without any limit as the angle gets close to 90
+degrees. At exactly 90 degrees there is no answer at all.
 
-At 90 degrees the point is at `(0, 1)`, so the across is zero, and `1/0` is not a number. **It is the vertical line that has no slope** — the same one that would not fit `y = mx + c` in the previous tutorial, arriving from a different direction.
+You have met this before. At 90 degrees the point is at $(0, 1)$, so the
+across value is zero, and $\frac{1}{0}$ is not a number. The line from
+the origin is vertical, and a vertical line has no slope. It is the same
+line that would not fit $y = mx + c$ in
+[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances).
+Here it arrives from a different direction.
+
+If you try `math.tan(math.pi / 2)` yourself, Python gives a huge number
+instead of an error. That is because `math.pi / 2` is a decimal, a tiny
+bit away from the exact quarter turn.
 
 ```python exec
 id: tangent-which-is-a-slope-3
@@ -366,21 +513,32 @@ ax.set_title("Tangent, and the angle where it has no value")
 
 ## Reflection
 
-One circle, and everything else was a description of it.
+We looked at one circle, and everything else was a description of it.
 
-**Cosine and sine are coordinates.** Across and up, for a point on a circle of radius one. They are not operations to perform on a triangle; the triangle comes later and inherits them.
+**Cosine and sine are coordinates.** They are the across and up values of
+a point on a circle of radius 1. Later, triangles use them too, but the
+circle comes first.
 
-**`sin²θ + cos²θ = 1` is Pythagoras.** Every point on the circle is 1 from the center, and the distance formula says what that means about the coordinates.
+**$\sin^2\theta + \cos^2\theta = 1$ is Pythagoras.** Every point on the
+circle is at distance 1 from the center. The distance formula tells us
+what that means for the coordinates.
 
-**A radian is a distance walked.** Which is why a full turn is `2π` of them — that is how far it is round a circle of radius 1.
+**A radian is a distance walked.** That is why a full turn is $2\pi$
+radians: $2\pi$ is the distance round a circle of radius 1.
 
-**The exact values are places, not numbers to memorize.** √2⁄2 is where the 45° line crosses, and the reason it is √2⁄2 is one line of Pythagoras.
+**The exact values are places on the circle.** You do not need to
+memorize them. $\frac{\sqrt{2}}{2}$ is where the 45° line crosses the
+circle, and one line of Pythagoras shows why.
 
-**Tangent is a slope**, and it has no value at 90 degrees for the same reason a vertical line has no slope.
+**Tangent is a slope.** It has no value at 90 degrees, for the same
+reason that a vertical line has no slope.
 
-Next, [Sine and cosine waves: amplitude, period and shift](tutorial:sine-and-cosine-waves) takes this circle and unrolls it flat.
+Next, [Sine and cosine waves: amplitude, period and shift](tutorial:sine-and-cosine-waves)
+takes this circle and unrolls it flat.
 
-In a few sentences, before this tutorial, what did you think sine and cosine were? Has that changed, and if so, when in the tutorial did it change?
+Before this page, what did you think sine and cosine were? Write a few
+sentences. Has your idea changed? If it has, where on the page did it
+change?
 
 ## Where to Read More
 
