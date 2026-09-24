@@ -55,7 +55,9 @@ The pipeline, in order:
 
 2. **Pull code and maths out before markdown sees them.** `extract_blocks()`
    replaces every fenced code block with a numbered placeholder and records
-   each as a `Cell` (`exec`-tagged, with `id`/`hint` parsed off), a
+   each as a `Cell` (`exec`-tagged, with `id`/`hint`/`toolkit` parsed off;
+   a `python toolkit-reference` fence leaves no placeholder at all and
+   becomes the `reference` of the toolkit cell its `for:` names), a
    `SitePane` (an `html`/`css`/`js` fence tagged `site`, grouped by
    `site:` name into one `SiteEditor` — a live preview with no Pyodide
    involved), an `AppPane` (the same three languages tagged `app` instead,
@@ -131,7 +133,10 @@ The pipeline, in order:
    type="application/json" id="dewlab-manifest">` with what the runtime
    needs and can't otherwise know: the cell list (id, starter code, hint),
    extra Python packages beyond the default three, whether the page has
-   maths, content-hashed asset versions. This manifest is the entire
+   maths, content-hashed asset versions, and the page's toolkit
+   (`toolkit_for()`: every `toolkit: yes` cell on an earlier tutorial of
+   its course, in the order `cumulative_glossary()` walks, as
+   `{tutorial, title, cell, reference}`). This manifest is the entire
    contract between `build.py` and `tutorial-runtime.js` — read once at
    `readManifest()` and trusted from then on.
 
@@ -217,6 +222,23 @@ matplotlib figure as a transparent PNG, a trimmed traceback: all decided in
 `tutorial_tools.py`, testable under plain CPython
 (`tests/test_tutorial_tools.py`). After the run, the runtime saves the
 cell's code and output to `localStorage`.
+
+**The toolkit** carries a reader's own functions from page to page, since
+each page is otherwise its own Python session. `loadToolkit()` runs the
+manifest's `toolkit` entries into `_page_globals` after the namespace is
+seeded at boot and again after every `resetPageState()`, before any cell
+runs: the reader's own saved code for each cell (read from that page's
+`dewlab:progress:<id>` record), or the reference where there is none,
+where theirs raises, or where the reader chose the reference
+(`dewlab:toolkit-mode`). The fallback is per function: a function the
+reference defines and the reader's code leaves out, or leaves as a stub
+(a body of only a docstring, `...`, `pass` or `raise
+NotImplementedError`, read with `ast`), comes from the reference while
+the reader's other functions stay theirs. A downloaded page always loads
+the reference. `tutorial_tools._load_toolkit()` does the running and
+names what was defined, through a `"load-toolkit"` Worker message or directly on the
+main thread; a quiet line above the first cell (`renderToolkitLine()`)
+says what loaded and lets the reader switch modes.
 
 A cell's report panel (`.dl-report-icon`) opens the same way its hint does.
 Its two issue links carry two fields `build.py` can't know ahead of time —
@@ -338,7 +360,8 @@ Two things worth knowing if you touch this integration:
   runnable cell" — which Crepe's language picker can't preserve.
   `restoreExecTag()` (`assets/editor.js`) restores it on the way out, using
   the same signal `build.py` uses to mean a fence is a cell: an `id:` line
-  as the fence's first content.
+  as the fence's first content (and, for a `python toolkit-reference`
+  fence, its `for:` line).
 
 The structural report (`problems()`, the same checks `build.py` fails on,
 run here before a commit) also checks cross-tutorial links —
@@ -515,6 +538,7 @@ PR that touches the runtime or the editor.
 |---|---|
 | What a tutorial's markdown can express (a new frontmatter field, a new fence convention) | `build.py` |
 | What a cell can do (a new tutorial-facing function) | `assets/tutorial_tools.py` |
+| The toolkit: which earlier cells a page loads, how, and the line that says so | `toolkit_for()` in `build.py`; `loadToolkit()`/`renderToolkitLine()` in `assets/tutorial-runtime.js`; `_load_toolkit()` in `assets/tutorial_tools.py` |
 | What a cell *looks like*, or the settings panel, save/restore behaviour | `assets/tutorial-runtime.js` |
 | The live HTML/CSS/JS site editor's engine (preview, console, friendly errors) — shared by dewmini's Site tab, a tutorial's own site editor, and `dewmini web` | `assets/site-relay.js` |
 | A tutorial page's own site editor: mounting, Run/Reset wiring, save/restore | `assets/tutorial-runtime.js`'s `buildSiteEditors()` |

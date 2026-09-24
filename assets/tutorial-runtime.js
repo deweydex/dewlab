@@ -29,6 +29,7 @@ const HIGHLIGHT_COLOR_KEY = "dewlab:highlight-color";
 const HIGHLIGHT_COLORS = ["amber", "green", "blue", "pink"];
 const DEFAULT_HIGHLIGHT_COLOR = "amber";
 const PANEL_WIDTH_KEY = "dewlab:panel-width";
+const TOOLKIT_MODE_KEY = "dewlab:toolkit-mode";
 const AUTOSAVE_DELAY = 500;
 const SAVED_OUTPUT_STRIP_THRESHOLD = 100_000;
 const NON_TUTORIAL_PAGES = new Set(["index", "tree", "about", "topics"]);
@@ -3512,6 +3513,7 @@ async function bootMainThread(manifest) {
 
   await pyodideMT.runPythonAsync(RESEED_GLOBALS_SOURCE);
   if (manifest.needsSqlite) await pyodideMT.runPythonAsync(SEED_SQL_DB_SOURCE);
+  await loadToolkit();
 
   setStatus("");
   setBooting(false);
@@ -3679,6 +3681,7 @@ async function bootWorker(manifest) {
     interruptBuffer = new SharedArrayBuffer(4);
     worker.postMessage({ type: "set-interrupt-buffer", buffer: interruptBuffer });
   }
+  await loadToolkit();
 
   setBooting(false);
   pyodideReady = true;
@@ -3727,8 +3730,163 @@ function boot(manifest) {
   return manifest.standalone ? bootMainThread(manifest) : bootWorker(manifest);
 }
 
-function resetPageState() {
-  return currentManifest.standalone ? resetPageStateMT() : resetPageStateWorker();
+async function resetPageState() {
+  await (currentManifest.standalone ? resetPageStateMT() : resetPageStateWorker());
+  await loadToolkit();
+}
+
+/* The toolkit: earlier pages' toolkit cells (manifest.toolkit, build.py's
+ * toolkit_for()), loaded into the shared namespace at boot and again after
+ * anything clears it. "mine" runs the reader's own saved code for each
+ * cell where there is some; "reference" runs the author's. */
+let toolkitEl = null;
+let toolkitResult = null; // what the last load did, for the line to say
+let toolkitReloadPending = false; // the mode changed while a cell was running
+
+function readToolkitMode() {
+  try {
+    return localStorage.getItem(TOOLKIT_MODE_KEY) === "reference" ? "reference" : "mine";
+  } catch (err) {
+    return "mine";
+  }
+}
+
+function writeToolkitMode(mode) {
+  try {
+    localStorage.setItem(TOOLKIT_MODE_KEY, mode);
+  } catch (err) {
+    /* Forgotten after this page, same as every other setting here. */
+  }
+}
+
+/* The reader's own code for one toolkit cell, from the saved work of the
+ * page it is on (saveNow()'s record), or null if nothing is saved. A stub
+ * saved as the page gave it is still returned: _load_toolkit() finds its
+ * unwritten functions itself, one by one. */
+function savedToolkitCode(entry) {
+  try {
+    const raw = localStorage.getItem(PROGRESS_PREFIX + entry.tutorial);
+    const record = raw ? JSON.parse(raw) : null;
+    const saved = record && Array.isArray(record.cells)
+      ? record.cells.find((c) => c && c.task_id === entry.cell)
+      : null;
+    const code = saved && typeof saved.student_code === "string" ? saved.student_code : null;
+    return code !== null && code.trim() ? code : null;
+  } catch (err) {
+    return null;
+  }
+}
+
+async function loadToolkit() {
+  const toolkit = currentManifest.toolkit;
+  if (!toolkit || !toolkit.length) return;
+  /* A downloaded page has no other page's saved work to read. */
+  const useMine = readToolkitMode() === "mine" && !currentManifest.standalone;
+  const entries = toolkit.map((entry) => {
+    const mine = useMine ? savedToolkitCode(entry) : null;
+    return {
+      tutorial: entry.tutorial,
+      cell: entry.cell,
+      reference: entry.reference,
+      mine,
+      unsaved: useMine && mine === null,
+    };
+  });
+  const payload = JSON.stringify(entries);
+  try {
+    const raw = currentManifest.standalone
+      ? toolsMT._load_toolkit(payload)
+      : await workerRequest("load-toolkit", { entries: payload });
+    const result = JSON.parse(raw);
+    result.entries.forEach((done, i) => { done.title = toolkit[i].title; });
+    toolkitResult = result;
+  } catch (err) {
+    console.error("dewlab: the toolkit did not load", err);
+    toolkitResult = { failed: true };
+  }
+  renderToolkitLine();
+}
+
+function toolkitNames(names) {
+  const quoted = names.map((name) => `<code>${escapeHtml(name)}</code>`);
+  if (quoted.length < 2) return quoted.join("");
+  return `${quoted.slice(0, -1).join(", ")} and ${quoted[quoted.length - 1]}`;
+}
+
+function renderToolkitLine() {
+  if (!toolkitEl) return;
+  const toolkit = currentManifest.toolkit;
+  const pages = new Set(toolkit.map((entry) => entry.tutorial)).size;
+  const fromPages = pages === 1 ? "1 earlier page" : `${pages} earlier pages`;
+  const lines = [];
+  if (!toolkitResult) {
+    lines.push(`Your toolkit from ${fromPages} loads when Python starts.`);
+  } else if (toolkitResult.failed) {
+    lines.push("Your toolkit could not be loaded. Restarting Python may fix it.");
+  } else {
+    const { names, entries } = toolkitResult;
+    lines.push(names.length
+      ? `Your toolkit has ${toolkitNames(names)}. It comes from ${fromPages}.`
+      : `Your toolkit from ${fromPages} is loaded.`);
+    const unwritten = [];
+    const raised = [];
+    for (const done of entries) {
+      for (const { name, why } of done.from_reference) {
+        (why === "raised" ? raised : unwritten).push(name);
+      }
+    }
+    const theReference = (list) => (list.length === 1 ? "the reference one is" : "the reference ones are");
+    if (unwritten.length) {
+      lines.push(`You have not written ${toolkitNames(unwritten)} yet, so ${theReference(unwritten)} loaded.`);
+    }
+    if (raised.length) {
+      lines.push(`${toolkitNames(raised)}: your version raised an error, so ${theReference(raised)} loaded.`);
+    }
+    for (const done of entries) {
+      if (done.error) {
+        lines.push(`The toolkit from ${escapeHtml(done.title)} raised an error, so part of it did not load.`);
+      }
+    }
+  }
+  if (currentManifest.standalone && readToolkitMode() === "mine") {
+    lines.push("This downloaded copy cannot see your work on other pages, so it uses the reference.");
+  }
+  const text = toolkitEl.querySelector(".dl-toolkit-text");
+  text.innerHTML = lines.map((line) => `<span class="dl-toolkit-line">${line}</span>`).join(" ");
+  const mode = readToolkitMode();
+  for (const input of toolkitEl.querySelectorAll("input[name='dl-toolkit-mode']")) {
+    input.checked = input.value === mode;
+  }
+}
+
+function buildToolkitLine(manifest) {
+  if (!manifest.toolkit || !manifest.toolkit.length || !cells.length) return;
+  toolkitEl = document.createElement("div");
+  toolkitEl.className = "dl-toolkit";
+  toolkitEl.innerHTML =
+    '<p class="dl-toolkit-text" aria-live="polite"></p>' +
+    '<span class="dl-toolkit-mode" role="radiogroup" aria-label="Which toolkit to load">' +
+    '<label><input type="radio" name="dl-toolkit-mode" value="mine"> My code</label>' +
+    '<label><input type="radio" name="dl-toolkit-mode" value="reference"> Reference</label>' +
+    "</span>";
+  for (const input of toolkitEl.querySelectorAll("input[name='dl-toolkit-mode']")) {
+    input.addEventListener("change", () => {
+      if (!input.checked) return;
+      writeToolkitMode(input.value);
+      if (!pyodideReady) renderToolkitLine();
+      else if (running) toolkitReloadPending = true;
+      else loadToolkit();
+    });
+  }
+  cells[0].element.insertAdjacentElement("beforebegin", toolkitEl);
+  renderToolkitLine();
+}
+
+/* Called as a run finishes: a mode change made during it loads now. */
+function reloadToolkitIfPending() {
+  if (!toolkitReloadPending) return;
+  toolkitReloadPending = false;
+  loadToolkit();
 }
 
 /* An app cell's own bridge to the page's shared `db` — `dewlabQueryRows`
@@ -4056,6 +4214,7 @@ async function runCell(cell) {
     running = null;
     clearCellRunning(cell, previousLabel);
     clearRunLineTicker(cell);
+    reloadToolkitIfPending();
     if (completed) {
       announceCellRun(cell);
       refreshPythonState();
@@ -4104,6 +4263,7 @@ async function runCellBatch(list, { reset, emptyMessage, describe }) {
     setStatus(`Python isn't available: ${err.message}`, "error");
   } finally {
     running = null;
+    reloadToolkitIfPending();
   }
 }
 
@@ -4169,6 +4329,8 @@ async function restartPython() {
 
   bootPromise = null;
   pyodideReady = false;
+  toolkitResult = null;
+  renderToolkitLine();
   setRunnable(false);
   setStatus("Restarting Python…");
   updateExecutionStatus();
@@ -5604,6 +5766,7 @@ const textureState = initTexture((dark) => {
 initSegKeyboardNav();
 
 buildCells(currentManifest);
+buildToolkitLine(currentManifest);
 buildQuestions();
 buildSiteEditors(currentManifest);
 wireDiagramWidthSliders();

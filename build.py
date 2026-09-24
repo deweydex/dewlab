@@ -148,7 +148,12 @@ VERSION_FILE_RE = re.compile(r"^v\d{4}\.\d{2}\.\d{2}\.\d+$")
 
 FENCE_RE = re.compile(r"^(?P<indent> *)```(?P<info>[^\n]*)\n(?P<body>.*?)^ *```[ \t]*$",
                       re.MULTILINE | re.DOTALL)
-HEADER_RE = re.compile(r"^\s*(id|hint|expect|name)\s*:\s*(.*)$")
+HEADER_RE = re.compile(r"^\s*(id|hint|expect|name|toolkit)\s*:\s*(.*)$")
+# `toolkit:` on a Python exec cell: its code is loaded into every later page
+# of the course (toolkit_for()). Either spelling of each answer is accepted.
+TOOLKIT_VALUES = {"yes": True, "true": True, "no": False, "false": False}
+# The one header line a ```python toolkit-reference fence carries.
+TOOLKIT_REFERENCE_HEADER_RE = re.compile(r"^\s*for\s*:\s*(.*)$")
 # The only two words that can open an exec fence today. Anything else fails
 # the build with a clear message rather than silently becoming a Python cell.
 CELL_TYPES = {"python", "sql"}
@@ -246,6 +251,17 @@ class Cell:
     expect: str | None = None
     name: str | None = None
     type: str = "python"
+    # A toolkit cell's code is loaded into every later page of its course;
+    # `reference` is the complete version from its ```python
+    # toolkit-reference fence, when the cell itself is a stub.
+    toolkit: bool = False
+    reference: str | None = None
+
+    @property
+    def toolkit_reference(self) -> str:
+        """What a later page loads when the reader's own version is not
+        used: the reference fence, or the cell's own code without one."""
+        return self.reference if self.reference is not None else self.code
 
 
 @dataclass
@@ -691,6 +707,16 @@ def parse_cell(body: str, path: Path, cell_type: str = "python") -> Cell:
         lines.pop(0)
     if "id" not in header:
         fail(path, "an exec cell has no `id:` line — ids are what saved progress matches on")
+    toolkit = False
+    if "toolkit" in header:
+        value = header["toolkit"].lower()
+        if value not in TOOLKIT_VALUES:
+            fail(path, f"cell {header['id']!r} says `toolkit: {header['toolkit']}` — "
+                       "write `toolkit: yes` or leave the line out")
+        toolkit = TOOLKIT_VALUES[value]
+        if toolkit and cell_type != "python":
+            fail(path, f"cell {header['id']!r} is a {cell_type} cell; only a Python "
+                       "cell can be a toolkit cell")
     code = expand_includes("\n".join(lines).strip("\n"), path)
     return Cell(
         id=header["id"],
@@ -699,7 +725,20 @@ def parse_cell(body: str, path: Path, cell_type: str = "python") -> Cell:
         expect=header.get("expect") or None,
         name=header.get("name") or None,
         type=cell_type,
+        toolkit=toolkit,
     )
+
+
+def parse_toolkit_reference(body: str, path: Path) -> tuple[str, str]:
+    """A ```python toolkit-reference fence: its `for:` line, naming the
+    toolkit cell it completes, and the code under it. Never shown to a
+    reader — extract_blocks() leaves nothing of it on the page."""
+    lines = body.split("\n")
+    match = TOOLKIT_REFERENCE_HEADER_RE.match(lines[0]) if lines else None
+    if not match or not match.group(1).strip():
+        fail(path, "a toolkit-reference fence needs a `for:` line first, naming "
+                   "the toolkit cell it completes")
+    return match.group(1).strip(), expand_includes("\n".join(lines[1:]).strip("\n"), path)
 
 
 def parse_site_pane(body: str, path: Path, language: str) -> SitePane:
@@ -1069,7 +1108,9 @@ def extract_blocks(
            list[AppCell]]:
     """Pull every fence out, leaving a comment placeholder markdown will keep.
 
-    An `exec` fence becomes a cell; a `hint` fence becomes a staged hint;
+    An `exec` fence becomes a cell; a `python toolkit-reference` fence
+    becomes the reference code of the toolkit cell its `for:` names, and
+    leaves nothing on the page; a `hint` fence becomes a staged hint;
     an `html site`/`css site`/`js site` fence
     becomes one pane of a `SiteEditor`, grouped with any of the same
     `site:` name immediately before or after it; a `question` fence
@@ -1093,6 +1134,7 @@ def extract_blocks(
     used_app_names: set[str] = set()
     current_app: AppCell | None = None
     last_app_pane_end = -1
+    references: list[tuple[str, str]] = []
 
     def one(match: re.Match) -> str:
         nonlocal current_site, last_site_pane_end, current_app, last_app_pane_end
@@ -1105,6 +1147,11 @@ def extract_blocks(
                            f"not one of {sorted(CELL_TYPES)}")
             cells.append(parse_cell(match.group("body"), path, cell_type))
             return f"{indent}<!--dewlab-cell-{len(cells) - 1}-->"
+        if "toolkit-reference" in info:
+            if info[0] != "python":
+                fail(path, f"a toolkit-reference fence starts with {info[0]!r}, not 'python'")
+            references.append(parse_toolkit_reference(match.group("body"), path))
+            return ""
         if info and info[0] == "hint":
             hint = parse_hint(match.group("body"), path, cells[-1].id if cells else None)
             hint.index = hints_per_cell.get(hint.cell, 0)
@@ -1176,6 +1223,18 @@ def extract_blocks(
         if cell.id in seen:
             fail(path, f"two exec cells share the id {cell.id!r}")
         seen.add(cell.id)
+    by_id = {cell.id: cell for cell in cells}
+    for target, code in references:
+        cell = by_id.get(target)
+        if cell is None:
+            fail(path, f"a toolkit-reference fence is for {target!r}, and this "
+                       "tutorial has no cell with that id")
+        if not cell.toolkit:
+            fail(path, f"a toolkit-reference fence is for {target!r}, which is not "
+                       "a toolkit cell — add `toolkit: yes` to it")
+        if cell.reference is not None:
+            fail(path, f"cell {target!r} has two toolkit-reference fences")
+        cell.reference = code
     for editor in site_editors:
         for pane in editor.panes.values():
             if pane.id in seen:
@@ -2822,6 +2881,68 @@ def origin_of(reader_at: Tutorial, introduced_by: Tutorial, term: str) -> dict:
     }
 
 
+def toolkit_entries(members: list[Tutorial]) -> list[dict]:
+    """Every toolkit cell on `members`, in order, as a manifest entry.
+    Whether a reader's saved version is really theirs, or the stub left
+    as it was, is decided per function when it loads
+    (`tutorial_tools._load_toolkit()`), so the stub itself need not travel."""
+    return [
+        {"tutorial": member.slug, "title": member.title, "cell": cell.id,
+         "reference": cell.toolkit_reference}
+        for member in members
+        for cell in member.cells
+        if cell.toolkit
+    ]
+
+
+def toolkit_for(
+    tutorial: Tutorial,
+    registry: dict[str, Tutorial],
+    groups: dict[tuple[str, str], list[Tutorial]],
+) -> list[dict]:
+    """The toolkit a page loads before its first cell runs: every toolkit
+    cell on an earlier tutorial of its course, in the order
+    cumulative_glossary() walks (`series_chain()`), and none of its own —
+    the reader runs those. On a page listed by several courses, the first
+    course in courses/index.yaml order whose earlier pages have any.
+
+    A frozen release sits where its current one does, so it is matched by
+    id rather than by identity. A practice or context page is on no route
+    of its own, so it loads the toolkit of the tutorial(s) it belongs to,
+    those tutorials' own toolkit cells included: the reader has been
+    through them by then. A mixed set naming several gets everything up to
+    and including the latest of them, in course order, whatever order its
+    `practice_across` lists them in: each owner's chain is a prefix of
+    the latest one's, so the union walks the course once.
+    """
+    if tutorial.is_companion:
+        found: list[dict] = []
+        seen: set[tuple[str, str]] = set()
+        for slug in tutorial.owners:
+            owner = registry.get(slug)
+            if owner is None:
+                continue
+            for entry in toolkit_for(owner, registry, groups) + toolkit_entries([owner]):
+                key = (entry["tutorial"], entry["cell"])
+                if key not in seen:
+                    seen.add(key)
+                    found.append(entry)
+        return found
+
+    for course in courses():
+        for placement in tutorial.placements:
+            if placement.course != course or not placement.series:
+                continue
+            chain = series_chain(course, placement.series, groups)
+            slugs = [member.slug for member in chain]
+            if tutorial.slug not in slugs:
+                continue
+            entries = toolkit_entries(chain[: slugs.index(tutorial.slug)])
+            if entries:
+                return entries
+    return []
+
+
 MATH_BASICS_DATA = ROOT / "planning" / "curriculum" / "math-basics.yaml"
 PYTHON_BASICS_DATA = ROOT / "planning" / "curriculum" / "python-basics.yaml"
 
@@ -4401,7 +4522,8 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           notes: list[dict] | None = None,
           datasets: list[dict] | None = None,
           groups: dict[tuple[str, str], list[Tutorial]] | None = None,
-          members: list[Tutorial] | None = None) -> Path:
+          members: list[Tutorial] | None = None,
+          toolkit: list[dict] | None = None) -> Path:
     """Assembles and writes one finished tutorial page to disk: builds
     the JSON manifest that `assets/tutorial-runtime.js` reads on the
     page (`docs/tutorial-runtime-explained.md` covers what that file
@@ -4477,6 +4599,10 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         manifest["packages"] = list(packages)
     if glossary:
         manifest["glossary"] = glossary
+    if toolkit:
+        # Earlier pages' toolkit cells (toolkit_for()), loaded into this
+        # page's namespace before its first cell runs.
+        manifest["toolkit"] = toolkit
     if notes:
         manifest["notes"] = notes
     if datasets:
@@ -6121,6 +6247,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             context=context.get(tutorial.slug),
             registry=registry,
             glossary=cumulative_glossary(tutorial, registry, groups),
+            toolkit=toolkit_for(tutorial, registry, groups),
             notes=[{"id": n.id, "html": n.html} for n in tutorial.notes],
             datasets=check_datasets(tutorial),
             groups=groups,

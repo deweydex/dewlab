@@ -422,6 +422,47 @@ names together, reading the live namespace as well as the text, and
 
 ---
 
+## The toolkit: earlier pages' functions, loaded before the first cell
+
+A page whose manifest has a `toolkit` list (build.py's `toolkit_for()`:
+every `toolkit: yes` cell on an earlier page of the course, in course
+order, each with its reference code) loads those cells into the shared
+namespace before any of its own run. `loadToolkit()` is the one entry
+point, called from three places: both boot paths (`bootWorker()` and
+`bootMainThread()`, before the page becomes runnable, so a Run click
+that waits on `ensureBooted()` also waits for the toolkit), and
+`resetPageState()`, which every namespace-clearing path goes through
+("Run this cell and all above", "Restart & run all"'s run half). A
+restart reboots, so it takes the boot path.
+
+Which version of each cell runs is the one decision made here rather
+than in Python. The mode is a site-wide setting, `dewlab:toolkit-mode`
+(`readToolkitMode()`/`writeToolkitMode()`, `mine` unless it says
+`reference`). In `mine`, `savedToolkitCode()` reads the reader's code for
+that cell straight out of the other page's saved record
+(`dewlab:progress:<tutorial id>`, the record `saveNow()` writes there),
+and marks an entry with nothing saved as `unsaved`. On a downloaded page
+(`manifest.standalone`) there is no other page's record to read, so it
+always sends the reference. Everything else — running each entry with
+its output thrown away, taking each function the reader left out or left
+as a stub from the reference (`_functions_in()`/`_is_placeholder()`),
+undoing a reader's version that raised and running the reference in its
+place, and naming the functions and classes the toolkit defined — is
+`tutorial_tools._load_toolkit()`,
+reached through a `"load-toolkit"` worker message or `toolsMT` directly,
+the same fork as every other dual-path call here.
+
+The line above the first cell (`buildToolkitLine()`,
+`renderToolkitLine()`, `.dl-toolkit` in `tutorial-style.css`) says what
+will load before Python has booted, what did load afterwards, and which
+functions came from the reference and why ("You have not written … yet",
+"… your version raised an error"). Its two radio buttons write
+the mode; if Python is running, the toolkit reloads straight away, or,
+when a cell is running, as soon as it finishes
+(`reloadToolkitIfPending()`).
+
+---
+
 ## Highlights: colour, the Notes panel's own list, and My Notes
 
 A highlight anchors to a passage of prose (`locateHighlightAnchor()`,
@@ -513,6 +554,10 @@ steps the way the base feature was:
   travel in the saved record (`attempts`, `hints_shown`), and two Settings
   rows (`initStagedHintsToggles()`) decide whether they show at all and
   whether a restart hides them.
+- **"Where does a function from an earlier page come from?"** —
+  `loadToolkit()` and the section on the toolkit above; the list itself is
+  build.py's `toolkit_for()`, and running it is
+  `tutorial_tools._load_toolkit()`.
 - **"What's actually exposed to the browser console / end-to-end tests?"**
   — the `globalThis.dewlab = {...}` object at the very end of the file.
 - **"Why doesn't a shared custom cell run itself when I load it?"** —
