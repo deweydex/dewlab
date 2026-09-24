@@ -197,8 +197,8 @@ def test_with_nothing_saved_the_reference_is_loaded(tab, site_url):
     assert _run_and_read(tab) == "ref:101"
     assert _run_and_read(tab, "use-hex") == "ref:ff"
     assert _line(tab) == ("Your toolkit has to_binary and to_hex. It comes from 1 earlier page. "
-                          "You have not written to_binary and to_hex yet, so the reference "
-                          "ones are loaded.")
+                          "You have not written any of these yet, so the reference ones "
+                          "are loaded.")
     # The reference's own print went nowhere.
     assert "never shown" not in tab.text_content("#dl-body")
     assert "ref:1000" not in tab.text_content("#dl-body")
@@ -223,7 +223,7 @@ def test_an_untouched_stub_counts_as_not_written(tab, site_url):
     _open_second(tab, site_url, saved=_saved_on_first(stub))
     assert _run_and_read(tab) == "ref:101"
     assert _run_and_read(tab, "use-hex") == "ref:ff"
-    assert ("You have not written to_binary and to_hex yet, so the reference ones are loaded."
+    assert ("You have not written any of these yet, so the reference ones are loaded."
             in _line(tab))
 
 

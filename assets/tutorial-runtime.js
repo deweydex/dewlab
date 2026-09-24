@@ -3836,7 +3836,11 @@ function renderToolkitLine() {
       }
     }
     const theReference = (list) => (list.length === 1 ? "the reference one is" : "the reference ones are");
-    if (unwritten.length) {
+    // A reader new to the course has written none of them; naming every
+    // function a second time would only repeat the sentence above.
+    if (unwritten.length && unwritten.length === names.length && !raised.length) {
+      lines.push("You have not written any of these yet, so the reference ones are loaded.");
+    } else if (unwritten.length) {
       lines.push(`You have not written ${toolkitNames(unwritten)} yet, so ${theReference(unwritten)} loaded.`);
     }
     if (raised.length) {
