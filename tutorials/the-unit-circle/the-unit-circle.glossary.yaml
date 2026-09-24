@@ -2,41 +2,58 @@
 entries:
   - term: unit circle
     kind: concept
-    definition: A circle of radius 1 centred on the origin. Every point on it is distance 1 from the center — the one fact everything about sine and cosine rests on.
+    definition: >
+      The unit circle is a circle of radius 1 with its center at the
+      origin. Every point on it is at distance 1 from the center. Sine and
+      cosine are built on that one fact.
   - term: cosine, sine
     kind: concept
     definition: >
-      The coordinates of a point on the unit circle, for a given angle
-      measured from the positive x-axis. Cosine is the across (x) value and
-      sine is the up (y) value. They are named after the coordinates, not
-      the other way round.
+      Cosine and sine are the coordinates of a point on the unit circle,
+      for an angle measured from the positive x-axis. Cosine is the across
+      (x) value and sine is the up (y) value. The coordinates came first,
+      and cosine and sine are their names.
     example: "math.cos(angle), math.sin(angle)"
   - term: "sin^2(theta) + cos^2(theta) = 1"
     kind: formula
     definition: >
-      Follows directly from the unit circle being distance 1 from the
-      center and the Pythagorean theorem (x^2 + y^2 = 1) — not a separate
-      fact to learn.
+      This identity is Pythagoras on the unit circle. Every point is at
+      distance 1 from the center, so x^2 + y^2 = 1, and x and y are
+      cos(theta) and sin(theta).
   - term: radian
     kind: concept
     definition: >
-      The angle where the arc walked equals the radius. A full turn is
-      2*pi radians, because 2*pi is the distance round a circle of
-      radius 1.
+      A radian is the angle you turn through when the arc you walk along
+      the edge equals the radius. A full turn is 2*pi radians, because
+      2*pi is the distance round a circle of radius 1.
   - term: degrees, radians conversion
     kind: formula
-    definition: 360 degrees equals 2*pi radians, so convert by proportion.
+    definition: >
+      360 degrees equals 2*pi radians, so we convert by proportion. One
+      radian is about 57.3 degrees.
     example: "radians = degrees * math.pi / 180"
+  - term: hypotenuse
+    kind: concept
+    definition: >
+      The hypotenuse of a right-angled triangle is its longest side. It is
+      the side opposite the right angle.
   - term: exact trig values (0, 30, 45, 60, 90 degrees)
     kind: formula
     definition: >
-      cos/sin pairs worked out exactly with Pythagoras rather than
-      approximated: 0 -> (1, 0); 30 -> (sqrt(3)/2, 1/2); 45 -> (sqrt(2)/2,
-      sqrt(2)/2); 60 -> (1/2, sqrt(3)/2); 90 -> (0, 1). Exact form matters
-      because the decimal is a genuinely different, slightly wrong number.
+      These are the cos and sin pairs we can work out exactly with
+      Pythagoras: 0 -> (1, 0); 30 -> (sqrt(3)/2, 1/2); 45 -> (sqrt(2)/2,
+      sqrt(2)/2); 60 -> (1/2, sqrt(3)/2); 90 -> (0, 1). A decimal version
+      is a slightly different number, so the exact form matters.
+  - term: surd form
+    kind: concept
+    definition: >
+      Surd form is a way of writing a number with a root left as a root,
+      such as sqrt(2)/2. It is exact. A decimal such as 0.7071 is close,
+      but it is a different number.
   - term: tangent
     kind: concept
     definition: >
-      up divided by across (sin/cos) — the slope of the line from the
-      origin to that point on the circle. Undefined at 90 degrees, for
-      the same reason a vertical line has no slope.
+      The tangent of an angle is the up value divided by the across value
+      (sin/cos). It is the slope of the line from the origin to that point
+      on the circle. It has no value at 90 degrees, for the same reason a
+      vertical line has no slope.

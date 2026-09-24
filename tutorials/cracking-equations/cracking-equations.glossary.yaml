@@ -1,40 +1,64 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
+  - term: solve, solution, root
+    kind: concept
+    definition: >
+      To solve an equation is to find the values of x that make it true.
+      Each such value is a solution. A solution of "polynomial = 0" is
+      also called a root of the polynomial: 1 is a root of x^2 - 4x + 3.
+  - term: linear equation
+    kind: concept
+    definition: >
+      A linear equation is one where x appears only to the power 1. Any
+      linear equation can be rearranged to ax + b = 0, and then
+      x = -b/a, as long as a is not 0.
+    example: "3x - 15 = 0  ->  x = 5"
+  - term: quadratic equation
+    kind: concept
+    definition: >
+      A quadratic equation has the form ax^2 + bx + c = 0, with a not 0.
+      It has at most two real solutions.
   - term: quadratic formula
     kind: formula
     definition: >
-      Solves ax^2 + bx + c = 0 directly, without factoring or completing
-      the square by hand.
+      The quadratic formula solves ax^2 + bx + c = 0 directly, without
+      factorising by hand. The +/- gives the two solutions.
     example: "x = (-b +/- sqrt(b**2 - 4*a*c)) / (2*a)"
   - term: discriminant
     kind: concept
     definition: >
-      b^2 - 4ac, the part of the quadratic formula under the square root.
-      Positive means two real roots; zero means one repeated root;
-      negative means no real roots.
-  - term: factored form (of a quadratic)
-    kind: formula
-    definition: >
-      A quadratic written as a(x - r1)(x - r2), where r1 and r2 are its
-      roots — the reverse of expanding two binomials with FOIL.
-    example: "x^2 - 4x + 3 = (x - 1)(x - 3)"
-  - term: linear inequality
+      The discriminant is b^2 - 4ac, the part of the quadratic formula
+      under the square root. Positive means two real roots, zero means one
+      repeated root, and negative means no real roots.
+  - term: binomial
     kind: concept
     definition: >
-      Solved the same way as an equation, with one extra rule: multiplying
-      or dividing both sides by a negative number flips the inequality's
-      direction.
+      A binomial is a polynomial with two terms, such as x - 1.
+  - term: factorise, factorised form (of a quadratic)
+    kind: formula
+    definition: >
+      To factorise a quadratic is to write it as a(x - r1)(x - r2), where
+      r1 and r2 are its roots. This is the reverse of expanding two
+      binomials with FOIL.
+    example: "x^2 - 4x + 3 = (x - 1)(x - 3)"
+  - term: inequality, linear inequality
+    kind: concept
+    definition: >
+      An inequality compares two expressions with >, >=, < or <=. We solve
+      a linear inequality the same way as an equation, with one extra
+      rule: multiplying or dividing both sides by a negative number flips
+      the inequality's direction.
     example: "2x + 3 > 7  ->  x > 2"
   - term: "simultaneous equations, elimination"
     kind: formula
     definition: >
-      Two equations, two unknowns, solved at once — multiply the
-      equations so one variable cancels when added or subtracted. For
-      a1*x + b1*y = c1 and a2*x + b2*y = c2, both x and y have a direct
-      formula in terms of the coefficients.
+      Simultaneous equations are two equations that must both be true at
+      the same time. Elimination solves them by multiplying the equations
+      so that one unknown cancels when we add or subtract them.
+    example: "x + y = 10 and 2x - y = 5: adding gives 3x = 15"
   - term: determinant (of a 2x2 system)
     kind: concept
     definition: >
-      a1*b2 - a2*b1, the denominator in the simultaneous-equations
-      formula. Zero means the system has no unique solution — the lines
-      are parallel or identical.
+      The determinant is a1*b2 - a2*b1, the bottom of both fractions in
+      the simultaneous-equations formula. If it is zero, the system has no
+      single solution: the two lines are parallel or the same line.

@@ -1,22 +1,42 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
-  - term: transposing a formula, subject of a formula
+  - term: subject of a formula
     kind: concept
     definition: >
-      Rearranging a formula so a different letter sits alone on one side
-      — the subject. No arrangement is more correct than another; the
-      original just reflects what whoever wrote it wanted to know.
+      The subject of a formula is the letter on its own on one side. In
+      v = u + at, the subject is v.
+  - term: transposing a formula, changing the subject
+    kind: concept
+    definition: >
+      Transposing a formula means rearranging it so that a different
+      letter is the subject. No arrangement is more correct than another.
+      The original only shows what its writer wanted to know.
+    example: "v = u + at  becomes  t = (v - u) / a"
   - term: do the same thing to both sides
     kind: concept
     definition: >
-      The one rule behind every rearrangement: whatever you do to one side
-      of an equation, do to the other. Work backwards through the
-      operations, from the outside in, until the letter you want is on its
-      own.
+      This is the one rule behind every rearrangement: whatever you do to
+      one side of an equation, do to the other. Work backwards through
+      the operations, from the outside in, until the letter you want is on
+      its own.
+  - term: denominator
+    kind: concept
+    definition: >
+      The denominator is the bottom of a fraction. When the letter you
+      want is in a denominator, find its reciprocal first, then flip it.
+    example: "1/R = 1/a + 1/b  becomes  R = 1 / (1/a + 1/b)"
+  - term: lambda
+    python: lambda
+    kind: keyword
+    definition: >
+      Makes a small function on one line, without a name. The part before
+      the colon lists the inputs, and the part after it is the value
+      returned.
+    example: "lambda u, a, t: u + a * t"
   - term: floating-point comparison tolerance
     kind: concept
     definition: >
       Two floats that should be equal in maths can differ in the last
-      decimal place. So check whether they are closer together than you care
-      about, rather than asking whether they are exactly equal.
+      decimal place. So check whether they are closer together than you
+      care about, rather than asking whether they are exactly equal.
     example: "abs(recovered - expected) > 1e-9"

@@ -1,7 +1,7 @@
 ---
 title: "Solving equations: linear, quadratic and simultaneous"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.24.1
 covers:
   solving-linear-equations:
     touches: [MIT-1.7]
@@ -17,21 +17,53 @@ covers:
 
 # Solving equations: linear, quadratic and simultaneous
 
-We can now represent, evaluate, and manipulate polynomials. Today we learn to *solve* them: given an equation like $3x + 7 = 22$ or $x^2 - 4x + 3 = 0$, find the values of x that make it true.
+In [Polynomials: representing and combining them in Python](tutorial:expressions-come-alive)
+we stored polynomials as lists, and evaluated, added and multiplied
+them. In [Rearranging formulae: changing the subject](tutorial:rearranging-formulae)
+we learned to move letters around a formula. Now we put the two together
+and *solve* equations. To solve an equation means to find the values of
+$x$ that make it true. For example, $3x + 7 = 22$ is true when $x = 5$.
 
-We will also learn to factor quadratics -- decomposing them into simpler pieces -- and to solve systems of equations with two unknowns.
+A value of $x$ that makes an equation true is called a *solution* of the
+equation. When the equation has the form "polynomial $= 0$", a solution
+is also called a *root* of the polynomial. For example, $x = 1$ is a root
+of $x^2 - 4x + 3$, because $1 - 4 + 3 = 0$.
 
-## Solving Linear Equations
+On this page we:
 
-A linear equation has the form $ax + b = 0$. The solution is straightforward:
+- solve linear equations, like $3x + 7 = 22$
+- solve quadratic equations, like $x^2 - 4x + 3 = 0$, with a formula
+- factorise quadratics: split them into simpler pieces
+- solve inequalities, like $2x + 3 > 7$
+- solve two equations with two unknowns at the same time
 
-$$x = -\frac{b}{a} \quad \text{(provided } a \neq 0 \text{)}$$
+## Solving linear equations
 
-In our coefficient-list convention, a linear polynomial `[b, a]` represents $ax + b$. Setting it equal to zero and solving gives $x = -b/a$.
+A *linear equation* is an equation where $x$ appears only to the power
+1. We can always rearrange one into the form $ax + b = 0$, by moving
+every term to one side. For example, $3x + 7 = 22$ becomes
+$3x - 15 = 0$ when we subtract 22 from both sides.
+
+To solve $ax + b = 0$, we subtract $b$ from both sides, then divide by
+$a$:
+
+$$x = -\frac{b}{a} \quad \text{(as long as } a \neq 0 \text{)}$$
+
+For $3x - 15 = 0$, that gives $x = -\frac{-15}{3} = 5$.
+
+In our coefficient-list convention, the list `[b, a]` stands for
+$ax + b$. So `[-15, 3]` is $3x - 15$.
 
 ### Your turn
 
-Let's write a function `solve_linear(coeffs)` that takes `[b, a]` and returns the solution. What should happen if $a = 0$? That means there is no x term at all, so it is not really a linear equation — have your function handle that case gracefully rather than crashing.
+Can you write a function `solve_linear(coeffs)` that takes `[b, a]` and
+returns the solution?
+
+1. Write the function in the first cell.
+2. Think about $a = 0$. Then there is no $x$ term at all, so it is not
+   really a linear equation. Make your function handle that case with a
+   clear message, without crashing.
+3. Test it in the second cell with the three cases in the comments.
 
 ```python exec
 id: your-turn-1
@@ -46,21 +78,47 @@ id: your-turn-2
 # solve_linear([4, 0]) -> no solution (or "not a linear equation")
 ```
 
-## The Quadratic Formula
+## The quadratic formula
 
-A quadratic equation $ax^2 + bx + c = 0$ has up to two solutions, given by:
+A *quadratic equation* has the form $ax^2 + bx + c = 0$, with
+$a \neq 0$. It can have up to two solutions. The *quadratic formula*
+gives them:
 
 $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 
-The expression under the square root, $b^2 - 4ac$, is called the *discriminant* and tells us how many real solutions exist:
+The sign $\pm$ means "plus or minus". Using $+$ gives one solution, and
+using $-$ gives the other.
 
-- If the discriminant is positive: two distinct real roots
-- If the discriminant is zero: one repeated root
-- If the discriminant is negative: no real roots (the parabola does not cross the x-axis)
+Here is one worked example. For $x^2 - 4x + 3 = 0$, we have $a = 1$,
+$b = -4$ and $c = 3$. Then $b^2 - 4ac = 16 - 12 = 4$, and
+$\sqrt{4} = 2$. So
+
+$$x = \frac{4 \pm 2}{2}, \quad\text{which gives } x = 3 \text{ or } x = 1.$$
+
+The part under the square root, $b^2 - 4ac$, is called the
+*discriminant*. The discriminant tells us how many real solutions there
+are:
+
+| Discriminant | Real roots | Example | $b^2 - 4ac$ |
+|---|---|---|---|
+| positive | two different roots | $x^2 - 4x + 3 = 0$ | $16 - 12 = 4$ |
+| zero | one repeated root | $x^2 - 2x + 1 = 0$ | $4 - 4 = 0$ |
+| negative | no real roots | $x^2 + 5 = 0$ | $0 - 20 = -20$ |
+
+Why no real roots when it is negative? No real number squared gives a
+negative number, so the square root of a negative number is not a real
+number. The graph of a quadratic is a curve called a parabola. When
+the discriminant is negative, the parabola does not cross the $x$-axis.
+You will draw these curves in
+[Functions and their graphs](tutorial:drawing-functions). And in
+[Complex numbers: roots that are not real](tutorial:complex-roots),
+the very next page, we find roots for these equations after all.
 
 ### Your turn
 
-How might you write a function `solve_quadratic(coeffs)` that takes `[c, b, a]` (our convention) and returns the solutions, handling all three cases of the discriminant?
+How might you write a function `solve_quadratic(coeffs)`? It takes
+`[c, b, a]` (our convention, constant first) and returns the solutions.
+It should handle all three cases of the discriminant.
 
 **Pseudocode:**
 ```
@@ -76,6 +134,9 @@ ELIF discriminant == 0:
 ELSE:
     RETURN () or a message indicating no real roots
 ```
+
+1. Write `solve_quadratic` in the first cell.
+2. Test it in the second cell with the four cases in the comments.
 
 ```python exec
 id: your-turn-3
@@ -95,10 +156,25 @@ id: your-turn-4
 
 ### Verifying solutions
 
-A satisfying check: if x is a root of the polynomial, then evaluating the polynomial at x should give zero (or very close to zero, allowing for floating-point imprecision).
+How can we be sure a root is right? If $x$ is a root of the polynomial,
+then evaluating the polynomial at $x$ gives zero. With floats, it may
+give a number very close to zero instead.
+
+The cell below uses your `solve_quadratic`, so run it after you have
+written that function. It also brings back `evaluate_poly` from the
+polynomials page. What values of p do you expect it to print? Run it to
+check.
 
 ```python exec
 id: verifying-solutions-1
+# evaluate_poly, as written in "Polynomials: representing and combining them in Python"
+def evaluate_poly(coeffs, x):
+    total = 0
+    for i, c in enumerate(coeffs):
+        total = total + c * x ** i
+    return total
+
+
 # Verification pattern
 coeffs = [3, -4, 1]   # x^2 - 4x + 3
 roots = solve_quadratic(coeffs)
@@ -110,7 +186,13 @@ for root in roots:
 
 ### Your turn
 
-Let's write a function `verify_roots(coeffs, roots)` that checks whether each root really is a root, by evaluating the polynomial at that point and printing PASS or FAIL for each (use a small tolerance like 0.0001 for floating-point comparison instead of exact equality).
+Can you write a function `verify_roots(coeffs, roots)` that checks each
+root for you?
+
+1. Evaluate the polynomial at each root.
+2. Print PASS if the value is close to zero, and FAIL if it is not. Use a
+   small tolerance, like 0.0001, in place of an exact test for zero.
+3. Test it on several quadratics in the second cell.
 
 ```python exec
 id: your-turn-5
@@ -124,19 +206,32 @@ id: your-turn-6
 
 ## Factorisation
 
-If we know the roots $r_1$ and $r_2$ of a quadratic $ax^2 + bx + c$, we can write it in factored form:
+Suppose we know the roots $r_1$ and $r_2$ of a quadratic
+$ax^2 + bx + c$. Then we can write the quadratic in *factorised form*:
 
 $$a(x - r_1)(x - r_2)$$
 
-For example, $x^2 - 4x + 3 = (x - 1)(x - 3)$.
+For example, the roots of $x^2 - 4x + 3$ are 1 and 3, so
+$x^2 - 4x + 3 = (x - 1)(x - 3)$. Here $a = 1$, so we do not need to
+write it.
 
-This is the reverse of expanding (FOIL): instead of multiplying two binomials to get a quadratic, we decompose a quadratic into two binomials.
+To *factorise* a quadratic is to write it in this form. A *binomial* is
+a polynomial with two terms, such as $x - 1$. Factorising is the reverse
+of expanding brackets with FOIL. When we expand, we multiply two
+binomials to get a quadratic. When we factorise, we split a quadratic
+into two binomials.
 
 ### Your turn
 
-Let's write a function `factor_quadratic(coeffs)` that returns a string showing the factored form — and if the quadratic has no real roots, have it say so plainly rather than guessing at an answer.
+Can you write a function `factor_quadratic(coeffs)` that returns a
+string showing the factorised form?
 
-Hint: use `solve_quadratic` to find the roots, then construct the string. Be careful with the leading coefficient $a$.
+1. Use `solve_quadratic` to find the roots.
+2. Build the string from the roots. Be careful with the leading
+   coefficient $a$: it goes in front.
+3. If the quadratic has no real roots, the function should say so
+   clearly, and not guess at an answer.
+4. Test it in the second cell with the three cases in the comments.
 
 ```python exec
 id: your-turn-7
@@ -153,10 +248,24 @@ id: your-turn-8
 
 ### Verification by expansion
 
-We can verify a factorization by multiplying the factors back together and checking that we get the original polynomial. This is where `multiply_poly` from *Polynomials: representing and combining them in Python* pays off:
+We can check a factorisation by multiplying the factors back together.
+If we get the original polynomial, the factorisation is right. This is
+where `multiply_poly` from
+[Polynomials: representing and combining them in Python](tutorial:expressions-come-alive)
+is useful again. The cell below brings it back. What list do you expect
+it to print? Run it to check.
 
 ```python exec
 id: verification-by-expansion-1
+# multiply_poly, as written in "Polynomials: representing and combining them in Python"
+def multiply_poly(a, b):
+    result = [0] * (len(a) + len(b) - 1)
+    for i in range(len(a)):
+        for j in range(len(b)):
+            result[i + j] += a[i] * b[j]
+    return result
+
+
 # If x^2 - 4x + 3 = (x - 1)(x - 3), then:
 factor1 = [-1, 1]     # (x - 1) in our convention
 factor2 = [-3, 1]     # (x - 3)
@@ -164,17 +273,33 @@ product = multiply_poly(factor1, factor2)
 print("Product:", product)  # should be [3, -4, 1]
 ```
 
-## Solving Inequalities
+## Solving inequalities
 
-A linear inequality like $2x + 3 > 7$ defines a *set* of solutions rather than a single value. Solving it follows the same steps as an equation, but we need to remember: if we multiply or divide by a negative number, the inequality flips.
+An *inequality* compares two expressions with $>$, $\geq$, $<$ or
+$\leq$. A linear inequality like $2x + 3 > 7$ has a whole set of
+solutions: every $x$ that makes it true.
+
+We solve it with the same steps as an equation:
 
 $$2x + 3 > 7 \implies 2x > 4 \implies x > 2$$
 
+For example, $x = 3$ works: $2 \times 3 + 3 = 9$, and $9 > 7$.
+
+There is one extra rule, and it trips up most people at first. **If we
+multiply or divide both sides by a negative number, the inequality
+flips.** For example, $-x > 3$ becomes $x < -3$ when we divide by $-1$.
+Check with $x = -4$: $-(-4) = 4$, and $4 > 3$ is true.
+
 ### Your turn
 
-How might you write a function `solve_linear_inequality(a, b, c, operator)` that solves $ax + b$ [operator] $c$, where operator is one of ">", ">=", "<", "<=", and returns a string describing the solution set?
+How might you write a function `solve_linear_inequality(a, b, c, operator)`?
 
-Think about what happens when $a$ is negative (the inequality direction reverses).
+1. It should solve $ax + b$ [operator] $c$, where the operator is one of
+   `">"`, `">="`, `"<"` or `"<="`.
+2. It should return a string that describes the set of solutions.
+3. Think about what happens when $a$ is negative: the direction of the
+   inequality reverses.
+4. Test it in the second cell with the three cases in the comments.
 
 ```python exec
 id: your-turn-9
@@ -189,24 +314,47 @@ id: your-turn-10
 # solve_linear_inequality(0, 5, 3, ">")  -> "True for all x" or "No solution"
 ```
 
-## Simultaneous Equations
+## Simultaneous equations
 
-Sometimes we need to find values that satisfy two equations at once. The system:
+Sometimes we need values that make two equations true at the same time.
+Two equations like this are called *simultaneous equations*. Here is an
+example:
 
 $$x + y = 10$$
 $$2x - y = 5$$
 
-has the solution $x = 5, y = 5$.
+Its solution is $x = 5$, $y = 5$. Check: $5 + 5 = 10$, and
+$2 \times 5 - 5 = 5$.
 
-The classic approach is *elimination*: multiply the equations so that one variable cancels when we add or subtract them. For the system $a_1 x + b_1 y = c_1$ and $a_2 x + b_2 y = c_2$:
+The classic method is *elimination*. We multiply the equations by
+numbers chosen so that one unknown cancels out when we add or subtract
+them. In the example, adding the two equations cancels $y$:
+$3x = 15$, so $x = 5$. Then $y = 10 - 5 = 5$.
+
+If we do elimination on the general system
+$a_1 x + b_1 y = c_1$ and $a_2 x + b_2 y = c_2$, we get a formula for
+each unknown:
 
 $$x = \frac{c_1 b_2 - c_2 b_1}{a_1 b_2 - a_2 b_1}, \quad y = \frac{a_1 c_2 - a_2 c_1}{a_1 b_2 - a_2 b_1}$$
 
-The denominator $a_1 b_2 - a_2 b_1$ is called the *determinant*. If it is zero, the system has no unique solution (the lines are parallel or identical).
+The bottom of both fractions, $a_1 b_2 - a_2 b_1$, is called the
+*determinant*. If the determinant is zero, the system has no single
+solution. Each equation's graph is a straight line, and the solution is
+the point where the two lines cross. A zero determinant means the lines
+are parallel (they never cross) or are the same line (they meet
+everywhere).
 
 ### Your turn
 
-Let's write a function `solve_simultaneous(eq1, eq2)` where each equation is represented as `[a, b, c]` meaning $ax + by = c$, returning the values of x and y — or saying plainly if no unique solution exists. If you want to push further, try extending it to three equations in three unknowns.
+Can you write a function `solve_simultaneous(eq1, eq2)`?
+
+1. Each equation is a list `[a, b, c]`, which means $ax + by = c$.
+2. The function returns the values of $x$ and $y$.
+3. If there is no single solution, it says so clearly.
+4. Test it in the second cell with the three systems in the comments.
+
+If you want to go further, try extending it to three equations with
+three unknowns.
 
 ```python exec
 id: your-turn-11
@@ -218,7 +366,7 @@ id: your-turn-12
 # Test: solve the system x + y = 10, 2x - y = 5
 # Should give x = 5, y = 5
 
-# Test: 3x + 2y = 12, x - y = 1
+# Test: 3x + 2y = 12, x - y = -1
 # Should give x = 2, y = 3
 
 # Test: 2x + 4y = 10, x + 2y = 5  (same line, infinite solutions)
@@ -226,13 +374,28 @@ id: your-turn-12
 
 ## Reflection
 
-We have built equation-solving machinery from scratch: linear equations, quadratic equations (with the discriminant determining the number of solutions), factorization, inequalities, and simultaneous equations. Each solution method is a function that takes coefficients and returns results.
+We have built tools for solving equations from scratch: linear
+equations, quadratic equations (where the discriminant tells us how many
+solutions there are), factorisation, inequalities and simultaneous
+equations. Each method is a function that takes coefficients and
+returns results.
 
-The power of this approach is that we can verify everything computationally. Find a root, then evaluate the polynomial at that root to confirm it is zero. Factor a quadratic, then multiply the factors to confirm we get the original. Solve a system, then substitute back to confirm both equations hold.
+The strength of this approach is that we can check everything with
+code:
 
-Next tutorial we will work with sets -- collections where membership and relationships matter -- which is the last major topic in this set.
+- Find a root, then evaluate the polynomial at that root to confirm it
+  gives zero.
+- Factorise a quadratic, then multiply the factors to confirm we get the
+  original.
+- Solve a system, then put the values back in to confirm both equations
+  hold.
 
-Which type of equation did you find most satisfying to solve programmatically?
+Next, in
+[Complex numbers: roots that are not real](tutorial:complex-roots), we
+go back to the quadratics with a negative discriminant, and find their
+roots in a new family of numbers.
+
+Which type of equation did you find most satisfying to solve with code?
 
 ## Where to Read More
 

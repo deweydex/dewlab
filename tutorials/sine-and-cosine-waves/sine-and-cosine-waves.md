@@ -1,7 +1,7 @@
 ---
 title: "Sine and cosine waves: amplitude, period and shift"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.24.1
 covers:
   unrolling-the-circle:
     covers: [MIT-3.3]
@@ -15,13 +15,28 @@ covers:
 
 # Sine and cosine waves: amplitude, period and shift
 
-The last tutorial defined sine and cosine. This one is about what they look like when you draw them, and what you can do to that shape.
+In [The unit circle: sine, cosine and tangent](tutorial:the-unit-circle)
+we defined sine and cosine. On this page we look at what they look like
+when we draw them, and at what we can do to that shape.
 
-Those are two different activities. The circle is a careful argument about coordinates; this is experiment — change a number, look at what happened, change it back. Both want room, which is why they are two tutorials.
+These are two different kinds of work. The circle page was a careful
+argument about coordinates. This page is more like an experiment: change
+a number, look at what happened, then change it back. Each kind of work
+needs room, and that is why there are two pages.
 
-## Unrolling the Circle
+On this page we:
 
-Take the point going round the circle and, instead of plotting where it is, plot **how high it is against how far round it has got**.
+- unroll the circle into a wave
+- see why the wave repeats
+- change four numbers that control the wave's shape
+- fit a wave to some real data
+- look at tangent, and see why it is not a wave
+
+## Unrolling the circle
+
+Take the point going round the circle again. This time, instead of
+drawing where the point is, we draw how high it is against how far round
+it has gone.
 
 ```python exec
 id: unrolling-the-circle-1
@@ -59,11 +74,16 @@ right.set_xlabel("turns")
 right.set_title("How high it is")
 ```
 
-The orange dots are the same six moments in both pictures. On the left they go round; on the right their heights are laid out side by side.
+The orange dots show the same six moments in both pictures. On the left
+they go round the circle. On the right, their heights are laid out side
+by side.
 
-**Nothing new has been defined.** That is the up column from the last tutorial's table, with the angle along the bottom instead of in a column beside it.
+We have not defined anything new. The right-hand curve is the up column
+(the sine) from the table on the circle page. The only difference is that
+the angle now runs along the bottom, instead of sitting in a column
+beside it.
 
-Do the same for the across column and you get the other curve.
+What do you think we get if we do the same with the across column?
 
 ```python exec
 id: unrolling-the-circle-2
@@ -78,11 +98,14 @@ ax.set_xlabel("turns")
 ax.set_title("Both columns, unrolled")
 ```
 
-The two curves are the same shape, shifted along by a quarter of a turn. Which makes sense: the point is at its highest a quarter turn after it is at its furthest across.
+We get the other curve, the cosine. The two curves have the same shape,
+moved along by a quarter of a turn. Why does that make sense? The point
+is furthest across at the start, and it reaches its highest point a
+quarter turn later.
 
-## Why It Repeats
+## Why it repeats
 
-Keep walking past one full turn.
+What happens if we keep walking past one full turn?
 
 ```python exec
 id: why-it-repeats-1
@@ -99,13 +122,24 @@ ax.set_title("Three turns forward, one turn back")
 
 The curve repeats exactly, every turn, forever, in both directions.
 
-**It is what going round in a circle looks like when you draw it flat, not a property the curve happens to have.** After a full turn you are back at the same point, so you must be at the same height, so the curve must do the same thing again.
+This is not an accident of this one curve. It is what going round in a
+circle looks like when you draw it flat. After a full turn you are back
+at the same point, so you must be at the same height. So the curve must
+do the same thing again.
 
-The proper word is **periodic**, and the length of one repeat is the **period**. For sine and cosine as we have drawn them, that is one turn — or `2π` radians, or 360 degrees, depending on which units you are counting in.
+A curve that repeats exactly like this is *periodic*. The length of one
+repeat is its *period*. For sine and cosine as we have drawn them, the
+period is one turn. That is $2\pi$ radians, or 360 degrees, depending on
+which unit you count in.
 
 ### Your turn
 
-Without plotting anything: what is `sin(10π)`? And `cos(4π)`? What's your reasoning — then check.
+What is $\sin(10\pi)$? What is $\cos(4\pi)$? Can you answer without
+plotting anything?
+
+1. Write your reasoning as a comment in the cell.
+2. Then remove the `#` from the two `print` lines and run the cell to
+   check.
 
 ```python exec
 id: your-turn-1
@@ -114,13 +148,30 @@ id: your-turn-1
 # print(math.cos(4 * math.pi))
 ```
 
-## The Four Numbers
+If Python prints a tiny number such as `-1.2246467991473533e-15`, read it
+as 0. The `e-15` means "times $10^{-15}$". Python's `math.pi` is a
+decimal, a tiny bit away from the real $\pi$, so the answer is off by a
+very tiny amount.
 
-Here is the general shape of a wave, with four numbers you can change:
+## The four numbers
 
-`y = A · sin(B(x − C)) + D`
+Here is the general shape of a wave. It has four numbers, $A$, $B$, $C$
+and $D$, that you can change:
 
-Rather than learning what each letter does, build the function and change them one at a time.
+$$y = A\sin\big(B(x - C)\big) + D$$
+
+In words: we take $x$ and subtract $C$, multiply by $B$, and take the
+sine. Then we multiply by $A$, and add $D$.
+
+$B$ controls the period. When $x$ is in radians, the period is
+$\frac{2\pi}{B}$. For example, $B = 2$ gives a period of
+$\frac{2\pi}{2} = \pi$, which is half a turn. So a bigger $B$ means a
+shorter repeat.
+
+Instead of learning what each letter does from a list, let's build the
+function and change the numbers one at a time. Our `wave` function takes
+the period directly, measured in turns, because that is easier to read
+off a picture.
 
 ```python exec
 id: the-four-numbers-1
@@ -150,6 +201,8 @@ draw(wave(amplitude=0.4), label="amplitude 0.4", ax=ax)
 ax.set_title("Amplitude: how tall")
 ```
 
+What do you expect a period of 0.5 to look like? And a period of 2?
+
 ```python exec
 id: the-four-numbers-2
 ax = draw(wave(), label="the plain one")
@@ -174,11 +227,29 @@ draw(wave(lift=-1), label="lift -1", ax=ax)
 ax.set_title("Lift: sliding it up and down")
 ```
 
-Four numbers, four completely separate effects, none of them interfering with the others.
+Did you notice? There are four numbers, and each one has its own separate
+effect. None of them changes what the others do.
 
-This is the same "one coefficient, one visible change" pattern you met with lines in *Functions and their graphs* and with quadratics in *Parabolas: completing the square*. Third time — it is worth noticing as a habit of mathematics rather than a coincidence, because it is how families of curves are usually built.
+| Number | In the formula | What it does |
+|---|---|---|
+| amplitude | $A$ | makes the wave taller or shorter |
+| period | set by $B$ | makes one repeat longer or shorter |
+| shift | $C$ | slides the wave left or right |
+| lift | $D$ | slides the wave up or down |
 
-A note on the names. **Amplitude** is how far it swings from the middle, not top to bottom — a wave of amplitude 2 is 4 tall in total. **Phase** is the usual word for what is called `shift` here.
+You have seen this pattern before: one number, one visible change. It
+happened with lines in [Functions and their graphs](tutorial:drawing-functions),
+and with quadratics in [Parabolas: completing the square](tutorial:parabolas).
+This is the third time. It is not a coincidence. It is a habit of
+mathematics, because families of curves are usually built this way.
+
+A note on the names. The *amplitude* is how far the wave swings from its
+middle line. It is not the height from top to bottom, so a wave of
+amplitude 2 is 4 tall in total. What we call `shift` here usually has the
+name *phase*.
+
+One more fact is useful later. A sine wave crosses its middle line going
+up at $x = C$, and it reaches its peak a quarter of a period after that.
 
 ```python exec
 id: the-four-numbers-5
@@ -190,7 +261,16 @@ ax.set_title("A wave with all four numbers set")
 
 ### Your turn
 
-Four waves below, drawn without their numbers shown. For each one, how might you work out the four numbers by reading the picture? Plot your version over the original and see whether it lands.
+The cell below draws four waves, without showing their numbers. How
+might you work out the four numbers for each one, by reading the picture?
+
+1. Run the cell to see the four waves.
+2. For each wave, read off the amplitude, period, shift and lift.
+3. In the next cell, make your own wave with those numbers.
+4. Draw it over the original, for example with
+   `draw(mine, ax=axes[0, 0])` for the top-left wave, and put `fig` on
+   the last line to show the pictures again. Does your wave land on top
+   of the original?
 
 ```python exec
 id: your-turn-2
@@ -219,11 +299,14 @@ id: your-turn-3
 # mine = wave(amplitude=?, period=?, shift=?, lift=?)
 ```
 
-## Where a Wave Comes From
+## Where a wave comes from
 
-The section that says why anybody would want this.
+Why would anybody want this? Here is the answer.
 
-**A wave is what anything that goes round and comes back looks like when you plot it against time.** Daylight through the year, the tides, a spinning motor, a sound, an alternating current. All of them are something circling, drawn flat.
+A wave is what we get when we draw anything that goes round and comes
+back, against time. Daylight through the year, the tides, a spinning
+motor, a sound, an alternating current: each of them is something going
+round in a circle, drawn flat.
 
 ```python exec
 id: where-a-wave-comes-from-1
@@ -240,9 +323,12 @@ ax.legend()
 ax.set_title("A year of daylight in Dublin")
 ```
 
-That shape should look familiar by now.
+Does that shape look familiar?
 
-The earth goes round the sun once a year, which is a circle, and the amount of daylight is a coordinate of where we are on it. So it should be a wave — and fitting one is a matter of finding the four numbers.
+The Earth goes round the Sun once a year. That is (close to) a circle,
+and the amount of daylight depends on where we are on it. So we expect a
+wave, and fitting a wave means finding its four numbers. The comments in
+the next cell read each number off the data.
 
 ```python exec
 id: where-a-wave-comes-from-2
@@ -256,8 +342,10 @@ def fitted(amplitude, period, shift, lift):
 #   the highest is about 17 and the lowest about 7, so the middle is 12
 #   and it swings about 5 either way;
 #   it repeats once a year, so the period is 12 months;
-#   it peaks around June, which is month 6.
-guess = fitted(amplitude=5, period=12, shift=3, lift=12)
+#   it peaks in June, which is month 5 here (0 = January). A sine wave
+#   peaks a quarter of a period after its shift, and a quarter of 12
+#   months is 3, so the shift is 5 - 3 = 2.
+guess = fitted(amplitude=5, period=12, shift=2, lift=12)
 
 fig, ax = plt.subplots(figsize=(8, 4))
 ax.plot(months, daylight, "o", markersize=7, label="real")
@@ -269,11 +357,15 @@ ax.set_xlabel("month")
 ax.set_title("Fitting a wave to data")
 ```
 
-Not perfect, and close enough to be useful. Each of the four numbers was read straight off the data rather than computed: **the middle, the swing, the repeat, and where the peak is.**
+It is not perfect, but it is close enough to be useful. We did not
+compute any of the four numbers. We read each one off the data: the
+middle, the swing, the repeat, and where the peak is.
 
 ### Your turn
 
-See if you can adjust the four numbers until the curve sits better on the points. There is no formula for this — look at where it is wrong and change the number responsible.
+Can you change the four numbers until the curve sits better on the
+points? There is no formula for this. Look at where the curve is wrong,
+and change the number that controls that part.
 
 ```python exec
 id: your-turn-4
@@ -287,11 +379,14 @@ id: your-turn-4
 # ax.grid(alpha=0.3)
 ```
 
-Doing this by eye is the manual version of what a fitting algorithm does automatically, and it is worth doing once by hand so that the automatic version is not magic.
+Fitting by eye is the hand-made version of what a fitting algorithm does
+automatically. It is worth doing once by hand, so that the automatic
+version is not a mystery.
 
-## Tangent, Briefly
+## Tangent, briefly
 
-The third function is not a wave, and it is worth seeing beside the two that are.
+The third function, tangent, is not a wave. It helps to see it beside
+sine, which is.
 
 ```python exec
 id: tangent-briefly-1
@@ -309,23 +404,39 @@ ax.set_xlabel("turns")
 ax.set_title("Tangent is not a wave")
 ```
 
-It repeats — twice as often as sine — but it does not swing between two limits. It runs away to infinity at every quarter turn and comes back from the other side.
+Tangent repeats, twice as often as sine: its period is half a turn. But
+it does not swing between two limits. Near each red line it grows without
+limit, and then it comes back from the other side. The red lines are a
+quarter turn, three quarters of a turn, and so on, half a turn apart.
 
-Those red lines are where the point on the circle is straight up or straight down, so the across value is zero, and a slope of "up over nothing" has no value. Same fact as the vertical line in *Straight lines: slope, midpoint and distance*, showing up for the third time.
+At those red lines, the point on the circle is straight up or straight
+down. So the across value is zero, and a slope of "up divided by nothing"
+has no value. It is the same fact as the vertical line in
+[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances),
+showing up for the third time.
 
 ## Reflection
 
-The circle, laid out flat.
+On this page we laid the circle out flat.
 
-**A wave is a circle drawn against time.** That is why it repeats: after a full turn you are back where you started, so the picture must do the same thing again.
+**A wave is a circle drawn against time.** That is why it repeats. After
+a full turn you are back where you started, so the picture must do the
+same thing again.
 
-**Four numbers, four separate effects.** Amplitude, period, phase and lift, none of them interfering with the others — the same pattern as lines and quadratics, for the third time.
+**Four numbers, four separate effects.** Amplitude, period, phase and
+lift each do their own job, and none of them changes the others. We saw
+the same pattern with lines and quadratics, so this is the third time.
 
-**Real periodic data is a wave with four numbers in it**, and all four can be read off the data by looking: the middle, the swing, the repeat, and where the peak sits.
+**Real periodic data is a wave with four numbers in it.** You can read
+all four off the data by looking: the middle, the swing, the repeat, and
+where the peak is.
 
-**Tangent is not one of these.** It repeats without swinging, and it breaks where the slope of a vertical line breaks.
+**Tangent is not one of these.** It repeats without swinging, and it
+breaks where the slope of a vertical line breaks.
 
-In a few sentences, name something in your own life that repeats. Would it plot as a wave, and if not, what would be different about its shape?
+Think of something in your own life that repeats. Would it make a wave if
+you plotted it? If not, how would its shape be different? Write a few
+sentences.
 
 ## Where to Read More
 
