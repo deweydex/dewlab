@@ -1,0 +1,66 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "right angle, right-angled triangle"
+    kind: concept
+    definition: >
+      A right angle is a square corner, 90 degrees. A right-angled triangle
+      is a triangle with one right angle in it.
+  - term: hypotenuse
+    kind: concept
+    definition: >
+      The hypotenuse is the longest side of a right-angled triangle. It is
+      the side across from the right angle.
+  - term: "Pythagoras' theorem, c² = a² + b²"
+    kind: formula
+    definition: >
+      In a right-angled triangle, the square on the hypotenuse equals the
+      squares on the other two sides added together. It is true only for
+      triangles with a right angle.
+    example: "3 ** 2 + 4 ** 2 == 5 ** 2"
+  - term: proof
+    kind: concept
+    definition: >
+      A proof is a reason that shows a rule holds in every case. A check
+      with numbers only shows it held in the cases tried.
+  - term: "distance formula, d = √((x₂ − x₁)² + (y₂ − y₁)²)"
+    kind: formula
+    definition: >
+      The distance between two points is Pythagoras' theorem, with the
+      across and the up as the two short sides. The order of the points
+      does not matter.
+  - term: "math.dist()"
+    kind: function
+    python: math.dist
+    definition: >
+      Gives the straight-line distance between two points, each given as a
+      tuple of coordinates.
+    example: "math.dist((0, 0), (3, 4))   # 5.0"
+  - term: "midpoint, ((x₁ + x₂) / 2, (y₁ + y₂) / 2)"
+    kind: formula
+    definition: >
+      The midpoint is the point halfway between two points. Its x is the
+      mean of the two x values, and its y is the mean of the two y values.
+  - term: "circles touch, d ≤ r₁ + r₂"
+    kind: formula
+    definition: >
+      Two circles touch or overlap when the distance between their centres
+      is no more than their two radii added together.
+  - term: "plt.Polygon(), plt.Circle()"
+    kind: function
+    python: [matplotlib.pyplot.Polygon, matplotlib.pyplot.Circle]
+    definition: >
+      Make a flat shape from a list of corners, or a circle from a centre
+      and a radius. add_patch() puts the shape on a drawing.
+    example: "axes.add_patch(plt.Circle((100, 50), 25))"
+  - term: "distance()"
+    kind: function
+    definition: >
+      Your toolkit's function that gives the straight-line distance between
+      two points. It is your own tool, not part of Python.
+    example: "distance((0, 0), (3, 4))   # 5.0"
+  - term: "midpoint()"
+    kind: function
+    definition: >
+      Your toolkit's function that gives the point halfway between two
+      points, as an (x, y) pair. It is your own tool, not part of Python.
+    example: "midpoint((2, 1), (10, 7))   # (6.0, 4.0)"

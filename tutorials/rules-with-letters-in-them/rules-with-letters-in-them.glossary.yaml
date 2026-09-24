@@ -1,0 +1,84 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: equation
+    kind: concept
+    definition: >
+      An equation is a sentence that says two expressions are equal, such as
+      50p + 30 = 280. It can be true for some values of its letter and false
+      for others.
+  - term: solving an equation
+    kind: concept
+    definition: >
+      Solving an equation means finding the values of its letter that make
+      it true. The equation 50p + 30 = 280 is true only when p is 5.
+  - term: identity
+    kind: concept
+    definition: >
+      An identity is an equation that is true for every value of its
+      letters, such as 2(50p + 30) = 100p + 60. One value where it fails is
+      enough to show that a sentence is not an identity.
+  - term: "a letter as a name"
+    kind: concept
+    definition: >
+      In an expression, a letter names any number you choose to put in. In
+      an equation, it names a number we do not know yet. In an identity, it
+      names every number at once.
+  - term: "evaluate, substitution"
+    kind: concept
+    definition: >
+      To evaluate an expression is to work out its value for one value of
+      its letter. Putting the number in place of the letter is called
+      substitution.
+    example: "x = -2\nprint(3 * x ** 2 + 5 * x - 2)   # 0"
+  - term: "term, coefficient, constant term"
+    kind: concept
+    definition: >
+      A term is a number times a power of the letter, such as 3x². The
+      number in front is its coefficient. The constant term is the term
+      with no letter, such as the −2 in 3x² + 5x − 2.
+  - term: "polynomial, degree"
+    kind: concept
+    definition: >
+      A polynomial is an expression made by adding terms whose powers are
+      whole numbers, 0 or more. Its degree is its highest power.
+  - term: "linear, quadratic, cubic"
+    kind: concept
+    definition: >
+      These are the names for polynomials of degree 1, 2 and 3. 50p + 30 is
+      linear, 3x² + 5x − 2 is quadratic, and x³ − 4x is cubic.
+  - term: a polynomial as a list
+    kind: concept
+    definition: >
+      A polynomial can be kept as the list of its coefficients, lowest power
+      first, so that each coefficient's index is its power. A missing power
+      still needs its place, as 0.
+    example: "[-2, 5, 3]   # 3x² + 5x − 2"
+  - term: "evaluate()"
+    kind: function
+    definition: >
+      Your toolkit's function that gives the value of a polynomial, kept as
+      a list of coefficients lowest power first, when its letter is x. It is
+      your own tool, not part of Python.
+    example: "evaluate([-2, 5, 3], 4)   # 66"
+  - term: "like terms, collecting like terms"
+    kind: concept
+    definition: >
+      Like terms are terms with the same power of the letter, such as 120x
+      and 80x. Collecting them means adding their coefficients: 120x + 80x
+      is 200x.
+  - term: simplify
+    kind: concept
+    definition: >
+      To simplify an expression is to write it with fewer parts and the same
+      value. 120x − 300 + 80x − 200 simplifies to 200x − 500.
+  - term: expanding brackets
+    kind: concept
+    definition: >
+      To expand brackets is to multiply every term in one bracket by every
+      term in the other, then collect like terms. (x + 3)(x + 5) expands to
+      x² + 8x + 15.
+  - term: "(x + a)² = x² + 2ax + a²"
+    kind: formula
+    definition: >
+      The square of a bracket has two middle terms, one for each strip in
+      the picture of a square. (x + 3)² is x² + 6x + 9, not x² + 9.
