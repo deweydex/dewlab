@@ -483,6 +483,71 @@ not buy you: it removes the duplication from your source, not from the student's
 browser. Every page is its own Python session, so an included setup cell runs
 again on every page.
 
+### A toolkit the reader carries from page to page
+
+An include shares *your* code. A toolkit cell shares the *reader's*: a
+function they write on one page is there on every later page of the course,
+before its first cell runs. Mark the cell with `toolkit: yes`, beside its
+`id:`:
+
+````markdown
+```python exec
+id: toolkit-binary
+toolkit: yes
+def to_binary(n):
+    ...
+```
+
+```python toolkit-reference
+for: toolkit-binary
+def to_binary(n):
+    return bin(n)[2:]
+```
+````
+
+The second fence is the *reference*: the complete, working version, for a
+cell that is a stub the reader fills in. It is never shown on the page. A
+toolkit cell with no reference fence is its own reference, which suits a
+cell that already works as written. `for:` must name a toolkit cell on the
+same page, and a cell can have one reference fence; either mistake fails
+the build. Only a Python cell can be a toolkit cell.
+
+What a later page loads, and in what order:
+
+- **Which pages count.** Every toolkit cell on a tutorial *before* this one
+  in its course, across every series, in the course file's order — the same
+  walk the Reference panel's glossary takes. A page's own toolkit cells are
+  not loaded for it; the reader runs those themselves. A page on two courses
+  uses the first course (in `courses/index.yaml` order) that has any toolkit
+  cells before it. A practice page (`practice_for:`) is not in the
+  course's order itself, so it loads the toolkit of its own tutorial *and*
+  of every tutorial before that one. A mixed page (`practice_across:`)
+  loads the toolkit of every tutorial it lists and of everything before
+  the latest of them, in course order. A context page (`context_for:`)
+  works the same way as a practice page.
+- **Whose version.** By default, the reader's own: the code they saved in
+  that cell on its own page, function by function. Each function your
+  reference defines comes from the reference instead when the reader's
+  code does not define it, or defines it with a body not yet written: only
+  a docstring, `...`, `pass` or `raise NotImplementedError`. So a reader
+  who wrote `to_binary` and left `to_hex` as your stub gets their
+  `to_binary` and your `to_hex`. When their code raises an error, none of
+  it is kept and the whole reference loads. The line at the top of the
+  page's first cell names each function that came from the reference, and
+  why. A reader can switch the whole site to the reference versions from
+  that same line. A downloaded copy of a page cannot see the reader's work
+  on other pages, so it always loads the references.
+- **What runs.** The whole cell, not only its functions. Keep a toolkit
+  cell to definitions: anything it prints or shows is thrown away when it
+  loads on a later page, and a slow cell slows every page after it. Write
+  a stub as a real `def` with a docstring and `...` in its body, so the
+  reference can stand in for it until the reader writes it.
+
+The cell's `id:` and the tutorial's id are the key the reader's version is
+found under, so the usual rule — never rename a cell id once students have
+used it — matters twice over here: renaming one quietly swaps every later
+page back to the reference.
+
 ---
 
 ## Linking between tutorials

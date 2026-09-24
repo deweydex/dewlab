@@ -1037,3 +1037,108 @@ class TestAppCellQueriesCommit:
             assert tt._query_rows("SELECT name FROM plushies") == [{"name": "Mug"}]
         finally:
             tt._page_globals.pop("db", None)
+
+
+class TestLoadToolkit:
+    """`_load_toolkit()`: earlier pages' toolkit cells, run into the shared
+    namespace before a page's first cell. The reader's version where there
+    is one, the reference where there is not or where theirs raises, and
+    nothing either prints reaches any cell."""
+
+    @pytest.fixture(autouse=True)
+    def seeded(self):
+        tt._page_globals.update({name: getattr(tt, name) for name in tt.__all__})
+        tt._page_globals["__name__"] = "__dewlab__"
+        yield
+        tt.reset_page_state()
+
+    def load(self, *entries):
+        import json
+        return json.loads(tt._load_toolkit(json.dumps(list(entries))))
+
+    def test_the_readers_version_runs_when_there_is_one(self):
+        result = self.load(
+            {"tutorial": "one", "cell": "c", "reference": "def double(n):\n    return n * 2",
+             "mine": "def double(n):\n    return n + n + 0"})
+        assert result["entries"][0]["used"] == "mine"
+        assert result["names"] == ["double"]
+        assert tt._page_globals["double"](4) == 8
+
+    def test_a_version_that_raises_is_undone_and_the_reference_runs(self):
+        result = self.load(
+            {"tutorial": "one", "cell": "c", "reference": "def double(n):\n    return n * 2",
+             "mine": "def double(n):\n    return 0\nleftover = 1\nraise ValueError('mine')"})
+        entry = result["entries"][0]
+        assert entry["used"] == "reference" and entry["fell_back"]
+        assert tt._page_globals["double"](4) == 8
+        assert "leftover" not in tt._page_globals
+
+    def test_names_are_what_the_toolkit_made_in_order_and_not_what_it_imported(self, capsys):
+        result = self.load(
+            {"tutorial": "one", "cell": "a", "reference": "def to_binary(n):\n    return bin(n)[2:]",
+             "mine": None},
+            {"tutorial": "two", "cell": "b", "mine": None,
+             "reference": "from math import sqrt\nprint('loading')\nclass Point:\n    pass\n"
+                          "def split_bill(total, people):\n    return total / people\nrate = 0.1"})
+        assert result["names"] == ["to_binary", "Point", "split_bill"]
+        assert result["entries"][1]["names"] == ["Point", "split_bill"]
+        assert "loading" not in capsys.readouterr().out
+        assert tt._current is None
+
+    def test_a_reference_that_raises_is_reported(self):
+        result = self.load({"tutorial": "one", "cell": "c", "reference": "1 / 0", "mine": None})
+        assert result["entries"][0]["error"] == ["ZeroDivisionError", "division by zero"]
+
+    REFERENCE = (
+        "RATE = 10\n"
+        "def split_bill(total, people):\n    return total / people\n"
+        "def tip(total):\n    return total * RATE / 100\n"
+        "def hello():\n    return 'hi'\n"
+    )
+
+    @pytest.mark.parametrize("stub_body", [
+        '"""Split a bill evenly."""\n    ...',
+        "pass",
+        "raise NotImplementedError",
+        '"""Not yet."""\n    raise NotImplementedError("write me")',
+    ])
+    def test_an_untouched_stub_takes_the_reference_function(self, stub_body):
+        mine = f"def split_bill(total, people):\n    {stub_body}\n"
+        result = self.load({"tutorial": "one", "cell": "c", "reference": self.REFERENCE,
+                            "mine": mine})
+        entry = result["entries"][0]
+        assert entry["used"] == "mine" and not entry["fell_back"]
+        assert tt._page_globals["split_bill"](10, 4) == 2.5
+        # tip and hello are not in the reader's code at all.
+        assert entry["from_reference"] == [
+            {"name": "split_bill", "why": "unwritten"},
+            {"name": "tip", "why": "unwritten"},
+            {"name": "hello", "why": "unwritten"}]
+        # A reference function calls the reference's own helpers.
+        assert tt._page_globals["tip"](50) == 5
+
+    def test_per_function_the_readers_written_ones_stay_theirs(self):
+        mine = ("def split_bill(total, people):\n    return 'mine'\n"
+                "def tip(total):\n    ...\n"
+                "hello = lambda: 'mine too'\n")
+        result = self.load({"tutorial": "one", "cell": "c", "reference": self.REFERENCE,
+                            "mine": mine})
+        assert tt._page_globals["split_bill"](1, 1) == "mine"
+        assert tt._page_globals["hello"]() == "mine too"
+        assert tt._page_globals["tip"](50) == 5
+        assert result["entries"][0]["from_reference"] == [{"name": "tip", "why": "unwritten"}]
+        assert result["names"] == ["split_bill", "tip", "hello"]
+
+    def test_a_version_that_raises_names_every_reference_function(self):
+        result = self.load({"tutorial": "one", "cell": "c", "reference": self.REFERENCE,
+                            "mine": "def split_bill(total, people):\n    return 0\n1 / 0"})
+        assert [(f["name"], f["why"]) for f in result["entries"][0]["from_reference"]] == [
+            ("split_bill", "raised"), ("tip", "raised"), ("hello", "raised")]
+
+    def test_nothing_saved_counts_as_unwritten_and_the_reference_mode_says_nothing(self):
+        unsaved = self.load({"tutorial": "one", "cell": "c", "reference": self.REFERENCE,
+                             "mine": None, "unsaved": True})
+        assert [f["why"] for f in unsaved["entries"][0]["from_reference"]] == ["unwritten"] * 3
+        chosen = self.load({"tutorial": "one", "cell": "c", "reference": self.REFERENCE,
+                            "mine": None})
+        assert chosen["entries"][0]["from_reference"] == []

@@ -74,14 +74,22 @@ for how that's wired up).
    before it ever reaches this file; this worker has no idea a SQL cell
    exists, which is deliberate — see
    [`dewmini-js-explained.md`](dewmini-js-explained.md).
-8. **Filesystem** (dewmini only — a
+8. **`"load-toolkit"`** (tutorial pages only) — a page's toolkit, the
+   toolkit cells of earlier pages in its course, arrives as one JSON
+   string of entries and goes straight to `tutorial_tools._load_toolkit()`,
+   which runs each into the shared namespace and returns JSON saying which
+   version ran and what names it defined. The worker only relays: which
+   version is the reader's own, and when to load (after boot, after every
+   reset, when the reader changes the toolkit mode), is decided on the page
+   by `tutorial-runtime.js`'s `loadToolkit()`. dewmini never sends it.
+9. **Filesystem** (dewmini only — a
    tutorial page has no filesystem to mount) — `fsMountNative`/`fsMountOpfs`/
    `fsMountIdbfs` (the three storage backends), `fsSync`, `fsUnmount`,
    and the plain file operations `fsList`/`fsRead`/`fsWrite`/`fsDelete`/
    `fsMkdir`. `db`-seeding above follows the same "purely additive,
    gated on who actually asks" shape this section already established —
    now asked by two callers instead of one.
-9. **`self.onmessage`** at the bottom — the one entry point tying
+10. **`self.onmessage`** at the bottom — the one entry point tying
    everything above together: reads a message's `type`, calls the
    matching function, and posts a `"response"` back (or an `"error"` if
    something threw).

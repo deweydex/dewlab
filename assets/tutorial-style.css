@@ -2692,6 +2692,26 @@ p code, li code {
   cursor: pointer;
 }
 
+/* The toolkit line above a page's first cell: what earlier pages' toolkit
+   cells put into this page, and which version. Quiet, like the run-line. */
+.dl-toolkit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 1rem;
+  margin: 0 0 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--dl-muted);
+}
+.dl-toolkit-text { margin: 0; flex: 1 1 18rem; }
+.dl-toolkit-line { display: block; }
+.dl-toolkit-line + .dl-toolkit-line { font-style: italic; }
+.dl-toolkit code { font-family: var(--dl-mono); font-size: 0.92em; color: var(--dl-fg); }
+.dl-toolkit-mode { display: inline-flex; gap: 0.8rem; white-space: nowrap; }
+.dl-toolkit-mode label { cursor: pointer; }
+.dl-toolkit-mode input { accent-color: var(--dl-orange); margin: 0 0.25rem 0 0; vertical-align: -0.1em; }
+
 /* KaTeX display math may be wider than the measure. */
 .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2rem 0; }
 

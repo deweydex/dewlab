@@ -861,6 +861,140 @@ def reset_page_state() -> None:
     _widget_values.clear()
 
 
+def _run_toolkit_code(filename: str, code: str, namespace: dict) -> tuple[str, str] | None:
+    """Run one piece of toolkit code into `namespace`, with everything it
+    prints or shows collected and thrown away. None when it ran, or the
+    error as `_describe_error()` gives it."""
+    _begin(filename, _RecordingSink(), code)
+    try:
+        exec(compile(code, _current.filename, "exec"), namespace)  # noqa: S102 - the page's own toolkit
+        return None
+    except BaseException as exc:  # noqa: BLE001 - a reader's broken version is expected
+        return _describe_error(exc)
+    finally:
+        _end(None)
+
+
+def _is_placeholder(statement) -> bool:
+    """A statement that stands in for a body nobody has written yet: a
+    docstring, `...`, `pass`, or `raise NotImplementedError`."""
+    import ast  # noqa: PLC0415 - only the toolkit needs it
+
+    if isinstance(statement, ast.Pass):
+        return True
+    if isinstance(statement, ast.Expr) and isinstance(statement.value, ast.Constant):
+        return isinstance(statement.value.value, str) or statement.value.value is Ellipsis
+    if isinstance(statement, ast.Raise) and statement.exc is not None:
+        raised = statement.exc.func if isinstance(statement.exc, ast.Call) else statement.exc
+        return isinstance(raised, ast.Name) and raised.id == "NotImplementedError"
+    return False
+
+
+def _functions_in(code: str) -> dict[str, bool]:
+    """The functions `code` defines at its top level, each with whether its
+    body is written (anything beyond `_is_placeholder()` statements). Empty
+    for code that does not parse: running it will say why."""
+    import ast  # noqa: PLC0415
+
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return {}
+    return {
+        node.name: not all(_is_placeholder(statement) for statement in node.body)
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    }
+
+
+def _load_toolkit(entries_json: str) -> str:
+    """Load the toolkit earlier pages built into this page's namespace.
+
+    `entries_json` is a JSON list, in course order, of `{tutorial, cell,
+    reference, mine}`: `mine` is the reader's own saved code for that
+    cell, or null to use the reference (with `unsaved` true when that is
+    because the reader has nothing saved). Output is discarded.
+
+    The fallback is per function. The reader's code runs; then every
+    function the reference defines is taken from the reference where the
+    reader's code does not define it, or defines it with an unwritten body
+    (a stub: `_is_placeholder()`), read from the reader's source before it
+    runs. Those reference functions come from running the reference in a
+    namespace of their own, so they call the reference's own helpers. If
+    the reader's code raises, everything it did is undone and the whole
+    reference runs in its place.
+
+    Returns JSON `{names, entries}`: `names` is every new function or
+    class the toolkit defined, in order. Each entry says which code ran
+    (`used`: "mine" or "reference"), whether the reader's raised
+    (`fell_back`), which functions came from the reference and why
+    (`from_reference`: `[{name, why}]`, why being "unwritten" or
+    "raised"), what the reference raised if it did (`error`), and the
+    names the entry defined. A name counts when it is callable and was
+    made here, not imported: its `__module__` is this namespace's own
+    `__name__`.
+    """
+    entries = json.loads(entries_json)
+    home = _page_globals.get("__name__")
+    all_names: list[str] = []
+    report = []
+    for entry in entries:
+        before = dict(_page_globals)
+        label = f"toolkit {entry.get('tutorial', '')} {entry.get('cell', '')}".strip()
+        reference = entry.get("reference") or ""
+        reference_functions = list(_functions_in(reference))
+        mine = entry.get("mine")
+        used, fell_back, error = "reference", False, None
+        from_reference: list[dict] = []
+
+        if mine is not None:
+            written = _functions_in(mine)
+            if _run_toolkit_code(label, mine, _page_globals) is None:
+                used = "mine"
+                missing = [
+                    name for name in reference_functions
+                    if not written.get(name, name in _page_globals
+                                       and _page_globals[name] is not before.get(name))
+                ]
+                if missing:
+                    scratch = dict(before)
+                    error = _run_toolkit_code(label, reference, scratch)
+                    for name in missing:
+                        if name in scratch:
+                            _page_globals[name] = scratch[name]
+                            from_reference.append({"name": name, "why": "unwritten"})
+            else:
+                fell_back = True
+                _page_globals.clear()
+                _page_globals.update(before)
+
+        if used == "reference":
+            error = _run_toolkit_code(label, reference, _page_globals)
+            if fell_back or entry.get("unsaved"):
+                why = "raised" if fell_back else "unwritten"
+                from_reference = [{"name": name, "why": why} for name in reference_functions]
+
+        names = [
+            name for name, value in _page_globals.items()
+            if not name.startswith("_") and callable(value)
+            and getattr(value, "__module__", None) == home
+            and before.get(name) is not value
+        ]
+        for name in names:
+            if name not in all_names:
+                all_names.append(name)
+        report.append({
+            "tutorial": entry.get("tutorial"),
+            "cell": entry.get("cell"),
+            "used": used,
+            "fell_back": fell_back,
+            "from_reference": from_reference,
+            "error": list(error) if error else None,
+            "names": names,
+        })
+    return json.dumps({"names": all_names, "entries": report})
+
+
 def show(*values, label: str | None = None) -> None:
     """Render values into this cell's output area.
 
