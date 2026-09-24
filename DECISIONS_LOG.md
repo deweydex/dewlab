@@ -4508,7 +4508,7 @@ Josh: "lets go for all of those suggestions". These are written after this entry
 **Units 5 and 6.**
 - *Many values: lists, sets and data*: lists taught properly, as Unit 3 promised; averages and spread built up step by step; kinds of data and honest charts; sets; Venn diagrams. It uses the Irish rows of `life-expectancy.csv`, and its mixed page builds a report on a dataset.
 - *Algorithms that scale*: searching, sorting, a race between sorts measured by counted steps, recursion, and doubling and halving. Its mixed page builds a phone-book search that stays fast at 100,000 names.
-- Both units add 16 toolkit functions.
+- Both units add 15 toolkit functions.
 - Every page ran through the real loader both ways. The heaviest four also ran cell by cell in Pyodide in a browser.
 - `data/co2-emissions.csv` gained the attribution file every declared dataset needs. The file came from Our World in Data under CC BY 4.0, as the entry that added it records.
 - Two headings used an en dash, which the build's slug drops, so each page's own `covers:` key no longer matched its heading. They now use a hyphen.
