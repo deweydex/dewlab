@@ -202,8 +202,7 @@ measuring is not. So "about 15 or 16 metres" is the honest answer.
 ### Your turn
 
 1. A friend stands further back, 32 m from the trunk, and measures 25°.
-   Before you run anything: will their angle give a taller tree or a
-   shorter one than yours?
+   Why is their angle smaller than yours?
 2. Work out the height from their measurement. Is it the same tree,
    roughly?
 3. Try `math.tan(math.radians(45))`. At 45°, how does the height above

@@ -64,10 +64,10 @@ and the angle between them is 0°.
 
 </details>
 
-**3. Make.** The Health and Safety Authority's advice for a ladder is
-the "1 in 4" rule: for every 4 m of height, the foot of the ladder
-should be 1 m out from the wall. What angle does the ladder then make
-with the ground?
+**3. Make.** On the practice page for
+[How far apart?](tutorial:how-far-apart), a ladder followed the "1 in
+4" rule: for every 4 m of height, its foot is 1 m out from the wall.
+What angle does such a ladder make with the ground?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 

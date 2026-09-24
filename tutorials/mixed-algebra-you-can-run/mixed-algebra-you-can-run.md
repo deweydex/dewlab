@@ -18,14 +18,12 @@ two or more. None of them is harder than what those pages covered. The
 new part is that nobody tells you which page a problem comes from.
 Choosing the tool is part of the problem.
 
-Along the way, the problems build this unit's product in two parts. The
-first is a phone-plan chooser: it finds where two plans cost the same,
-and the cheapest plan for the data you use. The second is a price finder
-for a small bakery: the price that makes the most profit. The rule of
-this unit holds for both. Every answer is checked by putting it back
-into the rule it came from, in code. Problems 5, 7, 9 and 10 build the
-chooser, and problems 13, 14 and 16 build the price finder. Each part
-builds on the one before, so do those in order.
+Along the way, the problems build this unit's product in two parts: a
+phone-plan chooser, which finds where two plans cost the same and the
+cheapest plan for your data, and a price finder for a small bakery.
+Every answer is checked by putting it back into its rule, in code.
+Problems 4, 6, 8 and 9 build the chooser, and 11, 12 and 14 the price
+finder. Each builds on the one before, so do those in order.
 
 Your toolkit is loaded on this page: `evaluate`, `plot_rule`,
 `solve_linear`, `solve_quadratic`, `vertex` and `solve_simultaneous`
@@ -57,15 +55,10 @@ print(vertex(1, -4, 1))
 
 `-4`, `2.5`, `[-3.0, 3.0]` and `(2.0, -3.0)`.
 
-- `[5, 0, -1]` is $5 - x^2$, lowest power first. At 3 it is
-  $5 - 9 = -4$.
-- `solve_linear(4, -10)` solves $4x - 10 = 0$. Add 10 to both sides, then
-  divide by 4: $x = 2.5$.
-- $x^2 - 9 = 0$ has two roots, $-3$ and 3, smallest first. They are
-  floats because the formula divides.
-- The vertex of $x^2 - 4x + 1$ is at $x = -\frac{-4}{2 \times 1} = 2$,
-  and the rule there is $4 - 8 + 1 = -3$. The $x^2$ term is positive, so
-  it is a minimum.
+`[5, 0, -1]` is $5 - x^2$, lowest power first, and $5 - 9 = -4$.
+$4x - 10 = 0$ gives $x = \frac{10}{4}$. $x^2 - 9 = 0$ has two roots,
+smallest first. The vertex of $x^2 - 4x + 1$ is at
+$x = -\frac{-4}{2} = 2$, where the rule is $4 - 8 + 1 = -3$.
 
 </details>
 
@@ -76,9 +69,8 @@ $ax + b = 0$, solve it with `solve_linear`, and put the answer back in.
 
 <details class="dl-answer"><summary>answer</summary>
 
-With $r$ rides, the year costs $10 + 0.5r$, so the equation is
-$10 + 0.5r = 40$. Subtract 40 from both sides: $0.5r - 30 = 0$. So
-$a = 0.5$ and $b = -30$.
+With $r$ rides, the equation is $10 + 0.5r = 40$. Subtract 40 from both
+sides: $0.5r - 30 = 0$, so $a = 0.5$ and $b = -30$.
 
 ```python
 rides = solve_linear(0.5, -30)
@@ -86,9 +78,8 @@ print(rides)
 print(evaluate([10, 0.5], rides))
 ```
 
-It prints `60.0`, and the year's cost at 60 rides is `40.0`. The rule
-$10 + 0.5r$ is the list `[10, 0.5]`, so `evaluate` does the
-substituting.
+It prints `60.0`, and 60 rides cost `40.0`. The rule $10 + 0.5r$ is the
+list `[10, 0.5]`, so `evaluate` does the substituting.
 
 </details>
 
@@ -96,7 +87,7 @@ substituting.
 temperature $t$ hours after midnight as $0.1t^2 - 1.2t + 2$ degrees
 Celsius, from midnight to noon. (A made-up model.) A friend says: "The
 coldest moment is where the graph crosses zero." Run this cell. What do
-the two answers mean, and which one is the coldest moment?
+the two answers mean, and when is the coldest moment?
 
 ```python
 print(solve_quadratic(0.1, -1.2, 2))
@@ -109,46 +100,13 @@ The first line gives the roots, `[2.0, 10.0]`. The second gives the
 vertex, $(6, -1.6)$, printed with a tiny float error in the last
 digits.
 
-A root is a time when the temperature is exactly 0 °C: at about 2 am it
-drops below freezing, and at about 10 am it climbs back above. The
-vertex is the turning point of the curve. Its $t^2$ term is positive, so
-it is a minimum: the coldest moment is 6 am, at −1.6 °C.
-
-So the friend has mixed up two different points. Crossing zero is where
-the value is 0, as on
-[Drawing a rule](tutorial:drawing-a-rule#a-tool-that-draws-any-rule).
-The coldest moment is where the curve turns, as on
+A root is a time when the temperature is exactly 0 °C: 2 am and
+10 am. The vertex is where
+the curve turns, as on
 [The top of the curve](tutorial:the-top-of-the-curve#a-curve-that-turns).
-The mirror joins them: 6 is halfway between 2 and 10.
-
-</details>
-
-**4. Predict.** A music festival sold 5,000 tickets: day tickets at €60
-and weekend tickets at €90. It took €360,000. Before you run the line
-below, guess: were more than half of the tickets day tickets? Then run
-it, and put the answer back into both facts.
-
-```python
-print(solve_simultaneous(1, 1, 5000, 60, 90, 360000))
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-`(3000.0, 2000.0)`: 3,000 day tickets and 2,000 weekend tickets, so yes,
-more than half.
-
-A quick way to guess: if all 5,000 were day tickets, the takings would
-be €300,000. Each weekend ticket adds €30 more, and €60,000 more is
-2,000 weekend tickets. Now the check, in both facts:
-
-```python
-day, weekend = solve_simultaneous(1, 1, 5000, 60, 90, 360000)
-print(day + weekend, 60 * day + 90 * weekend)
-```
-
-It prints `5000.0 360000.0`. Checking both facts matters: one fact on
-its own has thousands of answers, as on
-[Several unknowns at once](tutorial:several-unknowns-at-once#two-facts-two-unknowns).
+Its $t^2$ term is positive, so the vertex is a minimum: the coldest
+moment is 6 am, at −1.6 °C. The friend has mixed up the two. The mirror
+joins them: 6 is halfway between 2 and 10.
 
 </details>
 
@@ -164,11 +122,10 @@ gigabyte of data. (The prices are made up.)
 | Flex | €15 | €1.25 |
 | Unlimited | €30 | €0 |
 
-Each plan's cost is a linear rule, so each is a list of coefficients,
-lowest power first, as on
+Each plan's cost is a linear rule, so this cell keeps each one as a
+list of coefficients, lowest power first, as on
 [Rules with letters in them](tutorial:rules-with-letters-in-them#terms-coefficients-and-a-list).
-Unlimited keeps its 0 in place, so every list has two numbers. This cell
-keeps the three plans in a dictionary, keyed by name. Run it first.
+Run it first.
 
 ```python exec
 id: mixed-run-plans
@@ -180,19 +137,18 @@ plans = {
 print(evaluate(plans["Basic"], 2))
 ```
 
-It prints `14`: two gigabytes on Basic cost €14. A scratch cell for the
-core problems. Keep the chooser's functions in it as you write them, so
-that later problems can use them.
+It prints `14`: two gigabytes on Basic cost €14. Keep the chooser's
+functions in the scratch cell below as you write them, so that later
+problems can use them.
 
 ```python exec
 id: mixed-run-scratch-2
 # Your phone-plan chooser, problem by problem
 ```
 
-**5. Make.** The chooser's first job is a table. Write a loop that
-prints what each plan costs at 0, 4, 8, 12 and 16 gigabytes a month, one
-row for each amount. From the table, which plan would you choose at each
-amount?
+**4. Make.** The chooser's first job is a table. Write a loop that
+prints what each plan costs at 0, 4, 8, 12 and 16 gigabytes a month,
+one row for each amount. Which plan would you choose at each amount?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -212,15 +168,13 @@ for gigabytes in [0, 4, 8, 12, 16]:
 [16, 56, 35.0, 30]
 ```
 
-Basic is cheapest at 0 GB. At 4 GB, Basic and Flex tie on €20. At 8 GB
-Flex wins, at 12 GB Flex and Unlimited tie on €30, and at 16 GB
-Unlimited wins. The table shows two ties, but only because we chose
-rows that land on them. With other rows, a table can only say "somewhere
-between".
+Basic wins at 0 GB, Flex at 8 GB and Unlimited at 16 GB, with ties at
+4 and 12 GB. The table shows the ties only because its rows land on
+them.
 
 </details>
 
-**6. Predict.** Now a picture of all three plans, drawn with
+**5. Predict.** Here are the three plans as a picture, drawn with
 `plot_rule` from
 [Drawing a rule](tutorial:drawing-a-rule#straight-lines-and-where-two-meet).
 How many times will two lines cross? Guess where, before you run it.
@@ -248,46 +202,44 @@ plt.legend()
 
 <details class="dl-answer"><summary>answer</summary>
 
-Three crossings, one for each pair of plans: Basic and Flex at 4 GB,
-Basic and Unlimited at a bit more than 7 GB, and Flex and Unlimited at
-12 GB.
+There are three crossings, one for each pair: Basic and Flex at 4 GB, Basic and
+Unlimited at a little over 7 GB, and Flex and Unlimited at 12 GB.
 
-Only two of them matter to a customer. The cheapest plan at each amount
-is the lowest line there. Basic is lowest up to 4 GB, Flex from 4 to 12
-GB, and Unlimited after 12 GB. The Basic and Unlimited crossing happens
-above the Flex line, where neither of them is the cheapest.
-
-The picture says "a bit more than 7". The next problem finds each
-crossing exactly.
+Only two of them matter to a customer. The cheapest plan is the lowest
+line: Basic up to 4 GB, Flex from 4 to 12 GB, and Unlimited after that.
+Basic and Unlimited cross above the Flex line, where neither is
+cheapest.
 
 </details>
 
-**7. Make.** Two plans cost the same where the difference of their
+**6. Make.** Two plans cost the same where the difference of their
 rules is 0. Write two functions:
 
 - `subtract_polynomials(first, second)`, which gives back the list for
   `first` minus `second`, with like terms collected;
 - `break_even(first, second)`, which gives back the gigabytes where two
-  linear plans cost the same, using `solve_linear`, or `None` when there
-  is no single answer.
+  plans cost the same, using `solve_linear`, or `None` when there is no
+  single answer.
 
-Then find all three crossings, and put each one back into both plans.
+Then find all three crossings exactly, and put each one back into both
+plans.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. `subtract_polynomials` has the shape of `add_polynomials` on
    [Rules with letters in them](tutorial:rules-with-letters-in-them#collecting-like-terms),
    with one `+` changed to `-`.
-2. The difference of Basic and Flex is $(8 + 3g) - (15 + 1.25g)$, which
-   is $-7 + 1.75g$, the list `[-7, 1.75]`.
-3. `solve_linear(a, b)` wants $ax + b = 0$. Which place in the list is
+2. Basic minus Flex is $(8 + 3g) - (15 + 1.25g) = -7 + 1.75g$, the list
+   `[-7, 1.75]`.
+3. `solve_linear(a, b)` solves $ax + b = 0$. Which place in the list is
    $a$, and which is $b$?
 
 **Think about:** what should `break_even` give back for two plans with
 the same price per gigabyte?
 
-**Try this next:** add a fourth plan, and find where it meets each of
-the other three.
+**Try this next:** find where Basic and Flex meet with
+`solve_simultaneous`, taking $g$ and the cost $y$ as the two unknowns:
+$-3g + y = 8$ and $-1.25g + y = 15$.
 
 </details>
 
@@ -328,15 +280,21 @@ Flex Unlimited 12.0 30.0
 ```
 
 Every crossing passes the check. The list is lowest power first, so the
-number in front of $g$ is `difference[1]`, and the constant is
-`difference[0]`. The Basic and Unlimited crossing is at $7\frac{1}{3}$
-GB: $8 + 3g = 30$ gives $3g = 22$. `round` keeps the print short, and
-`close_enough` does the checking, because $7\frac{1}{3}$ is a float
-with a tiny error.
+number in front of $g$ is `difference[1]`. Basic meets Unlimited at
+$7\frac{1}{3}$ GB, a float, so the check uses `close_enough`.
+
+The simultaneous route from the hint is one line:
+
+```python
+print(solve_simultaneous(-3, 1, 8, -1.25, 1, 15))
+```
+
+It gives `(4.0, 20.0)`: the same 4 GB, and the cost there too. Taking one of its facts from the other cancels
+$y$ and leaves $-1.75g = -7$, the same equation `break_even` solves.
 
 </details>
 
-**8. Fix.** Someone's first `break_even` gives an answer, but the check
+**7. Fix.** Someone's first `break_even` gives an answer, but the check
 after it fails. Run it, and read the message. Find the mistake, and fix
 it.
 
@@ -358,12 +316,11 @@ print("Basic and Flex cost the same at", gigabytes, "GB.")
 
 It prints `0.25`, and then stops with
 `AssertionError: the plans should cost the same here`. At 0.25 GB,
-Basic costs €8.75 and Flex costs about €15.31.
+Basic costs €8.75 and Flex about €15.31.
 
-The difference is `[-7, 1.75]`, lowest power first: $-7 + 1.75g$. The
-call `solve_linear(difference[0], difference[1])` passes $-7$ as $a$ and
-$1.75$ as $b$, so it solves $-7g + 1.75 = 0$, a different equation.
-The fix swaps them:
+The difference is `[-7, 1.75]`, which is $-7 + 1.75g$. The call passes
+$-7$ as $a$ and $1.75$ as $b$, so it solves $-7g + 1.75 = 0$, a
+different equation. The fix swaps them:
 
 ```python
 def break_even_first_try(first, second):
@@ -372,29 +329,28 @@ def break_even_first_try(first, second):
     return solve_linear(difference[1], difference[0])
 ```
 
-Now it prints `4.0`, and the check passes. Two conventions met here:
-coefficient lists put the constant first, and $ax + b$ puts it last.
-The substitution check caught the mix-up at once. Without it, 0.25 GB
-would have looked like a believable answer.
+Now it prints `4.0`, and the check passes. A coefficient list puts the
+constant first, and $ax + b$ puts it last. Without the substitution
+check, 0.25 GB would have looked like a believable answer.
 
 </details>
 
-**9. Make.** The chooser's main tool. Write
+**8. Make.** The chooser's main tool. Write
 `cheapest_plan(plans, gigabytes)`, which gives back the name of the
 cheapest plan for that much data. Test it at 2, 8 and 20 GB, and print
 what the winning plan costs each time.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Keep two names: the best plan so far, and its cost. Start with no
-   plan and a cost of `None`.
-2. Loop over the names in `plans`. Work out each plan's cost with
+1. Keep two names: the best plan so far, and its cost. Start both at
+   `None`.
+2. Loop over the names in `plans`, and work out each plan's cost with
    `evaluate`.
 3. If there is no best plan yet, or this plan costs less, it becomes the
    best plan.
 
-**Think about:** at exactly 4 GB, Basic and Flex tie. Which one will your
-function give back, and why?
+**Think about:** at exactly 4 GB, Basic and Flex tie. Which one will
+your function give back, and why?
 
 **Try this next:** give back the name and the cost together, as a pair.
 
@@ -429,27 +385,22 @@ for gigabytes in [2, 8, 20]:
 20 Unlimited 30
 ```
 
-At exactly 4 GB it gives back Basic. The test is `cost < best_cost`, so
-a plan that only ties does not replace the plan found first, and Basic
-comes first in the dictionary. A tie is a real answer here: either plan
-is cheapest.
+At exactly 4 GB it gives back Basic: a plan that only ties is not
+`<`, so it does not replace the plan found first. Either is a right
+answer there.
 
 </details>
 
-**10. Make.** Your old phone plan had a fixed monthly fee and a price
-per gigabyte, but you have lost the leaflet. You still have two bills.
-In March you used 3 GB and paid €17.50. In April you used 7 GB and paid
-€27.50. Find the fee and the price per gigabyte with
+**9. Make.** Your old phone plan had a monthly fee and a price per
+gigabyte, and you have lost the leaflet. In March you used 3 GB and
+paid €17.50. In April you used 7 GB and paid €27.50. Find the fee and the price per gigabyte with
 `solve_simultaneous`, and check both bills. Then add the old plan to
 `plans` as `"Old"`. Is it ever the cheapest?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Call the fee $f$ and the price per gigabyte $p$. The two bills are two
-facts:
-
-$$f + 3p = 17.50$$
-$$f + 7p = 27.50$$
+Call the fee $f$ and the price per gigabyte $p$. The bills are two
+facts: $f + 3p = 17.50$ and $f + 7p = 27.50$.
 
 ```python
 fee, per_gigabyte = solve_simultaneous(1, 3, 17.50, 1, 7, 27.50)
@@ -462,116 +413,68 @@ for gigabytes in [0, 2, 4, 6, 10, 20]:
 ```
 
 The old plan was €10 a month plus €2.50 a gigabyte, and both bills
-check out: `17.5 27.5`. Taking one bill from the other shows why:
-4 GB more cost €10 more, so each gigabyte costs €2.50.
+check out: `17.5 27.5`. By elimination: 4 GB more cost €10 more, so a
+gigabyte costs €2.50.
 
-The old plan never wins. It is cheaper than Basic above 4 GB, and
-cheaper than Flex below 4 GB, and at 4 GB all three cost €20. Draw it
-with the others, and the three lines cross at one point, $(4, 20)$. So
-there is no amount of data where the old plan beats both. Unless you
-like it for another reason, switching costs you nothing.
+The old plan never wins. It beats Basic above 4 GB and Flex below 4 GB,
+and at 4 GB all three cost €20: their lines cross at one point,
+$(4, 20)$.
 
 </details>
 
-**11. Explain.** The company adds a fifth plan, Flex Plus: €20 a month
-and €1.25 a gigabyte, with free calls abroad. What does
+**10. Explain.** The company adds Flex Plus: €20 a month and €1.25 a
+gigabyte, with free calls abroad. What does
 `break_even(plans["Flex"], [20, 1.25])` give back? What would its line
 look like beside Flex on a graph, and what does that mean for someone
-choosing between the two?
+choosing between them?
 
 <details class="dl-answer"><summary>answer</summary>
 
 It gives back `None`. The difference is `[-5, 0]`, which is $-5 + 0g$,
-and `solve_linear(0, -5)` has no single answer: no $g$ makes
-$-5 = 0$.
+and no $g$ makes $-5 = 0$.
 
-The two lines have the same steepness, so they are parallel, and they
-never cross. Flex Plus always costs €5 a month more than Flex, however
-much data you use. That is the same case as the two fans on
-[Several unknowns at once](tutorial:several-unknowns-at-once#when-there-is-no-single-answer),
-where the determinant was 0.
-
-So there is no amount of data where the choice changes. The question
-for the customer is a different one: are free calls abroad worth €5 a
-month to you? The algebra can say the price of that question. It cannot
-answer it.
-
-</details>
-
-**12. Another way.** Find where Basic and Flex cost the same a second
-way, with `solve_simultaneous`. Call the gigabytes $g$ and the monthly
-cost $y$, so each plan is one fact about $g$ and $y$. Do the two ways
-agree?
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. Basic says $y = 8 + 3g$. Move the $g$ term across: $-3g + y = 8$.
-2. Do the same for Flex.
-3. In `solve_simultaneous(a1, b1, c1, a2, b2, c2)`, the unknowns are
-   in the order $g$, then $y$.
-
-**Think about:** what does the second number of the answer mean?
-
-**Try this next:** do the same for Flex and Unlimited.
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-Basic is $-3g + y = 8$, and Flex is $-1.25g + y = 15$.
-
-```python
-print(solve_simultaneous(-3, 1, 8, -1.25, 1, 15))
-print(break_even(plans["Basic"], plans["Flex"]))
-```
-
-The first line gives `(4.0, 20.0)`: 4 GB, at €20. The second gives
-`4.0`. They agree, and the simultaneous route gives the cost as well.
-
-The two routes are one idea. `break_even` took one rule from the other
-to get one equation in one unknown. Elimination on
-[Several unknowns at once](tutorial:several-unknowns-at-once#elimination-one-unknown-at-a-time)
-does the same: taking one fact from the other cancels $y$, and leaves
-$-1.75g = -7$.
+The two lines have the same steepness, so they are parallel and never
+cross, like the two fans' facts on
+[Several unknowns at once](tutorial:several-unknowns-at-once#when-there-is-no-single-answer).
+Flex Plus always costs €5 more than Flex, so the data never changes the
+choice. The question is whether free calls abroad are worth €5 a month
+to you. The algebra puts a price on that question. It cannot answer it.
 
 </details>
 
 ## Stretch
 
 The stretch problems build the price finder. A small bakery sells
-sourdough loaves. Each loaf costs €1.40 to make. At a price of $p$ euro,
-it sells about $260 - 40p$ loaves a day. (A made-up model, with the
-shape real sellers see: a higher price means fewer sales.) The profit is
-the profit on one loaf, times the number sold:
+sourdough loaves, and each loaf costs €1.40 to make. At a price of $p$
+euro, it sells about $260 - 40p$ loaves a day. (A made-up model: a
+higher price means fewer sales.) The profit is the profit on one loaf,
+times the number sold:
 
 $$\text{profit} = (p - 1.4)(260 - 40p)$$
 
-A scratch cell for the stretch problems.
+Here is a scratch cell for the stretch problems.
 
 ```python exec
 id: mixed-run-scratch-3
 # Your price finder, problem by problem
 ```
 
-**13. Make.** Multiply out the brackets with a loop, as
+**11. Make.** Multiply out the brackets with a loop, as
 `expand_brackets` did on
 [Rules with letters in them](tutorial:rules-with-letters-in-them#expanding-brackets-is-a-loop).
-Write it again here, from memory if you can, and use it to get the
-profit as a list of coefficients. Then check the list against the
-brackets, by substituting every price from €1.40 to €6.50 in steps of 10
-cent.
+Write it again here, from memory if you can, and get the profit as a
+list of coefficients. Then check the list against the brackets, at
+every price from €1.40 to €6.50 in steps of 10 cent.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. $p - 1.4$ is the list `[-1.4, 1]`, and $260 - 40p$ is `[260, -40]`.
-2. The expanded list has room for every power: its length is
-   `len(first) + len(second) - 1`.
+2. The expanded list's length is `len(first) + len(second) - 1`.
 3. A term at index `i` times a term at index `j` goes to index `i + j`.
 
 **Think about:** why does the check need `close_enough`, and not `==`?
 
-**Try this next:** what happens to the list if each loaf costs €2 to
-make?
+**Try this next:** find the list for a loaf that costs €2 to make.
 
 </details>
 
@@ -596,15 +499,15 @@ for cents in range(140, 651, 10):
 print("The expanded rule agrees with the brackets.")
 ```
 
-The list is `[-364.0, 316.0, -40]`: the profit is
+The list is `[-364.0, 316.0, -40]`, so the profit is
 $-40p^2 + 316p - 364$. By hand, the grid of four pieces gives
-$260p - 40p^2 - 364 + 56p$, and collecting the two $p$ terms gives
-$316p$. The check passes at all 52 prices. It uses `close_enough`
-because 1.4 is a float, and the two routes can differ in the last digit.
+$260p - 40p^2 - 364 + 56p$, and the two $p$ terms collect to $316p$.
+The check passes at all 52 prices. It needs `close_enough` because 1.4
+is a float, and two routes to a float can differ in the last digit.
 
 </details>
 
-**14. Make.** Find the best price with `vertex`, and the profit there.
+**12. Make.** Find the best price with `vertex`, and the profit there.
 Then check it with a fine comb, as on
 [The top of the curve](tutorial:the-top-of-the-curve#checking-with-a-fine-comb):
 try every price from €1.40 to €6.50, one cent apart, and find the
@@ -626,17 +529,16 @@ top = largest(profits)
 print(prices[profits.index(top)], round(top, 2))
 ```
 
-Both lines give a price of €3.95 and a profit of €260.10 a day. The
-vertex is at $p = -\frac{316}{2 \times (-40)} = 3.95$. The $p^2$ term is
-negative, so the parabola opens downwards, and the vertex is a maximum.
-The comb tried 511 prices, and none beats it. At €3.95 the bakery sells
-$260 - 158 = 102$ loaves, and makes €2.55 on each.
+Both lines give €3.95 and a profit of €260.10 a day. The vertex is at
+$p = -\frac{316}{2 \times (-40)} = 3.95$, and the $p^2$ term is
+negative, so it is a maximum. The comb tried 511 prices, and none beats
+it.
 
 </details>
 
-**15. Another way.** Find the best price a third way, with
-`solve_quadratic` and no vertex formula. Where is the profit 0? What
-does each of those prices mean for the bakery?
+**13. Another way.** Find the best price with `solve_quadratic` and no
+vertex formula. Where is the profit 0? What does each of those prices
+mean for the bakery?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -646,23 +548,18 @@ print(roots)
 print((roots[0] + roots[1]) / 2)
 ```
 
-The roots are €1.40 and €6.50, and halfway between them is €3.95. At
-€1.40 each loaf sells for what it costs to make, so the bakery makes
-nothing on each one. At €6.50 it sells no loaves at all: $260 - 40
-\times 6.5 = 0$. A parabola is a mirror image of itself, so its top is
-halfway between the two roots, as on
+The roots are €1.40, where a loaf sells for what it costs to make, and
+€6.50, where the bakery sells none. Each is where one bracket of
+$(p - 1.4)(260 - 40p)$ is 0. The parabola's mirror puts its top halfway
+between them, at €3.95, as on
 [The top of the curve](tutorial:the-top-of-the-curve#halfway-between-the-roots).
-The roots could be read straight off the brackets too, since each
-bracket is 0 at one of them.
 
 </details>
 
-**16. Predict.** The owner asks two more questions. Which prices give a
-profit of at least €200 a day? And which price gives €300 a day? Each
-target makes a quadratic equation: profit minus the target equals 0.
-Before you run the cell, say how many real roots each one will have.
-Then look at the complex roots of the second, and compare their real
-part with your answer to problem 14.
+**14. Predict.** Which prices make at least €200 a day? Which price
+makes €300? Each target gives an equation: the profit, minus the target,
+equals 0. Before you run the cell, say how many real roots each has.
+Then compare the real part of the complex roots with problem 12.
 
 ```python
 import cmath
@@ -679,38 +576,35 @@ print(solve_quadratic_complex(-40, 316, -364 - 300))
 
 <details class="dl-answer"><summary>answer</summary>
 
-€200 has two real roots, about €2.72 and €5.18. Any price between them
-makes at least €200 a day. Put each root back in, and the profit is
-€200:
+€200 has two real roots, about €2.72 and €5.18, and any price between
+them makes at least €200. Put each root back in, and the profit is €200:
 
 ```python
 for price in solve_quadratic(-40, 316, -564):
     print(round(price, 2), round(evaluate(profit_rule, price), 2))
 ```
 
-€300 has none: `solve_quadratic` gives back `[]`. The most the bakery
-can make is €260.10, from problem 14, so no real price reaches €300. The
-discriminant says the same: $316^2 - 4 \times (-40) \times (-664)$ is
-$-6384$.
+€300 has none, and `solve_quadratic` gives back `[]`. The most the
+bakery can make is €260.10, so no real price reaches €300. The
+discriminant agrees: $316^2 - 4 \times (-40) \times (-664) = -6384$.
 
-The complex roots are about $3.95 + 0.999i$ and $3.95 - 0.999i$, a
-pair of conjugates. Their real part is 3.95, the best price. That is no accident. The formula is
-$-\frac{b}{2a}$, plus or minus a square root over $2a$, and
-$-\frac{b}{2a}$ is the vertex. When the discriminant is negative, the
-plus-or-minus part is imaginary, and the real part is left pointing at
-the top of the curve.
+The complex roots are about $3.95 + 0.999i$ and $3.95 - 0.999i$.
+Their real part is 3.95, the best price, and that is no accident. The
+formula is $-\frac{b}{2a}$, plus or minus a square root over $2a$, and
+$-\frac{b}{2a}$ is the vertex. When the discriminant is negative, only
+the plus-or-minus part turns imaginary.
 
-So which space answers the owner? A price is a real amount of money, so
-the question lives in $\mathbb{R}$, and the honest answer is "no price
-reaches €300". The complex roots are true roots in $\mathbb{C}$, as on
-[When there is no real answer](tutorial:when-there-is-no-real-answer#every-quadratic-has-roots-here).
-They are not prices anyone can charge.
+A price is a real amount of money, so the owner's question lives in
+$\mathbb{R}$, and the honest answer is "no price reaches €300". The
+complex roots are true roots in $\mathbb{C}$, as on
+[When there is no real answer](tutorial:when-there-is-no-real-answer#every-quadratic-has-roots-here),
+but nobody can charge them.
 
 </details>
 
-**17. Fix.** Someone tries the fine comb with prices one cent apart.
-The cell stops before it prints anything. Read the last line of the
-error, find the mistake, and fix it.
+**15. Fix.** Someone tries the fine comb with prices one cent apart,
+and the cell stops with an error. Read its last line, find the mistake,
+and fix it.
 
 ```python exec
 id: mixed-run-fix-comb
@@ -726,13 +620,10 @@ print(best_price_so_far, best_so_far)
 <details class="dl-answer"><summary>answer</summary>
 
 The error is `TypeError: 'float' object cannot be interpreted as an
-integer`. `range` counts in whole numbers only: its start, stop and
-step must all be ints. Nothing is wrong with the idea, only with the
-space `range` works in.
-
-The fix counts in whole cents, and turns each count into euro inside
-the loop. The stop is 651, because `range` stops before its last
-number:
+integer`. `range` works in the space of whole numbers: its start, stop
+and step must all be ints. The fix counts in whole cents, and turns each
+count into euro inside the loop. The stop is 651, because `range` stops
+before its last number:
 
 ```python
 best_so_far = 0
@@ -745,35 +636,32 @@ for cents in range(140, 651):
 print(best_price_so_far, round(best_so_far, 2))
 ```
 
-It prints `3.95 260.1`, the answer from problem 14. Counting in cents
-has a second benefit: `cents / 100` gives each price once, fresh. Adding
-0.01 again and again would build up a small float error with each step.
+It prints `3.95 260.1`, the answer from problem 12. Counting in cents
+also avoids adding 0.01 again and again, which would build up a small
+float error at every step.
 
 </details>
 
-**18. Explain.** Every answer on this page was checked by putting it
-back into the rule it came from. The chooser and the price finder pass
-every check. Does that mean the bakery should charge €3.95? What does a
-substitution check prove, and what can it not prove?
+**16. Explain.** Every answer on this page was checked by putting it
+back into the rule it came from, and every check passed. Does that mean
+the bakery should charge €3.95? What does a substitution check prove,
+and what can it not prove?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A substitution check proves that the answer fits the rule. If $3.95$ goes
-into $-40p^2 + 316p - 364$ and the vertex is right, the algebra and the
-code made no mistake. It catches a swapped argument, as in problem 8, or
-a lost term, at once.
+A substitution check proves that an answer fits its rule, so the
+algebra and the code made no mistake. It caught the swapped argument in
+problem 7 at once.
 
-It cannot prove that the rule fits the world. The bakery's rule came
-from a guess: about $260 - 40p$ loaves a day. If customers really buy
-$300 - 60p$, every check still passes, and €3.95 is still the wrong
-price. The check is about the second step, from rule to answer. The
-first step, from the world to the rule, needs other evidence: the
-bakery's own sales at a few prices, as Aoife's notes were on
+It cannot prove that the rule fits the world. The bakery's rule is a
+guess. If customers really buy $300 - 60p$ loaves, every check still
+passes, and €3.95 is the wrong price. The step from the world to the
+rule needs other evidence, such as the bakery's own sales at a few
+prices, like Aoife's notes on
 [The top of the curve](tutorial:the-top-of-the-curve#a-price-too-low-a-price-too-high).
 
-The same holds for the phone plans, with one difference. Their rules
-come from the company's price list, so the rule is exact, and the
-checks say nearly everything. A good answer names both steps: the
-answer fits the rule, and here is why we trust the rule.
+The phone plans are different: their rules come from the price list,
+so they are exact. A good answer names both steps: the answer fits the
+rule, and here is why we trust the rule.
 
 </details>
