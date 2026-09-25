@@ -139,11 +139,41 @@ Levels: **Warm-up** (one step, anyone can do it), **Core** (what the page
 teaches), **Stretch** (combines it with an earlier unit). Every problem has
 an answer fold and, where it helps, a hint fold.
 
-**Diverse contexts.** Each unit rotates through settings so no reader meets
-only one kind of example: music and playlists, sport, cooking and recipes,
-money and rent, travel and maps, health and fitness, games, weather and
-climate, Irish data (rainfall, bus times, the census), art and colour. A
-context is chosen because the maths genuinely fits it, never as decoration.
+**Contexts: computing first.** A context is chosen because the maths
+fits it, never as decoration. Computing comes first: pixels, screens,
+files, packets, sensors, fonts, games. Physics comes in where the maths
+*is* physics: falling, bouncing, orbits, waves, light. Real Irish data
+stays wherever it exists (rainfall, emissions, the census). A made-up
+everyday setting (a café bill, a runner, a cupcake stall) is the last
+choice, and needs a reason. Two warnings from the audit: a reader's
+English may be a second language, so a science setting gets its terms
+explained on the page; and a reader who fears maths should not be handed
+a fear of physics instead, so the physics is always the kind you can see
+(a ball, a raindrop, a ray of light).
+
+**Schlomo and Schlomi.** The track borrows Schlomo from Josh's 2017
+handouts, where he has a plausible idea that turns out not to work
+(shifting a cipher twice to make it "more secure"). Here he has a sister
+or friend, Schlomi. Fix and Explain problems give their ideas to one of
+them, so the reader tests somebody else's reasoning before their own:
+"Schlomo says 0.1 + 0.2 should print 0.3. Is he wrong?" Rules:
+
+- Their ideas are *reasonable*. Each is the idea a thoughtful reader
+  might have. Neither of them is ever the butt of the joke.
+- Neither is always right. Sometimes Schlomo is right and Schlomi is
+  wrong, and sometimes both are right in different spaces (the fourth
+  idea, §2).
+- One or two appearances per practice page, not every problem.
+- They make mistakes; the reader never gets called one.
+
+**Choose your project.** Where one idea has several good uses, the page
+offers two to four short projects and the reader picks one: "choose one
+of these, or do more than one if you like". Each project is complete on
+its own, is a few cells long, and ends with its own check. The first
+use is Unit 9, where the derivative finds the bottom of a letter's curve,
+the edge of a shape in an image, the best line through data, or the
+lowest point of a cost by walking downhill (gradient descent). A mixed
+page may offer a choice of products in the same way.
 
 ## 5. The units
 
@@ -387,3 +417,17 @@ Made by Josh on 24 September 2026:
 2. **The toolkit:** both modes, the reader's own code and the reference (§6).
 3. **Where it sits:** beside the existing integrated course, as a beta track.
 4. **The four ideas** (§2) are the spine of the track.
+
+Made by Josh on 25 September 2026 (7.228):
+
+5. **Contexts:** computing first, physics where the maths is physics
+   (§4). Unit 1's project is a digit display, in two stages: a
+   seven-segment display first, then a small pixel font. It replaces the
+   bill splitter.
+6. **Schlomo and Schlomi** are the track's two characters (§4).
+7. **Headings and ids may change.** No reader has used the track yet, so
+   headings, cell ids and toolkit names can change freely until it
+   leaves beta. `waves` is also in the MIT–PDP course, so its headings
+   and cell ids stay.
+8. **Choose your project** where one idea has several good uses (§4).
+9. **The tagline** says "maths".

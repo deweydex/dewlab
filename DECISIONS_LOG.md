@@ -4675,3 +4675,17 @@ Renaming any of these would strand work a student already has. The code keeps it
 **Old addresses.** `compose/dewmini.html` and `compose/dewminiweb.html` are now hand-written redirects. Each uses `location.replace()` to keep the query string and hash, with a meta refresh and a plain link for readers without JavaScript. They are not lines in `courses/redirects.yaml`, for two reasons: that mechanism only points at pages the build writes one by one (`compose/` is copied whole), and its stub drops the query and hash. `COMPOSE_REDIRECTS` in `build.py` keeps them out of the offline bundle, which has no bookmarks to honour. An e2e test (`test_old_compose_addresses.py`) and a build test cover them.
 
 *Cost to change: the two page names now appear in links on the home, features and about pages, in a tutorial and in the docs, so a further rename means another pair of redirects. The internal names can change later only with a migration of the stored keys.*
+
+---
+
+**7.228 — The Dewey Track's contexts, characters and projects.** Josh answered the questions from the context audit on 25 September 2026.
+
+- **Contexts: computing first.** Pixels, files, sensors, fonts and games come first, physics where the maths is physics, and real Irish data wherever it exists. A made-up everyday setting is the last choice. `DEWEY_TRACK_PLAN.md` §4 has the rule and the two warnings that go with it: explain science terms for second-language readers, and don't swap a fear of maths for a fear of physics.
+- **Unit 1 builds a digit display, not a bill splitter.** Josh: "What about something like making a 7 pixel display or small 7 by 4 display for numbers". It comes in two stages: a seven-segment display, then a small pixel font. `//` and `%` find a pixel's row and column and a number's digits, and `2 ** 7` counts the segment patterns. `split_bill` leaves the toolkit.
+- **Schlomo and Schlomi.** Schlomo comes from Josh's 2017 handouts, where he has a reasonable idea that doesn't work. The track gives Fix and Explain problems to him and Schlomi, so the reader tests somebody else's reasoning first. Neither is ever the joke, and neither is always right.
+- **Choose your project.** Josh: "we don't have to pick one of these we can have a variety of projects and examples that the student can choose between". Where one idea has several good uses, the page offers two to four short projects. The first is Unit 9, where the derivative finds the bottom of a letter's curve (typographic overshoot), an edge in an image, a line of best fit, or a minimum by gradient descent.
+- **Headings, cell ids and toolkit names may change.** Josh: "No one has used these yet so no need to worry about getting rid of old stuff". This holds until the track leaves beta. `waves` is also in the MIT–PDP course, so it keeps its headings and ids.
+- **The letter is unsigned** until Josh has read it. A comment in the file says to sign it again.
+- **The tagline** says "maths".
+
+*Cost to change: each is text in the plan until the unit rewrites land. After that, the contexts are page content, and the toolkit names are in every later page that calls them.*

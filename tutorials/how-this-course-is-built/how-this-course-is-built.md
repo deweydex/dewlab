@@ -134,4 +134,4 @@ people learn by doing. Here, you learn by dewing. The next page,
 [Recipes are algorithms](tutorial:recipes-are-algorithms), is where the
 dewing starts.
 
-Josh
+<!-- Unsigned until Josh has read the letter (7.228). Once he has, sign it "Josh" again. -->
