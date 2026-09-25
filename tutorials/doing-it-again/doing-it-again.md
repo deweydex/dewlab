@@ -29,23 +29,21 @@ it travelled by then?
 
 Here is something odd to keep in mind. In the maths on this page, the
 ball never stops bouncing, and it still travels less than 10 metres.
-That sounds impossible. By the end of the page you will have seen it
-happen.
+That sounds impossible. By the end of the page you will see it happen.
 
 On this page we:
 
-- repeat some lines for each value in a list, with `for`
+- repeat lines for each value in a list, with `for`
 - keep a running total, and count with `range()`
-- read sigma, $\sum$, and pi, $\prod$: loops, written by mathematicians
-- repeat until something is true, with `while`, and watch the ball
+- read sigma, $\sum$, and pi, $\prod$: loops written by mathematicians
+- repeat until something is true, with `while`
 - add `total` and `product` to your toolkit
 
 > **The space we're in.** Numbers, and lines of Python that run from the
-> top down. New on this page: a few lines can run again and again, and
-> Python decides how many times from what we give it. Our ball is a
-> *model*: a simple version of the real thing, with only the parts we
-> need. It keeps exactly the same fraction of its height at every
-> bounce, which a real ball does only roughly.
+> top down. New on this page: a few lines can run again and again. Our
+> ball is a *model*: a simple version of the real thing. It keeps exactly
+> the same fraction of its height at every bounce, which a real ball does
+> only roughly.
 
 ## Warm-up
 
@@ -106,15 +104,15 @@ at 80%, is bouncier.
 
 </aside>
 
-But the question at the top needs every bounce, added up. We want a way
-to say "do this again, once for each bounce". On
+But the question at the top needs every bounce, added up: "do this
+again, once for each bounce". On
 [Recipes are algorithms](tutorial:recipes-are-algorithms#steps-that-repeat-and-steps-that-choose)
-that was repetition: "for each cup, pour the tea".
+that was repetition.
 
 ## Doing it for each
 
-Here are the heights of the first five bounces, to the nearest
-centimetre. First, a plan in pseudocode:
+Here are the first five bounce heights, to the nearest centimetre, and
+a plan in pseudocode:
 
 ```text
 SET bounces TO the five heights, first to fifth
@@ -123,12 +121,9 @@ REPEAT for each height in bounces:
 SAY the ball is still bouncing
 ```
 
-And here it is in Python. The square brackets make a *list*: a row of
-values, kept in order, under one name. That is all we need from lists
-for now. Unit 5 is where we learn them properly.
-
-How many lines do you think the cell will print? Count before you run
-it.
+In Python, the square brackets make a *list*: a row of values, kept in
+order, under one name. Unit 5 looks at lists properly. How many lines
+will the cell print? Count before you run it.
 
 ```python exec
 id: doing-it-for-1
@@ -148,25 +143,23 @@ happened, in order.
 2. When the list ran out, Python went on to the first line that is not
    pushed in.
 
-A loop is a group of lines that Python runs again and again. A `for`
-loop runs them once for each value in a row of values. You met one on
-[True, false and every case](tutorial:true-false-and-every-case), going
-through `[False, True]`, and it works the same way for five heights or a
-thousand. The pushed-in lines are the *loop body*. The name on the
-`for` line, here `height`, is the *loop variable*: each time round, it
-points at the next value.
+A `for` loop runs some lines once for each value in a row of values. You
+met one on [True, false and every case](tutorial:true-false-and-every-case),
+going through `[False, True]`. The pushed-in lines are the *loop body*.
+The name on the `for` line, here `height`, is the *loop variable*: each
+time round, it points at the next value.
 
 ### Your turn
 
 1. Put a sixth height, 26, on the end of `bounces`, and run the cell.
 2. Put four spaces in front of the last line, so that it is pushed in
-   like `print(height)`. Before you run it, how many times do you think
-   the last line will print? Then take them out again.
+   like `print(height)`. Before you run it, how many times will that
+   line print? Then take the spaces out again.
 
 ## A running total
 
 Now the distance. The ball falls 100 cm. Then each bounce goes up and
-comes down again, so it adds its height twice. On paper:
+comes down, so it adds its height twice. On paper:
 
 | Bounce | Height | Travelled so far |
 |---|---|---|
@@ -174,10 +167,9 @@ comes down again, so it adds its height twice. On paper:
 | 1 | 80 | 260 |
 | 2 | 64 | 388 |
 
-Each row does the same thing: take the distance so far, and add twice
-the new height. A *running total* is a name that holds the total so far,
-and grows each time round the loop. What do you think the last line will
-print?
+Each row takes the distance so far, and adds twice the new height. A
+*running total* is a name that holds the total so far, and grows each
+time round the loop. What will the last line print?
 
 ```python exec
 id: doing-it-running-1
@@ -194,8 +186,7 @@ After five bounces the ball has travelled 638 cm. In maths, "travelled
 equals travelled plus something" would be false. In Python, `=` is an
 instruction, in two steps. First, Python works out the right-hand side,
 using the old value of `travelled`. Then it points the name `travelled`
-at the answer. You may also see `travelled += 2 * height`, which is
-short for the same line.
+at the answer. `travelled += 2 * height` is short for the same line.
 
 Where each line sits matters too.
 
@@ -215,15 +206,14 @@ that adds. What does the last line print now?
 
 Each time round, the loop would set `travelled` back to 100, so at the
 end it holds only the drop and the last bounce: $100 + 2 \times 33 =
-166$. A running total must start before the loop, so that it is set
-only once.
+166$. A running total must start before the loop.
 
 ## Counting with range()
 
-When the loop should count, `range()` gives the numbers for us. You met
-it on [Untangling a condition](tutorial:untangling-a-condition#not-between).
+When the loop should count, `range()` gives the numbers, as on
+[Untangling a condition](tutorial:untangling-a-condition#not-between).
 `range(1, 8)` gives the whole numbers from 1 up to 7. The last number,
-8, is left out. Run it to check.
+8, is left out.
 
 ```python exec
 id: doing-it-range-1
@@ -233,7 +223,7 @@ for bounce in range(1, 8):
 
 Now 20 bounces, with Python working out each height from the last one.
 Guess how far the ball travels. Then change `keep` to 0.5, and to 0.9,
-and guess again each time before you run.
+and guess again each time.
 
 ```python exec
 id: doing-it-range-2
@@ -250,7 +240,7 @@ print("travelled:", round(travelled, 1), "cm")
 
 With `keep = 0.8`, the 20th bounce is just over 1 cm high, and the ball
 has travelled about 890.8 cm. The order of the two lines in the body
-matters: first the new height, then the distance it adds.
+matters: first the new height, then the distance.
 
 ### Choosing inside a loop
 
@@ -272,19 +262,18 @@ print(middle, "bounces")
 ```
 
 Seven, from the 4th to the 10th. This small program keeps values under
-names (`height`, `middle`): that is *storage*. It chooses with `if`:
-that is selection. It repeats with `for`: that is iteration. Those are
-the three shapes of step from
-[Recipes are algorithms](tutorial:recipes-are-algorithms), and between
-them they can build any program. Planning a program from those shapes is
-called *structured design*.
+names: that is *storage*. It chooses with `if`, which is selection, and
+repeats with `for`, which is iteration. Those are the three shapes of
+step from [Recipes are algorithms](tutorial:recipes-are-algorithms), and
+they can build any program. Planning a program from them is called
+*structured design*.
 
 Your turn: change 0.8 to 0.9. Do more bounces land between 10 and
 50 cm, or fewer? Guess first.
 
 ## Sigma: a loop written by mathematicians
 
-Maths has a short way to write a row of numbers like our heights:
+Maths writes a row of numbers like our heights as
 $h_1, h_2, h_3$ and so on. The small number is the *index*: it says
 which one we mean. So $h_3$ is the height of bounce 3, and $h_k$ is the
 height of bounce $k$. For our ball, $h_k = 100 \times 0.8^k$.
@@ -318,8 +307,7 @@ print(round(100 + 2 * added, 1))
 
 ### The most famous sigma
 
-Sigma works for any row of numbers. The most famous is
-$1 + 2 + 3 + \dots + n$. A story says that a
+The most famous sigma is $1 + 2 + 3 + \dots + n$. A story says that a
 young Carl Friedrich Gauss was asked to add 1 to 100 at school, and
 found the answer in a moment. Write the numbers forwards, and under them
 write them backwards:
@@ -336,7 +324,7 @@ words: the sum of 1 to $n$ is $n$ times $n + 1$, halved.
 $$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$
 
 A formula like this is a promise, so let's check it. Python's built-in
-`sum()` adds up a row of values for us. Will the two columns agree?
+`sum()` adds up a row of values. Will the two columns agree?
 
 ```python exec
 id: doing-it-sigma-2
@@ -344,9 +332,8 @@ for n in [1, 2, 3, 10, 100, 365]:
     print(n, sum(range(1, n + 1)), n * (n + 1) // 2)
 ```
 
-They agree every time. The formula is much faster, and the loop is the
-proof we can follow step by step, so we check the formula against the
-loop.
+They agree every time. The formula is faster; the loop is the one we
+can follow step by step.
 
 ### The ball that never stops
 
@@ -372,15 +359,14 @@ for n in [1, 5, 20, 50, 100]:
 ```
 
 The loop and the formula agree, and the distance settles at 900 cm. The
-ball bounces with no last bounce, and the whole journey is 9 metres. I
+ball has no last bounce, and the whole journey is 9 metres. I
 think this is the strangest result on the page. Unit 9's
 [Getting closer](tutorial:getting-closer) names this settling: a limit.
 
 <aside class="dl-note" id="doing-it-note-buzz">
 
 **You can hear it.** A lower bounce is also a quicker one. In the model
-the times shrink fast enough to add up to a few seconds, so the endless
-bounces are over quickly. Drop a table tennis ball on a table and
+the times shrink fast enough to add up to a few seconds. Drop a table tennis ball on a table and
 listen: the taps come faster and faster, blur into a buzz, and stop.
 
 </aside>
@@ -406,9 +392,9 @@ Schlomo, who is learning Python too, has a quicker idea. "Each bounce
 loses 20% of the height. So after five bounces the ball has lost 100%,
 and it stops." Is he right? Decide before you read on.
 
-After each bounce the height is multiplied by 0.8, so after five bounces
-it has been multiplied by 0.8 five times. We need a running product: a
-number that is multiplied, not added, each time round.
+After five bounces the height has been multiplied by 0.8 five times. We
+need a running product: a number that is multiplied, not added, each
+time round.
 
 ```question
 id: doing-it-pi-1
@@ -449,9 +435,8 @@ Maths writes a product of many values with a Greek capital P, called pi:
 $$\prod_{k=1}^{5} r_k = r_1 \times r_2 \times r_3 \times r_4 \times r_5$$
 
 where $r_k$ is the fraction kept at bounce $k$. This is *pi notation*:
-the same as sigma, with multiplying in place of adding. Our ball has every $r_k = 0.8$, so the product is
-$0.8^5$. A power is a product of one number, again and again: $2^{10}$
-on
+sigma, with multiplying in place of adding. Every $r_k$ is 0.8 here, so
+the product is $0.8^5$. A power is a product of one number: $2^{10}$ on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times)
 is $\prod_{i=1}^{10} 2$.
 
@@ -460,9 +445,9 @@ is $\prod_{i=1}^{10} 2$.
 When does a bounce first come up less than 1 cm? This time we do not
 know how many times to go round. We know when to stop.
 
-A *while loop* runs its body again and again, for as long as a
-condition is True. Before each round, it checks the condition. As soon
-as the condition is False, the loop ends. Guess the bounce first.
+A *while loop* runs its body for as long as a condition is True. It
+checks the condition before each round, and ends as soon as the
+condition is False. Guess the bounce first.
 
 ```python exec
 id: doing-it-while-1
@@ -476,9 +461,8 @@ print("Bounce", bounces_so_far, "reaches", round(height, 2), "cm.")
 ```
 
 Bounce 21 is the first under 1 cm, at 0.92 cm. On Recipes are
-algorithms we asked of every repeat: what makes it end? A while loop
-ends only when its condition becomes False. This one does, because
-`height` shrinks every round. Here is one that never would:
+algorithms we asked of every repeat: what makes it end? This loop ends
+because `height` shrinks every round. Here is one that never would:
 
 ```python
 height = 100
@@ -487,14 +471,14 @@ while height >= 1:
 ```
 
 No real ball can do that, but Python does not know about balls. If a
-loop like this ever runs in a cell, the cell's **Run** button turns into
-**Stop**. Press it, and Python stops.
+loop like this runs in a cell, the **Run** button turns into **Stop**.
+Press it, and Python stops.
 
 ### Watching it bounce
 
-The next cell builds a list of heights, one for each frame of a short
-film, with a `for` loop inside a `while` loop. Then matplotlib plays the
-frames. You do not need to follow the drawing part yet.
+The next cell builds the heights for a short film, with a `for` loop
+inside a `while` loop, and matplotlib plays it. You do not need to
+follow the drawing part yet.
 
 Guess first: with `keep = 0.8`, will you see all 21 bounces? Then try
 `keep = 0.5` and `keep = 0.95`, and guess each time.
@@ -519,7 +503,7 @@ while height >= 1:
     height = height * keep
 
 # Drawing: a grey trail, and the ball at the end of it.
-figure, stage = plt.subplots(figsize=(3.6, 2.2))
+figure, stage = plt.subplots(figsize=(3.2, 2.0))
 stage.set_xlim(0, len(path))
 stage.set_ylim(-4, 105)
 stage.set_xlabel("time")
@@ -532,13 +516,12 @@ def draw_step(frame):
     trail.set_data(range(frame + 1), path[:frame + 1])
     ball.set_data([frame], [path[frame]])
 
-skip = len(path) // 50 + 1          # at most 50 frames, so it draws quickly
-FuncAnimation(figure, draw_step, frames=range(0, len(path), skip), interval=80)
+skip = len(path) // 30 + 1          # at most 30 frames, so the film stays small
+FuncAnimation(figure, draw_step, frames=range(0, len(path), skip), interval=120)
 ```
 
-The ball falls from the top left, and its grey trail draws each bounce
-as an arch. The arches get lower and narrower, because a low bounce is
-also a quick one. The film repeats until you run the cell again.
+The grey trail draws each bounce as an arch. The arches get lower and
+narrower, because a low bounce is also a quick one.
 
 So which loop do you reach for? `for`, when you know the values, or how
 many times: the first 20 bounces. `while`, when you know when to stop,
@@ -562,11 +545,11 @@ print("Bounce", bounces_so_far, "and", round(travelled, 1), "cm so far")
 
 ## Two tools for your toolkit
 
-Let's make adding up and multiplying into tools, so that later pages
-can use them in one line. The first, `total`, has one gap: the line inside the loop adds `0` where
-it should add each value. Change that `0`. The second, `product`, is a
-stub: only its promise is written. Write its body in the same shape as
-`total`. Remember where a product starts.
+Let's make adding up and multiplying into tools for later pages. In
+`total`, the line inside the loop adds `0` where it should add each
+value: change that `0`. `product` is a stub with only its promise
+written. Write its body in the same shape as `total`, and remember
+where a product starts.
 
 ```python exec
 id: doing-it-toolkit
@@ -619,13 +602,13 @@ def product(values):
 ```
 
 Run the toolkit cell, then the tests. Until both tools are written,
-expect the first test to stop with an `AssertionError`: the test telling
-you which promise is not kept yet.
+a test stops with an `AssertionError`, telling you which promise is not
+kept yet.
 
 ```python exec
 id: doing-it-toolkit-tests
 assert total([80, 64, 51]) == 195
-assert total(range(1, 101)) == 5050           # the staircase of pixels
+assert total(range(1, 101)) == 5050           # Gauss's sum
 assert total([]) == 0
 assert product([2, 3, 4]) == 24
 assert round(product([0.8, 0.8, 0.8, 0.8, 0.8]), 4) == 0.3277
@@ -652,25 +635,20 @@ title: some steps
 not inside it?
 ```
 
-One thing about names. `total` is now the name of a function. If a cell
-on a later page says `total = 0`, the name `total` points at 0 instead,
-and the tool is gone from that page. That is why the loops on this page
-used names like `travelled`, `added` and `kept`.
+One thing about names. `total` is now a function. If a later cell says
+`total = 0`, the name points at 0 instead, and the tool is gone from that
+page. That is why this page used names like `travelled` and `kept`.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
-This page had you write `total` and `product` yourself. Python already
-has `sum()`, and `math.prod()` in its `math` module, and they do the same
-jobs.
-
-Using Python's own tools is what most programmers do, for good reasons:
-they are tested, they are fast, and every Python reader knows them.
+Python already has `sum()`, and `math.prod()` in its `math` module.
+Most programmers use them, for good reasons: they are tested, fast and
+well known.
 
 We wrote our own because a running total is the idea this page teaches,
-and `sum()` hides it. Writing `total` shows what happens inside: a
-starting value, a loop, and one line that runs again and again. It also
-shows why a product starts at 1. Once you have written one, `sum()` is
-not a mystery, and you can choose either.
+and `sum()` hides it. Writing `total` shows the starting value, the loop,
+and the line that runs again and again, and why a product starts at 1.
+After that, `sum()` is not a mystery.
 
 </details>
 
@@ -678,9 +656,9 @@ not a mystery, and you can choose either.
 
 | The question | On this page |
 |---|---|
-| What is named here? | a list, `bounces`; a loop variable, `height`, that points at each value in turn; running totals like `travelled`; the index $k$ in $h_k$ |
-| What is promised? | one round of a `for` loop for each value; the sum and the product of any list, from `total` and `product`; the same answer from each formula as from its loop |
-| What happens when? | a running total starts before the loop and grows inside it; a `while` loop checks its condition before every round |
+| What is named here? | a list, `bounces`; a loop variable, `height`; running totals like `travelled`; the index $k$ in $h_k$ |
+| What is promised? | one round of a `for` loop for each value; a sum and a product, from `total` and `product`; the same answer from each formula as from its loop |
+| What happens when? | a running total starts before the loop; a `while` loop checks its condition before every round |
 | What does this space let us do? | a total starts at 0 and a product at 1; losses multiply, they do not add; in the model, endless bounces add up to 9 metres |
 
 ## What we have now
@@ -688,16 +666,16 @@ not a mystery, and you can choose either.
 | Term or tool | What it means |
 |---|---|
 | list | a row of values in square brackets, kept in order |
-| `for x in values:` | a loop: run the pushed-in lines once for each value |
+| `for x in values:` | run the pushed-in lines once for each value |
 | loop body, loop variable | the pushed-in lines; the name that points at each value in turn |
-| running total | a name that holds the total so far: start it before the loop |
-| `range(start, stop)` | the whole numbers from `start` up to `stop`, with `stop` left out |
+| running total | the total so far: start it before the loop |
+| `range(start, stop)` | whole numbers from `start` up to `stop`, leaving out `stop` |
 | storage, selection, iteration | names, `if` and loops: the shapes of structured design |
 | $\sum_{i=1}^{n} x_i$, $\prod_{i=1}^{n} x_i$ | sigma adds up $x_i$ for every $i$ from 1 to $n$; pi multiplies them |
 | $\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$ | the sum of 1 to $n$, found by pairing the ends |
-| $\sum_{k=1}^{n} r^k = r \times \frac{1 - r^n}{1 - r}$ | the sum when each value is the last one times $r$ |
-| `while condition:` | a loop that runs for as long as the condition is True |
-| `total(values)`, `product(values)` | your two new toolkit tools |
+| $\sum_{k=1}^{n} r^k = r \times \frac{1 - r^n}{1 - r}$ | a geometric series: each value is the last one times $r$ |
+| `while condition:` | a loop that runs while the condition is True |
+| `total(values)`, `product(values)` | your new toolkit tools |
 
 The practice page is next. After it,
 [Counting every outfit](tutorial:counting-every-outfit) puts one loop
