@@ -9,7 +9,7 @@ covers:
     covers: [CMPS-LO3]
   watching-it-settle:
     covers: [CMPS-LO3]
-  more-is-not-reliably-better:
+  more-darts-better-on-average:
     covers: [CMPS-LO3, CMPS-LO13]
 ---
 
@@ -189,7 +189,7 @@ id: watching-it-settle-2
 hint: Look at the shape of the settling rather than the particular wiggles. The wiggles are different every time; something about them is not.
 ```
 
-## More Is Not Reliably Better
+## More Darts, Better on Average
 
 This method has real limits. The table below shows them. For each number
 of darts, it prints the estimate, and how far that estimate is from π.
@@ -215,8 +215,8 @@ thousand*.
 This is not a mistake in the code, and it is not a bad seed. Ten times
 the work gave a slightly worse answer on this run. That is a normal thing
 for this method to do. With another seed the numbers will be different,
-but the pattern will be the same: the answer improves slowly, and not
-every time.
+but the pattern will be the same: on average, more darts give a better
+answer, slowly, but not on every single run.
 
 The next cell makes four runs of a hundred thousand darts each, with four
 different seeds.
@@ -228,20 +228,26 @@ for seed in [0, 1, 2, 3]:
     print(f"seed = {seed}   estimate = {estimate:.5f}")
 ```
 
-The four runs give four different answers. They disagree from the second
-decimal place on: some start 3.14, and some start 3.13. This shows two
-different questions we can ask about any model's numbers.
+The four runs give four different answers, two above π and two below.
+They disagree from the second decimal place on: some start 3.14, and
+some start 3.13. This shows two different questions we can ask about any
+model's numbers.
 
-- *Accuracy* is how close an estimate is to the true answer. It is the
-  "off by" column in the table above.
-- *Precision* is how much of an estimate stays the same when the whole
-  thing is run again.
+- *Accuracy* is whether the estimates are centred on the true answer. If
+  we averaged a great many runs, would the average be π?
+- *Precision* is how close the runs are to each other: how much the
+  answer changes when the whole thing is run again.
 
-Here, a hundred thousand darts are fairly accurate: the estimate is off by
-well under a hundredth. But they are not very precise, because a new run
-can give a different second decimal place. Knowing which of the two is
-missing tells you what will fix it. You might need more darts, a better
-method, or a clearer idea of how far the number can be trusted.
+Darts are accurate. The four runs land on both sides of π, and their
+average, 3.14116, is off by less than a thousandth. That is closer than
+any one of the four runs. What darts lack is precision: two runs of a
+hundred thousand darts can differ by more than a hundredth.
+
+Knowing which of the two is missing tells you what will fix it. An
+imprecise method, like this one, gets better with more darts, and the
+rule below says how much better. An inaccurate method is different. If
+every run is off in the same direction, more darts only make you more
+sure of the wrong answer, and what you need is a better method.
 
 Underneath all of this is a rule. The typical error shrinks in proportion
 to $1/\sqrt{n}$, where $n$ is the number of darts. This page shows the

@@ -1,7 +1,7 @@
 ---
 title: "Inverse matrices: undoing a transformation"
 year: "2026-2027"
-version: 2026.08.24.1
+version: 2026.09.25.1
 covers:
   measuring-the-square:
     touches: [CMPS-LO4]
@@ -39,6 +39,10 @@ finds the area of a shape in three steps:
 2. Add up all of those results.
 3. Halve the total.
 
+The total can come out negative. This function keeps the sign, and
+does not hide it. For our square, whose corners go round anticlockwise,
+it comes out positive.
+
 ```python exec
 id: measuring-the-square-1
 def polygon_area(points):
@@ -48,7 +52,7 @@ def polygon_area(points):
     for i in range(point_count):
         j = (i + 1) % point_count
         total += xs[i] * ys[j] - xs[j] * ys[i]
-    return abs(total) / 2
+    return total / 2
 
 square = [[0, 1, 1, 0], [0, 0, 1, 1]]
 print("area of the original square:", polygon_area(square))
@@ -104,9 +108,32 @@ id: measuring-the-square-4
 hint: For stretch, a=2, b=0, c=0, d=1. For shear, a=1, b=1, c=0, d=1.
 ```
 
-What did you find? The determinant of a matrix is the factor by which
-the matrix scales area. The determinant can also be negative. A negative
-determinant means the matrix also flips the shape over, like a mirror.
+Both matched. But both would also match a simpler guess: multiply the
+two numbers on the diagonal, $a \times d$. In `stretch` and `shear`, $b$
+or $c$ is 0, so the $-bc$ part never had a chance to show. Here are two
+matrices where it does. Before you run the cell, work out $a \times d$
+and $ad - bc$ for each.
+
+```python exec
+id: measuring-the-square-5
+rotate90 = [[0, -1], [1, 0]]
+flip = [[1, 0], [0, -1]]
+print("area after rotate90:", polygon_area(multiply(rotate90, square)))
+print("area after flip:    ", polygon_area(multiply(flip, square)))
+```
+
+Turning a square does not change its area, so `rotate90` gives 1. The
+diagonal guess says $0 \times 0 = 0$. The determinant says
+$0 \times 0 - (-1) \times 1 = 1$.
+
+And `flip` gives $-1$. That is a strange result, isn't it? An area
+cannot be less than nothing. The minus sign is telling us something
+else: `flip` turned the square over, like a mirror, so its corners now
+go round clockwise. The determinant is $1 \times (-1) - 0 \times 0 = -1$,
+and it says the same thing.
+
+So the determinant of a matrix is the factor by which the matrix scales
+area, and its sign says whether the shape was flipped over.
 
 `shear` looked like the biggest change in the gallery. Yet it did not
 change the area at all. The picture alone does not make that clear, but

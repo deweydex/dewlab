@@ -10,7 +10,9 @@ covers:
   selection-sort-find-the-smallest:
     covers: [MIT-6.8]
   comparing-our-sorts:
-    covers: [MIT-6.8, CMPS-LO5]
+    covers: [MIT-6.8]
+# CMPS-LO5 is taught here, but this page is not on Computational Methods,
+# so it is not claimed for that module until #333 brings it into the course.
   optional-challenges:
     touches: [MIT-6.8]
 ---

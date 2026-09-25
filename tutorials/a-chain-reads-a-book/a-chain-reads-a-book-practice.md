@@ -2,7 +2,7 @@
 title: "A Markov chain from a whole book: a dictionary of dictionaries — Practice"
 practice_for: a-chain-reads-a-book
 year: "2026-2027"
-version: 2026.09.05.2
+version: 2026.09.25.1
 datasets: [the-time-machine, the-war-of-the-worlds, frankenstein, a-princess-of-mars, the-lost-world, pride-and-prejudice]
 ---
 
@@ -164,6 +164,8 @@ place, so the chain never sees one either.
 ```python exec
 id: generating-setup-1
 import random
+
+random.seed(1)    # run this cell again to start the same runs over
 
 def generate(start_word, steps):
     result = [start_word]

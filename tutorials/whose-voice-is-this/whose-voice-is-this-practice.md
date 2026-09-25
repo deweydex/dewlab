@@ -2,7 +2,7 @@
 title: "Writing style: comparing two writers with Markov chains — Practice"
 practice_for: whose-voice-is-this
 year: "2026-2027"
-version: 2026.09.05.1
+version: 2026.09.25.1
 ---
 
 # Writing style: comparing two writers with Markov chains — Practice
@@ -18,6 +18,22 @@ dewey_first = dewey_raw.find(dewey_marker)
 dewey_second = dewey_raw.find(dewey_marker, dewey_first + 1)
 dewey_end = dewey_raw.find("INDEX")
 dewey_book = dewey_raw[dewey_second:dewey_end].strip()
+
+
+def clean_scan(text):
+    """Remove blank lines and page headers, then join words split at a line end."""
+    kept = []
+    for line in text.split("\n"):
+        words = line.split()
+        if not words:
+            continue
+        if len(words) <= 8 and (words[0].isdigit() or words[-1].isdigit()):
+            continue
+        kept.append(line.strip())
+    return "\n".join(kept).replace("-\n", "")
+
+
+dewey_book = clean_scan(dewey_book)
 
 montessori_raw = await load_text("the-montessori-method.txt")
 montessori_marker = "A CRITICAL CONSIDERATION OF THE NEW PEDAGOGY IN ITS RELATION TO"
@@ -56,7 +72,8 @@ again.
    is more repetitive.
 
 **Think about:** why is it not fair to compare the numbers of different
-followers on their own?
+followers on their own? And is dividing by the number of uses enough to
+make it fair?
 
 </details>
 
@@ -71,23 +88,47 @@ print(sum(montessori_chain["child"].values()))
 
 There are 38 different followers in Dewey and 230 in Montessori. So
 Montessori's chain has *more* different words after `"child"`. Does that
-make her less repetitive? No. She uses the word 604 times, and Dewey
-uses it only 53 times. Her book is about children from start to finish,
-so the word meets many more neighbours. Dewey's book covers a wider
-subject and mentions `"child"` much less often.
+make her less repetitive? Not necessarily. She uses the word 604 times,
+and Dewey uses it only 53 times. Her book is about children from start
+to finish, so the word meets many more neighbours.
 
-Now divide. For Dewey, $38 / 53 pprox 0.72$: almost every use has a
-new follower. For Montessori, $230 / 604 pprox 0.38$: the same
-followers come back much more often. Montessori's use of `"child"` is
-the more repetitive one.
+Dividing looks like the fix. For Dewey, $38 / 53 \approx 0.72$. For
+Montessori, $230 / 604 \approx 0.38$. But that is not a fair test either.
+The more times anybody uses a word, the more its followers repeat,
+because only so many words can sensibly come next. Anybody who writes
+"child" 604 times will score lower than somebody who writes it 53 times.
+
+A fair test puts both writers on the same footing. Take 53 of
+Montessori's 604 uses, at random, as many as Dewey has, and count how
+many different followers they have. Then do that a thousand times:
+
+```python
+import random
+
+random.seed(1)
+uses = []
+for follower, count in montessori_chain["child"].items():
+    uses = uses + [follower] * count
+
+counts = [len(set(random.sample(uses, 53))) for _ in range(1000)]
+print(sum(counts) / len(counts))
+```
+
+The average is about 37. Dewey's 53 uses have 38. So, like for like, the
+two writers use "child" with about the same variety. The first
+difference came from *how often* each one wrote the word, not from how.
+
+What does differ is *which* words come next:
 
 ```python
 print(sorted(montessori_chain["child"].items(), key=lambda kv: -kv[1])[:3])
+print(sorted(dewey_chain["child"].items(), key=lambda kv: -kv[1])[:3])
 ```
 
-Three words alone, `"to"`, `"is"` and `"who"`, follow `"child"` 124
-times between them in Montessori's book: 50, 42 and 32. That is a real
-pattern in how she builds a sentence around the word.
+In Montessori, `"to"`, `"is"` and `"who"` follow `"child"` 50, 42 and 32
+times. In Dewey, the top three are `"and"`, `"is"` and `"has"`, only 5,
+5 and 4 times each. That is a real difference in how each builds a
+sentence around the word, even though neither is more repetitive.
 
 </details>
 
@@ -115,10 +156,14 @@ montessori_only = set(montessori_chain) - set(dewey_chain)
 print(len(shared), len(dewey_only), len(montessori_only))
 ```
 
-5,115 words are in both. 11,026 words appear only in Dewey, and 9,278
+5,099 words are in both. 9,284 words appear only in Dewey, and 9,294
 only in Montessori. So two books on a related subject share less than
 half of their words. Most of the words each writer uses never appear in
 the other's book.
+
+Cleaning the scan mattered here. Before `clean_scan`, about 1,700 more
+words counted as "only in Dewey". They were halves of words the printer
+had split at the end of a line, such as `environ-`.
 
 One thing to keep in mind: `split()` cuts only at spaces, so `"child"`
 and `"child,"` count as different words. Some of the words "only in
@@ -132,6 +177,8 @@ to them.
 ```python exec
 id: generate-setup-1
 import random
+
+random.seed(1)    # run this cell again to start the same runs over
 
 def generate(chain, start_word, steps):
     result = [start_word]
@@ -156,7 +203,7 @@ hint: Check "your word" in shared first — problem 2's shared set only exists i
 ```
 
 **4. Try this next:** repeat problem 1 for a few more shared words of your
-own. Can you see a pattern in *which kinds* of words show the biggest
+own, with the fair test from its answer. Can you see a pattern in *which kinds* of words show the biggest
 gap between the two writers? Compare words about each book's subject,
 like `"child"`, with ordinary joining words.
 

@@ -303,8 +303,13 @@ for step in range(20):
 print("A, B, C:", [round(v, 4) for v in visits[0]])
 ```
 
-Both of the other pages link to page A. That matters more than how many
-links a page has going out.
+A comes first, with 4 visits in every 9. Why A? It is not the number of
+links pointing at it: B has two pages linking to it as well, A and C.
+The difference is what those links carry. B has only one link out, so
+every surfer on B goes to A next. A and C each split their surfers in
+half. A page ranks high when the pages that link to it send it a big
+share of their visitors, and when those pages are visited often
+themselves.
 
 ### Your turn
 

@@ -2,7 +2,7 @@
 title: "N-grams: a Markov chain that remembers more words — Practice"
 practice_for: how-much-it-remembers
 year: "2026-2027"
-version: 2026.09.05.2
+version: 2026.09.25.1
 ---
 
 # N-grams: a Markov chain that remembers more words — Practice
@@ -96,6 +96,8 @@ There are 18. Here are three of them:
 ```python exec
 id: generate-setup-1
 import random
+
+random.seed(1)    # run this cell again to start the same runs over
 
 def generate1(start_word, steps):
     result = [start_word]

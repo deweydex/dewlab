@@ -1,7 +1,7 @@
 ---
 title: "A Markov chain from a whole book: a dictionary of dictionaries"
 year: "2026-2027"
-version: 2026.09.05.2
+version: 2026.09.25.1
 datasets: [the-time-machine]
 covers:
   loading-a-real-book:
@@ -72,13 +72,33 @@ Here is what the cell does, one step at a time:
 ### Your turn
 
 Is the licence text really gone? The words `"Project Gutenberg"` appear
-all through it. Can you check that they no longer appear anywhere in
-`book`? What do you expect the answer to be?
+all through it. Before you run anything, guess: is
+`"Project Gutenberg" in book` True or False? Then check.
 
 ```python exec
 id: loading-a-real-book-3
-hint: The in operator tests whether one string sits inside another — "cat" in "concatenate" is True. "Project Gutenberg" in book should say False.
+hint: The in operator tests whether one string sits inside another. "cat" in "concatenate" is True.
 ```
+
+Did you get True? Most people expect False. So something called Project
+Gutenberg is still inside the novel. Where? `book.find("Project Gutenberg")`
+gives the position where the words first appear, and a slice from a
+little before that point shows the rest.
+
+```python exec
+id: loading-a-real-book-4
+where = book.find("Project Gutenberg")
+print(where, "of", len(book), "characters")
+print(book[where - 60:])
+```
+
+It is the very last line of `book`: *End of the Project Gutenberg EBook
+of The Time Machine, by H. G. Wells*. Project Gutenberg put that closing
+line before its END marker, not after it, so our slice kept it. Nothing
+is broken. The cell did exactly what we asked. The marker was just not
+quite where we assumed. That is the reason to check a cleaned text,
+and not only trust it. One line of 14 words makes no real difference to
+a chain built from more than 32,000 words, so we leave it in.
 
 ## Too Many Words for a Grid
 
@@ -170,6 +190,8 @@ would with probabilities.
 id: a-dictionary-of-dictionaries-2
 import random
 
+random.seed(1)    # change the 1 to any other number for a different run
+
 def generate(start_word, steps):
     result = [start_word]
     current = start_word
@@ -187,19 +209,19 @@ print(generate("Weena", 20))
 `for _ in range(steps)` repeats the loop `steps` times. The name `_` is
 the usual way to say "we do not need the loop variable".
 
-Run the cell a few times. Each run gives a different sentence. One run
-gave this:
+`random.seed(1)` fixes where the random choices start, so the cell
+gives the same sentence every time it runs. Seed 1 gives this:
 
 > Weena was Weena would still remained one by their features, I left her to
 > speak of putrefaction and grew visible. “I
 
-Another gave this:
+Change the 1 to a 2, and run it again. Seed 2 gives this:
 
 > Weena lay awake most of intense relief, I was free from which I thought
 > of increasing apprehensions drew her hands, and
 
-Your own runs will almost certainly read differently. Every run mixes up
-the same 32,467 words, but always by what really follows what in this
+Every other seed gives another sentence. Every run mixes up the same
+32,467 words, but always by what really follows what in this
 one book. Each pair of words next to each other in the output is a pair
 from the book.
 

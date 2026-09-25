@@ -2,7 +2,7 @@
 title: "The perceptron: a model that learns from its mistakes — Practice"
 practice_for: a-model-that-corrects-itself
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.25.1
 ---
 
 # The perceptron: a model that learns from its mistakes — Practice
@@ -12,8 +12,15 @@ you to predict what the code will do before you run it. Try to answer
 before you check. Being wrong, and finding out why, teaches you more than
 being right by accident.
 
+The cell below sets up everything the problems use: the two shapes,
+`predict()`, the tutorial's twenty messy pictures in `train`, and a
+function `fit()` that runs the tutorial's training loop. Its last line
+trains the same model the tutorial did.
+
 ```python exec
 id: setup-1
+import random
+
 PLUS = [0, 1, 0,
         1, 1, 1,
         0, 1, 0]
@@ -25,6 +32,36 @@ CROSS = [1, 0, 1,
 def predict(weights, bias, pixels):
     total = sum(w * p for w, p in zip(weights, pixels)) + bias
     return 1 if total > 0 else 0
+
+
+def noisy(picture, flips):
+    copy = list(picture)
+    for i in random.sample(range(9), flips):
+        copy[i] = 1 - copy[i]
+    return copy
+
+
+random.seed(1)    # the same twenty pictures as the tutorial
+train = []
+for _ in range(10):
+    train.append((noisy(PLUS, 3), 1))
+    train.append((noisy(CROSS, 3), 0))
+random.shuffle(train)
+
+
+def fit(examples, learning_rate=0.5, epochs=10):
+    """The tutorial's training loop. Gives back the final weights and bias."""
+    weights, bias = [0.0] * 9, 0.0
+    for _ in range(epochs):
+        for pixels, label in examples:
+            error = label - predict(weights, bias, pixels)
+            for i in range(9):
+                weights[i] += learning_rate * error * pixels[i]
+            bias += learning_rate * error
+    return weights, bias
+
+
+weights, bias = fit(train)
 ```
 
 ## A Model That Starts Out Wrong
@@ -74,22 +111,28 @@ is written.
 
 ```python exec
 id: running-it-again-and-again-1
-hint: Copy the training loop, but iterate over list(reversed(train)) instead of train. Print the final weights and bias from both runs side by side.
+hint: fit(list(reversed(train))) trains a new model on the reversed list. Print its weights and bias beside weights and bias.
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. Both reach 100% train accuracy by the second epoch, but they end with
+No. Both get every training example right in the end, but they end with
 different weights.
 
 | pixel | tutorial's order | reversed order |
 |---|---|---|
-| top-right | `0.0` | `-0.5` |
-| mid-left | `+0.5` | `0.0` |
-| mid-right | `0.0` | `+0.5` |
-| bottom-right | `-0.5` | `0.0` |
+| top-left | `-2.0` | `-1.0` |
+| top-middle | `+0.5` | `+1.0` |
+| top-right | `-1.5` | `-2.0` |
+| mid-left | `+1.0` | `+1.5` |
+| mid-right | `+2.5` | `+2.0` |
+| bottom-left | `-1.5` | `-1.0` |
+| bottom-middle | `+1.5` | `+1.0` |
+| bottom-right | `-1.0` | `-2.0` |
 
-The other five weights are the same in both.
+The centre, `+0.5`, and the bias, `+0.5`, are the same in both. Every
+arm of the plus is still positive, and every corner of the cross is
+still negative. Only the sizes changed.
 
 There is no single correct set of weights here. There are only sets that
 get every training example right. Which set the training finds depends on
@@ -108,8 +151,9 @@ hint: Think back to what the tutorial found with 0.05. What does the learning ra
 
 <details class="dl-answer"><summary>answer</summary>
 
-It still takes two epochs. Every weight ends up four times as large as
-with `0.5`: `2.0` in place of `0.5`, and `-2.0` in place of `-0.5`.
+It still takes seven epochs, with the same dip in the sixth. Every
+weight ends up four times as large as with `0.5`: `+10.0` in place of
+`+2.5`, and `-8.0` in place of `-2.0`.
 
 This is the same thing the tutorial found with `0.05`. Every weight
 starts at zero, and every change is multiplied by the learning rate. So
@@ -132,15 +176,16 @@ you run it?
 
 ```python exec
 id: checking-it-against-patterns-it-has-never-seen-1
-hint: Every training example was PLUS or CROSS with one pixel flipped. So the clean originals are, in a way, the easiest possible test.
+hint: Every training example was PLUS or CROSS with three pixels flipped. So the clean originals are, in a way, the easiest possible test.
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-Both are correct: `1` for `PLUS`, and `0` for `CROSS`. Every example in
-`train` was one flipped pixel away from one of these two pictures. So the
-clean pictures are closer to what the model learned than any of the
-examples it was corrected against.
+Both are correct: `1` for `PLUS`, and `0` for `CROSS`. The totals are
+far from zero, $+6.5$ and $-5.0$. Every example in `train` was three
+flipped pixels away from one of these two pictures. So the clean
+pictures are closer to what the model learned than any of the examples
+it was corrected against.
 
 </details>
 
@@ -154,11 +199,13 @@ hint: Every weight gets multiplied by 0. What is left in the total?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It predicts `0`, "cross". Here is why. Every term is `weight * 0`, so the
-total is only the bias, which is `0.0`. The rule is
-`1 if total > 0 else 0`. `0` is not greater than `0`, so a total of
-exactly zero goes to "cross". For a blank picture, the bias alone decides
-the answer. No weight plays any part.
+It predicts `1`, "plus". Here is why. Every term is `weight * 0`, so the
+total is only the bias, which is `+0.5`. The rule is
+`1 if total > 0 else 0`, and `0.5` is greater than `0`. For a blank
+picture, the bias alone decides the answer. No weight plays any part.
+
+A blank picture is neither shape, and the model has no way to say so. It
+can only ever answer "plus" or "cross".
 
 </details>
 
@@ -170,13 +217,14 @@ it to end up with, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`0.0`. A pixel that never changes gives the model no way to tell the two
-shapes apart. The tutorial gave the same reason for the centre pixel,
-which both shapes share.
+`0.0`. A weight only moves by `learning_rate * error * pixel`. For a
+pixel that is always `0`, that change is always zero, so its weight can
+never move.
 
-There is a second reason too. A weight only moves by
-`learning_rate * error * pixel`. For a pixel that is always `0`, that
-change is always zero, so its weight can never move.
+Compare the centre pixel in the tutorial. It could not tell the shapes
+apart either, but it was lit in most pictures, so it moved 19 times.
+Only the ups and downs cancelling brought it back near zero. "Tells the
+model nothing" and "never moves" are not the same thing.
 
 </details>
 

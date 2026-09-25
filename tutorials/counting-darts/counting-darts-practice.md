@@ -39,13 +39,17 @@ circle. What would you multiply by?
 
 <details class="dl-answer"><summary>answer</summary>
 
-By 4 again. But the reason is different, and the difference is worth
-understanding.
+By 4 again, and that is not a coincidence.
 
-That square has area $2 \times 2 = 4$. The whole circle has area $\pi$.
-So the fraction inside is $\pi/4$, and the estimate is $4 \times$ the
-fraction. The arithmetic matches the tutorial by coincidence. It is not
-the same setup.
+The big square is made of four unit squares, one in each corner around
+the origin. The circle is made of four quarter-circles, one in each of
+those squares. Each small square holds the tutorial's picture, turned
+round. So the fraction of darts inside is the same, $\pi/4$, and the 4
+comes back.
+
+The areas say the same thing. The big square has area $2 \times 2 = 4$,
+and the whole circle has area $\pi$. So the fraction inside is $\pi/4$,
+and the estimate is $4 \times$ the fraction.
 
 Here is the general rule underneath both:
 
