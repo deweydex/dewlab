@@ -7,7 +7,7 @@ practice_across:
   - waves
   - how-tall-is-that-tree
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.26.1
 ---
 
 # Mixed problems: shapes, angles and waves
@@ -22,7 +22,9 @@ checker for a 2D game. A ball and a player are circles, and a wall is a
 straight line at a slant. The checker says when the ball hits either of
 them, and an arrow in the corner of the screen gives the bearing and
 distance to the goal. Problems 5, 7, 8, 10, 12 and 14 are the checker's
-parts, and they build on each other, so do those in order.
+parts, and they build on each other, so do those in order. At the end,
+the checker runs a small game you can play with the arrow keys, and
+change level by level.
 
 Your toolkit is loaded on this page: `slope`, `line_through`,
 `distance`, `midpoint`, `point_on_circle`, `wave` and `angle_between`
@@ -174,9 +176,11 @@ radius.
 
 </details>
 
-**6. Fix.** A five-a-side football app checks whether a ball of radius
-11 cm touches a player's foot, a circle of radius 5 cm. It says there is
-no touch, but the centres are 14 cm apart. Find the mistake.
+**6. Fix.** Schlomi, who is learning Python too, is writing a
+five-a-side football game. It checks whether a ball of radius 11 cm
+touches a player's foot, a circle of radius 5 cm. It says there is no
+touch, but the centres are 14 cm apart. What is her check comparing,
+and what needs to change?
 
 ```python exec
 id: mixed-shapes-fix-touch
@@ -197,8 +201,9 @@ last line should be
     return distance(ball_centre, foot_centre) <= 11 + 5
 ```
 
-and the call then gives `True`. The mistaken version treats the foot as
-a single point, with no size.
+and the call then gives `True`. Schlomi's version treats the foot as a
+single point, with no size, which is how many games start before the
+players have a shape.
 
 </details>
 
@@ -335,18 +340,19 @@ one for the wall, each built from a tool of this unit.
 
 </details>
 
-**11. Fix.** A cycle path meets a straight road at a right angle, at the
-point $(4, 5)$ on a town map. The road runs along $y = 2x - 3$. This code
-finds the path's line, but a check says the two are not at a right
-angle. Find the mistake.
+**11. Fix.** In a racing game, a side track meets the main track at a
+right angle, at the point $(4, 5)$ on the game's map. The main track
+runs along $y = 2x - 3$. This code finds the side track's line, but a
+check says the two are not at a right angle. What does it get, and what
+needs to change?
 
 ```python exec
 id: mixed-shapes-fix-path
-road_slope = 2
-path_slope = 1 / road_slope
-path_start = 5 - path_slope * 4
-print("path: y =", path_slope, "x +", path_start)
-print(close_enough(road_slope * path_slope, -1))
+track_slope = 2
+side_slope = 1 / track_slope
+side_start = 5 - side_slope * 4
+print("side track: y =", side_slope, "x +", side_start)
+print(close_enough(track_slope * side_slope, -1))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
@@ -354,10 +360,10 @@ print(close_enough(road_slope * path_slope, -1))
 A perpendicular slope is $-\frac{1}{m}$, not $\frac{1}{m}$. The fix is
 
 ```python
-path_slope = -1 / road_slope
+side_slope = -1 / track_slope
 ```
 
-Then the path is $y = -0.5x + 7$, and the check prints `True`. With
+Then the side track is $y = -0.5x + 7$, and the check prints `True`. With
 $+\frac{1}{2}$, the two lines both go uphill, and they cross at a sharp
 angle, about 37°. `angle_between` can measure it: try
 `angle_between((5, 7), (4, 5), (6, 6))`.
@@ -562,5 +568,396 @@ the two ends, for example with `between` from
 for an upright wall). If the nearest point is past an end, the nearest
 part of the wall is that end itself, and `distance` from the centre to
 the end decides the hit, as if the end were a circle of radius 0.
+
+</details>
+
+## Play it: your checker in a real game
+
+The checker has been answering questions about still pictures. Here it
+runs a game you can play. You steer a blue player to a green ring, round
+a wall, while an orange ball bounces round the screen. The arrow in the
+corner is problem 12's bearing and distance to the goal.
+
+The game comes in two parts. The Python cell below is the level. Its
+first lines are the settings, and those are yours to change. The rest
+works out the ball's whole path, frame by frame, with the tools of this
+unit: `point_on_circle` turns a speed and an angle into a move, as on
+[Going round in circles](tutorial:going-round-in-circles#a-tool-for-any-point-on-a-circle);
+`solve_simultaneous` finds the nearest point of the wall, as in problem
+8; and `distance` decides every bounce. The cell saves the path in the
+page's database, `db`, where the game can read it. Before you run it:
+the ball starts near the bottom left, moving at 35°. Which does it
+reach first, the wall or an edge of the screen?
+
+```python exec
+id: mixed-shapes-game-level
+import matplotlib.pyplot as plt
+
+# The level: change any of these, run this cell, then press Run on the game.
+ball_speed = 4                       # pixels the ball moves each frame
+ball_angle = 35                      # degrees, anticlockwise from the right
+ball_radius = 10
+player_radius = 14
+player_start = (40, 250)
+goal = (360, 150)
+wall_ends = ((170, 40), (250, 230))
+
+# The ball's path, frame by frame. You do not need to change this part.
+screen_width, screen_height = 400, 300
+wall_a, wall_b = wall_ends
+a = wall_b[1] - wall_a[1]            # the wall as a*x + b*y = c, as in problem 7
+b = wall_a[0] - wall_b[0]
+c = a * wall_a[0] + b * wall_a[1]
+wall_length = distance(wall_a, wall_b)
+
+
+def nearest_on_wall(centre):
+    """Return the point of the wall nearest to centre (problems 8 and 16)."""
+    p, q = centre
+    foot = solve_simultaneous(a, b, c, b, -a, b * p - a * q)
+    if close_enough(distance(wall_a, foot) + distance(foot, wall_b), wall_length, tolerance=1e-6):
+        return foot                  # the foot is between the two ends
+    if distance(centre, wall_a) < distance(centre, wall_b):
+        return wall_a
+    return wall_b
+
+
+move_x, move_y = point_on_circle(ball_speed, ball_angle)
+x, y = 60, 60
+path = []
+first_bounce = None
+for frame in range(1200):
+    x, y = x + move_x, y + move_y
+    # An edge straight up or straight across turns one part of the move round.
+    if (x < ball_radius and move_x < 0) or (x > screen_width - ball_radius and move_x > 0):
+        move_x = -move_x
+        first_bounce = first_bounce or ("an edge", frame)
+    if (y < ball_radius and move_y < 0) or (y > screen_height - ball_radius and move_y > 0):
+        move_y = -move_y
+        first_bounce = first_bounce or ("an edge", frame)
+    # The slanted wall turns round the part of the move that points at it.
+    touch = nearest_on_wall((x, y))
+    gap = distance((x, y), touch)
+    if 0 < gap <= ball_radius:
+        out_x, out_y = (x - touch[0]) / gap, (y - touch[1]) / gap
+        towards = move_x * out_x + move_y * out_y
+        if towards < 0:
+            move_x = move_x - 2 * towards * out_x
+            move_y = move_y - 2 * towards * out_y
+            first_bounce = first_bounce or ("the wall", frame)
+    path.append((frame, x, y))
+
+db.execute("DROP TABLE IF EXISTS ball_path_tbl")
+db.execute("CREATE TABLE ball_path_tbl (ball_path_id INTEGER PRIMARY KEY, x REAL, y REAL)")
+db.executemany("INSERT INTO ball_path_tbl VALUES (?, ?, ?)", path)
+db.execute("DROP TABLE IF EXISTS setting_tbl")
+db.execute("CREATE TABLE setting_tbl (setting_id TEXT PRIMARY KEY, value REAL)")
+db.executemany("INSERT INTO setting_tbl VALUES (?, ?)", [
+    ("ball_radius", ball_radius), ("player_radius", player_radius),
+    ("start_x", player_start[0]), ("start_y", player_start[1]),
+    ("goal_x", goal[0]), ("goal_y", goal[1]),
+    ("wall_ax", wall_a[0]), ("wall_ay", wall_a[1]),
+    ("wall_bx", wall_b[0]), ("wall_by", wall_b[1]),
+])
+db.commit()
+print(len(path), "frames saved. The first bounce is off", first_bounce[0], "in frame", first_bounce[1])
+
+path_x = []
+path_y = []
+for frame, x, y in path[:400]:
+    path_x.append(x)
+    path_y.append(y)
+plt.figure(figsize=(4, 3))
+plt.plot(path_x, path_y, color="C1", linewidth=1)
+plt.plot([wall_a[0], wall_b[0]], [wall_a[1], wall_b[1]], color="black", linewidth=3)
+plt.plot([player_start[0]], [player_start[1]], "o", color="C0", markersize=10)
+plt.plot([goal[0]], [goal[1]], "o", color="green", markersize=10)
+plt.xlim(0, screen_width)
+plt.ylim(0, screen_height)
+plt.gca().set_aspect("equal")
+```
+
+The ball reaches the wall first, in frame 46. The picture shows the
+first 400 frames of its path: the level before you play it. Now the game. Its three panes are the engine,
+written in JavaScript, the language of web pages, which
+[Many languages, one idea](tutorial:many-languages-one-idea) meets
+properly in Unit 10. You do not need to change anything in them. Press
+Run on the game, click it (or tap it), and move with the arrow keys or
+the buttons under it. The ball starts when you do.
+
+```html app
+id: mixed-shapes-game-html
+app: shapes-game
+<div class="game">
+  <canvas width="400" height="300" tabindex="0" aria-label="The game: a blue player, an orange ball, a black wall and a green goal"></canvas>
+  <p class="game-status" aria-live="polite">Run the Python cell above, then press Run here.</p>
+  <div class="game-pad">
+    <button type="button" data-move="left">left</button>
+    <button type="button" data-move="up">up</button>
+    <button type="button" data-move="down">down</button>
+    <button type="button" data-move="right">right</button>
+    <button type="button" class="game-again">start again</button>
+  </div>
+</div>
+```
+
+```css app
+id: mixed-shapes-game-css
+app: shapes-game
+.game canvas {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 4 / 3;
+  border: 1px solid #888;
+  touch-action: none;
+}
+.game canvas:focus {
+  outline: 3px solid #3a7bd5;
+}
+.game-pad {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+.game-pad button {
+  min-width: 3.4rem;
+  min-height: 2.6rem;
+}
+```
+
+```js app
+id: mixed-shapes-game-js
+app: shapes-game
+// The game engine. The level comes from your Python cell, through the
+// page's database. JavaScript cannot call your Python functions, so the
+// engine has its own copy of three of them: distance, the nearest point
+// of the wall, and the bearing.
+if (root.dlStopGame) root.dlStopGame();
+
+const canvas = root.querySelector("canvas");
+const pen = canvas.getContext("2d");
+const status = root.querySelector(".game-status");
+
+let setting;
+let path;
+try {
+  const rows = await dlQuery("SELECT setting_id, value FROM setting_tbl");
+  setting = Object.fromEntries(rows.map((row) => [row.setting_id, row.value]));
+  path = await dlQuery("SELECT x, y FROM ball_path_tbl ORDER BY ball_path_id");
+} catch (error) {
+  status.textContent = "Run the Python cell above first, then press Run here again.";
+  return;
+}
+
+const WIDTH = 400;
+const HEIGHT = 300;
+const STEP = 2.5;                  // pixels the player moves each frame
+const GOAL_RADIUS = 12;
+const wallA = [setting.wall_ax, setting.wall_ay];
+const wallB = [setting.wall_bx, setting.wall_by];
+const goal = [setting.goal_x, setting.goal_y];
+
+function distance(p, q) {
+  return Math.hypot(q[0] - p[0], q[1] - p[1]);
+}
+
+function nearestOnWall(centre) {
+  // How far along the wall the foot of the right-angled line lands,
+  // from 0 at one end to 1 at the other, kept between the ends.
+  const runX = wallB[0] - wallA[0];
+  const runY = wallB[1] - wallA[1];
+  let along = ((centre[0] - wallA[0]) * runX + (centre[1] - wallA[1]) * runY) / (runX * runX + runY * runY);
+  along = Math.max(0, Math.min(1, along));
+  return [wallA[0] + along * runX, wallA[1] + along * runY];
+}
+
+function bearing(start, end) {
+  const degrees = Math.atan2(end[0] - start[0], end[1] - start[1]) * 180 / Math.PI;
+  return (degrees + 360) % 360;
+}
+
+function allowed(point) {
+  return distance(point, nearestOnWall(point)) > setting.player_radius;
+}
+
+let player;
+let frame;
+let state;
+let frames;
+const held = new Set();
+
+function startAgain() {
+  player = [setting.start_x, setting.start_y];
+  frame = 0;
+  frames = 0;
+  state = "ready";
+  status.textContent = "Click the game, then move. Reach the green ring without touching the ball.";
+}
+
+function update() {
+  if (state === "ready" && held.size > 0) state = "playing";
+  if (state !== "playing") return;
+  const across = (held.has("right") ? STEP : 0) - (held.has("left") ? STEP : 0);
+  const up = (held.has("up") ? STEP : 0) - (held.has("down") ? STEP : 0);
+  const r = setting.player_radius;
+  const inside = (value, top) => Math.max(r, Math.min(top - r, value));
+  // Try the whole move, then only across, then only up: the wall blocks the rest.
+  for (const next of [[player[0] + across, player[1] + up], [player[0] + across, player[1]], [player[0], player[1] + up]]) {
+    const kept = [inside(next[0], WIDTH), inside(next[1], HEIGHT)];
+    if (allowed(kept)) {
+      player = kept;
+      break;
+    }
+  }
+  frame = (frame + 1) % path.length;
+  frames += 1;
+  const ball = [path[frame].x, path[frame].y];
+  if (distance(player, ball) <= r + setting.ball_radius) {
+    state = "hit";
+    status.textContent = "The ball touched you after " + (frames / 60).toFixed(1) + " seconds. Press start again.";
+  } else if (distance(player, goal) <= r + GOAL_RADIUS) {
+    state = "won";
+    status.textContent = "You reached the goal in " + (frames / 60).toFixed(1) + " seconds. Press start again to try for less.";
+  }
+}
+
+function circle(centre, radius, colour) {
+  pen.beginPath();
+  pen.arc(centre[0], HEIGHT - centre[1], radius, 0, 2 * Math.PI);
+  pen.fillStyle = colour;
+  pen.fill();
+}
+
+function draw() {
+  pen.fillStyle = "#f6f4ee";
+  pen.fillRect(0, 0, WIDTH, HEIGHT);
+  pen.strokeStyle = "#222";
+  pen.lineWidth = 5;
+  pen.beginPath();
+  pen.moveTo(wallA[0], HEIGHT - wallA[1]);
+  pen.lineTo(wallB[0], HEIGHT - wallB[1]);
+  pen.stroke();
+  circle(goal, GOAL_RADIUS, "#2e8b57");
+  circle(player, setting.player_radius, "#1f6fb2");
+  circle([path[frame].x, path[frame].y], setting.ball_radius, state === "hit" ? "#c0392b" : "#e67e22");
+  // The arrow in the corner: which way the goal is, and how far.
+  const turn = bearing(player, goal) * Math.PI / 180;
+  const tip = [30 + 18 * Math.sin(turn), 30 - 18 * Math.cos(turn)];
+  pen.strokeStyle = "#222";
+  pen.lineWidth = 3;
+  pen.beginPath();
+  pen.moveTo(30, 30);
+  pen.lineTo(tip[0], tip[1]);
+  pen.stroke();
+  circle([tip[0], HEIGHT - tip[1]], 4, "#222");
+  pen.fillStyle = "#222";
+  pen.font = "13px sans-serif";
+  pen.fillText(Math.round(bearing(player, goal)) + "°  " + Math.round(distance(player, goal)) + " px", 56, 35);
+}
+
+const KEYS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" };
+canvas.addEventListener("keydown", (event) => {
+  if (KEYS[event.key]) {
+    event.preventDefault();
+    held.add(KEYS[event.key]);
+  }
+});
+canvas.addEventListener("keyup", (event) => held.delete(KEYS[event.key]));
+canvas.addEventListener("blur", () => held.clear());
+canvas.addEventListener("pointerdown", () => canvas.focus());
+for (const button of root.querySelectorAll("[data-move]")) {
+  const name = button.dataset.move;
+  button.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    held.add(name);
+  });
+  for (const end of ["pointerup", "pointerleave", "pointercancel"]) {
+    button.addEventListener(end, () => held.delete(name));
+  }
+}
+root.querySelector(".game-again").addEventListener("click", () => {
+  startAgain();
+  canvas.focus();
+});
+
+// Sixty steps a second, whatever the screen's own refresh rate.
+let handle;
+let last = performance.now();
+let spare = 0;
+function loop(now) {
+  if (!canvas.isConnected) return;
+  spare = Math.min(spare + now - last, 250);
+  last = now;
+  while (spare >= 1000 / 60) {
+    update();
+    spare -= 1000 / 60;
+  }
+  draw();
+  handle = requestAnimationFrame(loop);
+}
+root.dlStopGame = () => cancelAnimationFrame(handle);
+startAgain();
+handle = requestAnimationFrame(loop);
+```
+
+The ball's path came from your Python, and the game only plays it
+back. The hits, the goal and the arrow are worked out in the engine,
+sixty times a second.
+
+**17. Predict.** In the level cell, change `ball_speed` to 30 and run
+it. Before you look at the picture, predict: will the ball still bounce
+off the wall every time it meets it? Then run it, and play.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. The wall is a line with no thickness. The ball bounces when its
+   centre is within 10 pixels of the wall, at the end of a frame.
+2. At 30 pixels a frame, how far can the centre jump in one frame?
+3. Think back to the fast ball on
+   [How far apart?](tutorial:how-far-apart#watching-it-frame-by-frame).
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+Not every time. The picture shows the path going straight through the
+wall in places: in 1,200 frames it crosses 26 times. At 4, 8 or 12
+pixels a frame, this level's ball never crosses; at 16 it crosses 6
+times.
+
+The check runs once a frame. When the ball can move more than its
+radius towards the wall in one frame, its centre can land on the far
+side of the wall's line. The checker then finds the wall close, but
+the ball already moving away from it on that side, so it lets it go.
+It is the tunnelling from
+[How far apart?](tutorial:how-far-apart#watching-it-frame-by-frame),
+with a wall in place of a player. One fix is to move a fast ball in
+several small steps each frame, and check after each one.
+
+</details>
+
+**18. Explain.** Schlomo, who is learning Python too, reads the engine
+and notices that it has its own `distance`, a second copy of the one in
+his toolkit. He says it would be simpler to keep one copy, since two
+copies can drift apart. Why does this page keep two anyway, and how
+could you check that they agree?
+
+<details class="dl-answer"><summary>answer</summary>
+
+The engine runs in the browser's own language, JavaScript, sixty times
+a second. It cannot call a Python function directly: the only thing the
+two parts share is the database. So the Python works out everything
+that can be worked out before the game starts, the ball's path, and the
+JavaScript does what depends on the keys you press.
+
+Schlomo's worry is a fair one. If someone changed the Python bounce
+rule and not the JavaScript hit rule, the game could show a hit the
+Python never predicted. One check: have the Python save a few test
+points and their distances to the wall in a table, and have the engine
+compare its own answers with them when it starts. That is one good
+answer, and there are others, such as writing the rule once in a form
+both languages can read.
 
 </details>

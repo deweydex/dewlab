@@ -64,3 +64,9 @@ entries:
       Your toolkit's function that gives the point halfway between two
       points, as an (x, y) pair. It is your own tool, not part of Python.
     example: "midpoint((2, 1), (10, 7))   # (6.0, 4.0)"
+  - term: tunnelling
+    kind: concept
+    definition: >
+      Tunnelling is when a fast object in a game passes right through
+      another between two frames. The game checks for a hit only once a
+      frame, so it never sees the two touching.

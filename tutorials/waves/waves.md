@@ -1,7 +1,7 @@
 ---
 title: "Waves: sine, cosine and sound"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.26.1
 covers:
   a-point-going-round-drawn-against-time:
     covers: [MIT-3.3, MIT-4.6]
@@ -30,12 +30,16 @@ Pluck the thickest string of a guitar, then the thinnest. The second
 note is higher. Both strings are the same length, and both are made to
 move by the same finger. So what makes one note higher than another?
 
+Pause and make a guess before you read on. The answer is a number you
+can count, and the same number describes the electricity in the wall
+beside you.
+
 On this page we:
 
 - draw a point going round a circle against time, and get a wave
 - make a wave taller or shorter: its amplitude
 - make it repeat faster or slower: its frequency and its period
-- add `wave` to the toolkit
+- add `wave` to the toolkit, and draw the voltage in an Irish socket
 - find the notes of a piano, and see that an octave is a doubling
 - start a wave late, and use that to cancel a noise
 - draw the tangent, which repeats but is not a wave
@@ -112,6 +116,59 @@ The height rises to 1 at $90^\circ$, falls back through 0 at
 $180^\circ$, reaches −1 at $270^\circ$, and is back at 0 after a whole
 turn. Then it does the same again. This curve is the graph of
 $y = \sin\theta$, and its shape is called a *sine wave*.
+
+Here is the same idea, moving. On the left the point goes round; on the
+right its height is drawn against time, one second at a time. After you
+have watched it once, change `turns_per_second` to 2. Before you run
+it again, guess: what happens to the wave on the right?
+
+```python exec
+id: waves-unroll-animation
+from matplotlib.animation import FuncAnimation
+
+turns_per_second = 1     # change it, then run the cell again
+
+figure, (circle_side, wave_side) = plt.subplots(
+    1, 2, figsize=(4.4, 1.9), gridspec_kw={"width_ratios": [1, 2]})
+rim_x = []
+rim_y = []
+for angle in range(0, 361, 10):
+    x, y = point_on_circle(1, angle)
+    rim_x.append(x)
+    rim_y.append(y)
+circle_side.plot(rim_x, rim_y, color="lightgrey")
+circle_side.set_aspect("equal")
+circle_side.axis("off")
+wave_side.set_xlim(0, 2)
+wave_side.set_ylim(-1.2, 1.2)
+wave_side.axhline(0, color="grey")
+wave_side.set_xlabel("seconds")
+point, = circle_side.plot([1], [0], "o", color="C1")
+trace, = wave_side.plot([], [], color="C0")
+times_so_far = []
+heights_so_far = []
+
+
+def draw_frame(frame):
+    if frame == 0:           # start the trace again each time round the loop
+        times_so_far.clear()
+        heights_so_far.clear()
+    time = frame / 20
+    x, y = point_on_circle(1, 360 * turns_per_second * time)
+    point.set_data([x], [y])
+    times_so_far.append(time)
+    heights_so_far.append(y)
+    trace.set_data(times_so_far, heights_so_far)
+
+
+figure.tight_layout()
+FuncAnimation(figure, draw_frame, frames=41, interval=100)
+```
+
+At one turn a second, the right side draws two humps in two seconds.
+At two turns a second, it draws four, squeezed into the same space.
+The circle looks the same, only faster; the wave changes shape. The
+animation loops; run the cell again to watch it from the start.
 
 A function whose graph repeats the same piece for ever is *periodic*.
 The sine wave repeats every $360^\circ$, because after a whole turn the
@@ -192,9 +249,11 @@ plt.xlabel("time in seconds")
 Two humps, and two dips: 2 repeats in one second, each 0.5 seconds
 long.
 
-The electricity in an Irish wall socket is a wave too. It swings 50
-times a second, at 50 Hz, so each repeat takes $\frac{1}{50}$ of a
-second, 20 milliseconds.
+The electricity in an Irish wall socket is a wave too. The electric
+current there is *alternating current*, AC: it pushes one way along the
+wire, then the other, again and again. It swings 50 times a second, at
+50 Hz, so each repeat takes $\frac{1}{50}$ of a second, 20
+milliseconds.
 
 ```question
 id: waves-period-1
@@ -264,6 +323,50 @@ Try `print(wave(1, 1, 0.25))` on its own. What came back? The formula is
 $A \sin(2\pi f t)$: which name is $A$, which is $f$, and which is $t$?
 ```
 
+Now the wall socket. A socket in Ireland is rated at 230 volts. (A volt
+measures the push behind an electric current.) The 230 is a kind of
+average of the swing: the steady voltage that would heat a kettle just
+as much. The top of the swing, its amplitude, is $\sqrt{2}$ times more.
+How high is that, and how many repeats will 40 milliseconds show? Make
+both guesses, then run it. This cell and the rest of the page use your
+`wave`, so write it first.
+
+```python exec
+id: waves-mains-1
+peak_volts = 230 * math.sqrt(2)
+print(round(peak_volts))
+
+times = []
+volts = []
+for step in range(401):
+    time = step / 10000          # 0 to 0.04 seconds
+    times.append(time)
+    volts.append(wave(peak_volts, 50, time))
+
+plt.plot(times, volts)
+plt.axhline(0, color="grey")
+plt.xlabel("time in seconds")
+plt.ylabel("volts")
+```
+
+The voltage swings between about +325 and −325 volts, twice in 40
+milliseconds. That swing is the "alternating" in alternating current.
+On
+[When there is no real answer](tutorial:when-there-is-no-real-answer),
+engineers wrote it as a complex number turning on a plane. Here is the
+same turn, seen from the side: a point going round, drawn as its
+height.
+
+<aside class="dl-note" id="waves-note-hertz">
+
+**Why hertz.** The unit is named after Heinrich Hertz, a German
+physicist. Around 1887 he was the first to make radio waves on purpose
+and detect them across a room. Radio, Wi-Fi and mobile phones all send
+their messages on waves like the ones on this page, at millions or
+thousands of millions of hertz.
+
+</aside>
+
 ## Higher notes: an octave is a doubling
 
 Back to the guitar. The thinnest string swings faster, so its wave has
@@ -271,9 +374,8 @@ a higher frequency. A higher frequency is a higher note. The word
 musicians use for how high or low a note sounds is *pitch*.
 
 Bands tune to one agreed note: the A above middle C, at 440 Hz. Here is
-that A beside the A below it, at 220 Hz, over 10 milliseconds. The
-cells from here on use your `wave`, so write it first. How many repeats
-will each one make?
+that A beside the A below it, at 220 Hz, over 10 milliseconds. How
+many repeats will each one make?
 
 ```python exec
 id: waves-notes-1
@@ -443,6 +545,7 @@ hides it a little.
 | periodic | repeating the same piece for ever |
 | amplitude, $A$ | how far a wave goes from its middle line; for a sound, how loud |
 | frequency, $f$, hertz (Hz) | how many times a wave repeats each second |
+| alternating current (AC) | a current that swings back and forth; 50 Hz in Ireland |
 | period, $T = \frac{1}{f}$ | how long one repeat takes |
 | $y = A\sin(2\pi f t)$ | a wave of amplitude $A$ and frequency $f$, at time $t$ |
 | `wave(amplitude, frequency, time)` | your toolkit tool: $A\sin(2\pi f t)$ |

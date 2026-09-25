@@ -1,7 +1,7 @@
 ---
 title: "How far apart? Distance, midpoint and Pythagoras"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.26.1
 covers:
   straight-across-and-straight-up:
     covers: [MIT-4.3]
@@ -27,6 +27,9 @@ times a second, the game has to answer one question: did the ball hit
 the player? The game knows where the centre of each one is, and how big
 each one is. What else does it need to know?
 
+Pause and guess before you read on. The answer is one number, and
+people have known the rule that finds it for about 3,800 years.
+
 On this page we:
 
 - measure a distance straight across, then straight up, then on a slant
@@ -34,7 +37,8 @@ On this page we:
 - find the distance between any two points, and add `distance` to the
   toolkit
 - find the point halfway between two points, and add `midpoint`
-- decide whether two circles in a game touch
+- decide whether two circles in a game touch, and watch a fast ball
+  slip through
 
 > **The space we're in.** The same flat plane as on
 > [Straight lines](tutorial:straight-lines), with the same unit across
@@ -247,15 +251,28 @@ square root.
 
 The ball is 50 pixels from the player, not 70. And one more check,
 from [Straight lines](tutorial:straight-lines#the-rule-for-a-ramp): the
-café's new ramp runs 4.5 m along and rises 0.3 m. How long is its
+hall's new ramp runs 4.5 m along and rises 0.3 m. How long is its
 sloping surface? `distance((0, 0), (4.5, 0.3))` gives about 4.51 m,
 only 1 cm longer than the run. A gentle slope is almost as long as the
 ground under it.
 
+<aside class="dl-note" id="how-far-note-plimpton">
+
+**Older than Pythagoras.** A clay tablet from Babylon, now called
+Plimpton 322, was written about 3,800 years ago. It lists two sides
+each of fifteen right-angled triangles whose sides are all whole
+numbers, such as 119 and 169, whose third side is 120. Pythagoras lived
+more than a thousand years later. The theorem carries his name, but people knew
+the rule long before him.
+
+</aside>
+
 ## Halfway: the midpoint
 
-Two friends live at $(2, 1)$ and $(10, 7)$ on a map grid marked in
-kilometres. They want to meet halfway. Where?
+In a two-player game, the camera has to keep both players on the
+screen. One way is to point it at the spot halfway between them. The
+players stand at $(2, 1)$ and $(10, 7)$, in metres of the game's world.
+Where does the camera point?
 
 Halfway across is the mean of the two $x$ values, and halfway up is the
 mean of the two $y$ values, as `mean` on
@@ -264,8 +281,8 @@ shares a total out equally. The *midpoint* of two points is:
 
 $$\left(\frac{x_1 + x_2}{2}, \frac{y_1 + y_2}{2}\right)$$
 
-Before you write it, work this one out in your head: where do the
-friends meet?
+Before you write it, work this one out in your head: where does the
+camera point?
 
 ```python exec
 id: how-far-toolkit-midpoint
@@ -299,19 +316,19 @@ test stops with `AssertionError: None`.
 
 ```python exec
 id: how-far-toolkit-midpoint-tests
-home = (2, 1)
-friend = (10, 7)
-meet = midpoint(home, friend)
-assert meet == (6, 4), meet
-assert close_enough(distance(home, meet), distance(meet, friend)), "same from both ends"
-assert close_enough(distance(home, meet), distance(home, friend) / 2), "half the way"
-assert close_enough(slope(home, meet), slope(home, friend)), "on the line"
-print("midpoint keeps its promise. Meet at", meet, "after", distance(home, meet), "km each.")
+first_player = (2, 1)
+second_player = (10, 7)
+camera = midpoint(first_player, second_player)
+assert camera == (6, 4), camera
+assert close_enough(distance(first_player, camera), distance(camera, second_player)), "same from both ends"
+assert close_enough(distance(first_player, camera), distance(first_player, second_player) / 2), "half the way"
+assert close_enough(slope(first_player, camera), slope(first_player, second_player)), "on the line"
+print("midpoint keeps its promise. The camera points at", camera, distance(first_player, camera), "m from each player.")
 ```
 
-The friends meet at $(6, 4)$, and each travels 5 km, as a bird flies.
-The whole trip is a 6, 8, 10 triangle: the 3, 4, 5 triangle made
-twice as big.
+The camera points at $(6, 4)$, 5 m from each player. The two players
+are a 6, 8, 10 triangle apart: the 3, 4, 5 triangle made twice as big.
+As they move, the game works the midpoint out again every frame.
 
 ### Your turn
 
@@ -363,7 +380,7 @@ A game that wrote `<` would let the ball graze the player. Which is
 fairer is a choice about the game, not about the maths.
 
 Here is frame 3 as a picture. `plt.Circle` makes a circle from a centre
-and a radius.
+and a radius, and `add_patch` puts it on the drawing.
 
 ```python exec
 id: how-far-hit-2
@@ -380,6 +397,51 @@ axes.set_aspect("equal")
 The two circles meet at one point, on the line between the centres.
 Without `set_aspect("equal")`, the circles would be drawn as ovals, the
 same stretching that hid the right angle on the last page.
+
+### Watching it frame by frame
+
+The game only looks at the ball once a frame. This animation shows
+what it sees: the ball turns red in every frame where `circles_touch`
+says it touches the player. After you have watched it, change `step` on
+the first line to 90, as if the ball were kicked much harder. Before
+you run it again, guess: in which frame does it turn red?
+
+```python exec
+id: how-far-hit-3
+from matplotlib.animation import FuncAnimation
+
+step = 5     # pixels the ball moves each frame: change it, then run the cell again
+
+figure, axes = plt.subplots(figsize=(3.2, 3.2))
+axes.add_patch(plt.Circle(player, player_radius, color="lightblue"))
+ball_shape = plt.Circle(ball, ball_radius, color="orange")
+axes.add_patch(ball_shape)
+axes.set_xlim(40, 160)
+axes.set_ylim(-20, 120)
+axes.set_aspect("equal")
+
+
+def draw_frame(frame):
+    # Each frame, the ball moves step pixels along the 3, 4, 5 direction.
+    ball_now = (130 - 0.6 * step * frame, 90 - 0.8 * step * frame)
+    ball_shape.center = ball_now
+    if circles_touch(ball_now, ball_radius, player, player_radius):
+        ball_shape.set_color("red")
+    else:
+        ball_shape.set_color("orange")
+
+
+FuncAnimation(figure, draw_frame, frames=int(110 / step) + 1, interval=200)
+```
+
+At 5 pixels a frame, the ball turns red from frame 3 and stays red
+while it overlaps the player. At 90 pixels a frame, it never turns red.
+In frame 0 it is 50 pixels from the player's centre, and in frame 1 it
+is already 40 pixels past it, on the other side. Both are more than 35,
+so the game sees no hit, although the ball went straight through. I
+think this is the strangest result on the page. Game makers call it
+*tunnelling*, and the practice page asks how a game can stop it. The
+animation loops; run the cell again to watch it from the start.
 
 ### Your turn
 
@@ -429,6 +491,7 @@ that the middle shape really is a square.
 | `math.dist(p, q)` | Python's own straight-line distance between two points |
 | midpoint | the point halfway between two points: the mean of the $x$ values and of the $y$ values |
 | circles touch | when the distance between centres is at most the two radii added |
+| tunnelling | a fast object passing through another between two frames, with no hit seen |
 | `plt.Polygon`, `plt.Circle`, `add_patch` | draw a shape from its corners, or a circle from its centre and radius |
 | `distance(p, q)` | your toolkit tool: how far apart two points are |
 | `midpoint(p, q)` | your toolkit tool: the point halfway between two points |

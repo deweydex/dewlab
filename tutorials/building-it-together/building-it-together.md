@@ -161,9 +161,13 @@ from a random throw? What is a fair score?
 
 The collision checker from
 [Unit 8's mixed problems](tutorial:mixed-shapes-angles-and-waves) is an
-engine to start from. For a game that moves on the screen,
+engine to start from, and its last section,
+[Play it: your checker in a real game](tutorial:mixed-shapes-angles-and-waves#play-it-your-checker-in-a-real-game),
+turns it into a game you move with the arrow keys: a Python cell sets
+the level, and a JavaScript engine plays it on a canvas. For more on
+how a page draws one frame after another,
 [Drawing frames with JavaScript](tutorial:drawing-frames-with-javascript)
-shows how a page draws one frame after another.
+goes further.
 
 The player stands on the edge of a 10 by 10 pitch. Before you run it,
 guess: out of 10,000 random throws, about how many hit?
