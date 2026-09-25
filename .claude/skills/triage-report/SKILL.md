@@ -48,9 +48,9 @@ before doing anything else:
 - **"The page is wrong, or I could not follow it"** — a factual mistake
   (wrong answer, a broken link, a stale reference) or a plain-language
   problem. These need different tools: a factual fix is usually one line;
-  a "could not follow it" report means running `PEDAGOGICAL_STYLE_GUIDE.md`
-  §4's nine checks over the passage before touching it, not guessing at a
-  rewrite.
+  a "could not follow it" report means running the checks in
+  `PEDAGOGICAL_STYLE_GUIDE.md#plain-language` over the passage before
+  touching it, not guessing at a rewrite.
 
 ## Reproducing an error report
 

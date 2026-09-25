@@ -5,7 +5,7 @@
 # database after anything else), so the cumulative list starts empty here.
 #
 # This module was ported without the usual single-asterisk emphasis
-# convention (PEDAGOGICAL_STYLE_GUIDE.md §4) -- dev/curriculum_map.py's
+# convention (docs/WRITING_TUTORIALS.md#marking-a-term) -- dev/curriculum_map.py's
 # EMPHASIS_RE finds zero marked terms across all four of this series'
 # tutorials. Candidates below came from reading the prose and cells
 # directly, cross-checked against each tutorial's own "What you have now"

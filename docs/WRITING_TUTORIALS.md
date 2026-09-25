@@ -11,9 +11,11 @@ open the pull request for you.
 
 Two other documents go with this one. Read
 [`../planning/PEDAGOGICAL_STYLE_GUIDE.md`](../planning/PEDAGOGICAL_STYLE_GUIDE.md)
-before you write prose — it is short, and it settles questions that are easy to
+before you write prose. It is short, and it settles questions that are easy to
 guess wrong on. This page governs how a tutorial is built; that one governs how
-it is written.
+it is written, and why. Cite a part of that guide by its anchor, as
+`PEDAGOGICAL_STYLE_GUIDE.md#voice`, never by a section number:
+`dev/check_doc_links.py` checks the anchor exists, and fails on a number.
 
 ---
 
@@ -127,9 +129,15 @@ readings[readings["evening"] > 14]
 ```
 ````
 
-`id` is how saved progress finds this cell again. It must be unique within the
-tutorial, and it should stay the same when you edit the cell. That is what lets
-you fix a typo without wiping what students have written.
+<a id="cell-ids"></a>
+`id` is how saved progress finds this cell again. Write it in small letters and
+hyphens. The usual shape is `<section-slug>-<n>`: `filter-evening-1` is the
+first cell under a heading whose slug is `filter-evening`. It must be unique
+within the tutorial, and it should stay the same when you edit the cell. That is
+what lets you fix a typo without wiping what students have written. Once a
+tutorial has been in front of a class, a cell id is the key somebody's saved
+work lives under, and renaming one throws that work away. The editor warns
+about this; believe it.
 
 `hint` is optional. It appears behind a small **?** on the cell, so it is
 available without being in the way.
@@ -248,8 +256,9 @@ changing anything. The second fold gives steps, in the shape of the
 code with a gap in it. None of them gives the answer: an answer belongs in
 a `dl-answer` fold the reader opens for themselves, and is never triggered.
 Not every cell earns a staged hint. A page where every cell produces one
-teaches readers to ignore them. The style guide's section 3 has the
-reasoning.
+teaches readers to ignore them. The style guide's
+[When a reader is stuck](../planning/PEDAGOGICAL_STYLE_GUIDE.md#stuck) has
+the reasoning.
 
 ---
 
@@ -619,8 +628,9 @@ year: "2026-2027"
 version: 2026.08.24.1
 ```
 
-A practice page is never listed in a course file: it follows its tutorial onto
-every course that lists it.
+A practice page's title is its tutorial's, with " — Practice" added
+(`DECISIONS_LOG.md` 7.213). A practice page is never listed in a course file:
+it follows its tutorial onto every course that lists it.
 
 The contents page links a tutorial to its own practice page, and the tutorial
 links forward to it too, so practice is always one click from the material it is
@@ -689,8 +699,8 @@ Write toward a few tools per section rather than a cell per problem — one
 `python exec` cell holding the helpers a section needs, rather than sixty
 editors on a page. **Every number in an answer gets run before it is published**,
 not reasoned about. See
-[`../planning/PEDAGOGICAL_STYLE_GUIDE.md`](../planning/PEDAGOGICAL_STYLE_GUIDE.md#6-practice-pages)
-for the full shape of a good practice page.
+[`../planning/PEDAGOGICAL_STYLE_GUIDE.md`](../planning/PEDAGOGICAL_STYLE_GUIDE.md#page-shapes)
+for what a practice page is for.
 
 ### Why this way?
 
@@ -762,6 +772,51 @@ of its tutorials, after the Practice button, with a small "context" tag.
   tutorial, so it is never where an outcome is taught;
 - a course file listing it. It follows its tutorial onto every course, the
   same as a practice page.
+
+---
+
+<a id="marking-a-term"></a>
+## Marking a new term
+
+Put a term in italics the first time it means something particular on the
+page: `*binary search*`. A page whose key terms should stand out may set them
+in bold italics, `***binary search***`. The italics are what mark the term,
+and the bold is only how it looks; everything that reads the marks reads both.
+Stress on an ordinary word (*not* the same) is fine, because the tools skip a
+short list of stress words.
+
+Three things read these marks:
+
+- the vocabulary report in `planning/CURRICULUM_MAP.md`, written by
+  `dev/curriculum_map.py`, which lists a term introduced on more than one page
+  and a term used before the page that introduces it;
+- the build, which links a term in the Reference panel back to the section
+  where it is italicised;
+- the `tutorial-glossary` skill, which starts its list of a page's new terms
+  from them.
+
+A term met first in a code cell may never be italicised; the build then links
+to its first plain use instead.
+
+---
+
+## Notes in the Reference panel
+
+A longer aside (a story, a bit of history, a book worth reading) goes in a
+note, where it waits in the Reference panel for a reader who wants it and
+stays out of the way of one who does not:
+
+```html
+<aside class="dl-note" id="row-note-zero">
+
+**An argument about 0.** In 1982 the computer scientist Edsger Dijkstra…
+
+</aside>
+```
+
+The `id` is required, and must be unique on the page. The build takes the note
+out of the page body, so where it sits in the file only decides the order of
+the notes in the panel.
 
 ---
 
@@ -848,6 +903,10 @@ Beyond ordinary Python, a cell can use:
 | `await load_text(name)` | Fetch a plain-text file — from `data/`, or a full URL — and return its contents as a string. |
 | `run_query(conn_or_path, sql, params=None, max_rows=20, caption=None)` | Run a SQL query and render the result as a table. Takes an open `sqlite3` connection or a path to pass to `sqlite3.connect()`. |
 
+These are already in the page's namespace before the first cell runs. Do not
+write `from tutorial_tools import check`: it works, and it teaches an import
+that is not part of how the page works.
+
 Widgets keep their values when a cell is re-run, so a student can type an answer,
 press Run, and still see what they typed.
 
@@ -864,6 +923,11 @@ keep** copy, which runs on the main thread
 
 `numpy`, `pandas` and `matplotlib` are available in every tutorial without
 importing anything special — they load with the page.
+
+**A figure needs no `plt.show()`.** Drawing it is enough: the page shows any
+figure a cell made and did not show. `plt.show()` still works, and shows the
+figures drawn so far at that point, so a cell that draws, prints, then draws
+again reads in the order it was written.
 
 **A matplotlib animation renders as a moving picture.** Build one with
 `FuncAnimation` and make it the cell's last expression, or pass it to
@@ -927,7 +991,9 @@ page, the About page and the features page. Each is one markdown file under
 `pages/` — `home.md`, `about.md`, `features.md` — with a frontmatter of one
 field, `title:`, and nothing else. The body is ordinary markdown, converted
 the way a tutorial's prose is, and every word on it is student-facing, so
-the plain-language rules in the style guide apply.
+the style guide's
+[plain-language rules](../planning/PEDAGOGICAL_STYLE_GUIDE.md#plain-language)
+apply.
 
 A page can hold three things ordinary prose cannot:
 
@@ -989,6 +1055,10 @@ Run `python3 -m pytest` and make sure it is green.
 If you added or changed a code cell, run it. Every number a tutorial or practice
 page states as an answer should have been executed, not reasoned about. Open the
 page in a browser and click through it.
+
+Then read the page against the style guide's
+[checklist](../planning/PEDAGOGICAL_STYLE_GUIDE.md#checklist). That one is about
+how the page teaches; this list is about whether it builds.
 
 Record a real decision — something somebody could reasonably have done
 differently — as a new numbered entry in [`../DECISIONS_LOG.md`](../DECISIONS_LOG.md),

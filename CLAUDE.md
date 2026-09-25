@@ -23,8 +23,8 @@ the result, or CI fails.
 Student-facing means the contents page, the topic tree, a glossary
 definition, a tutorial or practice page, and any string in `build.py` that
 ends up on a page — not code comments, not planning documents, not this
-file. Read `planning/PEDAGOGICAL_STYLE_GUIDE.md` §4 before writing any of
-it.
+file. Read `planning/PEDAGOGICAL_STYLE_GUIDE.md` before writing any of it.
+It is short; if you read one part, read `#voice`.
 
 ## Where the rest lives
 
@@ -42,12 +42,7 @@ it.
 change isn't finished until the document describing that behaviour
 describes the new one. A stale comment is worse than no comment.
 
-## Three traps
-
-**Section numbers in the style guide are cited from elsewhere** — two
-skills above, several planning documents, and `DECISIONS_LOG.md` all cite
-it as "§4", "section 5" and so on. Add a subsection rather than
-renumbering.
+## Two traps
 
 **Cell ids are a contract, and so is a tutorial's id.** Once a tutorial has
 been in front of a class, a cell id is the key somebody's saved work lives
