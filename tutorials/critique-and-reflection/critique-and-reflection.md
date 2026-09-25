@@ -106,7 +106,7 @@ and [Designing and testing good functions](tutorial:building-reusable-tools) is 
 page that teaches it.
 
 Next comes [The Team Project](tutorial:the-team-project). There, you
-will use all of this with three to five other people, over several
+will use all of this in a group of three to five, over several
 weeks. The code will feel familiar. Working on it together will be new
 for most of you, and the reviewing you practised in Part 2 is a big
 part of it.

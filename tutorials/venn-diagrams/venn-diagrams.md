@@ -1,7 +1,7 @@
 ---
 title: "Venn diagrams: drawing sets and their overlaps"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.25.1
 covers:
   two-circles-from-real-sets:
     covers: [MIT-2.3]
@@ -295,8 +295,6 @@ regions do you expect four sets to need? Run the cell to check.
 
 ```python exec
 id: where-the-picture-stops-helping-1
-from itertools import combinations
-
 for n in (2, 3, 4, 5):
     print(f"{n} sets need {2 ** n - 1} regions")
 ```

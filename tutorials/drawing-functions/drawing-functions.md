@@ -1,7 +1,7 @@
 ---
 title: "Functions and their graphs"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.25.1
 covers:
   a-function-is-a-machine:
     covers: [MIT-3.1]
@@ -307,8 +307,37 @@ ax.set_title("What the a in ax^2 does")
 ```
 
 A bigger $a$ makes the curve narrower. A negative $a$ turns it upside
-down. This is the same pattern we saw with the line: one number, one
-visible change.
+down. So far, this is the same pattern we saw with the line: one number,
+one visible change.
+
+Does $b$ behave the same way? Before you run the next cell, guess. Will
+changing $b$ slide the curve left and right, move it up and down, or do
+something else? The cell draws $x^2 + bx$ nine times, once for every
+whole number $b$ from $-4$ to $4$.
+
+```python exec
+id: curves-that-bend-3
+ax = None
+for b in range(-4, 5):
+    ax = draw(quadratic(1, b, 0), ax=ax)
+ax.set_ylim(-6, 10)
+ax.set_title("x^2 + bx, for b from -4 to 4")
+
+# Remove the # from the next line when you have a guess.
+# draw(quadratic(-1, 0, 0), ax=ax, label="-x^2")
+```
+
+Look at where each curve turns. The turning points are not scattered.
+They seem to sit on a curve of their own, an upside-down one. Which
+curve could it be? When you have a guess, remove the `#` from the last
+line of the cell and run it again.
+
+Every turning point lies on $y = -x^2$. That is a strange result, isn't
+it? Changing $b$ does not do one separate thing. It slides the curve
+sideways and down at the same time, and the turning point travels along
+a parabola of its own. The next page,
+[Parabolas: completing the square](tutorial:parabolas), shows where that
+path comes from.
 
 A cubic has an $x^3$ in it, and it can bend twice. Look at the two
 cubics below. Which one turns, and which one does not?
@@ -509,9 +538,10 @@ Here are four ideas to take with you.
 $(x, y)$ pairs seen from far away. Anything we can compute, we can also
 draw.
 
-**One number makes one visible change.** A line has two numbers and a
-quadratic has three. Each one does a separate thing to the picture. We
-will see this pattern again with every family of curves in the course.
+**Some numbers make one visible change, and some do not.** The two
+numbers in a line each do one job. In a quadratic, $a$ changes the width.
+But $b$ moves the turning point sideways and down at once, along the
+curve $y = -x^2$. Only the picture showed us that.
 
 **Crossing the axis is solving the equation.** Once we trust that, a
 picture becomes a way to answer questions, including questions with no

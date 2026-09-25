@@ -317,7 +317,7 @@ written for exactly this audience.
 
 Python Software Foundation. *The Python Tutorial*, sections 3.1 and 3.1.1.
 <https://docs.python.org/3/tutorial/introduction.html>. The official reference
-for the arithmetic operators, including the exact behavior of `//` and `%`.
+for the arithmetic operators, including the exact behaviour of `//` and `%`.
 
 Computerphile (2017). *What on Earth is an Algorithm?*
 <https://www.youtube.com/watch?v=X0HHUlAiA4E>. Nine minutes on what does and

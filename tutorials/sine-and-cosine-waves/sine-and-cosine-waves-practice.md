@@ -277,7 +277,7 @@ met for the third time.
 ## One longer one
 
 **17.** A Ferris wheel (a big wheel at a fair) has a radius of 20 m. Its
-center is 22 m above the ground, and it takes 4 minutes to go round once.
+centre is 22 m above the ground, and it takes 4 minutes to go round once.
 
 - (a) You start at the bottom. Write your height above the ground as a
   function of time.
@@ -292,7 +292,7 @@ cosine does that:
 $$h(t) = -20\cos\left(\frac{2\pi t}{4}\right) + 22$$
 
 (b) After 1 minute you are a quarter of the way round, at the same height
-as the center: 22 m. After 3 minutes you are three quarters of the way
+as the centre: 22 m. After 3 minutes you are three quarters of the way
 round. That is also 22 m, on the other side.
 
 (c) Solve $-20\cos\left(\frac{2\pi t}{4}\right) + 22 = 30$. This gives

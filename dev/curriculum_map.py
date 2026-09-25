@@ -46,7 +46,7 @@ MAIN_SERIES = (
     "data-chance-and-logic",
     "algebra-and-functions",
     "trigonometry-and-calculus",
-    "capstone-project",
+    "review-problems",
 )
 
 

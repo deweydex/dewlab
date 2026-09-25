@@ -8,9 +8,9 @@ description: 'This is dewlab''s flagship course. It teaches Programming and Desi
   moving between the two subjects in the order the class needs them.
 
 
-  Five series carry it: programming foundations, discrete maths and statistics,
-  algebra and functions, geometry and trigonometry, and a capstone project that
-  draws on all four.'
+  Four series carry it: Programming Foundations; Data, Chance and Logic; Algebra
+  and Functions; and Trigonometry and Calculus. After them come a page of review
+  problems on the algebra and the sets, and the team project.'
 contents:
 - title: Programming Foundations
   tutorials:
@@ -54,7 +54,7 @@ contents:
   - solving-triangles
   - approaching-a-limit
   - rates-of-change
-- title: Capstone Project
+- title: Review Problems
   tutorials:
   - bringing-it-all-together
 - title: Reflections and review

@@ -385,8 +385,9 @@ Say what the difference is, and ask whether it is worth presenting.
 There are several tricks that make a small difference look big:
 cutting off the bottom of the axis, using area or volume to show an
 amount that should be a length, or choosing a lucky date range. Every
-one of them works by misleading. They mislead the presenter too, and the
-chart ends up helping somebody make a decision.
+one of them works by misleading the people who look at the chart. Later,
+somebody may use that chart to make a decision, and the decision will
+rest on the trick.
 
 Sometimes the difference does matter and still looks small. Then the fix
 is usually to plot the right thing: the change instead of the level, the

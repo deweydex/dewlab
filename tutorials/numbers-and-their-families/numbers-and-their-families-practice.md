@@ -156,8 +156,8 @@ enough".
 
 The quickest argument: $\frac{1}{3} = 0.333\ldots$ Multiply both sides by
 3, and you get $1 = 0.999\ldots$ The careful argument: the difference
-between them is smaller than every positive number, and the only number
-like that is zero.
+between them is never negative, and it is smaller than every positive
+number. The only number like that is zero.
 
 Many people find this uncomfortable, and that feeling is worth naming. It
 comes from thinking of 0.999… as a process that keeps going. It is a

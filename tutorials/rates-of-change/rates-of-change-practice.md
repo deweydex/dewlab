@@ -2,7 +2,7 @@
 title: "Derivatives: the rate of change of a curve — Practice"
 practice_for: rates-of-change
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.25.1
 ---
 
 # Derivatives: the rate of change of a curve — Practice
@@ -19,10 +19,10 @@ The check tells you whether you applied the rule correctly.
 The cell below defines two helpers:
 
 - `derivative_at(f, x)` computes the slope of `f` at `x` with numbers.
-- `check(f, df)` compares your hand-worked derivative `df` with the
-  numerical one, at four points.
+- `compare_slopes(f, df)` puts your hand-worked derivative `df` beside
+  the numerical one, at four points.
 
-The last line shows how to use `check`, with $x^2$ and its derivative
+The last line shows how to use `compare_slopes`, with $x^2$ and its derivative
 $2x$. If the two columns match, your derivative is right.
 
 ```python exec
@@ -32,13 +32,13 @@ def derivative_at(f, x, gap=1e-6):
     return (f(x + gap) - f(x - gap)) / (2 * gap)
 
 
-def check(f, df, points=(-2, -0.5, 1, 3)):
+def compare_slopes(f, df, points=(-2, -0.5, 1, 3)):
     """Compare a hand-computed derivative against the numerical one."""
     for x in points:
         print(f"  x = {x:>5}:  yours {df(x):>12.5f}   numerical {derivative_at(f, x):>12.5f}")
 
 
-check(lambda x: x ** 2, lambda x: 2 * x)
+compare_slopes(lambda x: x ** 2, lambda x: 2 * x)
 ```
 
 ## The power rule
@@ -349,7 +349,7 @@ square of side $x$ from each corner, then fold up the sides.
 
 Two things are worth noticing here. First, the derivative gave two
 candidates, and the situation ruled one of them out. Second, this is the
-usual shape of an optimization problem, a problem that asks for the
+usual shape of an optimisation problem, a problem that asks for the
 best (largest or smallest) value:
 
 1. Write the quantity as a function.

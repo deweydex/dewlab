@@ -33,7 +33,7 @@ entries:
       Four datasets with nearly identical statistics, sharing a mean, a
       standard deviation and a correlation, that look completely different
       when plotted. It is the classic argument for why data has to be drawn,
-      not only summarized.
+      not only summarised.
   - term: correlation
     kind: concept
     definition: >

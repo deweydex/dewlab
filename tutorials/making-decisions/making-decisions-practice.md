@@ -73,26 +73,26 @@ works in Python, and it is worth being able to write it.
 
 ## If, Else, Elif
 
-**4.** What does this print when `mark` is 75? When it is 40? When it is
-40.5?
+**4.** What does this print when `mark` is 75? When it is 50? When it is
+50.5?
 
 ```python
-if mark >= 70:
+if mark >= 80:
     print("Distinction")
-elif mark >= 50:
+elif mark >= 65:
     print("Merit")
-elif mark >= 40:
+elif mark >= 50:
     print("Pass")
 else:
-    print("Fail")
+    print("Unsuccessful")
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-`Distinction`, `Pass`, `Pass`.
+`Merit`, `Pass`, `Pass`.
 
 Only one branch ever runs: the first one whose condition is True. That is
-why the order matters. If `>= 40` came first, every mark from 40 up would
+why the order matters. If `>= 50` came first, every mark from 50 up would
 print `Pass`.
 
 </details>
@@ -100,11 +100,11 @@ print `Pass`.
 **5.** This code is wrong. Why? What does it print for a mark of 85?
 
 ```python
-if mark >= 40:
-    print("Pass")
 if mark >= 50:
+    print("Pass")
+if mark >= 65:
     print("Merit")
-if mark >= 70:
+if mark >= 80:
     print("Distinction")
 ```
 
@@ -296,11 +296,10 @@ the division by zero. Swap the two conditions, and the program crashes.
 
 </details>
 
-## From the Everlearning Problem Bank
+## Conditions that give back True or False
 
-These problems come from the shared problem bank, written again for this
-page. The answers are written as small functions, using `def` and
-`return`. We meet these properly in
+The answers to these problems are written as small functions, using
+`def` and `return`. We meet these properly in
 [Writing your own functions](tutorial:writing-your-own-functions). For now, you can
 read `def opposite_signs(a, b):` as "here is a rule called
 `opposite_signs` that takes two values", and `return` as "give back this

@@ -180,9 +180,15 @@ the angle to radians first, then rearrange: $r = \frac{s}{\theta}$.
 7.2° is 0.1257 radians. Then
 $r = \frac{s}{\theta} = \frac{800}{0.1257} \approx 6366$ km.
 
-The modern figure is 6,371 km. He was within about 0.1%, in 240 BCE,
-using a stick and a well. That is a good reason to take a simple idea
-seriously.
+The modern figure is 6,371 km, so this answer is within about 0.1%.
+Be careful with that 0.1%, though. It depends on the 800 km, and the
+800 km is ours. Eratosthenes gave the distance as 5,000 stadia, a
+Greek unit of length, and nobody knows exactly how long his stadion
+was. Depending on which
+length you pick, his answer was somewhere between about 2% and about
+15% out. Even so, he found the size of the whole Earth, in 240 BCE,
+from a stick, a well and one angle. That is a good reason to take a
+simple idea seriously.
 
 </details>
 
@@ -289,7 +295,7 @@ $\sin 30^\circ = \frac{1}{2}$, so $\sin^2 30^\circ = \frac{1}{4}$.
 $\cos 30^\circ = \frac{\sqrt{3}}{2}$, so $\cos^2 30^\circ = \frac{3}{4}$.
 And $\frac{1}{4} + \frac{3}{4} = 1$.
 
-This is Pythagoras. The point is at distance 1 from the center, so its
+This is Pythagoras. The point is at distance 1 from the centre, so its
 two coordinates, squared, add up to 1.
 
 </details>

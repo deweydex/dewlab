@@ -7,12 +7,12 @@ entries:
       input gets closer to some point. The function does not need to have
       a value at that point. A limit is about the numbers near a point,
       not the point itself.
-  - term: neighborhood
+  - term: neighbourhood
     kind: concept
     definition: >
-      The neighborhood of a point is the set of numbers very close to it,
+      The neighbourhood of a point is the set of numbers very close to it,
       on both sides. A limit describes what a function does in the
-      neighborhood of a point.
+      neighbourhood of a point.
   - term: "lim(x -> a) f(x)"
     kind: formula
     definition: >

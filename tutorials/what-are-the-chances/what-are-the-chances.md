@@ -32,18 +32,18 @@ An *outcome* is one possible result, such as rolling a 4 on a die. An *event* is
 
 The probability of an event is a number from 0 to 1. A probability of 0 means the event is impossible. A probability of 1 means it is certain.
 
-A *favorable outcome* is an outcome that makes the event happen. When every outcome is equally likely, we find the probability of an event A in two steps. First, count the favorable outcomes. Then divide by the number of all possible outcomes:
+A *favourable outcome* is an outcome that makes the event happen. When every outcome is equally likely, we find the probability of an event A in two steps. First, count the favourable outcomes. Then divide by the number of all possible outcomes:
 
-$$P(A) = \frac{\text{number of favorable outcomes}}{\text{total number of outcomes}}$$
+$$P(A) = \frac{\text{number of favourable outcomes}}{\text{total number of outcomes}}$$
 
-Let's try it with a fair coin. There are 2 equally likely outcomes, heads and tails. If the event is "heads", there is 1 favorable outcome. So $P(\text{heads}) = \frac{1}{2} = 0.5$.
+Let's try it with a fair coin. There are 2 equally likely outcomes, heads and tails. If the event is "heads", there is 1 favourable outcome. So $P(\text{heads}) = \frac{1}{2} = 0.5$.
 
 Now a fair die. There are 6 equally likely outcomes. Only one of them is a 4, so $P(\text{rolling a 4}) = \frac{1}{6}$. Three of them are even (2, 4 and 6), so $P(\text{rolling an even number}) = \frac{3}{6} = \frac{1}{2}$.
 
 ### Your turn
 
-1. Before you write any code, decide what your function should do in two special cases. What should happen when the total is 0? What should happen when the favorable count is larger than the total?
-2. Write a function `probability(favorable, total)` that works out a basic probability. Give it a docstring.
+1. Before you write any code, decide what your function should do in two special cases. What should happen when the total is 0? What should happen when the favourable count is larger than the total?
+2. Write a function `probability(favourable, total)` that works out a basic probability. Give it a docstring.
 3. Try it on the three test cases in the second cell.
 
 ```python exec
@@ -294,7 +294,7 @@ We have met the main rules of probability: the complement rule, the addition rul
 
 Simulation is more than a way to learn. Sometimes a problem is too complicated to work out exactly. Then people run it a million times and count. This method has a name: *Monte Carlo simulation*.
 
-Calculation and simulation work well together. First we calculate a probability, then we simulate to check it. If the two agree, we can trust both. If they disagree, there is a mistake to find, and finding it teaches us something.
+Calculation and simulation work well together. First we calculate a probability, then we simulate to check it. If they disagree, there is a mistake to find, and finding it teaches us something. If they agree, that is good evidence, but it is not proof. A simulation can be built on the same misreading of the problem as the calculation, and then the two agree on the wrong answer.
 
 In the next tutorial, [The Monty Hall problem: three doors and a simulation](tutorial:three-doors), we use both on a famous puzzle.
 
@@ -304,8 +304,8 @@ What was most surprising about the relationship between calculation and simulati
 
 3Blue1Brown (2020). *Bayes theorem, the geometry of changing beliefs.*
 <https://www.youtube.com/watch?v=HZGCoVF3YvM>. Conditional probability drawn as
-areas, which is the representation that makes the medical-test result stop being
-surprising.
+areas. It is the picture that makes the medical-test result in problem 16 of the
+[practice page](tutorial:what-are-the-chances-practice) stop being surprising.
 
 StatQuest with Josh Starmer (2017). *Probability is not Likelihood.*
 <https://www.youtube.com/watch?v=pYxNSUDSFH4>. A distinction this tutorial skirts

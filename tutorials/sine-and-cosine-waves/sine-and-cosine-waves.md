@@ -1,7 +1,7 @@
 ---
 title: "Sine and cosine waves: amplitude, period and shift"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   unrolling-the-circle:
     covers: [MIT-3.3]
@@ -276,12 +276,17 @@ might you work out the four numbers for each one, by reading the picture?
 id: your-turn-2
 import random
 
-targets = [
-    wave(amplitude=2, period=1, shift=0, lift=0),
-    wave(amplitude=1, period=0.5, shift=0, lift=1),
-    wave(amplitude=0.5, period=2, shift=0.5, lift=0),
-    wave(amplitude=3, period=1, shift=0.25, lift=-1),
-]
+random.seed(11)    # the same four waves every time the cell runs
+
+answers = []
+targets = []
+for _ in range(4):
+    amplitude = random.choice([0.5, 1, 1.5, 2, 3])
+    period = random.choice([0.5, 1, 2])
+    shift = random.choice([0, 0.25, 0.5])
+    lift = random.choice([-1, 0, 1])
+    answers.append((amplitude, period, shift, lift))
+    targets.append(wave(amplitude, period, shift, lift))
 
 fig, axes = plt.subplots(2, 2, figsize=(10, 6))
 for target, cell in zip(targets, axes.flat):
@@ -297,6 +302,9 @@ fig
 id: your-turn-3
 # Your guesses. Plot each over its target and see whether it lands.
 # mine = wave(amplitude=?, period=?, shift=?, lift=?)
+
+# When you have tried all four, print(answers) shows the numbers the
+# cell chose. Yours can be different and still land on top. How?
 ```
 
 ## Where a wave comes from
@@ -325,9 +333,12 @@ ax.set_title("A year of daylight in Dublin")
 
 Does that shape look familiar?
 
-The Earth goes round the Sun once a year. That is (close to) a circle,
-and the amount of daylight depends on where we are on it. So we expect a
-wave, and fitting a wave means finding its four numbers. The comments in
+The Earth goes round the Sun once a year, and its axis is tilted. The
+tilt always points the same way in space. So for half the year, our
+half of the Earth leans towards the Sun, and the days are long. For the
+other half, it leans away, and the days are short. The lean changes
+smoothly and comes back every year, so we expect a wave. Fitting a wave
+means finding its four numbers. The comments in
 the next cell read each number off the data.
 
 ```python exec

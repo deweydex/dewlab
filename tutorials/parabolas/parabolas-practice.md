@@ -2,7 +2,7 @@
 title: "Parabolas: completing the square — Practice"
 practice_for: parabolas
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.25.1
 ---
 
 # Parabolas: completing the square — Practice
@@ -21,8 +21,8 @@ import math
 import matplotlib.pyplot as plt
 
 def complete_the_square(b, c):
-    """Rewrite x^2 + bx + c as (x + h)^2 + k."""
-    h = b / 2
+    """Rewrite x^2 + bx + c as (x - h)^2 + k, and return h and k."""
+    h = -b / 2
     return h, c - h ** 2
 
 
@@ -79,7 +79,9 @@ square. 36 is exactly the square of half of 12.
 (d) $(6, 0)$
 
 The sign flip on the first coordinate catches almost everybody at least
-once. $(x + 4)^2$ is smallest when $x = -4$.
+once. $(x + 4)^2$ is smallest when $x = -4$. Written as
+$(x - (-4))^2 - 13$, it has $h = -4$ and $k = -13$, and the vertex is
+$(h, k)$ with nothing to flip.
 
 </details>
 
@@ -87,9 +89,9 @@ once. $(x + 4)^2$ is smallest when $x = -4$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because $(x + h)^2$ multiplies out to $x^2 + 2hx + h^2$. The middle term
-is $2h$ times $x$. To match a middle number $b$, we need $2h = b$, so
-$h = b/2$.
+Because $(x - h)^2$ multiplies out to $x^2 - 2hx + h^2$. The middle term
+is $-2h$ times $x$. To match a middle number $b$, we need $-2h = b$, so
+$h = -b/2$.
 
 Multiply out the bracket once, and the rule has a clear reason.
 

@@ -181,15 +181,38 @@ two to be exactly independent? Is that a whole number?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Not quite. $P(M) = 0.6$ and $P(P) = 0.5$, and their product is 0.30.
-But $P(M \cap P) = \dfrac{8}{30} \approx 0.267$.
+By the arithmetic test, not quite. $P(M) = 0.6$ and $P(P) = 0.5$, and
+their product is 0.30. That is 9 students out of 30. But the class has
+8, and $P(M \cap P) = \dfrac{8}{30} \approx 0.267$.
 
-So taking maths makes physics slightly *less* likely than chance would.
-That is a weak negative link. The cause is probably a timetable clash,
-and not anything about the students.
+Is one student short of 9 worth explaining, though? We can ask chance.
+Suppose the 18 maths places and the 15 physics places were handed out
+at random, with nothing at all connecting them. How often would the
+overlap come out at 8 or fewer? This uses `simulate` from the tools
+cell:
 
-Exact independence is a numerical coincidence. The interesting cases
-are the ones where it nearly holds, but does not.
+```python
+students = range(30)
+
+
+def overlap_is_8_or_fewer():
+    maths = set(random.sample(students, 18))
+    physics = set(random.sample(students, 15))
+    return len(maths & physics) <= 8
+
+
+print(simulate(overlap_is_8_or_fewer))
+```
+
+It comes out at about 0.36. With no link at all, a class gives 8 or
+fewer about a third of the time. An overlap of exactly 9, the
+"independent" number, turns up less often than that, about 0.29 of the
+time.
+
+So this class tells us nothing about a link between the two subjects.
+The missing student is noise. The arithmetic test asks whether two
+numbers are equal. With real data, the better question is whether the
+difference is bigger than chance usually makes.
 
 </details>
 
@@ -270,7 +293,7 @@ brings in.
 ## Data
 
 **10.** Here are ten response times, in milliseconds:
-`[12, 14, 13, 15, 14, 13, 12, 98, 14, 13]`. Summarize them. Which number
+`[12, 14, 13, 15, 14, 13, 12, 98, 14, 13]`. Summarise them. Which number
 would you report?
 
 <details class="dl-answer"><summary>answer</summary>

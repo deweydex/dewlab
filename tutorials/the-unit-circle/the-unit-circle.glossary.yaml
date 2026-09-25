@@ -3,8 +3,8 @@ entries:
   - term: unit circle
     kind: concept
     definition: >
-      The unit circle is a circle of radius 1 with its center at the
-      origin. Every point on it is at distance 1 from the center. Sine and
+      The unit circle is a circle of radius 1 with its centre at the
+      origin. Every point on it is at distance 1 from the centre. Sine and
       cosine are built on that one fact.
   - term: cosine, sine
     kind: concept
@@ -18,7 +18,7 @@ entries:
     kind: formula
     definition: >
       This identity is Pythagoras on the unit circle. Every point is at
-      distance 1 from the center, so x^2 + y^2 = 1, and x and y are
+      distance 1 from the centre, so x^2 + y^2 = 1, and x and y are
       cos(theta) and sin(theta).
   - term: radian
     kind: concept

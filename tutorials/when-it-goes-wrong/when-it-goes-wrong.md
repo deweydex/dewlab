@@ -1,7 +1,7 @@
 ---
 title: "Finding bugs in bigger programs"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.25.1
 covers:
   errors-from-lists-and-dictionaries:
     covers: [PDP-LO9]
@@ -246,7 +246,10 @@ The average is 80, and the program says 81. The `+ 1` sits outside the
 division, and it should not be there at all. Nothing will tell you this,
 except knowing what the answer should be.
 
-Here are two more. Both run with no error. What is wrong with each one?
+Here are two more. Both run with no error. The first is meant to pass
+any score of 50 or more. The second is meant to predict a mark from this
+rule: 3.5 marks for every hour of study, plus 20 times the attendance,
+plus 30. What is wrong with each one?
 
 ```python exec
 id: the-dangerous-kind-2
@@ -272,7 +275,8 @@ print("Predicted mark:", prediction)
 - The first one uses `>` where it means `>=`. So a student with exactly
   the pass mark, 50, fails.
 - The second one never uses `attendance` at all. It multiplies by
-  `hours` twice, and prints a confident number that means nothing.
+  `hours` twice, and prints 265.0 with complete confidence. The rule
+  gives 35 + 17 + 30 = 82.
 
 **This is why we check answers we already know.** Before you trust a
 function on data you cannot check, give it data you can check. The
@@ -393,13 +397,13 @@ program still goes wrong, the bug is in how the pieces are joined.
 ### Your turn
 
 This program gives each student a grade from the average of their
-marks. A grade of Distinction needs 70 or more, Merit needs 50 or more,
-and Pass needs 40 or more. Something is wrong.
+marks. A grade of Distinction needs 80 or more, Merit needs 65 or more,
+and Pass needs 50 or more. Something is wrong.
 
 1. Work out each student's average and grade by hand.
 2. Run the cell. Which results are wrong?
 3. Test `average` on its own, with a list whose average you know.
-4. Test `grade` on its own, with 75, 55, 45 and 30.
+4. Test `grade` on its own, with 85, 70, 55 and 40.
 5. Which function has the bug? Fix it, and run the cell again.
 
 ```python exec
@@ -412,11 +416,11 @@ def average(marks):
 
 
 def grade(mark):
-    if mark >= 40:
+    if mark >= 50:
         return "Pass"
-    elif mark >= 50:
+    elif mark >= 65:
         return "Merit"
-    elif mark >= 70:
+    elif mark >= 80:
         return "Distinction"
     else:
         return "Fail"
@@ -427,7 +431,7 @@ def student_result(name, marks):
 
 
 print(student_result("Aoife", [72, 68, 80]))
-print(student_result("Ben", [45, 50, 40]))
+print(student_result("Ben", [55, 60, 50]))
 print(student_result("Cara", [30, 35, 20]))
 ```
 
