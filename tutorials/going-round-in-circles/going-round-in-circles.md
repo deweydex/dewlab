@@ -424,7 +424,7 @@ axes.plot([0], [0], "*", color="goldenrod", markersize=14)   # the Sun
 dots = []
 for name, radius in zip(names, distances_km):
     rim_x, rim_y = circle_points(radius, range(0, 361, 5))
-    axes.plot(rim_x, rim_y, color="lightgrey")
+    axes.plot(rim_x, rim_y, color="lightgrey", antialiased=False)   # sharp edges keep the film small
     dot, = axes.plot([radius], [0], "o", label=name)
     dots.append(dot)
 axes.set_aspect("equal")
