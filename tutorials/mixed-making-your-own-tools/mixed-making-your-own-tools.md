@@ -7,7 +7,7 @@ practice_across:
   - does-it-work
   - what-a-function-can-see
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.2
 ---
 
 # Mixed problems: making your own tools
@@ -18,8 +18,11 @@ new part is that nobody tells you which page a problem comes from.
 Choosing the tool is part of the problem.
 
 Along the way, the problems build this unit's product: a unit
-converter, where every conversion is tested both ways. Going there and
-back should bring you home. Problems 5, 6, 10, 15 and 16 are the
+converter for reading about space, where every conversion is tested
+both ways. American space news often gives miles, pounds and degrees
+Fahrenheit first, and most of the world uses kilometres, kilograms and
+degrees Celsius. Your converter will read both. Going there and back
+should bring you home. Problems 5, 6, 10, 15 and 16 are the
 converter's main parts, and they build on each other, so do those in
 order.
 
@@ -38,7 +41,7 @@ id: mixed-tools-scratch-1
 # Try things here
 ```
 
-**1. Predict.** An oven dial shows Fahrenheit. What does this line show?
+**1. Predict.** A thermometer shows Fahrenheit. What does this line show?
 Work it out by hand first.
 
 ```python
@@ -79,7 +82,7 @@ The call works out 2, and gives it back, but nothing keeps it. The
 parameter `level` lives in the call's own space, and the page's `level`
 never changes. On
 [What a function can see](tutorial:what-a-function-can-see#values-in-by-position-and-by-name)
-that was the `add_tip` table. To move up a level, the page has to say
+that was the `add_bonus` table. To move up a level, the page has to say
 so: `level = next_level(level)`.
 
 </details>
@@ -103,21 +106,23 @@ the domain belongs in the docstring, and an `assert` can check it.
 
 </details>
 
-**4. Make.** A bedroom wall is 4 m wide and 2.5 m high. One litre of
-paint covers 10 square metres, and the wall needs two coats. Use
-`rectangle_area` to work out how many litres of paint to buy.
+**4. Make.** A full-HD screen is 1920 pixels wide and 1080 high, and
+each pixel needs 3 bytes, one for each of red, green and blue. Use
+`rectangle_area` to work out how many megabytes one screenful takes. (A
+megabyte here is 1,000,000 bytes.) A video shows 60 screenfuls a
+second. How many megabytes is that each second?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-wall = rectangle_area(4, 2.5)
-coats = 2
-litres = wall * coats / 10
-print(wall, litres)
+pixels = rectangle_area(1920, 1080)
+frame_mb = pixels * 3 / 1000000
+print(pixels, frame_mb, frame_mb * 60)
 ```
 
-The wall is 10.0 square metres. Two coats cover 20 square metres, so
-the room needs 2.0 litres of paint. The formula from
+The screen has 2,073,600 pixels, so one screenful is about 6.2 MB, and
+60 of them are about 373 MB every second. That is why video is always
+squeezed before it is sent. The formula from
 [Measuring rooms and tins](tutorial:measuring-rooms-and-tins) did the
 first step; the rest is one line of arithmetic.
 
@@ -137,7 +142,9 @@ id: mixed-tools-scratch-2
 from miles per hour to kilometres per hour. One mile is exactly
 1.609344 km. Write `miles_to_km(miles)` and `km_to_miles(km)`, each
 with a docstring. Test them with values you know: 1 mile is 1.609344 km,
-and 0 is 0 in both. Then find what the old 60 mph limit is in km/h.
+and 0 is 0 in both. Then find what the old 60 mph limit is in km/h, and
+how far the Moon is in km, if an American page says about 238,900
+miles.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -159,9 +166,11 @@ assert miles_to_km(1) == 1.609344
 assert km_to_miles(1.609344) == 1
 assert miles_to_km(0) == 0 and km_to_miles(0) == 0
 print(miles_to_km(60))
+print(miles_to_km(238900))
 ```
 
-60 mph is about 96.6 km/h. On national roads the new signs rounded it
+60 mph is about 96.6 km/h, and the Moon is about 384,500 km away,
+close to the 384,400 km a European page would give. On national roads the new signs rounded it
 to 100 km/h. On regional and local roads the new limit was 80 km/h.
 
 `KM_PER_MILE` is a global name, and both functions read it. That is not
@@ -220,10 +229,10 @@ tiny distance from home, as `fahrenheit_to_celsius` showed on
 
 </details>
 
-**7. Fix.** An airline allows a 23 kg suitcase, and a passenger from
-the United States wants it in pounds. One pound is exactly 0.45359237
-kg. This cell tests the two weight functions both ways, and stops with
-an `AssertionError`. Find the mistake, and fix it.
+**7. Fix.** NASA's Perseverance rover, on Mars since 2021, has a mass
+of 1,025 kg, and American pages give it in pounds. One pound is exactly
+0.45359237 kg. This cell tests the two weight functions both ways, and
+stops with an `AssertionError`. Find the mistake, and fix it.
 
 ```python exec
 id: mixed-tools-fix-weight
@@ -240,10 +249,10 @@ def pounds_to_kg(pounds):
     return pounds / KG_PER_POUND
 
 
-for weight in [0, 1, 23, 100]:
+for weight in [0, 1, 23, 1025]:
     assert close_enough(pounds_to_kg(kg_to_pounds(weight)), weight)
 print("The weight functions work both ways.")
-print(kg_to_pounds(23))
+print(kg_to_pounds(1025))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
@@ -259,13 +268,15 @@ def pounds_to_kg(pounds):
     return pounds * KG_PER_POUND
 ```
 
-Now the test passes, and the suitcase limit is about 50.7 pounds.
+Now the test passes, and the rover is about 2,259.7 pounds. NASA's pages
+round it to 2,260.
 
 </details>
 
-**8. Explain.** A friend writes `miles_to_km` with 1.6 in place of
-1.609344, and `km_to_miles` with 1.6 too. Will `works_both_ways` catch
-the mistake? What kind of test would?
+**8. Explain.** Schlomo, who is learning Python too, writes
+`miles_to_km` with 1.6 in place of 1.609344, and `km_to_miles` with 1.6
+too. It is a sensible shortcut for a rough answer. Will
+`works_both_ways` catch it? What kind of test would?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -275,7 +286,8 @@ functions are wrong in the same way, and a round trip cannot see a
 mistake that the way back undoes.
 
 A test with a known value catches it: `miles_to_km(1)` should be
-1.609344, and the friend's version gives 1.6. So a converter needs both
+1.609344, and Schlomo's version gives 1.6. His shortcut is fine for a
+rough answer, and a known-value test says how rough. So a converter needs both
 kinds of test from
 [Running a formula backwards](tutorial:running-a-formula-backwards#the-promise-run-backwards):
 known values, to check the factor is right, and round trips, to check
@@ -312,18 +324,19 @@ it ran after the name was reused.
 
 **10. Make.** Every converter so far has the same shape: multiply by a
 factor, or divide by it. Write `scaler(factor)`, which gives back a
-function that multiplies its input by `factor`. Then use it to make
-`litres_to_gallons` and `gallons_to_litres`. One UK gallon is exactly
-4.54609 litres. Check them with `works_both_ways`, and find the price of
-a gallon of fuel at €1.80 a litre.
+function that multiplies its input by `factor`. Astronomers measure the
+solar system in *astronomical units* (AU): one AU is exactly
+149,597,870.7 km, about the distance from the Earth to the Sun. Use
+`scaler` to make `au_to_km` and `km_to_au`, check them with
+`works_both_ways`, and find how far Mars is from the Sun, on average,
+if it is 1.52 AU.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. `scaler` has the shape of `rate_converter` on
+1. `scaler` has the shape of `converter` on
    [What a function can see](tutorial:what-a-function-can-see#a-function-made-inside-a-function).
 2. Going the other way is multiplying by `1 / factor`.
-3. A price per litre is a different question from a number of litres.
-   How many litres are in a gallon?
+3. Mars is 1.52 AU away, so `au_to_km(1.52)`.
 
 **Think about:** where does each of your two new functions find its
 `factor`?
@@ -343,51 +356,60 @@ def scaler(factor):
     return scale
 
 
-LITRES_PER_GALLON = 4.54609
-gallons_to_litres = scaler(LITRES_PER_GALLON)
-litres_to_gallons = scaler(1 / LITRES_PER_GALLON)
+KM_PER_AU = 149597870.7
+au_to_km = scaler(KM_PER_AU)
+km_to_au = scaler(1 / KM_PER_AU)
 
-print(works_both_ways(litres_to_gallons, gallons_to_litres, [0, 1, 50, 1000]))
-print(round(1.80 * gallons_to_litres(1), 2))
+print(works_both_ways(au_to_km, km_to_au, [0, 1, 1.52, 30]))
+print(au_to_km(1.52))
 ```
 
-The first line shows `True`. A gallon holds about 4.55 litres, so at
-€1.80 a litre it costs €8.18.
+The first line shows `True`. Mars is about 227 million km from the Sun.
+The AU has been fixed at exactly this number of kilometres since 2012,
+so it is a unit like any other.
 
-`gallons_to_litres` and `litres_to_gallons` are two closures. Each was
-made in its own call to `scaler`, and each keeps its own `factor`.
+`au_to_km` and `km_to_au` are two closures. Each was made in its own
+call to `scaler`, and each keeps its own `factor`.
 
 </details>
 
-**11. Another way.** In Ireland, people often give their weight in
-stone. One stone is 14 pounds. Write `pounds_to_stone`, and use
-`compose` with your fixed `kg_to_pounds` from problem 7 to make
-`kg_to_stone`. Then find a second route: one stone is exactly 6.35029318
-kg. Check that the two routes agree for 70 kg.
+**11. Another way.** A drive sold as "1 TB" holds 1,000,000,000,000
+bytes, because drive makers count in thousands. But many computers
+count in 1,024s: a *gibibyte* (GiB) is $2^{30}$ bytes, which is
+1,073,741,824. Write `tb_to_bytes` and `bytes_to_gib`, and use
+`compose` to make `tb_to_gib`. Then find a second route: one TB is
+exactly $\frac{10^{12}}{2^{30}}$ GiB. Check that the two routes agree.
+How big does a new 1 TB drive look to a computer that counts in 1,024s?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def pounds_to_stone(pounds):
-    """Give back a weight in stone, given it in pounds."""
-    return pounds / 14
+def tb_to_bytes(tb):
+    """Give back a size in bytes, given it in terabytes of 10 ** 12 bytes."""
+    return tb * 10 ** 12
 
 
-kg_to_stone = compose(pounds_to_stone, kg_to_pounds)
-
-def kg_to_stone_directly(kg):
-    """Give back a weight in stone, given it in kg, in one step."""
-    return kg / 6.35029318
+def bytes_to_gib(size_bytes):
+    """Give back a size in gibibytes of 2 ** 30 bytes, given it in bytes."""
+    return size_bytes / 2 ** 30
 
 
-print(kg_to_stone(70), kg_to_stone_directly(70))
-print(close_enough(kg_to_stone(70), kg_to_stone_directly(70)))
+tb_to_gib = compose(bytes_to_gib, tb_to_bytes)
+
+def tb_to_gib_directly(tb):
+    """Give back a size in gibibytes, given it in terabytes, in one step."""
+    return tb * 10 ** 12 / 2 ** 30
+
+
+print(tb_to_gib(1), tb_to_gib_directly(1))
+print(close_enough(tb_to_gib(1), tb_to_gib_directly(1)))
 ```
 
-Both routes give about 11.02 stone, and `close_enough` says `True`. The
-second route's number is $14 \times 0.45359237$, the two steps of the
-first route multiplied together. Composing two scalings is one scaling,
-by the product of their factors.
+Both routes give about 931.3, and `close_enough` says `True`. That is
+the surprise many people meet with a new drive: the box says 1 TB, and
+Windows says about 931 GB. Nothing is missing. The two are counting in
+different units, and Windows writes GB where it means GiB. The second route's number is the two steps of the first route
+multiplied together: composing two scalings is one scaling.
 
 </details>
 
@@ -420,23 +442,24 @@ ticks.
 
 </details>
 
-**13. Make.** A saucepan is a cylinder, 10 cm in radius and 12 cm deep.
-Use `cylinder_volume` to find how many litres it holds. (A litre is 1000
-cubic centimetres.) A recipe from the United States asks for 4 cups of
-stock, and a US cup is about 0.24 litres. Does it fit?
+**13. Make.** A 3D printer's filament is a plastic thread 1.75 mm
+across, so its radius is 0.0875 cm. Use `cylinder_volume` to find the
+volume of one metre of it, in cm³. A spool holds 1 kg of the plastic
+PLA, and each cm³ of PLA weighs about 1.24 g. Roughly how many metres
+of thread are on the spool? Guess first.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-pot_cm3 = cylinder_volume(10, 12)
-pot_litres = pot_cm3 / 1000
-stock_litres = 4 * 0.24
-print(round(pot_litres, 2), stock_litres, stock_litres < pot_litres)
+one_metre = cylinder_volume(0.0875, 100)      # 100 cm of thread
+spool_cm3 = 1000 / 1.24                       # 1,000 g at 1.24 g per cm³
+print(round(one_metre, 3), round(spool_cm3), round(spool_cm3 / one_metre))
 ```
 
-The pot holds about 3.77 litres, and the stock is 0.96 litres, so it
-fits with plenty of room for the vegetables. The volume is
-$\pi r^2 h = \pi \times 10^2 \times 12$, about 3770 cm³.
+One metre of thread is about 2.405 cm³, the spool is about 806 cm³ of
+plastic, and so it holds about 335 metres of thread. That is running
+the cylinder's formula backwards: we knew the volume, and wanted the
+length.
 
 </details>
 
@@ -451,23 +474,23 @@ id: mixed-tools-scratch-3
 # Try things here
 ```
 
-**14. Another way.** A runner logs a week of training in miles: 3.1,
-5, 6.2 and 13.1. Find the week's total in km two ways. First, add the
-miles with `total`, then convert. Second, convert each run, then add.
-Do the two ways agree? Now try the same two ways on three days of
-temperatures, 10, 12 and 15 °C, converted to Fahrenheit. What happens,
-and why?
+**14. Another way.** A survey drone logs four flights in miles: 3.1,
+5, 6.2 and 13.1. Find the total in km two ways. First, add the miles
+with `total`, then convert. Second, convert each flight, then add. Do
+the two ways agree? Now try the same two ways on three temperature
+readings from a sensor, 10, 12 and 15 °C, converted to Fahrenheit. What
+happens, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-runs = [3.1, 5, 6.2, 13.1]
-first = miles_to_km(total(runs))
+flights = [3.1, 5, 6.2, 13.1]
+first = miles_to_km(total(flights))
 
-runs_in_km = []
-for run in runs:
-    runs_in_km.append(miles_to_km(run))
-second = total(runs_in_km)
+flights_in_km = []
+for flight in flights:
+    flights_in_km.append(miles_to_km(flight))
+second = total(flights_in_km)
 
 print(first, second, close_enough(first, second))
 ```
@@ -486,7 +509,7 @@ print(total(days_in_f))
 
 These do not agree: 98.6 and 162.6. Converting each day adds 32 three
 times, and converting the total adds it once. A total of temperatures
-is not a temperature anyone would feel, either.
+is not a temperature anything could be, either.
 
 So "add, then convert" is a move that works in one space and not the
 other. It works for a converter that only multiplies, like miles to
@@ -514,7 +537,8 @@ the functions you have already written.
 `to_unit` are strings. What would happen if someone called it with the
 units in the wrong order?
 
-**Try this next:** add `"litres"` and `"gallons"`.
+**Try this next:** add `"AU"` to `"km"` and back, with your tools from
+problem 10.
 
 </details>
 
@@ -541,15 +565,15 @@ def convert(value, from_unit, to_unit):
     assert False, "convert does not know " + from_unit + " to " + to_unit
 
 
-print(convert(26.2, "miles", "km"))
-print(convert(23, "kg", "pounds"))
+print(convert(238900, "miles", "km"))
+print(convert(1025, "kg", "pounds"))
 print(convert(-40, "C", "F"))
 convert(5, "km", "kg")
 ```
 
-The first three lines show a marathon in km, about 42.2, the suitcase
-limit, about 50.7 pounds, and −40.0, where the two temperature scales
-meet. The last line stops with
+The first three lines show the Moon's distance in km, about 384,500, the
+rover's mass, about 2,260 pounds, and −40.0, where the two temperature
+scales meet. The last line stops with
 `AssertionError: convert does not know km to kg`, which is the promise
 naming its own domain: a distance cannot become a weight.
 
@@ -579,7 +603,7 @@ function, and use it to check all three pairs.
 **Think about:** which space does the inner function find `from_unit`
 and `to_unit` in?
 
-**Try this next:** add litres and gallons to `convert`, and their pair
+**Try this next:** add AU and km to `convert`, and their pair
 to the test. How many lines did the test need to grow by?
 
 </details>
@@ -615,9 +639,9 @@ a composition, a test, and a function that remembers what it can see.
 
 </details>
 
-**17. Fix.** Someone's first version of `works_both_ways` says `True` for
-two functions that do not undo each other: doubling, and
-dividing by 3. Find the mistake. Why did the value 0 hide it?
+**17. Fix.** Schlomi, who is learning Python too, wrote a first version
+of `works_both_ways`. It says `True` for two functions that do not undo
+each other: doubling, and dividing by 3. Find the mistake. Why did the value 0 hide it?
 
 ```python exec
 id: mixed-tools-fix-both-ways

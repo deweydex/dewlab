@@ -83,12 +83,12 @@ id: row-warm-up-2
 type: multiple-choice
 correct: 2
 
-`add_song(playlist, song)` puts a song at the end of `playlist` with
-`append`. After `road_trip = ["Zombie", "Linger"]` and
-`add_song(road_trip, "Galway Girl")`, what does `road_trip` hold?
+`add_reading(readings, value)` puts a value at the end of `readings`
+with `append`. After `today = [14.2, 14.8]` and
+`add_reading(today, 15.1)`, what does `today` hold?
 
-- `["Zombie", "Linger"]`
-- `["Zombie", "Linger", "Galway Girl"]`
+- `[14.2, 14.8]`
+- `[14.2, 14.8, 15.1]`
 - `None`
 ```
 

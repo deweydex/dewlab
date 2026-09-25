@@ -2,7 +2,7 @@
 title: "Does it work? Testing, walkthroughs and naming — Practice"
 practice_for: does-it-work
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.2
 ---
 
 # Does it work? Testing, walkthroughs and naming — Practice
@@ -44,7 +44,7 @@ tolerance.
 
 </details>
 
-**2. Make.** A cinema app shows film lengths in hours. Write three test
+**2. Make.** A video player shows how long a video is, in hours. Write three test
 cases, with `assert`, for this function: one from a fact you know, one
 at an edge, and one that uses a second route.
 
@@ -63,7 +63,7 @@ def minutes_to_hours(minutes):
     """Return a length of time in hours, given it in minutes."""
     return minutes / 60
 
-assert minutes_to_hours(90) == 1.5, "a 90-minute film is an hour and a half"
+assert minutes_to_hours(90) == 1.5, "a 90-minute video is an hour and a half"
 assert minutes_to_hours(0) == 0, "no minutes is no hours"
 assert close_enough(minutes_to_hours(137) * 60, 137), "back to minutes again"
 print("minutes_to_hours keeps its promise.")
@@ -75,18 +75,20 @@ Yours may use other values and still be good tests.
 
 </details>
 
-**3. Explain.** A friend says: "My function ran, and there was no error,
-so it works." What would you say to them? Give an example from this
-unit.
+**3. Explain.** Schlomo, who is learning Python too, says: "My function
+ran, and there was no error, so it works." What would you say to him?
+Give an example from this unit.
 
 <details class="dl-answer"><summary>answer</summary>
 
 Python only reports an error when it cannot make a move, such as
 dividing by zero or using a name that points at nothing. It has no idea
 what the function was meant to do. So a function can run with no error
-and still break its promise. The tutorial's `oven_celsius` ran, and said
-350 °F was about 332 °C. Only a test case, such as "32 °F should give
-0 °C", showed that it was wrong.
+and still break its promise. The tutorial's `to_celsius` ran, and said
+water boils at about 194 °C. Only a test case, such as "32 °F should
+give 0 °C", showed that it was wrong. Schlomo's idea is a reasonable
+first check, since an error does mean something is wrong. It is the
+other direction that fails: no error does not mean nothing is wrong.
 
 </details>
 
@@ -123,25 +125,25 @@ id: does-it-practice-core
 # Your working for problems 5 to 12
 ```
 
-**5. Predict.** €100 is saved at 10% interest a year. How many years
-until it is €150 or more? Make a trace table with the columns `years`
-and `balance` before you run the cell. (Round the balance to the cent in
-your table.)
+**5. Predict.** A yeast colony in a lab weighs 100 mg, and grows by 10%
+each hour. After how many hours is it 150 mg or more? Make a trace
+table with the columns `hours` and `mass` before you run the cell.
+(Round the mass to two decimal places in your table.)
 
 ```python
-balance = 100
-years = 0
-while balance < 150:
-    balance = balance * 1.1
-    years = years + 1
-print(years, round(balance, 2))
+mass = 100
+hours = 0
+while mass < 150:
+    mass = mass * 1.1
+    hours = hours + 1
+print(hours, round(mass, 2))
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Start the table with `years` 0 and `balance` 100.
-2. Each row: check `balance < 150`. If it is true, multiply the balance
-   by 1.1 and add 1 to `years`.
+1. Start the table with `hours` 0 and `mass` 100.
+2. Each row: check `mass < 150`. If it is true, multiply the mass by
+   1.1 and add 1 to `hours`.
 3. Stop at the first row where the check is false.
 
 **Think about:** why the loop runs once more after 146.41, even though
@@ -151,7 +153,7 @@ that is so close to 150.
 
 <details class="dl-answer"><summary>answer</summary>
 
-| `years` | `balance` | `balance < 150`? |
+| `hours` | `mass` | `mass < 150`? |
 |---|---|---|
 | 0 | 100.00 | True |
 | 1 | 110.00 | True |
@@ -197,38 +199,39 @@ Now all three pass. Testing only `(5, 1)` would have missed this bug.
 
 </details>
 
-**7. Fix.** A restaurant adds a 10% tip to every bill. The test fails.
-Run it, then decide: is the mistake in the code, the comment or the
-docstring? Fix it.
+**7. Fix.** Schlomi, who is learning Python too, writes a function for
+a photo app that makes a picture 10% wider. The test fails. Run it, then
+decide: is the mistake in the code, the comment or the docstring? Fix
+it.
 
 ```python exec
-id: does-it-practice-fix-tip
-def price_with_tip(bill):
-    """Return the bill with a 10% tip added."""
-    return bill * 1.15    # add the 10% tip
+id: does-it-practice-fix-wider
+def wider(width):
+    """Return a picture's width, in pixels, made 10% wider."""
+    return width * 1.15    # make it 10% wider
 
-assert close_enough(price_with_tip(100), 110), "€100 plus 10% is €110"
-print("price_with_tip keeps its promise.")
+assert close_enough(wider(100), 110), "100 pixels, 10% wider, is 110"
+print("wider keeps its promise.")
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-The restaurant's rule is 10%, and the docstring and the comment both say
-10%. The code multiplies by 1.15, which adds 15%. So the code is wrong:
+The app's rule is 10%, and the docstring and the comment both say 10%.
+The code multiplies by 1.15, which adds 15%. So the code is wrong:
 
 ```python
-def price_with_tip(bill):
-    """Return the bill with a 10% tip added."""
-    return bill * 1.10
+def wider(width):
+    """Return a picture's width, in pixels, made 10% wider."""
+    return width * 1.10
 ```
 
 The comment can go: it says what the code says. Notice the test uses
 `close_enough`. `100 * 1.10` is `110.00000000000001`, so `==` would fail
-even with the right code.
+even with the right code. Schlomi chose the right tool for the test.
 
 </details>
 
-**8. Make.** A running app shows distances in kilometres or in miles.
+**8. Make.** A GPS app shows distances in kilometres or in miles.
 One mile is exactly 1.609344 km. Write `km_to_miles` and `miles_to_km`.
 Test them with a fact (a marathon is 42.195 km, about 26.2 miles), and
 with a loop that goes there and back for every whole number of km from 0
@@ -260,13 +263,14 @@ would have failed on 41 km, among others.
 
 </details>
 
-**9. Explain.** A recipe app has a function to double the amounts. It has
-a bug, but its test passes. Why does the test pass? Write a better test.
+**9. Explain.** An image app has a function to double a picture's
+width. It has a bug, but its test passes. Why does the test pass? Write
+a better test.
 
 ```python
-def double(amount):
-    """Return twice amount."""
-    return amount * amount
+def double(width):
+    """Return twice width."""
+    return width * width
 
 assert double(2) == 4
 ```
@@ -282,23 +286,24 @@ and 2, where many different rules happen to agree.
 
 </details>
 
-**10. Make.** This function from a concert ticket site works, but nobody
-can tell what it does. Give it and its names words, add a docstring,
-and test that your version gives the same answers as the old one for
-three different sets of values.
+**10. Make.** This function from a camera app works, but nobody can
+tell what it does. Give it and its names words, add a docstring, and
+test that your version gives the same answers as the old one for three
+different sets of values.
 
 ```python
 def calc(x, y, z):
     t = x * y
-    return t - t * z / 100
+    return t * z / 8 / 1000000
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Try `calc(40, 3, 10)`. What could 40, 3 and 10 be on a ticket site?
-2. `t` is `x` times `y`. What is a ticket price times a number of
-   tickets?
-3. The last line takes away `z` per cent of `t`.
+1. Try `calc(4000, 3000, 24)`. What could 4000 and 3000 be in a camera?
+2. `t` is `x` times `y`. What do you get when you multiply a picture's
+   width by its height?
+3. The last line divides by 8 and then by a million. How many bits are
+   in a byte?
 
 **Think about:** which names would let a stranger guess what the
 function does without running it?
@@ -307,31 +312,33 @@ function does without running it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`x` is a ticket price, `y` is how many tickets, and `z` is a discount in
-per cent.
+`x` and `y` are a photo's width and height in pixels, and `z` is how
+many bits each pixel uses. The answer is the photo's size in megabytes.
 
 ```python
 def calc(x, y, z):
     t = x * y
-    return t - t * z / 100
+    return t * z / 8 / 1000000
 
 
-def price_after_discount(ticket_price, tickets, discount_percent):
-    """Return the cost of tickets at ticket_price each, with discount_percent taken off."""
-    full_price = ticket_price * tickets
-    return full_price - full_price * discount_percent / 100
+def photo_megabytes(width, height, bits_per_pixel):
+    """Return the size in MB of a photo, width by height pixels, before any squeezing."""
+    pixels = width * height
+    return pixels * bits_per_pixel / 8 / 1000000
 
 
-for values in [(40, 3, 10), (25.5, 2, 0), (60, 10, 15)]:
-    assert price_after_discount(*values) == calc(*values)
+for values in [(4000, 3000, 24), (1920, 1080, 24), (640, 480, 8)]:
+    assert photo_megabytes(*values) == calc(*values)
 print("The two versions agree.")
-print(price_after_discount(40, 3, 10))
+print(photo_megabytes(4000, 3000, 24))
 ```
 
-It prints `The two versions agree.`, then `108.0`. Three tickets at €40,
-with 10% off, cost €108. Writing `*values` hands the three numbers in a
-row to the function as its three inputs, the same way `*row` did on
-[Untangling a condition](tutorial:untangling-a-condition).
+It prints `The two versions agree.`, then `36.0`. A 12-megapixel photo
+at 24 bits a pixel is 36 MB before it is squeezed. Writing `*values`
+hands the three numbers in a row to the function as its three inputs,
+the same way `*row` did on
+[Untangling a condition](tutorial:untangling-a-condition). Your names
+may be different and as clear.
 
 </details>
 
@@ -365,7 +372,7 @@ compared with the size, so `math.isclose` says True. For two numbers
 that are both about a billionth, one is double the other, so
 `math.isclose` says False. Each tool is right in its own space: a fixed
 tolerance suits numbers of an everyday size, like temperatures and
-prices.
+distances in a room.
 
 </details>
 
@@ -514,62 +521,62 @@ of the numbers.
 
 </details>
 
-**15. Fix.** A bus company charges nothing for children under 5, €1 for
-ages 5 to 17, and €2 for anyone 18 or over. Write test cases at every
+**15. Fix.** A phone shows its battery icon in red below 20%, in amber
+from 20% to 49%, and in green from 50% up. Write test cases at every
 edge of that promise, run them, and fix the bug they find.
 
 ```python exec
-id: does-it-practice-fix-fare
-def fare(age):
-    """Return the bus fare in euro: free under 5, €1 from 5 to 17, €2 from 18."""
-    if age < 5:
-        return 0
-    elif age < 17:
-        return 1
+id: does-it-practice-fix-battery
+def battery_colour(percent):
+    """Return the battery icon's colour: red under 20, amber from 20 to 49, green from 50."""
+    if percent < 20:
+        return "red"
+    elif percent < 49:
+        return "amber"
     else:
-        return 2
+        return "green"
 
 # Your test cases here
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The promise changes at 5 and at 18. Those are the edges.
-2. Test the age just before each edge, and the edge itself: 4, 5, 17 and
-   18.
-3. Which one gives the wrong fare?
+1. The promise changes at 20 and at 50. Those are the edges.
+2. Test the value right before each edge, and the edge itself: 19, 20,
+   49 and 50.
+3. Which one gives the wrong colour?
 
-**Think about:** "5 to 17" includes 17. Which sign includes it?
+**Think about:** "20 to 49" includes 49. Which sign includes it?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-assert fare(4) == 0, "4 is under 5"
-assert fare(5) == 1, "5 is the first child fare"
-assert fare(17) == 1, "17 is the last child fare"
-assert fare(18) == 2, "18 is the first adult fare"
-print("fare keeps its promise.")
+assert battery_colour(19) == "red", "19 is under 20"
+assert battery_colour(20) == "amber", "20 is the first amber"
+assert battery_colour(49) == "amber", "49 is the last amber"
+assert battery_colour(50) == "green", "50 is the first green"
+print("battery_colour keeps its promise.")
 ```
 
-The test for 17 fails: `17 < 17` is False, so a 17-year-old pays the
-adult fare. Either of these fixes it:
+The test for 49 fails: `49 < 49` is False, so 49% shows green. Either of
+these fixes it:
 
 ```python
-def fare(age):
-    """Return the bus fare in euro: free under 5, €1 from 5 to 17, €2 from 18."""
-    if age < 5:
-        return 0
-    elif age < 18:
-        return 1
+def battery_colour(percent):
+    """Return the battery icon's colour: red under 20, amber from 20 to 49, green from 50."""
+    if percent < 20:
+        return "red"
+    elif percent < 50:
+        return "amber"
     else:
-        return 2
+        return "green"
 ```
 
-or `elif between(age, 5, 17):`, with the toolkit's `between`. A test in
-the middle, like age 10, would never have found this bug. Bugs like this
-one live at the edges, so the edges are where tests go.
+or `elif between(percent, 20, 49):`, with the toolkit's `between`. A
+test in the middle, like 35, would never have found this bug. Bugs like
+this one live at the edges, so the edges are where tests go.
 
 </details>
 
