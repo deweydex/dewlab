@@ -6,25 +6,36 @@
 # compose is the course's own toolkit function, not a Python name, so it
 # has no python: line.
 entries:
+  - term: volt
+    kind: concept
+    definition: >
+      A volt measures the push behind an electric current. A temperature
+      chip gives out a voltage, and a rule turns it into degrees.
+  - term: absolute zero
+    kind: concept
+    definition: >
+      Absolute zero is −273.15 °C, the coldest temperature there can be.
+      Nothing can be colder.
   - term: "function notation, f(x)"
     kind: concept
     definition: >
       Function notation is the maths way to write a rule with a name. In
-      f(x) = 4 + 1.5x, f is the name, x is the input, and f(10) means the
-      rule used on 10.
-    example: "f(10) = 4 + 1.5 × 10 = 19"
+      f(x) = 100x − 50, f is the name, x is the input, and f(0.75) means
+      the rule used on 0.75.
+    example: "f(0.75) = 100 × 0.75 − 50 = 25"
   - term: argument
     kind: concept
     definition: >
       An argument is the value put into a parameter when a function is
-      called. In fare(10), the parameter is km and the argument is 10.
-    example: "fare(10)"
+      called. In sensor_celsius(0.75), the parameter is volts and the
+      argument is 0.75.
+    example: "sensor_celsius(0.75)"
   - term: "domain, range"
     kind: concept
     definition: >
       The domain of a function is the set of inputs it accepts. The range
-      is the set of outputs it can give. A taxi fare's domain is every
-      distance from 0 up.
+      is the set of outputs it can give. A TMP36 temperature chip's rule has
+      the domain 0.1 to 1.75 volts, and the range −40 °C to 125 °C.
   - term: square root
     kind: concept
     definition: >
@@ -52,7 +63,7 @@ entries:
       Checks a condition, and shows the message after the comma if the
       check fails. It is a way for a function to say which inputs it
       accepts.
-    example: 'assert km >= 0, "a trip cannot be shorter than 0 km"'
+    example: 'assert between(volts, 0.1, 1.75), "a TMP36 gives 0.1 to 1.75 volts"'
   - term: algorithm as a function
     kind: concept
     definition: >
@@ -88,7 +99,7 @@ entries:
       The inverse of a function is a function that undoes it. If f takes x
       to y, then f⁻¹ takes y back to x, so f⁻¹(f(x)) = x. The −1 is a name,
       not a power.
-    example: "distance_for(fare(7)) gives 7.0"
+    example: "volts_for(sensor_celsius(1.25)) gives 1.25"
   - term: one-to-one
     kind: concept
     definition: >
@@ -101,7 +112,7 @@ entries:
       Composition joins two functions, so that the output of the first
       goes into the second. (g ∘ f)(x) means g(f(x)), and f runs first.
       The order can change the answer.
-    example: "take_ten_percent_off(add_delivery(50))"
+    example: "sensor_celsius(reading_volts(154))"
   - term: "compose()"
     kind: function
     definition: >

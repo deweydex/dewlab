@@ -1,7 +1,7 @@
 ---
 title: "Running a formula backwards: rearranging and inverses"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.2
 covers:
   one-formula-three-questions:
     covers: [MIT-1.7]
@@ -22,13 +22,14 @@ covers:
 
 # Running a formula backwards: rearranging and inverses
 
-A bus leaves Dublin and drives for 3 hours at an average of 80 km/h.
-How far has it gone? Now turn it round. A train covers 200 km in 2.5
-hours. How fast was it going? And a cyclist rides 60 km at 20 km/h.
-How long did that take?
+The sunlight on your hand left the Sun 8 minutes and 19 seconds ago. How far has it come? The International Space Station goes once
+round the Earth, about 42,700 km, in 92.9 minutes. How fast is it
+going? And a radio message to a rover on Mars, 225 million km away,
+travels as fast as light. How long does the rover wait for it?
 
-Three questions, and one formula answers all of them, if we know how to
-run it backwards. That is what this page is about.
+Three questions about space, and one short formula answers all of
+them, if we know how to run it backwards. That is what this page is
+about.
 
 On this page we:
 
@@ -40,7 +41,7 @@ On this page we:
 - add and simplify fractions that have letters in them
 
 > **The space we're in.** Numbers that measure things: kilometres,
-> hours, degrees. A formula here is a rule that stays true, and we may
+> seconds, degrees. A formula here is a rule that stays true, and we may
 > do any move to it, as long as we do the same move to both sides. One
 > thing usually goes unsaid: a formula with a division in it has no
 > answer when the bottom of the fraction is 0. Your toolkit is loaded,
@@ -68,7 +69,7 @@ A floor is 5 m long and 4 m wide. Its area is {20} square metres.
 ```
 
 Keep that floor in mind. If a floor has an area of 20 square metres and
-is 5 m long, how wide is it? If you said 4 m, you just ran a formula
+is 5 m long, how wide is it? If you said 4 m, you ran a formula
 backwards.
 
 ## One formula, three questions
@@ -79,26 +80,37 @@ With letters, $s$ for speed, $d$ for distance and $t$ for time:
 
 $$s = \frac{d}{t}$$
 
-Let's check it on the train. It covered 200 km in 2.5 hours. Before you
-run the cell, what speed do you expect?
+Let's check it on the space station. It goes 42,700 km in 92.9
+minutes, which is $92.9 \times 60$ seconds. Before you run the cell,
+guess: is its speed nearer 1 km a second, or 10?
 
 ```python exec
 id: running-a-three-questions-1
-distance_km = 200
-time_hours = 2.5
-print(distance_km / time_hours)
+distance_km = 42700
+time_seconds = 92.9 * 60
+print(distance_km / time_seconds)
 ```
 
-The train's average speed was 80 km/h. The formula answers "how fast?"
+About 7.66 km every second, which is about 27,600 km/h. At that speed
+you would get from Dublin to Galway in under half a minute. The formula answers "how fast?"
 straight away, because $s$ is alone on the left. The letter on its own
 on one side of a formula is called the *subject* of the formula. Here
 the subject is $s$.
 
-The bus asks a different question. We know $s = 80$ and $t = 3$, and we
-want $d$. The formula still holds, but $d$ is not on its own. We could
-guess: try 200 km, then 250, then 240, until $\frac{d}{3}$ comes out as
-80. Guessing works, but it is slow. A better way is to change the
-formula so that $d$ is the subject.
+The Sun asks a different question. Light travels 299,792 km every
+second, so we know $s = 299{,}792$, and $t = 499$ seconds, and we want
+$d$. The formula still holds, but $d$ is not on its own. We could
+guess numbers until $\frac{d}{499}$ comes out as 299,792, but that is
+slow. A better way is to change the formula so that $d$ is the subject.
+
+<aside class="dl-note" id="running-note-metre">
+
+**A metre made of light.** Since 1983, the metre has been defined by
+light. It is the distance light travels in empty space in exactly
+$\frac{1}{299{,}792{,}458}$ of a second. So the speed of light is exactly
+299,792,458 metres a second, by definition.
+
+</aside>
 
 ## The same move on both sides
 
@@ -121,17 +133,18 @@ and $d$ is left. So:
 
 $$d = s \times t$$
 
-In words: the distance is the speed times the time. For the bus, that is
-$80 \times 3 = 240$ km.
+In words: the distance is the speed times the time. For the Sun, that
+is $299{,}792 \times 499$, about 149.6 million km.
 
-Now the cyclist. We want $t$, and $t$ is at the bottom of the fraction.
-Take $d = s \times t$, which we just found. Here $t$ is multiplied by
+Now the message to Mars. We want $t$, and $t$ is at the bottom of the fraction.
+Take $d = s \times t$, which we found above. Here $t$ is multiplied by
 $s$, so we undo that by dividing both sides by $s$:
 
 $$\frac{d}{s} = t$$
 
-In words: the time is the distance divided by the speed. For the
-cyclist, $\frac{60}{20} = 3$ hours.
+In words: the time is the distance divided by the speed. For Mars,
+$\frac{225{,}000{,}000}{299{,}792}$ is about 751 seconds: the rover waits
+about 12 and a half minutes.
 
 That is one formula written three ways:
 
@@ -147,32 +160,34 @@ which lines do you expect to print `True`?
 
 ```python exec
 id: running-a-both-sides-1
-bus_distance = 80 * 3
-cyclist_time = 60 / 20
+sun_distance = 299792 * 499
+mars_wait = 225_000_000 / 299792
 
-print(bus_distance, cyclist_time)
-print(bus_distance / 3 == 80)
-print(60 / cyclist_time == 20)
+print(sun_distance, mars_wait)
+print(sun_distance / 499 == 299792)
+print(225_000_000 / mars_wait == 299792)
 ```
 
-Both checks print `True`. Putting an answer back into the formula it
+Both checks print `True`. (The `_` in `225_000_000` is only there to
+make the number easier to read. Python ignores it.) Putting an answer back into the formula it
 came from is called *substituting* it back, and it is the best habit on
 this page. It turns "I think I rearranged it right" into "I checked".
 
 ### Your turn
 
-A runner finishes a 10 km race in 50 minutes, which is $\frac{50}{60}$
-of an hour.
+The Moon is about 384,400 km away. The crew of Apollo 11 took about 76
+hours to get there in 1969.
 
-1. Before you run anything, which of the three formulas gives her
+1. Before you run anything, which of the three formulas gives their
    average speed in km/h?
-2. In the cell below, work it out.
-3. Substitute it back: does her speed times her time give 10 km?
+2. In the cell below, work it out. (Their real path curved, so this is
+   the average over a straight line.)
+3. Substitute it back: does the speed times the time give 384,400 km?
 
 ```python exec
 id: running-a-both-sides-your-turn
-time_hours = 50 / 60
-# her average speed, then a check
+time_hours = 76
+# their average speed, then a check
 ```
 
 ## Tools for any trip
@@ -187,7 +202,7 @@ toolkit: yes
 def speed(distance, time):
     """Return the average speed for a distance covered in a time.
 
-    With distance in km and time in hours, the speed is in km/h.
+    Use matching units: km and seconds give km/s, km and hours km/h.
     time must not be 0.
     """
     return distance / time
@@ -196,7 +211,7 @@ def speed(distance, time):
 def travel_time(distance, speed):
     """Return how long it takes to cover distance at an average speed.
 
-    With distance in km and speed in km/h, the time is in hours.
+    Use matching units: km and km/s give seconds, km and km/h hours.
     speed must not be 0.
     """
     ...
@@ -205,7 +220,7 @@ def travel_time(distance, speed):
 def distance_travelled(speed, time):
     """Return the distance covered at an average speed for a time.
 
-    With speed in km/h and time in hours, the distance is in km.
+    Use matching units: km/s and seconds give km, km/h and hours km.
     """
     ...
 ```
@@ -215,7 +230,7 @@ for: running-a-toolkit-travel
 def speed(distance, time):
     """Return the average speed for a distance covered in a time.
 
-    With distance in km and time in hours, the speed is in km/h.
+    Use matching units: km and seconds give km/s, km and hours km/h.
     time must not be 0.
     """
     return distance / time
@@ -224,7 +239,7 @@ def speed(distance, time):
 def travel_time(distance, speed):
     """Return how long it takes to cover distance at an average speed.
 
-    With distance in km and speed in km/h, the time is in hours.
+    Use matching units: km and km/s give seconds, km and km/h hours.
     speed must not be 0.
     """
     return distance / speed
@@ -233,7 +248,7 @@ def travel_time(distance, speed):
 def distance_travelled(speed, time):
     """Return the distance covered at an average speed for a time.
 
-    With speed in km/h and time in hours, the distance is in km.
+    Use matching units: km/s and seconds give km, km/h and hours km.
     """
     return speed * time
 ```
@@ -243,16 +258,16 @@ not the function above it. A later page,
 [What a function can see](tutorial:what-a-function-can-see), is about
 exactly that.
 
-Now the tests. The first three check the three trips from the top of
-this page. The last two are different: each one runs a formula forwards,
+A signal's trip counts as a trip. Now the tests. The first three check
+the three questions from the top of this page. The last two are different: each one runs a formula forwards,
 then backwards, and expects to arrive where it started. Until your two
 functions are written, this cell stops with an error.
 
 ```python exec
 id: running-a-toolkit-travel-tests
-assert distance_travelled(80, 3) == 240
-assert speed(200, 2.5) == 80
-assert travel_time(60, 20) == 3
+assert distance_travelled(299792, 499) == 149596208
+assert round(speed(42700, 92.9 * 60), 2) == 7.66
+assert round(travel_time(225_000_000, 299792)) == 751
 
 assert travel_time(distance_travelled(80, 3), 80) == 3
 assert speed(distance_travelled(80, 3), 3) == 80
@@ -261,14 +276,25 @@ print("The travel tools keep their promises.")
 
 ```hint
 What did you expect the failing line to give? Try printing
-`travel_time(60, 20)` on its own to see what your version gives now.
+`travel_time(60, 20)` on its own. It should be 3. What does your version
+give now?
 ```
+
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one good way. In `travel_time`, the `...` becomes
+`return distance / speed`. In `distance_travelled`, it becomes
+`return speed * time`. If you have not written them yet, put these in
+the stub now, so that later cells on this page can use them.
+
+</details>
 
 ## Undoing, in reverse order
 
-You are in Boston, and the forecast says 68 degrees. That is degrees
-Fahrenheit, the scale used in the United States. To turn degrees Celsius
-into Fahrenheit, there are two steps:
+The average temperature on Mars is about −60 °C. American pages often
+give it as −76 degrees: degrees Fahrenheit, the scale used in the
+United States. To turn degrees Celsius into Fahrenheit, there are two
+steps:
 
 1. multiply by $\frac{9}{5}$;
 2. then add 32.
@@ -286,11 +312,11 @@ print(0 * 9 / 5 + 32)
 print(100 * 9 / 5 + 32)
 ```
 
-Both are right. Now the question from Boston: what is 68 °F in Celsius?
-We need $C$ as the subject.
+Both come out as they should. Now the other way: is −76 °F really
+−60 °C? We need $C$ as the subject.
 
 On [Machines that take a number](tutorial:machines-that-take-a-number#running-it-backwards-the-inverse),
-we undid the taxi meter's two steps in the opposite order. Think of
+we undid the sensor's two steps in the opposite order. Think of
 putting on socks, then shoes. To undo that, you take off the shoes
 first, then the socks. The last thing done is the first thing undone.
 Here, the last step going forwards was "add 32", so the first step
@@ -309,40 +335,41 @@ first", the way the undoing needs.
 
 A common slip is to do the undoing steps in the forward order: multiply
 by $\frac{5}{9}$ first, then subtract 32. Which of these two lines do you
-think gives 20 °C for 68 °F? Run it to check.
+think gives −60 °C for −76 °F? Run it to check.
 
 ```python exec
 id: running-a-reverse-2
-fahrenheit = 68
+fahrenheit = -76
 print((fahrenheit - 32) * 5 / 9)
 print(fahrenheit * 5 / 9 - 32)
 ```
 
-The first line gives 20.0. The second gives about 5.8, which would be a
-very cold day in Boston. The steps were right, and the order was wrong.
-Undoing is sequence, run in reverse.
+The first line gives −60.0. The second gives about −74.2. Look at how
+believable that is: it is a cold Mars number too, and nothing about it
+looks wrong. The steps were right, and the order was wrong. Undoing is
+sequence, run in reverse.
 
 ```question
 id: running-a-reverse-3
 type: multiple-choice
 correct: 3
 
-To turn a price without VAT into a price with VAT, a shop multiplies by
-1.23 and then adds a €2 delivery charge. A receipt shows €63.50 in
-total. How do we find the price without VAT?
+An image editor scales a picture to 150% of its width, then crops 20
+pixels off. The result is 1,180 pixels wide. How do we find the width
+of the original?
 
-- Multiply 63.50 by 1.23, then subtract 2.
-- Divide 63.50 by 1.23, then subtract 2.
-- Subtract 2 from 63.50, then divide by 1.23.
+- Multiply 1,180 by 1.5, then subtract 20.
+- Divide 1,180 by 1.5, then add 20.
+- Add 20 to 1,180, then divide by 1.5.
 ```
 
 ## The promise run backwards
 
 A function makes a promise: give it a temperature in Celsius, and it
 gives back the same temperature in Fahrenheit. Its inverse, $f^{-1}$,
-keeps the same promise backwards: give it 68, and it gives back 20.
+keeps the same promise backwards: give it −76, and it gives back −60.
 
-The first function below is written for you. The formula we just
+The first function below is written for you. The formula we have
 rearranged is its inverse. Can you write it as a function?
 
 ```python exec
@@ -387,23 +414,30 @@ three lines to print?
 id: running-a-backwards-1
 assert fahrenheit_to_celsius(32) == 0
 assert fahrenheit_to_celsius(212) == 100
-assert fahrenheit_to_celsius(68) == 20
+assert fahrenheit_to_celsius(-76) == -60
 
 print(fahrenheit_to_celsius(celsius_to_fahrenheit(37)))
 print(fahrenheit_to_celsius(celsius_to_fahrenheit(-40)))
 print(fahrenheit_to_celsius(celsius_to_fahrenheit(1)))
 ```
 
+<details class="dl-answer"><summary>answer</summary>
+
+One good way: in `fahrenheit_to_celsius`, the `...` becomes
+`return (fahrenheit - 32) * 5 / 9`. The brackets make the subtraction
+happen first.
+
+</details>
+
 Body temperature, 37 °C, comes back as `37.0`. And −40 comes back as
 −40: it is the one temperature where both scales agree.
 
 But 1 °C comes back as `0.9999999999999984`. The two functions are
-right. What we are seeing is floats. On
+right. As on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
-we saw that a float is very close to the true value but not always equal
-to it, and each step of the trip adds a tiny error. So for a float, "we
-arrive where we started" means "we arrive very, very close". For now we
-round before we compare. The next page,
+a float is very close to the true value, and each step of the trip adds
+a tiny error. So for a float, "we arrive where we started" means "we
+arrive very, very close". For now we round before we compare. The next page,
 [Does it work?](tutorial:does-it-work), builds a better tool for this.
 
 ```python exec
@@ -422,28 +456,28 @@ tested on a whole row of temperatures, with a loop. What will it print?
 id: running-a-backwards-3
 there_and_back = compose(fahrenheit_to_celsius, celsius_to_fahrenheit)
 
-for celsius in [-40, 0, 1, 18.5, 37, 100, 180]:
+for celsius in [-80, -60, -40, 0, 1, 18.5, 37, 100]:
     assert round(there_and_back(celsius), 9) == celsius
 print("fahrenheit_to_celsius undoes celsius_to_fahrenheit.")
 ```
 
-The loop checks seven temperatures in one go, from a cold night to a hot
-oven. A test like this does not need anyone to know the right answers.
+The loop checks eight temperatures in one go, from a lab freezer to
+boiling water. A test like this does not need anyone to know the right answers.
 It only needs the promise: going there and back changes nothing.
 
 ### Your turn
 
-An American recipe says to bake a cake at 350 °F.
+Biology labs keep samples in freezers at −80 °C. An American catalogue
+lists the same freezer in Fahrenheit.
 
-1. Before you run anything, guess the oven setting in Celsius. Is it
-   more or less than 200?
-2. In the cell below, use `fahrenheit_to_celsius` to find it.
-3. Run it back the other way with `celsius_to_fahrenheit`. Do you get
-   350 again, or very close to it?
+1. Before you run anything, guess: is −80 °C more or fewer than −80 °F?
+2. In the cell below, use `celsius_to_fahrenheit` to find it.
+3. Run it back the other way with `fahrenheit_to_celsius`. Do you get
+   −80 again, or very close to it?
 
 ```python exec
 id: running-a-backwards-your-turn
-# The cake's oven, in Celsius, and back again
+# The lab freezer, in Fahrenheit, and back again
 ```
 
 ## When the way back needs care
@@ -451,21 +485,21 @@ id: running-a-backwards-your-turn
 A formula that works for every number going forwards may not work for
 every number going backwards. Here are two places to take care.
 
-The first is zero. A car parked for 2 hours has a speed of 0, and
-`distance_travelled(0, 2)` is 0 km. That makes sense. Now run the same
-formula backwards: how long does the parked car take to reach Galway,
-208 km away? The next cell uses your two travel functions, and it is
+The first is zero. A Mars rover parked for 10 hours has a speed of 0,
+and `distance_travelled(0, 10)` is 0 km. That makes sense. Now run the
+same formula backwards: how long does the parked rover take to reach a
+rock 1 km away? The next cell uses your two travel functions, and it is
 meant to fail. Before you run it, which error do you think Python will
 give?
 
 ```python exec
 id: running-a-way-back-1
-print(distance_travelled(0, 2))
-print(travel_time(208, 0))
+print(distance_travelled(0, 10))
+print(travel_time(1, 0))
 ```
 
 The first line prints `0`. The second stops with a `ZeroDivisionError`.
-The question has no answer, because a parked car never arrives. The
+The question has no answer, because a parked rover never arrives. The
 formula $d = s \times t$ accepts a speed of 0, and the rearranged
 $t = \frac{d}{s}$ does not. So rearranging can make the domain smaller.
 That is why the docstring of `travel_time` says "speed must not be 0":
@@ -473,8 +507,9 @@ the promise names its own space.
 
 The second place is a square. On
 [Measuring rooms and tins](tutorial:measuring-rooms-and-tins), the area
-of a circle was $A = \pi r^2$. A pizza box says it holds 700 square
-centimetres of pizza. What is the radius of the pizza?
+of a circle was $A = \pi r^2$. The James Webb Space Telescope collects
+light over 25.4 square metres of mirror. If that were one round mirror,
+what would its radius be?
 
 We want $r$ as the subject. First, divide both sides by $\pi$:
 
@@ -495,14 +530,17 @@ radius to be, roughly? Run it to check, and to substitute it back.
 id: running-a-way-back-2
 import math
 
-pizza_area = 700
-radius = math.sqrt(pizza_area / math.pi)
+mirror_area = 25.4
+radius = math.sqrt(mirror_area / math.pi)
 print(radius)
 print(circle_area(radius))
 ```
 
-The radius is about 14.9 cm, so the pizza is about 30 cm across.
-Putting the radius back into `circle_area` gives `700.0` again.
+The radius is about 2.84 m, so one round mirror would be about 5.7 m
+across. Putting the radius back into `circle_area` gives 25.4 again.
+The real mirror is 6.5 m across, because
+it is 18 six-sided pieces with small gaps between them, not one
+circle.
 
 ```question
 id: running-a-way-back-3
@@ -519,11 +557,13 @@ from?
 
 ## Fractions with letters in them
 
-A cyclist rides to the next town at 20 km/h, and rides home into the
-wind at 30 km/h. What was her average speed for the whole trip?
+A drone flies out to a weather station at 20 km/h, into the wind, and
+comes back at 30 km/h, with the wind behind it. What was its average
+speed for the whole trip?
 
-Many people guess 25 km/h, halfway between. Let's find out, without
-knowing how far the town is. Call the distance $d$.
+Pause and guess before you read on. Many people say 25 km/h, halfway
+between. Let's find out, without knowing how far the station is. Call
+the distance $d$.
 
 Going there takes $\frac{d}{20}$ hours, and coming back takes
 $\frac{d}{30}$ hours. The whole trip takes
@@ -549,7 +589,7 @@ $$\frac{2d}{\;\frac{d}{12}\;} = 2d \times \frac{12}{d} = 24$$
 The $d$ on the top and the $d$ on the bottom cancel. The average speed
 is 24 km/h, not 25, and it is 24 whatever the distance. Is that
 believable? Let's check with the travel tools from your toolkit, for
-three different towns. (This cell needs your `travel_time`.) Before you
+three different stations. (This cell needs your `travel_time`.) Before you
 run it, what do you expect each line to show?
 
 ```python exec
@@ -562,23 +602,25 @@ for distance in [6, 15, 42]:
 Every line gives an average speed of 24.0. The algebra said the
 distance would not matter, and the code agrees.
 
-Why is it less than 25? She spends longer on the slow part of the trip,
-so the slow speed counts for more of the time.
+Why is it less than 25? The drone spends longer on the slow part of the
+trip, so the slow speed counts for more of the time. I think this is the
+most surprising result on the page, and it has a name: the harmonic
+mean.
 
 ### Your turn
 
-A swimmer swims one length of a pool at 2 m/s and swims back at
+An underwater robot dives to the sea floor at 2 m/s, and climbs back at
 3 m/s.
 
-1. Write the time for the two lengths, $\frac{d}{2} + \frac{d}{3}$, as
-   one fraction. What is the common denominator?
+1. Write the time for the two trips, $\frac{d}{2} + \frac{d}{3}$, as one
+   fraction. What is the common denominator?
 2. Work out the average speed with algebra.
-3. Check it with the toolkit in the cell below, for a 25 m pool and a
-   50 m pool.
+3. Check it with the toolkit in the cell below, for a sea floor 100 m
+   down and one 3,000 m down.
 
 ```python exec
 id: running-a-fractions-your-turn
-# Check the swimmer's average speed here
+# Check the robot's average speed here
 ```
 
 <details class="dl-answer"><summary>answer</summary>
@@ -588,12 +630,13 @@ with a common denominator of 6. The average speed is
 $2d \div \frac{5d}{6} = 2d \times \frac{6}{5d} = \frac{12}{5} = 2.4$ m/s.
 
 ```python
-for pool in [25, 50]:
-    whole_time = travel_time(pool, 2) + travel_time(pool, 3)
-    print(pool, speed(2 * pool, whole_time))
+for depth in [100, 3000]:
+    whole_time = travel_time(depth, 2) + travel_time(depth, 3)
+    print(depth, speed(2 * depth, whole_time))
 ```
 
-Both lines give 2.4.
+Both lines give 2.4. Yours may be written another way and be as
+good.
 
 </details>
 

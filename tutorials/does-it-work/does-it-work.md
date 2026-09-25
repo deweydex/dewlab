@@ -1,7 +1,7 @@
 ---
 title: "Does it work? Testing, walkthroughs and naming"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.25.2
 covers:
   code-that-runs-and-code-that-works:
     covers: [PDP-LO10]
@@ -20,13 +20,15 @@ covers:
 
 # Does it work? Testing, walkthroughs and naming
 
-An American recipe says to bake a cake at 350 °F. A friend's cooking app
-turns that into Celsius, and says 332 °C. Most home ovens do not even go
-that high. The app did not crash, and it showed no error message. It
-gave a wrong answer, calmly.
+In September 1999, NASA lost a spacecraft at Mars. One program worked
+out the push of its small engines in an American unit, pound-force
+seconds. The program that used those numbers expected the metric unit,
+newton-seconds. Every program ran, and not one of them showed an error.
+The Mars Climate Orbiter came far too close to the planet, and was
+never heard from again.
 
-So how would anyone have known, before the cake burned? When you write a
-function, how do you know it is right?
+Code that runs can still be wrong. So when you write a function, how do
+you know it is right, before it matters?
 
 On this page we:
 
@@ -74,20 +76,22 @@ What happens when Python runs `assert 2 + 2 == 4`?
 
 ## Code that runs and code that works
 
-Here is the converter from the cooking app. Before you run it, read the
-last line of the function. What do you think it will print for 350 °F?
+Here is a smaller bug of the same family: a temperature converter.
+Before you run it, read the last line of the function. What do you
+think it will print for 212 °F, the temperature at which water boils?
 
 ```python exec
 id: does-it-runs-1
-def oven_celsius(fahrenheit):
-    """Return an oven temperature in degrees Celsius, given it in degrees Fahrenheit."""
+def to_celsius(fahrenheit):
+    """Return a temperature in degrees Celsius, given it in degrees Fahrenheit."""
     return fahrenheit - 32 * 5 / 9
 
-print(oven_celsius(350))
+print(to_celsius(212))
 ```
 
-It prints about 332.2, with no error. Python did exactly what the line
-says: it multiplied first, then subtracted. The code runs. It does not
+It prints about 194.2, with no error. By this converter, water boils at
+194 °C. Python did exactly what the line says: it multiplied first,
+then subtracted. The code runs. It does not
 work, because it breaks its promise.
 
 A mistake in code that makes it break its promise is called a *bug*.
@@ -95,6 +99,16 @@ Python cannot find this kind of mistake for us, because Python does not
 know what we meant. So we check. *Testing* is running code on inputs
 where we already know what the promise says it should give, and
 comparing. One input with its expected output is a *test case*.
+
+<aside class="dl-note" id="does-it-note-bug">
+
+**Why "bug"?** The word is older than computers: Thomas Edison used it
+in the 1870s for faults in his inventions. In 1947, the team running
+the Harvard Mark II computer found a real moth stuck in one of its
+switches. They taped it into their logbook as the "first actual case of
+bug being found". That page is now in a museum in Washington.
+
+</aside>
 
 Where do the expected answers come from? There are three good places.
 
@@ -114,9 +128,9 @@ the function has a bug. Which test do you think fails first?
 
 ```python exec
 id: does-it-runs-2
-assert oven_celsius(32) == 0, "water freezes at 32 °F, which is 0 °C"
-assert oven_celsius(212) == 100, "water boils at 212 °F, which is 100 °C"
-print("oven_celsius keeps its promise.")
+assert to_celsius(32) == 0, "water freezes at 32 °F, which is 0 °C"
+assert to_celsius(212) == 100, "water boils at 212 °F, which is 100 °C"
+print("to_celsius keeps its promise.")
 ```
 
 The first test fails, and the last line of the traceback shows its
@@ -125,7 +139,7 @@ where it broke.
 
 ### Your turn
 
-1. Fix `oven_celsius` in the first cell of this section. The formula is
+1. Fix `to_celsius` in the first cell of this section. The formula is
    on the last page: subtract 32 first.
 2. Run the first cell again, then run the tests. Do both pass now?
 3. Add a third test: the one temperature where both scales agree is
@@ -192,6 +206,14 @@ print("close_enough keeps its promise.")
 What is `1 - 5`? What is it without its sign? Which of those two do you
 want to compare with the tolerance?
 ```
+
+<details class="dl-answer"><summary>answer</summary>
+
+One good way: the `...` becomes `return abs(a - b) <= tolerance`. If
+you have not written it yet, put it in now: the rest of this page uses
+it.
+
+</details>
 
 The last test is there because of a real, common bug. Without `abs()`,
 `1 - 5` is −4, and −4 is smaller than any tolerance, so two numbers far
@@ -265,7 +287,7 @@ its column. The column shows the bug: the starting value, 0, is bigger
 than every reading.
 
 Ask the fourth question. Starting at 0 is a guess from a different
-space. For heights or prices, which are never below 0, it works. For
+space. For heights or file sizes, which are never below 0, it works. For
 temperatures in Ireland in January, it does not. A better start is a
 real reading: the first one, `readings[0]`. The docstring already
 promises at least one reading, so there always is a first one.
@@ -398,30 +420,33 @@ read it. Here is a function that works. What do you think it does?
 ```python exec
 id: does-it-names-1
 def f(a, b):
-    c = a * b / 100
-    return a + c  # add c to a
+    c = a * b
+    return c * 3 / 1000000  # multiply c by 3, divide by a million
 
-print(f(84, 10))
-print(f(50, 23))
+print(f(1920, 1080))
+print(f(4000, 3000))
 ```
 
-It is hard to say. It adds a percentage to an amount, and that could be
-a tip, or VAT, or a price rise. The comment, "add c to a", says only
-what the code already says. Here is the same function with new names, a
-docstring, and no comment. Which version would you rather find in your
-toolkit in six months?
+It is hard to say. It multiplies two numbers and scales the answer, and
+that could be an area, a volume or almost anything. The comment says
+only what the code already says. Here is the same function with new
+names, a docstring, and no comment. Which version would you rather find
+in your toolkit in six months?
 
 ```python exec
 id: does-it-names-2
-def add_percent(amount, percent):
-    """Return amount with percent per cent added, as for a tip or VAT."""
-    extra = amount * percent / 100
-    return amount + extra
+def image_megabytes(width, height):
+    """Return the size in MB of a picture, width by height pixels, at 3 bytes a pixel."""
+    pixels = width * height
+    return pixels * 3 / 1000000
 
-for amount, percent in [(84, 10), (50, 23), (19.99, 0)]:
-    assert add_percent(amount, percent) == f(amount, percent)
+for width, height in [(1920, 1080), (4000, 3000), (1, 1)]:
+    assert image_megabytes(width, height) == f(width, height)
 print("The two versions agree.")
 ```
+
+A full-HD picture, 1920 by 1080 pixels, is about 6.2 MB before any
+squeezing. That is why photos are saved in formats that shrink them.
 
 The tests show that renaming changed nothing for Python. Python does not
 read names. People do.
@@ -434,7 +459,7 @@ most so far.
 
 - **Names are words that say what a value is.** `total_minutes`, not
   `tm` or `x`. A function is named for what it gives back or what it
-  does: `add_percent`, `travel_time`. Python names are written in small
+  does: `image_megabytes`, `travel_time`. Python names are written in small
   letters, with underscores between words, like `warmest_so_far`.
 - **A comment says why, not what.** The code already says what it does.
   A comment earns its place when it says something the code cannot: a
@@ -455,12 +480,12 @@ id: does-it-names-3
 type: multiple-choice
 correct: 3
 
-A line in a shopping app is `total = total * 0.9`. Which comment is the
-most useful?
+A line in a phone's settings code is
+`brightness = brightness * 0.9`. Which comment is the most useful?
 
-- `# multiply total by 0.9`
-- `# change the total`
-- `# members get 10% off`
+- `# multiply brightness by 0.9`
+- `# change the brightness`
+- `# dim a little for each idle minute, to save battery`
 ```
 
 ## Your toolkit, reviewed
@@ -479,6 +504,7 @@ def test_toolkit():
         digit_at(2026, 3) == 2,
         to_binary(5) == "101",
         to_hex(255) == "FF",
+        pixel_row(9) == "#..#",
         between(18, 18, 65),
         not between(17, 18, 65),
         parity_bit([1, 0, 1, 1]) == 1,

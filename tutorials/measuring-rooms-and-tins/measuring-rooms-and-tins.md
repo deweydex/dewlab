@@ -1,7 +1,7 @@
 ---
 title: "Measuring rooms and tins: area, perimeter and volume"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.2
 covers:
   around-the-edge-perimeter:
     covers: [MIT-1.2]
@@ -28,8 +28,12 @@ covers:
 
 You want to paint a bedroom. The shop sells paint in 2.5 litre tins, and
 the label says one litre covers about 12 square metres. How many tins do
-you need? Buy too few, and you are back at the shop with one wall
-half-done. Buy too many, and the spare tins sit in the shed for years.
+you need? Too few, and one wall is half-done.
+
+The same few formulas reach much further than one room. On this page
+they also measure the track on a music CD, the plastic in a 3D-printed
+ball, and how many Moons would fit inside the Earth. I think one of
+those answers is the most surprising on the page. See if you agree.
 
 On this page we:
 
@@ -39,7 +43,8 @@ On this page we:
 - meet $\pi$, and see where it comes from
 - measure how much a solid holds, and how much it takes to wrap it
 - turn every formula into a toolkit function, and check each one
-- work out the paint for a real room
+- work out the paint for a real room, and measure a CD, a 3D print and
+  the Moon on the way
 
 > **The space we're in.** Flat shapes and solid shapes, measured in
 > metres or centimetres. Every length is 0 or more. Three spaces sit side
@@ -77,8 +82,7 @@ Your toolkit's `total` adds up a row of values, so
 
 ## Around the edge: perimeter
 
-Before painting, people often put masking tape all the way round the
-edge of the floor, to protect it. How much tape does that take?
+How much tape goes all the way round the edge of the floor?
 
 The *perimeter* of a shape is the distance all the way round its edge.
 For the bedroom floor, 4 m long and 3.5 m wide, we walk round the four
@@ -104,9 +108,9 @@ print(total([length, width, length, width]))
 print(2 * (length + width))
 ```
 
-Both give `15.0` metres. The first line is the walk round the edge,
-using `total` from your toolkit. The second is the formula. The formula
-is shorter, and the walk round is the reason it is true.
+Both give `15.0` metres. The first line walks round the edge with
+`total` from your toolkit; the second is the formula. The walk round is
+the reason the formula is true.
 
 ## Covering a surface: area
 
@@ -147,7 +151,7 @@ $36 - 1.6 - 1.2 = 33.2$ m².
 
 Here is a question about the space we are in. What is $15 \text{ m} + 14
 \text{ m}^2$? It has no answer. One is a length and the other is an
-area, and adding them is like adding 15 minutes to 14 euro. Multiplying
+area, and adding them is like adding 15 seconds to 14 kilograms. Multiplying
 across spaces is allowed: a length times a length is an area. Checking
 the units is a quick test of any formula. If the answer to an area
 question comes out in metres, something has gone wrong.
@@ -192,23 +196,24 @@ through the centre, so $d = 2r$. The *circumference* is a circle's
 perimeter: the distance all the way round.
 
 Here is something you can try with a piece of string. Measure round a
-circle, and across it, and divide. Someone did that with a two-euro
-coin, a dinner plate and a bicycle wheel. What do you notice about the
-three answers?
+circle, and across it, and divide. Here are three circles: a two-euro
+coin and a CD, in millimetres, and the Earth round its equator, in
+kilometres. What do you notice about the three answers?
 
 ```python exec
 id: measuring-rooms-circle-1
-# (name, distance across, distance round), all in millimetres
+# (name, distance across, distance round)
 measured = [
-    ("coin", 25.75, 80.9),
-    ("plate", 270, 848),
-    ("wheel", 670, 2105),
+    ("coin", 25.75, 80.9),       # millimetres
+    ("CD", 120, 377),            # millimetres
+    ("Earth", 12756, 40075),     # kilometres
 ]
 for name, across, around in measured:
     print(name, around / across)
 ```
 
-Every answer is close to 3.14, whether the circle is small or large.
+Every answer is close to 3.14, from a coin to a planet. The units do not
+even matter, because we divide one length by another.
 This number is called *pi*, written $\pi$. It is the circumference of
 any circle divided by its diameter. Its digits go on forever without a
 pattern, so nobody can write it down exactly. Python keeps a very close
@@ -219,31 +224,41 @@ symbols:
 
 $$C = \pi d = 2 \pi r$$
 
-What about the area? Picture a round pizza cut into many thin slices.
+What about the area? Picture a paper circle cut into many thin slices.
 Lay them in a row, points up and points down in turn. They make a
 shape that is almost a rectangle. Its height is the radius, $r$, and its
-length is half the crust, $\pi r$. The thinner the slices, the closer it
+length is half the edge, $\pi r$. The thinner the slices, the closer it
 comes to a real rectangle. So the area is $\pi r \times r$:
 
 $$A = \pi r^2$$
 
-A pizza shop sells a 40 cm pizza for the same price as two 25 cm ones.
-Which gives more pizza? Guess before you run it. The sizes are
-diameters, so the radius is half.
+A music CD keeps its sound along one long track, a spiral that winds
+out from the middle. The track starts 25 mm from the centre and ends
+58 mm from it. Its loops are 0.0016 mm apart, which is 1.6 micrometres:
+a micrometre is a thousandth of a millimetre. How long is the track?
+Stop and guess before you read on. Is it a metre? A hundred?
+
+The track covers a ring: the big circle, with the small circle taken
+out of the middle. Now picture the track unrolled into one long, thin
+strip, 0.0016 mm wide. Its area is its length times its width, so its
+length is the area divided by the width.
 
 ```python exec
 id: measuring-rooms-circle-2
 import math
 
-one_large = math.pi * 20 ** 2
-two_medium = 2 * math.pi * 12.5 ** 2
-print(round(one_large), "cm² from one large")
-print(round(two_medium), "cm² from two medium")
+ring = math.pi * 58 ** 2 - math.pi * 25 ** 2    # in mm²
+loop_gap = 0.0016                               # in mm
+print(round(ring), "mm² of ring")
+print(round(ring / loop_gap / 1_000_000, 2), "km of track")
 ```
 
-One large pizza is about 1,257 cm², and two medium ones are about 982
-cm². Doubling the radius makes the area four times bigger, because the
-radius is squared. Most people guess the other way.
+The ring is about 8,605 mm², and the track is about 5.38 kilometres
+long. A disc that fits in your
+hand holds a track about as long as a person walks in an hour. That is
+the answer I meant at the top. A CD player
+reads it at about 1.2 metres a second, which is how a CD plays for
+about 74 minutes.
 
 ## Tools for flat shapes
 
@@ -339,10 +354,6 @@ on its own. If it shows `None`, that function still has `...` where its
 `return` line should be.
 ```
 
-A test like `circle_area(1) == math.pi` is worth a moment. A circle of
-radius 1 has area $\pi \times 1^2 = \pi$, so any mistake in the formula,
-such as `2 * math.pi * radius`, shows up at once.
-
 ## How much a tin holds: volume
 
 The *volume* of a solid is how much space it takes up. We measure it in
@@ -350,7 +361,8 @@ cubes. A *cubic centimetre*, cm³, is a cube 1 cm long on each side. A
 litre is 1,000 cm³: a cube 10 cm on each side.
 
 A box shape, like a shoebox or a room, is a *cuboid*. Picture it filled
-with layers of centimetre cubes. One layer covers the base, so it holds
+with layers of centimetre cubes. A 3D printer builds a solid in the
+same way, one thin layer at a time. One layer covers the base, so it holds
 $l \times w$ cubes. There are $h$ layers. So:
 
 $$V = l \times w \times h$$
@@ -364,8 +376,7 @@ the base times the height:
 
 $$V = \pi r^2 h$$
 
-Look at how that is built. It is the circle's area, with one more
-multiply. A tin is 16 cm across and 14 cm tall, so its radius is 8 cm.
+It is the circle's area, with one more multiply. A tin is 16 cm across and 14 cm tall, so its radius is 8 cm.
 Can it hold 2.5 litres?
 
 ```python exec
@@ -379,34 +390,50 @@ About 2,815 cm³, which is 2.81 litres. The 2.5 litres fit, with some
 room left at the top for stirring.
 
 Two more solids come up everywhere. A *cone* has a circle for a base
-and comes to a point, like an ice cream cone or a traffic cone. Fill a
+and comes to a point, like a traffic cone. Fill a
 cone with water and pour it into a cylinder with the same base and
 height, and it takes three cones to fill it. So a cone's volume is a
 third of the cylinder's:
 
 $$V = \frac{1}{3} \pi r^2 h$$
 
-A *sphere* is a perfect ball, like a football. Its volume is
+A *sphere* is a perfect ball, like a raindrop or a planet. Its volume
+is
 
 $$V = \frac{4}{3} \pi r^3$$
 
 More than 2,000 years ago, Archimedes showed that a sphere fills two
-thirds of the smallest cylinder that fits round it. He was so pleased
-with this that he asked for it to be carved on his grave.
+thirds of the smallest cylinder that fits round it.
 
-A scoop of ice cream is a sphere with a radius of 2.5 cm. It sits on a
-cone with the same radius and a height of 11 cm. If the scoop melts,
-does it all fit inside the cone? Guess, then run it.
+<aside class="dl-note" id="measuring-note-archimedes">
+
+**A sphere on a grave.** Archimedes lived in Syracuse, in Sicily, and
+died there in 212 BC. He asked for a sphere inside a cylinder to be
+carved on his tomb. About 140 years later the Roman writer Cicero went
+looking for it, and found it overgrown with bushes. He knew it by the
+carving.
+
+</aside>
+
+A 3D printer makes a solid from a plastic thread, called *filament*,
+1.75 mm across. The thread is a very long, thin cylinder. How many
+metres of it does a solid ball 4 cm across take? And a cone 4 cm across
+and 4 cm tall? Guess both, then run it.
 
 ```python exec
 id: measuring-rooms-volume-2
-scoop = 4 / 3 * math.pi * 2.5 ** 3
-cone = 1 / 3 * math.pi * 2.5 ** 2 * 11
-print(round(scoop, 1), "cm³ of ice cream")
-print(round(cone, 1), "cm³ of cone")
+ball = 4 / 3 * math.pi * 2 ** 3          # in cm³
+cone = 1 / 3 * math.pi * 2 ** 2 * 4      # in cm³
+thread_end = math.pi * 0.0875 ** 2       # the thread's end, in cm²
+print(round(ball, 1), "cm³ in the ball,", round(ball / thread_end / 100, 1), "m of thread")
+print(round(cone, 1), "cm³ in the cone,", round(cone / thread_end / 100, 1), "m of thread")
 ```
 
-About 65.4 cm³ of ice cream, and 72.0 cm³ of cone. It all fits, with a little room to spare.
+About 14 metres of thread for the ball, and 7 for the cone: exactly
+half. That is not luck. A cone, a ball and a cylinder of the same width
+and height hold volumes in the ratio 1 : 2 : 3, which is Archimedes' two
+thirds again. (A real printer fills the inside with a light grid to save
+plastic, so it uses less than this.)
 
 ## Wrapping it: surface area
 
@@ -544,17 +571,15 @@ def sphere_surface_area(radius):
     return 4 * circle_area(radius)
 ```
 
-Floats round very slightly, as we saw on
-[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
-so some of these tests round both sides before comparing them. Until
-your two functions are written, the tests stop with an error. Which
-test checks Archimedes' two thirds?
+Floats round very slightly, so some of these tests round both sides
+before comparing them. Until your two functions are written, the tests
+stop with an error. Which tests check Archimedes?
 
 ```python exec
 id: measuring-rooms-toolkit-solid-tests
 assert cuboid_volume(10, 10, 10) == 1000
 assert round(cylinder_volume(8, 14)) == 2815
-assert round(cone_volume(2.5, 11), 1) == 72.0
+assert round(2 * cone_volume(2, 4), 9) == round(sphere_volume(2), 9)
 assert round(3 * cone_volume(3, 7), 9) == round(cylinder_volume(3, 7), 9)
 assert round(sphere_volume(3), 9) == round(2 / 3 * cylinder_volume(3, 6), 9)
 assert cube_surface_area(2) == 24
@@ -564,24 +589,26 @@ assert sphere_surface_area(1) == 4 * math.pi
 print("The solid-shape tools keep their promises.")
 ```
 
-The fifth test is Archimedes: a sphere of radius 3 fits inside a
-cylinder of radius 3 and height 6, and fills two thirds of it. The test
-checks that our two formulas agree with what Archimedes found. It does
-not show why he was right. The
-cone test uses a cone with radius 3 and height 4, whose slant is
+The third and fifth tests are Archimedes. In the fifth, a sphere of
+radius 3 fits inside a cylinder of radius 3 and height 6, and fills two
+thirds of it. The tests check that our formulas agree with what
+Archimedes found. They do not show why he was right. The surface-area
+test for the cone uses a cone with radius 3 and height 4, whose slant is
 exactly 5, so its area is $9\pi + 15\pi = 24\pi$.
 
 ### Your turn
 
-A size 5 football has a radius of about 11 cm.
+The Earth's radius is about 6,371 km, and the Moon's is about 1,737 km.
 
-1. Before you run anything, guess how many litres of air it holds.
-2. Use `sphere_volume` to check, and turn cm³ into litres.
-3. Use `sphere_surface_area` to find how much leather covers it, in cm².
+1. Before you run anything, guess: how many Moons would it take to fill
+   the Earth?
+2. Use `sphere_volume` twice, and divide, to check.
+3. Use `sphere_surface_area` to find the area of the Moon's surface, in
+   km².
 
 ```python exec
 id: measuring-rooms-solid-your-turn
-# The football, in cm³, litres and cm²
+# The Earth and the Moon
 ```
 
 ## How much paint does the room need?
@@ -644,7 +671,7 @@ id: measuring-rooms-paint-your-turn
 <details class="dl-why"><summary>Why this way?</summary>
 
 Most formulas on this page came with a reason: the walls unfolded into a
-strip, the pizza cut into slices, the cone poured three times into a
+strip, the paper circle cut into slices, the cone poured three times into a
 cylinder. The sphere did not. Its volume and its surface area arrived
 with a story about Archimedes, and no reason.
 
@@ -652,7 +679,7 @@ A page could leave the sphere out until the reason can be given. That
 reason slices the ball into very thin pieces and adds them all up, which
 needs more than this unit has.
 
-We kept the sphere because footballs, planets and scoops of ice cream
+We kept the sphere because raindrops, planets and 3D-printed balls
 are spheres, and your toolkit needs it now. So, to be honest about it:
 these two formulas are taken on trust, for the moment. The test with
 Archimedes' two thirds checks that two facts agree. It does not say why

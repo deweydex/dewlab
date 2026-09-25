@@ -7,7 +7,7 @@ practice_across:
   - collections-without-repeats
   - circles-that-overlap
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 datasets: [life-expectancy]
 ---
 
@@ -16,7 +16,8 @@ datasets: [life-expectancy]
 Each problem here draws on at least one page of Unit 5, and many draw on
 two or more. None of them is harder than what those pages covered. The
 new part is that nobody tells you which page a problem comes from.
-Choosing the tool is part of the problem.
+Choosing the tool is part of the problem, and if you are unsure which
+tool fits, open the hint: it names the page to look back at.
 
 Along the way, the problems build this unit's product: a one-page
 report on real data. It gives typical values, the spread, a frequency
@@ -63,23 +64,25 @@ last two days, 14 and 12. Slices are on
 
 </details>
 
-**2. Make.** Here is what a household spent on food each week for seven
-weeks, in euro. One week had a birthday party in it. Find the mean and
-the median. Which one would you give as a typical week, and why?
+**2. Make.** A smart meter records how much electricity a home uses,
+in kilowatt-hours (kWh). Here are seven weeks of one home's readings.
+They are made up. In one week a cold snap came, and an electric heater
+ran every evening. Find the mean and the median. Which one would you
+give as a typical week, and why?
 
 ```python
-food = [32, 28, 35, 30, 120, 31, 29]
+kwh = [78, 72, 81, 75, 160, 77, 74]
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-print(round(mean(food), 2), median(food))
+print(round(mean(kwh), 2), median(kwh))
 ```
 
-This prints `43.57 31`. The mean is pulled up by the party week, an
-outlier, and five of the seven weeks cost less than 35. The median,
-€31, is the better answer to "what does a typical week cost?". The
+This prints `88.14 77`. The mean is pulled up by the cold week, an
+outlier, and it is higher than six of the seven weeks. The median,
+77 kWh, is the better answer to "what does a typical week use?". The
 mean answers a different question: shared out equally, how much went on
 each week? As on
 [What is typical?](tutorial:what-is-typical#when-the-three-disagree),
@@ -87,19 +90,20 @@ the mean moves towards the tail.
 
 </details>
 
-**3. Explain.** The sports club on
-[Circles that overlap](tutorial:circles-that-overlap) asked "Do you
-swim?", "Do you cycle?" and "Do you run?". What kind of data is the
-answer to each question? Could you find the mean answer to "Do you
-swim?" What could you say about it instead?
+**3. Explain.** The IT team on
+[Circles that overlap](tutorial:circles-that-overlap) asked three
+questions of each laptop: "Is it updated?", "Does it have antivirus?"
+and "Is it backed up?". What kind of data is the answer to each
+question? Could you find the mean answer to "Is it updated?" What could
+you say about it instead?
 
 <details class="dl-answer"><summary>answer</summary>
 
 Each answer is yes or no, so it is categorical data, and nominal: yes
 and no have no order that means anything here. There is no mean of
 "yes" and "no". What we can do is count: a frequency table of the
-answers, or the fraction who said yes. The club had 10 swimmers in 20,
-so half said yes. The mode, the most common answer, makes sense too.
+answers, or the fraction that said yes. The team found 10 updated
+laptops in 20, so half said yes. The mode, the most common answer, makes sense too.
 The Venn diagram is a picture of those counts, for three questions at
 once.
 
@@ -295,9 +299,11 @@ went up and down they would not be.
 
 </details>
 
-**9. Fix.** Someone writes the typical values into their report like
-this. The first line runs. The cell is meant to stop with an error on
-the second. Read the last line of the error, then find the mistake.
+**9. Fix.** Schlomo, who is learning Python too, writes the typical
+values into his report like this. He names the number `mean` because
+that is what it is. The first line runs. The cell is meant to stop with
+an error on the second. Read the last line of the error, then find what
+went wrong.
 
 ```python exec
 id: mixed-many-fix-hidden
@@ -322,8 +328,9 @@ does repointing a name change?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first line points the name `mean` at a number, 73.79…, and the
-function is gone from this page. On the second line, `mean(other)`
+Schlomo's name is honest, and that is the trouble. The first line
+points the name `mean` at a number, 73.79…, and the function is gone
+from this page. On the second line, `mean(other)`
 tries to call that number, and a number cannot be called. Give the
 number its own name:
 
@@ -492,15 +499,17 @@ must start at 0.
 
 </details>
 
-**14. Explain.** A friend's report shows a bar chart of the two means,
-73.8 for Ireland and 75.0 for Spain, with the vertical axis from 73 to
-75.5. Spain's bar is more than twice as tall as Ireland's. Every number
-on the axis is right. What is dishonest about the chart, and what would
-you change?
+**14. Explain.** Schlomi, who is learning Python too, wants her report
+to make it plain that Spain's mean is higher. Her bar chart of the two
+means shows 73.8 for Ireland and 75.0 for Spain, with the vertical axis
+from 73 to 75.5, so Spain's bar is more than twice as tall as Ireland's. Every
+number on the axis is true. What is dishonest about the chart, and what
+would you change so that it still makes her point?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The bars' lengths are not the values. Ireland's bar is $73.8 - 73 = 0.8$
+Her point is a fair one, and the chart overstates it. The bars'
+lengths are not the values. Ireland's bar is $73.8 - 73 = 0.8$
 long, and Spain's is $75.0 - 73 = 2.0$, so Spain looks two and a half
 times as high, for a difference of about a year. A reader compares the
 lengths, not the axis labels. The honest fix is to start the axis at 0,

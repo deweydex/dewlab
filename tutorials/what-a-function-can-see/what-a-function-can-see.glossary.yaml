@@ -6,6 +6,12 @@
 # "NameError" on when-python-says-no; "append()" on
 # true-false-and-every-case. They are used here, not introduced.
 entries:
+  - term: gravity
+    kind: concept
+    definition: >
+      Gravity is the pull that makes things fall. On Earth it makes a
+      falling thing 9.81 metres a second faster every second, if we
+      ignore the air. On the Moon the number is 1.62.
   - term: local name
     kind: concept
     definition: >
@@ -61,7 +67,7 @@ entries:
       A closure is a function that keeps the space it was made in. A
       function made inside another function can still use that function's
       names after its call has ended.
-    example: "to_sterling = rate_converter(0.85)"
+    example: "bytes_to_bits = converter(8)"
   - term: where Python looks for a name
     kind: concept
     definition: >

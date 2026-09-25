@@ -2,7 +2,7 @@
 title: "Machines that take a number: functions in maths and code — Practice"
 practice_for: machines-that-take-a-number
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.2
 ---
 
 # Machines that take a number: functions in maths and code — Practice
@@ -50,25 +50,29 @@ always gives a float, which is why the second line shows `1.0` and not
 
 </details>
 
-**2. Make.** A common rule of thumb says that a person's highest safe
-heart rate, in beats per minute, is 220 minus their age. Write the rule
-in function notation, then as a Python function `max_heart_rate(age)`.
-What does it give for an age of 40?
+**2. Make.** In a thunderstorm, the light of the flash reaches you at
+once, and the sound comes later. Sound travels about 343 metres each
+second in air at 20 °C. So if you count the seconds from the flash to
+the thunder, the storm is 343 times that many metres away. Write the
+rule in function notation, in kilometres, then as a Python function
+`storm_km(seconds)`. How far away is a storm 3 seconds after the flash?
 
 <details class="dl-answer"><summary>answer</summary>
 
-In function notation, with $a$ for the age: $h(a) = 220 - a$.
+In function notation, with $t$ for the seconds:
+$d(t) = \frac{343t}{1000}$, because 1,000 metres make a kilometre.
 
 ```python
-def max_heart_rate(age):
-    """Return a rough highest safe heart rate, in beats per minute."""
-    return 220 - age
+def storm_km(seconds):
+    """Return how far away a storm is, in km, from the seconds between flash and thunder."""
+    return 343 * seconds / 1000
 
-print(max_heart_rate(40))
+print(storm_km(3))
 ```
 
-This prints `180`. It is only a rough rule: a doctor or a fitness test
-gives a better number for one person.
+This prints `1.029`. That is where the old rule "three seconds for
+every kilometre" comes from. Your function may have other names and
+still be a good one.
 
 </details>
 
@@ -76,19 +80,19 @@ gives a better number for one person.
 argument?
 
 ```python
-def pizza_slices(people):
-    """Return how many slices to order, at 3 slices each."""
-    return people * 3
+def colour_bytes(pixels):
+    """Return how many bytes a picture needs, at 3 bytes for each pixel."""
+    return pixels * 3
 
-print(pizza_slices(4))
+print(colour_bytes(4))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-The parameter is `people`: the name in the brackets of the `def` line.
+The parameter is `pixels`: the name in the brackets of the `def` line.
 The argument is `4`: the value put into that slot when the function is
 called. The parameter is the slot, and the argument is what goes in it.
-Call `pizza_slices(9)` and the parameter is still `people`, but the
+Call `colour_bytes(9)` and the parameter is still `pixels`, but the
 argument is now 9.
 
 </details>
@@ -195,55 +199,60 @@ want the bonus before the power-up.
 
 </details>
 
-**7. Fix.** A city bike costs €3 to unlock, then €0.25 for each minute.
-`minutes_for` is meant to be the inverse of `bike_cost`, but the test
-fails. Run it, read the error, and fix `minutes_for`.
+**7. Fix.** Schlomo, who is learning Python too, has a phone at 20%
+charge. It charges 1.5 percentage points every minute. He writes
+`charge_after`, and then `minutes_for`, meant to be its inverse: how
+many minutes it takes to reach a charge. His test fails. Run it, read
+the error, and fix `minutes_for`.
 
 ```python exec
-id: machines-practice-fix-bike
-def bike_cost(minutes):
-    """Return the cost in euro of a bike ride of minutes minutes."""
-    return 3 + 0.25 * minutes
+id: machines-practice-fix-charge
+def charge_after(minutes):
+    """Return the phone's charge, in percent, after charging for minutes."""
+    return 20 + 1.5 * minutes
 
 
-def minutes_for(cost):
-    """Return how many minutes a ride was, if it cost cost euro."""
-    return cost / 0.25 - 3
+def minutes_for(percent):
+    """Return how many minutes of charging it takes to reach percent."""
+    return percent / 1.5 - 20
 
 
-assert minutes_for(bike_cost(20)) == 20
-print("minutes_for undoes bike_cost.")
+assert minutes_for(charge_after(40)) == 40
+print("minutes_for undoes charge_after.")
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. List the steps of `bike_cost`, in order: first multiply by 0.25, then
-   add 3.
+1. List the steps of `charge_after`, in order: first multiply by 1.5,
+   then add 20.
 2. To undo them, undo the last step first.
-3. What does `minutes_for(8)` give now? A 20-minute ride costs €8.
+3. What does `minutes_for(80)` give now? Forty minutes of charging
+   reach 80%.
 
 **Think about:** putting on socks and then shoes. Which one comes off
 first?
 
-**Try this next:** add a test that goes the other way:
-`bike_cost(minutes_for(8)) == 8`.
+**Try this next:** what does `minutes_for(110)` give? Why does that
+answer mean nothing?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-The steps are undone in the wrong order. `bike_cost` multiplies by 0.25
-and then adds 3, so the inverse must take away 3 first, and then divide
-by 0.25:
+Schlomo had the right two steps, undone in the wrong order.
+`charge_after` multiplies by 1.5 and then adds 20, so the inverse must
+take away 20 first, and then divide by 1.5:
 
 ```python
-def minutes_for(cost):
-    """Return how many minutes a ride was, if it cost cost euro."""
-    return (cost - 3) / 0.25
+def minutes_for(percent):
+    """Return how many minutes of charging it takes to reach percent."""
+    return (percent - 20) / 1.5
 ```
 
-Now `minutes_for(8)` is `20.0`, and the test passes. The old version
-gave $8 \div 0.25 - 3 = 29$.
+Now `minutes_for(80)` is `40.0`, and the test passes. The old version
+gave $80 \div 1.5 - 20$, about 33.3. And `minutes_for(110)` gives 60
+minutes for a charge no phone can reach: 110% is outside the range of
+`charge_after`, so it is outside the domain of its inverse.
 
 </details>
 
@@ -298,19 +307,20 @@ even number in it.
 
 </details>
 
-**10. Fix.** A shop's app adds 23% VAT to two prices and adds them up.
-It stops with an error. Run it, read the last line of the error, and
-fix `vat_price`.
+**10. Fix.** A photo app puts two pictures side by side, each scaled
+to 125% of its width, and works out how wide the row is. It stops with
+an error. Run it, read the last line of the error, and fix
+`scaled_width`.
 
 ```python exec
-id: machines-practice-fix-vat
-def vat_price(price):
-    """Return the price with 23% VAT added."""
-    print(price * 1.23)
+id: machines-practice-fix-width
+def scaled_width(width):
+    """Return a picture's width, in pixels, scaled to 125%."""
+    print(width * 1.25)
 
 
-basket = vat_price(10) + vat_price(20)
-print("Total:", basket)
+row = scaled_width(640) + scaled_width(1024)
+print("The row is", row, "pixels wide")
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -329,21 +339,19 @@ back.
 
 The error is
 `TypeError: unsupported operand type(s) for +: 'NoneType' and 'NoneType'`.
-`vat_price` prints its answer, but gives back `None`, and Python cannot
-add `None` to `None`. The docstring promised to return the price, so
-keep that promise:
+`scaled_width` prints its answer, but gives back `None`, and Python
+cannot add `None` to `None`. The docstring promised to return the
+width, so keep that promise:
 
 ```python
-def vat_price(price):
-    """Return the price with 23% VAT added."""
-    return price * 1.23
+def scaled_width(width):
+    """Return a picture's width, in pixels, scaled to 125%."""
+    return width * 1.25
 ```
 
-Now the cell prints `Total: 36.900000000000006`. The long tail is float
-rounding, which we met on
-[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros);
-`round(basket, 2)` shows `36.9`. The two numbers the old version printed
-were right. Only the handing back was missing.
+Now the cell prints `The row is 2080.0 pixels wide`. The two numbers the
+old version printed, 800.0 and 1280.0, were right. Only the handing back
+was missing.
 
 </details>
 
@@ -412,68 +420,70 @@ answer, composed after the other two.
 
 </details>
 
-**13. Make.** At a meeting, every person shakes hands once with every
-other person. On [Orders and choices](tutorial:orders-and-choices) we
-counted these with `combinations(people, 2)`. Now go backwards: if
-there were 45 handshakes, how many people were there? Write
-`people_for(handshakes)`, with a `while` loop that tries 2 people, then
-3, and so on, until `combinations(people, 2)` reaches `handshakes`. Try
-it on 45. What should it do with 50?
+**13. Make.** In a small network, every computer has its own cable to
+every other computer. On [Orders and choices](tutorial:orders-and-choices)
+we counted pairs like these with `combinations(computers, 2)`. Now go
+backwards: if there are 45 cables, how many computers are there? Write
+`computers_for(cables)`, with a `while` loop that tries 2 computers,
+then 3, and so on, until `combinations(computers, 2)` reaches `cables`.
+Try it on 45. What should it do with 50?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Start with `people = 2`.
-2. While `combinations(people, 2)` is less than `handshakes`, add 1 to
-   `people`.
-3. When the loop ends, `combinations(people, 2)` is `handshakes` or more.
+1. Start with `computers = 2`.
+2. While `combinations(computers, 2)` is less than `cables`, add 1 to
+   `computers`.
+3. When the loop ends, `combinations(computers, 2)` is `cables` or more.
    Which of the two tells you the answer was in the range?
 
-**Think about:** is `combinations(people, 2)` one-to-one, for 2 or more
-people? What does that say about the inverse?
+**Think about:** is `combinations(computers, 2)` one-to-one, for 2 or
+more computers? What does that say about the inverse?
 
-**Try this next:** list the numbers of handshakes that are possible for
-2 to 10 people. Those are the range, and the domain of `people_for`.
+**Try this next:** list the numbers of cables that are possible for 2
+to 10 computers. Those are the range, and the domain of
+`computers_for`.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def people_for(handshakes):
-    """Return how many people shook hands, if there were handshakes in total.
+def computers_for(cables):
+    """Return how many computers a network has, if every pair has a cable.
 
-    handshakes must be a number that some group can make: 1, 3, 6, 10, ...
+    cables must be a number that some network can have: 1, 3, 6, 10, ...
     """
-    people = 2
-    while combinations(people, 2) < handshakes:
-        people = people + 1
-    assert combinations(people, 2) == handshakes, "no group makes that many handshakes"
-    return people
+    computers = 2
+    while combinations(computers, 2) < cables:
+        computers = computers + 1
+    assert combinations(computers, 2) == cables, "no network has that many cables"
+    return computers
 
-print(people_for(45))
-print(people_for(50))
+print(computers_for(45))
+print(computers_for(50))
 ```
 
 The first line prints `10`, because $C(10, 2) = 45$. The second stops
-with `AssertionError: no group makes that many handshakes`. Nine people
-make 36 handshakes and ten make 45, so 50 is not in the range of the
-handshake function, and not in the domain of its inverse.
+with `AssertionError: no network has that many cables`. Nine computers
+need 36 cables and ten need 45, so 50 is not in the range of the cable
+function, and not in the domain of its inverse.
 
-Each extra person makes more handshakes, never the same number, so the
-handshake function is one-to-one for 2 or more people. That is why it
-has an inverse at all.
+Each extra computer adds more cables, never the same number, so the
+cable function is one-to-one for 2 or more computers. That is why it has
+an inverse at all. It is also why real networks rarely wire every pair:
+100 computers would need 4,950 cables.
 
 </details>
 
 **14. Another way.** A clock shows the hours 0 to 11. The function
-`later(hour)` gives the time 4 hours on: `(hour + 4) % 12`. A student
-says its inverse is "take away 4", and tries it on 2 o'clock: $2 - 4$ is
-$-2$. Is the student wrong? Find the space where "take away 4" is right,
+`later(hour)` gives the time 4 hours on: `(hour + 4) % 12`. Schlomi,
+who is learning Python too, says its inverse is "take away 4", and
+tries it on 2 o'clock: $2 - 4$ is $-2$. Is she wrong? Find the space where "take away 4" is right,
 and check the inverse with `compose` for every hour.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The student has the right move, in the wrong space. On a clock, the
+Schlomi has the right move. She tried it in the wrong space. On a clock, the
 numbers go round, so "take away 4" also has to go round. Python's `%`
 does that for us, even with a negative number:
 
@@ -501,46 +511,47 @@ foolish.
 
 </details>
 
-**15. Explain.** A running app turns a time in seconds into minutes,
-minutes into hours, and hours into a rounded, readable number. Here are
-three machines joined in two different groupings. Predict, run, then
-say why the two answers agree. Would they still agree if you swapped
-the order of two of the machines?
+**15. Explain.** A file manager turns a size in bytes into kilobytes,
+kilobytes into megabytes, and megabytes into a rounded, readable
+number. (Here a kilobyte is 1,000 bytes, and a megabyte is 1,000
+kilobytes.) Here are three machines joined in two different groupings.
+Predict, run, then say why the two answers agree. Would they still agree
+if you swapped the order of two of the machines?
 
 ```python exec
 id: machines-practice-grouping
-def to_minutes(seconds):
-    """Return seconds as minutes."""
-    return seconds / 60
+def to_kilobytes(size_bytes):
+    """Return a size in bytes as kilobytes."""
+    return size_bytes / 1000
 
 
-def to_hours(minutes):
-    """Return minutes as hours."""
-    return minutes / 60
+def to_megabytes(size_kilobytes):
+    """Return a size in kilobytes as megabytes."""
+    return size_kilobytes / 1000
 
 
-def to_one_place(hours):
-    """Return hours rounded to one decimal place."""
-    return round(hours, 1)
+def to_one_place(megabytes):
+    """Return a size in megabytes rounded to one decimal place."""
+    return round(megabytes, 1)
 
 
-first_way = compose(to_one_place, compose(to_hours, to_minutes))
-second_way = compose(compose(to_one_place, to_hours), to_minutes)
-marathon = 3 * 60 * 60 + 25 * 60   # 3 hours 25 minutes, in seconds
-print(first_way(marathon), second_way(marathon))
+first_way = compose(to_one_place, compose(to_megabytes, to_kilobytes))
+second_way = compose(compose(to_one_place, to_megabytes), to_kilobytes)
+photo = 3456789   # the size of one photo, in bytes
+print(first_way(photo), second_way(photo))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-Both print `3.4`. In both groupings, the machines run in the same order:
-`to_minutes`, then `to_hours`, then `to_one_place`. Grouping only
+Both print `3.5`. In both groupings, the machines run in the same order:
+`to_kilobytes`, then `to_megabytes`, then `to_one_place`. Grouping only
 decides which two are joined first, and that does not change what
 happens to the number. Maths says composition is associative:
 $f \circ (g \circ h) = (f \circ g) \circ h$.
 
-Swapping the order is different. Round first, in seconds, and then
+Swapping the order is different. Round first, in bytes, and then
 divide, and the answer is no longer rounded to one place:
-`to_hours(to_minutes(to_one_place(marathon)))` gives
-`3.4166666666666665`. Grouping does not matter; order does.
+`to_megabytes(to_kilobytes(to_one_place(photo)))` gives `3.456789`.
+Grouping does not matter; order does.
 
 </details>

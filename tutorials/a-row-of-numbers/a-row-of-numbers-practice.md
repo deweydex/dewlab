@@ -2,7 +2,7 @@
 title: "A row of numbers: lists — Practice"
 practice_for: a-row-of-numbers
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 datasets: [life-expectancy]
 ---
 
@@ -10,7 +10,8 @@ datasets: [life-expectancy]
 
 Each answer is hidden until you open it. Where a problem asks you to
 predict, the prediction is the exercise, so make one before you run
-anything.
+anything. A guess that turns out different from Python is the most
+useful kind: it shows you exactly where to look.
 
 Your toolkit is loaded on this page, so `largest`, `smallest` and
 `count_if` are ready to use, and so are `total`, `between` and the rest.
@@ -62,22 +63,22 @@ indexes 2, 3 and 4. It holds $5 - 2 = 3$ values.
 
 </details>
 
-**3. Make.** Here is a shopping list for a stew:
-`shopping = ["onions", "carrots", "beef", "stock"]`. Add `"potatoes"` at
-the end. Then the shop has no beef, so change `"beef"` to `"lentils"`.
-Print the list.
+**3. Make.** A folder holds these files, in this order:
+`files = ["notes.txt", "photo.jpg", "draft.docx", "song.mp3"]`. Add
+`"backup.zip"` at the end. Then the draft is finished, so change
+`"draft.docx"` to `"final.docx"`. Print the list.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-shopping = ["onions", "carrots", "beef", "stock"]
-shopping.append("potatoes")
-shopping[2] = "lentils"
-print(shopping)    # ['onions', 'carrots', 'lentils', 'stock', 'potatoes']
+files = ["notes.txt", "photo.jpg", "draft.docx", "song.mp3"]
+files.append("backup.zip")
+files[2] = "final.docx"
+print(files)    # ['notes.txt', 'photo.jpg', 'final.docx', 'song.mp3', 'backup.zip']
 ```
 
-`append` adds at the end. `shopping[2] = "lentils"` points position 2,
-the third item, at a new value. Nothing else in the list moves.
+`append` adds at the end. `files[2] = "final.docx"` points position 2,
+the third file, at a new value. Nothing else in the list moves.
 
 </details>
 
@@ -91,8 +92,8 @@ $a_1$ is `a[0]`, and $a_n$ is `a[n - 1]`.
 
 The maths counts which value it is: first, second, third. Python counts
 how many steps from the start: the first value is 0 steps along. So
-every Python index is one less than the maths number. Neither is wrong;
-they are two ways of counting, like the ground floor being 0 in a lift.
+every Python index is one less than the maths number. They are two good
+ways of counting, like the ground floor being 0 in a lift.
 
 </details>
 
@@ -147,83 +148,88 @@ agrees with `count_if`, which is a good check.
 
 </details>
 
-**6. Fix.** A bus leaves the stop at these times, in minutes after 8:00.
-The code should print the wait between each bus and the next. It prints
-the right waits, then stops with an error. Find the mistake.
+**6. Fix.** A web server logs the moment each request arrives, in
+milliseconds after it starts. The code should print the gap between each
+request and the next. It prints four gaps, then stops with an error.
+Find the mistake.
 
 ```python exec
 id: row-practice-fix-bus
-departures = [2, 14, 21, 35, 47]
+arrivals = [2, 14, 21, 35, 47]
 
-for i in range(len(departures)):
-    print("wait:", departures[i + 1] - departures[i], "minutes")
+for i in range(len(arrivals)):
+    print("gap:", arrivals[i + 1] - arrivals[i], "ms")
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Read the last line of the error. Which kind is it?
-2. How many buses are there? How many waits between them?
+2. How many requests are there? How many gaps between them?
 3. On the last time round, what is `i`, and what is `i + 1`?
 
 **Think about:** five fence posts have how many gaps between them?
 
-**Try this next:** can you write it with `range(1, len(departures))`
+**Try this next:** can you write it with `range(1, len(arrivals))`
 and `i - 1` instead?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-On the last time round, `i` is 4, so `departures[i + 1]` asks for index
+On the last time round, `i` is 4, so `arrivals[i + 1]` asks for index
 5. The list has indexes 0 to 4, so Python stops with an `IndexError`.
-Five buses have only four waits between them, so the loop should go
+Five requests have only four gaps between them, so the loop should go
 round four times:
 
 ```python
-departures = [2, 14, 21, 35, 47]
+arrivals = [2, 14, 21, 35, 47]
 
-for i in range(len(departures) - 1):
-    print("wait:", departures[i + 1] - departures[i], "minutes")
+for i in range(len(arrivals) - 1):
+    print("gap:", arrivals[i + 1] - arrivals[i], "ms")
 ```
 
-The waits are 12, 7, 14 and 12 minutes. A step that reaches a
+The gaps are 12, 7, 14 and 12 ms. A step that reaches a
 neighbour needs one fewer time round than there are values.
 
 </details>
 
-**7. Fix.** A pancake recipe for two people is kept as a list of amounts:
-flour in grams, milk in ml, and eggs. The code should make a recipe for
-four people and keep the recipe for two. But after it runs, the recipe
-for two has doubled too. Find the mistake.
+**7. Fix.** Schlomo, who is learning Python too, is writing a photo
+editor. One pixel's colour is a list of red, green and blue, from 0 to
+255. He wants a brighter copy, with each part doubled, and he wants to
+keep the original so that "undo" works. His idea: give the colour a
+second name, and double through that name. After it runs, the original
+has doubled too. What went wrong?
 
 ```python exec
 id: row-practice-fix-pancakes
-for_two = [100, 250, 1]
-for_four = for_two
-for i in range(len(for_four)):
-    for_four[i] = for_four[i] * 2
-print("for two: ", for_two)     # should be [100, 250, 1]
-print("for four:", for_four)    # should be [200, 500, 2]
+original = [100, 60, 20]
+brighter = original
+for i in range(len(brighter)):
+    brighter[i] = brighter[i] * 2
+print("original:", original)    # hoping for [100, 60, 20]
+print("brighter:", brighter)    # hoping for [200, 120, 40]
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-`for_four = for_two` does not make a second list. It ties a second name
-to the same list. So doubling through `for_four` doubles the only list
-there is, and `for_two` sees it too. Ask for a second list with
+`brighter = original` does not make a second list. It ties a second
+name to the same list. So doubling through `brighter` doubles the only
+list there is, and `original` sees it too. Schlomo's idea of a second
+name was half of a good plan; the other half is a second list, from
 `.copy()`:
 
 ```python
-for_two = [100, 250, 1]
-for_four = for_two.copy()
-for i in range(len(for_four)):
-    for_four[i] = for_four[i] * 2
-print("for two: ", for_two)     # [100, 250, 1]
-print("for four:", for_four)    # [200, 500, 2]
+original = [100, 60, 20]
+brighter = original.copy()
+for i in range(len(brighter)):
+    brighter[i] = brighter[i] * 2
+print("original:", original)    # [100, 60, 20]
+print("brighter:", brighter)    # [200, 120, 40]
 ```
 
-Building a new list with `append` works too, and then there is no
-question of which list is which.
+That is one good fix. Building a new list with `append` works too,
+and then there is no question of which list is which. (A real editor would also stop each
+part at 255, the largest value a part can hold.)
 
 </details>
 
@@ -250,34 +256,36 @@ a list of five zeros, for example to keep five running totals.
 
 </details>
 
-**9. Make.** The same four things cost this much in two shops, in euro:
-`shop_a = [2.49, 1.10, 3.75, 0.89]` and
-`shop_b = [2.29, 1.25, 3.60, 0.95]`. Build a list of the cheaper price
-for each thing, and find what the whole basket costs if you always buy
-at the cheaper shop.
+**9. Make.** A drone has two sensors that each report how full its
+battery is, in percent, once a minute. They rarely agree exactly. To be
+safe, the drone trusts the lower of the two readings each minute. Build
+that list from `sensor_a = [98, 95, 91, 88, 86]` and
+`sensor_b = [97, 96, 90, 89, 84]`, and find the lowest value the drone
+trusted. (The readings are made up.)
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-shop_a = [2.49, 1.10, 3.75, 0.89]
-shop_b = [2.29, 1.25, 3.60, 0.95]
+sensor_a = [98, 95, 91, 88, 86]
+sensor_b = [97, 96, 90, 89, 84]
 
-cheaper = []
-for i in range(len(shop_a)):
-    cheaper.append(smallest([shop_a[i], shop_b[i]]))
-print(cheaper)                  # [2.29, 1.1, 3.6, 0.89]
-print(round(total(cheaper), 2)) # 7.88
+trusted = []
+for i in range(len(sensor_a)):
+    trusted.append(smallest([sensor_a[i], sensor_b[i]]))
+print(trusted)              # [97, 95, 90, 88, 84]
+print(smallest(trusted))    # 84
 ```
 
-The basket costs €7.88 at the cheaper prices. Each step needs the same
-position in two lists, so the loop goes through by index. `smallest`
-works on any list, even one of two values made on the spot.
+The drone trusted 97, 95, 90, 88 and 84, and the lowest was 84. Each
+step needs the same position in two lists, so the loop goes through by
+index. `smallest` works on any list, even one of two values made on the
+spot.
 
 </details>
 
-**10. Another way.** A friend says `[1, 2] + [3, 4]` should give
-`[4, 6]`, and Python is wrong to give `[1, 2, 3, 4]`. Is there a space
-where your friend is right? Show it in a cell.
+**10. Another way.** Schlomi, who is learning Python too, says
+`[1, 2] + [3, 4]` should give `[4, 6]`, and Python is wrong to give
+`[1, 2, 3, 4]`. Is there a space where she is right? Show it in a cell.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -290,24 +298,26 @@ import numpy as np
 print(np.array([1, 2]) + np.array([3, 4]))    # [4 6]
 ```
 
-Your friend is using the maths meaning of `+`. Python's lists use
-another meaning, joining, because a list can hold words as well as
-numbers. The move is fine; it belongs to the array space, not the list
-space.
+Schlomi is using the maths meaning of `+`, the one that mixes two
+sounds. Python's lists use another meaning, joining, because a list can
+hold words as well as numbers. Her move is a good one; it belongs to the
+array space, not the list space.
 
 </details>
 
-**11. Explain.** `largest` starts with `biggest_so_far = values[0]`. Why
-not start with `biggest_so_far = 0`? Give a list where starting at 0
-would give the wrong answer.
+**11. Explain.** `largest` starts with `biggest_so_far = values[0]`.
+Schlomo thinks `biggest_so_far = 0` would be tidier: every list can
+start from the same number. When does his idea work, and when does it
+fail? Give a list for each.
 
 <details class="dl-answer"><summary>answer</summary>
 
-If every value is below 0, none of them is bigger than 0, so a start of
-0 would never change, and the function would give back 0. For
-`[-3, -1, -4]`, three January nights, it would say 0 when the answer is
-−1. Starting from a real value in the list means the answer is always
-one of the values. That is what
+His idea works whenever at least one value is 0 or more, such as
+`[11, 13, 9]`. But if every value is below 0, none of them is bigger
+than 0, so a start of 0 would never change, and the function would give
+back 0. For `[-3, -1, -4]`, three January nights, it would say 0 when
+the biggest is −1. Starting from a real value in the list means the
+answer is always one of the values. That is what
 [Does it work?](tutorial:does-it-work#a-walkthrough-by-hand) found with
 a trace table.
 
@@ -403,26 +413,26 @@ lists, so the loop goes through by index.
 
 </details>
 
-**14. Make.** A savings account gets these amounts over six months, in
-euro: `saved = [50, 20, 0, 75, 40, 60]`. Build a list of the running
-total at the end of each month. Check that its last value equals
-`total(saved)`.
+**14. Make.** A rain gauge measured this much rain in each of six
+months, in mm: `rain = [110, 80, 95, 60, 70, 75]`. (The numbers are made
+up.) Build a list of the running total at the end of each month, the
+rain so far this year. Check that its last value equals `total(rain)`.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-saved = [50, 20, 0, 75, 40, 60]
+rain = [110, 80, 95, 60, 70, 75]
 
 so_far = 0
 running = []
-for amount in saved:
-    so_far = so_far + amount
+for month_mm in rain:
+    so_far = so_far + month_mm
     running.append(so_far)
-print(running)                        # [50, 70, 70, 145, 185, 245]
-print(running[-1] == total(saved))    # True
+print(running)                       # [110, 190, 285, 345, 415, 490]
+print(running[-1] == total(rain))    # True
 ```
 
-The account holds €245 at the end. This joins two shapes from this
+By the end of the sixth month, 490 mm of rain had fallen. This joins two shapes from this
 unit and the last: a running total, and a list built in a loop. The
 list keeps every step of the total, not only the last one.
 
@@ -479,6 +489,6 @@ print(mixed)    # [195, 171, 117]
 
 The mix is `[195, 171, 117]`, a light brown, a little like sand. This
 is adding element by element, then halving each value: the same move as
-the quiz scores, used on colours.
+the two notes on the tutorial page, used on colours.
 
 </details>

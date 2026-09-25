@@ -2,7 +2,7 @@
 title: "Circles that overlap: Venn diagrams — Practice"
 practice_for: circles-that-overlap
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Circles that overlap: Venn diagrams — Practice
@@ -14,7 +14,7 @@ way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
 Your toolkit is loaded on this page, from every earlier page of the
-course. Every survey here is made up, so that the numbers stay small
+course. Every survey and check here is made up, so that the numbers stay small
 enough to check by eye. A pencil and a quick sketch of the circles help
 with almost every problem.
 
@@ -27,20 +27,22 @@ id: circles-practice-warm-up
 # Try things here
 ```
 
-**1. Predict.** At a music festival, these people went to the jazz tent
-and the trad tent. What will the cell print? Draw the two circles first.
+**1. Predict.** A website runs on two servers. These users reached the
+first server this morning, and these reached the second. What will the
+cell print? Draw the two circles first.
 
 ```python
-jazz = {"Mia", "Tom", "Ada", "Sean"}
-trad = {"Tom", "Sean", "Nora"}
-print(len(jazz | trad), len(jazz & trad), len(jazz ^ trad))
+server_one = {"Mia", "Tom", "Ada", "Sean"}
+server_two = {"Tom", "Sean", "Nora"}
+print(len(server_one | server_two), len(server_one & server_two), len(server_one ^ server_two))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 `5 2 3`.
 
-Tom and Sean are in the overlap, so `jazz & trad` has 2 names. The union
+Tom and Sean are in the overlap, so `server_one & server_two` has 2
+names. The union
 has everyone once: Mia, Tom, Ada, Sean and Nora, which makes 5. The
 symmetric difference, `^`, is the two outer parts without the overlap:
 Mia, Ada and Nora, which makes 3. Inclusion–exclusion agrees:
@@ -97,16 +99,16 @@ box is different, and so the answer is different.
 
 </details>
 
-**4. Predict.** A running club has 30 members. 18 like tea after a run,
-15 like coffee, and 7 like both. How many like at least one of the two?
-How many like neither? Work it out on paper, then check it in the
-warm-up cell.
+**4. Predict.** An office has 30 computers. 18 are on the Wi-Fi, 15 are
+plugged in with an Ethernet cable, and 7 use both. How many are on the
+network at least one way? How many are on neither? Work it out on
+paper, then check it in the warm-up cell.
 
 <details class="dl-answer"><summary>answer</summary>
 
-At least one: $18 + 15 - 7 = 26$. The 7 who like both were counted once
-with the tea drinkers and once with the coffee drinkers, so they are
-taken away once. Neither: $30 - 26 = 4$.
+At least one: $18 + 15 - 7 = 26$. The 7 that use both were counted once
+with the Wi-Fi and once with the cable, so they are taken away once.
+Neither: $30 - 26 = 4$, perhaps switched off.
 
 ```python
 print(18 + 15 - 7, 30 - (18 + 15 - 7))
@@ -116,19 +118,19 @@ print(18 + 15 - 7, 30 - (18 + 15 - 7))
 
 ## Core
 
-Run this cell first. It gives the core and stretch problems the sports
-club from the tutorial.
+Run this cell first. It gives the core and stretch problems the 20
+laptops from the tutorial.
 
 ```python exec
-id: circles-practice-club
-swimmers = {"Aoife", "Hassan", "Ben", "Isla", "Rory", "Priya", "Wei",
-            "Ciara", "Eoin", "Maeve"}
-cyclists = {"Aoife", "Hassan", "Ben", "Isla", "Rory", "Priya", "Wei",
-            "Dmitri", "Kate", "Fatima", "Liam"}
-runners = {"Aoife", "Hassan", "Ciara", "Dmitri", "Kate", "Grainne",
-           "Sadhbh", "Tomas"}
-members = swimmers | cyclists | runners | {"Jakub", "Niamh", "Oisin"}
-print(len(members), "members")
+id: circles-practice-laptops
+updated = {"Aoife", "Hassan", "Ben", "Isla", "Rory", "Priya", "Wei",
+           "Ciara", "Eoin", "Maeve"}
+antivirus = {"Aoife", "Hassan", "Ben", "Isla", "Rory", "Priya", "Wei",
+             "Dmitri", "Kate", "Fatima", "Liam"}
+backed_up = {"Aoife", "Hassan", "Ciara", "Dmitri", "Kate", "Grainne",
+             "Sadhbh", "Tomas"}
+laptops = updated | antivirus | backed_up | {"Jakub", "Niamh", "Oisin"}
+print(len(laptops), "laptops")
 ```
 
 **5. Make.** An evening class has 12 adults. Here is who speaks Irish,
@@ -180,10 +182,12 @@ $0 + 2 + 1 = 3$ people, Chloe, Iris and Kasia.
 
 </details>
 
-**6. Fix.** Here is a function that finds "exactly two" from a survey's
-totals, with the club's numbers as a test. The club's pairs are 7, 3 and
-4, its middle is 2, and the tutorial found 8. The cell is meant to stop
-with an `AssertionError` until you fix the function.
+**6. Fix.** Schlomi, who is learning Python too, wants a function that
+finds "exactly two" from a report's totals. Her idea: add the three
+pairs, then take away the middle, because the middle is not "exactly
+two". She tests it on the tutorial's laptops: their pairs are 7, 3 and
+4, their middle is 2, and the tutorial found 8. The cell is meant to
+stop with an `AssertionError` until you fix the function.
 
 ```python exec
 id: circles-practice-fix-two
@@ -196,7 +200,7 @@ def exactly_two_from_totals(pair_1, pair_2, pair_3, all_three):
     return pair_1 + pair_2 + pair_3 - all_three
 
 
-assert exactly_two_from_totals(7, 3, 4, 2) == 8, "the club has 8"
+assert exactly_two_from_totals(7, 3, 4, 2) == 8, "the laptops have 8"
 print(exactly_two_from_totals(9, 2, 1, 1), "days in Galway")
 ```
 
@@ -206,42 +210,43 @@ frost, and 1 day had all three.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Draw three circles. Which regions does the pair "swim and cycle",
-   7 people, include?
+1. Draw three circles. Which regions does the pair "updates and
+   antivirus", 7 laptops, include?
 2. The middle is inside every pair. How many of the three pairs is it
    inside?
 3. So how many times does the middle need to be taken away?
 
 **Think about:** the table in the tutorial's section on inclusion–exclusion
-for three sets. What does it say about a person in all three circles?
+for three sets. What does it say about a laptop in all three circles?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-Each pair's total includes the middle. There are three pairs, so the
-middle is counted three times, and it must be taken away three times:
+Schlomi was right that the middle must go. But each pair's total
+includes the middle. There are three pairs, so the middle is counted
+three times, and it must be taken away three times:
 
 ```python
     return pair_1 + pair_2 + pair_3 - 3 * all_three
 ```
 
-Now the club gives $14 - 6 = 8$, and the test passes. Galway had
+Now the laptops give $14 - 6 = 8$, and the test passes. Galway had
 $12 - 3 = 9$ days with exactly two of rain, wind and frost.
 
 </details>
 
-**7. Another way.** The tutorial found that 14 club members swim or
-cycle, with `len(swimmers | cyclists)`. Find the same number without
+**7. Another way.** The tutorial found that 14 laptops are updated or
+have antivirus, with `len(updated | antivirus)`. Find the same number without
 using `|` at all. Two different ways are possible; can you find both?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. One way is a formula from the tutorial, using `len` and `&`.
-2. For the other, think about the people who do *neither*. Who are they,
-   in terms of the complements `members - swimmers` and
-   `members - cyclists`?
-3. Everyone who is not in "neither" swims or cycles.
+2. For the other, think about the laptops with *neither*. Which are
+   they, in terms of the complements `laptops - updated` and
+   `laptops - antivirus`?
+3. Every laptop that is not in "neither" has at least one of the two.
 
 **Think about:** which law from Unit 2 turns "not (A or B)" into
 "not A and not B"?
@@ -251,17 +256,17 @@ using `|` at all. Two different ways are possible; can you find both?
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-print(len(swimmers) + len(cyclists) - len(swimmers & cyclists))
+print(len(updated) + len(antivirus) - len(updated & antivirus))
 
-neither = (members - swimmers) & (members - cyclists)
-print(len(members) - len(neither))
+neither = (laptops - updated) & (laptops - antivirus)
+print(len(laptops) - len(neither))
 ```
 
 Both print 14. The first is inclusion–exclusion. The second counts the
-people outside both circles, and takes them away from the box. "Outside
-both" is "not a swimmer and not a cyclist", which is De Morgan's law
-from [Untangling a condition](tutorial:untangling-a-condition#de-morgans-laws),
-written with sets: $(S \cup C)' = S' \cap C'$.
+laptops outside both circles, and takes them away from the box.
+"Outside both" is "not updated and no antivirus", which is De Morgan's
+law from [Untangling a condition](tutorial:untangling-a-condition#de-morgans-laws),
+written with sets: $(U_p \cup A)' = U_p' \cap A'$.
 
 </details>
 
@@ -311,8 +316,8 @@ the three. The formula also gives $52 - 19 + 2 = 35$.
 
 </details>
 
-**9. Explain.** The tutorial started with the names of the club's
-members in sets, and drew each diagram from them. Only at the end did it
+**9. Explain.** The tutorial started with the names of the laptops in
+sets, and drew each diagram from them. Only at the end did it
 give a survey's totals and ask for the regions. Many textbooks start the
 other way round, with a puzzle of totals filled in from the middle out.
 If you were teaching Venn diagrams to a friend, which would you start
@@ -320,13 +325,13 @@ with, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no single right answer. A good answer weighs a few things.
+There is more than one good answer. A good answer weighs a few things.
 
 - **What your friend needs them for.** An exam question usually gives
   totals, so starting there practises the thing that will be asked. A
   person reading survey results also meets totals, not names.
 - **What makes a region make sense.** With names, a region is a set of
-  real people, and every number in it can be checked by counting. With
+  real laptops, and every number in it can be checked by counting. With
   totals alone, a region is a number worked out by rules, and a mistake
   is harder to see.
 - **Your friend.** Someone who likes puzzles may enjoy the totals first.
@@ -387,9 +392,9 @@ where the two groups share nothing.
 
 **12. Make.** Write a function `exactly(groups, everyone, k)`. `groups`
 is a list of sets, and the function returns the set of values in
-`everyone` that are in exactly `k` of the groups. Test it on the club:
-`exactly([swimmers, cyclists, runners], members, 2)` should have 8
-names. Then use it to check that the sizes for `k` = 0, 1, 2 and 3 add
+`everyone` that are in exactly `k` of the groups. Test it on the
+laptops: `exactly([updated, antivirus, backed_up], laptops, 2)` should
+have 8 names. Then use it to check that the sizes for `k` = 0, 1, 2 and 3 add
 up to 20.
 
 ```python exec
@@ -428,34 +433,34 @@ def exactly(groups, everyone, k):
     return found
 
 
-club = [swimmers, cyclists, runners]
-assert len(exactly(club, members, 2)) == 8
+checks = [updated, antivirus, backed_up]
+assert len(exactly(checks, laptops, 2)) == 8
 sizes = []
 for k in range(4):
-    sizes.append(len(exactly(club, members, k)))
+    sizes.append(len(exactly(checks, laptops, k)))
 print(sizes, sum(sizes))
 ```
 
-This prints `[3, 7, 8, 2] 20`. Every member said yes to 0, 1, 2 or 3
-questions, and to only one of those numbers, so the four sets share no
+This prints `[3, 7, 8, 2] 20`. Every laptop passed 0, 1, 2 or 3
+checks, and to only one of those numbers, so the four sets share no
 one and cover the whole box. The function works for any number of
 groups: try it on the language class from problem 5.
 
 </details>
 
-**13. Another way.** Pick one club member at random. What is the chance
-that they said yes to exactly two questions? Work it out by counting,
+**13. Another way.** Pick one of the 20 laptops at random. What is the
+chance that it has exactly two of the three? Work it out by counting,
 from the tutorial's answer. Then find it a second way, with `simulate`
 from [How likely is it?](tutorial:how-likely-is-it#a-tool-that-runs-it-many-times).
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. By counting: 8 of the 20 members said yes to exactly two, and each
-   member is equally likely to be picked.
+1. By counting: 8 of the 20 laptops have exactly two, and each laptop
+   is equally likely to be picked.
 2. For `simulate`, you need a trial: a function with no inputs that
-   picks one member with `random.choice` and returns True when they are
-   in exactly two sets.
-3. `random.choice` needs a list, and `sorted(members)` makes one.
+   picks one laptop with `random.choice` and returns True when it is in
+   exactly two sets.
+3. `random.choice` needs a list, and `sorted(laptops)` makes one.
 
 **Think about:** why will the two answers differ a little?
 
@@ -468,14 +473,14 @@ By counting, the chance is $\frac{8}{20} = 0.4$.
 ```python
 import random
 
-names = sorted(members)
+names = sorted(laptops)
 
 
 def picks_exactly_two():
-    """Pick one member at random. True when they do exactly two of the three sports."""
+    """Pick one laptop at random. True when it has exactly two of the three checks."""
     name = random.choice(names)
     yes_answers = 0
-    for group in [swimmers, cyclists, runners]:
+    for group in [updated, antivirus, backed_up]:
         if name in group:
             yes_answers = yes_answers + 1
     return yes_answers == 2
@@ -491,18 +496,19 @@ each pick is left to chance.
 
 </details>
 
-**14. Predict.** On the tutorial, `swimmers ^ cyclists` gave everyone in
-exactly one of the two circles. What do you think
-`swimmers ^ cyclists ^ runners` gives? Guess how many names, and which
-regions they come from. Then run it.
+**14. Predict.** On the tutorial, `updated ^ antivirus` gave every
+laptop in exactly one of the two circles. Schlomo, who is learning
+Python too, reasons that `updated ^ antivirus ^ backed_up` must give the
+laptops in exactly one of the three circles. What do you think? Guess
+how many names, and which regions they come from. Then run it.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Python works out `swimmers ^ cyclists` first, then `^ runners`.
-2. Follow Aoife, who is in all three. Is she in `swimmers ^ cyclists`?
-   Is she in the answer after `^ runners`?
-3. Follow Ben, who swims and cycles but does not run, and Tomas, who
-   only runs.
+1. Python works out `updated ^ antivirus` first, then `^ backed_up`.
+2. Follow Aoife's laptop, which is in all three. Is it in
+   `updated ^ antivirus`? Is it in the answer after `^ backed_up`?
+3. Follow Ben's, which is updated and has antivirus but no backup, and
+   Tomas's, which only has a backup.
 
 **Think about:** [Bits that flip](tutorial:bits-that-flip#counting-the-1s-parity)
 and what XOR says about how many 1s there are.
@@ -512,16 +518,16 @@ and what XOR says about how many 1s there are.
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-odd_ones = swimmers ^ cyclists ^ runners
+odd_ones = updated ^ antivirus ^ backed_up
 print(len(odd_ones), sorted(odd_ones))
 ```
 
-It gives 9 names: the 7 people who do exactly one sport, and the 2 who
-do all three. It is not "exactly one of the three", which many people
-guess. A name ends up in the answer when it is in an odd number of the
+It gives 9 names: the 7 laptops with exactly one of the three, and the
+2 with all three. Schlomo's guess is the one most people make, and it
+holds for two sets; for three, it picks up the middle as well. A name ends up in the answer when it is in an odd number of the
 sets: 1 or 3. That is parity, as on
 [Bits that flip](tutorial:bits-that-flip): XOR of several bits is 1 when
-the number of 1s is odd. Aoife is in all three: `swimmers ^ cyclists`
-drops her, and `^ runners` puts her back.
+the number of 1s is odd. Aoife's laptop is in all three:
+`updated ^ antivirus` drops it, and `^ backed_up` puts it back.
 
 </details>

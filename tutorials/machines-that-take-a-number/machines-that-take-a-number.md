@@ -1,7 +1,7 @@
 ---
 title: "Machines that take a number: functions in maths and code"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.25.2
 covers:
   a-machine-with-one-slot:
     covers: [MIT-3.1]
@@ -22,12 +22,15 @@ covers:
 
 # Machines that take a number: functions in maths and code
 
-At the end of a taxi ride, the meter shows a price. It was given one
-number, the distance, and it gave back one number, the fare. Nobody at
-the taxi rank calls the meter a function, but that is what it is.
+A weather station, a phone and a 3D printer all know the temperature.
+But the small chip that senses it knows nothing about degrees. It gives
+out a voltage, and a rule turns that voltage into a temperature. The
+rule takes one number in and gives one number out. That is a function.
 
-What does it mean for something to take an input and give an output?
-And what happens when you give it an input it was never built for?
+Here is the question for this page. Give the rule a voltage the chip
+could never make, and it answers −350 °C. That is colder than anything
+in the universe can be. What went wrong, and whose job was it to stop
+it?
 
 On this page we:
 
@@ -78,92 +81,101 @@ different things. What does `factorial(4)` give back?
 
 ## A machine with one slot
 
-Picture a machine with a slot on one side and a tray on the other. You
-put a number in the slot. The machine follows its rule, and a number
-drops into the tray. The same number in always gives the same number
-out.
+Picture a machine with a slot and a tray. You put a number in the
+slot, the machine follows its rule, and a number drops into the tray.
+The same number in always gives the same number out.
 
-Here is a taxi meter's rule, in words. The numbers are made up, but they
-are close to a real Irish fare: "start at €4, then add €1.50 for every
-kilometre."
+A common temperature chip, the TMP36, gives out 0.5 volts at 0 °C, and
+0.01 volts more for every degree warmer. (A *volt* measures the push
+behind an electric current.) So
+to get the temperature, multiply the voltage by 100, then take away 50.
 
 Maths writes that rule like this:
 
-$$f(x) = 4 + 1.5x$$
+$$f(x) = 100x - 50$$
 
 We read $f(x)$ as "f of x". The letter $f$ is the function's name, $x$
-stands for the input, and the right-hand side is the rule. So $f(10)$
-means "put 10 in the slot":
-$f(10) = 4 + 1.5 \times 10 = 19$. Writing a function this way is called
-*function notation*.
+stands for the input, and the right-hand side is the rule. So $f(0.75)$
+means "put 0.75 in the slot": $f(0.75) = 100 \times 0.75 - 50 = 25$.
+Writing a function this way is called *function notation*.
 
 Python writes the same rule with `def`. Before you run the cell, what
 will each line show?
 
 ```python exec
 id: machines-slot-1
-def fare(km):
-    """Return the taxi fare in euro for a trip of km kilometres."""
-    return 4 + 1.5 * km
+def sensor_celsius(volts):
+    """Return the temperature in °C that a TMP36 chip reads as volts."""
+    return 100 * volts - 50
 
-print(fare(10))
-print(fare(2))
+print(sensor_celsius(0.75))
+print(sensor_celsius(0.5))
 ```
 
-The cell shows `19.0` and `7.0`. Put the two versions side by side, and
-every part of one has a partner in the other:
+The cell shows `25.0` and `0.0`: a warm room, and freezing. Put the two
+versions side by side, and every part of one has a partner in the
+other:
 
 | | Maths | Python |
 |---|---|---|
-| the function's name | $f$ | `fare` |
-| the input's name | $x$ | `km` |
-| the rule | $4 + 1.5x$ | `4 + 1.5 * km` |
-| using it on 10 | $f(10)$ | `fare(10)` |
+| the function's name | $f$ | `sensor_celsius` |
+| the input's name | $x$ | `volts` |
+| the rule | $100x - 50$ | `100 * volts - 50` |
+| using it on 0.75 | $f(0.75)$ | `sensor_celsius(0.75)` |
 
-These are not two ideas that happen to look alike. They are one idea,
-written two ways. In maths, a function is a rule that gives exactly
+They are one idea, written two ways. In maths, a function is a rule that gives exactly
 one output for each input. A Python function that takes a number and
 returns a number keeps the same promise.
 
 Two words help us talk about the slot. On
 [Recipes are algorithms](tutorial:recipes-are-algorithms) we met the
-parameter: the name in the brackets of the `def` line, here `km`. The
-value we put in when we call the function, here `10`, is the
+parameter: the name in the brackets of the `def` line, here `volts`.
+The value we put in when we call the function, here `0.75`, is the
 *argument*. The parameter is the slot, and the argument is what goes
 into it.
 
 ### Your turn
 
-At night the fare is higher: €5 to start, then €1.80 for every
-kilometre.
+Another chip, the LM35, gives out 0 volts at 0 °C, and 0.01 volts more
+for every degree.
 
-1. Change the rule in the cell below to the night rate.
-2. Before you run it, work out what a 10 km trip costs at night.
-3. Add a line that prints `night_fare(0)`. What does a trip of 0 km
-   cost, and why?
+1. Change the rule in the cell below to the LM35's.
+2. Before you run it, work out what 0.25 volts means for this chip.
+3. Add a line that prints `lm35_celsius(0)`. Why is it different from
+   the TMP36 at 0 volts?
 
 ```python exec
 id: machines-slot-your-turn
-def night_fare(km):
-    """Return the night fare in euro for a trip of km kilometres."""
-    return 4 + 1.5 * km   # change this to the night rate
+def lm35_celsius(volts):
+    """Return the temperature in °C that an LM35 chip reads as volts."""
+    return 100 * volts - 50   # change this to the LM35's rule
 
-print(night_fare(10))
+print(lm35_celsius(0.25))
 ```
 
 ## What goes in and what comes out
 
-Can we put any number in the taxi slot? Python will run `fare(-3)`
-without a word of complaint, and give back `-0.5`. A trip of −3 km
-means nothing, and nobody is paid 50 cent to ride in a taxi. Python
-followed the rule. The rule did not know which numbers it was meant
-for.
+Can we put any number in the slot? Python will run
+`sensor_celsius(-3)` without a word of complaint, and give back
+`-350`. The chip never gives out −3 volts, and nothing can be −350 °C.
+Python followed the rule. The rule did not know which numbers it was
+meant for.
+
+<aside class="dl-note" id="machines-note-absolute-zero">
+
+**The coldest there is.** Nothing can be colder than −273.15 °C, called
+*absolute zero*. Scientists measure from there with the kelvin scale,
+where absolute zero is 0 K. So −350 °C is not a very cold day. It is a
+temperature that does not exist.
+
+</aside>
 
 The *domain* of a function is the set of inputs it accepts. The *range*
-is the set of outputs it can give. For the taxi meter:
+is the set of outputs it can give. The TMP36 works from −40 °C to
+125 °C, so for our rule:
 
-- the domain is every distance from 0 up: $x \ge 0$;
-- the range is every fare from €4 up: $f(x) \ge 4$.
+- the domain is every voltage from 0.1 to 1.75 volts;
+- the range is every temperature from −40 °C to 125 °C.
 
 Some functions in Python do check their domain. Here is one. The
 *square root* of a number is the number that, multiplied by itself,
@@ -199,29 +211,31 @@ $\mathbb{R}$, because every real number, multiplied by itself, gives 0
 or more. Unit 7 builds a bigger space where $-4$ does have a square
 root. The move is fine; it needs a different space.
 
-Our own `fare` can say its domain too. The docstring says it in words,
-and an `assert` at the top checks it. After the comma, an `assert` can
-carry a message, which Python shows if the check fails. The last line
-of this cell is meant to stop with an error.
+Our own function can say its domain too. The docstring says it in
+words, and an `assert` at the top checks it, with `between` from your
+toolkit. After the comma, an `assert` can carry a message, which Python
+shows if the check fails. The last line of this cell is meant to stop
+with an error.
 
 ```python exec
 id: machines-domain-2
-def fare(km):
-    """Return the taxi fare in euro for a trip of km kilometres.
+def sensor_celsius(volts):
+    """Return the temperature in °C that a TMP36 chip reads as volts.
 
-    km must be 0 or more.
+    volts must be from 0.1 to 1.75, the voltages the chip can give.
     """
-    assert km >= 0, "a trip cannot be shorter than 0 km"
-    return 4 + 1.5 * km
+    assert between(volts, 0.1, 1.75), "a TMP36 gives 0.1 to 1.75 volts"
+    return 100 * volts - 50
 
-print(fare(3))
-print(fare(-3))
+print(sensor_celsius(0.75))
+print(sensor_celsius(-3))
 ```
 
 This time the last line of the error is
-`AssertionError: a trip cannot be shorter than 0 km`. An error with a
-message like that is a kindness to whoever calls the function next,
-and that person is often you, a few weeks later.
+`AssertionError: a TMP36 gives 0.1 to 1.75 volts`. So the answer to the
+question at the top is: the function's job, once its promise names its
+domain. The message helps whoever calls the function next, and that is
+often you, a few weeks later.
 
 ```question
 id: machines-range-round
@@ -272,9 +286,8 @@ def sum_by_formula(n):
 print(sum_by_loop(100), sum_by_formula(100))
 ```
 
-Both give 5050. Inside, the steps are completely different. One makes a
-hundred additions, and the other makes one multiplication and one
-division. But from the outside, as machines, the two cannot be told
+Both give 5050. Inside, one makes a hundred additions, and the other
+one multiplication and one division. But from the outside, as machines, the two cannot be told
 apart: the same input always gives the same output.
 
 This is how mathematicians think of an algorithm. An algorithm, the list
@@ -284,8 +297,8 @@ on a domain of inputs: for each input it is built for, it gives one
 output. The function says what comes out. The algorithm says how we get
 there. Two algorithms can be one function.
 
-Let's check that claim on a lot of the domain at once. How long do you
-expect this to take?
+Let's check that on a lot of the domain at once. How long do you expect
+it to take?
 
 ```python exec
 id: machines-algorithm-2
@@ -294,8 +307,7 @@ for n in range(0, 1001):
 print("They agree for every n from 0 to 1000.")
 ```
 
-A thousand and one checks, and every one passed. Now let's try an input
-from outside the domain. "Add up the whole numbers from 1 to −5" does
+Every check passed. Now let's try an input from outside the domain. "Add up the whole numbers from 1 to −5" does
 not mean anything. What will each function do with it?
 
 ```python exec
@@ -303,51 +315,52 @@ id: machines-algorithm-3
 print(sum_by_loop(-5), sum_by_formula(-5))
 ```
 
-The loop gives `0`, because `range(1, -4)` is empty, so it adds nothing.
-The formula gives `10`. Outside the domain, the two machines disagree,
-and neither answer is right, because the question has no answer. That is
-why the domain belongs in the promise. Both functions promised the same
-thing, for whole numbers from 0 up, and both kept that promise.
+The loop gives `0`, because `range(1, -4)` is empty. The formula gives
+`10`. Outside the domain the two machines disagree, and neither answer
+is right, because the question has no answer. That is why the domain
+belongs in the promise: both promised the same thing, for whole numbers
+from 0 up, and both kept it.
 
 ## Functions that give back, and procedures that do
 
 Not every function hands back a value. Some do a job instead: they
-print a receipt, draw a picture or save a file. Here is one. What will
-the last line show?
+print a line, draw a picture or save a file. Here is one. What will the
+last line show?
 
 ```python exec
 id: machines-procedure-1
-def show_receipt(km):
-    """Print a receipt for a taxi trip of km kilometres."""
-    print("Distance in km:", km)
-    print("Fare in euro:", fare(km))
+def show_reading(volts):
+    """Print a sensor reading: the voltage, and the temperature it means."""
+    print("Sensor voltage:", volts)
+    print("Temperature in °C:", sensor_celsius(volts))
 
 
-result = show_receipt(8)
-print("show_receipt gave back:", result)
+result = show_reading(0.75)
+print("show_reading gave back:", result)
 ```
 
-The receipt appears, and then `show_receipt gave back: None`. *None* is
+The reading appears, and then `show_reading gave back: None`. *None* is
 Python's value for "nothing here". A function with no `return` line
 gives back `None` when it finishes.
 
 A *procedure* is a function that does a job, such as printing, instead
 of giving back a value. Python writes both with `def`. Some older
 languages, such as Pascal, use two different words for them. The
-difference matters when we build with them. `fare(8) + 2` is a number
-we can use. `show_receipt(8) + 2` asks Python to add `None` and 2, and
-stops with a `TypeError`.
+difference matters when we build with them. `sensor_celsius(0.75) + 2`
+is a number we can use. `show_reading(0.75) + 2` asks Python to add
+`None` and 2, and stops with a `TypeError`.
 
-Look at how `show_receipt` gets its fare. It does not work the fare out
-again: it calls `fare`. Splitting a program into small functions, each
-with one job, is called *modularisation*. When the taxi rate changes,
-we change `fare`, and every receipt is right at once.
+Look at how `show_reading` gets its temperature. It does not work it
+out again: it calls `sensor_celsius`. Splitting a program into small
+functions, each with one job, is called *modularisation*. Swap the
+TMP36 for another chip, change `sensor_celsius`, and every reading is
+right at once.
 
-A call can also name its arguments. `fare(km=8)` puts 8 into the slot
-called `km`. This is a *keyword argument*, and it helps most when a
-function has several slots. Your toolkit's `digit_at` has three. Say a
-scoreboard is to show 5050, the sum from 1 to 100. Before you run this,
-which digit will each line give?
+A call can also name its arguments. `sensor_celsius(volts=0.75)` puts
+0.75 into the slot called `volts`. This is a *keyword argument*, and it
+helps most when a function has several slots. Your toolkit's `digit_at`
+has three. Say a display is to show 5050, the sum from 1 to 100. Before
+you run this, which digit will each line give?
 
 ```python exec
 id: machines-procedure-2
@@ -364,14 +377,13 @@ The inside of the brackets happens before the outside, as it did with
 
 ## Running it backwards: the inverse
 
-The receipt fell out of your pocket, but you remember paying €19. How
-far did you go?
+The display says 25 °C. What voltage did the chip give out?
 
-The meter's rule did two things, in order: multiply by 1.5, then add 4.
-To go backwards, undo each step in the opposite order. First take away
-4, then divide by 1.5:
+The rule did two things, in order: multiply by 100, then take away 50.
+To go backwards, undo each step in the opposite order. First add 50,
+then divide by 100:
 
-$$f^{-1}(y) = \frac{y - 4}{1.5}$$
+$$f^{-1}(y) = \frac{y + 50}{100}$$
 
 We read $f^{-1}$ as "f inverse". The *inverse* of a function is a
 function that undoes it: if $f$ takes $x$ to $y$, then $f^{-1}$ takes
@@ -382,20 +394,20 @@ output into the other's slot.
 
 ```python exec
 id: machines-inverse-1
-def distance_for(euro):
-    """Return how many km a taxi trip was, if it cost euro euro."""
-    return (euro - 4) / 1.5
+def volts_for(celsius):
+    """Return the voltage a TMP36 gives out at this temperature in °C."""
+    return (celsius + 50) / 100
 
-print(distance_for(19))
-print(distance_for(fare(7)))
-print(fare(distance_for(31)))
+print(volts_for(25))
+print(volts_for(sensor_celsius(1.25)))
+print(sensor_celsius(volts_for(-10)))
 ```
 
-The answers are `10.0`, `7.0` and `31.0`. Going forward and then back
+The answers are `0.75`, `1.25` and `-10.0`. Going forward and then back
 lands where we started, whichever way round we go. Notice that the
-domain of `distance_for` is the range of `fare`. A fare of €2 is not in
-that range, and `distance_for(2)` gives a negative distance, which means
-nothing. A later page in this unit,
+domain of `volts_for` is the range of `sensor_celsius`. −60 °C is not in
+that range, and `volts_for(-60)` gives −0.1 volts, which the chip can
+never give. A later page in this unit,
 [Running a formula backwards](tutorial:running-a-formula-backwards),
 undoes formulas in general, one step at a time.
 
@@ -439,38 +451,39 @@ Does `round` have an inverse?
 
 ## Machines in a row: composition
 
-Earlier on this page, `digit_at(sum_by_loop(100), 3)` sent the output of one machine
-straight into the slot of the next. Joining two functions this way is
-called *composition*. Maths writes "g after f" as
+A small computer board, such as an Arduino, cannot read a voltage
+directly. It turns the voltage into a whole number from 0 to 1023: 10
+bits, so $2^{10} = 1024$ possible readings. Each step up is
+$\frac{5}{1024}$ of a volt. So a reading goes through two machines:
+first reading to volts, then volts to °C.
+
+Earlier on this page, `digit_at(sum_by_loop(100), 3)` sent the output
+of one machine straight into the slot of the next. Joining two
+functions this way is called *composition*. Maths writes "g after f"
+as
 
 $$(g \circ f)(x) = g(f(x))$$
 
 The small circle is read "after", and it is a reminder that $f$ runs
-first, even though it is written second.
-
-Does the order matter? A shop adds €5 for delivery, and has a sale with
-10% off. Here are both orders, on a €50 jacket. Predict both answers.
+first, even though it is written second. What temperature is a reading
+of 154? And what happens if the two machines swap places?
 
 ```python exec
 id: machines-compose-1
-def add_delivery(price):
-    """Return the price with €5 delivery added."""
-    return price + 5
+def reading_volts(reading):
+    """Return the voltage for a board's reading, a whole number from 0 to 1023."""
+    return reading * 5 / 1024
 
-
-def take_ten_percent_off(price):
-    """Return the price with 10% taken off."""
-    return price * 0.9
-
-
-print(take_ten_percent_off(add_delivery(50)))
-print(add_delivery(take_ten_percent_off(50)))
+print(sensor_celsius(reading_volts(154)))
+print(reading_volts(sensor_celsius(0.75)))
 ```
 
-The first order gives €49.50, because the discount comes off the
-delivery too. The second gives €50.00. The same two machines, in a
-different order, give a different answer. That is sequence, the third of
-our four questions: what happens when?
+The first line gives about 25.2 °C. Now look at the second. Python ran
+the machines the other way round without a word, and gave about 0.12.
+That number means nothing: it treats a temperature as a board's
+reading. The same two machines, in a different order, do a different
+job, or no job at all. That is sequence, the third of our four
+questions: what happens when?
 
 ### Your turn: a tool that joins machines
 
@@ -513,9 +526,9 @@ def compose(outer, inner):
 ```
 
 ```hint
-What does `compose(add_delivery, square)` give back at the moment? Try
-`print(compose(add_delivery, square))` on its own. A function you can
-call is shown as `<function ...>`.
+What does `compose(sensor_celsius, square)` give back at the moment?
+Try `print(compose(sensor_celsius, square))` on its own. A function you can call is
+shown as `<function ...>`.
 ```
 
 ```hint
@@ -538,35 +551,53 @@ third test?
 
 ```python exec
 id: machines-toolkit-tests
-sale_price = compose(take_ten_percent_off, add_delivery)
-assert sale_price(50) == take_ten_percent_off(add_delivery(50))
-assert compose(add_delivery, take_ten_percent_off)(50) == 50
-assert compose(distance_for, fare)(10) == 10
+reading_celsius = compose(sensor_celsius, reading_volts)
+assert reading_celsius(154) == sensor_celsius(reading_volts(154))
+assert compose(sensor_celsius, volts_for)(25) == 25
+assert compose(volts_for, sensor_celsius)(0.75) == 0.75
 assert compose(math.sqrt, square)(-3) == 3
 print("compose keeps its promise.")
 ```
 
-The third test joins `fare` to its own inverse, and 10 comes straight
-back out. That is one way to say what an inverse is:
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one good way to write it. Yours may use other names inside and
+work as well.
+
+```python
+def compose(outer, inner):
+    """Return a new function that runs inner on its input, then outer on the result.
+
+    compose(outer, inner)(x) gives the same answer as outer(inner(x)).
+    """
+    def both(x):
+        return outer(inner(x))
+    return both
+```
+
+</details>
+
+The third test joins `sensor_celsius` to its own inverse, and 0.75
+comes straight back out. That is one way to say what an inverse is:
 $f^{-1}(f(x)) = x$ for every $x$ in the domain. The last test is the
 square root failing to undo squaring: −3 went in, and 3 came out.
 
 One thing may seem strange. `both` is made inside `compose`, and still
-knows `outer` and `inner` after `compose` has finished. A later page in
-this unit, [What a function can see](tutorial:what-a-function-can-see),
+knows `outer` and `inner` after `compose` has finished. If that is hard
+to picture, it is fine to take it on trust for now: a later page in this
+unit, [What a function can see](tutorial:what-a-function-can-see),
 explains how.
 
 ### Your turn
 
-1. Write `add_vat(price)`, which adds 23% VAT to a price. (Multiply by
-   1.23.)
-2. Make `compose(add_vat, add_delivery)`, and try it on a €40 order.
-3. Now compose them the other way round. Before you run it, which order
-   do you think costs more, and why?
+1. Use `reading_celsius` from the tests on the readings 102, 205 and
+   300. Before you run it, which one is close to freezing?
+2. Use `compose` to make `lm35_reading_celsius`, for a board with the
+   LM35 chip from the first Your turn. What does a reading of 51 give?
 
 ```python exec
 id: machines-compose-your-turn
-# Your add_vat, and both orders
+# Your readings, and the other order
 ```
 
 <details class="dl-why"><summary>Why this way?</summary>
@@ -591,7 +622,7 @@ function.
 
 | The question | On this page |
 |---|---|
-| What is named here? | a function ($f$, `fare`), its input ($x$, `km`), and the value put in, the argument |
+| What is named here? | a function ($f$, `sensor_celsius`), its input ($x$, `volts`), and the value put in, the argument |
 | What is promised? | one output for each input in the domain; an inverse promises to undo; `compose` promises a new function |
 | What happens when? | the inside of the brackets first; in $g(f(x))$, $f$ runs first; the order of two machines can change the answer |
 | What does this space let us do? | the domain says which inputs are allowed; $\sqrt{-4}$ needs a bigger space; squaring has an inverse only on a smaller one |
@@ -609,7 +640,7 @@ function.
 | algorithm as a function | for each input in its domain, one output; two algorithms can be one function |
 | procedure, `None` | a function that does a job and gives back nothing; Python's value for nothing |
 | modularisation | splitting a program into small functions, each with one job |
-| keyword argument | naming the slot in a call: `fare(km=8)` |
+| keyword argument | naming the slot in a call: `sensor_celsius(volts=0.75)` |
 | inverse, $f^{-1}$ | the function that undoes $f$ |
 | one-to-one | each output comes from exactly one input; only these have inverses |
 | composition, $g \circ f$ | $g(f(x))$: the output of $f$ goes into $g$ |

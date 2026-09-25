@@ -220,9 +220,12 @@ as the words stay common:
   letter is signed. Never invent the writer's history or experiences: a
   story about "when I was at school" is only written if the writer told
   it.
-- **Name the feeling before the reader has to.** *Before you roll your
-  eyes…*, *this is the part that hurts your brain*, *if this feels like
-  hard work, that is the right feeling*.
+- **Name a feeling rarely, and always with a route.** Where a page
+  knows a step is hard, it may say so once, and say what to do about it:
+  *if this feels like hard work, open the hint under the cell, or come
+  back to it after the next section*. A feeling named with nothing under
+  it is a verdict on the reader (see "Name the feeling, then hand over
+  the route" below; decided for #306/#310, 7.229).
 - **Stop and wait.** *Pause here and guess. I'll wait.* A question the
   page does not answer straight away.
 - **Give permission.** Skip ahead, come back, write in the margin, use
