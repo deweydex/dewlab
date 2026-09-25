@@ -18,6 +18,11 @@ entries:
     definition: >
       A quadratic equation has the shape ax² + bx + c = 0, where a is not 0.
       It can have two real roots, one, or none.
+  - term: "sprite, sprite sheet"
+    kind: concept
+    definition: >
+      A sprite is one of a game's small pictures. A sprite sheet keeps many
+      sprites side by side in one image, in rows and columns.
   - term: factorising
     kind: concept
     definition: >

@@ -1,7 +1,7 @@
 ---
 title: "Drawing a rule: graphs of functions"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   a-table-then-a-picture:
     covers: [MIT-3.2]
@@ -24,22 +24,23 @@ covers:
 # Drawing a rule: graphs of functions
 
 Here is a rule: $y = x^2 - 4$. Put in 3, and 5 comes out. Put in $-3$,
-and 5 comes out again. Put in 0, and you get $-4$. What does the rule
-look like when we put in every number at once? And where does it cross
-zero?
+and 5 comes out again. Two different numbers, the same answer. Put in
+0, and you get $-4$. What does the rule look like when we put in every
+number at once? Pause here and picture it before you read on. And
+where does it cross zero?
 
-A goalkeeper asks the same kind of question without knowing it. The
-ball goes up, slows, turns and comes down. When does it land? A table of
-heights can answer that. A picture answers it at a glance, and shows
-more besides.
+A goalkeeper who kicks a ball high asks the same kind of question
+without knowing it. The ball goes up, slows, turns and comes down.
+When does it land? A table of heights can answer that. A picture
+answers it at a glance, and shows more besides.
 
 On this page we:
 
 - draw a rule as every pair $(x, y)$ at once, and add `plot_rule` to
   the toolkit
 - read where a graph crosses zero, and check it by substituting
-- draw straight lines, parabolas and cubics, and find where two graphs
-  meet
+- draw straight lines, parabolas and cubics, find where two graphs
+  meet, and watch a ball fly along its graph
 - meet a rule with a gap in it, $\frac{1}{x}$, and two rules that race,
   $x^2$ and $2^x$
 - see what a graph shows that a table hides
@@ -98,6 +99,15 @@ line across is the *x-axis*, and the line up is the *y-axis*. They cross
 at the *origin*, the point $(0, 0)$. A negative $x$ means "go left", and
 a negative $y$ means "go down".
 
+<aside class="dl-note" id="drawing-a-note-descartes">
+
+**Whose grid?** Placing a point by two numbers is often called
+Cartesian coordinates, after the French thinker René Descartes. His
+book *La Géométrie*, from 1637, showed how to turn a curve into an
+equation, and an equation into a curve.
+
+</aside>
+
 The cell below draws the seven rows as seven dots. The two grey lines
 are the axes, drawn through 0. What shape will the dots make?
 
@@ -126,8 +136,8 @@ $y = f(x)$, so that $y$ names the output.
 
 We cannot work out every real number, but we can work out a lot of
 them. `plot_rule` works out 401 evenly spaced points between `low` and
-`high`, and joins them. The points are so close together that the short
-straight lines look like one smooth curve.
+`high`, and joins them with lines so short that they look like one
+smooth curve.
 
 This toolkit tool is written for you. Read it before you run it: which
 lines are the table, and which lines draw?
@@ -161,9 +171,8 @@ def plot_rule(rule, low, high):
 
 The loop is the table from the last section, with 401 rows in place of
 7. The rest draws. `rule.__name__` is the name the rule was given with
-`def`: every Python function knows its own name, and `plot_rule` uses it
-as a label. The two `if` lines draw an axis only where 0 is in view, so
-a graph from 5 to 10 has no y-axis squeezed in at its edge.
+`def`, which `plot_rule` uses as a label. The two `if` lines draw an
+axis only where 0 is in view.
 
 `plot_rule` is a procedure, as on
 [Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do):
@@ -189,76 +198,84 @@ print(square_minus_four(-2), square_minus_four(2))
 print(evaluate([-4, 0, 1], -2), evaluate([-4, 0, 1], 2))
 ```
 
-Both give 0. The last page expanded $(x - 2)(x + 2)$ into $x^2 - 4$.
-The brackets tell us the same roots: $x - 2$ is 0 when $x$ is 2, and
-$x + 2$ is 0 when $x$ is $-2$.
+Both give 0. The last page expanded $(x - 2)(x + 2)$ into $x^2 - 4$,
+and the brackets tell us the same roots: $x - 2$ is 0 when $x$ is 2,
+and $x + 2$ is 0 when $x$ is $-2$.
 
 ## Straight lines, and where two meet
 
-Two phone plans. Plan A costs €8 a month, plus €2 for each gigabyte of
-data you use. Plan B costs €20 a month, however much you use. Which is
-cheaper? It depends on the gigabytes. Here are both plans, drawn on one
-picture. `plt.legend()` shows which line is which. Before you run it,
-predict the shape of each line.
+An app sends each request to a server, and the server answers. Two
+servers could do the job. Server A answers in 8 milliseconds (ms,
+thousandths of a second), plus 2 ms for every thousand people using the
+app at that moment. Server B answers in 20 ms, however many people use
+it. (The numbers are made up, and real servers slow down in more
+complicated ways, so a straight line is a model.) Which server is
+faster? It depends on how many people are using the app. Here are both
+on one picture. `plt.legend()` shows which line is which. Before you
+run it, predict the shape of each line.
 
 ```python exec
 id: drawing-a-lines-1
-def plan_a(gigabytes):
-    """Return the monthly cost in euro of plan A: €8, plus €2 a gigabyte."""
-    return 8 + 2 * gigabytes
+def server_a(thousands):
+    """Return server A's time to answer, in ms, with this many thousand people using the app."""
+    return 8 + 2 * thousands
 
 
-def plan_b(gigabytes):
-    """Return the monthly cost in euro of plan B: €20, however much you use."""
+def server_b(thousands):
+    """Return server B's time to answer, in ms: 20, however many people use the app."""
     return 20
 
 
-plot_rule(plan_a, 0, 10)
-plot_rule(plan_b, 0, 10)
+plot_rule(server_a, 0, 10)
+plot_rule(server_b, 0, 10)
+plt.xlabel("thousands of people using the app")
+plt.ylabel("ms to answer")
 plt.legend()
 ```
 
-Both graphs are straight lines. Plan A starts at 8 and climbs 2 for
-every step to the right. Plan B is flat. A *linear function* is a
+Both graphs are straight lines. Server A starts at 8 and climbs 2 for
+every step to the right. Server B is flat. A *linear function* is a
 function whose graph is a straight line. Its rule has the shape
 $y = mx + c$: the number $m$ in front of $x$ says how steep the line is,
-and $c$ is where it crosses the y-axis. Plan A is $y = 2x + 8$.
+and $c$ is where it crosses the y-axis. Server A is $y = 2x + 8$.
 [Straight lines](tutorial:straight-lines) looks at steepness properly.
 
-The lines cross at about 6 gigabytes and €20. Left of the crossing,
-plan A is cheaper; right of it, plan B is. Where two graphs meet, the
-two rules give the same value, so the crossing answers the equation
-$2x + 8 = 20$. Let's check by substituting:
+The lines cross at about 6 thousand people and 20 ms. Left of the
+crossing, server A is faster; right of it, server B is. Where two graphs
+meet, the two rules give the same value, so the crossing answers the
+equation $2x + 8 = 20$. Let's check by substituting:
 
 ```python exec
 id: drawing-a-lines-2
-print(plan_a(6), plan_b(6))
-print(plan_a(5), plan_a(7))
+print(server_a(6), server_b(6))
+print(server_a(5), server_a(7))
 ```
 
-At 6 gigabytes both cost €20. At 5, plan A costs €18, and at 7 it costs
-€22. The graph gave the answer, and substitution checked it.
+With 6 thousand people, both answer in 20 ms. With 5 thousand, server A
+takes 18 ms, and with 7 thousand it takes 22. The graph gave the
+answer, and substitution checked it.
 [Solving for x](tutorial:solving-for-x) finds the same answer with no
 picture at all.
 
 ### Your turn
 
-1. Plan C costs €12 a month plus €1 a gigabyte. Write `plan_c` and draw
-   all three plans from 0 to 15.
-2. Read off where plan C crosses each of the others.
-3. Check each crossing by substituting.
+1. Server C answers in 15 ms, plus 1.2 ms for every thousand people.
+   Write `server_c` and draw all three servers from 0 to 15.
+2. Read off where server C crosses each of the others.
+3. Check each crossing by substituting. How close do the two times come?
 
 ```python exec
 id: drawing-a-lines-your-turn
-# Your plan_c, and the three graphs
+# Your server_c, and the three graphs
 ```
 
 ## Curves that bend: parabolas and cubics
 
 Back to the goalkeeper. In a simple model with rounded numbers, a ball
 kicked straight up at 20 metres a second is $20t - 5t^2$ metres high,
-$t$ seconds after the kick. What shape will its graph be? Where will it
-cross zero?
+$t$ seconds after the kick. (The model leaves out the air. The 5 is half
+of 10, the pull of gravity rounded: about 10 metres a second, every
+second.) What shape will its graph be? Where will it cross zero?
 
 ```python exec
 id: drawing-a-curves-1
@@ -276,6 +293,54 @@ The graph is an upside-down U. It starts at 0, rises to a top of 20
 metres after 2 seconds, and comes back to 0 after 4 seconds. That is
 when the ball lands: `ball_height(4)` is 0. The top of the curve is the
 subject of [The top of the curve](tutorial:the-top-of-the-curve).
+
+The graph is not the ball's path. The ball goes straight up and down,
+and the graph spreads its heights out along a line of time. This
+animation shows both, side by side. After you have watched it once,
+change `launch_speed` on the first line to 15. Before you run it again,
+guess: will the ball land sooner or later, and when?
+
+```python exec
+id: drawing-a-curves-animation
+from matplotlib.animation import FuncAnimation
+
+launch_speed = 20        # metres a second: change it, then run the cell again
+
+
+def height_now(seconds):
+    """Return the ball's height in metres, or 0 once it is back on the grass."""
+    return max(launch_speed * seconds - 5 * seconds ** 2, 0)
+
+
+figure, (column, graph) = plt.subplots(1, 2, figsize=(4.4, 2.6), gridspec_kw={"width_ratios": [1, 4]})
+column.set_xlim(-1, 1)
+column.set_ylim(0, 32)
+column.set_xticks([])
+column.set_ylabel("metres")
+times = [step / 10 for step in range(61)]
+graph.plot(times, [height_now(t) for t in times], color="grey")
+graph.set_ylim(0, 32)
+graph.set_xlabel("seconds after the kick")
+ball, = column.plot([0], [0], "o", color="C1", markersize=9)
+dot, = graph.plot([0], [0], "o", color="C1")
+
+
+def draw_frame(frame):
+    seconds = frame * 0.25
+    ball.set_data([0], [height_now(seconds)])
+    dot.set_data([seconds], [height_now(seconds)])
+
+
+figure.tight_layout()
+FuncAnimation(figure, draw_frame, frames=25, interval=200)
+```
+
+At 20 metres a second the ball lands after 4 seconds. At 15, the grey
+curve is lower and narrower, and the ball lands after 3 seconds. Each
+landing time is a root of the rule, and
+[Solving for x](tutorial:solving-for-x) finds roots like these with no
+picture. The animation loops; run the cell again to watch it from the
+start.
 
 The graph of a quadratic function is a curve called a *parabola*. When
 the $x^2$ term has a positive coefficient, as in $x^2 - 4$, the
@@ -315,9 +380,19 @@ id: drawing-a-curves-your-turn
 
 ## Rules with gaps, and rules that race
 
-Four friends share a €60 prize, and each gets €15. Ten friends get €6
-each. The more people, the smaller each share. The share is
-$\frac{60}{x}$, and its shape comes from $\frac{1}{x}$.
+A game draws a new picture on the screen many times a second, and each
+picture is a frame. At 50 frames a second, each frame stays on the
+screen for $\frac{1000}{50} = 20$ ms. At 100 frames a second, each gets
+10 ms. The more frames, the less time each one gets. The time is
+$\frac{1000}{x}$ ms, and its shape comes from $\frac{1}{x}$.
+
+<aside class="dl-note" id="drawing-a-note-frames">
+
+**Frames in films and games.** Cinema films have been shot at 24
+frames a second since the late 1920s, when sound arrived. Many games
+aim for 60, which gives the computer about 16.7 ms to draw each frame.
+
+</aside>
 
 What happens to $\frac{1}{x}$ at $x = 0$? The cell below asks
 `plot_rule` to find out. It is meant to stop with an error.
@@ -406,10 +481,9 @@ for x in range(0, 8):
     print(x, round(close_call(x), 2))
 ```
 
-Every value in the table is above 0. The smallest are 0.24, at 3 and at
-4. From the table, you would say this rule never reaches zero. Now draw
-it. `plt.figure()` starts a second picture, which zooms in between 3
-and 4.
+Every value in the table is above 0, and the smallest are 0.24, at 3
+and at 4. From the table, the rule never reaches zero. Now draw it.
+`plt.figure()` starts a second picture, which zooms in between 3 and 4.
 
 ```python exec
 id: drawing-a-hides-2
@@ -418,14 +492,12 @@ plt.figure()
 plot_rule(close_call, 3, 4)
 ```
 
-In the first picture, the curve seems to touch the x-axis at its
-lowest point and go no further. The zoom tells a different story: the
-curve dips below the x-axis, between two rows of the table. It has two
-roots, close together, at about 3.4 and 3.6. The table was right about
-every row it had. It had no row where the dip was, and the first
-picture was drawn at a size where the dip was too small to see. Let's check
-the roots by substituting. The values are floats, so we use
-`close_enough`:
+In the first picture, the curve seems to touch the x-axis and go no
+further. The zoom tells a different story: the curve dips below the
+axis, between two rows of the table, with two roots at about 3.4 and
+3.6. I like this one: a table that is true in every row, and a picture
+that is true at its size, and both miss the dip. Let's check the roots
+by substituting, with `close_enough`, since the values are floats:
 
 ```python exec
 id: drawing-a-hides-3
@@ -436,8 +508,8 @@ print(close_enough(close_call(3.4), 0), close_enough(close_call(3.6), 0))
 Both are 0, to within a tiny float error. A table gives exact values,
 one row at a time. A graph gives the shape at a glance: where it rises
 and falls, where it turns, and how many times it crosses. A graph drawn
-from only the 8 rows of the table would have missed the dip too. That
-is why `plot_rule` works out 401 points.
+from the table's 8 rows would have missed the dip as well, which is
+why `plot_rule` works out 401 points.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
@@ -450,9 +522,9 @@ yourself, and after a few you know the shapes of lines and parabolas by
 heart. It is also what many exams ask for.
 
 We drew by computer because it makes a graph cheap, so we could draw
-many and compare them. The cost is that a picture on a screen can
-feel like the truth. The last section is there to show that a picture
-is only as good as the points behind it.
+many and compare them. The cost is that a picture on a screen can feel
+like the truth, and the last section shows that it is only as honest as
+the points behind it.
 
 </details>
 
@@ -460,9 +532,9 @@ is only as good as the points behind it.
 
 | The question | On this page |
 |---|---|
-| What is named here? | a point, by its coordinates $(x, y)$; the output, $y = f(x)$; a root, an $x$ where the value is 0; a rule, by `rule.__name__` |
+| What is named here? | a point, by its coordinates $(x, y)$; the output, $y = f(x)$; a root; a rule, by `rule.__name__` |
 | What is promised? | `plot_rule` promises the graph of any rule over a range, with the axes through 0; a graph promises only as much as its points |
-| What happens when? | the table of points is worked out first, then drawn; left of a crossing one plan is cheaper, right of it the other |
+| What happens when? | the table of points is worked out first, then drawn; left of a crossing one server is faster, right of it the other |
 | What does this space let us do? | a flat grid of pairs; $\frac{1}{x}$ has a gap at 0 and $\log_2 x$ needs $x > 0$; the ball's model means nothing after it lands |
 
 ## What we have now
@@ -480,13 +552,12 @@ is only as good as the points behind it.
 | parabola | the graph of a quadratic: a U when the $x^2$ coefficient is positive, upside down when negative |
 | a cubic's graph | turns up to twice, crosses the x-axis up to three times |
 | a gap in a graph | an $x$ outside the domain, like 0 for $\frac{1}{x}$ |
-| `plt.legend()` | shows which line is which, using each line's label |
-| `plt.figure()` | starts a new picture; what comes next is drawn on it |
+| `plt.legend()`, `plt.figure()` | a key to which line is which; a new picture |
 
 For more, the page
 [Functions and their graphs](tutorial:drawing-functions), from another
 course, draws more curves and reads answers off them.
 
 The practice page is next. On the next page,
-[Solving for x](tutorial:solving-for-x), we find where the phone plans
-meet with no picture at all.
+[Solving for x](tutorial:solving-for-x), we find where the servers'
+lines meet with no picture at all.

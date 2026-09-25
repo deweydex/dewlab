@@ -1,7 +1,7 @@
 ---
 title: "A function that calls itself: recursion"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   folders-inside-folders:
     touches: [MIT-6.8, PDP-LO6]
@@ -26,6 +26,11 @@ The photo folder on your laptop is called "Holidays". It has some photos
 in it, and some folders. Some of those folders have folders of their
 own. How many photos are there in all, counting every folder inside
 every folder?
+
+A loop cannot answer that on its own, and you will see why. The answer
+is a function that uses itself. That sounds like a circle, the kind of
+answer that says "a word means the word". Here is the surprise: done
+with care, it works, and it can be the shortest code on the page.
 
 On this page we:
 
@@ -168,6 +173,10 @@ because that is what the docstring promises. Then $n \times (n - 1)!$
 is $n!$, which is what this call promised. So the promise keeps itself,
 as long as it stops somewhere.
 
+If trusting the promise feels like cheating, that is a fair feeling to
+have here. The next section follows every call, one at a time, so you
+can see that nothing is hidden. You can read it first and come back.
+
 Every recursive function has two parts:
 
 - The *base case* is an input small enough to answer straight away,
@@ -271,6 +280,16 @@ type: fill-in-the-blank
 all, counting the first call, there are {11} calls.
 ```
 
+<aside class="dl-note" id="calls-itself-note-search">
+
+**Did you mean: recursion?** For years, a search for the word
+"recursion" on Google has come back with the line "Did you mean:
+recursion". Click it, and you are back where you started. It is a
+programmers' joke: the definition of recursion that uses recursion,
+with no base case to stop it.
+
+</aside>
+
 ## Where the promise stops: the base case
 
 What if we forget the base case? Here is `factorial_again` with its
@@ -327,7 +346,7 @@ id: calls-itself-stop-3
 print(factorial_again(3))
 ```
 
-`n` goes 2.5, 1.5, 0.5, −0.5, and steps right over 0, so the same error
+`n` goes 2.5, 1.5, 0.5, −0.5, and steps over 0, so the same error
 appears. Whole numbers from 0 up are the domain of the promise, as on
 [Machines that take a number](tutorial:machines-that-take-a-number#what-goes-in-and-what-comes-out).
 Outside it, the steps never land on the place where they stop.
@@ -407,7 +426,7 @@ title: some steps
 4. `return found` sits after the loop, at the same level as `for`.
 
 **Think about:** what does the call for an empty folder give back, and
-why is that the right answer?
+why is 0 the count it should give?
 ```
 
 Now the tests. Until `count_items` is written, the first test stops
@@ -425,11 +444,37 @@ assert count_items([1, [2, [3, [4, [5]]]]]) == 5   # items need not be names
 print("count_items keeps its promise.")
 ```
 
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one way to write it. Yours may differ and still keep the
+promise: the tests are the judge.
+
+```python
+def count_items(nested):
+    """Count the items inside nested, a list that may hold lists, at any depth.
+
+    A list inside counts for what it holds, not as an item itself.
+    count_items(["a", ["b", "c"], []]) is 3.
+    """
+    found = 0
+    for item in nested:
+        if isinstance(item, list):
+            found = found + count_items(item)
+        else:
+            found = found + 1
+    return found
+```
+
+</details>
+
 It counts 9 photos in "Holidays", where the loop found 8. It does not
 matter how deep a folder is. Each folder is counted by its own call,
 and each call only has to look one level down.
 
 ### Your turn
+
+If you have not written `count_items` yet, open the answer under the
+tests and copy it into the stub.
 
 1. A music library has a folder for each artist, and inside it a folder
    for each album. The artists' names are in comments, so that
@@ -509,11 +554,11 @@ and only then watched five calls wait inside each other.
 Many courses go the other way: trace every call first, with a diagram of
 the call stack, and let the promise come later. The trace shows that
 there is no magic, and it is the view a debugger gives you when a
-recursion goes wrong.
+recursion does something you did not expect.
 
 We led with the promise because tracing stops working quickly. You can
 trace `factorial_again(4)`. You cannot trace a folder of ten thousand
-photos. The two checks you learned, a right base case and a promise
+photos. The two checks you learned, a base case that stops and a promise
 kept for one step, work at any size. Mathematicians use the same two
 checks to prove a rule for every whole number.
 

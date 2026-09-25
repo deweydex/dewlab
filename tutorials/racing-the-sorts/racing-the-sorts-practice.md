@@ -2,14 +2,14 @@
 title: "Racing the sorts: counting steps — Practice"
 practice_for: racing-the-sorts
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Racing the sorts: counting steps — Practice
 
-Each answer is hidden until you open it. Where a problem asks you to
-predict, the prediction is the exercise, so make one before you run
-anything.
+Each answer is hidden until you open it, and each one is one way
+through: yours may go another way. Where a problem asks you to predict,
+the prediction is the exercise, so make one before you run anything.
 
 Your toolkit is loaded on this page, so `shell_sort`, `selection_sort`,
 `insertion_sort`, `binary_search` and `median` are ready to use. The
@@ -215,9 +215,11 @@ gives `True`, because it has no pair out of order.
 
 </details>
 
-**7. Fix.** Someone wrote their own Shell sort to sort parkrun finishing
-times, in seconds. The cell is meant to fail. Read the last line of the
-error, find the one mistake, and fix it.
+**7. Fix.** Schlomi, who is learning Python too, wrote her own Shell
+sort to put the sizes of eight photos in order, in kilobytes. Halving
+the gap is dividing by 2, so she wrote `gap / 2`. That is a fair
+reading of "halve". The cell is meant to fail. Read the last line of
+the error, find the line that stops it, and change it.
 
 ```python exec
 id: racing-practice-fix-gap
@@ -260,7 +262,8 @@ on? Would the loop ever end?
 
 `gap = gap / 2` makes `gap` a float: 4 becomes 2.0. `range(2.0, 8)`
 cannot count from a float, so the second pass stops with a
-`TypeError`. The fix is whole-number division:
+`TypeError`. Schlomi's halving needs to stay in the whole numbers,
+which is floor division:
 
 ```python
         gap = gap // 2
@@ -272,8 +275,10 @@ Now it prints `[1288, 1320, 1390, 1411, 1507, 1533, 1602, 1745]`. With
 
 </details>
 
-**8. Fix.** This cell times `shell_sort` on 1,000 values, but it prints
-a time below zero. Find the mistake.
+**8. Fix.** Schlomo, who is learning Python too, times `shell_sort` on
+1,000 values. He reads the clock before the sort and after it, and
+subtracts one from the other. His cell prints a time below zero. Which
+line needs to change?
 
 ```python exec
 id: racing-practice-fix-timer
@@ -286,9 +291,10 @@ print(round(seconds * 1000, 2), "ms")
 
 <details class="dl-answer"><summary>answer</summary>
 
-The subtraction is the wrong way round. The clock reading after the
-sort is the bigger number, so the time taken is the later reading
-minus the earlier one:
+The two readings are the plan Schlomo needs. The subtraction runs the
+other way round from what he meant. The clock reading after the sort
+is the bigger number, so the time taken is the later reading minus the
+earlier one:
 
 ```python
 seconds = time.perf_counter() - start
@@ -364,7 +370,8 @@ way would you have taught sorting, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no single right answer. A good answer weighs a few things.
+There is more than one answer worth giving. Here are some things an
+answer might weigh.
 
 - What each way lets a reader do soon. Starting from `sorted()` gets
   real work done on day one, which is how most programmers work.
@@ -377,8 +384,8 @@ There is no single right answer. A good answer weighs a few things.
 - The cost in time and patience. Three sorts take hours that could go
   elsewhere.
 
-A strong answer also says who the course is for, since the best choice
-changes with the reader.
+It also helps to say who the course is for, since the choice changes
+with the reader.
 
 </details>
 

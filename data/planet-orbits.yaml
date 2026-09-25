@@ -1,0 +1,27 @@
+# Attribution for data/planet-orbits.csv.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the numbers they are working with back to their source.
+
+source: >
+  NASA Space Science Data Coordinated Archive, "Planetary Fact Sheet -
+  Metric", compiled by David R. Williams, NASA Goddard Space Flight Center,
+  last updated 18 March 2025. https://nssdc.gsfc.nasa.gov/planetary/factsheet/
+
+license: >
+  Public domain. It is a work of NASA, a United States government agency,
+  and NASA does not claim copyright on it.
+
+snapshot: 2026-09-25
+
+description: >
+  The eight planets of the solar system, one row each, in order from the
+  Sun. Three columns: planet; distance_million_km, the fact sheet's
+  "Distance from Sun" in millions of kilometres, which its notes define
+  as the average distance, the semi-major axis; and orbit_days, the fact
+  sheet's "Orbital Period" in Earth days, which its notes define as the
+  tropical period, from one spring equinox to the next. For the outer
+  planets that is a little shorter than a full turn against the stars
+  (Neptune's is 59,800 days against 60,189). Every other row of the fact
+  sheet is left out, and so are its columns for the Moon and Pluto. The
+  numbers are as the fact sheet prints them, with the thousands commas
+  removed.

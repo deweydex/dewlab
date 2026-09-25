@@ -105,16 +105,17 @@ It prints `7.0`.
 
 **4. Explain.** On
 [Drawing a rule](tutorial:drawing-a-rule#straight-lines-and-where-two-meet),
-phone plan B cost €20 a month, however many gigabytes you used. Why is
-the slope of plan B 0? What does that slope mean for a customer?
+server B answered in 20 ms, however many people used the app. Why is
+the slope of server B 0? What does that slope mean for someone using
+the app?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Plan B's graph is a flat line: the cost does not change as the
-gigabytes change. A slope says how much the output changes for each
-step of the input, and here it changes by nothing. For a customer, each
-extra gigabyte costs €0 more. Plan A's slope is 2: each extra gigabyte
-costs €2 more.
+Server B's graph is a flat line: the time does not change as the crowd
+changes. A slope says how much the output changes for each step of the
+input, and here it changes by nothing. For someone using the app, each
+extra thousand people add 0 ms. Server A's slope is 2: each extra
+thousand people add 2 ms.
 
 </details>
 

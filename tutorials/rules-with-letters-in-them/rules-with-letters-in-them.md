@@ -1,7 +1,7 @@
 ---
 title: "Rules with letters in them: expressions, equations and identities"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   a-rule-a-question-and-a-promise:
     covers: [MIT-1.5]
@@ -17,13 +17,14 @@ covers:
 
 # Rules with letters in them: expressions, equations and identities
 
-A pancake recipe says: use 50 g of flour for each person, and 30 g
-more, because the first pancake always goes wrong. You have 280 g of
-flour. How many people can you feed?
+Open a photo gallery on a website. The page has a header 30 pixels
+tall, and under it rows of photos, each row 50 pixels tall. Your
+browser window is 280 pixels tall. How many rows fit?
 
-The first sentence is a rule: it works for any number of people. The
-second is a question: it has one answer. Algebra writes both with the
-same letters. So what is the difference between a rule and a question?
+The sentence about the page is a rule: it works for any number of
+rows. "How many rows fit?" is a question: it has one answer. Algebra writes both with the
+same letters and the same equals sign. So how can you tell a rule from
+a question?
 
 On this page we:
 
@@ -32,8 +33,8 @@ On this page we:
 - put a number in for a letter, and add `evaluate` to the toolkit
 - keep an expression like $3x^2 + 5x - 2$ as a list of numbers
 - simplify an expression by collecting the parts that belong together
-- multiply out brackets with a loop, into quadratics and cubics, and
-  check every answer by putting numbers back in
+- multiply out brackets with a loop, and find the three weights that
+  draw a curve on a screen
 
 > **The space we're in.** The real numbers, and one letter at a time,
 > usually $x$. A letter stands for a number, so any move we may make with
@@ -67,61 +68,71 @@ type: fill-in-the-blank
 
 ## A rule, a question and a promise
 
-Let's write the recipe's rule with a letter. If $p$ is the number of
-people, the flour in grams is
+Let's write the gallery's rule with a letter. If $n$ is the number of
+rows, the page's height in pixels is
 
-$$50p + 30$$
+$$50n + 30$$
 
 On
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#which-comes-first),
 an expression was a piece of code that Python works out to one value.
 In maths, an expression can have letters in it too: it is a rule made
-of numbers, letters and operations, such as $50p + 30$ or $x^2 - 4$. It
-has a value once each letter has a value. Here $p$ is a name for any
+of numbers, letters and operations, such as $50n + 30$ or $x^2 - 4$. It
+has a value once each letter has a value. Here $n$ is a name for any
 number we choose to put in, like the parameter of a function.
 
-Now the question. "Which $p$ needs exactly 280 g?" is written
+Now the question. "How many rows make exactly 280 pixels?" is written
 
-$$50p + 30 = 280$$
+$$50n + 30 = 280$$
 
 An *equation* is a sentence that says two expressions are equal. It can
-be true for some values of the letter and false for others. Here $p$ is
+be true for some values of the letter and false for others. Here $n$ is
 a name for a number we do not know yet. To *solve* an equation is to
 find the values that make it true.
 
-There is a third kind of sentence. Say you double the recipe for two
-tables. Is doubling the whole rule the same as doubling each part?
+There is a third kind of sentence. Put two gallery pages one under the
+other, each with its own header. Is doubling the whole rule the same as
+doubling each part?
 
-$$2(50p + 30) = 100p + 60$$
+$$2(50n + 30) = 100n + 60$$
 
 An *identity* is an equation that is true for every value of its
-letters. Here $p$ is a name for every number at once. An identity is a
+letters. Here $n$ is a name for every number at once. An identity is a
 promise: whatever number you put in, the two sides agree.
 
-The cell tries 1 to 8 people. For each row, it prints the flour, then
-asks the equation, then asks the identity. Which rows do you expect to
-say `True` in each column? Run it to check.
+The cell tries 1 to 8 rows, and asks the equation and the identity
+of each. Pause here and guess which rows will say `True` in each
+column. Then run it.
 
 ```python exec
 id: rules-with-kinds-1
-def flour_needed(people):
-    """Return the grams of flour the pancake recipe needs for this many people."""
-    return 50 * people + 30
+def page_height(rows):
+    """Return the gallery page's height in pixels: a 30 px header and rows 50 px tall."""
+    return 50 * rows + 30
 
-for people in range(1, 9):
-    print(people, flour_needed(people),
-          flour_needed(people) == 280,
-          2 * flour_needed(people) == 100 * people + 60)
+for rows in range(1, 9):
+    print(rows, page_height(rows),
+          page_height(rows) == 280,
+          2 * page_height(rows) == 100 * rows + 60)
 ```
 
-The equation is true in one row only: 5 people. The identity is true in
-every row. Checking 8 values does not prove the identity for every
-number, but it tells us a lot. A single `False` would have been enough
-to show that it is not an identity.
+The equation is true in one row only: 5 rows fit exactly. The identity
+is true in every row. Eight values do not prove it for every number,
+but a single `False` would have been enough to show it is not an
+identity.
 
-Look at the two kinds of equals sign in the cell. In Python, `=` gives a
-name a value, and `==` asks whether two values are equal. Maths uses one
-sign, $=$, for both jobs, and the reader has to tell which one is meant.
+In Python, `=` gives a name a value, and `==` asks whether two values
+are equal. Maths uses one sign, $=$, for both jobs, and the reader has
+to tell which is meant. I think Python does us a favour by splitting
+them.
+
+<aside class="dl-note" id="rules-with-note-equals">
+
+**Two lines of the same length.** The sign $=$ was first printed in
+1557, by the Welsh doctor Robert Recorde. He chose two lines of the
+same length because, he wrote, no two things can be more equal.
+
+</aside>
 
 ```question
 id: rules-with-kinds-2
@@ -151,8 +162,8 @@ print((3 * x) ** 2 + 5 * x - 2)
 ```
 
 The first line is $3 \times 4 - 10 - 2 = 0$. The second squares $-6$,
-and gives 24. The brackets moved the power to a different place in the
-sequence of steps, and the answer changed.
+and gives 24. The brackets moved the power to a new place in the
+sequence of steps.
 
 ### Terms, coefficients and a list
 
@@ -165,10 +176,8 @@ $x^0 = 1$, as on
 
 A *polynomial* is an expression made by adding terms like these, where
 every power is a whole number, 0 or more. Its *degree* is its highest
-power. A polynomial of degree 1, like $50p + 30$, is *linear*. Degree 2
-is quadratic, the word
-[Racing the sorts](tutorial:racing-the-sorts) used for growth like
-$n^2$. Degree 3 is *cubic*.
+power. A polynomial of degree 1, like $50n + 30$, is *linear*. Degree 2
+is quadratic, and degree 3 is *cubic*.
 
 A polynomial is its list of coefficients. We write the list lowest power
 first, so that each coefficient's index is its power:
@@ -176,7 +185,7 @@ first, so that each coefficient's index is its power:
 | Polynomial | List | Why |
 |---|---|---|
 | $3x^2 + 5x - 2$ | `[-2, 5, 3]` | $-2x^0$, $5x^1$, $3x^2$ |
-| $50p + 30$ | `[30, 50]` | the constant first, then the $p$ term |
+| $50n + 30$ | `[30, 50]` | the constant first, then the $n$ term |
 | $x^3 - 4x$ | `[0, -4, 0, 1]` | no constant and no $x^2$: each still needs its place, as 0 |
 
 ```question
@@ -208,6 +217,9 @@ Replace the `...` with a loop:
    `coefficients[power] * x ** power` to it.
 3. After the loop, give back the running total.
 
+If the loop feels like hard work, open the hints under the cell, or
+the answer under the tests, and come back to your own version later.
+
 ```python exec
 id: rules-with-toolkit
 toolkit: yes
@@ -235,8 +247,8 @@ def evaluate(coefficients, x):
 ```
 
 ```hint
-Try `print(evaluate([30, 50], 5))` on its own. The recipe for 5 people
-needs 280 g. What came back instead?
+Try `print(evaluate([30, 50], 5))` on its own. Five rows of the gallery
+make 280 pixels. What came back instead?
 ```
 
 ```hint
@@ -258,7 +270,7 @@ it.
 
 ```python exec
 id: rules-with-toolkit-tests
-assert evaluate([30, 50], 5) == 280, "flour for 5 people"
+assert evaluate([30, 50], 5) == 280, "the gallery with 5 rows"
 assert evaluate([-2, 5, 3], -2) == 0
 assert evaluate([7], 100) == 7, "a constant has the same value for every x"
 for x in range(-10, 11):
@@ -268,27 +280,47 @@ assert close_enough(evaluate([-2, 5, 3], 0.1), 3 * 0.1 ** 2 + 5 * 0.1 - 2)
 print("evaluate keeps its promise.")
 ```
 
+<details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may use other names and keep the same promise.
+
+```python
+def evaluate(coefficients, x):
+    """Return the value of a polynomial when its letter is x.
+
+    coefficients lists the number in front of each power, lowest power
+    first: [-2, 5, 3] is 3x^2 + 5x - 2.
+    """
+    value = 0
+    for power in range(len(coefficients)):
+        value = value + coefficients[power] * x ** power
+    return value
+```
+
+</details>
+
 The last test uses `close_enough` from
-[Does it work?](tutorial:does-it-work#close-enough), because 0.1 is a
-float, and two routes to the same float answer can differ in the last
-digit.
+[Does it work?](tutorial:does-it-work#close-enough): 0.1 is a float,
+and two routes to a float can differ in the last digit.
 
 ## Collecting like terms
 
-A band plays two nights and is paid $x$ euro for each ticket. On Friday
-it sells 120 tickets and pays €300 for the hall. On Saturday it sells 80
-tickets and pays €200. Its takings for the weekend are
+If you have not written `evaluate` yet, open the answer under the tests
+and copy it into the stub.
 
-$$120x - 300 + 80x - 200$$
+A longer gallery page has two sections. The top one has 4 rows of
+photos, each $x$ pixels tall, and a 30-pixel header. The bottom one has
+3 rows and a 50-pixel footer. The page's height is
+
+$$4x + 30 + 3x + 50$$
 
 That is four terms, and it can be shorter. *Like terms* are terms with
-the same power of the letter. $120x$ and $80x$ are like terms: 120 lots
-of $x$ and 80 more lots of $x$ make 200 lots. The two constants are like
-terms too. To *simplify* an expression is to write it with fewer parts
+the same power of the letter: $4x$ and $3x$ make $7x$, and the two
+constants are like terms too. To *simplify* an expression is to write it with fewer parts
 and the same value. *Collecting like terms*, adding their coefficients,
 is one way:
 
-$$120x - 300 + 80x - 200 = 200x - 500$$
+$$4x + 30 + 3x + 50 = 7x + 80$$
 
 $x^2$ and $x$ are not like terms, so $x^2 + x$ stays as it is.
 
@@ -297,7 +329,7 @@ all at index 1. So collecting like terms is adding two lists place by
 place, as on
 [A row of numbers](tutorial:a-row-of-numbers#adding-and-multiplying-lists).
 The lists may have different lengths, so the new list is as long as the
-longer one. Before you run it, what list do you expect for the weekend?
+longer one. Before you run it, what list do you expect for the page?
 
 ```python exec
 id: rules-with-collect-1
@@ -310,22 +342,21 @@ def add_polynomials(first, second):
         collected[power] = collected[power] + second[power]
     return collected
 
-friday = [-300, 120]
-saturday = [-200, 80]
-weekend = add_polynomials(friday, saturday)
-print(weekend)
+top_section = [30, 4]
+bottom_section = [50, 3]
+whole_page = add_polynomials(top_section, bottom_section)
+print(whole_page)
 
-for ticket_price in [5, 10, 12.5]:
-    print(ticket_price, evaluate(weekend, ticket_price),
-          evaluate(friday, ticket_price) + evaluate(saturday, ticket_price))
+for row_height in [50, 100, 120]:
+    print(row_height, evaluate(whole_page, row_height),
+          evaluate(top_section, row_height) + evaluate(bottom_section, row_height))
 ```
 
-The list is `[-500, 200]`, which is $200x - 500$. The last three lines
-check it by substitution. At each ticket price, the short expression and
-the long one give the same takings. When is the weekend's total exactly
-zero? That is an equation, $200x - 500 = 0$, and
-[Solving for x](tutorial:solving-for-x) is where we solve equations like
-it.
+The list is `[80, 7]`, which is $7x + 80$. The last three lines check it
+by substitution: for each row height, the short and the long expression
+agree. Which rows make the page exactly 780 pixels tall? That is an
+equation, $7x + 80 = 780$, and
+[Solving for x](tutorial:solving-for-x) solves equations like it.
 
 ### Your turn
 
@@ -333,8 +364,7 @@ it.
 2. Check your answer with `add_polynomials([-1, 3, 4], [6, -3, 2])`.
    What happened to the $x$ term, and why does the list still have a
    place for it?
-3. Check again by substitution: compare `evaluate` on your answer with
-   the two original expressions added, for three values of $x$.
+3. Check by substitution, for three values of $x$.
 
 ```python exec
 id: rules-with-collect-your-turn
@@ -343,13 +373,14 @@ id: rules-with-collect-your-turn
 
 ## Expanding brackets is a loop
 
-A square patio is $x$ metres on each side. The owner makes it 3 m longer
-one way and 5 m longer the other way. The new area is $(x + 3)(x + 5)$
-square metres.
+A square photo is $x$ pixels on each side. An app adds a strip 3 pixels
+wide down its right side, and a caption bar 5 pixels tall along the
+bottom. The new rectangle is $x + 3$ wide and $x + 5$ tall, so it
+covers $(x + 3)(x + 5)$ pixels.
 
-Picture the new rectangle cut into four pieces: the old square, a strip
-$x$ by 5, a strip 3 by $x$, and a small corner, 3 by 5. Each piece is
-one term of the first bracket times one term of the second:
+Picture the rectangle cut into four pieces: the photo, the strip, the
+bar, and a small corner, 3 by 5. Each piece is one term of the first
+bracket times one term of the second:
 
 | times | $x$ | $5$ |
 |---|---|---|
@@ -381,8 +412,8 @@ def expand_brackets(first, second):
             expanded[i + j] = expanded[i + j] + first[i] * second[j]
     return expanded
 
-patio = expand_brackets([3, 1], [5, 1])
-print(patio)
+photo_with_bars = expand_brackets([3, 1], [5, 1])
+print(photo_with_bars)
 ```
 
 It prints `[15, 8, 1]`, which is $x^2 + 8x + 15$. Is the expansion an
@@ -392,17 +423,18 @@ brackets itself:
 ```python exec
 id: rules-with-expand-2
 for side in range(-20, 21):
-    assert evaluate(patio, side) == (side + 3) * (side + 5)
+    assert evaluate(photo_with_bars, side) == (side + 3) * (side + 5)
 print("The two sides agree for every whole number from -20 to 20.")
 ```
 
 Here the check says more than it seems to. Two different quadratics can
 agree at two values of $x$ at most. So if two quadratics agree at three
-or more values, they are the same quadratic. The 41 values we tried are
-a proof.
+or more values, they are the same quadratic, and the 41 values we tried
+are a proof. I find that surprising: three checks cover every number
+there is.
 
-A loop that multiplies two brackets can multiply three: expand two of
-them, then multiply the answer by the third. How long will the list for
+The loop can multiply three brackets too: expand two, then multiply
+the answer by the third. How long will the list for
 $(x + 1)(x + 2)(x + 3)$ be?
 
 ```python exec
@@ -412,11 +444,55 @@ print(cubic)
 
 for x in range(-10, 11):
     assert evaluate(cubic, x) == (x + 1) * (x + 2) * (x + 3)
-print("It checks out.")
+print("Every value from -10 to 10 agrees.")
 ```
 
 It is `[6, 11, 6, 1]`: the cubic $x^3 + 6x^2 + 11x + 6$. Three linear
 brackets make a cubic, and two make a quadratic.
+
+### Three weights for a curve
+
+Fonts and drawing programs draw a smooth curve by mixing three
+points: a start, an end, and a point in between that pulls the curve.
+A number $t$ runs from 0 at the start to 1 at the end, and the three
+points get three *weights*: $(1 - t)^2$, $2t(1 - t)$ and $t^2$. Each
+weight is brackets multiplied together, so the loop can expand it.
+What will each weight be at $t = 0$?
+
+```python exec
+id: rules-with-expand-weights-1
+start_weight = expand_brackets([1, -1], [1, -1])      # (1 - t)(1 - t)
+middle_weight = expand_brackets([0, 2], [1, -1])      # 2t times (1 - t)
+end_weight = expand_brackets([0, 1], [0, 1])          # t times t
+print(start_weight, middle_weight, end_weight)
+
+for t in [0, 0.25, 0.5, 1]:
+    print(t, evaluate(start_weight, t), evaluate(middle_weight, t), evaluate(end_weight, t))
+```
+
+At $t = 0$ all the weight is on the start, and at $t = 1$ all of it is
+on the end. Halfway, the middle point gets half. Before you run the
+next cell, what do the three weights add up to, as a polynomial?
+
+```python exec
+id: rules-with-expand-weights-2
+all_three = add_polynomials(add_polynomials(start_weight, middle_weight), end_weight)
+print(all_three)
+```
+
+`[1, 0, 0]`: the number 1, with no $t$ at all. Three weights that rise
+and fall add up to a flat 1, for every $t$. That identity is why the
+mix works: the weights always share out one whole. On
+[The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line),
+these three weights draw the bottom of a letter o.
+
+<aside class="dl-note" id="rules-with-note-bernstein">
+
+**Weights with a name.** These weights are called Bernstein
+polynomials, after Sergei Bernstein, who used them in 1912 to show that
+polynomials can come as close as you like to any unbroken curve.
+
+</aside>
 
 ### A move that works once
 
@@ -432,12 +508,12 @@ for x in range(-3, 4):
 print(expand_brackets([3, 1], [3, 1]))
 ```
 
-It is true for $x = 0$ only, so it is an equation with one answer, and
-not an identity. The expansion, `[9, 6, 1]`, shows what went missing:
+It is true for $x = 0$ only: an equation with one answer, not an
+identity. The expansion, `[9, 6, 1]`, shows what went missing:
 $(x + 3)^2 = x^2 + 6x + 9$. For any number $a$, the same grid gives
-$(x + a)^2 = x^2 + 2ax + a^2$. In the patio picture, $x^2 + 9$ keeps the
-big square and the small corner, and forgets the two strips, each $3x$.
-The move is right in the one case where the strips have no width: when
+$(x + a)^2 = x^2 + 2ax + a^2$. In the photo picture, $x^2 + 9$ keeps the
+photo and the small corner, and forgets the strip and the bar, each
+$3x$. The move works in the one case where they have no length: when
 $x$ is 0.
 
 ### Your turn
@@ -455,19 +531,18 @@ id: rules-with-expand-your-turn
 
 <details class="dl-why"><summary>Why this way?</summary>
 
-This page checked every piece of algebra by putting numbers in: the
-pancake identity, the band's takings, the patio's area. A second way is
-to prove each step from rules, such as "multiply each term inside the
-bracket", and never try a number.
+This page checked every piece of algebra by putting numbers in. A
+second way is to prove each step from rules, such as "multiply each
+term inside the bracket", and never try a number.
 
 Proof by rules is what algebra is for, in the end. It covers every
 number at once, and a list of checks never can, except in special cases
 like the quadratics above.
 
 We checked with numbers because a check is something you can run and
-trust, even before you trust the rules. It also finds a mistake at once.
-The cost is that a passing check can feel like more than it is: it
-shows a rule works for the numbers you tried.
+trust before you trust the rules, and it shows at once where two sides
+part. The cost is that a passing check shows a rule works only for the
+numbers you tried.
 
 </details>
 
@@ -475,27 +550,27 @@ shows a rule works for the numbers you tried.
 
 | The question | On this page |
 |---|---|
-| What is named here? | a letter, which names any number (an expression), an unknown number (an equation) or every number at once (an identity); a polynomial, named by its list of coefficients |
-| What is promised? | an identity promises that its two sides agree for every value; `evaluate` promises the value of a polynomial at $x$ |
+| What is named here? | a letter: any number, an unknown number, or every number at once; a polynomial, by its list of coefficients |
+| What is promised? | an identity promises that its two sides agree for every value; `evaluate` promises the value of a polynomial at $x$; the three weights promise to add up to 1 |
 | What happens when? | powers before multiplying; expand first, then collect like terms; in `expand_brackets`, every $i$ meets every $j$ |
-| What does this space let us do? | any move we may make with a number, we may make with a letter; Python needs a value for each name, so we check by substituting |
+| What does this space let us do? | any move we make with a number, we may make with a letter; Python needs a value for each name, so we check by substituting |
 
 ## What we have now
 
 | Term or tool | What it means |
 |---|---|
 | expression | a rule of numbers, letters and operations; it has a value once each letter has one |
-| equation, solving | a sentence saying two expressions are equal; solving finds the values that make it true |
+| equation, solving | two expressions said to be equal; solving finds the values that make it true |
 | identity | an equation true for every value of its letters |
-| evaluate, substitution | work out an expression's value by putting a number in place of its letter |
+| evaluate, substitution | work out an expression's value by putting a number in for its letter |
 | term, coefficient, constant term | a number times a power of the letter; the number in front; the term with no letter |
-| polynomial, degree | a sum of terms with whole-number powers; its highest power |
-| linear, quadratic, cubic | degree 1, 2 and 3 |
+| polynomial, degree | a sum of terms with whole-number powers; its highest power (1 linear, 2 quadratic, 3 cubic) |
 | a polynomial as a list | coefficients lowest power first: `[-2, 5, 3]` is $3x^2 + 5x - 2$ |
 | `evaluate(coefficients, x)` | your toolkit function: a polynomial's value at $x$ |
 | like terms, collecting, simplifying | terms with the same power; add their coefficients; fewer parts, same value |
-| expanding brackets | multiply every term of one bracket by every term of the other, then collect |
-| $(x + a)^2 = x^2 + 2ax + a^2$ | a squared bracket: the big square, two strips of $ax$, and the small corner |
+| expanding brackets | every term of one bracket times every term of the other, then collect |
+| $(x + a)^2 = x^2 + 2ax + a^2$ | a squared bracket: two strips of $ax$ as well as the two squares |
+| weights for a curve | $(1 - t)^2$, $2t(1 - t)$ and $t^2$, which add up to 1 for every $t$ |
 
 For more, the page
 [Polynomials: representing and combining them in Python](tutorial:expressions-come-alive),

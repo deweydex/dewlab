@@ -54,6 +54,11 @@ entries:
     definition: >
       O(n) and O(log n) are how programmers write those two kinds of
       growth. They are said "order n" and "order log n".
+  - term: exoplanet
+    kind: concept
+    definition: >
+      An exoplanet is a planet that goes round a star other than the Sun.
+      NASA's Exoplanet Archive keeps a list of every one found so far.
   - term: "list.index()"
     kind: function
     python: list.index

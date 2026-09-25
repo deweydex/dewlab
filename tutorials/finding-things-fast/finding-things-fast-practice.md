@@ -2,17 +2,18 @@
 title: "Finding things fast: linear and binary search — Practice"
 practice_for: finding-things-fast
 year: "2026-2027"
-version: 2026.09.24.1
-datasets: [life-expectancy]
+version: 2026.09.25.1
+datasets: [exoplanets, life-expectancy]
 ---
 
 # Finding things fast: linear and binary search — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
-way** means reach the same place by a second route. The answers are
-folded away until you open them.
+run. **Make** means write something new. **Fix** means find the one
+line in some code that does not do what its writer meant, and change
+it. **Explain** means answer in words. **Another way** means reach the
+same place by a second route. The answers are folded away until you
+open them, and each one is one way through: yours may go another way.
 
 Your toolkit is loaded on this page: `linear_search` and
 `binary_search` from the tutorial, and `largest`, `mean`, `total` and
@@ -73,35 +74,36 @@ print(math.log2(16))
 
 </details>
 
-**3. Make.** Here is a shopping list for a curry. Use `linear_search`
-to find where `"coconut milk"` is, and print it with a sentence. Then
-search for `"rice"`, which someone forgot to write down.
+**3. Make.** Here are the files in a folder, in the order they were
+saved. Use `linear_search` to find where `"report.pdf"` is, and print
+it with a sentence. Then search for `"backup.zip"`, which nobody made.
 
 ```python
-shopping = ["onions", "garlic", "ginger", "coconut milk", "spinach", "chickpeas"]
+folder = ["notes.txt", "photo.png", "song.mp3", "report.pdf", "data.csv", "map.svg"]
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-shopping = ["onions", "garlic", "ginger", "coconut milk", "spinach", "chickpeas"]
-print("coconut milk is at index", linear_search(shopping, "coconut milk"))
-print("rice is at index", linear_search(shopping, "rice"))
+folder = ["notes.txt", "photo.png", "song.mp3", "report.pdf", "data.csv", "map.svg"]
+print("report.pdf is at index", linear_search(folder, "report.pdf"))
+print("backup.zip is at index", linear_search(folder, "backup.zip"))
 ```
 
-Coconut milk is at index 3, the fourth item. Rice gives −1: time to add
-it to the list.
+The report is at index 3, the fourth file. The backup gives −1, after
+the search has looked at all six files.
 
 </details>
 
-**4. Explain.** A friend writes their own search. It gives back 0 when
-the target is not there. What goes wrong when they use it?
+**4. Explain.** Schlomo, who is learning Python too, writes his own
+search. It gives back 0 when the target is not there. His reason is a
+fair one: 0 is the usual number for "nothing". What happens when he
+uses his search?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0 is a real index: it means "found, at the front". So a search that
-also gives 0 for "not there" says the same thing about two different
-answers. A program cannot tell "the first contact is Aoife" from "there
+0 is a real index: it means "found, at the front". So Schlomo's search
+says the same thing about two different results. A program cannot tell "the first contact is Aoife" from "there
 is no Aoife", and it would dial the first contact's number either way.
 A "not found" answer has to be a value that can never be a real
 answer. −1 works in many languages, as long as the caller checks for
@@ -158,29 +160,29 @@ else:
 
 </details>
 
-**6. Fix.** A coach wants to know where a player is in the team list.
-This search finds the first player, but says −1 for every other player,
-even ones on the team. Run it, then find the mistake.
+**6. Fix.** A laptop keeps a list of the Wi-Fi networks it has joined.
+This search finds the first network, but says −1 for every other one,
+even ones on the list. Run it, then find the line that stops it.
 
 ```python exec
-id: finding-fast-practice-fix-team
-def find_player(team, name):
-    """Return the index of name in team, or -1 if name is not there."""
-    for i in range(len(team)):
-        if team[i] == name:
+id: finding-fast-practice-fix-wifi
+def find_network(networks, name):
+    """Return the index of name in networks, or -1 if name is not there."""
+    for i in range(len(networks)):
+        if networks[i] == name:
             return i
         else:
             return -1
 
 
-team = ["Katie", "Ciara", "Aimée", "Orlaith", "Sinéad"]
-print(find_player(team, "Katie"))
-print(find_player(team, "Orlaith"))
+networks = ["eduroam", "HomeNet", "Library-Guest", "Station-WiFi", "Phone-Hotspot"]
+print(find_network(networks, "eduroam"))
+print(find_network(networks, "Station-WiFi"))
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Follow the loop by hand for "Orlaith". What happens at `i = 0`?
+1. Follow the loop by hand for "Station-WiFi". What happens at `i = 0`?
 2. `return` ends the whole function at once. How many names does this
    function ever look at?
 3. When do we really know that a name is not there?
@@ -198,16 +200,16 @@ the others. We only know that a name is missing after the loop has
 looked at every name, so `return -1` belongs after the loop:
 
 ```python
-def find_player(team, name):
-    """Return the index of name in team, or -1 if name is not there."""
-    for i in range(len(team)):
-        if team[i] == name:
+def find_network(networks, name):
+    """Return the index of name in networks, or -1 if name is not there."""
+    for i in range(len(networks)):
+        if networks[i] == name:
             return i
     return -1
 
 
-print(find_player(team, "Katie"))
-print(find_player(team, "Orlaith"))
+print(find_network(networks, "eduroam"))
+print(find_network(networks, "Station-WiFi"))
 ```
 
 Now it prints 0 and 3.
@@ -241,33 +243,37 @@ new index.
 
 </details>
 
-**8. Another way.** Load the countries from the tutorial, and find
-Ireland three ways: with `binary_search`, with `linear_search`, and with
-Python's own `.index()`. Do all three agree? Then ask each one for
-`"Atlantis"`.
+**8. Another way.** Load the planets from the tutorial, and find
+Proxima Cen b three ways: with `binary_search` on the sorted names,
+with `linear_search`, and with Python's own `.index()`. Then ask each
+one for `"Vulcan"`, a planet astronomers once looked for inside the
+orbit of Mercury, and never found.
 
 ```python exec
-id: finding-fast-practice-countries
-df = await load_csv("life-expectancy.csv")
-countries = df[df.year == 2016]["country"].tolist()
-print(len(countries))
+id: finding-fast-practice-planets
+df = await load_csv("exoplanets.csv")
+planets = df["name"].tolist()
+planets_in_order = sorted(planets)
+print(len(planets), "planets, on 25 September 2026")
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-print(binary_search(countries, "Ireland"))
-print(linear_search(countries, "Ireland"))
-print(countries.index("Ireland"))
-print(binary_search(countries, "Atlantis"))
-print(linear_search(countries, "Atlantis"))
+print(binary_search(planets_in_order, "Proxima Cen b"))
+print(linear_search(planets, "Proxima Cen b"))
+print(planets.index("Proxima Cen b"))
+print(binary_search(planets_in_order, "Vulcan"))
+print(linear_search(planets, "Vulcan"))
 ```
 
-All three give 97 for Ireland. For Atlantis, both of your tools give
-−1. `countries.index("Atlantis")` does not: it stops with
-`ValueError: 'Atlantis' is not in list`. The same search, with a
-different promise about what happens when the target is missing. An
-error is harder to miss than a −1, which is one reason Python chose it.
+The binary search gives 5185, an index in the sorted list. The other
+two give 4914, an index in the list as the file gave it. Those are two
+different lists, so two different indexes both point at Proxima Cen b.
+For Vulcan, both of your tools give −1. `planets.index("Vulcan")` does
+not: it stops with `ValueError: 'Vulcan' is not in list`. That is the
+same search, with a different promise about a missing target. An error
+is harder to miss than a −1, which is one reason Python chose it.
 
 </details>
 
@@ -331,14 +337,16 @@ secret needs is 7, as the tutorial's halving chain said.
 **10. Explain.** On
 [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950)
 we made the list `ireland`, of life expectancy in each year from 1950
-to 2016. It rises from 65.6 to 81.1. Someone wants a binary search to
-find the first year it reached 70. Why can we not trust a binary search
-on this list, even though the numbers mostly go up?
+to 2016. It rises from 65.6 to 81.1. Schlomi, who is learning Python
+too, has a quick idea: the numbers go up, so a binary search can find
+the first year it reached 70. Can we trust a binary search on this
+list, when the numbers only mostly go up?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A binary search needs the list to be in order all the way along. This
-list is not: that page found ten years where life expectancy fell. It
+Not quite. Schlomi's idea works on a list that is in order all the way
+along, and this list is not: that page found ten years where life
+expectancy fell. It
 passed 70 in 1960, at 70.23, and fell back to 69.69 in 1961. A binary
 search that looks at one year and sees 69.69 decides that every
 earlier year is lower, which is false. Mostly sorted is not sorted. For
@@ -347,73 +355,78 @@ keeps its promise.
 
 </details>
 
-**11. Fix.** A café's prices are sorted, cheapest first. This binary
-search finds some prices, but not €21, even though it is on the menu.
-Run it, then find the mistake. Which other prices does it miss?
+**11. Fix.** A server keeps a sorted list of the network *ports* it
+listens on: numbered doors for different kinds of traffic, such as 443
+for secure web pages. Schlomo, who is learning Python too, wrote this
+binary search. His idea: when `low` and `high` meet, only one port is
+left, so the search can stop there. It finds some ports, but not 9000,
+which is on the list. Run it. Which other ports does it miss? Change
+the one line that makes it miss them.
 
 ```python exec
-id: finding-fast-practice-fix-prices
-def find_price(sorted_prices, target):
-    """Return an index where target is in sorted_prices, or -1."""
+id: finding-fast-practice-fix-ports
+def find_port(sorted_ports, target):
+    """Return an index where target is in sorted_ports, or -1."""
     low = 0
-    high = len(sorted_prices) - 1
+    high = len(sorted_ports) - 1
     while low < high:
         middle = (low + high) // 2
-        if sorted_prices[middle] == target:
+        if sorted_ports[middle] == target:
             return middle
-        if sorted_prices[middle] < target:
+        if sorted_ports[middle] < target:
             low = middle + 1
         else:
             high = middle - 1
     return -1
 
 
-prices = [2, 5, 8, 13, 21]
-for price in prices:
-    print(price, find_price(prices, price))
+ports = [22, 80, 443, 8080, 9000]
+for port in ports:
+    print(port, find_port(ports, port))
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Follow the search for 21 on paper, with columns for `low`, `high`
+1. Follow the search for 9000 on paper, with columns for `low`, `high`
    and `middle`.
 2. What are `low` and `high` when the loop stops?
-3. Was the item at that index ever looked at?
+3. Was the port at that index ever looked at?
 
-**Think about:** what it means when `low` and `high` are equal. How
-many items are left to look at?
+**Think about:** Schlomo has a point: one port is left when `low` and
+`high` meet. Which step did his loop leave out for that last port?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 The loop runs `while low < high`. When `low` and `high` are equal, one
-price is still left to look at, but the loop stops without looking at
-it. For 21, `low` and `high` both reach 4, and the search gives up. It
-misses 5 the same way, when `low` and `high` both reach 1. The fix is one character: `while low <= high`.
+port is still left, as Schlomo said, but the loop stops without looking
+at it. For 9000, `low` and `high` both reach 4, and the search gives
+up. It misses 80 the same way, when `low` and `high` both reach 1. The
+change is one character: `while low <= high`.
 
 ```python
-def find_price(sorted_prices, target):
-    """Return an index where target is in sorted_prices, or -1."""
+def find_port(sorted_ports, target):
+    """Return an index where target is in sorted_ports, or -1."""
     low = 0
-    high = len(sorted_prices) - 1
+    high = len(sorted_ports) - 1
     while low <= high:
         middle = (low + high) // 2
-        if sorted_prices[middle] == target:
+        if sorted_ports[middle] == target:
             return middle
-        if sorted_prices[middle] < target:
+        if sorted_ports[middle] < target:
             low = middle + 1
         else:
             high = middle - 1
     return -1
 
 
-for price in prices:
-    print(price, find_price(prices, price))
+for port in ports:
+    print(port, find_port(ports, port))
 ```
 
-Now every price is found. A test that searches for every item, as the
-tutorial's toolkit tests do, catches this kind of mistake.
+Now every port is found. A test that searches for every item, as the
+tutorial's toolkit tests do, catches a slip like this one.
 
 </details>
 
@@ -444,6 +457,10 @@ Use this cell for any of the stretch problems.
 id: finding-fast-practice-stretch
 scores = [120, 250, 310, 480, 520, 700]
 print(binary_search(scores, 480))
+
+life = await load_csv("life-expectancy.csv")
+countries = life[life.year == 2016]["country"].tolist()
+print(len(countries), "names, in alphabetical order")
 ```
 
 **13. Make.** A game keeps its high scores sorted, lowest first. A new
@@ -541,18 +558,20 @@ print(binary_search_largest_first(league, 310))
 ```
 
 Both routes find 310 at index 3 of `league`: the backwards list has it
-at index 2, and $6 - 1 - 2 = 3$. The move "throw away half" was right.
-It needed a space where "after the middle" and "bigger" mean the same
+at index 2, and $6 - 1 - 2 = 3$. The move "throw away half" still
+works. It needed a space where "after the middle" and "bigger" mean the same
 thing, or a search that knows they mean the opposite.
 
 </details>
 
-**15. Make.** Over all 226 names in `countries`, how many looks does each search
-need on average? Write two small counting functions, or copy
-`linear_looks` and `binary_looks` from the tutorial. Search for every
-country in turn, keep the counts in two lists, and use `mean` from your
-toolkit. Use the `countries` list from problem 8, which holds a few
-regions as well as countries.
+**15. Make.** The cell at the top of this section also loads
+`countries`: the 226 names from the life expectancy file of
+[A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950),
+in alphabetical order, with a few regions such as "World" among the
+countries. Over all 226 names, how many looks does each search need on
+average? Write two small counting functions, or copy `linear_looks`
+and `binary_looks` from the tutorial. Search for every name in turn,
+keep the counts in two lists, and use `mean` from your toolkit.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 

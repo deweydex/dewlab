@@ -1,7 +1,7 @@
 ---
 title: "When there is no real answer: complex numbers"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   a-question-with-no-answer-here:
     covers: [MIT-1.10]
@@ -23,8 +23,13 @@ covers:
 Type `2j` into a Python cell, and Python does not complain. It shows
 `2j` back. Now type `2j * 2j`, and Python gives `(-4+0j)`, which is −4.
 So `2j` is a number that squares to make a negative. On the last page,
-no real number could do that. What does Python mean by `2j`, and why
+no real number could do that. Python has been keeping a number that
+"does not exist" ready all along. What does it mean by `2j`, and why
 does it keep one ready?
+
+I think this is the strangest page in the unit. The new numbers look
+like a trick at first. By the end, they turn a shape
+on a screen, and every quadratic has its roots.
 
 On this page we:
 
@@ -106,6 +111,18 @@ $$i^2 = -1$$
 
 That is the whole definition. Naming comes first here: we name the
 number we want, and then find out what it lets us do.
+
+<aside class="dl-note" id="no-real-note-history">
+
+**A name meant as an insult.** Gerolamo Cardano met square roots of
+negative numbers in his book *Ars Magna*, in 1545, and called them
+useless. Rafael Bombelli, in his *Algebra* of 1572, wrote down the
+rules for adding and multiplying them, and used them to find real
+answers. In 1637 René Descartes called such numbers "imaginary", and
+he did not mean it kindly. The name stayed; the numbers turned out to
+be some of the most useful in science.
+
+</aside>
 
 ## Python's j
 
@@ -297,8 +314,8 @@ print(solve_quadratic_complex(1, 3, -40))
 
 There is no `if`. Nothing can fail now, so there is no case to leave
 out. $x^2 + 1 = 0$ has roots $-i$ and $i$. $x^2 - 2x + 5 = 0$ has roots
-$1 - 2i$ and $1 + 2i$. And the allotment from the last page still has its
-roots, −8 and 5, now written with `+0j`.
+$1 - 2i$ and $1 + 2i$. And the sprite sheet from the last page still
+has its roots, −8 and 5, now written with `+0j`.
 
 Look at the two roots of $x^2 - 2x + 5$. They have the same real part,
 and imaginary parts that are opposites. Two such numbers are called
@@ -366,12 +383,12 @@ mathematicians give neither answer.
 That is why your toolkit's `solve_quadratic` promised real roots,
 smallest first. "Smallest first" means nothing in $\mathbb{C}$.
 
-So which space should we work in? It depends on the question. An allotment's
-width must be real, and the order matters: $\mathbb{R}$ is the right
-space, and "no real roots" is the honest answer. A question about a
-turning shape, or a signal that swings, is better asked in
-$\mathbb{C}$. Asking "which space are we in?" is always allowed. Here
-it chooses the answer.
+So which space should we work in? It depends on the question. A
+sprite sheet's rows must be real, and the order matters: $\mathbb{R}$
+is the space for it, and "no real roots" is the honest answer. A
+question about a turning shape, or a signal that swings, is better
+asked in $\mathbb{C}$. Asking "which space are we in?" is always
+allowed. Here it chooses the answer.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
@@ -412,6 +429,15 @@ need, and some geometry that waits until a later unit to be used again.
 | `cmath.sqrt(x)` | a square root that accepts negative numbers, and gives a complex answer |
 | conjugates | $a + bi$ and $a - bi$: the two complex roots of a quadratic with real numbers in it |
 | no order in $\mathbb{C}$ | `<` and "smallest first" have no meaning for complex numbers |
+
+## Where to read more
+
+Electrical engineers use complex numbers every day. The current in the
+wires of a house swings back and forth, 50 times a second in Ireland,
+and they write it as a complex number, whose turn on the plane says
+where in its swing the current is.
+[Waves](tutorial:waves), in the next unit, is where a swing becomes a
+sine wave.
 
 For another route through these numbers, the integrated course has
 [Complex numbers: roots that are not real](tutorial:complex-roots).

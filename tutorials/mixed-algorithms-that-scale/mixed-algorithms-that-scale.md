@@ -7,7 +7,7 @@ practice_across:
   - a-function-that-calls-itself
   - doubling-and-halving
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Mixed problems: algorithms that scale
@@ -27,8 +27,9 @@ other, so do those in order.
 Your toolkit is loaded on this page: `linear_search`, `binary_search`,
 `selection_sort`, `insertion_sort`, `shell_sort`, `count_items` and
 `halvings` from this unit, and every tool from Units 1 to 5, such as
-`total`, `mean` and `largest`. Each answer is hidden until you open it.
-Where a problem asks you to predict, make the prediction before you run
+`total`, `mean` and `largest`. Each answer is hidden until you open it,
+and each one is one way through: yours may go another way. Where a
+problem asks you to predict, make the prediction before you run
 anything. It is the most useful part.
 
 ## Warm-up
@@ -54,7 +55,8 @@ print(binary_search(["Cork", "Galway", "Athlone"], "Athlone"))
 
 13 is at index 3 of a sorted list, so binary search finds it. The
 linear search reads from the front and finds Athlone at index 2. The
-last line is a wrong answer, given calmly: the list is not sorted. The
+last line is an answer that is not true, given calmly: the list is not
+sorted. The
 binary search looks at Galway first. Athlone comes before Galway in the
 alphabet, so it throws away Galway and everything after it, and
 Athlone goes too. Binary search keeps its promise only in the space of
@@ -167,8 +169,8 @@ id: mixed-scale-scratch-2
 # Your phone book search, problem by problem
 ```
 
-**5. Make.** Binary search needs a sorted book, and a wrong answer
-gives no error. So the first part of the product is a check. Write
+**5. Make.** Binary search needs a sorted book, and on an unsorted
+book it can give an untrue answer with no error. So the first part of the product is a check. Write
 `is_in_order(values)`, which gives back True when every value is less
 than or equal to the one after it. Go through the list by index. Test
 it on `[]`, `[3]`, `[1, 2, 2, 5]` and `[2, 1]`, and then on a phone
@@ -245,9 +247,12 @@ The 100,000 book takes a moment to make and to search.
 
 </details>
 
-**7. Fix.** Here is a binary search with one change from the toolkit's.
-It finds names in the middle of the book, but one search stops with an
-error. Run it, read the last line of the error, and fix the function.
+**7. Fix.** Schlomo, who is learning Python too, wrote this binary
+search. His one change from the toolkit's: `high` starts at
+`len(sorted_values)`, since that is how many names there are. It finds
+names in the middle of the book, but one search stops with an error.
+Run it, read the last line of the error, and change the line that
+causes it.
 
 ```python exec
 id: mixed-scale-fix-high
@@ -291,15 +296,16 @@ The first two searches print `4` and `-1`. The third stops with
 `IndexError: list index out of range`. `high` starts at 10, one past the
 last index, which is 9. A search for a name after every other name
 keeps moving `low` up, until `middle` is 10, and there is no index 10.
-The fix is the first line of the toolkit's version:
+Schlomo counted the names; the search needs the last index, which is
+one less. That is the first line of the toolkit's version:
 
 ```python
     high = len(sorted_values) - 1
 ```
 
 The search for Aaron never failed because it moves `high` down, away
-from the bad index. Searching only in the middle of the book would never
-have found this bug. The edges of the promise are where to test, as on
+from index 10. Searching only in the middle of the book would never
+have found this. The edges of the promise are where to test, as on
 [Does it work?](tutorial:does-it-work#code-that-runs-and-code-that-works).
 
 </details>
@@ -362,7 +368,8 @@ for size in [10, 1000, 100000]:
 It prints `10 4 4`, `1000 10 10` and `100000 17 17`. From 10 names to
 100,000 names, ten thousand times as many, the looks go from 4 to only
 17. The `assert` uses your check from problem 5, so a book that was
-somehow not sorted would stop the cell rather than give a wrong count.
+somehow not sorted would stop the cell rather than give a count that
+means nothing.
 
 </details>
 
@@ -576,9 +583,12 @@ Python's limit, because each one halves the problem.
 
 </details>
 
-**15. Fix.** Here is someone's recursive search. It finds every name
-that is in the book, but a search for a missing name stops with an
-error. Run it, read the last line of the error, and fix it.
+**15. Fix.** Schlomi, who is learning Python too, wrote binary search
+as a recursion, as on
+[A function that calls itself](tutorial:a-function-that-calls-itself#a-promise-that-uses-itself).
+It finds every name that is in the book, but a search for a missing
+name stops with an error. Run it, read the last line of the error, and
+add what is missing.
 
 ```python exec
 id: mixed-scale-fix-base
@@ -601,10 +611,10 @@ print(search_by_calls(tiny_book, "Kelly, Mei 500", 0, 9))
 The first search prints `7`. The second stops with
 `RecursionError: maximum recursion depth exceeded`. The function has no
 base case for a part with nothing left in it. Once `low` passes `high`,
-it goes on calling itself on the same empty part, for ever, until Python
-stops it, as on
+it goes on calling itself on empty parts, for ever, until Python stops
+it, as on
 [A function that calls itself](tutorial:a-function-that-calls-itself#where-the-promise-stops-the-base-case).
-The fix is a base case at the top:
+Schlomi's recursive cases are sound. It needs a base case at the top:
 
 ```python
     if low > high:
@@ -666,7 +676,7 @@ what it needs to work.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one good answer. Yours may say it differently.
+Here is one answer. Yours may say it differently.
 
 "Each look throws away half of the names that are left, so the most
 looks a binary search can need is the number of halvings that take $n$
@@ -676,7 +686,7 @@ names need at most 17 looks where a linear search can need 100,000.
 It only works if the book is sorted, so the book must be sorted once
 and kept in order."
 
-A good answer names the halving, links it to $\log_2 n$, and says what
+An answer that does the job names the halving, links it to $\log_2 n$, and says what
 the space must be: a sorted book. The set is faster again, but by a
 different trick, a hash, which a later course explains.
 

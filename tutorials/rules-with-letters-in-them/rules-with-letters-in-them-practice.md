@@ -2,14 +2,14 @@
 title: "Rules with letters in them: expressions, equations and identities — Practice"
 practice_for: rules-with-letters-in-them
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Rules with letters in them: expressions, equations and identities — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -17,7 +17,8 @@ Your toolkit is loaded on this page, including `evaluate` from the
 tutorial and `close_enough` from
 [Does it work?](tutorial:does-it-work#close-enough). The tutorial's
 `expand_brackets` was a page cell, not a toolkit tool, so the stretch
-section copies it in.
+section copies it in. Schlomo and Schlomi, who are learning Python too,
+have ideas in a few of the problems.
 
 ## Warm-up
 
@@ -45,9 +46,10 @@ $8^2 = 64$. In maths, $2x^2$ means the first one.
 
 </details>
 
-**2. Explain.** A pancake recipe has 3 eggs for every 4 people, so $y$
-people need $\frac{3y}{4}$ eggs. Which of these is an expression, which
-an equation with one answer, and which an identity? Say why for each.
+**2. Explain.** A weather sensor sends 3 readings every 4 seconds, so
+in $y$ seconds it sends $\frac{3y}{4}$ readings. Which of these is an
+expression, which an equation with one answer, and which an identity?
+Say why for each.
 
 - $\frac{3y}{4}$
 - $\frac{3y}{4} = 6$
@@ -56,16 +58,16 @@ an equation with one answer, and which an identity? Say why for each.
 <details class="dl-answer"><summary>answer</summary>
 
 - $\frac{3y}{4}$ is an expression. It has no equals sign. It is a rule
-  that gives a number of eggs once $y$ has a value.
-- $\frac{3y}{4} = 6$ is an equation with one answer. It asks "how many
-  people use 6 eggs?", and it is true only for $y = 8$.
+  that gives a number of readings once $y$ has a value.
+- $\frac{3y}{4} = 6$ is an equation with one answer. It asks "after how
+  many seconds are there 6 readings?", and it is true only for $y = 8$.
 - $\frac{3(y + 4)}{4} = \frac{3y}{4} + 3$ is an identity. Four more
-  people always need 3 more eggs, whatever $y$ is. You can check it in
-  a loop:
+  seconds always bring 3 more readings, whatever $y$ is. You can check
+  it in a loop:
 
 ```python
-for people in range(0, 21):
-    assert close_enough(3 * (people + 4) / 4, 3 * people / 4 + 3)
+for seconds in range(0, 21):
+    assert close_enough(3 * (seconds + 4) / 4, 3 * seconds / 4 + 3)
 print("True for every value tried.")
 ```
 
@@ -118,21 +120,22 @@ id: rules-with-practice-core
 # Your working for problems 5 to 11
 ```
 
-**5. Make.** A gym charges €30 to join, and then €25 a month. Write the
-cost after $m$ months as an expression, then as a list. Use `evaluate`
-to find the cost of one year.
+**5. Make.** A backup program takes 30 seconds to start, and then 25
+seconds for each gigabyte it copies. Write the time for $g$ gigabytes
+as an expression, then as a list. Use `evaluate` to find the time for
+12 GB.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The cost is $25m + 30$, which is the list `[30, 25]`.
+The time is $25g + 30$ seconds, which is the list `[30, 25]`.
 
 ```python
-gym = [30, 25]
-print(evaluate(gym, 12))
+backup = [30, 25]
+print(evaluate(backup, 12))
 ```
 
-One year costs €330. The constant, the joining fee, comes first in the
-list, because it is the $m^0$ term.
+12 GB take 330 seconds, five and a half minutes. The constant, the time
+to start, comes first in the list, because it is the $g^0$ term.
 
 </details>
 
@@ -165,12 +168,14 @@ answer by substitution, for every whole number from $-10$ to 10.
    $-2 \times -4$ is $+8$.
 3. Collect the $x$ terms, then the constants.
 
-**Think about:** which step is the one most people get wrong? Where
+**Think about:** which step gives people the most trouble? Where
 does the check catch it?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 $3(2x + 1) - 2(x - 4) = 6x + 3 - 2x + 8 = 4x + 11$.
 
@@ -185,8 +190,9 @@ at $x = 0$ the two sides would be 11 and $-5$.
 
 </details>
 
-**8. Fix.** Here is someone's version of `evaluate`, with two tests.
-Run it, see which test fails, and fix the function.
+**8. Fix.** Schlomi, who is learning Python too, wrote her own version
+of `evaluate`, with two tests. Run it, see which test fails, and change
+one line so that both pass.
 
 ```python exec
 id: rules-with-practice-fix-evaluate
@@ -206,7 +212,7 @@ print("value_of keeps its promise.")
 
 The second test fails: `value_of([-4, 0, 1], 2)` gives 4, not 0. The
 loop starts at power 1, so it never adds the constant term, at index 0.
-The fix is to start at 0:
+Starting at 0 fixes it:
 
 ```python
 def value_of(coefficients, x):
@@ -221,15 +227,16 @@ assert value_of([-4, 0, 1], 2) == 0
 print("value_of keeps its promise.")
 ```
 
-The first test passed with the bug, because its constant term is 0.
-A test on a polynomial with no constant could never find this mistake.
+The first test passed even so, because its constant term is 0.
+Schlomi's second test is the one that found the gap: a test on a
+polynomial with no constant could never find it.
 
 </details>
 
-**9. Make.** A square painting is $x$ cm on each side. Its frame adds
-4 cm to the width and 6 cm to the height. Expand $(x + 4)(x + 6)$, the
-area of the painting and frame, with a grid of four pieces. Then check
-your answer by substitution.
+**9. Make.** A square icon is $x$ pixels on each side. A margin adds
+4 pixels to its width and 6 to its height. Expand $(x + 4)(x + 6)$, the
+area of the icon and its margin, with a grid of four pieces. Then check
+your expansion by substitution.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -246,8 +253,8 @@ for side in range(0, 101):
 print("x^2 + 10x + 24 checks out.")
 ```
 
-For a painting 40 cm wide, the area with the frame is
-$1600 + 400 + 24 = 2024$ square centimetres.
+For an icon 40 pixels wide, the area with the margin is
+$1600 + 400 + 24 = 2024$ pixels.
 
 </details>
 
@@ -276,21 +283,21 @@ substituting numbers, and said a proof by rules is what algebra is for
 in the end. A textbook often starts the other way: it teaches the rules
 for brackets and like terms, and practises them by hand, with no
 numbers put in. Which way would you have wanted to learn it, and why?
-There is no one right answer.
+There is no single answer.
 
 <details class="dl-answer"><summary>answer</summary>
 
-A good answer weighs a few things, and can land on either side.
+An answer might weigh a few things, and can land on either side.
 
-- **Trust.** A check you run tells you at once whether a step was
-  right. A rule you apply tells you only if you applied it well.
+- **Trust.** A check you run tells you at once whether two sides
+  agree. A rule you apply tells you only as much as your care with it.
 - **Certainty.** A proof by rules covers every number. A check covers
   the numbers you tried, unless you know a fact like "two quadratics
   that agree at three values are the same".
 - **Speed.** With practice, rules are faster than typing a check,
   and exams usually ask for the rules.
-- **Mistakes.** A check shows you where a mistake is. It does not show
-  you why it happened. Knowing the rules does.
+- **Slips.** A check shows you where two sides part. It does not
+  show you why. Knowing the rules does.
 - **You.** Some people need to see a rule work on numbers before they
   believe it. Others find the numbers slow.
 
@@ -348,8 +355,8 @@ for chosen in range(5):
 
 </details>
 
-**13. Fix.** This version of `expand_brackets` gives the wrong list for
-$(x + 3)(x + 5)$. Find the mistake.
+**13. Fix.** This version of `expand_brackets` gives a different list
+from the tutorial's for $(x + 3)(x + 5)$. Find the line that causes it.
 
 ```python exec
 id: rules-with-practice-fix-expand
@@ -370,14 +377,15 @@ assert expand_quickly([3, 1], [5, 1]) == [15, 8, 1]
 It prints `[15, 5, 1]`, and the test fails. The line inside the loops
 puts each product into its place, and so it replaces what was there.
 Two pieces land at index 1, $3x$ and $5x$, and only the last one is
-kept. Like terms must be added:
+kept. Like terms need adding:
 
 ```python
             expanded[i + j] = expanded[i + j] + first[i] * second[j]
 ```
 
-Now it gives `[15, 8, 1]`. The mistake is invisible for a bracket times
-a single number, where no two pieces ever land in the same place.
+Now it gives `[15, 8, 1]`. For a bracket times a single number, no two
+pieces ever land in the same place, so the two versions agree there and
+the difference stays hidden.
 
 </details>
 
@@ -402,6 +410,8 @@ polynomial of degree 10?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def evaluate_nested(coefficients, x):
     """Return the value of a polynomial at x, with no powers: highest coefficient first."""
@@ -423,43 +433,61 @@ this way.
 
 </details>
 
-**15. Make.** €1,000 is saved at a rate $r$ a year (0.04 means 4%). After
-two years it is $1000(1 + r)^2$. Expand this into a polynomial in $r$
-with `expand_brackets`, then multiply every coefficient by 1000. Check
-your answer at $r = 0.04$.
+**15. Make.** The curves in many fonts use four points, not three: a
+start, an end, and two points that pull. Their four weights are
+$(1 - t)^3$, $3t(1 - t)^2$, $3t^2(1 - t)$ and $t^3$. Expand each one
+with `expand_brackets`, then check that the four add up to 1 for every
+$t$, as the three weights did on the tutorial.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. $1 - t$ is the list `[1, -1]`, $3t$ is `[0, 3]` and $t$ is `[0, 1]`.
+2. Each weight is three brackets, so call `expand_brackets` twice:
+   expand two of them, then expand the answer with the third.
+3. To add four lists of the same length, add them place by place.
+
+**Think about:** where have you seen the numbers 1, 3, 3, 1 before?
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-squared_bracket = expand_brackets([1, 1], [1, 1])
-savings = []
-for coefficient in squared_bracket:
-    savings.append(1000 * coefficient)
-print(savings)
+one_take_t = [1, -1]
+start_weight = expand_brackets(expand_brackets(one_take_t, one_take_t), one_take_t)
+first_pull = expand_brackets(expand_brackets([0, 3], one_take_t), one_take_t)
+second_pull = expand_brackets(expand_brackets([0, 3], [0, 1]), one_take_t)
+end_weight = expand_brackets(expand_brackets([0, 1], [0, 1]), [0, 1])
+print(start_weight, first_pull, second_pull, end_weight)
 
-print(evaluate(savings, 0.04), 1000 * 1.04 ** 2)
-print(close_enough(evaluate(savings, 0.04), 1000 * 1.04 ** 2))
+added = []
+for power in range(4):
+    added.append(start_weight[power] + first_pull[power] + second_pull[power] + end_weight[power])
+print(added)
 ```
 
-The list is `[1000, 2000, 1000]`: $1000 + 2000r + 1000r^2$. At 4%, both
-give €1,081.60 (the float may show a few more digits). The $2000r$ is
-the interest of both years on the €1,000. The $1000r^2$ is the
-interest earned on the first year's interest: €1.60. That small term is
-compound growth, from
-[Doubling and halving](tutorial:doubling-and-halving#how-long-to-double).
+The weights are `[1, -3, 3, -1]`, `[0, 3, -6, 3]`, `[0, 0, 3, -3]` and
+`[0, 0, 0, 1]`, and they add up to `[1, 0, 0, 0]`: the number 1, for
+every $t$. The 1, 3, 3, 1 in front of the weights are the row for
+$(x + 1)^3$ from problem 12. In fact the four weights are the four
+terms of $\big((1 - t) + t\big)^3$, and $(1 - t) + t$ is 1, so they
+have to add up to $1^3 = 1$. PostScript fonts, and the letters on many
+screens, are drawn with these four weights.
 
 </details>
 
-**16. Explain.** A friend checks the claim $(x + 1)^3 = x^3 + 1$ at
-$x = 0$, and it is true. "So it is an identity," they say. What would
-you say back? Find every whole number from $-5$ to 5 where the claim
-is true.
+**16. Explain.** Schlomo, who is also learning Python, checks the claim
+$(x + 1)^3 = x^3 + 1$ at $x = 0$, and it is true. "So it is an
+identity," he says. Checking a value is a sensible first step. What
+would you say back? Find every whole number from $-5$ to 5 where the
+claim is true.
 
 <details class="dl-answer"><summary>answer</summary>
 
 One value that works does not make an identity. An identity must be
 true for every value, and one value where it fails is enough to show it
-is not one.
+is not one. Schlomo's check was worth doing; it needs more values
+beside it.
 
 ```python
 for x in range(-5, 6):
@@ -470,5 +498,91 @@ for x in range(-5, 6):
 It prints `-1` and `0`. So the claim is an equation with two answers.
 Expanding shows why: $(x + 1)^3 = x^3 + 3x^2 + 3x + 1$, and the middle
 terms, $3x^2 + 3x = 3x(x + 1)$, are 0 only at $x = 0$ and $x = -1$.
+
+</details>
+
+**17. Another way.** The tutorial found each point of a curve by mixing
+its three points with the weights $(1 - t)^2$, $2t(1 - t)$ and $t^2$.
+Paul de Casteljau, an engineer at Citroën, found the same points by
+mixing twice. Take the point a fraction $t$ of the way along each of the
+two grey lines, join those two points with an orange line, and go a
+fraction $t$ of the way along that. The cell below does this for the
+letter bowl from
+[The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line),
+and draws the curve as $t$ grows. Run it and watch. Then:
+
+1. Move `pull` to `(260, -200)` and run it again. Before you do, guess:
+   will the bowl dip about twice as far?
+2. Show with algebra that mixing twice gives the same three weights.
+   Mixing $p$ and $q$ gives $(1 - t)p + tq$.
+
+```python exec
+id: rules-with-practice-casteljau
+from matplotlib.animation import FuncAnimation
+import matplotlib.pyplot as plt
+
+start = (100, 112)
+pull = (260, -108)       # move this point, then run the cell again
+end = (460, 72)
+
+
+def mix(p, q, t):
+    """Return the point a fraction t of the way from p to q."""
+    return ((1 - t) * p[0] + t * q[0], (1 - t) * p[1] + t * q[1])
+
+
+figure, drawing = plt.subplots(figsize=(4, 2.8))
+drawing.plot([start[0], pull[0], end[0]], [start[1], pull[1], end[1]], "o:", color="grey")
+drawing.axhline(0, color="black", linewidth=1)
+drawing.set_aspect("equal")
+arm, = drawing.plot([], [], "o-", color="C1")
+curve, = drawing.plot([], [], color="C0", linewidth=2)
+
+
+def draw_frame(frame):
+    t = frame / 20
+    first = mix(start, pull, t)
+    second = mix(pull, end, t)
+    arm.set_data([first[0], second[0]], [first[1], second[1]])
+    points = [mix(mix(start, pull, k / 20), mix(pull, end, k / 20), k / 20) for k in range(frame + 1)]
+    curve.set_data([point[0] for point in points], [point[1] for point in points])
+    drawing.set_title(f"t = {t:.2f}", fontsize=9)
+
+
+FuncAnimation(figure, draw_frame, frames=21, interval=200)
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+The orange line slides along the two grey lines, and its tip traces the
+bowl, dipping below the baseline and rising again. With `pull` at
+$(260, -200)$ the lowest height is about $-55$, where it was $-9$: six
+times as deep, for a pull that moved less than twice as far. Near the
+middle of the curve the pull point has about half the weight, so moving
+it 92 units lower moves the bottom about 46 units lower, and the
+bottom was only 9 below the line to begin with.
+
+The algebra, for the heights (the across numbers work the same way).
+Call the three heights $s$, $p$ and $e$. The first mix gives
+$(1 - t)s + tp$, and the second gives $(1 - t)p + te$. Mixing those two:
+
+$$(1 - t)\big((1 - t)s + tp\big) + t\big((1 - t)p + te\big)
+= (1 - t)^2 s + 2t(1 - t)p + t^2 e$$
+
+The middle point is met twice, once from each side, which is where the
+2 in $2t(1 - t)$ comes from. Here is one check in code, at eleven
+values of $t$:
+
+```python
+for tenths in range(11):
+    t = tenths / 10
+    twice = mix(mix(start, pull, t), mix(pull, end, t), t)[1]
+    weighted = (1 - t) ** 2 * start[1] + 2 * t * (1 - t) * pull[1] + t ** 2 * end[1]
+    print(t, round(twice, 6), round(weighted, 6))
+```
+
+The two columns agree (a `-0.0` is a float a hair below 0, and rounding
+keeps its sign). Mixing twice is how many drawing programs work
+out a curve, because it needs only the one small step, done again.
 
 </details>
