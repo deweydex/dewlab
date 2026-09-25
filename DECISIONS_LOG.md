@@ -4689,3 +4689,9 @@ Renaming any of these would strand work a student already has. The code keeps it
 - **The tagline** says "maths".
 
 *Cost to change: each is text in the plan until the unit rewrites land. After that, the contexts are page content, and the toolkit names are in every later page that calls them.*
+
+---
+
+**7.229 — Feelings named rarely, with a route, across the site.** The revision plan (#306) and its style-guide issue (#310) name feelings rarely and always with a route to help. The Dewey Track's "Warmth that survives translation" said to name the feeling before the reader has to. Josh chose #310's rule for the whole site, the Dewey Track included, on 25 September 2026. The guide's bullet now reads "Name a feeling rarely, and always with a route", and the brief for the remaining Dewey Track units follows it. Units 1, 2, 3 and 9, written to the older bullet, get a light pass (tracked in an issue). The course letter keeps its opening until Josh has read it.
+
+*Cost to change: one bullet in the guide; the pages written to it are the cost.*
