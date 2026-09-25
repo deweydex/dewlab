@@ -303,9 +303,11 @@ billion?
 
 ## How long to double?
 
-Money in a savings account at 4% a year grows the way prices did on
-[Doing it again](tutorial:doing-it-again#pi-multiplying-instead-of-adding):
-each year it is multiplied by 1.04. Growth where each step's increase is
+The bouncing ball on
+[Doing it again](tutorial:doing-it-again#pi-multiplying-instead-of-adding)
+shrank by the same factor at every bounce. Money in a savings account at
+4% a year does the same thing the other way: each year it is multiplied
+by 1.04. Growth where each step's increase is
 added in, and earns its own increase the next time, is called *compound
 growth*. It is exponential growth with a base of 1.04 in place of 2.
 
