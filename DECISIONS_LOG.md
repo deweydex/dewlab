@@ -4723,3 +4723,23 @@ Renaming any of these would strand work a student already has. The code keeps it
 **Also removed:** "No emoji, unless Josh asks for them". It was about Josh, not about a reader.
 
 *Cost to change: the guide is prose, and changing a principle means changing the pages written to it. Renaming an anchor means changing its citations, and the checker lists every one.*
+
+---
+
+**7.231 — The page templates, and the syntax for blocks and worlds.** The templates issue (#311), part of #306. `docs/templates/` holds six real pages, one of each shape: a tutorial, its practice page, a closer look, a mixed set, a series-end making task and a project brief. Together they make a small series, *Running totals*, taught with the rocky planets' widths from NASA and offered in three worlds (planets, the sea floor, pixel art). They are real pages rather than skeletons because an author copies a page, not a description of one. `tests/build/test_templates.py` builds them in a temporary repository on every run, and they are never published.
+
+**The syntax, decided here so the platform issues build to it:**
+- **A block is a fence after its cell**, with the same `key: value` header lines as a cell; `for:` names another cell instead. This is the rule the `hint` fence already follows, so there is one rule for every block.
+- **`solution`** is Python, then optionally a `---` line and markdown notes. Two solutions make two tiers, and the comparison uses the first.
+- **`inputs`** is one Python expression per line: a call, or a name the cell makes. A `#` comment labels a case. The author never writes an expected value.
+- **The comparison** runs the solution in a copy of the page's namespace taken after the reader's cell, so both see the same data. A starter cell that defines the data is then enough for the solution to use it.
+- **`predict`** has `type: choice`, `number` or `text`. An option's note is an indented line under it. It follows its cell in the source like every other block, and the page shows it above the cell.
+- **Tests the reader writes** go in a cell marked `tests: <cell id>`, and an `inputs` block with `guess: yes` adds a column of the reader's own expectations.
+- **`python challenge`** (and `html`, `css`, `js`) holds a closer's starter code, the same shape as `python exec` and `python toolkit-reference`.
+- **Worlds** are a `worlds:` mapping in the frontmatter, the first being the page's own, and a `<div class="dl-world" data-world="…">` wrapper around each variant. A variant's cell id is the section's with `--<world>` added. The wrapper follows the `<div class="dl-hero">` convention the site's own pages already use, rather than a new fence that would have to nest cells inside it.
+
+Until each platform issue lands (#312, #313, #315, #316), its syntax builds as plain text, and `docs/WRITING_TUTORIALS.md` says so beside each one.
+
+Also: `planning/EXERCISES.md` now points to the templates and keeps only where the first problems came from and what is left. Its counts were stale (41 tutorials), and its frontmatter example still had `slug:`, which `check.py` rejects. The same stale line is gone from `WRITING_TUTORIALS.md`'s mixed-set example. `planning/outlines/README.md` no longer says a tutorial explains before it demonstrates.
+
+*Cost to change: until #312 lands, only these six templates and the docs use the syntax. After it, every page written with blocks does.*

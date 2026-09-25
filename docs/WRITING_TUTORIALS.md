@@ -19,6 +19,113 @@ it is written, and why. Cite a part of that guide by its anchor, as
 
 ---
 
+<a id="page-templates"></a>
+## Page templates
+
+`docs/templates/` holds one real page of each shape a dewlab page can take.
+Together they make a small series, *Running totals*, that you can read in
+order. Start a new page by copying the one that fits, then change its id and
+its content. The notes in `<!-- -->` comments say why each part is there;
+delete them when you copy. The style guide's
+[page shapes](../planning/PEDAGOGICAL_STYLE_GUIDE.md#page-shapes) says what
+each shape is for.
+
+| Shape | Start from |
+|---|---|
+| A tutorial | [`templates/running-totals.md`](templates/running-totals.md) |
+| A practice page | [`templates/running-totals-practice.md`](templates/running-totals-practice.md) |
+| A closer look | [`templates/where-the-total-starts.md`](templates/where-the-total-starts.md) |
+| A mixed set | [`templates/mixed-running-totals.md`](templates/mixed-running-totals.md) |
+| A series-end making task | [`templates/a-total-you-can-see.md`](templates/a-total-you-can-see.md) |
+| A project brief | [`templates/a-scale-model-of-the-solar-system.md`](templates/a-scale-model-of-the-solar-system.md) |
+
+`tests/build/test_templates.py` builds all six on every test run. The
+templates use the blocks and worlds described below, which are agreed but
+not all live yet; until each one lands, it builds as plain text.
+
+### A tutorial
+
+- **The opening** runs or shows something, and asks a question about it.
+  The "On this page we:" list is optional.
+- **Two to four predict blocks**, placed where the misconceptions are.
+- **The line-by-line walk-through** of a cell goes in a fold,
+  `<details class="dl-answer"><summary>What each line does</summary>`,
+  after a prompt to try changing something.
+- **A task** is an invitation, with its blocks, in each world the page
+  offers.
+- **The closer**, headed "Looking back", has one question that belongs to
+  this page and a challenge that opens in the Notebook. The reader's
+  surprises from the predict blocks, and the link to the practice page, are
+  added by the page itself.
+- **Read more**: the original source, a textbook, or a channel worth
+  watching.
+
+### A practice page
+
+- **The mix of problem kinds is yours.** Some ideas: predict, make, fix,
+  explain, another way, open-ended.
+- **A code problem** gets a `solution` block and an `inputs` block, not a
+  hand-written answer fold.
+- **Mathematics done by hand** gets a `dl-hint` fold, then a `dl-answer`
+  fold with the summary "one way through it".
+- **Two or three problems from earlier pages**, each saying which page:
+  "From *Lists and sequences*".
+- **A solution in two tiers** is two `solution` blocks, titled "with what
+  you've met so far" and "a shorter way you'll meet later".
+
+### A mixed set
+
+One per series, drawing on every page in it, and one per course, drawing on
+every series so far. Both are `practice_across:` pages listed under `mixed:`
+in the course file. The problems do not say which page each comes from:
+choosing the tool is part of the problem.
+
+### A series-end making task
+
+A first step anyone can take, then a piece of work that is the reader's
+own, in their world, with no top. It has no `solution` block, because there
+is nothing to compare the reader's own work with. It ends with "If you want
+more" and a few questions for looking back.
+
+### A project brief
+
+A group version and an individual version of one project, then reflection
+questions. No rubric is shown to students. How a class runs the project
+(time, groups, what is handed in) is the teacher's decision, so the brief
+leaves it out.
+
+### A closer look
+
+One misconception, as an experiment. The page states two ideas, both
+reasonable, and a predict block whose notes name the idea behind each
+option. Only one idea matches what happens. Then the page explains why the
+other idea is so natural to hold. It never says the reader held it. A
+predict block on another page links here from the option that shows the
+misconception.
+
+---
+
+<a id="choosing-a-context"></a>
+## Choosing a context
+
+- **Wonder over worthiness.** The width of a planet, the mass of a
+  dinosaur, the depth of a wreck: a reader will run a cell to find out. A
+  bank balance, a temperature conversion and a generic list of marks have
+  been used so often that nobody wonders about them. Choose another
+  context when you meet one.
+- **Real data where it exists**, with where it came from: NASA for the
+  planets, the CSO and Met Éireann for Ireland. Invented data is fine when
+  the page says so where the data appears: "The readings below are made
+  up."
+- **Explain the context in words the reader has.** A science term needs
+  the same care as a mathematical one. The point is the mathematics, and a
+  reader afraid of physics is no better off than one afraid of maths.
+- **Each series offers several worlds** (#306 has the list). A page teaches
+  in one of them, rotating across the series, and offers its tasks in all
+  of them. See [Worlds](#worlds).
+
+---
+
 ## The file and its frontmatter
 
 A tutorial is a folder, at `tutorials/<id>/`, holding everything that
@@ -132,8 +239,9 @@ readings[readings["evening"] > 14]
 <a id="cell-ids"></a>
 `id` is how saved progress finds this cell again. Write it in small letters and
 hyphens. The usual shape is `<section-slug>-<n>`: `filter-evening-1` is the
-first cell under a heading whose slug is `filter-evening`. It must be unique
-within the tutorial, and it should stay the same when you edit the cell. That is
+first cell under a heading whose slug is `filter-evening`. A cell inside a
+world variant adds its world after two hyphens: `your-turn-1--planets`
+([Worlds](#worlds)). It must be unique within the tutorial, and it should stay the same when you edit the cell. That is
 what lets you fix a typo without wiping what students have written. Once a
 tutorial has been in front of a class, a cell id is the key somebody's saved
 work lives under, and renaming one throws that work away. The editor warns
@@ -259,6 +367,209 @@ Not every cell earns a staged hint. A page where every cell produces one
 teaches readers to ignore them. The style guide's
 [When a reader is stuck](../planning/PEDAGOGICAL_STYLE_GUIDE.md#stuck) has
 the reasoning.
+
+---
+
+<a id="blocks"></a>
+## Blocks attached to a cell
+
+A block is a fence that belongs to one cell: a solution, the inputs to try,
+a prediction, a hint, or a challenge. Write it after its cell. With a
+`for:` line, it belongs to the cell that line names instead. A cell's blocks
+may follow it in any order, and every block uses the same `key: value`
+header lines a cell does.
+
+**Status.** `hint` is live now. The others are agreed syntax, and each goes
+live with its own pull request: `solution`, `inputs` and the comparison with
+#312, `predict` with #313, and `challenge` with #316. Until then, a block
+builds as a plain code block, so a page can be written against it now.
+
+### solution
+
+One way to do the task, which the reader opens when they ask for it. It is
+also what the comparison runs against. The body is Python. After it, a line
+holding only `---` starts notes in markdown:
+
+````markdown
+```solution
+title: with what you've met so far
+total = 0
+for width in giants:
+    total = total + width
+---
+The same loop as the rocky planets, with a new list.
+```
+````
+
+`title:` is optional; the default is *one way to do it*. A cell may have
+more than one solution, shown in order, and the comparison uses the first.
+The build runs every solution with its inputs, and fails if one raises an
+error, so no value a reader is shown was never run.
+
+### inputs
+
+The cases to try, one Python expression on each line: a call to the
+reader's function, or a name their cell makes. Anything after a `#` is shown
+beside the case. Include the edge cases: an empty list, zero, a negative
+number.
+
+````markdown
+```inputs
+line_up([4879, 12104, 12756, 6792])
+line_up([])          # an empty list
+line_up([-3, 3])     # a negative number
+```
+````
+
+You never write the expected values. What the solution gives is found by
+running it.
+
+### The comparison
+
+A cell with a solution has a **Compare with a solution** button beside it.
+Running the cell never compares anything; the reader asks. The comparison
+is a small table:
+
+| Input | What your code gave | What a solution gives |
+|---|---|---|
+
+Each input is evaluated after the reader's cell, in the page's own
+namespace. The solution then runs in a copy of that namespace, so it sees
+the same data the reader's code saw, and each input is evaluated in the copy.
+Whatever the solution defines replaces the reader's own only inside the
+copy. An error shows as the
+error's name, in its place in the table. Where the two columns differ, the
+row is highlighted, in a colour that means "different", not "wrong". There
+are no ticks, no crosses, no "not yet" and no score. The reader decides what
+a difference means.
+
+### Tests the reader writes
+
+Readers meet testing in three stages:
+
+1. **Early pages.** The author's inputs only, shown in the comparison.
+2. **From `writing-your-own-functions`.** An `inputs` block with
+   `guess: yes` adds a column where the reader writes what they expect for
+   each input, before comparing.
+3. **From `building-reusable-tools`, and in OOP.** The reader writes their
+   own tests, in a cell marked `tests: <cell id>`. Each line is an `assert`
+   or an expression. The comparison runs them against the reader's code and
+   against the solution. A test that fails on the solution raises a question
+   about the test, not the code. Then it runs the author's inputs, as cases
+   the reader may not have thought of.
+
+### predict
+
+A guess, written before the cell runs. It follows its cell in the source,
+and the page shows it above the cell.
+
+````markdown
+```predict
+type: choice
+
+Before you run it: do the four planets reach round the Earth?
+
+- Yes, easily
+  Four whole planets sounds like a lot of planet.
+- Nearly, but not quite
+- Not even halfway
+```
+````
+
+`type:` is `choice`, `number` or `text`. For a choice, the list is the
+options, and an indented line under an option is its note: one line naming
+the thinking that leads to it, with a link to a closer-look page if there is
+one. No option is marked right. For a number, `tolerance:` says how close
+counts as the same, for an estimate. The prose before the list, or the
+whole body for `number` and `text`, is the question.
+
+The reader also says how sure they are: *sure*, *a hunch*, or *I'm not
+sure yet*. "I'm not sure yet" opens the cell's first hint. After the run,
+the guess and the output sit side by side; for printed output the cell is
+the answer key, so you write nothing more. Guesses save with the cell, and
+the end of the page lists the reader's surprises: the cells where the guess
+and the output differed, and the ones marked "not sure". Two hint signals
+go with it: `unsure` and `guess differed`.
+
+Two to four on a page, where the misconceptions are. A page that asks for a
+guess before every cell teaches readers to skip them.
+
+### hint
+
+The `hint` fence described in [Hints that wait for an
+attempt](#hints-that-wait-for-an-attempt) is a block like the others.
+
+### challenge
+
+The starter code for a page closer's challenge, which opens in the
+Notebook as a new file named after the page, beside the reader's other
+files and never over one:
+
+````markdown
+```python challenge
+# A running total that never goes below zero.
+changes = [5, -3, -4, 6, -10, 2]
+```
+````
+
+`html challenge`, `css challenge` and `js challenge` open in the Workspace.
+In a downloaded copy, with no Notebook to open, the starter is offered as a
+file to save.
+
+---
+
+<a id="worlds"></a>
+## Worlds
+
+**Status.** Agreed syntax, live with #315. Until then, a world's `<div>`
+builds, but its contents are shown without being converted.
+
+A page's frontmatter lists the worlds it offers, each with one line saying
+what it is:
+
+```yaml
+worlds:
+  planets: The planets of the solar system, measured by NASA.
+  sea-floor: A deep-sea submersible's dive. The numbers are made up.
+  pixels: Pixel art on a grid five squares wide.
+```
+
+The first is the world the page's own prose teaches in. A task, a practice
+problem or a project step can have a variant for each world, written inside
+a wrapper, with a blank line after the opening tag and before the closing
+one:
+
+````markdown
+<div class="dl-world" data-world="planets">
+
+The four giant planets are much wider. Lined up edge to edge, would they
+reach from the Earth to the Moon?
+
+```python exec
+id: your-turn-1--planets
+giants = [142984, 120536, 51118, 49528]
+```
+
+```solution
+…
+```
+
+</div>
+````
+
+A cell inside a variant adds its world to its id after two hyphens, so
+switching worlds never overwrites saved work. Each variant cell carries its
+own blocks. Prose and demonstration cells outside every variant are shown
+whatever the world.
+
+The page shows the worlds on offer near the top, each with its line, and
+remembers the reader's choice for that page. Changing it swaps the variants.
+A downloaded or printed copy has the chosen world, or all of them, with a
+heading for each.
+
+A world the reader makes up for themselves (OOP's "your own world") is a
+variant with a neutral prompt and no solution. The comparison is offered
+only where a solution exists.
 
 ---
 
@@ -630,7 +941,9 @@ version: 2026.08.24.1
 
 A practice page's title is its tutorial's, with " — Practice" added
 (`DECISIONS_LOG.md` 7.213). A practice page is never listed in a course file:
-it follows its tutorial onto every course that lists it.
+it follows its tutorial onto every course that lists it. It declares no
+`covers:` either. It sets problems on what its tutorial taught, and counting
+it would report the same outcome as taught twice.
 
 The contents page links a tutorial to its own practice page, and the tutorial
 links forward to it too, so practice is always one click from the material it is
@@ -642,7 +955,6 @@ the course page knows to show it:
 
 ```yaml
 title: "Mixed problems: algebra and functions"
-slug: mixed-algebra
 practice_across:
   - numbers-and-their-families
   - expressions-come-alive
