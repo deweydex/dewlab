@@ -135,7 +135,7 @@ class TestTheReference:
         """One tutorial, three terms, each settling one rule about which
         section an inherited term's origin lands on. A whole-page link makes
         a reader hunt; the emphasised first use is where
-        PEDAGOGICAL_STYLE_GUIDE.md §4 puts the introduction."""
+        docs/WRITING_TUTORIALS.md#marking-a-term puts the introduction."""
         write(repo,
               "Intro.\n\n"
               # `gamma` is in this link's href, and the origin must ignore a

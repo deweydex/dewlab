@@ -3837,10 +3837,11 @@ def origin_anchor(tutorial: Tutorial, term: str) -> str:
     """The section of `tutorial` a reader should land on for `term`, or "".
 
     Prefers the term's emphasised first use, since
-    PEDAGOGICAL_STYLE_GUIDE.md §4 asks an author to italicise exactly that,
-    and falls back to its first plain occurrence — a term introduced through
-    a code cell rather than a sentence may never be italicised at all, and
-    landing on the right section still beats landing on the page.
+    docs/WRITING_TUTORIALS.md#marking-a-term asks an author to italicise
+    exactly that, and falls back to its first plain occurrence — a term
+    introduced through a code cell rather than a sentence may never be
+    italicised at all, and landing on the right section still beats landing
+    on the page.
 
     Searched per `h2` section, against each section's *text* rather than its
     markup, which matters for both halves of that: a raw search over the HTML
@@ -5276,7 +5277,7 @@ def write_page(shell: str, name: str) -> Path:
     and was written out three times before this function existed.
 
     Every word on these pages is student-facing: the plain-language rules
-    in PEDAGOGICAL_STYLE_GUIDE.md section 4 apply.
+    in PEDAGOGICAL_STYLE_GUIDE.md#plain-language apply.
     """
     stem, crumb, nav = SITE_PAGES[name]
     meta, body = read_page(name)

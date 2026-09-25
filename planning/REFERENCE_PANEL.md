@@ -100,9 +100,9 @@ run it on a tutorial, and it produces this file.
 
 ## 4. The skill: writing one tutorial's *new* terms, not the cumulative list
 
-Not a cold read. `PEDAGOGICAL_STYLE_GUIDE.md` §4 already requires authors to
-mark a term's first meaningful use in single-asterisk emphasis — "define
-every technical term where it first appears, and mark it in italics" — and
+Not a cold read. `docs/WRITING_TUTORIALS.md#marking-a-term` already asks
+authors to mark a term's first meaningful use in single-asterisk emphasis,
+and
 `dev/curriculum_map.py` already relies on that same convention
 (`EMPHASIS_RE`, `terms_of()`, `term_findings()`'s "introduced more than
 once"/"used before it was introduced" checks, DECISIONS_LOG.md 5.11). That
