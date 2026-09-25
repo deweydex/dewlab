@@ -327,7 +327,8 @@ number. The walk to the door was one too.
 Here is one with a surprise in it, and a question somebody really
 asked. On
 [Doubling and halving](tutorial:doubling-and-halving#how-long-to-double),
-savings grew by 4% once a year. Now picture a bank that pays 100% a
+a count grew by the same percent once a year: compound growth. Now
+picture a bank that pays 100% a
 year, which no real bank does. €1 becomes €2 after a year.
 
 Suppose the bank pays half of that, 50%, every six months instead. After

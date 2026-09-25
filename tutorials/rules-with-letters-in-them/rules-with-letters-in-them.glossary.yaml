@@ -4,18 +4,18 @@ entries:
     kind: concept
     definition: >
       An equation is a sentence that says two expressions are equal, such as
-      50p + 30 = 280. It can be true for some values of its letter and false
+      50n + 30 = 280. It can be true for some values of its letter and false
       for others.
   - term: solving an equation
     kind: concept
     definition: >
       Solving an equation means finding the values of its letter that make
-      it true. The equation 50p + 30 = 280 is true only when p is 5.
+      it true. The equation 50n + 30 = 280 is true only when n is 5.
   - term: identity
     kind: concept
     definition: >
       An identity is an equation that is true for every value of its
-      letters, such as 2(50p + 30) = 100p + 60. One value where it fails is
+      letters, such as 2(50n + 30) = 100n + 60. One value where it fails is
       enough to show that a sentence is not an identity.
   - term: "a letter as a name"
     kind: concept
@@ -44,7 +44,7 @@ entries:
   - term: "linear, quadratic, cubic"
     kind: concept
     definition: >
-      These are the names for polynomials of degree 1, 2 and 3. 50p + 30 is
+      These are the names for polynomials of degree 1, 2 and 3. 50n + 30 is
       linear, 3x² + 5x − 2 is quadratic, and x³ − 4x is cubic.
   - term: a polynomial as a list
     kind: concept
@@ -63,14 +63,14 @@ entries:
   - term: "like terms, collecting like terms"
     kind: concept
     definition: >
-      Like terms are terms with the same power of the letter, such as 120x
-      and 80x. Collecting them means adding their coefficients: 120x + 80x
-      is 200x.
+      Like terms are terms with the same power of the letter, such as 4x
+      and 3x. Collecting them means adding their coefficients: 4x + 3x is
+      7x.
   - term: simplify
     kind: concept
     definition: >
       To simplify an expression is to write it with fewer parts and the same
-      value. 120x − 300 + 80x − 200 simplifies to 200x − 500.
+      value. 4x + 30 + 3x + 50 simplifies to 7x + 80.
   - term: expanding brackets
     kind: concept
     definition: >
@@ -82,3 +82,10 @@ entries:
     definition: >
       The square of a bracket has two middle terms, one for each strip in
       the picture of a square. (x + 3)² is x² + 6x + 9, not x² + 9.
+  - term: "weights for a curve"
+    kind: formula
+    definition: >
+      A curve on a screen can be drawn by mixing three points with the
+      weights (1 − t)², 2t(1 − t) and t², as t runs from 0 to 1. Expanded,
+      the three weights add up to 1 for every t.
+    example: "expand_brackets([1, -1], [1, -1])   # [1, -2, 1], which is (1 − t)²"

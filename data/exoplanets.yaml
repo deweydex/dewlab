@@ -1,0 +1,32 @@
+# Attribution for data/exoplanets.csv.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the numbers they are working with back to their source.
+
+source: >
+  NASA Exoplanet Archive, Planetary Systems Composite Parameters table
+  (PSCompPars, DOI 10.26133/NEA13), fetched through the archive's TAP service
+  on 25 September 2026. https://exoplanetarchive.ipac.caltech.edu
+  This research has made use of the NASA Exoplanet Archive, which is operated
+  by the California Institute of Technology, under contract with the National
+  Aeronautics and Space Administration under the Exoplanet Exploration Program.
+
+license: >
+  The archive states no licence. It asks that anyone who uses its data
+  include the acknowledgment above. The values are measurements of
+  planets, collected by the archive from published papers.
+
+snapshot: 2026-09-25
+
+description: >
+  Every confirmed planet outside the solar system known to the archive on
+  25 September 2026: 6,372 planets, one row each, in the order the archive
+  gave them, which is no particular order. Six columns: name (pl_name);
+  discovered, the year it was announced (disc_year); method, how it was
+  found (discoverymethod); orbit_days, the time for one orbit of its star,
+  in days, to 5 significant figures (pl_orbper); radius_earths, its radius
+  in Earth radii, to 2 decimal places (pl_rade; for some planets the
+  archive estimates this from the mass); distance_ly, the distance from
+  the Sun to its star in light-years, converted from the archive's parsecs
+  with 1 parsec = 3.26156 light-years and rounded to 0.1 (sy_dist). An
+  empty cell means the archive has no value. All the archive's other
+  columns, uncertainties and references are left out.

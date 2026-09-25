@@ -334,23 +334,25 @@ The rate is about 0.0131, or 1.31% a year. Putting it back in gives
 
 **12. Another way.** On
 [Drawing a rule](tutorial:drawing-a-rule#straight-lines-and-where-two-meet),
-phone plan A cost $8 + 2x$ euro for $x$ gigabytes, and plan B cost €20.
-Find where they cost the same with `bisect_root`, by looking for a root
-of the difference between them. Compare with `solve_linear`.
+server A answered in $8 + 2x$ ms with $x$ thousand people using an
+app, and server B in 20 ms. Find where they are equally fast with
+`bisect_root`, by looking for a root of the difference between them.
+Compare with `solve_linear`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The plans cost the same where plan A minus plan B is 0: $2x - 12 = 0$.
+The servers are equally fast where server A minus server B is 0:
+$2x - 12 = 0$.
 
 ```python
-def plan_difference(gigabytes):
-    return (8 + 2 * gigabytes) - 20
+def server_difference(thousands):
+    return (8 + 2 * thousands) - 20
 
-print(bisect_root(plan_difference, 0, 10))
+print(bisect_root(server_difference, 0, 10))
 print(solve_linear(2, -12))
 ```
 
-Both give 6 gigabytes (bisection to within a billionth). Any "where are
+Both give 6 thousand people (bisection to within a billionth). Any "where are
 two rules equal?" question becomes a root question this way.
 
 </details>

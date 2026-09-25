@@ -1,7 +1,7 @@
 ---
 title: "Doubling and halving: powers and logarithms at work"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 datasets: [co2-emissions]
 covers:
   a-rumour-that-doubles:
@@ -39,7 +39,8 @@ On this page we:
 - follow a rumour that doubles every hour, and count the hours
 - put grains on a chessboard, and add them up
 - see why doublings add, and use $2^{10} \approx 1000$ to estimate
-- find how long money, or a country's emissions, takes to double
+- find how long computer chips, and a country's emissions, took to
+  double
 - count halvings down to 1, and add `halvings` to the toolkit
 - see why binary search is so quick: $2^k = n$ and $k = \log_2 n$, from
   both ends
@@ -109,14 +110,15 @@ while people_who_know < population:
 print(hours, "hours, and", people_who_know, "people could know")
 ```
 
-It takes 23 hours. After 22 hours, 4,194,304 people know, which is
-about four people in every five. One more doubling passes the whole population. (The
+It takes 23 hours: less than one day for the whole country. I find
+that hard to believe, even after running it. After 22 hours, 4,194,304
+people know, which is about four people in every five. One more doubling passes the whole population. (The
 rumour runs out of new people before the last hour ends, so 8,388,608
 is what the rule would give, not what could happen.)
 
-The loop has a counter, `hours`, and the counter is the answer. It
-counts doublings. Here is a picture of the same 23 hours. Before you
-run it, what shape do you expect?
+The counter, `hours`, is the answer: it counts doublings. Here is a
+picture of the same 23 hours. Before you run it, what shape do you
+expect?
 
 ```python exec
 id: doubling-rumour-2
@@ -140,6 +142,20 @@ For most of the day the line lies flat along the bottom. After 13 hours,
 only 8,192 people know, and the country has not noticed. Then the line
 rises very steeply. By the rule, more people hear the rumour in each
 hour than in all the hours before it put together.
+
+A *computer worm*, a program that copies itself from one computer to
+the next across a network, spreads by the same rule: every computer it
+reaches starts looking for more.
+
+<aside class="dl-note" id="doubling-note-worm">
+
+**Ten minutes.** In January 2003, a worm called Slammer reached about
+75,000 computers in roughly ten minutes. At the start, the number of
+computers it had reached doubled about every 8.5 seconds. It slowed
+only when it began to run out of computers it could reach, as the
+rumour runs out of people.
+
+</aside>
 
 Growth like this, where a number is multiplied by the same amount each
 step, is called *exponential growth*. The name comes from the exponent:
@@ -188,11 +204,10 @@ at such a small reward.
 You met this kind of doubling on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times),
 where each new segment of a display doubled the number of patterns. Now
-let's fill the whole board. Square 1 has $2^0 = 1$ grain,
-square 2 has $2^1 = 2$, and square $k$ has $2^{k-1}$. The power is one
-less than the square's number, because the first square has had no
-doublings yet. Multiplying no 2s at all leaves 1, in the same way that
-a running product started at 1 on
+let's fill the whole board. Square $k$ has $2^{k-1}$ grains: the power
+is one less than the square's number, because the first square has had
+no doublings yet. Multiplying no 2s at all leaves 1, as a running
+product started at 1 on
 [Doing it again](tutorial:doing-it-again#pi-multiplying-instead-of-adding).
 So $2^0 = 1$.
 
@@ -306,59 +321,71 @@ billion?
 
 The bouncing ball on
 [Doing it again](tutorial:doing-it-again#pi-multiplying-instead-of-adding)
-shrank by the same factor at every bounce. Money in a savings account at
-4% a year does the same thing the other way: each year it is multiplied
-by 1.04. Growth where each step's increase is
-added in, and earns its own increase the next time, is called *compound
-growth*. It is exponential growth with a base of 1.04 in place of 2.
+shrank by the same factor at every bounce. Computer chips have grown
+the other way. A chip does its work with *transistors*: tiny switches,
+each on or off, like the segments of a display. Here are seven chips,
+from the first one-chip processor in 1971 to a laptop chip of 2020,
+with how many transistors each holds.
 
-How many years until €1,000 becomes €2,000? The time it takes a growing
-amount to double is its *doubling time*. Guess first. The cell counts
-the years, the way the rumour counted hours.
-
-```python exec
-id: doubling-money-1
-def years_to_double(start, rate_percent):
-    """Return how many whole years start takes to double, growing by rate_percent a year."""
-    amount = start
-    years = 0
-    while amount < 2 * start:
-        amount = amount * (1 + rate_percent / 100)
-        years = years + 1
-    return years
-
-print(years_to_double(1000, 4))
-print(years_to_double(50, 4))
-print(years_to_double(1000, 8))
-```
-
-At 4%, it takes 18 years. The start does not matter: €50 also takes 18
-years. Only the rate does. At 8% it takes 10 years, a little over half
-as long.
-
-Savers have a shortcut for this, the *rule of 72*: divide 72 by the rate
-in percent, and you get the doubling time, roughly. $72 \div 4 = 18$,
-and $72 \div 8 = 9$. It is a rough rule, close for rates from about 2%
-to 10%, and not exact.
-
-The exact question is: which $k$ makes $1.04^k = 2$? That is a
-logarithm with base 1.04, written $\log_{1.04} 2$. A logarithm can have
-any base, not only 2 or 10. Python's `math.log(x, base)` takes the base
-as its second input. What will it give?
+For each chip, how many doublings is it from the first? Guess the last
+number before you run it.
 
 ```python exec
-id: doubling-money-2
-print(math.log(2, 1.04))
-print(math.log(2, 1.08))
+id: doubling-moore-1
+years = [1971, 1978, 1985, 1989, 2000, 2006, 2020]
+transistors = [2250, 29000, 275000, 1180235, 42000000, 291000000, 16000000000]
+
+for position in range(len(years)):
+    doublings = math.log2(transistors[position] / transistors[0])
+    print(years[position], transistors[position], round(doublings, 1))
 ```
 
-About 17.7 years and 9.0 years. The loop counted whole years, so it
-rounded up. At 8%, after 9 years, €1,000 has grown to €1,999.00: one
-euro short of doubling, so the loop needed a tenth year.
+The Apple M1 of 2020 holds 16 billion transistors, 22.8 doublings more
+than the Intel 4004's 2,250. Those doublings took 49 years, so there
+was one doubling about every $49 \div 22.8 \approx 2.15$ years, for half
+a century.
+
+<aside class="dl-note" id="doubling-note-moore">
+
+**Moore's law.** In 1965 Gordon Moore, who later helped found Intel,
+wrote that the number of parts on a chip was doubling every year. In
+1975 he changed his estimate to every two years. It is not a law of
+nature: it held because engineers worked to make it hold, and it has
+slowed in recent years. The counts above are the ones usually quoted
+for each chip.
+
+</aside>
+
+Growth like this, where each step multiplies by the same number, so
+that each step's increase is bigger than the last, is called *compound
+growth*. It is exponential growth with a base other than 2. Say a count
+grows by 40% a year: each year it is multiplied by 1.4. How many years
+until it doubles? The time it takes a growing amount to double is its
+*doubling time*. Guess first. The cell counts the years, the way the
+rumour counted hours.
+
+```python exec
+id: doubling-moore-2
+growth = 1
+years_passed = 0
+while growth < 2:
+    growth = growth * 1.4
+    years_passed = years_passed + 1
+print(years_passed, "years, and the count is", round(growth, 2), "times as big")
+
+print(math.log(2, 1.4))
+```
+
+The loop says 3 years. After 2 years the count is 1.96 times as big:
+only a little short of doubling, so the loop needs a third year. The
+exact question is: which $k$ makes $1.4^k = 2$? That is a logarithm
+with base 1.4, written $\log_{1.4} 2$. A logarithm can have any base,
+not only 2 or 10, and Python's `math.log(x, base)` takes the base as
+its second input. It gives about 2.06 years, close to Moore's two.
 
 ### Doubling in real data
 
-Rules like "4% every year" are steady. Real numbers are not. Here are
+Rules like "40% every year" are steady. Real numbers are not. Here are
 Ireland's carbon dioxide emissions from burning fuel and making cement,
 in millions of tonnes a year, from 1950 to 2023. The cell loads a file
 of every country's emissions, keeps Ireland's rows, and takes two
@@ -396,10 +423,10 @@ such promise.
 
 ### Your turn
 
-1. Try `years_to_double(1000, 2)` and `72 / 2`. How close is the rule of
-   72 at 2%? Try 20% too.
-2. Change the cell so that it looks for the year Ireland's emissions
-   first reached 3 times the 1950 level.
+1. Change the 1.4 in the doubling-time cell to 1.04, a growth of 4% a
+   year. Before you run it, guess the doubling time.
+2. Change the emissions cell so that it looks for the year Ireland's
+   emissions first reached 3 times the 1950 level.
 
 ## Halving down to 1
 
@@ -494,6 +521,31 @@ title: some steps
 What would `halvings(8)` give with `n > 0`?
 ```
 
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one way to write it. Yours may differ and still keep the
+promise: the tests are the judge.
+
+```python
+def halvings(n):
+    """Return how many times the whole number n (1 or more) can be halved,
+    rounding down each time, before it reaches 1.
+
+    halvings(128) is 7, halvings(1000) is 9 and halvings(1) is 0.
+    It is log2(n), rounded down.
+    """
+    count = 0
+    while n > 1:
+        n = n // 2
+        count = count + 1
+    return count
+```
+
+</details>
+
+If you have not written `halvings` yet, open the answer above and copy
+it into the stub. The rest of the page uses it.
+
 `math.floor` rounds down, the partner of `math.ceil`. The fifth test says
 something worth a second look. 5,149,139 halves 22 times to reach 1,
 while the rumour needed 23 doublings to pass it. Halvings round
@@ -579,7 +631,7 @@ number, found from opposite ends:
 | number of steps | $\log_2 n$, rounded up | $\log_2 n$, rounded down |
 | where we met it | the rumour, the chessboard | tennis, binary search |
 
-Doubling makes numbers huge fast. Halving makes them small just as fast.
+Doubling makes numbers huge fast. Halving makes them small equally fast.
 That is why the logarithmic growth of binary search is so slow. Ten
 times as many names adds only 3 or 4 looks, because
 $\log_2 10 \approx 3.3$. A million times as many adds about 20.
@@ -638,7 +690,7 @@ that this page showed only one law of logarithms, and a logarithm like
 
 | The question | On this page |
 |---|---|
-| What is named here? | a counter like `hours` or `rounds`, which turns out to be a logarithm; a base, 2 or 1.04; $k$ in $2^k = n$ |
+| What is named here? | a counter like `hours` or `rounds`, which turns out to be a logarithm; a base, 2 or 1.4; $k$ in $2^k = n$ |
 | What is promised? | `halvings(n)` promises $\log_2 n$ rounded down; $2^a \times 2^b = 2^{a+b}$; $\log_2(ab) = \log_2 a + \log_2 b$ |
 | What happens when? | each doubling or halving happens after the one before; the last doubling adds more than all the ones before it |
 | What does this space let us do? | Python's whole numbers hold $2^{64} - 1$ exactly; `//` stops halving at 1, while fractions halve for ever; a model of a rumour doubles for ever, and people do not |
@@ -653,7 +705,8 @@ that this page showed only one law of logarithms, and a logarithm like
 | $2^{10} \approx 1000$ | a way to estimate: 20 doublings is about a million |
 | $\log_2(ab) = \log_2 a + \log_2 b$ | a law of logarithms: the counts add |
 | compound growth | growth where each step's increase earns its own increase next time |
-| doubling time, rule of 72 | how long a growing amount takes to double; roughly 72 divided by the rate in percent |
+| transistor, Moore's law | a tiny on-off switch on a chip; the count on a chip doubled about every two years for half a century |
+| doubling time | how long a growing amount takes to double |
 | `math.log(x, base)` | a logarithm with any base: how many times do I multiply by `base`? |
 | `math.floor(x)` | $x$ rounded down to a whole number |
 | `halvings(n)` | your toolkit tool: how many times $n$ halves down to 1, which is $\log_2 n$ rounded down |

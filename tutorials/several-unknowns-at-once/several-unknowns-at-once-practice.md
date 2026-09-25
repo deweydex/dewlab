@@ -2,14 +2,14 @@
 title: "Several unknowns at once: simultaneous equations — Practice"
 practice_for: several-unknowns-at-once
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Several unknowns at once: simultaneous equations — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -77,16 +77,16 @@ $2 \times (-3) - 1 \times 1 = -7$, is not 0.
 
 </details>
 
-**4. Explain.** A café sold 12 drinks, some tea and some coffee. That is
-one fact, $t + c = 12$. How many answers does it have if the counts are
-whole numbers? And if $t$ and $c$ could be any real numbers? What does a
-second fact do?
+**4. Explain.** A server answered 12 requests, some for images and some
+for text. That is one fact, $i + t = 12$. How many answers does it have
+if the counts are whole numbers? And if $i$ and $t$ could be any real
+numbers? What does a second fact do?
 
 <details class="dl-answer"><summary>answer</summary>
 
-With whole numbers from 0 up, there are 13 answers: 0 teas and 12
-coffees, 1 and 11, and so on up to 12 and 0. With any real numbers,
-there are endless answers: every point on the line $c = 12 - t$.
+With whole numbers from 0 up, there are 13 answers: 0 images and 12
+texts, 1 and 11, and so on up to 12 and 0. With any real numbers, there
+are endless answers: every point on the line $t = 12 - i$.
 
 A second fact that is not the same fact again draws a second line. Two
 lines that are not parallel cross at exactly one point, and that point
@@ -124,6 +124,8 @@ substitute back.
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 oats, yoghurt = solve_simultaneous(1, 1, 250, 0.13, 0.10, 29.5)
 print(round(oats, 2), round(yoghurt, 2))
@@ -132,42 +134,44 @@ print(close_enough(oats + yoghurt, 250), close_enough(0.13 * oats + 0.10 * yoghu
 
 150 g of oats and 100 g of yoghurt, and both checks print `True`. The
 numbers like 0.13 are floats, so the answer may come back a tiny way
-from 150, and `close_enough` is the right test.
+from 150, and `close_enough` is the test to use.
 
 </details>
 
-**6. Make.** Two bus fares and a train fare cost €8.30. One bus fare
-and three train fares cost €12.40. (The fares are made up.) Find each
-fare by elimination, by hand, in the four steps from the tutorial.
-Then check with `solve_simultaneous`.
+**6. Make.** A game's download is made of pictures and sounds. Two
+pictures and a sound make 8.30 MB. One picture and three sounds make
+12.40 MB. (The sizes are made up.) Find the size of each by
+elimination, by hand, in the four steps from the tutorial. Then check
+with `solve_simultaneous`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Call the bus fare $b$ and the train fare $t$:
+Call a picture's size $p$ and a sound's size $s$:
 
-$$2b + t = 8.30$$
-$$b + 3t = 12.40$$
+$$2p + s = 8.30$$
+$$p + 3s = 12.40$$
 
-Step 1: multiply the second equation by 2, so $b$ has 2 in front of it
-in both: $2b + 6t = 24.80$. Step 2: take the first equation away from
-it: $5t = 16.50$. Step 3: $t = 3.30$. Step 4: put it back into the
-first equation: $2b + 3.30 = 8.30$, so $2b = 5$ and $b = 2.50$.
+Step 1: multiply the second equation by 2, so $p$ has 2 in front of it
+in both: $2p + 6s = 24.80$. Step 2: take the first equation away from
+it: $5s = 16.50$. Step 3: $s = 3.30$. Step 4: put it back into the
+first equation: $2p + 3.30 = 8.30$, so $2p = 5$ and $p = 2.50$.
 
 ```python
-fares = solve_simultaneous(2, 1, 8.30, 1, 3, 12.40)
-print(fares)
-print(round(fares[0], 2), round(fares[1], 2))
+sizes = solve_simultaneous(2, 1, 8.30, 1, 3, 12.40)
+print(sizes)
+print(round(sizes[0], 2), round(sizes[1], 2))
 ```
 
-A bus fare is €2.50 and a train fare €3.30. The first line may show a
-float a tiny way off, such as `2.5000000000000004`; rounding to cent
-shows the fares.
+A picture is 2.5 MB and a sound 3.3 MB. The first line may show a
+float a tiny way off, such as `2.5000000000000004`; rounding to two
+places shows the sizes.
 
 </details>
 
-**7. Fix.** Here is someone's version of `solve_simultaneous`. The
-first test passes, and the second stops with an error. Run it, read the
-error, and fix the function.
+**7. Fix.** Schlomo, who is learning Python too, wrote his own
+`solve_simultaneous`. It has every line it needs. The first test
+passes, and the second stops with an error. Run it, read the error,
+and change the function so that both pass.
 
 ```python exec
 id: several-unknowns-practice-fix
@@ -200,9 +204,10 @@ come first?
 <details class="dl-answer"><summary>answer</summary>
 
 The error is `ZeroDivisionError: division by zero`, on the line that
-works out `x`. For the fans' T-shirts the determinant is 0, and the
-function divides by it before it checks. The check is right, and it
-comes too late. Move it up, straight after the determinant:
+works out `x`. For the two backup readings the determinant is 0, and
+the function divides by it before it checks. Schlomo's check is the
+one it needs, and it comes too late. Move it up, straight after the
+determinant:
 
 ```python
 def solve_pair(a1, b1, c1, a2, b2, c2):
@@ -254,7 +259,7 @@ $(-2) \times 1 - (-2) \times 1 = 0$.
 
 </details>
 
-**9. Another way.** Solve the concert question from the tutorial by
+**9. Another way.** Solve the server-log question from the tutorial by
 *substitution* instead of elimination. From $a + c = 230$, write
 $a = 230 - c$, and put that in place of $a$ in $12a + 5c = 2060$. That
 leaves one equation in $c$. Tidy it into the shape $mc + k = 0$ and
@@ -266,23 +271,27 @@ $12(230 - c) + 5c = 2060$, so $2760 - 12c + 5c = 2060$, which is
 $2760 - 7c = 2060$. Taking 2060 from both sides gives $-7c + 700 = 0$.
 
 ```python
-children = solve_linear(-7, 700)
-adults = 230 - children
-print(adults, children)
-print(adults + children == 230, 12 * adults + 5 * children == 2060)
+texts = solve_linear(-7, 700)
+images = 230 - texts
+print(images, texts)
+print(images + texts == 230, 12 * images + 5 * texts == 2060)
 ```
 
-130 adults and 100 children, as before, and both checks print `True`.
+130 images and 100 pages of text, as before, and both checks print
+`True`.
 Substitution turns two unknowns into one, and the toolkit already had a
 tool for one.
 
 </details>
 
 **10. Explain.** In elimination, we multiplied $a + c = 230$ by 5 to get
-$5a + 5c = 1150$. Why does that not change the answer? Would its line on
-a graph change?
+$5a + 5c = 1150$. Schlomi, who is also learning Python, is uneasy:
+"That is a different equation. Why does it keep the same answer?" What
+would you tell her? Would its line on a graph change?
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 Any pair that makes $a + c = 230$ true also makes $5a + 5c = 1150$ true,
 because both sides were multiplied by the same number. It works the
@@ -295,17 +304,18 @@ every pair, so that move throws the fact away.
 
 </details>
 
-**11. Make.** On [Solving for x](tutorial:solving-for-x) one phone plan
-cost €20 a month, and another cost €8 plus 6 cent a minute. Write the
-two plans as simultaneous equations in $m$ (minutes) and $y$ (the cost
-in euro), and solve them with `solve_simultaneous`.
+**11. Make.** On [Solving for x](tutorial:solving-for-x), server B took
+20 ms whatever the crowd, and server A took 8 ms plus 2 ms for each
+thousand people. Write the two servers as simultaneous equations in $g$
+(thousands of people) and $y$ (the time in ms), and solve them with
+`solve_simultaneous`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The first plan: $y = 20$. With no $m$ in it, that is $0m + 1y = 20$.
-2. The second plan: $y = 8 + 0.06m$. Move the $m$ term to the left:
-   $-0.06m + 1y = 8$.
-3. The six numbers are `0, 1, 20, -0.06, 1, 8`.
+1. Server B: $y = 20$. With no $g$ in it, that is $0g + 1y = 20$.
+2. Server A: $y = 8 + 2g$. Move the $g$ term to the left:
+   $-2g + 1y = 8$.
+3. The six numbers are `0, 1, 20, -2, 1, 8`.
 
 **Think about:** what does the answer's second number, $y$, mean?
 
@@ -314,14 +324,14 @@ in euro), and solve them with `solve_simultaneous`.
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-minutes, cost = solve_simultaneous(0, 1, 20, -0.06, 1, 8)
-print(round(minutes, 6), cost)
-print(close_enough(8 + 0.06 * minutes, 20))
+thousands, time = solve_simultaneous(0, 1, 20, -2, 1, 8)
+print(thousands, time)
+print(8 + 2 * thousands == 20)
 ```
 
-200 minutes, at a cost of €20. That is the answer `solve_linear` found
-on that page, and the crossing of the two lines. Here the second number
-is the cost where the plans meet, which the one-unknown version did not
+6 thousand people, at 20 ms. That is the answer `solve_linear` found on
+that page, and the crossing of the two lines. Here the second number is
+the time where the servers meet, which the one-unknown version did not
 give us.
 
 </details>
@@ -333,7 +343,7 @@ A cell for the stretch problems.
 ```python exec
 id: several-unknowns-practice-stretch
 import numpy as np
-# Your working for problems 12 to 14
+# Your working for problems 12 to 15
 ```
 
 **12. Make.** In rugby union, a try is worth 5 points, a conversion 2
@@ -412,5 +422,72 @@ Two lines that are nearly parallel cross at a point that is very
 sensitive: tilt one line a little and the crossing slides a long way.
 So when the determinant is close to 0, an answer built from measured
 numbers deserves less trust.
+
+</details>
+
+**15. Make.** On
+[The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line),
+the bowl of a letter o dipped 9 font units below the baseline. That
+came from the font file. Could you find the dip with no font file,
+from a picture of the letter? Here are three pixels on the bottom of
+the bowl, across then up, in font units: $(234, 0)$, $(270, -8)$ and
+$(344, 0)$. Near its bottom, the bowl is close to a parabola,
+$y = ax^2 + bx + c$, with three unknowns. Each pixel gives one fact:
+the first says $234^2 a + 234b + c = 0$.
+
+1. Write the three facts.
+2. Take the first fact from each of the other two. That eliminates
+   $c$, and leaves two facts in $a$ and $b$ for `solve_simultaneous`.
+3. Put $a$ and $b$ back into the first fact to find $c$, and check all
+   three pixels.
+4. Find the bottom of your parabola with `vertex`. How close is it to
+   the font file's $-9$?
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. The second fact is $270^2 a + 270b + c = -8$, and the third is
+   $344^2 a + 344b + c = 0$.
+2. Second take first: $(270^2 - 234^2)a + (270 - 234)b = -8 - 0$.
+3. Third take first: $(344^2 - 234^2)a + (344 - 234)b = 0 - 0$.
+4. Python can work out $270^2 - 234^2$ for you: write it as
+   `270 ** 2 - 234 ** 2` inside the call.
+
+**Think about:** why must the three pixels be at three different
+places across?
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+One way through, in code:
+
+```python
+pixels = [(234, 0), (270, -8), (344, 0)]
+(x1, y1), (x2, y2), (x3, y3) = pixels
+
+a, b = solve_simultaneous(x2 ** 2 - x1 ** 2, x2 - x1, y2 - y1,
+                          x3 ** 2 - x1 ** 2, x3 - x1, y3 - y1)
+c = y1 - a * x1 ** 2 - b * x1
+print(a, b, c)
+for x, y in pixels:
+    print(x, y, round(a * x ** 2 + b * x + c, 9))
+
+print(np.linalg.solve([[x * x, x, 1] for x, y in pixels], [y for x, y in pixels]))
+print(vertex(a, b, c))
+```
+
+$a$ is about 0.003, $b$ about $-1.736$ and $c$ about 241.7, and the
+parabola passes through all three pixels. `np.linalg.solve` gives the
+same three numbers. Its bottom is at $x = 289$, about 9.08 units below
+the baseline: within a tenth of a unit of the font file's 9, from
+three pixels and no font file.
+
+Why not exactly 9? Two reasons. The pixels are rounded to whole units.
+And the letter's curve is a quadratic in $t$, how far along the curve
+we are, not quite in $x$, so a parabola in $x$ is a close model of the
+bowl, not the bowl itself. Three unknowns needed three facts, and three
+pixels were enough to get this close. As problem 14 warned, facts that
+come from measuring are worth a second look: move one pixel by a unit
+and see how far the bottom moves.
 
 </details>

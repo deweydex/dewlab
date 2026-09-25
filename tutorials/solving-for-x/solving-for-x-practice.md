@@ -2,14 +2,14 @@
 title: "Solving for x: linear and quadratic equations — Practice"
 practice_for: solving-for-x
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Solving for x: linear and quadratic equations — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -46,11 +46,10 @@ smallest first. They are floats, because the formula divides.
 
 </details>
 
-**2. Make.** A band hires a hall for €500. The venue pays the band €300,
-plus €4 for every ticket sold. How many tickets must be sold for the
-band to cover the hall? Write the equation, tidy it into the shape
-$ax + b = 0$, solve it with `solve_linear`, and substitute the answer
-back.
+**2. Make.** A 500 MB download has 300 MB done, and 4 MB more arrive
+each second. How many seconds until it is done? Write the equation,
+tidy it into the shape $ax + b = 0$, solve it with `solve_linear`, and
+substitute the answer back.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -58,12 +57,12 @@ $300 + 4t = 500$. Subtract 500 from both sides: $4t - 200 = 0$, so
 $a = 4$ and $b = -200$.
 
 ```python
-tickets = solve_linear(4, -200)
-print(tickets)
-print(300 + 4 * tickets)
+seconds = solve_linear(4, -200)
+print(seconds)
+print(300 + 4 * seconds)
 ```
 
-It prints `50.0` and `500.0`: 50 tickets pay for the hall.
+It prints `50.0` and `500.0`: 50 more seconds finish the download.
 
 </details>
 
@@ -94,30 +93,33 @@ $x$ term, so $b$ is 0.
 
 </details>
 
-**4. Explain.** A square rug covers 9 square metres. A friend writes
-$x^2 = 9$ and says "so $x = 3$". Is that the whole answer to the
-equation? Is it the whole answer to the question about the rug?
+**4. Explain.** A square photo has 9 million pixels. Schlomi, who is
+learning Python too, writes $x^2 = 9\,000\,000$ for its side and says
+"so $x = 3000$". Is that the whole answer to the equation? Is it the
+whole answer to the question about the photo?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Work out $3^2$, then $(-3)^2$.
+1. Work out $3000^2$, then $(-3000)^2$.
 2. Ask what $x$ stands for in the question.
 
 **Think about:** which space the equation lives in, and which space the
-rug lives in.
+photo lives in.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-The equation has two roots, 3 and −3, because $(-3)^2 = 9$ as well.
-`solve_quadratic(1, 0, -9)` gives both. So "$x = 3$" is not the whole
-answer to the equation.
+One way through; yours may differ and work as well.
 
-It is the whole answer to the question. The side of a rug is a length,
-and a length lives in the numbers from 0 up. There, −3 is not
-allowed, and 3 is the only answer. Your friend was right about the
-rug, and left out a root of the equation.
+The equation has two roots, 3000 and −3000, because
+$(-3000)^2 = 9\,000\,000$ as well. `solve_quadratic(1, 0, -9000000)`
+gives both. So "$x = 3000$" is not the whole answer to the equation.
+
+It is the whole answer to the question. The side of a photo is a count
+of pixels, and a count lives in the numbers from 0 up. There, −3000 has
+no meaning, and 3000 is the only answer. Schlomi answered the photo's
+question in full, and left out a root of the equation.
 
 </details>
 
@@ -130,33 +132,35 @@ id: solving-practice-core
 # Your working for problems 5 to 12
 ```
 
-**5. Make.** Two car hire companies charge for one day. Company A
-charges €30, plus 10 cent a kilometre. Company B charges €20, plus 25
-cent a kilometre. At what distance do they cost the same? Which is
-cheaper for a 50 km trip to the coast?
+**5. Make.** Two servers offer the same file. Server A takes 30 seconds
+to start sending, then 0.10 seconds for each megabyte. Server B takes 20
+seconds to start, then 0.25 seconds a megabyte. (The times are made
+up.) For what size of file are they equally fast? Which is faster for
+a 50 MB file?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$30 + 0.10d = 20 + 0.25d$. Subtract $20 + 0.25d$ from both sides:
-$-0.15d + 10 = 0$.
+$30 + 0.10m = 20 + 0.25m$. Subtract $20 + 0.25m$ from both sides:
+$-0.15m + 10 = 0$.
 
 ```python
-kilometres = solve_linear(-0.15, 10)
-print(kilometres)
-print(30 + 0.10 * kilometres, 20 + 0.25 * kilometres)
+megabytes = solve_linear(-0.15, 10)
+print(megabytes)
+print(30 + 0.10 * megabytes, 20 + 0.25 * megabytes)
 print(30 + 0.10 * 50, 20 + 0.25 * 50)
 ```
 
-The two companies cost the same at about 66.7 km, where each costs
-about €36.67. For 50 km, A costs €35 and B costs €32.50, so B is
-cheaper. B's day rate is lower, so B wins for short trips and A for
-long ones.
+The two are equally fast at about 66.7 MB, where each takes about
+36.67 seconds. For 50 MB, A takes 35 seconds and B takes 32.5, so B is
+faster. B starts sooner, so B wins for small files and A for large
+ones.
 
 </details>
 
-**6. Fix.** It is 50 °F in New York. This cell tries to find that
-temperature in Celsius by solving $\frac{9}{5}C + 32 = 50$ with
-`solve_linear`. The check fails. Find the mistake.
+**6. Fix.** It is 50 °F in New York. Schlomo, who is also learning
+Python, wants that temperature in Celsius, so he solves
+$\frac{9}{5}C + 32 = 50$ with `solve_linear`. His check fails. Find the
+line that makes it fail.
 
 ```python exec
 id: solving-practice-fix-weather
@@ -180,9 +184,10 @@ $32 - 50 = -18$, not $50 - 32$:
 b = 32 - 50
 ```
 
-Now `celsius` is `10.0`, and the check passes. The mistake is a very
-common one: moving a number across the equals sign and forgetting that
-it changes sign. The check caught it, which is what it is for.
+Now `celsius` is `10.0`, and the check passes. Moving a number across
+the equals sign and keeping its old sign is one of the most common
+slips in algebra, for everyone. Schlomo's check caught it, which is
+what a check is for.
 
 </details>
 
@@ -242,29 +247,29 @@ makes its own bracket 0.
 
 </details>
 
-**9. Make.** A five-a-side pitch is a rectangle, 20 m longer than it is
-wide, and covers 800 square metres. Write the equation, solve it with
-`solve_quadratic`, and say which root is the width. How long is the
-pitch?
+**9. Make.** A wide screen is 20 cm wider than it is tall, and covers
+800 square centimetres. Write the equation, solve it with
+`solve_quadratic`, and say which root is the height. How wide is the
+screen?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$w(w + 20) = 800$, which is $w^2 + 20w - 800 = 0$.
+$h(h + 20) = 800$, which is $h^2 + 20h - 800 = 0$.
 
 ```python
 print(solve_quadratic(1, 20, -800))
 print(20 * (20 + 20))
 ```
 
-The roots are −40 and 20. A width cannot be negative, so the pitch is
-20 m wide and 40 m long, and $20 \times 40 = 800$. By inspection, the
-pair is 40 and −20: $(w + 40)(w - 20) = 0$.
+The roots are −40 and 20. A height cannot be negative, so the screen
+is 20 cm tall and 40 cm wide, and $20 \times 40 = 800$. By inspection,
+the pair is 40 and −20: $(h + 40)(h - 20) = 0$.
 
 </details>
 
-**10. Fix.** Here is someone's quadratic solver, with two tests that
+**10. Fix.** Here is a quadratic solver, with two tests that
 substitute the roots back. The first test passes and the second fails.
-Find the mistake.
+Find the line that makes it fail.
 
 ```python exec
 id: solving-practice-fix-roots
@@ -293,7 +298,7 @@ print("roots_of keeps its promise.")
 2. Work out `12 / 2 * 2` in your head, the way Python does: left to
    right.
 
-**Think about:** why the first test could not find this mistake.
+**Think about:** why the first test passed anyway.
 
 </details>
 
@@ -306,7 +311,7 @@ $2a$, so the bottom needs brackets:
     return sorted([(-b - root) / (2 * a), (-b + root) / (2 * a)])
 ```
 
-With the mistake, `roots_of(2, -7, 3)` gives `[2.0, 12.0]`. The first
+Without the brackets, `roots_of(2, -7, 3)` gives `[2.0, 12.0]`. The first
 test passed because there $a$ is 1, and dividing by 2 then multiplying
 by 1 is the same as dividing by 2. A test with $a = 1$ alone would never
 have found this. It is the order of operations from
@@ -328,9 +333,9 @@ same shape as "two roots" or "one root".
 Code that uses the tool does not need a special case. A loop over an
 empty list runs 0 times and moves on, so a check like the tutorial's
 works for every quadratic. An error would stop the whole program, even
-though "no real roots" is a true answer, not a mistake. An error is the
-right choice when the input itself is wrong, such as $a = 0$, which the
-docstring rules out.
+though "no real roots" is a true answer, not a failure. An error suits
+the case where the input itself breaks the promise, such as $a = 0$,
+which the docstring rules out.
 
 </details>
 
@@ -366,37 +371,45 @@ id: solving-practice-stretch
 # Your working for problems 13 to 15
 ```
 
-**13. Make.** €1,000 is saved for two years at a rate $r$ a year, with
-compound growth as on
-[Doubling and halving](tutorial:doubling-and-halving#how-long-to-double).
-After two years there is €1,102.50. So $1000(1 + r)^2 = 1102.5$. Find
-$r$ as a percentage.
+**13. Make.** You drop a stone into a well, and hear the splash 3
+seconds later. How deep is the well? Two things take those 3 seconds.
+The stone falls $4.9u^2$ metres in $u$ seconds (leaving out the air).
+Then the sound climbs back up at 343 metres a second, the speed of
+sound in air at 20 °C, and `travel_time` from
+[Running a formula backwards](tutorial:running-a-formula-backwards)
+says how long that takes.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Expand $(1 + r)^2$ into $1 + 2r + r^2$, then multiply by 1000.
-2. Subtract 1102.5 from both sides, so the right side is 0.
-3. Read off $a$, $b$ and $c$, and use `solve_quadratic`.
+1. Call the stone's falling time $u$. The depth is $4.9u^2$ metres.
+2. The sound takes $\frac{4.9u^2}{343}$ seconds to climb that far.
+3. So $u + \frac{4.9u^2}{343} = 3$. Take 3 from both sides and read off
+   $a$, $b$ and $c$ for `solve_quadratic`.
 
-**Think about:** which root is a rate a bank would offer.
+**Think about:** which root is a time after you let go?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-$1000 + 2000r + 1000r^2 - 1102.5 = 0$, which is
-$1000r^2 + 2000r - 102.5 = 0$.
+One way through; yours may differ and work as well.
+
+$\frac{4.9}{343}u^2 + u - 3 = 0$.
 
 ```python
-rates = solve_quadratic(1000, 2000, -102.5)
-print(rates)
-print(1000 * (1 + rates[1]) ** 2)
+fall_times = solve_quadratic(4.9 / 343, 1, -3)
+print(fall_times)
+fall = fall_times[1]
+depth = 4.9 * fall ** 2
+print(round(depth, 2), round(fall + travel_time(depth, 343), 6))
 ```
 
-The roots are about −2.05 and 0.05. A rate of −205% would mean the bank
-takes more than you saved, so the rate is 0.05, which is 5%. Putting it
-back gives about €1,102.50. Another way: $(1 + r)^2 = 1.1025$, so
-$1 + r = \sqrt{1.1025} = 1.05$.
+The roots are about −72.9 and 2.88. A time before you let go of the
+stone means nothing here, so the stone falls for 2.88 seconds, and the
+well is about 40.7 m deep. The sound takes the last 0.12 seconds, and
+the two times add up to 3 again. If you had left out the sound, you
+would have said $4.9 \times 3^2 = 44.1$ m: a real well, measured this
+way, holds a small surprise in its last tenth of a second.
 
 </details>
 

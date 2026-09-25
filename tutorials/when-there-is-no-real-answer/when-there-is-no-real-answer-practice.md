@@ -2,14 +2,14 @@
 title: "When there is no real answer: complex numbers — Practice"
 practice_for: when-there-is-no-real-answer
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # When there is no real answer: complex numbers — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -61,20 +61,21 @@ turned a quarter turn. `math.sqrt` would refuse both.
 
 </details>
 
-**3. Explain.** A friend says: "The square root of −1 does not exist. My
-teacher told me so." Were they told something false?
+**3. Explain.** Schlomi, who is learning Python too, says: "The square
+root of −1 does not exist. My teacher told me so." Was she told
+something false?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. Their teacher was working in the real numbers, $\mathbb{R}$, and in
+No. Her teacher was working in the real numbers, $\mathbb{R}$, and in
 $\mathbb{R}$ no number squares to make −1. That is true, and `math.sqrt`
 agrees.
 
 In the bigger space $\mathbb{C}$, there is such a number, $i$, and
 there are two square roots of −1: $i$ and $-i$. Both statements are
-right, each in its own space. It is the same as "you cannot take 5 from
-3", which is true in $\mathbb{N}$ and not in $\mathbb{Z}$. A good reply
-to your friend asks which space they mean.
+true, each in its own space. It is the same as "you cannot take 5 from
+3", which is true in $\mathbb{N}$ and not in $\mathbb{Z}$. One helpful
+reply to Schlomi asks which space she means.
 
 </details>
 
@@ -210,6 +211,8 @@ like this? Look at the quadratic formula.
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 In $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$, the only part that can
 make an $i$ is the square root of a negative discriminant. Everything
 else, $-b$ and $2a$, is real. So both roots have the same real part,
@@ -258,8 +261,10 @@ promises real roots, smallest first: only in $\mathbb{R}$ does
 
 </details>
 
-**11. Fix.** This check puts the roots of $2x^2 + 3x + 5 = 0$ back in,
-and fails, although the roots are right. Find the mistake in the check.
+**11. Fix.** Schlomo, who is also learning Python, puts the roots of
+$2x^2 + 3x + 5 = 0$ back in to check them. His check fails, although
+the roots are true roots. Find the line in the check that makes it
+fail.
 
 ```python exec
 id: no-real-practice-fix-zero
@@ -343,6 +348,8 @@ eight dots, and draw them.
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 eighth = cmath.sqrt(1j)
 print(eighth, eighth * eighth, abs(eighth))
@@ -390,12 +397,12 @@ Both give `(-1+0j)`, which matches the formula's roots.
 **15. Explain.** The tutorial gave $i$ a picture: a point on a plane,
 and a quarter turn when we multiply by it. Many courses give only the
 rule, $i^2 = -1$, and practise the algebra of $a + bi$ with no picture.
-Which way would you have wanted to learn it, and why? There is no one
-right answer.
+Which way would you have wanted to learn it, and why? There is no
+single answer.
 
 <details class="dl-answer"><summary>answer</summary>
 
-A good answer weighs a few things, and can land on either side.
+An answer might weigh a few things, and can land on either side.
 
 - **What each one explains.** The picture gives $i^2 = -1$ a reason:
   two quarter turns make a half turn. The rule on its own asks you to

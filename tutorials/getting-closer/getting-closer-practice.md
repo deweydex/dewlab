@@ -286,7 +286,8 @@ and 3.5 goes up to 4. This is called banker's rounding. The value at
 
 **11. Another way.** On
 [Doubling and halving](tutorial:doubling-and-halving#how-long-to-double),
-savings grew by 4% a year. If the bank paid $\frac{4}{n}$% $n$ times a
+a count grew by the same percent once a year. Say savings grow by 4% a
+year. If the bank paid $\frac{4}{n}$% $n$ times a
 year, a euro would end the year at $(1 + \frac{0.04}{n})^n$. Find the
 limit with a table. Then compare it with `math.e ** 0.04`.
 
