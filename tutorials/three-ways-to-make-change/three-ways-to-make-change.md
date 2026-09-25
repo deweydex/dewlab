@@ -137,6 +137,13 @@ question is looked up, is called *memoization*. Memoization does not
 change which answer comes back. It is exactly as correct as brute force.
 The only thing it changes is how much work it takes to get there.
 
+Why is it safe to trust a stored answer? Because the fewest tokens for
+an amount depends only on that amount and the token values. It does not
+matter how we got there. "What is the fewest for 2?" has the same answer
+whether we reached 2 from 6 by taking a 4, or from 5 by taking a 3. So
+the first time we work out the answer for 2, we have worked it out for
+every path that ever reaches 2.
+
 How much work does it save? The next cell times both functions on larger
 and larger amounts.
 
@@ -157,9 +164,11 @@ for amount in [10, 15, 20, 22, 24]:
 ```
 
 Each time the amount goes up by 2, brute force takes two or three times
-as long. The cached version hardly changes. In principle, both still
-check the same possibilities. The cache only stops the same question from
-being worked out twice.
+as long. The cached version hardly changes. The two do not do the same
+work. Brute force walks every path of choices, and meets the same
+smaller amounts again and again along different paths. For an amount of
+20 it calls itself 20,736 times. The cached version works out each
+amount from 0 to 20 once, and after that only looks it up: 56 calls.
 
 ### Your turn
 

@@ -14,16 +14,18 @@ entries:
   - term: stable (queue)
     kind: concept
     definition: >
-      A queue is stable when it never grows without limit, however bad
-      its luck. Average arrivals per step stay below what the server can
-      clear, so after a run of bad luck the queue drains away again.
+      A queue is stable when it keeps coming back to empty and has a
+      typical length it hovers around. Average arrivals per step stay
+      below what the server can clear, so after a run of bad luck the
+      queue drains away again, and its average length settles.
 
   - term: unstable (queue)
     kind: concept
     definition: >
       A queue is unstable when average arrivals per step are at or above
-      what the server can clear. It does not have to grow fast to be
-      unstable. It only has to have no length it is sure to stay below.
+      what the server can clear. It has no typical length: the longer it
+      runs, the longer its average length gets. It does not have to grow
+      fast to be unstable.
 
   - term: "min()"
     python: min

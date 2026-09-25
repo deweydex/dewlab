@@ -1,7 +1,7 @@
 ---
 title: "N-grams: a Markov chain that remembers more words"
 year: "2026-2027"
-version: 2026.09.05.2
+version: 2026.09.25.1
 datasets: [the-time-machine]
 covers:
   keying-on-more-than-one-word:
@@ -109,6 +109,8 @@ words, and it never grows longer.
 id: comparing-what-each-one-writes-1
 import random
 
+random.seed(1)    # change the 1 to any other number for a different run
+
 def generate1(start_word, steps):
     result = [start_word]
     current = start_word
@@ -140,26 +142,41 @@ The line `current = (current[1], next_word)` is the step where the key
 moves forward. `current[1]` is the second word of the old key, and
 `next_word` is the word just chosen.
 
-Run the cell a few times. Which line reads more like real English? One
-run gave this:
+Which line reads more like real English? `random.seed(1)` fixes where
+the random choices start, so the cell gives the same two lines every
+time it runs. Seed 1 gives this:
 
 > order1: the machine below grew scattered, as the eyes glared at work as
 > the heavy smell, the appearances of fire. Upon these
 >
-> order2: the Morlocks their mechanical servants: but that this is what is
-> meant by the Morlocks, subterranean for innumerable generations, had
-> come to
+> order2: the Morlocks taken my Time Machine and the latter, because it
+> happens that our consciousness moves intermittently in one hand and the
 
-The `order2` line reads much more like real English. Why? The first key,
-`("the", "Morlocks")`, has 17 possible next words. But most of the pairs
-after it have only one recorded next word in the whole book. For long
-stretches, the chain is not choosing at all.
+The `order2` line reads more like real English, at least in stretches.
+Why? The first key, `("the", "Morlocks")`, has 17 possible next words.
+But 11 of the 20 pairs after it have only one recorded next word in the
+whole book. For long stretches, the chain is not choosing at all.
 
-"the Morlocks their mechanical servants: but that" is not a coincidence.
-That exact phrase is in the book, word for word. The more context a
-chain remembers, the more often it recites a piece of the book it has
-already seen. With less context, it combines pieces of the book in new
-ways.
+"and the latter, because it happens that our consciousness moves
+intermittently in one" is not a coincidence. Those 13 words are in the
+book, in that order. Can we check? `in` looks for an exact match, so we
+have to be careful. Guess before you run the cell: which line will say
+True?
+
+```python exec
+id: comparing-what-each-one-writes-check
+phrase = "and the latter, because it happens that our consciousness moves intermittently in one"
+print(phrase in book)
+print(phrase in " ".join(words))
+```
+
+The first line says False. In `book`, a line break sits between two of
+those words, where the phrase has a space. The second line joins the
+words with single spaces, the same way `generate2` does, and says True.
+
+The more context a chain remembers, the more often it recites a piece of
+the book it has already seen. With less context, it combines pieces of
+the book in new ways.
 
 ### Your turn
 

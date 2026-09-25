@@ -1,7 +1,7 @@
 ---
 title: "Writing style: comparing two writers with Markov chains"
 year: "2026-2027"
-version: 2026.09.05.1
+version: 2026.09.25.1
 datasets: [democracy-and-education, the-montessori-method]
 covers:
   cleaning-two-different-books:
@@ -25,13 +25,13 @@ sound different from a chain trained on the other's?
 
 ## Cleaning Two Different Books
 
-These two files come from scans of printed books. They are less tidy
-than the Project Gutenberg books, such as *Pride and Prejudice*, that
-came with [A Markov chain from a whole book: a dictionary of
-dictionaries](tutorial:a-chain-reads-a-book). Neither
+These two files are less tidy than the Project Gutenberg books, such as
+*Pride and Prejudice*, that came with [A Markov chain from a whole book:
+a dictionary of dictionaries](tutorial:a-chain-reads-a-book). Neither
 file has a `*** START OF... ***` marker to show where the book begins.
-Each one needs its own way of cleaning. That is normal: real data rarely
-arrives in exactly one shape.
+Dewey's file is a raw scan of the printed book, and it shows. Each one
+needs its own way of cleaning. That is normal: real data rarely arrives
+in exactly one shape.
 
 ```python exec
 id: cleaning-two-different-books-1
@@ -69,6 +69,60 @@ Here is what the cell does:
    have one. `.find("INDEX")` gives the position where the index starts,
    and so where Dewey's writing stops.
 4. The slice from `second` to `dewey_end` is the book itself.
+
+There is more to clean. The scan kept everything on the printed page,
+including things a reader's eye skips over. Here is one short stretch:
+
+```python exec
+id: cleaning-two-different-books-scan-1
+where = dewey_book.find("assimilate, imaginatively")
+print(dewey_book[where:where + 160])
+```
+
+Two things have got into Dewey's sentence. The word "something" did not
+fit at the end of a printed line, so it was split with a hyphen:
+`some-` on one line, `thing` on the next. And in between sits the top of
+the next page, a *running header*: a title and a page number, printed on
+every page. How many words end in a hyphen?
+
+```python exec
+id: cleaning-two-different-books-scan-2
+split_words = [word for word in dewey_book.split() if word.endswith("-")]
+print(len(split_words), "words end in a hyphen")
+print(split_words[:10])
+```
+
+More than two thousand half-words, each of which would become a key in
+the chain. And about four hundred headers would put words like
+"18 Philosophy of Education" into the middle of Dewey's sentences. The
+next cell deals with both.
+
+```python exec
+id: cleaning-two-different-books-scan-3
+def clean_scan(text):
+    """Remove blank lines and page headers, then join words split at a line end."""
+    kept = []
+    for line in text.split("\n"):
+        words = line.split()
+        if not words:
+            continue    # a blank line
+        if len(words) <= 8 and (words[0].isdigit() or words[-1].isdigit()):
+            continue    # a header: a short line that starts or ends with a page number
+        kept.append(line.strip())
+    return "\n".join(kept).replace("-\n", "")
+
+
+dewey_book = clean_scan(dewey_book)
+print(len(dewey_book.split()), "words of real Dewey")
+print(len([word for word in dewey_book.split() if word.endswith("-")]), "words still end in a hyphen")
+```
+
+Is it perfect? No. A handful of broken words are left, where something
+else sat between the two halves. And a word that really had a hyphen,
+such as "self-control", is glued into "selfcontrol" if the line happened
+to break at its hyphen. Both are far fewer than the two thousand broken
+words it fixed. Cleaning real data is usually like this: each rule
+fixes a lot and gets a little wrong.
 
 ### Your turn
 
@@ -124,6 +178,8 @@ argument, so the one function works for both writers.
 id: two-writers-two-chains-2
 import random
 
+random.seed(1)    # change the 1 to any other number for a different run
+
 def generate(chain, start_word, steps):
     result = [start_word]
     current = start_word
@@ -139,9 +195,9 @@ print("Dewey:", generate(dewey_chain, "education", 20))
 print("Montessori:", generate(montessori_chain, "education", 20))
 ```
 
-Run the cell a few times. Both chains start from the same word. Do they
-go to the same kind of sentence, or does each one wander off in its own
-way?
+Run the cell, then change the seed and run it a few more times. Both
+chains start from the same word. Do they go to the same kind of
+sentence, or does each one wander off in its own way?
 
 ### Your turn
 
@@ -180,7 +236,7 @@ Here is how the cell finds the five most common words:
 - `[:5]` keeps the first five.
 
 What do the two lines show? Dewey's most common word after `"education"`
-is `"is"`, 57 times. Montessori's is `"of"`, 68 times. These counts come
+is `"is"`, 58 times. Montessori's is `"of"`, 68 times. These counts come
 from the whole of each book. They are not a random sample, so the numbers
 are the same every time you run the cell.
 
@@ -189,10 +245,16 @@ education *is*, which is a philosopher's habit. Montessori keeps coming
 back to the education *of* someone or something, which is a practical
 habit.
 
-Dewey's book has 92 different words after `"education"`. Montessori's
+Dewey's book has 97 different words after `"education"`. Montessori's
 has 36. So Dewey's use of the word ranges more widely. Part of the
-reason is that he also uses the word about twice as often, 281 times
+reason is that he also uses the word more than twice as often, 301 times
 against 133, which gives it more chances to meet new neighbours.
+
+Those counts are for `"education"` exactly: a small e, and nothing
+stuck to it. The chain treats `"Education"` at the start of a sentence,
+and `"education,"` with a comma, as different words. Counted in every
+form, Dewey writes the word 464 times and Montessori 210, so he still
+uses it about twice as often.
 
 ### Your turn
 

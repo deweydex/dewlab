@@ -119,8 +119,11 @@ Average arrivals here are `2 * 0.3 = 0.6` per step. The server can clear
 never grows for long. It rises after a run of bad luck. Then it drains
 again, once arrivals fall back below what the server can handle.
 
-A queue like this is called *stable*. A stable queue never grows without
-limit, however bad its luck.
+A queue like this is called *stable*. A stable queue keeps coming back
+to empty, and it has a typical length that it hovers around. A long run
+of bad luck can still push it high, and nothing promises it will stay
+below any particular length. But it always comes back down, and over a
+long run its average length settles.
 
 ## A Queue That Never Clears
 
@@ -146,9 +149,9 @@ catches up either.
 This queue does not drain back down the way the first one did. It goes
 down a little now and then, but over the whole run it climbs.
 
-A queue like this is called *unstable*. An unstable queue does not have
-to grow fast. It keeps climbing over a long run, and it never drains back
-to empty for good.
+A queue like this is called *unstable*. An unstable queue has no
+typical length. It does not have to grow fast. But the longer you run
+it, the longer its average length gets. It never settles.
 
 ### Your turn
 
@@ -166,11 +169,11 @@ hint: Print the queue length at a few points along the way, such as step 200, st
 We could have predicted both results before running either simulation.
 Compare `2 * arrival_prob` with `service_capacity`:
 
-- If average arrivals are *below* the capacity, the queue stays under
-  control.
-- If average arrivals are *at or above* the capacity, the queue has no
-  limit. On any one run, the numbers may look different, but over a long
-  run there is no length the queue stays below.
+- If average arrivals are *below* the capacity, the queue is stable. It
+  keeps coming back to empty, and its average length settles.
+- If average arrivals are *at or above* the capacity, the queue is
+  unstable. On any one run, the numbers may look different, but over a
+  long run its average length keeps growing.
 
 Before you run the next cell, which of these settings do you expect to be
 stable?
@@ -188,8 +191,9 @@ for arrival_prob in [0.2, 0.3, 0.45, 0.5, 0.6, 0.8]:
 
 This rule is the real result of the two simulations above. The plots
 only tell us what happened on one run, with one seed. The rule tells us
-what will happen on every run, before we spend any computer time finding
-out. An engineer makes the same kind of prediction before adding a
+how the queue behaves in the long run, whatever the seed, before we
+spend any computer time finding out. It does not tell us what any one
+run will look like. An engineer makes the same kind of prediction before adding a
 fourth checkout to a shop, or before deciding whether a web server needs
 a second worker.
 
@@ -221,8 +225,9 @@ Most runs look like something in between. The queue does not climb
 steadily, like the unstable run. It often drains back to empty. But it
 has no level that it settles around either. Some runs wander well above
 ten before they come back down, and a longer run can wander further
-still. There is no length the queue is sure to stay below, and that is
-why the rule counts this setting as unstable.
+still. Its average length keeps growing the longer it runs. It has no
+typical length, and that is why the rule counts this setting as
+unstable.
 
 ## Where to Read More
 

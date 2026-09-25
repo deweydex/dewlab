@@ -9,10 +9,11 @@ source: >
 license: >
   Public domain in the United States — published in 1916, well before the
   cutoff for automatic public-domain status. This particular file is a
-  scanned, OCR'd copy; its front matter (a publisher's catalogue of other
-  titles) and back-matter index carry visible OCR errors, which is why a
-  tutorial using this file trims down to the chapters themselves before
-  treating it as prose.
+  scanned, OCR'd copy. Its front matter (a publisher's catalogue of other
+  titles) and back-matter index carry visible OCR errors, and the body
+  keeps the printed page's running headers and about 2,100 words split
+  with a hyphen at a line end. A tutorial using this file trims down to
+  the chapters and cleans both before treating it as prose.
 
 description: >
   The complete text of Dewey's 1916 book, front matter and index intact —
