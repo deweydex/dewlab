@@ -2,7 +2,7 @@
 #
 # Comes after four-questions and recipes-are-algorithms in the Dewey
 # Track. "*", "=", "def", "variable" and "parameter" were introduced there.
-# split_bill is the course's own toolkit function, not a Python name, so
+# digit_at is the course's own toolkit function, not a Python name, so
 # it has no python: line.
 entries:
   - term: "/"
@@ -21,6 +21,13 @@ entries:
       Gives the remainder after floor division: 7 % 2 is 1. Programmers
       often call it modulo, or mod.
     example: "25 % 4"
+  - term: pixel
+    kind: concept
+    definition: >
+      A pixel is one tiny square of light on a screen. If the pixels are
+      numbered from 0, row after row, pixel p on a screen w pixels wide is
+      in row p // w and column p % w.
+    example: "25 // 4, 25 % 4  # row 6, column 1"
   - term: natural numbers
     kind: concept
     definition: >
@@ -94,6 +101,13 @@ entries:
       the base is 2, the number being multiplied, and the exponent is 10,
       how many times.
     example: "2 ** 10  # 1024"
+  - term: segment, seven-segment display
+    kind: concept
+    definition: >
+      A seven-segment display shows a digit with seven bars of light. Each
+      bar is a segment, and the segments are named a to g. Each segment is
+      on or off, so there are 2^7 = 128 patterns, and ten of them are
+      digits.
   - term: "**"
     kind: operator
     definition: "Raises a number to a power: 2 ** 10 is 1024."
@@ -102,7 +116,7 @@ entries:
     kind: formula
     definition: >
       A logarithm is the number of times you multiply a base to reach a
-      number. log2(16) = 4, because 2^4 = 16. It is a power, read
+      number. log2(128) = 7, because 2^7 = 128. It is a power, read
       backwards.
   - term: module
     kind: concept
@@ -134,7 +148,7 @@ entries:
     kind: keyword
     definition: >
       Hands a value back from a function to the code that called it.
-    example: "return total / people"
+    example: "return number % 10"
   - term: docstring
     kind: concept
     definition: >
@@ -146,7 +160,7 @@ entries:
     definition: >
       Checks that something is true. If it is, nothing happens; if it is
       not, Python stops with an AssertionError.
-    example: "assert share_of(84, 4) == 21"
+    example: "assert last_digit(2026) == 6"
   - term: AssertionError
     python: AssertionError
     kind: keyword
@@ -163,8 +177,8 @@ entries:
     kind: concept
     definition: >
       A default value is the value a parameter takes when a call does not
-      give one. In def split_bill(total, people, tip_percent=0), the tip is
-      0 unless you say otherwise.
+      give one. In def digit_at(number, place, base=10), the base is 10
+      unless you say otherwise.
   - term: input, output
     kind: concept
     definition: >
@@ -177,16 +191,21 @@ entries:
       Waits for someone to type, and gives back what they typed, as a
       string. It needs a keyboard, so the cells on these pages do not use
       it.
-    example: 'input("What is the bill? ")'
+    example: 'input("How many seconds? ")'
   - term: toolkit
     kind: concept
     definition: >
       Your toolkit is the set of functions you build across this course.
       Later pages can use them without you writing them again.
-  - term: "split_bill(total, people, tip_percent=0)"
+  - term: base 60
+    kind: concept
+    definition: >
+      Counting in base 60 means each column is worth 60 times the column to
+      its right: 1, 60, 3600 and so on. Minutes and seconds count this way.
+  - term: "digit_at(number, place, base=10)"
     kind: function
     definition: >
-      Returns each person's share of a bill, in euro, rounded to the cent,
-      with an optional tip as a percentage. It is the first function in your
-      toolkit.
-    example: "split_bill(84, 4, 10)  # 23.1"
+      Returns the digit of a whole number in one place, counting from 0 on
+      the right, in base 10 unless another base is given. It is the first
+      tool in your toolkit.
+    example: "digit_at(2026, 3)  # 2"

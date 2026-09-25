@@ -2,7 +2,7 @@
 title: "How likely is it? Probability and simulation — Practice"
 practice_for: how-likely-is-it
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # How likely is it? Probability and simulation — Practice
@@ -11,7 +11,10 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find one mistake
 in code that looks fine. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
-folded away until you open them.
+folded away until you open them, and each shows one good way: yours may
+be different, and as good. Several problems ask you to guess
+first. Guesses about chance are often wrong, for everybody, and a wrong
+guess is the most useful kind here.
 
 Your toolkit is loaded on this page: `simulate` from the tutorial, and
 `combinations`, `all_pairs`, `total` and the rest from earlier pages.
@@ -41,9 +44,9 @@ equally likely, and 13 of the 52 outcomes are in the event "a heart".
 
 </details>
 
-**2. Make.** A bag of sweets has 3 red, 5 green and 2 blue sweets. You
-take one without looking. Work out the probability that it is green, in
-Python, using names for the three counts.
+**2. Make.** A tiny image has 10 pixels: 3 red, 5 green and 2 blue. A
+program picks one pixel at random. Work out the probability that it is
+green, in Python, using names for the three counts.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -54,7 +57,7 @@ blue = 2
 print(green / (red + green + blue))
 ```
 
-This prints `0.5`. There are 10 sweets, each equally likely, and 5 of
+This prints `0.5`. There are 10 pixels, each equally likely, and 5 of
 them are green.
 
 </details>
@@ -123,26 +126,27 @@ faces let you out.
 
 </details>
 
-**6. Fix.** A basketball player scores 70% of her free throws. A neat
-way to act this out is `random.random() < 0.7`, which is True about 70%
-of the time, because `random.random()` gives a decimal from 0 up to 1.
-This cell should count her baskets in 1,000 throws. It gives an answer
-near 0 instead. Run it, then find the mistake.
+**6. Fix.** A bad Wi-Fi link loses 30% of the packets sent over it. (A
+packet is one small piece of a message.) So each packet arrives with
+chance 0.7, and `random.random() < 0.7` acts that out: it is True about
+70% of the time. This cell should count the packets that arrive, out of
+1,000. It gives an answer near 0 instead. Run it, then find the
+mistake.
 
 ```python exec
-id: likely-practice-fix-baskets
-baskets = 0
-for throw in range(1000):
-    baskets = 0
+id: likely-practice-fix-packets
+arrived = 0
+for packet in range(1000):
+    arrived = 0
     if random.random() < 0.7:
-        baskets = baskets + 1
-print(baskets / 1000)
+        arrived = arrived + 1
+print(arrived / 1000)
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. What value can `baskets` have when the loop ends? Try printing it.
-2. How many times does the line `baskets = 0` run?
+1. What value can `arrived` have when the loop ends? Try printing it.
+2. How many times does the line `arrived = 0` run?
 3. Where did the running totals on
    [Doing it again](tutorial:doing-it-again#a-running-total) start?
 
@@ -153,17 +157,17 @@ happen every time round.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`baskets = 0` is inside the loop, so the count goes back to 0 before
-every throw. At the end, `baskets` is 1 or 0, depending only on the last
-throw, and the cell prints 0.001 or 0.0. Move that line above the loop,
-so it runs once:
+`arrived = 0` is inside the loop, so the count goes back to 0 before
+every packet. At the end, `arrived` is 1 or 0, depending only on the
+last packet, and the cell prints 0.001 or 0.0. Move that line above the
+loop, so it runs once:
 
 ```python
-baskets = 0
-for throw in range(1000):
+arrived = 0
+for packet in range(1000):
     if random.random() < 0.7:
-        baskets = baskets + 1
-print(baskets / 1000)
+        arrived = arrived + 1
+print(arrived / 1000)
 ```
 
 Now it prints something near 0.7.
@@ -203,9 +207,9 @@ bigger. So the answer is $\frac{15}{36}$, a little less than a half.
 
 </details>
 
-**8. Explain.** A friend runs `simulate(heads, 10)` and gets 0.8. "Your
-`simulate` is broken," they say, "a coin is 0.5." What would you tell
-them?
+**8. Explain.** Schlomo, who is learning Python too, runs
+`simulate(heads, 10)` and gets 0.8. "Your `simulate` is broken," he
+says, "a coin is 0.5." What would you tell him?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -386,14 +390,16 @@ is your toolkit's `product` from
 
 </details>
 
-**14. Another way.** Someone says: "Two dice can add up to 11 different
-totals, 2 to 12, so each total has probability $\frac{1}{11}$." For two
-dice that is wrong. Describe a different experiment, a different space,
-in which that answer would be right.
+**14. Another way.** Schlomi, who is learning Python too, says: "Two dice
+can add up to 11 different totals, 2 to 12, so each total has
+probability $\frac{1}{11}$." For two dice that is wrong. Describe a
+different experiment, a different space, in which her answer would be
+right.
 
 <details class="dl-answer"><summary>answer</summary>
 
-A spinner with 11 equal sections, marked 2 to 12. There, each total is
+One good answer: a spinner with 11 equal sections, marked 2 to 12. A
+program that picks a total with `random.randint(2, 12)` works too. There, each total is
 one equally likely outcome, and $P(7) = \frac{1}{11}$ is right.
 
 With two dice, the equally likely outcomes are the 36 pairs, not the 11
@@ -444,20 +450,22 @@ are longer and more common than they feel, which is one reason a
 
 </details>
 
-**16. Explain.** A penalty taker scored 9 of her 10 penalties this
-season. A commentator says her probability of scoring is 0.9. What is
-0.9 here, in the words of this page, and how much should we trust it?
+**16. Explain.** A new spam filter caught 9 of the first 10 spam emails
+sent to it. Its maker says the probability that it catches spam is 0.9.
+What is 0.9 here, in the words of this page, and how much should we
+trust it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0.9 is a relative frequency: how often she scored, divided by how many
-times she tried. It is not a probability found by counting equally
-likely outcomes, because a penalty has no such outcomes to count.
+0.9 is a relative frequency: how often it caught spam, divided by how
+many times it tried. It is not a probability found by counting equally
+likely outcomes, because a spam email has no such outcomes to count.
 
 With only 10 tries, the relative frequency wobbles a lot, just as
-`simulate(heads, 10)` does. A player whose real chance is 0.75 could
-score 9 of 10 in a lucky season. After 100 or 200 penalties, the
-relative frequency would be a much better guide to her real chance.
+`simulate(heads, 10)` does. A filter whose real chance is 0.75 could
+catch 9 of 10 on a lucky day. After thousands of emails, the relative
+frequency would be a much better guide. Real spam filters are tested on
+very large collections of email for this reason.
 
 </details>
 

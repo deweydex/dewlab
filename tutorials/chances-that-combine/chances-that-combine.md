@@ -1,7 +1,7 @@
 ---
 title: "Chances that combine: and, or, and the birthday problem"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   two-sixes-at-once:
     covers: [MIT-5.8]
@@ -27,8 +27,10 @@ covers:
 
 There are 23 people in a room. How likely is it that two of them share
 a birthday? Make a guess now, as a percentage, and keep it in mind.
-Many people guess something small, like 5% or 10%. By the end of this
-page we will know the real answer, and why it surprises so many people.
+Many people guess something small, like 5% or 10%. Most people do not
+believe the real answer the first time they see it. By the
+end of this page we will know it three ways, and why the same answer
+matters inside every computer that stores files.
 
 On this page we:
 
@@ -38,7 +40,7 @@ On this page we:
 - turn "at least once" round into "not even once"
 - add `at_least_one` to the toolkit
 - solve the birthday problem three ways: by simulating, by counting,
-  and by thinking about pairs
+  and by thinking about pairs, then meet it again in computer codes
 
 > **The space we're in.** Every chance is a number from 0 to 1, as on
 > [How likely is it?](tutorial:how-likely-is-it). Dice are fair, coins
@@ -110,8 +112,8 @@ There are 36 outcomes, all equally likely, and only one of them is two
 sixes. So the chance is $\frac{1}{36}$. None of the three guesses was
 right.
 
-Here is a picture that helps. Draw the 36 outcomes as a grid, with 6
-rows for the first die and 6 columns for the second. A six on the first
+Draw the 36 outcomes as a grid, with 6 rows for the first die and 6
+columns for the second. A six on the first
 die is one row out of 6. Inside that row, a six on the second die is one
 square out of 6. So two sixes is $\frac{1}{6}$ of $\frac{1}{6}$ of the
 grid, and "of" means multiply:
@@ -149,13 +151,11 @@ print("100,000 games:  ", simulate(two_sixes, 100000))
 ```
 
 The exact answer is about 0.0278. The simulated answers are close to
-it, but almost never equal to it, and they change each time you run the
-cell. Why? A simulation is a sample. In 1,000 games, luck can give 20
-double sixes or 35. This is the law of large numbers from
+it, and change each time you run the cell. That is the law of large
+numbers from
 [How likely is it?](tutorial:how-likely-is-it#why-the-two-answers-differ):
-the more games we play, the smaller the wobble, so 100,000 games usually
-lands much nearer 0.0278. The exact answer tells us where the simulation
-is heading, and the simulation checks our reasoning.
+the more games, the smaller the wobble. The exact answer tells us where
+the simulation is heading, and the simulation checks our reasoning.
 
 ### Your turn
 
@@ -236,6 +236,16 @@ $$\frac{2}{10} \times \frac{1}{9} = \frac{2}{90} \approx 0.022$$
 We still multiply, but the second number is the chance after the
 first song has played. These two events are not independent.
 
+<aside class="dl-note" id="chances-note-shuffle">
+
+**A shuffle that is less random on purpose.** In 2014, the music app
+Spotify wrote that it had stopped using a purely random shuffle. Its
+listeners complained that songs by one artist came up close together
+too often, which real chance does. The new shuffle spreads each
+artist's songs out, because that feels more random to people.
+
+</aside>
+
 So $P(A) \times P(B)$, with both chances as they were at the start,
 belongs to the space of independent events. Before you multiply two
 chances, ask which space you are in: does the first one change the
@@ -243,19 +253,20 @@ second?
 
 ## One or the other
 
-A footballer takes a penalty. Of her last 100 penalties, 20 were saved
-and 10 missed the goal. So we take the chance of a
-save as 0.2, and the chance of a miss as 0.1. What is the chance that
-she does not score?
+A message crosses a network in small pieces called *packets*. Over a
+bad Wi-Fi link, 20 of the last 100 packets were lost, and 10 arrived
+damaged. So we take the chance of a lost packet as 0.2, and of a
+damaged one as 0.1. What is the chance that a packet does not arrive
+whole?
 
-A penalty cannot be saved and missed at the same time. Two events are
+A packet cannot be lost and arrive damaged at the same time. Two events are
 *mutually exclusive* when they cannot both happen at once. For mutually
 exclusive events, the chance that one or the other happens is the two
 chances added. This is the *addition rule*:
 
 $$P(A \text{ or } B) = P(A) + P(B)$$
 
-So the chance she does not score is $0.2 + 0.1 = 0.3$. This is the
+So the chance a packet does not arrive whole is $0.2 + 0.1 = 0.3$. This is the
 chance version of "and multiplies, or adds" from
 [Counting every outfit](tutorial:counting-every-outfit#and-multiplies-or-adds),
 and it needs the same care: the two groups must not overlap.
@@ -319,9 +330,9 @@ is this same rule, in a space where both cannot happen.
 
 ## Not, and at least once
 
-Back to the penalty. The chance she scores is $1 - 0.3 = 0.7$. Scoring
-and not scoring are the two halves of everything that can happen, so
-their chances add up to 1. The *complement* of an event is everything
+Back to the packets. The chance one arrives whole is $1 - 0.3 = 0.7$.
+Whole and not whole are the two halves of everything that can happen,
+so their chances add up to 1. The *complement* of an event is everything
 that can happen except that event. Its chance is
 
 $$P(\text{not } A) = 1 - P(A)$$
@@ -443,8 +454,8 @@ title: some steps
 1. A forecast gives a 30% chance of rain on each day of a week's holiday
    in Kerry. If the days were independent, what is the chance of at
    least one wet day? Use `at_least_one`.
-2. A basketball player scores 75% of her free throws. What is the chance
-   she scores at least one of two?
+2. A phone sends a message, and it gets through on 75% of tries. If
+   the phone tries twice, what is the chance at least one try works?
 3. How many rolls of a die do you need before the chance of at least one
    six is more than 0.9? Try different numbers of tries, or write a
    `while` loop that keeps adding one try until the chance passes 0.9.
@@ -525,8 +536,8 @@ The simulation was right.
 
 ### Way three: think about pairs
 
-Why is it so high? The usual guess thinks about one person: "does
-anyone share my birthday?". For you alone, with 22 others in the room,
+Why is it so high? The usual guess asks: "does anyone share my
+birthday?" For you alone, with 22 others in the room,
 that chance is `at_least_one(1 / 365, 22)`, about 0.06. But
 any two people in the room can share a birthday, and a room of 23 has a
 lot of pairs. How many? That is choosing 2 people from 23, which
@@ -550,10 +561,6 @@ birthday with Ben, and Ben shares with Cara, then Ann must share with
 Cara too. The tool is still a good guide, because the pairs are nearly
 independent. But the exact answer came from the product.
 
-The same maths is at work inside computers. Programs often give each
-file or password a short code called a hash, and two different files
-getting the same hash, called a collision, turns up far sooner than
-most people expect, for exactly the birthday problem's reason.
 
 ### A picture of every room size
 
@@ -601,6 +608,33 @@ very close to 1. Very few people guess that shape before they see it.
 id: chances-birthday-your-turn
 print(chance_of_shared(23))
 ```
+
+### Birthdays inside a computer
+
+The same maths is at work inside computers. Programs often give each
+file a short code worked out from its contents, called a hash, so that
+two files can be compared by their codes. Two different files with the
+same code are a collision. A file's code is like a birthday, and a
+32-bit hash has $2^{32}$ possible codes, about 4.3 billion. How many
+files before two of them probably share a code? A million? A billion?
+Guess, then run it.
+
+```python exec
+id: chances-hash-1
+codes = 2 ** 32
+files = 77000
+pairs = combinations(files, 2)
+print(pairs, "pairs of files")
+print(at_least_one(1 / codes, pairs))
+```
+
+About 77,000 files are enough for an even chance, out of more than four
+billion codes, because 77,000 files make almost three billion pairs.
+Security people call using this a *birthday attack*, and it is why the
+hashes used to check downloads today, such as SHA-256, are 256 bits
+long. The context page
+[Maths that runs the world](tutorial:maths-that-runs-the-world) tells
+more of this story.
 
 <details class="dl-why"><summary>Why this way?</summary>
 

@@ -1,7 +1,7 @@
 ---
 title: "Counting every outfit: lists of outcomes"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   every-outfit-one-by-one:
     covers: [MIT-5.1]
@@ -12,6 +12,9 @@ covers:
     covers: [MIT-5.2]
   a-tool-that-lists-every-pair:
     covers: [MIT-5.1, MIT-5.2]
+  every-pixel-every-colour:
+    covers: [MIT-5.1, MIT-5.2]
+    touches: [MIT-1.4]
   and-multiplies-or-adds:
     covers: [MIT-5.2]
   too-many-to-list-pins-and-passwords:
@@ -26,12 +29,17 @@ many different outfits can you put together? You could try them all on.
 You could write them all down. Or you could find a way to count them
 without doing either.
 
+That last way is worth having. How many colours can a screen show? How
+many passwords would a thief have to try? Each is the outfit question
+with bigger numbers, far too big to list, and by the end of this page
+you will count them anyway.
+
 On this page we:
 
 - list every outfit, with one loop inside another
 - meet experiments, outcomes, and the list of every outcome
 - find the counting principle, and check it against the list
-- add `all_pairs` to your toolkit
+- add `all_pairs` to your toolkit, and list every pixel and colour
 - count PINs and passwords, far too many to list
 
 > **The space we're in.** Choices that do not change each other.
@@ -223,14 +231,17 @@ formula is the fast way, and it agrees.
 
 Look back at the warm-up. A truth table with three inputs has 8 rows,
 because each input is a choice of 2: $2 \times 2 \times 2 = 2^3$. The
-$2^n$ rows on that page were the counting principle all along.
+$2^n$ rows on that page were the counting principle all along. So were
+the 128 patterns of a seven-segment display on
+[Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times):
+seven segments, each a choice of on or off, make $2^7$.
 
 ```question
 id: counting-every-principle-2
 type: fill-in-the-blank
 
-A café sells 4 kinds of sandwich, 3 kinds of drink and 2 kinds of cake.
-A meal deal is one of each, so there are {24} different meal deals.
+A laptop comes with 4 screen sizes, 3 amounts of memory and 2 colours.
+Each laptop is one of each, so there are {24} different laptops.
 ```
 
 ## A tool that lists every pair
@@ -309,13 +320,27 @@ title: some steps
 that the right answer?
 ```
 
-The second test is the counting principle, written as a test. Whatever
-two lists you give `all_pairs`, the number of pairs is the length of one
-times the length of the other.
+<details class="dl-answer"><summary>answer</summary>
+
+One good way to write it. Yours may differ and still keep the promise.
+
+```python
+def all_pairs(first, second):
+    pairs = []
+    for a in first:
+        for b in second:
+            pairs.append((a, b))
+    return pairs
+```
+
+</details>
+
+The second test is the counting principle, written as a test. The cells
+from here on use `all_pairs`. If you have not written it yet, copy the
+answer above into the stub and run it.
 
 A pair can itself go into a pair. What do you think this cell prints
-last? It needs your `all_pairs`, so until that is written it stops with
-an error. Run it to check.
+last?
 
 ```python exec
 id: counting-every-toolkit-2
@@ -328,33 +353,88 @@ The first outfit is `(('white shirt', 'jeans'), 'runners')`: a top and
 trousers, paired with shoes. There are 12 of them, $6 \times 2$. Three
 choices are two choices, where the first choice is itself a pair.
 
+## Every pixel, every colour
+
+Each pixel on a screen has a column and a row, so a screen is
+`all_pairs` of its columns and its rows. Here is a tiny one, 4 pixels
+wide and 3 tall. How many pixels, and which comes last?
+
+```python exec
+id: counting-every-pixels-1
+pixels = all_pairs(range(4), range(3))
+print(pixels)
+print(len(pixels), "pixels")
+```
+
+Twelve pixels, from `(0, 0)` to `(3, 2)`. A grid is the counting
+principle drawn as a rectangle. A common laptop screen is
+1920 pixels wide and 1080 tall, so it has $1920 \times 1080 =
+2{,}073{,}600$ pixels.
+
+Each pixel mixes red, green and blue light, as on
+[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#how-ff8800-makes-orange).
+Let's pair four levels of red with four of green, blue off, and draw
+every mix. Guess first: how many squares, and what
+colour is the corner where both are full?
+
+```python exec
+id: counting-every-colours-1
+import matplotlib.pyplot as plt
+
+levels = [0, 85, 170, 255]
+mixes = all_pairs(levels, levels)
+
+figure, grid = plt.subplots(figsize=(3, 3))
+for red, green in mixes:
+    square = plt.Rectangle((green, red), 85, 85, color=(red / 255, green / 255, 0))
+    grid.add_patch(square)
+grid.set_xlim(0, 340)
+grid.set_ylim(0, 340)
+grid.set_xlabel("green")
+grid.set_ylabel("red")
+print(len(mixes), "mixes")
+```
+
+Sixteen squares, $4 \times 4$, from black in one corner to yellow in
+the other: full red and full green light together look yellow. A real
+screen has 256 levels of each colour, not 4, and blue as well:
+$256 \times 256 \times 256 = 16{,}777{,}216$ colours for every pixel.
+
+<aside class="dl-note" id="counting-every-note-colour">
+
+**Why 256?** Each of red, green and blue is stored in 8 bits, and 8
+bits hold $2^8 = 256$ values. Three of them make 24 bits a pixel, often
+called "24-bit colour".
+
+</aside>
+
 ## And multiplies, or adds
 
-A lunch deal gives you soup and a sandwich. There are 3 soups and 4
-sandwiches. By the counting principle, that is $3 \times 4 = 12$
-lunches.
+A game lets you build a team of one robot and one pet. There are 3
+robots and 4 pets. By the counting principle, that is $3 \times 4 = 12$
+teams.
 
-Now a different café: you can have soup or a sandwich, not both. How
-many lunches now?
+Another game lets you play as a robot or as a pet, not both. How many
+choices now?
 
 ```question
 id: counting-every-or-1
 type: multiple-choice
 correct: 1
 
-You can have one of 3 soups, or one of 4 sandwiches, but not both. How
-many different lunches is that?
+You can play as one of 3 robots, or one of 4 pets, but not both. How
+many different choices is that?
 
 - 7
 - 12
 - 1
 ```
 
-Seven. Each lunch is one soup or one sandwich, so we list the soups,
-then the sandwiches, and count them all: $3 + 4$. When the choices are
+Seven. Each choice is one robot or one pet, so we list the robots, then
+the pets, and count them all: $3 + 4$. When the choices are
 made one after the other, "this and then that", the counts multiply.
 When you make only one choice, from one group or the other, the counts
-add. The two groups must not share anything, or some lunches would be
+add. The two groups must not share anything, or some choices would be
 counted twice.
 
 ## Too many to list: PINs and passwords
@@ -403,10 +483,20 @@ print(26 ** 12)
 
 Twelve small letters win by a long way: 95,428,956,661,682,176
 passwords, more than 400 times as many as 8 characters with capitals
-and digits. Length beats variety. Say an attacker's computer can try a billion
-passwords a second. It would try every 8-letter password in about three
+and digits. Length beats variety. I find that the nicest surprise on
+the page: the plain, long password wins. Say an attacker's
+computer can try a billion passwords a second. It would try every 8-letter password in about three
 and a half minutes, every 8-character mixed one in about two and a half
 days, and every 12-letter one in about three years.
+
+<aside class="dl-note" id="counting-every-note-guesses">
+
+**A billion a second is slow.** In 2012, the researcher Jeremi Gosney
+showed a machine of 25 graphics cards that tried about 348 billion
+guesses a second, against one common way that Windows stored
+passwords.
+
+</aside>
 
 Nobody can list $26^{12}$ passwords to check that count: a loop would
 run for years. We trust the formula here because we have checked it
@@ -417,9 +507,8 @@ proof, and the formula is how we go further than the loop can reach.
 
 1. Some phones use a six-digit PIN. How many are there? Work it out
    with the counting principle first, then check with Python.
-2. A bike lock has three wheels, each with the digits 0 to 9. Make a
-   list of every code with `all_pairs`, or with loops, and check its
-   length.
+2. A lock has three wheels, each with the digits 0 to 9. Make a list of
+   every code with `all_pairs`, or with loops, and check its length.
 3. Which adds more passwords: one more character of small letters, or
    allowing capitals as well? Try both on an 8-letter password.
 
@@ -450,7 +539,7 @@ remember.
 
 | The question | On this page |
 |---|---|
-| What is named here? | each outcome, written as a pair like `("H", 4)`; the sample space $S$, the list of every outcome; `all_pairs` |
+| What is named here? | each outcome, as a pair like `("H", 4)` or a pixel's `(column, row)`; the sample space $S$; `all_pairs` |
 | What is promised? | the counting principle promises $m \times n$ outcomes for two choices that do not change each other; `all_pairs` promises every pair, in order |
 | What happens when? | the inner loop runs all the way through for each value of the outer loop, so each first choice meets every second choice |
 | What does this space let us do? | choices that do not change each other, and finite lists; "and" multiplies and "or" adds; lists too long to write, which the formula still counts |

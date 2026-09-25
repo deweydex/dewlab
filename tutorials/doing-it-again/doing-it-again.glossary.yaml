@@ -1,5 +1,12 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
+  - term: model
+    kind: concept
+    definition: >
+      A model is a simple version of something real, with only the parts
+      we need. The bouncing ball on this page keeps exactly the same
+      fraction of its height at every bounce, which a real ball does only
+      roughly.
   - term: list
     kind: concept
     python: list
@@ -7,7 +14,7 @@ entries:
       A list is a row of values in square brackets, kept in order. A for
       loop can go through it one value at a time. Unit 5 has much more
       about lists.
-    example: "week = [3.20, 0, 3.50]"
+    example: "bounces = [80, 64, 51, 41, 33]"
   - term: loop body
     kind: concept
     definition: >
@@ -18,20 +25,20 @@ entries:
     definition: >
       The loop variable is the name on a for line. Each time round the
       loop, it points at the next value.
-    example: "for price in week:   # price is the loop variable"
+    example: "for height in bounces:   # height is the loop variable"
   - term: running total
     kind: concept
     definition: >
       A running total is a name that holds the total so far. It starts at 0
       before the loop, and each time round the loop the next value is added
       to it.
-    example: "spent = spent + price"
+    example: "travelled = travelled + 2 * height"
   - term: "+="
     kind: operator
     definition: >
-      Adds a value to a name and points the name at the result. spent +=
-      price is short for spent = spent + price.
-    example: "spent += price"
+      Adds a value to a name and points the name at the result. total +=
+      value is short for total = total + value.
+    example: "travelled += 2 * height"
   - term: "range()"
     kind: function
     python: range
@@ -75,7 +82,15 @@ entries:
     definition: >
       The whole numbers from 1 to n add up to n times n + 1, halved. Writing
       the numbers forwards and backwards makes every column add to n + 1.
-    example: "1 + 2 + … + 365 = 365 × 366 / 2 = 66795"
+    example: "1 + 2 + … + 100 = 100 × 101 / 2 = 5050"
+  - term: geometric series
+    kind: formula
+    definition: >
+      A geometric series is a sum where each value is the last one times
+      the same number r. The sum of
+      r, r², up to rⁿ is r times (1 − rⁿ) divided by (1 − r). When r is
+      between 0 and 1, the sum settles at r / (1 − r) as n grows.
+    example: "0.8 + 0.8² + 0.8³ + …  settles at 4"
   - term: "sum()"
     kind: function
     python: sum
@@ -90,7 +105,7 @@ entries:
       A while loop runs its body again and again, for as long as its
       condition is True. It checks the condition before every round, and
       stops as soon as the condition is False.
-    example: "while jar < 10000:"
+    example: "while height >= 1:"
   - term: "total(values), product(values)"
     kind: function
     definition: >

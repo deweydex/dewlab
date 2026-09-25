@@ -185,9 +185,10 @@ on the first square of the board, two on the second, four on the third,
 and so on, doubling each time, across all 64 squares. The king laughed
 at such a small reward.
 
-You met the start of this on
+You met this kind of doubling on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times),
-with cents. Now let's fill the whole board. Square 1 has $2^0 = 1$ grain,
+where each new segment of a display doubled the number of patterns. Now
+let's fill the whole board. Square 1 has $2^0 = 1$ grain,
 square 2 has $2^1 = 2$, and square $k$ has $2^{k-1}$. The power is one
 less than the square's number, because the first square has had no
 doublings yet. Multiplying no 2s at all leaves 1, in the same way that

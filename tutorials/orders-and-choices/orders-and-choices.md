@@ -1,7 +1,7 @@
 ---
 title: "Orders and choices: factorials, permutations and combinations"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   three-songs-in-a-row:
     covers: [MIT-5.3]
@@ -20,14 +20,15 @@ covers:
 
 # Orders and choices: factorials, permutations and combinations
 
-Eight friends turn up for a game of five-a-side football, and only five
-can play at a time. How many different teams could walk onto the pitch?
-And if the five also have to agree who plays in goal, who defends and who
-attacks, how many ways are there then?
+A lab has eight drones and only five chargers, so five drones fly at a
+time. How many different flight teams could take off? And if each of
+the five also gets a job (lead, map, film, relay and spare), how many
+ways are there then?
 
-The answers are 56 and 6,720. By the end of this page you will know where
-each number comes from, and you will have three tools that find numbers
-like these in one line.
+The answers are 56 and 6,720. Giving the drones jobs makes 120 times as
+many ways, which I find hard to believe the first time. By the end of
+this page you will know where each number comes from, and you will have
+three tools that find numbers like these in one line.
 
 On this page we:
 
@@ -39,10 +40,10 @@ On this page we:
 - add `factorial`, `permutations` and `combinations` to the toolkit
 
 > **The space we're in.** Whole numbers, and groups of things that are
-> all different from each other: eight different friends, three different
+> all different from each other: eight different drones, three different
 > songs. Nothing is picked twice unless we say so. One thing usually goes
 > unsaid, so we will say it: we assume we can tell every item apart. Two
-> identical red socks would change every count on this page. Your toolkit
+> drones nobody could tell apart would change every count on this page. Your toolkit
 > gives us `total`, `product` and `all_pairs` from the last two pages.
 
 ## Warm-up
@@ -56,8 +57,8 @@ and the second from
 id: orders-warm-up-1
 type: fill-in-the-blank
 
-A café offers 3 kinds of bread and 4 fillings. A sandwich is one bread
-and one filling, so the café can make {12} different sandwiches.
+A game character wears one of 3 hats and one of 4 coats, so it can look
+{12} different ways.
 ```
 
 ```question
@@ -75,9 +76,9 @@ What does `product([1, 2, 3, 4])` give?
 
 ## Three songs in a row
 
-You have three songs by The Cranberries for the start of a playlist:
-"Zombie", "Linger" and "Dreams". In how many different orders can they
-play? Try to list them all on paper before you read on.
+You press shuffle on a playlist of three songs by The Cranberries:
+"Zombie", "Linger" and "Dreams". In how many different orders can the
+app play them? Try to list them all on paper before you read on.
 
 One way to be sure we miss none is to fill one place at a time. The first
 song can be any of the three. Once it is chosen, the second song can be
@@ -136,6 +137,14 @@ counts the arrangements of $n$ different things.
 
 $$n! = n \times (n-1) \times \dots \times 2 \times 1 = \prod_{k=1}^{n} k$$
 
+<aside class="dl-note" id="orders-note-kramp">
+
+**Why an exclamation mark?** The sign $n!$ was first used by the French
+mathematician Christian Kramp, in a book of 1808. I think it fits: the
+numbers grow fast enough to shout about.
+
+</aside>
+
 The $\prod$ is the pi notation from
 [Doing it again](tutorial:doing-it-again#pi-multiplying-instead-of-adding), a
 loop written by mathematicians: multiply $k$, for every $k$ from 1 to
@@ -184,8 +193,8 @@ id: orders-factorial-2
 type: multiple-choice
 correct: 2
 
-A queue of 6 people forms at a bus stop. How many different orders
-could they stand in?
+Six files are waiting to print, one after another. How many different
+orders could they print in?
 
 - 21, which is 6 + 5 + 4 + 3 + 2 + 1
 - 720, which is 6!
@@ -247,44 +256,44 @@ function reached its end without a `return`.
 
 ## Only the first few places
 
-At a club race, eight runners are close together in the last 200 metres.
-Prizes go to the first three: gold, silver and bronze. How many
-different top threes are possible?
+A computer has eight jobs waiting, and runs them one at a time. We only
+want to know which three run first, and in what order. How many
+different starts are possible?
 
-Fill one place at a time again. Any of the 8 can win. Then any of the 7
-left can come second, and any of the 6 left can come third. After that
-we stop, because the other five runners do not change who is on the
-podium.
+Fill one place at a time again. Any of the 8 jobs can run first. Then
+any of the 7 left can run second, and any of the 6 left can run third.
+After that we stop, because the other five jobs do not change the first
+three.
 
 $$8 \times 7 \times 6 = 336$$
 
 A *permutation* is an arrangement of some of a group of things, where
 the order matters. The number of permutations of $r$ things chosen from
-$n$ is written $P(n, r)$. Some books write it $^{n}P_{r}$. So the club race
+$n$ is written $P(n, r)$. Some books write it $^{n}P_{r}$. So the job
 question asks for $P(8, 3)$.
 
-The loop below tries every runner in every place, and counts the rows
-with no runner twice. It counts, rather than printing 336 rows. Does it
-agree with $8 \times 7 \times 6$?
+The loop below tries every job in every place, and counts the rows with
+no job twice. It counts, rather than printing 336 rows. Does it agree
+with $8 \times 7 \times 6$?
 
 ```python exec
-id: orders-podium-1
-runners = ["Aoife", "Bea", "Cian", "Dara", "Eoin", "Fionn", "Grace", "Hana"]
-podiums = 0
-for gold in runners:
-    for silver in runners:
-        for bronze in runners:
-            if gold != silver and gold != bronze and silver != bronze:
-                podiums = podiums + 1
+id: orders-jobs-1
+jobs = ["A", "B", "C", "D", "E", "F", "G", "H"]
+starts = 0
+for first in jobs:
+    for second in jobs:
+        for third in jobs:
+            if first != second and first != third and second != third:
+                starts = starts + 1
 
-print(podiums)
+print(starts)
 print(8 * 7 * 6)
 ```
 
 Both lines show 336. Now we want a formula for any $n$ and $r$. Look at
 $8 \times 7 \times 6$. It is the start of $8!$, with the end,
 $5 \times 4 \times 3 \times 2 \times 1$, missing. That end is $5!$, the
-orders of the five runners who win nothing. Dividing $8!$ by $5!$ cuts
+orders of the five jobs that run later. Dividing $8!$ by $5!$ cuts
 it off.
 
 In words: the orders of all $n$ things, divided by the orders of the
@@ -300,15 +309,15 @@ not written yet, the cell stops with a `TypeError`, because a function
 with no `return` gives back `None`, and Python cannot divide `None`.
 
 ```python exec
-id: orders-podium-2
+id: orders-jobs-2
 print(factorial(8) // factorial(5))
 print(factorial(8) // factorial(3))
 ```
 
-The first line is the podium, 336. The second line divides by $3!$
-instead, and gives 6,720. That is $P(8, 5)$: the ways to put five of
-the eight friends into five named positions on the pitch. It answers the
-second question at the top of the page.
+The first line is the three jobs, 336. The second line divides by $3!$
+instead, and gives 6,720. That is $P(8, 5)$: the ways to give five of
+the eight drones the five jobs. It answers the second question at the
+top of the page.
 
 ### Your turn: permutations in your toolkit
 
@@ -353,32 +362,32 @@ and it only comes out as 1 because $0! = 1$.
 
 ## When order does not matter
 
-Back to five-a-side, with no positions this time. Aoife, Bea, Cian, Dara
-and Eoin are one team. Eoin, Dara, Cian, Bea and Aoife are the same team,
-listed in a different order. So $P(8, 5)$ counts every team many times
-over.
+Back to the drones, with no jobs this time. Drones A, B, C, D and E are
+one flight team. E, D, C, B and A are the same team, listed in a
+different order. So $P(8, 5)$ counts every team many times over.
 
-Let's look at a smaller question first. A pizza comes with two toppings
-from four: ham, pineapple, mushroom and olive. In order, there are
-$4 \times 3 = 12$ ways to pick two. But "ham and olive" is the same
-pizza as "olive and ham", so every pizza is counted twice.
+Let's look at a smaller question first. A drone can carry two sensors
+from four: a camera, a thermometer, a microphone and a location sensor.
+In order, there are $4 \times 3 = 12$ ways to pick two. But "camera and
+microphone" is the same drone as "microphone and camera", so every
+choice is counted twice.
 
-To list each pizza once, we let the second loop start just after the
-first one. How many pizzas do you expect? Run it to check.
+To list each choice once, we let the second loop start just after the
+first one. How many do you expect? Run it to check.
 
 ```python exec
-id: orders-pizza-1
-toppings = ["ham", "pineapple", "mushroom", "olive"]
-pizzas = 0
+id: orders-sensors-1
+sensors = ["camera", "thermometer", "microphone", "location"]
+fittings = 0
 for first in range(4):
     for second in range(first + 1, 4):
-        print(toppings[first], "and", toppings[second])
-        pizzas = pizzas + 1
-print(pizzas, "pizzas")
+        print(sensors[first], "and", sensors[second])
+        fittings = fittings + 1
+print(fittings, "ways to fit two sensors")
 ```
 
-Six pizzas: $12 \div 2$. The loops count positions in the list, from 0.
-Because `second` always starts after `first`, each pair of toppings
+Six ways: $12 \div 2$. The loops count positions in the list, from 0.
+Because `second` always starts after `first`, each pair of sensors
 appears once, in one order only.
 
 A *combination* is a choice of some things from a group, where the order
@@ -390,7 +399,7 @@ permutations count each combination $r!$ times, and we divide that out:
 
 $$C(n, r) = \frac{P(n, r)}{r!} = \frac{n!}{r!\,(n-r)!}$$
 
-For the pizza, that is $12 \div 2! = 6$. For the team, it is
+For the sensors, that is $12 \div 2! = 6$. For the team, it is
 $6720 \div 5! = 6720 \div 120 = 56$.
 
 ### Checking with a list of every team
@@ -413,18 +422,18 @@ count it.
 id: orders-team-1
 import itertools
 
-players = ["Aoife", "Bea", "Cian", "Dara", "Eoin", "Fionn", "Grace", "Hana"]
-teams = list(itertools.combinations(players, 5))
+drones = ["A", "B", "C", "D", "E", "F", "G", "H"]
+teams = list(itertools.combinations(drones, 5))
 print(teams[0])
 print(teams[1])
 print(len(teams), "teams")
 
-lineups = list(itertools.permutations(players, 5))
-print(len(lineups), "line-ups with positions")
+with_jobs = list(itertools.permutations(drones, 5))
+print(len(with_jobs), "teams with jobs")
 ```
 
-Every team of five, listed and counted: 56. Every line-up with
-positions: 6,720. The formula is the fast way, and the list is the
+Every team of five, listed and counted: 56. Every team with jobs:
+6,720. The formula is the fast way, and the list is the
 proof.
 
 ### Your turn: combinations in your toolkit
@@ -432,8 +441,9 @@ proof.
 1. Fill in the body of `combinations`, using `factorial` or
    `permutations`.
 2. Run it, then run the tests.
-3. Look at the fourth test. Why should choosing 3 friends from 8 give
-   the same count as choosing 5? (Think about who sits out.)
+3. Look at the fourth test. Why should choosing 3 drones from 8 give
+   the same count as choosing 5? (Think about which ones stay on the
+   chargers.)
 
 ```python exec
 id: orders-toolkit-combinations
@@ -464,7 +474,7 @@ Until your `combinations` is written, these tests stop with an error.
 id: orders-combinations-tests
 assert combinations(4, 2) == 6
 assert combinations(8, 5) == 56
-assert combinations(8, 5) == len(list(itertools.combinations(players, 5)))
+assert combinations(8, 5) == len(list(itertools.combinations(drones, 5)))
 assert combinations(8, 3) == combinations(8, 5)
 assert combinations(5, 0) == 1
 assert combinations(5, 5) == 1
@@ -479,7 +489,7 @@ order matter? And can the same thing be picked more than once?
 | | Order matters | Order does not matter |
 |---|---|---|
 | **Repeats allowed** | $n^r$, the counting principle: a 4-digit PIN has $10^4$ | a rarer case, which we leave for now |
-| **No repeats** | $P(n, r)$: a podium, a team with positions | $C(n, r)$: a team, a pizza, a lottery ticket |
+| **No repeats** | $P(n, r)$: the first jobs in a queue, a team with jobs | $C(n, r)$: a team, a pair of sensors, a lottery ticket |
 
 The Irish Lotto draws 6 numbers from 1 to 47. A ticket wins the jackpot
 when its six numbers match, in any order. So the order does not matter,
@@ -515,8 +525,8 @@ id: orders-which-2
 type: multiple-choice
 correct: 3
 
-A school choir of 20 needs 4 singers to go to a competition. Which count
-gives the number of different groups that could go?
+A test lab has 20 phones, and needs 4 of them to try a new app. Which
+count gives the number of different groups of phones it could use?
 
 - $20^4$
 - $P(20, 4)$
@@ -526,15 +536,16 @@ gives the number of different groups that could go?
 
 ### Your turn
 
-1. A café's meal deal lets you choose 3 different sides from 7. Decide
-   first: does the order matter, and can a side repeat?
-2. Work out the number of meal deals in the cell below.
-3. A bet on a horse race names the first and second horse, in order,
-   from 12 runners. Decide which count it needs, and work it out too.
+1. A chart needs 3 different colours from a palette of 7. Decide first:
+   does the order matter, and can a colour repeat?
+2. Work out the number of colour choices in the cell below.
+3. A phone's dock holds 4 apps in a row, chosen from your 10 favourites.
+   How many different docks can you make? Decide which count it needs,
+   and work it out too.
 
 ```python exec
 id: orders-which-your-turn
-# The meal deal, then the horse race
+# The colours, then the dock
 ```
 
 <details class="dl-why"><summary>Why this way?</summary>
@@ -562,7 +573,7 @@ the rest of the page keeps it.
 | What is named here? | $n!$, $P(n, r)$ and $C(n, r)$; the toolkit functions `factorial`, `permutations` and `combinations`; one name, `combinations`, in two spaces |
 | What is promised? | `factorial(n)` promises the orders of $n$ things; `permutations` and `combinations` promise their counts, and the tests check each promise against a list of every case |
 | What happens when? | Places are filled one at a time, with one choice fewer each time. `factorial` must work before `permutations` and `combinations`, which are built from it. |
-| What does this space let us do? | Things we can tell apart, picked at most once. Here $0! = 1$ is an agreement that keeps the formulas working. |
+| What does this space let us do? | Things we can tell apart, like drones A to H, picked at most once. Here $0! = 1$ is an agreement that keeps the formulas working. |
 
 ## What we have now
 

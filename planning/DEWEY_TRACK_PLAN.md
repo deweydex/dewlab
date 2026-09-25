@@ -190,12 +190,18 @@ can it hold?*
 |---|---|---|---|
 | 1.0 | Four questions | What do a board game, a recipe and a line of Python have in common? | PDP-LO5, MIT-6.1 |
 | 1.1 | Recipes are algorithms | How would you teach a robot to make tea? | PDP-LO2, PDP-LO5, PDP-LO6, MIT-6.1 |
-| 1.2 | Numbers a computer can hold | Why does Python say `7 / 2` is `3.5` but `7 // 2` is `3`? | PDP-LO4, MIT-1.1 |
-| 1.3 | Everything is ones and zeros | How does `#FF8800` make orange? | MIT-1.4 |
+| 1.2 | Numbers a computer can hold | A microwave clock keeps one number: how does it take it apart into digits, and why does Python give three answers to 7 ÷ 2? | PDP-LO4, MIT-1.1 |
+| 1.3 | Everything is ones and zeros | Can you see the 8 in `0x6996996`? And how does `#FF8800` make orange? | MIT-1.4 |
 | 1.4 | When Python says no | What is an error message trying to tell you? | PDP-LO9 |
 
-Unit product: a tip calculator that splits a restaurant bill. Toolkit starts
-with `to_binary`, `to_hex`.
+Unit product: a digit display, in two stages, built on the mixed page.
+Stage 1 is a seven-segment display drawn in text: `//` and `%` take a
+number apart, $2^7 = 128$ counts the segment patterns, and each digit's
+pattern is a byte. Stage 2 is a pixel font 4 pixels wide and 7 tall,
+where each row is one hex digit and a digit is seven. The digit display
+runs through the unit: pixels and segments in 1.2, bits and glyphs in
+1.3, errors in display code in 1.4. Toolkit starts with `digit_at`
+(1.2), then `to_binary`, `to_hex` and `pixel_row` (1.3).
 
 ### Unit 2 — Decisions and the logic under them
 
@@ -224,16 +230,24 @@ counting, and at chance?*
 
 | # | Tutorial | Question | Outcomes |
 |---|---|---|---|
-| 3.1 | Doing it again | How much does a daily coffee cost over a year? | PDP-LO6, MIT-6.4 |
-| 3.2 | Counting every outfit | How many different outfits are in your wardrobe? | MIT-5.1, MIT-5.2 |
-| 3.3 | Orders and choices | How many ways can a five-a-side team be picked? | MIT-5.3, MIT-5.4, MIT-5.5 |
+| 3.1 | Doing it again | A ball keeps 80% of its height at each bounce. When does it stop, and how far does it travel? | PDP-LO6, MIT-6.4 |
+| 3.2 | Counting every outfit | How many outfits are in your wardrobe, and how many colours can one pixel show? | MIT-5.1, MIT-5.2 |
+| 3.3 | Orders and choices | Eight drones, five chargers: how many flight teams, and how many if each drone has a job? | MIT-5.3, MIT-5.4, MIT-5.5 |
 | 3.4 | How likely is it? | Is a coin that lands heads 7 times in 10 unfair? | MIT-5.6, MIT-5.7 |
-| 3.5 | Chances that combine | How likely is it that two people in the class share a birthday? | MIT-5.8 |
+| 3.5 | Chances that combine | How likely is it that two people in the class share a birthday, and two files a hash code? | MIT-5.8 |
 
-Sigma and pi notation arrive as "a loop, written by mathematicians" (3.1).
-Every counting formula is checked against a loop that lists every case.
-Unit product: a password-strength checker. Toolkit gains `factorial`,
-`combinations`, `simulate`.
+A bouncing ball runs through 3.1: a `for` loop over the bounces, a
+running total of the distance, sigma for a geometric series (endless
+bounces that add up to 9 metres), pi for the height kept after $n$
+bounces, and `while` until a bounce is under 1 cm, with an animation
+the reader steers by editing `keep`. Sigma and pi notation arrive as "a
+loop, written by mathematicians". Every counting formula is checked
+against a loop that lists every case, and 3.2 and 3.3 count pixels,
+colours, PINs, passwords and the 128 seven-segment patterns from Unit 1.
+3.4 simulates rain on a 10 × 10 grid as well as the coin, with an
+animation of the grid. Unit product: a password-strength checker.
+Toolkit gains `total`, `product`, `all_pairs`, `factorial`,
+`permutations`, `combinations`, `simulate` and `at_least_one`.
 
 ### Unit 4 — Making your own tools
 

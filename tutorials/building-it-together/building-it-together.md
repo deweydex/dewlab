@@ -192,7 +192,7 @@ A simulation and a formula that agree are a good first test.
 A list of places to visit. How far is the whole trip, how long will it
 take, which way do you set off, and which order of stops is shortest?
 
-- Unit 1: `split_bill`, to share the cost of fuel
+- Unit 1: `digit_at` and `pixel_row`, to draw the minutes left on a small pixel display
 - Unit 3: `factorial` and `permutations`, to count the orders of stops
 - Unit 4: `travel_time`, `distance_travelled`
 - Unit 5: `mean` and `largest`, for the legs of the trip

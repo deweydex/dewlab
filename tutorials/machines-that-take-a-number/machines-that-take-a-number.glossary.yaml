@@ -81,7 +81,7 @@ entries:
     definition: >
       A keyword argument names the parameter it goes into, in the call. It
       helps most when a function has several parameters.
-    example: "split_bill(22.0, people=3, tip_percent=10)"
+    example: "digit_at(2026, place=1, base=2)"
   - term: "inverse function, f⁻¹"
     kind: concept
     definition: >

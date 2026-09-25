@@ -2,17 +2,19 @@
 title: "Doing it again: loops, sums and products — Practice"
 practice_for: doing-it-again
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Doing it again: loops, sums and products — Practice
 
 Each answer is hidden until you open it. Where a problem asks you to
 predict, the prediction is the exercise, so make one before you run
-anything.
+anything. The problems get harder as they go, on purpose. If one of the
+stretch problems feels like hard work, that is the right feeling, and
+you can skip it and come back.
 
 Your toolkit is loaded on this page, so `total` and `product` are ready
-to use, and so are `split_bill`, `between` and the rest.
+to use, and so are `digit_at`, `between` and the rest.
 
 ## Warm-up
 
@@ -46,7 +48,7 @@ the loop has finished.
 
 </details>
 
-**2. Predict.** A bus route has stops numbered 1 to 9. Which stop numbers
+**2. Predict.** A game has levels numbered 1 to 9. Which level numbers
 does `range(3, 7)` give?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -54,8 +56,8 @@ does `range(3, 7)` give?
 3, 4, 5 and 6. The stop number, 7, is left out.
 
 ```python
-for stop in range(3, 7):
-    print(stop)
+for level in range(3, 7):
+    print(level)
 ```
 
 A handy check: `range(3, 7)` gives $7 - 3 = 4$ numbers.
@@ -80,12 +82,15 @@ shared out equally over the seven days.
 
 </details>
 
-**4. Explain.** In maths, $c = c + 1$ can never be true. Why is
-`count = count + 1` a sensible line of Python?
+**4. Explain.** Schlomi, who is learning Python too, reads
+`count = count + 1` and says it can never be right: in maths, $c = c + 1$
+is never true. Is she right? In which space?
 
 <details class="dl-answer"><summary>answer</summary>
 
-In Python, `=` is an instruction, not a claim that two sides are equal.
+She is right about maths, where $=$ says two sides are equal, and no
+number is one more than itself. In Python, `=` is an instruction, not a
+claim that two sides are equal.
 It happens in two steps. First Python works out the right-hand side,
 `count + 1`, using the value `count` has now. Then it points the name
 `count` at the answer. So if `count` was 4, it is now 5. The line means
@@ -125,46 +130,47 @@ had 1,418 mm.
 
 </details>
 
-**6. Fix.** This code should add up the cost of the ingredients for a
-pot of soup. It prints the wrong answer. Find the one mistake, and fix
-it.
+**6. Fix.** Schlomo, who is learning Python too, wants the size of a
+folder: the sizes of its four files, in megabytes (MB), added up. His
+code prints the wrong answer. Find the one mistake, and fix it.
 
 ```python exec
 id: doing-it-practice-fix-soup
-ingredients = [1.20, 0.85, 2.40, 0.60]    # onions, carrots, stock, herbs
+file_sizes = [1.20, 0.85, 2.40, 0.60]    # sizes in MB
 
-for cost in ingredients:
-    basket = 0
-    basket = basket + cost
-print("The soup costs", basket)    # should be 5.05
+for size in file_sizes:
+    folder = 0
+    folder = folder + size
+print("The folder holds", folder, "MB")    # should be 5.05
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Follow `basket` through the loop by hand, one cost at a time.
-2. What is `basket` just after the line `basket = 0`, every time round?
-3. Which cost is the only one left at the end?
+1. Follow `folder` through the loop by hand, one size at a time.
+2. What is `folder` just after the line `folder = 0`, every time round?
+3. Which size is the only one left at the end?
 
 **Think about:** how many times should a running total be set to 0?
 
-**Try this next:** what would the code print if the list had the herbs
-first and the stock last?
+**Try this next:** what would the code print if the list had the
+0.60 MB file first and the 2.40 MB file last?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-`basket = 0` is inside the loop, so the running total goes back to 0
-every time round. At the end it holds only the last cost, 0.60. The
-line must come before the loop, so that it runs only once:
+`folder = 0` is inside the loop, so the running total goes back to 0
+every time round. At the end it holds only the last size, 0.60.
+Schlomo's two lines are both right. Only the place of the first one is
+wrong: it must come before the loop, so that it runs only once.
 
 ```python
-ingredients = [1.20, 0.85, 2.40, 0.60]
+file_sizes = [1.20, 0.85, 2.40, 0.60]
 
-basket = 0
-for cost in ingredients:
-    basket = basket + cost
-print("The soup costs", round(basket, 2))    # 5.05
+folder = 0
+for size in file_sizes:
+    folder = folder + size
+print("The folder holds", round(folder, 2), "MB")    # 5.05
 ```
 
 `round` tidies away a float's tiny rounding, so the answer shows as
@@ -241,72 +247,73 @@ scales multiply.
 
 </details>
 
-**10. Make.** A runner can run 5 km today. Each week, she runs 10% further
-than the week before. After how many weeks can she first run more than a
-half marathon, 21.1 km? Use a `while` loop.
+**10. Make.** A new app has 5,000 users. Each week it has 10% more users
+than the week before. After how many weeks does it first have more than
+20,000? Use a `while` loop. (The app is made up. Real apps grow in less
+tidy ways.)
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Start with two names: the distance, 5, and the number of weeks, 0.
-2. Go round again while the distance is not yet more than 21.1.
-3. Each round, multiply the distance by 1.1 and add 1 to the weeks.
+1. Start with two names: the users, 5000, and the number of weeks, 0.
+2. Go round again while the users are not yet more than 20,000.
+3. Each round, multiply the users by 1.1 and add 1 to the weeks.
 
 **Think about:** why is this a `while` loop, and not a `for` loop?
 
-**Try this next:** how many weeks until she can run a full marathon,
-42.2 km?
+**Try this next:** how many weeks until it has more than 40,000 users?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-distance = 5
+users = 5000
 weeks = 0
-while distance <= 21.1:
-    distance = distance * 1.1
+while users <= 20000:
+    users = users * 1.1
     weeks = weeks + 1
-print(weeks, round(distance, 1))    # 16 23.0
+print(weeks, round(users))    # 15 20886
 ```
 
-After 16 weeks she can run about 23 km. After 15 weeks it was about
-20.9 km, not quite enough. We did not know the number of weeks at the
-start, only when to stop. That is the job of a `while` loop.
+After 15 weeks the app has about 20,886 users. After 14 weeks it had
+about 18,987, not quite enough. We did not know the number of weeks at
+the start, only when to stop. That is the job of a `while` loop.
 
 </details>
 
-**11. Another way.** A small stadium has 30 rows of seats. Row 1 has 20
-seats, row 2 has 21, row 3 has 22, and each row has one more than the
-row in front. How many seats are there? Find the answer two ways: with a
-loop, and with the formula $\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$.
+**11. Another way.** A game draws a ramp in pixels, 30 rows tall. The top
+row is 20 pixels wide, the next is 21, then 22, and each row is one
+pixel wider than the row above. How many pixels is the ramp? Find the
+answer two ways: with a loop, and with the formula
+$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Row $i$ has $19 + i$ seats. Check: row 1 has 20.
+1. Row $i$ has $19 + i$ pixels. Check: row 1 has 20.
 2. For the loop, add $19 + i$ for each $i$ from 1 to 30.
 3. For the formula, split each row into 19 seats plus $i$ seats. Add
    the 19s and the $i$s separately.
 
 **Think about:** how many 19s are there in all?
 
-**Try this next:** what if the stadium had 40 rows?
+**Try this next:** what if the ramp had 40 rows?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-Row $i$ has $19 + i$ seats, so the stadium has $\sum_{i=1}^{30} (19 + i)$.
+Row $i$ has $19 + i$ pixels, so the ramp has $\sum_{i=1}^{30} (19 + i)$.
 
 With a loop:
 
 ```python
-seats = 0
+pixels = 0
 for row in range(1, 31):
-    seats = seats + (19 + row)
-print(seats)    # 1035
+    pixels = pixels + (19 + row)
+print(pixels)    # 1035
 ```
 
-With the formula, split each row into 19 seats plus `row` seats. There
+With the formula, split each row into 19 pixels plus `row` pixels. There
 are 30 lots of 19, and the rest is $1 + 2 + \dots + 30$:
 
 $$30 \times 19 + \frac{30 \times 31}{2} = 570 + 465 = 1035$$
@@ -315,24 +322,27 @@ $$30 \times 19 + \frac{30 \times 31}{2} = 570 + 465 = 1035$$
 print(30 * 19 + 30 * 31 // 2)    # 1035
 ```
 
-Both routes give 1,035 seats.
+Both routes give 1,035 pixels. This is one good way to split it. You
+might have found another, such as pairing the top row with the bottom
+row, as Gauss did.
 
 </details>
 
 **12. Explain.** For each job, would you use a `for` loop or a `while`
 loop? Say why.
 
-1. Print a line for every player in a squad of 15.
+1. Print a line for every file in a folder of 15 files.
 2. Keep rolling a die until you roll a 6.
-3. Add up the cost of every item on a till receipt.
-4. Keep heating a kettle until the water reaches 100 °C.
+3. Add up the brightness of every pixel in a row of an image.
+4. Keep dropping a ball until a bounce is under 1 cm.
 
 <details class="dl-answer"><summary>answer</summary>
 
-1. `for`: we know the players, one for each.
+1. `for`: we know the files, one for each.
 2. `while`: we know when to stop (a 6), but not how many rolls it takes.
-3. `for`: we know the items.
-4. `while`: we know when to stop, but not how many seconds it takes.
+3. `for`: we know the pixels.
+4. `while`: we know when to stop, but not how many bounces it takes.
+   (The tutorial worked it out: 21, for a ball that keeps 80%.)
 
 The question to ask is: do I know the values, or how many times? Then
 `for`. Do I only know when to stop? Then `while`.
@@ -348,25 +358,26 @@ id: doing-it-practice-scratch-3
 # Use this cell for the stretch problems
 ```
 
-**13. Make.** Four friends go on a weekend trip. They spend €240 on a
-hostel, €85.50 on train tickets, €60 on food and €34.50 on a museum.
-They add 10% for small extras, and share the cost equally. Use `total`
-and your `split_bill` from
+**13. Make.** A game adds up your points from four rounds: 480, 1250,
+95 and 700. Its score display lights one digit at a time, from the
+thousands down. Use `total` to find the score. Then use a `for` loop
+and your `digit_at` from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold) to
-find each person's share.
+print the four digits the display lights, from left to right.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-costs = [240, 85.50, 60, 34.50]
-trip = total(costs)
-print(trip)                        # 420.0
-print(split_bill(trip, 4, 10))     # 115.5
+rounds = [480, 1250, 95, 700]
+score = total(rounds)
+print(score)                        # 2525
+for place in [3, 2, 1, 0]:
+    print(digit_at(score, place))   # 2, then 5, then 2, then 5
 ```
 
-The trip cost €420, and with 10% added for extras, each friend pays
-€115.50. `split_bill`'s "tip" works for any percentage added on. One
-tool hands its answer to the next.
+The score is 2525, and the loop prints 2, 5, 2 and 5. In Unit 1, the
+display needed one line for each digit; the loop does the same job for
+any number of places. One tool hands its answer to the next.
 
 </details>
 
@@ -407,9 +418,9 @@ to $100^2 = 10000$.
 
 </details>
 
-**15. Make.** A pizza of 1000 g is cut in half, and one half is given
-away. Then what is left is cut in half, and one half is given away
-again. How many times can you do this before less than 1 g is left?
+**15. Make.** A game has a picture 1000 pixels wide. To draw it far
+away, it makes a copy half as wide, then a copy half as wide as that,
+and so on. How many halvings until a copy is less than 1 pixel wide?
 Use a `while` loop. Then compare with `math.log2(1000)`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -417,25 +428,27 @@ Use a `while` loop. Then compare with `math.log2(1000)`.
 ```python
 import math
 
-pizza = 1000
+width = 1000
 halvings = 0
-while pizza >= 1:
-    pizza = pizza / 2
+while width >= 1:
+    width = width / 2
     halvings = halvings + 1
-print(halvings, pizza)       # 10 0.9765625
+print(halvings, width)       # 10 0.9765625
 print(math.log2(1000))       # 9.965784284662087
 ```
 
-After 10 halvings, less than 1 g is left. On
+After 10 halvings, the copy is less than 1 pixel wide. Games really do
+this: the smaller copies of a picture are called "mipmaps", and each
+one is half the width of the one before. On
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times),
 a logarithm was "how many times do I multiply by 2?". Halving is the
 same question run backwards: $\log_2 1000$ is about 9.97, so 9 halvings
-are not quite enough and the 10th takes it under 1 g. The loop counts
+are not quite enough and the 10th takes it under 1 pixel. The loop counts
 the halvings one by one, and the logarithm gives the answer in one step.
 
 </details>
 
-**16. Predict.** Someone writes their own product function, and tests
+**16. Predict.** Schlomi writes her own product function, and tests
 it. What do the two `print` lines show? Explain the result, and fix the
 function.
 

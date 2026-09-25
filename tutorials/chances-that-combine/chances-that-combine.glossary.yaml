@@ -60,6 +60,17 @@ entries:
       The birthday problem asks how likely it is that two people in a room
       share a birthday. With 23 people the chance is about 0.507, because
       23 people make 253 pairs, and any pair can match.
+  - term: packet
+    kind: concept
+    definition: >
+      A packet is one small piece of a message sent over a network. A long
+      message travels as many packets.
+  - term: birthday attack
+    kind: concept
+    definition: >
+      A birthday attack uses the birthday problem to find two different
+      files with the same hash. A hash with n bits needs only about 2 to
+      the power n/2 files for an even chance, not 2 to the power n.
   - term: "at_least_one()"
     kind: function
     definition: >

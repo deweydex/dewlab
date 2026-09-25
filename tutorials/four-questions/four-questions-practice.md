@@ -2,7 +2,7 @@
 title: "Four questions for any puzzle — Practice"
 practice_for: four-questions
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Four questions for any puzzle — Practice
@@ -15,7 +15,9 @@ route, or to find the space where a "wrong" answer is right.
 
 Many of these have more than one good answer. The answer folds show one
 of them, with the thinking behind it. If yours is different, it may be
-right too: check it against the four questions.
+right too, and it may be more interesting: check it against the four
+questions. Try each one before you open its fold. A guess that turns
+out wrong is not wasted; it shows you exactly where to look.
 
 ## Warm-up
 
@@ -99,8 +101,8 @@ which does everyone assume without saying?
 
 </details>
 
-**4. Make.** A concert ticket costs €35. Write one line of Python that
-shows the cost of 4 tickets.
+**4. Make.** A photo on a phone takes up about 3 MB (megabytes) of
+space. Write one line of Python that shows the space taken by 4 photos.
 
 ```python exec
 id: four-q-practice-make-1
@@ -110,19 +112,19 @@ id: four-q-practice-make-1
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-print(4 * 35)
+print(4 * 3)
 ```
 
-It shows `140`, so four tickets cost €140. `print(35 * 4)` works too:
-multiplying in either order gives the same answer.
+It shows `12`, so four photos take about 12 MB. `print(3 * 4)` works
+too: multiplying in either order gives the same answer.
 
 </details>
 
 ## Core
 
-**5. Fix.** This cell should work out the flour for 3 batches of
-pancakes, at 250 g a batch. It stops with an error instead. Run it, then
-find and fix the mistake.
+**5. Fix.** Schlomo, who is learning Python too, wants the space taken
+by 3 videos of 250 MB each. He writes this cell, and it stops with an
+error. Run it, then find and fix his mistake.
 
 ```python exec
 id: four-q-practice-fix-1
@@ -137,7 +139,7 @@ print(3 x 250)
    guessing, and here the guess is wrong.
 2. Look at the symbol between `3` and `250`. Is that the symbol Python
    uses for multiply?
-3. What did the pancakes cell on the tutorial page use?
+3. What did the first cell on the tutorial page use?
 
 **Think about:** on paper, you write × or sometimes x. What does Python
 use, and why might that be?
@@ -150,22 +152,24 @@ use, and why might that be?
 print(3 * 250)
 ```
 
-In Python, multiply is `*`, not `x`. To Python, `x` is a letter, and
-`3 x 250` is a number, a letter and a number side by side, with nothing
-to say what to do with them. So Python cannot read the line.
+It shows `750`: 750 MB. In Python, multiply is `*`, not `x`. To Python,
+`x` is a letter, and `3 x 250` is a number, a letter and a number side
+by side, with nothing to say what to do with them. So Python cannot
+read the line.
 
-This is a very common mistake, and a sensible one: on paper, `x` is how
-most of us write multiply. It is a move from a different space.
+Schlomo's mistake is a very common one, and a sensible one: on paper,
+`x` is how most of us write multiply. It is a move from a different
+space.
 
 </details>
 
-**6. Fix.** This cell should show the word `pancake` three times. It
-stops with an error. Run it, read the last line of the message, and fix
-it.
+**6. Fix.** A digital alarm clock should show the word `beep` three
+times. The cell stops with an error. Run it, read the last line of the
+message, and fix it.
 
 ```python exec
 id: four-q-practice-fix-2
-print(3 * pancake)
+print(3 * beep)
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -173,7 +177,7 @@ print(3 * pancake)
 1. The last line of the error says `NameError`. That means Python met a
    name it does not know.
 2. Which word in the line is Python treating as a name?
-3. How did the tutorial page tell Python that `pancake` was text, and not
+3. How did the tutorial page tell Python that `"ha "` was text, and not
    a name?
 
 **Think about:** which of the four questions is this error about?
@@ -183,46 +187,47 @@ print(3 * pancake)
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-print(3 * "pancake ")
+print(3 * "beep ")
 ```
 
-Without quote marks, Python reads `pancake` as a name, and goes looking
+Without quote marks, Python reads `beep` as a name, and goes looking
 for what that name points at. Nothing has that name yet, so Python says
-`NameError: name 'pancake' is not defined`.
+`NameError: name 'beep' is not defined`.
 
-With quote marks, `"pancake "` is a string: the text itself, not a name
+With quote marks, `"beep "` is a string: the text itself, not a name
 for something else. This error is about the first question, *what is
 named here?* Python was asked to follow a name that pointed at nothing.
 
 </details>
 
-**7. Explain.** Here are the steps for catching a bus, out of order.
-Put them in an order that works, and say which two steps could swap
-without causing a problem.
+**7. Explain.** Here are the steps for sending a photo from a phone, out
+of order. Put them in an order that works, and say which two steps
+could swap without causing a problem.
 
-- A. Sit down.
-- B. Walk to the bus stop.
-- C. Tap your Leap card on the reader.
-- D. Wave to the driver as the bus comes near.
-- E. Check the timetable for the next bus.
-- F. Get on the bus.
+- A. Tap Send.
+- B. Open the messages app.
+- C. Choose the photo.
+- D. Choose who gets it.
+- E. Unlock the phone.
+- F. Wait for the tick that says it was sent.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One order that works is E, B, D, F, C, A: check the timetable, walk to
-the stop, wave the bus down, get on, tap your card, sit down.
+One order that works is E, B, D, C, A, F: unlock the phone, open the
+app, choose the person, choose the photo, tap Send, and wait for the
+tick.
 
-E and B could swap. You can check the timetable on your phone at home,
-or on the sign at the stop, and either way you catch the bus.
+C and D could swap. Some apps ask for the person first, and some for
+the photo first, and either way the photo arrives.
 
-D and F cannot swap. If you have not waved, the bus may not stop, so
-there is nothing to get on. C must come after F, because the card
-reader is on the bus.
+A and F cannot swap. The tick only comes after something has been sent.
+And E must come first, because a locked phone does nothing else.
 
 </details>
 
-**8. Another way.** A child says that 45 minutes and 30 minutes make
-`1:15`. Their friend says they make `75`. Who is right?
+**8. Another way.** Two videos last 45 minutes and 30 minutes. Schlomi,
+who is also learning Python, says together they make `1:15`. Schlomo
+says they make `75`. Who is right?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -238,23 +243,23 @@ we can check each answer.
 
 </details>
 
-**9. Explain.** A recipe says "Bake until done." What does this step
-assume that it does not say? Give two things.
+**9. Explain.** A help page says "Restart your phone if it is slow."
+What does this step assume that it does not say? Give two things.
 
 <details class="dl-answer"><summary>answer</summary>
 
 There are many. Some of them:
 
-- It assumes you have an oven, and that it is already hot. It does not
-  say how hot.
-- It assumes you know what "done" looks like: golden on top, firm in the
-  middle, a knife coming out clean.
-- It assumes you will check more than once, so it hides a repeat: "look,
-  and if it is not done, wait and look again".
+- It assumes you know how to restart this phone: which button, held for
+  how long.
+- It assumes you know what "slow" means: slower than yesterday, or
+  slower than a friend's phone?
+- It assumes you have saved anything you were working on, since a
+  restart closes every app.
 
-A person who has baked before fills these gaps without noticing. A
-machine, or someone who has never baked, cannot. Filling those gaps is
-what the next page is about.
+A person who has used phones for years fills these gaps without
+noticing. A machine, or someone who has never used one, cannot. Filling
+those gaps is what the next page is about.
 
 </details>
 
@@ -283,18 +288,18 @@ The second line multiplies 10 by 10, and then that answer by 10 again.
 
 </details>
 
-**11. Explain.** A ticket machine at a train station makes a promise.
-What goes in, and what comes out? What must be true before it keeps its
-promise?
+**11. Explain.** A vending machine makes a promise. What goes in, and
+what comes out? What must be true before it keeps its promise?
 
 <details class="dl-answer"><summary>answer</summary>
 
-You put in your choice of journey and enough money, or a card payment.
-Out come a ticket, and maybe some change.
+You put in the number of your choice and enough money, or a card
+payment. Out come a snack or a drink, and maybe some change.
 
 Before it keeps the promise, some things must be true. You must pay at
-least the price of the ticket. The machine must have paper and must be
-switched on. Your journey must be one the machine sells.
+least the price. The machine must be switched on, and the thing you
+chose must be in stock. The number you typed must be one the machine
+knows.
 
 This is a function in the sense of this course: something in, something
 out, and a promise about how the two are connected.
@@ -324,24 +329,23 @@ Python can tell which is which from the quote marks.
 
 ## Stretch
 
-**13. Another way.** The tutorial worked out the flour for three batches
-with `print(3 * 250)`. Show the same 750 in Python in a different way,
-without using `*`.
+**13. Another way.** The tutorial worked out `print(4 * 7)`. Show the
+same 28 in Python in a different way, without using `*`.
 
 ```python exec
 id: four-q-practice-another-1
-# Another way to get 750
+# Another way to get 28
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-print(250 + 250 + 250)
+print(7 + 7 + 7 + 7)
 ```
 
-Multiplying by 3 is adding three times. Both lines keep the same
-promise. The first is shorter, and it stays short for 300 batches, when
-the second would not.
+Multiplying by 4 is adding four times. Both lines keep the same
+promise. The first is shorter, and it stays short for `1920 * 1080`,
+when the second would need 1080 copies of 1920.
 
 </details>
 

@@ -7,7 +7,7 @@ practice_across:
   - how-likely-is-it
   - chances-that-combine
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Mixed problems: loops, counting and chance
@@ -25,7 +25,9 @@ same answer by a second route, or find the space where a "wrong" answer
 is right). Answers are in the folds.
 
 Along the way, the problems build this unit's product: a
-password-strength checker. Problems 6, 8, 10 and 15 are its parts, and
+password-strength checker. I think it is the most useful thing in the
+unit, because you can test passwords like your own. Make up ones like
+yours: never type a real password into a web page. Problems 6, 8, 10 and 15 are its parts, and
 each one uses the part before it. If you skip one, copy its answer into
 a scratch cell before you go on.
 
@@ -56,23 +58,24 @@ id: mixed-loops-scratch-1
 print(total(range(1, 11)))
 ```
 
-**1. Predict.** You put €1 in a jar on the first day, €2 on the second,
-€3 on the third, and so on. The cell above adds up the first 10 days.
-What will it print?
+**1. Predict.** A game draws a triangle in pixels: 1 pixel in the top
+row, 2 in the next, 3 in the next, and so on. The cell above adds up
+the pixels in the first 10 rows. What will it print?
 
 <details class="dl-answer"><summary>answer</summary>
 
 `55`.
 
 `range(1, 11)` is the whole numbers from 1 to 10: the 11 is left out.
-Their total is $\sum_{i=1}^{10} i = \frac{10 \times 11}{2} = 55$, the
+The triangle has $\sum_{i=1}^{10} i = \frac{10 \times 11}{2} = 55$ pixels, the
 pairing trick from [Doing it again](tutorial:doing-it-again): 1 and 10
 make 11, 2 and 9 make 11, and there are five such pairs.
 
 </details>
 
-**2. Predict.** A gym locker has a code of 4 digits, each from 0 to 9.
-How many different codes are there? Predict, then check with `product`.
+**2. Predict.** A phone's lock screen takes a code of 4 digits, each
+from 0 to 9. How many different codes are there? Predict, then check
+with `product`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -90,7 +93,7 @@ number of choices at each step.
 
 </details>
 
-**3. Make.** Some locks do not let a code use the same digit twice. How
+**3. Make.** Some phones do not let a code use the same digit twice. How
 many 4-digit codes have four different digits? Write one line that
 works it out with a toolkit function.
 
@@ -240,12 +243,13 @@ first kind found would count.
 
 </details>
 
-**7. Fix.** A friend wrote this version. It gives 52 for `"Hi"`, which
-is right, but 130 for `"hello"`. Run it, find the mistake, and fix it.
+**7. Fix.** Schlomi, who is learning Python too, wrote this version. It
+gives 52 for `"Hi"`, which is right, but 130 for `"hello"`. Run it,
+find the mistake, and fix it.
 
 ```python exec
 id: mixed-loops-fix-pool
-def friends_pool_size(password):
+def schlomis_pool_size(password):
     """How many different characters each place in password could hold."""
     size = 0
     for character in password:
@@ -259,8 +263,8 @@ def friends_pool_size(password):
             size = size + 32
     return size
 
-print(friends_pool_size("Hi"))       # should be 52
-print(friends_pool_size("hello"))    # should be 26
+print(schlomis_pool_size("Hi"))       # should be 52
+print(schlomis_pool_size("hello"))    # should be 26
 ```
 
 <details class="dl-answer"><summary>answer</summary>
@@ -656,8 +660,9 @@ codes to be very long.
 
 </details>
 
-**17. Explain.** The checker gives `"Password1!"` 65.5 bits, the same as
-`"9Lq#v2!mZx"`, and rates it strong. But it is one of the first
+**17. Explain.** Schlomo, who is learning Python too, runs the checker on
+`"Password1!"`. It gives 65.5 bits, the same as `"9Lq#v2!mZx"`, and
+rates it strong, so Schlomo is pleased. But it is one of the first
 passwords any thief tries. What does the checker assume that is not true
 here? Which of the four questions does that belong to?
 

@@ -443,44 +443,47 @@ bigger than `high`.
 
 </details>
 
-**13. Make.** Some restaurants add a 12.5% service charge for a group of
-6 or more. Use `split_bill` from your toolkit to write
-`share_for(total, people)`: each person's share, with 12.5% added for a
-group of 6 or more, and nothing added for a smaller group. A bill of
-€180 for 6 people should give 33.75 each. A bill of €120 for 4 people
-should give 30.0 each.
+**13. Make.** A retro game shows your score on a display with four
+digits. Up to 9999, it shows the score in base 10. At 10000 or more the
+score no longer fits, so the game switches to hexadecimal, where four
+digits reach 65535. Use `digit_at` from your toolkit to write
+`score_digit(score, place)`: the digit the display shows in `place`.
+`score_digit(2026, 3)` should give 2, and `score_digit(50000, 3)`
+should give 12, the hex digit C.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Look at the promise of `split_bill`. Its third input is a percentage
-   to add.
-2. Which condition says "6 or more"?
-3. One branch calls `split_bill` with 12.5 as the third input. The other
+1. Look at the promise of `digit_at`. Its third input is the base, 10
+   unless you say otherwise.
+2. Which condition says "10000 or more"?
+3. One branch calls `digit_at` with 16 as the third input. The other
    calls it without one.
 
-**Think about:** why 6 people get the charge but 5 do not. Which sign
+**Think about:** why 10000 switches to hex but 9999 does not. Which sign
 makes that true?
 
-**Try this next:** add a third path: groups of 10 or more pay 15%.
+**Try this next:** add a third path. At 65536 or more, even hex does not
+fit, so give back 15 for every place, and the display shows FFFF.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def share_for(total, people):
-    """Each person's share, with 12.5% added for a group of 6 or more."""
-    if people >= 6:
-        return split_bill(total, people, 12.5)
+def score_digit(score, place):
+    """The digit a four-digit score display shows in place, in hex from 10000 on."""
+    if score >= 10000:
+        return digit_at(score, place, 16)
     else:
-        return split_bill(total, people)
+        return digit_at(score, place)
 
-print(share_for(180, 6))
-print(share_for(120, 4))
+print(score_digit(2026, 3))
+print(score_digit(50000, 3))
 ```
 
-This prints `33.75`, then `30.0`. For 6 people: €180 plus 12.5% is
-€202.50, and €202.50 shared by 6 is €33.75.
+This prints `2`, then `12`. `to_hex(50000)` is `C350`, so its digit in
+place 3 is C, which is 12. With `>` in place of `>=`, a score of exactly
+10000 would stay in base 10 and show `0000`, with its 1 lost.
 
 </details>
 

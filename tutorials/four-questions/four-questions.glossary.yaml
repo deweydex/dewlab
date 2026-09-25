@@ -40,17 +40,23 @@ entries:
   - term: string
     kind: concept
     definition: >
-      A string is text in quote marks, like "pancake". Python treats it as
+      A string is text in quote marks, like "ha ". Python treats it as
       text, not as a name.
-    example: '"pancake "'
+    example: '"ha "'
   - term: "print()"
     python: print
     kind: function
     definition: Shows whatever is inside its brackets.
-    example: "print(3 * 250)"
+    example: "print(1920 * 1080)"
   - term: "*"
     kind: operator
     definition: >
       Multiplies two numbers. With a string and a whole number, it repeats
       the string that many times.
     example: 'print(3 * "ha ")'
+  - term: modular arithmetic
+    kind: concept
+    definition: >
+      Modular arithmetic is arithmetic that goes round in a circle and
+      starts again, like the hours on a clock. On a 12-hour clock, 10 + 4
+      is 2.

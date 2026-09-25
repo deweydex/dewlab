@@ -1,7 +1,7 @@
 ---
 title: "Machines that take a number: functions in maths and code"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   a-machine-with-one-slot:
     covers: [MIT-3.1]
@@ -345,20 +345,22 @@ we change `fare`, and every receipt is right at once.
 
 A call can also name its arguments. `fare(km=8)` puts 8 into the slot
 called `km`. This is a *keyword argument*, and it helps most when a
-function has several slots. Your toolkit's `split_bill` has three.
-Before you run this, what will each person pay?
+function has several slots. Your toolkit's `digit_at` has three. Say a
+scoreboard is to show 5050, the sum from 1 to 100. Before you run this,
+which digit will each line give?
 
 ```python exec
 id: machines-procedure-2
-print(split_bill(fare(12), 3))
-print(split_bill(fare(12), people=3, tip_percent=10))
+print(digit_at(sum_by_loop(100), 3))
+print(digit_at(sum_by_loop(100), place=1, base=2))
 ```
 
-Each person pays €7.33, or €8.07 with a 10% tip. Look at the order of
-events. Python works out `fare(12)` first, and gets 22.0. Only then
-does that number go into `split_bill`. The inside of the brackets
-happens before the outside, as it did with `print(3 * 250)` on the
-first page of this course.
+The first line gives 5, the digit in the thousands place. The second
+gives 1: in binary, 5050 is `1001110111010`, and its bit in place 1 is
+1. Look at the order of events. Python works out `sum_by_loop(100)`
+first, and gets 5050. Only then does that number go into `digit_at`.
+The inside of the brackets happens before the outside, as it did with
+`print(1920 * 1080)` on the first page of this course.
 
 ## Running it backwards: the inverse
 
@@ -437,7 +439,7 @@ Does `round` have an inverse?
 
 ## Machines in a row: composition
 
-Last section, `split_bill(fare(12), 3)` sent the output of one machine
+Earlier on this page, `digit_at(sum_by_loop(100), 3)` sent the output of one machine
 straight into the slot of the next. Joining two functions this way is
 called *composition*. Maths writes "g after f" as
 

@@ -16,8 +16,8 @@ entries:
     kind: formula
     definition: >
       A permutation is an arrangement of r things chosen from n, where the
-      order matters. There are n! / (n − r)! of them. A podium of 3 from 8
-      runners is one permutation.
+      order matters. There are n! / (n − r)! of them. The first 3 of 8
+      jobs in a queue, in order, are one permutation.
     example: "P(8, 3) = 8 × 7 × 6 = 336"
   - term: "combination, C(n, r)"
     kind: formula
@@ -32,7 +32,7 @@ entries:
     definition: >
       List every choice, or every order, of r things from a group. Wrap the
       result in list() to count it with len().
-    example: "len(list(itertools.combinations(players, 5)))"
+    example: "len(list(itertools.combinations(drones, 5)))"
   - term: "factorial()"
     kind: function
     definition: >

@@ -55,7 +55,7 @@ On this page we:
 > values", and used `len`, `append` and `[0]` in passing. This page is
 > where we learn them properly. One thing usually goes unsaid: Python
 > counts positions from 0, and maths usually counts from 1. Both are
-> right, in their own space. Your toolkit is loaded, from `split_bill`
+> right, in their own space. Your toolkit is loaded, from `digit_at`
 > to `close_enough`.
 
 ## Warm-up

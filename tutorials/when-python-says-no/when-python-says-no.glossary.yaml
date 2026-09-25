@@ -12,21 +12,21 @@ entries:
     definition: >
       A NameError means Python met a name that points at nothing. Usually
       the name is misspelled, or it has not been given a value yet.
-    example: "print(totl)"
+    example: "print(numbr)"
   - term: TypeError
     python: TypeError
     kind: keyword
     definition: >
       A TypeError means a move was used on the wrong kind of value, such
       as joining a string and a number with +.
-    example: '"Each person pays €" + 28.2'
+    example: '"Ones digit: " + 6'
   - term: ZeroDivisionError
     python: ZeroDivisionError
     kind: keyword
     definition: >
       A ZeroDivisionError means the code tried to divide by zero, which has
-      no answer in any number family.
-    example: "60 / 0"
+      no answer in any number family. It can come from /, // or %.
+    example: "37 // 0"
   - term: syntax, SyntaxError
     python: SyntaxError
     kind: keyword
@@ -34,7 +34,7 @@ entries:
       Syntax is the grammar of a language: which words and marks may go
       where. A SyntaxError means the code is not valid Python, so none of
       the cell runs.
-    example: 'print("Your score:", score'
+    example: 'print("Showing:", digit'
   - term: indent, IndentationError
     python: IndentationError
     kind: keyword
@@ -43,11 +43,14 @@ entries:
       to the line above, such as the steps of a function. An
       IndentationError means the spaces at the start of a line are not
       what Python expected.
-  - term: "str()"
-    python: str
+  - term: "str(), int(), float()"
+    python: [str, int, float]
     kind: function
-    definition: Turns a value, such as a number, into a string.
-    example: 'str(28.2) gives "28.2"'
+    definition: >
+      Turn a value into another kind. str() turns a number into text.
+      int() turns text such as "2026" into a whole number, and float()
+      turns text such as "2.5" into a float.
+    example: 'int("2026") % 10'
   - term: compiler
     kind: concept
     definition: >

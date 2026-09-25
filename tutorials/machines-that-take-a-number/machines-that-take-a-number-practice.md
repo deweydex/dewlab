@@ -347,15 +347,16 @@ were right. Only the handing back was missing.
 
 </details>
 
-**11. Predict.** Your toolkit's `split_bill` has the parameters
-`total`, `people` and `tip_percent`, in that order. What does each line
-print? One of them stops with an error.
+**11. Predict.** Your toolkit's `digit_at` has the parameters
+`number`, `place` and `base`, in that order. A display wants the
+digits of the year 2026. What does each line print? One of them stops
+with an error.
 
 ```python
-print(split_bill(people=2, total=30))
-print(split_bill(30, 2, tip_percent=20))
-print(split_bill(2, 30))
-print(split_bill(total=30, 2))
+print(digit_at(place=1, number=2026))
+print(digit_at(2026, 1, base=2))
+print(digit_at(1, 2026))
+print(digit_at(number=2026, 1))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
@@ -364,11 +365,12 @@ Python reads the whole cell before it runs any of it, and the last line
 is not allowed. So nothing prints at all: the cell stops with
 `SyntaxError: positional argument follows keyword argument`.
 
-Take the last line out, and the others print `15.0`, `18.0` and `0.07`.
-With keyword arguments, the order in the call does not matter, because
-each value names its slot. Without them, the order is everything:
-`split_bill(2, 30)` shares a €2 bill between 30 people. Once one
-argument is named, every argument after it must be named too.
+Take the last line out, and the others print `2`, `1` and `0`. With
+keyword arguments, the order in the call does not matter, because each
+value names its slot. Without them, the order is everything:
+`digit_at(1, 2026)` asks for the digit in place 2026 of the number 1,
+which is 0. Once one argument is named, every argument after it must be
+named too.
 
 </details>
 
