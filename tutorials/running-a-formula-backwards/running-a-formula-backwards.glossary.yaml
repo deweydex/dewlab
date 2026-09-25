@@ -1,7 +1,7 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
 # Comes after machines-that-take-a-number and measuring-rooms-and-tins in
-# the Plot Twist track. The inverse, f⁻¹, one-to-one, domain, math.sqrt()
+# the Dewey Track. The inverse, f⁻¹, one-to-one, domain, math.sqrt()
 # and compose() were introduced on machines-that-take-a-number, so they are
 # not repeated here. The toolkit functions are the course's own, not Python
 # names, so they have no python: line.

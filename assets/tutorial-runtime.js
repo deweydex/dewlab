@@ -88,7 +88,7 @@ function trackChromeHeight() {
   if (!chrome) {
     // No bar above the page at all (assets/shell.html) — everything that
     // measured from the bar's height measures from the top edge instead.
-    // The stylesheet's own default still serves compose/dewmini.html,
+    // The stylesheet's own default still serves compose/notebook.html,
     // which keeps a real #dl-chrome of its own.
     document.documentElement.style.setProperty("--dl-chrome-h", "0px");
     return;

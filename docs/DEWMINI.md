@@ -1,9 +1,9 @@
-# dewmini
+# The dewlab Notebook
 
-dewmini is a small notebook for writing and running Python in your
-browser. It uses the same Python as dewlab's tutorials, so there is
+The dewlab Notebook is a small notebook for writing and running Python in
+your browser. It uses the same Python as dewlab's tutorials, so there is
 nothing to install. No tutorial is attached to it. Open it at
-`compose/dewmini.html` and you get a blank page, ready for you to add a
+`compose/notebook.html` and you get a blank page, ready for you to add a
 cell.
 
 Use it when a tutorial does not quite cover what you want to try. It
@@ -14,14 +14,14 @@ suits four things in particular:
 - keeping a small project going across sessions, with its own files
 - running a few lines of Python that are not tied to any one topic
 
-A tutorial page is mostly reading, with some code mixed in. dewmini is
-mostly code, with room for a few notes.
+A tutorial page is mostly reading, with some code mixed in. The Notebook
+is mostly code, with room for a few notes.
 
 ---
 
 ## What you see
 
-dewmini is a plain page. Cells sit directly on the background rather
+The Notebook is a plain page. Cells sit directly on the background rather
 than in bordered boxes. Each cell has a thin colored line down its left
 side, and that line is invisible most of the time. It turns orange for
 the cell you touched last. It turns red if that cell's last run gave an
@@ -73,7 +73,7 @@ Settings' **Restart & run all** goes further. It throws Python away
 completely, then reruns every cell from a fresh start. This is the real test of whether a notebook works for somebody opening
 it new, rather than only in the order you built it up.
 
-While you type, dewmini offers the same completion, hover documentation
+While you type, the Notebook offers the same completion, hover documentation
 and function-signature help that a tutorial page's cells do. It offers
 them on code that has not run yet, as well as on names an earlier cell
 already defined.
@@ -105,7 +105,7 @@ have cells.
 **See an example** loads four cells and runs them straight away. One
 prints something. One is a small numpy calculation. One is a text cell,
 showing what a note looks like formatted. One is a plot. The first thing
-you see is dewmini doing something, rather than an account of what it
+you see is the Notebook doing something, rather than an account of what it
 could do.
 
 **Start with imports** begins with one cell that imports the packages
@@ -143,7 +143,7 @@ copied:
 
 **The four widgets do not work here at the moment, and say so when you
 call one.** A widget attaches a listener to a live element on the page.
-dewmini runs Python in a background worker, off the page's own thread,
+The Notebook runs Python in a background worker, off the page's own thread,
 and that is what lets the Stop button interrupt a runaway cell. On the
 far side of that boundary there is no page to attach a listener to.
 Calling a widget therefore raises a clear error, rather than drawing
@@ -152,7 +152,7 @@ trade (`DECISIONS_LOG.md` 7.77). The widgets do work in a downloaded
 copy, which runs Python on the page's own thread.
 
 `numpy`, `pandas` and `matplotlib` are available without importing
-them, and you can still `import` them if you want. dewmini keeps that
+them, and you can still `import` them if you want. The Notebook keeps that
 import visible on purpose, so a cell you copy somewhere else still makes
 sense on its own.
 
@@ -262,8 +262,8 @@ On a phone, panels slide up from the bottom instead.
 **Reference** holds every term, function and operator that any dewlab
 tutorial introduces, in one searchable list. Each entry names the
 tutorial that introduced it. This reference shows everything. A tutorial page's own reference shows
-only what you have been taught so far. In a workspace with no tutorial
-attached, there is no "so far" to go by.
+only what you have been taught so far. The Notebook has no tutorial
+attached, so there is no "so far" to go by.
 
 Search it, or narrow it with the buttons above the list:
 
@@ -336,7 +336,7 @@ one produced. A `.html` opens as a small website. Its matching `.css` and
 of these saves straight back to its file. A website has no cells, so
 the Library's **Add a cell that loads it** asks you to switch to a
 notebook tab first. Other kinds of file stay in the
-list for a cell to read, since dewmini would have to guess how to show
+list for a cell to read, since the Notebook would have to guess how to show
 them as code.
 
 **Your own Python files live here too, and you can import them.** Write
@@ -348,10 +348,10 @@ them.
 One thing about it surprises most people the first time. Python reads a
 file once and remembers it. Editing that file after you have imported it
 does not change what runs. You fix a mistake, run the cell again, and
-get the same wrong answer. dewmini notices when this happens, names the
+get the same wrong answer. The Notebook notices when this happens, names the
 file that changed, and offers to re-read it. The behaviour is Python's
 own, and you will meet it in every other Python you use. That is why
-dewmini tells you about it rather than working around it quietly.
+the Notebook tells you about it rather than working around it quietly.
 
 Re-reading a file replaces what is inside it. A name you imported with
 `from shapes import area` still points at the old version, so run that
@@ -386,11 +386,11 @@ buttons. You can also load a `.ipynb` or `.py` file back in, whether it
 came from here or from anywhere else, and carry on with it.
 
 An import **opens in a new tab**, so it never lands on top of what you
-were doing. A `.py` file that dewmini exported comes back exactly as it
+were doing. A `.py` file that the Notebook exported comes back exactly as it
 was, cell by cell, text cells included. A plain `.py` script with no
 markers comes back as one Python cell.
 
-A notebook written outside dewmini can bring along things this Python
+A notebook written somewhere else can bring along things this Python
 cannot run. A `tkinter` window, a Jupyter "magic" command and a `!pip
 install` shell line are the common ones. A warning banner appears straight after the
 import and names which imported cell each one is in.
@@ -428,7 +428,7 @@ how it looks.
 
 ## Keeping your work
 
-Everything you type in dewmini saves to the browser you typed it in, as
+Everything you type in the Notebook saves to the browser you typed it in, as
 you type it. Nothing you write leaves your browser, and nothing is
 scored.
 
@@ -439,10 +439,10 @@ section and its "use a folder on my computer".
 
 A browser gives each site a limited amount of room, usually around five
 megabytes. One chart takes up far more of that room than all your code
-does. If you fill it, dewmini keeps your code and gives up the outputs
+does. If you fill it, the Notebook keeps your code and gives up the outputs
 it cannot fit. It names the ones it dropped. Run those cells again after
 a reload and the outputs come back. If even the code will not fit,
-dewmini says so and asks you to download the notebook. A reload from
+the Notebook says so and asks you to download the notebook. A reload from
 that point would lose your work.
 
 - **`.py`** joins every Python cell together and turns each text cell
@@ -465,7 +465,7 @@ that point would lose your work.
   it fetches Python. After that it works without one.
 - **`.ipynb`** is a real Jupyter notebook file: Python cells become code
   cells, text cells become markdown cells, and it opens in Jupyter,
-  JupyterLab, or Colab. The same file loads back into dewmini from
+  JupyterLab, or Colab. The same file loads back into the Notebook from
   Settings.
 
   This is the download that keeps your results. Printed text, tables
@@ -475,10 +475,10 @@ that point would lose your work.
 
 ---
 
-## The downloadable dewmini
+## The downloadable Notebook
 
-The link under dewmini's own title, "downloadable copy of dewmini
-itself", gets you the whole tool as a zip. Unzip it and it works the
+The link under the Notebook's own title, "downloadable copy of the
+Notebook itself", gets you the whole tool as a zip. Unzip it and it works the
 same as it does online. The copy you download already includes Python,
 so it needs no internet connection at all.
 
@@ -489,8 +489,22 @@ site looks like by then.
 It needs one step the online version does not. After unzipping, open a
 terminal in the folder and run `python3 serve.py`, rather than
 double-clicking `index.html`. A modern browser will not let a page
-opened straight off disk load its own JavaScript the way dewmini needs
-to. *serve.py* starts a small local server and opens the right page for
+opened straight off disk load its own JavaScript the way the Notebook
+needs to. *serve.py* starts a small local server and opens the right page for
 you, and it needs nothing installed beyond the Python already running
 it. Leave that terminal window open
-while you use dewmini; closing it stops the server.
+while you use the Notebook; closing it stops the server.
+
+---
+
+## An older name
+
+The Notebook used to be called dewmini, and the Workspace, its partner
+for HTML, CSS and JavaScript, used to be called dewmini web. Old links
+and bookmarks still work. `compose/dewmini.html` opens the Notebook, and
+`compose/dewminiweb.html` opens the Workspace.
+
+You may still meet the old names in dewlab's code, and in this page's
+own file name. They stay there on purpose. Your saved work is stored in
+this browser under names that begin with `dewmini`, and renaming those
+would lose it.

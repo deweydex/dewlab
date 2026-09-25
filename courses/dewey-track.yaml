@@ -1,20 +1,29 @@
-title: Plot Twist
+title: The Dewey Track
 code: 5N2927 + 5N18396 · QQI Level 5
 status: beta
-card: Maths and programming for people who are sure they hate both. Every page starts with a question from the world, and the maths and the code arrive because the question needs them.
+card: Python and maths for people who want something different. You guess what will happen, run the code and find out, and the maths turns up because the question needs it. Learn by dewing.
 description: >-
-  Plot Twist teaches Programming and Design Principles (5N2927) and
-  Mathematics for Information Technology (5N18396) as one subject.
+  If maths or programming has gone badly for you before, this course was
+  written with you in mind. The Dewey Track teaches Programming and Design
+  Principles (5N2927) and Mathematics for Information Technology (5N18396)
+  as one subject, in Python.
 
 
-  Every page opens with a question a person might want to answer, and four
-  questions come back on every page: what is named here, what is promised,
-  what happens when, and what this space lets us do. Along the way you build
-  a toolkit of your own functions, and later pages use them.
+  It is named after John Dewey, an educator who argued that people learn by
+  doing: by working on real questions, not by memorising answers first. Here
+  you learn by dewing. You guess what will happen, run it, and find out. A
+  wrong guess is welcome, because it points straight at the idea worth a
+  second look.
 
 
-  This course is new, and in beta: all ten units are written, and they
-  will change as classes use them.
+  Four questions come back on every page: what is named here, what is
+  promised, what happens when, and what this space lets us do. Along the way
+  you build a toolkit of your own functions, and later pages use them.
+
+
+  This course is new, and in beta. All ten units are written, and they will
+  change as classes use them, so tell us what works for you and what does
+  not.
 contents:
 - title: Instructions for a machine
   tutorials:

@@ -179,3 +179,4 @@ tutorials/web-authoring/transitions-and-transforms.html: tutorials/transitions-a
 tutorials/web-authoring/troubleshooting.html: tutorials/troubleshooting.html
 tutorials/web-authoring/variables-and-colour.html: tutorials/variables-and-colour.html
 tutorials/web-authoring/your-copy-of-the-starter.html: tutorials/your-copy-of-the-starter.html
+plot-twist.html: dewey-track.html

@@ -271,7 +271,7 @@ class TestDownloadsDoNotCollide:
         pages = list((repo_with_assets / "site" / "tutorials").rglob("*.html"))
         copies = [
             p for p in (repo_with_assets / "site" / "download").rglob("*.html")
-            if "dewmini" not in p.parts
+            if "notebook" not in p.parts
         ]
         assert len(copies) == len(pages) == 2
         assert (repo_with_assets / "site" / "download" / "first-steps.html").is_file()

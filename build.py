@@ -5103,10 +5103,21 @@ DEWMINI_ASSET_FILES = (
 )
 
 
+# compose/'s pages at their old addresses, from before dewmini and dewmini
+# web were renamed the Notebook and the Workspace: small hand-written
+# redirects rather than lines in courses/redirects.yaml, because they keep a
+# query string and a #hash, and because compose/ is copied wholesale rather
+# than written page by page (write_redirects() only sends an old address to
+# a page the build wrote).
+COMPOSE_REDIRECTS = ("dewmini.html", "dewminiweb.html")
+
+
 def write_dewmini_bundle() -> Path | None:
-    """The downloadable dewmini: a folder a student or teacher can save and
+    """The downloadable Notebook (download/notebook/, zipped as
+    download/notebook.zip): a folder a student or teacher can save and
     open with no internet at all, once assets/vendor/pyodide/ exists to
-    include.
+    include. The Notebook's code is still called dewmini, hence this
+    function's name.
 
     It still needs a local server to open, though: dewmini.js imports
     dewmini-fs.js and pyodide-engine.js with real `import` statements,
@@ -5116,7 +5127,7 @@ def write_dewmini_bundle() -> Path | None:
     and SERVE_SCRIPT is copied in as this bundle's own serve.py.
 
     The bundle mirrors the hosted site's actual folder shape — compose/,
-    assets/, and data/ as siblings, exactly what compose/dewmini.html's own
+    assets/, and data/ as siblings, exactly what compose/notebook.html's own
     relative references already assume — so nothing in it needs rewriting
     to work unhosted, beyond layering in the DEWLAB_PYODIDE_BASE override.
     The tiny top-level `index.html` exists so opening the downloaded folder
@@ -5132,25 +5143,29 @@ def write_dewmini_bundle() -> Path | None:
     autocomplete.) A build run without that first still produces a working
     bundle, just one that falls back to the CDN on first run.
     """
-    dewmini_html = COMPOSE / "dewmini.html"
-    if not dewmini_html.exists():
+    notebook_html = COMPOSE / "notebook.html"
+    if not notebook_html.exists():
         return None
 
-    target = OUT / "download" / "dewmini"
+    target = OUT / "download" / "notebook"
     shutil.rmtree(target, ignore_errors=True)
     (target / "assets" / "vendor").mkdir(parents=True, exist_ok=True)
 
     pyodide_vendored = (ASSETS / "vendor" / "pyodide").is_dir()
 
-    shutil.copytree(COMPOSE, target / "compose")
-    html = (target / "compose" / "dewmini.html").read_text()
+    # The two old-address redirects (compose/dewmini.html and
+    # compose/dewminiweb.html) are for bookmarks into the hosted site; a
+    # fresh download has none to keep.
+    shutil.copytree(COMPOSE, target / "compose",
+                    ignore=shutil.ignore_patterns(*COMPOSE_REDIRECTS))
+    html = (target / "compose" / "notebook.html").read_text()
     if pyodide_vendored:
         html = html.replace(
             "<head>",
             '<head>\n<script>window.DEWLAB_PYODIDE_BASE = "../assets/vendor/pyodide/";</script>',
             1,
         )
-        (target / "compose" / "dewmini.html").write_text(html)
+        (target / "compose" / "notebook.html").write_text(html)
 
     for rel in DEWMINI_ASSET_FILES:
         src = ASSETS / rel
@@ -5193,32 +5208,32 @@ def write_dewmini_bundle() -> Path | None:
         "<html lang=\"en\">\n"
         "<head>\n"
         "<meta charset=\"utf-8\">\n"
-        "<title>dewmini</title>\n"
+        "<title>dewlab Notebook</title>\n"
         "<style>body{font:15px/1.5 sans-serif;max-width:34rem;margin:3rem auto;padding:0 1rem;}"
         "code{background:#eee;padding:0.1rem 0.35rem;border-radius:3px;}</style>\n"
         "</head>\n"
         "<body>\n"
         '<div id="file-warning" hidden>\n'
         "<h1>One more step</h1>\n"
-        "<p>Opening this file directly shows a blank page — dewmini's own "
+        "<p>Opening this file directly shows a blank page — the Notebook's own "
         "JavaScript needs a real (if entirely local) web server to load, "
         "which a browser won't do for a file opened straight off disk.</p>\n"
         "<p>Open a terminal in this folder and run:</p>\n"
         "<p><code>python3 serve.py</code></p>\n"
-        "<p>That opens a browser tab pointed at dewmini for you. Leave the "
+        "<p>That opens a browser tab with the Notebook in it. Leave the "
         "terminal window open while you use it.</p>\n"
         "</div>\n"
         "<script>\n"
         "if (window.location.protocol === \"file:\") {\n"
         '  document.getElementById("file-warning").hidden = false;\n'
         "} else {\n"
-        '  window.location.replace("compose/dewmini.html");\n'
+        '  window.location.replace("compose/notebook.html");\n'
         "}\n"
         "</script>\n"
         "<noscript><p>JavaScript is off, so this can't check what's needed automatically: "
         "run <code>python3 serve.py</code> in this folder from a terminal, then open the "
         "browser tab it starts, or (with JavaScript back on) open "
-        '<a href="compose/dewmini.html">dewmini</a> directly once this is being served.</p></noscript>\n'
+        '<a href="compose/notebook.html">the Notebook</a> directly once this is being served.</p></noscript>\n'
         "</body>\n"
         "</html>\n"
     )
@@ -6318,8 +6333,9 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.append(write_reference_index(tutorials))
         written.append(write_routes(groups, practice, mixed))
 
-    # dewmini (compose/) is its own small folder rather than more root-level
-    # files, so it copies wholesale like assets/ does.
+    # The Notebook and the Workspace (compose/) are their own small folder
+    # rather than more root-level files, so it copies wholesale like assets/
+    # does, COMPOSE_REDIRECTS included.
     if COMPOSE.is_dir():
         shutil.rmtree(OUT / "compose", ignore_errors=True)
         shutil.copytree(COMPOSE, OUT / "compose")
@@ -6344,7 +6360,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         dewmini_bundle_dir = write_dewmini_bundle()
         if dewmini_bundle_dir is not None:
             written.append(dewmini_bundle_dir)
-            written.append(zip_directory(dewmini_bundle_dir, OUT / "download" / "dewmini.zip"))
+            written.append(zip_directory(dewmini_bundle_dir, OUT / "download" / "notebook.zip"))
 
     coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
     if coi_src.exists():

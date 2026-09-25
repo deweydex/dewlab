@@ -206,6 +206,44 @@ reader. Nine checks close the gap:
    would do?** *Get*, not *obtain*. *Continue*, not *carry on*. Pitched at a
    reader with a working vocabulary of about two thousand English words.
 
+### Warmth that survives translation
+
+The plain-language checks above can be met by prose that is correct and
+flat, and pages written to them have drifted that way. The voice this
+guide is drawn from, Josh's own handouts (*Dear Student*, *Introduction
+to Cryptography*, *Codes as Functions*), is plain and lively at once.
+Its moves all survive a reader working in their second language, as long
+as the words stay common:
+
+- **A person is writing.** A page may say *I* for the writer's own
+  stance: *I think this is the most surprising result on the page*. A
+  letter is signed. Never invent the writer's history or experiences: a
+  story about "when I was at school" is only written if the writer told
+  it.
+- **Name the feeling before the reader has to.** *Before you roll your
+  eyes…*, *this is the part that hurts your brain*, *if this feels like
+  hard work, that is the right feeling*.
+- **Stop and wait.** *Pause here and guess. I'll wait.* A question the
+  page does not answer straight away.
+- **Give permission.** Skip ahead, come back, write in the margin, use
+  your own names and notation as long as someone else can follow them.
+  An answer fold says its answer is one good answer, and that the
+  reader's may be more interesting.
+- **Enjoy the surprise.** When a result is surprising, say so: *that is
+  a strange result, isn't it?* Surprise is where interest comes from.
+- **Asides.** A short story, a bit of history, a word from another
+  language, a book worth reading. Put a long one in a note
+  (`<aside class="dl-note">`), where it waits in the reference panel for
+  a reader who wants it.
+- **Humour in plain words.** A joke that needs an idiom (*it says on the
+  tin*, *old chestnuts*) is lost on a second-language reader; a joke about
+  a situation is not. A recurring character who makes the mistakes, and
+  takes the blame for them, is funnier than any pun and makes an error
+  something that happens to someone else first.
+
+None of this relaxes the checks above. It is what the checks are for:
+a reader who can follow every sentence, and wants to read the next one.
+
 **"We" for the learning, "you" for what is the reader's own.** *We explore,
 then we name what we found.* *Your work is saved on this device.*
 

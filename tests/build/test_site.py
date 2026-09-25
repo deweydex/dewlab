@@ -113,8 +113,9 @@ class TestOnePlainTutorial:
         assert features.is_file()
         features_page = features.read_text()
         assert "What dewlab can do" in features_page
-        assert "Use dewmini without a tutorial" in features_page
-        assert 'href="compose/dewmini.html"' in features_page
+        assert "Work without a tutorial" in features_page
+        assert 'href="compose/notebook.html"' in features_page
+        assert 'href="compose/workspace.html"' in features_page
         assert manifest(features_page)["cells"] == []
 
         # ---- The about page is written at the site root, from

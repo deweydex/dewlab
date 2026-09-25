@@ -25,7 +25,7 @@ only have to read the one that matches what you are here to do.
 | Write or edit a tutorial | [`docs/WRITING_TUTORIALS.md`](docs/WRITING_TUTORIALS.md) |
 | Change the code | [`CONTRIBUTING.md`](CONTRIBUTING.md), then [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | Report a mistake or a bug | [`docs/REPORTING_A_PROBLEM.md`](docs/REPORTING_A_PROBLEM.md) |
-| Use the standalone Python workspace | [`docs/DEWMINI.md`](docs/DEWMINI.md) |
+| Use the Notebook, the Python workspace with no tutorial | [`docs/DEWMINI.md`](docs/DEWMINI.md) |
 | Decide whether to teach with dewlab | keep reading here |
 
 ---
@@ -72,10 +72,12 @@ the course descriptors by what has to come first, and marks the ones dewlab
 does not teach yet. Browse by topic gathers everything on one subject in one
 place.
 
-**A Python workspace with no tutorial attached.** dewmini is a blank page for
-trying a few lines out, with a file manager, uploads, SQLite, notebook import,
-and a Stop button that interrupts code that is stuck, all in its own smaller,
-quieter shape.
+**A Python notebook with no tutorial attached.** The dewlab Notebook is a
+blank page for trying a few lines out, with a file manager, uploads, SQLite,
+notebook import, and a Stop button that interrupts code that is stuck, all in
+its own smaller, quieter shape. The dewlab Workspace does the same for HTML,
+CSS and JavaScript: several small sites, each with its own live preview.
+Their code is still called dewmini and dewmini web inside `compose/`.
 
 **Coverage you can check.** Each tutorial declares which learning outcomes it
 teaches, per section. The build refuses to accept a section that does not
@@ -103,7 +105,7 @@ tutorials/       one folder per module, then one folder per tutorial
 setup/           setup snippets tutorials pull in with {{include: ...}}
 data/            shared CSV datasets
 assets/          the page template, styles, runtime, editors, and vendored libraries
-compose/         dewmini, the smaller Python workspace
+compose/         the Notebook and the Workspace (dewmini and dewmini web in the code)
 dewmark/         the exam track — specifications for authoring, sitting, and marking exams
 build.py         markdown in, site/ out
 dev/             maintainer scripts, including the curriculum map generator
@@ -143,7 +145,7 @@ content. Run the tests with `python3 -m pytest`.
 ## Where the project stands
 
 The reading and running experience, practice pages, versioned releases,
-curriculum coverage, the topic tree, both Python workspaces, the authoring
+curriculum coverage, the topic tree, the Notebook and the Workspace, the authoring
 editor and the build-and-publish pipeline are all built and live.
 
 The curriculum spans six accredited QQI modules — *Mathematics for IT*,

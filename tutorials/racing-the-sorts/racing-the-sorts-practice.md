@@ -357,7 +357,7 @@ Shell sort's long jumps are work this list did not need.
 
 </details>
 
-**12. Explain.** Plot Twist had you write three sorts of your own, and
+**12. Explain.** This course had you write three sorts of your own, and
 only then showed you that Python's `sorted()` beats all of them. Another
 course might start from `sorted()`, and use it from the first day. Which
 way would you have taught sorting, and why?

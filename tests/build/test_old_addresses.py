@@ -61,3 +61,30 @@ def test_a_page_left_by_an_earlier_build_is_not_a_real_page(repo):
     written = b.build()
     assert stale in written
     assert 'url=../sample.html' in stale.read_text()
+
+
+def test_the_notebook_and_the_workspace_keep_their_old_addresses(repo_with_assets):
+    # dewmini and dewmini web became the Notebook and the Workspace. Their
+    # old pages are hand-written redirects in compose/, not lines in
+    # redirects.yaml: they keep a query string and a hash, which a
+    # redirects.yaml stub cannot.
+    write(repo_with_assets, "Prose.\n")
+    b.build(standalone=True)
+    compose = repo_with_assets / "site" / "compose"
+    for old, new in (("dewmini.html", "notebook.html"), ("dewminiweb.html", "workspace.html")):
+        assert (compose / new).is_file()
+        stub = (compose / old).read_text()
+        assert f'location.replace("{new}" + location.search + location.hash)' in stub
+        assert f'<meta http-equiv="refresh" content="0; url={new}">' in stub
+        assert f'<a href="{new}">open it here</a>' in stub
+        # A stub, not a second copy of the page.
+        assert "dewmini.js" not in stub and "dewminiweb.js" not in stub
+    # The offline copy is new at download/notebook/, and carries no stubs:
+    # nobody has a bookmark into a folder they have just unzipped.
+    bundle = repo_with_assets / "site" / "download" / "notebook"
+    assert (bundle / "compose" / "notebook.html").is_file()
+    assert not (bundle / "compose" / "dewmini.html").exists()
+    assert not (bundle / "compose" / "dewminiweb.html").exists()
+    assert 'window.location.replace("compose/notebook.html")' in (bundle / "index.html").read_text()
+    assert (repo_with_assets / "site" / "download" / "notebook.zip").is_file()
+    assert not (repo_with_assets / "site" / "download" / "dewmini").exists()

@@ -104,5 +104,6 @@ page usually has a harder problem near the end of the set.
 
 ## I want to try Python without following a tutorial. Can I?
 
-Yes — that is what [dewmini](DEWMINI.md) is for. It is a blank page with
-nowhere in particular to go: add a cell, run it, and see what happens.
+Yes — that is what the [dewlab Notebook](DEWMINI.md) is for. It is a blank
+page with nowhere in particular to go: add a cell, run it, and see what
+happens.

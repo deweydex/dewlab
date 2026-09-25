@@ -1,10 +1,10 @@
 # Contributing code to dewlab
 
 Thanks for your interest in contributing to dewlab! This page covers the
-site's own code — the build, the runtime, and the editor, dewmini: getting set
-up, what to run before you open a pull request, and the one standing
-requirement this repository has, that documentation and comments stay accurate
-as the code changes.
+site's own code — the build, the runtime, and the Notebook and the Workspace
+(dewmini and dewmini web in the code): getting set up, what to run before you
+open a pull request, and the one standing requirement this repository has,
+that documentation and comments stay accurate as the code changes.
 
 If you are here for something else, one of these is a better door:
 

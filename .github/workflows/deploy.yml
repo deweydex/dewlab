@@ -69,12 +69,12 @@ jobs:
           # depth, not by guessing at names.
           current=$(find site/tutorials -mindepth 1 -maxdepth 1 -name '*.html' | wc -l)
           echo "of which $current are current releases"
-          # site/download/dewmini/ is dewmini's own offline-capable app
-          # bundle (write_dewmini_bundle() in build.py) — a standalone tool,
+          # site/download/notebook/ is the Notebook's own offline-capable
+          # app bundle (write_dewmini_bundle() in build.py) — a standalone tool,
           # not a tutorial, so its own HTML files have no tutorial page to
           # match against and are excluded from this count the same way
           # series zips already are.
-          downloads=$(find site/download -name '*.html' 2>/dev/null | grep -v '^site/download/dewmini/' | wc -l)
+          downloads=$(find site/download -name '*.html' 2>/dev/null | grep -v '^site/download/notebook/' | wc -l)
           echo "built $downloads downloadable copies and $(find site/download -name '*.zip' 2>/dev/null | wc -l) series archives"
           test "$downloads" -eq "$current" || {
             echo "$current current tutorial pages but $downloads downloadable copies"; exit 1; }

@@ -4447,7 +4447,7 @@ The five headings the pass renamed (three in *Complex numbers*, one each in *Rea
 
 ---
 
-**7.218 — Plot Twist's first two units are written, and its rule on words is "never measure the reader".** The plan, `planning/PLOT_TWIST_PLAN.md`, called for a pilot of Units 1 and 2 before the rest is written.
+**7.218 — Plot Twist's first two units are written, and its rule on words is "never measure the reader".** The plan, `planning/DEWEY_TRACK_PLAN.md`, called for a pilot of Units 1 and 2 before the rest is written.
 
 **The pilot.**
 - Nine tutorials, each with a practice page and a glossary, and a mixed practice page for each unit.
@@ -4646,3 +4646,32 @@ Everything the page writers had flagged as unsure checked out. Every changed num
 - **Left for Josh.** A download gives separate `.html`, `.css` and `.js` files, and the HTML does not link the other two, so the downloaded page opens unstyled.
 
 *Cost to change: local to `compose/dewminiweb.js`.*
+
+---
+
+**7.226 — Plot Twist is now the Dewey Track.** Josh: "for the series let's call it the Dewey Track and the tagline can involve python and math for those who want something different: learn by dewing".
+
+- **The name.** John Dewey argued that people learn by doing. The tagline, "learn by dewing", is his idea with the site's name in it. Second-language readers may not catch the pun, so the course description says where it comes from in plain words.
+- **The card:** "Python and maths for people who want something different. Learn by dewing — every page starts with a question from the world, and the maths and the code arrive because the question needs them."
+- **The address.** The course id moved from `plot-twist` to `dewey-track`, so the course page is now `dewey-track.html`. `courses/redirects.yaml` sends `plot-twist.html` there. A course id is not a key for anyone's saved work (tutorial and cell ids are), and a reader's remembered course falls back to the page's first course when the id is no longer listed.
+- **The plan** is now `planning/DEWEY_TRACK_PLAN.md`, and its name section says why. The topic groups show "Dewey Track:" in their names. Their keys stay `plot-twist-…`, since the generated topic game and editor are keyed on them and no reader sees them. One practice question that named the course now says "This course".
+- **Earlier entries keep the old name.** They describe what was done under it. Only the plan's file path in them was updated.
+
+*Cost to change: the title and card are text; changing the id again means another redirect line.*
+
+---
+
+**7.227 — dewmini and dewmini web become the Notebook and the Workspace, at new addresses.** Josh: "let's just change the name to notebook and workspace but let's also change the urls to reflect the change".
+
+**The new names.** Readers now see the *dewlab Notebook* (`compose/notebook.html`) and the *dewlab Workspace* (`compose/workspace.html`). Pages say "dewlab Notebook" or "dewlab Workspace" where the brand helps, and "the Notebook" or "the Workspace" elsewhere. The offline copy is `download/notebook.zip`. A notebook still under its default name gives its page the title "dewlab Notebook", rather than "notebook — dewlab Notebook".
+
+**What keeps the old name.** Everything saved work is keyed on stays as it was:
+- the `dewmini:*` and `dewminiweb:*` localStorage keys;
+- the `dewmini-fs` IndexedDB database, `/mnt/dewmini` and the `dewmini` OPFS folder;
+- the `# dewmini export` first line that the `.py` import recognises, and `metadata.dewmini` in an `.ipynb` export.
+
+Renaming any of these would strand work a student already has. The code keeps its own names too (`dewmini.js`, `dewminiweb.js`, the `dm-` and `dl-ws-` classes, `write_dewmini_bundle()`), as the internal name. ARCHITECTURE §4 and `docs/DEWMINI.md` say so.
+
+**Old addresses.** `compose/dewmini.html` and `compose/dewminiweb.html` are now hand-written redirects. Each uses `location.replace()` to keep the query string and hash, with a meta refresh and a plain link for readers without JavaScript. They are not lines in `courses/redirects.yaml`, for two reasons: that mechanism only points at pages the build writes one by one (`compose/` is copied whole), and its stub drops the query and hash. `COMPOSE_REDIRECTS` in `build.py` keeps them out of the offline bundle, which has no bookmarks to honour. An e2e test (`test_old_compose_addresses.py`) and a build test cover them.
+
+*Cost to change: the two page names now appear in links on the home, features and about pages, in a tutorial and in the docs, so a further rename means another pair of redirects. The internal names can change later only with a migration of the stored keys.*

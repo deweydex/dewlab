@@ -21,17 +21,17 @@ works offline.
 ```
 
 ```card
-url: compose/dewmini.html
+url: compose/notebook.html
 meta: A blank notebook
-### dewmini
+### dewlab Notebook
 Start from nothing: write Python, run it, and keep notes, with no tutorial
 around it.
 ```
 
 ```card
-url: compose/dewminiweb.html
+url: compose/workspace.html
 meta: A blank web workspace
-### dewmini web
+### dewlab Workspace
 Build web pages in HTML, CSS and JavaScript, each with its own live preview.
 ```
 

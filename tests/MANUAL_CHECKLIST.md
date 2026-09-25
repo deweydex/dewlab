@@ -101,7 +101,7 @@ a connection.
 python3 dev/fetch_pyodide.py --out assets/vendor/pyodide \
     --packages numpy pandas matplotlib sqlite3 Pillow jedi pyodide-http
 python3 build.py --clean
-python3 -m http.server -d site/download/dewmini 8200
+python3 -m http.server -d site/download/notebook 8200
 ```
 
 Then, on a machine with the network off (or with everything but
@@ -131,7 +131,7 @@ the cards, the code it writes, the local datasets — is covered by
 `tests/e2e/test_dewmini_workbench.py`; this is the half that needs a
 real network.
 
-On a machine with an ordinary connection, open dewmini, open the
+On a machine with an ordinary connection, open the Notebook, open the
 **Library** rail, and in **Data** pick one of the entries marked *from
 the web*. Run the cell it adds.
 

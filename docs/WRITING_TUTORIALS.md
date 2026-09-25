@@ -707,7 +707,7 @@ that alternative is good for, and what is at stake.
 
 One choice, a few short paragraphs, closed until the reader opens it, so
 a curious reader can see the reasoning and nobody has to read it to
-finish the page. Plot Twist puts one on every tutorial, just before "Four
+finish the page. The Dewey Track puts one on every tutorial, just before "Four
 questions, looking back"; its plan's principle 10 has the reasoning.
 
 ---

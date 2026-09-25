@@ -1294,7 +1294,7 @@ p code, li code {
 
 /* .dl-settings itself is dead in assets/shell.html since the corner-dock
    rebuild split it into the .dl-right-panel family — kept here only
-   because compose/dewmini.html still ships its own, unrelated Settings
+   because compose/notebook.html still ships its own, unrelated Settings
    panel under that same class name, sharing this stylesheet. */
 .dl-right-panel, .dl-settings {
   position: fixed;
@@ -1351,7 +1351,7 @@ p code, li code {
   opacity: 0.5;
 }
 
-/* Still used by compose/dewmini.html's own, unrelated Settings panel,
+/* Still used by compose/notebook.html's own, unrelated Settings panel,
    which keeps a visible title and close button — shell.html's right-hand
    panels dropped both (DECISIONS_LOG.md): a corner tab already names the
    panel it opens, showing that name again inside it said it twice, and
@@ -1460,7 +1460,7 @@ p code, li code {
 /* What the masthead used to hold — wordmark and orientation — now living
    in the top-left dock instead of a separate header bar. .dl-wordmark/
    .dl-crumbs are unstyled here beyond their own existing rules;
-   compose/dewmini.html still uses both classes inside its own, unrelated
+   compose/notebook.html still uses both classes inside its own, unrelated
    <header class="dl-masthead">, so neither rule was touched, only reused. */
 .dl-corner-identity {
   display: flex;

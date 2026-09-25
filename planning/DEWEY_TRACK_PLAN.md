@@ -1,6 +1,6 @@
-# Plot Twist: a plan
+# The Dewey Track: a plan
 
-*Maths and programming for people who are sure they hate both.*
+*Python and maths for people who want something different. Learn by dewing.*
 
 A new track that teaches all of Programming and Design Principles (5N2927)
 and all of Maths for Information Technology (5N18396) as one subject. It
@@ -8,12 +8,12 @@ sits beside "Programming and Maths, Integrated", which keeps its pages. None
 of this track's pages is a copy of those; some link to them for readers who
 want more.
 
-**The name.** A *plot* is a graph, and a *plot twist* is the moment a story
-turns out differently from what you expected. Both are the promise: you will
-draw a lot of graphs, and this is not the maths or programming you remember.
-Alternatives if it doesn't land: *Count Me In*, *Surprisingly Doable*. The
-course id is `plot-twist` either way; the title can change later without
-touching any page.
+**The name.** The track is named after John Dewey, who argued that people
+learn by doing: by working on real questions rather than memorising answers
+first. Its tagline, "learn by dewing", is his idea with the site's name in
+it. It was called *Plot Twist* while its first units were written; Josh
+renamed it (DECISIONS_LOG 7.226), and the course id moved from `plot-twist`
+to `dewey-track`, with a redirect from the old address.
 
 ---
 
@@ -364,7 +364,7 @@ feature, and no later page breaks either way.
    from the agreed pilot, with the same checks as every other pass: every
    cell run, every answer run, `check.py`, the build.
 3. **Unit 10 and the context pages last**, since they draw on everything.
-4. **The course file**, plot-twist.yaml in the courses folder, a topic-tree group, and a
+4. **The course file**, dewey-track.yaml in the courses folder, a topic-tree group, and a
    decisions-log entry. The course starts as `status: beta`.
 
 ## 8. Coverage check
@@ -383,7 +383,7 @@ from the pages' own `covers:` frontmatter, so the claim above cannot drift.
 
 Made by Josh on 24 September 2026:
 
-1. **The name:** *Plot Twist*, for now; it can change without touching a page.
+1. **The name:** *Plot Twist*, for now; later renamed *the Dewey Track* (7.226).
 2. **The toolkit:** both modes, the reader's own code and the reference (§6).
 3. **Where it sits:** beside the existing integrated course, as a beta track.
 4. **The four ideas** (§2) are the spine of the track.
