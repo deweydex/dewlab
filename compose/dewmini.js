@@ -2266,10 +2266,17 @@ function getFilenameBase() {
   return name || "notebook";
 }
 
+// A notebook still called by the default name gives the plain product
+// name, not "notebook — dewlab Notebook".
+function notebookPageTitle() {
+  const base = getFilenameBase();
+  return base.toLowerCase() === "notebook" ? "dewlab Notebook" : `${base} — dewlab Notebook`;
+}
+
 function updateFilenameField() {
   const el = document.getElementById("dm-filename");
   if (el) el.value = activeNotebook()?.name || "";
-  document.title = `${getFilenameBase()} — dewlab Notebook`;
+  document.title = notebookPageTitle();
 }
 
 /* Wires the filename box to rename the notebook it belongs to. */
@@ -2281,7 +2288,7 @@ function initFilename() {
     const notebook = activeNotebook();
     if (!notebook) return;
     notebook.name = el.value.trim().slice(0, 40) || notebook.name;
-    document.title = `${getFilenameBase()} — dewlab Notebook`;
+    document.title = notebookPageTitle();
     saveState();
     renderTabs();
   });

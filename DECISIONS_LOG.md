@@ -4658,3 +4658,20 @@ Everything the page writers had flagged as unsure checked out. Every changed num
 - **Earlier entries keep the old name.** They describe what was done under it. Only the plan's file path in them was updated.
 
 *Cost to change: the title and card are text; changing the id again means another redirect line.*
+
+---
+
+**7.227 — dewmini and dewmini web become the Notebook and the Workspace, at new addresses.** Josh: "let's just change the name to notebook and workspace but let's also change the urls to reflect the change".
+
+**The new names.** Readers now see the *dewlab Notebook* (`compose/notebook.html`) and the *dewlab Workspace* (`compose/workspace.html`). Pages say "dewlab Notebook" or "dewlab Workspace" where the brand helps, and "the Notebook" or "the Workspace" elsewhere. The offline copy is `download/notebook.zip`. A notebook still under its default name gives its page the title "dewlab Notebook", rather than "notebook — dewlab Notebook".
+
+**What keeps the old name.** Everything saved work is keyed on stays as it was:
+- the `dewmini:*` and `dewminiweb:*` localStorage keys;
+- the `dewmini-fs` IndexedDB database, `/mnt/dewmini` and the `dewmini` OPFS folder;
+- the `# dewmini export` first line that the `.py` import recognises, and `metadata.dewmini` in an `.ipynb` export.
+
+Renaming any of these would strand work a student already has. The code keeps its own names too (`dewmini.js`, `dewminiweb.js`, the `dm-` and `dl-ws-` classes, `write_dewmini_bundle()`), as the internal name. ARCHITECTURE §4 and `docs/DEWMINI.md` say so.
+
+**Old addresses.** `compose/dewmini.html` and `compose/dewminiweb.html` are now hand-written redirects. Each uses `location.replace()` to keep the query string and hash, with a meta refresh and a plain link for readers without JavaScript. They are not lines in `courses/redirects.yaml`, for two reasons: that mechanism only points at pages the build writes one by one (`compose/` is copied whole), and its stub drops the query and hash. `COMPOSE_REDIRECTS` in `build.py` keeps them out of the offline bundle, which has no bookmarks to honour. An e2e test (`test_old_compose_addresses.py`) and a build test cover them.
+
+*Cost to change: the two page names now appear in links on the home, features and about pages, in a tutorial and in the docs, so a further rename means another pair of redirects. The internal names can change later only with a migration of the stored keys.*

@@ -53,9 +53,10 @@ def test_an_old_address_opens_the_new_page_keeping_its_query_and_hash(
         tab.wait_for_selector("h1", timeout=10_000)
         assert tab.inner_text("h1") == title
         assert title in tab.title()
-        # location.replace(): Back leaves the site rather than landing on
-        # the redirect, which would only send the reader forward again.
-        assert tab.evaluate("history.length") == 1
+        # location.replace(): the redirect leaves no entry of its own, so
+        # Back goes to where the reader came from (the tab's about:blank
+        # here) rather than to a page that only sends them forward again.
+        assert tab.evaluate("history.length") == 2
     finally:
         context.close()
 
