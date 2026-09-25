@@ -4695,3 +4695,9 @@ Renaming any of these would strand work a student already has. The code keeps it
 **7.229 — Feelings named rarely, with a route, across the site.** The revision plan (#306) and its style-guide issue (#310) name feelings rarely and always with a route to help. The Dewey Track's "Warmth that survives translation" said to name the feeling before the reader has to. Josh chose #310's rule for the whole site, the Dewey Track included, on 25 September 2026. The guide's bullet now reads "Name a feeling rarely, and always with a route", and the brief for the remaining Dewey Track units follows it. Units 1, 2, 3 and 9, written to the older bullet, get a light pass (tracked in an issue). The course letter keeps its opening until Josh has read it.
 
 *Cost to change: one bullet in the guide; the pages written to it are the cost.*
+
+---
+
+**7.230 — A Workspace download is a page that links its own CSS and JS.** 7.225 left this for Josh: a downloaded site opened unstyled, because the HTML pane holds only the body and the saved `.html` had no `<link>` or `<script src>`. Issue #350 offered three fixes: one self-contained file, three linked files, or a zip. The Workspace keeps three files, and the `.html` becomes a whole page that links the other two by name. Web Authoring teaches that a page is made of separate files joined by these two tags, so the download shows the reader how their own site fits together rather than hiding it inside one file. Load files strips the frame again, so a site can go out and come back unchanged. An e2e test (`test_a_downloaded_page_links_its_css_and_js_and_loads_back`) covers both directions.
+
+*Cost to change: two small functions in `compose/dewminiweb.js`; switching to a single file means inlining the CSS and JS in `pageFile()`.*

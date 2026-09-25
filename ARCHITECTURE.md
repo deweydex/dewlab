@@ -503,6 +503,13 @@ hint) is written fresh rather than shared with `tutorial-runtime.js`'s
 matching code, the same look-alike-rather-than-coupled relationship
 `render_cell()` has with dewmini's own cell markup.
 
+A site's HTML pane holds only what goes inside `<body>`; the preview adds
+the frame. Download therefore saves three files, and the `.html` one is a
+whole page (`pageFile()`): doctype, head, a `<link>` to the `.css` saved
+beside it, and a `<script src>` for the `.js`. Load files reverses it
+(`bodyOf()`), so a downloaded page comes back into the panes as it left
+(DECISIONS_LOG 7.230).
+
 ---
 
 ## 5. Two build systems, on purpose

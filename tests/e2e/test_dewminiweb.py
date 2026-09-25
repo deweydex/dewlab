@@ -248,3 +248,43 @@ def test_delete_removes_the_site_on_screen_even_if_the_saved_open_id_is_stale(
     page.click(".dl-ws-delete")
     page.wait_for_function("document.querySelectorAll('.dl-ws-list button').length === 1")
     assert page.inner_text(".dl-ws-list button") == "Kept"
+
+
+def test_a_downloaded_page_links_its_css_and_js_and_loads_back(page, tmp_path):
+    """Issue #350: the HTML pane holds only the body, so a download used to
+    open unstyled with nothing running. The saved page now carries the
+    frame, a <link> and a <script src>, and loading it back gives the pane
+    only its body again."""
+    page.fill("#dl-ws-name", "Linked Site")
+    page.dispatch_event("#dl-ws-name", "input")
+    downloads = []
+    page.on("download", lambda d: downloads.append(d))
+    page.click(".dl-ws-download")
+    for _ in range(50):
+        if len(downloads) == 3:
+            break
+        page.wait_for_timeout(100)
+    names = sorted(d.suggested_filename for d in downloads)
+    assert names == ["linked-site.css", "linked-site.html", "linked-site.js"]
+
+    html_download = next(d for d in downloads if d.suggested_filename.endswith(".html"))
+    saved = tmp_path / "linked-site.html"
+    html_download.save_as(saved)
+    text = saved.read_text()
+    assert text.startswith("<!DOCTYPE html>")
+    assert '<link rel="stylesheet" href="linked-site.css">' in text
+    assert '<script src="linked-site.js"></script>' in text
+    assert "<h1>Hello</h1>" in text
+
+    before = page.evaluate(
+        "document.querySelector('.dl-site-pane[data-lang=\"html\"] .cm-content').innerText"
+    )
+    page.set_input_files(".dl-ws-file", str(saved))
+    page.wait_for_timeout(500)  # file.text() is async; the pane updates after it
+    after = page.evaluate(
+        "document.querySelector('.dl-site-pane[data-lang=\"html\"] .cm-content').innerText"
+    )
+    assert "<!DOCTYPE" not in after
+    assert "<script src" not in after
+    assert after.strip() == before.strip()
+    assert page.problems == []
