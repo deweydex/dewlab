@@ -516,8 +516,8 @@ def draw_step(frame):
     trail.set_data(range(frame + 1), path[:frame + 1])
     ball.set_data([frame], [path[frame]])
 
-skip = len(path) // 30 + 1          # at most 30 frames, so the film stays small
-FuncAnimation(figure, draw_step, frames=range(0, len(path), skip), interval=120)
+skip = len(path) // 22 + 1          # at most 22 frames, so the film stays small
+FuncAnimation(figure, draw_step, frames=range(0, len(path), skip), interval=140)
 ```
 
 The grey trail draws each bounce as an arch. The arches get lower and
