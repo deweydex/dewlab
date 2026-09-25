@@ -1,7 +1,7 @@
 ---
 title: "Getting closer: limits"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   halfway-to-the-door:
     covers: [MIT-3.5]
@@ -27,8 +27,11 @@ covers:
 
 You stand 8 metres from a door. You walk half the way there, and stop.
 Then you walk half of what is left, and stop again, and again. Do you
-ever reach the door? And if you never do, what number are your steps
-heading for?
+ever reach the door? Your legs say yes. The arithmetic says every walk
+leaves half of the gap still to go. If that argument makes your head
+hurt a little, good: people have argued about it for about 2,500 years.
+This page is about the number your steps are heading for, and it is
+the idea that the rest of this unit is built on.
 
 On this page we:
 
@@ -37,7 +40,8 @@ On this page we:
 - meet a rule with a hole in it, and ask what belongs in the hole
 - close in on a number from both sides, with a loop that halves the
   step
-- see what happens when the two sides disagree
+- see what happens at the sharp edge of a shape on a screen, where the
+  two sides disagree
 - find a limit far away, at infinity, and meet the number $e$
 - see where Python's floats stop getting closer
 
@@ -98,6 +102,15 @@ $k$ walks, what is left is $8 \times 2^{-k}$, a
 [negative exponent](tutorial:doubling-and-halving#halving-down-to-1)
 counting halvings. But what is left can be made as small as we like.
 After 20 walks it is less than a hundredth of a millimetre.
+
+<aside class="dl-note" id="getting-closer-note-zeno">
+
+**Zeno's paradox.** The Greek thinker Zeno of Elea, who lived in the
+5th century BC, told a story like this walk to argue that moving from
+one place to another should be impossible. The idea of a limit, which
+this page builds, is one of the answers mathematicians later gave him.
+
+</aside>
 
 The distances walked, 4, 6, 7, 7.5, and so on, are a sequence, as on
 [A row of numbers](tutorial:a-row-of-numbers#counting-from-0): values
@@ -243,36 +256,41 @@ id: getting-closer-sides-your-turn
 
 ## When the two sides disagree
 
-A car park charges €2 for up to 1 hour, and €5 for anything longer.
-(The prices are made up.) What happens close to 1 hour? Predict both
-columns before you run it.
+A computer draws a black square on a white screen. Follow a line
+across the square's right-hand edge, and measure along it in
+millimetres, with the edge at 1 mm. Each point's brightness is 0 inside
+the square, where it is black, and 255 outside, where it is white, as
+on [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
+The point exactly on the edge counts as black. What happens close to
+the edge? Predict both columns before you run it.
 
 ```python exec
 id: getting-closer-disagree-1
-def parking_fee(hours):
-    """Return the fee in euro: €2 for up to 1 hour, €5 for longer."""
-    if hours <= 1:
-        return 2
-    return 5
+def brightness(position_mm):
+    """Return the brightness along the line: 0 (black) up to the edge at 1 mm, 255 (white) after it."""
+    if position_mm <= 1:
+        return 0
+    return 255
 
-approach(parking_fee, 1, rows=5)
+approach(brightness, 1, rows=5)
 ```
 
-The left column stays at 2 and the right column stays at 5, however
+The left column stays at 0 and the right column stays at 255, however
 small the step. Each side has a limit of its own. A *one-sided limit*
 is the number a rule heads for from one side only. From the left, it
 is written $\lim_{x \to 1^-}$, and from the right, $\lim_{x \to 1^+}$:
 
-$$\lim_{x \to 1^-} \text{fee}(x) = 2 \qquad \lim_{x \to 1^+} \text{fee}(x) = 5$$
+$$\lim_{x \to 1^-} \text{brightness}(x) = 0 \qquad \lim_{x \to 1^+} \text{brightness}(x) = 255$$
 
 The small minus sign means "from below", and the plus means "from
 above". A limit from both sides exists only when the two one-sided
-limits exist and agree. Here they do not, so the fee has no limit at 1
-hour.
+limits exist and agree. Here they do not, so the brightness has no
+limit at the edge. That jump is what makes an edge an edge, and a
+program that finds edges in a photo looks for exactly this.
 
 Compare this with the hole. There, the rule had no value at 2, but it
-had a limit. Here, the fee has a value at 1 hour, `parking_fee(1)` is
-2, but it has no limit. A value and a limit answer two different
+had a limit. Here, the brightness has a value at the edge,
+`brightness(1)` is 0, but it has no limit. A value and a limit answer two different
 questions: "what is here?" and "what is everything near here heading
 for?"
 
@@ -306,7 +324,8 @@ $$\lim_{x \to \infty} \frac{1}{x} = 0$$
 This is a *limit at infinity*: where a rule heads as $x$ grows past any
 number. The walk to the door was one too.
 
-Here is one with a surprise in it. On
+Here is one with a surprise in it, and a question somebody really
+asked. On
 [Doubling and halving](tutorial:doubling-and-halving#how-long-to-double),
 savings grew by 4% once a year. Now picture a bank that pays 100% a
 year, which no real bank does. €1 becomes €2 after a year.
@@ -320,7 +339,7 @@ times, it ends at
 $$\left(1 + \frac{1}{n}\right)^n$$
 
 If the bank pays every day, every hour, every minute, does your euro
-grow without end? Guess, then run it.
+grow without end? Pause and guess before you run it.
 
 ```python exec
 id: getting-closer-infinity-1
@@ -338,7 +357,16 @@ $$e = \lim_{n \to \infty} \left(1 + \frac{1}{n}\right)^n \approx 2.71828$$
 Python keeps it as `math.e`. Like $\pi$, $e$ has decimals that never
 end or repeat. It turns up wherever something grows or shrinks
 smoothly, all the time, and not in yearly jumps. The next page meets
-it again, in a runner's speed.
+it again, in a falling hailstone.
+
+<aside class="dl-note" id="getting-closer-note-bernoulli">
+
+**A question about interest.** In 1683, Jacob Bernoulli asked this
+question about a bank's interest, and showed that the answer lies
+between 2 and 3. The letter $e$ for it was chosen later, by Leonhard
+Euler.
+
+</aside>
 
 ## When the floats run out
 
@@ -352,8 +380,9 @@ for times in [10 ** 12, 10 ** 15, 10 ** 16]:
     print(times, (1 + 1 / times) ** times)
 ```
 
-The values get worse, not better: 2.71852, then 3.035, then 1.0. The
-maths is not wrong. The floats are. On
+The values get worse, not better: 2.71852, then 3.035, then 1.0. I
+think this is the strangest result on the page: more payments, and
+the euro shrinks back to 1. The maths is not wrong. The floats are. On
 [How a computer stores a number](tutorial:how-a-computer-stores-a-number#reading-e-16),
 the gap between two neighbouring floats near 1 was about
 $2.2 \times 10^{-16}$. So $1 + 10^{-16}$ has no float of its own:
@@ -436,7 +465,7 @@ now seen the evidence for a limit without its proof.
 
 The practice page is next. Then
 [How fast, right now?](tutorial:how-fast-right-now) uses a limit to
-find a runner's speed at a single moment.
+find a falling hailstone's speed at a single moment.
 
 ## Where to read more
 

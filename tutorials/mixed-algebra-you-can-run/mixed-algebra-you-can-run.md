@@ -657,11 +657,13 @@ It cannot prove that the rule fits the world. The bakery's rule is a
 guess. If customers really buy $300 - 60p$ loaves, every check still
 passes, and €3.95 is the wrong price. The step from the world to the
 rule needs other evidence, such as the bakery's own sales at a few
-prices, like Aoife's notes on
-[The top of the curve](tutorial:the-top-of-the-curve#a-price-too-low-a-price-too-high).
+prices.
 
 The phone plans are different: their rules come from the price list,
-so they are exact. A good answer names both steps: the answer fits the
+so they are exact. So was the letter's bowl on
+[The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line):
+its rule came from the font's own points, so the bottom that `vertex`
+found is the real bottom of the letter. A good answer names both steps: the answer fits the
 rule, and here is why we trust the rule.
 
 </details>

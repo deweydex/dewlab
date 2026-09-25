@@ -1,11 +1,23 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
-  - term: profit
+  - term: "font units, baseline"
     kind: concept
     definition: >
-      Profit is the money a seller keeps: the money taken in, minus what
-      the goods cost. For one kind of item, it is the profit on each one
-      times the number sold.
+      Font units are the grid a font stores its letters on, with y
+      counting upwards. The baseline is the line the letters stand on, at
+      a height of 0.
+  - term: quadratic Bézier curve
+    kind: concept
+    definition: >
+      A quadratic Bézier curve is drawn from three points: a start, a
+      control point and an end. It bends towards the control point but
+      never reaches it. Its height at t, from 0 to 1, is a quadratic in t.
+  - term: overshoot
+    kind: concept
+    definition: >
+      Overshoot is how far a round letter, such as o, dips below the
+      baseline. Designers add it so that the letter looks as if it sits on
+      the line. It is usually 1% to 3% of the letter's height.
   - term: vertex
     kind: concept
     definition: >
@@ -41,7 +53,7 @@ entries:
     definition: >
       The vertex of ax² + bx + c is at x = −b / 2a. Its height is the rule
       worked out at that x.
-    example: "-140 / (2 * -20)   # 3.5"
+    example: "440 / (2 * 400)   # 0.55"
   - term: "vertex()"
     kind: function
     definition: >

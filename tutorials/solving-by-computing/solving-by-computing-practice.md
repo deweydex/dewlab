@@ -2,7 +2,7 @@
 title: "Solving by computing: bisection and Newton's method — Practice"
 practice_for: solving-by-computing
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Solving by computing: bisection and Newton's method — Practice
@@ -68,9 +68,9 @@ It prints a number a tiny way from `3.125`, because `newton` uses
 
 </details>
 
-**3. Make.** A shop sells stock cubes in a box shaped like a cube, and
-the box holds 50 cubic centimetres. How long is each side? Use
-`newton`, and check with `50 ** (1 / 3)`.
+**3. Make.** A small sensor for a weather station sits in a case shaped
+like a cube, and the case must hold 50 cubic centimetres. How long is
+each side? Use `newton`, and check with `50 ** (1 / 3)`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -87,9 +87,10 @@ comes back to 50.
 
 </details>
 
-**4. Explain.** `bisect_root(nine_gap, -5, 5)` stops with a
-`ValueError`, even though $x^2 - 9$ has two roots between $-5$ and 5.
-Why?
+**4. Explain.** Schlomi, who is learning Python too, runs
+`bisect_root(nine_gap, -5, 5)`, and it stops with a `ValueError`. She
+says: "So $x^2 - 9$ has no root between $-5$ and 5." But it has two.
+What went wrong with her reading of the error?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -100,6 +101,9 @@ through zero at 3, and the two crossings hide each other. A sign
 change says "at least one root here". No sign change does not mean "no
 root". Try `bisect_root(nine_gap, 0, 5)`: now there is a sign change,
 and it finds 3.
+
+That is one good way to say it. Yours may use other words, or a
+picture, and be as good.
 
 </details>
 
@@ -133,8 +137,9 @@ Both give 1.0594630943592953. One semitone above A at 440 Hz is about
 
 </details>
 
-**6. Fix.** Here is someone's bisection. It runs without an error, but
-the answer is far from $\sqrt{2}$. Find the one mistake, and fix it.
+**6. Fix.** Schlomo, who is learning Python too, wrote his own
+bisection. It runs without an error, but the answer is far from
+$\sqrt{2}$. Find the one mistake, and fix it.
 
 ```python exec
 id: solving-by-practice-fix
@@ -359,41 +364,45 @@ id: solving-by-practice-stretch
 # Your working for problems 13 to 15
 ```
 
-**13. Make.** Sinéad borrows €10,000 and pays back €2,300 at the end of
-each year for 5 years. What yearly interest rate is she paying? A
-payment made $k$ years from now is worth $\frac{2300}{(1 + r)^k}$ today,
-and the five payments together must be worth the €10,000. There is no
-formula for $r$. Find it with `bisect_root`.
+**13. Make.** Where will Mars be in its orbit next month?
+Astronomers answer that with Kepler's equation,
+$E - e\sin E = M$. Here $M$ is how far round Mars would be if it
+moved at a steady speed, $e$ says how far its orbit is from a circle,
+and $E$ is an angle that fixes where Mars really is. All three are in
+radians, and for Mars $e$ is about 0.0934. Nobody has found a formula
+for $E$. Find $E$ when $M = 1$ with `bisect_root`, then check it with
+`newton`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Write a rule of the rate that adds up $\frac{2300}{(1 + r)^k}$ for
-   $k$ from 1 to 5, and takes away 10,000.
-2. Try it at 0.001 and at 0.2. Is there a sign change?
+1. Write a rule of $E$ that gives back $E - 0.0934 \sin E - 1$. It is
+   0 at the answer.
+2. Try it at 0 and at 2. Is there a sign change?
 3. Give those two as `low` and `high`.
 
-**Think about:** she pays back €11,500 in all. Why is the rate less
-than 15% a year?
+**Think about:** $e$ is small, so $E$ is close to $M$. Why?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def loan_gap(rate):
-    worth_today = 0
-    for year in range(1, 6):
-        worth_today = worth_today + 2300 / (1 + rate) ** year
-    return worth_today - 10000
+import math
 
-print(loan_gap(0.001), loan_gap(0.2))
-rate = bisect_root(loan_gap, 0.001, 0.2)
-print(round(rate * 100, 2), "% a year")
+def kepler_gap(angle):
+    return angle - 0.0934 * math.sin(angle) - 1
+
+print(kepler_gap(0), kepler_gap(2))
+print(bisect_root(kepler_gap, 0, 2))
+print(newton(kepler_gap, 1))
 ```
 
-The rate is about 4.85% a year. The €1,500 extra is not all interest
-on the whole €10,000 for five years: she pays some back every year, so
-she owes less and less.
+The rule is $-1$ at 0 and about 0.92 at 2, so there is a sign change.
+Both methods give $E \approx 1.0825$ radians. Mars is a little ahead of
+where a steady speed would put it. $E$ is close to $M$ because the
+$e \sin E$ part is never bigger than 0.0934: Mars's orbit is nearly a
+circle. Programs that track planets and satellites solve this
+equation over and over, often with Newton's method.
 
 </details>
 

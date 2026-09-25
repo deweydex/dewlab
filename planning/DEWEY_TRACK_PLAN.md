@@ -204,13 +204,18 @@ follow?*
 
 | # | Tutorial | Question | Outcomes |
 |---|---|---|---|
-| 2.1 | Choosing a path | How does a ticket machine know you get the student price? | PDP-LO4, PDP-LO6, MIT-1.11 |
-| 2.2 | True, false and every case in between | Can we list every way a condition can come out? | MIT-2.4 |
+| 2.1 | Choosing a path | How does a phone decide when to slow its processor down? | PDP-LO4, PDP-LO6, MIT-1.11 |
+| 2.2 | True, false and every case | Can we list every way a condition can come out? | MIT-2.4 |
 | 2.3 | Untangling a condition | Why does `not (a and b)` mean the same as `not a or not b`? | MIT-2.5 |
 | 2.4 | Bits that flip | How can one bit catch a mistake in a message? | MIT-2.4, MIT-1.4 |
 
-Unit product: a quiz that marks answers and explains why. Toolkit gains
-`truth_table`.
+Contexts: a phone's temperature rules, a drone's battery and a laptop's
+fan speeds (2.1); an app's unlock and login rules, and which segments of
+a seven-segment display light for the digits 0 to 7 (2.2); a delivery
+app's Order button and a drone that stays grounded in rain or wind (2.3);
+an Irish weather buoy's radio message and its parity bit (2.4). Unit
+product: a quiz that marks binary answers and explains why. Toolkit gains
+`between`, `truth_table`, `same_rule` and `parity_bit`.
 
 ### Unit 3 — Again and again: loops, counting and chance
 
@@ -292,7 +297,7 @@ growth rates are seen before they are named. Shell sort is in 6.3.
 | 7.2 | Drawing a rule | What does `y = x² − 4` look like, and where does it cross zero? | MIT-3.2 |
 | 7.3 | Solving for x | When will two phone plans cost the same? | MIT-1.9 |
 | 7.4 | When there is no real answer | What does Python mean by `2j`? | MIT-1.10 |
-| 7.5 | The top of the curve | What price gives a shop the most profit? | MIT-3.4 |
+| 7.5 | The top of the curve | Why does a round letter dip below the line, and how far? (typographic overshoot) | MIT-3.4 |
 | 7.6 | Several unknowns at once | How many adult and child tickets were sold? | MIT-1.12 |
 
 Polynomials are lists of coefficients, so expanding brackets is a loop. Every
@@ -317,20 +322,38 @@ same sine and cosine. Toolkit gains `distance`, `midpoint`, `slope`,
 
 ### Unit 9 — Change
 
-*How fast is it changing, right now? Every speedometer and every machine
+*How fast is it changing, right now? Every weather radar and every machine
 learning model asks this.*
 
 | # | Tutorial | Question | Outcomes |
 |---|---|---|---|
-| 9.1 | Getting closer | What happens to a value as you zoom in on it? | MIT-3.5 |
-| 9.2 | How fast, right now | What was the runner's speed at the 3-minute mark? | MIT-3.6 |
+| 9.1 | Getting closer | Walking halfway to a door again and again, do you ever arrive? | MIT-3.5 |
+| 9.2 | How fast, right now | How fast is a falling hailstone going 3 seconds after it starts? | MIT-3.6 |
 | 9.3 | Rules for change | Is there a shortcut for the slope of any curve? | MIT-3.7 |
 | 9.4 | Solving by computing | How does a calculator find √2 when there is no formula for it? | MIT-3.6, MIT-6.6 |
+| 9.5 | Putting the derivative to work: choose a project | What is the derivative for? | touches MIT-3.4, 3.6, 3.7 |
 
-9.3 teaches all four rules, the quotient rule included; the existing course
-narrows it out. 9.4 is bisection and Newton's method: limits, derivatives,
-divide and conquer and binary search in one algorithm. Toolkit gains
-`derivative_at`, `bisect`, `newton`.
+9.1's one-sided limits are the sharp edge of a shape on a screen, which
+9.5's edge-finding project comes back to. 9.2's hailstone falls in the
+simplest air-resistance model (drag proportional to speed, said to be a
+model), and a Doppler weather radar is the instrument that reads a speed
+at an instant. 9.3 teaches all four rules, the quotient rule included; the
+existing course narrows it out, and it finds 7.5's letter bottom again by
+setting the slope to 0. 9.4 is bisection and Newton's method: limits,
+derivatives, divide and conquer and binary search in one algorithm.
+Toolkit gains `derivative_at`, `bisect_root`, `newton`.
+
+9.5 is the first "choose your project" page (§4): after a short shared
+opening (a slope of 0 marks a turn, a large slope marks fast change) the
+reader picks one or more of four self-contained projects, each ending in
+its own `check()`: the bottom of a letter drawn with a cubic Bézier curve,
+an edge in a row of pixels and in a small picture, the least-squares line
+through Ireland's life expectancy, and gradient descent. It has no practice
+page: each project is its own practice, and the mixed page follows.
+
+Unit product (on `mixed-change`): a best-moment finder, `best_point`, that
+finds a rule's top or bottom (the letter's bowl first) and the moment it
+changes fastest, then does the same for Ireland's CO₂ emissions.
 
 ### Unit 10 — Programs for people
 

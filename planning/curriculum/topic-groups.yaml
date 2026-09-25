@@ -277,8 +277,9 @@ groups:
   - key: plot-twist-change-and-people
     name: "Dewey Track: change, and programs for people"
     intro: >
-      Limits, the derivative, the rules of change, and solving by computing
-      with bisection and Newton's method; then where programming came from,
+      Limits, the derivative, the rules of change, solving by computing
+      with bisection and Newton's method, and a choice of projects that put
+      the derivative to work; then where programming came from,
       one idea in many languages, code other people can read, and a team
       project that uses everything.
     tutorials:
@@ -286,6 +287,7 @@ groups:
       - how-fast-right-now
       - rules-for-change
       - solving-by-computing
+      - putting-the-derivative-to-work
       - mixed-change
       - where-programming-came-from
       - many-languages-one-idea

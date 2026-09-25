@@ -2,7 +2,7 @@
 title: "The top of the curve: maximum and minimum — Practice"
 practice_for: the-top-of-the-curve
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # The top of the curve: maximum and minimum — Practice
@@ -87,12 +87,13 @@ It prints `(-5.0, -25.0)`.
 
 </details>
 
-**4. Explain.** A friend says $x^2 - 2x + 5$ is never 0, for any real
-$x$, without trying a single number. How could they know?
+**4. Explain.** Schlomi, who is learning Python too, says
+$x^2 - 2x + 5$ is never 0, for any real $x$. She has not tried a single
+number. How could she know?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Complete the square: $x^2 - 2x + 5 = (x - 1)^2 + 4$. A real square is
+One good answer: complete the square. $x^2 - 2x + 5 = (x - 1)^2 + 4$. A real square is
 never negative, so $(x - 1)^2$ is 0 or more, and the whole rule is 4 or
 more. It can never come down to 0. The discriminant from
 [Solving for x](tutorial:solving-for-x#how-many-answers-the-discriminant)
@@ -106,14 +107,15 @@ A cell for the core problems.
 
 ```python exec
 id: the-top-practice-core
-# Your working for problems 5 to 11
+# Your working for problems 5 to 12
 ```
 
-**5. Make.** Tomás has 40 m of fencing for a vegetable patch against a
-garden wall. The wall is one long side, so the fence makes the other
-three. If each short side is $w$ metres, the long side is $40 - 2w$
-metres. What $w$ gives the biggest patch, and how big is it? Find it
-with `vertex`, then check it with a fine comb.
+**5. Make.** In a building game, you have 40 blocks of fence to make a
+rectangular pen against the edge of the map. The edge is one long
+side, so the fence makes the other three. If each short side is $w$
+blocks, the long side is $40 - 2w$ blocks. What $w$ gives the biggest
+pen, and how many squares of ground does it hold? Find it with
+`vertex`, then check it with a fine comb.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -125,8 +127,8 @@ with `vertex`, then check it with a fine comb.
 
 **Think about:** why must $w$ be between 0 and 20?
 
-**Try this next:** with the wall gone, the fence makes all four sides.
-What shape gives the biggest patch then?
+**Try this next:** away from the edge, the fence makes all four sides.
+What shape gives the biggest pen then?
 
 </details>
 
@@ -144,14 +146,16 @@ biggest = largest(areas)
 print(widths[areas.index(biggest)], biggest)
 ```
 
-Both give a width of 10 m and an area of 200 square metres. The long
-side is then $40 - 20 = 20$ m. The width must be between 0 and 20,
-because at 20 the long side is 0: that is the domain of the rule.
+Both give a width of 10 blocks and 200 squares of ground. The long
+side is then $40 - 20 = 20$ blocks. The width must be between 0 and 20,
+because at 20 the long side is 0: that is the domain of the rule. A
+game needs whole blocks, and here the best width is whole already.
 
 </details>
 
-**6. Fix.** Here is someone's version of `vertex`. The first test
-passes and the second fails. Run it, find the mistake, and fix it.
+**6. Fix.** Schlomo, who is also learning Python, wrote his own
+`vertex`. The first test passes and the second fails. Run it, find the
+mistake, and fix it.
 
 ```python exec
 id: the-top-practice-fix
@@ -162,15 +166,15 @@ def vertex_again(a, b, c):
     return (x, y)
 
 assert vertex_again(1, -6, 13) == (3, 4)
-assert vertex_again(-20, 140, -120) == (3.5, 125), vertex_again(-20, 140, -120)
+assert close_enough(vertex_again(400, -440, 112)[0], 0.55), vertex_again(400, -440, 112)
 print("vertex_again keeps its promise.")
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. The second test's message shows what the function gave back. Is the
-   $x$ anywhere near 3.5?
-2. Work out `-140 / 2 * -20` by hand, in the order Python does it.
+   $x$ anywhere near 0.55?
+2. Work out `440 / 2 * 400` by hand, in the order Python does it.
 3. Compare with the formula $-\frac{b}{2a}$. What is on the bottom?
 
 **Think about:** why did the first test pass? What is special about its
@@ -189,37 +193,40 @@ The formula wants the whole of $2a$ on the bottom:
 x = -b / (2 * a)
 ```
 
-The first test passed by luck: its $a$ is 1, and multiplying by 1 and
-dividing by 1 give the same answer. A test with $a = 1$ cannot catch
-this mistake, which is a good reason to test with other values too.
+Schlomo's $x$ for the bowl was 88,000, far off the letter. The first
+test passed by luck: its $a$ is 1, and multiplying by 1 and dividing by
+1 give the same answer. A test with $a = 1$ cannot catch this mistake,
+which is a good reason to test with other values too.
 
 </details>
 
-**7. Predict.** A band sells tickets for a gig. At $p$ euro a ticket,
-about $800 - 30p$ people come, so the takings are $p(800 - 30p)$, which
-is $-30p^2 + 800p$. The cell below searches whole-euro prices only.
-Before you run it, what do you think it prints? Does it agree with
-`vertex`?
+**7. Predict.** A game draws a thrown ball 10 times a second. The
+ball's height after $t$ seconds is $1 + 14t - 4.9t^2$ metres, so frame
+number $f$ shows it at $t = f / 10$. The cell finds the frame where
+the ball is drawn highest. Before you run it, what do you think it
+prints? Does it agree with `vertex`?
 
 ```python
-takings = []
-for price in range(0, 27):
-    takings.append(price * (800 - 30 * price))
-best = largest(takings)
-print(takings.index(best), best)
-print(vertex(-30, 800, 0))
+heights = []
+for frame in range(0, 30):
+    t = frame / 10
+    heights.append(1 + 14 * t - 4.9 * t ** 2)
+top = largest(heights)
+print(heights.index(top), top)
+print(vertex(-4.9, 14, 1))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-The search prints `13 5330`, and `vertex` prints about
-`(13.333333333333334, 5333.333333333334)`.
+The search prints frame `14`, at a height of about 10.996 m, and
+`vertex` prints about `(1.4286, 11.0)`.
 
-They disagree a little, and both are right. The vertex is at €13.33,
-between two rows of the search, which only tried whole euros. €13
-gives €5,330 and €14 gives €5,320, so €13 is the best whole-euro price.
-At €13.33 the takings are only €3.33 more. For a real ticket price, the
-whole-euro answer from the search may be the more useful one.
+They disagree a little, and both are right. The true top is at 1.4286
+seconds, between frame 14 and frame 15, and the game never draws that
+moment. So the highest ball a player sees is 4 mm lower than the real
+top. For a game, that is fine. For a program that must know the true
+top, such as one that checks whether the ball clears a bar, the
+formula is the one to trust.
 
 </details>
 
@@ -289,8 +296,8 @@ are, without any formula. A vertex exactly on the axis gives one root.
 
 </details>
 
-**11. Explain.** The tutorial found Aoife's best price first with a
-table, then with a graph, and only then with the formula
+**11. Explain.** The tutorial found the bottom of the letter's bowl
+first with a table, then with a graph, and only then with the formula
 $x = -\frac{b}{2a}$. Another course might give the formula first and
 then practise it on many examples. Which way would you have taught it,
 and why?
@@ -299,10 +306,10 @@ and why?
 
 There is no one right answer. A good answer weighs things like these:
 
-- The table and the graph show *why* there is a best price, and why
-  €3 and €4 tie. A reader who forgets the formula can still find the
+- The table and the graph show *why* there is a lowest point, and why
+  0.5 and 0.6 tie. A reader who forgets the formula can still find the
   answer that way.
-- The table can miss the answer, as it did between €3 and €4. That
+- The table can miss the answer, as it did between 0.5 and 0.6. That
   miss is a reason to want a formula, and it is felt more strongly
   when the reader has seen it happen.
 - Formula first is shorter, and it gets a reader to correct answers
@@ -311,7 +318,32 @@ There is no one right answer. A good answer weighs things like these:
   vertex outside the domain, with no picture to check it against.
 
 Who is the page for, and what do they need most: speed, or a way to
-check?
+check? Your answer may weigh things this list leaves out.
+
+</details>
+
+**12. Explain.** Schlomo has an idea for the letter's bowl on the
+tutorial page. "The control point is at $(260, -108)$, and it is the
+lowest of the three points. So the bowl's lowest point is 108 units
+below the baseline, at $x = 260$. No formula needed." Is he right? What
+is good about his idea?
+
+<details class="dl-answer"><summary>answer</summary>
+
+He is not right, but his idea has a good part. The curve never reaches
+its control point: the control point only pulls it. The bowl's lowest
+point is only 9 units below the baseline, at $t = 0.55$, where $x$ is
+about 288. You can see it in the tutorial's picture: the dotted lines
+go down to $-108$, and the curve stays far above them.
+
+The good part: the curve always stays inside the triangle its three
+points make. So the control point is a limit on how low the bowl can
+go. Schlomo found a floor, $-108$, that the curve cannot go below. He
+did not find the bottom itself. Here is one way to check:
+
+```python
+print(vertex(400, -440, 112))
+```
 
 </details>
 
@@ -321,34 +353,39 @@ A cell for the stretch problems.
 
 ```python exec
 id: the-top-practice-stretch
-# Your working for problems 12 to 14
+# Your working for problems 13 to 15
 ```
 
-**12. Make.** A coffee cart sells about $300 - 60p$ cups a day at $p$
-euro a cup, and each cup costs it €0.80 to make. Write the profit as a
-quadratic by multiplying out $(p - 0.8)(300 - 60p)$, check your
-multiplying-out with `evaluate` at a few prices, then find the best
-price.
+**13. Make.** The bottom of an "s" in the same font is another
+quadratic Bézier curve. Its three heights, in font units, are 40 at the
+start, $-70$ at the control point and 60 at the end. Multiply out
+$(1 - t)^2 \times 40 + 2t(1 - t) \times (-70) + t^2 \times 60$ to get
+$at^2 + bt + c$, check your multiplying-out with `evaluate` at a few
+values of $t$, then find how far the "s" dips below the baseline.
 
 <details class="dl-answer"><summary>answer</summary>
 
-$(p - 0.8)(300 - 60p) = 300p - 60p^2 - 240 + 48p = -60p^2 + 348p - 240$.
+$(1 - t)^2 \times 40 = 40 - 80t + 40t^2$, and
+$2t(1 - t) \times (-70) = -140t + 140t^2$, and the last part is $60t^2$.
+Collecting: $240t^2 - 220t + 40$.
 
 ```python
-coffee_profit = [-240, 348, -60]
-for price in [1, 2.5, 4]:
-    print(price, round((price - 0.8) * (300 - 60 * price), 2), round(evaluate(coffee_profit, price), 2))
+s_bottom = [40, -220, 240]
+for t in [0, 0.25, 0.5, 1]:
+    mixed = (1 - t) ** 2 * 40 + 2 * t * (1 - t) * -70 + t ** 2 * 60
+    print(t, round(mixed, 6), round(evaluate(s_bottom, t), 6))
 
-print(vertex(-60, 348, -240))
+print(vertex(240, -220, 40))
 ```
 
-The two columns agree, so the multiplying-out is right. The best price
-is €2.90, and the profit there is about €264.60 a day: 126 cups, each
-making €2.10.
+The two columns agree, so the multiplying-out is right. The vertex is
+at $t \approx 0.458$, and the "s" dips about 10.4 units below the
+baseline: a little more than the bowl's 9. The vertex is inside 0 to 1,
+so it is on the letter.
 
 </details>
 
-**13. Another way.** Here is a way to find the $x$ of any vertex without
+**14. Another way.** Here is a way to find the $x$ of any vertex without
 roots and without completing the square. At $x = 0$, the rule
 $ax^2 + bx + c$ gives $c$. Find the *other* $x$ where it gives $c$
 again. Then use the mirror. Does your answer match $-\frac{b}{2a}$?
@@ -385,7 +422,7 @@ uses a height the curve always reaches, $c$, in place of the height 0.
 
 </details>
 
-**14. Make.** Here is a surprise that joins this page to
+**15. Make.** Here is a surprise that joins this page to
 [What is typical?](tutorial:what-is-typical#the-standard-deviation).
 Take the bus delays `[3, 7, 8, 12, 5]`. For any guess $m$, add up the
 squared distances from each value to $m$. That total is a quadratic in

@@ -1,5 +1,12 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
+  - term: "air resistance, terminal speed"
+    kind: concept
+    definition: >
+      Air resistance is the push of the air against something moving
+      through it, and it grows with speed. A falling thing stops speeding
+      up when that push balances its weight. The speed it settles at is its
+      terminal speed.
   - term: chord
     kind: concept
     definition: >
@@ -17,6 +24,12 @@ entries:
       (f(a + h) − f(a)) / h as the step h gets close to 0. It is the slope
       of the curve at the single point a. It is also written dy/dx.
     example: "f′(a) = lim h→0 (f(a + h) − f(a)) / h"
+  - term: Doppler effect
+    kind: concept
+    definition: >
+      The Doppler effect is the small change in a wave's frequency when it
+      bounces off, or comes from, something moving. A weather radar uses
+      it to measure how fast rain or hail is moving.
   - term: instantaneous rate of change
     kind: concept
     definition: >

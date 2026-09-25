@@ -2,7 +2,7 @@
 title: "Getting closer: limits — Practice"
 practice_for: getting-closer
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Getting closer: limits — Practice
@@ -81,15 +81,16 @@ $3 + 3 = 6$.
 point, and whether it has a *limit* there.
 
 - $\frac{x^2 - 4}{x - 2}$ at $x = 2$
-- the parking fee (€2 up to 1 hour, €5 for longer) at 1 hour
+- the brightness across the square's edge (0 up to the edge at 1 mm,
+  255 after it) at the edge
 - $x + 2$ at $x = 2$
 
 <details class="dl-answer"><summary>answer</summary>
 
 - $\frac{x^2 - 4}{x - 2}$ at 2: no value, since $\frac{0}{0}$ has
   none, but a limit of 4.
-- The parking fee at 1 hour: a value, €2, but no limit, because the
-  left side heads for 2 and the right side for 5.
+- The brightness at the edge: a value, 0, but no limit, because the
+  left side heads for 0 and the right side for 255.
 - $x + 2$ at 2: a value, 4, and a limit, 4, and they agree.
 
 The first two show that a value and a limit are separate questions.
@@ -159,8 +160,9 @@ the same value on each side.
 
 </details>
 
-**6. Fix.** Here is someone's version of `approach`. Run it. The table
-never gets any closer to 6. Find the one mistake.
+**6. Fix.** Schlomo, who is learning Python too, wrote his own
+`approach`. Run it. The table never gets any closer to 6. Find the one
+mistake.
 
 ```python exec
 id: getting-closer-practice-fix
@@ -194,25 +196,25 @@ says which lines are inside the loop, and so which lines happen again.
 
 </details>
 
-**7. Make.** A small café pays €300 a week for its coffee machine,
-however many cups it makes, and €0.50 for the beans and milk in each
-cup. So the average cost of a cup, when it makes $n$ cups, is
-$\frac{300 + 0.5n}{n}$. What happens to the average cost as $n$
-grows? Try 10, 100, 1,000, 10,000 and 1,000,000 cups, and give the
-limit at infinity.
+**7. Make.** A small video service pays €300 a month for its server,
+however many films it streams, and €0.50 for the data of each film it
+streams. (The prices are made up.) So the average cost of a film, when
+it streams $n$ films in a month, is $\frac{300 + 0.5n}{n}$. What
+happens to the average cost as $n$ grows? Try 10, 100, 1,000, 10,000
+and 1,000,000 films, and give the limit at infinity.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-for cups in [10, 100, 1000, 10000, 1000000]:
-    print(cups, (300 + 0.5 * cups) / cups)
+for films in [10, 100, 1000, 10000, 1000000]:
+    print(films, (300 + 0.5 * films) / films)
 ```
 
 €30.50, €3.50, €0.80, €0.53, €0.5003. The limit at infinity is €0.50.
 The rule is $\frac{300}{n} + 0.5$, and $\frac{300}{n}$ heads for 0
-as $n$ grows, like $\frac{1}{x}$ did. The cost of the machine gets
-shared among more and more cups, but each cup always needs its own
-beans and milk.
+as $n$ grows, like $\frac{1}{x}$ did. The cost of the server gets
+shared among more and more films, but each film always needs its own
+data.
 
 </details>
 
@@ -313,10 +315,11 @@ id: getting-closer-practice-stretch
 # Your working for problems 12 to 15
 ```
 
-**12. Explain.** Here is a table for $\sin\left(\frac{\pi}{x}\right)$
-near 0. Every value is tiny, so it looks like the limit is 0. Then the
-second loop tries a few other points near 0. What went wrong, and does
-the rule have a limit at 0?
+**12. Explain.** Schlomi, who is learning Python too, made this table
+for $\sin\left(\frac{\pi}{x}\right)$ near 0. Every value is tiny, so
+she says the limit is 0. It is a reasonable reading of the table. Then
+the second loop tries a few other points near 0. What went wrong, and
+does the rule have a limit at 0?
 
 ```python
 def sine_of_pi_over_x(x):
@@ -340,6 +343,9 @@ $\frac{\pi}{x}$ is huge and changes very fast, so the sine swings
 between $-1$ and 1 over and over, however close we get. The values
 never settle, so there is no limit. A table is evidence, not proof,
 and a table that only looks at special points can be fooled.
+
+That is one good way to say it. Yours may use other words, or a
+picture, and be as good.
 
 </details>
 
@@ -373,19 +379,21 @@ gives 0.0.
 
 </details>
 
-**14. Make.** A made-up income tax takes 20% of the first €40,000 of
-income, and 40% of every euro above that. Write `tax(income)` and
-`rate(income)`, where `rate` is the percentage taken from the next
-euro. Use `approach` on both at €40,000. Which one has a limit there?
+**14. Make.** Irish income tax takes 20% of income up to a limit, and
+40% of every euro above it. In 2025 the limit was €44,000 for a single
+person. (Real tax also has credits and other charges, which this
+problem leaves out.) Write `tax(income)` and `rate(income)`, where
+`rate` is the share taken from the next euro. Use `approach` on both
+at €44,000. Which one has a limit there?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Up to €40,000, the tax is `0.2 * income`.
-2. Above it, the tax is 8,000 for the first €40,000, plus
-   `0.4 * (income - 40000)`.
-3. `rate` gives back 0.2 up to €40,000 and 0.4 above.
+1. Up to €44,000, the tax is `0.2 * income`.
+2. Above it, the tax is 8,800 for the first €44,000, plus
+   `0.4 * (income - 44000)`.
+3. `rate` gives back 0.2 up to €44,000 and 0.4 above.
 
-**Think about:** when someone earns one euro more than €40,000, how
+**Think about:** when someone earns one euro more than €44,000, how
 much more tax do they pay?
 
 </details>
@@ -394,21 +402,21 @@ much more tax do they pay?
 
 ```python
 def tax(income):
-    if income <= 40000:
+    if income <= 44000:
         return 0.2 * income
-    return 8000 + 0.4 * (income - 40000)
+    return 8800 + 0.4 * (income - 44000)
 
 def rate(income):
-    if income <= 40000:
+    if income <= 44000:
         return 0.2
     return 0.4
 
-approach(tax, 40000, rows=4)
-approach(rate, 40000, rows=4)
+approach(tax, 44000, rows=4)
+approach(rate, 44000, rows=4)
 ```
 
-The tax heads for €8,000 from both sides, 7,999.80 and 8,000.40 on the
-first row, and closer after. So the tax has a limit at €40,000, and it
+The tax heads for €8,800 from both sides, 8,799.80 and 8,800.40 on the
+first row, and closer after. So the tax has a limit at €44,000, and it
 is the value there: there is no jump in what people pay. The rate jumps
 from 0.2 to 0.4, so it has two different one-sided limits and no limit.
 This is why earning a little more never leaves you with less money in
@@ -417,13 +425,15 @@ rate.
 
 </details>
 
-**15. Make.** The rule $x^x$ has no value at $x = 0$ in Python's
-floats, and for negative $x$ it gives complex numbers, as on
+**15. Make.** The rule $x^x$ gives complex numbers for negative $x$,
+as on
 [When there is no real answer](tutorial:when-there-is-no-real-answer).
 Try `(-0.5) ** (-0.5)` to see one. So only the right-hand side makes
-sense here. Write `approach_from_right(rule, a, rows=10)`, which prints
-only the right column, and use it to find the one-sided limit of $x^x$
-as $x \to 0^+$.
+sense here. At 0 itself, Python says `0.0 ** 0.0` is `1.0`, a value
+somebody chose, like `round(2.5)` in problem 10. Write
+`approach_from_right(rule, a, rows=10)`, which prints only the right
+column, and use it to find the one-sided limit of $x^x$ as
+$x \to 0^+$. Does the limit agree with the value Python chose?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -446,7 +456,9 @@ print(x_to_the_x(1e-6))
 `(-0.5) ** (-0.5)` gives a complex number, about $-1.414i$. From the
 right, the values are 1, 0.707, 0.707, 0.771, 0.841, and then they
 climb: 0.988 after ten rows, and 0.99999 at $x = 10^{-6}$. So
-$\lim_{x \to 0^+} x^x = 1$. The values first go down and then come
-back up. A limit only cares where they end up, not the path they take.
+$\lim_{x \to 0^+} x^x = 1$, and it agrees with the `1.0` Python chose.
+Here the choice and the limit match, which is one good reason for the
+choice. The values first go down and then come back up. A limit only
+cares where they end up, not the path they take.
 
 </details>

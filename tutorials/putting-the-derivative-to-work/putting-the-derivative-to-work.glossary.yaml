@@ -1,0 +1,57 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: flat and steep
+    kind: concept
+    definition: >
+      A derivative answers two questions about a curve. Where its slope is
+      0, the curve is flat and may turn at a top or a bottom. Where its
+      slope is large, up or down, the curve changes fast.
+  - term: cubic Bézier curve
+    kind: concept
+    definition: >
+      A cubic Bézier curve is drawn from four points: a start, two control
+      points and an end. Its height at t is a cubic in t, so completing the
+      square cannot find its lowest point, but a slope of 0 can.
+  - term: edge, in a picture
+    kind: concept
+    definition: >
+      An edge is a place in a picture where the brightness changes fast.
+      A program finds it as a large difference between neighbouring
+      pixels, which is a slope with a step of one pixel.
+  - term: least squares
+    kind: concept
+    definition: >
+      Least squares chooses the line that makes the total of the squared
+      misses as small as it can be. The total is a parabola in the line's
+      slope, so the best slope is where its slope is 0.
+  - term: gradient descent
+    kind: concept
+    definition: >
+      Gradient descent finds the bottom of a curve by stepping against the
+      slope, again and again. It can stop in a valley that is not the
+      lowest one. Machine-learning models are trained this way.
+  - term: "step size, or rate"
+    kind: concept
+    definition: >
+      The rate sets how far each step of gradient descent goes. Too big a
+      rate jumps out of the valley, and too small a rate crawls.
+  - term: "np.diff()"
+    kind: function
+    python: numpy.diff
+    definition: >
+      Gives back the differences between neighbouring values of an array.
+      With axis=1 it works along each row, and with axis=0 down each
+      column.
+    example: "np.diff([250, 200, 90])   # array([ -50, -110])"
+  - term: "np.polyfit()"
+    kind: function
+    python: numpy.polyfit
+    definition: >
+      Fits a polynomial to points by least squares. With 1 as its last
+      input it fits a straight line, and gives back the slope first.
+    example: "np.polyfit(years, lifespans, 1)[0]"
+  - term: "plt.imshow()"
+    kind: function
+    python: matplotlib.pyplot.imshow
+    definition: "Draws a grid of numbers as a picture, one square of colour for each number."
+    example: 'plt.imshow(picture, cmap="gray")'
