@@ -79,7 +79,7 @@ entries:
     definition: >
       Says that every element of A is also in B. The natural numbers are a
       subset of the integers.
-    example: "needed <= in_gym"
+    example: '{"red", "green"} <= {"red", "green", "blue"}'
   - term: "set-builder notation, {x ∈ Z : x ≥ 0}"
     kind: formula
     definition: >
@@ -92,7 +92,7 @@ entries:
       The Cartesian product of two sets is the set of every pair (a, b),
       with a from A and b from B. Its size is |A| × |B|. Your all_pairs
       makes it.
-    example: "all_pairs(drinks, sizes)"
+    example: "all_pairs(devices, modes)"
   - term: "power set, 𝒫(A)"
     kind: formula
     definition: >

@@ -316,23 +316,23 @@ print(insertion_count(backwards), selection_count(backwards))    # 4950 4950
 
 </details>
 
-**10. Another way.** Here are seven monthly rents, in euro:
-`[1450, 1200, 2100, 1650, 1380, 3900, 1520]`. Find the median by
-sorting them with `shell_sort` and taking the middle one. Then check
+**10. Another way.** Here are seven response times of a website, in
+milliseconds: `[210, 190, 3400, 180, 230, 1850, 200]`. Find the median
+by sorting them with `shell_sort` and taking the middle one. Then check
 with your toolkit's `median` from
 [What is typical?](tutorial:what-is-typical).
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-rents = [1450, 1200, 2100, 1650, 1380, 3900, 1520]
-in_order = shell_sort(rents)
-print(in_order)                        # [1200, 1380, 1450, 1520, 1650, 2100, 3900]
-print(in_order[len(in_order) // 2])    # 1520
-print(median(rents))                   # 1520
+response_ms = [210, 190, 3400, 180, 230, 1850, 200]
+in_order = shell_sort(response_ms)
+print(in_order)                        # [180, 190, 200, 210, 230, 1850, 3400]
+print(in_order[len(in_order) // 2])    # 210
+print(median(response_ms))             # 210
 ```
 
-Both give €1,520. With 7 values, the middle one is at index 3. A median
+Both give 210 ms. With 7 values, the middle one is at index 3. A median
 needs the values in order, so every median starts with a sort.
 
 </details>

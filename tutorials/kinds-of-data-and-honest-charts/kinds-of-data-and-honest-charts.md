@@ -1,7 +1,7 @@
 ---
 title: "Kinds of data, and honest charts"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 datasets: [life-expectancy]
 covers:
   four-kinds-of-data:
@@ -25,10 +25,15 @@ covers:
 
 # Kinds of data, and honest charts
 
-An advert for a health drink shows two bars: life expectancy in Ireland,
+Picture an advert for a health drink. (The advert is made up; the
+numbers in it are real.) It shows two bars: life expectancy in Ireland,
 and in the UK. The Irish bar is more than three times as tall. Does an
-Irish baby really expect to live three times as long? Why is this chart
-misleading, and how would an honest one look?
+Irish baby really expect to live three times as long?
+
+No. And here is the part I find most surprising: every number on that
+chart can be true. The trick is in one small choice about where the
+picture starts. By the end of this page you will have drawn the
+misleading chart yourself, and the honest one beside it.
 
 On this page we:
 
@@ -145,7 +150,8 @@ whatever it looks like.
 
 Here are the twenty answers to the first question, as a list. The
 survey is made up, but it is the kind of answer a real class gives.
-Which way to travel do you think is the most common?
+Which way to travel do you think is the most common? How would your own
+class answer?
 
 The next cell counts them with a new kind of collection. A *dictionary*
 is a collection of names, each pointing at a value. The names are
@@ -430,15 +436,16 @@ numbers would never show that at a glance.
 
 1. Change the bins to `range(50, 90, 10)`, then to `range(50, 90, 2)`.
    How does the shape change?
-2. Which width tells the story best, in your opinion? There is no single
-   right answer: too few bins hide the shape, and too many make it
+2. Which width tells the story best, in your opinion? Several answers
+   are good ones: too few bins hide the shape, and too many make it
    ragged.
 
 ## Stem-and-leaf: every value kept
 
 A histogram hides the values inside each bar. A *stem-and-leaf plot*
-keeps them. Here are twenty finishing times at a Saturday parkrun, in
-whole minutes. They are made up, but close to a real one.
+keeps them. Here are the twenty answers to the survey's fourth
+question: how many minutes the journey took this morning, rounded to
+whole minutes. Like the rest of the survey, they are made up.
 
 Each time is split in two. The tens digit is the *stem*, and the units
 digit is the *leaf*: 27 has stem 2 and leaf 7. On
@@ -450,14 +457,14 @@ What will the row for stem 2 look like? Guess, then run it.
 
 ```python exec
 id: kinds-stem-1
-times = [24, 31, 19, 27, 45, 22, 28, 33, 26, 38,
-         21, 29, 35, 24, 30, 27, 41, 25, 23, 32]
+journey_minutes = [24, 31, 19, 27, 45, 22, 28, 33, 26, 38,
+                   21, 29, 35, 24, 30, 27, 41, 25, 23, 32]
 
 for stem in range(1, 5):
     leaves = []
-    for time in sorted(times):
-        if time // 10 == stem:
-            leaves.append(time % 10)
+    for minutes in sorted(journey_minutes):
+        if minutes // 10 == stem:
+            leaves.append(minutes % 10)
     print(stem, "|", *leaves)
 ```
 
@@ -468,7 +475,7 @@ for stem in range(1, 5):
 4 | 1 5
 ```
 
-`sorted(times)`, from [What is typical?](tutorial:what-is-typical),
+`sorted(journey_minutes)`, from [What is typical?](tutorial:what-is-typical),
 puts the times in order first, so each row's leaves come out smallest
 first. Read the row `3 | 0 1 2 3 5 8` as the times 30, 31, 32, 33, 35 and 38.
 Turn your head to the left, and the rows become bars: a histogram, with
@@ -476,7 +483,8 @@ every value still readable. The `*leaves` hands `print` each leaf on its
 own, as `*row` did on
 [Untangling a condition](tutorial:untangling-a-condition).
 
-A stem-and-leaf plot suits a small set of numbers, up to about fifty,
+A stem-and-leaf plot suits a
+small set of numbers, up to about fifty,
 where you want the shape and the values both. For the 226 life
 expectancies, it would be a wall of digits.
 
@@ -526,7 +534,8 @@ in mind for the next section, where the same choice becomes a trick.
 Back to the advert. Ireland's life expectancy in 2016 was 81.14 years,
 and the UK's was 80.90. The advert's chart is drawn below on the left,
 and an honest one on the right. The two charts use the same two numbers.
-What do you think is different about them?
+What do you think is different about them? Pause here and guess before
+you run it.
 
 ```python exec
 id: kinds-honest-1
@@ -598,6 +607,16 @@ In the flat pie, the bus's slice is a little bigger than the car's, as
 front. Its slice looks wider, and it shows its thick side as well as its
 top, so it covers more of the page than the bus. The numbers did not
 change. The picture changed which slice looks biggest.
+
+<aside class="dl-note" id="kinds-note-playfair">
+
+**Who drew the first bar chart?** The Scottish engineer William
+Playfair published the first bar charts and line charts of economic
+data in 1786, in his *Commercial and Political Atlas*, and the first
+pie chart in 1801. He wanted readers to see trade figures at a glance,
+the same job these charts do today.
+
+</aside>
 
 So an honest chart, in short:
 

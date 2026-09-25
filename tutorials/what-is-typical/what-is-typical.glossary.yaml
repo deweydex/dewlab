@@ -29,7 +29,7 @@ entries:
     python: list.count
     definition: >
       Gives how many times one value appears in a list.
-    example: "rents.count(1250)"
+    example: "response_ms.count(190)"
   - term: outlier
     kind: concept
     definition: >
@@ -47,7 +47,14 @@ entries:
     definition: >
       Spread is how far apart the values in a list are. The range is the
       simplest measure of it: the largest value minus the smallest.
-    example: "largest(route_b) - smallest(route_b)"
+    example: "largest(connection_b) - smallest(connection_b)"
+  - term: "ping, jitter"
+    kind: concept
+    definition: >
+      A ping sends a tiny message to a server and times how long the answer
+      takes to come back, in milliseconds (ms). Jitter is the spread of
+      those times: a connection with a lot of jitter is fast one moment
+      and slow the next.
   - term: deviation
     kind: concept
     definition: >

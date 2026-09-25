@@ -1,7 +1,7 @@
 ---
 title: "A row of numbers: lists"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 datasets: [life-expectancy]
 covers:
   a-week-in-one-name:
@@ -36,7 +36,12 @@ covers:
 A weather app shows the highest temperature for each day of the week.
 That is seven numbers. How do we keep them in a program, so that we can
 ask which day was warmest, or how much warmer Friday was than Thursday?
-Seven names would work, for a week. For a year, we would need 365.
+
+Seven names would work, for a week. A year would need 365 names. A
+phone that counts your steps every minute makes 525,600 numbers a year.
+Nobody can write half a million names. By the end of this page, one
+name will hold them all, and you will be asking questions of 67 years of
+real Irish data with a few lines of code.
 
 On this page we:
 
@@ -54,8 +59,8 @@ On this page we:
 > We met lists on [Doing it again](tutorial:doing-it-again) as "a row of
 > values", and used `len`, `append` and `[0]` in passing. This page is
 > where we learn them properly. One thing usually goes unsaid: Python
-> counts positions from 0, and maths usually counts from 1. Both are
-> right, in their own space. Your toolkit is loaded, from `digit_at`
+> counts positions from 0, and maths usually counts from 1. Each way is
+> a good one, in its own space. Your toolkit is loaded, from `digit_at`
 > to `close_enough`.
 
 ## Warm-up
@@ -121,7 +126,8 @@ print(week[3])
 ```
 
 `week[0]` is 11, Monday's temperature, and `week[3]` is 12, which is
-Thursday's. The number in square brackets is the *index*: the position
+Thursday's. If you guessed Wednesday, you counted the way people usually
+do, and Python counts another way. The number in square brackets is the *index*: the position
 of a value in the list. Python's first index is 0, so a week goes from
 `week[0]` to `week[6]`.
 
@@ -129,6 +135,17 @@ Why start at 0? Think of an index as "how many steps from the start".
 Monday is at the start, 0 steps along. Thursday is 3 steps along. A
 building in Ireland counts its floors the same way: the ground floor is
 0, and the first floor is one flight of stairs up.
+
+<aside class="dl-note" id="row-note-zero">
+
+**An argument about 0.** In 1982 the computer scientist Edsger Dijkstra
+wrote a short note called "Why numbering should start at zero". His
+reason was about ranges like `range(0, 7)`: when you count from 0 and
+leave the end out, the length of a range is the end minus the start,
+and nothing needs a "+ 1". Python chose his way. Some other languages,
+such as MATLAB and Lua, count from 1.
+
+</aside>
 
 Maths usually counts from 1. On
 [Doing it again](tutorial:doing-it-again#sigma-a-loop-written-by-mathematicians)
@@ -143,8 +160,8 @@ another. So the same week can be written two ways:
 | In Python | `week[0]` | `week[1]` | `week[2]` | `week[3]` | `week[4]` | `week[5]` | `week[6]` |
 | Value | 11 | 13 | 9 | 12 | 14 | 10 | 8 |
 
-So $x_i$ in maths is `week[i - 1]` in Python. Neither way is wrong. They
-are two spaces with two rules, and it helps to ask which one you are in.
+So $x_i$ in maths is `week[i - 1]` in Python. They are two spaces with
+two rules, and it helps to ask which one you are in.
 
 Notice what `week[3]` is. It is a name made from a name and a number.
 We can use it anywhere we could use a plain name. `week[4] - week[3]`
@@ -179,7 +196,8 @@ print(week[len(week) - 1])
 `week[-1]` is 8, Sunday, the last value. `week[-2]` is 10, the one
 before it. A *negative index* counts from the end: `-1` is the last
 value, `-2` is the one before the last, and so on. It works whatever
-the length of the list, which is why it is so useful.
+the length of the list, so the same line finds the newest reading in a
+week of data or in a year of it.
 
 ## A slice of the week
 
@@ -234,10 +252,6 @@ print(len(week))
 other value stayed where it was. `append` added 12 at the end, so the
 list is now 8 long.
 
-Look again at `week[2] = 15`. It is `=`, as always: the name on the
-left, here `week[2]`, points at a new value. What is new is that the
-name is made from a list and an index.
-
 Let's set the week back to the way it was, for the rest of the page:
 
 ```python exec
@@ -273,9 +287,8 @@ Tuesday, Thursday and Friday. Each time round, `i` is one index, so
 finds the day's name in `days`, because the two lists are in the same
 order.
 
-Going through a list by index means using the position as the loop
-variable, and the list's name with `[i]` to reach each value. It is the
-way to go when a step needs a value's neighbours, or a second list.
+Going through by index is the way to go when a step needs a value's
+neighbours, or a second list.
 
 ```question
 id: row-by-index-2
@@ -327,54 +340,59 @@ print(cool_days)
 
 ## Adding and multiplying lists
 
-A pub quiz has four teams, and two rounds. Here are each team's points
-in round 1 and round 2, in the same team order. In maths, adding two
-rows of numbers like these means adding each pair: the first team's two
-scores, then the second's, and so on. What do you think Python's `+`
-does? And `*`?
+A sound on a computer is a list of numbers. A microphone measures the
+push of the air many times a second, and each measurement is a
+*sample*. A music CD keeps 44,100 samples every second, for each
+speaker. Here are eight samples from each of two short sounds, a low
+note and a high note. They are made up, and much shorter than a real
+sound.
+
+To play both notes at once, a computer adds the two lists pair by pair:
+the first sample of one to the first sample of the other, and so on.
+In maths, adding two rows of numbers usually means that too. What do you
+think Python's `+` does? And `*`? Pause here and guess. I'll wait.
 
 ```python exec
 id: row-add-1
-round_one = [8, 6, 9, 5]
-round_two = [7, 9, 4, 8]
-print(round_one + round_two)
-print(round_one * 2)
+low_note = [0, 5, 8, 5, 0, -5, -8, -5]
+high_note = [0, 4, 0, -4, 0, 4, 0, -4]
+print(low_note + high_note)
+print(low_note * 2)
 ```
 
 Python's `+` does not add the pairs. It joins the two lists into one
-longer list, eight values long. And `* 2` repeats the list twice. This
-is not a mistake in Python. In Python's space, a list is a row of any
-values, words as well as numbers, and joining and repeating make sense
-for any row. Adding pairs only makes sense for numbers.
+longer list, sixteen values long: the low note, and then the high note
+after it. And `* 2` plays the low note twice. This is Python keeping a
+promise of its own. In Python's space, a list is a row of any values,
+words as well as numbers, and joining and repeating make sense for any
+row. Adding pairs only makes sense for numbers.
 
 So for the maths meaning, we go through by index, and add the pairs
 ourselves:
 
 ```python exec
 id: row-add-2
-quiz_scores = []
-for i in range(len(round_one)):
-    quiz_scores.append(round_one[i] + round_two[i])
-print(quiz_scores)
+both_notes = []
+for i in range(len(low_note)):
+    both_notes.append(low_note[i] + high_note[i])
+print(both_notes)
 ```
 
-Each team's points: 15, 15, 13 and 13. Adding lists this way, pair by
-pair, is called *adding element by element*. In maths, it only works
-when the two lists are the same length.
+The mixed sound is `[0, 9, 8, 1, 0, -1, -8, -9]`. Adding lists this way,
+pair by pair, is called *adding element by element*. In maths, it only
+works when the two lists are the same length.
 
-Multiplying every value by one number is the other common move. A café
-shows its prices without VAT, and needs to add 13.5%, which means
-multiplying each price by 1.135. The cell below is meant to stop with
-an error. Can you guess which kind?
+Multiplying every value by one number is the other common move: every
+sample times 0.5 makes the sound quieter. The cell below is meant to
+stop with an error. Can you guess which kind?
 
 ```python exec
 id: row-add-3
-prices = [3.20, 4.50, 2.80]
-print(prices * 1.135)
+print(low_note * 0.5)
 ```
 
 A `TypeError`, whose last line says we `can't multiply sequence by
-non-int of type 'float'`. Repeating a list 1.135 times means nothing,
+non-int of type 'float'`. Repeating a list half a time means nothing,
 so Python refuses. The move we wanted belongs to a different space.
 
 Python has that space too. *numpy*, which is on every page, has an
@@ -385,15 +403,23 @@ the maths way. What do you expect this time?
 id: row-add-4
 import numpy as np
 
-print(np.array(prices) * 1.135)
-print(np.array(round_one) + np.array(round_two))
+print(np.array(low_note) * 0.5)
+print(np.array(low_note) + np.array(high_note))
 ```
 
-The same moves, in a space built for numbers, give the maths answer:
-€3.63, €5.11 and €3.18 once rounded to the cent, and the same quiz
-scores as before.
-This unit works with lists, so that we can see every step. When you
-meet an array later, you will know what it does for you.
+The same moves, in a space built for numbers, give the maths answer.
+Programs that work with real sound use arrays, because a song is
+millions of samples. This unit works with lists, so that we can see
+every step.
+
+<aside class="dl-note" id="row-note-cd">
+
+**Why 44,100?** People hear sounds up to about 20,000 vibrations a
+second. To keep a sound, a computer must take more than two samples
+for each vibration, so more than 40,000 samples a second. The makers of
+the CD, Sony and Philips, chose 44,100 in the early 1980s.
+
+</aside>
 
 ## Two names for one list
 
@@ -409,8 +435,9 @@ forecast[6] = 16
 print(week)
 ```
 
-`week` changed too, and Sunday is 16 in both. Here is a picture in
-words. The list is one box with seven values in it. A name is a label
+`week` changed too, and Sunday is 16 in both. Nobody touched `week`,
+and still it changed. That surprises almost everyone the first time.
+Here is a picture in words. The list is one box with seven values in it. A name is a label
 on a string, tied to a box. `forecast = week` does not make a second
 box. It ties a second label to the same box. So a change through one
 label is a change to the only box there is, and both labels see it.
@@ -435,10 +462,9 @@ print(forecast)
 Now `week` keeps its 8, and only `forecast` has 16. Two boxes, one label
 each. A slice is also a new list, so `week[:]` would work too.
 
-So there are two different moves. `forecast = week` points a name at a
-list that already exists. `forecast[6] = 16` changes the list itself.
-The first is renaming, and it changes nothing. The second changes the
-value, and every name that points at it sees the change.
+So there are two different moves. `forecast = week` is renaming, and it
+changes nothing. `forecast[6] = 16` changes the list itself, and every
+name that points at it sees the change.
 
 ## Three tools for your toolkit
 
@@ -551,13 +577,14 @@ brackets, when the test was handed over as `is_cold`, without them?
 ```
 
 A list with one value is the edge of the promise, "at least one
-number". Mistakes like to hide at the edges.
+number". Mistakes like to hide at the edges. If the stubs are slow to
+come, copy `largest` and change one thing at a time. After a few tries,
+a fold under the tests offers the steps, and you can come back to
+`count_if` after the next section.
 
-Python has its own `max()` and `min()`, which do what `largest` and
-`smallest` do. Writing our own shows what happens inside. One warning
-about names, as with `total`: a cell that says `largest = 14` hides
-the tool on that page. Call the number `warmest_day` or `top_score`
-instead.
+Python has its own `max()` and `min()`, which do the same jobs. One
+warning about names, as with `total`: a cell that says `largest = 14`
+hides the tool on that page. Call the number `warmest_day` instead.
 
 ## A real list: Ireland since 1950
 
@@ -566,10 +593,9 @@ expectancy at birth, in years, for many countries from 1950 to 2016.
 Life expectancy is how long a baby born that year could expect to live.
 
 The first line loads the file. `await` means "wait until the file has
-arrived". The second line keeps the rows where the country is Ireland,
-takes the `life_expectancy` column, and makes it a list. That is all we
-need from the file. From there on, it is an ordinary list, and the
-maths is ours.
+arrived". The second line keeps Ireland's rows, takes the
+`life_expectancy` column, and makes it a list. From there on, it is an
+ordinary list, and the maths is ours.
 
 ```python exec
 id: row-real-1

@@ -49,25 +49,31 @@ entries:
       An empty list is a list with no values in it. A new list often starts
       empty before a loop, and grows by append each time round.
     example: "week_fahrenheit = []"
+  - term: sample
+    kind: concept
+    definition: >
+      A sample is one measurement of a sound, taken many times a second.
+      A sound on a computer is a list of samples.
   - term: "+ and * on lists"
     kind: operator
     definition: >
       Join two lists into one longer list, or repeat a list a whole number
       of times. They do not add or multiply the values inside.
-    example: "[8, 6] + [7, 9]   # [8, 6, 7, 9]"
+    example: "[0, 5] + [0, 4]   # [0, 5, 0, 4]"
   - term: adding element by element
     kind: concept
     definition: >
       Adding element by element means adding each pair of values in the
       same position of two lists of the same length. It is the maths
-      meaning of adding two rows of numbers.
+      meaning of adding two rows of numbers, and how a computer mixes two
+      sounds.
   - term: "numpy array"
     kind: function
     python: numpy.array
     definition: >
       Makes an array from a list. An array is numpy's row of numbers, where
       + and * work element by element, the maths way.
-    example: "np.array([3.20, 4.50]) * 1.135"
+    example: "np.array([0, 5, 8]) * 0.5"
   - term: two names for one list
     kind: concept
     definition: >
