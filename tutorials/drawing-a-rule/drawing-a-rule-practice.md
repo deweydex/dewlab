@@ -2,14 +2,14 @@
 title: "Drawing a rule: graphs of functions — Practice"
 practice_for: drawing-a-rule
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Drawing a rule: graphs of functions — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -18,7 +18,7 @@ tutorial, `evaluate` from
 [Rules with letters in them](tutorial:rules-with-letters-in-them), and
 `close_enough`. Each call to `plot_rule` in one cell draws on the same
 picture. The first cell below imports `matplotlib.pyplot` as `plt`, for
-`plt.legend()` and friends, and `math`.
+`plt.legend()` and the other drawing tools, and `math`.
 
 ## Warm-up
 
@@ -140,8 +140,10 @@ the number it was given.
 
 </details>
 
-**6. Fix.** This cell is meant to draw an arch, $y = 4 - x^2$. It stops
-with an error. Read the error, then fix the rule.
+**6. Fix.** Schlomo, who is learning Python too, wants to draw an arch,
+$y = 4 - x^2$. He remembers that some calculators and spreadsheets
+write a power with `^`, so he tries it. His cell stops with an error.
+Read the error, then change the rule.
 
 ```python exec
 id: drawing-a-practice-fix-arch
@@ -169,8 +171,10 @@ plot_rule(arch, -3, 3)
 ```
 
 Now it draws an upside-down U, with its top at $(0, 4)$ and roots at
-$-2$ and 2. With whole numbers only, `4 - x ^ 2` would have run and
-given wrong answers with no error at all, which is worse.
+$-2$ and 2. Schlomo's memory was sound: spreadsheets do write powers
+with `^`. Python keeps that sign for XOR. With whole numbers only,
+`4 - x ^ 2` would have run and given other numbers with no error at
+all, which is harder to notice.
 
 </details>
 
@@ -193,6 +197,8 @@ How could you get the second decimal place?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def basketball_height(seconds):
     """Return the height in metres of the basketball, seconds after it is thrown."""
@@ -208,32 +214,34 @@ two, closer to 1.8. Drawing again from 1.8 to 1.85 gives about 1.82.
 
 </details>
 
-**8. Predict.** Two taxi firms. Firm A charges €4, plus €1.50 a
-kilometre. Firm B charges €6, plus €1.20 a kilometre. Which is cheaper
-for a short trip, and which for a long one? Guess about where they cost
-the same, then draw both from 0 to 15 km and check.
+**8. Predict.** Two ways to back up the photos on a phone. Method A
+takes 4 minutes to start, then 1.5 minutes for each gigabyte. Method B
+takes 6 minutes to start, then 1.2 minutes for each gigabyte. (The
+times are made up.) Which is faster for a small backup, and which for a
+large one? Guess about where they take the same time, then draw both
+from 0 to 15 GB and check.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def firm_a(km):
-    """Return firm A's fare in euro for km kilometres."""
-    return 4 + 1.5 * km
+def method_a(gigabytes):
+    """Return method A's backup time in minutes for this many gigabytes."""
+    return 4 + 1.5 * gigabytes
 
-def firm_b(km):
-    """Return firm B's fare in euro for km kilometres."""
-    return 6 + 1.2 * km
+def method_b(gigabytes):
+    """Return method B's backup time in minutes for this many gigabytes."""
+    return 6 + 1.2 * gigabytes
 
-plot_rule(firm_a, 0, 15)
-plot_rule(firm_b, 0, 15)
+plot_rule(method_a, 0, 15)
+plot_rule(method_b, 0, 15)
 plt.legend()
-print(firm_a(20 / 3), firm_b(20 / 3))
+print(method_a(20 / 3), method_b(20 / 3))
 ```
 
-Firm A starts lower, and firm B climbs more slowly, so A is cheaper for
-short trips and B for long ones. The lines meet at about 6.7 km, where
-each fare is €14. The exact crossing is $6\frac{2}{3}$ km, and both
-fares print as `14.0`.
+Method A starts lower, and method B climbs more slowly, so A is faster
+for small backups and B for large ones. The lines meet at about 6.7 GB,
+where each takes 14 minutes. The exact crossing is $6\frac{2}{3}$ GB,
+and both times print as `14.0`.
 
 </details>
 
@@ -257,6 +265,8 @@ What do you get from the table that the picture did not give you?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 before = evaluate([-4, 0, 1], -3)
 for step in range(-299, 301):
@@ -268,35 +278,54 @@ for step in range(-299, 301):
 ```
 
 It prints `-2.0 0.0`, then `-1.99`, then `2.0 0.0`. The roots are $-2$
-and 2. The line at $-1.99$ is where the value first goes below 0, just
-after the root. A table like this gives numbers you can print; a
+and 2. The line at $-1.99$ is where the value first goes below 0, one
+step after the root. A table like this gives numbers you can print; a
 picture gives the shape at a glance. Here the search found each root
 exactly, because $-2$ and 2 are on the table's steps.
 
 </details>
 
 **10. Explain.** The graph of $y = \frac{1}{x}$ creeps towards the
-x-axis and never reaches it. Why can $\frac{1}{x}$ never be 0?
+x-axis and never reaches it. Schlomi, who is learning Python too, is
+not so sure. "Take $x$ big enough and it does reach 0. Python says so."
+She runs `print(1 / 10 ** 400)`, and it prints `0.0`. Which should we
+believe, the graph or Python? Why?
 
-<details class="dl-answer"><summary>answer</summary>
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-$\frac{1}{x}$ is the number that, times $x$, makes 1. If it were 0, then
-0 times $x$ would be 1, but 0 times any number is 0. So $\frac{1}{x}$
-can be as small as you like, when $x$ is large, but never 0. The
-equation $\frac{1}{x} = 0$ has no answer in the real numbers.
+1. What number, times $x$, makes 1? Could that number be 0?
+2. Try `print(1 / 10 ** 300)` and `print(1 / 10 ** 330)`.
+3. Which space is each answer in: the real numbers, or Python's floats?
 
 </details>
 
-**11. Make.** A €60 prize is shared equally. Draw the rule
-$\frac{60}{x}$ from 1 to 10 as a curve. On the same picture, draw dots
-at the whole numbers 1 to 10 only. Which picture tells the truth about
-sharing a prize among people, and why?
+<details class="dl-answer"><summary>answer</summary>
+
+Both, each in its own space. In the real numbers, $\frac{1}{x}$ is
+the number that, times $x$, makes 1. If it were 0, then 0 times $x$
+would be 1, but 0 times any number is 0. So $\frac{1}{x}$ can be as
+small as you like, when $x$ is large, but never 0: the equation
+$\frac{1}{x} = 0$ has no answer in $\mathbb{R}$.
+
+Schlomi's `0.0` is true of floats. A float cannot hold a number much
+smaller than about $10^{-308}$ in the usual way, and nothing below
+about $5 \times 10^{-324}$ at all, so $10^{-400}$ is rounded to 0.0.
+`1 / 10 ** 300` still prints `1e-300`. Her experiment found the edge of
+Python's number space, which the graph, drawn in $\mathbb{R}$, does not
+have.
+
+</details>
+
+**11. Make.** A shared drive of 60 GB is split equally among the people
+who use it. Draw the rule $\frac{60}{x}$ from 1 to 10 as a curve. On the
+same picture, draw dots at the whole numbers 1 to 10 only. Which picture
+tells the truth about sharing a drive among people, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
 def each_share(people):
-    """Return each person's share in euro when €60 is shared by people."""
+    """Return each person's share in GB when 60 GB is shared by people."""
     return 60 / people
 
 plot_rule(each_share, 1, 10)
@@ -310,8 +339,8 @@ plt.plot(dots_x, dots_y, "o")
 
 The dots tell the truth. People come in whole numbers, so the domain
 of this rule is 1, 2, 3 and so on. The curve has a value at 2.5 people,
-€24, which means nothing. A curve says "every value in between makes
-sense". For a speed, a price per kilogram, or a time, it does. For a
+24 GB, which means nothing. A curve says "every value in between makes
+sense". For a speed, a temperature, or a time, it does. For a
 count of people, it does not.
 
 </details>
@@ -345,7 +374,7 @@ plt.legend()
 print(cubed(10), two_to_the(10))
 ```
 
-$2^{10}$ is 1,024 and $10^3$ is 1,000, so $2^x$ is only just ahead. The
+$2^{10}$ is 1,024 and $10^3$ is 1,000, so $2^x$ is barely ahead. The
 graphs meet twice, at about 1.4 and about 9.9. Between those, $x^3$ is
 ahead. After 9.9, $2^x$ pulls away and never looks back. Every power
 of $x$, however high, is overtaken by $2^x$ in the end.
@@ -401,39 +430,39 @@ routes to one answer.
 
 </details>
 
-**15. Fix.** This cell should draw a phone plan's cost. It stops with a
-`TypeError`. Find the mistake.
+**15. Fix.** This cell should draw server A's time from the tutorial.
+It stops with a `TypeError`. Find the line that causes it.
 
 ```python exec
 id: drawing-a-practice-fix-return
-def plan_cost(gigabytes):
-    """Return the monthly cost in euro: €8, plus €2 a gigabyte."""
-    8 + 2 * gigabytes
+def server_time(thousands):
+    """Return server A's time to answer in ms: 8, plus 2 for each thousand people."""
+    8 + 2 * thousands
 
-plot_rule(plan_cost, 0, 10)
+plot_rule(server_time, 0, 10)
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 The last line of the error is
 `TypeError: '<' not supported between instances of 'NoneType' and 'NoneType'`.
-The function works out `8 + 2 * gigabytes` and then throws it away,
+The function works out `8 + 2 * thousands` and then throws it away,
 because there is no `return`. So it gives back `None` for every
 point, and `plot_rule` stops when it asks for the smallest of its
 values to decide where the x-axis goes: `None` cannot be compared with
 `None`.
 
 ```python
-def plan_cost(gigabytes):
-    """Return the monthly cost in euro: €8, plus €2 a gigabyte."""
-    return 8 + 2 * gigabytes
+def server_time(thousands):
+    """Return server A's time to answer in ms: 8, plus 2 for each thousand people."""
+    return 8 + 2 * thousands
 
-plot_rule(plan_cost, 0, 10)
+plot_rule(server_time, 0, 10)
 ```
 
-The error was raised inside `plot_rule`, but the mistake was in
-`plan_cost`. The traceback lists both. The line at the bottom says what
-went wrong, and the lines above say where it came from.
+The error was raised inside `plot_rule`, but the missing `return` was
+in `server_time`. The traceback lists both. The line at the bottom says
+what happened, and the lines above say where it came from.
 
 </details>
 

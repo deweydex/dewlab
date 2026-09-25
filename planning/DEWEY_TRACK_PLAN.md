@@ -312,20 +312,37 @@ spread, a frequency table and one honest chart. Toolkit gains
 
 ### Unit 6 — Algorithms that scale
 
-*Finding a name in 10 names is easy. In 10 million? The maths of "how many
-steps" decides.*
+*Finding a name in 10 names is quick. In 10 million? The maths of "how
+many steps" decides.*
 
 | # | Tutorial | Question | Outcomes |
 |---|---|---|---|
-| 6.1 | Finding things fast | How does a phone find one contact in thousands? | MIT-6.6, MIT-6.8, MIT-1.1 |
-| 6.2 | Putting things in order | How would you sort a hand of cards, and how many moves does it take? | MIT-6.8 |
-| 6.3 | Racing the sorts | Which sort wins on 1,000 numbers, and why? | MIT-6.8, PDP-LO2 |
+| 6.1 | Finding things fast | How does a computer find one planet in NASA's list of over six thousand, in about a dozen looks? | MIT-6.6, MIT-6.8, MIT-1.1 |
+| 6.2 | Sorting a hand of cards | How would you sort a hand of cards, and how many moves does it take? | MIT-6.8 |
+| 6.3 | Racing the sorts | Which sort wins on 1,000 numbers, and which can we wait for on six thousand planets? | MIT-6.8, PDP-LO2 |
 | 6.4 | A function that calls itself | How many files are in this folder, counting every folder inside it? | MIT-6.8, PDP-LO8 |
-| 6.5 | Doubling and halving | Why does a rumour spread so fast, and why is binary search so quick? | MIT-1.1 |
+| 6.5 | Doubling and halving | Why does a rumour, or a computer worm, spread so fast, and why is binary search so quick? | MIT-1.1 |
 
 Logarithms arrive as "how many halvings" (6.1) and powers as "how many
 doublings" (6.5), the same idea from both ends. Step counts are plotted, so
 growth rates are seen before they are named. Shell sort is in 6.3.
+
+Contexts: eight phone contacts for tracing, then NASA's Exoplanet Archive
+(`data/exoplanets.csv`, a snapshot of 25 September 2026, 6,372 planets),
+binary-searched for Proxima Cen b (6.1); a hand of cards, and in the
+practice the nearest known planets, file names and a weather buoy's
+batteries (6.2); random lists, Ireland's life expectancy as a nearly
+sorted list, and the orbits of 6,019 planets, where the formula says
+which sorts are worth waiting for (6.3); a folder of photos, a website's
+menus, zip files inside zip files and a recursive fractal tree (6.4); a
+rumour and the Slammer worm, the chessboard, Moore's law from the Intel
+4004 to the Apple M1, Ireland's CO₂ emissions and, in the practice, the
+list of known planets doubling since 1995 (6.5). No page uses money.
+Unit product (on `mixed-algorithms-that-scale`): a phone-book search
+that stays fast, the same lookup done three ways on 10, 1,000 and
+100,000 names, with the step counts and a sentence on why. Toolkit
+gains `linear_search`, `binary_search`, `selection_sort`,
+`insertion_sort`, `shell_sort`, `count_items` and `halvings`.
 
 ### Unit 7 — Algebra you can run
 
@@ -333,16 +350,38 @@ growth rates are seen before they are named. Shell sort is in 6.3.
 
 | # | Tutorial | Question | Outcomes |
 |---|---|---|---|
-| 7.1 | Rules with letters in them | What is the difference between a rule and a question? | MIT-1.5, MIT-1.6, MIT-1.8 |
+| 7.1 | Rules with letters in them | How many rows of photos fit on a gallery page, and what is the difference between a rule and a question? | MIT-1.5, MIT-1.6, MIT-1.8 |
 | 7.2 | Drawing a rule | What does `y = x² − 4` look like, and where does it cross zero? | MIT-3.2 |
-| 7.3 | Solving for x | When will two phone plans cost the same? | MIT-1.9 |
+| 7.3 | Solving for x | When are two servers equally fast, and when does a volleyed ball land? | MIT-1.9 |
 | 7.4 | When there is no real answer | What does Python mean by `2j`? | MIT-1.10 |
 | 7.5 | The top of the curve | Why does a round letter dip below the line, and how far? (typographic overshoot) | MIT-3.4 |
-| 7.6 | Several unknowns at once | How many adult and child tickets were sold? | MIT-1.12 |
+| 7.6 | Several unknowns at once | A server sent 230 requests and 2,060 KB: how many were images? | MIT-1.12 |
 
 Polynomials are lists of coefficients, so expanding brackets is a loop. Every
-algebraic answer is checked by substituting it back in code. Toolkit gains
-`evaluate`, `solve_linear`, `solve_quadratic`, `solve_simultaneous`.
+algebraic answer is checked by substituting it back in code.
+
+Contexts: a photo gallery's page height ($50n + 30$), a photo with a
+strip and a caption bar, and the three weights $(1 - t)^2$, $2t(1 - t)$,
+$t^2$ of a curve on a screen, expanded by the loop and adding up to 1
+(7.1, with a de Casteljau animation of 7.5's letter bowl on its practice
+page); a kicked ball's height against time, animated beside its graph,
+three servers whose answer times cross, and a game's frame time,
+$\frac{1000}{x}$ (7.2); the same servers solved exactly, a game's
+sprite sheet, a volleyed ball's landing time from the quadratic formula,
+and a stone dropped down a well on the practice page (7.3); a ship
+turned by multiplying by `1j`, the history of "imaginary", and
+alternating current as where engineers meet these numbers (7.4); a
+server log of image and text requests, a game's coins and gems, backup
+logs of photos, songs and clips, and on the practice page 7.5's letter
+bowl found again from three of its pixels (7.6). No page uses money.
+Unit product (on `mixed-algebra-you-can-run`): a server chooser (where
+two servers are equally fast, the fastest for a crowd, an old server's
+rule from two measurements) and a free-kick checker (the top of the
+flight, whether it clears the wall, and why 5 m has only complex
+roots), with a detour to Kepler's third law, $T^2 = a^3$, on NASA's
+numbers for the eight planets (`data/planet-orbits.csv`). Toolkit gains
+`evaluate`, `plot_rule`, `solve_linear`, `solve_quadratic`, `vertex`
+and `solve_simultaneous`.
 
 ### Unit 8 — Shapes, angles and waves
 

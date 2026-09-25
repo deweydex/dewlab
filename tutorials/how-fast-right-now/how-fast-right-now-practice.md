@@ -94,16 +94,16 @@ picture, and be as good.
 </details>
 
 **4. Predict.** What do these print? The first rule is the straight
-line from the warm-up cell, and the second is a phone plan that costs
-€20 whatever you use, as on
+line from the warm-up cell, and the second is server B, which answers
+in 20 ms however many people use the app, as on
 [Drawing a rule](tutorial:drawing-a-rule#straight-lines-and-where-two-meet).
 
 ```python
-def plan_b(gigabytes):
+def server_b(thousands):
     return 20
 
 print(derivative_at(straight_line, 100))
-print(derivative_at(plan_b, 5))
+print(derivative_at(server_b, 5))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
@@ -113,7 +113,7 @@ About 1.5, printed as 1.499999996212864, and exactly 0.0.
 A straight line has the same slope everywhere, so its derivative is
 its slope at every point: the line climbs 1.5 for each step of 1. The
 tiny difference from 1.5 is float rounding. A flat rule never changes,
-so its rate of change is 0: one more gigabyte costs nothing more.
+so its rate of change is 0: a thousand more people add no time.
 
 </details>
 

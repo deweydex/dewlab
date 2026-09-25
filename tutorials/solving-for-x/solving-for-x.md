@@ -1,9 +1,9 @@
 ---
 title: "Solving for x: linear and quadratic equations"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
-  when-do-two-plans-cost-the-same:
+  when-are-two-servers-equally-fast:
     covers: [MIT-1.9]
     touches: [MIT-1.7]
   a-tool-for-any-straight-line-equation:
@@ -24,17 +24,24 @@ covers:
 
 # Solving for x: linear and quadratic equations
 
-A phone company has three plans. Plan A costs €8 a month, plus €2 for
-each gigabyte of data. Plan B costs €20, however much you use. Plan C
-costs €15, plus €1.20 a gigabyte. On
+On
 [Drawing a rule](tutorial:drawing-a-rule#straight-lines-and-where-two-meet),
-the graphs of plans A and B crossed at about 6 gigabytes. When do plans
-A and C cost the same? A graph can only say "about". Can we find the
-exact answer, and be sure of it?
+three servers raced to answer an app's requests. Server A takes 8 ms,
+plus 2 ms for every thousand people using the app. Server B takes
+20 ms, however many people there are. Server C takes 15 ms, plus 1.2 ms
+for every thousand. The graphs of A and B crossed at about 6 thousand
+people, and A and C somewhere near 9. A graph can only say "about".
+Can we find the exact crowd where A and C are equally fast, and be sure
+of it?
+
+And a second question, with a ball in it: a footballer volleys a ball
+upwards. When does it land? This one has a square in it, and a square
+changes everything.
 
 On this page we:
 
-- find where two plans cost the same, by a table and then by undoing
+- find where two servers are equally fast, by a table and then by
+  undoing
 - write `solve_linear` for any equation of the form $ax + b = 0$
 - solve an equation with a square in it by spotting two numbers
 - say the quadratic formula in words, then in symbols, then in code
@@ -79,13 +86,13 @@ What does `evaluate([6, 5, 1], 2)` give?
 - 32
 ```
 
-## When do two plans cost the same?
+## When are two servers equally fast?
 
-Let's start with plans A and B. Call the number of gigabytes $g$. Here
-$g$ is a name for a number we do not know yet. On
+Let's start with servers A and B. Call the number of people, in
+thousands, $g$. Here $g$ is a name for a number we do not know yet. On
 [Rules with letters in them](tutorial:rules-with-letters-in-them#a-rule-a-question-and-a-promise),
 an equation was a question, and solving it meant finding the values
-that make it true. "When do A and B cost the same?" is this equation:
+that make it true. "When are A and B equally fast?" is this equation:
 
 $$8 + 2g = 20$$
 
@@ -94,20 +101,30 @@ we kept a formula true by doing the same move to both sides. The same
 rule works here. First, subtract 8 from both sides: $2g = 12$. Then
 divide both sides by 2: $g = 6$. The graph's "about 6" is exactly 6.
 
-Now plans A and C. A table first. Before you run it, guess where the
-two plans meet.
+<aside class="dl-note" id="solving-note-al-jabr">
+
+**Where "algebra" comes from.** Around the year 820, in Baghdad,
+Muhammad ibn Musa al-Khwarizmi wrote a book on solving equations. Its
+title has the word *al-jabr*, "restoring": moving a term that is taken
+away on one side over to the other, where it is added. That word became
+*algebra*, and his own name became *algorithm*.
+
+</aside>
+
+Now servers A and C. A table first. Before you run it, guess where the
+two meet.
 
 ```python exec
-id: solving-plans-1
-for gigabytes in range(0, 13):
-    plan_a = 8 + 2 * gigabytes
-    plan_c = 15 + 1.2 * gigabytes
-    print(gigabytes, plan_a, round(plan_c, 2))
+id: solving-servers-1
+for thousands in range(0, 13):
+    server_a = 8 + 2 * thousands
+    server_c = 15 + 1.2 * thousands
+    print(thousands, server_a, round(server_c, 2))
 ```
 
-At 8 gigabytes, plan A is cheaper. At 9, plan C is. The two plans meet
-somewhere between, and the table cannot say where. So let's write the
-equation:
+At 8 thousand people, server A is faster. At 9, server C is. The two
+meet somewhere between, and the table cannot say where. So let's write
+the equation:
 
 $$8 + 2g = 15 + 1.2g$$
 
@@ -122,14 +139,14 @@ The rule of this unit is that every answer is checked. We put it back
 into both sides and see if they agree. What do you expect?
 
 ```python exec
-id: solving-plans-2
-gigabytes = 7 / 0.8
-print(gigabytes)
-print(8 + 2 * gigabytes, 15 + 1.2 * gigabytes)
+id: solving-servers-2
+thousands = 7 / 0.8
+print(thousands)
+print(8 + 2 * thousands, 15 + 1.2 * thousands)
 ```
 
-`8.75`, and both plans cost €25.50 there. Below 8.75 gigabytes plan A
-is cheaper, and above it plan C is. Each side of this equation has
+`8.75`, and both servers take 25.5 ms there. Below 8,750 people server
+A is faster, and above it server C is. Each side of this equation has
 degree 1, so it is a *linear equation*: the unknown is only multiplied
 by a number and added to. Each side, drawn as on the last page, is a
 straight line, and the answer is where the two lines cross.
@@ -194,8 +211,8 @@ assert solve_linear(0.8, -7) == 8.75
 assert solve_linear(2, 6) == -3
 assert solve_linear(0, 5) is None
 
-# the plans, the band's weekend from Rules with letters in them, and more
-for a, b in [(0.8, -7), (2, -12), (200, -500), (5, -35), (3, 7), (-2.5, 4)]:
+# the servers, the gallery page from Rules with letters in them, and more
+for a, b in [(0.8, -7), (2, -12), (7, -700), (0.6, -30), (3, 7), (-2.5, 4)]:
     x = solve_linear(a, b)
     assert close_enough(evaluate([b, a], x), 0), (a, b, x)
 print("solve_linear keeps its promise.")
@@ -208,26 +225,28 @@ last line of the function is not written yet. It starts with `return`.
 
 ### Your turn
 
-A swimming pool charges €7 a visit. A membership costs €35 a month,
-plus €2 a visit.
+Two phones are charging. Phone A is at 20% and gains 1.5% a minute.
+Phone B is at 50% and gains 0.9% a minute. (A steady rate is a model:
+real phones charge more slowly as they fill.)
 
-1. Write the equation for "the two cost the same", with $v$ for the
-   number of visits in a month.
-2. Tidy it into the shape $av + b = 0$. What are $a$ and $b$?
+1. Write the equation for "the two show the same charge", with $m$ for
+   the minutes.
+2. Tidy it into the shape $am + b = 0$. What are $a$ and $b$?
 3. Solve it with `solve_linear`, and substitute the answer back.
 
 ```python exec
 id: solving-linear-your-turn
-# The pool: solve, then substitute back
+# The phones: solve, then substitute back
 ```
 
 ## When the unknown is squared
 
-An allotment plot is a rectangle, 3 m longer than it is wide, and it
-covers 40 square metres. How wide is it?
+A game keeps its small pictures, its *sprites*, side by side in one
+image called a sprite sheet. One sprite sheet holds 40 tiles in a
+rectangle, with 3 more columns than rows. How many rows are there?
 
-Call the width $w$. Then the length is $w + 3$, and the area is width
-times length:
+Call the number of rows $w$. Then there are $w + 3$ columns, and the
+number of tiles is rows times columns:
 
 $$w(w + 3) = 40$$
 
@@ -243,16 +262,16 @@ numbers that make it true are its roots. As on
 [Drawing a rule](tutorial:drawing-a-rule#a-tool-that-draws-any-rule),
 a root is a place where the graph meets the x-axis.
 
-Let's try a table first. What width do you expect?
+Let's try a table first. How many rows do you expect?
 
 ```python exec
-id: solving-allotment-1
-for width in range(0, 9):
-    print(width, width * (width + 3))
+id: solving-sprites-1
+for rows in range(0, 9):
+    print(rows, rows * (rows + 3))
 ```
 
-A width of 5 m gives exactly 40. The table worked because the answer is
-a whole number. Here is a way that does not need luck.
+5 rows give exactly 40 tiles. The table worked because the answer is a
+whole number. Here is a way that does not need luck.
 
 ## Factorising by inspection
 
@@ -289,18 +308,18 @@ Now one fact does the rest. If two numbers multiply to make 0, then one
 of them must be 0. So either $w - 5 = 0$, which gives $w = 5$, or
 $w + 8 = 0$, which gives $w = -8$.
 
-Two roots. Which one answers the question? A width is a length, and a
-length is never negative. The equation lives in all of $\mathbb{R}$,
-and the allotment lives in the numbers from 0 up. So it is 5 m wide
-and 8 m long. We check both roots anyway. What do you expect?
+Two roots. Which one answers the question? A count of rows is never
+negative. The equation lives in all of $\mathbb{R}$, and the sprite
+sheet lives in the whole numbers from 0 up. So it has 5 rows and 8
+columns. We check both roots anyway. What do you expect?
 
 ```python exec
 id: solving-inspection-2
-allotment = [-40, 3, 1]
-print(evaluate(allotment, 5), evaluate(allotment, -8))
+sprite_sheet = [-40, 3, 1]
+print(evaluate(sprite_sheet, 5), evaluate(sprite_sheet, -8))
 ```
 
-Both give 0, so both are roots. Only one of them is an allotment.
+Both give 0, so both are roots. Only one of them is a sprite sheet.
 
 ### Your turn
 
@@ -313,17 +332,17 @@ Both give 0, so both are roots. Only one of them is an allotment.
 ## The quadratic formula
 
 Inspection works well when the roots are whole numbers. Often they are
-not. A photo 20 cm wide and 30 cm tall goes in a frame with a border of
-the same width, $x$ cm, all the way round. The framed picture must
-cover 1,000 square centimetres. How wide is the border?
+not. Back to the footballer. The ball leaves the boot 1 m above the
+grass, rising at 14 metres a second. Gravity slows it by 9.8 metres a
+second, every second. Leaving out the air, its height after $t$
+seconds is
 
-The framed picture is $20 + 2x$ wide and $30 + 2x$ tall, so
+$$1 + 14t - 4.9t^2$$
 
-$$(20 + 2x)(30 + 2x) = 1000$$
+metres. (The 4.9 is half of 9.8.) When does it land? It lands when its
+height is 0:
 
-Expanding the brackets and subtracting 1,000 gives
-
-$$4x^2 + 100x - 400 = 0$$
+$$-4.9t^2 + 14t + 1 = 0$$
 
 No pair of whole numbers factorises that. We need a method that always
 works.
@@ -341,34 +360,37 @@ other":
 
 $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 
-The fold near the end of this page says where the formula comes from.
-Here we check it instead. Here are the four steps for the frame, one
-line each. Before you run it, guess: is the border more or
-less than 5 cm?
+Where the formula comes from is on
+[The top of the curve](tutorial:the-top-of-the-curve#completing-the-square).
+Here we check it instead. Here are the four steps for the ball, one
+line each. Before you run it, guess: is the ball in the air for more
+than 3 seconds, or less? I'll wait.
 
 ```python exec
 id: solving-formula-1
 import math
 
-a, b, c = 4, 100, -400
+a, b, c = -4.9, 14, 1
 under_the_root = b ** 2 - 4 * a * c
 root = math.sqrt(under_the_root)
 print((-b + root) / (2 * a))
 print((-b - root) / (2 * a))
 ```
 
-The two roots are about 3.51 and −28.51. The border is about 3.5 cm
-wide. A border of −28.5 cm means nothing, so, as with the allotment,
-the equation has two answers and the question has one. Let's check the
-border in the frame:
+The two roots are about −0.07 and 2.93. The ball lands a little before
+3 seconds. What is the other root? It is a time 0.07 seconds *before*
+the kick. The rule's curve, run backwards, would have left the grass
+then; the real ball was still on the boot. So, as with the sprite
+sheet, the equation has two answers and the question has one. Let's
+put the landing time back into the rule:
 
 ```python exec
 id: solving-formula-2
-border = (-b + root) / (2 * a)
-print((20 + 2 * border) * (30 + 2 * border))
+landing = (-b - root) / (2 * a)
+print(landing, 1 + 14 * landing - 4.9 * landing ** 2)
 ```
 
-`1000.0`: the framed picture covers 1,000 square centimetres.
+`0.0`: at 2.93 seconds the ball is back on the grass.
 
 ## How many answers? The discriminant
 
@@ -465,7 +487,7 @@ error.
 
 ```python exec
 id: solving-toolkit-quadratic-tests
-assert solve_quadratic(1, 3, -40) == [-8, 5], "the allotment"
+assert solve_quadratic(1, 3, -40) == [-8, 5], "the sprite sheet"
 assert solve_quadratic(1, -6, 9) == [3]
 assert solve_quadratic(1, -6, 13) == []
 
@@ -505,8 +527,8 @@ $-b + \sqrt{\ }$ and $-b - \sqrt{\ }$ gives the smaller root?
 ## When the square root says no
 
 What if `solve_quadratic` did not check the discriminant first? Here is
-the frame's cell again, for $x^2 + 1 = 0$. This cell is meant to stop with an error. Before you run
-it, which line do you think will stop it?
+the ball's cell again, for $x^2 + 1 = 0$. This cell is meant to stop
+with an error. Before you run it, which line do you think will stop it?
 
 ```python exec
 id: solving-no-root-1
@@ -522,8 +544,8 @@ It prints `-4`, and then stops at the last line with
 the value is a number, but outside what `math.sqrt` accepts.
 
 $x^2 + 1 = 0$ asks for a number that squares to make −1. In
-$\mathbb{R}$ there is none, so `solve_quadratic` is right to give back
-`[]`.
+$\mathbb{R}$ there is none, so `solve_quadratic` keeps its promise by
+giving back `[]`.
 
 But is asking the question a foolish move? On
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#families-of-numbers),
@@ -544,8 +566,9 @@ formula comes from, and it is the route most textbooks take.
 
 We checked instead of deriving because a check is something a reader
 can run, on any equation, and trust. The cost is that the formula
-arrives as a fact from outside, and a reader who forgets it cannot
-rebuild it.
+arrives here as a fact from outside. Two pages on,
+[The top of the curve](tutorial:the-top-of-the-curve#completing-the-square)
+builds it.
 
 </details>
 
@@ -556,7 +579,7 @@ rebuild it.
 | What is named here? | a letter, $g$, $w$ or $x$, for a number we do not know yet; $a$, $b$ and $c$ for the numbers in an equation; roots |
 | What is promised? | `solve_linear` gives the one answer, or `None`; `solve_quadratic` gives every real root, smallest first; every answer is checked by substituting it back |
 | What happens when? | the same move on both sides, one step at a time; the discriminant is worked out before any square root is taken |
-| What does this space let us do? | in $\mathbb{R}$, $x^2 = -1$ has no answer and `math.sqrt` refuses; a width lives in the numbers from 0 up, so one root may not fit the question |
+| What does this space let us do? | in $\mathbb{R}$, $x^2 = -1$ has no answer and `math.sqrt` refuses; a count of rows lives in the whole numbers, and a landing time comes after the kick, so one root may not fit the question |
 
 ## What we have now
 

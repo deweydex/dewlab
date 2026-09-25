@@ -1,7 +1,7 @@
 ---
 title: "Several unknowns at once: simultaneous equations"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   two-facts-two-unknowns:
     covers: [MIT-1.12]
@@ -22,11 +22,15 @@ covers:
 
 # Several unknowns at once: simultaneous equations
 
-A GAA club ran a concert to raise money. Adult tickets cost €12 and
-child tickets cost €5. At the end of the night the treasurer knows two
-things: 230 tickets were sold, and the takings came to €2,060. Nobody
-kept count of which kind was which. How many adults came, and how many
-children?
+A website's server keeps a log. Tonight's log says two things: it
+answered 230 requests, and it sent 2,060 KB (kilobytes) of data. Each
+request was for a small image, which is 12 KB, or for a page of text,
+which is 5 KB. The log did not keep count of which kind was which. How
+many images did it send, and how many pages of text?
+
+Before you read on, take a guess. You have two facts and two things you
+do not know. Is that enough to find them? It turns out to be exactly
+enough, and this page is about why.
 
 On this page we:
 
@@ -77,29 +81,29 @@ Where is that?
 
 ## Two facts, two unknowns
 
-Let's name what we do not know. Call the number of adults $a$ and the
-number of children $c$. The first fact, in symbols, is
+Let's name what we do not know. Call the number of image requests $a$
+and the number of text requests $c$. The first fact, in symbols, is
 
 $$a + c = 230$$
 
-Is that enough to find $a$? Try some pairs: 200 adults and 30
-children, or 115 and 115. Each one makes 230. The cell counts every
+Is that enough to find $a$? Try some pairs: 200 images and 30 pages
+of text, or 115 and 115. Each one makes 230. The cell counts every
 pair of whole numbers that fits. How many do you expect?
 
 ```python exec
 id: several-unknowns-facts-1
 pairs = []
-for adults in range(0, 231):
-    children = 230 - adults
-    pairs.append((adults, children))
+for images in range(0, 231):
+    texts = 230 - images
+    pairs.append((images, texts))
 
 print(len(pairs), "pairs fit the first fact")
 print(pairs[:3], "...", pairs[-2:])
 ```
 
-There are 231 pairs, from no adults to no children. One fact about two
-unknowns leaves many answers. The second fact is the money: each adult
-paid €12 and each child €5.
+There are 231 pairs, from no images to no text. One fact about two
+unknowns leaves many answers. The second fact is the data: each image
+sent 12 KB and each page of text 5 KB.
 
 $$12a + 5c = 2060$$
 
@@ -109,28 +113,28 @@ time, as a linear search does on
 
 ```python exec
 id: several-unknowns-facts-2
-for adults, children in pairs:
-    if 12 * adults + 5 * children == 2060:
-        print(adults, "adults and", children, "children")
+for images, texts in pairs:
+    if 12 * images + 5 * texts == 2060:
+        print(images, "images and", texts, "pages of text")
 ```
 
-Exactly one pair fits both: 130 adults and 100 children. Two equations
-that must be true at the same time, for the same unknowns, are called
-*simultaneous equations*. The pair that makes them all true is their
-*solution*.
+Exactly one pair fits both: 130 images and 100 pages of text. Two
+equations that must be true at the same time, for the same unknowns,
+are called *simultaneous equations*. The pair that makes them all true
+is their *solution*.
 
 The search worked because the answers had to be whole numbers under
-231. If the unknowns were prices, with cents, or measured amounts, there
-would be far too many cases to try. We need a method.
+231. If the unknowns were measured amounts, such as sizes in megabytes,
+there would be far too many cases to try. We need a method.
 
 ## Two lines that cross
 
 On [Drawing a rule](tutorial:drawing-a-rule#straight-lines-and-where-two-meet),
-two phone plans met where their graphs crossed. Each fact here can be
-written as a rule that gives $c$ from $a$:
+two servers were equally fast where their graphs crossed. Each fact
+here can be written as a rule that gives $c$ from $a$:
 
-- from the tickets, $c = 230 - a$;
-- from the money, $5c = 2060 - 12a$, so $c = \frac{2060 - 12a}{5}$.
+- from the count, $c = 230 - a$;
+- from the data, $5c = 2060 - 12a$, so $c = \frac{2060 - 12a}{5}$.
 
 Each is a linear function, so each graph is a straight line. What do
 you expect to see where they meet?
@@ -139,22 +143,22 @@ you expect to see where they meet?
 id: several-unknowns-lines-1
 import matplotlib.pyplot as plt
 
-def children_from_tickets(adults):
-    return 230 - adults
+def texts_from_count(images):
+    return 230 - images
 
-def children_from_money(adults):
-    return (2060 - 12 * adults) / 5
+def texts_from_data(images):
+    return (2060 - 12 * images) / 5
 
-plot_rule(children_from_tickets, 0, 230)
-plot_rule(children_from_money, 0, 230)
+plot_rule(texts_from_count, 0, 230)
+plot_rule(texts_from_data, 0, 230)
 plt.plot(130, 100, "o")
-plt.xlabel("adults")
-plt.ylabel("children")
+plt.xlabel("image requests")
+plt.ylabel("text requests")
 plt.legend()
 ```
 
-Every point on the first line fits the ticket count. Every point on the
-second fits the takings. Only one point is on both: the crossing, at
+Every point on the first line fits the count. Every point on the
+second fits the data sent. Only one point is on both: the crossing, at
 $(130, 100)$. Solving simultaneous equations in two unknowns is finding
 where two lines cross.
 
@@ -189,21 +193,31 @@ lines will print `True`?
 
 ```python exec
 id: several-unknowns-elimination-1
-adults = 910 / 7
-children = 230 - adults
-print(adults, children)
-print(adults + children == 230)
-print(12 * adults + 5 * children == 2060)
+images = 910 / 7
+texts = 230 - images
+print(images, texts)
+print(images + texts == 230)
+print(12 * images + 5 * texts == 2060)
 ```
 
 Both are `True`. Checking only the equation we used in step 4 would
 prove little, since we built $c$ from it. The second check is the one
 that counts.
 
+<aside class="dl-note" id="several-unknowns-note-nine-chapters">
+
+**Two thousand years of elimination.** A Chinese book, *The Nine
+Chapters on the Mathematical Art*, put together about two thousand
+years ago, solves problems with several unknowns by laying their
+numbers out on a counting board in columns and taking one column from
+another. That is elimination, long before Europe had a name for it.
+
+</aside>
+
 ### Your turn
 
-A juice bar sells small smoothies for €4 and large ones for €6. One
-morning it sold 45 smoothies and took €222.
+In a game, a level hides coins worth 4 points and gems worth 6 points.
+One player picked up 45 of them and scored 222 points.
 
 1. Name the two unknowns, and write the two facts as equations.
 2. Eliminate one unknown, by hand, in the steps above.
@@ -285,7 +299,7 @@ title: some steps
 divisions, and not after?
 ```
 
-The tests start with the concert. The last one makes up two equations
+The tests start with the server log. The last one makes up two equations
 from an answer we choose, and checks that the tool finds that answer
 again. Until your function is written, the first test stops with an
 error.
@@ -301,14 +315,47 @@ assert close_enough(x, 1.5) and close_enough(y, 4)
 print("solve_simultaneous keeps its promise.")
 ```
 
-In the concert test, the determinant is $1 \times 5 - 12 \times 1 = -7$,
+<details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may use other names and keep the same promise.
+
+```python
+def solve_simultaneous(a1, b1, c1, a2, b2, c2):
+    """Return the pair (x, y) where a1x + b1y = c1 and a2x + b2y = c2.
+
+    Return None when there is no single answer: the determinant
+    a1*b2 - a2*b1 is 0.
+    """
+    determinant = a1 * b2 - a2 * b1
+    if determinant == 0:
+        return None
+    x = (c1 * b2 - c2 * b1) / determinant
+    y = (a1 * c2 - a2 * c1) / determinant
+    return (x, y)
+```
+
+</details>
+
+In the server-log test, the determinant is $1 \times 5 - 12 \times 1 = -7$,
 the same 7 that elimination divided by, with its sign turned round.
+
+<aside class="dl-note" id="several-unknowns-note-cramer">
+
+**Cramer.** Gabriel Cramer, a Swiss mathematician, published the rule
+in 1750, in a book about curves. He wanted to find the curve through a
+set of points: the same question the practice page asks of a letter.
+
+</aside>
 
 ## When there is no single answer
 
-Two fans are counting their spending at a concert. The first says three
-T-shirts and two posters cost €80. The second says six T-shirts and
-four posters cost €150. What does `solve_simultaneous` make of that?
+If you have not written `solve_simultaneous` yet, open the answer under
+the tests and copy it into the stub.
+
+Two people read a backup log to find the size of one photo and one
+song. The first reads that 3 photos and 2 songs made 80 MB. The second
+reads that 6 photos and 4 songs made 150 MB. What does
+`solve_simultaneous` make of that?
 
 ```python exec
 id: several-unknowns-none-1
@@ -317,32 +364,32 @@ print(3 * 4 - 6 * 2)
 ```
 
 It gives back `None`, because the determinant is 0. Let's draw the two
-facts as rules that give the poster price from the T-shirt price. What
-will the lines do?
+facts as rules that give a song's size from a photo's size. What will
+the lines do?
 
 ```python exec
 id: several-unknowns-none-2
-def poster_from_first_fan(shirt):
-    return (80 - 3 * shirt) / 2
+def song_from_first_reading(photo):
+    return (80 - 3 * photo) / 2
 
-def poster_from_second_fan(shirt):
-    return (150 - 6 * shirt) / 4
+def song_from_second_reading(photo):
+    return (150 - 6 * photo) / 4
 
-plot_rule(poster_from_first_fan, 0, 25)
-plot_rule(poster_from_second_fan, 0, 25)
-plt.xlabel("T-shirt price")
-plt.ylabel("poster price")
+plot_rule(song_from_first_reading, 0, 25)
+plot_rule(song_from_second_reading, 0, 25)
+plt.xlabel("MB in one photo")
+plt.ylabel("MB in one song")
 plt.legend()
 ```
 
 The lines are *parallel*: they have the same steepness, and never meet.
-No pair of prices fits both facts. Six T-shirts and four posters are
-twice three and two, so they should cost twice €80, which is €160. One
-of the fans has it wrong, or had a discount.
+No pair of sizes fits both facts. Six photos and four songs are twice
+three and two, so they should make twice 80 MB, which is 160 MB. One of
+the two readings is off, or the files were not all the same size.
 
-If the second fan had said €160, the two equations would be one fact
-said twice, and the two lines would be the same line. Every point on it
-fits, so there are endless answers and still no single one. The
+If the second reading had said 160 MB, the two equations would be one
+fact said twice, and the two lines would be the same line. Every point
+on it fits, so there are endless answers and still no single one. The
 determinant is 0 in both cases, and `None` covers both.
 
 So two straight lines on a flat plane can meet in three ways: once,
@@ -363,32 +410,39 @@ Which pair of equations has no single solution?
 
 ## Three unknowns
 
-A café's three orders are on the till receipts, but the prices of a
-coffee, a scone and a juice are not:
+The backup log has three more lines. Each line is one upload, and gives
+only its total size, not the size of a photo, a song or a short video
+clip. (The sizes are made up, but they are the size real ones are.)
 
-- 2 coffees, 1 scone and 1 juice cost €12.50;
-- 1 coffee, 2 scones and 1 juice cost €11.50;
-- 1 coffee, 1 scone and 2 juices cost €12.00.
+- 2 photos, 1 song and 1 clip made 12.5 MB;
+- 1 photo, 2 songs and 1 clip made 11.5 MB;
+- 1 photo, 1 song and 2 clips made 12.0 MB.
 
 Three unknowns need three facts. Elimination works the same way, one
-unknown at a time. Taking the second order from the first eliminates
-the juice: $c - s = 1$. Taking the third from twice the second
-eliminates it again: $c + 3s = 11$. Now there are two equations in two
-unknowns, and your toolkit can finish the job. (This cell needs your
-`solve_simultaneous`.) What do you expect?
+unknown at a time. Call the sizes $p$, $s$ and $v$. Taking the second
+upload from the first eliminates the clip: $p - s = 1$. Taking the
+third from twice the second eliminates it again: $p + 3s = 11$. Now
+there are two equations in two unknowns, and your toolkit can finish
+the job. (This cell needs your `solve_simultaneous`.) What do you
+expect?
 
 ```python exec
 id: several-unknowns-three-1
-coffee, scone = solve_simultaneous(1, -1, 12.50 - 11.50, 1, 3, 2 * 11.50 - 12.00)
-juice = 12.50 - 2 * coffee - scone
-print(coffee, scone, juice)
+photo, song = solve_simultaneous(1, -1, 12.5 - 11.5, 1, 3, 2 * 11.5 - 12.0)
+clip = 12.5 - 2 * photo - song
+print(photo, song, clip)
 
-print(2 * coffee + scone + juice, coffee + 2 * scone + juice, coffee + scone + 2 * juice)
+print(2 * photo + song + clip, photo + 2 * song + clip, photo + song + 2 * clip)
 ```
 
-A coffee is €3.50, a scone €2.50 and a juice €3.00, and all three
-orders check out. The big job was made of smaller promises: two
+A photo is 3.5 MB, a song 2.5 MB and a clip 3.0 MB, and all three
+uploads check out. The big job was made of smaller promises: two
 eliminations, one call to `solve_simultaneous`, and one substitution.
+
+Three facts for three unknowns is also how a curve is found from a
+picture: the practice page finds the letter's bowl from
+[The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line)
+from three of its pixels.
 
 For more unknowns, the same idea is written with grids of numbers
 called matrices, and numpy has a tool for it, `np.linalg.solve`. It
@@ -399,12 +453,12 @@ and the totals.
 id: several-unknowns-three-2
 import numpy as np
 
-orders = [[2, 1, 1], [1, 2, 1], [1, 1, 2]]
-totals = [12.50, 11.50, 12.00]
-print(np.linalg.solve(orders, totals))
+uploads = [[2, 1, 1], [1, 2, 1], [1, 1, 2]]
+totals = [12.5, 11.5, 12.0]
+print(np.linalg.solve(uploads, totals))
 ```
 
-The same three prices. The Computational Methods course works with
+The same three sizes. The Computational Methods course works with
 these grids in depth, starting at
 [Matrices: adding, scaling and transposing a grid of numbers](tutorial:grid-of-numbers).
 
@@ -430,7 +484,7 @@ grow: for three unknowns we had to eliminate by hand first.
 
 | The question | On this page |
 |---|---|
-| What is named here? | $a$ and $c$ for counts nobody kept; $a_1$, $b_1$, $c_1$ for the numbers of the first equation; the determinant |
+| What is named here? | $a$ and $c$ for counts the log did not keep; $a_1$, $b_1$, $c_1$ for the numbers of the first equation; the determinant |
 | What is promised? | the solution makes every equation true at once; `solve_simultaneous` promises that pair, or `None` |
 | What happens when? | elimination first finds one unknown, and only then the other; three unknowns become two, and then one |
 | What does this space let us do? | two straight lines on a flat plane cross once, never, or everywhere; a determinant of 0 means never or everywhere |

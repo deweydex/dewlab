@@ -302,7 +302,7 @@ the $y$ axis at 4, the fare for 0 km.
 
 On
 [Drawing a rule](tutorial:drawing-a-rule#straight-lines-and-where-two-meet),
-phone plan A was the line $y = 2x + 8$, and that page promised a proper
+server A's time was the line $y = 2x + 8$, and that page promised a proper
 look at steepness. Every straight line that is not vertical can be
 written this way:
 
