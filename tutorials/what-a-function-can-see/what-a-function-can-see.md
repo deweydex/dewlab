@@ -1,7 +1,7 @@
 ---
 title: "What a function can see: scope and parameters"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   names-made-inside-a-function:
     covers: [PDP-LO8]
@@ -224,7 +224,7 @@ this order:
 3. Python's own space, where `print`, `round` and `len` live.
 
 The first place that has the name wins. Your toolkit functions, like
-`split_bill`, are in the page's space too. They were loaded there before
+`digit_at`, are in the page's space too. They were loaded there before
 the first cell ran.
 
 Now a question about sequence. The rate changes to 13.5%, one of
@@ -249,7 +249,7 @@ Is that good? The same call, `with_vat(100)`, gave two different answers,
 and nothing in the call or the docstring says why. The rate is a
 *hidden input*: something the function needs that is not among its
 parameters. The fix is to make it a parameter, with a default value, as
-`split_bill` does with its tip:
+`digit_at` does with its base:
 
 ```python exec
 id: what-function-outside-3
@@ -361,25 +361,27 @@ in the call's new space, point at its argument: the first parameter at
 the first argument, the second at the second, and so on. This is
 *parameter passing*.
 
-Here is `split_bill` from your toolkit, called twice with the same two
+Here is `digit_at` from your toolkit, called twice with the same two
 names. What will the second line give?
 
 ```python exec
 id: what-function-args-1
-bill = 84
-friends = 4
-print(split_bill(bill, friends, 10))
-print(split_bill(friends, bill, 10))
+year = 2026
+place = 3
+print(digit_at(year, place))
+print(digit_at(place, year))
 ```
 
-The first line gives `23.1`. The second gives `0.05`: a bill of €4,
-shared between 84 people. `split_bill` never saw the names `bill` and
-`friends`. It saw the values 84 and 4, in the order they came.
+The first line gives `2`, the thousands digit of 2026. The second gives
+`0`: the digit in place 2026 of the number 3, far past its only digit.
+`digit_at` never saw the names `year` and `place`. Even the page's
+`place` went into the slot called `number`, because it came first. The
+function saw the values 3 and 2026, in the order they came.
 
 This answers the question from the top of the page, from the other side.
 A function cannot see your variable's name. It sees only the value you
 hand it. That is also why your toolkit works on every page:
-`split_bill` was written on another page, knows nothing about this one,
+`digit_at` was written on another page, knows nothing about this one,
 and needs nothing from it.
 
 The keyword arguments from
@@ -389,40 +391,42 @@ come in any order, as long as they come after the plain ones.
 
 ```python exec
 id: what-function-args-2
-print(split_bill(people=4, total=84, tip_percent=10))
-print(split_bill(84, 4, tip_percent=15))
+print(digit_at(place=0, number=2026))
+print(digit_at(2026, 0, base=2))
 ```
 
-These give `23.1` and `24.15`.
+These give `6` and `0`: 2026 ends in 6, and in binary it ends in 0,
+because it is even.
 
-One more question. Inside this function, the parameter is given a new
-value. Does `bill` on the page change too? Decide before you run it.
+One more question. In a game, a bonus doubles your points. Inside this
+function, the parameter is given a new value. Does `score` on the page
+change too? Decide before you run it.
 
 ```python exec
 id: what-function-args-3
-def add_tip(total):
-    total = total * 1.10
-    return round(total, 2)
+def add_bonus(points):
+    points = points * 2
+    return points
 
-bill = 84
-print(add_tip(bill))
-print(bill)
+score = 84
+print(add_bonus(score))
+print(score)
 ```
 
-The first line shows `92.4`, the bill with the tip added. The second
-shows `84`: `bill` did not change. A trace table, like the ones on
+The first line shows `168`, the score with its bonus. The second shows
+`84`: `score` did not change. A trace table, like the ones on
 [Does it work?](tutorial:does-it-work#a-walkthrough-by-hand), shows why. This one has a column
 for each space.
 
-| Step | The page's space | `add_tip`'s space |
+| Step | The page's space | `add_bonus`'s space |
 |---|---|---|
-| `bill = 84` | `bill` → 84 | (no call yet) |
-| the call `add_tip(bill)` starts | `bill` → 84 | `total` → 84 |
-| `total = total * 1.10` | `bill` → 84 | `total` → 92.4 |
-| `return` hands 92.4 out | `bill` → 84 | (thrown away) |
+| `score = 84` | `score` → 84 | (no call yet) |
+| the call `add_bonus(score)` starts | `score` → 84 | `points` → 84 |
+| `points = points * 2` | `score` → 84 | `points` → 168 |
+| `return` hands 168 out | `score` → 84 | (thrown away) |
 
-The `=` inside made `total` point at a new value, in the call's own
-space. It did nothing to `bill`, which lives in another space.
+The `=` inside made `points` point at a new value, in the call's own
+space. It did nothing to `score`, which lives in another space.
 
 ## Handing over a list
 
@@ -446,7 +450,7 @@ print(road_trip)
 ```
 
 Three. This time the function changed something on the page. Why is
-this different from `add_tip`?
+this different from `add_bonus`?
 
 When the call starts, `playlist` is made to point at the same list that
 `road_trip` points at. There is one list, with two names. `append` does
@@ -460,7 +464,7 @@ So there are two different moves, and it helps to keep them apart:
   space, sees the new value.
 
 A number cannot be changed in place, so for numbers only the first move
-exists. That is why `bill` was safe. A list can be changed in place, so a
+exists. That is why `score` was safe. A list can be changed in place, so a
 function that is handed a list can change it. `add_song` says so in its
 docstring, which is the honest thing to do.
 

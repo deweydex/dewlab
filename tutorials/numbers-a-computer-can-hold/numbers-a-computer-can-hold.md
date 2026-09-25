@@ -1,9 +1,9 @@
 ---
 title: "Numbers a computer can hold"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
-  sharing-seven-euro:
+  the-row-and-column-of-a-pixel:
     covers: [PDP-LO4]
     touches: [MIT-1.1]
   families-of-numbers:
@@ -14,29 +14,28 @@ covers:
     covers: [PDP-LO4]
   powers-and-how-many-times:
     covers: [MIT-1.1]
-  a-calculator-for-splitting-the-bill:
+  taking-a-number-apart:
     covers: [PDP-LO4]
 ---
 
 # Numbers a computer can hold
 
-Two friends find €7 on the ground and decide to share it. Ask Python,
-and it gives two answers. `7 / 2` is `3.5`, and `7 // 2` is `3`.
+Look at the clock on a microwave. Each digit is made of seven small bars
+of light. Inside, the computer keeps one number, and every time the
+display changes, it takes that number apart to know which bars to light.
 
-Which one is right? Both of them. They answer two different questions,
-in two different spaces. By the end of this page you will know which
-space each one lives in, and you will have built a calculator that
-splits a restaurant bill.
+Here is the first surprise. Ask Python to divide 7 by 2, and it can give
+you three answers: `3.5`, `3` and `1`. If division at school had one
+answer, that may feel wrong. It is not. Each answer belongs to a
+different question, and the last two are the tools a display needs.
 
 On this page we:
 
-- meet three kinds of division in Python
-- meet the families of numbers that mathematicians use, and the moves
-  each one allows
-- see Python's two kinds of number, and what each can hold
+- meet three kinds of division, and find a pixel on a screen with them
+- meet the families of numbers, and Python's two kinds of number
 - work out the order Python does things in, inside one line
-- meet powers, and turn them round into logarithms
-- write `split_bill`, the first function in your own toolkit
+- count the patterns that seven bars of light can make
+- take a number apart, and write `digit_at`, the first tool in your toolkit
 
 > **The space we're in.** Numbers, and the question "which family of
 > numbers are we in?". Python gives us `+`, `-`, `*`, `/` and a few more
@@ -65,67 +64,75 @@ What does `print(3 * "7")` show?
 - An error, because `"7"` is not a number.
 ```
 
-## Sharing seven euro
+## The row and column of a pixel
 
-Here are three ways Python can divide 7 by 2. Before you run the cell,
-guess what each line will show. The third line uses `%`, which you may
-not have met. Guess anyway.
+A screen is a grid of tiny squares of light. Each square is a *pixel*.
+A computer often numbers the pixels from 0, row after row. Here is a
+very small screen, 2 pixels wide:
+
+```text
+ 0  1
+ 2  3
+ 4  5
+ 6  7
+```
+
+Counting from 0, the way the computer counts, pixel 7 is in row 3 and
+column 1. How could a computer work that out from 7 and 2 alone? Before
+you run the cell, guess what each line shows. The third line uses `%`,
+which you may not have met. Guess anyway.
 
 ```python exec
-id: numbers-sharing-1
+id: numbers-pixel-1
 print(7 / 2)
 print(7 // 2)
 print(7 % 2)
 ```
 
-The three answers are `3.5`, `3` and `1`. Each answers a different
-question about sharing €7 between two people.
+Each answer belongs to a different question.
 
-- `7 / 2` asks: how much does each person get? If you can make change,
-  each gets €3.50.
-- `7 // 2` asks: how many whole euro coins does each person get, if
-  nobody can make change? Each gets 3. This is *floor division*:
-  division that keeps only the whole number part of the answer.
-- `7 % 2` asks: how many coins are left over? One. This is the
-  *remainder*. Programmers often call `%` "modulo", or "mod".
+- `7 / 2` is ordinary division. 3.5 is a true answer, but there is no
+  row 3.5.
+- `7 // 2` is *floor division*: division that keeps only the whole
+  number part of the answer. It gives 3, the row.
+- `7 % 2` gives the *remainder*, what is left over after floor division.
+  It gives 1, the column. Programmers often call `%` "modulo", or "mod".
 
-Picture seven coins in a line. Deal them out to two people, one at a
-time. Each person ends up with three, and one coin is left on the table.
-`//` counts the coins in each hand, and `%` counts the coin on the
-table.
+Pixels 0 to 5 fill three rows, and pixel 7 is second in the next. `//` counts the full rows before it, and `%` counts how
+far along its own row it is. So on any screen, a pixel's row is
+`pixel // width`, and its column is `pixel % width`.
 
 ### Your turn
 
-Twenty-five sweets are shared between four children, and no sweet is
-cut in half.
+Later in this unit we draw digits on a grid 4 pixels wide and 7 pixels
+tall. Its pixels are numbered from 0 to 27.
 
-1. Before you run anything, work out how many each child gets, and how
-   many are left over.
-2. Change the cell below to check your answer, using `//` and `%`.
+1. Before you run anything, work out the row and column of pixel 25.
+2. Change the cell below to check, using `//` and `%`.
 
 ```python exec
-id: numbers-sharing-your-turn
+id: numbers-pixel-your-turn
 print(7 // 2)
 print(7 % 2)
 ```
 
 ## Families of numbers
 
-Why does Python need two kinds of division? Because some questions only
-make sense with whole things. You cannot hand someone half a coin, or
-half a bus. Mathematicians have names for these different spaces of
-numbers. There are four main ones, and each is bigger than the last.
+Some questions only make sense with whole things: there is no pixel
+3.5. Mathematicians have names for these different spaces of numbers.
+There are four main ones, and each is bigger than the last.
 
 The *natural numbers*, written $\mathbb{N}$, are the counting numbers:
 0, 1, 2, 3 and so on. (Some books start at 1. This course counts 0 as a
-natural number.) In $\mathbb{N}$ you can always add, and
-always multiply. But $3 - 5$ has no answer. It is like the building in
+natural number.) In $\mathbb{N}$ you can always add, and always
+multiply. But $3 - 5$ has no answer. It is like the building in
 [Four questions for any puzzle](tutorial:four-questions#the-same-move-in-a-different-space)
 with no floors below the ground.
 
 The *integers*, written $\mathbb{Z}$, are the whole numbers, with the
-negative ones added: …, −2, −1, 0, 1, 2, …. Now $3 - 5 = -2$. But $7 \div 2$ has no answer in
-$\mathbb{Z}$, because no whole number doubles to make 7.
+negative ones added: …, −2, −1, 0, 1, 2, …. Now $3 - 5 = -2$. But
+$7 \div 2$ has no answer in $\mathbb{Z}$, because no whole number
+doubles to make 7.
 
 The *rational numbers*, written $\mathbb{Q}$, are all the numbers you
 can write as one integer divided by another: the fractions, like
@@ -134,22 +141,17 @@ can divide by anything except 0.
 
 The *real numbers*, written $\mathbb{R}$, are all the points on the
 number line. Some of them are not fractions at all. The number that
-squares to make 2, written $\sqrt{2}$, is one; so is $\pi$. Mathematicians
-proved more than two thousand years ago that no fraction, however
-carefully chosen, squares to exactly 2.
+squares to make 2, written $\sqrt{2}$, is one; so is $\pi$.
 
 | Family | What it adds | A move that has no answer here |
 |---|---|---|
 | $\mathbb{N}$, natural | counting: 0, 1, 2, … | $3 - 5$ |
 | $\mathbb{Z}$, integers | negative whole numbers | $7 \div 2$ |
 | $\mathbb{Q}$, rational | fractions | $\sqrt{2}$ |
-| $\mathbb{R}$, real | every point on the line | (a later unit builds a bigger space still) |
+| $\mathbb{R}$, real | every point on the line | (a later unit goes bigger) |
 
-Each family sits inside the next, like a set of boxes, one inside
-another. Every natural number is an integer, every integer is a
-rational number, and every rational number is a real number. We write
-that as $\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}$.
-
+Each family sits inside the next, like boxes inside boxes:
+$\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}$.
 So when someone says "you can't take 5 from 3", they are right, in
 $\mathbb{N}$. The move is not foolish. It needs a bigger space.
 
@@ -188,19 +190,17 @@ print(type(7 // 2))
 print(6 / 3)
 ```
 
-Python calls whole numbers `int`, short for integer. An *int* is a whole
-number in Python: Python's version of $\mathbb{Z}$. A *float* is a number
-with a decimal point, like `3.5`. Floats are Python's stand-in for
-$\mathbb{R}$. The name comes from the "floating" decimal point, which
-can sit anywhere in the number.
+An *int*, short for integer, is a whole number in Python: Python's
+version of $\mathbb{Z}$. A *float* is a number with a decimal point,
+like `3.5`: Python's stand-in for $\mathbb{R}$. The name comes from the
+"floating" decimal point, which can sit anywhere in the number.
 
 Now look at the last line. `6 / 3` gives `2.0`, not `2`. The `/` sign
 always gives a float, even when the division comes out exactly. `//`
 stays with ints, when it is given ints.
 
-Each space has its own rules about what it can hold. What do you think
-will happen here? The first line multiplies three nine-digit numbers.
-The second adds two small decimals.
+What do you think will happen here? The first line multiplies three
+nine-digit numbers.
 
 ```python exec
 id: numbers-two-kinds-2
@@ -212,27 +212,26 @@ The first answer has 26 digits, and every one of them is right. Python's
 ints never run out of room. Many other languages have a largest whole
 number, but Python does not.
 
-The second answer is `0.30000000000000004`. That is not a mistake by
-you, and it is not really a mistake by Python. A float keeps about 16
-digits, and some decimals, like 0.1, cannot be stored exactly in a
-computer. The float that Python holds is very, very close to 0.1, but
-not equal to it. A later page in this unit shows why. For now, the thing
-to know is this: ints are exact, and floats are very close.
+The second answer is `0.30000000000000004`. That is not your mistake,
+and not really Python's. A float keeps about 16 digits, and some
+decimals, like 0.1, cannot be stored exactly. A later page in this unit
+shows why. For now: ints are exact, and floats are very close.
 
 ## Which comes first
 
-Three friends each have a starter at €6, and one of them also has a main
-course at €14. Here are three ways to write the bill. Which ones give
-the right total? Predict all three, then run the cell.
+The pixel sum also runs the other way. On the grid 4 pixels wide, which
+pixel is in row 6, column 1? Six full rows of 4 come before it, then 1
+more. Which of these give the right pixel? Predict all three, then run.
 
 ```python exec
 id: numbers-order-1
-print(3 * 6 + 14)
-print(14 + 3 * 6)
-print((14 + 3) * 6)
+print(6 * 4 + 1)
+print(1 + 6 * 4)
+print((1 + 6) * 4)
 ```
 
-The first two show `32`, the right bill. The third shows `102`.
+The first two show `25`, the pixel from the last Your turn. The third
+shows `28`, which is not on the grid at all.
 
 Even inside one line, there is a "what happens when?". Python does not
 always work from left to right. It follows the *order of operations*:
@@ -242,274 +241,292 @@ always work from left to right. It follows the *order of operations*:
 3. then multiplying and dividing, from left to right;
 4. then adding and subtracting, from left to right.
 
-You may have met this at school as BIMDAS or BODMAS. It is the same rule
-in maths and in Python. In `14 + 3 * 6`, the multiply happens first, so
-it is $14 + 18$. In `(14 + 3) * 6`, the brackets go first, so it is
-$17 \times 6$, which is the wrong bill.
+You may have met this at school as BIMDAS or BODMAS. In `1 + 6 * 4`, the
+multiply happens first. In `(1 + 6) * 4`, the brackets go first.
+Python counts `//` and `%` as dividing, so they take their turn with `*`
+and `/`.
 
 A few words for what we have been writing. An *expression* is a piece of
-code that Python works out to one value, like `3 * 6 + 14`. An
-*operator* is a symbol that does one job in an expression, like `+`,
-`*`, `//` or `%`. A *statement* is one complete instruction, usually one
-line, like `total = 3 * 6 + 14` or `print(total)`.
+code that Python works out to one value, like `6 * 4 + 1`. An *operator*
+is a symbol that does one job in an expression, like `+`, `*`, `//` or
+`%`. A *statement* is one complete instruction, usually one line, like
+`pixel = 6 * 4 + 1` or `print(pixel)`.
 
 ### Your turn
 
-The friends want to leave a 10% tip on the €32 bill.
+Each pixel has a brightness from 0 to 255. We want the brightness
+halfway between 255 and 136.
 
-1. Predict what `32 + 32 * 10 / 100` gives. Which part happens first?
+1. Predict what `255 + 136 / 2` gives. Which part happens first?
 2. Run it in the cell below and check.
-3. Write the same tip calculation another way, using brackets:
-   `32 * (1 + 10 / 100)`. Do the two agree?
+3. Add brackets so that the line gives the halfway value, 195.5.
 
 ```python exec
 id: numbers-order-your-turn
-print(32 + 32 * 10 / 100)
+print(255 + 136 / 2)
 ```
 
 ## Powers, and how many times
 
-Take a sheet of paper about 0.1 mm thick, and fold it in half. It is now
-0.2 mm thick. Fold it again: 0.4 mm. Every fold doubles it.
+Back to the microwave clock. Each bar of light is a *segment*, and a
+digit made of seven is a *seven-segment display*. The segments have
+standard names, a to g:
 
-After 10 folds, we have doubled 10 times:
-$2 \times 2 \times 2 \times \dots \times 2$, with ten 2s. That is a *power*, written $2^{10}$ and
-said "2 to the power 10". The 2 is the *base*, the number being
-multiplied, and the 10 is the *exponent*, how many times. In Python,
-the power sign is `**`.
+```text
+ aaaa
+f    b
+f    b
+ gggg
+e    c
+e    c
+ dddd
+```
 
-How thick is the paper after 10 folds? And after 42 folds? Guess the
-second one in whatever units you like, then run the cell. The last line
-turns millimetres into kilometres and rounds to a whole number.
+The digit 1 lights b and c, and 8 lights all seven. How many different
+patterns can seven segments make, each on or off? Pause here and make
+a guess before you read on.
+
+One segment has 2 patterns: off and on. Two have 4: off-off, off-on,
+on-off and on-on. Each new segment doubles the count, because every old
+pattern can come with the new one off or on. So seven segments give
+$2 \times 2 \times 2 \times 2 \times 2 \times 2 \times 2$ patterns.
+
+That is a *power*, written $2^7$ and said "2 to the power 7". The 2 is
+the *base*, the number being multiplied, and the 7 is the *exponent*,
+how many times. In Python, the power sign is `**`.
 
 ```python exec
 id: numbers-powers-1
-print(2 ** 10)
-print(0.1 * 2 ** 10)
-print(round(0.1 * 2 ** 42 / 1000 / 1000))
+print(2 ** 7)
+print(2 * 2 * 2 * 2 * 2 * 2 * 2)
+print(2 ** 7 - 10)
 ```
 
-After 10 folds, the paper is 102.4 mm thick, about the width of your
-hand. After 42 folds, it is about 439,805 km thick, which is further
-than from here to the Moon. (Real paper cannot be folded much more
-than about a dozen times, and even that needs a very long, thin sheet.
-The maths does not mind.) The function `round()`
-rounds a number to the nearest whole number; `round(x, 2)` rounds it to
-two decimal places.
+There are 128 patterns, and only 10 of them are digits. The other 118
+are shapes no clock ever shows.
 
-Now let's turn the question round. Music gives a good example. When a
-note goes up by one octave, its frequency doubles. A low A on a bass
-guitar is 55 Hz, and a high A, on a flute or a piano, is 880 Hz. How many octaves apart are
-they? That is: how many times do we double 55 to reach 880?
+<aside class="dl-note" id="numbers-note-hello">
 
-$55 \to 110 \to 220 \to 440 \to 880$, so the answer is 4.
+**Words on a calculator.** A calculator's digits are seven segments too,
+and upside down some of them look like letters. Type 0.7734, turn the
+calculator over, and it says "hELLO".
 
-The question "how many times do I multiply by 2?" has a name. A
-*logarithm* is the number of times you multiply a base to reach a
-number. Here, $880 \div 55 = 16$, and we double 4 times to reach 16. So
-the logarithm of 16, base 2, is 4:
+</aside>
 
-$$\log_2 16 = 4 \quad \text{because} \quad 2^4 = 16$$
+Now turn the question round. How many on-or-off lights would give
+1,000 different patterns? That asks how many times we double 1 to reach
+1,000. A *logarithm* is the number of times you multiply a base to reach
+a number. For example:
+
+$$\log_2 128 = 7 \quad \text{because} \quad 2^7 = 128$$
 
 A logarithm is a power, read backwards. Python keeps it in a *module*:
 a collection of extra tools that Python keeps on the shelf until you
-ask for them with `import`. What do you think the last line will show?
+ask for them with `import`. Guess the last line before you run it.
+About 8 billion people live on Earth. How many on-or-off lights would
+give every one of them a pattern of their own?
 
 ```python exec
 id: numbers-powers-2
 import math
 
-print(math.log2(16))
-print(math.log2(880 / 55))
+print(math.log2(128))
 print(math.log2(1000))
+print(math.log2(8000000000))
 ```
 
-The first two are `4.0`. The last is about 9.97. To reach 1000, you
-double nine times, reaching 512, and then you need a little less than
-one more doubling. So a logarithm need not be a whole number.
+The second is about 9.97: nine doublings reach 512, and a little less
+than one more reaches 1,000. So a logarithm need not be a whole number,
+and 10 lights are enough.
 
-Asking "which space?" helps here too. Without `import math`, Python does
-not know `math.log2` at all. The tools were there, but not in our space
-until we asked.
+The last is about 32.9. So 33 lights are enough for every person on
+Earth. I think this is the most surprising number on the page. Doubling
+grows so fast that its backwards question, the logarithm, grows very
+slowly.
 
 ### Your turn
 
-1. Put 1 cent on the first square of a board, 2 cents on the next, 4 on
-   the next, doubling each time. How many doublings until you reach
-   €1,000,000, which is 100,000,000 cents? Use `math.log2`.
+1. A display with 4 digits shows numbers from 0000 to 9999. How many
+   different numbers is that? Write it as a power of 10 with `**`.
 2. `math.log10` asks "how many times do I multiply by 10?". Before you
-   run it, what do you think `math.log10(1000000)` gives?
+   run it, what do you think `math.log10(10000)` gives?
 
 ```python exec
 id: numbers-powers-your-turn
 import math
 
-print(math.log2(100000000))
+print(math.log10(10000))
 ```
 
-## A calculator for splitting the bill
+## Taking a number apart
 
-Four friends have a meal. The bill is €84, and they want to leave a 10%
-tip and split it evenly. Here are the steps, in words:
+Now the display's real job. The computer holds the number 2026, and the
+display has four digits to light. Which digit goes where?
 
-1. Work out the tip: 10% of the bill.
-2. Add it to the bill.
-3. Divide by the number of people.
-4. Round to the nearest cent.
-
-As a formula, before rounding, with the tip as a percentage:
-
-$$\text{share} = \frac{\text{total} \times \left(1 + \frac{\text{tip}}{100}\right)}{\text{people}}$$
-
-Let's check that with the numbers. What do you expect?
+The last digit is what is left over when we divide by 10, so it is
+`2026 % 10`. Floor division by 10 drops the last digit: `2026 // 10` is
+202. So the digit before it is `202 % 10`. Before you run this cell,
+say what each line shows.
 
 ```python exec
-id: numbers-bill-1
-print(84 * (1 + 10 / 100) / 4)
+id: numbers-digits-1
+print(2026 % 10)
+print(2026 // 10 % 10)
+print(2026 // 100 % 10)
+print(2026 // 1000 % 10)
 ```
 
-Each person pays €23.10. Now we want this as a function we can use again
-with any bill. On the last page, a function showed steps with `print`.
-This one needs to hand back a number, so that other code can use it.
+Read from the bottom up, the lines show 2, 0, 2, 6. Each line divides
+by 1, 10, 100 or 1000, which are $10^0$ to $10^3$, then keeps the last
+digit. So the digit in place 3, counting from 0 on the right, is
+`2026 // 10 ** 3 % 10`: first the power, then `//`, then `%`.
+
+On the last page, a function printed steps. A tool for the display
+should hand back a number that other code can use.
 
 ```python exec
-id: numbers-bill-2
-def share_of(total, people):
-    """Each person's part of a bill, with no tip."""
-    return total / people
+id: numbers-digits-2
+def last_digit(number):
+    """Give the last digit of a whole number."""
+    return number % 10
 
-print(share_of(84, 4))
-print(share_of(10, 4))
+print(last_digit(2026))
+print(last_digit(7))
 ```
 
-The *return* line hands a value back to whoever called the function.
-`share_of(84, 4)` is replaced by 21.0, and `print` shows it. Words like
-`def` and `return` are *keywords*: words Python keeps for its own use,
-so you cannot use them as names.
+The *return* line hands a value back to whoever called the function:
+`last_digit(2026)` is replaced by 6. Words like `def` and `return` are
+*keywords*: words Python keeps for its own use, so they cannot be
+names. The text in three quote marks is a *docstring*, which says what
+the function promises. Python does not check it; it is for people.
 
-The text in three quote marks, under the `def` line, is a *docstring*.
-A docstring says what the function promises. Python does not check it;
-it is there for people.
-
-So how do we check that a function keeps its promise? With `assert`. An
-*assert* statement checks that something is true. If it is true, nothing
-happens at all. If it is false, Python stops with an error.
+So how do we check a promise? An *assert* statement checks that
+something is true. If it is true, nothing happens. If it is false,
+Python stops with an error.
 
 ```python exec
-id: numbers-bill-3
-assert share_of(84, 4) == 21
-assert share_of(10, 4) == 2.5
-print("share_of keeps its promise.")
+id: numbers-digits-3
+assert last_digit(2026) == 6
+assert last_digit(7) == 7
+print("last_digit keeps its promise.")
 ```
 
 The `==` sign asks "are these equal?". It is different from `=`, which
 makes a name point at a value.
 
 The next cell tests for a wrong answer on purpose, so that you can see
-what a failed test looks like. It is meant to stop with an error.
+a failed test. It is meant to stop with an error.
 
 ```python exec
-id: numbers-bill-4
-assert share_of(84, 4) == 20
+id: numbers-digits-4
+assert last_digit(2026) == 2
 ```
 
-Read the last line of the message: `AssertionError`. The line above it
-shows which test failed. An error here is not a verdict on you. It is
-information: this promise, on this line, was not kept. That is exactly
-what a test is for.
+The last line says `AssertionError`, and the line above it shows which
+test failed. An error here is not a verdict on you. It is information:
+this promise, on this line, was not kept.
 
-### Your turn: your first toolkit function
+### Your turn: your first toolkit tool
 
-The cell below is the start of `split_bill`, the first function in your
-*toolkit*. Your toolkit is a set of functions you build across this
-course. Later pages can use them without you writing them again.
+A microwave timer shows minutes and seconds. 1234 seconds is 20
+minutes and 34 seconds, because `1234 // 60` is 20 and `1234 % 60` is
+34. Minutes and seconds are digits in *base 60*: their columns are
+worth 1, 60, 3600 and so on, the powers of 60.
 
-Two lines have `...` where the working should go. Fill them in, then run
-the cell.
+<aside class="dl-note" id="numbers-note-sixty">
 
-- `tip_percent=0` gives the parameter a *default value*. If nobody says
-  what the tip is, it is 0.
-- `round(share, 2)` rounds to two decimal places, which is the nearest
-  cent.
+**Why sixty?** Mathematicians in ancient Mesopotamia, in what is now
+Iraq, wrote numbers in base 60 about four thousand years ago.
+Astronomers kept using it, and our 60 minutes in an hour come from that
+tradition.
+
+</aside>
+
+The cell below is the start of `digit_at`, the first tool in your
+*toolkit*: the set of functions you build across this course. Later
+pages load them for you. Replace the `...` with one line that starts
+with `return`. The digits cell above has the pattern, with 10 in place
+of `base`.
+
+`base=10` gives the parameter a *default value*: if a call does not say
+what the base is, it is 10. So `digit_at(2026, 3)` counts in tens, and
+`digit_at(1234, 1, 60)` counts in sixties.
 
 ```python exec
 id: numbers-toolkit
 toolkit: yes
-def split_bill(total, people, tip_percent=0):
-    """Return each person's share of a bill, in euro, rounded to the cent.
+def digit_at(number, place, base=10):
+    """Give the digit of a whole number in one place.
 
-    total is the bill before the tip, and people is how many are paying.
-    tip_percent is the tip as a percentage, so 10 means 10%. With no
-    tip_percent given, there is no tip.
+    number is a whole number, 0 or more. place counts from 0 on the
+    right: place 0 is the ones, place 1 the tens, and so on. base is how
+    many digits the counting uses: 10 unless you say otherwise, or 60
+    for minutes and seconds.
     """
-    with_tip = ...  # the bill, with the tip added
-    share = ...     # one person's part of with_tip
-    return round(share, 2)
+    ...
 ```
 
 ```python toolkit-reference
 for: numbers-toolkit
-def split_bill(total, people, tip_percent=0):
-    """Return each person's share of a bill, in euro, rounded to the cent.
+def digit_at(number, place, base=10):
+    """Give the digit of a whole number in one place.
 
-    total is the bill before the tip, and people is how many are paying.
-    tip_percent is the tip as a percentage, so 10 means 10%. With no
-    tip_percent given, there is no tip.
+    number is a whole number, 0 or more. place counts from 0 on the
+    right: place 0 is the ones, place 1 the tens, and so on. base is how
+    many digits the counting uses: 10 unless you say otherwise, or 60
+    for minutes and seconds.
     """
-    with_tip = total * (1 + tip_percent / 100)
-    share = with_tip / people
-    return round(share, 2)
+    return number // base ** place % base
 ```
 
-Now test it. Until both lines are filled in, this cell stops with an
-error; that is the tests doing their job. Once it prints its message,
-your `split_bill` keeps its promise.
+Now test it. Until the `return` line is written, this cell stops with
+an error: the tests are doing their job.
 
 ```python exec
 id: numbers-toolkit-tests
-assert split_bill(84, 4) == 21.0
-assert split_bill(84, 4, 10) == 23.1
-assert split_bill(100, 3) == 33.33
-assert split_bill(50, 1, 20) == 60.0
-print("split_bill keeps its promise.")
+assert digit_at(2026, 0) == 6
+assert digit_at(2026, 3) == 2
+assert digit_at(2026, 4) == 0
+assert digit_at(1234, 0, 60) == 34
+assert digit_at(1234, 1, 60) == 20
+print("digit_at keeps its promise.")
 ```
 
 ```hint
 Which line does the error point at, and what did you expect
-`split_bill(84, 4)` to give? Try `print(split_bill(84, 4))` on its own
+`digit_at(2026, 0)` to give? Try `print(digit_at(2026, 0))` on its own
 to see what your version gives now.
 ```
 
 ```hint
 after: 10 errors
 title: some steps
-1. `with_tip` is the bill times $(1 + \frac{\text{tip}}{100})$. In
-   Python, the tip is `tip_percent`, and the bill is `total`.
-2. `share` is `with_tip` divided by `people`.
-3. The formula is in the cell `numbers-bill-1`, with numbers in place of
-   the names.
+1. The digit in place 3 of 2026 was `2026 // 10 ** 3 % 10`.
+2. In the function, the number is `number`, the place is `place`, and
+   10 is `base`.
+3. Put those names where the numbers were, after `return`.
 
-**Think about:** why does `100 / 3` need rounding, when `84 / 4` does
-not?
+**Think about:** why does `digit_at(2026, 4)` give 0, when 2026 has only
+four digits?
 ```
 
-A real calculator at a restaurant till would ask for the bill. Python
-has a function for that, `input()`, which waits for someone to type.
-Asking for a value is *input*, and showing a result is *output*.
+A real microwave reads its buttons. Python's `input()` waits for
+someone to type. Asking for a value is *input*, and showing a result is
+*output*.
 
 ```python
-total = float(input("What is the bill? "))
-print(split_bill(total, 4, 10))
+seconds = int(input("How many seconds? "))
+print(digit_at(seconds, 1, 60), "minutes and", digit_at(seconds, 0, 60), "seconds")
 ```
 
-There is no keyboard for the Python on this page to listen to, so here
-we give values by editing the cell instead. `float()` turns the typed
-text into a number, because whatever someone types arrives as a string.
+The Python on this page has no keyboard to listen to, so we edit a cell
+instead. `int()` turns the typed text into a whole number, because
+whatever someone types arrives as a string.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
 This page met logarithms as a question, "how many times do I multiply?",
-and asked it about folded paper and octaves. A textbook usually meets
+and asked it about lights that are on or off. A textbook usually meets
 them much later, as rules: the logarithm of a product is the sum of the
 logarithms, and so on.
 
@@ -517,10 +534,9 @@ The rules are useful. They let you work with logarithms on paper, and
 exams often ask for them.
 
 We started with the question because a rule means little until you know
-what it is a rule about. Here a logarithm is a power, read backwards.
-`math.log2` answers the question for us, and the next page uses the same
-question to count the bits a number needs. The rules can come when a
-page needs them.
+what it is a rule about. Here a logarithm is a power, read backwards,
+and the next page uses the same question to count bits. The rules can
+come when a page needs them.
 
 </details>
 
@@ -528,8 +544,8 @@ page needs them.
 
 | The question | On this page |
 |---|---|
-| What is named here? | the number families $\mathbb{N}$, $\mathbb{Z}$, $\mathbb{Q}$, $\mathbb{R}$; `int` and `float`; the toolkit function `split_bill` |
-| What is promised? | `//` promises a whole number, `/` a float; `split_bill` promises each person's share, to the cent; `assert` checks a promise |
+| What is named here? | the number families $\mathbb{N}$, $\mathbb{Z}$, $\mathbb{Q}$, $\mathbb{R}$; `int` and `float`; each segment, a to g; the toolkit tool `digit_at` |
+| What is promised? | `//` promises a whole number, `/` a float; `digit_at` promises the digit in one place; `assert` checks a promise |
 | What happens when? | brackets, then powers, then × and ÷, then + and −; a test runs after the function it tests |
 | What does this space let us do? | $3 - 5$ needs $\mathbb{Z}$; $7 \div 2$ needs $\mathbb{Q}$; ints are exact and never run out; floats are very close; `math` needs `import` |
 
@@ -542,7 +558,7 @@ page needs them.
 | `int`, `float` | Python's whole numbers (exact), and its decimals (very close) |
 | order of operations | brackets, powers, × and ÷, + and − |
 | expression, operator, statement | a piece of code with a value; a symbol that does one job; one complete instruction |
-| power, `**` | $2^{10}$: 2 multiplied by itself 10 times |
-| logarithm | how many times you multiply the base to reach a number: $\log_2 16 = 4$ |
+| power, `**` | $2^7$: 2 multiplied by itself 7 times |
+| logarithm | how many times you multiply the base to reach a number: $\log_2 128 = 7$ |
 | `return`, docstring, `assert` | hand back a value; the promise in words; a check that the promise is kept |
-| `split_bill(total, people, tip_percent=0)` | your first toolkit function |
+| `digit_at(number, place, base=10)` | your first toolkit tool: `number // base ** place % base` |

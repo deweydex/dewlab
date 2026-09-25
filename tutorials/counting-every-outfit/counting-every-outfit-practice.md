@@ -2,14 +2,15 @@
 title: "Counting every outfit: lists of outcomes — Practice"
 practice_for: counting-every-outfit
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Counting every outfit: lists of outcomes — Practice
 
 Each answer is hidden until you open it. Where a problem asks you to
 predict, the prediction is the exercise, so make one before you run
-anything.
+anything. An answer shows one good way. Yours may be different, and as
+good.
 
 Your toolkit is loaded on this page, so `all_pairs`, `total` and
 `product` are ready to use, and so is everything from earlier pages.
@@ -20,21 +21,22 @@ Use this cell for any of the warm-up problems.
 
 ```python exec
 id: counting-every-practice-scratch-1
-print(all_pairs(["tea", "coffee"], ["small", "large"]))
+print(all_pairs(["light", "dark"], ["small", "large"]))
 ```
 
-**1. Predict.** What does the cell above print? Say how many pairs there
+**1. Predict.** An app lets you choose a light or dark screen, and small
+or large text. What does the cell above print? Say how many pairs there
 are, and which one comes first and which last, before you run it.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```text
-[('tea', 'small'), ('tea', 'large'), ('coffee', 'small'), ('coffee', 'large')]
+[('light', 'small'), ('light', 'large'), ('dark', 'small'), ('dark', 'large')]
 ```
 
-Four pairs, $2 \times 2$. The first is `('tea', 'small')` and the last
-is `('coffee', 'large')`. Every pair with `"tea"` comes first, because
-the first list is the outer loop inside `all_pairs`.
+Four pairs, $2 \times 2$. The first is `('light', 'small')` and the
+last is `('dark', 'large')`. Every pair with `"light"` comes first,
+because the first list is the outer loop inside `all_pairs`.
 
 </details>
 
@@ -57,17 +59,24 @@ print(len(outcomes))    # 6
 
 </details>
 
-**3. Predict.** A football club has 3 jerseys, 2 pairs of shorts and 4
-pairs of socks. A kit is one of each. How many different kits are
-there?
+**3. Predict.** DNA, the code inside every living cell, is written with
+four letters: A, C, G and T. A cell reads it three letters at a time,
+and each group of three is called a codon. How many different codons
+can there be?
 
 <details class="dl-answer"><summary>answer</summary>
 
-By the counting principle, $3 \times 2 \times 4 = 24$ kits.
+Each of the three places is a choice of 4 letters, so by the counting
+principle there are $4 \times 4 \times 4 = 64$ codons.
 
 ```python
-print(product([3, 2, 4]))    # 24
+print(product([4, 4, 4]))    # 64
 ```
+
+Living things use those 64 codons to stand for only 20 building blocks,
+plus a few "stop" signals, so most building blocks have more than one
+codon. Two letters would not have been enough: $4 \times 4 = 16$ is
+fewer than 20.
 
 </details>
 
@@ -94,23 +103,25 @@ die = [1, 2, 3, 4, 5, 6]
 print(len(all_pairs(die, die)))
 ```
 
-**5. Make.** You are driving from Galway to Dublin through Athlone.
-There are 3 roads you could take from Galway to Athlone, call them A, B
-and C, and 2 from Athlone to Dublin, call them X and Y. List every
-route with `all_pairs`, and count them.
+**5. Make.** A message goes from your laptop to a website in two hops.
+First it passes through one of 3 routers, boxes that pass messages on,
+called A, B and C. Then it passes through one of 2 more, X and Y. List
+every route with `all_pairs`, and count them.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-to_athlone = ["A", "B", "C"]
-to_dublin = ["X", "Y"]
-routes = all_pairs(to_athlone, to_dublin)
+first_hop = ["A", "B", "C"]
+second_hop = ["X", "Y"]
+routes = all_pairs(first_hop, second_hop)
 print(routes)
 print(len(routes))    # 6
 ```
 
-Six routes: AX, AY, BX, BY, CX, CY. Every road to Athlone can be
-followed by either road to Dublin, so $3 \times 2 = 6$.
+Six routes: AX, AY, BX, BY, CX, CY. Every first router can be followed
+by either second one, so $3 \times 2 = 6$. The internet has many more
+routers than this, and many more routes, which is one reason a message
+still gets through when one router fails.
 
 </details>
 
@@ -151,28 +162,28 @@ probability, on
 
 </details>
 
-**7. Fix.** This function is meant to list every pizza you can make from
-one base and one topping. It gives only some of them. Find the one
-mistake, and fix it.
+**7. Fix.** Schlomo, who is learning Python too, writes a function to
+list every text style a small editor offers: one font and one size. It
+gives only some of them. Find the one mistake, and fix it.
 
 ```python exec
-id: counting-every-practice-fix-pizza
-def every_pizza(bases, toppings):
-    """Every (base, topping) pair."""
-    pizzas = []
-    for base in bases:
-        for topping in toppings:
-            pizzas.append((base, topping))
-        return pizzas
+id: counting-every-practice-fix-styles
+def every_style(fonts, sizes):
+    """Every (font, size) pair."""
+    styles = []
+    for font in fonts:
+        for size in sizes:
+            styles.append((font, size))
+        return styles
 
-bases = ["thin", "deep"]
-toppings = ["cheese", "mushroom", "pepperoni"]
-print(len(every_pizza(bases, toppings)))    # should be 6
+fonts = ["serif", "sans"]
+sizes = [10, 12, 14]
+print(len(every_style(fonts, sizes)))    # should be 6
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Which pizzas does the function give back? Print the list, not only
+1. Which styles does the function give back? Print the list, not only
    its length.
 2. Which loop is the `return` line inside?
 3. What happens to a function when it reaches `return`?
@@ -188,48 +199,50 @@ level further, inside the inner loop?
 <details class="dl-answer"><summary>answer</summary>
 
 The `return` line is pushed in under the outer loop. So after the first
-base, the thin one, has met every topping, the function returns, and
-the deep base is never used. It gives 3 pizzas, not 6.
+font, serif, has met every size, the function returns, and sans is never
+used. It gives 3 styles, not 6. Schlomo's loops were right; one line was
+four spaces too far in.
 
-`return` must sit outside both loops, level with `for base`:
+`return` must sit outside both loops, level with `for font`:
 
 ```python
-def every_pizza(bases, toppings):
-    pizzas = []
-    for base in bases:
-        for topping in toppings:
-            pizzas.append((base, topping))
-    return pizzas
+def every_style(fonts, sizes):
+    styles = []
+    for font in fonts:
+        for size in sizes:
+            styles.append((font, size))
+    return styles
 
-print(len(every_pizza(bases, toppings)))    # 6
+print(len(every_style(fonts, sizes)))    # 6
 ```
 
 </details>
 
-**8. Fix.** A lunch deal is one sandwich and one drink. This code counts
-the lunch deals, and gets the wrong answer. Fix it.
+**8. Fix.** A laptop comes with one of 4 screens and one of 3 amounts of
+memory. This code counts the different laptops, and gets the wrong
+answer. Fix it.
 
 ```python exec
-id: counting-every-practice-fix-lunch
-sandwiches = ["ham", "cheese", "egg", "falafel"]
-drinks = ["water", "juice", "tea"]
+id: counting-every-practice-fix-laptops
+screens = ["13 inch", "14 inch", "15 inch", "16 inch"]
+memory = ["8 GB", "16 GB", "32 GB"]
 
-meal_deals = len(sandwiches) + len(drinks)
-print(meal_deals)    # should be 12
+laptops = len(screens) + len(memory)
+print(laptops)    # should be 12
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-A deal is a sandwich and a drink, one choice then another, so the counts
-multiply:
+A laptop has a screen and an amount of memory, one choice then another,
+so the counts multiply:
 
 ```python
-meal_deals = len(sandwiches) * len(drinks)
-print(meal_deals)    # 12
+laptops = len(screens) * len(memory)
+print(laptops)    # 12
 ```
 
-`+` would be right for "a sandwich or a drink, not both": 7 choices.
-And multiplies, or adds.
+`+` would be right for "a new screen or more memory, not both": 7
+choices. And multiplies, or adds.
 
 </details>
 
@@ -254,24 +267,24 @@ rows. Heads and tails, like True and False, are a choice of two.
 
 </details>
 
-**10. Explain.** A restaurant has 8 starters and 12 main courses. Its
-menu says "Choose a starter and a main: over 100 different dinners!" Is
-that true? What could the restaurant add to make it true?
+**10. Explain.** A game has 8 heads and 12 bodies for your robot. Its
+advert says "Choose a head and a body: over 100 different robots!" Is
+that true? What could the game add to make it true?
 
 <details class="dl-answer"><summary>answer</summary>
 
 It is not true. By the counting principle there are $8 \times 12 = 96$
-dinners, which is fewer than 100.
+robots, which is fewer than 100.
 
-Adding one starter gives $9 \times 12 = 108$. Adding one main gives
+Adding one head gives $9 \times 12 = 108$. Adding one body gives
 $8 \times 13 = 104$. Either would make the claim true. So would
-counting "a main on its own" as a dinner too: that adds 12 more, for
-108.
+allowing "a body with no head": that adds 12 more, for 108. That is one
+good answer, and you may have found others.
 
 </details>
 
-**11. Another way.** A friend says that two dice have 21 outcomes, not
-36. In which space is your friend right?
+**11. Another way.** Schlomi, who is learning Python too, says that two
+dice have 21 outcomes, not 36. In which space is she right?
 
 ```python exec
 id: counting-every-practice-another-dice
@@ -301,7 +314,7 @@ The cell prints 21. It keeps one pair out of each two that are the same
 numbers in a different order, such as `(3, 4)` and `(4, 3)`, and it
 keeps all six doubles.
 
-Your friend is right when the two dice look the same and only the two
+Schlomi is right when the two dice look the same and only the two
 numbers matter, not which die showed which. Then "a 3 and a 4" is one
 outcome. The count of 36 is right when the dice can be told apart, such
 as a red die and a blue one.
@@ -431,16 +444,16 @@ inputs. A truth table is the sample space of its inputs.
 </details>
 
 **16. Explain.** On the tutorial page, the loop came first and
-the formula $m \times n$ came second. A friend says: "Listing all the
+the formula $m \times n$ came second. Schlomo says: "Listing all the
 outfits was a waste of time. Tell me to multiply, and I'll multiply." What
-would you say to them? Is there a kind of problem where they are right?
+would you say to him? Is there a kind of problem where he is right?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no single right answer. A good answer agrees with the friend
-where they are right, and also says what the list is for.
+There is no single right answer. A good answer agrees with Schlomo
+where he is right, and also says what the list is for.
 
-- **Where the friend is right.** When the choices do not change each
+- **Where Schlomo is right.** When the choices do not change each
   other, and there are too many to list, the formula is the only way. No
   loop will list $26^{12}$ passwords. In an exam, multiplying is faster
   too.

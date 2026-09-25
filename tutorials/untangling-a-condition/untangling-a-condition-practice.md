@@ -2,7 +2,7 @@
 title: "Untangling a condition: De Morgan's laws — Practice"
 practice_for: untangling-a-condition
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Untangling a condition: De Morgan's laws — Practice
@@ -47,25 +47,26 @@ needs both to be false, and one of them is true.
 
 </details>
 
-**2. Make.** A recipe app shows a "Quick meals" banner when
-`not (has_time and has_oven)`. Write the same rule without brackets, using
-the first law.
+**2. Make.** A phone turns on "Do not disturb" when
+`not (is_weekday and is_daytime)`. Write the same rule without brackets,
+using the first law. Then say it in plain words.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`not has_time or not has_oven`.
+`not is_weekday or not is_daytime`.
 
-Put a `not` on each part, then swap `and` for `or`. In words: show quick
-meals if you are short of time, or if you have no oven. You can check it:
+Put a `not` on each part, then swap `and` for `or`. In words: do not
+disturb me at the weekend, or in the evening and night. You can check
+it:
 
 ```python
-def banner(has_time, has_oven):
-    return not (has_time and has_oven)
+def quiet(is_weekday, is_daytime):
+    return not (is_weekday and is_daytime)
 
-def banner_no_brackets(has_time, has_oven):
-    return not has_time or not has_oven
+def quiet_no_brackets(is_weekday, is_daytime):
+    return not is_weekday or not is_daytime
 
-same_rule(banner, banner_no_brackets, 2)    # True
+same_rule(quiet, quiet_no_brackets, 2)    # True
 ```
 
 </details>
@@ -115,37 +116,39 @@ def grey_out_a(is_open, has_stock):
 def grey_out_c(is_open, has_stock):
     return not is_open and not has_stock
 
-def washing_out(is_raining, is_cold):
-    return not (is_raining or is_cold)
+def photo_ok(is_cloudy, is_night):
+    return not (is_cloudy or is_night)
 ```
 
-**5. Make.** You can hang your washing outside when
-`not (is_raining or is_cold)`. That rule is `washing_out` in the tools cell.
-Write `washing_out_2`, the same rule without brackets, and check it with
-`same_rule`.
+**5. Make.** A satellite takes photos of the ground by sunlight, so it
+can take a useful photo of a place when `not (is_cloudy or is_night)`.
+That rule is `photo_ok` in the tools cell. Write `photo_ok_2`, the same
+rule without brackets, and check it with `same_rule`.
 
 ```python exec
-id: untangling-practice-washing
-# Your washing_out_2, and a same_rule check
+id: untangling-practice-photo
+# Your photo_ok_2, and a same_rule check
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def washing_out_2(is_raining, is_cold):
-    return not is_raining and not is_cold
+def photo_ok_2(is_cloudy, is_night):
+    return not is_cloudy and not is_night
 
-print(same_rule(washing_out, washing_out_2, 2))    # True
+print(same_rule(photo_ok, photo_ok_2, 2))    # True
 ```
 
-This is the second law: "not raining or cold" means "not raining, and not
-cold".
+This is the second law: "not (cloudy or night)" means "not cloudy, and
+not night". Some satellites carry radar, which sees through cloud and
+works in the dark. For them the rule would be different.
 
 </details>
 
-**6. Fix.** Someone wrote their own version of `same_rule`. It passes the
-first test, but it says `grey_out_a` and `grey_out_c` are the same rule, and
-we know they are not. Run it, find the one mistake, and fix it.
+**6. Fix.** Schlomo, who is learning Python too, wrote his own version of
+`same_rule`, to see whether he could. It passes the first test, but it
+says `grey_out_a` and `grey_out_c` are the same rule, and we know they are
+not. Run it, find the one mistake, and fix it.
 
 ```python exec
 id: untangling-practice-fix-same-rule
@@ -266,8 +269,8 @@ Nothing is printed except the last line, so the two agree at every hour.
 </details>
 
 **9. Explain.** On the tutorial page, `same_rule` checked De Morgan's law on
-four rows, and we called that a proof. The loop over ages from 0 to 100 also
-found no disagreement. Why is the first a proof about every possible input,
+four rows, and we called that a proof. The loop over temperatures from
+$-20$ to 60 also found no disagreement. Why is the first a proof about every possible input,
 when the loop, on its own, is not?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -275,9 +278,9 @@ when the loop, on its own, is not?
 In the space of True and False, two inputs have exactly four possible
 rows, and `same_rule` checked all four. There is nothing left to check.
 
-Ages are numbers, and there are far more numbers than 0 to 100: 17.5, −3,
-a million. The loop checked 101 of them and said nothing about the rest.
-What makes the age rule hold everywhere is the law, because each
+Temperatures are numbers, and there are far more numbers than $-20$ to
+60: 35.5, $-100$, a million. The loop checked 81 of them and said nothing
+about the rest. What makes the temperature rule hold everywhere is the law, because each
 comparison is only ever True or False. The loop was a check on a few
 cases, and the law is the reason it holds for all of them.
 
@@ -295,20 +298,21 @@ number of nots flips the value, and an even number leaves it alone.
 
 </details>
 
-**11. Fix.** A cinema shows a film to anyone aged 18 or over, or anyone who
-comes with an adult. The original rule for turning people away was
-`not (age >= 18 or with_adult)`. Someone removed the brackets and made a
-mistake. A 20-year-old on their own is now turned away. Find the mistake
-and fix it.
+**11. Fix.** A video website shows a film to anyone aged 18 or over, or
+anyone whose parent has said yes. The rule for blocking the film was
+`not (age >= 18 or parent_ok)`. Schlomi, who is learning Python too,
+wanted to remove the brackets, which is a good instinct: fewer brackets,
+fewer places to go wrong. But she made a mistake, and now a 20-year-old
+on their own is blocked. Find it and fix it.
 
 ```python exec
-id: untangling-practice-fix-cinema
-def turn_away(age, with_adult):
-    return not age >= 18 or not with_adult
+id: untangling-practice-fix-age-gate
+def block(age, parent_ok):
+    return not age >= 18 or not parent_ok
 
-print(turn_away(20, False))   # should be False: an adult on their own may go in
-print(turn_away(15, True))    # should be False
-print(turn_away(15, False))   # should be True
+print(block(20, False))   # should be False: an adult may watch
+print(block(15, True))    # should be False
+print(block(15, False))   # should be True
 ```
 
 <details class="dl-answer"><summary>answer</summary>
@@ -317,13 +321,14 @@ The `or` should have become an `and`. The second law turns
 `not (A or B)` into `not A and not B`:
 
 ```python
-def turn_away(age, with_adult):
-    return not age >= 18 and not with_adult
+def block(age, parent_ok):
+    return not age >= 18 and not parent_ok
 ```
 
 Now the three lines print `False`, `False` and `True`. You could also
-write `age < 18 and not with_adult`, which reads well aloud: turn someone
-away if they are under 18 and have no adult with them.
+write `age < 18 and not parent_ok`, which reads well aloud: block the film
+for someone under 18 whose parent has not said yes. Schlomi's instinct
+was right, and the law is what makes it safe.
 
 </details>
 
@@ -358,7 +363,7 @@ print(first_difference(grey_out_a, grey_out_c, 2))   # (False, True)
 print(first_difference(grey_out_a, grey_out_a, 2))   # None
 ```
 
-`(False, True)` means a café that is closed but has stock. `grey_out_a`
+`(False, True)` means a restaurant that is closed but has stock. `grey_out_a`
 greys the button out there, and `grey_out_c` does not.
 
 </details>

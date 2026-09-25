@@ -1,7 +1,7 @@
 ---
 title: "How likely is it? Probability and simulation"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   a-scale-from-0-to-1:
     covers: [MIT-5.6]
@@ -13,6 +13,9 @@ covers:
   a-tool-that-runs-it-many-times:
     covers: [MIT-5.6]
     touches: [PDP-LO6, PDP-LO8]
+  rain-on-a-grid:
+    covers: [MIT-5.6]
+    touches: [PDP-LO6]
   why-the-two-answers-differ:
     covers: [MIT-5.6]
   seven-heads-in-ten:
@@ -24,7 +27,9 @@ covers:
 
 A friend tosses a coin ten times and gets seven heads. "This coin is
 not fair," they say. Are they right? Or could an ordinary coin do that
-too?
+too? Before you read on, decide what you think. Most of us have a strong
+feeling about questions like this, and feelings about chance are often
+wrong in interesting ways.
 
 To answer, we need to say how likely something is, with a number. By
 the end of this page we will have that number, found in two different
@@ -37,6 +42,7 @@ On this page we:
 - let Python toss coins and roll dice, with the `random` module
 - add `simulate` to the toolkit: it runs a chance experiment many times,
   and counts
+- use it on rain falling on a grid, and watch the grid fill
 - see why a simulation and the exact answer differ a little, and how
   more runs bring them closer
 - answer the question about the coin, two ways
@@ -316,6 +322,108 @@ What does `print(simulate(always, 50))` show? If it shows `None`, the
 function has no `return` yet. If it shows 50, check what you divide by.
 ```
 
+<details class="dl-answer"><summary>answer</summary>
+
+One good way to write it. Yours may differ and still keep the promise.
+
+```python
+def simulate(trial, times):
+    successes = 0
+    for run in range(times):
+        if trial():
+            successes = successes + 1
+    return successes / times
+```
+
+</details>
+
+The cells from here on use `simulate`. Until it is written, they show
+`None` or stop with a `TypeError`, so if you have not written it yet,
+copy the answer above into the stub and run it.
+
+## Rain on a grid
+
+A trial does not have to be a coin. Here is one from the weather. A
+shower starts over a patio of 100 square paving stones, 10 by 10. In
+the first second, each square gets a raindrop with chance 0.3, whatever
+happens to the others. That is a model: real drops are smaller than a
+paving stone, and many land at once. But it keeps the part we care
+about.
+
+On average, 30 of the 100 squares get wet. Watch a few showers first.
+Each frame of this film is a new first second of a new shower, with
+the wet squares in blue. Guess before you run it: will you see more
+than 40 wet squares in any frame?
+
+```python exec
+id: likely-rain-watch
+import random
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+chance = 0.3               # change this, and guess first
+
+figure, patio = plt.subplots(figsize=(2.6, 2.9))
+dry = []
+for row in range(10):
+    dry.append([0] * 10)
+picture = patio.imshow(dry, cmap="Blues", vmin=0, vmax=1.5)
+patio.set_xticks([])
+patio.set_yticks([])
+
+def draw_step(frame):
+    """One new shower: each square is wet (1) or dry (0)."""
+    grid = []
+    wet = 0
+    for row in range(10):
+        squares = []
+        for column in range(10):
+            if random.random() < chance:
+                squares.append(1)
+                wet = wet + 1
+            else:
+                squares.append(0)
+        grid.append(squares)
+    picture.set_data(grid)
+    patio.set_title(str(wet) + " of 100 wet")
+
+FuncAnimation(figure, draw_step, frames=30, interval=600)
+```
+
+The count jumps about from frame to frame, mostly in the 20s and 30s.
+Now the question for `simulate`: how often are more than 40 squares
+wet? One trial is one shower.
+
+```python exec
+id: likely-rain-1
+chance = 0.3
+
+def more_than_40_wet():
+    """One shower on 100 squares. True when more than 40 get wet."""
+    wet = 0
+    for square in range(100):
+        if random.random() < chance:
+            wet = wet + 1
+    return wet > 40
+
+print(simulate(more_than_40_wet, 10000))
+```
+
+About 0.012: roughly one shower in 80. `random.random() < chance` is
+True with chance 0.3, because `random.random()` is spread evenly from 0
+up to 1, and 0.3 of that stretch lies below 0.3. Change `chance` to 0.4
+and run it again. Does the answer surprise you?
+
+<aside class="dl-note" id="likely-note-rng-tests">
+
+**Testing the dice inside a computer.** How do people check that a
+random-number generator is fair? With the coin question. One of the
+tests published by NIST, the United States standards agency, counts
+the 1s in a long run of random bits, and asks whether a fair coin would
+often give a count that far from half.
+
+</aside>
+
 ## Why the two answers differ
 
 Counting says $P(\text{heads}) = 0.5$ exactly. A simulation says
@@ -328,10 +436,7 @@ simulation can land a little above or below the exact answer, and it
 lands somewhere different every run.
 
 What happens as the runs grow? Before you run the cell, guess: which
-row will be furthest from 0.5? This cell, and the ones after it that
-call `simulate`, need your `simulate` from the last section. Until it is
-written, this cell stops with a `TypeError`, because a function with no
-`return` gives back `None`.
+row will be furthest from 0.5?
 
 ```python exec
 id: likely-differ-1
@@ -353,9 +458,8 @@ the wobble gets smaller. As a rough guide, 100 times as many runs make
 the wobble about 10 times smaller.
 
 A picture shows the same thing. The chart below tosses one coin 2,000
-times and plots the fraction of heads so far, after every toss. We
-learn to draw charts properly in a later unit. For now, `plt.plot`
-draws the line, and `plt.axhline` draws the flat line at 0.5.
+times and plots the fraction of heads so far, after every toss.
+`plt.plot` draws the line, and `plt.axhline` the flat line at 0.5.
 
 ```python exec
 id: likely-differ-2

@@ -6,7 +6,7 @@ practice_across:
   - rules-for-change
   - solving-by-computing
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 datasets: [co2-emissions]
 ---
 
@@ -141,22 +141,22 @@ a counter added.
 
 </details>
 
-**4. Explain.** A car's speedometer shows 50 km/h. A friend says: "In a
-single instant the car moves 0 metres, and 0 metres in 0 seconds is not
-a speed. So the speedometer is showing something that does not exist."
-What is right in what your friend says, and what does the speedometer
-show?
+**4. Explain.** A weather radar says a hailstone is falling at 11 metres
+a second. Schlomo, who is learning Python too, says: "In a single
+instant the stone moves 0 metres, and 0 metres in 0 seconds is not a
+speed. So the radar is showing something that does not exist." What is
+right in what Schlomo says, and what does the radar show?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Your friend is right that distance divided by time, at one instant, is
+One good answer: Schlomo is right that distance divided by time, at one instant, is
 $\frac{0}{0}$, which has no value. But a rule can have a limit where it
 has no value, as $\frac{x^2 - 4}{x - 2}$ did at 2 on
 [Getting closer](tutorial:getting-closer#a-rule-with-a-hole-in-it). The
 average speeds over one second, half a second, a hundredth of a second,
 head for one number. That limit is the derivative of the distance, as
 on [How fast, right now?](tutorial:how-fast-right-now#the-derivative-is-a-limit),
-and it is what the speedometer shows.
+and it is what the radar shows.
 
 </details>
 
@@ -171,15 +171,16 @@ import math
 # Your best-moment finder, problem by problem
 ```
 
-**5. Make.** A band plays a venue that holds 2,400. At a ticket price of
-$p$ euro, the promoter expects to sell $2400 - 80p$ tickets, and each
-person costs €5 in staff. (The numbers are made up.) So the
-profit is $(p - 5)(2400 - 80p)$ euro.
+**5. Make.** On
+[The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line),
+the bottom of a letter's bowl had the height $400t^2 - 440t + 112$ font
+units, for $t$ from 0 to 1.
 
 The first part of the finder is `best_point(rule, low, high)`. At a top
 or a bottom the slope is 0, so `best_point` finds a root of the rule's
 slope with `bisect_root`, and gives back $(x, \text{rule}(x))$. Use
-it to find the best ticket price, and check it with `vertex`.
+it to find how far the bowl dips below the baseline, and check it with
+`vertex`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -187,7 +188,6 @@ it to find the best ticket price, and check it with `vertex`.
    gives back `derivative_at(rule, x)`.
 2. `bisect_root(slope_here, low, high)` finds where that slope is 0.
 3. Return the $x$ it found, and the rule at that $x$.
-4. For `vertex`, multiply out the brackets: $-80p^2 + 2800p - 12000$.
 
 **Think about:** `slope_here` uses `rule`, which is not one of its own
 inputs. Why can it see it?
@@ -209,17 +209,17 @@ def best_point(rule, low, high):
     x = bisect_root(slope_here, low, high)
     return (x, rule(x))
 
-def gig_profit(price):
-    """Return the promoter's profit in euro at this ticket price."""
-    return (price - 5) * (2400 - 80 * price)
+def bowl_height(t):
+    """Return the height of the letter's bowl, in font units, at t from 0 to 1."""
+    return 400 * t ** 2 - 440 * t + 112
 
-print(best_point(gig_profit, 5, 30))
-print(vertex(-80, 2800, -12000))
+print(best_point(bowl_height, 0, 1))
+print(vertex(400, -440, 112))
 ```
 
-The best price is €17.50, and the profit there is €12,500. `best_point`
-is a billionth away, since `bisect_root` stops when its gap is that
-small. The slope is 0 at the top, as on
+The lowest point is at $t = 0.55$, 9 font units below the baseline.
+`best_point` is a billionth away, since `bisect_root` stops when its
+gap is that small. The slope is 0 at the bottom, as on
 [Rules for change](tutorial:rules-for-change#back-to-the-top-of-the-curve).
 
 `slope_here` can see `rule` because it is made inside `best_point`, as
@@ -228,8 +228,10 @@ on
 
 </details>
 
-**6. Fix.** Someone's first version of `best_point` says the best ticket
-price is €5, where the profit is 0. Find the mistake.
+**6. Fix.** Schlomi, who is learning Python too, wrote a first
+`best_point`. On the bowl it stops with a `ValueError`: "rule(low) and
+rule(high) have the same sign". But the bowl's slope does change sign
+between 0 and 1. Find the mistake.
 
 ```python exec
 id: mixed-change-fix-best
@@ -238,18 +240,19 @@ def first_best_point(rule, low, high):
     x = bisect_root(rule, low, high)
     return (x, rule(x))
 
-def gig_profit(price):
-    return (price - 5) * (2400 - 80 * price)
+def bowl_height(t):
+    return 400 * t ** 2 - 440 * t + 112
 
-print(first_best_point(gig_profit, 5, 30))
+print(first_best_point(bowl_height, 0, 1))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 It looks for a root of the rule, not of its slope. A root of the
-profit is a price where the profit is 0: the break-even prices, €5 and
-€30. `bisect_root` found €5, because `gig_profit(5)` is exactly 0. The
-fix is to hand `bisect_root` the slope:
+height is a $t$ where the letter crosses the baseline. At 0 and at 1
+the height is 112 and 72, both above the line, so `bisect_root` finds
+no sign change and says so. The error message was telling the truth
+about the wrong rule. The fix is to hand `bisect_root` the slope:
 
 ```python
 def first_best_point(rule, low, high):
@@ -260,7 +263,7 @@ def first_best_point(rule, low, high):
     return (x, rule(x))
 ```
 
-Then it gives €17.50.
+Then it gives $t = 0.55$ and a height of $-9$.
 
 </details>
 
@@ -642,38 +645,41 @@ finds a peak two ways.
 
 </details>
 
-**17. Fix.** Someone wants a more exact best ticket price, so they give
-`derivative_at` a much smaller step. The finder now says the best price
-is €12.80, and the profit there is less than at €17.50. Find the
-mistake. Which page warned about it?
+**17. Fix.** Schlomo wants a more exact bottom for the letter's bowl,
+so he gives `derivative_at` a much smaller step. It is a reasonable
+thought: a smaller step is closer to the limit. But the finder now
+says the bowl is lowest at about $t = 0.514$, and the height there is
+higher than at 0.55. Find the mistake. Which page warned about it?
 
 ```python exec
 id: mixed-change-fix-step
-def gig_profit(price):
-    return (price - 5) * (2400 - 80 * price)
+def bowl_height(t):
+    return 400 * t ** 2 - 440 * t + 112
 
-def exact_slope(price):
-    return derivative_at(gig_profit, price, step=1e-15)
+def exact_slope(t):
+    return derivative_at(bowl_height, t, step=1e-15)
 
-best_price = bisect_root(exact_slope, 5, 30)
-print(best_price, gig_profit(best_price), gig_profit(17.5))
-for price in [10, 17, 25]:
-    print(price, exact_slope(price))
+lowest_t = bisect_root(exact_slope, 0, 1)
+print(lowest_t, bowl_height(lowest_t), bowl_height(0.55))
+for t in [0.2, 0.5, 0.6]:
+    print(t, exact_slope(t), 800 * t - 440)
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-The step of $10^{-15}$ is too small. Near 17, the prices
-$p - 10^{-15}$ and $p + 10^{-15}$ are stored as the same float, or one
-tiny gap apart, so the "slope" comes out as 0 or as nonsense. The fix
-is to leave the step at its default:
+The step of $10^{-15}$ is too small. The two heights the chord
+subtracts are nearly equal, and each is a float a tiny way off, so the
+"slope" is mostly float error: $-28.4$ at 0.5 when it should be
+$-40$, and $14.2$ at 0.6 when it should be 40. With slopes that wrong,
+the sign change lands in the wrong place. The fix is to leave the step
+at its default:
 
 ```python
-def exact_slope(price):
-    return derivative_at(gig_profit, price)
+def exact_slope(t):
+    return derivative_at(bowl_height, t)
 ```
 
-Then the root is €17.50 again.
+Then the root is 0.55 again.
 [How fast, right now?](tutorial:how-fast-right-now#why-the-step-cannot-be-0-or-too-small)
 warned that a step of $10^{-15}$ loses the answer, and
 [Getting closer](tutorial:getting-closer#when-the-floats-run-out)

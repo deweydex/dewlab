@@ -29,8 +29,19 @@ Fold a sheet of A4 paper in half, and the half has the same shape as
 the whole sheet. That only works because the long side is $\sqrt{2}$
 times the short side: 210 mm across, and $210 \times \sqrt{2}$, about
 297 mm, down. Your calculator says $\sqrt{2}$ is 1.4142135623730951.
-But a calculator can only add, take away, multiply and divide. Where do
-those digits come from?
+But a calculator can only add, take away, multiply and divide, and no
+amount of adding gives a number whose digits never end. So where do
+those digits come from? If you have always trusted the square-root
+button without asking, you are in good company. This page opens it up.
+
+<aside class="dl-note" id="solving-by-note-a4">
+
+**Why A4 is that shape.** The international standard for paper sizes,
+ISO 216, starts from A0, a sheet with an area of one square metre and
+sides in the ratio $1 : \sqrt{2}$. Fold it in half and you get A1, the
+same shape; fold again for A2, and so on down to A4.
+
+</aside>
 
 On this page we:
 
@@ -377,13 +388,24 @@ The errors go 0.09, 0.002, 0.000002, 0.0000000000016, and then 0.
 After four steps the guess is right to 11 decimal places, and after
 five it is the float `math.sqrt` gives. The sixth step moves it by one
 float's width, about $2 \times 10^{-16}$. The number of correct digits
-roughly doubles at every step, once the guess is close.
+roughly doubles at every step, once the guess is close. I find that
+astonishing every time: bisection earns one binary digit a step, and
+this earns twice as many digits as it already had.
 
 For $x^2 - 2$, the slope is $2x$, as
 [Rules for change](tutorial:rules-for-change#a-pattern-in-the-slopes-the-power-rule)
 showed, and the step becomes "the average of $g$ and $\frac{2}{g}$".
 That form is nearly 2,000 years old: Heron of Alexandria described it
 as a way to find square roots.
+
+<aside class="dl-note" id="solving-by-note-raphson">
+
+**Newton and Raphson.** Isaac Newton described a version of this
+method in 1669, working on one equation at a time. Joseph Raphson
+published a simpler, general form in 1690, so it is often called the
+Newton–Raphson method.
+
+</aside>
 
 ## A tool that follows tangents
 
@@ -582,4 +604,7 @@ a method fails matters as much as knowing the method.
 | `newton(rule, start, steps=20)` | your toolkit tool: a root found by Newton's method |
 | a flat tangent | where Newton's method has nowhere to go |
 
-The practice page is next, and then the mixed problems for this unit.
+The practice page is next. Then
+[Putting the derivative to work](tutorial:putting-the-derivative-to-work)
+lets you choose a project that uses everything in this unit, before the
+mixed problems.

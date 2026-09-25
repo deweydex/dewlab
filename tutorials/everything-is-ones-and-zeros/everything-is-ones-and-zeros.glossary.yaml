@@ -1,4 +1,7 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
+# pixel and seven-segment display are introduced on
+# numbers-a-computer-can-hold. to_binary, to_hex and pixel_row are the
+# course's own toolkit functions, so they have no python: line.
 entries:
   - term: bit
     kind: concept
@@ -36,11 +39,20 @@ entries:
       Writes a number as text in a chosen form. "b" asks for binary, and
       "X" asks for hexadecimal with capital letters.
     example: 'format(255, "X")'
-  - term: pixel
+  - term: "zfill(), replace()"
+    python: [str.zfill, str.replace]
+    kind: function
+    definition: >
+      Change a piece of text. zfill(width) adds 0s on the left until the
+      text is width long. replace(old, new) swaps every old for new.
+    example: '"1001".replace("1", "#")  # "#..#"'
+  - term: pixel font
     kind: concept
     definition: >
-      A pixel is one dot of a screen. Each pixel is three tiny lights, red,
-      green and blue, and each light has a brightness from 0 to 255.
+      A pixel font draws each character on a small grid of pixels. On a
+      grid 4 pixels wide, each row is 4 bits, one hex digit, so a digit 7
+      rows tall is 7 hex digits.
+    example: "0x6996996 draws an 8"
   - term: "hex colour, #RRGGBB"
     kind: concept
     definition: >
@@ -54,6 +66,13 @@ entries:
       of hexadecimal digits, with no 0b or 0x in front. Both are tools in
       your own toolkit.
     example: 'to_hex(255) gives "FF"'
+  - term: "pixel_row(bits, width=4)"
+    kind: function
+    definition: >
+      Returns a row of pixels as text, # for each 1 bit and . for each 0
+      bit, 4 pixels wide unless another width is given. It is a tool in
+      your own toolkit.
+    example: 'pixel_row(9) gives "#..#"'
   - term: binary fraction
     kind: concept
     definition: >

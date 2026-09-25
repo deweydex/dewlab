@@ -139,11 +139,41 @@ Levels: **Warm-up** (one step, anyone can do it), **Core** (what the page
 teaches), **Stretch** (combines it with an earlier unit). Every problem has
 an answer fold and, where it helps, a hint fold.
 
-**Diverse contexts.** Each unit rotates through settings so no reader meets
-only one kind of example: music and playlists, sport, cooking and recipes,
-money and rent, travel and maps, health and fitness, games, weather and
-climate, Irish data (rainfall, bus times, the census), art and colour. A
-context is chosen because the maths genuinely fits it, never as decoration.
+**Contexts: computing first.** A context is chosen because the maths
+fits it, never as decoration. Computing comes first: pixels, screens,
+files, packets, sensors, fonts, games. Physics comes in where the maths
+*is* physics: falling, bouncing, orbits, waves, light. Real Irish data
+stays wherever it exists (rainfall, emissions, the census). A made-up
+everyday setting (a café bill, a runner, a cupcake stall) is the last
+choice, and needs a reason. Two warnings from the audit: a reader's
+English may be a second language, so a science setting gets its terms
+explained on the page; and a reader who fears maths should not be handed
+a fear of physics instead, so the physics is always the kind you can see
+(a ball, a raindrop, a ray of light).
+
+**Schlomo and Schlomi.** The track borrows Schlomo from Josh's 2017
+handouts, where he has a plausible idea that turns out not to work
+(shifting a cipher twice to make it "more secure"). Here he has a sister
+or friend, Schlomi. Fix and Explain problems give their ideas to one of
+them, so the reader tests somebody else's reasoning before their own:
+"Schlomo says 0.1 + 0.2 should print 0.3. Is he wrong?" Rules:
+
+- Their ideas are *reasonable*. Each is the idea a thoughtful reader
+  might have. Neither of them is ever the butt of the joke.
+- Neither is always right. Sometimes Schlomo is right and Schlomi is
+  wrong, and sometimes both are right in different spaces (the fourth
+  idea, §2).
+- One or two appearances per practice page, not every problem.
+- They make mistakes; the reader never gets called one.
+
+**Choose your project.** Where one idea has several good uses, the page
+offers two to four short projects and the reader picks one: "choose one
+of these, or do more than one if you like". Each project is complete on
+its own, is a few cells long, and ends with its own check. The first
+use is Unit 9, where the derivative finds the bottom of a letter's curve,
+the edge of a shape in an image, the best line through data, or the
+lowest point of a cost by walking downhill (gradient descent). A mixed
+page may offer a choice of products in the same way.
 
 ## 5. The units
 
@@ -160,12 +190,18 @@ can it hold?*
 |---|---|---|---|
 | 1.0 | Four questions | What do a board game, a recipe and a line of Python have in common? | PDP-LO5, MIT-6.1 |
 | 1.1 | Recipes are algorithms | How would you teach a robot to make tea? | PDP-LO2, PDP-LO5, PDP-LO6, MIT-6.1 |
-| 1.2 | Numbers a computer can hold | Why does Python say `7 / 2` is `3.5` but `7 // 2` is `3`? | PDP-LO4, MIT-1.1 |
-| 1.3 | Everything is ones and zeros | How does `#FF8800` make orange? | MIT-1.4 |
+| 1.2 | Numbers a computer can hold | A microwave clock keeps one number: how does it take it apart into digits, and why does Python give three answers to 7 ÷ 2? | PDP-LO4, MIT-1.1 |
+| 1.3 | Everything is ones and zeros | Can you see the 8 in `0x6996996`? And how does `#FF8800` make orange? | MIT-1.4 |
 | 1.4 | When Python says no | What is an error message trying to tell you? | PDP-LO9 |
 
-Unit product: a tip calculator that splits a restaurant bill. Toolkit starts
-with `to_binary`, `to_hex`.
+Unit product: a digit display, in two stages, built on the mixed page.
+Stage 1 is a seven-segment display drawn in text: `//` and `%` take a
+number apart, $2^7 = 128$ counts the segment patterns, and each digit's
+pattern is a byte. Stage 2 is a pixel font 4 pixels wide and 7 tall,
+where each row is one hex digit and a digit is seven. The digit display
+runs through the unit: pixels and segments in 1.2, bits and glyphs in
+1.3, errors in display code in 1.4. Toolkit starts with `digit_at`
+(1.2), then `to_binary`, `to_hex` and `pixel_row` (1.3).
 
 ### Unit 2 — Decisions and the logic under them
 
@@ -174,13 +210,18 @@ follow?*
 
 | # | Tutorial | Question | Outcomes |
 |---|---|---|---|
-| 2.1 | Choosing a path | How does a ticket machine know you get the student price? | PDP-LO4, PDP-LO6, MIT-1.11 |
-| 2.2 | True, false and every case in between | Can we list every way a condition can come out? | MIT-2.4 |
+| 2.1 | Choosing a path | How does a phone decide when to slow its processor down? | PDP-LO4, PDP-LO6, MIT-1.11 |
+| 2.2 | True, false and every case | Can we list every way a condition can come out? | MIT-2.4 |
 | 2.3 | Untangling a condition | Why does `not (a and b)` mean the same as `not a or not b`? | MIT-2.5 |
 | 2.4 | Bits that flip | How can one bit catch a mistake in a message? | MIT-2.4, MIT-1.4 |
 
-Unit product: a quiz that marks answers and explains why. Toolkit gains
-`truth_table`.
+Contexts: a phone's temperature rules, a drone's battery and a laptop's
+fan speeds (2.1); an app's unlock and login rules, and which segments of
+a seven-segment display light for the digits 0 to 7 (2.2); a delivery
+app's Order button and a drone that stays grounded in rain or wind (2.3);
+an Irish weather buoy's radio message and its parity bit (2.4). Unit
+product: a quiz that marks binary answers and explains why. Toolkit gains
+`between`, `truth_table`, `same_rule` and `parity_bit`.
 
 ### Unit 3 — Again and again: loops, counting and chance
 
@@ -189,16 +230,24 @@ counting, and at chance?*
 
 | # | Tutorial | Question | Outcomes |
 |---|---|---|---|
-| 3.1 | Doing it again | How much does a daily coffee cost over a year? | PDP-LO6, MIT-6.4 |
-| 3.2 | Counting every outfit | How many different outfits are in your wardrobe? | MIT-5.1, MIT-5.2 |
-| 3.3 | Orders and choices | How many ways can a five-a-side team be picked? | MIT-5.3, MIT-5.4, MIT-5.5 |
+| 3.1 | Doing it again | A ball keeps 80% of its height at each bounce. When does it stop, and how far does it travel? | PDP-LO6, MIT-6.4 |
+| 3.2 | Counting every outfit | How many outfits are in your wardrobe, and how many colours can one pixel show? | MIT-5.1, MIT-5.2 |
+| 3.3 | Orders and choices | Eight drones, five chargers: how many flight teams, and how many if each drone has a job? | MIT-5.3, MIT-5.4, MIT-5.5 |
 | 3.4 | How likely is it? | Is a coin that lands heads 7 times in 10 unfair? | MIT-5.6, MIT-5.7 |
-| 3.5 | Chances that combine | How likely is it that two people in the class share a birthday? | MIT-5.8 |
+| 3.5 | Chances that combine | How likely is it that two people in the class share a birthday, and two files a hash code? | MIT-5.8 |
 
-Sigma and pi notation arrive as "a loop, written by mathematicians" (3.1).
-Every counting formula is checked against a loop that lists every case.
-Unit product: a password-strength checker. Toolkit gains `factorial`,
-`combinations`, `simulate`.
+A bouncing ball runs through 3.1: a `for` loop over the bounces, a
+running total of the distance, sigma for a geometric series (endless
+bounces that add up to 9 metres), pi for the height kept after $n$
+bounces, and `while` until a bounce is under 1 cm, with an animation
+the reader steers by editing `keep`. Sigma and pi notation arrive as "a
+loop, written by mathematicians". Every counting formula is checked
+against a loop that lists every case, and 3.2 and 3.3 count pixels,
+colours, PINs, passwords and the 128 seven-segment patterns from Unit 1.
+3.4 simulates rain on a 10 × 10 grid as well as the coin, with an
+animation of the grid. Unit product: a password-strength checker.
+Toolkit gains `total`, `product`, `all_pairs`, `factorial`,
+`permutations`, `combinations`, `simulate` and `at_least_one`.
 
 ### Unit 4 — Making your own tools
 
@@ -262,7 +311,7 @@ growth rates are seen before they are named. Shell sort is in 6.3.
 | 7.2 | Drawing a rule | What does `y = x² − 4` look like, and where does it cross zero? | MIT-3.2 |
 | 7.3 | Solving for x | When will two phone plans cost the same? | MIT-1.9 |
 | 7.4 | When there is no real answer | What does Python mean by `2j`? | MIT-1.10 |
-| 7.5 | The top of the curve | What price gives a shop the most profit? | MIT-3.4 |
+| 7.5 | The top of the curve | Why does a round letter dip below the line, and how far? (typographic overshoot) | MIT-3.4 |
 | 7.6 | Several unknowns at once | How many adult and child tickets were sold? | MIT-1.12 |
 
 Polynomials are lists of coefficients, so expanding brackets is a loop. Every
@@ -287,20 +336,38 @@ same sine and cosine. Toolkit gains `distance`, `midpoint`, `slope`,
 
 ### Unit 9 — Change
 
-*How fast is it changing, right now? Every speedometer and every machine
+*How fast is it changing, right now? Every weather radar and every machine
 learning model asks this.*
 
 | # | Tutorial | Question | Outcomes |
 |---|---|---|---|
-| 9.1 | Getting closer | What happens to a value as you zoom in on it? | MIT-3.5 |
-| 9.2 | How fast, right now | What was the runner's speed at the 3-minute mark? | MIT-3.6 |
+| 9.1 | Getting closer | Walking halfway to a door again and again, do you ever arrive? | MIT-3.5 |
+| 9.2 | How fast, right now | How fast is a falling hailstone going 3 seconds after it starts? | MIT-3.6 |
 | 9.3 | Rules for change | Is there a shortcut for the slope of any curve? | MIT-3.7 |
 | 9.4 | Solving by computing | How does a calculator find √2 when there is no formula for it? | MIT-3.6, MIT-6.6 |
+| 9.5 | Putting the derivative to work: choose a project | What is the derivative for? | touches MIT-3.4, 3.6, 3.7 |
 
-9.3 teaches all four rules, the quotient rule included; the existing course
-narrows it out. 9.4 is bisection and Newton's method: limits, derivatives,
-divide and conquer and binary search in one algorithm. Toolkit gains
-`derivative_at`, `bisect`, `newton`.
+9.1's one-sided limits are the sharp edge of a shape on a screen, which
+9.5's edge-finding project comes back to. 9.2's hailstone falls in the
+simplest air-resistance model (drag proportional to speed, said to be a
+model), and a Doppler weather radar is the instrument that reads a speed
+at an instant. 9.3 teaches all four rules, the quotient rule included; the
+existing course narrows it out, and it finds 7.5's letter bottom again by
+setting the slope to 0. 9.4 is bisection and Newton's method: limits,
+derivatives, divide and conquer and binary search in one algorithm.
+Toolkit gains `derivative_at`, `bisect_root`, `newton`.
+
+9.5 is the first "choose your project" page (§4): after a short shared
+opening (a slope of 0 marks a turn, a large slope marks fast change) the
+reader picks one or more of four self-contained projects, each ending in
+its own `check()`: the bottom of a letter drawn with a cubic Bézier curve,
+an edge in a row of pixels and in a small picture, the least-squares line
+through Ireland's life expectancy, and gradient descent. It has no practice
+page: each project is its own practice, and the mixed page follows.
+
+Unit product (on `mixed-change`): a best-moment finder, `best_point`, that
+finds a rule's top or bottom (the letter's bowl first) and the moment it
+changes fastest, then does the same for Ireland's CO₂ emissions.
 
 ### Unit 10 — Programs for people
 
@@ -387,3 +454,17 @@ Made by Josh on 24 September 2026:
 2. **The toolkit:** both modes, the reader's own code and the reference (§6).
 3. **Where it sits:** beside the existing integrated course, as a beta track.
 4. **The four ideas** (§2) are the spine of the track.
+
+Made by Josh on 25 September 2026 (7.228):
+
+5. **Contexts:** computing first, physics where the maths is physics
+   (§4). Unit 1's project is a digit display, in two stages: a
+   seven-segment display first, then a small pixel font. It replaces the
+   bill splitter.
+6. **Schlomo and Schlomi** are the track's two characters (§4).
+7. **Headings and ids may change.** No reader has used the track yet, so
+   headings, cell ids and toolkit names can change freely until it
+   leaves beta. `waves` is also in the MIT–PDP course, so its headings
+   and cell ids stay.
+8. **Choose your project** where one idea has several good uses (§4).
+9. **The tagline** says "maths".

@@ -2,7 +2,7 @@
 title: "Numbers a computer can hold — Practice"
 practice_for: numbers-a-computer-can-hold
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Numbers a computer can hold — Practice
@@ -10,12 +10,18 @@ version: 2026.09.24.1
 Each problem says what kind it is: **Predict**, **Make**, **Fix**,
 **Explain** or **Another way**. With numbers, it is tempting to run the
 cell first and guess afterwards. Try it the other way round: write your
-guess down, then run. The surprises are where the learning is.
+guess down, then run. The surprises are where the learning is, and a
+wrong guess is a surprise you earned.
+
+Your `digit_at` from the tutorial page is loaded here. If you have not
+written it yet, the page uses a reference version, so every problem
+works.
 
 ## Warm-up
 
-**1. Predict.** Seventeen people turn up for five-a-side football. What
-does each line show, and what does each answer mean for the game?
+**1. Predict.** A folder on a computer holds 17 files, and you move
+them into smaller folders of 5. What does each line show, and what does
+each answer mean for the files?
 
 ```python exec
 id: numbers-practice-predict-1
@@ -32,20 +38,19 @@ print(17 / 5)
 3.4
 ```
 
-`17 // 5` is 3: there are enough people for 3 full teams. `17 % 5` is 2:
-two people are left over, and could be substitutes. `17 / 5` is 3.4,
-which is a true answer in the rational numbers, but nobody can pick 0.4
-of a team. For this question, `//` and `%` live in the right space, and
-`/` does not.
+`17 // 5` is 3: there are enough files for 3 full folders. `17 % 5` is
+2: two files are left over. `17 / 5` is 3.4, which is a true answer in
+the rational numbers, but nobody can fill 0.4 of a folder. For this
+question, `//` and `%` live in the right space, and `/` does not.
 
 </details>
 
 **2. Explain.** What is the smallest family of numbers, $\mathbb{N}$,
 $\mathbb{Z}$, $\mathbb{Q}$ or $\mathbb{R}$, that each of these belongs to?
 
-- (a) 12 people on a bus
+- (a) 12 pixels in a row
 - (b) a temperature of −4 °C in Mullingar in January
-- (c) three quarters of a pizza, 0.75
+- (c) a phone battery three quarters full, 0.75
 - (d) $\pi$, the number that turns a circle's width into its distance round
 
 <details class="dl-answer"><summary>answer</summary>
@@ -58,9 +63,8 @@ $\mathbb{Z}$, $\mathbb{Q}$ or $\mathbb{R}$, that each of these belongs to?
 
 (d) $\mathbb{R}$, because $\pi$ is not a fraction of two whole numbers.
 
-Remember that the families sit inside each other. So 12 is also in
-$\mathbb{Z}$, $\mathbb{Q}$ and $\mathbb{R}$. The question asked for the
-smallest.
+The families sit inside each other, so 12 is also in $\mathbb{Z}$,
+$\mathbb{Q}$ and $\mathbb{R}$. The question asked for the smallest.
 
 </details>
 
@@ -82,9 +86,9 @@ $2 + 3 = 5$, then $5 \times 4 = 20$.
 
 </details>
 
-**4. Make.** Eggs are packed in boxes of 6. A farm has 50 eggs. Write
-two lines that show how many full boxes it can pack, and how many eggs
-are left over.
+**4. Make.** A phone sends a 50 KB (kilobyte) photo over a network in
+packets of 6 KB each. Write two lines that show how many full packets it sends,
+and how many KB are left over for one last, smaller packet.
 
 ```python exec
 id: numbers-practice-make-1
@@ -98,7 +102,7 @@ print(50 // 6)
 print(50 % 6)
 ```
 
-8 full boxes, with 2 eggs left over. Check: $8 \times 6 + 2 = 50$. That
+8 full packets, with 2 KB left over. Check: $8 \times 6 + 2 = 50$. That
 check always works: the whole part times the divisor, plus the
 remainder, gives back the number you started with.
 
@@ -131,9 +135,9 @@ kind of number it was given.
 
 </details>
 
-**6. Fix.** A basketball player scored 12, 15 and 18 points in three
-games. This cell should show her average, which is 15. It shows 33.0
-instead. Find the mistake and fix it.
+**6. Fix.** Schlomo, who is learning Python too, has a temperature
+sensor that read 12, 15 and 18 °C. He wants the average, which is 15.
+His cell shows 33.0 instead. Find his mistake and fix it.
 
 ```python exec
 id: numbers-practice-fix-1
@@ -157,17 +161,18 @@ for the division?
 print((12 + 15 + 18) / 3)
 ```
 
-Division comes before addition, so the original line worked out
+Division comes before addition, so Schlomo's line worked out
 $18 \div 3 = 6$ first, then $12 + 15 + 6 = 33$. Brackets make the adding
 happen first: $45 \div 3 = 15.0$.
 
-On paper, we would write $\frac{12 + 15 + 18}{3}$, and the long line
-does the job of the brackets. Python has no long line, so we write the
-brackets ourselves.
+On paper, he would have written $\frac{12 + 15 + 18}{3}$, and the long
+line does the job of the brackets. Python has no long line, so we write
+the brackets ourselves. His mistake came from paper, where it was not a
+mistake at all.
 
 </details>
 
-**7. Fix.** A bus journey takes 135 minutes. This cell should show it in
+**7. Fix.** A video lasts 135 minutes. This cell should show it in
 hours and minutes: 2 hours and 15 minutes. Run it and see what it shows
 instead, then fix it.
 
@@ -188,35 +193,37 @@ print(minutes // 60, "hours and", minutes % 60, "minutes")
 ```
 
 This shows `2 hours and 15 minutes`. `//` gives the whole hours, and `%`
-gives the minutes left over. Both answers come from the same division,
-seen two ways.
+gives the minutes left over. `digit_at(135, 1, 60)` and
+`digit_at(135, 0, 60)` give the same two numbers, because hours and
+minutes are base 60 too.
 
 </details>
 
-**8. Another way.** A child says: "You can't take 5 away from 3." Find
-a space where they are right, and a space where they are wrong. Give a
-real situation for each.
+**8. Another way.** Schlomi, who is also learning Python, says: "You
+can't take 5 away from 3." Schlomo says you can, and the answer is −2.
+Find a space where Schlomi is right, and a space where Schlomo is right.
+Give a real situation for each.
 
 <details class="dl-answer"><summary>answer</summary>
 
-They are right in $\mathbb{N}$. If you have 3 apples, you cannot give
-away 5. There is no such thing as −2 apples in a bowl.
+Schlomi is right in $\mathbb{N}$. If a phone has 3 GB (gigabytes) of free space, it
+cannot store a 5 GB video. There is no such thing as −2 GB of free
+space.
 
-They are wrong in $\mathbb{Z}$. If it is 3 °C and the temperature drops
-by 5 degrees, it is −2 °C. And if you have €3 in your account and spend
-€5, your balance is −€2 (if the bank allows it).
+Schlomo is right in $\mathbb{Z}$. If it is 3 °C and the temperature
+drops by 5 degrees, it is −2 °C.
 
-The child has not made a mistake. They have described the natural
-numbers correctly. Some situations need a bigger space.
+Neither of them has made a mistake. They are answering in two
+different spaces. Here is one good pair of situations; yours may be
+different and still right.
 
 </details>
 
-**9. Make.** A message is passed on in rounds. In the first round, one
-person tells 2 people. In each round after that, everyone who has heard
-tells 2 new people, so the number who heard it in that round doubles.
-In the 2022 census, Ireland's population was 5,149,139. Use `math.log2`
-to find about how many rounds of doubling it takes for one round to
-reach that many people.
+**9. Make.** A message on a phone app is passed on in rounds. In the
+first round, one person sends it to 2 people. In each round after that,
+the number who get it doubles. In the 2022 census, Ireland's population
+was 5,149,139. Use `math.log2` to find about how many rounds of
+doubling it takes for one round to reach that many people.
 
 ```python exec
 id: numbers-practice-make-2
@@ -233,13 +240,12 @@ import math
 print(math.log2(5149139))
 ```
 
-It shows about 22.3. So 22 doublings is not quite enough, and 23 is more
-than enough. We can check with powers: $2^{22} = 4{,}194{,}304$, which
-is less than the population, and $2^{23} = 8{,}388{,}608$, which is more.
+It shows about 22.3. So 22 doublings are not quite enough, and 23 are
+more than enough. Check with powers: $2^{22} = 4{,}194{,}304$, which is
+less than the population, and $2^{23} = 8{,}388{,}608$, which is more.
 
-A logarithm answers "how many times do I multiply by 2?". A very big
-number needs surprisingly few doublings, and that is why news can
-spread so fast.
+A very big number needs surprisingly few doublings. That is why a
+message can reach a whole country in a day.
 
 </details>
 
@@ -261,55 +267,52 @@ or 0.2 exactly, only very close to them, and the tiny differences show
 up in the sum. `==` asks whether two values are exactly equal, and these
 two are not, quite.
 
-For money, this means a program should not test an answer with `==` on
-floats that have not been rounded. That is one reason `split_bill` rounds
-to the cent before it returns. Try `print(round(0.1 + 0.2, 2) == 0.3)`:
-it shows `True`. A later page in this unit explains why 0.1 cannot be
-stored exactly.
+So a program should not test floats with `==` before rounding them.
+Try `print(round(0.1 + 0.2, 2) == 0.3)`: it shows `True`. Programs that
+handle money often count in whole cents instead, since ints are exact.
+A later page in this unit explains why 0.1 cannot be stored exactly.
 
 </details>
 
-The next two problems use `split_bill`. If you wrote your own on the
-tutorial page, it should do the same as this one. Run this cell first,
-so that the page has a `split_bill` to use.
-
-```python exec
-id: numbers-practice-tools
-def split_bill(total, people, tip_percent=0):
-    """Return each person's share of a bill, in euro, rounded to the cent."""
-    with_tip = total * (1 + tip_percent / 100)
-    share = with_tip / people
-    return round(share, 2)
-```
-
-**11. Make.** Five friends share a taxi that costs €37.50, and they want
-to add a 10% tip. Use `split_bill` to find each person's share. Then
-find it with no tip.
+**11. Make.** A microwave timer has 754 seconds left. Use `digit_at`
+to find the minutes and the seconds it shows. Then find the four digits
+its display lights, from left to right.
 
 ```python exec
 id: numbers-practice-make-3
 # Your lines here
 ```
 
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. The seconds are the digit in place 0, in base 60.
+2. The minutes are the digit in place 1, in base 60.
+3. Each of those is a number from 0 to 59. Its tens digit is place 1,
+   and its ones digit is place 0, in base 10.
+
+**Think about:** why the base-10 calls need no third number.
+
+</details>
+
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-print(split_bill(37.50, 5, 10))
-print(split_bill(37.50, 5))
+minutes = digit_at(754, 1, 60)
+seconds = digit_at(754, 0, 60)
+print(minutes, seconds)
+print(digit_at(minutes, 1), digit_at(minutes, 0), digit_at(seconds, 1), digit_at(seconds, 0))
 ```
 
-With the tip, each pays €8.25. With no tip, each pays €7.50, which
-Python shows as `7.5`. In the second call, we did not give a tip, so
-`tip_percent` took its default value, 0.
-
-Check the first one by hand: 10% of €37.50 is €3.75, so the total is
-€41.25, and $41.25 \div 5 = 8.25$.
+This shows `12 34`, then `1 2 3 4`: the timer reads 12:34. Check:
+$12 \times 60 + 34 = 754$. The base-10 calls leave out the third number,
+so `base` takes its default value, 10.
 
 </details>
 
 **12. Make.** On a piano, one A is 110 Hz and a higher A is 1760 Hz.
-Each octave up doubles the frequency. Use `math.log2` to find how many
-octaves apart they are.
+(Hz, hertz, counts how many times a sound wave shakes the air each
+second.) Each octave up doubles the frequency. Use `math.log2` to find
+how many octaves apart the two notes are.
 
 ```python exec
 id: numbers-practice-make-4
@@ -327,16 +330,16 @@ print(math.log2(1760 / 110))
 ```
 
 It shows `4.0`: they are 4 octaves apart. First, $1760 \div 110 = 16$,
-so the higher note is 16 times the frequency. Then $\log_2 16 = 4$,
-because $2^4 = 16$. Check by doubling: 110, 220, 440, 880, 1760. That is
-four doublings.
+so the higher note shakes the air 16 times as fast. Then
+$\log_2 16 = 4$, because $2^4 = 16$. Check by doubling: 110, 220, 440,
+880, 1760. That is four doublings.
 
 </details>
 
 ## Stretch
 
-**13. Another way.** The tutorial found $\log_2 1024$ with
-`math.log2`. Find it another way, without any logarithm and without a
+**13. Another way.** The tutorial found $\log_2 128$ with `math.log2`.
+Find $\log_2 1024$ another way, without any logarithm and without a
 computer. Start from 1024 and keep halving.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -369,48 +372,49 @@ halvings take a million below 1.
 
 </details>
 
-**14. Fix.** Here is a friend's first try at a bill calculator, with its
-tests. The tests fail. Run the cell, find the one mistake, and fix it so
-that all the tests pass.
+**14. Fix.** Schlomi wants the tens digit of a number. Her idea: take
+the last digit, then divide it by 10. Her tests fail. Run the cell,
+find the flaw in the idea, and fix it so that both tests pass.
 
 ```python exec
 id: numbers-practice-fix-3
-def bill_share(total, people, tip_percent=0):
-    """Return each person's share of a bill, in euro, rounded to the cent."""
-    with_tip = total * tip_percent / 100
-    share = with_tip / people
-    return round(share, 2)
+def tens_digit(number):
+    """Give the tens digit of a whole number."""
+    return number % 10 // 10
 
-assert bill_share(84, 4) == 21.0
-assert bill_share(84, 4, 10) == 23.1
-print("bill_share keeps its promise.")
+assert tens_digit(2026) == 2
+assert tens_digit(57) == 5
+print("tens_digit keeps its promise.")
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Which test fails first? The error message names its line.
-2. Work out `bill_share(84, 4)` by hand, line by line. With no tip,
-   `tip_percent` is 0. What is `with_tip`?
-3. Is `with_tip` the bill with the tip added, or the tip on its own?
+1. Work out `tens_digit(2026)` by hand. What is `2026 % 10`?
+2. What is that number `// 10`?
+3. Which of `%` and `//` should happen first, to get rid of the ones
+   digit?
 
-**Think about:** what should `with_tip` be when there is no tip at all?
+**Think about:** which of the four questions is this mistake about?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first test fails. With no tip, `with_tip` is $84 \times 0 \div 100 =
-0$, so each person pays €0. The line works out the tip on its own, and
-forgets to add the bill.
+`2026 % 10` is 6, and `6 // 10` is 0. Any last digit is less than 10,
+so her function gives 0 every time. The tens digit is thrown away in
+the first step.
+
+The steps need the other order: first drop the last digit, then keep
+the new last digit.
 
 ```python
-    with_tip = total * (1 + tip_percent / 100)
+    return number // 10 % 10
 ```
 
-`total + total * tip_percent / 100` works too. It is the same amount,
-written another way. This is a realistic mistake, and it is why a
-function should be tested with more than one case: a test with a tip of
-0 catches it at once.
+This is a mistake about *what happens when*. Here is another way that
+works: `number % 100 // 10` keeps the last two digits first, 26, then
+drops the ones, leaving 2. Schlomi had the right two moves. Only the
+order was wrong.
 
 </details>
 
@@ -453,63 +457,63 @@ chose "down" instead. Same move, a different space.
 
 </details>
 
-**16. Make.** A recipe for 4 people uses 300 g of flour. Write a
-function `scale(amount, from_people, to_people)` that returns how much
-you need for a different number of people. Give it a docstring, and
+**16. Make.** A photo 1920 pixels wide is shrunk to fit a screen 1280
+pixels wide. Write a function `scale(position, from_width, to_width)`
+that returns where a pixel's column moves to. Give it a docstring, and
 test it with at least two `assert` lines.
 
 ```python exec
 id: numbers-practice-make-5
-def scale(amount, from_people, to_people):
+def scale(position, from_width, to_width):
     """Your promise here."""
     ...
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. How much flour is that for one person?
-2. Then how much for `to_people` people?
+1. What fraction of the way across the photo is `position`?
+2. Where is that same fraction of the way across the new width?
 3. Write that as one expression after `return`.
-4. Test it with numbers you can check in your head: 300 g for 4 should
-   be 150 g for 2.
+4. Test it with numbers you can check in your head: halfway across 1920
+   is 960, and halfway across 1280 is 640.
 
-**Think about:** does your function work for any ingredient, or only
-flour?
+**Think about:** does your function work for any two widths, or only
+these?
 
-**Try this next:** what does your function give for 250 g, from 4
-people to 3? Is that a sensible amount to weigh?
+**Try this next:** what does your function give for column 1, from a
+width of 3 to a width of 2? Is that a column a screen can have?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def scale(amount, from_people, to_people):
-    """Return the amount of an ingredient for to_people, from a recipe
-    that serves from_people."""
-    return amount / from_people * to_people
+def scale(position, from_width, to_width):
+    """Return where column position moves to, when an image
+    from_width pixels wide is scaled to to_width pixels wide."""
+    return position / from_width * to_width
 
-assert scale(300, 4, 2) == 150
-assert scale(300, 4, 6) == 450
+assert scale(960, 1920, 1280) == 640
+assert scale(100, 400, 200) == 50
 print("scale keeps its promise.")
 ```
 
-First we divide by 4 to get the amount for one person, 75 g. Then we
-multiply by the new number of people. For 6 people that is 450 g.
+First we divide by the old width, to find how far across the pixel is:
+960 is half of 1920. Then we multiply by the new width: half of 1280 is
+640. The promise is about any two widths, so it works for any image.
 
-It works for any ingredient, because the promise is about amounts, not
-flour. For the "try this next", `scale(250, 4, 3)` gives 187.5 g. That
-is fine on a kitchen scale, and it is a float, because `/` always gives
-one.
+For the "try this next", `scale(1, 3, 2)` gives 0.6666666666666666.
+There is no column 0.67. A real program would round it, or use `//`,
+to land on a whole pixel.
 
 </details>
 
-**17. Explain.** The tutorial page met logarithms as a
-question, "how many times do I multiply?". Another course might teach the
-rules first, such as $\log_2(a \times b) = \log_2 a + \log_2 b$. For
-someone meeting logarithms for the first time, which would you start with,
-the question or the rules? Say why, and say what a learner who met only
-your choice would be missing.
+**17. Explain.** The tutorial page met logarithms as a question, "how
+many times do I multiply?". Another course might teach the rules first,
+such as $\log_2(a \times b) = \log_2 a + \log_2 b$. For someone meeting
+logarithms for the first time, which would you start with, the question
+or the rules? Say why, and say what a learner who met only your choice
+would be missing.
 
 <details class="dl-answer"><summary>answer</summary>
 

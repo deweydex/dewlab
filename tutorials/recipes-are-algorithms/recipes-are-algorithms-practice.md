@@ -2,7 +2,7 @@
 title: "Recipes are algorithms — Practice"
 practice_for: recipes-are-algorithms
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Recipes are algorithms — Practice
@@ -14,6 +14,8 @@ teaches more than a right one you were not sure of.
 
 Plans and pseudocode can be right in many different ways. Where an
 answer fold shows a plan, it shows one good plan, not the only one.
+Yours may be clearer. A good test for any plan: would a robot that
+knows nothing follow it and get it right?
 
 ## Warm-up
 
@@ -82,8 +84,9 @@ Most repeats that end with "until" have a check like this inside.
 
 </details>
 
-**4. Make.** A bus journey on a Leap card costs €2. Make a variable
-`journeys` that holds 8, and show the cost of 8 journeys.
+**4. Make.** A phone backs up your photos each night, and each photo
+takes about 3 MB (megabytes) of space. Make a variable `photos` that holds 8, and show the
+space that 8 photos take.
 
 ```python exec
 id: recipes-practice-make-1
@@ -93,14 +96,14 @@ id: recipes-practice-make-1
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-journeys = 8
-print(journeys * 2)
+photos = 8
+print(photos * 3)
 ```
 
-It shows `16`, so 8 journeys cost €16. You could also give the fare its
-own name, `fare = 2`, and write `print(journeys * fare)`. Then, if the
-fare changes, there is only one line to change, and the name says
-what the number is.
+It shows `24`, so 8 photos take about 24 MB. You could also give the
+size its own name, `photo_mb = 3`, and write `print(photos * photo_mb)`.
+Then, if the phone's camera changes, there is only one line to change,
+and the name says what the number is.
 
 </details>
 
@@ -159,17 +162,17 @@ It is called three times, so the chorus appears three times.
 
 </details>
 
-**7. Fix.** This cell should show a short stretching routine. The first
-time it runs, it stops with an error. Run it, read the last line of the
-error, and fix it.
+**7. Fix.** Schlomo, who is learning Python too, wrote the steps a
+phone follows when it starts. The first time his cell runs, it stops
+with an error. Run it, read the last line of the error, and fix it.
 
 ```python exec
 id: recipes-practice-fix-1
-stretch_routine()
+start_up()
 
-def stretch_routine():
-    print("Reach up high for 10 seconds.")
-    print("Touch your toes for 10 seconds.")
+def start_up():
+    print("Check the battery.")
+    print("Show the lock screen.")
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -185,17 +188,18 @@ def stretch_routine():
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def stretch_routine():
-    print("Reach up high for 10 seconds.")
-    print("Touch your toes for 10 seconds.")
+def start_up():
+    print("Check the battery.")
+    print("Show the lock screen.")
 
-stretch_routine()
+start_up()
 ```
 
 Python runs a cell from the top. On the first line, the function has not
-been defined yet, so the name `stretch_routine` points at nothing. The
-fix is to define it first, and call it after. This is a mistake about
-"what happens when?".
+been defined yet, so the name `start_up` points at nothing. The fix is
+to define it first, and call it after. Schlomo's order makes sense on
+paper, where the most important line often comes first. In Python, it
+is a mistake about "what happens when?".
 
 One thing to watch for. Once your fixed cell has run, move the call
 back to the top and run it again. Now it works. The function was
@@ -206,16 +210,16 @@ the same error again.
 
 </details>
 
-**8. Fix.** This function should show two things to pack on a rainy
-day. It stops with an error. Run it, read the error, and fix it.
+**8. Fix.** This function should show the two steps of a backup. It
+stops with an error. Run it, read the error, and fix it.
 
 ```python exec
 id: recipes-practice-fix-2
-def pack_for_rain():
-print("Pack a raincoat.")
-print("Pack an umbrella.")
+def save_backup():
+print("Copy every new photo.")
+print("Check that the copies open.")
 
-pack_for_rain()
+save_backup()
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -233,11 +237,11 @@ and which do not?
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def pack_for_rain():
-    print("Pack a raincoat.")
-    print("Pack an umbrella.")
+def save_backup():
+    print("Copy every new photo.")
+    print("Check that the copies open.")
 
-pack_for_rain()
+save_backup()
 ```
 
 The error is `IndentationError: expected an indented block after
@@ -246,7 +250,7 @@ function definition on line 1`. To
 know which steps belong to the function. Without it, the function has no
 steps at all, and Python will not accept an empty recipe card.
 
-The last line, `pack_for_rain()`, is not indented, because it is not
+The last line, `save_backup()`, is not indented, because it is not
 one of the function's steps. It is the line that uses the card.
 
 </details>
@@ -301,9 +305,9 @@ most 10 minutes".
 
 </details>
 
-**11. Make.** Write a function `directions_to_college()` that shows at
-least three steps for getting from a bus stop to a college door. Then
-call it.
+**11. Make.** A robot pen draws on paper. Write a function
+`draw_letter_l()` that shows at least three steps for drawing a capital
+L. Then call it.
 
 ```python exec
 id: recipes-practice-make-3
@@ -315,13 +319,14 @@ id: recipes-practice-make-3
 One answer:
 
 ```python
-def directions_to_college():
-    print("Get off the bus at the stop after the bridge.")
-    print("Walk up the hill for about 200 metres.")
-    print("Turn right at the post office.")
-    print("The college door is the red one on your left.")
+def draw_letter_l():
+    print("Put the pen down at the top.")
+    print("Draw a line 4 cm down.")
+    print("Turn left.")
+    print("Draw a line 2 cm long.")
+    print("Lift the pen.")
 
-directions_to_college()
+draw_letter_l()
 ```
 
 Check three things: every step is pushed in by the same amount, the call
@@ -329,22 +334,25 @@ at the end is not pushed in, and the call has brackets.
 
 </details>
 
-**12. Another way.** A coach writes a warm-up on the whiteboard as 20
-lines, each one saying "Do a star jump". Write the same warm-up a shorter
-way, in pseudocode. Which way is better if the coach wants 50 star jumps
-next week?
+**12. Another way.** Schlomi, who is also learning Python, wants the
+robot pen to draw a dashed line. Her plan has 20 lines, each one saying
+"Draw 1 cm, then lift the pen and move 1 cm". It works. Write the same
+plan a shorter way, in pseudocode. Which way is better if she wants 50
+dashes next week?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```text
 REPEAT 20 times:
-    DO a star jump
+    DRAW 1 cm
+    LIFT the pen and MOVE 1 cm
+    PUT the pen down
 ```
 
-The 20-line version and the 2-line version promise the same warm-up.
-For 50 star jumps, the long version needs 30 more lines, and you could
-lose count while writing them. The short version needs one number
-changed. A repeat says "how many" in one place, where it is simple to
+Schlomi's 20-line plan and the short plan promise the same line. Hers
+is not wrong. But for 50 dashes, the long version needs 30 more lines,
+and she could lose count while writing them. The short version needs
+one number changed. A repeat says "how many" in one place, where it is simple to
 read and simple to change.
 
 </details>
@@ -401,10 +409,10 @@ true?", and Python's space asks "what happens next?".
 
 </details>
 
-**15. Make.** A pancake recipe needs 50 g of flour and 80 ml of milk for
-each person. Write a function `pancakes_for(people)` that shows how
-much flour and how much milk to use. Call it for 2 people and for 6
-people.
+**15. Make.** An image is stored with 3 bytes for each pixel, one each
+for red, green and blue. Write a function `memory_for(width, height)`
+that shows how many pixels an image has, and how many bytes it needs.
+Call it for an image 4 pixels by 3, and for one 1920 by 1080.
 
 ```python exec
 id: recipes-practice-make-4
@@ -413,44 +421,45 @@ id: recipes-practice-make-4
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Start from `make_tea_for(cups)` on the tutorial page. It has the same
-   shape.
-2. The first line is `def pancakes_for(people):`.
+1. Start from `make_tea_for(cups)` on the tutorial page. It has the
+   same shape, with two parameters instead of one.
+2. The first line is `def memory_for(width, height):`.
 3. Each step is a `print` line, pushed in, with the amount worked out
-   from `people`.
+   from `width` and `height`.
 4. After the function, not pushed in, write two calls.
 
-**Think about:** what does `people` point at during the first call, and
-during the second?
+**Think about:** what do `width` and `height` point at during the first
+call, and during the second?
 
-**Try this next:** add a third line for eggs, at one egg for every two
-people. What happens with 3 people?
+**Try this next:** some small screens use half a byte for each pixel.
+Add a third line for that. What happens with an image 3 pixels by 3?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def pancakes_for(people):
-    print("Use", people * 50, "g of flour.")
-    print("Use", people * 80, "ml of milk.")
+def memory_for(width, height):
+    print("Pixels:", width * height)
+    print("Bytes:", width * height * 3)
 
-pancakes_for(2)
-pancakes_for(6)
+memory_for(4, 3)
+memory_for(1920, 1080)
 ```
 
 This shows:
 
 ```text
-Use 100 g of flour.
-Use 160 ml of milk.
-Use 300 g of flour.
-Use 480 ml of milk.
+Pixels: 12
+Bytes: 36
+Pixels: 2073600
+Bytes: 6220800
 ```
 
-For the "try this next": `people / 2` eggs for 3 people is 1.5 eggs.
-Half an egg is possible, but awkward. The next page is about which
-numbers a computer can hold, and what `/` gives back.
+A full screen of pixels takes over 6 million bytes. For the "try this
+next": `width * height / 2` for a 3 by 3 image is 4.5 bytes. Half a
+byte cannot be stored on its own. The next page is about which numbers
+a computer can hold, and what `/` gives back.
 
 </details>
 

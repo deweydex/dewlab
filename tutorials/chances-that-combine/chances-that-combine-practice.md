@@ -2,7 +2,7 @@
 title: "Chances that combine: and, or, and the birthday problem — Practice"
 practice_for: chances-that-combine
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Chances that combine: and, or, and the birthday problem — Practice
@@ -11,7 +11,8 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find one mistake
 in code that looks fine. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
-folded away until you open them.
+folded away until you open them, and each shows one good way: yours may
+be different, and as good.
 
 Your toolkit is loaded on this page, `at_least_one` included, along with
 `all_pairs`, `product`, `combinations` and `simulate` from earlier in
@@ -64,8 +65,8 @@ left, or what is likely, for the second?
 
 </details>
 
-**3. Make.** A bus route runs on time on 85% of days. Write one line
-that works out the chance it is late on a given day. What does Python
+**3. Make.** A web server is up and working on 85% of days. Write one
+line that works out the chance it is down on a given day. What does Python
 print, and why is it not exactly `0.15`?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -74,8 +75,9 @@ print, and why is it not exactly `0.15`?
 print(1 - 0.85)
 ```
 
-It prints `0.15000000000000002`. Late is the complement of on time, so
-the chance is $1 - 0.85 = 0.15$.
+It prints `0.15000000000000002`. Down is the complement of up, so the
+chance is $1 - 0.85 = 0.15$. (A real server that was down on 15% of days
+would lose its customers quickly. Real ones aim for 99.9% and more.)
 
 The tiny extra at the end is the float rounding from
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros):
@@ -114,24 +116,25 @@ import random
 # Try things here
 ```
 
-**5. Make.** On your cycle to college there are two sets of traffic
-lights, far apart and not linked. The first is green when you reach it
-40% of the time, and the second 50% of the time. What is the chance
-that both are green? Work it out with the multiplication rule, then
-check it with `simulate`.
+**5. Make.** An online game needs two players' phones to be online at
+the same minute. The first player's phone is online 40% of the time,
+and the second's 50% of the time, and the two have nothing to do with
+each other. What is the chance that both are online? Work it out with
+the multiplication rule, then check it with `simulate`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The lights are not linked, so the two events are independent.
+1. The phones have nothing to do with each other, so the two events
+   are independent.
 2. Multiply the two chances.
 3. For the simulation, `random.randint(1, 10) <= 4` is True 4 times in
    10, the same as a 40% chance.
 
-**Think about:** what would change if the second light always turned
-green a few seconds after the first?
+**Think about:** what would change if the two players were friends
+who always play at the same time of day?
 
 **Try this next:** what is the chance that at least one of the two is
-red?
+offline?
 
 </details>
 
@@ -142,14 +145,14 @@ $0.4 \times 0.5 = 0.2$.
 ```python
 import random
 
-def both_green():
-    """One trip. True when both lights are green."""
+def both_online():
+    """One minute. True when both phones are online."""
     first = random.randint(1, 10) <= 4
     second = random.randint(1, 10) <= 5
     return first and second
 
 print(0.4 * 0.5)
-print(simulate(both_green, 100000))
+print(simulate(both_online, 100000))
 ```
 
 The simulation gives a number near 0.2, a little different each time
@@ -361,9 +364,9 @@ $20 \times 19 = 380$ possible draws, which is `permutations(20, 2)`.
 
 </details>
 
-**11. Explain.** For part b of problem 10, a friend uses
-`at_least_one(3 / 20, 2)` and gets about 0.2775, not 0.284. Who is right,
-and why do the two answers differ?
+**11. Explain.** For part b of problem 10, Schlomi, who is learning
+Python too, uses `at_least_one(3 / 20, 2)` and gets about 0.2775, not
+0.284. Who is right, and why do the two answers differ?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -375,9 +378,9 @@ not put back, so the first draw changes the second. If the first draw
 is not yours, one of the 17 tickets that are not yours has gone, and
 your chance on the second draw goes up to $\frac{3}{19}$.
 
-Your friend's answer would be right for a raffle where each drawn ticket
-goes back in the drum before the next draw. The move is fine; it belongs
-to a different space.
+Schlomi's answer would be right for a raffle where each drawn ticket
+goes back in the drum before the next draw. Her move is fine; it
+belongs to a different space.
 
 </details>
 
@@ -390,18 +393,19 @@ id: chances-practice-stretch
 # Try things here
 ```
 
-**12. Make.** There are 12 star signs. Suppose each person's sign is
-equally likely to be any of the 12. How many people must be in a room
-before the chance that two share a sign is more than a half? Use a
-`while` loop and `product`.
+**12. Make.** A program keeps names in 12 boxes, called buckets. It
+works out a short code from each name, a hash, and the code chooses the
+bucket. Suppose each name is equally likely to land in any of the 12.
+How many names must go in before the chance that two share a bucket is
+more than a half? Use a `while` loop and `product`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. This is the birthday problem with a "year" of 12 days.
-2. For a room of `people`, the chance that all signs are different is
-   the product of $\frac{12 - k}{12}$ for $k$ from 0 to `people - 1`.
-3. Start at `people = 1`, and keep adding one person while the chance
-   of a shared sign is 0.5 or less.
+2. For `names` names, the chance that all buckets are different is
+   the product of $\frac{12 - k}{12}$ for $k$ from 0 to `names - 1`.
+3. Start at `names = 1`, and keep adding one name while the chance of a
+   shared bucket is 0.5 or less.
 
 **Think about:** what the answer would be with 365 in place of 12.
 
@@ -412,23 +416,26 @@ before the chance that two share a sign is more than a half? Use a
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def chance_of_shared_sign(people):
-    """The chance that two of this many people share a star sign."""
+def chance_of_shared_bucket(names):
+    """The chance that two of this many names land in the same bucket."""
     chances = []
-    for already in range(people):
+    for already in range(names):
         chances.append((12 - already) / 12)
     return 1 - product(chances)
 
-people = 1
-while chance_of_shared_sign(people) <= 0.5:
-    people = people + 1
+names = 1
+while chance_of_shared_bucket(names) <= 0.5:
+    names = names + 1
 
-print(people, chance_of_shared_sign(people))
+print(names, chance_of_shared_bucket(names))
 ```
 
-It prints `5` and about `0.618`. With 4 people the chance is about
-0.427, so 5 is the first room where a shared sign is more likely than
-not. With 365 in place of 12, the same loop stops at 23.
+It prints `5` and about `0.618`. With 4 names the chance is about
+0.427, so 5 is the first count where a shared bucket is more likely
+than not. With 365 in place of 12, the same loop stops at 23. A shared
+bucket does not break the program: it keeps a short list in each
+bucket. But the birthday problem says the programmer should plan for
+it from the start.
 
 </details>
 
@@ -464,9 +471,9 @@ fast way is the only way.
 
 </details>
 
-**14. Fix.** This version of `shared_birthday` says that even 2 people
-share a birthday every single time. Run it, find the mistake, and fix
-it.
+**14. Fix.** Schlomo, who is learning Python too, wrote this version of
+`shared_birthday`. It says that even 2 people share a birthday every
+single time. Run it, find the mistake, and fix it.
 
 ```python exec
 id: chances-practice-fix-birthday

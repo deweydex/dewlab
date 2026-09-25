@@ -75,7 +75,7 @@ from earlier pages, and every unit ends with a page of mixed problems.
 Powers come back when we count bits. Truth tables come back when we
 count outfits.
 
-**A toolkit of your own.** You write small functions, like `split_bill`
+**A toolkit of your own.** You write small functions, like `digit_at`
 and `factorial`, and later pages load them for you. Last week's work is
 what this week's page stands on. If one of yours is missing, or has a
 mistake in it, the page quietly uses a reference version, so nothing
@@ -134,4 +134,4 @@ people learn by doing. Here, you learn by dewing. The next page,
 [Recipes are algorithms](tutorial:recipes-are-algorithms), is where the
 dewing starts.
 
-Josh
+<!-- Unsigned until Josh has read the letter (7.228). Once he has, sign it "Josh" again. -->

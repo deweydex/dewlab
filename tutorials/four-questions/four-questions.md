@@ -1,7 +1,7 @@
 ---
 title: "Four questions for any puzzle"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   a-game-of-snakes-and-ladders:
     covers: [PDP-LO5]
@@ -17,14 +17,20 @@ covers:
 
 # Four questions for any puzzle
 
-A friend sits down to play a board game they have never seen. Before the
-first roll, they ask you: which piece is mine? What can I do on my turn?
-Who goes first? And what are the rules here?
+Have you ever sat down to a game that everyone else at the table
+already knew? The rules fly past, people laugh at moves you do not
+understand, and you feel a step behind. Many people who start maths or
+programming again as adults know that feeling well.
+
+Here is what a new player does, if they are brave. Before the first
+roll, they ask: which piece is mine? What can I do on my turn? Who goes
+first? And what are the rules here?
 
 Those four questions are not only about games. We can ask them of a
-recipe, a bus timetable, a sum in maths, or a line of computer code. This
-page is about those four questions, because they work on every page that
-comes after it.
+recipe, a sum in maths, or a line of computer code. This page is about
+those four questions, because they work on every page that comes after
+it. You are allowed to ask them at any moment, and nobody will think
+less of you for it.
 
 On this page we:
 
@@ -92,6 +98,15 @@ number to land on 100, so you stay where you are. In others you go up to
 100 and then bounce back. Neither is wrong. They are two different sets
 of rules, and the roll of 6 means something different in each one.
 
+<aside class="dl-note" id="four-q-note-snakes">
+
+**An old game.** Snakes and Ladders began in India, where it was called
+Moksha Patam. The ladders stood for good deeds and the snakes for bad
+ones. It reached England in the 1800s, and the rules have kept changing
+from home to home ever since.
+
+</aside>
+
 ## Four questions
 
 The four questions we asked of the game are the four questions of this
@@ -132,6 +147,15 @@ So on a clock, 10 + 4 is 2. At school, that would be marked wrong. But
 nobody at the train station thinks it is wrong. It is the right answer in
 a different space. On a clock face, the numbers go round from 12 back to
 1, so adding can bring you back to a smaller number.
+
+<aside class="dl-note" id="four-q-note-clock">
+
+**Clock arithmetic.** Mathematicians call this *modular arithmetic*.
+Carl Friedrich Gauss set out its rules, and the way it is still written
+today, in a book in 1801. Computers use it all the time, and Python has a sign for it, `%`, which
+we meet two pages from now.
+
+</aside>
 
 The same happens with the roll of 6 on square 97. The move is the same;
 the rules of the space decide what it means.
@@ -224,16 +248,20 @@ To run a cell, press its **Run** button, or hold Ctrl and press Enter.
 The first run can take a few seconds, because Python has to load in your
 browser.
 
-Before you press Run, what do you think this line will show? It works
-out how much flour three batches of pancakes need. Run it to check.
+The screen you are reading this on is made of tiny squares of light. A
+common kind of screen, called Full HD, has 1920 of them across and 1080
+down. How many is that altogether? Make a guess before you press Run:
+a thousand? A million? Then run it to check.
 
 ```python exec
 id: four-q-first-cell
-print(3 * 250)
+print(1920 * 1080)
 ```
 
-You should see `750` under the cell. In Python, `*` means multiply,
-because a keyboard has no × key.
+You should see `2073600` under the cell: more than two million tiny
+lights, on a thing you look at every day. I find that number surprising
+every time. In Python, `*` means multiply, because a keyboard has no ×
+key.
 
 Let's ask the four questions of that one line.
 
@@ -243,9 +271,9 @@ did not have to explain it.
 **What is promised?** `print` is a function, and its promise is: give me
 something in brackets, and I will show it on the screen.
 
-**What happens when?** Python works out `3 * 250` first, and gets 750.
-Only then does `print` show it. The inside of the brackets happens
-before the outside.
+**What happens when?** Python works out `1920 * 1080` first, and gets
+2073600. Only then does `print` show it. The inside of the brackets
+happens before the outside.
 
 **What does this space let us do?** Python gives us `print` and `*`
 without being asked. It also runs one line after another, from the top of
@@ -255,11 +283,13 @@ the cell down.
 
 Try these, one at a time.
 
-1. Change the `3` to `5`, and run the cell again. Does the answer match
-   what you expected?
-2. Change it to a very big number, like `3000000`, and run it. Python
-   does not get tired of big numbers.
-3. Press the cell's **reset** button, and see the `3` come back.
+1. A phone screen might be 1080 across and 2400 down. Change the
+   numbers and run the cell again. Does the answer match what you
+   expected?
+2. Change one of them to a very big number, like `3000000`, and run it.
+   Python does not get tired of big numbers.
+3. Press the cell's **reset** button, and see the first numbers come
+   back.
 
 That is all there is to a cell: read it, guess, run, change, run again.
 
@@ -277,14 +307,15 @@ allowed at all? Make a guess, even a wild one, then run it to check.
 
 ```python exec
 id: four-q-same-move
-print(3 * 250)
-print(3 * "pancake ")
+print(4 * 7)
+print(4 * "#")
 ```
 
-The second line shows `pancake pancake pancake `. The same `*` does a
-different job, because it is working in a different space. With numbers,
-`3 *` means "multiply by 3". With text, `3 *` means "write it out 3
-times".
+The second line shows `####`. The same `*` does a different job, because
+it is working in a different space. With numbers, `4 *` means "multiply
+by 4". With text, `4 *` means "write it out 4 times". If you squint,
+`####` is a row of four lit squares on a tiny screen. This unit ends by
+drawing numbers in exactly that way.
 
 Neither meaning is the "real" one. Each is right in its own space, in the
 same way that 10 + 4 is 14 on a calculator and 2 on a clock. Python decides which
@@ -329,7 +360,7 @@ to trust them on something new.
 Here are the four questions again, asked of all three things on this
 page.
 
-| The question | Snakes and Ladders | Pancakes | `print(3 * 250)` |
+| The question | Snakes and Ladders | Pancakes | `print(1920 * 1080)` |
 |---|---|---|---|
 | What is named here? | pieces and squares | ingredients, and "the batter" | `print` |
 | What is promised? | a roll gives 1 to 6; a ladder lifts you | whisking gives smooth batter | `print` shows what is in its brackets |

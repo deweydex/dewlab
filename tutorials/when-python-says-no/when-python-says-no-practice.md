@@ -2,7 +2,7 @@
 title: "When Python says no: reading error messages — Practice"
 practice_for: when-python-says-no
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # When Python says no: reading error messages — Practice
@@ -11,7 +11,9 @@ Most cells on this page are meant to fail, the way they were on the
 tutorial page. Each problem says what kind it is: **Predict**, **Make**,
 **Fix**, **Explain** or **Another way**. Before you open an answer, try
 the routine: read the last line, find the line it names, ask which of
-the four questions it is about, change one thing, and run again.
+the four questions it is about, change one thing, and run again. If red
+text still worries you a little, that is normal. The worry fades with
+practice, and this page is that practice.
 
 ## Warm-up
 
@@ -19,20 +21,20 @@ the four questions it is about, change one thing, and run again.
 will give, and what Python will suggest.
 
 ```python exec
-id: when-python-practice-playlist
-playlist_length = 12
-print(playlist_lenght)
+id: when-python-practice-typo
+pixel_count = 28
+print(pixel_cuont)
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```text
-NameError: name 'playlist_lenght' is not defined. Did you mean: 'playlist_length'?
+NameError: name 'pixel_cuont' is not defined. Did you mean: 'pixel_count'?
 ```
 
-The name on line 2 has the `h` and the `t` swapped, so it points at
+The name on line 2 has the `o` and the `u` swapped, so it points at
 nothing. Python looks for a name that is spelled nearly the same, and
-suggests `playlist_length`.
+suggests `pixel_count`.
 
 </details>
 
@@ -49,17 +51,18 @@ last"), so the bottom is also where Python stopped.
 
 </details>
 
-**3. Fix.** This recipe card will not run. Read the message, then fix
-it so that it prints both steps.
+**3. Fix.** A display runs these steps when it is switched on. The
+cell will not run. Read the message, then fix it so that it prints both
+steps.
 
 ```python exec
-id: when-python-practice-oven
-def oven_steps():
-print("Heat the oven to 200 degrees.")
-    print("Wait 10 minutes.")
+id: when-python-practice-startup
+def startup_steps():
+print("Light every segment for one second.")
+    print("Show 0000.")
 
 
-oven_steps()
+startup_steps()
 ```
 
 <details class="dl-answer"><summary>answer</summary>
@@ -74,17 +77,20 @@ Both steps belong to the function, so both must be pushed in by the
 same amount:
 
 ```python
-def oven_steps():
-    print("Heat the oven to 200 degrees.")
-    print("Wait 10 minutes.")
+def startup_steps():
+    print("Light every segment for one second.")
+    print("Show 0000.")
 
 
-oven_steps()
+startup_steps()
 ```
+
+Many devices light every segment for a moment when they start, for a
+good reason: it shows at once if a segment is broken.
 
 </details>
 
-**4. Another way.** A scoreboard program has this line, which gives a
+**4. Another way.** A game's score display has this line, which gives a
 `TypeError`:
 
 ```python
@@ -117,13 +123,13 @@ Neither is more correct: they are two routes out of the same problem.
 
 ## Core
 
-**5. Predict.** Will the first line of this cell print? Say your answer
-before you run it.
+**5. Predict.** The display on a DART train shows the stops. Will the
+first line of this cell print? Say your answer before you run it.
 
 ```python exec
-id: when-python-practice-bus
+id: when-python-practice-dart
 print("Leaving Bray now")
-print("Next stop: Killiney")
+print("Next stop: Shankill")
 print("Arriving at Dún Laoghaire)
 ```
 
@@ -132,7 +138,7 @@ print("Arriving at Dún Laoghaire)
 No. Nothing prints at all.
 
 ```text
-  File "<cell when-python-practice-bus>", line 3
+  File "<cell when-python-practice-dart>", line 3
     print("Arriving at Dún Laoghaire)
           ^
 SyntaxError: unterminated string literal (detected at line 3)
@@ -145,23 +151,25 @@ There is no "Traceback" line at the top, because nothing ran.
 
 </details>
 
-**6. Explain.** A running app works out your pace in minutes per
-kilometre. Run the cell. The first report works and the second does
-not. Which line failed? Which line is responsible? Answer in the
-comment at the end.
+**6. Explain.** A GPS logger records how far you went, in metres, and
+how long it took, in seconds, and reports your speed. Run the cell. The
+first report works and the second does not. Schlomo, who is learning
+Python too, says line 2 must be the mistake, because that is where
+Python stopped. Is he right? Which line failed, and which line is
+responsible? Answer in the comments at the end.
 
 ```python exec
-id: when-python-practice-pace
-def pace(minutes, km):
-    return minutes / km
+id: when-python-practice-speed
+def speed(metres, seconds):
+    return metres / seconds
 
 
-def report(minutes, km):
-    print("Your pace:", pace(minutes, km), "minutes per km")
+def report(metres, seconds):
+    print("Speed:", speed(metres, seconds), "metres per second")
 
 
-report(30, 5)
-report(30, 0)
+report(300, 60)
+report(300, 0)
 
 # The line that failed:
 # The line that is responsible:
@@ -169,26 +177,28 @@ report(30, 0)
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first report prints `Your pace: 6.0 minutes per km`. Then:
+The first report prints `Speed: 5.0 metres per second`. Then:
 
 ```text
 Traceback (most recent call last):
-  File "<cell when-python-practice-pace>", line 10, in <module>
-    report(30, 0)
-    ~~~~~~^^^^^^^
-  File "<cell when-python-practice-pace>", line 6, in report
-    print("Your pace:", pace(minutes, km), "minutes per km")
-                        ~~~~^^^^^^^^^^^^^
-  File "<cell when-python-practice-pace>", line 2, in pace
-    return minutes / km
-           ~~~~~~~~^~~~
+  File "<cell when-python-practice-speed>", line 10, in <module>
+    report(300, 0)
+    ~~~~~~^^^^^^^^
+  File "<cell when-python-practice-speed>", line 6, in report
+    print("Speed:", speed(metres, seconds), "metres per second")
+                    ~~~~~^^^^^^^^^^^^^^^^^
+  File "<cell when-python-practice-speed>", line 2, in speed
+    return metres / seconds
+           ~~~~~~~^~~~~~~~~
 ZeroDivisionError: division by zero
 ```
 
-The line that failed is line 2, inside `pace`, where the division
-happens. The line responsible is line 10, `report(30, 0)`, which asked
-for a pace over 0 km. Line 2 is fine: it worked for `report(30, 5)`.
-The trail from line 10 to line 2 is exactly what the traceback shows.
+Schlomo is half right. Line 2, inside `speed`, is the line that
+failed: the division happens there. But the line responsible is line
+10, `report(300, 0)`, which asked for a speed over 0 seconds. Line 2 is
+fine: it worked for `report(300, 60)`. His idea is a sensible first
+guess, and the traceback is the trail that takes us from line 2 back
+to line 10.
 
 </details>
 
@@ -354,65 +364,67 @@ line first.
 
 </details>
 
-**12. Another way.** A concert venue plans its rows of seats. The cell
-stops with a `ZeroDivisionError` on line 7. The traceback says where
-it stopped, but not where the 0 came from. Find the responsible line a
-second way: add `print` lines that show the value of each name, and run
-again.
+**12. Another way.** A paint program fills an image of 120 pixels. It
+has painted 45 pixels red and 75 blue, and it shares 50 seconds among
+the rows it still has to paint. The cell stops with a
+`ZeroDivisionError` on line 7. The traceback says where it stopped, but
+not where the 0 came from. Find the responsible line a second way: add
+`print` lines that show the value of each name, and run again.
 
 ```python exec
-id: when-python-practice-concert
-tickets = 120
-sold_online = 45
-sold_at_door = 75
-left = tickets - sold_online - sold_at_door
-seats_per_row = 10
-rows_needed = left / seats_per_row
-cost_per_row = 50 / rows_needed
+id: when-python-practice-paint
+pixels = 120
+painted_red = 45
+painted_blue = 75
+left = pixels - painted_red - painted_blue
+pixels_per_row = 10
+rows_needed = left / pixels_per_row
+seconds_per_row = 50 / rows_needed
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-tickets = 120
-sold_online = 45
-sold_at_door = 75
-left = tickets - sold_online - sold_at_door
+pixels = 120
+painted_red = 45
+painted_blue = 75
+left = pixels - painted_red - painted_blue
 print("left:", left)
-seats_per_row = 10
-rows_needed = left / seats_per_row
+pixels_per_row = 10
+rows_needed = left / pixels_per_row
 print("rows_needed:", rows_needed)
 ```
 
-This prints `left: 0` and `rows_needed: 0.0`. Every ticket is sold, so
-line 4 makes `left` zero, and the 0 travels down to line 7. Nothing is
-wrong with line 7 at all: the question it asks has no answer when no
-rows are needed. Printing values is a second way to follow the trail,
-and it works even when there is no error to read.
+This prints `left: 0` and `rows_needed: 0.0`. Every pixel is painted,
+so line 4 makes `left` zero, and the 0 travels down to line 7. Nothing
+is wrong with line 7 at all: the question it asks has no answer when no
+rows are left. Printing values is a second way to follow the trail, and
+it works even when there is no error to read.
 
 </details>
 
-**13. Predict.** Your toolkit's `split_bill` from
+**13. Predict.** Your toolkit's `digit_at` from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold)
-takes a total and a number of people. What do you think happens here?
-Which of the four questions is the error about?
+takes a number and a place. What do you think happens here? Which of
+the four questions is the error about?
 
 ```python exec
-id: when-python-practice-split
-print(split_bill(60))
+id: when-python-practice-missing-place
+print(digit_at(2026))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```text
-TypeError: split_bill() missing 1 required positional argument: 'people'
+TypeError: digit_at() missing 1 required positional argument: 'place'
 ```
 
-`split_bill` promises a share for a given total and a given number of
-people. We gave only the total. So this is about *what is promised*: a
-function's promise holds only when it gets everything it asked for. An
-*argument* is Python's word for a value given to a function when it is
-called. `split_bill(60, 4)` keeps the promise, and gives `15.0`.
+`digit_at` promises the digit of a number in a given place. We gave
+only the number. So this is about *what is promised*: a function's
+promise holds only when it gets everything it asked for. An *argument*
+is Python's word for a value given to a function when it is called.
+`digit_at(2026, 0)` keeps the promise, and gives `6`. The base could be
+left out, because it has a default value, 10.
 
 </details>
 
@@ -442,17 +454,18 @@ order of the reports change?
 Here is one:
 
 ```python
-price = 12
-people = 0
-print("Each pays", price / people)
-print("Total:", prce
+pixels = 12
+width = 0
+print("Rows:", pixels // width)
+print("Pixels:", pixls
 ```
 
 Python reports the `SyntaxError` on line 4 first, because it reads the
 whole cell before running any of it. Once the bracket is closed, the
 `ZeroDivisionError` on line 3 comes next, because line 3 runs before
-line 4. Once `people` is not zero, the `NameError` for `prce` on line 4
-comes last. A mistake Python finds while reading always comes first.
+line 4. Once `width` is not zero, the `NameError` for `pixls` on line 4
+comes last. This is one good cell; yours will be different, and the
+order of its reports should follow the same rule. A mistake Python finds while reading always comes first.
 After that, running mistakes come in the order of the lines.
 
 </details>

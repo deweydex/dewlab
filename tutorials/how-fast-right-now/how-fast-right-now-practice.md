@@ -2,7 +2,7 @@
 title: "How fast, right now? The derivative — Practice"
 practice_for: how-fast-right-now
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 datasets: [co2-emissions]
 ---
 
@@ -19,7 +19,7 @@ tutorial, `slope` and `line_through` from
 [Straight lines](tutorial:straight-lines), `speed` from
 [Running a formula backwards](tutorial:running-a-formula-backwards),
 `plot_rule` and `close_enough`. The first cell below brings back the
-sprinter and two small rules. Run it first.
+falling hailstone and two small rules. Run it first.
 
 ## Warm-up
 
@@ -28,14 +28,14 @@ id: how-fast-practice-warm-up
 import math
 import matplotlib.pyplot as plt
 
-def sprint_distance(seconds):
-    """Return the sprinter's distance in metres, this many seconds after the gun."""
+def fall_distance(seconds):
+    """Return how far the hailstone has fallen, in metres, this many seconds after it starts."""
     return 12 * (seconds - 1.2 * (1 - math.exp(-seconds / 1.2)))
 
 def squared(x):
     return x ** 2
 
-def taxi(x):
+def straight_line(x):
     return 1.5 * x + 4
 
 # Try things here
@@ -56,10 +56,11 @@ of change of $x^2$ between 1 and 3.
 
 </details>
 
-**2. Make.** A train leaves Heuston at 10:00. At 10:30 it has gone
-40 km, and at 11:30 it has gone 125 km. (The times are made up.) What
-was its average speed between 10:30 and 11:30, in km/h? Find it with
-`speed`, and again as the slope of a chord with time in hours.
+**2. Make.** A GPS logger rides on a coach that leaves Dublin at 10:00.
+The log says that at 10:30 the coach has gone 40 km, and at 11:30 it
+has gone 125 km. (The log is made up.) What was its average speed
+between 10:30 and 11:30, in km/h? Find it with `speed`, and again as
+the slope of a chord with time in hours.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -73,8 +74,10 @@ hour and a half after, so the run is 1 hour and the rise is 85 km.
 
 </details>
 
-**3. Explain.** Why does `derivative_at(taxi, 2, step=0)` stop with an
-error? What does the derivative do instead of taking a step of 0?
+**3. Explain.** Schlomo, who is learning Python too, wants the exact
+slope, not a close one. So he tries `derivative_at(straight_line, 2,
+step=0)`. It stops with an error. Why? What does the derivative do
+instead of taking a step of 0?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -85,17 +88,21 @@ the limit of the chord slopes as the step gets close to 0, the number
 they head for. `derivative_at` cannot take a limit, so it takes one
 small step, $10^{-6}$, and gives a number very close to the limit.
 
+That is one good way to say it. Yours may use other words, or a
+picture, and be as good.
+
 </details>
 
-**4. Predict.** What do these print? The first rule is the taxi fare
-from [Straight lines](tutorial:straight-lines), and the second is a
-phone plan that costs €20 whatever you use.
+**4. Predict.** What do these print? The first rule is the straight
+line from the warm-up cell, and the second is a phone plan that costs
+€20 whatever you use, as on
+[Drawing a rule](tutorial:drawing-a-rule#straight-lines-and-where-two-meet).
 
 ```python
 def plan_b(gigabytes):
     return 20
 
-print(derivative_at(taxi, 100))
+print(derivative_at(straight_line, 100))
 print(derivative_at(plan_b, 5))
 ```
 
@@ -104,7 +111,7 @@ print(derivative_at(plan_b, 5))
 About 1.5, printed as 1.499999996212864, and exactly 0.0.
 
 A straight line has the same slope everywhere, so its derivative is
-its slope at every point: €1.50 more for each extra kilometre. The
+its slope at every point: the line climbs 1.5 for each step of 1. The
 tiny difference from 1.5 is float rounding. A flat rule never changes,
 so its rate of change is 0: one more gigabyte costs nothing more.
 
@@ -121,7 +128,9 @@ id: how-fast-practice-core
 
 **5. Make.** A cup of tea is poured at 90 °C into a room at 20 °C. A
 model for its temperature, after some minutes, is
-$20 + 70e^{-t/10}$. (The 10 is made up; a real cup depends on the cup.)
+$20 + 70e^{-t/10}$. This shape is Newton's law of cooling, a real law
+of physics: the hotter the tea is than the room, the faster it cools.
+(The 10 is made up; a real cup depends on the cup.)
 Write it as a function and find its rate of change at 0 minutes and at
 10 minutes. What does the sign of the answer mean?
 
@@ -155,8 +164,9 @@ it gets close to the room's 20 °C.
 
 </details>
 
-**6. Fix.** Here is someone's `derivative_at`. Run the cell, see which
-test fails, and fix the one mistake.
+**6. Fix.** Schlomi, who is learning Python too, wrote her own
+`derivative_at`. Run the cell, see which test fails, and fix the one
+mistake.
 
 ```python exec
 id: how-fast-practice-fix
@@ -164,13 +174,13 @@ def derivative_again(rule, x, step=1e-6):
     """Return the slope of rule at x: the slope of a very short chord centred on x."""
     return (rule(x + step) - rule(x - step)) / step
 
-assert close_enough(derivative_again(taxi, 0), 1.5, tolerance=1e-6), "the taxi"
+assert close_enough(derivative_again(straight_line, 0), 1.5, tolerance=1e-6), "a line"
 print("derivative_again keeps its promise.")
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-The test fails, because `derivative_again(taxi, 0)` gives about 3, twice
+The test fails, because `derivative_again(straight_line, 0)` gives about 3, twice
 the right answer. The chord runs from `x - step` to `x + step`, so its
 run is two steps, not one. The fix is to divide by `2 * step`:
 
@@ -199,7 +209,7 @@ the centred chord from $3 - h$ to $3 + h$ has slope
 $$\frac{(3 + h)^2 - (3 - h)^2}{2h} = \frac{12h}{2h} = 6$$
 
 for every $h$. The $h^2$ parts cancel. So for a parabola, the error of
-a long centred chord is 0. For a curve like the sprinter's, the errors
+a long centred chord is 0. For a curve like the hailstone's, the errors
 on the two sides only mostly cancel, and a short step is still needed.
 
 </details>
@@ -340,20 +350,20 @@ id: how-fast-practice-stretch
 # Your working for problems 13 to 15
 ```
 
-**13. Make.** The sprinter's top speed in this model is 12 metres a
-second. At what time, to the nearest hundredth of a second, does she
-first reach 11.9 metres a second? Search with a loop, as the fine comb
-did on
+**13. Make.** The hailstone's terminal speed in this model is 12
+metres a second. At what time, to the nearest hundredth of a second,
+does it first reach 11.9 metres a second? Search with a loop, as the
+fine comb did on
 [The top of the curve](tutorial:the-top-of-the-curve#checking-with-a-fine-comb).
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Start `time_now` at 0.
-2. While `derivative_at(sprint_distance, time_now)` is less than 11.9,
+2. While `derivative_at(fall_distance, time_now)` is less than 11.9,
    add 0.01 to `time_now`.
 3. Round the time as you go, so that float errors do not pile up.
 
-**Think about:** could she ever reach 12 metres a second?
+**Think about:** could it ever reach 12 metres a second?
 
 </details>
 
@@ -361,14 +371,15 @@ did on
 
 ```python
 time_now = 0
-while derivative_at(sprint_distance, time_now) < 11.9:
+while derivative_at(fall_distance, time_now) < 11.9:
     time_now = round(time_now + 0.01, 2)
 print(time_now)
 ```
 
 5.75 seconds. The model's speed rule is $12(1 - e^{-t/1.2})$, which
-gets closer and closer to 12 and never reaches it: 12 metres a second is
-the limit of her speed at infinity. (The exact answer is
+gets closer and closer to 12 and never reaches it: the terminal speed is
+the limit of the speed at infinity. That is what "terminal" means in
+this model. (The exact answer is
 $1.2 \ln 120 \approx 5.745$ seconds, where $\ln$ is a logarithm with
 base $e$. The search rounds it to 5.75.)
 
@@ -397,30 +408,31 @@ gives $2 \times 10^{11}$, to within a float's rounding.
 
 </details>
 
-**15. Make.** A derivative at every point is a new rule: the sprinter's
-speed at every time. Write `sprint_speed(seconds)`, which gives back
-`derivative_at(sprint_distance, seconds)`, and draw it from 0 to 10
-with `plot_rule`. Where is the curve steepest, and what does that
-mean?
+**15. Make.** A derivative at every point is a new rule: the
+hailstone's speed at every time. Write `fall_speed(seconds)`, which
+gives back `derivative_at(fall_distance, seconds)`, and draw it from 0
+to 10 with `plot_rule`. Where is the curve steepest, and what does
+that mean?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def sprint_speed(seconds):
-    return derivative_at(sprint_distance, seconds)
+def fall_speed(seconds):
+    return derivative_at(fall_distance, seconds)
 
-plot_rule(sprint_speed, 0, 10)
-plt.xlabel("seconds after the gun")
+plot_rule(fall_speed, 0, 10)
+plt.xlabel("seconds after it starts to fall")
 plt.ylabel("metres a second")
 for second in [0, 1, 3, 6, 10]:
-    print(second, round(sprint_speed(second), 2))
+    print(second, round(fall_speed(second), 2))
 ```
 
 The speed starts at 0, is 6.78 after 1 second and 11.01 after 3, and
 levels off near 12: 11.92 at 6 seconds and 12.0 at 10. The speed curve
 is steepest at the start, where the speed changes fastest. The slope of
 the speed curve is itself a rate of change, of speed, which is called
-acceleration: she speeds up most in the first second. A rule made
+acceleration: the stone speeds up most in the first second, and hardly
+at all once the air's push nearly balances its weight. A rule made
 from the derivative at every point is called the derivative function,
 and [Rules for change](tutorial:rules-for-change) finds such rules
 without a chord at all.

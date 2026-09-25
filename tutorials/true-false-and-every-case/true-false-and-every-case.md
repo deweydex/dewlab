@@ -1,7 +1,7 @@
 ---
 title: "True, false and every case: truth tables"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   true-and-false-are-values:
     touches: [MIT-2.4]
@@ -27,8 +27,11 @@ covers:
 
 A bike-share app unlocks a bike only when your account is paid up and
 the dock is working. Before the app goes live, somebody has to be sure
-it does the right thing in every situation. How many situations are
-there? Can we list every one of them, and be sure we missed none?
+it does the right thing in every situation. "Every situation" sounds
+endless, and a little frightening: how could anyone test them all?
+
+Here is the surprise of this page. For a rule like this one, "every
+situation" is a short list, and Python can write all of it.
 
 On this page we:
 
@@ -36,7 +39,7 @@ On this page we:
 - combine them with `and`, `or`, `not`, and "one or the other, not both"
 - list every case of a rule in a truth table, with a loop
 - count the rows, and find binary counting hiding inside them
-- add `truth_table` to the toolkit
+- add `truth_table` to the toolkit, and use it on a digit display
 
 > **The space we're in.** Every value on this page is True or False.
 > There is nothing in between: no "maybe", no "half working". Real life
@@ -55,8 +58,8 @@ second from
 id: true-false-warm-up-1
 type: fill-in-the-blank
 
-The age 18 is outside "5 to 17", so `between(18, 5, 17)` gives
-{False|True}.
+An iPhone is designed to work from 0 °C to 35 °C. The temperature 36 is
+outside that range, so `between(36, 0, 35)` gives {False|True}.
 ```
 
 ```question
@@ -78,12 +81,21 @@ values can 3 bits hold?
 On the last page, every condition had an answer, `True` or `False`. A
 *Boolean value* is a value that is either True or False, and nothing
 else. The name comes from George Boole, who worked out the rules of
-these values in the 1840s and 1850s. He was the first professor of mathematics at
-Queen's College Cork, now University College Cork.
+these values in the 1840s and 1850s, in Cork.
 
 Boole's idea was that True and False can be combined, the way numbers
-can be added. Numbers have `+` and `*`. Boolean values have three words:
-`and`, `or` and `not`. Let's meet them one at a time.
+can be added. Boolean values have three words for it: `and`, `or` and
+`not`.
+
+<aside class="dl-note" id="true-false-note-boole">
+
+**George Boole.** Boole taught himself most of his mathematics, and
+never studied at a university. In 1849 he became the first professor of
+mathematics at Queen's College Cork, now University College Cork. In
+1937, Claude Shannon showed that Boole's algebra describes circuits of
+switches. Every chip in your phone is built on that idea.
+
+</aside>
 
 ## And: both must be true
 
@@ -120,12 +132,10 @@ for paid_up in [False, True]:
         print(paid_up, dock_working, paid_up and dock_working)
 ```
 
-Four lines, one for each situation. Look at the order they come in. The
-outer loop picks a value for `paid_up`. While it holds that value, the
-inner loop runs through both values of `dock_working`. Then the outer
-loop moves on, and the inner loop runs through both again. This is
-sequence at work: the order of the two `for` lines decides the order of
-the rows.
+Four lines, one for each situation. Look at the order. The outer loop
+picks a value for `paid_up`. While it holds that value, the inner loop
+runs through both values of `dock_working`. Then the outer loop moves
+on. The order of the two `for` lines decides the order of the rows.
 
 A *truth table* is a table that lists every combination of inputs, with
 the result for each one. Here is the one we printed, tidied up:
@@ -142,38 +152,38 @@ without its middle line, which is one way to remember it.
 
 ## Or: at least one is true
 
-A café gives you a free coffee if it is your birthday or you have ten
-stamps on your loyalty card. What if it is your birthday, and you also
-have ten stamps? Most people would still expect the free coffee. Python
-agrees. Before you run the cell, which rows do you think will say True?
+Your phone unlocks with your fingerprint or with your PIN. What if the
+fingerprint works, and you also type the right PIN? Nobody would expect
+the phone to stay locked. Python agrees. Before you run the cell, which
+rows do you think will say True?
 
 ```python exec
 id: true-false-or-1
-for birthday in [False, True]:
-    for ten_stamps in [False, True]:
-        print(birthday, ten_stamps, birthday or ten_stamps)
+for fingerprint_ok in [False, True]:
+    for pin_ok in [False, True]:
+        print(fingerprint_ok, pin_ok, fingerprint_ok or pin_ok)
 ```
 
 `A or B` is True when at least one of A and B is True. It is False only
 when both are False. Maths writes it as $A \lor B$.
 
 This "or" includes the row where both are True, so it is called
-*inclusive or*. English uses "or" both ways, which is why we need to
-be careful with it. The next two sections show the other way.
+*inclusive or*. English uses "or" both ways, so we need to be careful
+with it.
 
 ### Your turn
 
-A band can play an outdoor gig when the weather is dry or the stage has
-a roof.
+An office door opens when your keycard is valid or someone presses the
+button on the inside.
 
-1. In the cell below, write a loop over `dry` and a loop inside it over
-   `has_roof`, like the ones above.
-2. Print both inputs and whether the gig can go ahead.
+1. In the cell below, write a loop over `card_valid` and a loop inside it
+   over `button_pressed`, like the ones above.
+2. Print both inputs and whether the door opens.
 3. Before you run it, say which row is the only False one.
 
 ```python exec
 id: true-false-your-turn-1
-# Your gig truth table
+# Your door truth table
 ```
 
 ## Not: the opposite
@@ -184,21 +194,20 @@ rows. Guess them, then run it to check.
 
 ```python exec
 id: true-false-not-1
-for raining in [False, True]:
-    print(raining, not raining)
+for muted in [False, True]:
+    print(muted, not muted)
 ```
 
 Maths writes "not A" as $\lnot A$.
 
-A name that already holds a Boolean value reads well with `not` in
-front of it. "The match goes ahead if it is not raining" becomes
-`go_ahead = not raining`, which is close to the English.
+"The phone rings if it is not muted" becomes `rings = not muted`,
+which is close to the English.
 
 ## Exclusive or: exactly one
 
-A menu says "every main course comes with chips or salad". Here "or"
-means one of the two, but not both. This is *exclusive or*, often
-written XOR. It is True when exactly one of its inputs is True.
+A payment form says "pay by card or by cash". Here "or" means one of the
+two, but not both. This is *exclusive or*, often written XOR. It is True
+when exactly one of its inputs is True.
 
 A real place where XOR lives is the light on a staircase. There is a
 switch at the bottom and a switch at the top. Flipping either switch
@@ -246,22 +255,23 @@ off. What is it now?
 
 ## How many rows?
 
-A music festival lets you in if you have a ticket, and you are either
-18 or over or with an adult. That rule has three inputs. How many rows
-will its truth table have? Make a guess, then run the cell and count.
+A company's computer lets you log in when your password is right, and
+you are either at the office or you type a code from your phone. That
+rule has three inputs. How many rows will its truth table have? Make a
+guess, then run the cell and count.
 
 ```python exec
 id: true-false-rows-1
-for has_ticket in [False, True]:
-    for over_18 in [False, True]:
-        for with_adult in [False, True]:
-            let_in = has_ticket and (over_18 or with_adult)
-            print(has_ticket, over_18, with_adult, let_in)
+for password_ok in [False, True]:
+    for at_office in [False, True]:
+        for code_ok in [False, True]:
+            log_in = password_ok and (at_office or code_ok)
+            print(password_ok, at_office, code_ok, log_in)
 ```
 
 Eight rows. The brackets say which part to work out first, the same way
-they do in arithmetic: first `over_18 or with_adult`, then `and` with
-the ticket.
+they do in arithmetic: first `at_office or code_ok`, then `and` with the
+password.
 
 Now look at the count. One input gave 2 rows. Two inputs gave 4. Three
 gave 8. Each new input doubles the rows, because every old row appears
@@ -279,23 +289,23 @@ Run it to check.
 
 ```python exec
 id: true-false-rows-2
-for has_ticket in [False, True]:
-    for over_18 in [False, True]:
-        for with_adult in [False, True]:
-            print(int(has_ticket), int(over_18), int(with_adult))
+for password_ok in [False, True]:
+    for at_office in [False, True]:
+        for code_ok in [False, True]:
+            print(int(password_ok), int(at_office), int(code_ok))
 
 print("Rows for 3 inputs:", 2 ** 3)
 print("Rows for 10 inputs:", 2 ** 10)
 ```
 
 Read down the rows: 000, 001, 010, 011, 100, 101, 110, 111. That is
-counting from 0 to 7 in binary. The nested loops count in binary without
-being told to. A truth table with $n$ inputs is every number from 0 to
-$2^n - 1$, written in $n$ bits.
+counting from 0 to 7 in binary. Nobody told the loops to count in
+binary. They did it anyway. I find that one of the nicest surprises in this
+unit. A truth table with $n$ inputs is every number from 0 to $2^n - 1$,
+written in $n$ bits.
 
-It also shows why checking every case gets hard fast. A rule with 10
-inputs has 1,024 rows. Nobody wants to write those out by hand, but a
-computer does not mind.
+A rule with 10 inputs has 1,024 rows. Nobody wants to write those by
+hand, but a computer does not mind.
 
 ## A tool for any rule
 
@@ -312,14 +322,14 @@ def unlock(paid_up, dock_working):
     return paid_up and dock_working
 
 
-def free_coffee(birthday, ten_stamps):
-    """The café rule: at least one must be True."""
-    return birthday or ten_stamps
+def unlock_phone(fingerprint_ok, pin_ok):
+    """The phone rule: at least one must be True."""
+    return fingerprint_ok or pin_ok
 
 
-def let_in(has_ticket, over_18, with_adult):
-    """The festival rule."""
-    return has_ticket and (over_18 or with_adult)
+def log_in(password_ok, at_office, code_ok):
+    """The office login rule."""
+    return password_ok and (at_office or code_ok)
 
 
 print(unlock(True, False))
@@ -419,10 +429,9 @@ id: true-false-tool-2
 truth_table(unlock, ["paid_up", "dock_working"])
 ```
 
-The table comes first, from the `print` lines. Under it, the page shows
-what `truth_table` gave back: the result column on its own,
-`[False, False, False, True]`. Printing is for us to read. Giving back
-is for other code to use, and that includes tests.
+The table comes from the `print` lines. Under it is what `truth_table`
+gave back: the column `[False, False, False, True]`. Printing is for us
+to read. Giving back is for other code, including tests.
 
 The tests below check the promise. Each one prints its table as it
 runs, and the `assert` checks the column. Until your three-input branch
@@ -431,22 +440,82 @@ is written, expect the last test to stop with an `AssertionError`.
 ```python exec
 id: true-false-tool-3
 assert truth_table(unlock, ["paid_up", "dock_working"]) == [False, False, False, True]
-assert truth_table(free_coffee, ["birthday", "ten_stamps"]) == [False, True, True, True]
-assert len(truth_table(let_in, ["has_ticket", "over_18", "with_adult"])) == 8
+assert truth_table(unlock_phone, ["fingerprint_ok", "pin_ok"]) == [False, True, True, True]
+assert len(truth_table(log_in, ["password_ok", "at_office", "code_ok"])) == 8
 print("truth_table keeps its promise.")
 ```
 
-The last test does not check every value. It checks there are 8 rows,
-the $2^3$ we worked out. Can you add one more `assert` that checks the
-whole festival column? The table from the loop in "How many rows?" has
-the answer.
+The last test only checks that there are $2^3 = 8$ rows. Can you add an
+`assert` for the whole login column? "How many rows?" has the answer.
+
+### Your turn: a digit display
+
+A seven-segment display, like the one Unit 1 builds, shows a digit with seven small bars, called
+segments, which each light up or stay dark. You have seen them on
+microwaves and alarm clocks. Engineers name the segments with letters,
+from a at the top, round the outside, to g in the middle. Segment e is
+the one at the bottom left.
+
+Among the digits 0 to 7, segment e lights for 0, 2 and 6 only. (Draw
+them in the margin to check.) A three-input truth table lists 0 to 7 in
+binary, so "does e light?" is a rule with three inputs: the bits worth
+4, 2 and 1.
+
+1. Write `bottom_left(bit_4, bit_2, bit_1)`, which gives True for the
+   rows of 0, 2 and 6, and False for the others.
+2. Print its table with `truth_table`, and check that the column is
+   `[True, False, True, False, False, False, True, False]`.
+
+```python exec
+id: true-false-your-segment
+# Your bottom_left rule, and its truth table
+```
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. 0, 2 and 6 are all even. What is `bit_1` for an even number?
+2. Among the even digits 0, 2, 4 and 6, only 4 stays dark. 4 is `100`.
+3. So e lights when `bit_1` is off, and the digit is not `100`: `bit_2`
+   is on, or `bit_4` is off.
+
+**Think about:** how many different rules could give this same column?
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one good answer. There are many others, and yours may read
+better.
+
+```python
+def bottom_left(bit_4, bit_2, bit_1):
+    """True when segment e lights, for the digits 0 to 7."""
+    return not bit_1 and (bit_2 or not bit_4)
+
+column = truth_table(bottom_left, ["bit_4", "bit_2", "bit_1"])
+print(column == [True, False, True, False, False, False, True, False])
+```
+
+The last line prints `True`. A chip inside a real display works out a
+rule like this for each of the seven segments.
+
+</details>
+
+<aside class="dl-note" id="true-false-note-decoder">
+
+**A chip for every segment.** Many clocks use a small decoder chip,
+such as the CD4511, that takes a digit as four bits and lights the right
+segments. Inside, it is seven truth tables. Displays do not all agree:
+some draw 6 without its top bar.
+
+</aside>
 
 ## Brackets change the rule
 
-Here is a question that many programmers get wrong. The festival rule had
-brackets: `has_ticket and (over_18 or with_adult)`. What if someone
+Here is a question that many programmers get wrong. The login rule had
+brackets: `password_ok and (at_office or code_ok)`. What if someone
 writes the brackets in a different place?
-`(has_ticket and over_18) or with_adult` uses the same words, in the
+`(password_ok and at_office) or code_ok` uses the same words, in the
 same order. Is it the same rule?
 
 Guess first. Then run the cell and compare the two result columns row
@@ -455,19 +524,20 @@ finish that first.
 
 ```python exec
 id: true-false-brackets-1
-def let_in_other_brackets(has_ticket, over_18, with_adult):
-    """The festival words, with the brackets moved."""
-    return (has_ticket and over_18) or with_adult
+def log_in_other_brackets(password_ok, at_office, code_ok):
+    """The login words, with the brackets moved."""
+    return (password_ok and at_office) or code_ok
 
 
-first = truth_table(let_in, ["has_ticket", "over_18", "with_adult"])
-second = truth_table(let_in_other_brackets, ["has_ticket", "over_18", "with_adult"])
+first = truth_table(log_in, ["password_ok", "at_office", "code_ok"])
+second = truth_table(log_in_other_brackets, ["password_ok", "at_office", "code_ok"])
 print(first == second)
 ```
 
-They are different. Look at the rows where `has_ticket` is False and
-`with_adult` is True. The second rule lets those people in without a
-ticket. Anyone who came with an adult gets in free.
+They are different. Look at the rows where `password_ok` is False and
+`code_ok` is True. The second rule lets those people in. Anyone who has
+the phone code gets in with no password at all. That is a real security
+hole, made by moving two brackets.
 
 The brackets decide what happens first, and what happens first changes
 the answer. That is the same lesson as the order of the `elif` checks on
@@ -477,7 +547,7 @@ Python does when there are no brackets at all.
 
 ### Your turn
 
-A phone shows a notification sound when a message arrives, and the phone
+A phone plays a notification sound when a message arrives, and the phone
 is not on silent, or the message is from a favourite contact.
 
 1. Write it as a function with three inputs: `message`, `silent` and
@@ -497,15 +567,13 @@ id: true-false-your-turn-2
 On this page, Python wrote every truth table for us, with a short loop.
 The more usual way is to fill the table in on paper, one row at a time.
 
-Filling a table by hand is slower, and that is its strength. You look at
-every row yourself, and the rule starts to feel familiar.
+Filling a table by hand is slower, and that is its strength: you look
+at every row yourself.
 
-We let the computer write the rows because the page's question was "can
-we list every case, and be sure we missed none?". A loop over
-`[False, True]` never forgets a row, and it writes 1,024 rows as
-readily as 4. The cost was meeting a loop a unit before loops are
-taught. The page said so, and used only as much of the loop as it
-needed.
+We let the computer write the rows because the page asked "can we list
+every case, and be sure we missed none?". A loop never forgets a row,
+and it writes 1,024 rows as readily as 4. The cost was meeting a loop a
+unit before loops are taught.
 
 </details>
 
@@ -513,7 +581,7 @@ needed.
 
 | Question | On this page |
 |---|---|
-| What is named here? | Each input got a name (`paid_up`, `over_18`), and so did each rule (`unlock`, `let_in`). A rule's name can be handed to another function. |
+| What is named here? | Each input got a name (`paid_up`, `code_ok`), and so did each rule (`unlock`, `log_in`). A rule's name can be handed to another function. |
 | What is promised? | `and`, `or`, `not` and XOR each promise one result for every row. `truth_table` promises every row, and gives back the result column. |
 | What happens when? | Nested loops run the inner loop fully for each value of the outer one, which counts in binary. Brackets decide which part is worked out first. |
 | What does this space let us do? | Only True and False live here. That is what makes "every case" a list we can finish: $2^n$ rows for $n$ inputs. |

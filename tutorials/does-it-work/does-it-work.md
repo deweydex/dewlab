@@ -1,7 +1,7 @@
 ---
 title: "Does it work? Testing, walkthroughs and naming"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   code-that-runs-and-code-that-works:
     covers: [PDP-LO10]
@@ -476,7 +476,7 @@ id: does-it-review-1
 def test_toolkit():
     """Run a few test cases for each toolkit function, and say how many passed."""
     tests = [
-        split_bill(84, 4, 10) == 23.1,
+        digit_at(2026, 3) == 2,
         to_binary(5) == "101",
         to_hex(255) == "FF",
         between(18, 18, 65),
@@ -515,8 +515,8 @@ a stranger would.
 2. Is every name a word that says what it holds?
 3. Is every comment about why, and does it still match the code?
 4. Add one test case of your own to `test_toolkit` above, for the edge
-   of some promise, such as `split_bill` with one person, or
-   `to_binary(0)`. Run it again.
+   of some promise, such as `digit_at` asked for a place past the last
+   digit, or `to_binary(0)`. Run it again.
 
 <details class="dl-why"><summary>Why this way?</summary>
 

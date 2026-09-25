@@ -2,7 +2,7 @@
 title: "Everything is ones and zeros — Practice"
 practice_for: everything-is-ones-and-zeros
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Everything is ones and zeros — Practice
@@ -11,27 +11,18 @@ Each problem says what kind it is: **Predict** (say what a cell will
 print, then run it), **Make** (build something small), **Fix** (repair
 one mistake), **Explain** (answer in words) or **Another way** (reach the
 same answer by a second route). Answers are in the folds. Working by hand
-first, then checking in Python, teaches more than either one alone.
+first, then checking in Python, teaches more than either one alone. It
+is slower, and that is fine: binary is a new way of seeing numbers you
+have known all your life.
 
-## Tools
-
-This cell gives you `to_binary` and `to_hex`, the same two tools as on
-the tutorial page, so every problem below works even if your own toolkit
-is not loaded. Run it once before you start.
+Your toolkit is loaded here: `digit_at`, `to_binary`, `to_hex` and
+`pixel_row`. If you have not finished one of them, the page uses a
+reference version. Use this cell for any problem that has no cell of
+its own.
 
 ```python exec
 id: everything-is-practice-tools
-def to_binary(n):
-    """Give the whole number n (0 or more) in binary, as a string of 0s and 1s."""
-    return format(n, "b")
-
-
-def to_hex(n):
-    """Give the whole number n (0 or more) in hexadecimal, as a string, with capital letters."""
-    return format(n, "X")
-
-
-print(to_binary(13), to_hex(255))
+print(to_binary(13), to_hex(255), pixel_row(9))
 ```
 
 ## Warm-up
@@ -55,21 +46,25 @@ print(0xA)
 
 </details>
 
-**2. Make.** A die has six faces. Write 6 in binary by hand, using the
-halving recipe. Then check with `to_binary(6)`.
+**2. Make.** On a seven-segment display, the digit 7 lights segments a,
+b and c. Segment a is the ones column, b the twos and c the fours. Write
+the digit 7's pattern as 7 bits by hand. Then turn it into a number with
+`0b`, and into hex with `to_hex`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`110`.
+Segments g, f, e and d are off, and c, b and a are on, so the pattern
+is `0000111`.
 
-| Number | Half | Remainder |
-|---|---|---|
-| 6 | 3 | 0 |
-| 3 | 1 | 1 |
-| 1 | 0 | 1 |
+```python
+print(0b0000111)
+print(to_hex(0b0000111))
+```
 
-The remainders are 0, 1, 1. Read from the last back to the first, they
-give `110`. Checking the other way: $4 + 2 + 0 = 6$.
+This prints `7`, then `7`. The pattern for the digit 7 is the number 7:
+$4 + 2 + 1$. That is a coincidence, and a nice one. No other digit's
+pattern is its own number. The digit 1, for example, is `0000110`,
+which is 6.
 
 </details>
 
@@ -84,9 +79,9 @@ base 10 there is no single digit for ten, for the same reason.
 
 </details>
 
-**4. Another way.** A friend writes $10 + 10 = 100$ and says it is
-right. In ordinary counting it is wrong. In which space is it right?
-Check it in Python.
+**4. Another way.** Schlomo, who is learning Python too, writes
+$10 + 10 = 100$ and says it is right. In ordinary counting it is wrong.
+In which space is he right? Check it in Python.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -110,7 +105,7 @@ print(0b10 + 0b10)
 print(to_binary(0b10 + 0b10))
 ```
 
-This prints `4`, then `100`. The friend's sum was never foolish. It was a
+This prints `4`, then `100`. Schlomo's sum was never foolish. It was a
 sum from a different space. (The "try this next" one is base 8, where
 the columns are worth 1, 8, 64, and so on.)
 
@@ -261,22 +256,72 @@ From the right: 1 + 0 is 1. Then 1 + 1 is 10: write 0, carry 1. Then
 
 </details>
 
-**10. Explain.** In the arcade game Pac-Man, the level number was kept
-in one byte. The trouble began at level 256. Why 256, and not 250 or
-300?
+**10. Predict.** Which digit does this number draw? Guess from the hex
+digits, then run it in the tools cell. Each hex digit is one row, from
+the top.
+
+```python
+glyph = 0x6999996
+print(pixel_row(digit_at(glyph, 6, 16)))
+print(pixel_row(digit_at(glyph, 5, 16)))
+print(pixel_row(digit_at(glyph, 4, 16)))
+print(pixel_row(digit_at(glyph, 3, 16)))
+print(pixel_row(digit_at(glyph, 2, 16)))
+print(pixel_row(digit_at(glyph, 1, 16)))
+print(pixel_row(digit_at(glyph, 0, 16)))
+```
 
 <details class="dl-answer"><summary>answer</summary>
 
-One byte is eight bits, so it holds $2^8 = 256$ different values: 0 to
-255. Level 255 is the last number a byte can hold, `11111111`. Adding
-one more would need a ninth bit, `100000000`, and there is no ninth
-bit, so the byte goes back to `00000000`. The game had never planned for
-that. 250 and 300 are round numbers for us, in base 10. The computer's
-round numbers are powers of 2.
+It draws a 0:
+
+```text
+.##.
+#..#
+#..#
+#..#
+#..#
+#..#
+.##.
+```
+
+6 is `0110`, `.##.`, the top and bottom of a round shape. 9 is `1001`,
+`#..#`, the two sides. So `0x6999996` is a top, five rows of sides and a
+bottom. Compare the 8, `0x6996996`: the only change is the middle row,
+9 to 6, and that is exactly the bar across the middle of an 8.
 
 </details>
 
-**11. Another way.** On the tutorial page we turned numbers into binary
+**11. Explain.** Schlomi, who is also learning Python, wants a wider
+font, 5 pixels wide and 7 tall, like many real small screens. She says
+each digit will still be 7 hex digits, one per row. Is she right? What
+would each row need?
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. How many bits is one row, 5 pixels wide?
+2. How many bits is one hex digit?
+3. Does one hex digit hold the widest row, `#####`?
+
+**Think about:** why the tutorial chose 4 columns.
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+Her idea is reasonable, and it has one flaw. A row 5 pixels wide is 5
+bits, and one hex digit holds only 4. The widest row, `#####`, is
+`11111`, which is 31, or `1F` in hex: two hex digits. So each row needs
+two hex digits, and a digit needs 14 of them, with 3 bits in each row
+left unused.
+
+That is why the tutorial's font is 4 wide: then one row is exactly one
+hex digit. A real 5-wide font still works well; it only makes the rows
+harder to read in hex.
+
+</details>
+
+**12. Another way.** On the tutorial page we turned numbers into binary
 by halving. Here is a second recipe: take away the biggest power of 2
 that fits, and repeat. Use it to write 200 in binary, then check with
 `to_binary(200)`.
@@ -310,7 +355,7 @@ powers finds them from the left.
 
 </details>
 
-**12. Fix.** A rain gauge records 0.1 mm in the morning and 0.2 mm in
+**13. Fix.** A rain gauge records 0.1 mm in the morning and 0.2 mm in
 the afternoon. The cell should print `True`, and it prints `False`.
 Change one line so it checks the total in a way that works with floats.
 
@@ -340,7 +385,7 @@ asks "is it close enough?" instead of "is it exactly equal?".
 
 ## Stretch
 
-**13. Another way.** A bus fare is €1.10 and a coffee is €2.20. Run
+**14. Another way.** One app costs €1.10 and another costs €2.20. Run
 `print(1.10 + 2.20)`. Then find a way to add them that gives an exact
 answer, and print the result as euro and cents, using `//` and `%` from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold).
@@ -365,9 +410,9 @@ one gives exactly 50 cents?
 avoids that:
 
 ```python
-fare_cents = 110
-coffee_cents = 220
-total_cents = fare_cents + coffee_cents
+first_cents = 110
+second_cents = 220
+total_cents = first_cents + second_cents
 print(total_cents // 100, "euro and", total_cents % 100, "cent")
 ```
 
@@ -377,7 +422,7 @@ binary, so adding cents never drifts. `// 100` gives the whole euro and
 
 </details>
 
-**14. Make.** A phone's step counter may need to count up to 100,000
+**15. Make.** A phone's step counter may need to count up to 100,000
 steps in a day. How many bits does it need? Use `math.log2`, then check
 your answer with powers of 2.
 
@@ -412,7 +457,7 @@ have.
 
 </details>
 
-**15. Explain.** In 2014 a music video passed 2,147,483,647 views.
+**16. Explain.** In 2014 a music video passed 2,147,483,647 views.
 YouTube had already moved its view counter to 64 bits, because 32 bits
 stop at 2,147,483,647. That number is $2^{31} - 1$. A 32-bit counter
 keeps each number in 32 bits, and one of those bits says whether the
@@ -436,7 +481,7 @@ the video got there.
 
 </details>
 
-**16. Make.** A painter wants a darker version of `#FF8800`, with every
+**17. Make.** A designer wants a darker version of `#FF8800`, with every
 light at half its brightness. Use `//` to halve each one, and build the
 new colour code with two digits for each light. Draw both colours to
 compare them, the way the tutorial page did.

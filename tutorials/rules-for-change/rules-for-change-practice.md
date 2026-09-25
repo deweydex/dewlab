@@ -2,7 +2,7 @@
 title: "Rules for change: the sum, product, quotient and chain rules — Practice"
 practice_for: rules-for-change
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Rules for change: the sum, product, quotient and chain rules — Practice
@@ -224,8 +224,10 @@ $a - b = -(b - a)$.
 
 </details>
 
-**7. Predict.** A friend says the slope of $(3x + 2)^2$ is $2(3x + 2)$,
-so at $x = 1$ it is 10. What do you think `derivative_at` will say?
+**7. Predict.** Schlomi, who is learning Python too, says the slope of
+$(3x + 2)^2$ is $2(3x + 2)$, so at $x = 1$ it is 10. She used the power
+rule, which is a sensible start. What do you think `derivative_at` will
+say?
 
 ```python
 def bracket_squared(x):
@@ -236,7 +238,7 @@ print(round(derivative_at(bracket_squared, 1), 6))
 
 <details class="dl-answer"><summary>answer</summary>
 
-It prints `30.0`. The friend used the power rule on the outside, and
+It prints `30.0`. Schlomi used the power rule on the outside, and
 forgot the chain rule's last step: times the slope of the inside, which
 is 3. So the slope is $2(3x + 2) \times 3 = 6(3x + 2)$, and at 1 that
 is 30.
@@ -313,10 +315,11 @@ Both give about 5.0265, and the check agrees at every second from 0 to
 
 </details>
 
-**10. Explain.** A student says: "The slope of $x \times x$ should be
-the slope of $x$ times the slope of $x$, which is $1 \times 1 = 1$."
-But $x \times x$ is $x^2$, whose slope is $2x$. Where does the student's
-move go wrong? Is there a space where multiplying slopes is right?
+**10. Explain.** Schlomo, who is learning Python too, says: "The slope
+of $x \times x$ should be the slope of $x$ times the slope of $x$, which
+is $1 \times 1 = 1$." But $x \times x$ is $x^2$, whose slope is $2x$.
+Where does Schlomo's move go wrong? Is there a space where multiplying
+slopes is right?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -330,26 +333,30 @@ Multiplying slopes is right for a rule inside a rule. There, the
 chain rule multiplies the outside slope by the inside slope, because
 the inside rule's output is the outside rule's input.
 
+That is one good way to say it. Yours may use other words, or a
+picture, and be as good.
+
 </details>
 
 **11. Make.** On
 [The top of the curve](tutorial:the-top-of-the-curve#checking-with-a-fine-comb),
-a car's fuel use at $v$ km/h was about $0.001v^2 - 0.14v + 9.9$ litres
-per 100 km. Find the most economical speed by setting the slope to 0.
-Check your answer with `vertex`.
+a ball thrown straight up was at a height of about $1.8 + 15t - 4.9t^2$
+metres after $t$ seconds. Find when it is highest by setting the slope
+to 0. Check your answer with `vertex`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The slope is $0.002v - 0.14$. It is 0 when $0.002v = 0.14$, so
-$v = 70$ km/h.
+The slope is $15 - 9.8t$. It is 0 when $9.8t = 15$, so $t$ is about
+1.53 seconds.
 
 ```python
-print(solve_linear(0.002, -0.14))
-print(vertex(0.001, -0.14, 9.9))
+print(solve_linear(-9.8, 15))
+print(vertex(-4.9, 15, 1.8))
 ```
 
-Both say 70 km/h, and `vertex` says the
-fuel use there is about 5 litres per 100 km.
+Both say about 1.53 seconds, and `vertex` says the ball is about
+13.28 m up then. At the top the ball stops rising for an instant: its
+speed, the slope of its height, is 0.
 
 </details>
 
@@ -476,10 +483,11 @@ at the top and bottom of each wave.
 
 </details>
 
-**15. Make.** A second café buys a machine for €900, and each cup costs
-€0.25. With the quotient rule, find the slope of the average cost per
-cup after $n$ cups. After how many cups is the average falling by less
-than a tenth of a cent, €0.001, per extra cup?
+**15. Make.** A second video service rents a bigger server for €900 a
+month, and each film costs €0.25 in data. With the quotient rule, find
+the slope of the average cost per film after $n$ films. After how many
+films is the average falling by less than a tenth of a cent, €0.001,
+per extra film?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -488,20 +496,20 @@ slope 1. The quotient rule gives
 $\frac{0.25n - (900 + 0.25n)}{n^2} = -\frac{900}{n^2}$.
 
 It falls by less than 0.001 when $\frac{900}{n^2} < 0.001$, that is
-when $n^2 > 900{,}000$, so $n > 948.7$. From the 949th cup on.
+when $n^2 > 900{,}000$, so $n > 948.7$. From the 949th film on.
 
 ```python
-def cafe_average(cups_made):
-    return (900 + 0.25 * cups_made) / cups_made
+def film_average(films):
+    return (900 + 0.25 * films) / films
 
-def cafe_average_slope(cups_made):
-    return -900 / cups_made ** 2
+def film_average_slope(films):
+    return -900 / films ** 2
 
-print(slopes_agree(cafe_average, cafe_average_slope, list(range(100, 3001, 50))))
-print(cafe_average_slope(948), cafe_average_slope(949))
+print(slopes_agree(film_average, film_average_slope, list(range(100, 3001, 50))))
+print(film_average_slope(948), film_average_slope(949))
 ```
 
-The check agrees, and the slope is about $-0.001002$ at 948 cups and
+The check agrees, and the slope is about $-0.001001$ at 948 films and
 $-0.000999$ at 949.
 
 </details>

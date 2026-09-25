@@ -43,7 +43,7 @@ entries:
     python: help
     definition: >
       Shows a function's name, its inputs and its docstring.
-    example: "help(split_bill)"
+    example: "help(digit_at)"
   - term: doctest
     kind: function
     python: doctest.run_docstring_examples

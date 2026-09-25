@@ -1,7 +1,7 @@
 ---
 title: "Code other people can read: reviewing your toolkit"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   reading-code-as-a-stranger:
     covers: [PDP-LO11]
@@ -44,7 +44,7 @@ On this page we:
 > and Python ignores them. So nothing on this page changes what a
 > program does. One thing usually goes unsaid: code is read many more
 > times than it is written. Your whole toolkit is loaded, from
-> `split_bill` to `angle_between` and beyond.
+> `digit_at` to `angle_between` and beyond.
 
 ## Warm-up
 
@@ -258,11 +258,13 @@ do you expect to see?
 
 ```python exec
 id: code-other-docstring-1
-help(split_bill)
+help(digit_at)
 ```
 
 `help()` shows the function's name and inputs, then its docstring. If
-your own `split_bill` has a docstring, that is what appears.
+your own `digit_at` has a docstring, that is what appears. Its first
+line is the summary, and the details come after a blank line, the shape
+PEP 257 asks for.
 
 An example in a docstring can do more than explain. Python's `doctest`
 module finds each line that starts with `>>>` in a docstring, runs it,
@@ -365,7 +367,7 @@ a note?
 
 ```python exec
 id: code-other-toolkit-1
-tools = [split_bill, to_binary, between, truth_table, total, simulate,
+tools = [digit_at, to_binary, between, truth_table, total, simulate,
          compose, close_enough, mean, frequency_table, binary_search,
          halvings, solve_quadratic, vertex, slope, distance, angle_between]
 

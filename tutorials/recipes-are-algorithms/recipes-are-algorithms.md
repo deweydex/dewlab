@@ -1,7 +1,7 @@
 ---
 title: "Recipes are algorithms"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   teaching-a-robot-to-make-tea:
     covers: [MIT-6.1, PDP-LO5]
@@ -26,8 +26,18 @@ and it will do anything you tell it. You ask it to make you a cup of tea,
 and it stands there, doing nothing. It does not know what "make" means.
 
 How would you teach a robot to make tea? It sounds like a silly question,
-but it is the question every programmer answers, every day. A computer is
-that robot.
+and it is a little funny. It is also the question every programmer
+answers, every day. A computer is that robot. If you have ever given
+someone directions and watched them go the wrong way, you already know
+the hard part: the gap between what you said and what you meant.
+
+<aside class="dl-note" id="recipes-note-robot">
+
+**Where "robot" comes from.** The word first appeared in a play, R.U.R.,
+by the Czech writer Karel Čapek, in 1920. His brother Josef suggested
+it. It comes from the Czech word "robota", which means forced work.
+
+</aside>
 
 On this page we:
 
@@ -133,6 +143,16 @@ was the environment. The first try assumed a person's knowledge: that
 kettles need water, that tea bags come out. The second try says those
 things out loud.
 
+<aside class="dl-note" id="recipes-note-algorithm">
+
+**Where "algorithm" comes from.** Muhammad ibn Musa al-Khwarizmi was a
+mathematician in Baghdad in the 800s. His book on calculating with the
+digits 0 to 9 was translated into Latin, and his name became
+"algorismus", the word for working with those digits. Over the
+centuries, it became our "algorithm".
+
+</aside>
+
 ## Steps that repeat and steps that choose
 
 Now three friends call round. Two of them take milk, and one does not.
@@ -207,9 +227,10 @@ later. It is the next idea on this page.
 
 ### Your turn
 
-Write a plan, in pseudocode, for making toast for some friends. Some
-want butter and some want jam. Use `SET`, `REPEAT` and `IF` at least once
-each.
+Look at the clock on a microwave. Each digit is made of seven bars of
+light, called segments. To show a 4, the clock lights some bars and
+leaves the others off. Write a plan, in pseudocode, for a clock that
+shows one digit. Use `SET`, `REPEAT` and `IF` at least once each.
 
 Write it in the cell below. Each line starts with `#`, which makes it a
 *comment*: a note for people, which Python skips. So you can run the cell
@@ -217,28 +238,27 @@ and nothing will go wrong. There is one possible answer at the bottom of
 this section.
 
 ```python exec
-id: recipes-toast-plan
-# SET slices TO 4
+id: recipes-digit-plan
+# SET digit TO 4
 # ...your plan here
 ```
 
 <details class="dl-answer"><summary>one possible plan</summary>
 
 ```text
-SET slices TO 4
-REPEAT for each slice:
-    PUT the slice in the toaster
-    WAIT until it pops up
-    IF this friend wants butter:
-        SPREAD butter
-    IF this friend wants jam:
-        SPREAD jam
-    PUT the slice on a plate
-SERVE the plates
+SET digit TO 4
+REPEAT for each of the seven bars:
+    IF this bar is part of the shape of digit:
+        LIGHT the bar
+    OTHERWISE:
+        SWITCH the bar off
+WAIT one minute
 ```
 
 Yours may be quite different and still be right. A good test: could
-someone who has never made toast follow your plan?
+someone who has never seen a clock follow your plan? This one still
+assumes something: how does the clock know which bars make a 4? The
+next two pages answer that, with numbers.
 
 </details>
 
@@ -374,16 +394,18 @@ each.)
 
 ### Your turn
 
-1. In the cell below, write a function `make_toast()` with at least three
-   steps, each one a `print` line pushed in to the right.
+A robot pen draws on paper, and it follows steps like our tea robot.
+
+1. In the cell below, write a function `draw_square()` with at least
+   three steps, each one a `print` line pushed in to the right.
 2. Call it twice.
-3. If you would like more: write `make_toast_for(slices)`, and make one
-   step say how many slices to put in the toaster.
+3. If you would like more: write `draw_square_of(size_cm)`, and make one
+   step say how long each side is.
 
 ```python exec
 id: recipes-card-your-turn
-def make_toast():
-    print("Put a slice of bread in the toaster.")
+def draw_square():
+    print("Put the pen down.")
     # more steps here
 ```
 

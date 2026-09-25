@@ -7,7 +7,7 @@ practice_across:
   - everything-is-ones-and-zeros
   - when-python-says-no
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Mixed problems: instructions for a machine
@@ -18,23 +18,32 @@ sure where to start, the four questions are always allowed: what is
 named here, what is promised, what happens when, and what does this
 space let us do?
 
+In the middle of the page, you build the unit's project: a digit
+display, like the clock on a microwave, drawn in text. Stage 1 is a
+seven-segment display, in problems 7 to 11. Stage 2, a small pixel
+font, is in the Stretch section, for when you want more. It may feel
+like a lot of pieces at first. Every piece is one you have already met.
+
 Each problem says what kind it is: **Predict** (say what a cell will
 print, then run it), **Make** (build something small), **Fix** (repair
 one mistake), **Explain** (answer in words) or **Another way** (reach the
 same answer by a second route, or find the space where a "wrong" answer
-is right). Answers are in the folds.
+is right). Answers are in the folds, and each is one good answer, not
+the only one.
 
 ## Your toolkit
 
-Your toolkit from this unit is loaded on this page: `split_bill`,
-`to_binary` and `to_hex`. Run this cell to check that all three are
-there. If one of them gives a `NameError`, its page is where to build it.
+Your toolkit from this unit is loaded on this page: `digit_at`,
+`to_binary`, `to_hex` and `pixel_row`. Run this cell to check that all
+four are there. If one of them gives a `NameError`, its page is where to
+build it.
 
 ```python exec
 id: mixed-instructions-toolkit-check
-print(split_bill(60, 4))
+print(digit_at(2026, 0))
 print(to_binary(13))
 print(to_hex(255))
+print(pixel_row(9))
 ```
 
 This cell is a scratchpad for any problem below. Change it as much as you
@@ -42,7 +51,7 @@ like.
 
 ```python exec
 id: mixed-instructions-scratchpad
-print(3 * "la ")
+print(3 * "#")
 ```
 
 ## Warm-up
@@ -51,17 +60,18 @@ print(3 * "la ")
 run them in the scratchpad.
 
 ```python
-print(3 * "la ")
+print(3 * "#")
 print(7 // 2)
 print(7 / 2)
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-`la la la `, then `3`, then `3.5`.
+`###`, then `3`, then `3.5`.
 
 - `*` with a string writes it out that many times, as on
-  [Four questions for any puzzle](tutorial:four-questions).
+  [Four questions for any puzzle](tutorial:four-questions): here, three
+  lit pixels.
 - `//` divides and keeps only the whole part, an int.
 - `/` always gives a float, even when the answer could be whole.
 
@@ -76,8 +86,8 @@ would meet that answer.
 In the integers ℤ, which include the negative whole numbers,
 $3 - 5 = -2$. The weather gives one place to meet it: it is 3 °C in the
 evening, and by morning the temperature has fallen 5 degrees, to −2 °C.
-Python's `print(3 - 5)` gives `-2` as well, because Python's ints are a
-space with negative numbers in it.
+Python's ints are a space with negative numbers in it, so
+`print(3 - 5)` gives `-2`.
 
 </details>
 
@@ -96,131 +106,302 @@ bits become 3 hex digits, since each hex digit stands for four bits.
 
 </details>
 
-**4. Fix.** This recipe card should print two steps and then `Enjoy!`.
-It prints only `Enjoy!`, with no error. Find the mistake and fix it.
+**4. Fix.** A robot pen draws on paper. This cell should print the
+pen's two steps and then `Done.`. It prints only `Done.`, with no error.
+Find the mistake and fix it.
 
 ```python exec
-id: mixed-instructions-pancakes
-def make_pancakes(eggs):
-    print("Whisk", eggs, "eggs with", eggs * 125, "ml of milk.")
-    print("Cook in a hot pan.")
+id: mixed-instructions-pen
+def draw_square(size_cm):
+    print("Put the pen down.")
+    print("Draw 4 sides of", size_cm, "cm, turning left after each.")
 
 
-make_pancakes
-print("Enjoy!")
+draw_square
+print("Done.")
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 Line 6 names the function but does not call it. A call needs brackets,
-with the value for `eggs` inside them:
+with the value for `size_cm` inside them:
 
 ```python
-make_pancakes(2)
-print("Enjoy!")
+draw_square(3)
+print("Done.")
 ```
 
-This prints `Whisk 2 eggs with 250 ml of milk.`, `Cook in a hot pan.`
-and `Enjoy!`. There was no error, because naming a function without
-calling it is allowed. It does nothing, the same way reading a recipe
-card's title does not make any pancakes.
+This prints `Put the pen down.`, then `Draw 4 sides of 3 cm, turning
+left after each.` and `Done.`. There was no error, because naming a
+function without calling it is allowed. It does nothing, the same way
+reading the title of a recipe card does not make any tea.
 
 </details>
 
-**5. Explain.** A robot is told: "Wash the pan until it is clean." Why is
-this a poor step for a robot? Rewrite it as a better one.
+**5. Explain.** A robot vacuum cleaner is told: "Clean the floor until
+it is clean." Why is this a poor step for a robot? Rewrite it as a
+better one.
 
 <details class="dl-answer"><summary>answer</summary>
 
-"Clean" has no single meaning. One person's clean pan is another
-person's dirty one, so two robots could stop at different times, and
-one might never stop at all. A good step has one meaning, and a
-repeated step needs a clear end.
+"Clean" has no single meaning, and the robot cannot see dirt the way a
+person does. Two robots could stop at different times, and one might
+never stop at all. A good step has one meaning, and a repeated step
+needs a clear end.
 
-A better version: "Scrub the pan for 30 seconds. Rinse it. If you can
-still see food on it, repeat, at most 5 times." Now every part can be
-checked, and the steps must end.
+A better version: "Drive over every part of the floor once. If the dust
+sensor still finds dust, repeat, at most 3 times." Now every part can
+be checked, and the steps must end.
 
 </details>
 
 ## Core
 
-**6. Predict.** A taxi costs €4 to start, plus €2 for each kilometre.
-What does each line print for a 6 km trip? Which one is the real fare?
+**6. Predict.** What does this print: 750 or 1250?
 
 ```python
-print(4 + 2 * 6)
-print((4 + 2) * 6)
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-`16`, then `36`.
-
-Python multiplies before it adds, so the first line is
-$4 + (2 \times 6) = 4 + 12 = 16$. That is the real fare: the €4 is paid
-once, and the €2 six times. The brackets in the second line force the
-adding to happen first, $6 \times 6 = 36$, which charges the €4 start
-six times.
-
-</details>
-
-**7. Predict.** What does this print: 750 or 1250?
-
-```python
-water_ml = 250
-cups = 3
-total_ml = cups * water_ml
-cups = 5
-print(total_ml)
+row_width = 250
+rows = 3
+pixels = rows * row_width
+rows = 5
+print(pixels)
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 `750`. On line 3, Python works out `3 * 250` and names the result
-`total_ml`. Line 4 points `cups` at a new value, but `total_ml` was
-worked out already, and nothing tells Python to work it out again. A
-value is worked out when its line runs, not later.
+`pixels`. Line 4 points `rows` at a new value, but `pixels` was worked
+out already, and nothing tells Python to work it out again. A value is
+worked out when its line runs, not later.
 
 </details>
 
-**8. Make.** Four friends have a meal that costs €86.40, and they want
-to leave a 10% tip. Use `split_bill` to find each share. Then check the
-answer by hand, step by step.
+The next five problems build Stage 1 of the project: a seven-segment
+display that shows 2026. Each answer fold has code you can copy, so if
+one step will not come, you can still go on to the next.
+
+**7. Make.** Use `digit_at` to print the four digits of 2026, from left
+to right. Then print `math.log10(2026)`, and use it to say why 2026
+needs four digits on the display.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-print(split_bill(86.40, 4, 10))
+import math
+
+print(digit_at(2026, 3), digit_at(2026, 2), digit_at(2026, 1), digit_at(2026, 0))
+print(math.log10(2026))
 ```
 
-By hand: the tip is 10% of €86.40, which is €8.64. The total with the
-tip is $86.40 + 8.64 = 95.04$. Shared between 4, that is
-$95.04 \div 4 = 23.76$. Each friend pays €23.76.
+This prints `2 0 2 6`, then about `3.3`. So $10^3 = 1000$ is below 2026,
+and $10^4 = 10000$ is above it. Any number from 1000 to 9999 has 4
+digits: its logarithm, base 10, rounded down, plus 1.
 
 </details>
 
-**9. Fix.** The total here came from a form, as text. Run the cell,
-read the last line of the error, and fix the cell.
+**8. Explain.** Schlomo, who is learning Python too, says: "Seven
+segments make 128 patterns, so a seven-segment display can show 128
+different digits." Is he right?
+
+<details class="dl-answer"><summary>answer</summary>
+
+He is right about the patterns and wrong about the digits. Each segment
+is on or off, so there are $2^7 = 128$ patterns. But only ten of them
+are the digits 0 to 9. Most of the others do not look like anything we
+would read.
+
+Some of them are useful all the same. Many seven-segment displays show
+all sixteen hex digits, with A, b, C, d, E and F for the letters, some
+of them lower case so that they do not look like 8 or 0. So Schlomo's
+counting was right. What a pattern *means* is a question for the people
+who read it.
+
+</details>
+
+**9. Make.** A display keeps each digit's pattern as one byte, with
+segment a as the ones bit, b the twos, and so on up to g, the 64s. All
+ten patterns fit in one number, one byte each, the way `#FF8800` holds
+three bytes. The digit 0's pattern is the last byte, `3F`, and the digit
+9's is the first, `6F`. Run the cell. Then use `digit_at` in base 256 to
+get the pattern for the digit 8, and print it in binary and in hex.
+
+```python exec
+id: mixed-instructions-segments
+segment_table = 0x6F7F077D6D664F5B063F
+
+
+def mark(on, symbol):
+    """Give symbol when on is 1, and a space when on is 0."""
+    return symbol * on + " " * (1 - on)
+
+
+def lit(digit, segment):
+    """Give 1 if segment (0 for a, up to 6 for g) is lit in digit, else 0."""
+    pattern = digit_at(segment_table, digit, 256)
+    return digit_at(pattern, segment, 2)
+
+
+def top_row(digit):
+    """Give the top row of digit as three characters: segment a."""
+    return " " + mark(lit(digit, 0), "_") + " "
+```
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. One byte is 8 bits, which count up to 255. So a byte is one digit in
+   base 256.
+2. The digit 8's pattern is in place 8.
+3. `digit_at(segment_table, 8, 256)` gives it as a number. Give that
+   number to `to_binary` and to `to_hex`.
+
+**Think about:** why the digit 8's pattern should be seven 1s.
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+pattern = digit_at(segment_table, 8, 256)
+print(to_binary(pattern))
+print(to_hex(pattern))
+```
+
+This prints `1111111`, then `7F`: the 8 lights all seven segments. The
+cell also made tools for the next problem. `mark` uses the string
+repeat from the first page of this unit: `"_" * 1` is `"_"`, and
+`"_" * 0` is empty.
+
+</details>
+
+**10. Make.** `top_row` draws segment a. Write `middle_row(digit)`,
+which draws f, g and b, and `bottom_row(digit)`, which draws e, d and
+c. Use `|` for an upright segment and `_` for a flat one. Then print
+the three rows of an 8, one under another. The segments a to g are
+numbered 0 to 6.
+
+```python exec
+id: mixed-instructions-rows
+def middle_row(digit):
+    """Give the middle row of digit: segments f, g and b."""
+    ...
+
+
+def bottom_row(digit):
+    """Give the bottom row of digit: segments e, d and c."""
+    ...
+```
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Look at `top_row`. It joins three characters with `+`.
+2. In the middle row, f is on the left, g in the middle, and b on the
+   right. f is segment 5, g is 6 and b is 1.
+3. In the bottom row, e is segment 4, d is 3 and c is 2.
+
+**Think about:** why the names a to g are single letters here, when
+names are usually words. (What would you call segment f?)
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+def middle_row(digit):
+    """Give the middle row of digit: segments f, g and b."""
+    return mark(lit(digit, 5), "|") + mark(lit(digit, 6), "_") + mark(lit(digit, 1), "|")
+
+
+def bottom_row(digit):
+    """Give the bottom row of digit: segments e, d and c."""
+    return mark(lit(digit, 4), "|") + mark(lit(digit, 3), "_") + mark(lit(digit, 2), "|")
+
+
+print(top_row(8))
+print(middle_row(8))
+print(bottom_row(8))
+```
+
+This prints the 8:
+
+```text
+ _ 
+|_|
+|_|
+```
+
+The letters a to g are the names every seven-segment display uses, so
+here a single letter is the clearest name there is.
+
+</details>
+
+**11. Make.** Now the whole display. Print 2026 as four seven-segment
+digits side by side, with a space between digits. Then change the
+number to one of your own.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Give each digit of the number a name with `digit_at`: `thousands`,
+   `hundreds`, `tens`, `ones`.
+2. The display's top line is the four top rows joined with `+`, with
+   `" "` between them.
+3. Do the same for the middle line and the bottom line.
+
+**Think about:** what happens to the order of the steps if you print
+one whole digit, then the next?
+
+**Try this next:** what does your display show for 12345, and why?
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+number = 2026
+thousands = digit_at(number, 3)
+hundreds = digit_at(number, 2)
+tens = digit_at(number, 1)
+ones = digit_at(number, 0)
+print(top_row(thousands) + " " + top_row(hundreds) + " " + top_row(tens) + " " + top_row(ones))
+print(middle_row(thousands) + " " + middle_row(hundreds) + " " + middle_row(tens) + " " + middle_row(ones))
+print(bottom_row(thousands) + " " + bottom_row(hundreds) + " " + bottom_row(tens) + " " + bottom_row(ones))
+```
+
+This prints:
+
+```text
+ _   _   _   _ 
+ _| | |  _| |_ 
+|_  |_| |_  |_|
+```
+
+Text comes out line by line, top to bottom, so each line needs a piece
+of every digit. That is why we print row by row, not digit by digit.
+For the "try this next", 12345 shows `2345`: the 1 in place 4 has
+nowhere to go. Unit 3's loops will shorten the three long lines.
+
+</details>
+
+**12. Fix.** The number came from a box on a web page, as text. Run the
+cell, read the last line of the error, and fix the cell.
 
 ```python exec
 id: mixed-instructions-form-total
-total = "86.40"
-print(split_bill(total, 4, 10))
+number = "2026"
+print(digit_at(number, 0))
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Read the last line. What kind of error is it?
 2. Which kind of value does it name that should not be there?
-3. Which line of *your* cell gave `split_bill` that value?
-4. Which function turns text into a float?
+3. Which line of *your* cell gave `digit_at` that value?
+4. Which function turns text into a whole number?
 
-**Think about:** the line that failed is inside `split_bill`. The line
+**Think about:** the line that failed is inside `digit_at`. The line
 responsible is in your cell.
 
-**Try this next:** what happens if the form gives `"86,40"`, with a
-comma, as it might in many countries?
+**Try this next:** what happens if the box gives `"2,026"`, with a
+comma?
 
 </details>
 
@@ -229,127 +410,28 @@ comma, as it might in many countries?
 The last line is:
 
 ```text
-TypeError: can't multiply sequence by non-int of type 'float'
+TypeError: unsupported operand type(s) for //: 'str' and 'int'
 ```
 
 This is the message from
-[When Python says no](tutorial:when-python-says-no): a "sequence" here
-is the string `"86.40"`, and `split_bill` tried to multiply it by a
-float. The line that failed is inside `split_bill`, but the line
-responsible is line 1 of this cell, which made `total` a string. Turn
-it into a number first:
+[When Python says no](tutorial:when-python-says-no): `//` cannot divide
+a string by a number. The line that failed is inside `digit_at`, but
+the line responsible is line 1 of this cell, which made `number` a
+string. Turn it into a number first:
 
 ```python
-total = float("86.40")
-print(split_bill(total, 4, 10))
+number = int("2026")
+print(digit_at(number, 0))
 ```
 
-This prints `23.76`, as in problem 8.
-
-</details>
-
-**10. Another way.** Find 255 in hexadecimal two ways. First, use
-`to_hex`. Then write 255 in binary, split the bits into groups of four,
-and turn each group into one hex digit.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`to_hex(255)` gives `FF`.
-
-The second way: `to_binary(255)` gives `11111111`. In groups of four
-that is `1111 1111`. Each group is $8 + 4 + 2 + 1 = 15$, which is the
-hex digit F. So 255 is `FF` again. This is why hex is so handy for
-colours: a byte always splits into exactly two hex digits.
-
-</details>
-
-**11. Explain.** A weather station's temperature sensor sends each
-reading as a whole number from 0 to 1023. Why 1023, and not a round
-number like 1000? How many bits does each reading use?
-
-<details class="dl-answer"><summary>answer</summary>
-
-The sensor uses 10 bits. Ten bits give $2^{10} = 1024$ different
-patterns, and counting from 0, the largest is $1024 - 1 = 1023$. For a
-computer, the round numbers are powers of 2, not powers of 10. Checking
-with a logarithm: `math.log2(1024)` is `10.0`.
-
-</details>
-
-**12. Make.** Say an adult bus fare is €2.00 and a child fare is €0.65.
-First, write the steps in pseudocode, as comments. Then write a function
-`bus_fare(adults, children)` that gives the total fare for a group. Test
-it with `assert`: 2 adults and 3 children should cost €5.95.
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. In words: what do you do with the number of adults? With the number
-   of children? What do you do with the two results?
-2. Write those steps as `#` lines.
-3. Under `def bus_fare(adults, children):`, write one pushed-in line
-   that gives back the total with `return`.
-4. Floats can be a tiny bit off, so round the total to 2 places before
-   comparing it.
-
-**Think about:** which is the promise here, and which are the steps?
-
-**Try this next:** what should `bus_fare(0, 0)` give?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-# SET adult_cost TO adults times 2.00
-# SET child_cost TO children times 0.65
-# GIVE BACK adult_cost plus child_cost
-
-def bus_fare(adults, children):
-    """The total bus fare, in euro, for a group of adults and children."""
-    return adults * 2.00 + children * 0.65
-
-
-assert round(bus_fare(2, 3), 2) == 5.95
-assert bus_fare(0, 0) == 0
-print(bus_fare(2, 3))
-```
-
-This prints `5.95`. Python multiplies before it adds, so the line needs
-no brackets. The `round` in the test is there because floats are binary
-fractions, and 0.65 has no exact binary form.
-
-</details>
-
-**13. Fix.** In Gaelic football, a goal is worth 3 points. A score of
-2 goals and 11 points, written 2-11, is worth 17 points. This function
-should give that total. Run it, read the message, and fix it.
-
-```python exec
-id: mixed-instructions-gaa
-def total_points(goals, points):
-    return goal * 3 + points
-
-
-print(total_points(2, 11))
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-```text
-NameError: name 'goal' is not defined. Did you mean: 'goals'?
-```
-
-The parameter is named `goals`, with an s, but line 2 uses `goal`. The
-fix is `return goals * 3 + points`, and then the cell prints `17`. The
-traceback names two places: line 5, where the call was made, and line
-2, inside the function, where the name was missing. Here the line that
-failed is also the line to fix.
+This prints `6`. For the "try this next", `int("2,026")` stops with a
+`ValueError`: a comma is not a digit.
 
 </details>
 
 ## Stretch
 
-**14. Predict.** `to_binary` and `to_hex` promise to work with whole
+**13. Predict.** `to_binary` and `to_hex` promise to work with whole
 numbers of 0 or more. What happens if we step outside that space? Say
 what you expect, then run each line on its own.
 
@@ -367,103 +449,131 @@ ValueError: Unknown format code 'X' for object of type 'float'
 ```
 
 So one broken promise gives an error, and the other gives an answer we
-never agreed on. `-101` is a sensible way to write −5, but it is not the
-string of 0s and 1s that `to_binary` promised, and a program that trusts
-the promise could go wrong later, with no message at all. A promise
-holds only inside its space. Outside it, anything may happen, and an
-error is the better of the two outcomes.
+never agreed on: `-101` is not the string of 0s and 1s that `to_binary`
+promised. A promise holds only inside its space. Outside it, anything
+may happen, and an error is the better of the two outcomes, because it
+tells us.
 
 </details>
 
-**15. Another way.** Three friends share a €100 bill. Run
-`split_bill(100, 3)`. What does each person pay? Add up the three
-shares. What went missing? Then find another way, in whole cents with
-`//` and `%`, that shares out every cent.
+**14. Make.** Stage 2 of the project: a pixel font. On
+[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
+a digit was 7 hex digits, one per row. Here are the glyphs, the drawn
+shapes, for the digits of 2026. Write `glyph_row(glyph, row)`, which
+gives one row of a glyph as pixels, with row 0 at the top. Then print
+2026 in pixels, the four glyphs side by side.
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. €100 is 10,000 cents.
-2. `10000 // 3` is what everyone pays at least.
-3. `10000 % 3` is how many cents are left over after that.
-4. Who pays the leftover cents?
-
-**Think about:** why whole cents never go missing, and rounded euro can.
-
-**Try this next:** share €50 between 7 people the same way.
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-`split_bill(100, 3)` gives `33.33`. Three shares of €33.33 add up to
-€99.99, so one cent is missing: rounding each share to the cent threw
-away a third of a cent three times.
-
-In whole cents:
-
-```python
-total_cents = 10000
-people = 3
-each = total_cents // people
-left_over = total_cents % people
-print(each, left_over)
+```python exec
+id: mixed-instructions-font
+two = 0x691248F
+zero = 0x6999996
+six = 0x688E996
 ```
 
-This prints `3333 1`. Everyone pays 3,333 cents, and 1 cent is left, so
-one person pays €33.34 and the other two pay €33.33. Now
-$3334 + 3333 + 3333 = 10000$, every cent. The unit's two number spaces
-meet here: whole numbers share exactly, and floats round.
-
-</details>
-
-**16. Make.** Write a function `hex_colour(red, green, blue)` that
-gives the colour code, like `"#FF8800"`, for three brightnesses from 0
-to 255. Test it with `assert`, including a colour with a 0 in it.
-
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Each light needs exactly two hex digits.
-2. `to_hex(0)` gives `"0"`, only one digit. `format(0, "02X")` gives
-   `"00"`.
-3. Join `"#"` and the three pairs with `+`.
-4. Test with `(255, 136, 0)`, which should give `"#FF8800"`.
+1. Row 0, the top row, is the hex digit in place 6. Row 6 is place 0.
+   So row `row` is place `6 - row`.
+2. `digit_at(glyph, 6 - row, 16)` gives that row's 4 bits as a number,
+   and `pixel_row` draws it.
+3. Each of the 7 lines of the display joins one row from each glyph.
 
-**Think about:** why the test with a 0 in it matters more than the
-others.
+**Think about:** why the pixel font needs 7 print lines, and the
+seven-segment display only 3.
 
-**Try this next:** what should `hex_colour(256, 0, 0)` give, and what
-does yours give?
+**Try this next:** design a glyph for 3 on the 4 by 7 grid, and draw
+2023.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def hex_colour(red, green, blue):
-    """The #RRGGBB code for three brightnesses from 0 to 255."""
-    return "#" + format(red, "02X") + format(green, "02X") + format(blue, "02X")
+def glyph_row(glyph, row):
+    """Give row (0 at the top, 6 at the bottom) of a 4 by 7 glyph as pixels."""
+    return pixel_row(digit_at(glyph, 6 - row, 16))
 
 
-assert hex_colour(255, 136, 0) == "#FF8800"
-assert hex_colour(0, 0, 0) == "#000000"
-assert hex_colour(255, 255, 255) == "#FFFFFF"
-print(hex_colour(22, 155, 98))
+def display_row(row):
+    """Give one row of 2026, all four glyphs side by side."""
+    return glyph_row(two, row) + " " + glyph_row(zero, row) + " " + glyph_row(two, row) + " " + glyph_row(six, row)
+
+
+print(display_row(0))
+print(display_row(1))
+print(display_row(2))
+print(display_row(3))
+print(display_row(4))
+print(display_row(5))
+print(display_row(6))
 ```
 
-This prints `#169B62`. The test with 0 in it is the one that catches a
-version built with `to_hex`, which would give `#FF880`, a code a
-browser cannot read.
+This prints:
+
+```text
+.##. .##. .##. .##.
+#..# #..# #..# #...
+...# #..# ...# #...
+..#. #..# ..#. ###.
+.#.. #..# .#.. #..#
+#... #..# #... #..#
+#### .##. #### .##.
+```
+
+The seven-segment display needed only 3 lines, because a segment is a
+whole bar. The pixel font needs one line for every row of pixels.
 
 </details>
 
-**17. Explain.** A friend says: "Python is broken. `1 + 2 == 3` is
+**15. Another way.** Schlomi, who is also learning Python, has an idea.
+"The segment table held ten bytes in one number. Python's whole numbers
+never run out, so the whole pixel font can be one number too, one glyph
+of 7 hex digits after another." Here is her number, with 9 on the left
+and 0 on the right. Is she right? Use `digit_at` to get the glyph for 2
+out of it.
+
+```python exec
+id: mixed-instructions-font-number
+font = 0x69971166996996F122444688E996F8E11961359F116916196691248F26222276999996
+```
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. In the segment table, each pattern was one digit in base 256, which
+   is $2^8$, one byte.
+2. Here, each glyph is 7 hex digits. What base makes one glyph one
+   digit?
+3. Try `digit_at(font, 2, 16 ** 7)`, and give the answer to `to_hex`.
+
+**Think about:** how many hex digits long her number is.
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+She is right. Each glyph is 7 hex digits, so in base $16^7$ each glyph
+is one digit, and `digit_at` can pick out any of them:
+
+```python
+print(to_hex(digit_at(font, 2, 16 ** 7)))
+print(to_hex(digit_at(font, 8, 16 ** 7)))
+```
+
+This prints `691248F`, the 2, then `6996996`, the 8. Her number has 70
+hex digits, which is 280 bits. In many languages, an ordinary whole
+number stops at 64 bits. Python does not mind at all.
+
+</details>
+
+**16. Explain.** Schlomo says: "Python is broken. `1 + 2 == 3` is
 `True`, but `0.1 + 0.2 == 0.3` is `False`." Using what this unit taught
 about the spaces numbers live in, explain what is happening, and whether
 anything is broken.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Nothing is broken. The two sums live in different spaces.
+Nothing is broken, and Schlomo's surprise is a fair one. The two sums
+live in different spaces.
 
 `1`, `2` and `3` are ints. Python keeps whole numbers exactly, in
 binary, so `1 + 2` is exactly `3`.
@@ -479,7 +589,7 @@ of floats, the question to ask is "close enough?", for example
 
 </details>
 
-**18. Fix.** A game controller sends the state of four buttons as four
+**17. Fix.** A game controller sends the state of four buttons as four
 bits. This function should turn them back into a number, so `1, 1, 0, 1`
 should give 13. The test fails. Find the mistake and fix it.
 

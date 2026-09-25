@@ -1,7 +1,7 @@
 ---
 title: "Rules for change: the sum, product, quotient and chain rules"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   a-pattern-in-the-slopes-the-power-rule:
     covers: [MIT-3.7]
@@ -27,8 +27,10 @@ covers:
 Your toolkit's `derivative_at` can find the slope of any curve, at any
 point. Ask it about $x^2$ at 3, and it says about 6. At 5, it says about
 10. Each answer is one number, a tiny bit off, and it comes with no
-reason. Is there a shortcut: one rule that gives the slope everywhere
-at once, exactly, and says why?
+reason, like a machine that never explains itself. Is there a
+shortcut: one rule that gives the slope everywhere at once, exactly,
+and says why? There is, and you will find it in a table before anyone
+tells you what it is.
 
 On this page we:
 
@@ -37,8 +39,8 @@ On this page we:
   product, quotient and chain rules
 - say each rule in words, then in symbols, and check it against
   `derivative_at` at many points
-- come back to the top of Aoife's profit curve, and find it a second
-  way
+- come back to the bottom of the letter's curve from Unit 7, and find
+  it a second way
 
 > **The space we're in.** Rules made from powers of $x$, added,
 > multiplied, divided and put inside each other, over the real numbers.
@@ -122,13 +124,22 @@ a rule. Put in an $x$, and a slope comes out. If $f(x) = x^4$, then
 $f'(x) = 4x^3$. Finding the derivative of a rule is called
 *differentiating*.
 
+<aside class="dl-note" id="rules-for-note-newton-leibniz">
+
+**Two inventors.** Isaac Newton in England and Gottfried Leibniz in
+Germany found these rules separately, Newton in the 1660s and Leibniz
+in the 1670s. They and their friends argued for years about who was
+first. The notation $\frac{dy}{dx}$ is Leibniz's.
+
+</aside>
+
 Two small cases come with it. A number in front stays in front: the
 slope of $5x^3$ is $5 \times 3x^2 = 15x^2$, because making a curve 5
 times as tall makes it 5 times as steep. And a number on its own, such
 as 7, has slope 0: its graph is a flat line.
 
-A table of five rows is a pattern, not a check. Here is a helper that
-checks a slope rule against `derivative_at` at every point in a list.
+Five rows are a pattern, not a check. This helper checks a slope rule
+against `derivative_at` at every point in a list.
 
 ```python exec
 id: rules-for-power-2
@@ -188,15 +199,16 @@ print(slopes_agree(one_over, one_over_slope, positive_points))
 
 Both agree. The power rule holds for any power $n$, not only whole
 numbers. The minus sign in the slope of $\frac{1}{x}$ says it goes
-downhill: the more friends share a prize, the less each gets.
+downhill: the more phones share one Wi-Fi connection, the less each
+gets.
 
 ## Adding rules: the sum rule
 
 A car's stopping distance has two parts. While the driver sees the
 danger and moves a foot to the brake, the car keeps going: the
-thinking distance. Then the brakes slow it: the braking distance.
-Here is a model with the shape of the Road Safety Authority's chart, in
-metres, at a speed of $v$ km/h. The numbers are rounded and made up.
+thinking distance. Then the brakes slow it: the braking distance. Here
+is a model in metres, at $v$ km/h, with the shape of the Road Safety
+Authority's chart and rounded, made-up numbers.
 
 $$\text{stopping}(v) = 0.2v + 0.006v^2$$
 
@@ -267,18 +279,17 @@ points.
 
 ## Multiplying rules: the product rule
 
-A coffee cart sells 200 cups a week at €2.50 a cup. Each week the
-owner raises the price by 10 cent, and sells 5 fewer cups. After $t$
-weeks the price is $2.5 + 0.1t$, the number sold is $200 - 5t$, and the
-takings are the price times the number. Are the takings going up or
-down, and how fast?
+A phone app turns a video window from tall to wide. Every tenth of a
+second, the window gets 0.5 cm wider and 0.4 cm shorter. After $t$
+tenths it is $4 + 0.5t$ cm wide and $8 - 0.4t$ cm high, and its area
+is the width times the height. Is the window growing or shrinking, and
+how fast?
 
-The takings are the area of a rectangle, with the price along one side
-and the number sold along the other. When both sides change a little,
-the area changes in three pieces: a strip along one side, a strip
-along the other, and a tiny corner where both changes meet. For a very
-small change, the corner is so small that it disappears. What is left
-is the two strips.
+The window is a rectangle. When both sides change a
+little, the area changes in three pieces: a strip along one side, a
+strip along the other, and a tiny corner where both changes meet. For
+a very small change, the corner is so small that it disappears. What
+is left is the two strips.
 
 That gives the *product rule*. In words: the first times the slope of the
 second, plus the second times the slope of the first. In symbols, if
@@ -287,49 +298,51 @@ $h(x) = f(x) \times g(x)$, then
 $$h'(x) = f(x)\,g'(x) + g(x)\,f'(x)$$
 
 Many people's first guess is "the slope of a product is the product of
-the slopes". The cell tries both. Which do you think will agree with
-`derivative_at`?
+the slopes". It is a reasonable guess. The cell tries both. Which do
+you think will agree with `derivative_at`?
 
 ```python exec
 id: rules-for-product-1
-def price(week):
-    return 2.5 + 0.1 * week
+def width(tenths):
+    return 4 + 0.5 * tenths
 
-def cups(week):
-    return 200 - 5 * week
+def height(tenths):
+    return 8 - 0.4 * tenths
 
-def takings(week):
-    return price(week) * cups(week)
+def window_area(tenths):
+    return width(tenths) * height(tenths)
 
-def product_rule_slope(week):
-    return price(week) * -5 + cups(week) * 0.1
+def product_rule_slope(tenths):
+    return width(tenths) * -0.4 + height(tenths) * 0.5
 
-def slopes_multiplied(week):
-    return 0.1 * -5
+def slopes_multiplied(tenths):
+    return 0.5 * -0.4
 
-weeks = list(range(0, 21))
-print("product rule:", slopes_agree(takings, product_rule_slope, weeks))
-print("slopes multiplied:", slopes_agree(takings, slopes_multiplied, weeks))
+moments = list(range(0, 21))
+print("product rule:", slopes_agree(window_area, product_rule_slope, moments))
+print("slopes multiplied:", slopes_agree(window_area, slopes_multiplied, moments))
 print(product_rule_slope(0), product_rule_slope(10))
 ```
 
-The product rule agrees in every week. Multiplying the slopes gives
-$-0.5$ every week, and disagrees at week 0. At the start, the takings
-grow by €7.50 a week. By week 10 they fall by €2.50 a week: the lost
-cups now cost more than the higher price brings in.
+The product rule agrees at every moment. Multiplying the slopes gives
+$-0.2$ every time, and disagrees at once. At the start, the
+window grows by 2.4 square cm each tenth of a second. After one second,
+ten tenths, it is shrinking by 1.6: the lost height now costs more
+than the new width brings in.
 
 Is multiplying slopes a foolish move, then? Do not throw it away yet. It is
 the right move in a different space, two sections from here.
 
 ## Dividing rules: the quotient rule
 
-A café buys a coffee machine for €600, and each cup costs €0.30 in
-beans and milk. After $n$ cups, the average cost of a cup is the total
-cost divided by the number of cups:
+A small video service rents a server for €600 a month, and each film
+it streams costs €0.30 in data. (The prices are made up.) After $n$
+films, the average cost of a film is the total cost divided by the
+number of films:
 
 $$\text{average}(n) = \frac{600 + 0.3n}{n}$$
 
-The average falls as more cups are made. How fast?
+The average falls as more films are streamed. How fast?
 
 The *quotient rule* gives the slope of one rule divided by another. In
 words: the bottom times the slope of the top, minus the top times the
@@ -341,7 +354,7 @@ $$h'(x) = \frac{g(x)\,f'(x) - f(x)\,g'(x)}{g(x)^2}$$
 The order matters, because of the minus sign. The bottom can never be
 0, since a division by 0 has no value.
 
-For the café, the top is $600 + 0.3n$, with slope 0.3, and the bottom
+For the server, the top is $600 + 0.3n$, with slope 0.3, and the bottom
 is $n$, with slope 1. So the slope of the average is
 
 $$\frac{n \times 0.3 - (600 + 0.3n) \times 1}{n^2} = \frac{-600}{n^2}$$
@@ -350,24 +363,24 @@ Predict the sign of the slope before you run it.
 
 ```python exec
 id: rules-for-quotient-1
-def average_cost(cups_made):
-    """Return the average cost of a cup, in euro, after cups_made cups."""
-    return (600 + 0.3 * cups_made) / cups_made
+def average_cost(films):
+    """Return the average cost of a film, in euro, after this many films."""
+    return (600 + 0.3 * films) / films
 
-def quotient_rule_slope(cups_made):
-    top = 600 + 0.3 * cups_made
-    bottom = cups_made
+def quotient_rule_slope(films):
+    top = 600 + 0.3 * films
+    bottom = films
     return (bottom * 0.3 - top * 1) / bottom ** 2
 
-cup_counts = list(range(100, 5001, 100))
-print(slopes_agree(average_cost, quotient_rule_slope, cup_counts))
+film_counts = list(range(100, 5001, 100))
+print(slopes_agree(average_cost, quotient_rule_slope, film_counts))
 print(average_cost(1000), quotient_rule_slope(1000))
 ```
 
-After 1,000 cups the average cost is €0.90, and it is falling by
-0.0006 of a euro with each extra cup. The slope is negative, and it
-gets closer to 0 as $n$ grows: the machine's €600 is shared among more
-and more cups, and each extra cup changes the share less.
+After 1,000 films the average cost is €0.90, and it is falling by
+0.0006 of a euro with each extra film. The slope is negative, and it
+gets closer to 0 as $n$ grows: the server's €600 is shared among more
+and more films, and each extra film changes the share less.
 
 There is another way. The average is $600 \times n^{-1} + 0.3$, and the
 power rule and the sum rule give $-600n^{-2}$ in one step. Two routes,
@@ -389,8 +402,8 @@ How fast is the area growing? Think of the rates, with their units:
   (the power rule on $\pi r^2$)
 - the radius grows by 0.5 metres for each second
 
-Metres cancel, and square metres per second are left: $2\pi r \times
-0.5$. The rates multiply.
+Metres cancel, leaving square metres per second: $2\pi r \times 0.5$.
+The rates multiply.
 
 That is the *chain rule*. In words: the slope of the outside rule,
 worked out at the inside value, times the slope of the inside rule. In
@@ -425,9 +438,9 @@ two rules sit side by side, and multiplying their slopes fails. For a
 rule inside a rule, one rule's output is the other's input, and the
 slopes multiply.
 
-One more check, on a rule with no story: $(2x + 1)^3$. The outside rule
-is "cube it", with slope $3u^2$, and the inside is $2x + 1$, with slope
-2. What does the chain rule give?
+One more check, with no story: $(2x + 1)^3$. The outside rule is "cube
+it", with slope $3u^2$, and the inside is $2x + 1$, with slope 2. What
+does the chain rule give?
 
 ```python exec
 id: rules-for-chain-2
@@ -460,45 +473,46 @@ id: rules-for-chain-your-turn
 
 ## Back to the top of the curve
 
-On [The top of the curve](tutorial:the-top-of-the-curve#a-price-too-low-a-price-too-high),
-Aoife's profit at a price of $p$ euro was $-20p^2 + 140p - 120$, and its
-top was at €3.50. That page found it by completing the square, and it
-made a promise: Unit 9 would come back to this curve with the idea of a
-slope at a point.
+On [The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line),
+the bottom of a letter's bowl had the height $400t^2 - 440t + 112$
+font units, lowest at $t = 0.55$. That page found it by completing the
+square, and promised that Unit 9 would come back to this curve with
+the idea of a slope at a point.
 
-At the top of a curve, the curve is neither going up nor going down.
-Its
+At the bottom of a curve, the curve is neither going up nor going
+down. Its
 [tangent line](tutorial:how-fast-right-now#the-tangent-line) is flat,
 so the slope there is 0. The tests on
 [How fast, right now?](tutorial:how-fast-right-now#a-tool-for-the-slope-at-a-point)
 checked this for the kicked ball, at a top we already knew from its
-graph. Now we turn it round: set the slope to 0, and find the top with
-no graph at all. By the power rule and the
-sum rule, the slope of the profit is $-40p + 140$. Where is that 0?
-That is a linear equation, and your toolkit's `solve_linear` from
+graph. Now we turn it round: set the slope to 0, and find the bottom
+with no graph at all. By the power rule and the sum rule, the slope of
+the bowl is $800t - 440$. Where is that 0? That is a linear equation,
+and your toolkit's `solve_linear` from
 [Solving for x](tutorial:solving-for-x#a-tool-for-any-straight-line-equation)
 solves it. Predict the answer.
 
 ```python exec
 id: rules-for-top-1
-profit_rule = [-120, 140, -20]
-profit_slope = derivative_coefficients(profit_rule)
-print(profit_slope)
+bowl_rule = [112, -440, 400]
+bowl_slope = derivative_coefficients(bowl_rule)
+print(bowl_slope)
 
-best_price = solve_linear(profit_slope[1], profit_slope[0])
-print(best_price, evaluate(profit_rule, best_price))
-print(vertex(-20, 140, -120))
+lowest_t = solve_linear(bowl_slope[1], bowl_slope[0])
+print(lowest_t, evaluate(bowl_rule, lowest_t))
+print(vertex(400, -440, 112))
 ```
 
-The slope is $140 - 40p$, it is 0 at €3.50, and the profit there is
-€125. It is the same answer as `vertex` gives, found by a new route.
+The slope is $-440 + 800t$, it is 0 at $t = 0.55$, and the height there
+is $-9$. It is the same answer as `vertex` gives, found by a new route.
 
 This works for every quadratic, with no graph and no completing the
 square. The slope of $ax^2 + bx + c$ is $2ax + b$, and that is 0 when
-$x = -\frac{b}{2a}$: the formula from Unit 7, found again. The difference is what comes next. Completing the
-square only works on a quadratic. A slope of 0 finds the tops and
-bottoms of any curve whose slope we can work out, and the four rules on
-this page can work out a great many.
+$x = -\frac{b}{2a}$: the formula from Unit 7, found again. The
+difference is what comes next. Completing the square only works on a
+quadratic. A slope of 0 finds the tops and bottoms of any curve whose
+slope we can work out, and the four rules on this page can work out a
+great many, such as the cubic curves many fonts draw with.
 
 ### Your turn
 

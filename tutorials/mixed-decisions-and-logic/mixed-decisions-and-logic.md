@@ -6,7 +6,7 @@ practice_across:
   - untangling-a-condition
   - bits-that-flip
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Mixed problems: decisions and logic
@@ -22,26 +22,30 @@ from Unit 1. Each answer is hidden until you open it. Where a problem asks
 you to predict, make the prediction before you run anything. It is the
 most useful part.
 
+If a problem feels hard, that is usually the feeling of choosing a tool,
+which is the new skill here. Skip it, try another, and come back. The
+answers show one good way each; yours may be different and still right.
+
 ## Warm-up
 
 Use this cell for any warm-up problem. Change the line, and run it.
 
 ```python exec
 id: mixed-decisions-scratch-1
-print(between(17.5, 12, 17))
+print(between(35.5, 0, 35))
 ```
 
-**1. Predict.** A bus company's youth fare is for ages 12 to 17. A
-program checks `between(age, 12, 17)`. What does it give for an age of
-17.5?
+**1. Predict.** A phone is designed to work from 0 °C to 35 °C, and a
+program checks `between(temperature, 0, 35)`. Another rule warns at "36
+and over". What does `between` give for a reading of 35.5?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`False`, because 17.5 is more than 17.
+`False`, because 35.5 is more than 35.
 
-A fare table usually assumes ages are whole numbers, and in that space
-there is nothing between 17 and 18. In the space of decimals, 17.5 falls
-into a gap: it is not "12 to 17", and it is not "18 and over" either. On
+The two rules assume whole degrees, and in that space there is nothing
+between 35 and 36. A sensor that reads tenths finds a gap: 35.5 is not
+"0 to 35", and it is not "36 and over" either. On
 [Choosing a path](tutorial:choosing-a-path), that assumption was said out
 loud in "the space we're in". This is why.
 
@@ -60,23 +64,24 @@ it as `(True and (not False)) or False`.
 
 </details>
 
-**3. Make.** A swing in the playground is free when
-`not (occupied or broken)`. Write it as a function, `swing_free`, and print
-its truth table with `truth_table`. In how many rows is the swing free?
+**3. Make.** An office printer can take a new job when
+`not (busy or out_of_paper)`. Write it as a function, `printer_ready`, and
+print its truth table with `truth_table`. In how many rows is the printer
+ready?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def swing_free(occupied, broken):
-    return not (occupied or broken)
+def printer_ready(busy, out_of_paper):
+    return not (busy or out_of_paper)
 
-truth_table(swing_free, ["occupied", "broken"])
+truth_table(printer_ready, ["busy", "out_of_paper"])
 ```
 
-The swing is free in one row only: not occupied and not broken. That is
-De Morgan's second law, from
+The printer is ready in one row only: not busy and not out of paper.
+That is De Morgan's second law, from
 [Untangling a condition](tutorial:untangling-a-condition):
-`not (occupied or broken)` is `not occupied and not broken`.
+`not (busy or out_of_paper)` is `not busy and not out_of_paper`.
 
 </details>
 
@@ -91,19 +96,21 @@ De Morgan's second law, from
 
 </details>
 
-**5. Explain.** A friend says that `age > 17` and `age >= 18` always mean
-the same thing. When is your friend right, and when not?
+**5. Explain.** Schlomi, who is learning Python too, says that
+`temperature > 79` and `temperature >= 80` always mean the same thing, so
+it does not matter which one the fan code uses. When is she right, and
+when not?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Your friend is right when ages are whole numbers. Then there is nothing
-between 17 and 18, so "more than 17" and "18 or more" pick out the same
-ages.
+Schlomi is right when the sensor gives whole degrees. Then there is
+nothing between 79 and 80, so "more than 79" and "80 or more" pick out
+the same readings.
 
-With decimals, they differ. An age of 17.5 is more than 17, but it is not
-18 or more. So the friend's move is right in one space and wrong in the
-other. Neither of you made a mistake, as long as you both say which space
-you are in.
+With decimals, they differ. A reading of 79.5 is more than 79, but it is
+not 80 or more. So Schlomi's move is right in one space and wrong in the
+other. She did not make a mistake, as long as she says which space she
+is in.
 
 </details>
 
@@ -116,54 +123,55 @@ id: mixed-decisions-scratch-2
 # Try things here
 ```
 
-**6. Make.** A sports club charges a yearly fee by age. Under 5 is free.
-Ages 5 to 17 pay €40. Ages 18 to 64 pay €120. Ages 65 and over pay €60.
-Write `club_fee(age)` with `if`, `elif` and `else`, and test it with
-`assert` at 4, 5, 17, 18, 64 and 65.
+**6. Make.** A phone draws its battery icon from the battery level, a
+whole number from 0 to 100. From 0 to 10 it shows "empty". From 11 to 40
+it shows "low". From 41 to 80 it shows "half". From 81 to 100 it shows
+"full". Write `battery_icon(level)` with `if`, `elif` and `else`, and test
+it with `assert` at 10, 11, 40, 41, 80 and 81.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Start with the youngest group, and work up.
+1. Start with the lowest band, and work up.
 2. Each `elif` only runs if every check above it was False, so you do not
-   need to check the low end of each group again.
-3. The tests are at the edges of the groups, where a `<` in place of a
+   need to check the low end of each band again.
+3. The tests are at the edges of the bands, where a `<` in place of a
    `<=` would hide.
 
-**Think about:** could you write it with `between` for each group
-instead? Which version reads more like the fee table?
+**Think about:** could you write it with `between` for each band
+instead? Which version reads more like the list of bands?
 
-**Try this next:** add a student price of €60 for ages 18 to 22 with a
-student card.
+**Try this next:** add a "charging" icon that wins over all the others
+when the phone is plugged in.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def club_fee(age):
-    """Return the yearly fee in euro for a member of this age."""
-    if age < 5:
-        return 0
-    elif age <= 17:
-        return 40
-    elif age <= 64:
-        return 120
+def battery_icon(level):
+    """Return the icon for a battery level from 0 to 100."""
+    if level <= 10:
+        return "empty"
+    elif level <= 40:
+        return "low"
+    elif level <= 80:
+        return "half"
     else:
-        return 60
+        return "full"
 
-assert club_fee(4) == 0
-assert club_fee(5) == 40
-assert club_fee(17) == 40
-assert club_fee(18) == 120
-assert club_fee(64) == 120
-assert club_fee(65) == 60
+assert battery_icon(10) == "empty"
+assert battery_icon(11) == "low"
+assert battery_icon(40) == "low"
+assert battery_icon(41) == "half"
+assert battery_icon(80) == "half"
+assert battery_icon(81) == "full"
 print("All six tests pass.")
 ```
 
-Each test sits at the edge of a group, because that is where mistakes
-hide. You could also write `elif between(age, 5, 17):` and so on. That
+Each test sits at the edge of a band, because that is where mistakes
+hide. You could also write `elif between(level, 11, 40):` and so on. That
 checks both ends every time, which is a little longer, but reads the same
-as the fee table.
+as the list of bands.
 
 </details>
 
@@ -296,33 +304,34 @@ a `==` that should be a `!=`.
 
 </details>
 
-**11. Explain.** A cinema uses this rule to let people in:
+**11. Explain.** A web forum lets you post if you are a member or you
+have a guest code, and you are not banned. Its rule is:
 
 ```python
-def let_in(over_18, with_adult, has_ticket):
-    return over_18 or with_adult and has_ticket
+def can_post(is_member, has_code, not_banned):
+    return is_member or has_code and not_banned
 ```
 
-An adult with no ticket gets in. Why? What should the rule be?
+A banned member can still post. Why? What should the rule be?
 
 <details class="dl-answer"><summary>answer</summary>
 
 Python works out `and` before `or`. So the rule means
-`over_18 or (with_adult and has_ticket)`. Anyone over 18 gets in, ticket
-or not.
+`is_member or (has_code and not_banned)`. Any member can post, banned or
+not.
 
 The rule should have brackets around the `or`:
 
 ```python
-def let_in_fixed(over_18, with_adult, has_ticket):
-    return (over_18 or with_adult) and has_ticket
+def can_post_fixed(is_member, has_code, not_banned):
+    return (is_member or has_code) and not_banned
 
-print(same_rule(let_in, let_in_fixed, 3))    # False: they are different rules
-print(let_in(True, False, False), let_in_fixed(True, False, False))
+print(same_rule(can_post, can_post_fixed, 3))    # False: they are different rules
+print(can_post(True, False, False), can_post_fixed(True, False, False))
 ```
 
-The last line prints `True False`: the first rule lets in an adult with no
-ticket, and the fixed one does not.
+The last line prints `True False`: the first rule lets a banned member
+post, and the fixed one does not.
 
 </details>
 
@@ -452,8 +461,10 @@ length.
 </details>
 
 **15. Explain.** On [Untangling a condition](tutorial:untangling-a-condition),
-`same_rule` showed that `a and b` is the same rule as `b and a`. But these
-two lines are not the same in a program. The second one raises an error on
+`same_rule` showed that `a and b` is the same rule as `b and a`. So
+Schlomo, who is learning Python too, says the order inside an `and` never
+matters. It is a fair conclusion from what he saw. But these two lines
+are not the same in a program. The second one raises an error on
 purpose. Run it, read the last line of the error, and explain why the order
 matters here.
 
@@ -478,15 +489,18 @@ the second line, the division comes first, and dividing by zero is not
 allowed.
 
 As rules on True and False, the two orders are the same: `same_rule` was
-right. But a program is more than a rule. What happens when is part of
+right, and so was Schlomo, in that space. But a program is more than a
+rule. What happens when is part of
 it, and the left part of an `and` can protect the right part.
 
 </details>
 
-**16. Make.** A band chooses songs by a vote of three members. A song is
-in when at least two of the three vote yes. Write `majority(a, b, c)`
-using `and` and `or`, print its truth table, and check with `same_rule`
-that it is the same rule as `a + b + c >= 2`.
+**16. Make.** A satellite has three temperature sensors on one panel.
+Each says True when it reads "too hot". So that one broken sensor cannot
+fool it, the satellite believes "too hot" when at least two of the three
+say so. Write `majority(a, b, c)` using `and` and `or`, print its truth
+table, and check with `same_rule` that it is the same rule as
+`a + b + c >= 2`.
 
 <details class="dl-answer"><summary>answer</summary>
 
