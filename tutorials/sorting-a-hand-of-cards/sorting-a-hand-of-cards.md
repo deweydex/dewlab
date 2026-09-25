@@ -1,7 +1,7 @@
 ---
 title: "Sorting a hand of cards: selection and insertion sort"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   two-ways-to-sort-a-hand:
     covers: [MIT-6.8]
@@ -29,6 +29,11 @@ covers:
 Someone deals you seven cards. Before you play, you put them in order,
 lowest on the left. You do it without thinking, in a few seconds. But
 what exactly did your hands do? And how many moves did it take?
+
+Your hands already know at least one algorithm, and this page writes
+it down. There is a surprise on the way. One of the two ways people
+sort cards does almost no work on a hand that is already in order. The
+other does exactly as much work on that hand as on any other.
 
 On the last page, binary search needed a sorted list, and Python's
 `sorted()` made one for us. This page opens that box.
@@ -120,6 +125,16 @@ place as it arrives. Which way is that?
 The second way works even while the cards are still arriving. The
 first way needs the whole hand in front of it, because it cannot know
 the lowest card until it has seen them all.
+
+<aside class="dl-note" id="sorting-hand-note-bridge">
+
+**The bridge player's method.** Donald Knuth's *The Art of Computer
+Programming*, the best-known set of books on algorithms, begins its
+section on insertion sort with card players. It calls insertion sort
+the method a bridge player uses to put a hand in order. Programmers
+have been learning sorting from a hand of cards for over fifty years.
+
+</aside>
 
 ## Swapping two cards
 
@@ -233,6 +248,11 @@ conditions joined by `and`, as on
 [True, false and every case](tutorial:true-false-and-every-case):
 "there is still a card to the left, and that card is higher".
 
+The `while` line is the hardest line on this page to read. If it
+feels tangled, read it aloud as "while there is a card to the left,
+and that card is higher", or run the cell with a hand of three cards
+first and watch what moves.
+
 Before you run it, which card do you think moves the furthest?
 
 ```python exec
@@ -339,8 +359,10 @@ for five_cards in hands:
 | already in order | 10 | 4 |
 | in reverse order | 10 | 10 |
 
-Selection sort makes 10 comparisons every time. It has to look at
-every card left to be sure which is the smallest, whatever the order.
+Selection sort makes 10 comparisons every time, even on the hand that
+was already in order. I find that a strange result: it does all that
+work to learn nothing new. It has to look at every card left to be sure
+which is the smallest, whatever the order.
 In the first round it compares 4 pairs, then 3, then 2, then 1:
 
 $$4 + 3 + 2 + 1 = 10$$
@@ -400,8 +422,8 @@ print(hand, answer)
 was. `hand.sort()` does something else: it sorts `hand` itself, in
 place, and gives back `None`. It is a procedure, in the words of
 [Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do).
-So `answer` is `None`. A line like `hand = hand.sort()` is a common
-mistake, and it throws the whole hand away.
+So `answer` is `None`. A line like `hand = hand.sort()` looks
+harmless, and it throws the whole hand away.
 
 Both are useful. Sorting in place needs no second list, which matters
 when the list is huge. A new list keeps the original, which matters
@@ -524,11 +546,55 @@ title: some steps
 and which one would catch it?
 ```
 
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one way to write them. Yours may differ and still keep the
+promises: the tests are the judge.
+
+```python
+def selection_sort(values):
+    """Return a new list with the items of values in ascending order,
+    found by selection sort. values itself is not changed.
+
+    The items must be comparable with <, like numbers or words.
+    """
+    items = values.copy()
+    for place in range(len(items) - 1):
+        smallest_at = place
+        for i in range(place + 1, len(items)):
+            if items[i] < items[smallest_at]:
+                smallest_at = i
+        items[place], items[smallest_at] = items[smallest_at], items[place]
+    return items
+
+
+def insertion_sort(values):
+    """Return a new list with the items of values in ascending order,
+    found by insertion sort. values itself is not changed.
+
+    The items must be comparable with <, like numbers or words.
+    """
+    items = values.copy()
+    for place in range(1, len(items)):
+        item = items[place]
+        i = place
+        while i > 0 and items[i - 1] > item:
+            items[i] = items[i - 1]
+            i = i - 1
+        items[i] = item
+    return items
+```
+
+</details>
+
 The loop `for sort in [selection_sort, insertion_sort]:` hands each
 tool, in turn, to the same tests. A function is a value, and a list can
 hold functions, as it holds numbers.
 
 ### Your turn
+
+If you have not written the two sorts yet, open the answer under the
+tests and copy it into the stubs.
 
 Sorting and searching go together. Your contacts from the last page
 were in the order they were added.
@@ -548,7 +614,7 @@ contacts = ["Siobhán", "Tomasz", "Aoife", "Kwame", "Niamh", "Oisín", "Priya", 
 
 This page taught selection sort and insertion sort, two ways people
 already sort cards. Many courses start with a third, bubble sort, which
-walks along the list swapping any two neighbours that are in the wrong
+walks along the list swapping any two neighbours that are out of
 order, again and again.
 
 Bubble sort has real strengths. Its code is short, it only ever

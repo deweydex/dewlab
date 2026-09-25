@@ -1,8 +1,8 @@
 ---
 title: "Racing the sorts: counting steps"
 year: "2026-2027"
-version: 2026.09.24.1
-datasets: [life-expectancy]
+version: 2026.09.25.1
+datasets: [exoplanets, life-expectancy]
 covers:
   lists-to-race-on:
     covers: [MIT-6.8]
@@ -21,16 +21,25 @@ covers:
   the-fourth-racer-sorted:
     covers: [PDP-LO2]
     touches: [MIT-6.8]
+  six-thousand-planets:
+    covers: [MIT-6.8]
+    touches: [PDP-LO2]
   which-sort-where:
     covers: [PDP-LO2]
 ---
 
 # Racing the sorts: counting steps
 
-Your music app holds 1,000 songs. You tap "most played", and the list
-is in order before you lift your finger. On the last page we sorted a
-hand of five cards. Which of our two sorts would you trust with 1,000
-songs? And is there a faster one?
+NASA's list of planets around other stars has more than six thousand
+entries. Say we want them in order of the length of their year: the
+time each one takes to go round its star. On the last page we sorted a
+hand of five cards. Which of our two sorts would you trust with six
+thousand planets? And is there a faster one?
+
+Here is the surprise. Before we run anything, a formula from the last
+page can tell us how long we would wait. And on that list, the planet
+with the shortest year and the one with the longest are about four
+billion times apart.
 
 On this page we:
 
@@ -40,6 +49,7 @@ On this page we:
 - sort a real list that is nearly in order already
 - build a third sort, Shell sort, which makes long jumps first
 - time Python's own `sorted()` against all three
+- sort six thousand real planets, and choose the racers we can wait for
 - ask which sort to use where
 
 > **The space we're in.** Lists of numbers, and the two sorts from
@@ -79,10 +89,8 @@ Which numbers can `random.randint(1, 10)` give?
 
 ## Lists to race on
 
-A race needs a fair track. If we race on a list we chose ourselves, we
-might choose one that suits one sort. So let's race on lists of random
-numbers, which suit no sort in particular. Here is a function that
-makes one. What will it print?
+A race needs a fair track, so let's start with lists of random
+numbers, which suit no sort in particular. What will this print?
 
 ```python exec
 id: racing-lists-1
@@ -158,13 +166,7 @@ for size in [10, 100, 1000]:
 Selection sort makes 45, 4,950 and 499,500 comparisons, the same every
 time you run the cell. Insertion sort's counts change from run to run,
 because the lists are random, but they stay close to 25, 2,500 and
-250,000. Here is one run:
-
-| Values, $n$ | Selection sort | Insertion sort (one run) |
-|---|---|---|
-| 10 | 45 | 30 |
-| 100 | 4,950 | 2,598 |
-| 1,000 | 499,500 | 250,132 |
+250,000.
 
 Insertion sort makes about half as many comparisons as selection sort.
 On a random list, each new value slides about half way along the
@@ -182,8 +184,8 @@ id: racing-ten-2
 type: multiple-choice
 correct: 3
 
-A list of 1,000 songs takes insertion sort about 250,000 comparisons.
-About how many would a list of 2,000 songs take?
+A list of 1,000 random values takes insertion sort about 250,000
+comparisons. About how many would a list of 2,000 take?
 
 - 500,000
 - 250,002
@@ -218,16 +220,15 @@ plt.ylabel("comparisons")
 plt.legend()
 ```
 
-Both lines curve upwards, and they get steeper as they go. A straight
-line would add the same number of comparisons for each 100 new values.
-These lines add more each time, because each new value has more values
-to be compared with.
+Both lines curve upwards, steeper as they go. Each 100 new values add
+more comparisons than the 100 before, because each new value has more
+values to be compared with.
 
 Growth like this, where the count grows with the square of the size, is
 called *quadratic* growth. In the notation from Finding things fast,
-programmers write it $O(n^2)$. For 1,000 songs it is fine: a computer
+programmers write it $O(n^2)$. For 1,000 values it is fine: a computer
 makes half a million comparisons in well under a second. For a million
-songs, it is about half a million million comparisons, and that takes
+values, it is about half a million million comparisons, and that takes
 hours.
 
 ## A list that is nearly in order
@@ -258,35 +259,30 @@ $\frac{67 \times 66}{2}$: it cannot tell that the list is nearly
 sorted. Insertion sort makes only 86. Each value only needs to slide
 back a step or two, past a dip, and most values do not move at all.
 
-Lists like this are common. A leaderboard that was sorted yesterday,
-with three new scores at the end, is nearly in order. So is a class
-list with one new student added. For lists like these, insertion sort
-does very little work.
+Lists like this are common: a leaderboard sorted yesterday, with three
+new scores at the end, is nearly in order too.
 
 ## Shell sort: long jumps first
 
-Insertion sort is slow on a random list for one reason. A value moves
-one place for each comparison. A small value near the end of the list
-has to be compared with almost every value before it, one at a time,
-to reach the front.
+Insertion sort is slow on a random list because a value moves only one
+place for each comparison. A small value near the end has a long way
+to walk.
 
 In 1959, Donald Shell found a way round this. First, sort values that
-are far apart. Take every 4th value, say, and insertion sort just those.
+are far apart. Take every 4th value, say, and insertion sort only those.
 A small value can then jump 4 places with one comparison. Then do the
 same for every 2nd value, and at last for every value, with an ordinary
-insertion sort. By the last pass, the list is nearly in order, and we
-just saw what insertion sort does with a list like that.
+insertion sort. By the last pass, the list is nearly in order, and the
+last section showed what insertion sort does with a list like that.
 
 The distance between the values sorted together is the *gap*. *Shell
 sort* is insertion sort done again and again, first with a large gap
 and then with smaller ones, ending with a gap of 1. Here, the gap
 starts at half the length of the list, and halves each pass.
 
-Here is Shell sort on a hand of 8 cards in reverse order. That is the
-worst case for insertion sort. The code is `insertion_sort` with every
-step of 1 changed to a step of `gap`, inside a loop that halves the
-gap. Before you run it, what will the hand look like after the gap-4
-pass?
+Here is Shell sort on a hand of 8 cards in reverse order, the worst
+case for insertion sort. Before you run it, what will the hand look
+like after the gap-4 pass?
 
 ```python exec
 id: racing-shell-1
@@ -308,6 +304,11 @@ def shell_steps(values):
 
 print(shell_steps([13, 12, 9, 8, 7, 5, 3, 1]))
 ```
+
+If the inner `while` loop is hard to follow, compare it line by line
+with `insertion_steps` on the last page: inside the gap loop, each step
+of 1 has become a step of `gap`. Or run the cell and read the printed lines first, then
+come back to the code.
 
 With a gap of 4, the pairs 4 places apart are sorted: 13 and 7, 12
 and 5, 9 and 3, 8 and 1. Every small card jumped 4 places towards the
@@ -404,6 +405,39 @@ title: some steps
 **Think about:** what would happen if `gap = gap // 2` were left out?
 ```
 
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one way to write it. Yours may differ and still keep the
+promise: the tests are the judge.
+
+```python
+def shell_sort(values):
+    """Return a new list with the items of values in ascending order,
+    found by Shell sort. values itself is not changed.
+
+    The gap between the items compared starts at half the length and
+    halves each pass, ending with an ordinary insertion sort.
+    The items must be comparable with <, like numbers or words.
+    """
+    items = values.copy()
+    gap = len(items) // 2
+    while gap > 0:
+        for place in range(gap, len(items)):
+            item = items[place]
+            i = place
+            while i >= gap and items[i - gap] > item:
+                items[i] = items[i - gap]
+                i = i - gap
+            items[i] = item
+        gap = gap // 2
+    return items
+```
+
+</details>
+
+If you have not written `shell_sort` yet, open the answer above and
+copy it into the stub. The rest of the page uses it.
+
 Now Shell sort joins the race. Here is its counter, with the same two
 counting lines as `insertion_count`. Guess its count for 1,000 random
 values: nearer 250,000, or nearer 1,000?
@@ -444,9 +478,8 @@ a nearly sorted list did not need. No sort wins every race.
 
 ## The fourth racer: sorted()
 
-Python's own `sorted()` is the last racer. We cannot put a counter
-inside it, because it is not our code. So we time it instead, with a
-clock.
+Python's own `sorted()` is the last racer. It is not our code, so we
+cannot put a counter inside it. We time it with a clock instead.
 
 `time.perf_counter()` gives the time, in seconds, on a clock inside
 the computer. Read it before a job and again after it, and the
@@ -467,9 +500,9 @@ for racer in [selection_sort, insertion_sort, shell_sort, sorted]:
     print(racer.__name__, round(seconds * 1000, 2), "ms")
 ```
 
-Your times will be different from anyone else's, and a little different
-each time you run the cell. (`racer.__name__` is the name each function
-was given when it was made.) Two things usually hold, though.
+Your times will differ from anyone else's, and from run to run.
+(`racer.__name__` is the name each function was given when it was
+made.) Two things usually hold, though.
 
 First, `sorted()` is far ahead of all three: often more than ten times
 faster than Shell sort, and more than a hundred times faster than
@@ -486,18 +519,75 @@ called Timsort, which needs about 8,600 comparisons for 1,000 random
 numbers. And it is written in the language C, so it runs as the
 computer's own instructions, not as lines of Python read one at a time.
 
+<aside class="dl-note" id="racing-note-timsort">
+
+**Tim's sort.** Timsort is named after Tim Peters, who wrote it for
+Python in 2002. It worked so well on real data that Java adopted it
+too, for sorting lists of objects.
+
+</aside>
+
 That is not a reason to stop writing sorts of your own. Timsort is
 built from the ideas on these pages: inside it, short pieces of the
 list are sorted by insertion sort, because insertion sort is quick on
 short lists and nearly sorted ones.
 
+## Six thousand planets
+
+Now the list from the top of the page. The file holds NASA's list of
+planets as it was on 25 September 2026. For each planet, `orbit_days`
+is the length of its year: how many of our days it takes to go once
+round its star. A few planets have no value for this, and `.dropna()`
+leaves those out. It keeps only the rows that have a number.
+
+Before you run anything, use the formula. How many comparisons would
+selection sort make on this list?
+
+```python exec
+id: racing-planets-1
+df = await load_csv("exoplanets.csv")
+planet_days = df["orbit_days"].dropna().tolist()
+size = len(planet_days)
+print(size, "planets with a known year")
+print(size * (size - 1) // 2, "comparisons for selection sort")
+```
+
+There are 6,019 planets with a known year, and selection sort would
+make 18,111,171 comparisons; insertion sort, about nine million. Each
+could keep you waiting a long time. The formula told us the cost
+before we paid it, so we race only the two we can wait for. Guess
+Shell sort's count first: nearer nine million, or a hundred thousand?
+
+```python exec
+id: racing-planets-2
+print(shell_count(planet_days), "comparisons for Shell sort")
+
+start = time.perf_counter()
+planets_in_order = sorted(planet_days)
+print(round((time.perf_counter() - start) * 1000, 2), "ms for sorted()")
+
+print("shortest year:", planets_in_order[0], "days")
+print("longest year:", planets_in_order[-1], "days")
+```
+
+Shell sort makes 148,266 comparisons, about sixty times fewer than
+insertion sort would. `sorted()` takes a few milliseconds.
+
+And look at the two ends. The shortest year is 0.090706 days, about 2
+hours and 11 minutes: a planet called PSR J1719-1438 b, which goes
+round a dead star in about the time a long film lasts. The longest is
+402,000,000 days, which is about 1.1 million of our years. That planet,
+COCONUTS-2 b, is so far from its star that in the 300,000 years or so
+since the first people of our kind lived, it has gone less than a
+third of the way round. The two years are more than four billion times
+apart, and one sort puts them at the two ends of the same list.
+
 ## Which sort, where?
 
 An algorithm is chosen for the job it is doing, not only for its
-speed on one track. Here is what the races found, and where each sort
-is a good choice.
+speed on one track. Here is what the races found.
 
-| Sort | Comparisons, $n$ random values | Where it is a good choice |
+| Sort | Comparisons, $n$ random values | Where it fits |
 |---|---|---|
 | selection sort | $\frac{n(n-1)}{2}$, always | where moving a value is costly: it makes at most $n - 1$ swaps |
 | insertion sort | about $\frac{n^2}{4}$; about $n$ if nearly in order | short lists, and lists that are nearly in order |
@@ -509,9 +599,9 @@ id: racing-where-1
 type: multiple-choice
 correct: 2
 
-A running club keeps its 400 members' best times in order. Each
-week, five members set new best times, and their times are added at
-the end. Which sort of ours does the least work on the new list?
+A catalogue keeps 6,000 planets in order of their distance. Each week,
+five new planets are added at the end. Which sort of ours does the
+least work on the new list?
 
 - selection sort, because it always does the same work
 - insertion sort, because the list is nearly in order
@@ -534,18 +624,20 @@ print(selection_count(in_order), insertion_count(in_order), shell_count(in_order
 
 <details class="dl-why"><summary>Why this way?</summary>
 
-This page raced the sorts on random lists. A race on real data, the
-lists a program meets at work, was the other choice.
+This page measured the growth of each sort on random lists, and met
+real lists, Ireland's and the planets', only after that. Racing on real
+data from the start, the lists a program meets at work, was the other
+choice.
 
 Real data is the honest test of a program in use. It is often nearly
 in order, as Ireland's list was, and a sort that looks slow on random
 lists can win there. Benchmarks used in industry are usually built
 from real data for this reason.
 
-We used random lists because they favour no sort, and because a
-random list of any size is one line away. They showed the shape of the
-growth at 10, 100 and 1,000 values. But the Ireland race showed the
-cost: the track decides the winner. When someone tells you one method
+We started with random lists because they favour no sort, and because
+a random list of any size is one line away. They showed the shape of
+the growth at 10, 100 and 1,000 values. But the Ireland race showed
+what that choice hides: the track decides the winner. When someone tells you one method
 is faster, ask what it was raced on.
 
 </details>
@@ -567,6 +659,7 @@ is faster, ask what it was raced on.
 | gap | the distance between the values Shell sort compares |
 | Shell sort | insertion sort with a large gap first, then smaller gaps, ending with a gap of 1 |
 | `shell_sort(values)` | your new toolkit tool: a new sorted list, found by Shell sort |
+| `.dropna()` | keeps only the values in a column that are there, and leaves out the empty cells |
 | `time.perf_counter()` | a clock reading, in seconds; the difference of two readings is how long a job took |
 | Timsort | the method inside Python's `sorted()` |
 | choosing an algorithm | pick the one that fits the job: the list's length, its starting order, and what is costly |

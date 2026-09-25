@@ -1,8 +1,8 @@
 ---
 title: "Finding things fast: linear and binary search"
 year: "2026-2027"
-version: 2026.09.24.1
-datasets: [life-expectancy]
+version: 2026.09.25.1
+datasets: [exoplanets]
 covers:
   one-contact-at-a-time:
     covers: [MIT-6.8]
@@ -26,16 +26,23 @@ covers:
 
 # Finding things fast: linear and binary search
 
-Your phone holds two thousand contacts. You start to type "Niamh", and
-her number is on the screen before you have finished. How does a phone
-find one name among thousands so quickly? And would it still be quick
-with a million names?
+Astronomers have found more than six thousand planets that go round
+other stars. NASA keeps a list of them, and a computer can find any one
+planet on that list in about a dozen looks. Your phone does the same
+trick with its contacts: you type "Niamh", and her number is there
+before you finish.
+
+Here is the surprise ahead. If everyone on Earth were on one list,
+about 8 billion names, the same trick would find any one of them in 33
+looks. How can so few looks be enough? And what does the list have to
+be like for the trick to work?
 
 On this page we:
 
 - look for a name by checking one item after another: linear search
 - count the looks with a counter inside the loop
 - play a guessing game, and turn its trick into binary search
+- search NASA's list of planets both ways
 - find out which lists binary search works on, and which it does not
 - meet logarithms again, as "how many halvings"
 - plot the number of looks as the list grows
@@ -46,8 +53,9 @@ On this page we:
 > unsaid: a computer looks at one item of a list at a time, and
 > "finding" means looking and comparing, again and again. It does not
 > see the whole list at once, the way your eye takes in a short
-> shopping list. Whether the list is *in order* decides which moves are
-> allowed, and that is the question this page keeps coming back to.
+> list of eight names. Whether the list is *in order* decides which
+> moves are allowed, and that is the question this page keeps coming
+> back to.
 
 ## Warm-up
 
@@ -84,7 +92,7 @@ Here are eight contacts, in the order they were added to a phone. The
 phone has not put them in any order. How would you find Niamh? Most
 people would read from the top until they reach her.
 
-That is the whole method. A *search* is a way of finding where a value,
+A *search* is a way of finding where a value,
 the *target*, sits in a list. A *linear search* looks at each item in
 turn, from the front, until it finds the target or runs out of items.
 "Linear" means "in a line": it goes along the list one step at a time.
@@ -181,16 +189,14 @@ throws away half of what is left.
 
 $$100 \to 50 \to 25 \to 12 \to 6 \to 3 \to 1$$
 
-Each arrow is one guess that was not right, and the numbers are how
-many are still possible after it. After 6 wrong guesses at most, only
+Each arrow is one guess that missed, and the numbers are how many are
+still possible after it. After 6 missed guesses at most, only
 one number is left, and the 7th guess is that number. Seven guesses,
 not 100.
 
 This trick has a name. *Divide and conquer* is a way of solving a
 problem by splitting it into smaller problems of the same kind, and
-solving those. Here, "find the number in 1 to 100" becomes "find it in
-51 to 100", then "find it in 51 to 75", each problem half the size of
-the one before.
+solving those: "find it in 1 to 100" becomes "find it in 51 to 100".
 
 ```question
 id: finding-fast-game-1
@@ -198,7 +204,7 @@ type: multiple-choice
 correct: 2
 
 The guessing game works because "higher" or "lower" tells you which
-half the number is in. What would go wrong if your friend's numbers
+half the number is in. What would change if your friend's numbers
 were written on 100 cards, shuffled, and you guessed a card's position
 instead?
 
@@ -237,7 +243,7 @@ give back -1, because nothing is left to look at
 
 `low` and `high` are the two ends of the part still worth looking at.
 Before you run the cell, guess: how many looks will it need to find
-Priya?
+Priya? Pause here and make the guess. I'll wait.
 
 ```python exec
 id: finding-fast-binary-1
@@ -271,6 +277,26 @@ Priya comes after Niamh, so the left half, Aoife to Niamh, was thrown
 away, and `low` became 4. The second look was halfway between 4 and 7,
 at index 5, and that was Priya.
 
+Three names change at every look, and that is a lot to hold in your
+head. If it feels like too much, take a pencil and write `low`, `high`
+and `middle` as three columns, one row per look. The third step of the
+Your turn below asks for exactly that.
+
+<aside class="dl-note" id="finding-fast-note-overflow">
+
+**A bug that hid for years.** In Java and C, a
+whole number has a fixed size, and adding two very large ones can go
+past the largest number the computer can hold. So `(low + high) / 2`
+breaks once a list has more than about a billion items. Joshua Bloch
+found this in the binary search in Java's own library, and wrote about
+it in 2006. The same line is in Jon Bentley's well-known book
+*Programming Pearls*, from 1986. Python's
+whole numbers never run out, as on
+[Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#two-kinds-of-number-in-python),
+so the line is safe here: the space we are in matters.
+
+</aside>
+
 ### Your turn
 
 1. Search for `"Aoife"`. Before you run it, which three names do you
@@ -286,28 +312,44 @@ id: finding-fast-binary-your-turn
 print(binary_steps(in_order, "Aoife"))
 ```
 
-Now a real list. The file from
-[A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950)
-has one row for every country and every year. If we keep the rows for
-2016 and take the `country` column, we get each name once, in
-alphabetical order. Most names are countries, and a few are regions,
-such as "World" and "Western Europe". How many looks will it take to
-find Ireland?
+Now a real list. NASA's Exoplanet Archive lists every *exoplanet*
+known so far: a planet that goes round a star other than our Sun. The
+file here is the list as it was on 25 September 2026. Each planet is
+named after its star, with a small letter for the planet: Proxima Cen b
+is the first planet found around Proxima Centauri, the star nearest to
+the Sun.
+
+The file lists the planets in no particular order. The cell sorts the
+names, then searches for Proxima Cen b both ways. How many looks will
+each search need? Guess before you run it.
 
 ```python exec
 id: finding-fast-binary-2
-df = await load_csv("life-expectancy.csv")
-countries = df[df.year == 2016]["country"].tolist()
-print(len(countries), "names")
+df = await load_csv("exoplanets.csv")
+planets = df["name"].tolist()
+print(len(planets), "planets, on 25 September 2026")
 
-print("Ireland is at index", binary_steps(countries, "Ireland"))
-print(linear_looks(countries, "Ireland"), "looks for a linear search")
+planets_in_order = sorted(planets)
+print("found at index", binary_steps(planets_in_order, "Proxima Cen b"))
+print(linear_looks(planets, "Proxima Cen b"), "looks for a linear search")
 ```
 
-There are 226 names. The binary search looked at Lesotho, Djibouti,
-Guinea and then Ireland: four looks. The linear search needed 98,
-because Ireland is at index 97. Four looks was a little lucky, and the
-worst case for 226 names is 8. That is still far fewer than 98.
+There are 6,372 planets in this copy of the list. The binary search
+took 11 looks, and the linear search took 4,915, because Proxima Cen b
+happens to sit far down the file. Eleven looks against almost five
+thousand. I think that is worth a second look: the binary search
+skipped straight past thousands of planets it never needed to see.
+
+<aside class="dl-note" id="finding-fast-note-planets">
+
+**The first planets.** The oldest entries on the list were found in
+1992, going round a dead star called a pulsar. The first planet found
+around a star like the Sun was 51 Peg b, in 1995. Michel Mayor and
+Didier Queloz, who found it, shared the Nobel Prize in Physics in 2019.
+The list grows every week, so a copy fetched on another day holds more
+planets.
+
+</aside>
 
 ## Only in a sorted list
 
@@ -321,19 +363,19 @@ print(contacts)
 print("Aoife is at index", binary_steps(contacts, "Aoife"))
 ```
 
-It says −1: not there. There was no error message. It gave a wrong
-answer, calmly, like the oven converter on
+It says −1: not there. There was no error message. It gave an answer
+that is not true, calmly, like the oven converter on
 [Does it work?](tutorial:does-it-work#code-that-runs-and-code-that-works).
 
 Follow the looks. The first was Kwame. Aoife comes before Kwame in the
 alphabet, so the search kept the left half: Siobhán, Tomasz and Aoife.
-So far, so good. The second look was Tomasz. Aoife comes before Tomasz
+So far, Aoife is still in the part kept. The second look was Tomasz. Aoife comes before Tomasz
 too, so the search threw away Tomasz and everything after him, and
 Aoife went with them. In a sorted list, every name after Tomasz would
 come later in the alphabet than Tomasz. In this list, that is not
 true.
 
-So is binary search wrong? No. It keeps its promise in one space: a
+So is binary search broken? No. It keeps its promise in one space: a
 sorted list. There, "this item comes before the target" means "so does
 everything to its left". In an unsorted list, one look says nothing
 about the other items, and the only move that works is to look at all
@@ -341,10 +383,9 @@ of them. The moves allowed depend on the space.
 
 That is why the promise belongs in the function's name and docstring:
 `binary_search(sorted_values, target)`. It also tells us what a phone
-does. Programs that hold many names usually keep them sorted, or keep
-a sorted list beside them, so that they can halve, not read every
-name. Keeping a list sorted costs work every time a name is added. It
-pays for itself when we search often.
+does. Programs that hold many names usually keep them sorted, so that
+they can halve, not read every name. Keeping a list sorted takes work
+every time a name is added, and it is worth it when we search often.
 
 ```question
 id: finding-fast-sorted-2
@@ -403,7 +444,8 @@ about $\log_2 n$ looks, one or two more at most.
 | 8,000,000,000 | 32.9 | 8,000,000,000 | 33 |
 
 The last row is everyone on Earth. With their names in order, 33 looks
-would find anybody.
+would find anybody. This is the number from the top of the page, and I
+think it is the most surprising number in this unit.
 
 ## Watching the steps grow
 
@@ -412,12 +454,10 @@ is `binary_looks`, the binary search with a counter in place of the
 printing. The cell then searches lists of 10, 100, 1,000, 10,000 and
 100,000 items.
 
-The names inside the list do not change the count. Only the length
-does, and whether the target is there. So we use a quick list of
-numbers in order, `range(0, 2 * size, 2)`, which gives the even numbers
-0, 2, 4 and so on. We search for `2 * size`, which is bigger than every
-number in the list, so it is not there. That is the worst case for
-both searches. Before you run it, guess the binary column.
+Only the length of the list changes the count, so we use quick lists
+of even numbers in order, `range(0, 2 * size, 2)`. We search for
+`2 * size`, which is bigger than every number in the list: the worst
+case for both searches. Before you run it, guess the binary column.
 
 ```python exec
 id: finding-fast-grow-1
@@ -601,11 +641,51 @@ title: some steps
 not sit in an `else` inside it?
 ```
 
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one way to write them. Yours may differ and still keep the
+promises: the tests are the judge.
+
+```python
+def linear_search(values, target):
+    """Look through values from the front, and return the index of the
+    first item equal to target, or -1 if no item is.
+
+    values can be any list, in any order.
+    """
+    for i in range(len(values)):
+        if values[i] == target:
+            return i
+    return -1
+
+
+def binary_search(sorted_values, target):
+    """Return an index where target is in sorted_values, or -1 if it is
+    not there, halving the part still to search at each look.
+
+    sorted_values must be in order, smallest first. If target is there
+    more than once, the index can be any one of them.
+    """
+    low = 0
+    high = len(sorted_values) - 1
+    while low <= high:
+        middle = (low + high) // 2
+        if sorted_values[middle] == target:
+            return middle
+        if sorted_values[middle] < target:
+            low = middle + 1
+        else:
+            high = middle - 1
+    return -1
+```
+
+</details>
+
 Python has its own linear search. `contacts.index("Niamh")` gives 4,
 and `"Niamh" in contacts` gives True. Both look through the list from
 the front, one item at a time. `.index()` does not give −1 for a
 missing item: it stops with a `ValueError`. That is a different promise
-for the same search, and neither is wrong. You now know what both do
+for the same search, and both are useful. You now know what both do
 inside.
 
 <details class="dl-why"><summary>Why this way?</summary>
@@ -649,6 +729,7 @@ it looks fewer times, and you can see why it looks fewer times.
 | in proportion, logarithmic | twice the items, twice the looks; twice the items, one more look |
 | $O(n)$, $O(\log n)$ | how programmers write those two kinds of growth |
 | `.index()`, `in` | Python's own linear searches on a list |
+| exoplanet | a planet that goes round a star other than the Sun |
 | `linear_search`, `binary_search` | your two new toolkit tools |
 
 The practice page is next. After it,

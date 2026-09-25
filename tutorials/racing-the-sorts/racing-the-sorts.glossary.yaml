@@ -25,6 +25,13 @@ entries:
       found by Shell sort, and leaves values unchanged. It is a toolkit
       function you wrote yourself.
     example: "shell_sort([13, 12, 9, 8])   # [8, 9, 12, 13]"
+  - term: ".dropna()"
+    kind: function
+    python: pandas.Series.dropna
+    definition: >
+      Gives back a column with its empty cells left out, so only the values
+      that are there remain.
+    example: 'df["orbit_days"].dropna().tolist()'
   - term: "time.perf_counter()"
     kind: function
     python: time.perf_counter

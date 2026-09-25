@@ -2,14 +2,14 @@
 title: "A function that calls itself: recursion — Practice"
 practice_for: a-function-that-calls-itself
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # A function that calls itself: recursion — Practice
 
-Each answer is hidden until you open it. Where a problem asks you to
-predict, the prediction is the exercise, so make one before you run
-anything.
+Each answer is hidden until you open it, and each one is one way
+through: yours may go another way. Where a problem asks you to predict,
+the prediction is the exercise, so make one before you run anything.
 
 Your toolkit is loaded on this page, so `count_items` is ready to use,
 and so are `factorial`, `total` and the rest.
@@ -129,19 +129,21 @@ and any number to the power 0 is 1:
 $$b^e = b \times b^{e-1}, \qquad b^0 = 1$$
 
 Write `power(base, exponent)` as a recursive function, for whole-number
-exponents from 0 up. Use it to find what €1,000 grows to in 10 years at
-5% a year, and check against Python's `**`.
+exponents from 0 up. An internet address of the older kind, called
+IPv4, is 32 bits long. Use `power` to find how many different addresses
+32 bits can make, and check against Python's `**`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. The base case: when `exponent == 0`, give back 1.
 2. The recursive case: give back `base` times `power(base, exponent - 1)`.
-3. €1,000 at 5% a year is multiplied by 1.05 each year, so after 10
-   years it is `1000 * power(1.05, 10)`.
+3. Each bit doubles the number of patterns, as on
+   [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
+   so 32 bits make `power(2, 32)`.
 
 **Think about:** why does the base case give back 1, and not 0 or `base`?
 
-**Try this next:** how many calls does `power(2, 10)` make?
+**Try this next:** how many calls does `power(2, 32)` make?
 
 </details>
 
@@ -154,46 +156,50 @@ def power(base, exponent):
         return 1
     return base * power(base, exponent - 1)
 
-print(power(2, 10))                        # 1024
-print(round(1000 * power(1.05, 10), 2))    # 1628.89
-print(round(1000 * 1.05 ** 10, 2))         # 1628.89
+print(power(2, 10))    # 1024
+print(power(2, 32))    # 4294967296
+print(2 ** 32)         # 4294967296
 ```
 
-€1,000 grows to €1,628.89. The base case gives back 1 because
+32 bits make 4,294,967,296 addresses, about 4.3 billion. That is fewer
+than the number of people on Earth, which is one reason a newer kind of
+address, IPv6, uses 128 bits. The base case gives back 1 because
 multiplying by 1 changes nothing, the same reason a running product
 starts at 1 on [Doing it again](tutorial:doing-it-again).
 
 </details>
 
-**6. Fix.** This function should count the recipes in a recipe book,
-with sections inside sections. There are 6 recipes, and it says 1. Find
-the one mistake.
+**6. Fix.** A website has a menu, and some menu items open smaller
+menus of their own. Schlomo, who is learning Python too, writes a
+function to count the pages the menu leads to. He copied the shape of
+`count_items`, which is a sound plan. There are 6 pages, and his
+function says 1. Find the line that loses the rest.
 
 ```python exec
-id: calls-itself-practice-fix-recipes
-book = [
-    ["Leek and potato", "Tomato"],            # Soups
-    ["Soda bread", ["Brown", "White"]],       # Bread, with a section of yeast breads
-    "Pancakes",
+id: calls-itself-practice-fix-menu
+menu = [
+    ["Timetable", "Maps"],                    # Travel
+    ["Courses", ["Python", "Maths"]],         # Learn, with a smaller menu of subjects
+    "Contact",
 ]
 
-def count_recipes(nested):
-    """Count the recipes in nested, at any depth."""
+def count_pages(nested):
+    """Count the pages in nested, at any depth."""
     found = 0
     for item in nested:
         if isinstance(item, list):
-            count_recipes(item)
+            count_pages(item)
         else:
             found = found + 1
     return found
 
-print(count_recipes(book))    # should be 6
+print(count_pages(menu))    # there are 6 pages
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Which items does the top call count itself? Only "Pancakes".
-2. For each section, it calls `count_recipes(item)`. What does it do
+1. Which items does the top call count itself? Only "Contact".
+2. For each smaller menu, it calls `count_pages(item)`. What does it do
    with the number that call gives back?
 3. A call gives its answer back to the line that made it. If that line
    does nothing with it, the answer is lost.
@@ -201,23 +207,24 @@ print(count_recipes(book))    # should be 6
 **Think about:** each call has its own `found`. Does adding to the
 inner call's `found` change the outer one?
 
-**Try this next:** change the function to count the sections instead.
+**Try this next:** change the function to count the menus instead.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-The line `count_recipes(item)` makes the call, but throws away its
+The line `count_pages(item)` makes the call, but throws away its
 answer. Each call has its own `found`, in its own space, so the inner
-calls' counts never reach the top. The line must add the answer:
+calls' counts never reach the top. The line needs to add the answer:
 
 ```python
         if isinstance(item, list):
-            found = found + count_recipes(item)
+            found = found + count_pages(item)
 ```
 
-Now it prints 6. This is the most common mistake in recursion: a call
-that is made, and whose answer is never used.
+Now it prints 6. Schlomo is not alone here: a call that is made, and
+whose answer is never used, is one of the most common slips in
+recursion.
 
 </details>
 
@@ -226,7 +233,7 @@ that is made, and whose answer is never used.
 alone, it would print about a thousand numbers before Python stopped
 it, so we added a safety net: it stops with a `RecursionError` once the
 count goes below −10. The numbers it prints are the clue. Find the
-mistake, and fix it.
+line that lets the count run on, and change it.
 
 ```python exec
 id: calls-itself-practice-fix-twos
@@ -257,7 +264,7 @@ count_in_twos(5)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`number` goes 5, 3, 1, −1, −3, and steps right over 0. The base case is
+`number` goes 5, 3, 1, −1, −3, and steps over 0. The base case is
 never reached. The fix is to stop at 0 or below:
 
 ```python
@@ -304,13 +311,14 @@ call to start is the first to finish. That is the call stack at work.
 
 </details>
 
-**9. Make.** An online shop keeps an order as a list of prices. A bag
-inside the order is a list, and a bag can hold a smaller bag. Write
-`sum_nested(nested)`, which adds up every price, at any depth. It has
-the same shape as `count_items`. What does this order cost?
+**9. Make.** A zip file can hold files, and other zip files, and
+those can hold zip files too. Here is one, as a nested list of the
+sizes of the files inside it, in kilobytes (KB). Write
+`sum_nested(nested)`, which adds up every size, at any depth. It has
+the same shape as `count_items`. How many kilobytes are inside?
 
 ```python
-order = [4.50, [2.20, 1.10, [0.80, 0.80]], [12.00], 3.25]
+archive = [450, [220, 110, [80, 80]], [1200], 325]
 ```
 
 <details class="dl-answer"><summary>answer</summary>
@@ -326,18 +334,18 @@ def sum_nested(nested):
             running = running + item
     return running
 
-print(round(sum_nested(order), 2))    # 24.65
+print(sum_nested(archive))    # 2465
 ```
 
-The order costs €24.65. Only one thing changed from `count_items`: a
-price adds its own value, where a photo added 1. The running name is
-`running`, not `total`, so the toolkit's `total` stays available.
+2,465 KB. Only one thing changed from `count_items`: a file adds its
+own size, where a photo added 1. The running name is `running`, not
+`total`, so the toolkit's `total` stays available.
 
 </details>
 
-**10. Another way.** Add up the same order without recursion, with a
-loop and a to-do list of bags not yet opened, as in the last section of
-the page. Do you get the same answer?
+**10. Another way.** Add up the same archive without recursion, with a
+loop and a to-do list of zip files not yet opened, as in the last
+section of the page. Do you get the same answer?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -347,27 +355,27 @@ def sum_nested_by_loop(nested):
     running = 0
     to_open = [nested]
     while len(to_open) > 0:
-        bag = to_open.pop()
-        for item in bag:
+        inner = to_open.pop()
+        for item in inner:
             if isinstance(item, list):
                 to_open.append(item)
             else:
                 running = running + item
     return running
 
-print(round(sum_nested_by_loop(order), 2))    # 24.65
+print(sum_nested_by_loop(archive))    # 2465
 ```
 
-The same €24.65. The loop opens the bags in a different order from the
-recursion, but adding does not care about order, so the answer is the
-same.
+The same 2,465 KB. The loop opens the zip files in a different order
+from the recursion, but adding does not care about order, so the sum
+is the same.
 
 </details>
 
 **11. Explain.** `factorial_again(-1)` and `factorial_again(2.5)` both
-stop with a `RecursionError`. Why? Someone suggests changing the base
-case to `if n <= 0: return 1`, so that they give an answer. Is that a
-good idea?
+stop with a `RecursionError`. Why? Schlomi, who is learning Python
+too, suggests changing the base case to `if n <= 0: return 1`, so that
+they give an answer. What would her change do?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -375,8 +383,8 @@ From −1, `n` goes −2, −3, −4, away from 0. From 2.5, it goes 1.5, 0.5,
 −0.5, and steps over 0. Neither ever reaches the base case, so the calls
 pile up until Python's limit stops them.
 
-The suggested change stops the error, but it gives wrong answers
-quietly: `factorial_again(2.5)` would give $2.5 \times 1.5 \times 0.5 =
+Schlomi's change does stop the error. But then it gives answers that
+mean nothing, quietly: `factorial_again(2.5)` would give $2.5 \times 1.5 \times 0.5 =
 1.875$, which is not a factorial of anything. The inputs are outside the
 promise's domain, whole numbers from 0 up. A clearer fix checks the
 domain at the top, as on
@@ -386,8 +394,8 @@ domain at the top, as on
 assert n >= 0 and n == int(n), "n must be a whole number, 0 or more"
 ```
 
-An error with a message says what went wrong. A wrong answer says
-nothing.
+An error with a message says what happened. An answer that means
+nothing says nothing.
 
 </details>
 
@@ -617,7 +625,68 @@ print(len(songs) == count_items(library))    # True
 
 The list is `['Take Me to Church', 'Cherry Wine', 'Too Sweet',
 'Eat Your Young', 'Linger', 'Dreams', 'Zombie']`. Its length is 7, the
-same as `count_items(library)`, which is a good test: two routes, one
+same as `count_items(library)`, which makes a useful test: two routes, one
 answer.
+
+</details>
+
+**17. Predict.** A recursion can draw as well as count. This cell
+draws a tree. Each branch draws itself, then hands two shorter
+branches, turned a little left and a little right, to the same
+function. The two lines with `cos` and `sin` work out where a branch
+ends; a later unit explains them, and here you can read them as "go
+this far in this direction". `depth` says how many more levels of
+branches to draw, so `depth == 0` is the base case.
+
+Before you run it, how many lines will a tree of depth 6 have? Then
+change the 6 to 10 and predict again.
+
+```python exec
+id: calls-itself-practice-tree
+import math
+import matplotlib.pyplot as plt
+
+
+def branch(x, y, angle, length, depth):
+    """Draw a branch from (x, y), and two smaller branches from its tip.
+
+    Give back how many lines were drawn, this branch and all below it.
+    """
+    if depth == 0:
+        return 0
+    tip_x = x + length * math.cos(math.radians(angle))
+    tip_y = y + length * math.sin(math.radians(angle))
+    plt.plot([x, tip_x], [y, tip_y], color="C2")
+    left = branch(tip_x, tip_y, angle + 25, length * 0.7, depth - 1)
+    right = branch(tip_x, tip_y, angle - 25, length * 0.7, depth - 1)
+    return 1 + left + right
+
+
+print(branch(0, 0, 90, 1, 6), "lines")
+plt.axis("equal")
+```
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Depth 1 draws one line, the trunk, and makes two calls with depth 0,
+   which draw nothing.
+2. Depth 2 draws its trunk, and two trees of depth 1.
+3. Write the counts for depth 1, 2 and 3. What pattern do you see?
+
+**Think about:** how many lines are at the very tips of the tree,
+compared with all the lines below them?
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+Depth 6 draws 63 lines, and depth 10 draws 1,023. Each level has twice
+as many branches as the one before: 1, 2, 4, 8, 16 and 32 for depth 6.
+Together that is $2^6 - 1 = 63$, one less than a power of 2, which is
+the chessboard's pattern from the next page,
+[Doubling and halving](tutorial:doubling-and-halving#grains-on-a-chessboard).
+A shape made of smaller copies of itself, like this tree, is called a
+*fractal*. Ferns, rivers and coastlines have shapes a little like it, and
+programs draw trees and mountains in games this way.
 
 </details>

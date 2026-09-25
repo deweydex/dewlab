@@ -7,6 +7,12 @@ entries:
       amount at every step. After k doublings, 1 has grown to 2 to the power
       k. It starts slowly and then rises very steeply.
     example: "people_who_know = people_who_know * 2"
+  - term: computer worm
+    kind: concept
+    definition: >
+      A computer worm is a program that copies itself from one computer to
+      the next across a network. Each computer it reaches looks for more,
+      so it can spread by doubling, like a rumour.
   - term: "2⁰ = 1"
     kind: formula
     definition: >
@@ -29,30 +35,30 @@ entries:
       The logarithm of a product is the sum of the logarithms. The doublings
       needed to reach a × b are the doublings to reach a, then the doublings
       to reach b more.
+  - term: "transistor, Moore's law"
+    kind: concept
+    definition: >
+      A transistor is a tiny switch on a computer chip, on or off. Moore's
+      law is the pattern Gordon Moore described: the number of transistors
+      on a chip doubled about every two years, for about half a century.
   - term: compound growth
     kind: concept
     definition: >
-      Compound growth is growth where each step's increase is added in, and
-      then earns its own increase the next time. Savings at 4% a year grow
-      this way: the amount is multiplied by 1.04 each year.
+      Compound growth is growth where each step multiplies by the same
+      number, so each step's increase is bigger than the last. A count
+      that grows by 40% a year is multiplied by 1.4 each year.
   - term: doubling time
     kind: concept
     definition: >
       The doubling time is how long a growing amount takes to double. It
       depends on the rate of growth, not on the amount you start with.
-  - term: rule of 72
-    kind: formula
-    definition: >
-      The rule of 72 is a rough way to find a doubling time. Divide 72 by
-      the growth rate in percent. At 4% a year, money doubles in about
-      72 ÷ 4 = 18 years.
   - term: "math.log(x, base)"
     kind: function
     python: math.log
     definition: >
       Gives the logarithm of x with any base: how many times you multiply by
       base to reach x. The answer need not be a whole number.
-    example: "math.log(2, 1.04)   # about 17.7"
+    example: "math.log(2, 1.4)   # about 2.06"
   - term: "math.floor()"
     kind: function
     python: math.floor
