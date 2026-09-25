@@ -50,7 +50,7 @@ approach(f, 1, from_below=False)
 
 4.
 
-The top factorizes as $(x - 2)(x + 2)$. So away from $x = 2$, the
+The top factorises as $(x - 2)(x + 2)$. So away from $x = 2$, the
 function is the same as $x + 2$. At 2, that would be $2 + 2 = 4$.
 
 The function itself has no value at 2. The bottom is zero there, so we
@@ -65,7 +65,7 @@ that is a different statement.
 
 6.
 
-Factorize in the same way: $\dfrac{(x - 3)(x + 3)}{x - 3}$ leaves
+Factorise in the same way: $\dfrac{(x - 3)(x + 3)}{x - 3}$ leaves
 $x + 3$. At 3, that is $3 + 3 = 6$.
 
 </details>
@@ -76,7 +76,7 @@ $x + 3$. At 3, that is $3 + 3 = 6$.
 
 3.
 
-$x^3 - 1$ factorizes as $(x - 1)(x^2 + x + 1)$. The $(x - 1)$ cancels,
+$x^3 - 1$ factorises as $(x - 1)(x^2 + x + 1)$. The $(x - 1)$ cancels,
 leaving $x^2 + x + 1$. At $x = 1$ that is $1 + 1 + 1 = 3$.
 
 </details>

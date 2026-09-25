@@ -115,7 +115,7 @@ Squaring makes every deviation positive. It also gives large deviations much mor
 
 In the first class, almost everyone scored close to 65%. The second class has both strong students and students who are struggling.
 
-The mean is the same, but the two classes need very different teaching. This is why we should never report an average alone. A center without a spread tells us very little.
+The mean is the same, but the two classes need very different teaching. This is why we should never report an average alone. A centre without a spread tells us very little.
 
 </details>
 
@@ -139,7 +139,7 @@ For $n = 100$, the two answers differ by about half a percent. For $n = 5$, they
 
 The mean and median both go up by 10. The range and standard deviation do not change at all.
 
-Measures of center move with the data. Measures of spread do not move, because every distance from the mean stays the same.
+Measures of centre move with the data. Measures of spread do not move, because every distance from the mean stays the same.
 
 What if we multiply every value by 3 instead? Then all four measures are multiplied by 3. The spread measures do not move when we add, but they do grow when we multiply.
 
@@ -154,7 +154,7 @@ What if we multiply every value by 3 instead? Then all four measures are multipl
 
 Is each of these nominal, ordinal, interval or ratio?
 
-- (a) Eye color
+- (a) Eye colour
 - (b) Exam grade (Pass, Merit, Distinction)
 - (c) Temperature in Celsius
 - (d) Height in centimetres

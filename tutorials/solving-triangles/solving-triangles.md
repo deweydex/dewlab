@@ -1,7 +1,7 @@
 ---
 title: "Solving triangles: the sine rule and the cosine rule"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   when-there-is-a-right-angle:
     covers: [MIT-4.9]
@@ -509,10 +509,39 @@ id: your-turn-4
 
 ## Putting it together
 
-Here is one function that picks the right rule for what you were given.
+First, two helpers. `tidy` rounds a finished triangle so that it is
+easy to read. `side_side_angle` handles the ambiguous case: it gives
+back every triangle that fits, which may be none, one or two.
 
 ```python exec
 id: putting-it-together-1
+def tidy(a, b, c, A, B, C):
+    return {"a": round(a, 3), "b": round(b, 3), "c": round(c, 3),
+            "A": round(A, 2), "B": round(B, 2), "C": round(C, 2)}
+
+
+def side_side_angle(a, b, A):
+    """Every triangle with sides a and b, and the angle A opposite a."""
+    # Rounded, because floats are not exact: sin(30) is not quite 0.5.
+    sine_of_B = round(b * math.sin(math.radians(A)) / a, 9)
+    if sine_of_B > 1:
+        return "No triangle fits: side a is too short to reach."
+    first = math.degrees(math.asin(sine_of_B))
+    triangles = []
+    for B in sorted({first, 180 - first}):   # a set, so 90 is not counted twice
+        C = 180 - A - B
+        if C > 0:
+            triangles.append(tidy(a, b, sine_rule_side(a, A, C), A, B, C))
+    return triangles
+
+
+print(side_side_angle(6, 8, 40))
+```
+
+Now one function that picks the right rule for what you were given.
+
+```python exec
+id: putting-it-together-2
 def solve(a=None, b=None, c=None, A=None, B=None, C=None):
     """Fill in what is missing, from whatever three things are known.
 
@@ -530,20 +559,28 @@ def solve(a=None, b=None, c=None, A=None, B=None, C=None):
         C = 180 - A - B
         b = sine_rule_side(a, A, B)
         c = sine_rule_side(a, A, C)
+    elif a and b and A:                    # two sides, and the angle opposite one
+        return side_side_angle(a, b, A)
     else:
         return "Not enough, or not a combination this handles."
-    return {"a": round(a, 3), "b": round(b, 3), "c": round(c, 3),
-            "A": round(A, 2), "B": round(B, 2), "C": round(C, 2)}
+    return tidy(a, b, c, A, B, C)
 
 
 print(solve(a=5, b=7, C=55))
 print(solve(a=3, b=4, c=5))
 print(solve(a=10, A=40, B=75))
+print(solve(a=6, b=8, A=40))
 ```
 
-Look at the middle result. A 3-4-5 triangle is right-angled, so there
+Look at the second result. A 3-4-5 triangle is right-angled, so there
 should be a 90 in it. Is there? The cosine rule worked out the right
 angle without being told.
+
+Now look at the last one. It is a list, with two triangles in it: the
+two from the ambiguous case, with a side of 6, a side of 8, and 40
+degrees opposite the 6. The function gives back both, and does not
+choose. The three numbers cannot choose either. That part is still
+yours.
 
 ### Your turn
 

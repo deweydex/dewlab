@@ -2,7 +2,7 @@
 title: "Rearranging formulae: changing the subject — Practice"
 practice_for: rearranging-formulae
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.25.1
 ---
 
 # Rearranging formulae: changing the subject — Practice
@@ -13,15 +13,15 @@ cell below can then tell you whether it is right.
 
 ## Tools
 
-This cell holds a `check` function. It feeds random numbers to the
-original formula and to your rearrangement, and tells you whether they
-ever disagree. The example at the bottom checks $t = \frac{v - u}{a}$.
+This cell holds a function called `do_they_agree`. It feeds random
+numbers to the original formula and to your rearrangement, and tells
+you whether they ever disagree. The example at the bottom checks $t = \frac{v - u}{a}$.
 
 ```python exec
 id: tools-1
 import random
 
-def check(original, rearranged, ranges, tries=200):
+def do_they_agree(original, rearranged, ranges, tries=200):
     """Feed random values to both and see whether they ever disagree.
 
     `original` takes the named values and returns the subject; `rearranged`
@@ -37,7 +37,7 @@ def check(original, rearranged, ranges, tries=200):
     return f"Agreed on all {tries} tries."
 
 
-print(check(lambda u, a, t: u + a * t,
+print(do_they_agree(lambda u, a, t: u + a * t,
             lambda v, u, a: (v - u) / a,
             {"u": (1, 100), "a": (1, 100), "t": (1, 100)}))
 ```
@@ -170,8 +170,10 @@ that mean?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$R = 0$. A resistance of zero is a plain wire. A wire beside a resistor
-carries all the current, so the pair has almost no resistance at all.
+$R = 0$. A resistance of zero is a perfect wire. Put a perfect wire
+beside a resistor, and all the current takes the wire, so the pair has
+no resistance at all. (A real wire has a tiny resistance, so a real
+pair has almost none.)
 
 Notice that the original form, $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$,
 fails completely at $b = 0$, because $\frac{1}{0}$ is undefined. The

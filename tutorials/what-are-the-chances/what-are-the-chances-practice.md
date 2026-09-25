@@ -56,13 +56,13 @@ Every probability is between 0 and 1. An impossible event, like rolling a 7, has
 
 </details>
 
-**2.** A bag holds 5 red, 3 blue and 2 green counters. What is the probability of drawing each color? Check that the three probabilities add up to 1.
+**2.** A bag holds 5 red, 3 blue and 2 green counters. What is the probability of drawing each colour? Check that the three probabilities add up to 1.
 
 <details class="dl-answer"><summary>answer</summary>
 
 0.5, 0.3 and 0.2, and they add up to 1.
 
-They must add up to 1. Every counter is one of the three colors, so no case is missing. No counter has two colors, so the events are mutually exclusive. Together, the three events cover every outcome exactly once.
+They must add up to 1. Every counter is one of the three colours, so no case is missing. No counter has two colours, so the events are mutually exclusive. Together, the three events cover every outcome exactly once.
 
 If a list of probabilities like this does not add up to 1, either a case is missing or a case is counted twice.
 
@@ -178,7 +178,7 @@ What *is* unlikely is five heads in a row, judged *before you start*: $\frac{1}{
 
 (a) and (d) are independent. (b) and (c) are not.
 
-(d) surprises people. $P(\text{red}) = \frac12$ and $P(\text{face}) = \frac{12}{52}$. $P(\text{both}) = \frac{6}{52}$, which is exactly $\frac12 \times \frac{12}{52}$. Half the face cards are red, so knowing the color tells you nothing about whether it is a face card.
+(d) surprises people. $P(\text{red}) = \frac12$ and $P(\text{face}) = \frac{12}{52}$. $P(\text{both}) = \frac{6}{52}$, which is exactly $\frac12 \times \frac{12}{52}$. Half the face cards are red, so knowing the colour tells you nothing about whether it is a face card.
 
 Independence is a fact about numbers that we can check. It is not a feeling about whether two things seem related.
 

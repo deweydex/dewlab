@@ -1,7 +1,7 @@
 ---
 title: "Solving equations: linear, quadratic and simultaneous"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   solving-linear-equations:
     touches: [MIT-1.7]
@@ -40,9 +40,10 @@ On this page we:
 ## Solving linear equations
 
 A *linear equation* is an equation where $x$ appears only to the power
-1. We can always rearrange one into the form $ax + b = 0$, by moving
-every term to one side. For example, $3x + 7 = 22$ becomes
-$3x - 15 = 0$ when we subtract 22 from both sides.
+1. We can always rearrange one into the form $ax + b = 0$. The rule is
+to do the same thing to both sides, so that they stay equal. For
+example, subtracting 22 from both sides of $3x + 7 = 22$ gives
+$3x - 15 = 0$.
 
 To solve $ax + b = 0$, we subtract $b$ from both sides, then divide by
 $a$:
@@ -51,13 +52,16 @@ $$x = -\frac{b}{a} \quad \text{(as long as } a \neq 0 \text{)}$$
 
 For $3x - 15 = 0$, that gives $x = -\frac{-15}{3} = 5$.
 
-In our coefficient-list convention, the list `[b, a]` stands for
-$ax + b$. So `[-15, 3]` is $3x - 15$.
+In code, a function takes the two numbers in the order they appear in
+$ax + b$: first $a$, then $b$. So `solve_linear(3, -15)` is about
+$3x - 15 = 0$. Every function on this page that takes coefficients
+works the same way, starting with the number in front of the highest
+power.
 
 ### Your turn
 
-Can you write a function `solve_linear(coeffs)` that takes `[b, a]` and
-returns the solution?
+Can you write a function `solve_linear(a, b)` that returns the solution
+of $ax + b = 0$?
 
 1. Write the function in the first cell.
 2. Think about $a = 0$. Then there is no $x$ term at all, so it is not
@@ -73,9 +77,9 @@ id: your-turn-1
 ```python exec
 id: your-turn-2
 # Test cases
-# solve_linear([7, 3]) solves 3x + 7 = 0 -> x = -7/3
-# solve_linear([-15, 5]) solves 5x - 15 = 0 -> x = 3
-# solve_linear([4, 0]) -> no solution (or "not a linear equation")
+# solve_linear(3, 7) solves 3x + 7 = 0 -> x = -7/3
+# solve_linear(5, -15) solves 5x - 15 = 0 -> x = 3
+# solve_linear(0, 4) -> no solution (or "not a linear equation")
 ```
 
 ## The quadratic formula
@@ -116,13 +120,12 @@ the very next page, we find roots for these equations after all.
 
 ### Your turn
 
-How might you write a function `solve_quadratic(coeffs)`? It takes
-`[c, b, a]` (our convention, constant first) and returns the solutions.
-It should handle all three cases of the discriminant.
+How might you write a function `solve_quadratic(a, b, c)`? It takes the
+three numbers in the order they appear in $ax^2 + bx + c$, and returns
+the solutions. It should handle all three cases of the discriminant.
 
 **Pseudocode:**
 ```
-EXTRACT c, b, a from coeffs
 COMPUTE discriminant = b^2 - 4*a*c
 IF discriminant > 0:
     COMPUTE root1 = (-b + sqrt(discriminant)) / (2*a)
@@ -148,10 +151,10 @@ import math
 ```python exec
 id: your-turn-4
 # Test cases
-# solve_quadratic([3, -4, 1]) solves x^2 - 4x + 3 = 0 -> roots 1 and 3
-# solve_quadratic([1, -2, 1]) solves x^2 - 2x + 1 = 0 -> repeated root 1
-# solve_quadratic([5, 0, 1]) solves x^2 + 5 = 0 -> no real roots
-# solve_quadratic([-9, 0, 1]) solves x^2 - 9 = 0 -> roots 3 and -3
+# solve_quadratic(1, -4, 3) solves x^2 - 4x + 3 = 0 -> roots 1 and 3
+# solve_quadratic(1, -2, 1) solves x^2 - 2x + 1 = 0 -> repeated root 1
+# solve_quadratic(1, 0, 5) solves x^2 + 5 = 0 -> no real roots
+# solve_quadratic(1, 0, -9) solves x^2 - 9 = 0 -> roots 3 and -3
 ```
 
 ### Verifying solutions
@@ -161,33 +164,23 @@ then evaluating the polynomial at $x$ gives zero. With floats, it may
 give a number very close to zero instead.
 
 The cell below uses your `solve_quadratic`, so run it after you have
-written that function. It also brings back `evaluate_poly` from the
-polynomials page. What values of p do you expect it to print? Run it to
-check.
+written that function. It puts each root back into $x^2 - 4x + 3$.
+What values do you expect it to print?
 
 ```python exec
 id: verifying-solutions-1
-# evaluate_poly, as written in "Polynomials: representing and combining them in Python"
-def evaluate_poly(coeffs, x):
-    total = 0
-    for i, c in enumerate(coeffs):
-        total = total + c * x ** i
-    return total
-
-
-# Verification pattern
-coeffs = [3, -4, 1]   # x^2 - 4x + 3
-roots = solve_quadratic(coeffs)
+a, b, c = 1, -4, 3   # x^2 - 4x + 3
+roots = solve_quadratic(a, b, c)
 print("Roots:", roots)
 for root in roots:
-    value = evaluate_poly(coeffs, root)
+    value = a * root ** 2 + b * root + c
     print("  p(" + str(root) + ") =", value)
 ```
 
 ### Your turn
 
-Can you write a function `verify_roots(coeffs, roots)` that checks each
-root for you?
+Can you write a function `verify_roots(a, b, c, roots)` that checks
+each root for you?
 
 1. Evaluate the polynomial at each root.
 2. Print PASS if the value is close to zero, and FAIL if it is not. Use a
@@ -223,7 +216,7 @@ into two binomials.
 
 ### Your turn
 
-Can you write a function `factor_quadratic(coeffs)` that returns a
+Can you write a function `factor_quadratic(a, b, c)` that returns a
 string showing the factorised form?
 
 1. Use `solve_quadratic` to find the roots.
@@ -241,9 +234,9 @@ id: your-turn-7
 ```python exec
 id: your-turn-8
 # Test cases
-# factor_quadratic([3, -4, 1]) -> "(x - 1)(x - 3)" or similar
-# factor_quadratic([-6, -1, 1]) -> "(x - 3)(x + 2)" or similar (roots are 3 and -2)
-# factor_quadratic([5, 0, 1]) -> "Cannot be factored over the reals"
+# factor_quadratic(1, -4, 3) -> "(x - 1)(x - 3)" or similar
+# factor_quadratic(1, -1, -6) -> "(x - 3)(x + 2)" or similar (roots are 3 and -2)
+# factor_quadratic(1, 0, 5) -> "Cannot be factorised over the reals"
 ```
 
 ### Verification by expansion
@@ -252,8 +245,13 @@ We can check a factorisation by multiplying the factors back together.
 If we get the original polynomial, the factorisation is right. This is
 where `multiply_poly` from
 [Polynomials: representing and combining them in Python](tutorial:expressions-come-alive)
-is useful again. The cell below brings it back. What list do you expect
-it to print? Run it to check.
+is useful again. The cell below brings it back.
+
+`multiply_poly` works on lists, as it did on that page, with the
+constant first, so that each number sits at the index of its power.
+So $x - 1$ is `[-1, 1]` here. A list is a different thing from the
+arguments of `solve_quadratic`: it holds a whole polynomial of any
+length. What list do you expect the cell to print?
 
 ```python exec
 id: verification-by-expansion-1
@@ -270,7 +268,7 @@ def multiply_poly(a, b):
 factor1 = [-1, 1]     # (x - 1) in our convention
 factor2 = [-3, 1]     # (x - 3)
 product = multiply_poly(factor1, factor2)
-print("Product:", product)  # should be [3, -4, 1]
+print("Product:", product)  # x^2 - 4x + 3, written constant first
 ```
 
 ## Solving inequalities
@@ -311,7 +309,8 @@ id: your-turn-10
 # Test cases
 # solve_linear_inequality(2, 3, 7, ">")  -> "x > 2.0"
 # solve_linear_inequality(-3, 5, 2, "<") -> "x > 1.0" (inequality flips!)
-# solve_linear_inequality(0, 5, 3, ">")  -> "True for all x" or "No solution"
+# solve_linear_inequality(0, 5, 3, ">")  -> "True for all x" (5 > 3 whatever x is)
+# solve_linear_inequality(0, 5, 7, ">")  -> "No solution" (5 > 7 is never true)
 ```
 
 ## Simultaneous equations

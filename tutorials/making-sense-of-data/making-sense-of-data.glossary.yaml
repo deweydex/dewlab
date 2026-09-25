@@ -3,7 +3,7 @@ entries:
   - term: statistics
     kind: concept
     definition: >
-      Statistics is the part of mathematics that summarizes, describes and
+      Statistics is the part of mathematics that summarises, describes and
       explains data.
   - term: dataset
     kind: concept
@@ -14,7 +14,7 @@ entries:
     kind: concept
     definition: >
       A measure of central tendency is a single number that describes the
-      center, or typical value, of a dataset. The mean, the median and the
+      centre, or typical value, of a dataset. The mean, the median and the
       mode are the three common ones.
   - term: mean
     kind: formula

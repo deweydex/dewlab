@@ -2,7 +2,7 @@
 title: "Reading an error message — Practice"
 practice_for: reading-an-error-message
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.25.1
 ---
 
 # Reading an error message — Practice
@@ -295,13 +295,13 @@ why nobody notices it.
 
 </details>
 
-**17.** The pass mark is 40. Run the cell with `score` set to 39, then
-40, then 41.
+**17.** The pass mark is 50. Run the cell with `score` set to 49, then
+50, then 51.
 
 ```python exec
 id: when-nothing-looks-wrong-practice-2
-score = 40
-if score > 40:
+score = 50
+if score > 50:
     print(score, "is a pass")
 else:
     print(score, "is a fail")
@@ -309,7 +309,7 @@ else:
 
 <details class="dl-answer"><summary>answer</summary>
 
-If 40 is the pass mark, this code fails everyone who scored exactly 40.
+If 50 is the pass mark, this code fails everyone who scored exactly 50.
 It needs `>=`.
 
 Logical errors live at boundaries. Always test the exact boundary, one

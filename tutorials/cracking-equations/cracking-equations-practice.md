@@ -436,7 +436,8 @@ seconds is $h = 20t - 4.9t^2$. When is it at a height of 15 m?
 
 At about 0.99 s on the way up and about 3.09 s on the way down.
 
-Set $h = 15$ and move everything to one side: $4.9t^2 - 20t + 15 = 0$.
+Set $h = 15$, so $15 = 20t - 4.9t^2$. Then add $4.9t^2$ to both sides
+and take $20t$ from both sides: $4.9t^2 - 20t + 15 = 0$.
 The discriminant is $400 - 294 = 106$, so the roots are
 $t = \frac{20 \pm \sqrt{106}}{9.8}$.
 

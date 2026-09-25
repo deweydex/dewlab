@@ -1,7 +1,7 @@
 ---
 title: "Straight lines: slope, midpoint and distance"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   a-line-you-have-already-written:
     covers: [MIT-4.1]
@@ -162,13 +162,13 @@ the slope between each pair mean?
 ```python exec
 id: slope-as-how-fast-something-changes-2
 # Hours worked, and pay received. No axes anywhere in sight.
-records = [(0, 20), (5, 82.5), (12, 170), (20, 270)]
+records = [(0, 20), (5, 95), (12, 200), (20, 320)]
 
 for i in range(len(records) - 1):
     print(f"between {records[i]} and {records[i+1]}:  {slope(records[i], records[i+1])} per hour")
 ```
 
-The slope is the hourly rate: €12.50 per hour. The 20 at zero hours is
+The slope is the hourly rate: €15 per hour. The 20 at zero hours is
 the intercept. It is the amount you are paid for arriving, before you
 work any hours at all.
 
@@ -547,16 +547,36 @@ thing to remember. In this order, they are one idea.
 
 ### Checking it
 
-Does $a^2 + b^2$ always equal $c^2$? The cell tries five triangles.
+How could we test the theorem, and not only use it? We need to measure
+the third side of a triangle without working it out from $a^2 + b^2$
+first. `distance` can do that: it measures the gap between two points.
+
+Here is the experiment. Take two sides, 3 and 4 long, joined at one
+corner. Open the angle between them to 80°, then 90°, then 100°. Each
+time, measure the gap across the open end, and call it $c$. Before you
+run the cell, guess: will $c^2$ be 25 every time?
+
+The cell uses `math.cos` and `math.sin` to point the second side at the
+angle we choose. We meet them properly on the next page.
 
 ```python exec
 id: how-far-apart-and-the-theorem-that-answers-it-5
-# A triangle with sides 3, 4, 5 — check the theorem directly.
-for a_side, b_side in [(3, 4), (5, 12), (8, 15), (1, 1), (2.5, 6)]:
-    c_side = math.sqrt(a_side ** 2 + b_side ** 2)
-    print(f"{a_side}^2 + {b_side}^2 = {a_side**2 + b_side**2:>7.2f}"
-          f"    and c^2 = {c_side ** 2:>7.2f}    so c = {c_side:.4f}")
+a_side, b_side = 3, 4
+for angle in [80, 90, 100]:
+    turn = math.radians(angle)    # cos and sin expect radians, not degrees
+    end_of_a = (a_side, 0)
+    end_of_b = (b_side * math.cos(turn), b_side * math.sin(turn))
+    c_side = distance(end_of_a, end_of_b)
+    print(f"{angle:>3} degrees:   a^2 + b^2 = {a_side ** 2 + b_side ** 2}    c^2 = {c_side ** 2:.2f}")
 ```
+
+Only the right angle gives 25. Close the angle, and the third side comes
+out shorter than the theorem says. Open it, and the third side comes out
+longer. So the theorem is not a fact about every triangle. It is a fact
+about triangles with a right angle, and the 90° is what makes it true.
+The rule that works for every angle is called the cosine rule, and it
+is on
+[Solving triangles: the sine rule and the cosine rule](tutorial:solving-triangles).
 
 ### Your turn
 
@@ -590,7 +610,7 @@ ax = axes(2)
 points = [(math.cos(t / 60 * 2 * math.pi), math.sin(t / 60 * 2 * math.pi))
           for t in range(61)]
 ax.plot([p[0] for p in points], [p[1] for p in points], linewidth=2)
-ax.set_title("Every point on this is distance 1 from the center")
+ax.set_title("Every point on this is distance 1 from the centre")
 ```
 
 Is every point on this circle really 1 away from the centre? Let's

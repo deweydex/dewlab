@@ -1,7 +1,7 @@
 ---
 title: "Rearranging formulae: changing the subject"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.25.1
 covers:
   the-same-formula-four-ways:
     covers: [MIT-1.7]
@@ -318,7 +318,7 @@ mistake in it. Can you spot it before you run the cell?
 id: checking-yourself-1
 import random
 
-def check(original, rearranged, tries=200):
+def do_they_agree(original, rearranged, tries=200):
     """Feed random numbers to both and see whether they ever disagree."""
     for _ in range(tries):
         u = random.uniform(1, 100)
@@ -331,11 +331,11 @@ def check(original, rearranged, tries=200):
     return f"Agreed on all {tries} tries."
 
 
-print(check(lambda u, a, t: u + a * t,
+print(do_they_agree(lambda u, a, t: u + a * t,
             lambda v, u, a: (v - u) / a))
 
 # And now a rearrangement with a mistake in it, to see the check work.
-print(check(lambda u, a, t: u + a * t,
+print(do_they_agree(lambda u, a, t: u + a * t,
             lambda v, u, a: (v + u) / a))
 ```
 
