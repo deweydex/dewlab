@@ -1,7 +1,7 @@
 ---
 title: "Composition: objects inside other objects"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.25.1
 covers:
   a-bank-holds-its-accounts:
     covers: [FOOP-LO7]
@@ -247,13 +247,13 @@ inheritance or composition?
 
 ## Accounts of every kind
 
-A bank holds savings accounts and checking accounts, not only plain ones.
+A bank holds savings accounts and current accounts, not only plain ones.
 Can `Bank` hold them all? `total_balance()` only reads `account.balance`,
 and every kind of account has that field.
 
 The cell below uses both relationships at once. `SavingsAccount` and
-`CheckingAccount` inherit from `BankAccount`. `Bank` holds all three
-kinds. Ben withdraws `250.0` from his checking account first. What total
+`CurrentAccount` inherit from `BankAccount`. `Bank` holds all three
+kinds. Ben withdraws `250.0` from his current account first. What total
 do you expect? Run it to check.
 
 ```python exec
@@ -276,7 +276,7 @@ class SavingsAccount(BankAccount):
         self.interest_rate = interest_rate
 
 
-class CheckingAccount(BankAccount):
+class CurrentAccount(BankAccount):
     def __init__(self, owner, balance, overdraft_limit):
         super().__init__(owner, balance)
         self.overdraft_limit = overdraft_limit
@@ -305,7 +305,7 @@ class Bank:
 
 bank = Bank("First Local")
 bank.open_account(SavingsAccount("Alice", 500.0, 0.05))
-bank.open_account(CheckingAccount("Ben", 200.0, 100.0))
+bank.open_account(CurrentAccount("Ben", 200.0, 100.0))
 bank.open_account(BankAccount("Cara", 50.0))
 
 bank.accounts[1].withdraw(250.0)   # Ben's account is the second one opened
@@ -324,7 +324,7 @@ every kind of account.
 ### Your turn
 
 A customer can have more than one account: say, a savings account and a
-checking account. Does a customer have accounts, or is a customer an
+current account. Does a customer have accounts, or is a customer an
 account?
 
 1. Write a `Customer` class. Give it a `name` field and an `accounts`
@@ -333,7 +333,7 @@ account?
 3. Add a `net_worth()` method that returns the total balance of all the
    customer's accounts.
 4. Create a customer called Dan with a `SavingsAccount` of `300.0` and a
-   `CheckingAccount` of `-40.0`, and print Dan's `net_worth()`. What
+   `CurrentAccount` of `-40.0`, and print Dan's `net_worth()`. What
    should it be?
 
 ```python exec
@@ -350,7 +350,7 @@ class SavingsAccount(BankAccount):
         self.interest_rate = interest_rate
 
 
-class CheckingAccount(BankAccount):
+class CurrentAccount(BankAccount):
     def __init__(self, owner, balance, overdraft_limit):
         super().__init__(owner, balance)
         self.overdraft_limit = overdraft_limit
@@ -370,12 +370,12 @@ class CheckingAccount(BankAccount):
 3. `add_account()` appends to `self.accounts`, the same as
    `Bank.open_account()`.
 4. `net_worth()` is the same loop as `Bank.total_balance()`.
-5. The checking account needs an owner, a balance and an overdraft
-   limit: `CheckingAccount("Dan", -40.0, 100.0)`.
+5. The current account needs an owner, a balance and an overdraft
+   limit: `CurrentAccount("Dan", -40.0, 100.0)`.
 
 **Think about:** suppose the bank opens Dan's two accounts too, so
 `Bank` and `Customer` hold the very same account objects. If Dan then
-withdraws from his checking account, do both totals change?
+withdraws from his current account, do both totals change?
 
 </details>
 
@@ -396,7 +396,7 @@ On this page:
 ### Reflection
 
 Write a few sentences about this page, whenever you are ready. `Bank` and
-`CheckingAccount` both build on something else. One does it by holding
+`CurrentAccount` both build on something else. One does it by holding
 objects, and the other by inheriting from a class. What is the difference
 between the two, in your own words?
 
@@ -411,5 +411,5 @@ Free at <https://greenteapress.com/wp/think-python-2e/>.
 
 Real Python. *Inheritance and Composition: A Python OOP Guide*.
 <https://realpython.com/inheritance-composition-python/>. A longer look at
-exactly the choice `Bank` and `CheckingAccount` make differently in this
+exactly the choice `Bank` and `CurrentAccount` make differently in this
 tutorial.

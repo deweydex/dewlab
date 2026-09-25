@@ -2,7 +2,7 @@
 title: "Composition: objects inside other objects — Practice"
 practice_for: objects-inside-objects
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.25.1
 ---
 
 # Composition: objects inside other objects — Practice
@@ -206,7 +206,7 @@ class SavingsAccount(BankAccount):
         self.balance = self.balance + self.balance * self.interest_rate
 
 
-class CheckingAccount(BankAccount):
+class CurrentAccount(BankAccount):
     def __init__(self, owner, balance, overdraft_limit):
         super().__init__(owner, balance)
         self.overdraft_limit = overdraft_limit
@@ -229,7 +229,7 @@ class Bank:
 
 bank = Bank("First Local")
 bank.open_account(SavingsAccount("Alice", 400.0, 0.1))
-bank.open_account(CheckingAccount("Ben", -30.0, 100.0))
+bank.open_account(CurrentAccount("Ben", -30.0, 100.0))
 bank.open_account(BankAccount("Cara", 80.0))
 print(bank.total_balance())
 ```
@@ -259,7 +259,7 @@ What happens when you call `bank.pay_interest()`?
 <details class="dl-answer"><summary>answer</summary>
 
 Alice's balance becomes `440.0`. Then the loop reaches Ben's account and
-stops with `AttributeError: 'CheckingAccount' object has no attribute
+stops with `AttributeError: 'CurrentAccount' object has no attribute
 'add_interest'`.
 
 Only `SavingsAccount` has `add_interest()`. `total_balance()` works for
@@ -270,7 +270,7 @@ that only one kind of account has cannot be called on all of them.
 
 **9.** Write a `Customer` class that has a `name` and a list of
 `accounts`, with an `add_account()` method and a `net_worth()` method.
-Give Dan a `SavingsAccount` of `300.0` and a `CheckingAccount` of
+Give Dan a `SavingsAccount` of `300.0` and a `CurrentAccount` of
 `-40.0`, and print his net worth.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -305,7 +305,7 @@ class Customer:
 
 dan = Customer("Dan")
 dan.add_account(SavingsAccount("Dan", 300.0, 0.05))
-dan.add_account(CheckingAccount("Dan", -40.0, 100.0))
+dan.add_account(CurrentAccount("Dan", -40.0, 100.0))
 print(dan.net_worth())   # 260.0
 ```
 

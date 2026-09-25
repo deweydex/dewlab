@@ -12,9 +12,9 @@ you to predict an output before you run anything. Try not to check first.
 When a prediction is wrong, finding out why teaches you more than a lucky
 guess does.
 
-A cell on this page cannot wait for you to type, so none of the cells
-call `input()`. We use plain functions, and lists of answers that stand
-in for a person typing, as the tutorial did.
+A cell on this site cannot wait for you to type: `input()` stops with an
+`OSError`. So none of the cells call it. We use plain functions, and
+lists of answers that stand in for a person typing.
 
 ## A menu loop
 

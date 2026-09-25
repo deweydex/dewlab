@@ -2,7 +2,7 @@
 title: "Inheritance: one class built on another — Practice"
 practice_for: one-parent-many-children
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.25.1
 ---
 
 # Inheritance: one class built on another — Practice
@@ -87,24 +87,24 @@ sets them.
 
 </details>
 
-**4.** Write a `CheckingAccount(BankAccount)` class with one new field,
+**4.** Write a `CurrentAccount(BankAccount)` class with one new field,
 `overdraft_limit`, and no new methods. Create one, and print its
 `overdraft_limit`.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-class CheckingAccount(BankAccount):
+class CurrentAccount(BankAccount):
     def __init__(self, owner, balance, overdraft_limit):
         super().__init__(owner, balance)
         self.overdraft_limit = overdraft_limit
 
 
-checking = CheckingAccount("Priya", 200.0, 100.0)
-print(checking.overdraft_limit)   # 100.0
+current = CurrentAccount("Priya", 200.0, 100.0)
+print(current.overdraft_limit)   # 100.0
 ```
 
-This `CheckingAccount` stores the limit, but does not use it yet. Its
+This `CurrentAccount` stores the limit, but does not use it yet. Its
 `withdraw()` is still the one it inherits from `BankAccount`. The next
 section gives it a `withdraw()` of its own.
 
@@ -129,7 +129,7 @@ class BankAccount:
         self.balance = self.balance - amount
 
 
-class CheckingAccount(BankAccount):
+class CurrentAccount(BankAccount):
     def __init__(self, owner, balance, overdraft_limit):
         super().__init__(owner, balance)
         self.overdraft_limit = overdraft_limit
@@ -141,9 +141,9 @@ class CheckingAccount(BankAccount):
         self.balance = self.balance - amount
 
 
-checking = CheckingAccount("Ben", 200.0, 100.0)
-checking.withdraw(300.0)
-print(checking.balance)
+current = CurrentAccount("Ben", 200.0, 100.0)
+current.withdraw(300.0)
+print(current.balance)
 ```
 
 **5.** Predict what the cell prints. Then change `300.0` to `301.0`, and
@@ -162,39 +162,39 @@ not change.
 </details>
 
 **6.** The fee version of `SavingsAccount.withdraw()`, from the tutorial,
-calls `super().withdraw(amount + 2.0)`. `CheckingAccount.withdraw()` above
+calls `super().withdraw(amount + 2.0)`. `CurrentAccount.withdraw()` above
 does not call `super().withdraw()` at all. Why not?
 
 <details class="dl-answer"><summary>answer</summary>
 
 The parent's check, `amount > self.balance`, is the wrong check for a
-`CheckingAccount`. It would refuse every withdrawal that goes into the
-overdraft, and allowing those is the whole reason `CheckingAccount`
+`CurrentAccount`. It would refuse every withdrawal that goes into the
+overdraft, and allowing those is the whole reason `CurrentAccount`
 exists.
 
 The savings fee only changes the *amount* that is checked, so the
-parent's check still fits. `CheckingAccount` needs a different check, so
+parent's check still fits. `CurrentAccount` needs a different check, so
 it writes its own. It does not pass anything to the parent's version.
 
 </details>
 
-**7.** Write a cell that creates a `CheckingAccount` with balance `50.0`
+**7.** Write a cell that creates a `CurrentAccount` with balance `50.0`
 and overdraft limit `0.0`. Predict what `withdraw(50.0)` does, and then
 what `withdraw(1.0)` does. Run it to check.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-checking = CheckingAccount("Ben", 50.0, 0.0)
-checking.withdraw(50.0)
-print(checking.balance)   # 0.0
-checking.withdraw(1.0)    # prints: Refused: over the overdraft limit.
-print(checking.balance)   # still 0.0
+current = CurrentAccount("Ben", 50.0, 0.0)
+current.withdraw(50.0)
+print(current.balance)   # 0.0
+current.withdraw(1.0)    # prints: Refused: over the overdraft limit.
+print(current.balance)   # still 0.0
 ```
 
 An overdraft limit of `0.0` behaves exactly like a plain `BankAccount`.
 `amount > self.balance + 0.0` is the same comparison that
-`BankAccount.withdraw()` makes. `CheckingAccount` does not need a
+`BankAccount.withdraw()` makes. `CurrentAccount` does not need a
 separate case for "no overdraft at all", because the general rule already
 covers it.
 
@@ -216,7 +216,7 @@ class BankAccount:
         self.balance = self.balance - amount
 
 
-class CheckingAccount(BankAccount):
+class CurrentAccount(BankAccount):
     def __init__(self, owner, balance, overdraft_limit):
         super().__init__(owner, balance)
         self.overdraft_limit = overdraft_limit
@@ -229,9 +229,9 @@ class CheckingAccount(BankAccount):
 
 
 plain = BankAccount("Cara", 80.0)
-checking = CheckingAccount("Ben", 80.0, 20.0)
+current = CurrentAccount("Ben", 80.0, 20.0)
 
-for account in [plain, checking]:
+for account in [plain, current]:
     account.withdraw(90.0)
     print(account.owner, account.balance)
 ```
@@ -243,7 +243,7 @@ for account in [plain, checking]:
 `Refused: not enough balance.`, then `Cara 80.0`. The amount `90.0` is
 more than `plain`'s balance, and a plain account has no overdraft.
 
-`Ben -10.0`. The amount `90.0` is within `checking`'s limit of
+`Ben -10.0`. The amount `90.0` is within `current`'s limit of
 `80.0 + 20.0 = 100.0`.
 
 </details>
@@ -258,13 +258,13 @@ Polymorphism is one method call running a different version of the
 method, depending on the class of the object.
 
 `account.withdraw(90.0)` is the same line for both objects in the loop.
-For `plain`, it runs `BankAccount`'s check. For `checking`, it runs
-`CheckingAccount`'s check. The loop never needs to know which one it has.
+For `plain`, it runs `BankAccount`'s check. For `current`, it runs
+`CurrentAccount`'s check. The loop never needs to know which one it has.
 
 </details>
 
 **10.** Add a `SavingsAccount` to the list, next to `plain` and
-`checking`. Does the loop still work, with no change to the loop itself?
+`current`. Does the loop still work, with no change to the loop itself?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -279,7 +279,7 @@ class SavingsAccount(BankAccount):
 
 savings = SavingsAccount("Priya", 200.0, 0.1)
 
-for account in [plain, checking, savings]:
+for account in [plain, current, savings]:
     account.withdraw(90.0)
     print(account.owner, account.balance)
 ```
