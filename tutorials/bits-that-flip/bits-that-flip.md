@@ -1,7 +1,7 @@
 ---
 title: "Bits that flip: XOR and parity"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   xor-on-single-bits:
     covers: [MIT-2.4]
@@ -20,10 +20,15 @@ covers:
 
 A weather buoy off the west coast of Ireland sends the sea temperature to
 land as a row of bits, over the radio. Radio is noisy. Now and then a
-single bit arrives flipped: a 0 that was sent arrives as a 1. The computer
-on land has never seen the message before, so how could it tell?
+single bit arrives flipped: a 0 that was sent arrives as a 1.
 
-This page is about one extra bit that can catch that mistake.
+Think about how strange it would be to catch that. The computer on land
+has never seen the message before. It does not know what the buoy meant
+to say. How could it possibly notice that one bit is wrong? Take a
+moment and see if you can think of a way, before this page shows you
+one.
+
+The answer is one extra bit, and it is cleverer than it looks.
 
 On this page we:
 
@@ -372,7 +377,9 @@ print("Looks right?", looks_right)
 The buoy sent 14 degrees, and land received 10. Without the parity bit,
 nobody would know. With it, land sees that the count of 1s has changed
 from odd to even, and says the message does not look right. It can then
-ask the buoy to send it again.
+ask the buoy to send it again. One bit, and a computer can notice a
+mistake in a message it has never seen. I still find that a little
+magical.
 
 Here is why it works. Flipping any one bit changes the number of 1s by
 exactly one, up or down. So an even count becomes odd, and an odd count
@@ -404,6 +411,18 @@ used in computer memory, and on the cables that joined early computers to
 modems. The check letter at the end of an Irish PPS number is a
 cousin of the same idea: one extra character, worked out from the others,
 that catches a mistyped digit.
+
+<aside class="dl-note" id="bits-note-hamming">
+
+**A weekend lost, and an idea found.** In 1947, Richard Hamming left a
+relay computer at Bell Labs running a job over a weekend. It found an
+error early on, and stopped, so on Monday he had nothing. He asked
+himself: if the machine can find out that there is an error, why can it
+not find where it is, and flip it back? His answer used several parity
+bits, each checking a different group of bits. It was published in 1950,
+and codes like it still protect the memory in many servers today.
+
+</aside>
 
 ### Your turn
 

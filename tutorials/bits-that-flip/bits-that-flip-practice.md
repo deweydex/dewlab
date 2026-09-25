@@ -2,7 +2,7 @@
 title: "Bits that flip: XOR and parity — Practice"
 practice_for: bits-that-flip
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Bits that flip: XOR and parity — Practice
@@ -48,18 +48,25 @@ no 1s in it, so nothing flips.
 
 </details>
 
-**3. Make.** A footballer wears the number 9. Work out the parity bit for 9
-by hand, then check it with `parity_bit(to_binary(9))`.
+**3. Make.** A seven-segment display can keep which segments are lit as
+seven bits, a to g from the left. The digit 1 lights
+b and c, so it is `0b0110000`. The digit 2 lights a, b, d, e and g, so it
+is `0b1101101`. When the display counts from 1 to 2, which segments
+switch? Guess first, then find out with one XOR.
 
 <details class="dl-answer"><summary>answer</summary>
 
-9 is `1001` in binary. It has two 1s, which is already even, so the
-parity bit is 0.
+XOR gives a 1 wherever the two patterns differ, and those are the
+segments that switch.
 
 ```python
-print(to_binary(9))                # 1001
-print(parity_bit(to_binary(9)))    # 0
+change = 0b0110000 ^ 0b1101101
+print(format(change, "07b"))    # 1011101
 ```
+
+The 1s are in the places of a, c, d, e and g. Five segments switch, and
+only b stays as it was. So `change` is also a mask: XOR the pattern for 1
+with it, and you get the pattern for 2.
 
 </details>
 
@@ -114,8 +121,9 @@ A mask of all 1s flips every bit. So `1010` becomes `0101`.
 
 </details>
 
-**7. Fix.** Someone wrote their own parity function. It passes the first
-test, but not the second. Find the one mistake, and fix it.
+**7. Fix.** Schlomi, who is learning Python too, wrote her own parity
+function, to be sure she understood it. It passes the first test, but not
+the second. Find the one mistake, and fix it.
 
 ```python exec
 id: bits-practice-fix-parity
@@ -333,8 +341,8 @@ write `score_a, score_b = score_b, score_a`, which says what it does.
 
 </details>
 
-**14. Make.** A bike lock has a four-digit code, 2468. You want to write
-down a hint that is not the code. Write `lock(code, key)`, which gives
+**14. Make.** A phone has a four-digit PIN, 2468. You want to write
+down a hint that is not the PIN. Write `lock(code, key)`, which gives
 `code ^ key`, and use it with the key 1357. Then show that locking the
 result again with the same key gives back 2468.
 
@@ -357,7 +365,40 @@ behind it is used in real encryption, with much longer keys.
 
 </details>
 
-**15. Make.** On [Untangling a condition](tutorial:untangling-a-condition)
+**15. Explain.** Schlomo, who is learning Python too, wants the hint to
+be safer. His idea: lock the PIN twice, first with the key 1357 and then
+with a second key, 4000. Does two keys make it safer? Try it, and
+explain what you see.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Work out `lock(lock(2468, 1357), 4000)`.
+2. Now work out `1357 ^ 4000`, and lock 2468 once with that.
+3. Compare the two answers.
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+print(lock(lock(2468, 1357), 4000))    # 841
+print(1357 ^ 4000)                     # 2797
+print(lock(2468, 2797))                # 841
+```
+
+Locking twice gives 841, and so does locking once with the key 2797.
+XOR lets us move the brackets:
+$(c \oplus k_1) \oplus k_2 = c \oplus (k_1 \oplus k_2)$. So Schlomo's
+two keys behave exactly like one key, and a thief who finds that one key
+has undone both.
+
+It was a reasonable idea: doing something twice often does make a lock
+stronger. With XOR, the second lock joins the first. This is one good
+answer; yours might also say what *would* help, such as a longer key.
+
+</details>
+
+**16. Make.** On [Untangling a condition](tutorial:untangling-a-condition)
 we had only `not`, `and` and `or`. Write `xor_from_and_or(a, b)` using
 only those three words, and check with `same_rule` that it is the same rule
 as `a ^ b`.
@@ -382,7 +423,7 @@ third way.
 
 </details>
 
-**16. Explain.** The weather buoy sends 16 bytes of readings. It could add
+**17. Explain.** The weather buoy sends 16 bytes of readings. It could add
 one parity bit to each byte (16 extra bits), or one parity bit for all 128
 bits together (1 extra bit). What does each choice catch? When would you
 choose each?

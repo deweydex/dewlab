@@ -2,7 +2,7 @@
 title: "Choosing a path: if, elif and else — Practice"
 practice_for: choosing-a-path
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Choosing a path: if, elif and else — Practice
@@ -12,6 +12,10 @@ run. **Make** means write something new. **Fix** means find one mistake
 in code that looks fine. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
+
+A wrong guess here costs nothing, and it is often the most useful thing
+on the page: it shows you exactly where your picture and Python's differ.
+Skip a problem if it does not interest you, and come back to it later.
 
 ## Warm-up
 
@@ -61,46 +65,49 @@ leaves 180 itself out, so the sign is `<`, not `<=`.
 
 </details>
 
-**3. Explain.** A match report program has these two lines. What does
-each one do?
+**3. Explain.** A game has these two lines. What does each one do?
 
 ```python
-home_score = 2
-home_score == 2
+level = 2
+level == 2
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first line names a value: from now on `home_score` stands for 2.
+The first line names a value: from now on `level` stands for 2.
 
-The second line asks a question: "is `home_score` equal to 2?" Its answer
+The second line asks a question: "is `level` equal to 2?" Its answer
 is `True`. It changes nothing. One equals sign names; two equals signs
 ask.
 
 </details>
 
-**4. Another way.** A fun-fair ride says "riders must be taller than
-119 cm". One program checks `height > 119`. Another checks
-`height >= 120`. Are they the same? Is there a space where they are, and
-a space where they are not?
+**4. Another way.** A phone turns on its battery saver when the battery
+is below 20%. Schlomo, who is learning Python too, writes the test as
+`battery < 20`. His sister Schlomi writes `battery <= 19`. Schlomo says
+they are the same test. Schlomi says they are not. Who is right? Is
+there a space where they both are?
 
 <details class="dl-answer"><summary>answer</summary>
 
-If heights are measured in whole centimetres, the two are the same: the
-only whole numbers above 119 are 120, 121 and so on.
+They are both right, in different spaces.
 
-If heights can have decimals, they are different. A child of 119.5 cm is
-taller than 119 cm, so `height > 119` lets them on, but `height >= 120`
-does not.
+The battery number on a phone's screen is a whole number. If the test
+only ever sees whole numbers, the two are the same: the whole numbers
+below 20 are 19, 18, 17 and so on.
+
+Inside the phone, the battery chip can measure more finely than that. If
+the test sees 19.5, the two are different: 19.5 is below 20, so
+`battery < 20` is True, but it is not 19 or less.
 
 ```python
-height = 119.5
-print(height > 119)
-print(height >= 120)
+battery = 19.5
+print(battery < 20)
+print(battery <= 19)
 ```
 
-This prints `True`, then `False`. Neither program is wrong. Each is right
-in its own space, and the ride's sign should say which space it means.
+This prints `True`, then `False`. Neither test is wrong. Each is right in
+its own space, and the program should say which space it means.
 
 </details>
 
@@ -113,84 +120,85 @@ id: choosing-practice-core-checks
 # Check your inequality answers here
 ```
 
-**5. Make.** A music shop sells downloaded albums at €9 each. A streaming
-service costs €11 a month. For how many albums a month is the streaming
-service cheaper? Write the inequality, solve it, and check your answer
-with code at the number of albums on either side.
+**5. Make.** A web designer wants a page's photos to add up to at most
+2,000 KB, so the page loads quickly on a phone. Each photo is 300 KB.
+How many photos can the page have? Write the inequality, solve it, and
+check your answer with code at the number of photos on either side.
 
 <details class="dl-answer"><summary>answer</summary>
 
-In words: streaming is cheaper when the albums would cost more than €11.
-Let $a$ be the number of albums:
+In words: the photos fit while they add up to at most 2,000 KB. Let $p$
+be the number of photos:
 
-$$9a > 11$$
+$$300p \le 2000$$
 
-Divide both sides by 9:
+Divide both sides by 300:
 
-$$a > 1.22\ldots$$
+$$p \le 6.67\ldots$$
 
-Albums are whole numbers, so streaming is cheaper from 2 albums a month.
+Photos are whole numbers, so the page can have 6 photos, and not 7.
 
 ```python
-album_price = 9
-streaming = 11
+photo_kb = 300
+budget_kb = 2000
 
-albums = 1
-print(albums, album_price * albums > streaming)
-albums = 2
-print(albums, album_price * albums > streaming)
+photos = 6
+print(photos, photo_kb * photos <= budget_kb)
+photos = 7
+print(photos, photo_kb * photos <= budget_kb)
 ```
 
-This prints `1 False`, then `2 True`.
+This prints `6 True`, then `7 False`. Six photos take 1,800 KB, and
+seven take 2,100 KB.
 
 </details>
 
-**6. Make.** A runner starts with 750 ml of water and drinks about 60 ml
-each kilometre. She wants at least 150 ml left for the end. For how many
-kilometres $k$ is that true? Solve $750 - 60k \ge 150$, and check your
-answer on both sides of it.
-
-<details class="dl-answer"><summary>answer</summary>
-
-$$750 - 60k \ge 150$$
-
-Subtract 750 from both sides:
-
-$$-60k \ge -600$$
-
-Divide both sides by $-60$. Dividing by a negative number turns the sign
-round:
-
-$$k \le 10$$
-
-```python
-water = 750
-per_km = 60
-
-km = 10
-print(km, water - per_km * km >= 150)
-km = 11
-print(km, water - per_km * km >= 150)
-```
-
-This prints `10 True`, then `11 False`. At 10 km she has exactly 150 ml,
-and "at least" includes 150.
-
-**Another route:** add $60k$ to both sides first: $750 \ge 150 + 60k$,
-so $600 \ge 60k$, so $10 \ge k$. No negative number is needed.
-
-</details>
+**6. Make.** In a game, a character starts with 750 health points and
+loses 60 points for each second spent in lava. The player wants at least
+150 points left when they get out. For how many seconds $s$ is that true?
+Solve $750 - 60s \ge 150$, and check your answer on both sides of it.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Move the 750 first: subtract it from both sides.
 2. You now divide by a negative number. What does that do to $\ge$?
-3. Check with $k = 10$ and $k = 11$ in the cell.
+3. Check with $s = 10$ and $s = 11$ in the cell.
 
 **Think about:** why $-3 > -5$, even though $3 < 5$.
 
-**Try this next:** with 1,000 ml and the same 150 ml left over, how far
-can she run?
+**Try this next:** with 1,000 points and the same 150 left over, how long
+can the character stay in?
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+$$750 - 60s \ge 150$$
+
+Subtract 750 from both sides:
+
+$$-60s \ge -600$$
+
+Divide both sides by $-60$. Dividing by a negative number turns the sign
+round:
+
+$$s \le 10$$
+
+```python
+health = 750
+loss_per_second = 60
+
+seconds = 10
+print(seconds, health - loss_per_second * seconds >= 150)
+seconds = 11
+print(seconds, health - loss_per_second * seconds >= 150)
+```
+
+This prints `10 True`, then `11 False`. At 10 seconds the character has
+exactly 150 points, and "at least" includes 150.
+
+**Another route:** add $60s$ to both sides first: $750 \ge 150 + 60s$,
+so $600 \ge 60s$, so $10 \ge s$. No negative number is needed.
 
 </details>
 
@@ -285,45 +293,56 @@ Now the four lines print `no warning`, `yellow`, `orange`, `red`.
 
 </details>
 
-**9. Make.** In a club's 400 m race, a time of 60 seconds or less wins
-gold, 65 or less wins silver, 70 or less wins bronze, and anything slower
-wins no medal. Write `medal_for(seconds)`, and test it with `assert` at
-60, 60.5, 70 and 71.
+**9. Make.** A weather app shows the *UV index*: a number that says how
+strong the sun's ultraviolet light is, the part of sunlight that burns
+skin. The World Health Organization puts it in five bands: 0 to 2 is
+Low, 3 to 5 is Moderate, 6 and 7 are High, 8 to 10 is Very high, and 11
+or more is Extreme. The index is given as a whole number. Write
+`uv_band(index)`, and test it with `assert` at 2, 3, 7, 8, 10 and 11.
 
 ```python exec
-id: choosing-practice-medal
-# Your medal_for, and its tests
+id: choosing-practice-uv
+# Your uv_band, and its tests
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
-def medal_for(seconds):
-    """Return the medal for a 400 m time in seconds."""
-    if seconds <= 60:
-        return "gold"
-    elif seconds <= 65:
-        return "silver"
-    elif seconds <= 70:
-        return "bronze"
-    else:
-        return "no medal"
+Here is one good answer. Yours may put the checks another way round and
+still be right.
 
-assert medal_for(60) == "gold"
-assert medal_for(60.5) == "silver"
-assert medal_for(70) == "bronze"
-assert medal_for(71) == "no medal"
+```python
+def uv_band(index):
+    """Return the WHO band for a whole-number UV index."""
+    if index <= 2:
+        return "Low"
+    elif index <= 5:
+        return "Moderate"
+    elif index <= 7:
+        return "High"
+    elif index <= 10:
+        return "Very high"
+    else:
+        return "Extreme"
+
+assert uv_band(2) == "Low"
+assert uv_band(3) == "Moderate"
+assert uv_band(7) == "High"
+assert uv_band(8) == "Very high"
+assert uv_band(10) == "Very high"
+assert uv_band(11) == "Extreme"
 print("All tests pass.")
 ```
 
-Here a smaller number is better, so the smallest limit goes first. The
-tests sit at the ends of the ranges, where a `<` in place of `<=` would
-show up.
+The smallest limit goes first, and each `elif` only runs when every
+check above it was False. The tests sit at the ends of the bands, where
+a `<` in place of `<=` would show up.
 
 </details>
 
-**10. Explain.** A student writes the grade rules with three separate
-`if` lines instead of `if` and `elif`. What does this print, and why?
+**10. Explain.** Schlomi, who is learning Python too, thinks `elif` is one
+word too many. She writes the grade rules with three separate `if` lines
+instead. It is a reasonable idea: every `if` still gets checked, so
+nothing is missed. What does this print for a mark of 90, and why?
 
 ```python
 mark = 90
@@ -344,6 +363,10 @@ is more than 80, more than 65 and more than 50, so every answer is True.
 With `elif`, the three checks belong to one question, and Python stops at
 the first True answer. That is the difference between three separate
 choices and one choice with three paths.
+
+So Schlomi's idea is right in one way: nothing is missed. That is the
+trouble. A grade needs exactly one answer, and "nothing is missed" gave
+three.
 
 </details>
 

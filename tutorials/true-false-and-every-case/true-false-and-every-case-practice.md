@@ -2,7 +2,7 @@
 title: "True, false and every case: truth tables — Practice"
 practice_for: true-false-and-every-case
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # True, false and every case: truth tables — Practice
@@ -12,6 +12,9 @@ run. **Make** means write something new. **Fix** means find one mistake
 in code that looks fine. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
+
+Guess before you open anything. A guess that turns out wrong is the most
+useful kind: it shows you exactly which row you had not pictured.
 
 ## Warm-up
 
@@ -66,15 +69,16 @@ it True. So 2, 4, 8, 16, which is $2^4$.
 
 </details>
 
-**4. Another way.** A match goes ahead when it is not raining. One way
-to write that is `not raining`. Write it another way, with `==`, and
-check that the two agree in both rows.
+**4. Another way.** A game pauses itself when its window is not in
+focus, that is, when you have clicked on another window. One way to
+write that is `not focused`. Write it another way, with `==`, and check
+that the two agree in both rows.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-for raining in [False, True]:
-    print(raining, not raining, raining == False)
+for focused in [False, True]:
+    print(focused, not focused, focused == False)
 ```
 
 This prints:
@@ -85,7 +89,7 @@ True False False
 ```
 
 The last two columns agree in every row, so the two ways say the same
-thing. `not raining` is shorter, and reads closer to the English.
+thing. `not focused` is shorter, and reads closer to the English.
 
 </details>
 
@@ -131,58 +135,60 @@ def truth_table(rule, names):
 print("truth_table is ready.")
 ```
 
-**5. Predict.** A pizza deal comes with garlic bread or wedges, but not
-both. The shop's program checks an order like this. What does it print?
+**5. Predict.** Two motion sensors watch the same door. If exactly one
+of them fires, one of the sensors may be broken, so the alarm system
+logs a fault. Both fired just now. What does this print?
 
 ```python
-garlic_bread = True
-wedges = True
-print(garlic_bread != wedges)
+sensor_1 = True
+sensor_2 = True
+print(sensor_1 != sensor_2)
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 `False`. For Boolean values, `!=` is XOR: True when exactly one input is
-True. This order has both, so the deal does not allow it.
+True. Both sensors agree, so there is no fault to log. Somebody really
+did walk through the door.
 
 </details>
 
-**6. Make.** A rail company gives a refund when a train is late or
-cancelled, and you kept your ticket. Write `refund(late, cancelled,
-kept_ticket)` and print its truth table with `truth_table`. In how many
-rows is there a refund?
+**6. Make.** A server sends an alert to the engineer on duty when its
+disk is full or last night's backup failed, and alerts are switched on.
+Write `alert(disk_full, backup_failed, alerts_on)` and print its truth
+table with `truth_table`. In how many rows is there an alert?
 
 ```python exec
-id: true-false-practice-refund
-# Your refund rule and its table
+id: true-false-practice-alert
+# Your alert rule and its table
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Which two inputs belong together, joined by `or`?
 2. Put brackets round that part.
-3. Join the bracket to `kept_ticket` with `and`.
+3. Join the bracket to `alerts_on` with `and`.
 
 **Think about:** what the rule would mean without the brackets.
 
-**Try this next:** change the rule so a cancelled train gives a refund
-even without the ticket.
+**Try this next:** change the rule so a failed backup sends an alert even
+when alerts are switched off.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def refund(late, cancelled, kept_ticket):
-    """A refund when the train was late or cancelled, and you kept your ticket."""
-    return (late or cancelled) and kept_ticket
+def alert(disk_full, backup_failed, alerts_on):
+    """An alert when the disk is full or the backup failed, and alerts are on."""
+    return (disk_full or backup_failed) and alerts_on
 
-truth_table(refund, ["late", "cancelled", "kept_ticket"])
+truth_table(alert, ["disk_full", "backup_failed", "alerts_on"])
 ```
 
 The result column is `[False, False, False, True, False, True, False,
-True]`. There is a refund in 3 of the 8 rows: late only, cancelled only,
-and both. In each of them, `kept_ticket` is True.
+True]`. There is an alert in 3 of the 8 rows: disk full only, backup
+failed only, and both. In each of them, `alerts_on` is True.
 
 </details>
 
@@ -248,16 +254,16 @@ once gives no point either.
 
 </details>
 
-**9. Explain.** A gallery's sign says "free entry for children under 5
-or adults over 65". Is that "or" inclusive or exclusive? Does it matter
-here?
+**9. Explain.** A weather station's program marks a temperature reading
+as "suspect" when it is below $-50$ °C or above 60 °C. Is that "or"
+inclusive or exclusive? Does it matter here?
 
 <details class="dl-answer"><summary>answer</summary>
 
 It does not matter. The two differ only in the row where both parts are
-True, and nobody is under 5 and over 65 at once. That row can never
-happen, so both kinds of "or" give the same answer for every real
-visitor.
+True, and no reading is below $-50$ and above 60 at once. That row can
+never happen, so both kinds of "or" give the same answer for every
+reading.
 
 This happens often in real rules. When two conditions cannot both be
 True, the difference between inclusive and exclusive "or" disappears.
@@ -281,9 +287,11 @@ This prints `101`. Counting from row 0, row 5 is the sixth row printed.
 
 </details>
 
-**11. Another way.** XOR means "at least one, but not both". Write that
-sentence with `or`, `and` and `not`, as a function `xor_in_words(a, b)`.
-Then check that its column is the same as the column for `a != b`.
+**11. Another way.** Schlomo, who is learning Python too, does not
+trust `!=` as XOR. He wants the rule to say what the English says: "at
+least one, but not both". Write his sentence with `or`, `and` and `not`,
+as a function `xor_in_words(a, b)`. Then check whether his column is the
+same as the column for `a != b`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -302,50 +310,59 @@ print(first == second)
 ```
 
 The last line prints `True`: both columns are `[False, True, True,
-False]`. The first way follows the English. The second way is shorter,
-and it only works because True and False are the only values here.
+False]`. Schlomo's way follows the English, and a reader can check it
+against the sentence. The `!=` way is shorter, and it only works because
+True and False are the only values here. Both are good answers.
 
 </details>
 
 ## Stretch
 
-**12. Make.** Three judges each vote yes or no, and a dive passes when at
-least two of them vote yes. Write `majority(judge_1, judge_2, judge_3)`
-with `and` and `or`. Test its whole column with `assert`.
+**12. Make.** Some aircraft and spacecraft carry three computers that
+work out the same answer, and go with the majority. Then one broken
+computer cannot steer the craft wrong. Each computer "votes" True or
+False. Write `majority(computer_1, computer_2, computer_3)`, True when at
+least two vote True, with `and` and `or`. Test its whole column with
+`assert`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. List the pairs of judges: 1 and 2, 1 and 3, 2 and 3.
-2. The dive passes when any one pair both say yes.
+1. List the pairs of computers: 1 and 2, 1 and 3, 2 and 3.
+2. The vote is True when any one pair both say True.
 3. So join three `and` parts with `or`.
 
-**Think about:** why all three saying yes is already covered.
+**Think about:** why all three saying True is already covered.
 
-**Try this next:** with five judges, how many pairs would a rule like
-this need? Is there a shorter way to count yes votes?
+**Try this next:** with five computers, how many pairs would a rule like
+this need? Is there a shorter way to count the True votes?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def majority(judge_1, judge_2, judge_3):
-    """True when at least two of the three judges vote yes."""
-    return (judge_1 and judge_2) or (judge_1 and judge_3) or (judge_2 and judge_3)
+def majority(computer_1, computer_2, computer_3):
+    """True when at least two of the three computers vote True."""
+    return (computer_1 and computer_2) or (computer_1 and computer_3) or (computer_2 and computer_3)
 
-column = truth_table(majority, ["judge_1", "judge_2", "judge_3"])
+column = truth_table(majority, ["computer_1", "computer_2", "computer_3"])
 assert column == [False, False, False, True, False, True, True, True]
 print("majority keeps its promise.")
 ```
 
-Four of the eight rows pass: the three rows with exactly two yes votes,
-and the row with three.
+Four of the eight rows pass: the three rows with exactly two True votes,
+and the row with three. Engineers call this *triple modular redundancy*.
+The Space Shuttle went further: four of its five flight computers ran
+the same program and checked each other, and could vote a faulty one
+out.
 
 </details>
 
-**13. Fix.** This cell should print the truth table of an umbrella rule.
-It stops with an error instead. Run it, read the last line of the error,
-and fix it.
+**13. Fix.** Schlomi, who is learning Python too, wrote this cell to
+print the truth table of an umbrella rule. It stops with an error
+instead. Her idea was sensible: `umbrella` is a function, and functions
+are called with brackets. Run it, read the last line of the error, and
+fix it.
 
 ```python exec
 id: true-false-practice-fix-umbrella
@@ -401,33 +418,36 @@ this fast.
 
 **15. Another way.** On
 [Choosing a path](tutorial:choosing-a-path) we chose with `if`, `elif`
-and `else`. Write the festival rule, a ticket and (18 or over, or with
-an adult), as a function `let_in_by_path` that uses `if` and `else` with
-no `and` or `or` at all. Check that its column matches
-`has_ticket and (over_18 or with_adult)`.
+and `else`. Write the login rule from the tutorial, a right password and
+(at the office, or a right phone code), as a function `log_in_by_path`
+that uses `if` and `else` with no `and` or `or` at all. Check that its
+column matches `password_ok and (at_office or code_ok)`.
 
 <details class="dl-answer"><summary>answer</summary>
 
+Here is one good answer. Your path may ask its questions in another
+order and still be right.
+
 ```python
-def let_in_by_path(has_ticket, over_18, with_adult):
-    """The festival rule, as a path of questions."""
-    if not has_ticket:
+def log_in_by_path(password_ok, at_office, code_ok):
+    """The login rule, as a path of questions."""
+    if not password_ok:
         return False
-    elif over_18:
+    elif at_office:
         return True
     else:
-        return with_adult
+        return code_ok
 
-def let_in(has_ticket, over_18, with_adult):
-    """The festival rule, with and and or."""
-    return has_ticket and (over_18 or with_adult)
+def log_in(password_ok, at_office, code_ok):
+    """The login rule, with and and or."""
+    return password_ok and (at_office or code_ok)
 
-print(truth_table(let_in_by_path, ["has_ticket", "over_18", "with_adult"])
-      == truth_table(let_in, ["has_ticket", "over_18", "with_adult"]))
+print(truth_table(log_in_by_path, ["password_ok", "at_office", "code_ok"])
+      == truth_table(log_in, ["password_ok", "at_office", "code_ok"]))
 ```
 
 The last line prints `True`. A path of questions and a line of `and`
-and `or` can say the same rule. The path asks about the ticket first,
-because without one nothing else matters.
+and `or` can say the same rule. This path asks about the password first,
+because without it nothing else matters.
 
 </details>

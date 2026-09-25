@@ -1,7 +1,7 @@
 ---
 title: "Untangling a condition: De Morgan's laws"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   two-ways-to-grey-out-a-button:
     touches: [MIT-2.4]
@@ -21,9 +21,16 @@ covers:
 
 # Untangling a condition: De Morgan's laws
 
-A café's website has an **Order** button. The button is greyed out when
-the café cannot take an order. One programmer writes the test as
-`not (is_open and has_stock)`. Another writes `not is_open or not has_stock`.
+Sooner or later, you will open someone's program and find a line like
+`not (not (a and not b) and c)`. Most people's eyes slide right off it.
+If that happens to you, it is not a sign that logic is not for you. It is
+a sign that the line was written badly, and this page is about how to
+write it well.
+
+Let's start small. A food-delivery app has an **Order** button. The
+button is greyed out when the restaurant cannot take an order. One
+programmer writes the test as `not (is_open and has_stock)`. Another
+writes `not is_open or not has_stock`.
 
 Do the two tests always agree? And why would `not (a and b)` mean the same
 as `not a or not b`?
@@ -51,12 +58,12 @@ type: multiple-choice
 correct: 1
 
 From [Choosing a path](tutorial:choosing-a-path): which condition is True
-for exactly the ages that are *not* "18 and over"?
+for exactly the temperatures that are *not* "80 and over"?
 
-- `age < 18`
-- `age <= 18`
-- `age > 18`
-- `age != 18`
+- `temperature < 80`
+- `temperature <= 80`
+- `temperature > 80`
+- `temperature != 80`
 ```
 
 ```question
@@ -81,8 +88,8 @@ def grey_out_b(is_open, has_stock):
     return not is_open or not has_stock
 ```
 
-Before we run anything, think about the café itself. It can take an order
-only when it is open and it has stock.
+Before we run anything, think about the restaurant itself. It can take
+an order only when it is open and it has stock.
 
 ```question
 id: untangling-grey-out-rows
@@ -117,7 +124,7 @@ print(column_a == column_b)
 ```
 
 The two tables match, row for row, and the last line says `True`. Each one is `True` in three rows. The
-button is available in one row only, where the café is open *and* has stock.
+button is available in one row only, where the restaurant is open *and* has stock.
 Every other row greys it out.
 
 There is one detail in `grey_out_b` that is worth reading slowly. The last
@@ -157,10 +164,12 @@ print(column_c == column_a)
 ```
 
 This table is different, and the last line says `False`. It is `True` in one row only: closed *and* out of
-stock. So a café that is closed but has stock would show a working Order
-button, and so would a café that is open with nothing to sell.
+stock. So a restaurant that is closed but has stock would show a working
+Order button, and so would one that is open with nothing to sell.
 
-The move was not a silly one. It works in arithmetic, the space of numbers,
+If you guessed "the same", you are in good company. I think this is the
+most natural wrong guess in the whole unit, and the move was not a silly
+one. It works in arithmetic, the space of numbers,
 where a minus sign goes onto each part and the plus stays. In the space of
 True and False, `not` does a second job as well: it changes the joining
 word. When `not` goes onto each part, `and` turns into `or`. That second
@@ -266,21 +275,22 @@ or a different one?
 
 We have found one law. Here is a second situation, to find the other.
 
-A sports club cancels its outdoor training if it is raining or if the wind
-is strong:
+A small drone should stay on the ground if it is raining or if the wind
+is strong. Most small drones are not waterproof, and a strong wind can
+push them further than their motors can fight.
 
 ```python
-def cancel(is_raining, is_windy):
+def stay_grounded(is_raining, is_windy):
     return is_raining or is_windy
 ```
 
-Training goes ahead when `not (is_raining or is_windy)`. How would you write
+The drone can fly when `not (is_raining or is_windy)`. How would you write
 that without the brackets? Here are two guesses. Which one do you think is
 right? Run the cell to check.
 
 ```python exec
 id: untangling-second-law
-def go_ahead(is_raining, is_windy):
+def can_fly(is_raining, is_windy):
     return not (is_raining or is_windy)
 
 def guess_1(is_raining, is_windy):
@@ -289,17 +299,16 @@ def guess_1(is_raining, is_windy):
 def guess_2(is_raining, is_windy):
     return not is_raining and not is_windy
 
-print("guess_1:", same_rule(go_ahead, guess_1, 2))
-print("guess_2:", same_rule(go_ahead, guess_2, 2))
+print("guess_1:", same_rule(can_fly, guess_1, 2))
+print("guess_2:", same_rule(can_fly, guess_2, 2))
 ```
 
-It is `guess_2`. Training goes ahead when it is not raining *and* it is not
+It is `guess_2`. The drone can fly when it is not raining *and* it is not
 windy. The same thing happened as before: `not` went onto each part, and the
 joining word changed, this time from `or` to `and`.
 
 These two facts are called *De Morgan's laws*, after Augustus De Morgan, a
-mathematician who wrote them in the language of algebra in the 1840s. (He was
-also Ada Lovelace's maths teacher. We meet her later in the course.) Here
+mathematician who wrote them in the language of algebra in the 1840s. Here
 they are in words first:
 
 - "Not both" means the same as "at least one is not".
@@ -319,6 +328,16 @@ the joining word: `and` becomes `or`, and `or` becomes `and`.
 The two laws are two promises, and `same_rule` is how we check a promise.
 We have checked both on every row, so the laws hold for every possible pair
 of inputs. A proof by checking every case is still a proof.
+
+<aside class="dl-note" id="untangling-note-de-morgan">
+
+**Augustus De Morgan** was born in India in 1806, and taught mathematics
+in London. He was Ada Lovelace's maths tutor; we meet her in Unit 10. His
+book *Formal Logic* came out in 1847, the same year as George Boole's
+first book on logic. The laws are older than their name: logicians in
+the Middle Ages, such as William of Ockham, stated them in words.
+
+</aside>
 
 ### Your turn
 
@@ -348,37 +367,39 @@ as two comparisons joined by `and`:
 
 $$\text{low} \le \text{value} \;\text{ and }\; \text{value} \le \text{high}$$
 
-A bus company charges a youth fare from age 12 to 17. Everyone else pays
-something different. So "not a youth fare" is `not between(age, 12, 17)`.
-Let's use the first law on it, one step at a time:
+That page met a real range: an iPhone is designed to work from 0 °C to
+35 °C. Say a phone warns its owner outside that range. So "warn" is
+`not between(temperature, 0, 35)`. Let's use the first law on it, one
+step at a time:
 
 1. Put a `not` on each part and swap `and` for `or`:
-   `not (12 <= age) or not (age <= 17)`.
-2. The warm-up showed that "not 18 and over" is `age < 18`. In the same way,
-   a `not` in front of a comparison turns it round, and the end point
-   changes sides: `not (12 <= age)` is `age < 12`, and `not (age <= 17)`
-   is `age > 17`.
-3. So "not a youth fare" is `age < 12 or age > 17`.
+   `not (0 <= temperature) or not (temperature <= 35)`.
+2. The warm-up showed that "not 80 and over" is `temperature < 80`. In the
+   same way, a `not` in front of a comparison turns it round, and the end
+   point changes sides: `not (0 <= temperature)` is `temperature < 0`, and
+   `not (temperature <= 35)` is `temperature > 35`.
+3. So "warn" is `temperature < 0 or temperature > 35`.
 
-That matches the number line: the youth ages sit in one piece in the middle,
-and "not youth" is everything to the left of it *or* everything to the right.
+That matches the number line: the safe temperatures sit in one piece in
+the middle, and "warn" is everything to the left of it *or* everything to
+the right.
 
 The inputs here are numbers, so `same_rule` cannot check it. A loop can.
-`range(0, 101)` gives the whole numbers from 0 up to 100 (the last number, 101,
-is left out). Will this cell print any lines that say "disagree"? Run it to
-check.
+`range(-20, 61)` gives the whole numbers from $-20$ up to 60 (the last
+number, 61, is left out). Will this cell print any lines that say
+"disagree"? Run it to check.
 
 ```python exec
 id: untangling-not-between
-for age in range(0, 101):
-    if (not between(age, 12, 17)) != (age < 12 or age > 17):
-        print("They disagree at age", age)
-print("Checked every whole-number age from 0 to 100.")
+for temperature in range(-20, 61):
+    if (not between(temperature, 0, 35)) != (temperature < 0 or temperature > 35):
+        print("They disagree at", temperature)
+print("Checked every whole degree from -20 to 60.")
 ```
 
-It prints no disagreements. The loop checked 101 ages, which are all the
-ages a bus company cares about. The law says more than the loop can: it holds
-for 17.5, for −3 and for a million as well, because it only depends on each
+It prints no disagreements. The loop checked 81 temperatures, more than a
+phone will meet. The law says more than the loop can: it holds for 35.5,
+for $-100$ and for a million as well, because it only depends on each
 comparison being True or False.
 
 ## Untangling a real condition
@@ -391,8 +412,9 @@ def refuse_booking(is_under_12, with_adult, has_paid):
     return not (not (is_under_12 and not with_adult) and has_paid)
 ```
 
-Can you say, in one sentence, when a booking is refused? Most people cannot,
-at first. Let's untangle it, one law at a time, and check each step with
+Can you say, in one sentence, when a booking is refused? Pause and try
+before you read on. Most people cannot, at first, and that is the point
+of this section. Let's untangle it, one law at a time, and check each step with
 `same_rule` before we take the next. Order matters here, so we work from the
 outside in.
 
@@ -426,7 +448,9 @@ Both steps print `True`, so `step_2` is the same rule as the tangled one, on
 all eight rows. And now it can be read aloud: a booking is refused if a child
 under 12 comes without an adult, or if the booking has not been paid.
 
-That is what untangling is for. The program does exactly what it did before.
+That is a strange and pleasing result: a line nobody could read turned
+into a sentence anybody can, and a computer checked every step. That is
+what untangling is for. The program does exactly what it did before.
 What changed is how quickly a person can read it, and check it. A condition
 that people can read is a condition that people can fix.
 

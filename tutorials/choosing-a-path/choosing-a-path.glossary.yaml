@@ -4,6 +4,17 @@
 # and def, return, assert and docstring on numbers-a-computer-can-hold, so
 # none of them is repeated. "toolkit" likewise.
 entries:
+  - term: processor
+    kind: concept
+    definition: >
+      A processor is the chip that carries out a program's instructions.
+      It gets hot when it works hard.
+  - term: thermal throttling
+    kind: concept
+    definition: >
+      Thermal throttling is when a device runs its processor more slowly
+      for a while, so that the chip can cool down. "Thermal" means "to do
+      with heat".
   - term: inequality
     kind: concept
     definition: >
@@ -11,20 +22,20 @@ entries:
       than another, written with <, ≤, > or ≥. On a number line, an empty
       circle marks an end that is left out, and a filled circle marks an
       end that is included.
-    example: "age ≥ 18"
+    example: "t ≥ 80"
   - term: "<, <=, >, >=, ==, !="
     kind: operator
     definition: >
       Compare two values and give back True or False. <= is Python's ≤,
       and >= is Python's ≥. == asks "are these equal?", while one = gives
       a name to a value. != asks "are these different?".
-    example: "age >= 18"
+    example: "temperature >= 80"
   - term: condition
     kind: concept
     definition: >
       A condition is a question with exactly two possible answers, True or
       False. Its answer is a value, so it can be given a name.
-    example: "is_adult = age >= 18"
+    example: "too_hot = temperature >= 80"
   - term: "True, False"
     python: ["True", "False"]
     kind: keyword
@@ -37,14 +48,14 @@ entries:
       We solve an inequality with the same moves as an equation. When we
       multiply or divide both sides by a negative number, the sign turns
       round, because the order of the numbers turns round.
-    example: "-5h > -60 becomes h < 12"
+    example: "-3.5t ≥ -80 becomes t ≤ 22.86"
   - term: "if, else"
     python: [if, else]
     kind: keyword
     definition: >
       Choose between two paths. The lines under if run when its condition
       is True, and the lines under else run when it is False.
-    example: 'if age >= 18:\n    print("Adult fare")\nelse:\n    print("Child fare")'
+    example: 'if temperature >= 80:\n    print("Slow down")\nelse:\n    print("Full speed")'
   - term: elif
     python: elif
     kind: keyword
@@ -63,10 +74,10 @@ entries:
     definition: >
       Checks two comparisons in one line, the way maths writes "between".
       It is True when both comparisons are True.
-    example: "120 <= heart_rate <= 150"
+    example: "0 <= temperature <= 35"
   - term: "between()"
     kind: function
     definition: >
       Gives True when a value is from low to high, with both ends
       included. It is a tool in your own toolkit, not part of Python.
-    example: "between(135, 120, 150)"
+    example: "between(20, 0, 35)"

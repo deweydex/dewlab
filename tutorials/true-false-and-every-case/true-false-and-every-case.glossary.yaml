@@ -21,14 +21,14 @@ entries:
     definition: >
       Gives True when at least one side is True, including when both are.
       This is inclusive or. Maths writes it as ∨.
-    example: "birthday or ten_stamps"
+    example: "fingerprint_ok or pin_ok"
   - term: not
     python: not
     kind: operator
     definition: >
       Gives the other value: not True is False, and not False is True.
       Maths writes it as ¬.
-    example: "go_ahead = not raining"
+    example: "rings = not muted"
   - term: "exclusive or, XOR"
     kind: concept
     definition: >
@@ -54,7 +54,7 @@ entries:
       Repeats the lines pushed in under it, once for each value in a list.
       A loop inside another loop runs all the way through for each value
       of the outer one.
-    example: 'for raining in [False, True]:\n    print(raining, not raining)'
+    example: 'for muted in [False, True]:\n    print(muted, not muted)'
   - term: "len()"
     python: len
     kind: function

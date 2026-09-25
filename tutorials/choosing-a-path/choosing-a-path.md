@@ -1,7 +1,7 @@
 ---
 title: "Choosing a path: if, elif and else"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   pictures-on-a-number-line:
     touches: [MIT-1.11]
@@ -22,16 +22,23 @@ covers:
 
 # Choosing a path: if, elif and else
 
-A ticket machine at a train station asks you two things: how old you
-are, and whether you have a student card. A moment later it shows a
-price. Nobody is inside the machine. So how does it know you get the
-student price?
+You may have felt this. A long video call, and the phone in your hand
+gets warm. Then a game on the same phone starts to stutter. Nobody
+pressed a button to slow it down. The phone did that by itself, on
+purpose. How does a phone decide when to slow its processor down?
+
+A *processor* is the chip that carries out a program's instructions.
+When it works hard, it gets hot. Most phones have no fan, so the way to
+cool the chip is to run it more slowly for a while. This is called
+*thermal throttling*: "thermal" means "to do with heat". Somewhere in the
+phone, a few lines of code read a temperature and choose what to do. By
+the end of this page, you will have written lines like them.
 
 On this page we:
 
-- draw "under 5" and "18 and over" as pictures on a number line
+- draw "below 0 °C" and "80 °C and over" as pictures on a number line
 - ask Python questions that have the answer True or False
-- solve an inequality: for how many journeys is a weekly pass cheaper?
+- solve an inequality: how many minutes of video fit on a phone?
 - let a program choose a path with `if`, `elif` and `else`
 - add our first decision tool to the toolkit: `between`
 
@@ -39,8 +46,8 @@ On this page we:
 > Unit 1, and Python's own ways of comparing them. Every question on this
 > page has exactly two answers, True or False: there is no "maybe" here.
 > Lines still run from top to bottom, but now some lines can be skipped.
-> One thing a fare table never says out loud: it assumes every age is a
-> whole number of years.
+> One thing a temperature rule never says out loud: how fine the readings
+> are. Some sensors give whole degrees. Others give tenths.
 
 ## Warm-up
 
@@ -67,47 +74,44 @@ id: choosing-warm-up-2
 type: multiple-choice
 correct: 2
 
-The last line of an error says `NameError: name 'totl' is not defined`.
+The last line of an error says `NameError: name 'temprature' is not defined`.
 What is the most likely cause?
 
-- The number in `totl` is too big for Python to hold.
+- The number in `temprature` is too big for Python to hold.
 - The name was typed differently here from where it was made.
-- Python cannot add the numbers in this cell.
+- Python cannot compare the numbers in this cell.
 - The cell has to be run a second time.
 ```
 
 ## Pictures on a number line
 
-Here is the fare table on the machine's screen. The prices are made up,
-but the shape is the same as on many real machines.
+Here are two rules a phone might follow. The numbers are made up, but
+real phones have rules with this shape.
 
-| Who | Fare for one journey |
+| Rule | When it applies |
 |---|---|
-| Under 5 | free |
-| 5 to 17 | €1.00 |
-| 18 and over, with a student card | €1.50 |
-| 18 and over | €2.60 |
+| Do not charge the battery | the battery is below 0 °C |
+| Slow the processor a lot | the chip is at 80 °C and over |
 
-Let's draw the first and last rows. Picture a line of ages, from 0 on the
-left to 30 on the right.
+(Charging a lithium battery when it is very cold can damage it.) Let's
+draw both rules on a line of temperatures, from $-20$ to 100.
 
-"Under 5" is every age to the left of 5. Is a person who is exactly 5
-"under 5"? No. So on the picture, 5 gets an empty circle, which means
-"up to here, but not this point". A thick line runs from the circle to
-the left.
+"Below 0" is every temperature to the left of 0. Is 0 itself "below 0"?
+No. So on the picture, 0 gets an empty circle, which means "up to here,
+but not this point". A thick line runs from the circle to the left.
 
-"18 and over" starts at 18 and runs to the right for ever. This time 18
-is included, so it gets a filled circle.
+"80 and over" starts at 80 and runs to the right. This time 80 is
+included, so it gets a filled circle.
 
 An *inequality* is a statement that one amount is bigger or smaller than
 another. Maths has four symbols for it:
 
 | In words | Symbol | Example |
 |---|---|---|
-| less than | $<$ | $age < 5$ |
-| less than or equal to | $\le$ | $age \le 17$ |
-| greater than | $>$ | $age > 17$ |
-| greater than or equal to | $\ge$ | $age \ge 18$ |
+| less than | $<$ | $t < 0$ |
+| less than or equal to | $\le$ | $t \le 79$ |
+| greater than | $>$ | $t > 79$ |
+| greater than or equal to | $\ge$ | $t \ge 80$ |
 
 The small end of the symbol points at the smaller amount. An empty
 circle on the number line goes with $<$ and $>$. A filled circle goes
@@ -118,16 +122,19 @@ id: choosing-number-line-1
 type: multiple-choice
 correct: 2
 
-Which of these is true for a person who is exactly 18?
+Which of these is true for a chip at exactly 80 °C?
 
-- $age < 18$
-- $age \ge 18$
-- $age > 18$
+- $t < 80$
+- $t \ge 80$
+- $t > 80$
 ```
 
-Notice that $age > 17$ and $age \ge 18$ draw the same picture, as long
-as ages are whole numbers. If ages could be 17.5, they would not. That is
-the space we are in deciding the answer.
+Now a small puzzle. Do $t > 79$ and $t \ge 80$ draw the same picture?
+Think about it before you read on.
+
+They do, if the sensor only ever gives whole degrees: there is no whole
+number between 79 and 80. If it can read 79.5, they do not. The rule did
+not change. The space we are in decided the answer.
 
 ## Asking Python a question
 
@@ -137,119 +144,118 @@ guess for all three, then run it to check.
 
 ```python exec
 id: choosing-asking-1
-age = 17
-print(age < 5)
-print(age >= 18)
-print(age <= 17)
+temperature = 79
+print(temperature < 0)
+print(temperature >= 80)
+print(temperature <= 79)
 ```
 
 Python answers each question with `True` or `False`. A *condition* is a
 question with exactly two possible answers, True or False. `True` and
-`False` are values in Python, the same way `17` is a value. They are
+`False` are values in Python, the same way `79` is a value. They are
 written with a capital letter.
 
 Asking whether two things are equal needs two equals signs. One equals
-sign already has a job: it names a value. So `age = 18` means "let `age`
-stand for 18", and `age == 18` asks "is `age` 18?". The sign `!=` asks
-"is it different?".
+sign already has a job: it names a value. So `temperature = 80` means
+"let `temperature` stand for 80", and `temperature == 80` asks "is
+`temperature` 80?". The sign `!=` asks "is it different?".
 
 ```python exec
 id: choosing-asking-2
-age = 18
-print(age == 18)
-print(age != 18)
+temperature = 80
+print(temperature == 80)
+print(temperature != 80)
 
-is_adult = age >= 18
-print(is_adult)
+too_hot = temperature >= 80
+print(too_hot)
 ```
 
-The last two lines show something useful. A condition's answer is a
-value, so we can give it a name, like any other value.
+A condition's answer is a value, so we can give it a name, like any
+other value.
 
 ### Your turn
 
-1. In the first cell above, change `age = 17` to `age = 4`. Before you
-   run it, guess the three answers.
-2. In the cell below, set `age` to your own age, or any age you like.
-3. Write a line that prints True when `age` is 66 or more.
+1. In the first cell above, change `temperature = 79` to
+   `temperature = -3`. Before you run it, guess the three answers.
+2. In the cell below, set `temperature` to any value you like.
+3. Write a line that prints True when `temperature` is 35 or more.
 
 ```python exec
 id: choosing-your-turn-1
-# Your age, and a question about it
+# A temperature, and a question about it
 ```
 
 ## Solving an inequality
 
-Many travellers have a choice. They can pay €2.00 for each single
-journey, or buy a weekly pass for €25.00. (The weekly price is made up.)
-For how many journeys in a week is the pass the cheaper choice?
+Your phone has 10,000 MB free, and you want to film in 4K, the sharpest
+setting. Say each minute of video takes 350 MB. (The real size depends
+on the phone and its settings.) For how many whole minutes is there
+room?
 
-Let's say it in words first. The pass is cheaper when the singles would
-cost more than €25.
+Pause here and guess. Ten minutes? An hour? I'll wait.
 
-Now in symbols. Maths likes a short letter here, so let $j$ stand for the
-number of journeys. The singles cost $2j$ euro, and we want
+In words: there is room while the video is at most 10,000 MB. In
+symbols, let $m$ stand for the number of minutes. The video takes
+$350m$ MB, and we want
 
-$$2j > 25$$
+$$350m \le 10000$$
 
 We solve an inequality with the same moves as an equation. We can add or
 subtract the same amount on both sides. We can multiply or divide both
-sides by the same positive number. Dividing both sides by 2 gives
+sides by the same positive number. Dividing both sides by 350 gives
 
-$$j > 12.5$$
+$$m \le 28.57\ldots$$
 
-What does $j > 12.5$ mean for a real week? Journeys are whole numbers:
-nobody takes half a bus. So the pass is cheaper for 13 journeys or more.
+We asked about whole minutes, so there is room for 28, and not for 29.
 
 Before you run the cell, which line do you expect to say True? Run it to
 check.
 
 ```python exec
 id: choosing-solving-1
-single_fare = 2.00
-weekly_pass = 25.00
+free_mb = 10000
+mb_per_minute = 350
 
-journeys = 12
-print(journeys, "journeys:", single_fare * journeys, "euro. Pass cheaper?", single_fare * journeys > weekly_pass)
+minutes = 28
+print(minutes, "minutes:", mb_per_minute * minutes, "MB. Room?", mb_per_minute * minutes <= free_mb)
 
-journeys = 13
-print(journeys, "journeys:", single_fare * journeys, "euro. Pass cheaper?", single_fare * journeys > weekly_pass)
+minutes = 29
+print(minutes, "minutes:", mb_per_minute * minutes, "MB. Room?", mb_per_minute * minutes <= free_mb)
 ```
 
-At 12 journeys the singles cost €24, so the pass is not cheaper yet. At
-13 they cost €26, and the pass wins. The algebra and the code agree.
-
-We checked two values by writing the same line twice. In Unit 3 we will
-meet a way to check every value from 1 to 20 with a few lines.
+At 28 minutes the video takes 9,800 MB, and it fits. At 29 it takes
+10,150 MB, and it does not. The algebra and the code agree. (In Unit 3, a
+loop will check every value for us.)
 
 ### Your turn
 
-A gym charges €6 for each visit, or €40 for a month. For how many visits
-is the monthly price cheaper?
+A camera's memory card has 16,000 MB free, and each photo takes about
+6 MB. How many photos fit?
 
 1. Write the inequality in words, then with a letter.
 2. Solve it on paper.
-3. Check your answer in the cell below, with one visit fewer and one
-   visit more than your answer.
+3. Check your answer in the cell below, with one photo fewer and one
+   photo more than your answer.
 
 ```python exec
 id: choosing-your-turn-2
-# Check your gym answer here
+# Check your memory card answer here
 ```
 
 ## A move that turns the sign round
 
-A phone battery is at 80%, and a video call uses 5% of it each hour. For
-how many hours $h$ does the battery stay above 20%?
+A small drone takes off with its battery at 100%. It uses 3.5% of the
+battery each minute, and the pilot wants to land with at least 20% left.
+For how many minutes $t$ can it fly?
 
-In symbols: $80 - 5h > 20$.
+In symbols: $100 - 3.5t \ge 20$.
 
-Subtract 80 from both sides: $-5h > -60$.
+Subtract 100 from both sides: $-3.5t \ge -80$.
 
-Now divide both sides by $-5$. It looks like the answer is $h > 12$. But
-look at 13 hours: $80 - 5 \times 13 = 15$, and 15 is not above 20.
-Something went wrong. Before you run the next cell, can you guess which
-of these three lines print True?
+Now divide both sides by $-3.5$. It looks like the answer is
+$t \ge 22.86$. But at 30 minutes the battery would be at
+$100 - 3.5 \times 30 = -5$ percent. Something went wrong. Before you run the next cell, can you
+guess which of these three lines print True?
 
 ```python exec
 id: choosing-sign-1
@@ -261,53 +267,55 @@ print(-3 > -5)
 Three is less than five. But $-3$ is greater than $-5$. It is closer to
 zero, so it sits further to the right on the number line. Multiplying or
 dividing by a negative number turns the whole number line round, so the
-order of any two numbers turns round too.
+order of any two numbers turns round too. I think this is the strangest
+move on the page: the same division gives the right number and the wrong
+sign.
 
 So in the space of inequalities, dividing by a negative number is
-allowed, with one extra rule: the sign turns round. $-5h > -60$ becomes
+allowed, with one extra rule: the sign turns round. $-3.5t \ge -80$
+becomes
 
-$$h < 12$$
+$$t \le 22.86\ldots$$
 
-Let's check that on both sides of 12.
+Let's check that on both sides of 22.86.
 
 ```python exec
 id: choosing-sign-2
-battery_now = 80
-use_per_hour = 5
+battery_start = 100
+use_per_minute = 3.5
 
-hours = 11
-print(hours, "hours:", battery_now - use_per_hour * hours > 20)
-hours = 12
-print(hours, "hours:", battery_now - use_per_hour * hours > 20)
-hours = 13
-print(hours, "hours:", battery_now - use_per_hour * hours > 20)
+minutes = 22
+print(minutes, "minutes:", battery_start - use_per_minute * minutes, "% left. Safe?", battery_start - use_per_minute * minutes >= 20)
+minutes = 23
+print(minutes, "minutes:", battery_start - use_per_minute * minutes, "% left. Safe?", battery_start - use_per_minute * minutes >= 20)
 ```
 
-After 12 hours the battery is at exactly 20%, and 20 is not above 20.
-So the battery stays above 20% for any time less than 12 hours.
+After 22 minutes the battery is at 23%, which is safe. After 23 minutes
+it is at 19.5%, which is not. So the pilot has 22 whole minutes.
 
-There is another way that never divides by a negative. Add $5h$ to both
-sides of $80 - 5h > 20$ to get $80 > 20 + 5h$. Subtract 20: $60 > 5h$.
-Divide by 5: $12 > h$. That is the same answer, read from the other side.
+There is another way that never divides by a negative. Add $3.5t$ to
+both sides of $100 - 3.5t \ge 20$ to get $100 \ge 20 + 3.5t$. Subtract
+20: $80 \ge 3.5t$. Divide by 3.5: $22.86 \ge t$. That is the same
+answer, read from the other side.
 
 ## Two paths: if and else
 
-Back to the ticket machine. Here is a machine that knows two fares.
-Guess what it prints for `age = 20`. Then run it to check.
+Back to the hot phone. Here is a program that knows two speeds. Guess
+what it prints for `temperature = 85`. Then run it to check.
 
 ```python exec
 id: choosing-if-else-1
-age = 20
+temperature = 85
 
-if age >= 18:
-    print("Adult fare: €2.60")
+if temperature >= 80:
+    print("Too hot: slowing the processor down.")
 else:
-    print("Child fare: €1.00")
+    print("Full speed.")
 
-print("Have a good journey.")
+print("Temperature checked.")
 ```
 
-Now change `age` to 12 and run it again.
+Now change `temperature` to 40 and run it again.
 
 The word `if` starts a question. After it comes a condition, then a
 colon. The lines pushed in under it run only when the condition is True.
@@ -326,136 +334,143 @@ making tea chose a path with "if they take milk, add milk". That shape
 was called selection. Here is the same shape, with Python doing the
 choosing.
 
-A condition does not have to be a comparison. Any True or False value
-will do, including one we named:
+Any True or False value can be a condition, including a name:
 
 ```python exec
 id: choosing-if-else-2
-has_student_card = True
+plugged_in = True
 
-if has_student_card:
-    print("Student fare: €1.50")
+if plugged_in:
+    print("Charging.")
 else:
-    print("Adult fare: €2.60")
+    print("On battery.")
 ```
 
 ## More than two paths: elif
 
-The real table has four rows, so the machine needs four paths. The word
-`elif` is short for "else if". It adds another condition. Python checks
-the conditions from the top, one after another. It takes the first path
-whose condition is True, and skips every path after it.
+A laptop has a fan with several speeds. The word `elif` is short for "else if". It adds another condition. Python
+checks the conditions from the top, one after another. It takes the
+first path whose condition is True, and skips every path after it.
 
-Here is the whole table as a function, which gives back a fare.
+Here is a fan rule as a function, which gives back a speed. The limits
+are made up.
 
 ```python exec
 id: choosing-elif-1
-def fare_for(age, has_student_card):
-    """Return the fare in euro for one journey."""
-    if age < 5:
-        return 0.00
-    elif age < 18:
-        return 1.00
-    elif has_student_card:
-        return 1.50
+def fan_speed_for(temperature):
+    """Return the fan speed for a chip temperature in °C."""
+    if temperature < 50:
+        return "off"
+    elif temperature < 70:
+        return "low"
+    elif temperature < 85:
+        return "high"
     else:
-        return 2.60
+        return "full"
 
-print(fare_for(3, False))
-print(fare_for(12, False))
-print(fare_for(19, True))
-print(fare_for(40, False))
+print(fan_speed_for(35))
+print(fan_speed_for(60))
+print(fan_speed_for(75))
+print(fan_speed_for(90))
 ```
 
-Look at the second condition, `age < 18`. The table says "5 to 17", but
-the code never checks that the age is 5 or more. It does not need to. We
-only reach that line when `age < 5` was False. The order of the checks
-carries information. What happens when is part of the meaning.
+Look at the second condition, `temperature < 70`. The fan should be
+"low" from 50 to 69, but the code never checks that the temperature is
+50 or more. It does not need to. We only reach that line when
+`temperature < 50` was False. The order of the checks carries
+information. What happens when is part of the meaning.
 
 ```question
 id: choosing-elif-2
 type: multiple-choice
 correct: 1
 
-A 16-year-old has a student card. What does `fare_for(16, True)` give?
+What does `fan_speed_for(70)` give?
 
-- `1.0`, because `age < 18` is checked before the student card
-- `1.5`, because they have a student card
-- `2.6`, because no condition fits
+- `"high"`, because `70 < 70` is False, and `70 < 85` is True
+- `"low"`, because 70 is the limit for "low"
+- `"full"`, because no condition fits
 ```
 
 Now let's put the same checks in a different order. This cell has a
-mistake in it on purpose. Before you run it, what do you think a
-3-year-old will pay?
+mistake in it on purpose. Before you run it, what do you think a cool
+laptop, at 35 °C, will do?
 
 ```python exec
 id: choosing-elif-3
-def fare_in_wrong_order(age, has_student_card):
-    """The same four fares, checked in a different order."""
-    if age < 18:
-        return 1.00
-    elif age < 5:
-        return 0.00
-    elif has_student_card:
-        return 1.50
+def fan_in_wrong_order(temperature):
+    """The same four speeds, checked in a different order."""
+    if temperature < 85:
+        return "high"
+    elif temperature < 50:
+        return "off"
+    elif temperature < 70:
+        return "low"
     else:
-        return 2.60
+        return "full"
 
-print(fare_in_wrong_order(3, False))
+print(fan_in_wrong_order(35))
 ```
 
-The 3-year-old pays €1.00. Python did exactly what it was told. Every
-age under 5 is also under 18, so the first condition catches it, and
-the line `elif age < 5` can never be reached. Nothing crashed, and no
-error message appeared. This kind of mistake only shows up when we test
-the program with the right ages.
+The fan runs "high" on a cool laptop. Python did exactly what it was
+told. Every temperature under 50 is also under 85, so the first
+condition catches it, and the line `elif temperature < 50` can never be
+reached. Nothing crashed, and no error message appeared. This kind of
+mistake only shows up when we test with the right temperatures.
 
 ### Your turn
 
-In Ireland, people aged 66 and over can travel free on most public
-transport.
+Real chips protect themselves: if they get far too hot, they switch off.
 
-1. Copy `fare_for` into the cell below.
-2. Add a branch so that anyone 66 or over pays 0.00. Think about where
-   in the order it has to go.
-3. Test it: `print(fare_for(70, True))` should print `0.0`, and
-   `print(fare_for(19, True))` should still print `1.5`.
+1. Copy `fan_speed_for` into the cell below.
+2. Add a path so that at 100 °C and over it returns `"shut down"`. Think
+   about where in the order it has to go.
+3. Test it: `print(fan_speed_for(105))` should print `shut down`, and
+   `print(fan_speed_for(90))` should still print `full`.
 
 ```python exec
 id: choosing-your-turn-3
-# Your fare_for, with free travel at 66 and over
+# Your fan_speed_for, with a shut down at 100 °C and over
 ```
+
+<aside class="dl-note" id="choosing-note-throttling">
+
+**Slowing down on purpose.** Phones and laptops really do this. The
+chip reads its own temperature sensors many times a second. When a
+review says a game "runs well for ten minutes and then slows", throttling
+is usually why.
+
+</aside>
 
 ## A tool of your own: between
 
-Many everyday questions have the shape "is this value between two
-others?". Is a child's age from 5 to 17? Is a heart rate during a run
-from 120 to 150 beats a minute? Is the oven from 180 to 200 degrees?
+Here is a real "between". Apple says an iPhone is designed to work where the air is
+from 0 °C to 35 °C. Outside that, it may change how it behaves to protect
+itself.
 
-Maths writes it as one line with two signs: $120 \le rate \le 150$.
-Python lets us write it the same way. What do you expect each line to
-print? Run it to check.
+Maths writes it as one line with two signs: $0 \le t \le 35$. Python
+lets us write it the same way. What do you expect each line to print?
+Run it to check.
 
 ```python exec
 id: choosing-between-1
-heart_rate = 135
-print(120 <= heart_rate <= 150)
+temperature = 20
+print(0 <= temperature <= 35)
 
-heart_rate = 150
-print(120 <= heart_rate <= 150)
+temperature = 35
+print(0 <= temperature <= 35)
 
-heart_rate = 151
-print(120 <= heart_rate <= 150)
+temperature = 36
+print(0 <= temperature <= 35)
 ```
 
-A value exactly at an end counts, because the signs are `<=`, the
-filled circles on the number line.
+A value exactly at an end counts, because the signs are `<=`, the filled
+circles on the number line.
 
-Now it is your turn to make a tool from this. The cell below is a
-toolkit cell, like the one where you finished `to_hex` on
-[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
-What you write here goes into your own toolkit, and later pages can use
-it. The first line of the function and its promise are written for you.
+Now let's make a tool from this. The cell below is a toolkit cell, like
+the one where you finished `to_hex` on
+[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros):
+later pages can use what you write here. The first line of the function and its promise are written for you.
 Replace the comment with one `return` line that keeps the promise.
 
 ```python exec
@@ -464,7 +479,7 @@ toolkit: yes
 def between(value, low, high):
     """Return True when low <= value <= high, with both ends included.
 
-    between(135, 120, 150) is True. between(151, 120, 150) is False.
+    between(20, 0, 35) is True. between(36, 0, 35) is False.
     """
     # Replace this comment with one return line.
 ```
@@ -474,7 +489,7 @@ for: choosing-between-toolkit
 def between(value, low, high):
     """Return True when low <= value <= high, with both ends included.
 
-    between(135, 120, 150) is True. between(151, 120, 150) is False.
+    between(20, 0, 35) is True. between(36, 0, 35) is False.
     """
     return low <= value <= high
 ```
@@ -488,22 +503,21 @@ not kept yet.
 
 ```python exec
 id: choosing-between-2
-assert between(135, 120, 150) == True
-assert between(120, 120, 150) == True   # the low end counts
-assert between(150, 120, 150) == True   # so does the high end
-assert between(119, 120, 150) == False
-assert between(151, 120, 150) == False
+assert between(20, 0, 35) == True
+assert between(0, 0, 35) == True    # the low end counts
+assert between(35, 0, 35) == True   # so does the high end
+assert between(-1, 0, 35) == False
+assert between(36, 0, 35) == False
 print("All five tests pass.")
 ```
 
-Look at which values the tests use. Two are the ends themselves, and two
-are one step outside. The ends are where a mistake like `<` in place of
-`<=` would hide.
+Two tests sit on the ends, and two one step outside. The ends are where
+a mistake like `<` in place of `<=` would hide.
 
 ### Your turn
 
-A weather warning for ice goes out when the temperature is from $-2$ to
-2 degrees.
+A road sensor sends out an ice warning when the road is from $-2$ to 2
+degrees. (The limits here are made up.)
 
 1. Set `temperature = 1` in the cell below.
 2. Write an `if` and `else` that uses `between` to print either "Risk of
@@ -523,14 +537,14 @@ algebra, and choosing a path with `if`, from programming. In most
 courses they belong to different subjects, often in different terms,
 with different teachers.
 
-Keeping them apart has good points. Each subject can go at its own
-speed, and you always know which kind of class you are in.
+Keeping them apart has good points: each subject goes at its own
+speed.
 
-We joined them because they are one question asked two ways. "For how
-many journeys is the pass cheaper?" is an inequality, and a ticket
-machine answers it with `if`. The number line works for both, and the
-code checks the algebra. When each subject needs the other, neither one
-is a topic you learn once and put away.
+We joined them because they are one question asked two ways. "How many
+minutes of video fit?" is an inequality, and a phone answers it with
+`if`. The number line works for both, and the code checks the algebra.
+When each subject needs the other, neither one is a topic you learn once
+and put away.
 
 </details>
 
@@ -538,10 +552,10 @@ is a topic you learn once and put away.
 
 | Question | On this page |
 |---|---|
-| What is named here? | Ages, fares and journeys. A condition's answer too: `is_adult = age >= 18`. `=` names, `==` asks. |
-| What is promised? | `fare_for` promises a fare for any age. `between` promises True exactly when the value is from `low` to `high`. The asserts check the promise. |
+| What is named here? | Temperatures, minutes and battery levels. A condition's answer too: `too_hot = temperature >= 80`. `=` names, `==` asks. |
+| What is promised? | `fan_speed_for` promises a speed for any temperature. `between` promises True exactly when the value is from `low` to `high`. The asserts check the promise. |
 | What happens when? | Conditions are checked from the top. The first True one wins, and the rest are skipped, so the order of the `elif` checks changes the answer. |
-| What does this space let us do? | Inequalities allow the same moves as equations, but dividing by a negative turns the sign round. Whole-number ages make $age > 17$ and $age \ge 18$ the same. |
+| What does this space let us do? | Inequalities allow the same moves as equations, but dividing by a negative turns the sign round. Whole-degree readings make $t > 79$ and $t \ge 80$ the same. |
 
 ## What we have now
 
