@@ -2,7 +2,7 @@
 title: "Kinds of data, and honest charts — Practice"
 practice_for: kinds-of-data-and-honest-charts
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 datasets: [life-expectancy]
 ---
 
@@ -49,9 +49,9 @@ discrete or continuous?
 1. the county you were born in
 2. a film's rating, from one star to five stars
 3. the number of goals in a football match
-4. the time a runner takes for a marathon
+4. the time a phone takes to download a film
 5. an Eircode, such as D02 X285
-6. a T-shirt size: S, M, L or XL
+6. a phone's Wi-Fi signal: weak, fair, good or excellent
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -64,7 +64,8 @@ discrete or continuous?
 4. Continuous: time is measured, and can be any value.
 5. Nominal: it has digits in it, but it only names a place. Adding two
    Eircodes means nothing.
-6. Ordinal: the sizes have an order, S before M before L before XL.
+6. Ordinal: the levels have an order, weak before fair before good
+   before excellent, but "good" is not a measured amount.
 
 </details>
 
@@ -152,8 +153,10 @@ that key was never made. With 60 rolls that almost never happens.
 
 </details>
 
-**6. Fix.** A music app counts how many times each song was played. The
-count for every song comes out as 1. Run it, then find the mistake.
+**6. Fix.** Schlomi, who is learning Python too, is writing the part of
+a music app that counts how many times each song was played. She wrote
+the loop from memory, and every count comes out as 1. Run it, then find
+what went missing.
 
 ```python exec
 id: kinds-practice-fix-plays
@@ -183,7 +186,8 @@ tutorial page.
 
 The line `counts[song] = 1` runs every time, since it is not inside an
 `else`. So when a song is seen again, the count goes up by 1, then goes
-straight back to 1. Put it in an `else`:
+straight back to 1. Schlomi remembered both lines; only the `else`
+that keeps them apart went missing. Put it back:
 
 ```python
 counts = {}
@@ -246,48 +250,51 @@ just before its right one.
 
 </details>
 
-**8. Fix.** A shop counts the T-shirt sizes it sold today, and draws a
-bar chart. Every number is right, and yet the chart is hard to read.
-Run it, then find the mistake.
+**8. Fix.** Ten phones in a library report their Wi-Fi signal, and a
+program draws a bar chart of the answers. Every number is right, and
+yet the chart is hard to read. Run it, then find the mistake.
 
 ```python exec
 id: kinds-practice-fix-sizes
-sizes = ["M", "L", "S", "M", "XL", "M", "S", "L", "M", "L"]
+signals = ["good", "fair", "weak", "good", "excellent", "good", "weak",
+           "fair", "good", "fair"]
 
-sold = frequency_table(sizes)
-plt.bar(list(sold.keys()), list(sold.values()))
-plt.title("T-shirts sold today")
+reports = frequency_table(signals)
+plt.bar(list(reports.keys()), list(reports.values()))
+plt.title("Wi-Fi signal on ten phones")
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-The bars come in the order each size was first sold: M, L, S, XL. Size
-is ordinal data, and its bars should follow its own order. Give that
-order as a list:
+The bars come in the order each level first appeared: good, fair, weak,
+excellent. Signal strength is ordinal data, and its bars should follow
+its own order. Give that order as a list:
 
 ```python
-sold = frequency_table(sizes)
-order = ["S", "M", "L", "XL"]
+reports = frequency_table(signals)
+order = ["weak", "fair", "good", "excellent"]
 heights = []
-for size in order:
-    heights.append(sold[size])
+for level in order:
+    heights.append(reports[level])
 plt.bar(order, heights)
-plt.title("T-shirts sold today")
+plt.title("Wi-Fi signal on ten phones")
 ```
 
-Now the chart reads from small to large, and the shape means something:
-most shirts sold were in the middle sizes.
+Now the chart reads from weak to excellent, and the shape means
+something: most phones had a fair or good signal.
 
 </details>
 
 **9. Explain.** A news website shows a line chart of Irish unemployment
 over two years. Its vertical axis runs from 4% to 6%, and the line
-climbs steeply. Is that chart dishonest, in the way the advert's bar
-chart was?
+climbs steeply. Schlomo, who is learning Python too, has read the
+tutorial, and says the chart is dishonest: its axis does not start at
+0. Is the chart dishonest in the way the advert's bar chart was?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Not in the same way. A line chart shows change, and a reader reads its
+Not in the same way. Schlomo is using the rule for bar charts, and it
+is a good rule there. A line chart shows change, and a reader reads its
 height against the numbers on the axis, not as a length from 0. Zooming
 in shows a change that matters: a rise from 4.2% to 5.1% is a real
 story for thousands of people. So it can be honest, if the axis has
@@ -415,7 +422,7 @@ a good check.
 stem 1 to stem 4, because we looked at the data first. Write a function
 `stem_and_leaf(values)` that prints the plot for any list of whole
 numbers from 0 to 99, working out the first and last stems for itself.
-Test it on the parkrun times and on the June temperatures.
+Test it on the journey times and on the June temperatures.
 
 ```python exec
 id: kinds-practice-stem-tool
@@ -460,7 +467,7 @@ stem_and_leaf(june)
 stem_and_leaf([12, 15, 41])
 ```
 
-The parkrun plot is the same as on the tutorial page, and the June plot
+The journey plot is the same as on the tutorial page, and the June plot
 has the two rows from problem 12. For `[12, 15, 41]` it prints the
 rows `2 |` and `3 |` with nothing after them. Keep them: an empty row
 is a gap in the data, and a gap is part of its shape, as a gap would be
@@ -513,7 +520,7 @@ you have chosen, for a class like yours, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no single right answer. A good answer weighs a few things.
+There is more than one good answer. A good answer weighs a few things.
 
 Names first gives a reader words to think with before the pictures
 arrive, and a clear table of which moves each kind allows. That suits a
@@ -523,7 +530,7 @@ feel empty until they are needed, and four new words at once is a lot.
 Charts first gives a surprise, such as a line joining "walk" to "car",
 and then the name arrives as the answer to a question the reader
 already has. That usually makes a name stick better. But it takes
-longer, and a reader who is unsure may read a wrong chart as their own
+longer, and a reader who is unsure may read a broken chart as their own
 mistake.
 
 A good answer also says who the class is: what they already know, and
@@ -544,7 +551,7 @@ so the whole is 85 ticks, not 50 people. The pie would suggest, for
 example, that a service ticked by 30 people has about a third of the
 viewers, when in fact 30 of 50 people, 60%, use it.
 
-A bar chart is honest here: one bar per service, each bar's height the
+One good answer is a bar chart: one bar per service, each bar's height the
 number of people who ticked it, and a title that says people could tick
 more than one. People who use two services at once belong to two sets
 at once, and that overlap is the subject of

@@ -76,6 +76,11 @@ entries:
       A cuboid's volume is V = lwh, and a cube's is s³. A cylinder's is
       V = πr²h, the base circle times the height. A cone's is a third of
       that, V = ⅓πr²h. A sphere's is V = ⁴⁄₃πr³.
+  - term: filament
+    kind: concept
+    definition: >
+      Filament is the plastic thread a 3D printer melts to build a solid.
+      It is a very long, thin cylinder, often 1.75 mm across.
   - term: surface area
     kind: concept
     definition: >

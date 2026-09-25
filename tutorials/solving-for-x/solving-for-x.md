@@ -61,8 +61,8 @@ and the second from
 id: solving-warm-up-1
 type: fill-in-the-blank
 
-A taxi meter multiplies the distance by 1.5, then adds 4. To undo it,
-we first {subtract 4|divide by 1.5|add 4}.
+A temperature chip's rule multiplies the volts by 100, then subtracts 50.
+To undo it, we first {add 50|divide by 100|subtract 50}.
 ```
 
 ```question

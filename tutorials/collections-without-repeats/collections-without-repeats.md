@@ -1,7 +1,8 @@
 ---
 title: "Collections without repeats: sets"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
+datasets: [the-lost-world, the-war-of-the-worlds]
 covers:
   two-playlists:
     covers: [MIT-2.1]
@@ -16,6 +17,9 @@ covers:
     touches: [MIT-2.4]
   everything-else-the-complement:
     covers: [MIT-2.2]
+  two-books-thousands-of-words:
+    covers: [MIT-2.2]
+    touches: [MIT-2.1]
   sets-too-big-to-list:
     covers: [MIT-2.1]
   every-pair-and-every-smaller-set:
@@ -27,21 +31,27 @@ covers:
 
 # Collections without repeats: sets
 
-You and a friend each make a playlist for a long drive to Galway. Some
-songs are on both, and one of you has put a favourite in twice. Which
-songs are on both playlists? And how many different songs are there
-between you?
+You and a friend each make a playlist in a music app. Some songs are on
+both, and one of you has put a favourite in twice. Which songs are on
+both playlists? And how many different songs are there between you?
+
+A music app answers questions like these in a blink, for playlists of
+thousands of songs. It uses a kind of collection that forgets repeats
+and ignores order. By the end of this page you will use the same few
+moves on two whole novels, one full of dinosaurs and one full of
+Martians, and find out how many words they share.
 
 On this page we:
 
 - turn a list into a set, and see what a set keeps and what it drops
 - ask whether a value is in a set, with `in`, written $\in$ in maths
 - find what two sets share, what either one has, and what one has that
-  the other does not
+  the other does not, first for playlists and then for two real books
 - take the complement of a set, and see why it needs a bigger set
   around it
 - meet the empty set, and sets too big to list, such as $\mathbb{N}$
-- make every pair from two sets, and every smaller set from one
+- make every pair from two sets, and every smaller set from one, and
+  see eight screen colours appear
 - see the same moves at work in a database
 
 > **The space we're in.** Collections where only one thing matters:
@@ -71,8 +81,8 @@ id: collections-warm-up-2
 type: multiple-choice
 correct: 3
 
-A café offers 3 drinks, each in 2 sizes. How many pairs does
-`all_pairs(drinks, sizes)` give?
+A game offers 3 characters, each in 2 colours. How many pairs does
+`all_pairs(characters, colours)` give?
 
 - 2
 - 5
@@ -105,11 +115,10 @@ print(my_songs)
 Each list has 7 songs, and each set has 6. The set kept "Linger" once
 and "Zombie" once, because a set only records whether a value is in it.
 
-Look at the order of the last line. It is not the order of the list.
-Run the cell again, and the order may change. A set keeps its values in
-an order of its own, and makes no promise about it. When the order
-matters to us, `sorted(my_songs)` gives the songs as a list, in
-alphabetical order.
+Look at the order of the last line. It is not the order of the list,
+and it may change if you run the cell again: a set makes no promise
+about order. When the order matters to us, `sorted(my_songs)` gives the
+songs as a list, in alphabetical order.
 
 The values in a set are its *elements*, or *members*. Maths writes a
 set with curly brackets, as on
@@ -159,12 +168,12 @@ $$\text{Zombie} \in A \qquad \text{Breakeven} \notin A$$
 reads "Zombie is an element of A, and Breakeven is not an element of
 A".
 
-For a long list, `in` looks at the values one by one, until it finds a
-match or runs out. A set can answer without looking through every
-value. It uses a short code made from each value, called a hash, which
+For a long list, `in` looks at the values one by one. A set can answer
+without looking through every value, using a short code made from each
+value, called a hash, which
 [Chances that combine](tutorial:chances-that-combine#the-birthday-problem)
-mentioned. So for "is this in here?" questions on a big collection, a
-set is usually much faster. Unit 6 counts the steps.
+mentioned. That is how the music app answers in a blink. Unit 6 counts
+the steps.
 
 ## On both lists: intersection
 
@@ -218,8 +227,7 @@ print(sorted(either))
 ```
 
 Ten, not twelve. "Dreams" and "Zombie" are on both lists, and the union
-holds each of them once. A set never holds a value twice, even when two
-sets pour into one. How to count a union without making it is the
+holds each of them once. How to count a union without making it is the
 subject of the next page.
 
 ### Your turn
@@ -245,8 +253,8 @@ print(sorted(my_songs - your_songs))
 print(sorted(your_songs - my_songs))
 ```
 
-No. Each gives four songs, and not the same four. Like $5 - 3$ and
-$3 - 5$, the order of a difference matters.
+No: four songs each, and not the same four. Like $5 - 3$ and $3 - 5$,
+the order of a difference matters.
 
 One more: the songs on exactly one of the two lists, mine or yours but
 not both. That is the *symmetric difference*, written $A \,\triangle\, B$.
@@ -264,10 +272,65 @@ print((my_songs ^ your_songs) == (either - both))
 Eight songs: the ten in the union, without the two in the
 intersection.
 
+## Two books, thousands of words
+
+Now some real data. *The Lost World*, by Arthur Conan Doyle (1912),
+sends four explorers to a plateau in South America where dinosaurs are
+still alive. *The War of the Worlds*, by H. G. Wells (1898), lands
+Martians near London. Both books are in dewlab's data folder. How many
+different words do you think a whole novel uses? A thousand? Fifty
+thousand? Pause here and guess. I'll wait.
+
+The cell below loads both books, each as one long piece of text, and
+makes a set of the words in each. You do not need to follow every line
+of `words_in`. It keeps the novel between the header and the licence
+that Project Gutenberg, a free online library, adds to each book. Then
+`re.findall` finds every run of the letters a to z.
+
+```python exec
+id: collections-books-1
+import re
+
+
+def words_in(book):
+    """Return the set of different words in a Project Gutenberg book."""
+    start = book.find("\n", book.find("*** START"))    # after the library's header
+    end = book.find("*** END")                         # before its licence
+    return set(re.findall("[a-z]+", book[start:end].lower()))
+
+
+lost_world = words_in(await load_text("the-lost-world.txt"))
+war_of_the_worlds = words_in(await load_text("the-war-of-the-worlds.txt"))
+print(len(lost_world), len(war_of_the_worlds))
+print(len(lost_world & war_of_the_worlds), len(lost_world | war_of_the_worlds))
+```
+
+*The Lost World* uses 7,766 different words, and *The War of the
+Worlds* 6,743. Did you guess more? *The Lost World* is about 77,000
+words long, so about nine words in ten repeat a word it has already
+used. The two books share 3,540 words, and between them they use
+10,969.
+
+Which words tell the two books apart? Guess each line before you run it.
+
+```python exec
+id: collections-books-2
+for word in ["london", "dinosaur", "pterodactyl", "martian", "tripod"]:
+    print(word, word in lost_world, word in war_of_the_worlds)
+print(len(lost_world - war_of_the_worlds), len(war_of_the_worlds - lost_world))
+```
+
+Both books visit London. The dinosaurs and the flying pterodactyl are
+only in *The Lost World*, and the Martians and their three-legged
+fighting machines, the tripods, only in *The War of the Worlds*. 4,226
+words are in the first book and not the second, and 3,203 the other
+way round. A difference of two sets of words is a rough picture of
+what makes each book its own.
+
 ## Everything else: the complement
 
-Say the car's music library holds twelve songs. Which of them are not on
-my playlist?
+Say the music library on your phone holds twelve songs. Which of them
+are not on my playlist?
 
 On
 [Chances that combine](tutorial:chances-that-combine#not-and-at-least-once),
@@ -292,9 +355,9 @@ print(sorted(not_mine))
 
 Of the 12 songs in the library, 6 are not on my playlist. Change the
 universal set to every song ever recorded, and the complement becomes
-millions of songs. The set $A$ did not change. The space around it did.
-This is the fourth question, in its purest form: the complement asks
-"what space are we in?" before it can answer at all.
+millions of songs. The set $A$ did not change; the space around it did.
+The complement asks "what space are we in?" before it can answer at
+all.
 
 ## Sets too big to list
 
@@ -316,7 +379,7 @@ The first line prints `set()`, which is how Python writes the empty
 set. The last line says `dict`: `{}` makes an empty dictionary, from
 [Kinds of data, and honest charts](tutorial:kinds-of-data-and-honest-charts#counting-a-frequency-table).
 Dictionaries came to Python before sets did, so they got the curly
-brackets first. An empty set needs its own name, `set()`.
+brackets first.
 
 An empty set is often where a set begins. `.add(value)` puts one more
 element into a set, and does nothing if it is already there.
@@ -333,9 +396,8 @@ print(sorted(favourites))
 Two elements: the second "Zombie" changed nothing.
 
 At the other end, some sets never stop. A *finite set* has a number of
-elements we could count, even if it is large: the songs in a library,
-the people in Ireland. An *infinite set* has no end, so no count. You
-already know several. The number families from
+elements we could count, even if it is large: the words in a novel,
+the people in Ireland. An *infinite set* has no end, so no count. The number families from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#families-of-numbers)
 are sets:
 
@@ -389,77 +451,104 @@ Which of these sets is infinite?
 
 ## Every pair, and every smaller set
 
-Two more ways to make a new set, both of them bigger than what we
-started with.
-
 The *Cartesian product* $A \times B$, said "A cross B", is the set of
 every pair $(a, b)$ with $a$ from $A$ and $b$ from $B$. You made it on
 [Counting every outfit](tutorial:counting-every-outfit#a-tool-that-lists-every-pair):
 it is `all_pairs`. And its size is the counting principle,
-$|A \times B| = |A| \times |B|$.
+$|A \times B| = |A| \times |B|$. A web designer who wants to check a new
+page on every device, in light mode and in dark mode, needs every pair:
 
 ```python exec
 id: collections-pairs-1
-drinks = {"tea", "coffee", "hot chocolate"}
-sizes = {"small", "large"}
-orders = set(all_pairs(drinks, sizes))
-print(len(orders), len(drinks) * len(sizes))
-print(("tea", "large") in orders)
+devices = {"phone", "tablet", "laptop"}
+modes = {"light", "dark"}
+checks = set(all_pairs(devices, modes))
+print(len(checks), len(devices) * len(modes))
+print(("phone", "dark") in checks)
 ```
 
-Six orders, as the counting principle promised.
+Six checks, as the counting principle promised.
 
-The second way. A pizza place has three toppings: ham, mushroom and
-pineapple. You may choose any of them, all of them, or none. How many
-different pizzas is that? Guess first.
+The second way. A pixel on a screen has three small lights: red, green
+and blue. Say each light can only be off or fully on. Which colours can
+the pixel show? Guess how many before you read on.
 
-Each pizza is a subset of the toppings. The *power set* of a set,
+Each colour is a subset of the lights. The *power set* of a set,
 written $\mathcal{P}(A)$, is the set of all its subsets, including the
 empty set and the whole set itself. Here is a way to build it. Start
-with one pizza, the plain one. Then, for each topping, keep every pizza
-you have, and add a copy of each with the new topping on it.
+with one colour, all lights off. Then, for each light, keep every colour
+you have, and add a copy of each with the new light on.
 
 ```python exec
 id: collections-power-1
-toppings = ["ham", "mushroom", "pineapple"]
+lights = ["red", "green", "blue"]
 
-pizzas = [set()]
-for topping in toppings:
-    with_topping = []
-    for pizza in pizzas:
-        with_topping.append(pizza | {topping})
-    pizzas = pizzas + with_topping
+colours = [set()]
+for light in lights:
+    with_light = []
+    for colour in colours:
+        with_light.append(colour | {light})
+    colours = colours + with_light
 
-for pizza in pizzas:
-    print(sorted(pizza))
-print(len(pizzas), "pizzas")
+for colour in colours:
+    print(sorted(colour))
+print(len(colours), "colours")
 ```
 
-Eight pizzas, from plain to everything. `pizzas` is a list of sets, not
-a set of sets, because a Python set cannot hold a value that might
-change, and a set can change.
+Eight colours, from no lights to all three. `colours` is a list of sets,
+not a set of sets, because a Python set cannot hold a value that might
+change, and a set can change. What do they look like? The next cell
+draws one square for each, with each light at full strength (1) or off
+(0).
 
-Why eight? Each topping is either on or off, so each new topping
-doubles the count: $2 \times 2 \times 2 = 2^3$. For a set of $n$
-elements,
+```python exec
+id: collections-power-2
+import matplotlib.pyplot as plt
+
+for position in range(len(colours)):
+    strengths = []
+    for light in lights:
+        if light in colours[position]:
+            strengths.append(1)
+        else:
+            strengths.append(0)
+    plt.bar(position, 1, color=strengths, edgecolor="grey")
+plt.axis("off")
+```
+
+Black, red, green, yellow, blue, magenta, cyan and white. Red and green
+light make yellow. That surprises most people who learned to mix paint,
+where red and green make brown: light adds, and paint takes away.
+
+<aside class="dl-note" id="collections-note-teletext">
+
+**Eight colours on television.** Teletext, the pages of news and
+weather that televisions showed from the 1970s on, used exactly these
+eight colours: each of red, green and blue was either fully on or off.
+
+</aside>
+
+Why eight? Each light is either on or off, so each new light doubles the
+count: $2 \times 2 \times 2 = 2^3$. For a set of $n$ elements,
 
 $$|\mathcal{P}(A)| = 2^n$$
 
 It is the same count as the rows of a truth table on
 [True, false and every case](tutorial:true-false-and-every-case#how-many-rows).
-That is no accident: a row that says "ham True, mushroom False,
-pineapple True" is the pizza with ham and pineapple.
+That is no accident: a row that says "red True, green True, blue False"
+is the colour yellow.
 
 ### Your turn
 
-1. Add a fourth topping, and run the cell. Before you do, how many
-   pizzas will there be?
-2. With 10 toppings, how many pizzas? Work it out with `2 ** 10` first,
-   then check it with the cell.
+1. Some early computers added a fourth element to each pixel, "bright",
+   which made every colour stronger. Add it to `lights`, and run the
+   first cell. Before you do, how many colours will there be?
+2. With 10 elements, how many subsets? Work it out with `2 ** 10`
+   first, then check it with the cell.
 3. Use `combinations` from
-   [Orders and choices](tutorial:orders-and-choices) to count the pizzas
-   with exactly two of your four toppings. Do they match the lines that
-   show two toppings?
+   [Orders and choices](tutorial:orders-and-choices) to count the
+   colours with exactly two of the three lights on. Which colours are
+   they?
 
 ## From sets to databases
 
@@ -483,15 +572,15 @@ from lists and loops, as the page
 [Sets: building them from sorted lists](tutorial:sets-as-sorted-lists)
 does.
 
-Building them yourself has real value. You see exactly how a union is
-made, and the work is good practice with loops and lists.
+Building them yourself shows exactly how a union is made, and is good
+practice with loops and lists.
 
 We chose the built-in sets because the subject here is the language:
 $\cap$, $\cup$, $\setminus$ and $\in$, and what each one means. Each
 symbol is a name for a move, and a reader who knows the names can read
 a maths book, a SQL query and a Python program with the same ideas.
-One loop checked one promise. The rest of the page could then be about
-meaning, not mechanics.
+One loop checked one promise, and the rest of the page could be about
+meaning.
 
 </details>
 
@@ -501,7 +590,7 @@ meaning, not mechanics.
 |---|---|
 | What is named here? | a set, and its elements; the symbols $\in$, $\cap$, $\cup$, $\setminus$, $\triangle$ and $'$, each a name for a move; $\varnothing$, $U$, and the number families |
 | What is promised? | a set holds each value once; `&` promises the same set as the loop that checks both; $\lvert A \times B \rvert = \lvert A \rvert \times \lvert B \rvert$, and $\lvert \mathcal{P}(A) \rvert = 2^n$ |
-| What happens when? | a set keeps no order, so we sort it when order matters; the power set doubles once for each new element |
+| What happens when? | a set keeps no order, so we sort it when order matters; the power set doubles once for each new element, as each light doubles the colours |
 | What does this space let us do? | a Python set is finite, so an infinite set needs a rule; a complement needs a universal set before it has any answer |
 
 ## What we have now

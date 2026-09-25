@@ -2,7 +2,7 @@
 title: "What is typical? Mean, median, mode and spread — Practice"
 practice_for: what-is-typical
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 datasets: [life-expectancy]
 ---
 
@@ -78,17 +78,18 @@ print(median([10, 2, 7, 4]))    # 5.5
 
 </details>
 
-**4. Explain.** A shoe shop keeps a list of the sizes it sold last
-month, and wants to know which size to order most of. Which average
-should it use, and why are the other two no help?
+**4. Explain.** A photo app keeps a list of the size setting each user
+chose for their pictures last month: 1, 2, 4, 8 or 12 megapixels. The
+app's makers want to know which setting to show first. Which average
+should they use, and why are the other two no help?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The mode, the size sold most often. The mean size might be 7.4, which
-is not a size anyone wears. The median is a real size, but it says
-only that half the sales were smaller and half bigger, not which size
-sold best. The mode answers the shop's question directly: this is the
-size most people bought.
+The mode, the setting chosen most often. The mean setting might be
+5.3 megapixels, which is not a setting anyone can choose. The median is
+a real setting, but it says only that half the choices were smaller and
+half bigger, not which one was most popular. The mode answers the
+question directly: this is the setting most people chose.
 
 </details>
 
@@ -128,29 +129,31 @@ than land.
 
 </details>
 
-**6. Fix.** A property website wants the median house price in a small
-area. This code gives an answer, with no error, and the answer is
-wrong. Find the mistake.
+**6. Fix.** Schlomi, who is learning Python too, times five downloads
+of the same file, in seconds, and wants the median. Her idea is a
+quick one: the median is in the middle, so take the value in the
+middle position. Her code gives an answer, with no error. Is it the
+median?
 
 ```python exec
 id: typical-practice-fix-median
-prices = [310000, 245000, 780000, 265000, 290000]
+download_seconds = [31, 24.5, 78, 26.5, 29]
 
 
-def middle_price(values):
+def middle_time(values):
     """Return the median of values, a list with an odd count."""
     return values[len(values) // 2]
 
 
-print(middle_price(prices))    # should be 290000
+print(middle_time(download_seconds))    # the median is 29
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Which index does `len(values) // 2` give for five values?
-2. Which price is at that index in `prices`?
-3. Is that the middle price, if the five houses stood in a line from
-   cheapest to dearest?
+2. Which time is at that index in `download_seconds`?
+3. Is that the middle time, if the five downloads stood in a line from
+   quickest to slowest?
 
 **Think about:** what must happen to the values before "the middle one"
 means anything?
@@ -160,39 +163,42 @@ means anything?
 <details class="dl-answer"><summary>answer</summary>
 
 The function takes the middle position of the list as it was given,
-which is €780,000, the most expensive house. The median is the middle
-one *in order*, so the values must be sorted first:
+which is 78 seconds, the slowest download. Schlomi's idea had the right
+picture, the middle one of a line, and one step missing: the line must
+be *in order*, so the values must be sorted first:
 
 ```python
-def middle_price(values):
+def middle_time(values):
     """Return the median of values, a list with an odd count."""
     return sorted(values)[len(values) // 2]
 
 
-print(middle_price(prices))    # 290000
+print(middle_time(download_seconds))    # 29
 ```
 
 A mistake like this is hard to spot, because the code runs, and gives a
-real price from the list. A test with a list that is not already in
+real time from the list. A test with a list that is not already in
 order catches it. Your toolkit's `median` does the same job, and works
 for an even count too.
 
 </details>
 
-**7. Fix.** A student writes a function to report a week's spending. It
-stops with an error. Read the last line of the error, then find the
-mistake.
+**7. Fix.** Schlomo, who is learning Python too, writes a function to
+report how much mobile data his phone used each day for five days, in
+megabytes (MB). He calls the number `mean`, because that is what it
+is. The function stops with an error. Read the last line of the error,
+then find the mistake.
 
 ```python exec
 id: typical-practice-fix-name
-def spending_report(spends):
-    """Print the mean and the largest of a list of amounts spent."""
-    mean = mean(spends)
+def data_report(megabytes):
+    """Print the mean and the largest of a list of daily data use."""
+    mean = mean(megabytes)
     print("typical day:", round(mean, 2))
-    print("biggest day:", largest(spends))
+    print("biggest day:", largest(megabytes))
 
 
-spending_report([12.50, 4.00, 7.80, 31.20, 6.50])
+data_report([125.0, 40.0, 78.0, 312.0, 65.0])
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -209,23 +215,25 @@ met this error. Why does one line both need the tool and hide it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The line `mean = mean(spends)` gives the name `mean` to a number inside
+The line `mean = mean(megabytes)` gives the name `mean` to a number inside
 the function. That makes `mean` a local name for the whole function.
 So when the right-hand side calls `mean(...)`, Python looks in the
 call's own space, finds a local `mean` with no value yet, and stops
-with an `UnboundLocalError`. Give the number its own name:
+with an `UnboundLocalError`. Schlomo's name said exactly what the number
+was, which is a good habit; here it collides with a tool. Give the
+number its own name:
 
 ```python
-def spending_report(spends):
-    """Print the mean and the largest of a list of amounts spent."""
-    typical_day = mean(spends)
+def data_report(megabytes):
+    """Print the mean and the largest of a list of daily data use."""
+    typical_day = mean(megabytes)
     print("typical day:", round(typical_day, 2))
-    print("biggest day:", largest(spends))
+    print("biggest day:", largest(megabytes))
 
 
-spending_report([12.50, 4.00, 7.80, 31.20, 6.50])
-# typical day: 12.4
-# biggest day: 31.2
+data_report([125.0, 40.0, 78.0, 312.0, 65.0])
+# typical day: 124.0
+# biggest day: 312.0
 ```
 
 Outside a function, the same line would work once, and then hide the
@@ -248,7 +256,7 @@ print(mean(ages + [64]), median(ages + [64]))    # 29.0 22.5
 
 The mean jumps from 22 to 29, older than everyone but the coach. The
 median moves only from 22 to 22.5. The coach is an outlier, and the
-mean moves towards the tail, as it did with the rents. Notice
+mean moves towards the tail, as it did with the response times. Notice
 `ages + [64]`: from
 [A row of numbers](tutorial:a-row-of-numbers#adding-and-multiplying-lists),
 `+` joins two lists.
@@ -271,13 +279,16 @@ With a formula: the deviations add up to
 $\sum x_i - n\bar{x}$, and $n\bar{x}$ is the total, so the answer is
 the total minus the total, which is 0.
 
+That is one good way to say it. Yours may use a picture, such as a
+see-saw that balances at the mean, and be as good.
+
 </details>
 
 **10. Another way.** Here is another way to find a median, by hand or
 in code. Put the values in order. Then take away the smallest and the
 largest, again and again, until one or two values are left. Write it
 with a `while` loop and a slice, and check it against your toolkit's
-`median` on the rents from the tutorial.
+`median` on the response times from the tutorial.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -302,12 +313,12 @@ def median_by_trimming(values):
     return mean(in_line)
 
 
-rents = [1350, 1250, 3900, 1200, 1450, 1250, 1300, 2600, 1150, 1400, 1250]
-print(median_by_trimming(rents), median(rents))    # 1300.0 1300
-print(median_by_trimming([10, 2, 7, 4]))           # 5.5
+response_ms = [210, 190, 3400, 180, 230, 190, 200, 1850, 170, 220, 190]
+print(median_by_trimming(response_ms), median(response_ms))    # 200.0 200
+print(median_by_trimming([10, 2, 7, 4]))                       # 5.5
 ```
 
-Both ways give €1,300. The mean of one value is that value, so
+Both ways give 200 ms. The mean of one value is that value, so
 `mean(in_line)` works whether one or two are left. Each trim takes one
 value from each side, so the middle is never touched. That is why the
 median ignores outliers: they are the first things trimmed away.
@@ -345,7 +356,7 @@ friend, which way would you choose, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no single right answer. A good answer weighs a few things:
+There is more than one good answer. A good answer weighs a few things:
 
 - **Time and exams.** The formula first is quicker, and an exam or a
   calculator often wants only the number.
@@ -401,18 +412,19 @@ measures how much a country changed, not how far apart its people are.
 
 **14. Another way.** Python's own `statistics` module has two standard
 deviations: `statistics.pstdev`, which divides by $n$, and
-`statistics.stdev`, which divides by $n - 1$. Find both for the rents,
-and compare them with your `std_dev`. Which one matches yours?
+`statistics.stdev`, which divides by $n - 1$. Find both for the
+response times from the tutorial, and compare them with your
+`std_dev`. Which one matches yours?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
 import statistics
 
-rents = [1350, 1250, 3900, 1200, 1450, 1250, 1300, 2600, 1150, 1400, 1250]
-print(round(std_dev(rents), 2))              # 809.73
-print(round(statistics.pstdev(rents), 2))    # 809.73
-print(round(statistics.stdev(rents), 2))     # 849.25
+response_ms = [210, 190, 3400, 180, 230, 190, 200, 1850, 170, 220, 190]
+print(round(std_dev(response_ms), 2))              # 992.92
+print(round(statistics.pstdev(response_ms), 2))    # 992.92
+print(round(statistics.stdev(response_ms), 2))     # 1041.38
 ```
 
 `pstdev` matches yours, because both divide by $n$. The `p` stands for
@@ -463,17 +475,18 @@ and a run of 100,000 rolls would settle it.
 
 </details>
 
-**16. Predict.** Every flat in the rents list goes up by €50 a month.
-What happens to the mean, the median and the standard deviation? What
-if instead every rent went up by 10%? Predict first, then check.
+**16. Predict.** The website from the tutorial moves to a network that
+adds 50 ms to every response. What happens to the mean, the median and
+the standard deviation? What if instead a slower server made every
+response take 10% longer? Predict first, then check.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Build a new list with 50 added to each rent, and another with each
-   rent multiplied by 1.1.
+1. Build a new list with 50 added to each time, and another with each
+   time multiplied by 1.1.
 2. Find the three numbers for each list, and compare with the old ones.
 
-**Think about:** when every value moves up by €50, do the values get
+**Think about:** when every value moves up by 50 ms, do the values get
 any further apart?
 
 </details>
@@ -481,25 +494,26 @@ any further apart?
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-rents = [1350, 1250, 3900, 1200, 1450, 1250, 1300, 2600, 1150, 1400, 1250]
+response_ms = [210, 190, 3400, 180, 230, 190, 200, 1850, 170, 220, 190]
 
 plus_fifty = []
 plus_ten_percent = []
-for rent in rents:
-    plus_fifty.append(rent + 50)
-    plus_ten_percent.append(rent * 1.1)
+for milliseconds in response_ms:
+    plus_fifty.append(milliseconds + 50)
+    plus_ten_percent.append(milliseconds * 1.1)
 
-for rent_list in [rents, plus_fifty, plus_ten_percent]:
-    print(round(mean(rent_list), 2), round(median(rent_list), 2), round(std_dev(rent_list), 2))
-# 1645.45 1300 809.73
-# 1695.45 1350 809.73
-# 1810.0 1430.0 890.7
+for time_list in [response_ms, plus_fifty, plus_ten_percent]:
+    print(round(mean(time_list), 2), round(median(time_list), 2), round(std_dev(time_list), 2))
+# 639.09 200 992.92
+# 689.09 250 992.92
+# 703.0 220.0 1092.21
 ```
 
-Adding €50 to every rent adds €50 to the mean and to the median, and
-leaves the standard deviation exactly where it was. Every value moves
-the same distance, so none of them gets further from the others.
-Adding 10% multiplies all three by 1.1, the spread included, because
-the big rents go up by more euro than the small ones.
+Adding 50 ms to every response adds 50 ms to the mean and to the
+median, and leaves the standard deviation exactly where it was. Every
+value moves the same distance, so none of them gets further from the
+others. Adding 10% multiplies all three by 1.1, the spread included,
+because the slow responses grow by more milliseconds than the quick
+ones.
 
 </details>

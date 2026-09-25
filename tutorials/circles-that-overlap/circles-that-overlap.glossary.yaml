@@ -15,7 +15,7 @@ entries:
     kind: concept
     definition: >
       A region is one part of a Venn diagram. Two circles make four regions,
-      and three circles make eight. Everyone in one region gave the same
+      and three circles make eight. Everything in one region got the same
       yes and no answers.
   - term: "inclusion–exclusion, two sets"
     kind: formula

@@ -54,7 +54,7 @@ and the second from
 id: rules-with-warm-up-1
 type: fill-in-the-blank
 
-The taxi rule is $f(x) = 4 + 1.5x$. So $f(10)$ is {19}.
+The temperature chip's rule is $f(x) = 100x - 50$. So $f(0.75)$ is {25}.
 ```
 
 ```question

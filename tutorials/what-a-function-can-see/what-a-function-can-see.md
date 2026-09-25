@@ -1,7 +1,7 @@
 ---
 title: "What a function can see: scope and parameters"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.25.2
 covers:
   names-made-inside-a-function:
     covers: [PDP-LO8]
@@ -27,11 +27,11 @@ covers:
 
 # What a function can see: scope and parameters
 
-You write a function that works out a runner's pace, and inside it you
-give the pace a name. On the next line, outside the function, you ask
-Python to print that name. Python says it has never heard of it. The
-name was there a moment ago. Where did it go, and what can a function
-see?
+You write a function that works out how fast a file downloaded, and
+inside it you give the speed a name. On the next line, outside the
+function, you ask Python to print that name. Python says it has never
+heard of it. The name was there a moment ago. Where did it go, and what
+can a function see?
 
 On this page we:
 
@@ -81,26 +81,26 @@ correct: 1
 
 ## Names made inside a function
 
-Here is the runner's function. A run of 5 km took 30 minutes. The last
+Here is the download function. A 700 MB file took 56 seconds. The last
 line asks for the name made inside the function, and it is meant to
 fail. Before you run it, which line do you think Python will stop at?
 
 ```python exec
 id: what-function-inside-1
-def pace(minutes, km):
-    """Give back the minutes taken for each kilometre of a run."""
-    minutes_per_km = minutes / km
-    return minutes_per_km
+def download_speed(megabytes, seconds):
+    """Give back the megabytes downloaded each second."""
+    megabytes_per_second = megabytes / seconds
+    return megabytes_per_second
 
-print(pace(30, 5))
-print(minutes_per_km)
+print(download_speed(700, 56))
+print(megabytes_per_second)
 ```
 
-The first line shows `6.0`, six minutes for each kilometre. Then Python
-stops:
+The first line shows `12.5`, twelve and a half megabytes each second.
+Then Python stops:
 
 ```text
-NameError: name 'minutes_per_km' is not defined
+NameError: name 'megabytes_per_second' is not defined
 ```
 
 That is the error from
@@ -110,18 +110,19 @@ The name was made, inside the function, and it is gone.
 
 Here is what happened, in order.
 
-1. The call `pace(30, 5)` starts. Python makes a new, empty space of
-   names for this one call.
-2. In that space, `minutes` points at 30 and `km` points at 5.
-3. `minutes_per_km = minutes / km` makes a third name, in the same space.
-4. `return` hands the value 6.0 out to the line that called.
+1. The call `download_speed(700, 56)` starts. Python makes a new, empty
+   space of names for this one call.
+2. In that space, `megabytes` points at 700 and `seconds` points at 56.
+3. `megabytes_per_second = megabytes / seconds` makes a third name, in
+   the same space.
+4. `return` hands the value 12.5 out to the line that called.
 5. The call ends, and Python throws the space away, with every name in it.
 
 A *local name* is a name made inside a function. It exists only inside
 that function, and only while one call is running. The *scope* of a name
 is the part of a program where the name can be seen. So the scope of
-`minutes_per_km` is the inside of `pace`, and the last line of the cell
-is outside it.
+`megabytes_per_second` is the inside of `download_speed`, and the last
+line of the cell is outside it.
 
 You can picture each call as a small room, built when the call starts
 and taken down when it ends. The only thing carried out of the room is
@@ -131,48 +132,48 @@ If you want that value outside, keep it under a name of your own:
 
 ```python exec
 id: what-function-inside-2
-my_pace = pace(30, 5)
-print(my_pace)
+my_speed = download_speed(700, 56)
+print(my_speed)
 ```
 
-`my_pace` is made on the page, outside every function, so it stays
+`my_speed` is made on the page, outside every function, so it stays
 after the call ends.
 
 ### Your turn
 
-1. A 10 km race took 55 minutes. In the cell above, keep the pace under
-   the name `race_pace`, and print it.
-2. After the call, add `print(km)`. Before you run it, which error do you
-   expect, and why?
+1. A 2,400 MB game took 80 seconds to download. In the cell above, keep
+   its speed under the name `game_speed`, and print it.
+2. After the call, add `print(seconds)`. Before you run it, which error
+   do you expect, and why?
 
 ## A fresh space for every call
 
-A café gives a stamp with every coffee. Here is a first try at a stamp
-counter. It is called three times. Will it print 1, 2 and 3, or
-something else? Decide, then run it to check.
+A network card counts the packets of data it receives: small pieces of
+a file, sent one at a time. Here is a first try at a packet counter.
+It is called three times. Will it print 1, 2 and 3, or something else?
+Decide, then run it to check.
 
 ```python exec
 id: what-function-fresh-1
-def add_stamp():
-    """Add one stamp to a loyalty card."""
-    stamps = 0
-    stamps = stamps + 1
-    return stamps
+def add_packet():
+    """Add one to the count of packets received."""
+    packets = 0
+    packets = packets + 1
+    return packets
 
-print(add_stamp())
-print(add_stamp())
-print(add_stamp())
+print(add_packet())
+print(add_packet())
+print(add_packet())
 ```
 
 It prints `1` three times. Each call gets a new space, so each call
-starts again with `stamps = 0`. Nothing is kept from one call to the
+starts again with `packets = 0`. Nothing is kept from one call to the
 next.
 
-For a loyalty card, that is a problem: a card has to remember. But it
-is also what makes a function a promise we can test. The tests on
-[Does it work?](tutorial:does-it-work) are only worth running because
-the same inputs give the same result every time. A later section on this
-page fixes the café card.
+For a counter, that is a problem: a counter has to remember. But it is
+also what makes a function a promise we can test: the same inputs give
+the same result every time. A later section on this page fixes the
+counter.
 
 Fresh spaces have a second good side. Two functions can use the same
 name for different things, and they never get in each other's way. What
@@ -180,41 +181,50 @@ do you think this cell prints?
 
 ```python exec
 id: what-function-fresh-2
-def bus_fares(journeys):
-    cost = journeys * 2.00
-    return cost
+def image_bytes(width, height):
+    size = width * height * 3        # 3 bytes for each pixel
+    return size
 
-def parking(hours):
-    cost = hours * 3.50
-    return cost
+def sound_bytes(seconds):
+    size = seconds * 44100 * 2 * 2   # CD sound: 44,100 samples a second, 2 bytes each, 2 speakers
+    return size
 
-print(bus_fares(10) + parking(2))
+print(image_bytes(1920, 1080) + sound_bytes(10))
 ```
 
-It prints `27.0`: €20 of bus fares and €7 of parking. Each `cost` lives
-in its own function's space. It is like two recipes in one cookbook that
-both say "the batter": nobody pours the pancake batter into the cake
-tin, because each recipe's names belong to that recipe.
+It prints `7984800`: about 6.2 million bytes for one full-HD picture,
+and 1.8 million for ten seconds of CD sound. Each `size` lives in its
+own function's space, like two files called `notes.txt` in two
+different folders.
 
 ## What a function can see from outside
 
 So names made inside stay inside. Can a function see names made
-outside? Here, the VAT rate is made on the page, and the function uses
+outside? Drop a ball, and *gravity*, the pull of the Earth, makes it
+fall faster and faster. On Earth, a falling thing gets 9.81 metres a
+second faster every second. Physics gives a rule for how long a fall
+takes, if we ignore the air: $t = \sqrt{\frac{2h}{g}}$, where $h$ is the
+height and $g$ is that 9.81. You do not need to know where the rule
+comes from. Here, `gravity` is made on the page, and the function uses
 it without being handed it. Will it work?
 
 ```python exec
 id: what-function-outside-1
-vat_percent = 23
+import math
 
-def with_vat(price):
-    """Give back the price with VAT added, rounded to the cent."""
-    return round(price * (1 + vat_percent / 100), 2)
+gravity = 9.81
 
-print(with_vat(100))
+def fall_time(height):
+    """Give back the seconds a ball takes to fall height metres, ignoring the air."""
+    return round(math.sqrt(2 * height / gravity), 2)
+
+print(fall_time(20))
 ```
 
-It works, and shows `123.0`. A *global name* is a name made on the page
-itself, outside every function. Every function on the page can read it.
+It works, and shows `2.02`: a ball dropped from 20 metres lands in
+about 2 seconds. A *global
+name* is a name made on the page itself, outside every function. Every
+function on the page can read it.
 
 When a function meets a name, Python looks for it in three spaces, in
 this order:
@@ -227,48 +237,58 @@ The first place that has the name wins. Your toolkit functions, like
 `digit_at`, are in the page's space too. They were loaded there before
 the first cell ran.
 
-Now a question about sequence. The rate changes to 13.5%, one of
-Ireland's reduced VAT rates, used for things like building work and
-heating fuel. The function was written when the rate was
-23. What will it give now?
+Now a question about sequence. We take the ball to the Moon, where
+gravity is much weaker: 1.62 metres a second, every second. The
+function was written for Earth. What will it give now?
 
 ```python exec
 id: what-function-outside-2
-vat_percent = 13.5
-print(with_vat(100))
+gravity = 1.62
+print(fall_time(20))
 ```
 
-It gives `113.5`. The function looks the name up each time it runs, not
-when it was written. Compare that with `water_ml` on
+It gives `4.97`: the same drop takes more than twice as long. The
+function looks the name up each time it runs, not when it was written.
+Compare that with `water_ml` on
 [Recipes are algorithms](tutorial:recipes-are-algorithms#names-that-hold-values):
 there, a line worked out a value once, and changing `cups` later made no
 difference. A function's lines run again at every call, so they see the
 page as it is at that moment.
 
-Is that good? The same call, `with_vat(100)`, gave two different answers,
-and nothing in the call or the docstring says why. The rate is a
-*hidden input*: something the function needs that is not among its
-parameters. The fix is to make it a parameter, with a default value, as
-`digit_at` does with its base:
+<aside class="dl-note" id="what-function-note-moon">
+
+**A hammer and a feather.** In 1971, on the Apollo 15 mission, the
+astronaut David Scott dropped a hammer and a feather together on the
+Moon. With no air to slow the feather, they landed at the same moment,
+as the rule above says they should. NASA keeps a film of it online.
+
+</aside>
+
+Is that good? The same call, `fall_time(20)`, gave two different
+answers, and nothing in the call or the docstring says why. The pull of
+gravity is a *hidden input*: something the function needs that is not
+among its parameters. The fix is to make it a parameter, with a default
+value, as `digit_at` does with its base:
 
 ```python exec
 id: what-function-outside-3
-def with_vat(price, vat_percent=23):
-    """Give back the price with VAT added, rounded to the cent.
+def fall_time(height, gravity=9.81):
+    """Give back the seconds a ball takes to fall height metres, ignoring the air.
 
-    vat_percent is the VAT rate as a percentage, 23 unless given.
+    gravity is how much faster, in metres a second, a falling thing gets
+    every second: 9.81 on Earth unless given.
     """
-    return round(price * (1 + vat_percent / 100), 2)
+    return round(math.sqrt(2 * height / gravity), 2)
 
-assert with_vat(100) == 123.0
-assert with_vat(100, 13.5) == 113.5
-print(with_vat(100))
+assert fall_time(20) == 2.02
+assert fall_time(20, 1.62) == 4.97
+print(fall_time(20))
 ```
 
-It prints `123.0`, even though the page's `vat_percent` is still 13.5.
-The parameter `vat_percent` is a local name, and the function's own space
-is searched first. Now everything the function needs is on its `def`
-line, where a reader can see it.
+It prints `2.02`, even though the page's `gravity` is still 1.62. The
+parameter `gravity` is a local name, and the function's own space is
+searched first. Now everything the function needs is on its `def` line,
+where a reader can see it, and the Moon is one argument away.
 
 ## Changing a name from inside
 
@@ -339,16 +359,16 @@ changes it is on the page, where you can see it.
 
 ### Your turn
 
-1. Rewrite `add_stamp` from the café so that it takes the number of
-   stamps in, and gives back one more.
+1. Rewrite `add_packet` so that it takes the count of packets in, and
+   gives back one more.
 2. Test it with two `assert` lines.
-3. Start a card at 0, and use a loop from
-   [Doing it again](tutorial:doing-it-again) to add ten stamps. Print the
-   card at the end. It should say `10`.
+3. Start a count at 0, and use a loop from
+   [Doing it again](tutorial:doing-it-again) to add ten packets. Print
+   the count at the end. It should say `10`.
 
 ```python exec
 id: what-function-change-your-turn
-# Your add_stamp(stamps), its tests, and a loop of ten coffees
+# Your add_packet(packets), its tests, and a loop of ten packets
 ```
 
 ## Values in, by position and by name
@@ -384,19 +404,10 @@ hand it. That is also why your toolkit works on every page:
 `digit_at` was written on another page, knows nothing about this one,
 and needs nothing from it.
 
-The keyword arguments from
-[Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do)
-match each value to a parameter by its name, not its place. So they can
-come in any order, as long as they come after the plain ones.
-
-```python exec
-id: what-function-args-2
-print(digit_at(place=0, number=2026))
-print(digit_at(2026, 0, base=2))
-```
-
-These give `6` and `0`: 2026 ends in 6, and in binary it ends in 0,
-because it is even.
+Keyword arguments, from
+[Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do),
+match each value to a parameter by its name instead, so
+`digit_at(place=0, number=2026)` gives 6, the last digit.
 
 One more question. In a game, a bonus doubles your points. Inside this
 function, the parameter is given a new value. Does `score` on the page
@@ -430,31 +441,30 @@ space. It did nothing to `score`, which lives in another space.
 
 ## Handing over a list
 
-A list is a row of values, as on [Doing it again](tutorial:doing-it-again).
-Unit 5 teaches lists properly. For now we need one thing about them:
-`append` adds a value to the end of a list, as it did on
+A list is a row of values, as on [Doing it again](tutorial:doing-it-again),
+and `append` adds a value to its end, as on
 [True, false and every case](tutorial:true-false-and-every-case#a-tool-for-any-rule).
 
-Here is a function that adds a song to a playlist. After the call, will
-`road_trip` have two songs or three?
+Here is a function that adds a reading to a sensor's log. After the
+call, will `today` have two readings or three?
 
 ```python exec
 id: what-function-list-1
-def add_song(playlist, song):
-    """Put song at the end of playlist. Gives nothing back."""
-    playlist.append(song)
+def add_reading(readings, value):
+    """Put value at the end of readings. Gives nothing back."""
+    readings.append(value)
 
-road_trip = ["Zombie", "Linger"]
-add_song(road_trip, "Galway Girl")
-print(road_trip)
+today = [14.2, 14.8]
+add_reading(today, 15.1)
+print(today)
 ```
 
 Three. This time the function changed something on the page. Why is
 this different from `add_bonus`?
 
-When the call starts, `playlist` is made to point at the same list that
-`road_trip` points at. There is one list, with two names. `append` does
-not make a name point at something new. It changes the list itself, and
+When the call starts, `readings` is made to point at the same list that
+`today` points at. There is one list, with two names. `append` does not
+make a name point at something new. It changes the list itself, and
 every name that points at that list sees the change.
 
 So there are two different moves, and it helps to keep them apart:
@@ -465,25 +475,23 @@ So there are two different moves, and it helps to keep them apart:
 
 A number cannot be changed in place, so for numbers only the first move
 exists. That is why `score` was safe. A list can be changed in place, so a
-function that is handed a list can change it. `add_song` says so in its
-docstring, which is the honest thing to do.
-
-`add_song` is a procedure, in the words of
+function that is handed a list can change it. `add_reading` says so in
+its docstring, which is the honest thing to do. It is a procedure, in
+the words of
 [Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do):
-it does a job, and gives back `None`. Its job is a change that reaches
-outside its own space, through the list it was handed.
+it gives back `None`, and its job reaches outside its own space, through
+the list it was handed.
 
 ```question
 id: what-function-procedure-2
 type: multiple-choice
 correct: 3
 
-After `road_trip = add_song(road_trip, "Sultans of Swing")`, what does
-`road_trip` point at?
+After `today = add_reading(today, 15.6)`, what does `today` point at?
 
-- The playlist, with the new song at the end
-- The playlist, without the new song
-- `None`, because `add_song` gives back nothing
+- The log, with the new reading at the end
+- The log, without the new reading
+- `None`, because `add_reading` gives back nothing
 ```
 
 ## A function made inside a function
@@ -493,27 +501,30 @@ On [Machines that take a number](tutorial:machines-that-take-a-number#machines-i
 That page left a puzzle. When `both` runs, the call to `compose` has
 already ended. So how does `both` still know `outer` and `inner`?
 
-Here is a smaller machine of the same shape. `rate_converter` is given
-an exchange rate, and gives back a function that changes euro at that
-rate. The rates are made up. What will the last line show?
+Here is a smaller machine of the same shape. `converter` is given a
+factor, and gives back a function that multiplies by that factor. There
+are 8 bits in a byte, and exactly 2.54 centimetres in an inch. What will
+the last line show?
 
 ```python exec
 id: what-function-made-inside-1
-def rate_converter(rate):
-    """Give back a function that changes euro into another money at rate."""
-    def convert(euro):
-        return round(euro * rate, 2)
+def converter(factor):
+    """Give back a function that multiplies its input by factor."""
+    def convert(value):
+        return value * factor
     return convert
 
-to_sterling = rate_converter(0.85)
-to_dollars = rate_converter(1.10)
-print(to_sterling(100), to_dollars(100))
+bytes_to_bits = converter(8)
+inches_to_cm = converter(2.54)
+print(bytes_to_bits(100), inches_to_cm(6.1))
 ```
 
-It shows `85.0 110.0`. Each call to `rate_converter` made its own space,
-with its own `rate` in it. Each `convert` was made inside one of those
-spaces, and it keeps hold of that space. So Python does not throw the
-space away when the call ends, because something still needs it.
+It shows `800 15.494`: 100 bytes are 800 bits, and a phone screen 6.1
+inches from corner to corner is about 15.5 cm. Each call to `converter`
+made its own space, with its own `factor` in it. Each `convert` was made
+inside one of those spaces, and it keeps hold of that space. So Python
+does not throw the space away when the call ends, because something
+still needs it.
 
 A *closure* is a function that keeps the space it was made in. So a
 function looks for a name in up to four spaces, in this order:
@@ -528,25 +539,28 @@ problems at the end of this unit use this idea to build a unit converter.
 
 ## What does a function need?
 
-Here is a delivery app's function, as someone first wrote it. It runs,
-and it prints the right cost. Let's ask three questions of it: what
-does it need, where does it get it, and what does it give back?
+Here is a download timer, as someone first wrote it. It says a
+download takes 2 seconds to start, then the time the data needs at the
+connection's speed. (A byte is 8 bits, and speeds are given in megabits
+a second.) It runs, and it prints the right time. Let's ask three
+questions of it: what does it need, where does it get it, and what does
+it give back?
 
 ```python exec
 id: what-function-need-1
-rate_per_km = 0.19
+speed_mbps = 100
 
-def delivery_cost(distance_km):
-    cost = 3 + distance_km * rate_per_km
-    print("Delivery costs", round(cost, 2))
+def download_seconds(size_mb):
+    seconds = 2 + size_mb * 8 / speed_mbps
+    print("The download takes", round(seconds, 1), "seconds")
 
-delivery_cost(12)
+download_seconds(700)
 ```
 
-It needs two things, the distance and the rate. It gets the distance
-from its parameter, and the rate from the page: a hidden input. It gives
-back nothing, so no `assert` can check it, and no other function can use
-its answer. Its local name `cost` is thrown away at the end of the call.
+It needs two things, the size and the speed. It gets the size from its
+parameter, and the speed from the page: a hidden input. It gives back
+nothing, so no `assert` can check it, and no other function can use its
+answer. Its local name `seconds` is thrown away at the end of the call.
 
 Three habits keep a function's promise in plain sight:
 
@@ -559,36 +573,37 @@ the reason it can travel from page to page.
 
 ### Your turn
 
-1. Rewrite `delivery_cost` in the cell below so that it keeps all three
-   habits. Give the rate a default value of 0.19, and round to the cent.
+1. Rewrite `download_seconds` in the cell below so that it keeps all
+   three habits. Give the speed a default value of 100, and round to one
+   decimal place.
 2. Run the cell. The tests at the bottom check your promise. Until your
    rewrite is done, they stop with an `AssertionError`. That is the tests
    doing their job.
-3. Print the cost of a 40 km delivery at a rate of €0.25 per km.
+3. Print the time for a 4,000 MB file at 50 megabits a second.
 
 ```python exec
 id: what-function-need-your-turn
-def delivery_cost(distance_km):
-    cost = 3 + distance_km * rate_per_km
-    print("Delivery costs", round(cost, 2))
+def download_seconds(size_mb):
+    seconds = 2 + size_mb * 8 / speed_mbps
+    print("The download takes", round(seconds, 1), "seconds")
 
-assert delivery_cost(12) == 5.28
-assert delivery_cost(12, rate_per_km=0.25) == 6.0
-print("delivery_cost keeps its promise.")
+assert download_seconds(700) == 58.0
+assert download_seconds(700, speed_mbps=25) == 226.0
+print("download_seconds keeps its promise.")
 ```
 
 ```hint
 What does the version above give back to the `assert`? Try
-`print(delivery_cost(12))` on its own and look at the last line it
+`print(download_seconds(700))` on its own and look at the last line it
 shows.
 ```
 
 ```hint
 after: 10 errors
 title: some steps
-1. Add `rate_per_km=0.19` to the `def` line, after `distance_km`.
+1. Add `speed_mbps=100` to the `def` line, after `size_mb`.
 2. Swap the `print` line for a `return` line that gives back
-   `round(cost, 2)`.
+   `round(seconds, 1)`.
 3. Nothing on the page needs to change: the tests only use the function.
 
 **Think about:** which line of the old version made the tests fail, and

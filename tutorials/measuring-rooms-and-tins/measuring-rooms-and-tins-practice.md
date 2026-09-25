@@ -2,7 +2,7 @@
 title: "Measuring rooms and tins: area, perimeter and volume — Practice"
 practice_for: measuring-rooms-and-tins
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.2
 ---
 
 # Measuring rooms and tins: area, perimeter and volume — Practice
@@ -71,9 +71,10 @@ more than 1.3 hectares: a hectare is 10,000 m².
 
 </details>
 
-**3. Explain.** A friend measures a square room, 4 m on each side. "Its
-area is 16 and its perimeter is 16," they say, "so the area and the
-perimeter are the same." What would you say to them?
+**3. Explain.** Schlomi, who is learning Python too, measures a square
+room, 4 m on each side. "Its area is 16 and its perimeter is 16," she
+says, "so the area and the perimeter are the same." What would you say
+to her?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -84,7 +85,8 @@ look equal because the numbers happen to match.
 Change the units and the match goes away. In centimetres, the room is
 400 cm on each side: its perimeter is 1,600 cm, and its area is
 160,000 cm². A length and an area cannot be the same, in the same way
-that 16 minutes and 16 euro cannot.
+that 16 seconds and 16 kilograms cannot. Her two 16s match, but only in
+metres.
 
 </details>
 
@@ -146,24 +148,26 @@ millimetres, and means nothing.
 
 </details>
 
-**6. Fix.** A pizza menu gives each size as a diameter. This function is
-meant to give a pizza's area from its diameter, but the test fails. Run
-it, then find and fix the mistake.
+**6. Fix.** A satellite dish catches radio signals over its whole
+round face, so a bigger face catches more. Dishes are sold by their
+diameter. Schlomo, who is learning Python too, writes a function to
+give a dish's area from its diameter, but the test fails. Run it, then
+find and fix the mistake.
 
 ```python exec
-id: measuring-practice-fix-pizza
-def pizza_area(diameter):
-    """Return the area in cm² of a round pizza, given its diameter in cm."""
+id: measuring-practice-fix-dish
+def dish_area(diameter):
+    """Return the area in cm² of a round dish, given its diameter in cm."""
     return circle_area(diameter)
 
 
-assert round(pizza_area(40)) == 1257
-print("pizza_area keeps its promise.")
+assert round(dish_area(60)) == 2827
+print("dish_area keeps its promise.")
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Print `pizza_area(40)` on its own. Is it too big or too small?
+1. Print `dish_area(60)` on its own. Is it too big or too small?
 2. By how many times?
 3. Read the docstring of `circle_area` with `help(circle_area)`. Which
    measurement does it want?
@@ -178,12 +182,12 @@ print("pizza_area keeps its promise.")
 radius is half the diameter:
 
 ```python
-def pizza_area(diameter):
-    """Return the area in cm² of a round pizza, given its diameter in cm."""
+def dish_area(diameter):
+    """Return the area in cm² of a round dish, given its diameter in cm."""
     return circle_area(diameter / 2)
 ```
 
-Now the test passes. The wrong version gave 5,027 cm², four times too
+Now the test passes. Schlomo's version gave 11,310 cm², four times too
 much. Doubling the radius doubles it twice, because the radius is
 squared.
 
@@ -210,9 +214,9 @@ circumference, because it went once round the tin.
 
 </details>
 
-**8. Predict.** A dice maker doubles the size of a cube, from 2 cm on
-each side to 4 cm. How many times more plastic does it need inside? How
-many times more paint to cover it? Guess both, then check with
+**8. Predict.** A 3D printer prints a solid cube 2 cm on each side, then
+a cube 4 cm on each side. How many times more plastic does the big one
+need inside? How many times more paint would cover it? Guess both, then check with
 `cuboid_volume` and `cube_surface_area`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -230,26 +234,27 @@ times.
 
 </details>
 
-**9. Make.** A recipe asks for a round cake tin, 20 cm across. You only
-have a square tin, 18 cm on each side. Both are 7 cm deep. Which holds
-more cake mix, and by how much?
+**9. Make.** You can 3D-print a pen holder in two shapes, both 10 cm
+tall: round, 8 cm across, or square, 7 cm on each side. Which holds
+more, and by how much?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-round_tin = cylinder_volume(10, 7)
-square_tin = cuboid_volume(18, 18, 7)
-print(round(round_tin), round(square_tin), round(square_tin - round_tin))
+round_holder = cylinder_volume(4, 10)
+square_holder = cuboid_volume(7, 7, 10)
+print(round(round_holder), square_holder, round(round_holder - square_holder, 1))
 ```
 
-This prints `2199 2268 69`. The square tin holds about 69 cm³ more, a
-little over 3%. So the recipe fits the square tin, and the cake may
-need a few minutes less, because it is slightly thinner.
+This prints `503 490 12.7`. The round holder holds about 12.7 cm³ more,
+a little under 3%, even though it is 8 cm across and the square one
+only 7. A square's corners reach further from the middle than its sides
+do, so it holds more than its width suggests.
 
 </details>
 
-**10. Explain.** A school trip has 53 students, and a minibus seats 16.
-Three programmers work out how many minibuses to book:
+**10. Explain.** A drone filmed 53 GB of video, and each memory card
+holds 16 GB. Three programmers work out how many cards the video needs:
 
 ```python
 print(round(53 / 16))
@@ -257,19 +262,19 @@ print(53 // 16)
 print(math.ceil(53 / 16))
 ```
 
-They get 3, 3 and 4. Which is right, and why are the other two wrong
+They get 3, 3 and 4. Which one fits, and why do the other two not fit
 here?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`math.ceil` is right: 4 minibuses. $53 \div 16 = 3.3125$, so three
-minibuses carry 48 students, and 5 would be left at the school.
+`math.ceil` gives what we need: 4 cards. $53 \div 16 = 3.3125$, so
+three cards hold 48 GB, and 5 GB of video would have nowhere to go.
 
 `round` goes to the nearest whole number, which is 3. `//` keeps only
-the whole part, which is also 3. Both would be right for a different
-question, such as "how many minibuses can we fill completely?". Here
-minibuses come whole, and everyone must travel, so any part of a
-minibus means one more minibus. That is rounding up.
+the whole part, which is also 3. Both would answer a different
+question, such as "how many cards can we fill completely?". Here cards
+come whole, and all the video must be kept, so any part of a card means
+one more card. That is rounding up.
 
 </details>
 
@@ -349,24 +354,26 @@ sphere, added together.
 
 </details>
 
-**13. Make.** A pizza shop sells three sizes: 25 cm for €9, 30 cm for
-€12 and 40 cm for €16. Which gives the most pizza for each euro? Write a
-loop over the three sizes, as on
-[Doing it again](tutorial:doing-it-again), and print the price of one
-square centimetre of each, in cent.
+**13. Make.** A telescope collects light over its round mirror, so a
+wider mirror sees fainter stars. The pupil of your eye, in the dark, is
+about 7 mm across. A backyard telescope might be 200 mm across, and the
+Hubble Space Telescope's mirror is 2.4 m, which is 2,400 mm. Write a
+loop over the three, as on [Doing it again](tutorial:doing-it-again),
+and print how many times more light each collects than your eye. Guess
+Hubble's number first.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-menu = [(25, 9), (30, 12), (40, 16)]
-for diameter, price in menu:
-    area = circle_area(diameter / 2)
-    print(diameter, "cm:", round(price * 100 / area, 2), "cent per cm²")
+eye = circle_area(7 / 2)
+for name, diameter in [("eye", 7), ("backyard telescope", 200), ("Hubble", 2400)]:
+    print(name, round(circle_area(diameter / 2) / eye))
 ```
 
-This prints `1.83`, `1.7` and `1.27` cent per cm². The large pizza
-costs most, but it is the best value by far. The price goes up with the
-diameter, but the area goes up with the diameter squared.
+This prints `1`, `816` and `117551`. Hubble collects over a hundred
+thousand times as much light as your eye. Its mirror is about 343 times
+as wide, and the area goes up with the width squared: $343^2$ is about
+117,600.
 
 </details>
 
@@ -418,7 +425,7 @@ The first line prints a number close to 3.14, such as 3.1418. Yours
 will be a little different on every run, because the points are random.
 With more runs it usually comes closer to `math.pi`, but slowly: to get
 one more correct digit, you need about 100 times as many points. The
-string and the dinner plate from the tutorial were one route to $\pi$.
+string and the coin from the tutorial were one route to $\pi$.
 This is another.
 
 </details>
@@ -454,8 +461,8 @@ There is no one right answer. A good answer weighs a few things.
 
 - **Leave it out until it can be explained.** Every formula then comes
   with its reason, and a reader never has to take one on trust. The cost:
-  a common shape is missing for a long time, and footballs, planets and
-  scoops of ice cream are all spheres.
+  a common shape is missing for a long time, and raindrops, planets and
+  bubbles are all spheres.
 - **Give it now.** The formula is useful at once, and the toolkit is
   complete. The cost: a formula without a reason is harder to remember,
   and harder to rebuild if it is forgotten.

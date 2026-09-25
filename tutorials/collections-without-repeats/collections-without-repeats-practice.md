@@ -2,7 +2,7 @@
 title: "Collections without repeats: sets — Practice"
 practice_for: collections-without-repeats
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 ---
 
 # Collections without repeats: sets — Practice
@@ -38,27 +38,32 @@ b, a and n. `set` goes through a string letter by letter, the way a
 
 </details>
 
-**2. Make.** Two painters list the paints they used on one mural. How
-many different colours did they use between them? Work it out with
-sets.
+**2. Make.** A game uses two small pictures. Each list below is the
+colour of every pixel in one picture, as a hex code from
+[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
+How many different colours do the two pictures use between them? That
+number is the size of the *palette*, the set of colours the game must
+keep. Work it out with sets.
 
 ```python exec
 id: collections-practice-paints
-first_painter = ["ochre", "teal", "white", "teal", "crimson"]
-second_painter = ["white", "black", "ochre", "gold"]
+first_picture = ["FF8800", "008080", "FFFFFF", "008080", "DC143C"]
+second_picture = ["FFFFFF", "000000", "FF8800", "FFD700"]
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-colours = set(first_painter) | set(second_painter)
-print(len(colours))
-print(sorted(colours))
+palette = set(first_picture) | set(second_picture)
+print(len(palette))
+print(sorted(palette))
 ```
 
-Six colours: black, crimson, gold, ochre, teal and white. The union
-holds "ochre" and "white" once each, although both painters used them,
-and "teal" once, although the first painter wrote it twice.
+Six colours. The union holds orange, `FF8800`, and white, `FFFFFF`,
+once each, although both pictures use them, and teal, `008080`, once,
+although the first picture has it twice. Real image formats such as GIF
+keep a palette like this, with each colour once, and store each pixel as
+a position in it.
 
 </details>
 
@@ -124,10 +129,11 @@ inside each ingredient, too.)
 
 </details>
 
-**6. Fix.** Two bus stops are served by these routes. The cell should
-print the routes that stop at both, so that you could wait at either
-one. It prints four routes, and some of them do not stop at the first
-stop. Run it, then find the mistake.
+**6. Fix.** Two bus stops are served by these routes. Schlomo, who is
+learning Python too, wants the routes that stop at both, so that he
+could wait at either one. In English, "in both" is "A *and* B", so he
+writes `and`. The cell prints four routes, and some of them do not stop
+at the first stop. Run it, then find what went wrong.
 
 ```python exec
 id: collections-practice-fix-buses
@@ -152,8 +158,9 @@ things in Python, when in English they are the same word.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`and` is the word for True and False. Given two sets, it does not make
-an intersection. It gives back the second set whenever the first one is
+Schlomo's reasoning is the reasoning behind the maths word: the
+intersection is "A and B". But in Python, `and` is the word for True
+and False. Given two sets, it does not make an intersection. It gives back the second set whenever the first one is
 not empty, so the cell printed all of `stop_b`. The sign for "in both"
 is `&`:
 
@@ -216,23 +223,25 @@ though `visited` is the same.
 
 </details>
 
-**9. Another way.** Two friends own some board games. The games only one
-of them owns are the symmetric difference, `^`. Find the same set two
-more ways, with `|`, `&` and `-`, and check that all three agree.
+**9. Another way.** Two laptops have these programs installed. The
+programs on only one of them are the symmetric difference, `^`. Find
+the same set two more ways, with `|`, `&` and `-`, and check that all
+three agree.
 
 ```python exec
 id: collections-practice-games
-maeve_games = {"Catan", "Ticket to Ride", "Scrabble", "Chess", "Cluedo"}
-tomas_games = {"Chess", "Carcassonne", "Scrabble", "Monopoly"}
+maeve_laptop = {"Firefox", "Python", "VLC", "GIMP", "Zoom"}
+tomas_laptop = {"GIMP", "Blender", "Python", "Audacity"}
 
-print(sorted(maeve_games ^ tomas_games))
+print(sorted(maeve_laptop ^ tomas_laptop))
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. The symmetric difference is everything in either set, except what is
    in both.
-2. It is also what only Maeve owns, together with what only Tomás owns.
+2. It is also what only Maeve's laptop has, together with what only
+   Tomás's has.
 3. Write each route as one line, and compare them with `==`.
 
 **Think about:** which of the three routes you would rather read out
@@ -243,14 +252,14 @@ loud to someone, and why.
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-route_one = maeve_games ^ tomas_games
-route_two = (maeve_games | tomas_games) - (maeve_games & tomas_games)
-route_three = (maeve_games - tomas_games) | (tomas_games - maeve_games)
+route_one = maeve_laptop ^ tomas_laptop
+route_two = (maeve_laptop | tomas_laptop) - (maeve_laptop & tomas_laptop)
+route_three = (maeve_laptop - tomas_laptop) | (tomas_laptop - maeve_laptop)
 print(route_one == route_two == route_three)
 ```
 
-It prints `True`. All three give the same five games: Carcassonne,
-Catan, Cluedo, Monopoly and Ticket to Ride. In symbols,
+It prints `True`. All three give the same five programs: Audacity,
+Blender, Firefox, VLC and Zoom. In symbols,
 $A \triangle B = (A \cup B) \setminus (A \cap B) = (A \setminus B) \cup (B \setminus A)$.
 
 </details>
@@ -273,9 +282,10 @@ such as `1 <= number <= 1_000_000_000 and number == int(number)` answers
 
 </details>
 
-**11. Fix.** This cell should collect the different words in a line of
-a song. It stops with an error. Run it, read the last line of the
-error, then find the mistake.
+**11. Fix.** Schlomi, who is learning Python too, wants the different
+words in a line of a song. Maths writes a set with curly brackets, so
+she starts an empty set with `{}`. The cell stops with an error. Run
+it, read the last line of the error, then find the mistake.
 
 ```python exec
 id: collections-practice-fix-words
@@ -290,9 +300,9 @@ print(len(different_words))
 <details class="dl-answer"><summary>answer</summary>
 
 The last line of the error is
-`AttributeError: 'dict' object has no attribute 'add'`. The cell made
-`different_words` with `{}`, which is an empty dictionary, not an empty
-set. A dictionary has no `.add`. Start with `set()`:
+`AttributeError: 'dict' object has no attribute 'add'`. Schlomi's
+brackets are the ones maths uses, but in Python `{}` is an empty
+dictionary, not an empty set. A dictionary has no `.add`. Start with `set()`:
 
 ```python
 different_words = set()
@@ -306,39 +316,41 @@ It prints `7`: the line has nine words, and "row" is three of them.
 
 </details>
 
-**12. Make.** A gym class needs a mat, a skipping rope and a kettlebell
-for each person. Write a function `can_run(needed, in_gym)` that gives
-True when everything needed is in the gym. Then print what is missing
-from the second gym.
+**12. Make.** A Python program needs three *packages*, collections of
+extra code other people wrote: `numpy`, `pandas` and `matplotlib`.
+Write a function `can_run(needed, installed)` that gives True when
+everything needed is installed on a computer. Then print what is
+missing from the second computer.
 
 ```python exec
 id: collections-practice-gym
-needed = {"mat", "skipping rope", "kettlebell"}
-first_gym = {"mat", "kettlebell", "bench", "skipping rope", "bike"}
-second_gym = {"mat", "bench", "bike"}
+needed = {"numpy", "pandas", "matplotlib"}
+first_computer = {"numpy", "matplotlib", "requests", "pandas", "flask"}
+second_computer = {"numpy", "requests", "flask"}
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def can_run(needed, in_gym):
-    """True when every item in needed is also in in_gym."""
-    return needed <= in_gym
+def can_run(needed, installed):
+    """True when every package in needed is also in installed."""
+    return needed <= installed
 
-print(can_run(needed, first_gym))
-print(can_run(needed, second_gym))
-print(sorted(needed - second_gym))
+print(can_run(needed, first_computer))
+print(can_run(needed, second_computer))
+print(sorted(needed - second_computer))
 ```
 
-`True`, `False`, then `['kettlebell', 'skipping rope']`. The class can
-run when `needed` is a subset of what the gym has. The difference says
-what to bring.
+`True`, `False`, then `['matplotlib', 'pandas']`. The program can run
+when `needed` is a subset of what is installed. The difference says
+what to install. Tools like `pip`, which installs Python packages, ask
+this question every time.
 
 </details>
 
 ## Stretch
 
-**13. Make.** Turn the pizza cell from the tutorial into a function,
+**13. Make.** Turn the colours cell from the tutorial into a function,
 `power_set(values)`, that returns a list of every subset of `values`.
 Then test its promise, $|\mathcal{P}(A)| = 2^n$, for sets of 0 to 6
 elements with `assert`.
@@ -355,8 +367,8 @@ def power_set(values):
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Inside the function, the pizza loop works with `toppings` renamed to
-   `values`, and `pizzas` renamed to `subsets`.
+1. Inside the function, the colours loop works with `lights` renamed to
+   `values`, and `colours` renamed to `subsets`.
 2. Return `subsets` after the loop.
 3. For the tests, loop over `n` in `range(7)`, and make a set of `n`
    elements with `set(range(n))`.
@@ -394,18 +406,18 @@ itself. That matches $2^0 = 1$, and it is why the loop starts from
 
 </details>
 
-**14. Another way.** The tutorial counted 8 pizzas from 3 toppings by
+**14. Another way.** The tutorial counted 8 colours from 3 lights by
 listing every subset. Count them another way, with `combinations` from
-[Orders and choices](tutorial:orders-and-choices): the pizzas with 0
-toppings, with 1, with 2 and with 3. Does it agree for 10 toppings too?
+[Orders and choices](tutorial:orders-and-choices): the colours with 0
+lights on, with 1, with 2 and with 3. Does it agree for 10 lights too?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The pizzas with exactly $k$ toppings from $n$ are $C(n, k)$.
+1. The colours with exactly $k$ lights on, from $n$, are $C(n, k)$.
 2. Add them up for every $k$ from 0 to $n$: `total` can help.
 3. Compare with `2 ** n`.
 
-**Think about:** why every pizza is counted exactly once this way.
+**Think about:** why every colour is counted exactly once this way.
 
 </details>
 
@@ -419,8 +431,9 @@ for n in [3, 10]:
     print(n, counts, total(counts), 2 ** n)
 ```
 
-For 3 toppings the counts are 1, 3, 3 and 1, which make 8. For 10 they
-make 1,024, which is $2^{10}$. Every pizza has some number of toppings,
+For 3 lights the counts are 1, 3, 3 and 1, which make 8: black; red,
+green and blue; yellow, magenta and cyan; white. For 10 they make
+1,024, which is $2^{10}$. Every subset has some number of elements,
 from 0 to $n$, so it is counted in exactly one of the groups. In
 symbols, $\sum_{k=0}^{n} C(n, k) = 2^n$.
 

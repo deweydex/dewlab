@@ -61,10 +61,10 @@ entries:
       Your toolkit's three forms of s = d / t. speed(distance, time) gives
       the average speed, travel_time(distance, speed) the time, and
       distance_travelled(speed, time) the distance.
-    example: "travel_time(60, 20)"
+    example: "travel_time(225_000_000, 299792)"
   - term: "celsius_to_fahrenheit(), fahrenheit_to_celsius()"
     kind: function
     definition: >
       Your toolkit's temperature converter. Each one turns a temperature
       from one scale into the other, and each undoes the other.
-    example: "fahrenheit_to_celsius(68)"
+    example: "fahrenheit_to_celsius(-76)"

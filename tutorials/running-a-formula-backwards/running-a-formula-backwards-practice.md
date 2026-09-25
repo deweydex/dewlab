@@ -2,7 +2,7 @@
 title: "Running a formula backwards: rearranging and inverses — Practice"
 practice_for: running-a-formula-backwards
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.2
 ---
 
 # Running a formula backwards: rearranging and inverses — Practice
@@ -25,23 +25,24 @@ id: running-a-practice-warm-up
 # Try things here
 ```
 
-**1. Predict.** A coach travels at 100 km/h for 2.5 hours. A car covers
-150 km at 60 km/h. A runner finishes a half marathon, 21.1 km, in 2
-hours. What does each line print?
+**1. Predict.** Light from the Moon takes 1.28 seconds to reach you,
+at 299,792 km a second. The space station goes 42,700 km at 7.66 km a
+second. The sound of thunder travels 1 km in 2.9 seconds. What does each
+line print, roughly?
 
 ```python
-print(distance_travelled(100, 2.5))
-print(travel_time(150, 60))
-print(speed(21.1, 2))
+print(distance_travelled(299792, 1.28))
+print(travel_time(42700, 7.66))
+print(speed(1, 2.9))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-`250.0`, `2.5` and `10.55`.
+About `383733.76`, `5574.4` and `0.3448`.
 
-The coach goes $100 \times 2.5 = 250$ km. The car takes
-$\frac{150}{60} = 2.5$ hours. The runner's average speed is
-$\frac{21.1}{2} = 10.55$ km/h. Each line uses a different form of the
+The Moon is about 384,000 km away. The station takes about 5,574
+seconds for one lap, which is 92.9 minutes. Sound travels about 0.345 km
+a second, which is 345 metres. Each line uses a different form of the
 same formula, $s = \frac{d}{t}$.
 
 </details>
@@ -114,56 +115,59 @@ id: running-a-practice-core
 # Your working for problems 5 to 12
 ```
 
-**5. Make.** On a trip to New York, say one euro buys 1.08 US dollars
-(rates change every day).
-Write `euro_to_dollars(euro)` and its inverse, `dollars_to_euro(dollars)`.
-Test each with a known value, then test the round trip for €50, €200 and
-€1,234.56.
+**5. Make.** Download speeds are given in megabits per second (Mb/s),
+but file sizes are in megabytes (MB). A byte is 8 bits, so a megabyte is
+8 megabits. Write `megabits_to_megabytes(megabits)` and its inverse,
+`megabytes_to_megabits(megabytes)`. Test each with a known value, then
+test the round trip for 50, 200 and 1,234.56. How many megabytes a
+second does a 100 Mb/s connection bring in?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Going forwards, dollars $=$ euro $\times 1.08$.
-2. Rearrange for euro: which move undoes "multiply by 1.08"?
+1. Going forwards, megabytes $=$ megabits $\div 8$.
+2. Rearrange for megabits: which move undoes "divide by 8"?
 3. For the round trip, round to 9 places before comparing, as the
    tutorial did.
 
-**Think about:** why a known value like €50 $=$ \$54 is a better first
-test than a round trip.
+**Think about:** why a known value like 8 megabits $=$ 1 megabyte is a
+better first test than a round trip.
 
-**Try this next:** a bureau de change adds a €3 fee before converting.
-Which step does the inverse undo first?
+**Try this next:** a gigabit is 1,000 megabits. Use `compose` to make
+`gigabits_to_megabytes`.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-def euro_to_dollars(euro):
-    """Return the US dollars bought with euro, at 1.08 dollars per euro."""
-    return euro * 1.08
+def megabits_to_megabytes(megabits):
+    """Return a size in megabytes, given it in megabits."""
+    return megabits / 8
 
 
-def dollars_to_euro(dollars):
-    """Return the euro that buy dollars, at 1.08 dollars per euro. Undoes euro_to_dollars."""
-    return dollars / 1.08
+def megabytes_to_megabits(megabytes):
+    """Return a size in megabits, given it in megabytes. Undoes megabits_to_megabytes."""
+    return megabytes * 8
 
 
-assert round(euro_to_dollars(50), 9) == 54
-assert round(dollars_to_euro(54), 9) == 50
-for euro in [50, 200, 1234.56]:
-    assert round(dollars_to_euro(euro_to_dollars(euro)), 9) == euro
+assert megabits_to_megabytes(8) == 1
+assert megabytes_to_megabits(1) == 8
+for megabits in [50, 200, 1234.56]:
+    assert round(megabytes_to_megabits(megabits_to_megabytes(megabits)), 9) == megabits
 print("The converter works both ways.")
+print(megabits_to_megabytes(100))
 ```
 
-It prints `The converter works both ways.` A known value checks the
-rate. A round trip checks that the two functions undo each other, and
-it would still pass if both used the wrong rate. The two kinds of test
+It prints `The converter works both ways.`, then `12.5`: a 100 Mb/s
+connection brings in 12.5 MB a second. A known value checks the factor.
+A round trip checks that the two functions undo each other, and it
+would still pass if both used the wrong factor. The two kinds of test
 catch different mistakes.
 
 </details>
 
-**6. Fix.** A health app turns a temperature taken in Fahrenheit into
-Celsius. A fever of 100.4 °F should be 38 °C, but the app says about
+**6. Fix.** Schlomi, who is learning Python too, writes a health app
+that turns a temperature taken in Fahrenheit into Celsius. A fever of 100.4 °F should be 38 °C, but the app says about
 82.6. Run the tests, find the mistake, and fix it.
 
 ```python exec
@@ -224,17 +228,19 @@ putting 128 bpm back into the first formula gives 180 seconds again.
 
 </details>
 
-**8. Make.** One cookbook's rule for roasting a turkey is 40 minutes for
-each kilogram, plus 20 minutes. The oven is free for 4 hours. What is
-the heaviest turkey that will be ready in time? Write the rule, run it
+**8. Make.** A 3D printer's software estimates how long a print takes.
+Say that for one printer the rule is 3 minutes for each gram of
+plastic, plus 12 minutes to warm up. (Real estimates depend on the
+shape; this is a simple model.) The printer is free for 2 hours. What
+is the heaviest print that will finish in time? Write the rule, run it
 backwards, and check.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Forwards: minutes $= 40 \times$ kg $+ 20$. Two steps: multiply, then
-   add.
+1. Forwards: minutes $= 3 \times$ grams $+ 12$. Two steps: multiply,
+   then add.
 2. Backwards, undo the last step first.
-3. Four hours is how many minutes?
+3. Two hours is how many minutes?
 
 **Think about:** which step did the temperature formula undo first, and
 why is this the same?
@@ -243,43 +249,44 @@ why is this the same?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$m = 40k + 20$. Subtract 20 from both sides, then divide both sides by
-40:
+$m = 3g + 12$. Subtract 12 from both sides, then divide both sides by
+3:
 
-$$k = \frac{m - 20}{40}$$
+$$g = \frac{m - 12}{3}$$
 
 ```python
-def roasting_minutes(kilograms):
-    """Return the roasting time in minutes for a turkey of kilograms."""
-    return 40 * kilograms + 20
+def print_minutes(grams):
+    """Return the minutes a print of grams takes, warm-up included."""
+    return 3 * grams + 12
 
 
-def heaviest_turkey(minutes):
-    """Return the heaviest turkey, in kg, that roasts in minutes. Undoes roasting_minutes."""
-    return (minutes - 20) / 40
+def heaviest_print(minutes):
+    """Return the heaviest print, in grams, that finishes in minutes. Undoes print_minutes."""
+    return (minutes - 12) / 3
 
 
-print(heaviest_turkey(4 * 60))
-print(roasting_minutes(heaviest_turkey(240)))
+print(heaviest_print(2 * 60))
+print(print_minutes(heaviest_print(120)))
 ```
 
-This prints `5.5`, then `240.0`. A turkey of 5.5 kg takes exactly 4
+This prints `36.0`, then `120.0`. A print of 36 g takes exactly 2
 hours.
 
 </details>
 
-**9. Explain.** A car park charges €3 for every hour or part of an hour:
-20 minutes costs €3, and 61 minutes costs €6. Your ticket says you paid
-€6. Can you work out exactly how long you parked? What does this say
-about running the charge backwards?
+**9. Explain.** A disk stores files in blocks of 4,096 bytes each. A
+file of 1 byte still takes a whole block, and a file of 4,097 bytes
+takes two. Your file takes 3 blocks. Can you work out exactly how
+big it is? What does this say about running the rule backwards?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. Every stay from just over 60 minutes up to 120 minutes costs €6, so
-€6 only tells you the stay was somewhere in that hour. Many inputs give
-the same output, so the charge is not one-to-one, and it has no inverse.
-The best a way back can do is give a range of times. Like `round()`, the
-charge throws information away, and nothing can bring it back.
+No. Every file from 8,193 bytes up to 12,288 bytes takes 3 blocks, so
+"3 blocks" only tells you the size was somewhere in that range. Many
+inputs give the same output, so the rule is not one-to-one, and it has
+no inverse. The best a way back can do is give a range of sizes. Like
+`round()`, the rule throws information away, and nothing can bring it
+back.
 
 </details>
 
@@ -323,46 +330,49 @@ number. For "double", $2C = \frac{9}{5}C + 32$ gives $C = 160$.
 
 </details>
 
-**11. Fix.** A hill-walking app times a walk of $d$ km as $\frac{d}{4}$
-hours up at 4 km/h and $\frac{d}{6}$ hours down at 6 km/h. Someone wrote
-the total as one fraction by adding the tops and adding the bottoms. Run
-the test, then fix the function.
+**11. Fix.** Schlomo, who is learning Python too, times a drone that
+flies $d$ km up a valley at 40 km/h, taking $\frac{d}{40}$ hours, and
+back at 60 km/h, taking $\frac{d}{60}$ hours. He writes the total as
+one fraction by adding the tops and adding the bottoms. Run the test,
+then fix the function.
 
 ```python exec
-id: running-a-practice-fix-hill
-def hill_walk_hours(distance):
-    """Return the hours to walk distance km up at 4 km/h and back down at 6 km/h."""
-    return 2 * distance / 10
+id: running-a-practice-fix-valley
+def valley_flight_hours(distance):
+    """Return the hours to fly distance km up the valley at 40 km/h and back at 60 km/h."""
+    return 2 * distance / 100
 
 for distance in [3, 6, 12]:
-    assert round(hill_walk_hours(distance), 9) == round(distance / 4 + distance / 6, 9)
-print("The walk time is right.")
+    assert round(valley_flight_hours(distance), 9) == round(distance / 40 + distance / 60, 9)
+print("The flight time is right.")
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-Adding the tops and the bottoms, $\frac{d + d}{4 + 6}$, is not how
-fractions add. Give them a common denominator, 12, first:
+Adding the tops and the bottoms, $\frac{d + d}{40 + 60}$, is not how
+fractions add. It is a reasonable guess, since it is how we might add
+two scores out of 40 and 60, but fractions of an hour add differently.
+Give them a common denominator, 120, first:
 
-$$\frac{d}{4} + \frac{d}{6} = \frac{3d}{12} + \frac{2d}{12} = \frac{5d}{12}$$
+$$\frac{d}{40} + \frac{d}{60} = \frac{3d}{120} + \frac{2d}{120} = \frac{5d}{120} = \frac{d}{24}$$
 
 ```python
-def hill_walk_hours(distance):
-    """Return the hours to walk distance km up at 4 km/h and back down at 6 km/h."""
-    return 5 * distance / 12
+def valley_flight_hours(distance):
+    """Return the hours to fly distance km up the valley at 40 km/h and back at 60 km/h."""
+    return distance / 24
 ```
 
-Now the test prints `The walk time is right.` For a 12 km walk, the
-wrong version gave 2.4 hours, and the right one gives 5 hours. The test
-compared the short form against the long form at three distances, which
-is a quick way to check any simplifying.
+Now the test prints `The flight time is right.` For a 12 km valley,
+Schlomo's version gave 0.24 hours, and the right one gives half an hour.
+The test compared the short form against the long form at three
+distances, which is a quick way to check any simplifying.
 
 </details>
 
-**12. Make.** Two friends split a bill of $x$ euro. One pays a third of
-it, and the other pays a sixth. Write $\frac{x}{3} + \frac{x}{6}$ as one
-fraction, and simplify it. What part of the bill is still unpaid? Check
-your answer with code for a bill of €84 and a bill of €150.
+**12. Make.** On a disk of $x$ GB, one program uses a third of the
+space, and another uses a sixth. Write $\frac{x}{3} + \frac{x}{6}$ as
+one fraction, and simplify it. What part of the disk is still free?
+Check your answer with code for a 512 GB disk and a 1,000 GB disk.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -370,15 +380,15 @@ The common denominator is 6:
 
 $$\frac{x}{3} + \frac{x}{6} = \frac{2x}{6} + \frac{x}{6} = \frac{3x}{6} = \frac{x}{2}$$
 
-So between them they pay half the bill, and half is still unpaid.
+So between them they use half the disk, and half is still free.
 
 ```python
-for bill in [84, 150]:
-    print(bill, bill / 3 + bill / 6, bill / 2)
+for disk in [512, 1000]:
+    print(disk, disk / 3 + disk / 6, disk / 2)
 ```
 
-This prints `84 42.0 42.0` and `150 75.0 75.0`. The long form and the
-short form agree.
+This prints `512 256.0 256.0` and `1000 500.0 500.0`. The long form and
+the short form agree.
 
 </details>
 
@@ -391,8 +401,8 @@ id: running-a-practice-stretch
 # Your working for problems 13 to 16
 ```
 
-**13. Make.** In the tutorial, a round trip at 20 km/h and 30 km/h had
-an average speed of 24 km/h. Show that, for any speeds $a$ there and $b$
+**13. Make.** In the tutorial, the drone's round trip at 20 km/h and
+30 km/h had an average speed of 24 km/h. Show that, for any speeds $a$ there and $b$
 back, the average speed is $\frac{2ab}{a + b}$. Then write
 `round_trip_speed(there, back)` and test it against the travel tools for
 20 and 30, and for 40 and 60.
@@ -405,7 +415,7 @@ back, the average speed is $\frac{2ab}{a + b}$. Then write
    the $d$ cancel.
 
 **Think about:** what happens to the average if $b$ is very small, like
-a walk back at 1 km/h?
+a flight back at 1 km/h against a gale?
 
 </details>
 
@@ -429,8 +439,8 @@ for there, back in [(20, 30), (40, 60)]:
 
 This prints `24.0 24.000000000000004`, then
 `48.0 48.00000000000001`. The formula and the travel tools agree, apart
-from a tiny float difference in the last digits. With a walk back at 1 km/h, the average stays under 2 km/h
-however fast the trip out was, because the slow part takes up almost
+from a tiny float difference in the last digits. With a flight back at
+1 km/h, the average stays under 2 km/h however fast the trip out was, because the slow part takes up almost
 all the time.
 
 </details>

@@ -255,16 +255,29 @@ Toolkit gains `total`, `product`, `all_pairs`, `factorial`,
 
 | # | Tutorial | Question | Outcomes |
 |---|---|---|---|
-| 4.1 | Machines that take a number | What does it mean for a function to have an input and an output? | PDP-LO8, MIT-3.1, MIT-6.2 |
-| 4.2 | Measuring rooms and tins | How much paint does a room need? | MIT-1.2, MIT-1.3 |
-| 4.3 | Running a formula backwards | If a trip took 3 hours at 80 km/h, how far was it? And how fast, if it was 200 km? | MIT-1.7, MIT-3.1 |
-| 4.4 | Does it work? Testing your tools | How do you know your function is right? | PDP-LO10, PDP-LO11 |
+| 4.1 | Machines that take a number | A temperature chip gives out a voltage, and a rule turns it into °C. Why does the rule say −350 °C for a voltage the chip never gives? | PDP-LO8, MIT-3.1, MIT-6.2 |
+| 4.2 | Measuring rooms and tins | How much paint does a room need, how long is the track on a CD, and how many Moons would fill the Earth? | MIT-1.2, MIT-1.3 |
+| 4.3 | Running a formula backwards | Sunlight takes 8 minutes 19 seconds to reach us: how far is the Sun? How fast is the space station, and how long does a message to Mars take? | MIT-1.7, MIT-3.1 |
+| 4.4 | Does it work? Testing your tools | A spacecraft was lost at Mars because of a unit mix-up that raised no error. How do you know your function is right? | PDP-LO10, PDP-LO11 |
 | 4.5 | What a function can see | Why can't the function see my variable? | PDP-LO8 |
 
-4.4 starts toolkit.py properly: every function in it gets `assert` tests,
-and the reader learns walkthroughs (tracing a function by hand) and the
-debugger's step-through. Unit product: a unit converter with tested
-conversions both ways.
+Contexts: a TMP36 temperature chip, a 10-bit board reading and the
+order of two drawing moves (4.1); the paint job, a CD's 5.4 km track, a
+3D-printed ball and cone, and the Earth and the Moon (4.2); light from
+the Sun, the space station, a message to Mars, Mars in Fahrenheit, the
+James Webb telescope's mirror and a drone into the wind (4.3); the Mars
+Climate Orbiter, a boiling-point bug, Irish January nights and the size
+of an image (4.4); a download's speed, a packet counter, a ball dropped
+on Earth and on the Moon, a sensor log and a unit-factor closure (4.5).
+No page uses money. 4.4 starts toolkit.py properly: every function in
+it gets `assert` tests, and the reader learns walkthroughs (tracing a
+function by hand) and the debugger's step-through. Unit product (on
+`mixed-making-your-own-tools`): a converter for reading about space,
+km and miles, kg and pounds, °C and °F, with astronomical units and
+a 1 TB drive in GiB on the way, every conversion tested both ways.
+Toolkit gains `compose`, the shape tools, `speed`, `travel_time`,
+`distance_travelled`, `celsius_to_fahrenheit`, `fahrenheit_to_celsius`
+and `close_enough`.
 
 ### Unit 5 — Many values: lists, sets and data
 
@@ -273,15 +286,28 @@ conversions both ways.
 | # | Tutorial | Question | Outcomes |
 |---|---|---|---|
 | 5.1 | A row of numbers | How do we keep a week of temperatures? | MIT-6.3, MIT-6.5, MIT-6.7 |
-| 5.2 | What is typical? | Is the average rent in your area the rent most people pay? | MIT-5.12, MIT-5.13 |
-| 5.3 | Kinds of data, and honest charts | Why is this chart misleading? | MIT-5.9, MIT-5.10, MIT-5.11 |
-| 5.4 | Collections without repeats | Which songs are on both playlists? | MIT-2.1, MIT-2.2 |
-| 5.5 | Circles that overlap | How many people answered yes to two questions out of three? | MIT-2.3 |
+| 5.2 | What is typical? | A website's average response time is 639 ms, but most pages load in 200 ms. Is the average lying? | MIT-5.12, MIT-5.13 |
+| 5.3 | Kinds of data, and honest charts | Why is this chart misleading, when every number on it is true? | MIT-5.9, MIT-5.10, MIT-5.11 |
+| 5.4 | Collections without repeats | Which songs are on both playlists, and how many words do two novels share? | MIT-2.1, MIT-2.2 |
+| 5.5 | Circles that overlap | How many of 20 laptops have exactly two of updates, antivirus and backups? | MIT-2.3 |
 
-Real data throughout (Met Éireann rainfall, rent, bus punctuality). 5.4 ends
-with the link to SQL: a JOIN is an intersection, a CROSS JOIN is the
-Cartesian product. Unit product: a one-page report on a dataset of the
-reader's choosing. Toolkit gains `mean`, `median`, `mode`, `std_dev`,
+Contexts: a week of temperatures, sound as a list of samples (mixing
+two notes is adding element by element), and 67 years of Ireland's life
+expectancy (5.1); skewed website response times, where the median beats
+the mean, ping times and jitter for spread, and life expectancy in 226
+places (5.2); a made-up advert's misleading bar chart of real life
+expectancy data, and a class survey (5.3); playlists, the words of *The
+Lost World* and *The War of the Worlds* from the data folder, and the
+power set of a pixel's red, green and blue lights, which gives the eight
+Teletext colours (5.4); a laptop security audit, and an audit report
+that gives only totals (5.5). Real data comes from the `data/` folder:
+Our World in Data's life expectancy series and two Project Gutenberg
+novels; small made-up lists say so. 5.4 ends with the link to SQL: a
+JOIN is an intersection, a CROSS JOIN is the Cartesian product. Unit
+product (on `mixed-many-values`): a one-page report on life expectancy
+in Ireland and a country the reader chooses, with typical values,
+spread, a frequency table and one honest chart. Toolkit gains
+`largest`, `smallest`, `count_if`, `mean`, `median`, `mode`, `std_dev`,
 `frequency_table`.
 
 ### Unit 6 — Algorithms that scale
