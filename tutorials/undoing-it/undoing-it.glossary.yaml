@@ -5,7 +5,8 @@ entries:
     definition: >
       The shoelace formula finds the area inside a shape from its corner
       points. For each pair of neighbouring corners, cross-multiply their
-      coordinates. Add up the results, and halve the total.
+      coordinates. Add up the results, and halve the total. The answer is
+      negative when the corners go round clockwise.
   - term: determinant
     kind: concept
     definition: >

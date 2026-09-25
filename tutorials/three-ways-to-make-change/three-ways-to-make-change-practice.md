@@ -127,9 +127,15 @@ hint: Walk through the two coins by hand: take a 4, what is left, does a 3 fit i
 
 `None`. Taking the `4` first leaves `1`. A `3` does not fit into `1`, so
 the loop ends with `remaining` still at `1`, not `0`. The function's last
-line, `count if remaining == 0 else None`, catches this. It reports,
-correctly, that `5` cannot be made from `[3, 4]` at all.
-`fewest_tokens_brute_force(5, [3, 4])` gives the same answer.
+line, `count if remaining == 0 else None`, catches this. Here it happens
+to be right: `5` cannot be made from `[3, 4]` at all, and
+`fewest_tokens_brute_force(5, [3, 4])` gives `None` too.
+
+But be careful what greedy's `None` means. Try
+`fewest_tokens_greedy(6, [3, 4])`. It takes a `4`, is left with `2`, and
+gives `None`. Yet `3 + 3` makes `6`. When greedy says `None`, it only
+means the shortcut got stuck. When brute force says `None`, it means no
+combination works.
 
 </details>
 
@@ -140,9 +146,11 @@ that the greedy shortcut does not. In your own words, why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Caching still checks every possibility that brute force checks. It only
-skips checking the *same* possibility a second time. The answers it
-compares are the same answers, so it still always finds the true fewest.
+Caching still compares every choice of first token, just as brute force
+does. It only skips working out the same smaller amount a second time.
+That is safe because the fewest tokens for an amount depends only on the
+amount, not on how we reached it. So the answers it compares are the
+same answers, and it still always finds the true fewest.
 
 The greedy shortcut never compares possibilities at all. At each step it
 takes the biggest token, and it never looks back. It never asks whether

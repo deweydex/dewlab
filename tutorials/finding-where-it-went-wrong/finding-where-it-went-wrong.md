@@ -123,11 +123,11 @@ id: building-the-pipeline-3
 ```
 
 ```hint
-after: 4 errors
-What does the last line of the message say went wrong: a name Python does
-not know, or the shape of a line? Which line is it pointing at? Before you
-change it, what did you expect `summarize(["32.0"])` to print? Write that
-number in your notes, then compare it with what comes back.
+after: 2 minutes
+title: a question to try
+What is $32 - 32$? The conversion then multiplies and divides that by some
+numbers. Does it matter which numbers? Now try `summarize(["212.0"])` on
+its own, and compare what comes back with $100$.
 ```
 
 ## The Symptom Is Not the Cause
@@ -274,9 +274,11 @@ order. Each one has a name.
 
 **Lateral thinking.** We tested with freezing and boiling point, not
 with three ordinary daily readings. *Lateral thinking* is choosing a test
-or an approach that nothing in the problem suggested. An easier, more
-obvious test would have missed the bug completely. The freezing-point
-check on its own showed that.
+or an approach that nothing in the problem suggested. The daily readings
+gave a wrong answer too, but nothing told us it was wrong, because nobody
+knows the right answer for them by heart. And freezing point on its own,
+the most obvious reading with a known answer, hides this bug completely:
+it comes out right.
 
 **A methodical approach.** We checked each stage of the pipeline in turn.
 We did not stare at the final wrong number and guess. A *methodical

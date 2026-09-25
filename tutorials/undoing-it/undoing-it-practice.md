@@ -206,20 +206,37 @@ used for a different kind of bad input.
 
 ## Thinking about it
 
-**9.** A matrix has determinant $0.0001$. That is not zero, so the matrix
-does have an inverse. Why might a computer still have trouble using it
-reliably?
+**9.** Here are two matrices. Both have determinant $0.0001$, so both
+have an inverse.
+
+$$A = \begin{bmatrix} 0.01 & 0 \\ 0 & 0.01 \end{bmatrix} \qquad
+B = \begin{bmatrix} 1 & 1 \\ 1 & 1.0001 \end{bmatrix}$$
+
+Undo each one on a point, then nudge the point by $0.0001$ and undo it
+again. Which answer moves more? Can you say why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The inverse formula divides by the determinant. Dividing by a very small
-number gives very large numbers. So any small errors already in the data
-get multiplied up enormously.
+With $B$, the point $(2, 2.0001)$ undoes to $(1, 1)$. Nudge it to
+$(2, 2.0002)$, and it undoes to $(0, 2)$. A change in the fourth decimal
+place moved the answer by a whole unit.
 
-A matrix like this is *ill-conditioned*. An ill-conditioned matrix has
-an inverse, but it is so close to singular that ordinary rounding can
-change the answer by more than we can trust. This happens often in real
-work. One example is fitting a model to data where two different
-measurements almost repeat each other, but not quite.
+With $A$, the point $(0.02, 0.02)$ undoes to $(2, 2)$. Nudge it to
+$(0.02, 0.0201)$, and it undoes to $(2, 2.01)$. The answer moved, but
+only in step with the nudge, 100 times over, because $A$ shrinks
+everything by 100 in every direction.
+
+So a small determinant is not the problem on its own. $A$ shrinks the
+plane evenly, and undoing it is safe. $B$'s two rows are almost the
+same, so it squashes the plane nearly flat onto a line. Undoing it means
+pulling apart two directions that are almost one direction, and a tiny
+change in the input decides where they land.
+
+A matrix like $B$ is *ill-conditioned*: it has an inverse, but a tiny
+change in what you give it can make a big change in what you get back.
+Rounding in a computer is exactly that kind of tiny change. This happens
+often in real work. One example is fitting a model to data where two
+different measurements almost repeat each other, but not quite, just as
+$B$'s two rows do.
 
 </details>

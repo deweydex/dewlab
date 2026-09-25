@@ -50,8 +50,12 @@ Two vectors are *orthogonal* when their dot product is zero. For
 ordinary vectors in space, orthogonal means at right angles, or
 perpendicular. `[1, 0, 0]` has a number only in the first position, and
 `[0, 5, 9]` has a zero there. They never have a number in the same
-position to multiply together. That is the arithmetic reason they are at
-right angles.
+position to multiply together, so every product vanishes.
+
+That is one way to get a zero, but not the only way. `dot([1, 1], [1, -1])`
+is $1 - 1 = 0$ as well, and those two vectors share both positions. Here
+the products cancel instead of vanishing. Draw $(1, 1)$ and $(1, -1)$
+from the origin, and they are at right angles too.
 
 </details>
 
