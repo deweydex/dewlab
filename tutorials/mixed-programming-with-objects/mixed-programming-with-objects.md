@@ -2,11 +2,15 @@
 title: "Mixed problems: programming with objects"
 practice_across:
   - objects-and-classes
+  - the-moves-you-already-know
+  - keeping-details-inside-an-object
   - one-class-many-methods
+  - the-tools-around-your-code
   - one-parent-many-children
   - objects-inside-objects
   - testing-what-a-class-does
   - documenting-a-class
+  - a-front-end-for-a-class
 year: "2026-2027"
 version: 2026.09.04.1
 ---
@@ -65,10 +69,9 @@ morning.add_song("Here Comes the Sun")
 print(morning.songs)
 ```
 
-Same shape as `Bank` from [Composition: objects inside other
-objects](tutorial:objects-inside-objects): a name, and a list
-that starts empty. It grows one item at a time through a method rather
-than being set directly.
+It has the same shape as `Bank` from [Composition: objects inside other
+objects](tutorial:objects-inside-objects): a name, and a list that
+starts empty. The list grows one song at a time, through a method.
 
 </details>
 
@@ -88,9 +91,10 @@ test_add_song()
 print("Passed.")
 ```
 
-A fresh `Playlist` each time a test runs — the same discipline [Testing a class with
-assert](tutorial:testing-what-a-class-does) used for `BankAccount`. Nothing is left over from an
-earlier test to trip this one up.
+The test makes a fresh `Playlist` every time it runs, as [Testing a
+class with assert](tutorial:testing-what-a-class-does) did for
+`BankAccount`. So nothing is left over from an earlier test to trip
+this one up.
 
 </details>
 
@@ -123,9 +127,9 @@ completely was the right call here.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`available` never changes — it stays `True`. `ReferenceBook`'s own
-`checkout()` refuses unconditionally and returns, never reaching a line
-that would set `self.available = False`.
+`available` never changes. It stays `True`, because `ReferenceBook`'s
+own `checkout()` always refuses. It never reaches a line that would set
+`self.available = False`.
 
 Calling `super().checkout()` would only make sense if some part of the
 parent's own check still applied. Here none of it does. A reference book
@@ -149,10 +153,17 @@ for item in [book, atlas]:
     print(item.title, item.available)
 ```
 
-`Dune True` after checkout would be wrong — checking `book.available`
-after `book.checkout()` gives `False`; `atlas.available` stays `True`.
-Polymorphism: `item.checkout()` is the same line for both, and runs
-whichever class's own version fits the object.
+It prints:
+
+```text
+Dune False
+Refused: reference books do not leave the library.
+Atlas True
+```
+
+The loop demonstrates polymorphism. `item.checkout()` is the same line
+for both objects, and each object runs its own class's version: the
+`Book` goes off the shelf, and the `ReferenceBook` refuses.
 
 </details>
 
@@ -190,8 +201,9 @@ library.add_book(ReferenceBook("Atlas", "Various"))
 print(library.available_titles())
 ```
 
-`Library` *has* books — [composition](tutorial:objects-inside-objects), the same relationship `Bank` has with
-its accounts — rather than being a kind of `Book` itself.
+A `Library` has books. That is
+[composition](tutorial:objects-inside-objects), the same relationship
+`Bank` has with its accounts. A library is not a kind of `Book`.
 
 </details>
 
@@ -200,10 +212,10 @@ its accounts — rather than being a kind of `Book` itself.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Both classes have an `available` field and a `title` field — `Book`'s own,
-inherited unchanged by `ReferenceBook`. `available_titles()` only ever
-reads those two fields, which every object in `self.books` is guaranteed
-to have, whichever of the two classes it actually is.
+Both classes have an `available` field and a `title` field. `Book` sets
+them, and `ReferenceBook` inherits them unchanged. `available_titles()`
+only ever reads those two fields, and every object in `self.books` has
+them, whichever of the two classes it is.
 
 </details>
 
@@ -252,18 +264,18 @@ library.checkout_by_title("Dune")
 library.checkout_by_title("Nonexistent")
 ```
 
-Three different outcomes from the same method. The first call succeeds,
-the second refuses since the book is already out, the third reports the
-title was never found. `checkout_by_title()` itself only ever calls
-`book.checkout()` — the refusal logic still lives entirely on `Book` and
-`ReferenceBook`, not duplicated here.
+The same method gives three different outcomes. The first call checks
+the book out. The second is refused, because the book is already out.
+The third reports that no book has that title. `checkout_by_title()`
+only ever calls `book.checkout()`. The rules for refusing still live on
+`Book` and `ReferenceBook`, and are not copied here.
 
 </details>
 
 **8.** Write `test_checkout_by_title_refuses_twice()`. Check out the same
-book twice through a fresh `Library`. Assert the book's `available` is
-still `False` after both calls — not that it errors, since `checkout()`
-already handles a repeat by printing and returning.
+book twice through a fresh `Library`. Then assert that the book's
+`available` is still `False`. (There is no error to test for:
+`checkout()` handles a repeat by printing a message and returning.)
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -295,11 +307,12 @@ to stay honest?
 <details class="dl-answer"><summary>answer</summary>
 
 It would need rewriting to say so, something like "Checks out every book
-matching title." Python would not catch the mismatch on its own.
+matching title." Python would not catch the mismatch on its own: a
+sentence in a docstring is not something it can check.
 
-*Keeping Documentation Honest* is exactly this situation, one level up, on
-a method that itself calls another class's method rather than doing the
-work directly.
+[Documenting a class with docstrings](tutorial:documenting-a-class) met
+the same problem with `withdraw()`. Here it is one level up, on a method
+that calls another class's method to do the work.
 
 </details>
 
@@ -318,5 +331,83 @@ Nothing about `Library` mentions `Book` or `ReferenceBook` by name anywhere
 in its own methods. It only ever asks each object in `self.books` for
 `title`, `available`, and `checkout()`. Any class supplying those three
 fits in without `Library` needing to know it exists.
+
+</details>
+
+## More of the series
+
+**11.** Anyone can reach into a `Library` from outside and write
+`library.books = "Dune"`. That replaces the whole list with a string,
+and the next call to `available_titles()` fails. How could you show that
+`books` is the library's own business, as
+[Encapsulation: keeping an object's data behind its methods](tutorial:keeping-details-inside-an-object)
+did? What does your change stop, and what does it not stop?
+
+<details class="dl-answer"><summary>answer</summary>
+
+Rename the field `_books`, everywhere inside the class, and let code
+outside use only `add_book()` and `available_titles()`.
+
+It stops nothing. Python still lets anybody write
+`library._books = "Dune"`. The underscore is a sign for people, not a
+lock. What it does is tell the next programmer which names are safe to
+use. Then a change to how `Library` keeps its books, a dictionary in
+place of a list, say, cannot break their code.
+
+</details>
+
+**12.** Write `run_choice(library, choice)` for a small menu: `"1"` prints
+the available titles, `"9"` returns `False` to quit, and anything else
+prints `Not a menu option` and returns `True`. A cell on this site cannot
+wait for typing, so run it on the list `["1", "x", "9"]`, standing in for
+a person.
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+def run_choice(library, choice):
+    if choice == "1":
+        print(library.available_titles())
+    elif choice == "9":
+        return False
+    else:
+        print("Not a menu option:", choice)
+    return True
+
+
+library = Library("Central")    # the Library from problem 5
+library.add_book(Book("Dune", "Frank Herbert"))
+library.add_book(ReferenceBook("Atlas", "Various"))
+
+for choice in ["1", "x", "9"]:
+    if not run_choice(library, choice):
+        break
+print("Goodbye.")
+```
+
+It prints `['Dune', 'Atlas']`, then `Not a menu option: x`, then
+`Goodbye.`. `run_choice()` never calls `input()`, as in
+[A front end: a text menu for a class](tutorial:a-front-end-for-a-class),
+so a list of answers can test it. Inside it is the selection from
+[Sequence, selection and iteration inside a class](tutorial:the-moves-you-already-know),
+and the loop around it is the iteration.
+
+</details>
+
+**13.** Run `library.available_titels()`, with the typo. Read the last
+line of the error. Which name does it say is missing? What would the
+editor have offered you as you typed, before you ran anything?
+
+<details class="dl-answer"><summary>answer</summary>
+
+The last line is
+`AttributeError: 'Library' object has no attribute 'available_titels'. Did you mean: 'available_titles'?`
+It names the exact name Python could not find, on the exact object, and
+then suggests the name you probably meant.
+
+As [Your development environment: the tools around your code](tutorial:the-tools-around-your-code)
+showed, the editor already knows the methods on `Library`. Type
+`library.avail`, and it offers `available_titles()`, spelled right, so
+the typo never happens.
 
 </details>

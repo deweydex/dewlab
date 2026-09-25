@@ -23,15 +23,17 @@ entries:
   - term: degree
     kind: concept
     definition: >
-      A polynomial's degree is the highest power of x in it. A quadratic
-      has degree two; a cubic has degree three.
+      A polynomial's degree is the highest power of x that has a
+      coefficient other than zero. A quadratic has degree two; a cubic has
+      degree three.
     example: "Polynomial([1, 0, -3, 2]).degree()  # 3"
 
   - term: leading coefficient
     kind: concept
     definition: >
       A polynomial's leading coefficient is the coefficient attached to
-      its highest power of x — the last entry in its coefficient list.
+      its highest power of x. It is the last entry in the coefficient
+      list, unless the list ends in zeros.
     example: "Polynomial([1, 0, -3, 2]).leading_coefficient()  # 2"
 
   - term: reusable

@@ -1,7 +1,7 @@
 ---
 title: "A class with many methods: building a polynomial class"
 year: "2026-2027"
-version: 2026.09.04.1
+version: 2026.09.25.1
 covers:
   from-loose-functions-to-one-class:
     covers: [FOOP-LO4]
@@ -136,10 +136,14 @@ class Polynomial:
         return result
 
     def degree(self):
-        return len(self.coeffs) - 1
+        for power in range(len(self.coeffs) - 1, -1, -1):
+            if self.coeffs[power] != 0:
+                return power
+        return None    # every coefficient is zero: no degree at all
 
     def leading_coefficient(self):
-        return self.coeffs[-1]
+        power = self.degree()
+        return 0 if power is None else self.coeffs[power]
 
 cubic = Polynomial([1, 0, -3, 2])
 print(cubic.degree())
@@ -148,6 +152,14 @@ print(cubic.leading_coefficient())
 
 It prints `3`, then `2`.
 
+`degree()` does not just count the list. It walks down from the highest
+power, and stops at the first coefficient that is not zero. That matters
+for a list like `[1, 2, 0]`. Its top number is a zero, so it is really
+$2x + 1$, which has degree 1, not 2. If every coefficient is zero, or the
+list is empty, there is no degree at all, and the method gives back
+`None`. `leading_coefficient()` finds its answer by calling
+`self.degree()`: one method can use another through `self`.
+
 Look at what did not have to change. `degree()` and
 `leading_coefficient()` needed no new parameter for the coefficients.
 The call `cubic.degree()` does not pass in a list at all. Both methods
@@ -155,8 +167,13 @@ already have `self`, and `self.coeffs` is there for them.
 
 This is what *reusable* code means for a class. Each new job is a
 method that can use everything the object already carries. A method
-written once works on every object of its class. A stand-alone function
-cannot do that. It needs the same data given to it every time.
+written once works on every object of its class.
+
+A stand-alone function can be reused just as well: `evaluate(coeffs, x)`
+at the top of this page works on any list of coefficients. The
+difference is where the data lives. The function needs the list handed
+to it on every call. The method finds the list on the object, so the
+call only has to say what is new.
 
 ### Your turn
 
@@ -178,10 +195,14 @@ class Polynomial:
         return result
 
     def degree(self):
-        return len(self.coeffs) - 1
+        for power in range(len(self.coeffs) - 1, -1, -1):
+            if self.coeffs[power] != 0:
+                return power
+        return None    # every coefficient is zero: no degree at all
 
     def leading_coefficient(self):
-        return self.coeffs[-1]
+        power = self.degree()
+        return 0 if power is None else self.coeffs[power]
 
     # Add a constant_term method here
 
@@ -268,7 +289,10 @@ class Polynomial:
         return result
 
     def degree(self):
-        return len(self.coeffs) - 1
+        for power in range(len(self.coeffs) - 1, -1, -1):
+            if self.coeffs[power] != 0:
+                return power
+        return None    # every coefficient is zero: no degree at all
 
 # Create two Polynomial objects here, then print each label and degree
 ```

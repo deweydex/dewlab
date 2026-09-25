@@ -36,8 +36,8 @@ It still runs. `__init__(self, title, author)` is listed under "Methods
 defined here". Under it, Python shows a general line of its own:
 `Initialize self.  See help(type(self)) for accurate signature.` That
 line comes from Python itself, and says nothing about books. A method
-with no docstring and no such built-in text, like `citation()` below
-without its docstring, shows nothing under its name.
+you write yourself, with no docstring, has no such built-in text, so
+nothing at all shows under its name.
 
 A docstring is optional. When one is missing, Python does not raise an
 error.
@@ -209,9 +209,13 @@ error about it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. A docstring is a plain string. Python never runs it, and never
-compares it with the code around it. Nothing in Python checks whether
+No. A docstring is a plain string. Python does not run it, and does not
+compare it with the code around it. Nothing in Python checks whether
 "Always succeeds" is still true. Whoever reads the method next has to
 notice the out-of-date docstring, and fix it.
+
+Examples are different. If the docstring held an example, a `>>>` line
+and the output it should give, the `doctest` module could run it and
+report the mismatch. A sentence has nothing for it to run.
 
 </details>

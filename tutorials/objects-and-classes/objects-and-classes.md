@@ -356,8 +356,9 @@ class.
 1. Add a class attribute `currency = "EUR"` to `BankAccount` below.
 2. Print `currency` through `alice`, through `bob`, and through the
    class itself. Do all three agree?
-3. Change it to `"USD"` through the class, and print it through `alice`
-   again. What do you see?
+3. Suppose the bank opens a branch in Belfast. Change `currency` to
+   `"GBP"` through the class, and print it through `alice` again. What
+   do you see?
 
 ```python exec
 id: class-attributes-and-instance-attributes-3

@@ -213,8 +213,15 @@ happened here. Someone who trusted the docstring would expect
 `account.balance` to be negative after the withdrawal.
 
 Python did not notice the mismatch. A docstring is a string like any
-other. Python never runs it, and never compares it with what the method
-does.
+other. Python does not run it, and does not compare it with what the
+method does.
+
+There is one exception worth knowing. A docstring can hold an example,
+written the way Python's own prompt shows it: a line starting with `>>>`,
+then the output you expect on the next line. Python's `doctest` module
+can run every example like that, and report any output that does not
+match. So an example in a docstring can be checked. A sentence like
+"Always succeeds" cannot.
 
 ### Your turn
 

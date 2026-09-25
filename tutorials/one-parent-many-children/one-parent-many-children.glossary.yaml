@@ -44,14 +44,14 @@ entries:
       Overriding is writing a method in a child class with the same name
       as a method in its parent class. Objects of the child class then
       run the child's version.
-    example: "def withdraw(self, amount):  # inside CheckingAccount"
+    example: "def withdraw(self, amount):  # inside CurrentAccount"
 
   - term: overdraft
     kind: concept
     definition: >
       An overdraft lets an account's balance go below zero, up to a set
       limit.
-    example: "CheckingAccount('Ben', 200.0, 100.0)  # a 100.0 overdraft limit"
+    example: "CurrentAccount('Ben', 200.0, 100.0)  # a 100.0 overdraft limit"
 
   - term: polymorphism
     kind: concept
