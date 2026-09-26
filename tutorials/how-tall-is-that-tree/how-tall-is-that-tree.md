@@ -556,7 +556,7 @@ title: some steps
 **Think about:** why is `across` the side that is taken away?
 ```
 
-Step 3 is there because of the sixth row. Three points on a straight line
+Step 3 is there because of the row "a straight line, with rounding". Three points on a straight line
 make an angle of 180°, whose cosine is −1. But 0.1 and 0.2 are not exact
 in binary, so the sum comes out a tiny bit below −1, such as
 −1.0000000000000002. That is outside the domain of `math.acos`, which

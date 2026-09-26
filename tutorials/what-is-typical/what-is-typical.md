@@ -642,6 +642,16 @@ for: typical-toolkit-std-dev
 import math
 
 
+def mean(values):
+    """Return the mean of values: their total shared out equally.
+
+    values is a list of at least one number.
+    """
+    return total(values) / len(values)
+
+
+
+
 def std_dev(values):
     """Return the standard deviation of values, a list of at least one number.
 
