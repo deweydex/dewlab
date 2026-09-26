@@ -76,6 +76,8 @@ print(5 != 3)       # not equal to
 Look closely at `==`. One equals sign, `=`, gives a name a value. Two,
 `==`, asks whether two values are equal. People confuse them very often,
 both beginners and people who have programmed for years.
+[The equals sign: a closer look](tutorial:equals-three-ways) has an
+experiment that shows the difference.
 
 Before you run the next cell, write what you think each line prints in the
 comment beside it.

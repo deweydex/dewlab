@@ -1,0 +1,13 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A closer look (#337), beside one-parent-many-children. Inheritance,
+# parent class and child class are taught there; this page names only the
+# principle it tests, after the experiment.
+entries:
+  - term: Liskov substitution principle
+    kind: concept
+    definition: >
+      The Liskov substitution principle says that a child class must work
+      anywhere its parent class works, with nothing breaking. If a parent's
+      method would break the child's own rule, the child class does not
+      fit, even when "is a" is true in real life.

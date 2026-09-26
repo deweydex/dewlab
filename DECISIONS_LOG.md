@@ -5178,3 +5178,38 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Found while checking.** `turning-a-cube` still named `rotate90` and "that gallery", both renamed in #326, and two pages said they began "with no code from earlier pages", which the matrices toolkit has made untrue. Drawing the planet task at first showed the quarter-turn planet behind the star; `rotation_y` sends it towards the camera, and the text now says so.
 
 *Cost to change: small. `your-own-scene` is a new id, the world cells' ids are new, and `setup/graphics/scene.py` is used only by the new page. Cell ids become a contract on 2 October.*
+
+---
+
+**7.261 — Fourteen closer-look pages, each beside the page it serves.** The content issue (#337), part of #306. Josh, 26 September 2026, chose where they sit: "beside the page they serve", and all fourteen written now, with links only where the home page is already rewritten.
+
+**The shape.** Each page follows `docs/templates/where-the-total-starts.md`. It links back to its home page, states two ideas, and runs one experiment whose predict block names the idea behind each option. It says which idea matches what happens, explains why the other is so easy to believe, and ends with a second, smaller case ("Where else it happens") and somewhere to read more. None says the reader held the idea. Each experiment uses only what its home page and the pages before it have taught: the running-total page loops over `range`, because lists come a page later; the vertex page shows a shifted $x^3$, not a sine wave, because trigonometry comes after algebra; the two-methods page avoids `continue`.
+
+**The fourteen, and where each sits.**
+
+| Page | Home page | Placed |
+|---|---|---|
+| `powers-in-python` (`^`, `**`, `-3 ** 2`) | `first-steps` | after it, and after `first-steps-cm` |
+| `dividing-in-python` (`-7 // 2`, `0.1 * 3`) | `storing-and-computing` | after it, three courses |
+| `equals-three-ways` | `making-decisions` | after it, three courses |
+| `a-total-that-starts-again` | `repeating-yourself` | after it, three courses |
+| `two-names-one-list` | `comprehensions-and-grids` | after it, three courses |
+| `small-samples` (8 sevens against 9) | `what-are-the-chances` | after it |
+| `when-two-methods-agree` (a die with faces 0 to 5) | `three-doors` | after it |
+| `when-is-a-breaks` (`Square(Rectangle)`) | `one-parent-many-children` | after it |
+| `dividing-every-term` | `rearranging-formulae` | not yet |
+| `the-hidden-bracket` (`v - u / a`) | `rearranging-formulae` | not yet |
+| `squaring-a-sum` | `expressions-come-alive` | not yet |
+| `the-vertex-sign` | `parabolas` | not yet |
+| `degrees-and-radians` | `the-unit-circle` | not yet |
+| `why-we-have-seasons` | `sine-and-cosine-waves` | not yet |
+
+**Not yet placed.** The last six have homes in Algebra and Functions and in Trigonometry and Calculus, which #328 and #330 rewrite and reorder. Putting them in the course file now would collide with those rewrites. They build, are in the topics page's new "Closer looks" group, and wait for those two PRs to add each one after its home page and link to it.
+
+**The misconception list, adjusted.** "Correlation, chance and small samples" became a page on small samples only: correlation is taught on `pictures-worth-numbers`, two pages later, so a page beside `what-are-the-chances` cannot use it. "Degrees and radians" does not repeat the `math.sin(90)` surprise, which its home page already has; it tests whether 0.894 means anything, by taking 14 whole turns away from 90 radians.
+
+**Links in.** Eight home pages got one link each, in a predict note where one option shows the idea (`comprehensions-and-grids`, `when-it-goes-wrong`, the 0.1 + 0.2 problem on `storing-and-computing-practice`) or in one sentence where it arises (`first-steps`, `making-decisions`, `what-are-the-chances`, `three-doors`, and the "Is it a kind?" answer on `one-parent-many-children-practice`).
+
+**Every number was run**, including that only `1 ^ 0` and `1 ** 0` agree for whole numbers up to 20, that 8 or fewer sevens in 54 rolls happens 44% of the time, that a face is missing from 12 rolls 56% of the time, and the 1.07 against 3.8 in the seasons.
+
+*Cost to change: new ids, free until 2 October. Moving a page means its line in each course file and its home page's link.*
