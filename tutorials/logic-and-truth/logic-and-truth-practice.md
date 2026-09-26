@@ -204,8 +204,8 @@ it worked" usually is not?
 There are exactly four possible inputs, and the loop tried all of them.
 For almost anything else, such as a function that takes whole numbers,
 the inputs never end, and a test can only fail to find a problem. A
-loop over every case proves a rule only when there are few enough cases
-to check them all.
+loop over every case is a proof when there are few enough cases to
+check them all.
 
 </details>
 

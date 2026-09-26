@@ -390,7 +390,7 @@ print("Switching won:", round(wins / 10000, 3))
 It is about 0.99. Your first pick is the car 1 time in 100, and switching
 wins all the other times. With a hundred doors, the host's 98 goats
 clearly tell you something. Of all the doors he could have left shut, he
-left that one. Three doors work the same way, with smaller numbers.
+left that one. Three doors work the same way, but the numbers are too small to make it obvious.
 ```
 
 ## What you have now

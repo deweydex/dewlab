@@ -22,6 +22,19 @@ sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
 
+def pytest_collection_modifyitems(config, items):
+    """Run the browser tests after every other test in the session.
+
+    `site_dir` points build.py's module-level paths (ROOT, OUT and the
+    rest) at a temporary folder, and `browser` keeps Playwright, and so an
+    asyncio event loop, running until the session ends. A unit test that
+    ran after them would build into that folder and fail on asyncio.run().
+    With these last, `python3 -m pytest` behaves like running tests/e2e/
+    and the rest separately, as CI does."""
+    here = Path(__file__).resolve().parent
+    items.sort(key=lambda item: here in Path(str(item.path)).resolve().parents)
+
+
 COURSE = "fixtures"
 SLUG = "rendering-tour"
 PAGE = f"tutorials/{SLUG}.html"

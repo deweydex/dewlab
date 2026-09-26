@@ -137,7 +137,7 @@ plt.title("Planets announced each year")
 plt.grid(alpha=0.3)
 ```
 
-There are two spikes: 2014, with 872 planets, and 2016, with 1,504. Both
+Two spikes stand out: 2014, with 872 planets, and 2016, with 1,504. Both
 are single announcements of planets found by the Kepler telescope,
 checked in batches. The line shows that discoveries come in lumps, as
 work is published, not steadily.

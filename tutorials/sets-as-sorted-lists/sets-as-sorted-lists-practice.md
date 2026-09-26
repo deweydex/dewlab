@@ -315,8 +315,8 @@ print(difference(far, near))
 ---
 Astrometry and Imaging appear only in `near`. Both need to see the
 star, or the planet, clearly. A photograph of a planet is only possible
-for a nearby one. Microlensing appears only in `far`. It needs a distant
-star to sit exactly behind a nearer one, so it works best a long way off.
+for a nearby one. Five methods appear only in `far`, Microlensing among
+them. It needs a distant star to sit exactly behind a nearer one, so it works best a long way off.
 The two differences are different sets, because order matters for
 difference.
 ```
