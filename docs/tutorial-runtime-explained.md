@@ -552,6 +552,18 @@ steps the way the base feature was:
   `updateNotesNudge()`/`markNotesExported()`: a small, deliberately rough
   heuristic (has enough new text piled up since the last export?) rather
   than anything precise.
+- **"What happens when I press Compare with a solution?"** —
+  `initCompare()`, called from `buildCells()` for a cell whose manifest
+  entry has `inputs` (and usually a `solution`, and a `tests` cell id).
+  `compareCell()` runs the cell as it stands (`runCell()`), then calls
+  `tutorial_tools.compare()` through a `"compare"` worker message or
+  `toolsMT` directly (`compareMainThread()`), the usual fork on
+  `manifest.standalone`. `renderComparison()` fills the table the build
+  wrote (`.dl-compare`, build.py's `render_inputs()`) with plain text
+  only, adds a "Your tests" section when the reader has a tests cell,
+  and marks a row that differs with `.dl-compare-differ` and the word
+  "different". A guess column's boxes save with the cell
+  (`cellGuesses()`/`restoreGuesses()`, the record's `guesses`).
 - **"How does a hint decide to appear under a cell?"** — the staged-hints
   block after `executeCell()`: `noteAttempt()` updates a cell's counters
   from the run's report, `triggerHolds()` tests a fold's `data-after`

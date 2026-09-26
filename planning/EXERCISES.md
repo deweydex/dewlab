@@ -1,33 +1,21 @@
 # Practice problems
 
-Every tutorial has a page of problems beside it, and four more sets draw on
-several tutorials at once. This file records where the material came from, how
-the pages are built, and what is still worth doing.
+Every tutorial has a page of problems beside it, and every series and course
+has a mixed set. How to write one is in `docs/WRITING_TUTORIALS.md`: start
+from the templates in `docs/templates/`
+([`running-totals-practice.md`](../docs/templates/running-totals-practice.md)
+for a practice page,
+[`mixed-running-totals.md`](../docs/templates/mixed-running-totals.md) for a
+mixed set). Why they are shaped that way is in the style guide's
+[page shapes](PEDAGOGICAL_STYLE_GUIDE.md#page-shapes) and
+[nothing is taught once](PEDAGOGICAL_STYLE_GUIDE.md#nothing-taught-once).
+
+This file keeps what those do not: where the first problems came from, and
+what is still to do.
 
 ---
 
-## 1. What exists
-
-| | Count |
-|---|---:|
-| Tutorials | 41 |
-| Practice pages, one per tutorial | 38 |
-| Mixed sets, drawing on several | 4 |
-
-Six of the tutorials and six of the practice pages are the first 5N0554
-strand — `computational-methods`'s `matrices` series. Unlike the other
-thirty-two, their worksheets (`07a`, `07b`, `07d`) have no answer key in the
-markdown, only a PDF, so every number on those six practice pages was worked
-fresh rather than transcribed (DECISIONS_LOG 7.56).
-
-Three tutorials have no practice page, on purpose. *Review problems: polynomials, equations and sets*
-is already a set of integrative problems, and *Looking Back Before Moving
-Forward* and *The Team Project* ask for reflection rather than answers.
-
-The mixed sets are on the programming spine, on algebra and functions, on
-trigonometry and geometry, and on data, chance and logic.
-
-## 2. Where the material came from
+## Where the material came from
 
 ### `deweydex/Mathematics`
 
@@ -38,9 +26,8 @@ roughly 60 problems.
 **Twenty of the twenty-six end in an answer key in the markdown.** The other six
 — `04e_optimisation`, `07a_matrix_operations`, `07c_eigenvalues`,
 `07d_markov_chains`, `08a_bayes` and `08b_distributions` — have answers only as
-PDFs under `pdfs/solutions/`. Those six are also the ones whose material isn't
-taught here yet; when the 5N0554 strands are written, their answers will have
-to come out of the PDFs or be worked afresh.
+PDFs under `pdfs/solutions/`, so every number on a page they fed was worked
+afresh (`DECISIONS_LOG.md` 7.56).
 
 Which worksheet fed which page:
 
@@ -75,49 +62,9 @@ every answer was written here.
 The largest source. Every "your turn" prompt in a tutorial is a problem that was
 already set and never answered, and those now have answers to compare against.
 
-## 3. How a practice page is built
+---
 
-**Frontmatter.** One line beyond an ordinary tutorial:
-
-```yaml
-title: "The Unit Circle — Practice"
-slug: the-unit-circle-practice
-practice_for: the-unit-circle
-```
-
-`build.py` checks both directions: the tutorial has to exist, be in the same
-module, and not be a practice page itself, and no two pages may claim the same
-tutorial. A practice page declares no `covers:` — it sets problems on what its
-tutorial taught, and saying so twice would report one outcome as taught by two
-pages.
-
-A mixed set uses `practice_across:` with a list of slugs instead. It links to
-each of them and none links back; see `DECISIONS_LOG.md` 7.49 for why.
-
-**Answers behind folds.**
-
-```html
-<details class="dl-answer"><summary>answer</summary>
-
-The answer, with the working.
-
-</details>
-```
-
-The site is public, so an answer that exists can be read regardless. What the
-fold protects is the moment before looking — a key at the bottom of the page
-is one scroll away, which is the same as being visible.
-
-**A few checking tools, not a cell per problem.** One `python exec` cell per
-section, holding the helpers that section's problems need. Sixty CodeMirror
-instances on a page is a slow page, and a cell under every question invites
-running it instead of thinking.
-
-**Every number gets run.** Twenty-one wrong numbers were caught this way while
-these pages were written, and none of them would have failed a test — no test
-asserts on prose. See `DECISIONS_LOG.md` 7.50.
-
-## 4. What is left
+## What is left
 
 - **A worksheet converter**, which would live in `dev/` and does not exist
   yet. It would convert the Mathematics worksheets, and the two conditions for

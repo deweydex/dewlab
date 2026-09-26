@@ -130,6 +130,23 @@ more detail; it's worth reading once, since the same shape shows up in
   `==`?"** — `_compare`, and its own docstring: floats need a tolerance,
   numpy arrays and DataFrames raise on a bare `==`, and `True == 1` in
   Python would let a boolean answer through disguised as a numeric one.
+- **"How does Compare with a solution work, and why can't it change my
+  code's state?"** — `compare()`, after `reset_page_state()` (#312). The
+  page runs the reader's cell first, then calls this. It takes two
+  copies of `_page_globals` (`_copy_namespace()`: every value
+  deep-copied through one shared memo, dunder names and anything
+  uncopyable shared as they are): the reader's side evaluates each
+  input in one, and the solution runs in the other before evaluating
+  the same inputs there, so it sees the same data the reader's code saw.
+  `_evaluate()`/`_run_code()` allow top-level `await`. `_same()` decides
+  whether a row reads as different: close floats and two separately
+  defined classes with equal attributes read as the same, `True` and `1`
+  do not. `_statements()`/`_run_statement()` run a reader's own test
+  cell one statement at a time on both sides. Printed output is
+  swallowed and any new figure closed, so nothing lands in the next
+  cell. `build.py`'s `check_solutions()` imports this same module in a
+  separate Python and calls this same function, so what the build
+  checks is what a reader sees.
 - **"What does the page learn about a run beyond its output?"** —
   `run_cell_report()` and `_report()`: the same run as `run_cell()`, plus a
   JSON report of whether it raised (`_describe_error()`: type and first

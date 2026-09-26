@@ -11,14 +11,12 @@ complexity and systems modelling — none of which has an outline file yet.
 ## Pedagogical & Structural Principles
 
 1. **Plain, Purposeful Titles**: Use descriptive, accessible titles communicating what the reader will build or understand (e.g. *Straight lines: slope, midpoint and distance* rather than *Coordinate Geometry*; *How We Got Here* rather than *The Computing Time Machine*).
-2. **Pedagogical Cohesion Over Metric Sizing**: Scoping is determined by pedagogical cohesion rather than arbitrary outcome counting. Every tutorial must establish context and motivation, explain core concepts, demonstrate computational applications, and provide hands-on practice.
+2. **Pedagogical Cohesion Over Metric Sizing**: Scoping is determined by pedagogical cohesion rather than arbitrary outcome counting. A tutorial opens with something to run or look at, and a question about it. The reader explores first, and the page names what they found afterwards (`PEDAGOGICAL_STYLE_GUIDE.md#discover-then-name`); practice comes after that. Some outlines were written to an older order (explain, then demonstrate). Read each "shape" as what the page has to reach, not as the order it goes in.
 
 ---
 
 ## Outline Matrix
 
-| Outline Specification | Target Outcomes | Scope |
-|---|---|---|
 | Outline Specification | Target Outcomes | Scope | Status |
 |---|---|---|---|
 | [Rearranging formulae: changing the subject](./rearranging-formulae.md) | `MIT-1.7` | Standard | Written |

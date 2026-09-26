@@ -90,7 +90,8 @@ and no top. A reader who finishes early finds more to do.
 one, page by page. A page teaches in one world, and its tasks, practice
 and project steps follow the reader's choice. Wonder beats worthiness: a
 dinosaur's mass beats a bank balance. Invented data is fine when the
-page says it is invented.
+page says it is invented. (Choosing one:
+`docs/WRITING_TUTORIALS.md#choosing-a-context`.)
 
 <a id="closer-look"></a>
 **A misconception gets a page of its own.** A misconception worth
@@ -101,8 +102,11 @@ flagged on a reader's answer, because that would be a verdict.
 <a id="page-shapes"></a>
 ## Page shapes
 
-Five kinds of page, each with its own job. Templates for each come with
-#311; until then, `docs/WRITING_TUTORIALS.md` has the mechanics.
+Five kinds of page, each with its own job. Each has a working template in
+[`docs/templates/`](../docs/templates/README.md), and
+[`docs/WRITING_TUTORIALS.md`](../docs/WRITING_TUTORIALS.md#page-templates)
+has the mechanics. A mixed set is a practice page that draws on a whole
+series or course.
 
 - **A tutorial** teaches one idea in about an hour. It opens by running
   or showing something ("On this page we:" is optional). A line-by-line

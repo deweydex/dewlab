@@ -275,6 +275,13 @@ async function runCell(cellId, code, expect, label) {
   return JSON.parse(report);
 }
 
+/* The comparison view (#312): tutorial_tools.compare() evaluates the
+ * inputs against copies of the page namespace, so nothing the reader has
+ * is changed by asking. A JSON string back, like run_cell_report(). */
+async function compare(solution, inputs, tests) {
+  return JSON.parse(await tools.compare(solution ?? null, inputs, tests ?? null));
+}
+
 async function resetPageState() {
   tools.reset_page_state();
   await pyodide.runPythonAsync(RESEED_GLOBALS_SOURCE);
@@ -356,6 +363,8 @@ self.onmessage = async (ev) => {
       pyodide.setInterruptBuffer(new Int32Array(msg.buffer));
     } else if (msg.type === "run-cell") {
       respond(await runCell(msg.cellId, msg.code, msg.expect, msg.label));
+    } else if (msg.type === "compare") {
+      respond(await compare(msg.solution, msg.inputs, msg.tests));
     } else if (msg.type === "reset-page-state") {
       await resetPageState();
       respond("ok");

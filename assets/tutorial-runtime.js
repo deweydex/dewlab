@@ -2075,6 +2075,7 @@ function buildCells(manifest) {
     cell.editor = editor;
     cells.push(cell);
     renderCellRunLine(cell);
+    initCompare(cell, spec);
 
     runBtn.addEventListener("click", () => runCell(cell));
     if (resetBtn) {
@@ -4013,6 +4014,162 @@ async function executeCell(cell) {
   return report.ok;
 }
 
+/* The comparison view (#312). A cell with an ```inputs block has a table
+ * of cases under it, and a button. The button runs the reader's cell as it
+ * stands, then asks Python for what their code gives for each case and,
+ * when the cell has a solution, what that gives: tutorial_tools.compare(),
+ * which works on copies of the namespace, so asking changes nothing. The
+ * table shows both, and marks a row where they differ with the word
+ * "different". It never says which one is right. */
+function initCompare(cell, spec) {
+  const box = document.querySelector(`.dl-compare[data-cell="${CSS.escape(spec.id)}"]`);
+  if (!box) return;
+  cell.compare = {
+    box,
+    solution: typeof spec.solution === "string" ? spec.solution : null,
+    inputs: Array.isArray(spec.inputs) ? spec.inputs : [],
+    testsCell: spec.tests || null,
+  };
+  box.querySelector(".dl-btn-compare").addEventListener("click", () => compareCell(cell));
+  for (const input of box.querySelectorAll(".dl-compare-guess input")) {
+    input.addEventListener("input", scheduleSave);
+  }
+}
+
+function cellGuesses(cell) {
+  if (!cell.compare) return undefined;
+  const boxes = [...cell.compare.box.querySelectorAll(".dl-compare-guess input")];
+  return boxes.length ? boxes.map((input) => input.value) : undefined;
+}
+
+function restoreGuesses(cell, guesses) {
+  if (!cell.compare) return;
+  const boxes = cell.compare.box.querySelectorAll(".dl-compare-guess input");
+  boxes.forEach((input, index) => {
+    if (typeof guesses[index] === "string") input.value = guesses[index];
+  });
+}
+
+async function compareMainThread(solution, inputs, tests) {
+  return JSON.parse(await toolsMT.compare(solution, inputs, tests));
+}
+
+async function compareCell(cell) {
+  if (running) return;
+  const { box, solution, inputs, testsCell } = cell.compare;
+  const status = box.querySelector(".dl-compare-status");
+  const button = box.querySelector(".dl-btn-compare");
+  button.disabled = true;
+  status.textContent = "Running your cell, then each case…";
+  try {
+    await runCell(cell);
+    await ensureBooted(currentManifest);
+    const tests = testsCell
+      ? (cells.find((c) => c.id === testsCell)?.getCode() ?? null)
+      : null;
+    const payload = JSON.stringify(inputs);
+    const result = currentManifest.standalone
+      ? await compareMainThread(solution, payload, tests)
+      : await workerRequest("compare", { solution, inputs: payload, tests });
+    renderComparison(cell, result);
+    status.textContent = result.solutionError
+      ? `The solution could not run here (${result.solutionError}). That is a problem in the page, not in your code.`
+      : "";
+  } catch (err) {
+    status.textContent = `The comparison could not run: ${err.message}`;
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function fillOutcome(td, outcome) {
+  td.replaceChildren();
+  if (!outcome) return;
+  const span = document.createElement("span");
+  if ("error" in outcome) {
+    span.className = "dl-compare-error";
+    span.textContent = outcome.error;
+  } else {
+    span.textContent = outcome.shown;
+  }
+  td.appendChild(span);
+}
+
+function markDiffer(tr, td, differ) {
+  tr.classList.toggle("dl-compare-differ", !!differ);
+  if (differ && td) {
+    const note = document.createElement("span");
+    note.className = "dl-compare-diff";
+    note.textContent = "different";
+    td.appendChild(note);
+  }
+}
+
+function sectionRow(text, columns, extraClass) {
+  const tr = document.createElement("tr");
+  tr.className = `dl-compare-section ${extraClass}`;
+  const th = document.createElement("th");
+  th.colSpan = columns;
+  th.scope = "colgroup";
+  th.textContent = text;
+  tr.appendChild(th);
+  return tr;
+}
+
+function renderComparison(cell, result) {
+  const { box } = cell.compare;
+  const table = box.querySelector(".dl-compare-table");
+  const main = table.querySelector("tbody:not(.dl-compare-tests)");
+  const columns = table.querySelectorAll("thead th").length;
+  const hasGuess = !!table.querySelector(".dl-compare-guess");
+  const hasSolution = !!table.querySelector(".dl-compare-theirs");
+
+  table.querySelector("tbody.dl-compare-tests")?.remove();
+  main.querySelector(".dl-compare-authors")?.remove();
+  if (result.tests && result.tests.length) {
+    const tests = document.createElement("tbody");
+    tests.className = "dl-compare-tests";
+    tests.appendChild(sectionRow("Your tests", columns, "dl-compare-yourtests"));
+    for (const row of result.tests) {
+      const tr = document.createElement("tr");
+      const input = document.createElement("td");
+      input.className = "dl-compare-input";
+      const code = document.createElement("code");
+      code.textContent = row.input;
+      input.appendChild(code);
+      tr.appendChild(input);
+      if (hasGuess) tr.appendChild(document.createElement("td"));
+      const yours = document.createElement("td");
+      yours.className = "dl-compare-yours";
+      fillOutcome(yours, row.yours);
+      tr.appendChild(yours);
+      let theirs = null;
+      if (hasSolution) {
+        theirs = document.createElement("td");
+        theirs.className = "dl-compare-theirs";
+        fillOutcome(theirs, row.solution);
+        tr.appendChild(theirs);
+      }
+      markDiffer(tr, theirs, row.differ);
+      tests.appendChild(tr);
+    }
+    table.insertBefore(tests, main);
+    main.insertBefore(
+      sectionRow("Cases you may not have tried", columns, "dl-compare-authors"),
+      main.firstChild,
+    );
+  }
+
+  result.rows.forEach((row, index) => {
+    const tr = main.querySelector(`tr[data-case="${index}"]`);
+    if (!tr) return;
+    fillOutcome(tr.querySelector(".dl-compare-yours"), row.yours);
+    const theirs = tr.querySelector(".dl-compare-theirs");
+    if (theirs) fillOutcome(theirs, row.solution);
+    markDiffer(tr, theirs, row.differ);
+  });
+}
+
 function freshAttempts() {
   return {
     runs: 0,          // runs since the counters were last cleared
@@ -4702,6 +4859,7 @@ function saveNow() {
       collapsed: !!cell.collapsed,
       attempts: cell.attempts,
       hints_shown: cell.hints.filter((hint) => hint.revealed).map((hint) => hint.index),
+      guesses: cellGuesses(cell),
     })),
     // A site editor's own preview and console are cheap to rebuild — no
     // Pyodide, no network — so unlike a cell's output_html, nothing here
@@ -4817,6 +4975,7 @@ function restoreSaved() {
         }
       }
     }
+    if (Array.isArray(saved.guesses)) restoreGuesses(cell, saved.guesses);
     restored.push(cell.id);
   }
 

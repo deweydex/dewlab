@@ -4726,6 +4726,42 @@ Renaming any of these would strand work a student already has. The code keeps it
 
 ---
 
-**7.231 — A Workspace download is a page that links its own CSS and JS.** 7.225 left this for Josh: a downloaded site opened unstyled, because the HTML pane holds only the body and the saved `.html` had no `<link>` or `<script src>`. Issue #350 offered three fixes: one self-contained file, three linked files, or a zip. The Workspace keeps three files, and the `.html` becomes a whole page that links the other two by name. Web Authoring teaches that a page is made of separate files joined by these two tags, so the download shows the reader how their own site fits together rather than hiding it inside one file. Load files strips the frame again, so a site can go out and come back unchanged. An e2e test (`test_a_downloaded_page_links_its_css_and_js_and_loads_back`) covers both directions.
+**7.231 — The page templates, and the syntax for blocks and worlds.** The templates issue (#311), part of #306. `docs/templates/` holds six real pages, one of each shape: a tutorial, its practice page, a closer look, a mixed set, a series-end making task and a project brief. Together they make a small series, *Running totals*, taught with the rocky planets' widths from NASA and offered in three worlds (planets, the sea floor, pixel art). They are real pages rather than skeletons because an author copies a page, not a description of one. `tests/build/test_templates.py` builds them in a temporary repository on every run, and they are never published.
+
+**The syntax, decided here so the platform issues build to it:**
+- **A block is a fence after its cell**, with the same `key: value` header lines as a cell; `for:` names another cell instead. This is the rule the `hint` fence already follows, so there is one rule for every block.
+- **`solution`** is Python, then optionally a `---` line and markdown notes. Two solutions make two tiers, and the comparison uses the first.
+- **`inputs`** is one Python expression per line: a call, or a name the cell makes. A `#` comment labels a case. The author never writes an expected value.
+- **The comparison** runs the solution in a copy of the page's namespace taken after the reader's cell, so both see the same data. A starter cell that defines the data is then enough for the solution to use it.
+- **`predict`** has `type: choice`, `number` or `text`. An option's note is an indented line under it. It follows its cell in the source like every other block, and the page shows it above the cell.
+- **Tests the reader writes** go in a cell marked `tests: <cell id>`, and an `inputs` block with `guess: yes` adds a column of the reader's own expectations.
+- **`python challenge`** (and `html`, `css`, `js`) holds a closer's starter code, the same shape as `python exec` and `python toolkit-reference`.
+- **Worlds** are a `worlds:` mapping in the frontmatter, the first being the page's own, and a `<div class="dl-world" data-world="…">` wrapper around each variant. A variant's cell id is the section's with `--<world>` added. The wrapper follows the `<div class="dl-hero">` convention the site's own pages already use, rather than a new fence that would have to nest cells inside it.
+
+Until each platform issue lands (#312, #313, #315, #316), its syntax builds as plain text, and `docs/WRITING_TUTORIALS.md` says so beside each one.
+
+Also: `planning/EXERCISES.md` now points to the templates and keeps only where the first problems came from and what is left. Its counts were stale (41 tutorials), and its frontmatter example still had `slug:`, which `check.py` rejects. The same stale line is gone from `WRITING_TUTORIALS.md`'s mixed-set example. `planning/outlines/README.md` no longer says a tutorial explains before it demonstrates.
+
+*Cost to change: until #312 lands, only these six templates and the docs use the syntax. After it, every page written with blocks does.*
+
+---
+
+**7.232 — Solutions, inputs and the comparison view: the site shows two values and never a verdict.** The block-model issue (#312), part of #306, building the syntax 7.231 agreed.
+
+**What a reader sees.** Under a cell, a table of the author's cases. A **Compare with a solution** button runs the cell as it stands, then fills in what the reader's code gives for each case beside what one solution gives. A row where the two differ gets the cell background and the word "different": nothing red, nothing green, no tick, no score. The solution itself is a closed fold. With `guess: yes`, a column of boxes comes first for the reader's own expectations, saved with the cell. A cell marked `tests: <cell id>` holds the reader's own tests; each statement runs on both sides, before the author's cases, which are then headed "Cases you may not have tried". A cell with inputs and no solution gets **Try these on your code** and one column.
+
+**Copies, not the page.** `tutorial_tools.compare()` deep-copies the page namespace twice, once for each side, through one shared memo. The solution runs in its copy after the reader's cell has run, so it sees the same data (a starter cell that defines `giants` is enough), and whatever it defines replaces the reader's only there. Pressing the button changes nothing the reader has: their `total_of` is still theirs afterwards. Printed output is swallowed and new figures closed.
+
+**When two values are "the same".** Close floats are (`0.1 + 0.2` beside `0.3` would be noise). `True` and `1` are not. Two separately defined classes with equal attributes are, since the reader's class and the solution's are never one class object. An error is an outcome, shown by name, and two of the same kind read as the same.
+
+**The build runs every solution.** `check_solutions()` runs the page's Python cells in order in a separate Python, with the runtime's own `tutorial_tools`, then calls the same `compare()` for every solution. A solution that raises stops the build. An input the solution cannot name (a `NameError` or `SyntaxError` on the solution's side) stops it too, as a typo in the page. Other errors are outcomes. A cell that fails as written is fine, and each cell has 20 seconds under `SIGALRM` where the platform has it, so a deliberate endless loop does not hang the build. A missing package is a note, not a failure, because it says nothing about the solution. Pages without solutions start no process at all.
+
+**Not done here.** `check()`, `expect:` and the `failed checks` signal stay until #314 retires them. The predict block is #313.
+
+*Cost to change: `compare()` and `render_inputs()` are the two places the comparison's meaning lives; the saved record gains `guesses`, which an older page ignores.*
+
+---
+
+**7.233 — A Workspace download is a page that links its own CSS and JS.** 7.225 left this for Josh: a downloaded site opened unstyled, because the HTML pane holds only the body and the saved `.html` had no `<link>` or `<script src>`. Issue #350 offered three fixes: one self-contained file, three linked files, or a zip. The Workspace keeps three files, and the `.html` becomes a whole page that links the other two by name. Web Authoring teaches that a page is made of separate files joined by these two tags, so the download shows the reader how their own site fits together rather than hiding it inside one file. Load files strips the frame again, so a site can go out and come back unchanged. An e2e test (`test_a_downloaded_page_links_its_css_and_js_and_loads_back`) covers both directions.
 
 *Cost to change: two small functions in `compose/dewminiweb.js`; switching to a single file means inlining the CSS and JS in `pageFile()`.*
