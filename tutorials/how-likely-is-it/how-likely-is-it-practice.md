@@ -221,6 +221,16 @@ will not be exactly 0.5, and that is fine too.
 
 </details>
 
+<aside class="dl-note" id="likely-practice-note-kerrich">
+
+**Ten thousand real tosses.** During the Second World War, the
+mathematician John Kerrich was held in a camp in Denmark. With another
+prisoner, Eric Christensen, he tossed a coin 10,000 times and wrote
+down every result. They got 5,067 heads, a fraction of 0.5067. Kerrich
+later wrote about the experiment in a book on probability.
+
+</aside>
+
 **9. Another way.** In the tutorial, $P(\text{the dice add up to 7})$
 was $\frac{6}{36}$, found by counting. Find it another way, with a trial
 and `simulate`.
@@ -276,22 +286,22 @@ of a mistake in the trial.
 
 </details>
 
-**11. Make.** The Irish Lotto draws 6 numbers from 47. What is the
+**11. Make.** The Irish Lotto draws 6 numbers from 45. What is the
 probability that one ticket wins the jackpot? Use `combinations` from
 your toolkit, and say the answer as "1 in …".
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-tickets = combinations(47, 6)
+tickets = combinations(45, 6)
 print(tickets)
 print(1 / tickets)
 ```
 
-There are 10,737,573 equally likely tickets, and one of them wins, so
-the probability is $\frac{1}{10{,}737{,}573}$, which is 1 in about ten
+There are 8,145,060 equally likely tickets, and one of them wins, so
+the probability is $\frac{1}{8{,}145{,}060}$, which is 1 in about eight
 million.
-Python writes it as `9.313091515186905e-08`, which is 0.000000093.
+Python writes it as `1.2277380399898834e-07`, which is 0.00000012.
 A simulation of this would need hundreds of millions of runs to see even a
 few wins. Here counting is the only practical way.
 

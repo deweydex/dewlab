@@ -123,6 +123,15 @@ question in full, and left out a root of the equation.
 
 </details>
 
+<aside class="dl-note" id="solving-practice-note-pixel">
+
+**Pix and el.** The word pixel is short for "picture element", with
+pix for picture. It was first printed in 1965, by Fred Billingsley, an
+engineer at NASA's Jet Propulsion Laboratory. He used it for the dots
+in pictures that space probes sent back from the Moon and Mars.
+
+</aside>
+
 ## Core
 
 A cell for the core problems.

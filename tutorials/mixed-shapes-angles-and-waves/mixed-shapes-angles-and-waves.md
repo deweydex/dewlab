@@ -522,6 +522,16 @@ wall first. That order is a choice about the game.
 
 </details>
 
+<aside class="dl-note" id="mixed-shapes-note-tennis">
+
+**A ball on a screen in 1958.** On 18 October 1958, visitors to
+Brookhaven National Laboratory, in New York, could play Tennis for Two.
+William Higinbotham, a physicist there, built it from an analog
+computer, and its screen was an oscilloscope about 13 cm across. Each
+player hit the ball over a net with a knob and a button.
+
+</aside>
+
 **15. Another way.** In a tower-defence game, two guards walk round a
 tower on a circle of radius 50. One is at 20° and the other at 80°. How
 far apart are they? Find it two ways: with `point_on_circle` and

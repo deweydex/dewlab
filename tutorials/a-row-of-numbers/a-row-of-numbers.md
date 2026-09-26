@@ -201,6 +201,8 @@ value, `-2` is the one before the last, and so on. It works whatever
 the length of the list, so the same line finds the newest reading in a
 week of data or in a year of it.
 
+<img src="indexes-both-ways.svg" alt="The list week drawn as seven boxes holding 11, 13, 9, 12, 14, 10 and 8, for Monday to Sunday. Above each box is its index, from [0] for Monday to [6] for Sunday. Below each box is its negative index, from [−7] for Monday to [−1] for Sunday.">
+
 ## A slice of the week
 
 Now we want only the work days, Monday to Friday. A *slice* is a part
@@ -387,6 +389,8 @@ The mixed sound is `[0, 9, 8, 1, 0, -1, -8, -9]`. Adding lists this way,
 pair by pair, is called *adding element by element*. In maths, it only
 works when the two lists are the same length.
 
+<img src="adding-two-notes.svg" alt="Three rows of samples, with one stem for each index from 0 to 7. low_note is 0, 5, 8, 5, 0, −5, −8, −5. high_note is 0, 4, 0, −4, 0, 4, 0, −4. both_notes, their sum index by index, is 0, 9, 8, 1, 0, −1, −8, −9. A dashed line follows index 1 down the three rows: 5 plus 4 is 9.">
+
 Multiplying every value by one number is the other common move: every
 sample times 0.5 makes the sound quieter. The cell below is meant to
 stop with an error. Can you guess which kind?
@@ -466,6 +470,8 @@ print(forecast)
 
 Now `week` keeps its 8, and only `forecast` has 16. There are two boxes now,
 with one label each. A slice is also a new list, so `week[:]` would work too.
+
+<img src="two-labels-one-box.svg" alt="Two pictures. On the left, after forecast = week, the labels week and forecast both point at one list, 11, 13, 9, 12, 14, 10, 16, so both names see the 16. On the right, after forecast = week.copy(), week points at a list that ends in 8, and forecast points at a second list that ends in 16.">
 
 So there are two different moves. `forecast = week` is renaming, and it
 changes nothing. `forecast[6] = 16` changes the list itself, and every

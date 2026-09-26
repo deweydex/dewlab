@@ -107,6 +107,8 @@ $k$ walks, what is left is $8 \times 2^{-k}$, a
 counting halvings. But what is left can be made as small as we like.
 After 20 walks it is less than a hundredth of a millimetre.
 
+<img src="halfway-to-the-door.svg" alt="Five bars, one for each of the first five walks, all on the same scale from 0 m to the door at 8 m. In each bar, the distance walked before is blue, the latest walk is amber, and what is left to the door is a dashed, empty box. After walk 1: 4 m walked, 4 m to go. After walk 2: 6 m walked, 2 m to go. After walk 3: 7 m walked, 1 m to go. After walk 4: 7.5 m walked, 0.5 m to go. After walk 5: 7.75 m walked, 0.25 m to go. The part still to go halves each time.">
+
 <aside class="dl-note" id="getting-closer-note-zeno">
 
 **Zeno's paradox.** The Greek thinker Zeno of Elea, who lived in the

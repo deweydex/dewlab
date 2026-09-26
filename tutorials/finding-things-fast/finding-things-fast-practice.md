@@ -216,6 +216,16 @@ Now it prints 0 and 3.
 
 </details>
 
+<aside class="dl-note" id="finding-fast-practice-note-wifi">
+
+**A name with no meaning.** The name Wi-Fi was invented in 1999 by
+Interbrand, a company that makes brand names. It was chosen to sound
+like hi-fi. It is not short for "wireless fidelity". Phil Belanger, one
+of the founders of the group behind Wi-Fi, has said that the name does
+not stand for anything.
+
+</aside>
+
 **7. Predict.** A fitness tracker kept a week of step counts, in the
 order of the days. Someone searches it with `binary_search`. What does
 each line print? Guess all three before you run it.

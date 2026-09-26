@@ -156,6 +156,18 @@ the clock each time. One more press brings it back to $(2, 1)$.
 
 </details>
 
+<aside class="dl-note" id="no-real-practice-note-hamilton">
+
+**Turning in three dimensions.** A complex number turns a point on a
+flat plane. William Rowan Hamilton spent years looking for numbers that
+turn things in space. On 16 October 1843, walking beside the Royal
+Canal in Dublin, he found them, and he carved their rule,
+$i^2 = j^2 = k^2 = ijk = -1$, into Broom Bridge. They are called
+quaternions, and games still use them to turn a spaceship or a camera
+in 3D. The carving is gone, and a plaque marks the place.
+
+</aside>
+
 **6. Make.** Solve $x^2 + 2x + 10 = 0$. First find the discriminant,
 and say how many real roots there are. Then find the complex roots with
 `solve_quadratic_complex`, and put each one back with `evaluate`.

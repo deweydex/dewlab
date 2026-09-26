@@ -110,6 +110,8 @@ but not this point". A thick line runs from the circle to the left.
 "80 and over" starts at 80 and runs to the right. This time 80 is
 included, so it gets a filled circle.
 
+<img src="two-rules-on-a-line.svg" alt="Two number lines of temperatures, each from −20 to 100 °C. On the first, for 'do not charge the battery: below 0 °C', there is an empty circle at 0 and a thick line running from it to the left. On the second, for 'slow the processor a lot: 80 °C and over', there is a filled circle at 80 and a thick line running from it to the right.">
+
 An *inequality* is a statement that one amount is bigger or smaller than
 another. Maths has four symbols for it:
 
@@ -280,6 +282,8 @@ dividing by a negative number turns the whole number line round, so the
 order of any two numbers turns round too. I think this is the strangest
 move on the page. The same division gives the right number but the
 wrong sign.
+
+<img src="turning-the-line-round.svg" alt="Two number lines from −6 to 6. On the top line, 3 and 5 are marked, and 3 is further left: 3 is less than 5. Multiplying by −1 moves each one to its mirror place on the bottom line, so 3 goes to −3 and 5 goes to −5. Now −5 is further left, so −3 is greater than −5.">
 
 So in the space of inequalities, dividing by a negative number is
 allowed, but the sign turns round. So $-3.5t \ge -80$

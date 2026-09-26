@@ -411,3 +411,82 @@ class TestTheMergeWalk:
     def test_leftovers_are_named_from_the_list_that_still_has_them(self):
         svg = step_renderer.merge_walk(self.A, self.B)
         assert "left in b: 7  8" in svg
+
+
+try:
+    import dewey_units_1_5 as dewey_early
+except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
+    dewey_early = None
+
+needs_dewey_early = pytest.mark.skipif(dewey_early is None, reason="svgwrite is not installed")
+
+
+@needs_dewey_early
+class TestDeweyUnitsOneToFive:
+    """The Dewey Track's Unit 1 to 5 pictures read their numbers from the
+    pages' own cells, so a cell edited without a regeneration leaves a
+    picture that disagrees with the page. This is the generator's check
+    mode, as a test."""
+
+    @pytest.mark.parametrize("relative", sorted(dewey_early.DIAGRAMS) if dewey_early else [])
+    def test_the_committed_picture_is_what_the_generator_draws(self, relative):
+        committed = (dewey_early.TUTORIALS / relative).read_text()
+        assert committed == dewey_early.DIAGRAMS[relative](), (
+            f"{relative} is stale: run python3 dev/graphics/dewey_units_1_5.py --write")
+
+    @pytest.mark.parametrize("relative", sorted(dewey_early.DIAGRAMS) if dewey_early else [])
+    def test_colours_are_theme_tokens_and_nothing_has_an_id(self, relative):
+        """Several of these are inlined on one page, where two copies of one
+        `id` would collide."""
+        import re
+
+        svg = (dewey_early.TUTORIALS / relative).read_text()
+        literals = {
+            value for value in re.findall(r'(?:fill|stroke)="([^"]+)"', svg)
+            if value != "none" and not value.startswith("var(--dl-") and value != "currentColor"
+        }
+        assert not literals, f"literal colours in {relative}: {sorted(literals)}"
+        assert not re.search(r'\sid="', svg), f"{relative} carries an id"
+
+
+try:
+    import dewey_units_6_10 as dewey_late
+except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
+    dewey_late = None
+
+needs_dewey_late = pytest.mark.skipif(dewey_late is None, reason="svgwrite is not installed")
+
+
+@needs_dewey_late
+class TestDeweyUnitsSixToTen:
+    """The same two checks for the Unit 6 to 10 pictures, which run the
+    pages' own cells (a search, a sort, a recursion's printed trace) and
+    draw what those cells print."""
+
+    @pytest.mark.parametrize("relative", sorted(dewey_late.DIAGRAMS) if dewey_late else [])
+    def test_the_committed_picture_is_what_the_generator_draws(self, relative):
+        committed = (dewey_late.TUTORIALS / relative).read_text()
+        assert committed == dewey_late.DIAGRAMS[relative](), (
+            f"{relative} is stale: run python3 dev/graphics/dewey_units_6_10.py --write")
+
+    @pytest.mark.parametrize("relative", sorted(dewey_late.DIAGRAMS) if dewey_late else [])
+    def test_colours_are_theme_tokens_and_nothing_has_an_id(self, relative):
+        import re
+
+        svg = (dewey_late.TUTORIALS / relative).read_text()
+        literals = {
+            value for value in re.findall(r'(?:fill|stroke)="([^"]+)"', svg)
+            if value != "none" and not value.startswith("var(--dl-") and value != "currentColor"
+        }
+        assert not literals, f"literal colours in {relative}: {sorted(literals)}"
+        assert not re.search(r'\sid="', svg), f"{relative} carries an id"
+
+    @pytest.mark.parametrize("relative", sorted(dewey_late.DIAGRAMS) if dewey_late else [])
+    def test_every_picture_is_placed_on_its_page_with_alt_text(self, relative):
+        import re
+
+        slug, name = relative.split("/")
+        page = (dewey_late.TUTORIALS / slug / f"{slug}.md").read_text()
+        tag = re.search(rf'<img src="{re.escape(name)}" alt="([^"]+)">', page)
+        assert tag, f"{slug}.md does not show {name}, or shows it without alt text"
+        assert tag.group(1).rstrip().endswith("."), "alt text is written in full sentences"

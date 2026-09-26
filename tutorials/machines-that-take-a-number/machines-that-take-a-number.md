@@ -131,6 +131,8 @@ They are one idea, written two ways. In maths, a function is a rule that gives e
 one output for each input. A Python function that takes a number and
 returns a number keeps the same promise.
 
+<img src="one-slot-machine.svg" alt="The function drawn as a machine: a box with a slot on the left and a tray on the right. Inside the box are the rule f(x) = 100x − 50 and the name sensor_celsius. The number 0.75, in volts, goes into the slot, and 25.0, in °C, comes out into the tray.">
+
 Two words help us talk about the slot. On
 [Recipes are algorithms](tutorial:recipes-are-algorithms) we met the
 parameter: the name in the brackets of the `def` line, here `volts`.

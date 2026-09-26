@@ -111,14 +111,7 @@ So each top appears twice, once with each pair of trousers. A drawing
 of this is called a *tree diagram*: one branch for each first choice,
 and each branch splits into one twig for each second choice.
 
-```text
-white shirt  ── jeans
-             └─ black trousers
-blue T-shirt ── jeans
-             └─ black trousers
-red jumper   ── jeans
-             └─ black trousers
-```
+<img src="outfit-tree.svg" alt="A tree diagram growing from left to right. From 'an outfit', three branches go to the tops: white shirt, blue T-shirt and red jumper. Each top splits into two twigs, jeans and black trousers. The six ends of the twigs are numbered 1 to 6.">
 
 Count the ends of the twigs, and you have counted the outfits: 6.
 

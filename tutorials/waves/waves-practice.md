@@ -64,6 +64,16 @@ milliseconds is $\frac{1000}{f}$.
 
 </details>
 
+<aside class="dl-note" id="waves-practice-note-a440">
+
+**Why 440?** Orchestras have tuned to many different A's. In May 1939,
+at a meeting in the BBC's Broadcasting House in London, delegates from
+several countries agreed on 440 Hz. The International Organization for
+Standardization made it a recommendation in 1955, and the standard
+ISO 16 in 1975.
+
+</aside>
+
 **3. Predict.** What does this print? Which notes are they?
 
 ```python

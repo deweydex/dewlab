@@ -115,6 +115,8 @@ means multiply:
 
 $$\frac{1}{6} \times \frac{1}{6} = \frac{1}{36}$$
 
+<img src="two-sixes.svg" alt="A grid of 36 squares, with the first die down the side and the second die along the top. Each square shows its pair, from 1,1 to 6,6. The bottom row, a six on the first die, is shaded: it is 1/6 of the grid. In that row, only the square 6,6 is shaded more strongly: it is 1/6 of that row, which is 1/36 of the grid.">
+
 Two events are *independent* when one happening does not change the
 chance of the other. Dice and coins have no memory, so each roll is
 independent of the last. For independent events, the chance that both

@@ -542,6 +542,17 @@ the computer's own instructions, and it does not use halving at all.
 
 </details>
 
+<aside class="dl-note" id="mixed-algorithms-note-luhn">
+
+**Buckets in 1953.** Early in 1953, Hans Peter Luhn, an engineer at
+IBM, wrote a memo about putting records into "buckets", each chosen by
+a number made from the record, so that a search could go straight to
+the right bucket. It is one of the first descriptions of hashing. Luhn
+also designed the check digit at the end of most bank card numbers,
+which catches any single mistyped digit.
+
+</aside>
+
 **14. Another way.** Binary search has the shape of a promise that uses
 itself, from
 [A function that calls itself](tutorial:a-function-that-calls-itself#a-promise-that-uses-itself):

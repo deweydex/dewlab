@@ -311,6 +311,8 @@ binary. They did it anyway. I find that one of the nicest surprises in this
 unit. A truth table with $n$ inputs is every number from 0 to $2^n - 1$,
 written in $n$ bits.
 
+<img src="rows-as-a-tree.svg" alt="The three loops drawn as a tree growing from left to right. From 'start', two branches for password_ok, False and True. Each of those splits in two for at_office, and each of those splits in two for code_ok, so the tree ends in 8 leaves. Beside the leaves, from top to bottom, are the bits 000, 001, 010, 011, 100, 101, 110 and 111, labelled row 0 to row 7.">
+
 A rule with 10 inputs has 1,024 rows. Nobody wants to write those by
 hand, but a computer does not mind.
 

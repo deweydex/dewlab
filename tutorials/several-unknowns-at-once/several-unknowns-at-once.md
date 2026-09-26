@@ -256,6 +256,11 @@ $a_1$ and $b_1$ on top and $a_2$ and $b_2$ below. Multiply along one
 diagonal, $a_1$ times $b_2$, then along the other, $a_2$ times $b_1$,
 and take the second product from the first.
 
+Here is that square for the two facts about the requests, where the
+unknowns are $a$ and $c$.
+
+<img src="the-determinant.svg" alt="The two equations a + c = 230 and 12a + 5c = 2060, and beside them a square of the four numbers in front of a and c. On top are 1 and 1, named a₁ and b₁. Below are 12 and 5, named a₂ and b₂. A solid arrow runs along one diagonal, from 1 to 5, and a dashed arrow runs along the other, from 12 to 1. Beside the square: one diagonal gives 1 × 5 = 5, the other gives 12 × 1 = 12, and the determinant is 5 − 12 = −7. It is not 0, so there is one answer: a = 130 and c = 100.">
+
 A fraction with 0 on the bottom has no answer. So when the determinant
 is 0, the formulas cannot give a single answer, and the next section
 shows what that means. Here is the promise for your toolkit. It
@@ -397,6 +402,8 @@ determinant is 0 in both cases, and `None` covers both.
 So two straight lines on a flat plane can meet in three ways: once,
 never, or everywhere. The determinant tells us which kind we have
 before we draw anything.
+
+<img src="once-never-everywhere.svg" alt="Three small graphs side by side. Once: the two lines for the image and text requests cross at one point, (130, 100), and the determinant is −7. Never: the two readings of the backup log, 3 photos and 2 songs making 80 MB and 6 photos and 4 songs making 150 MB, give two parallel lines that never meet, and the determinant is 0. Everywhere: with 160 MB in place of 150 MB, the second line lies exactly on top of the first, the same line drawn twice, and the determinant is 0 again.">
 
 ```question
 id: several-unknowns-none-3

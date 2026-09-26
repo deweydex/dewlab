@@ -476,6 +476,8 @@ So there are two different moves, and it helps to keep them apart:
 - `append` changes the value itself. Every name pointing at it, in any
   space, sees the new value.
 
+<img src="one-list-two-names.svg" alt="Two pictures, each with the page's space above a function's space. On the left, for add_bonus(score): on the page, score points at 84. In the call's space, points started at 84, and after the = line it points at 168. score still points at 84. On the right, for add_reading(today, 15.1): today on the page and readings in the call's space both point at one list, which now holds 14.2, 14.8 and 15.1.">
+
 A number cannot be changed in place, so for numbers only the first move
 exists. That is why `score` was safe. A list can be changed in place, so a
 function that is handed a list can change it. `add_reading` says so in

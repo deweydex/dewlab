@@ -163,6 +163,8 @@ maths often uses for an angle):
 - the *sine* of $\theta$, written $\sin\theta$, is the point's $y$, how
   far up it is.
 
+<img src="point-on-the-unit-circle.svg" alt="The unit circle, radius 1, with its centre where the two axes cross, and the points (1, 0), (0, 1), (−1, 0) and (0, −1) marked. A line of length 1 goes from the centre to a point on the circle, at an angle θ above the line across. From the point, a dashed line drops straight down to the line across, and meets it at a right angle. The distance across, along the axis, is marked cos θ, and the distance up, the dashed line, is marked sin θ. The point is marked (cos θ, sin θ).">
+
 So the point is $(\cos\theta, \sin\theta)$, and from the quarter
 turns, $\cos 90^\circ = 0$. Sine and cosine are functions, as on
 [Machines that take a number](tutorial:machines-that-take-a-number). An
@@ -200,6 +202,8 @@ A whole turn walks the whole circumference, $2\pi r$. With $r = 1$,
 that is $2\pi$, about 6.28. So:
 
 $$360^\circ = 2\pi \text{ radians} \qquad 180^\circ = \pi \text{ radians} \qquad 90^\circ = \frac{\pi}{2} \text{ radians}$$
+
+<img src="one-radian.svg" alt="A circle with two radii, each of length 1. The part of the edge between them is drawn thick and marked arc: 1, because it is as long as the radius. The angle between the two radii is 1 radian, about 57.3°. Ticks round the edge mark 1, 2, 3, 4, 5 and 6 radians from the start. The sixth tick sits a little short of a whole turn, because a whole turn is 2π, about 6.28 radians.">
 
 `math.cos(90)` walked 90 units round a circle whose whole edge is 6.28
 long. That is more than 14 whole turns, and then a bit.

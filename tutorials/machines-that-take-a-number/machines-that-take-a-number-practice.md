@@ -51,6 +51,17 @@ always gives a float, which is why the second line shows `1.0` and not
 
 </details>
 
+<aside class="dl-note" id="machines-practice-note-metronome">
+
+**Where "M.M." comes from.** Johann Maelzel patented a wind-up
+metronome in 1815, though much of its design came from Dietrich Winkel
+in Amsterdam. Beethoven liked it, and added metronome speeds to his
+first eight symphonies, which were already published. Printed music
+still gives a speed as "M.M. = 120", for Maelzel's Metronome, 120 beats
+a minute.
+
+</aside>
+
 **2. Make.** In a thunderstorm, the light of the flash reaches you at
 once, and the sound comes later. Sound travels about 343 metres each
 second in air at 20 °C. So if you count the seconds from the flash to

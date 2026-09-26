@@ -378,6 +378,16 @@ as wide, and the area goes up with the width squared: $343^2$ is about
 
 </details>
 
+<aside class="dl-note" id="measuring-practice-note-hubble">
+
+**A mirror a hair's width wrong.** Hubble went into orbit in 1990, and
+its first pictures were blurred. The edge of its mirror was too flat by
+about 2.2 micrometres, roughly a fiftieth of the width of a human hair.
+In December 1993, astronauts from the Space Shuttle Endeavour fitted
+extra optics that corrected the fault, a little like glasses.
+
+</aside>
+
 **14. Another way.** Here is a way to find $\pi$ with chance, using
 `simulate` from [How likely is it?](tutorial:how-likely-is-it). Picture
 a square 1 unit on each side, with a quarter circle of radius 1 drawn

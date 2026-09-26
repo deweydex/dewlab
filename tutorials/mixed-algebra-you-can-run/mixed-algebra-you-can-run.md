@@ -696,6 +696,14 @@ but nobody can stand at them.
 
 </details>
 
+<aside class="dl-note" id="mixed-algebra-note-yards">
+
+**Why 9.15?** The Laws of the Game give the distance as "9.15 m
+(10 yds)". Ten yards is exactly 9.144 m, so the metric figure is ten
+yards, rounded up a little.
+
+</aside>
+
 **16. Fix.** Schlomi tries the fine comb one centimetre at a time, and
 her cell stops with an error. Read its last line, find the line that
 causes it, and change it.

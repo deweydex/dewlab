@@ -325,6 +325,8 @@ print(evaluate(sprite_sheet, 5), evaluate(sprite_sheet, -8))
 
 Both give 0, so both are roots. Only one of them is a sprite sheet.
 
+<img src="sprite-sheet.svg" alt="A sprite sheet of 40 tiles, numbered 1 to 40, in 5 rows and 8 columns. The rows are marked w = 5, and the columns w + 3 = 8. Beside it: 5 × 8 = 40 tiles. The other root, w = −8, cannot be a count of rows.">
+
 ### Your turn
 
 1. Factorise $x^2 + 7x + 12$ by inspection, in your head. Which two

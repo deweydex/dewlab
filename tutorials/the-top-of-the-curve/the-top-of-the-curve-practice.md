@@ -230,6 +230,16 @@ use the formula.
 
 </details>
 
+<aside class="dl-note" id="the-top-practice-note-galileo">
+
+**Galileo's parabola.** In 1638, Galileo Galilei published a book,
+Two New Sciences, which says that a thrown object follows a parabola,
+if we ignore the air. He found it partly by rolling balls off a
+table and measuring where they landed. The height rule in this problem
+has that shape.
+
+</aside>
+
 **8. Another way.** A sliotar's height, in metres, $t$ seconds after it
 is struck, is $1.5 + 12t - 4.9t^2$. Find when it is highest in two
 ways: with `vertex`, and from the two roots that `solve_quadratic`

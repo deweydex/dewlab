@@ -497,6 +497,17 @@ inverse of a composition is the inverses, composed in reverse order.
 
 </details>
 
+<aside class="dl-note" id="running-practice-note-kelvin">
+
+**A scale named after a river.** The Kelvin scale is named after
+William Thomson, who was born in Belfast in 1824. He was a professor at
+the University of Glasgow for 53 years. When he became a lord in 1892,
+he took his title from the River Kelvin, which runs past the
+university. So the kelvin, a unit of temperature, has the name of a
+river in Scotland.
+
+</aside>
+
 **15. Make.** A bus goes from Dublin to Athlone, about 120 km, at an
 average of 100 km/h, then from Athlone to Galway, about 88 km, at
 80 km/h. Use

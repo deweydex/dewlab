@@ -400,6 +400,8 @@ and 4 bits are one hex digit. The 8's rows are `.##.`, `#..#`, `#..#`,
 the whole digit is seven hex digits: `0x6996996`. So the 8 really
 is in the number.
 
+<img src="eight-as-bits.svg" alt="The digit 8 drawn on a grid 4 pixels wide and 7 pixels tall. Beside each row are its bits and its hex digit: 0110 is 6, 1001 is 9, 1001 is 9, 0110 is 6, 1001 is 9, 1001 is 9, and 0110 is 6. Read from top to bottom, the hex digits make 0x6996996.">
+
 To draw it, we need each hex digit on its own. `digit_at` does that in
 base 16. Place 6 is the top row, and place 0 is the bottom one.
 

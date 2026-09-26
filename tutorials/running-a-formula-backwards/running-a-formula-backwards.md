@@ -348,6 +348,8 @@ to believe. It is a cold Mars number too, and nothing about it looks
 out of place. Both lines have the same two steps. Only the order is
 different, and the order of the steps matters here.
 
+<img src="undo-in-reverse.svg" alt="Two rows of steps. Forwards, on top: −60 °C, times 9/5, gives −108, and plus 32 gives −76 °F. Back, underneath, running from right to left: −76 °F, minus 32, gives −108, and times 5/9 gives −60 °C. Each step back sits under the step it undoes, so the last step forwards, plus 32, is the first step back.">
+
 ```question
 id: running-a-reverse-3
 type: multiple-choice

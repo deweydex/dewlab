@@ -439,6 +439,17 @@ it from the start.
 
 </details>
 
+<aside class="dl-note" id="chances-practice-note-birthday-attack">
+
+**A birthday attack.** People who design security use this problem too.
+A hash for security turns any message into a code of a fixed length.
+If the code has $n$ possible values, two messages with the same code
+usually appear after roughly $\sqrt{n}$ tries, far fewer than $n$.
+Security people call a search like that a birthday attack. It is one
+reason why the hash codes used for security are very long.
+
+</aside>
+
 **13. Another way.** Here is a birthday problem small enough to list
 every case. A "year" has 4 days, and there are 3 people. Find the chance
 that two of them share a day. Do it two ways: once with the complement
