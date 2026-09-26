@@ -214,7 +214,7 @@ missing?
 <details class="dl-answer"><summary>answer</summary>
 
 The mean of the values that are there. By default, pandas skips missing
-values when it works out a mean.
+values when it calculates a mean.
 
 That is handy, but it is a decision pandas makes for you. If three of
 the four readings were missing, pandas would report the fourth one as
@@ -230,8 +230,8 @@ id: checking-yourself-1
 readings["evening"].mean()
 ```
 
-**13.** What is the mean rise across all four sites? Can you work it out
-in Python, and then compare it with the difference between the two
+**13.** What is the mean rise across all four sites? Can you calculate
+it in Python, and then compare it with the difference between the two
 means?
 
 <details class="dl-answer"><summary>answer</summary>

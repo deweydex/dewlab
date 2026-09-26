@@ -11,13 +11,13 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means
 answer in words. **Another way** means reach the same place by a second
-route. The answers are folded away until you open them, and each is one
-way through: yours may go another way.
+route. The answers are folded away until you open them. Each is one
+answer, and yours may be different and work too.
 
 Your toolkit is loaded on this page, including `distance` and
 `midpoint` from the tutorial and `slope` from
-[Straight lines](tutorial:straight-lines). `math` is not: each cell
-that needs it starts with `import math`.
+[Straight lines](tutorial:straight-lines). `math` is not loaded. Each
+cell that needs it starts with `import math`.
 
 ## Warm-up
 
@@ -43,8 +43,8 @@ print(distance((-2, 0), (3, 0)))
 
 From $(1, 1)$ to $(4, 5)$ is 3 across and 4 up, the 3, 4, 5 triangle
 again. The midpoint of $(0, 0)$ and $(8, 2)$ is halfway in each
-direction. From $-2$ to 3 on one row is 5, and squaring the difference
-then taking the square root gives its size, with no sign.
+direction. From $-2$ to 3 on one row is 5. If we square the difference and then
+take the square root, we get its size, with no sign.
 
 </details>
 
@@ -73,12 +73,12 @@ measurement of 4.8 m tell her?
 <details class="dl-answer"><summary>answer</summary>
 
 Pythagoras says that a right angle makes $3^2 + 4^2 = 5^2$. The
-carpenter uses it the other way round: if the sides are 3, 4 and 5, the
-corner must be a right angle. That other-way-round rule is true too,
+carpenter uses it the other way round. If the sides are 3, 4 and 5, the
+corner must be a right angle. That rule is true too,
 though the tutorial did not prove it.
 
 A measurement of 4.8 m is less than 5, so the walls lean in towards
-each other: the corner is smaller than a right angle. More than 5 m
+each other, and the corner is smaller than a right angle. More than 5 m
 would mean the corner is too wide. A wall is not a grid on a page, but
 the maths is the same.
 
@@ -145,8 +145,8 @@ print(distance((0, 0), (width, height)))
 
 A 16 by 9 screen has a diagonal of about 18.36, so the real screen is
 about 2.996 times bigger. It is about 47.9 inches wide and 27.0 inches
-high, or about 121.8 cm by 68.5 cm. The last line checks the answer by
-putting it back in: the diagonal comes out as `55.0`.
+high, or about 121.8 cm by 68.5 cm. The last line puts the answer back
+in to check it. The diagonal comes out as `55.0`.
 
 </details>
 
@@ -168,7 +168,7 @@ print("distance_again keeps its promise.")
 
 <details class="dl-answer"><summary>answer</summary>
 
-The second test fails: `distance_again((0, 0), (3, 4))` gives 25. The
+The second test fails. `distance_again((0, 0), (3, 4))` gives 25. The
 function stops at $c^2$ and never takes the square root. The fix:
 
 ```python
@@ -176,10 +176,9 @@ function stops at $c^2$ and never takes the square root. The fix:
 ```
 
 with `import math` at the top of the cell. The first test passed
-because $1^2 = 1$ and $\sqrt{1} = 1$: a distance of 1 is the one
-length where leaving out the square root changes nothing. Schlomo
-chose the smallest test he could think of, which is a sensible start,
-and it happened to be that one length.
+because $1^2 = 1$ and $\sqrt{1} = 1$. For a distance of 1, the square
+root changes nothing. Schlomo chose the smallest test he could think
+of, and it happened to be that one length.
 
 </details>
 
@@ -223,7 +222,7 @@ print(out_from_wall, distance((0, 0), (out_from_wall, height)))
 The foot goes 1.5 m out, and the ladder must be at least about 6.18 m
 long. The wall and the ground meet at a right angle, so the ladder is
 the hypotenuse. In practice it should also reach about 1 m above the
-gutter, so a person has something to hold on to.
+gutter, so a person has something to hold.
 
 </details>
 
@@ -241,7 +240,7 @@ print(distance(base, charger) + distance(charger, drop_point))
 
 `12.0` and `20.0`.
 
-Going by the charger is two 6, 8, 10 triangles, 10 km each. A trip
+The trip by the charger is two 6, 8, 10 triangles, 10 km each. A trip
 that stops somewhere off the straight line is always longer than the
 straight line. It can only be as short when the charger is on the line
 itself.
@@ -256,9 +255,9 @@ needed `abs()` to turn $-7$ into 7. Why does `distance` never need
 
 `distance` squares each difference before it adds them. A negative
 number times itself is positive: $(-7)^2 = 49$, the same as $7^2$. So
-the sign is gone before the square root, and `math.sqrt` gives back the
-positive root. Squaring and then taking the square root is another way
-to get the size of a number: `math.sqrt((-7) ** 2)` is `7.0`.
+the sign is gone before the square root, and `math.sqrt` returns the
+positive root. If you square a number and then take the square root,
+you get its size: `math.sqrt((-7) ** 2)` is `7.0`.
 
 </details>
 
@@ -301,18 +300,18 @@ print("midpoint_again keeps its promise.")
 
 <details class="dl-answer"><summary>answer</summary>
 
-The second test fails: it gives `(7.0, 4.5)`. Division comes before
+The second test fails. It gives `(7.0, 4.5)`. Division comes before
 addition, as on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#which-comes-first),
-so `x1 + x2 / 2` halves only `x2`. Brackets make the adding happen
+so `x1 + x2 / 2` halves only `x2`. Brackets make Python add
 first:
 
 ```python
     return ((x1 + x2) / 2, (y1 + y2) / 2)
 ```
 
-The first test passed because its first point is $(0, 0)$, and adding
-0 before or after halving gives the same answer. Tests that start at
+The first test passed because its first point is $(0, 0)$. It makes no
+difference whether 0 is added before or after the halving. Tests that start at
 the origin miss many slips like this one.
 
 </details>
@@ -346,8 +345,8 @@ for frame in range(12):
         break
 ```
 
-Frame 8, with the centre at $x = 296$: only 4 pixels from the wall, so
-the ball overlaps it by 6 pixels. In frame 7 the centre was at 284, 16
+In frame 8, the centre is at $x = 296$, only 4 pixels from the wall.
+So the ball overlaps it by 6 pixels. In frame 7 the centre was at 284, 16
 pixels away. A real game would push the ball back out and turn it
 round. The distance to a wall that goes straight up is only the
 across part, because the shortest way from a point to that wall is
@@ -401,8 +400,8 @@ print("They agree every time.", hits, "of the pairs touched.")
 ```
 
 They agree on every pair. The number of hits changes from run to run,
-since the circles are random. Squaring both sides is safe here because
-both sides are 0 or more: for numbers that are not negative, the bigger
+since the circles are random. We can square both sides here because
+both sides are 0 or more. For numbers that are not negative, the bigger
 one always has the bigger square. That would not be true if a side
 could be negative, since $-6 < 5$ but $36 > 25$.
 
@@ -428,13 +427,12 @@ too far to touch. In frame 1 it is 40 pixels away on the other side,
 still too far. Between the two frames it passed right through the
 player, but the game only checks where the ball is at each frame, not
 where it went in between. This is tunnelling. In frame 2 the ball has
-gone. Schlomi's test was a useful one: it found the case her checker
-misses.
+gone. Schlomi's test found the case her checker misses.
 
 One fix is to move a fast ball in smaller steps, and check after each
 one. Another is to check the whole straight path between the two
-frames: here, the path from $(-60, 0)$ to $(40, 0)$ passes through
-$(0, 0)$, so it must hit. The first is simple and costs time; the
+frames. Here, the path from $(-60, 0)$ to $(40, 0)$ passes through
+$(0, 0)$, so it must hit. The first is simple and costs time. The
 second is exact and needs more maths. These are two ways, and yours
 may be a third.
 
@@ -442,13 +440,13 @@ may be a third.
 
 **16. Explain.** The tutorial proved Pythagoras' theorem with a
 picture of four triangles in a frame, before any code used it. Many
-courses only state the theorem, check it on a few triangles, and move
-on to using it. Which way would you have wanted, and why? There is no
+courses only state the theorem, check it on a few triangles, and then
+use it. Which way would you have wanted, and why? There is no
 single answer.
 
 <details class="dl-answer"><summary>answer</summary>
 
-An answer might weigh a few things, and can land on either side.
+An answer might weigh a few things, and can choose either way.
 
 - **Time.** Stating and checking is quicker, and leaves more time to
   use the theorem.
@@ -463,7 +461,7 @@ An answer might weigh a few things, and can land on either side.
 - **You.** Some people want the reason before they will use a rule.
   Others are happy to use it first and ask why later.
 
-It is also fair to want a proof for a rule this important, and only a
+You might also want a proof for a rule this important, and only a
 check for smaller ones.
 
 </details>

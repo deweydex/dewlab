@@ -49,17 +49,17 @@ On this page we:
 - find one value by its position, counting from the front and from the
   back
 - take a slice of a list, change a list, and make it longer
-- go through a list by position, and build a new list in a loop
+- loop over a list by position, and build a new list in a loop
 - see what `+` and `*` do to lists, and do the maths meaning ourselves
 - see what happens when two names point at one list
 - add `largest`, `smallest` and `count_if` to the toolkit, and use them
   on 74 years of real Irish data
 
-> **The space we're in.** Lists of numbers, and now and then of words.
+> **The space we're in.** We work with lists of numbers, and now and then of words.
 > We met lists on [Doing it again](tutorial:doing-it-again) as "a row of
-> values", and used `len`, `append` and `[0]` in passing. This page is
-> where we learn them properly. One thing usually goes unsaid: Python
-> counts positions from 0, and maths usually counts from 1. Each way
+> values", and used `len`, `append` and `[0]` in passing. On this page
+> we learn them properly. We usually do not say it, but Python counts
+> positions from 0, and maths usually counts from 1. Each way
 > works, in its own space. Your toolkit is loaded, from `digit_at`
 > to `close_enough`.
 
@@ -112,7 +112,7 @@ A *list* is a row of values, kept in order, under one name. The square
 brackets start and end it, and commas go between the values. `len()`
 gives the length: how many values the list holds. Here it is 7.
 
-This is the idea this unit leans on: naming. Seven values, and only one
+This unit is about naming. Here we have seven values, and only one
 name. The name `week` does not point at 11, or at 8. It points at the
 whole row.
 
@@ -143,7 +143,7 @@ building in Ireland counts its floors the same way: the ground floor is
 
 **An argument about 0.** In 1982 the computer scientist Edsger Dijkstra
 wrote a short note called "Why numbering should start at zero". His
-reason was about ranges like `range(0, 7)`: when you count from 0 and
+reason was about ranges like `range(0, 7)`. When you count from 0 and
 leave the end out, the length of a range is the end minus the start,
 and nothing needs a "+ 1". Python chose his way. Some other languages,
 such as MATLAB and Lua, count from 1.
@@ -153,8 +153,7 @@ such as MATLAB and Lua, count from 1.
 Maths usually counts from 1. On
 [Doing it again](tutorial:doing-it-again#sigma-a-loop-written-by-mathematicians)
 we wrote a list of numbers as $x_1, x_2, x_3$, and so on. Maths calls a
-list of values in order a sequence. It is the word from our third
-question, "what happens when?", because the values come one after
+list of values in order a sequence, because the values come one after
 another. So the same week can be written two ways:
 
 | Day | Mon | Tue | Wed | Thu | Fri | Sat | Sun |
@@ -180,8 +179,8 @@ print(week[7])
 
 The last line says `IndexError: list index out of range`. An
 *IndexError* means we asked for a position the list does not have. A
-list of 7 values has indexes 0 to 6, so 7 is one past the end. It is
-the same edge as the `range` warm-up, seen from the other side.
+list of 7 values has indexes 0 to 6, so 7 is one past the end. The
+`range` warm-up had the same edge.
 
 ## Counting from the end
 
@@ -265,10 +264,10 @@ week = [11, 13, 9, 12, 14, 10, 8]
 ## Going through by index
 
 On [Doing it again](tutorial:doing-it-again#doing-it-for-each), a `for`
-loop went through a list one value at a time. That works for "add them
+loop took the values of a list one at a time. That works for "add them
 all up". Now try this question: on which days was it warmer than the
 day before? To answer it, each step needs two values, today's and
-yesterday's. So we go through the positions instead of the values.
+yesterday's. So we loop over the positions instead of the values.
 
 `range(len(week))` gives the indexes 0, 1, 2, and so on up to 6. Here
 we start at 1, because Monday has no day before it in our list. We also
@@ -285,13 +284,13 @@ for i in range(1, len(week)):
         print(days[i], "was", change, "degrees warmer than", days[i - 1])
 ```
 
-Tuesday, Thursday and Friday. Each time round, `i` is one index, so
+It prints Tuesday, Thursday and Friday. Each time round, `i` is one index, so
 `week[i]` is today and `week[i - 1]` is yesterday. And the same `i`
 finds the day's name in `days`, because the two lists are in the same
 order.
 
-Going through by index is the way to go when a step needs a value's
-neighbours, or a second list.
+Use a loop by index when a step needs a value's neighbours, or a
+second list.
 
 ```question
 id: row-by-index-2
@@ -326,9 +325,9 @@ print(week_fahrenheit)
 print(len(week_fahrenheit))
 ```
 
-Seven values, one for each day, from 51.8 °F on Monday to 46.4 °F on
-Sunday. This is a running total's shape again: start before the loop
-with something empty, and add to it each time round. For a total, the
+The new list has seven values, from 51.8 °F on Monday to 46.4 °F on
+Sunday. This is the shape of a running total again. We start before
+the loop with something empty, and add to it each time round. For a total, the
 start is 0. For a list, the start is `[]`.
 
 ### Your turn
@@ -368,8 +367,8 @@ print(low_note * 2)
 
 Python's `+` does not add the pairs. It joins the two lists into one
 longer list, sixteen values long: the low note, and then the high note
-after it. And `* 2` plays the low note twice. This is Python keeping a
-promise of its own. In Python's space, a list is a row of any values,
+after it. And `* 2` plays the low note twice. Python is keeping a
+promise of its own here. In Python's space, a list is a row of any values,
 words as well as numbers, and joining and repeating make sense for any
 row. Adding pairs only makes sense for numbers.
 
@@ -397,7 +396,7 @@ id: row-add-3
 print(low_note * 0.5)
 ```
 
-A `TypeError`, whose last line says we `can't multiply sequence by
+It stops with a `TypeError`, whose last line says we `can't multiply sequence by
 non-int of type 'float'`. Repeating a list half a time means nothing,
 so Python refuses. The move we wanted belongs to a different space.
 
@@ -451,7 +450,7 @@ label is a change to the only box there is, and both labels see it.
 You met this on
 [What a function can see](tutorial:what-a-function-can-see#handing-over-a-list),
 where a function changed a playlist it was handed. It is the same
-thing: one list, two names.
+thing. There is one list with two names.
 
 When we want a second box, we ask for one. `.copy()` makes a new list
 with the same values in it. What will each line print now?
@@ -465,8 +464,8 @@ print(week)
 print(forecast)
 ```
 
-Now `week` keeps its 8, and only `forecast` has 16. Two boxes, one label
-each. A slice is also a new list, so `week[:]` would work too.
+Now `week` keeps its 8, and only `forecast` has 16. There are two boxes now,
+with one label each. A slice is also a new list, so `week[:]` would work too.
 
 So there are two different moves. `forecast = week` is renaming, and it
 changes nothing. `forecast[6] = 16` changes the list itself, and every
@@ -583,8 +582,8 @@ brackets, when the test was handed over as `is_cold`, without them?
 ```
 
 A list with one value is the edge of the promise, "at least one
-number". Bugs like to hide at the edges. If the stubs are slow to
-come, copy `largest` and change one thing at a time. After a few tries,
+number". Bugs like to hide at the edges. If the stubs are hard to
+write, copy `largest` and change one thing at a time. After a few tries,
 a fold under the tests offers the steps, and you can come back to
 `count_if` after the next section.
 
@@ -607,7 +606,7 @@ ours.
 The first line loads the file. `await` means "wait until the file has
 arrived". The second line keeps Ireland's rows, takes the
 `life_expectancy` column, and makes it a list. From there on, it is an
-ordinary list, and the maths is ours.
+ordinary list, and we do the maths ourselves.
 
 ```python exec
 id: row-real-1
@@ -619,10 +618,10 @@ print(ireland[0], ireland[-1])
 print(ireland[-5:])
 ```
 
-74 values, one for each year from 1950 to 2023. A baby born in Ireland
+The list has 74 values, one for each year from 1950 to 2023. A baby born in Ireland
 in 1950 could expect about 65.6 years, and one born in 2023 about 82.4.
 The last line shows the last five years, with a negative index in a
-slice. They are not all rising: keep that in mind for a few minutes.
+slice. They are not all rising. Keep that in mind for a few minutes.
 
 The index tells us the year: index 0 is 1950, so index `i` is the year
 `1950 + i`. Before you run the next cell, guess: in how many years was
@@ -652,13 +651,13 @@ for i in range(1, len(ireland)):
         print(1950 + i, "fell from", ireland[i - 1], "to", ireland[i])
 ```
 
-Fifteen years. The last two, 2020 and 2021, are the years of the
+Life expectancy went down in fifteen years. The last two, 2020 and 2021, are the years of the
 COVID-19 pandemic. A single year can dip for many reasons, such as a bad
-flu season, and the long rise is still the story.
+flu season, but the long rise is still the main pattern.
 
 ### Your turn
 
-1. Which year had the lowest life expectancy? Go through by index, and
+1. Which year had the lowest life expectancy? Loop by index, and
    print the year where `ireland[i]` equals `smallest(ireland)`.
 2. Find the biggest rise from one year to the next. Guess first: was it
    early or late in the list?
@@ -697,7 +696,7 @@ changed it.
 |---|---|
 | What is named here? | a whole list under one name, `week`; a value by its position, `week[3]`, a name made from a name and a number; one list with two names |
 | What is promised? | `len` gives the length; a slice gives a new list; `largest`, `smallest` and `count_if` keep the promises in their docstrings |
-| What happens when? | a loop by index goes through positions in order, so each step can reach its neighbours; a new list grows by `append`, one value each time round |
+| What happens when? | a loop by index visits positions in order, so each step can use its neighbours; a new list grows by `append`, one value each time round |
 | What does this space let us do? | Python counts from 0, maths from 1; in Python's list space `+` joins and `*` repeats; in numpy's array space they work element by element |
 
 ## What we have now

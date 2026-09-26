@@ -66,7 +66,7 @@ error, or the repository's README file. So rename your main file to
 
 GitHub Pages needs your repository to be public, unless you are on a
 paid plan. This is why the starter is meant to be copied as a public
-repository. The published site is public too: anyone with the address
+repository. The published site is public too. Anyone with the address
 can see it, even when a paid plan publishes it from a private
 repository.
 

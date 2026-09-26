@@ -9,9 +9,9 @@ version: 2026.09.25.1
 
 Each problem says what kind it is: **Predict**, **Make**, **Fix**,
 **Explain** or **Another way**. With numbers, it is tempting to run the
-cell first and guess afterwards. Try it the other way round: write your
-guess down, then run. The surprises are where the learning is, and a
-guess that misses is a surprise you earned.
+cell first and guess afterwards. Try it the other way round. Write your
+guess down, then run. You learn most from the surprises, and a guess
+that misses gives you one.
 
 Your `digit_at` from the tutorial page is loaded here. If you have not
 written it yet, the page uses a reference version, so every problem
@@ -38,8 +38,8 @@ print(17 / 5)
 3.4
 ```
 
-`17 // 5` is 3: there are enough files for 3 full folders. `17 % 5` is
-2: two files are left over. `17 / 5` is 3.4, which is a true answer in
+`17 // 5` is 3, so there are enough files for 3 full folders. `17 % 5`
+is 2, so two files are left over. `17 / 5` is 3.4, which is a true answer in
 the rational numbers, but nobody can fill 0.4 of a folder. For this
 question, `//` and `%` live in the right space, and `/` does not.
 
@@ -103,8 +103,8 @@ print(50 % 6)
 ```
 
 8 full packets, with 2 KB left over. Check: $8 \times 6 + 2 = 50$. That
-check always works: the whole part times the divisor, plus the
-remainder, gives back the number you started with.
+check always works. The whole part times the divisor, plus the
+remainder, gives the number you started with.
 
 </details>
 
@@ -127,7 +127,7 @@ print(10.0 // 4)
 2.0
 ```
 
-`/` always gives a float, even when it comes out exactly, so `10 / 5` is
+`/` always gives a float, even when the division is exact, so `10 / 5` is
 `2.0`, a float. `10 // 4` keeps the whole part, 2, and since both
 numbers were ints, the answer is an int. In the third line, `10.0` is a
 float, so the answer is a float too: `2.0`. Floor division keeps the
@@ -162,7 +162,7 @@ for the division?
 print((12 + 15 + 18) / 3)
 ```
 
-Division comes before addition, so Schlomo's line worked out
+Division comes before addition, so Schlomo's line calculated
 $18 \div 3 = 6$ first, then $12 + 15 + 6 = 33$. Brackets make the adding
 happen first: $45 \div 3 = 15.0$.
 
@@ -216,11 +216,11 @@ Schlomo's works in $\mathbb{Z}$. If it is 3 °C and the temperature
 drops by 5 degrees, it is −2 °C.
 
 They are answering in two different spaces. Here is one pair of
-situations; yours may be different and work as well.
+situations. Yours may be different and work too.
 
 </details>
 
-**9. Make.** A message on a phone app is passed on in rounds. In the
+**9. Make.** A message on a phone app is shared in rounds. In the
 first round, one person sends it to 2 people. In each round after that,
 the number who get it doubles. In the 2022 census, Ireland's population
 was 5,149,139. Use `math.log2` to find about how many rounds of
@@ -264,12 +264,12 @@ print(0.1 + 0.2 == 0.3)
 It shows `False`.
 
 `0.1 + 0.2` is `0.30000000000000004` as a float. Python cannot store 0.1
-or 0.2 exactly, only very close to them, and the tiny differences show
-up in the sum. `==` asks whether two values are exactly equal, and these
-two are not, quite.
+or 0.2 exactly, only very close to them, and the tiny differences appear
+in the sum. `==` asks whether two values are exactly equal, and these
+two are not quite equal.
 
 So a program should not test floats with `==` before rounding them.
-Try `print(round(0.1 + 0.2, 2) == 0.3)`: it shows `True`. Programs that
+Try `print(round(0.1 + 0.2, 2) == 0.3)`. It shows `True`. Programs that
 handle money often count in whole cents instead, since ints are exact.
 A later page in this unit explains why 0.1 cannot be stored exactly.
 
@@ -304,8 +304,8 @@ print(minutes, seconds)
 print(digit_at(minutes, 1), digit_at(minutes, 0), digit_at(seconds, 1), digit_at(seconds, 0))
 ```
 
-This shows `12 34`, then `1 2 3 4`: the timer reads 12:34. Check:
-$12 \times 60 + 34 = 754$. The base-10 calls leave out the third number,
+This shows `12 34`, then `1 2 3 4`, so the timer reads 12:34. Check:
+$12 \times 60 + 34 = 754$. The base-10 calls have no third number,
 so `base` takes its default value, 10.
 
 </details>
@@ -330,7 +330,7 @@ import math
 print(math.log2(1760 / 110))
 ```
 
-It shows `4.0`: they are 4 octaves apart. First, $1760 \div 110 = 16$,
+It shows `4.0`, so they are 4 octaves apart. First, $1760 \div 110 = 16$,
 so the higher note shakes the air 16 times as fast. Then
 $\log_2 16 = 4$, because $2^4 = 16$. Check by doubling: 110, 220, 440,
 880, 1760. That is four doublings.
@@ -367,16 +367,16 @@ $\log_2 1024 = 10$.
 
 Halving down to 1 undoes doubling up from 1, one step at a time. So the
 number of halvings is the number of doublings, which is the logarithm.
-The same idea, seen from the other end, is why searching a sorted list
-by halving it is so fast. A later unit is built on it.
+This idea also explains why halving a sorted list is such a fast way
+to search it. A later unit uses it.
 
 For the "try this next", `math.log2(1000000)` is about 19.9, so 20
 halvings take a million below 1.
 
 </details>
 
-**14. Fix.** Schlomi wants the tens digit of a number. Her idea: take
-the last digit, then divide it by 10. Her tests fail. Run the cell,
+**14. Fix.** Schlomi wants the tens digit of a number. Her idea is to
+take the last digit, then divide it by 10. Her tests fail. Run the cell,
 find the flaw in the idea, and fix it so that both tests pass.
 
 ```python exec
@@ -392,9 +392,9 @@ print("tens_digit keeps its promise.")
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Work out `tens_digit(2026)` by hand. What is `2026 % 10`?
+1. Find `tens_digit(2026)` by hand. What is `2026 % 10`?
 2. What is that number `// 10`?
-3. Which of `%` and `//` should happen first, to get rid of the ones
+3. Which of `%` and `//` should happen first, to remove the ones
    digit?
 
 **Think about:** which of the four questions is this about?
@@ -404,10 +404,10 @@ print("tens_digit keeps its promise.")
 <details class="dl-answer"><summary>answer</summary>
 
 `2026 % 10` is 6, and `6 // 10` is 0. Any last digit is less than 10,
-so her function gives 0 every time. The tens digit is thrown away in
-the first step.
+so her function gives 0 every time. The first step loses the tens
+digit.
 
-The steps need the other order: first drop the last digit, then keep
+The steps need the other order. First drop the last digit, then keep
 the new last digit.
 
 ```python
@@ -432,7 +432,7 @@ print(-7 % 2)
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Work out $-7 \div 2$ exactly. You get −3.5.
+1. Calculate $-7 \div 2$ exactly. You get −3.5.
 2. Draw a number line, and mark −3.5 on it.
 3. `//` is floor division. Floor means "the next whole number down".
    Which whole number comes next below −3.5 on your line?
@@ -448,7 +448,7 @@ number?
 
 $-7 \div 2 = -3.5$. Floor division rounds down, to the whole number
 below, and on the number line the whole number below −3.5 is −4, not
-−3. For positive numbers, rounding down and cutting off the decimal
+−3. For positive numbers, rounding down and removing the decimal
 part give the same answer. For negative numbers they do not.
 
 The remainder follows from that. Python keeps the rule from problem 4:
@@ -456,7 +456,7 @@ $-4 \times 2 + 1 = -7$. So the remainder is 1.
 
 Most people guess −3, and that is what some other programming
 languages give, because they round towards zero. Python
-chose "down" instead. Same move, a different space.
+chose "down" instead.
 
 </details>
 
@@ -503,7 +503,7 @@ assert scale(100, 400, 200) == 50
 print("scale keeps its promise.")
 ```
 
-First we divide by the old width, to find how far across the pixel is:
+First we divide by the old width, to find how far across the pixel is.
 960 is half of 1920. Then we multiply by the new width: half of 1280 is
 640. The promise is about any two widths, so it works for any image.
 
@@ -522,15 +522,15 @@ would be missing.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through. It weighs a few things.
+Here is one answer. It looks at a few things.
 
 - **The question first** gives the idea something to be about. A learner
-  knows what a logarithm is for before they learn its rules. What they
-  miss, for now, is a way to work with logarithms on paper, which exams
-  often ask for.
+  knows what a logarithm is for before they learn its rules. For now,
+  they miss a way to work with logarithms on paper, which exams often
+  ask for.
 - **The rules first** are quick to use, and they are what a calculator
-  and many exam questions need. What a learner can miss is what the rules
-  mean, which makes them hard to rebuild if they are forgotten.
+  and many exam questions need. A learner can miss what the rules mean,
+  and then the rules are hard to rebuild if they are forgotten.
 
 The question can even explain a rule. Multiplying 8 by 4 means doubling 3
 times and then 2 more times, 5 doublings in all:

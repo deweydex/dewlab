@@ -50,8 +50,7 @@ From now on, your copy behaves like any other repository:
 - Later changes to `portfolio_wad` never appear in your copy, unless
   you ask for them.
 
-For this course, that is what we want: a site that is entirely yours to
-change.
+This suits this course. We want a site that is entirely yours to change.
 
 ## Three ways to open it
 
@@ -74,7 +73,7 @@ on GitHub's website.
 **Edit it in the browser.** This uses GitHub's own editor, from [Choosing an editor](tutorial:an-editor). You download nothing. Everything happens on
 GitHub's website.
 
-Not sure which to pick? Editing in the browser is the easiest place to
+Not sure which to pick? The browser editor is the easiest place to
 start. You can always clone or download the same repository later.
 
 ## What we have now

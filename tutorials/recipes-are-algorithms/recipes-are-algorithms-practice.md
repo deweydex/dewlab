@@ -13,9 +13,9 @@ down before you run the cell. A guess that missed, once you see why,
 teaches more than a lucky match you were not sure of.
 
 A plan or pseudocode can be written in many different ways. Where an
-answer fold shows a plan, it shows one way through, not the only one.
-Yours may be clearer. One test for any plan: would a robot that
-knows nothing follow it and finish the task?
+answer fold shows a plan, it shows one answer, not the only one.
+Yours may be clearer. Here is one test for any plan. Would a robot
+that knows nothing follow it and finish the task?
 
 ## Warm-up
 
@@ -56,8 +56,8 @@ print(minutes)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`48`. The name `songs` points at 12. Then `songs * 4` is worked out, 48,
-and the name `minutes` points at that. A playlist of 12 songs, each
+`48`. The name `songs` points at 12. Then Python calculates `songs * 4`,
+which is 48, and the name `minutes` points at that. A playlist of 12 songs, each
 about 4 minutes long, lasts about 48 minutes.
 
 </details>
@@ -123,9 +123,9 @@ print(bonus)
 
 `20`.
 
-`bonus` is worked out on the second line, when `score` is 10, so
+Python calculates `bonus` on the second line, when `score` is 10, so
 `bonus` points at 20. The third line makes `score` point at 50, but
-that does not go back and redo the second line. In Python, `=` is a step
+the second line does not run again. In Python, `=` is a step
 done once, at one moment.
 
 </details>
@@ -156,7 +156,7 @@ Hey, hey, hey!
 Hey, hey, hey!
 ```
 
-The `def` part shows nothing when it runs: it only writes the recipe
+The `def` part shows nothing when it runs. It only writes the recipe
 card. Each `chorus()` line calls the function, and its one step runs.
 It is called three times, so the chorus appears three times.
 
@@ -201,7 +201,7 @@ to define it first, and call it after. Schlomo's order makes sense on
 paper, where the most important line often comes first. In Python, the
 order is about "what happens when?".
 
-One thing to watch for. Once your fixed cell has run, move the call
+Watch for one thing. Once your fixed cell has run, move the call
 back to the top and run it again. Now it works. The function was
 defined by the earlier run, and the page remembers every name that any
 cell has made. So whether a cell works can depend on what ran before it,
@@ -298,7 +298,7 @@ A limit also guarantees that the repeat ends. An algorithm must finish,
 and "repeat until the PIN is right" might never finish if the person
 does not know it.
 
-Other examples: a website that locks you out after five wrong
+Other examples: a website that locks your account after five wrong
 passwords; a phone that tries to connect to Wi-Fi a few times, then
 stops and tells you; a recipe that says "stir until thick, or for at
 most 10 minutes".
@@ -370,8 +370,8 @@ repetition.
 - **Repetition:** it sprays and drains more than once, and it keeps
   heating the water until it reaches the right temperature.
 
-Your answer may name different parts. What matters is that each one
-really does fit its shape.
+Your answer may name different parts. Check that each one really fits
+its shape.
 
 </details>
 
@@ -386,7 +386,7 @@ goals = goals + 1
 print(goals)
 ```
 
-In a maths class, $g = g + 1$ has no answer: no number is equal to
+In a maths class, $g = g + 1$ has no answer. No number is equal to
 itself plus one. So why does Python accept `goals = goals + 1`? In
 which space does it make sense?
 
@@ -399,7 +399,7 @@ equal to $g + 1$, so the equation has no answer, and a maths teacher is
 right to say so.
 
 In Python, `=` is a step: "make this name point at this value". Python
-first works out the right-hand side, `goals + 1`, using the value
+first calculates the right-hand side, `goals + 1`, using the value
 `goals` has now, which is 2. That gives 3. Only then does the name
 `goals` move to point at 3. It is a step in time, like a scoreboard
 going from 2 to 3 when a goal is scored.
@@ -424,7 +424,7 @@ id: recipes-practice-make-4
 1. Start from `make_tea_for(cups)` on the tutorial page. It has the
    same shape, with two parameters instead of one.
 2. The first line is `def memory_for(width, height):`.
-3. Each step is a `print` line, pushed in, with the amount worked out
+3. Each step is a `print` line, pushed in, with the amount calculated
    from `width` and `height`.
 4. After the function, not pushed in, write two calls.
 
@@ -459,7 +459,7 @@ Bytes: 6220800
 A full screen of pixels takes over 6 million bytes. For the "try this
 next": `width * height / 2` for a 3 by 3 image is 4.5 bytes. Half a
 byte cannot be stored on its own. The next page is about which numbers
-a computer can hold, and what `/` gives back.
+a computer can hold, and what `/` returns.
 
 </details>
 
@@ -500,7 +500,7 @@ REPEAT until a player is on square 100:
         SET player TO the other player
 ```
 
-This plan still leaves one thing out: what happens if a roll would take
+This plan still misses one thing. What happens if a roll would take
 a piece past 100? A robot would need to be told. Adding one more `IF`
 for it, in your family's version of the rule, finishes the plan.
 

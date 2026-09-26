@@ -11,8 +11,8 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means
 answer in words. **Another way** means reach the same place by a second
-route. The answers are folded away until you open them, and each is one
-way through: yours may go another way.
+route. The answers are folded away until you open them. Each is one
+answer, and yours may be different and work too.
 
 Your toolkit is loaded on this page, including `slope` and
 `line_through` from the tutorial, `close_enough` from
@@ -42,7 +42,7 @@ print(slope((0, 3), (3, 0)))
 
 The first line rises 1 over a run of 4. The second has a rise of
 $5 - 5 = 0$, so it is flat. The third falls 3 over a run of 3, so its
-slope is $\frac{-3}{3} = -1$: it goes down as we read it from left to
+slope is $\frac{-3}{3} = -1$. It goes down as we read it from left to
 right. Python shows each as a float, because `/` always gives a float.
 
 </details>
@@ -65,12 +65,12 @@ the road climbs 1 metre.
 </details>
 
 **3. Explain.** Ramp A rises 0.5 m over a run of 6 m. Ramp B rises
-0.25 m over a run of 3 m. Which is steeper? Answer before you work
-anything out, then check.
+0.25 m over a run of 3 m. Which is steeper? Answer before you calculate
+anything, then check.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Neither: they are equally steep. Ramp B is ramp A cut in half, so both
+Neither. They are equally steep. Ramp B is ramp A cut in half, so both
 the rise and the run are halved, and rise over run does not change.
 Both slopes are $\frac{1}{12}$, a gradient of 1:12. Steepness is about
 the rise for each metre along, not about the rise alone.
@@ -118,8 +118,8 @@ print(slope((0, 0), (needed_run, rise)), 1 / 15)
 
 The run is $0.25 \times 15 = 3.75$ m, which fits in 4 m. This is the
 slope formula run backwards: $\text{run} = \frac{\text{rise}}{\text{slope}}$,
-and dividing by $\frac{1}{15}$ is multiplying by 15. The last line
-checks it with `slope`: both numbers are about 0.0667.
+and to divide by $\frac{1}{15}$, we multiply by 15. The last line
+checks it with `slope`. Both numbers are about 0.0667.
 
 </details>
 
@@ -143,7 +143,7 @@ print("slope_again keeps its promise.")
 <details class="dl-answer"><summary>answer</summary>
 
 The second test fails: `slope_again((0, 0), (10, 1))` gives 10, not
-0.1. The function divides the run by the rise: the slope formula turned
+0.1. The function divides the run by the rise. That is the slope formula
 upside down. The fix is
 
 ```python
@@ -151,10 +151,9 @@ upside down. The fix is
 ```
 
 The first test passed because a line at 45 degrees has the same rise
-and run, and $\frac{1}{1}$ upside down is still 1. Schlomo's idea of
-testing a 45-degree line first is a reasonable one, and it is also the
-one line a swap like this can hide behind. A test where the rise and
-the run differ catches it.
+and run, and $\frac{1}{1}$ upside down is still 1. A 45-degree line
+is a natural first test, but it cannot show a swap like this. A test
+where the rise and the run differ shows it.
 
 </details>
 
@@ -174,11 +173,11 @@ for celsius in [-40, 0, 37, 100]:
     print(celsius, m * celsius + c, celsius_to_fahrenheit(celsius))
 ```
 
-The line is $F = 1.8C + 32$: slope 1.8, crossing at 32. The two columns
+The line is $F = 1.8C + 32$, with slope 1.8, crossing at 32. The two columns
 agree for every temperature, with at most a tiny float difference. So
 the conversion is a straight line, and two points were enough to find
-all of it. At −40 the two scales agree, which is where the line
-crosses $y = x$.
+all of it. At −40 the two scales agree. There, the line crosses
+$y = x$.
 
 </details>
 
@@ -207,7 +206,7 @@ A C False -1.0
 B C False -1.0
 ```
 
-A and B have the same slope, so they are parallel: they never meet. C
+A and B have the same slope, so they are parallel. They never meet. C
 is perpendicular to both, because $2 \times -0.5 = -1$. A line that is
 perpendicular to one of two parallel lines is perpendicular to the
 other too.
@@ -242,7 +241,7 @@ print(round(m * 1039 + c, 1))
 print(round(m * 1000, 1), "degrees for every 1,000 m")
 ```
 
-The slope is −0.0065: the air loses 0.0065 °C for every metre up, or
+The slope is −0.0065. The air loses 0.0065 °C for every metre up, or
 6.5 °C for every 1,000 m. At the top of Carrauntoohil the line gives
 about 8.2 °C. Real air does not follow the line exactly, and wind
 makes it feel colder, so a walker still packs a warm layer.
@@ -260,14 +259,14 @@ rule can describe it. The general form only asks whether a point makes
 $ax + by + c$ equal 0. It does not need to find $y$, so it has room for
 the wall: $1x + 0y - 2 = 0$.
 
-When $b = 0$, the $y$ drops out of the line's equation, and only $x$
+When $b = 0$, the $y$ disappears from the line's equation, and only $x$
 decides whether a point is on the line. So $b = 0$ means a vertical
-line. That is also why the slope, $-\frac{a}{b}$, cannot be found then:
-it would divide by 0.
+line. The slope, $-\frac{a}{b}$, cannot be found then, because it
+would divide by 0.
 
 </details>
 
-**11. Make.** Write `slope_from_general(a, b)`, which gives the slope
+**11. Make.** Write `slope_from_general(a, b)`, which returns the slope
 of the line $ax + by + c = 0$. Use it on $3x - 6y + 12 = 0$, and check
 by finding two points on that line and using `slope`.
 
@@ -283,7 +282,7 @@ print(slope_from_general(3, -6))
 print(slope((0, 2), (4, 4)))
 ```
 
-Both give 0.5. Moving everything except $by$ to the right gives
+Both give 0.5. Move everything except $by$ to the right, and you get
 $by = -ax - c$, so $y = -\frac{a}{b}x - \frac{c}{b}$, and the slope is
 $-\frac{a}{b} = -\frac{3}{-6} = 0.5$.
 
@@ -311,8 +310,8 @@ print("line_through_again keeps its promise.")
 
 <details class="dl-answer"><summary>answer</summary>
 
-The second test fails. From $y_1 = m x_1 + c$, moving $m x_1$ to the
-other side takes it away: $c = y_1 - m x_1$. The code adds it. The fix
+The second test fails. In $y_1 = m x_1 + c$, when $m x_1$ moves to the
+other side, it is taken away. So $c = y_1 - m x_1$. The code adds it. The fix
 is
 
 ```python
@@ -320,10 +319,10 @@ is
 ```
 
 The server A test passed because its first point has $x_1 = 0$, so
-$m x_1$ is 0, and adding it or taking it away gives the same answer.
-Schlomi's test was a sensible first test, since server A is the line
-she knew best. Putting both points back into the line, as the
-tutorial's tests did, would have caught it at once.
+$m x_1$ is 0, and it makes no difference whether we add it or take it
+away. Server A was a natural first test for Schlomi, since it is the
+line she knew best. If she had put both points back into the line, as
+the tutorial's tests did, she would have seen the mistake at once.
 
 </details>
 
@@ -338,7 +337,7 @@ id: straight-practice-stretch
 
 **13. Make.** A drawing program lets you draw a line, then click a
 point to draw a second line at a right angle to it. Write
-`perpendicular_through(m, point)`, which gives the `(m, c)` of the line
+`perpendicular_through(m, point)`, which returns the `(m, c)` of the line
 through `point` that is perpendicular to a line of slope `m`. Test it
 by drawing both lines with `plot_rule`, with `plt.axis("equal")`.
 
@@ -347,7 +346,7 @@ by drawing both lines with `plot_rule`, with `plt.axis("equal")`.
 1. The new slope is $-\frac{1}{m}$.
 2. The point is on the new line, so $c = y - (\text{new slope}) \times x$,
    as in `line_through`.
-3. Give back the pair.
+3. Return the pair.
 
 **Think about:** which slope `m` makes this function fail, and what
 kind of line would the answer be?
@@ -384,7 +383,7 @@ plt.axis("equal")
 
 The new line is $y = -2x + 6$, and it goes through $(2, 2)$, which is
 on the first line. The picture shows a square corner. With `m = 0` the
-function stops with a `ZeroDivisionError`: the line at a right angle
+function stops with a `ZeroDivisionError`. The line at a right angle
 to a flat line is a wall, which has no slope.
 
 </details>
@@ -412,13 +411,13 @@ print(perpendicular_general(2, -1, 2, -1))     # two parallel lines
 $0 \times 1 + 1 \times 0 = 0$. For the tutorial's lines,
 $0.5 \times -2 + (-1) \times (-1) = -1 + 1 = 0$. The general form gives
 one rule that covers every pair of lines, walls included. The slope
-rule is the same rule, divided through by $b_1 b_2$, which is why it
-breaks when a $b$ is 0.
+rule is the same rule, divided through by $b_1 b_2$. So it breaks when
+a $b$ is 0.
 
 </details>
 
 **15. Make.** A phone's GPS app records a hill climb, as (distance
-along the road in km, height in m) pairs. These numbers are made up:
+along the road in km, height in m) pairs. These numbers are invented:
 
 ```python
 climb = [(0, 20), (1.0, 60), (1.5, 110), (2.5, 150), (3.0, 240)]

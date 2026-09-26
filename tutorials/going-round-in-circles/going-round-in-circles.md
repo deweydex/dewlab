@@ -31,7 +31,7 @@ The clock on your phone knows the time: 10:10, say. To draw it, the app
 has to draw two lines from the middle of the face. Each line ends at a
 point on a circle. How does the app know where that point is?
 
-Asked of the sky, the same question is: where are the planets? One
+We can ask the same question of the sky. Where are the planets? One
 short tool of yours answers both.
 
 On this page we:
@@ -39,7 +39,7 @@ On this page we:
 - measure how far a clock hand has turned, in degrees
 - put a point on a circle of radius 1, and name its two coordinates
   cosine and sine
-- find out why `math.cos(90)` is not 0, and meet radians
+- see why `math.cos(90)` is not 0, and meet radians
 - add `point_on_circle` to the toolkit, and draw a clock with it
 - send four planets round the Sun with it, on NASA's numbers
 - find some points exactly, with Pythagoras
@@ -48,10 +48,9 @@ On this page we:
 > **The space we're in.** A flat plane, with $x$ across and $y$ up, as
 > on [Straight lines](tutorial:straight-lines) and
 > [How far apart?](tutorial:how-far-apart). Your toolkit is loaded, with
-> `distance` and `close_enough` ready. One thing usually goes unsaid:
-> maths measures a turn from the right, going anticlockwise, and a clock
-> measures it from the top, going clockwise. Neither is wrong. We have
-> to say which one we mean.
+> `distance` and `close_enough` ready. Maths measures a turn from the
+> right, going anticlockwise, and a clock measures it from the top,
+> going clockwise. Both work, but we have to say which one we mean.
 
 ## Warm-up
 
@@ -166,7 +165,7 @@ maths often uses for an angle):
 
 So the point is $(\cos\theta, \sin\theta)$, and from the quarter
 turns, $\cos 90^\circ = 0$. Sine and cosine are functions, as on
-[Machines that take a number](tutorial:machines-that-take-a-number): an
+[Machines that take a number](tutorial:machines-that-take-a-number). An
 angle goes in, and a number between −1 and 1 comes out.
 
 Every point is 1 from the centre. With
@@ -190,8 +189,7 @@ print(math.sin(90))
 
 Python prints `-0.4480736161291701` and `0.8939966636005579`. The point
 $(-0.448, 0.894)$ is up and to the left, not at the top. Nothing broke.
-The answer belongs to a different space: Python measures angles in a
-different unit.
+Python measures angles in a different unit.
 
 Picture the point walking round the edge of the unit circle. Instead of
 counting degrees, we could measure how far it has walked along the
@@ -204,11 +202,11 @@ that is $2\pi$, about 6.28. So:
 $$360^\circ = 2\pi \text{ radians} \qquad 180^\circ = \pi \text{ radians} \qquad 90^\circ = \frac{\pi}{2} \text{ radians}$$
 
 `math.cos(90)` walked 90 units round a circle whose whole edge is 6.28
-long: more than 14 whole turns, and then a bit.
+long. That is more than 14 whole turns, and then a bit.
 
 ### Converting
 
-Since $180^\circ = \pi$ radians, turning degrees into radians means
+Since $180^\circ = \pi$ radians, we turn degrees into radians by
 multiplying by $\frac{\pi}{180}$. Python has this ready as
 `math.radians`, and the way back as `math.degrees`. What do you expect
 now?
@@ -226,7 +224,8 @@ now the sine is `1.0`. One radian is about $57.3^\circ$.
 
 The cosine is `6.123233995736766e-17`, a number so small it is 0 for
 any clock. $\frac{\pi}{2}$ has endless digits, and a float keeps only
-about 16 of them, so the angle is a tiny bit off, and so is its cosine.
+about 16 of them, so the angle is not quite exact, and nor is its
+cosine.
 The context page
 [How a computer stores a number](tutorial:how-a-computer-stores-a-number#reading-e-16)
 has the whole story. This is why we compare with `close_enough`, never
@@ -262,8 +261,8 @@ angle $\theta$ is
 
 $$(r\cos\theta,\ r\sin\theta)$$
 
-Here is the promise of a new tool. Its body is yours to write: turn
-`angle_degrees` into radians, then give back the point.
+Here is the promise of a new tool. You write its body. Turn
+`angle_degrees` into radians, then return the point.
 
 ```python exec
 id: going-round-toolkit
@@ -294,7 +293,7 @@ def point_on_circle(radius, angle_degrees):
 ```
 
 Run the toolkit cell, then the tests. Until the body is written, the
-first test stops with a `TypeError`, because `...` gives back `None`.
+first test stops with a `TypeError`, because `...` returns `None`.
 The last test walks round a circle of radius 5, a degree at a time, and
 uses your `distance` to check that every point is 5 from the centre.
 
@@ -336,8 +335,8 @@ anticlockwise. How do we turn one into the other?
 
 12 o'clock is $90^\circ$ in maths. Each clockwise degree takes one away
 from that. So a hand that has turned $a$ degrees clockwise from 12 is at
-$90 - a$ degrees in maths. For 3 o'clock, $a = 90$, and $90 - 90 = 0$:
-the right-hand side, as it should be.
+$90 - a$ degrees in maths. For 3 o'clock, $a = 90$, and $90 - 90 = 0$,
+which is the right-hand side.
 
 First the face. A drawing needs two lists, the $x$ values and the $y$
 values, so a small helper turns a row of angles into those two lists.
@@ -401,7 +400,7 @@ The short hand points just past the 10, and the long hand at the 2.
 A clock hand turns at a steady speed round a circle. So, very nearly,
 does a planet. Its path round the Sun is an *orbit*. Real orbits are
 slightly stretched circles, Mercury's the most. We draw them as
-circles: a model, and a close one.
+circles. That is a model, and a close one.
 
 The file `planet-orbits.csv` holds NASA's numbers for each planet: its
 average distance from the Sun, in millions of kilometres, and how many
@@ -411,7 +410,7 @@ degrees, and `point_on_circle` does the rest.
 
 The cell sends the four planets nearest the Sun round for one year on
 Mars, 687 days. We start them all in a line on the right, which they
-are not today. Before you run it: while Mars goes round once, how many
+are not today. Before you run it, guess. While Mars goes round once, how many
 times does Mercury go round? Afterwards, try `days_shown = 365`.
 
 ```python exec
@@ -477,17 +476,17 @@ $$\cos 45^\circ = \sin 45^\circ = \sqrt{\tfrac{1}{2}} = \frac{\sqrt{2}}{2}$$
 **60 degrees.** Join $(0, 0)$, $(1, 0)$ and the point at $60^\circ$.
 Two sides are radii, so they are both 1, and the angle between them is
 $60^\circ$. That makes all three angles $60^\circ$, and all three sides
-1: an equilateral triangle. Its top corner is halfway across, so
+1. It is an equilateral triangle. Its top corner is halfway across, so
 $\cos 60^\circ = \frac{1}{2}$. Pythagoras gives the height:
 $\sin 60^\circ = \sqrt{1 - \frac{1}{4}} = \frac{\sqrt{3}}{2}$.
 
 **30 degrees** is 60 degrees seen in a mirror, the line $y = x$, with
-across and up swapped: $\cos 30^\circ = \frac{\sqrt{3}}{2}$ and
+across and up swapped. So $\cos 30^\circ = \frac{\sqrt{3}}{2}$ and
 $\sin 30^\circ = \frac{1}{2}$.
 
 A number like $\sqrt{2}$ or $\sqrt{3}$, left as a square root because it
-has no exact decimal, is called a *surd*. Writing
-$\frac{\sqrt{2}}{2}$ is *surd form*. It is exact, and
+has no exact decimal, is called a *surd*.
+$\frac{\sqrt{2}}{2}$ is written in *surd form*. It is exact, and
 `0.7071067811865476` is not. Do the surds agree with Python?
 
 ```python exec
@@ -502,7 +501,7 @@ print((math.sqrt(2) / 2) ** 2)
 ```
 
 All six agree. The last line should be exactly $\frac{1}{2}$, and
-Python prints `0.5000000000000001`: the float was rounded before it was
+Python prints `0.5000000000000001`. The float was rounded before it was
 squared, and the surd was not.
 
 | angle | $0^\circ$ | $30^\circ$ | $45^\circ$ | $60^\circ$ | $90^\circ$ |
@@ -559,8 +558,8 @@ $90^\circ + 90^\circ + 90^\circ = 270^\circ$. I think that is a
 wonderful number to see on a page about angles. Each side is a quarter
 of a circle, drawn by `point_on_circle`.
 
-The rule "180 degrees" belongs to the flat plane, and it rests on one
-move the plane allows: drawing
+The rule "180 degrees" belongs to the flat plane, and it needs one
+thing the plane allows. On the plane, we can draw
 [parallel lines](tutorial:straight-lines#parallel-and-perpendicular),
 which never meet. On a ball, the straightest paths are the *great
 circles*, the circles as big as the ball itself, like the equator and
@@ -569,20 +568,20 @@ longitude both cross the equator at right angles, and still they meet
 at the Pole. The ball has no parallel lines.
 
 A small triangle on a ball is almost flat, and its angles add up to
-just over $180^\circ$. That is why a football pitch seems to keep the
+just over $180^\circ$. So a football pitch seems to keep the
 flat rule, while a pilot crossing an ocean uses the rules of the ball.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
 This page defined sine and cosine as the across and up of a point on a
-circle. Many courses start with a right-angled triangle instead: the
-sine is the opposite side over the longest side, and so on.
+circle. Many courses start with a right-angled triangle instead. There,
+the sine is the opposite side over the longest side, and so on.
 
 The triangle route is quick for measuring heights and distances, which
 is what the ratios were first made for, and
 [Solving triangles](tutorial:how-tall-is-that-tree) uses them that way,
 after naming the sides inside this page's circle. Its cost is
-that it stops at $90^\circ$: the other two corners of a right-angled
+that it stops at $90^\circ$. The other two corners of a right-angled
 triangle are always smaller than that, so the ratios say nothing about
 $120^\circ$ until they are stretched to fit.
 
@@ -626,6 +625,6 @@ walks round the same circle more slowly, with more about the tangent.
 
 Veritasium (2023). *The SAT Question Everyone Got Wrong.*
 <https://www.youtube.com/watch?v=FUHkTs-Ipfg>. One coin rolls around
-another coin three times its size. How many times does it turn? The people
-who wrote a famous test got it wrong. Veritasium explains the answer,
+another coin three times its size. How many times does it turn? None of the
+answers on a famous test was correct. Veritasium explains the answer,
 which is about radius and turning, like this page. About eighteen minutes.

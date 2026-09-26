@@ -10,10 +10,9 @@ version: 2026.09.25.1
 Each problem says what kind it is: **Predict** (say what a cell will
 print, then run it), **Make** (build something small), **Fix** (find
 why code that looks fine does something else, and change it), **Explain** (answer in words) or **Another way** (reach the
-same answer by a second route). Answers are in the folds. Working by hand
-first, then checking in Python, teaches more than either one alone. It
-is slower, and that is fine: binary is a new way of seeing numbers you
-have known all your life.
+same answer by a second route). Answers are in the folds. You learn more
+if you work by hand first, then check in Python. It is slower. Binary
+is a new way of seeing numbers you have known all your life.
 
 Your toolkit is loaded here: `digit_at`, `to_binary`, `to_hex` and
 `pixel_row`. If you have not finished one of them, the page uses a
@@ -105,8 +104,8 @@ print(0b10 + 0b10)
 print(to_binary(0b10 + 0b10))
 ```
 
-This prints `4`, then `100`. Schlomo's sum was never foolish. It was a
-sum from a different space. (The "try this next" one is base 8, where
+This prints `4`, then `100`. Schlomo's sum comes from a different
+space. (The "try this next" one is base 8, where
 the columns are worth 1, 8, 64, and so on.)
 
 </details>
@@ -124,7 +123,7 @@ print(to_binary(127))
 ```
 
 This prints `1111111`, which is seven 1s. So 127 needs 7 bits, and it
-fits in one byte with a bit to spare. That is not an accident: $2^7 =
+fits in one byte with a bit to spare. That is not an accident. $2^7 =
 128$, so seven bits give exactly the 128 values from 0 to 127. The
 system that sends these notes between music machines, MIDI, was
 designed that way in the early 1980s.
@@ -145,14 +144,14 @@ print(to_hex(10), to_hex(15), to_hex(16), to_hex(255), to_hex(256))
 - 16 is one sixteen and no ones, so `10`. It is the hex version of how
   ten is `10` for us.
 - 255 is the biggest number two hex digits can hold, `FF`.
-- 256 is one step past it, so the columns roll over, like 99 to 100:
-  `100`.
+- 256 is one step past it, so a new column starts, as when 99 becomes
+  100. That gives `100`.
 
 </details>
 
 **7. Make.** A green often used for the Irish flag is written
 `#169B62`. What are its red, green and blue brightnesses, from 0 to 255?
-Work out one of them by hand, then use Python for all three.
+Calculate one of them by hand, then use Python for all three.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -177,7 +176,7 @@ By hand, `9B` is $9 \times 16 + 11 = 144 + 11 = 155$.
 print(0x16, 0x9B, 0x62)
 ```
 
-This prints `22 155 98`. Red 22, green 155, blue 98. Green is by far the
+This prints `22 155 98`. That is red 22, green 155 and blue 98. Green is by far the
 brightest, with a little blue, which gives a slightly cool green.
 
 </details>
@@ -227,7 +226,7 @@ print(colour)
 ```
 
 This prints `#FF8800`. The same trouble happens with any brightness
-under 16: 10 would give `A` instead of `0A`.
+under 16. For example, 10 would give `A` instead of `0A`.
 
 </details>
 
@@ -251,7 +250,7 @@ print(to_binary(0b1011 + 0b0110))
 
 From the right: 1 + 0 is 1. Then 1 + 1 is 10: write 0, carry 1. Then
 0 + 1 + 1 is 10: write 0, carry 1. Then 1 + 0 + 1 is 10: write 0, carry
-1. The last carry starts a new column. Checking in base 10: $11 + 6 =
+1. The last carry starts a new column. We can check in base 10: $11 + 6 =
 17 = 16 + 1$.
 
 </details>
@@ -287,8 +286,8 @@ It draws a 0:
 
 6 is `0110`, `.##.`, the top and bottom of a round shape. 9 is `1001`,
 `#..#`, the two sides. So `0x6999996` is a top, five rows of sides and a
-bottom. Compare the 8, `0x6996996`: the only change is the middle row,
-9 to 6, and that is exactly the bar across the middle of an 8.
+bottom. Compare the 8, `0x6996996`. Only the middle row changes, from
+9 to 6, and that row is the bar across the middle of an 8.
 
 </details>
 
@@ -309,27 +308,27 @@ What would each row need?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Her idea is reasonable, and it has one flaw. A row 5 pixels wide is 5
+Her idea has one problem. A row 5 pixels wide is 5
 bits, and one hex digit holds only 4. The widest row, `#####`, is
-`11111`, which is 31, or `1F` in hex: two hex digits. So each row needs
+`11111`, which is 31, or `1F` in hex, which is two hex digits. So each row needs
 two hex digits, and a digit needs 14 of them, with 3 bits in each row
 left unused.
 
-That is why the tutorial's font is 4 wide: then one row is exactly one
-hex digit. A real 5-wide font still works well; it only makes the rows
+The tutorial's font is 4 wide so that one row is exactly one hex
+digit. A real 5-wide font still works well. It only makes the rows
 harder to read in hex.
 
 </details>
 
 **12. Another way.** On the tutorial page we turned numbers into binary
-by halving. Here is a second recipe: take away the biggest power of 2
+by halving. Here is a second recipe: subtract the biggest power of 2
 that fits, and repeat. Use it to write 200 in binary, then check with
 `to_binary(200)`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. List the powers of 2: 1, 2, 4, 8, 16, 32, 64, 128, 256.
-2. The biggest one that fits in 200 is 128. Take it away. What is left?
+2. The biggest one that fits in 200 is 128. Subtract it. What is left?
 3. Repeat with what is left, until you reach 0.
 4. Write a 1 under each power you used and a 0 under each one you did not.
 
@@ -350,7 +349,7 @@ $200 - 128 = 72$, then $72 - 64 = 8$, then $8 - 8 = 0$. So we used 128,
 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 
 That is `11001000`, and `to_binary(200)` agrees. Both recipes always
-give the same answer. Halving finds the bits from the right; taking away
+give the same answer. Halving finds the bits from the right. Subtracting
 powers finds them from the left.
 
 </details>
@@ -407,7 +406,7 @@ one gives exactly 50 cents?
 <details class="dl-answer"><summary>answer</summary>
 
 `print(1.10 + 2.20)` shows `3.3000000000000003`. Counting in whole cents
-avoids that. Here is one way through; yours may differ and work as well:
+avoids that. Here is one answer. Yours may be different and work too.
 
 ```python
 first_cents = 110
@@ -417,7 +416,7 @@ print(total_cents // 100, "euro and", total_cents % 100, "cent")
 ```
 
 This prints `3 euro and 30 cent`. Whole numbers are kept exactly in
-binary, so adding cents never drifts. `// 100` gives the whole euro and
+binary, so a sum of cents is always exact. `// 100` gives the whole euro and
 `% 100` gives what is left over.
 
 </details>
@@ -452,8 +451,7 @@ print(2 ** 16, 2 ** 17)
 
 This prints `16.609640474436812`, then `65536 131072`. So 16 bits reach
 only 65,536, which is too few, and 17 bits reach 131,072, which is
-enough. Always round up: a part of a bit is not something a machine can
-have.
+enough. Always round up. A machine cannot have part of a bit.
 
 </details>
 
@@ -476,8 +474,8 @@ Python's whole numbers would have been fine. Python grows a whole
 number to as many bits as it needs, so `print(2 ** 31)` and even
 `print(2 ** 100)` work. That is part of the space Python gives us, and
 it is not true of every language. A counter with a fixed size needs
-room planned ahead, which is why YouTube gave its counter 64 bits before
-the video got there.
+room planned ahead, so YouTube gave its counter 64 bits before the video
+reached that number.
 
 </details>
 
@@ -521,7 +519,7 @@ plt.yticks([])
 
 This prints `#7F4400` and draws the orange beside a brown. The halves
 are 127, 68 and 0. We need `//` because a brightness must be a whole
-number from 0 to 255: `255 / 2` is `127.5`, and `format` cannot write
+number from 0 to 255. `255 / 2` is `127.5`, and `format` cannot write
 that in hexadecimal.
 
 </details>

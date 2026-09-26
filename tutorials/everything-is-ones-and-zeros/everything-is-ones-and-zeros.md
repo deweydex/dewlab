@@ -43,7 +43,7 @@ that is lit:
 
 And here is the same 8, written as one number: `0x6996996`. Look at
 that number for a moment. Can you see the 8 in it? If it looks like
-nonsense for now, read on: by the end of this page it will not. You will also know why a web page that asks for the colour
+nonsense for now, read on. By the end of this page it will make sense. You will also know why a web page that asks for the colour
 `#FF8800` gets orange, when not one of those characters says "orange".
 
 On this page we:
@@ -103,7 +103,7 @@ worth ten times the column to its right: 1, 10, 100, 1,000.
 A computer has only two digits, 0 and 1, because a switch is either off
 or on. One of these 0s or 1s is called a *bit*. Counting with only two
 digits is called *binary*, or base 2. It works the same way as our
-counting, with one change: each column is worth two times the column to
+counting, with one change. Each column is worth two times the column to
 its right.
 
 | Column worth | 8 | 4 | 2 | 1 |
@@ -115,7 +115,7 @@ symbols, with a small 2 to say which base we are in:
 
 $$1101_2 = 1 \times 2^3 + 1 \times 2^2 + 0 \times 2^1 + 1 \times 2^0 = 8 + 4 + 0 + 1$$
 
-Before you run the next cell, work that out. In Python, `0b` in front of
+Before you run the next cell, calculate that. In Python, `0b` in front of
 a number means "this is binary". Run it to check.
 
 ```python exec
@@ -132,7 +132,7 @@ second is the same sum we did by hand.
 1. Change `0b1101` to `0b1111` and run the cell. Did it show what you
    expected?
 2. Try `0b10000`. Why is it one more than `0b1111`?
-3. Make up a row of 0s and 1s of your own, work it out, and check.
+3. Make up a row of 0s and 1s of your own, find its value, and check.
 
 ```python exec
 id: everything-is-counting-2
@@ -141,7 +141,7 @@ print(0b1111)
 
 ## From a number to its bits
 
-Going the other way needs a recipe, like the ones on
+To go the other way, we need a recipe, like the ones on
 [Recipes are algorithms](tutorial:recipes-are-algorithms):
 
 1. Halve the number, and write down the remainder, 0 or 1.
@@ -165,13 +165,13 @@ number = number // 2
 print(number // 2, "remainder", number % 2)
 ```
 
-The remainders come out as 1, 0, 1, 1. Read from the last back to the
-first, they spell `1101`, where we started. Look again at what the
-recipe does: it is `digit_at` in base 2, one place at a time.
+The remainders are 1, 0, 1, 1. Read from the last back to the
+first, they spell `1101`, where we started. Look again at the
+recipe. It is `digit_at` in base 2, one place at a time.
 
 Writing the same two lines four times is tiring. Python can repeat lines
-for us with a loop, and Unit 3 is all about loops. For now, Python
-already knows this recipe: `format(13, "b")` gives 13 written in
+for us with a loop, and Unit 3 is all about loops. For now, we can use
+a recipe Python already knows. `format(13, "b")` gives 13 written in
 binary, as text.
 
 ```python exec
@@ -182,7 +182,7 @@ print(format(100, "b"))
 
 ### Your turn
 
-1. Work out 25 in binary by hand, with the halving recipe.
+1. Find 25 in binary by hand, with the halving recipe.
 2. Check your answer by changing `100` in the cell above to `25`.
 3. Then check it the other way: put `0b` in front of your answer and print it.
 
@@ -246,7 +246,7 @@ print(2 ** 21)
 
 It is about 20.98, so 20 bits are not quite enough and 21 are.
 $2^{21}$ is 2,097,152 numbers, enough for every pixel. Python's own
-whole numbers never run out of bits: try `print(2 ** 100)` in the cell
+whole numbers never run out of bits. Try `print(2 ** 100)` in the cell
 above.
 
 ## Adding in binary
@@ -315,7 +315,7 @@ print(format(0b1111111, "X"))
 Your toolkit started with `digit_at` on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold).
 Here are three more. `to_binary` and `pixel_row` are complete. `to_hex`
-has one line for you to finish: the `?` should be the letter that asks
+has one line for you to finish. The `?` should be the letter that asks
 `format` for hexadecimal.
 
 `pixel_row` turns a number into a row of pixels, `#` for each 1 bit and
@@ -369,7 +369,7 @@ def pixel_row(bits, width=4):
 ```
 
 The next cell tests all three with `assert`. Until `to_hex` is
-finished, expect an error that ends `Unknown format code '?'`: Python
+finished, expect an error that ends `Unknown format code '?'`. Python
 does not know a format called `?`.
 
 ```python exec
@@ -388,7 +388,7 @@ print("All three tools keep their promises.")
 
 1. Run the tests, and read the last line of anything that goes wrong.
 2. Finish `to_hex`, run the toolkit cell again, then the tests.
-3. Add one test of your own, worked out by hand first. What is 100 in
+3. Add one test of your own, calculated by hand first. What is 100 in
    hexadecimal?
 
 ## A digit drawn in pixels
@@ -397,11 +397,11 @@ Now the 8 from the top of the page. It is drawn in a *pixel font*: each
 digit is a small grid of pixels, here 4 pixels wide and 7 tall. Each row is 4 pixels, so each row is 4 bits,
 and 4 bits are one hex digit. The 8's rows are `.##.`, `#..#`, `#..#`,
 `.##.`, `#..#`, `#..#` and `.##.`, which are 6, 9, 9, 6, 9, 9, 6. So
-the whole digit is seven hex digits: `0x6996996`. The 8 was in the
-number all along.
+the whole digit is seven hex digits: `0x6996996`. So the 8 really
+is in the number.
 
 To draw it, we need each hex digit on its own. `digit_at` does that in
-base 16: place 6 is the top row, and place 0 is the bottom one.
+base 16. Place 6 is the top row, and place 0 is the bottom one.
 
 ```python exec
 id: everything-is-glyph-1
@@ -416,8 +416,8 @@ print(pixel_row(digit_at(eight, 0, 16)))
 ```
 
 And here is something I find strange and a little lovely. `0x6996996`
-is also an ordinary number: `print(0x6996996)` gives 110717334. A
-number, a row of bits, a picture of an 8: to the computer they are one
+is also an ordinary number: `print(0x6996996)` gives 110717334. To
+the computer, a number, a row of bits and a picture of an 8 are one
 thing. Only we decide what it means.
 
 <aside class="dl-note" id="everything-is-note-font">
@@ -469,7 +469,7 @@ Using the same idea, what colour is `#0088FF`?
 ```
 
 The next cell draws a few colours side by side. The square brackets
-make a list, a way to keep several values together; we meet lists
+make a list, a way to keep several values together. We meet lists
 properly in Unit 5.
 
 ```python exec
@@ -505,8 +505,7 @@ print(0.1 + 0.2 == 0.3)
 ```
 
 Python says `0.30000000000000004`, and `False`. That looks like a
-mistake, and it is not one. It is what happens in the space Python's
-decimals live in.
+mistake, but it comes from the space that Python's decimals live in.
 
 A float is kept in binary too. After the point, binary columns are worth
 a half, a quarter, an eighth, and so on. Some numbers can be made from
@@ -531,8 +530,7 @@ print(format(0.75, ".20f"))
 little off are added, the small errors can show.
 
 So in the space of fractions, ℚ, the move "check that two answers are
-equal with `==`" works. In the space of floats, it can fail. That does
-not make floats wrong. With floats, we ask "are these close enough?":
+equal with `==`" works. In the space of floats, it can fail. With floats, we ask "are these close enough?":
 
 ```python exec
 id: everything-is-float-3
@@ -557,8 +555,8 @@ loops.
 
 But loops come in Unit 3, so the choice was to wait, or to use the tool
 Python already has. "What does this space let us do?" includes what the
-space gives us without asking, and knowing when to use a tool that is
-already there is part of programming too. The halving recipe is still on
+space gives us without asking. Programmers also need to know when to use
+a tool that is already there. The halving recipe is still on
 the page, in words and done by hand, so nothing about how it works is
 hidden.
 

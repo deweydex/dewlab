@@ -33,14 +33,14 @@ On this page we:
 
 - meet three kinds of division, and find a pixel on a screen with them
 - meet the families of numbers, and Python's two kinds of number
-- work out the order Python does things in, inside one line
+- find the order Python does things in, inside one line
 - count the patterns that seven bars of light can make
 - take a number apart, and write `digit_at`, the first tool in your toolkit
 
 > **The space we're in.** Numbers, and the question "which family of
 > numbers are we in?". Python gives us `+`, `-`, `*`, `/` and a few more
-> without being asked. Two things about Python's numbers usually go
-> unsaid. Its whole numbers never run out, however big they get. Its
+> without being asked. People rarely mention two things about
+> Python's numbers. Its whole numbers never run out, however big they get. Its
 > decimal numbers are rounded, very slightly, almost all the time.
 
 ## Warm-up
@@ -81,7 +81,7 @@ very small screen, 2 pixels wide:
 ```
 
 Counting from 0, the way the computer counts, pixel 7 is in row 3 and
-column 1. How could a computer work that out from 7 and 2 alone? Before
+column 1. How could a computer find that from 7 and 2 alone? Before
 you run the cell, guess what each line shows. The third line uses `%`,
 which you may not have met. Guess anyway.
 
@@ -110,7 +110,7 @@ far along its own row it is. So on any screen, a pixel's row is
 Later in this unit we draw digits on a grid 4 pixels wide and 7 pixels
 tall. Its pixels are numbered from 0 to 27.
 
-1. Before you run anything, work out the row and column of pixel 25.
+1. Before you run anything, find the row and column of pixel 25.
 2. Change the cell below to check, using `//` and `%`.
 
 ```python exec
@@ -121,16 +121,15 @@ print(7 % 2)
 
 ## Families of numbers
 
-Some questions only make sense with whole things: there is no pixel
+Some questions only make sense with whole things. There is no pixel
 3.5. Mathematicians have names for these different spaces of numbers.
 There are four main ones, and each is bigger than the last.
 
 The *natural numbers*, written $\mathbb{N}$, are the counting numbers:
 0, 1, 2, 3 and so on. (Some books start at 1. This course counts 0 as a
 natural number.) In $\mathbb{N}$ you can always add, and always
-multiply. But $3 - 5$ has no answer. It is like the building in
-[Four questions for any puzzle](tutorial:four-questions#the-same-move-in-a-different-space)
-with no floors below the ground.
+multiply. But $3 - 5$ has no answer, as we saw in
+[Four questions for any puzzle](tutorial:four-questions#the-same-move-in-a-different-space).
 
 The *integers*, written $\mathbb{Z}$, are the whole numbers, with the
 negative ones added: …, −2, −1, 0, 1, 2, …. Now $3 - 5 = -2$. But
@@ -144,7 +143,7 @@ can divide by anything except 0.
 
 The *real numbers*, written $\mathbb{R}$, are all the points on the
 number line. Some of them are not fractions at all. The number that
-squares to make 2, written $\sqrt{2}$, is one; so is $\pi$.
+squares to make 2, written $\sqrt{2}$, is one. So is $\pi$.
 
 | Family | What it adds | A move that has no answer here |
 |---|---|---|
@@ -203,7 +202,7 @@ like `3.5`: Python's stand-in for $\mathbb{R}$. The name comes from the
 "floating" decimal point, which can sit anywhere in the number.
 
 Now look at the last line. `6 / 3` gives `2.0`, not `2`. The `/` sign
-always gives a float, even when the division comes out exactly. `//`
+always gives a float, even when the division is exact. `//`
 stays with ints, when it is given ints.
 
 What do you think will happen here? The first line multiplies three
@@ -220,9 +219,9 @@ ints never run out of room. Many other languages have a largest whole
 number, but Python does not.
 
 The second answer is `0.30000000000000004`. Your line did not cause
-it, and neither, really, did Python. A float keeps about 16 digits, and some
+it. A float keeps about 16 digits, and some
 decimals, like 0.1, cannot be stored exactly. A later page in this unit
-shows why. For now: ints are exact, and floats are very close.
+shows why. For now, remember that ints are exact, and floats are very close.
 
 ## Which comes first
 
@@ -253,8 +252,8 @@ multiply happens first. In `(1 + 6) * 4`, the brackets go first.
 Python counts `//` and `%` as dividing, so they take their turn with `*`
 and `/`.
 
-A few words for what we have been writing. An *expression* is a piece of
-code that Python works out to one value, like `6 * 4 + 1`. An *operator*
+Here are a few words for what we have been writing. An *expression* is a
+piece of code that Python turns into one value, like `6 * 4 + 1`. An *operator*
 is a symbol that does one job in an expression, like `+`, `*`, `//` or
 `%`. A *statement* is one complete instruction, usually one line, like
 `pixel = 6 * 4 + 1` or `print(pixel)`.
@@ -328,8 +327,8 @@ a number. For example:
 $$\log_2 128 = 7 \quad \text{because} \quad 2^7 = 128$$
 
 A logarithm is a power, read backwards. Python keeps it in a *module*:
-a collection of extra tools that Python keeps on the shelf until you
-ask for them with `import`. Guess the last line before you run it.
+a collection of extra tools that Python loads only when you ask for
+them with `import`. Guess the last line before you run it.
 About 8 billion people live on Earth. How many on-or-off lights would
 give every one of them a pattern of their own?
 
@@ -342,14 +341,13 @@ print(math.log2(1000))
 print(math.log2(8000000000))
 ```
 
-The second is about 9.97: nine doublings reach 512, and a little less
+The second is about 9.97. Nine doublings reach 512, and a little less
 than one more reaches 1,000. So a logarithm need not be a whole number,
 and 10 lights are enough.
 
 The last is about 32.9. So 33 lights are enough for every person on
-Earth. I think this is the most surprising number on the page. Doubling
-grows so fast that its backwards question, the logarithm, grows very
-slowly.
+Earth. I think this is the most surprising number on the page. Powers of
+2 grow very fast, so the logarithm grows very slowly.
 
 ### Your turn
 
@@ -367,7 +365,7 @@ print(math.log10(10000))
 
 ## Taking a number apart
 
-Now the display's real job. The computer holds the number 2026, and the
+Now let's do the display's real job. The computer holds the number 2026, and the
 display has four digits to light. Which digit goes where?
 
 The last digit is what is left over when we divide by 10, so it is
@@ -389,7 +387,7 @@ digit. So the digit in place 3, counting from 0 on the right, is
 `2026 // 10 ** 3 % 10`: first the power, then `//`, then `%`.
 
 On the last page, a function printed steps. A tool for the display
-should hand back a number that other code can use.
+should return a number that other code can use.
 
 ```python exec
 id: numbers-digits-2
@@ -401,11 +399,11 @@ print(last_digit(2026))
 print(last_digit(7))
 ```
 
-The *return* line hands a value back to whoever called the function:
-`last_digit(2026)` is replaced by 6. Words like `def` and `return` are
+The *return* line gives a value to whoever called the function.
+Here, `last_digit(2026)` is replaced by 6. Words like `def` and `return` are
 *keywords*: words Python keeps for its own use, so they cannot be
 names. The text in three quote marks is a *docstring*, which says what
-the function promises. Python does not check it; it is for people.
+the function promises. Python does not check it. It is for people.
 
 So how do we check a promise? An *assert* statement checks that
 something is true. If it is true, nothing happens. If it is false,
@@ -430,14 +428,14 @@ assert last_digit(2026) == 2
 ```
 
 The last line says `AssertionError`, and the line above it shows which
-test failed. An error here is not a verdict on you. It is information:
-this promise, on this line, was not kept.
+test failed. The error tells you that this promise, on this line, was
+not kept.
 
 ### Your turn: your first toolkit tool
 
 A microwave timer shows minutes and seconds. 1234 seconds is 20
 minutes and 34 seconds, because `1234 // 60` is 20 and `1234 % 60` is
-34. Minutes and seconds are digits in *base 60*: their columns are
+34. Minutes and seconds are digits in *base 60*. Their columns are
 worth 1, 60, 3600 and so on, the powers of 60.
 
 <aside class="dl-note" id="numbers-note-sixty">
@@ -455,7 +453,7 @@ pages load them for you. Replace the `...` with one line that starts
 with `return`. The digits cell above has the pattern, with 10 in place
 of `base`.
 
-`base=10` gives the parameter a *default value*: if a call does not say
+`base=10` gives the parameter a *default value*. If a call does not say
 what the base is, it is 10. So `digit_at(2026, 3)` counts in tens, and
 `digit_at(1234, 1, 60)` counts in sixties.
 
@@ -486,8 +484,8 @@ def digit_at(number, place, base=10):
     return number // base ** place % base
 ```
 
-Now test it. Until the `return` line is written, this cell stops with
-an error: the tests are doing their job.
+Now test it. Until you write the `return` line, this cell stops with
+an error. The tests are meant to do that.
 
 ```python exec
 id: numbers-toolkit-tests
@@ -518,8 +516,8 @@ four digits?
 ```
 
 A real microwave reads its buttons. Python's `input()` waits for
-someone to type. Asking for a value is *input*, and showing a result is
-*output*.
+someone to type. A value the program asks for is *input*, and a result it
+shows is *output*.
 
 ```python
 seconds = int(input("How many seconds? "))
@@ -567,7 +565,7 @@ come when a page needs them.
 | expression, operator, statement | a piece of code with a value; a symbol that does one job; one complete instruction |
 | power, `**` | $2^7$: 2 multiplied by itself 7 times |
 | logarithm | how many times you multiply the base to reach a number: $\log_2 128 = 7$ |
-| `return`, docstring, `assert` | hand back a value; the promise in words; a check that the promise is kept |
+| `return`, docstring, `assert` | give a value to the caller; the promise in words; a check that the promise is kept |
 | `digit_at(number, place, base=10)` | your first toolkit tool: `number // base ** place % base` |
 
 ## Where to read more

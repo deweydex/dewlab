@@ -22,8 +22,8 @@ id: what-function-practice-scratch-1
 # Try things here
 ```
 
-**1. Predict.** A weather app works out how cold the wind makes 8 °C
-feel. What does each line show? One of them is an error: which one, and
+**1. Predict.** A weather app calculates how cold the wind makes 8 °C
+feel. What does each line show? One of them is an error. Which one, and
 which kind?
 
 ```python
@@ -41,7 +41,7 @@ The first line shows `5.0`. The second stops with
 `NameError: name 'chill' is not defined`.
 
 `chill` is a local name. It was made in the space of one call to
-`feels_like`, and that space was thrown away when the call ended. Only
+`feels_like`, and that space was deleted when the call ended. Only
 the value 5.0 came out, through `return`. To keep it, give it a name on
 the page: `chill = feels_like(8, 30)`.
 
@@ -66,7 +66,7 @@ print(brightness)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`6`, then `5`.
+It shows `6`, then `5`.
 
 There are two names called `brightness`, in two spaces. The parameter
 `brightness` lives in the call's space. It starts by pointing at 5, and
@@ -87,11 +87,11 @@ print(lose_life(3))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`None`.
+It shows `None`.
 
-`lose_life` has no `return` line, so it gives back `None`, Python's
-value for "nothing here". The 2 it worked out was in a local name, and
-it was thrown away with the call's space. Adding `return lives` at the
+`lose_life` has no `return` line, so it returns `None`, Python's
+value for "nothing here". The 2 it calculated was in a local name, and
+it was deleted with the call's space. Adding `return lives` at the
 end makes it print `2`.
 
 </details>
@@ -179,11 +179,11 @@ battery after five hours, using 2% an hour.
 The line `battery = battery - percent_used` gives `battery` a value
 inside the function, so Python makes `battery` a local name for the
 whole function. The right side then asks for the local `battery` before
-it has a value. Schlomo's idea, to read the page's level, was
-reasonable: a function can read a page's name. It cannot also give that
-name a new value with `=`.
+it has a value. Schlomo wanted to read the page's level, and a
+function can read a page's name. But it cannot also give that name a new
+value with `=`.
 
-Take the level in as a parameter, and give the new level back:
+Take the level in as a parameter, and return the new level:
 
 ```python
 def use_battery(battery, percent_used):
@@ -245,11 +245,11 @@ print(pixels_needed(7))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`28`, then `35`.
+It shows `28`, then `35`.
 
 `width` is a global name, and the function reads it every time it runs,
 not once when it was written. By the second call, the page's `width`
-points at 5. That makes `width` a hidden input: the same call,
+points at 5. That makes `width` a hidden input. The same call,
 `pixels_needed(7)`, gave two answers. Giving the function a `width`
 parameter would put everything it needs on its `def` line.
 
@@ -258,7 +258,7 @@ parameter would put everything it needs on its `def` line.
 **8. Make.** Sound travels faster in warm air. A common rule says its
 speed, in metres a second, is about $331 + 0.6T$, where $T$ is the air
 temperature in °C. So at 20 °C it is about 343. Write
-`thunder_km(seconds, celsius=20)`, which gives back how far away a
+`thunder_km(seconds, celsius=20)`, which returns how far away a
 storm is, in km, from the seconds between the flash and the thunder,
 rounded to two decimal places. It should need nothing from the page.
 Test it with at least two `assert` lines.
@@ -308,7 +308,7 @@ print(today)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`['left', 'forward', 'forward', 'forward']`.
+It shows `['left', 'forward', 'forward', 'forward']`.
 
 `route` and `today` are two names for one list. `append` changes the
 list itself, so the page sees each change. Two calls add two steps.
@@ -317,7 +317,7 @@ list itself, so the page sees each change. Two calls add two steps.
 
 **10. Another way.** `add_reading` on the tutorial page changes the
 list it is handed. Write a second version, `with_reading(readings,
-value)`, that leaves the list it was handed as it was, and gives back a
+value)`, that leaves the list it was handed as it was, and returns a
 new list with the value at the end. Show that the old log did not
 change.
 
@@ -325,7 +325,7 @@ change.
 
 1. `+` joins two lists into a new list, the way it joins two strings.
 2. `[value]` is a list with one value in it.
-3. Give the new list back with `return`.
+3. Use `return` for the new list.
 
 **Think about:** which of the two moves from the tutorial does your
 version use, `=` or `append`?
@@ -383,7 +383,7 @@ print(my_backpack)
 The error is
 `AttributeError: 'NoneType' object has no attribute 'append'`.
 
-`pick_up` is a procedure: it gives back `None`. So the first
+`pick_up` is a procedure, so it returns `None`. So the first
 `my_backpack = pick_up(...)` line makes `my_backpack` point at `None`,
 and the key is lost with the list. On the next line, `pick_up` is handed
 `None`, and `None` has no `append`.
@@ -425,7 +425,7 @@ week = double_it(rain_mm) + rain_mm
 | `rain_mm = 3` | `rain_mm` → 3 | (no call yet) |
 | the call `double_it(rain_mm)` starts | `rain_mm` → 3 | `rain_mm` → 3 |
 | `rain_mm = rain_mm * 2` | `rain_mm` → 3 | `rain_mm` → 6 |
-| `return` hands 6 out | `rain_mm` → 3 | (thrown away) |
+| `return` hands 6 out | `rain_mm` → 3 | (deleted) |
 | `week = 6 + rain_mm` | `rain_mm` → 3, `week` → 9 | |
 
 `week` is 9. The `+ rain_mm` at the end reads the page's `rain_mm`,
@@ -447,9 +447,9 @@ id: what-function-practice-scratch-3
 **13. Make.** In a drawing app, a colour's red, green and blue parts
 each go from 0 to 255, as on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
-Write `brightener(factor)`, which gives back a function. That function
+Write `brightener(factor)`, which returns a function. That function
 takes one part of a colour, multiplies it by `factor`, rounds it, and
-gives back the answer, but never more than 255. Then use it with
+returns the answer, but never more than 255. Then use it with
 `to_hex` to brighten the red part 200 by 20%, and the red part 240 by
 20%.
 
@@ -457,8 +457,8 @@ gives back the answer, but never more than 255. Then use it with
 
 1. Follow the shape of `converter` on the tutorial page: a `def` inside
    a `def`, and `return` the inner function without brackets.
-2. Inside the inner function, work out the new value, then use `if` to
-   bring anything over 255 down to 255.
+2. Inside the inner function, calculate the new value, then use `if` to
+   change anything over 255 to 255.
 3. `to_hex(240)` gives the two hex digits for 240.
 
 **Think about:** which space does the inner function find `factor` in?
@@ -491,15 +491,15 @@ The first line shows `240 F0`. The second shows `255 FF`, because 288
 is more than a colour part can hold.
 
 `brighten` finds `factor` in the space of the call to `brightener` it
-was made in. That space stays alive as long as `twenty_percent` needs
-it: `twenty_percent` is a closure.
+was made in. That space stays as long as `twenty_percent` needs
+it, because `twenty_percent` is a closure.
 
 </details>
 
 **14. Another way.** Here are two ways to time a fall on the Moon. The
 first is `fall_time` from the tutorial, with a default for gravity. The
 second is a closure, in the shape of `converter`. Write the closure,
-`fall_timer(gravity)`, which gives back a function of the height alone.
+`fall_timer(gravity)`, which returns a function of the height alone.
 Then check with `close_enough` that both ways agree on the Moon, where
 gravity is 1.62, for every whole-metre height from 0 to 200.
 
@@ -552,17 +552,17 @@ that page never run on this one, so the page's space here has no
 `average_speed`. The function would look in its own space, then in this
 page's space, then in Python's, and find it in none of them.
 
-A function that needs nothing but its parameters can go anywhere. That
+A function that needs nothing but its parameters works on any page. That
 is why every toolkit function takes everything it needs as a parameter.
 
 </details>
 
 **16. Make.** Your toolkit's `simulate(trial, times)`, from
 [How likely is it?](tutorial:how-likely-is-it), runs `trial()` again
-and again and gives back the fraction of runs where it gave `True`. A
+and again and returns the fraction of runs where it gave `True`. A
 trial has no parameters. So how can one tool simulate a day with a 30%
 chance of rain, and another with a 70% chance? Write
-`chance_of(probability)`, which gives back a trial that is True with
+`chance_of(probability)`, which returns a trial that is True with
 that probability. Then simulate 10,000 days at 30% and at 70%.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -571,7 +571,7 @@ that probability. Then simulate 10,000 days at 30% and at 70%.
    `random.random() < 0.3` is True about 30% of the time.
 2. Make the trial inside `chance_of`, with no parameters. It can still
    see `probability`.
-3. Give the trial back without brackets, and hand it to `simulate`.
+3. Return the trial without brackets, and pass it to `simulate`.
 
 **Think about:** why can't `simulate` just pass the probability to the
 trial itself?
@@ -602,7 +602,7 @@ The two lines show numbers close to 0.3 and 0.7, and different on every
 run, since the days are random.
 
 `simulate` was written to call `trial()` with nothing in the brackets,
-so it has no way to pass a probability in. The closure solves that: the
+so it has no way to pass a probability in. The closure solves that. The
 probability goes in once, when `chance_of` is called, and each trial
 finds it in the space it was made in.
 

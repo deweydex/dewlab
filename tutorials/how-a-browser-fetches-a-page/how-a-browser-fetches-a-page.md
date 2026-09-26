@@ -8,13 +8,13 @@ context_for: [publish-it, the-two-loops, the-inspector]
 # How a browser fetches a page
 
 What happens between typing a web address and seeing a page? Three
-pages touch on the answer: [Publishing your site with GitHub
+pages give part of the answer: [Publishing your site with GitHub
 Pages](tutorial:publish-it), [Saving and publishing a
 change](tutorial:the-two-loops) and [Looking inside a page with the
 inspector](tutorial:the-inspector). This page follows one visit from
 start to end. It is background reading. You do not need it to finish
 those pages, but it can help you see why a page is sometimes missing,
-or sometimes out of date.
+or sometimes an old version.
 
 On this page we:
 
@@ -36,7 +36,7 @@ https://janedoe.github.io/web/about.html
 It has three parts.
 
 - `https://` says how the browser and the other computer talk to each
-  other. The `s` stands for *secure*: nobody in between can read or
+  other. The `s` stands for *secure*. Nobody in between can read or
   change what they send.
 - `janedoe.github.io` is the *domain name*. A domain name is the name
   of a website, which leads the browser to the computer that holds it.
@@ -46,7 +46,7 @@ It has three parts.
 A domain name reads from right to left, from the biggest part to the
 smallest. Every domain name ends with one of a fixed set of endings,
 such as `com`, `ie` or `io`. `github.io` belongs to GitHub. And `janedoe.github.io`
-is one of many names that GitHub gives out: one for each account that
+is one of many names that GitHub gives, one for each account that
 publishes a site.
 
 ## Finding the right computer
@@ -77,11 +77,11 @@ Here is the whole visit, with time running down the picture:
 ![A diagram with three columns: your browser, DNS (the address book), and GitHub's server (where your files are). Time runs down the page. First, the browser asks DNS: where is janedoe.github.io? DNS answers: at 185.199.108.153. Next, the browser sends a request to GitHub's server: GET /web/about.html. The server sends a response: 200 OK, here is the HTML. The HTML names a stylesheet, so the browser sends a second request: GET /web/styles.css. The server answers: 200 OK, here is the CSS. At the bottom, the browser draws the page.](request-and-response.svg)
 
 `GET` is the word a browser uses to ask for a file. The rules for
-these requests and responses are called *HTTP*, which is where the
-`http` in `https://` comes from.
+these requests and responses are called *HTTP*. The `http` in
+`https://` comes from this name.
 
 The status is a number, the *status code*, with a few words after it.
-Two of them come up all the time:
+Two of them are very common:
 
 | Status code | Meaning | When we see it |
 |---|---|---|
@@ -94,8 +94,8 @@ own files to fix for them.
 
 A GitHub Pages site sends your files as they are, the same files you
 see in your repository. When you commit, GitHub copies the new version
-of your files onto the computers that serve your site. That is the
-minute or two of waiting in [the second
+of your files onto the computers that serve your site. This is why
+you wait a minute or two in [the second
 loop](tutorial:the-two-loops#waiting-for-the-site-to-rebuild).
 
 ## One page, many requests
@@ -107,7 +107,7 @@ request for each one.
 
 Each of those requests can fail on its own. If the stylesheet's name is
 misspelt, the page still arrives, but the request for the stylesheet
-gets a `404`. The page shows up with no styles, and the inspector's
+gets a `404`. The page appears with no styles, and the inspector's
 **Console** tab shows an error that names the missing file. So an error
 in the Console is often a request that got a `404`.
 
@@ -146,7 +146,7 @@ You could try it on your own published site:
    What status does the first row show now?
 
 Some rows in step 4 may show `304` instead of `200`. That code means
-"the copy you already have is still up to date", so the browser uses the
+"the copy you already have has not changed", so the browser uses the
 copy in its cache.
 
 In Chrome and Edge, the Network tab has a **Disable cache** box. While
@@ -174,8 +174,8 @@ on the screen, and say where it can go wrong.
 ## Where to read more
 
 CrashCourse (2017). *The Internet: Crash Course Computer Science #29.*
-<https://www.youtube.com/watch?v=AEaKrq3SpW8>. What happens between typing
-a web address and seeing the page: finding the right computer, and sending
+<https://www.youtube.com/watch?v=AEaKrq3SpW8>. It shows what happens between
+typing a web address and seeing the page: finding the right computer, and sending
 the request across many networks in small packets. Twelve minutes.
 
 Ben Eater (2021). *Why was Facebook down for five hours?*

@@ -7,7 +7,7 @@ version: 2026.09.26.1
 
 # Running Python in a cell — Practice
 
-Short problems about two things that confuse people in their first hour:
+These short problems are about two things that confuse people in their first hour:
 what a cell shows you, and the order cells run in. Try each one before you
 open anything under it.
 
@@ -25,7 +25,7 @@ line and run it again. What changes?
 <details class="dl-answer"><summary>answer</summary>
 
 `printed` comes from the `print()`. The text in quotes comes from the last
-line, because that line is an expression: a cell shows the value of its
+line, because that line is an expression. A cell shows the value of its
 last line, if the line has a value. Delete the last line, and only the
 printed text is left. Delete the `print()` line, and only the value is
 left.
@@ -52,7 +52,7 @@ id: four-cells-1
 
 Look closely at (c). A line with `=` is an instruction, so it has no value
 to show. A cell that ends with an instruction looks as if it did nothing.
-It did the work; it has nothing to show you about it.
+It did the work, but it has nothing to show you.
 
 </details>
 
@@ -79,8 +79,8 @@ What will the last line under the cell be?
 <details class="dl-answer"><summary>why</summary>
 
 `one`, then `two`, then `7`. Printed lines appear in the order they
-happen, and the value of the last line comes at the end. Only the *last*
-line's value is shown: `1 + 1` on the second line would show nothing.
+happen, and the value of the last line comes at the end. Python shows only
+the value of the *last* line. `1 + 1` on the second line would show nothing.
 
 </details>
 
@@ -92,9 +92,9 @@ different? Is either of them wrong?
 <details class="dl-answer"><summary>answer</summary>
 
 Each run throws different random darts, so each estimate is a little
-different. Neither is wrong: both are estimates, and with more darts, they
-land closer together, and closer to 3.14159…. How close, and how fast, is
-what [Monte Carlo simulation](tutorial:counting-darts) works out.
+different. Neither is wrong. Both are estimates, and with more darts, they
+land closer together, and closer to 3.14159…. [Monte Carlo simulation](tutorial:counting-darts)
+finds how close, and how fast.
 
 </details>
 
@@ -129,8 +129,8 @@ Does the second cell work? What if it runs before the first?
 
 It shows 15, if the first cell has been run. The cells on a page share one
 workspace, so a name made in one can be used in every cell after it. If
-the second runs first, it stops with a `NameError`. What matters is the
-order you *ran* the cells in, not the order they appear on the page.
+the second runs first, it stops with a `NameError`. The order you *ran*
+the cells in matters, not the order they appear on the page.
 
 </details>
 
@@ -141,7 +141,7 @@ How can you tell whether a block of code on a page can be run?
 <details class="dl-answer"><summary>answer</summary>
 
 It has a Run button. A block without one is an illustration, for reading.
-Apart from that, the two look alike, on purpose: the code in an
+Apart from that, the two look alike, on purpose. The code in an
 illustration is real, and you are welcome to copy it into a cell to try
 it.
 

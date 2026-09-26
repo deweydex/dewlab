@@ -55,8 +55,8 @@ together make one *element*. So `<p>Hello</p>` is one paragraph element:
 an opening tag, the word "Hello", and a closing tag.
 
 Did you notice that the preview never shows the tags? The browser reads
-the file from top to bottom, and uses the tags to work out what each
-piece of text is: a heading, a paragraph, some bold text. Then it builds
+the file from top to bottom, and uses the tags to decide what each piece
+of text is: a heading, a paragraph, some bold text. Then it builds
 the page we see from that.
 
 Some tags carry extra information inside them, called an *attribute*,

@@ -9,8 +9,8 @@ version: 2026.09.22.1
 
 The answers are hidden in folds under each problem. Several problems ask
 you to predict what the code will do before you run it. Try to answer
-before you check. Being wrong, and finding out why, teaches you more than
-being right by accident.
+before you check. A wrong guess teaches you more than a lucky right one,
+once you see why it was wrong.
 
 ```python exec
 id: setup-1
@@ -30,7 +30,7 @@ def simulate_queue(steps, arrival_prob, service_capacity):
     return history
 ```
 
-## Predicting Before Simulating
+## Predicting before simulating
 
 **1.** A queue has `arrival_prob=0.4` and `service_capacity=1`.
 
@@ -59,22 +59,22 @@ word?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Only the first.
+Only the first one is stable.
 
 - `45 < 50`. Average arrivals stay below capacity, so the queue of waiting
   requests stays under control, even through a bad few seconds.
 - `55 > 50`. Average arrivals are above capacity, so the queue keeps
   growing for as long as the busy period lasts.
 
-The server has only so much room to hold waiting requests. That room
-fills up in the end. Then requests start to be dropped, or to take so
+The server has limited room to hold waiting requests. In the end, that
+room is full. Then requests start to be dropped, or to take so
 long that they fail. This is why a service that was fine yesterday can
 fail during a busy period today. The average arrival rate crossed the
 one number that decides everything.
 
 </details>
 
-## Changing the Shape of Arrivals
+## Changing the shape of arrivals
 
 **3.** Rewrite `arrivals_this_step` so that it checks *three* separate
 chances each step, instead of two. What is the new formula for average
@@ -110,17 +110,17 @@ hint: Average arrivals = 3 * 0.3. Compare that with 1. How close are the two num
 
 <details class="dl-answer"><summary>answer</summary>
 
-It is stable, but only just. Average arrivals are `3 * 0.3 = 0.9`, a
+It is stable, but only barely. Average arrivals are `3 * 0.3 = 0.9`, a
 little below the service capacity of `1`. The rule still calls it stable,
-and over a long run it is: the queue never climbs away for good.
+and over a long run it is stable. The queue does not grow forever.
 
 But a queue this close to the boundary swings much wider than the queue
 in question 1, which was safely stable. It often gets to ten or more, and
-sometimes into the teens, before it drains back down.
+sometimes to 13 or more, before it gets shorter again.
 
 </details>
 
-## Reading the Rule
+## Reading the rule
 
 **5.** Two runs with exactly the same settings give different queue
 lengths at every step. So how can one comparison, `arrival_prob *
@@ -134,9 +134,10 @@ set of arrivals. Two runs with the same settings do differ from moment to
 moment, in the same way as two dart-throwing runs in
 [Monte Carlo simulation: estimating π with random darts](tutorial:counting-darts).
 
-What does not differ is which side of the line the settings are on:
-average arrivals below capacity, or not. That alone decides whether the
-server catches up over a long enough run, or falls behind for good. The
+But the settings are always on the same side of the line. Average
+arrivals are either below capacity, or not. That alone decides whether
+the server clears the queue over a long enough run, or the queue grows
+forever. The
 rule predicts the *shape* that every run will take in the end. It does not
 predict the exact path any one run takes to get there.
 

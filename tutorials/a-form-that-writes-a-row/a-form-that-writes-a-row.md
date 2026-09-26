@@ -11,17 +11,16 @@ covers:
 
 Every table in this series has grown by running SQL directly: an `INSERT`
 typed into a cell, or a DataFrame written in with `to_sql`. Somebody using
-the finished thing rarely types SQL at all. They fill in a form. Pressing
-submit then turns their answers into a row.
+the finished thing rarely types SQL at all. They fill in a form. When
+they press submit, their answers become a row.
 
 A page on forms, part of the Web Authoring course once it is here, covers
 the HTML side of this: a label, an input, a button, and what makes a form
 usable rather than just present. This page stays on the database side,
 with the query a submission like that would run. It does not connect the
-two yet. Reading a form's own fields and writing what they held into a
-table is a job for a later page, one that brings a website and a database
-together. Both pieces it would join already exist; only the page that
-joins them does not yet.
+two yet. A later page reads a form's fields and writes what they hold
+into a table. That page brings a website and a database together. Both
+pieces already exist. The page that joins them does not exist yet.
 
 ## The row a submission would add
 
@@ -42,8 +41,8 @@ VALUES ('Ireland', 2024, 0.11);
 ```
 
 `VALUES ('Ireland', 2024, 0.11)` is exactly what three form fields become,
-in order, once their values are read. A form's job is collecting them from
-a visitor; a database's job starts where a form's ends. The form never asks
+in order, once their values are read. A form collects them from a
+visitor. Then the database takes over. The form never asks
 for `income_share_id`, because the database fills in the key itself.
 
 ## What still has to happen for this to be real
@@ -54,8 +53,8 @@ site, and none of them connected to each other yet:
 1. **JavaScript reads a form's values first.** A page on forms, part of
    the Web Authoring course once it is here, builds the fields; JavaScript
    reads what a visitor typed into them.
-2. **JavaScript turns those values into SQL next.** The `INSERT` above is
-   what that looks like, built with the values a form collected instead of
+2. **JavaScript turns those values into SQL next.** The `INSERT` above
+   shows the result, built with the values a form collected instead of
    typed directly.
 3. **That query then runs against a real table.** This series has already
    done that, on every page with a `sql exec` block.
@@ -77,6 +76,6 @@ for what a visitor might type.
 - **A form's `INSERT` is the query a submission runs.** The form's own
   field values stand in for what was typed by hand elsewhere in this
   series.
-- **Three jobs stay separate for now.** Reading a form, building a query
-  from what it read, and running that query are each already familiar
-  alone, not yet joined into one page.
+- **Three jobs stay separate for now.** You know how to read a form,
+  build a query from what it read, and run that query. No page joins the
+  three yet.

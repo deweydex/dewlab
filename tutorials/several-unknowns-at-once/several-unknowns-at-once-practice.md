@@ -38,7 +38,7 @@ print(solve_simultaneous(1, 1, 10, 1, -1, 4))
 
 `(7.0, 3.0)`. Check: $7 + 3 = 10$, and $7 - 3 = 4$.
 
-Adding the two equations eliminates $y$ at once: $2x = 14$, so $x = 7$.
+Add the two equations, and $y$ cancels at once. So $2x = 14$, and $x = 7$.
 The determinant is $1 \times (-1) - 1 \times 1 = -2$, which is not 0,
 so there is one answer.
 
@@ -134,13 +134,13 @@ print(close_enough(oats + yoghurt, 250), close_enough(0.13 * oats + 0.10 * yoghu
 
 150 g of oats and 100 g of yoghurt, and both checks print `True`. The
 numbers like 0.13 are floats, so the answer may come back a tiny way
-from 150, and `close_enough` is the test to use.
+from 150. So check with `close_enough`.
 
 </details>
 
 **6. Make.** A game's download is made of pictures and sounds. Two
 pictures and a sound make 8.30 MB. One picture and three sounds make
-12.40 MB. (The sizes are made up.) Find the size of each by
+12.40 MB. (The sizes are invented.) Find the size of each by
 elimination, by hand, in the four steps from the tutorial. Then check
 with `solve_simultaneous`.
 
@@ -163,7 +163,7 @@ print(round(sizes[0], 2), round(sizes[1], 2))
 ```
 
 A picture is 2.5 MB and a sound 3.3 MB. The first line may show a
-float a tiny way off, such as `2.5000000000000004`; rounding to two
+float with a tiny error, such as `2.5000000000000004`; rounding to two
 places shows the sizes.
 
 </details>
@@ -204,9 +204,9 @@ come first?
 <details class="dl-answer"><summary>answer</summary>
 
 The error is `ZeroDivisionError: division by zero`, on the line that
-works out `x`. For the two backup readings the determinant is 0, and
-the function divides by it before it checks. Schlomo's check is the
-one it needs, and it comes too late. Move it up, straight after the
+calculates `x`. For the two backup readings the determinant is 0, and
+the function divides by it before it checks. Schlomo wrote the check
+the function needs, but it comes too late. Move it up, straight after the
 determinant:
 
 ```python
@@ -225,7 +225,7 @@ print("solve_pair keeps its promise.")
 ```
 
 Now both tests pass. The same lines, in a different order, keep the
-promise: that is sequence.
+promise. The order of the steps matters here.
 
 </details>
 
@@ -268,7 +268,7 @@ finish with `solve_linear`.
 <details class="dl-answer"><summary>answer</summary>
 
 $12(230 - c) + 5c = 2060$, so $2760 - 12c + 5c = 2060$, which is
-$2760 - 7c = 2060$. Taking 2060 from both sides gives $-7c + 700 = 0$.
+$2760 - 7c = 2060$. Take 2060 from both sides to get $-7c + 700 = 0$.
 
 ```python
 texts = solve_linear(-7, 700)
@@ -299,8 +299,8 @@ other way too: dividing both sides by 5 brings the first equation back.
 So the two equations are true for exactly the same pairs. They are the
 same fact, written two ways, and they draw the same line.
 
-Multiplying both sides by 0 would be different: $0 = 0$ is true for
-every pair, so that move throws the fact away.
+If we multiply both sides by 0, we get $0 = 0$. That is true for every
+pair, so the fact is lost.
 
 </details>
 
@@ -367,7 +367,7 @@ something". Which method, substitution or elimination, suits it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Putting $c = t - 1$ into the first fact: $t + t - 1 + p = 10$, so
+Put $c = t - 1$ into the first fact: $t + t - 1 + p = 10$, so
 $2t + p = 11$. Into the second: $5t + 2t - 2 + 3p = 35$, so
 $7t + 3p = 37$.
 
@@ -378,7 +378,8 @@ print(tries, conversions, penalties)
 print(tries + conversions + penalties, 5 * tries + 2 * conversions + 3 * penalties)
 ```
 
-4 tries, 3 conversions and 3 penalties: 10 scores and 35 points.
+The team scored 4 tries, 3 conversions and 3 penalties. That makes 10
+scores and 35 points.
 
 </details>
 
@@ -412,12 +413,13 @@ print(solve_simultaneous(1, 1, 2, 1, 1.0001, 2.0002))
 <details class="dl-answer"><summary>answer</summary>
 
 The first gives very nearly $(1, 1)$, and the second gives $(0, 2)$.
-The first answer's last digits are a little off, because 1.0001 is a
+The first answer's last digits are not exact, because 1.0001 is a
 float. A change of 0.0001 in one fact moved the answer by a whole 1 in
 each unknown.
 
 The determinant is $1 \times 1.0001 - 1 \times 1 = 0.0001$, very close
-to 0. Dividing by a very small number makes every small change huge.
+to 0. When we divide by a very small number, every small change
+becomes huge.
 Two lines that are nearly parallel cross at a point that is very
 sensitive: tilt one line a little and the crossing slides a long way.
 So when the determinant is close to 0, an answer built from measured
@@ -449,7 +451,7 @@ the first says $234^2 a + 234b + c = 0$.
    $344^2 a + 344b + c = 0$.
 2. Second take first: $(270^2 - 234^2)a + (270 - 234)b = -8 - 0$.
 3. Third take first: $(344^2 - 234^2)a + (344 - 234)b = 0 - 0$.
-4. Python can work out $270^2 - 234^2$ for you: write it as
+4. Python can calculate $270^2 - 234^2$ for you: write it as
    `270 ** 2 - 234 ** 2` inside the call.
 
 **Think about:** why must the three pixels be at three different
@@ -479,15 +481,15 @@ print(vertex(a, b, c))
 $a$ is about 0.003, $b$ about $-1.736$ and $c$ about 241.7, and the
 parabola passes through all three pixels. `np.linalg.solve` gives the
 same three numbers. Its bottom is at $x = 289$, about 9.08 units below
-the baseline: within a tenth of a unit of the font file's 9, from
-three pixels and no font file.
+the baseline. That is within a tenth of a unit of the font file's 9,
+and we used only three pixels.
 
-Why not exactly 9? Two reasons. The pixels are rounded to whole units.
+Why not exactly 9? There are two reasons. The pixels are rounded to whole units.
 And the letter's curve is a quadratic in $t$, how far along the curve
 we are, not quite in $x$, so a parabola in $x$ is a close model of the
 bowl, not the bowl itself. Three unknowns needed three facts, and three
-pixels were enough to get this close. As problem 14 warned, facts that
-come from measuring are worth a second look: move one pixel by a unit
-and see how far the bottom moves.
+pixels were enough to get this close. As problem 14 warned, measured
+facts need care. Move one pixel by a unit and see how far the bottom
+moves.
 
 </details>

@@ -15,8 +15,8 @@ text with `text-align`. There are three kinds of problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and its
+reason, than from reading the answer.
 
 In several problems, the first line of the CSS sets the root font size.
 Changing it lets us test a page the way a reader with bigger text would

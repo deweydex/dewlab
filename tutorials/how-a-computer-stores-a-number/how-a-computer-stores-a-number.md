@@ -11,10 +11,10 @@ version: 2026.09.24.1
 
 # How a computer stores a number
 
-Ask Python for `0.1 + 0.2`, and it answers `0.30000000000000004`. Is
-Python bad at sums? No. It is doing exactly what it was built to do, in
-a space with one rule that usually goes unsaid. This page says that rule
-out loud, and uses it to explain every float surprise in this course.
+Ask Python for `0.1 + 0.2`, and it answers `0.30000000000000004`.
+Python is doing exactly what it was built to do. Its floats follow one
+rule that we rarely say. This page says that rule, and uses it to
+explain every float surprise in this course.
 
 On this page we:
 
@@ -22,10 +22,10 @@ On this page we:
 - look at the number Python really keeps when we type `0.1`
 - read answers that end in `e-16`, and see where they come from
 - find out why the square root of 2 cannot be kept exactly
-- see where Python's floats run out, and why its whole numbers never do
+- see where Python's floats stop, and why its whole numbers never do
 - see why `close_enough` is in your toolkit
 
-> **The space we're in.** Python's floats. Each one is kept in 64 bits,
+> **The space we're in.** We are working with Python's floats. Each one is kept in 64 bits,
 > and that number never changes: not for 0.5, not for a tenth, not for
 > the distance to the Sun. A fixed number of bits means a fixed number
 > of digits, and everything on this page follows from that one fact.
@@ -49,7 +49,7 @@ print(third + third + third)
 ```
 
 We get `0.9999`, not `1`. Each third was a tiny bit too small, and three
-small shortfalls added up to one we can see. Nobody made a mistake. The
+small shortfalls made a gap we can see. Nobody made a mistake. The
 space only had room for four digits.
 
 This gap between the true answer and the kept answer has a name. A
@@ -65,10 +65,10 @@ quarter, an eighth, and so on. A tenth cannot be built from those
 exactly. In binary it repeats for ever, the way a third does in decimal.
 
 A float keeps 53 binary digits of a number. That is about 16 decimal
-digits. So Python cuts 0.1 off after 53 binary digits, and keeps the
+digits. So Python stops 0.1 after 53 binary digits, and keeps the
 nearest fraction it can. Every float is really a fraction whose bottom
 number is a power of 2. We can ask Python for that fraction with
-`.as_integer_ratio()`, which gives the top and the bottom as whole
+`.as_integer_ratio()`, which returns the top and the bottom as whole
 numbers.
 
 What do you expect the bottom number to be? Run it, then compare it with
@@ -87,7 +87,7 @@ $$\frac{3602879701896397}{36028797018963968}$$
 
 which is very close to a tenth, and a tiny bit bigger. A tenth would
 need the top number to be 3602879701896396.8, and a fraction of this
-kind must have a whole number on top. Compare `0.75`: it is
+kind must have a whole number on top. Compare `0.75`. It is
 $\frac{3}{4}$, and 4 is a power of 2, so it is kept exactly.
 
 ## Why 0.1 + 0.2 lands on a neighbour
@@ -106,12 +106,12 @@ print(format(0.3, ".30f"))
 
 The kept 0.1 and the kept 0.2 are both a little too big. The kept 0.3 is
 a little too small. When we add 0.1 and 0.2, their two small extras add
-up, and the answer lands on the float just above 0.3, not on the one
+together, and the answer lands on the float just above 0.3, not on the one
 Python uses for 0.3. The two floats are neighbours. `==` asks whether
 two floats are the same float, so it says `False`.
 
-Python also prints numbers in a helpful way: it shows the shortest
-decimal that leads back to the same float. For the kept 0.3, that is
+Python also prints numbers in a helpful way. It shows the shortest
+decimal that gives the same float. For the kept 0.3, that is
 `0.3`. For its neighbour, the shortest is `0.30000000000000004`.
 
 ## Reading e-16
@@ -133,11 +133,11 @@ print(1 + 1e-15 == 1)
 print((0.1 + 0.2) - 0.3)
 ```
 
-Adding $10^{-16}$ to 1 changes nothing: the answer rounds straight back
+Adding $10^{-16}$ to 1 changes nothing. The answer rounds straight back
 to 1. Adding $10^{-15}$ is big enough to land on a different float. And
 the leftover in `(0.1 + 0.2) - 0.3` is about $5.6 \times 10^{-17}$.
 
-So when an answer that should be 0 comes out as something `e-16` or
+So when an answer that should be 0 ends in `e-16` or
 `e-17`, read it as "0, plus a rounding error". The size of the error
 tells you it came from the 16th digit, far past anything we measured.
 
@@ -167,17 +167,17 @@ The square is `0.5000000000000001`, and the difference from 0.5 is about
 $1.1 \times 10^{-16}$. Python kept the nearest float to $\sqrt{2}$, which
 was very slightly off. Squaring it carried that tiny error into the
 answer, which landed on the float just above 0.5. You will meet this
-number again in trigonometry, as the sine of 45°, so this surprise will
-come back.
+number again in trigonometry, as the sine of 45°, so you will see this
+surprise again.
 
 ## How big can a number be?
 
-Python's two number spaces run out in different ways.
+Python's two number spaces reach their limits in different ways.
 
 An int has no fixed size. Python gives a whole number as many bits as
 it needs, so `10 ** 400`, a 1 with 400 zeros, is kept exactly.
 
-A float always has 64 bits. They are shared out a little like
+A float always has 64 bits. They are divided a little like
 scientific notation: 1 bit for the sign, 11 bits for the power of 2,
 and the rest for the digits. The power can only go so high. So there is
 a largest float, a little under $1.8 \times 10^{308}$. What happens when
@@ -204,7 +204,7 @@ the same size in memory.
 
 ## When rounding errors add up
 
-One rounding error of $10^{-16}$ does no harm. Many of them, added up
+One rounding error of $10^{-16}$ does no harm. Many of them, added together
 over time, can.
 
 In 1991, during the Gulf War, a Patriot missile defence system at
@@ -213,8 +213,8 @@ Scud hit an army barracks, and 28 American soldiers were killed. A
 government report found the cause. The system counted time in tenths
 of a second, and kept 0.1 in binary with a fixed number of digits, so
 every tick was very slightly short. The battery had been running for
-more than 100 hours. By then, the small error in every tick had added
-up to about a third of a second, and in a third of a second a Scud
+more than 100 hours. By then, the small error in every tick had grown
+to about a third of a second, and in a third of a second a Scud
 travels far enough to be looked for in the wrong place.
 
 The software had already been corrected. The new version arrived at
@@ -222,8 +222,8 @@ Dhahran the day after the attack.
 
 ## So what do we do? Close enough
 
-None of this makes floats wrong. It means that with floats, "equal" is
-the wrong question. The right question is "how far apart are these?".
+Floats still work well. But with floats, we do not ask "are these
+equal?". We ask "how far apart are these?".
 
 On [Does it work?](tutorial:does-it-work#close-enough) you wrote
 `close_enough`, which says two numbers are equal when the distance
@@ -251,26 +251,25 @@ There are two other ways, and each fits a different space:
   Ints are exact, so adding a million payments gives an exact total.
 - **Use a fraction.** Python's `fractions` module keeps $\frac{1}{10}$
   as a true fraction, with no rounding at all. It is slower, and it
-  cannot hold $\sqrt{2}$, but for exact sums of fractions it is right.
+  cannot hold $\sqrt{2}$, but it gives exact sums of fractions.
 
-Which to choose is the fourth question again: what does this space let
-us do? Floats let us work fast with very large and very small numbers,
+To choose, we ask what each space lets us do. Floats let us work fast with very large and very small numbers,
 and ask us to accept a tiny error. When that error matters, we choose a
 different space.
 
 ## Where to read more
 
 Python Software Foundation. *Floating-Point Arithmetic: Issues and
-Limitations*. A chapter of the official Python tutorial. It covers the
-same ground as this page, with a little more detail on how Python
+Limitations*. This chapter of the official Python tutorial covers the
+same ideas as this page, with a little more detail on how Python
 prints a float.
 
 Goldberg, D. (1991). What every computer scientist should know about
-floating-point arithmetic. *ACM Computing Surveys*, 23(1). The classic
-long account. It needs more maths than this course, and it is worth
-coming back to later.
+floating-point arithmetic. *ACM Computing Surveys*, 23(1). This is the
+classic long account. It needs more maths than this course, so you may
+want to read it later.
 
 Spanning Tree (2024). *How Floating-Point Numbers Are Represented.*
-<https://www.youtube.com/watch?v=bbkcEiUjehk>. How a float keeps a number
+<https://www.youtube.com/watch?v=bbkcEiUjehk>. It shows how a float keeps a number
 as a sign, some digits and a power of two, and why that leaves gaps
 between the numbers it can hold. About nine minutes.

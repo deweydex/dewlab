@@ -15,9 +15,9 @@ datasets: [planet-orbits]
 # Mixed problems: algebra you can run
 
 Each problem here draws on at least one page of Unit 7, and many draw on
-two or more. None of them asks for more than those pages covered. The
-new part is that nobody tells you which page a problem comes from.
-Choosing the tool is part of the problem.
+two or more. None of them asks for more than those pages covered. This
+time, nobody tells you which page a problem comes from. You choose the
+tool yourself, and that is part of the problem.
 
 Along the way, the problems build this unit's product in two parts: a
 server chooser, which finds where two servers are equally fast and the
@@ -43,7 +43,7 @@ id: mixed-run-scratch-1
 # Try things here
 ```
 
-**1. Predict.** What does each line print? Work each one out by hand
+**1. Predict.** What does each line print? Find each one by hand
 first.
 
 ```python
@@ -65,7 +65,7 @@ $x = -\frac{-4}{2} = 2$, where the rule is $4 - 8 + 1 = -3$.
 </details>
 
 **2. Make.** A phone is at 10% and charging. It gains 0.5% a minute.
-(A steady rate is a model: real phones charge more slowly as they
+(A steady rate is only a model. Real phones charge more slowly as they
 fill.) How many minutes until it shows 40%? Write the equation, tidy it
 into the shape $ax + b = 0$, solve it with `solve_linear`, and put the
 answer back in.
@@ -107,10 +107,10 @@ digits.
 A root is a time when the temperature is exactly 0 °C: 2 am and
 10 am. The vertex is where the curve turns, as on
 [The top of the curve](tutorial:the-top-of-the-curve#a-curve-that-turns).
-Its $t^2$ term is positive, so the vertex is a minimum: the coldest
+Its $t^2$ term is positive, so the vertex is a minimum. The coldest
 moment is 6 am, at −1.6 °C. Schlomi's idea is a natural one, since 0 °C
 is where frost starts, but she has swapped the roots and the vertex.
-The mirror joins them: 6 is halfway between 2 and 10.
+The vertex is halfway between the roots, and 6 is halfway between 2 and 10.
 
 </details>
 
@@ -144,7 +144,7 @@ servers = {
 print(evaluate(servers["Small"], 2))
 ```
 
-It prints `14`: with two thousand people, the small server takes 14 ms.
+It prints `14`. With two thousand people, the small server takes 14 ms.
 Keep the chooser's functions in the scratch cell below as you write
 them, so that later problems can use them.
 
@@ -223,9 +223,9 @@ where neither is fastest.
 **6. Make.** Two servers are equally fast where the difference of their
 rules is 0. Write two functions:
 
-- `subtract_polynomials(first, second)`, which gives back the list for
+- `subtract_polynomials(first, second)`, which returns the list for
   `first` minus `second`, with like terms collected;
-- `same_speed(first, second)`, which gives back the crowd, in
+- `same_speed(first, second)`, which returns the crowd, in
   thousands, where two servers are equally fast, using `solve_linear`,
   or `None` when there is no single answer.
 
@@ -242,7 +242,7 @@ servers' rules.
 3. `solve_linear(a, b)` solves $ax + b = 0$. Which place in the list is
    $a$, and which is $b$?
 
-**Think about:** what should `same_speed` give back for two servers
+**Think about:** what should `same_speed` return for two servers
 with the same time for each thousand people?
 
 **Try this next:** find where Small and Medium meet with
@@ -335,13 +335,13 @@ def same_speed_first_try(first, second):
 ```
 
 Now it prints `4.0`, and the check passes. A coefficient list puts the
-constant first, and $ax + b$ puts it last, so this swap catches almost
-everyone once. Schlomo's check is what caught it.
+constant first, and $ax + b$ puts it last, so almost everyone
+makes this swap once. Schlomo's check caught it.
 
 </details>
 
 **8. Make.** The chooser's main tool. Write
-`fastest_server(servers, thousands)`, which gives back the name of the
+`fastest_server(servers, thousands)`, which returns the name of the
 fastest server for that crowd. Test it at 2, 8 and 20 thousand, and
 print the winning server's time each time.
 
@@ -349,15 +349,15 @@ print the winning server's time each time.
 
 1. Keep two names: the fastest server so far, and its time. Start both
    at `None`.
-2. Loop over the names in `servers`, and work out each server's time
+2. Loop over the names in `servers`, and find each server's time
    with `evaluate`.
 3. If there is no fastest server yet, or this one is quicker, it becomes
    the fastest.
 
 **Think about:** at exactly 4 thousand, Small and Medium tie. Which one
-will your function give back, and why?
+will your function return, and why?
 
-**Try this next:** give back the name and the time together, as a
+**Try this next:** return the name and the time together, as a
 pair.
 
 </details>
@@ -393,15 +393,15 @@ for thousands in [2, 8, 20]:
 20 Cluster 30
 ```
 
-At exactly 4 thousand it gives back Small: a server that only ties is
+At exactly 4 thousand it returns Small. A server that only ties is
 not `<`, so it does not replace the one found first. Either would do
 there.
 
 </details>
 
 **9. Make.** You also have an old server, and nobody wrote down its
-numbers. You measure it twice. With 3 thousand people it took 17.5 ms;
-with 7 thousand, 27.5 ms. Find its fixed time and its time for each
+numbers. You measure it twice. With 3 thousand people it took 17.5 ms.
+With 7 thousand, it took 27.5 ms. Find its fixed time and its time for each
 thousand with `solve_simultaneous`, and check both measurements. Then
 add it to `servers` as `"Old"`. Is it ever the fastest?
 
@@ -421,24 +421,24 @@ for thousands in [0, 2, 4, 6, 10, 20]:
 ```
 
 The old server takes 10 ms, plus 2.5 ms for each thousand, and both
-measurements check out: `17.5 27.5`. By elimination: 4 thousand more
+measurements pass the check: `17.5 27.5`. By elimination, 4 thousand more
 people add 10 ms, so each thousand adds 2.5 ms.
 
 The old server is never the fastest. It beats Small above 4 thousand
-and Medium below 4 thousand, and at 4 thousand all three take 20 ms:
-their lines cross at one point, $(4, 20)$.
+and Medium below 4 thousand, and at 4 thousand all three take 20 ms.
+Their lines cross at one point, $(4, 20)$.
 
 </details>
 
 **10. Explain.** The company adds Medium Plus: 20 ms and 1.25 ms for
 each thousand, because it keeps a second copy of every change. What
-does `same_speed(servers["Medium"], [20, 1.25])` give back? What would
+does `same_speed(servers["Medium"], [20, 1.25])` return? What would
 its line look like beside Medium's on a graph, and what does that mean
 for someone choosing between them?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It gives back `None`. The difference is `[-5, 0]`, which is $-5 + 0g$,
+It returns `None`. The difference is `[-5, 0]`, which is $-5 + 0g$,
 and no $g$ makes $-5 = 0$.
 
 The two lines have the same steepness, so they are parallel and never
@@ -484,7 +484,7 @@ for name, distance, year in zip(names, distances, years):
 
 1. Loop over `zip(names, distances, years)` and print `year ** 2` and
    `distance ** 3`.
-2. Write `def kepler(distance):` giving back `distance ** 1.5`, and
+2. Write `def kepler(distance):` returning `distance ** 1.5`, and
    draw it. Then `plt.plot(distances, years, "o")`.
 3. Undoing a cube is a cube root: `4 ** (1 / 3)`, as on
    [Running a formula backwards](tutorial:running-a-formula-backwards).
@@ -542,7 +542,7 @@ is kicked, is
 
 $$\text{height} = 0.025x(26 - x)$$
 
-(A model with made-up numbers: a real ball slows in the air.) Here is a
+(This model has made-up numbers. A real ball slows in the air.) Here is a
 scratch cell for the stretch problems.
 
 ```python exec
@@ -642,7 +642,7 @@ The roots are 0 m, where the ball is kicked, and 26 m, where it lands.
 (Python prints the first as `-0.0`: a float 0 that keeps a minus sign
 from the division.)
 Each is where one bracket of $0.025x(26 - x)$ is 0. The parabola's
-mirror puts its top halfway between them, at 13 m, as on
+two sides are mirror images, so its top is halfway between them, at 13 m, as on
 [The top of the curve](tutorial:the-top-of-the-curve#halfway-between-the-roots).
 
 </details>
@@ -678,18 +678,18 @@ for x in solve_quadratic(-0.025, 0.65, -2.2):
     print(round(x, 6), round(evaluate(height_rule, x), 6))
 ```
 
-5 m has none, and `solve_quadratic` gives back `[]`. The ball's highest
+5 m has none, and `solve_quadratic` returns `[]`. The ball's highest
 point is 4.225 m, so it never reaches 5 m. The discriminant agrees:
 $0.65^2 - 4 \times (-0.025) \times (-5) = -0.0775$.
 
 The complex roots are about $13 + 5.57i$ and $13 - 5.57i$. Their real
-part is 13, the place of the top, and that is no accident. The formula
+part is 13, the place of the top. The formula
 is $-\frac{b}{2a}$, plus or minus a square root over $2a$, and
 $-\frac{b}{2a}$ is the vertex. When the discriminant is negative, only
-the plus-or-minus part turns imaginary.
+the plus-or-minus part becomes imaginary.
 
-A place on a pitch is a real distance, so the question lives in
-$\mathbb{R}$, and the honest answer is "never". The complex roots are
+A place on a pitch is a real distance, so the question is about
+$\mathbb{R}$, and the answer is "never". The complex roots are
 true roots in $\mathbb{C}$, as on
 [When there is no real answer](tutorial:when-there-is-no-real-answer#every-quadratic-has-roots-here),
 but nobody can stand at them.
@@ -714,10 +714,10 @@ print(place_so_far, highest_so_far)
 <details class="dl-answer"><summary>answer</summary>
 
 The error is `TypeError: 'float' object cannot be interpreted as an
-integer`. `range` works in the space of whole numbers: its start, stop
-and step must all be ints. Schlomi's idea, one centimetre at a time, is
-sound; it needs counting in whole centimetres, and turning each count
-into metres inside the loop. The stop is 2601, because `range` stops
+integer`. `range` works in the space of whole numbers. Its start, stop
+and step must all be ints. Schlomi's idea, one centimetre at a time,
+works. The loop needs to count in whole centimetres, and turn each
+count into metres inside the loop. The stop is 2601, because `range` stops
 before its last number:
 
 ```python
@@ -731,9 +731,9 @@ for centimetres in range(0, 2601):
 print(place_so_far, round(highest_so_far, 4))
 ```
 
-It prints `13.0 4.225`, the answer from problem 13. Counting in
-centimetres also avoids adding 0.01 again and again, which would build
-up a small float error at every step.
+It prints `13.0 4.225`, the answer from problem 13. A count in
+whole centimetres also avoids adding 0.01 again and again, which would
+add a small float error at every step.
 
 </details>
 
@@ -749,19 +749,19 @@ algebra and the code agree with each other. It caught the swapped
 argument in problem 7 at once.
 
 It cannot prove that the rule fits the world. The ball's rule is a
-model: it leaves out the air and the spin. A real ball slows in the
+model. It leaves out the air and the spin. A real ball slows in the
 air, so its flight is shorter and lower than the model's. Every check
 on this page would still pass, and the real ball might still hit the
 wall. The step from the world to the rule needs other evidence, such as
 a video of real kicks.
 
-The planets are different: Kepler's rule was checked against
+The planets are different. Kepler's rule was checked against
 measurements of every planet, and then of Ceres. So was the letter's
 bowl on
 [The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line),
-in its own way: its rule came from the font's own points, so the
-bottom that `vertex` found is the real bottom of the letter. A strong
-answer names both steps: the answer fits the rule, and here is why we
-trust the rule.
+in its own way. Its rule came from the font's own points, so the
+bottom that `vertex` found is the real bottom of the letter. An answer
+that names both steps says two things: the answer fits the rule, and
+here is why we trust the rule.
 
 </details>

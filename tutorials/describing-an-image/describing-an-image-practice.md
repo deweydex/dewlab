@@ -15,8 +15,8 @@ out, and when to leave it empty. There are three kinds of problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and its
+reason, than from reading the answer.
 
 The images on this page point at files that do not exist. So every
 preview shows the alt text, just as a screen reader would read it. For

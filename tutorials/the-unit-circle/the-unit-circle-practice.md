@@ -7,7 +7,7 @@ version: 2026.08.23.1
 
 # The unit circle: sine, cosine and tangent — Practice
 
-You can keep the tutorial open beside you while you work through these.
+You can keep the tutorial open beside you while you do these.
 Every answer is on this page, hidden. Click to see it, but try to write
 something down first.
 
@@ -48,8 +48,7 @@ print(to_degrees(math.pi / 4), "degrees")
 $\frac{\pi}{2}$, $\pi$, $\frac{\pi}{4}$, $\frac{\pi}{3}$, $\frac{\pi}{6}$,
 $\frac{3\pi}{2}$, $2\pi$.
 
-The pattern to remember: 180° is $\pi$, and every other angle is a
-fraction of that.
+Remember that 180° is $\pi$. Every other angle is a fraction of that.
 
 </details>
 
@@ -99,7 +98,7 @@ up value is still positive.
 
 ## Arc length, and what a radian is for
 
-Why are radians worth the trouble? Here is the reason. Take a circle of
+Why are radians worth the trouble? Take a circle of
 radius $r$, and walk along its edge through an angle of $\theta$
 radians. The distance you walk is the *arc length*, $s$, and it is the
 radius times the angle:
@@ -135,8 +134,8 @@ $20\pi \approx 62.83$ cm.
 
 The last one is the whole way round, so it should be the circumference.
 The circumference is $2\pi r$, and with $r = 10$ that is exactly what
-$s = r\theta$ gives when $\theta = 2\pi$. So the arc length formula
-contains the circumference formula: it is the full-turn case.
+$s = r\theta$ gives when $\theta = 2\pi$. So the circumference formula
+is the arc length formula for a full turn.
 
 </details>
 
@@ -185,10 +184,9 @@ Be careful with that 0.1%, though. It depends on the 800 km, and the
 800 km is ours. Eratosthenes gave the distance as 5,000 stadia, a
 Greek unit of length, and nobody knows exactly how long his stadion
 was. Depending on which
-length you pick, his answer was somewhere between about 2% and about
-15% out. Even so, he found the size of the whole Earth, in 240 BCE,
-from a stick, a well and one angle. That is a good reason to take a
-simple idea seriously.
+length you pick, his answer differs from the modern figure by between
+about 2% and about 15%. Even so, he found the size of the whole Earth,
+in 240 BCE, from a stick, a well and one angle.
 
 </details>
 
@@ -218,8 +216,8 @@ Moon's. The Sun is about 150 million km away.
 $s = 150{,}000{,}000 \times 0.00925 \approx 1.39$ million km. The Sun's
 real diameter is about 1.392 million km.
 
-From Earth, the Sun and Moon look almost exactly the same size. That is
-what makes a total solar eclipse possible. The Moon covers the Sun's disc
+From Earth, the Sun and Moon look almost exactly the same size. This
+makes a total solar eclipse possible. The Moon covers the Sun's disc
 almost exactly, and so the corona, the Sun's faint outer glow, becomes
 visible.
 
@@ -256,8 +254,8 @@ for d in [0, 30, 45, 60, 90]:
 
 Look for a pattern in the sine column:
 $\frac{\sqrt{0}}{2}, \frac{\sqrt{1}}{2}, \frac{\sqrt{2}}{2}, \frac{\sqrt{3}}{2}, \frac{\sqrt{4}}{2}$.
-The cosine column is the same list backwards. That is the same triangle,
-seen from its other corner.
+The cosine column is the same list backwards. This happens because 30°
+and 60° use the same triangle, seen from its other corner.
 
 </details>
 
@@ -314,11 +312,12 @@ circle.
 
 </details>
 
-**17.** Why is $0.7071$ not a good enough answer for $\cos 45^\circ$?
+**17.** Why do we write $\frac{\sqrt{2}}{2}$ for $\cos 45^\circ$, and not
+$0.7071$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because it is wrong, by a small amount. $\frac{\sqrt{2}}{2}$ squared is
+Because $0.7071$ is a little too small. $\frac{\sqrt{2}}{2}$ squared is
 exactly $0.5$, but $0.7071$ squared is $0.49999041$.
 
 For most purposes that does not matter. It does matter when the small
@@ -335,8 +334,8 @@ the circle before you compute it.
 They are equal.
 
 The up value is highest at 90°, and it comes back down in the same way on
-the other side. So 89° and 91° are at the same height. This symmetry is
-what makes the sine rule ambiguous. You will meet that in
+the other side. So 89° and 91° are at the same height. This symmetry
+makes the sine rule ambiguous. You will meet that in
 [Solving triangles: the sine rule and the cosine rule](tutorial:solving-triangles).
 
 </details>
@@ -357,7 +356,7 @@ for d in [0, 30, 45, 60, 80]:
           f"    math.tan gives {math.tan(math.radians(d)):>10.5f}")
 ```
 
-Problems 21 and 22 go the other way: they give you the tangent or the
+Problems 21 and 22 go the other way. They give you the tangent or the
 sine, and ask for the angle. The function that does this is called an
 inverse. The inverse tangent is written $\tan^{-1}$ or arctan, and in
 Python it is `math.atan`. The inverse sine is $\sin^{-1}$ or arcsin, and
@@ -406,7 +405,7 @@ $\tan\theta = \frac{1}{12}$, so $\theta = \tan^{-1}\left(\frac{1}{12}\right) \ap
 In Python: `math.degrees(math.atan(1 / 12))`.
 
 Building rules for wheelchair ramps often ask for a slope of no more than
-about 1 in 12. That is where this number came from.
+about 1 in 12. This problem uses that number.
 
 </details>
 
@@ -441,13 +440,13 @@ glass of water.
 Both are 140 cm: $s = r\theta = 35 \times 4 = 140$.
 
 They are the same because the wheel rolls without slipping. The arc that
-touches the ground is exactly the distance the wheel covers. That is why
-$s = r\theta$ shows up in every problem about wheels, gears and belts.
+touches the ground is exactly the distance the wheel covers. So
+$s = r\theta$ appears in every problem about wheels, gears and belts.
 
 </details>
 
 **24.** A point starts at $(1, 0)$ on the unit circle. It moves
-anticlockwise by $\frac{7\pi}{6}$ radians. Where does it end up, exactly?
+anticlockwise by $\frac{7\pi}{6}$ radians. Where does it stop, exactly?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -464,8 +463,8 @@ sentences, without any formulae.
 <details class="dl-answer"><summary>answer</summary>
 
 A radian is the angle you turn through when you walk a distance equal to
-the radius along the edge. The whole way round a circle is $2\pi$ radii;
-that is what $\pi$ means. So a full turn is $2\pi$ radians.
+the radius along the edge. The whole way round a circle is $2\pi$ radii,
+because of how $\pi$ is defined. So a full turn is $2\pi$ radians.
 
 It is a measurement of the circle. It is not a conversion factor that
 somebody chose.
@@ -475,7 +474,7 @@ somebody chose.
 ## Where to read more
 
 Stand-up Maths (2022). *What is wrong with this sine memorisation
-pattern?* <https://www.youtube.com/watch?v=PDLQadz1KCc>. A popular pattern
-for remembering the sines of the landmark angles. Check it against your
-own values first. Then watch Matt Parker ask what is wrong with it. About
-twelve minutes.
+pattern?* <https://www.youtube.com/watch?v=PDLQadz1KCc>. This video shows
+a popular pattern for remembering the sines of the landmark angles. Check
+it against your own values first. Then watch Matt Parker ask what is
+wrong with it. It is about twelve minutes long.

@@ -13,9 +13,9 @@ datasets: [co2-emissions]
 # Mixed problems: change
 
 Each problem here draws on at least one page of Unit 9, and many draw on
-two or more. None of them is harder than what those pages covered. The
-new part is that nobody tells you which page a problem comes from.
-Choosing the tool is part of the problem.
+two or more. None of them is harder than what those pages covered. This
+time, nobody tells you which page a problem comes from. You choose the
+tool yourself, and that is part of the problem.
 
 Along the way, the problems build this unit's product: a best-moment
 finder. Give it a rule, and it finds the rule's top or bottom and the
@@ -73,7 +73,7 @@ way to $e \approx 2.718$.
 **2. Predict.** Here is a table that closes in on 4 from both sides,
 for the rule $\frac{\sqrt{x} - 2}{x - 4}$. At 4 itself, it is
 $\frac{0}{0}$. What number do the columns head for? Then look at the
-rule again: it is the slope of a chord of one curve. Which curve, and
+rule again. It is the slope of a chord of one curve. Which curve, and
 which slope is the limit?
 
 ```python
@@ -96,9 +96,8 @@ Since $\sqrt{4} = 2$, the rule is $\frac{\sqrt{x} - \sqrt{4}}{x - 4}$:
 rise over run, for the chord of $y = \sqrt{x}$ from 4 to $x$. So its
 limit is the slope of $\sqrt{x}$ at 4, as on
 [How fast, right now?](tutorial:how-fast-right-now#the-derivative-is-a-limit).
-The power rule gives the same: the slope of $x^{1/2}$ is
+The power rule gives the same. The slope of $x^{1/2}$ is
 $\frac{1}{2}x^{-1/2}$, and at 4 that is $\frac{1}{2} \times \frac{1}{2} = 0.25$.
-A derivative is a limit at a hole.
 
 </details>
 
@@ -150,7 +149,7 @@ radar show?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one answer. Schlomo's idea holds this far: distance divided by time, at one instant, is
+Here is one answer. Schlomo's first step works. Distance divided by time, at one instant, is
 $\frac{0}{0}$, which has no value. But a rule can have a limit where it
 has no value, as $\frac{x^2 - 4}{x - 2}$ did at 2 on
 [Getting closer](tutorial:getting-closer#a-rule-with-a-hole-in-it). The
@@ -179,14 +178,14 @@ units, for $t$ from 0 to 1.
 
 The first part of the finder is `best_point(rule, low, high)`. At a top
 or a bottom the slope is 0, so `best_point` finds a root of the rule's
-slope with `bisect_root`, and gives back $(x, \text{rule}(x))$. Use
+slope with `bisect_root`, and returns $(x, \text{rule}(x))$. Use
 it to find how far the bowl dips below the baseline, and check it with
 `vertex`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Inside `best_point`, write a small function `slope_here(x)` that
-   gives back `derivative_at(rule, x)`.
+   returns `derivative_at(rule, x)`.
 2. `bisect_root(slope_here, low, high)` finds where that slope is 0.
 3. Return the $x$ it found, and the rule at that $x$.
 
@@ -272,7 +271,7 @@ Then it gives $t = 0.55$ and a height of $-9$.
 
 **7. Make.** A courier drives a 240 km run. The driver is paid €18 an
 hour, so at $v$ km/h the wages for the trip are
-$\frac{240 \times 18}{v} = \frac{4320}{v}$ euro. Driving faster burns more fuel: say the fuel for
+$\frac{240 \times 18}{v} = \frac{4320}{v}$ euro. A faster drive burns more fuel. Say the fuel for
 the trip costs $0.0036v^2$ euro. (A made-up model.) The cost of the
 trip is the two added.
 
@@ -304,7 +303,7 @@ print(speeds[costs.index(cheapest)], cheapest)
 
 About 84.34 km/h, for a trip that costs about €76.83, and the comb of
 8,001 speeds agrees. `best_point` found a bottom this time, not a top,
-and it did not need to know which: either way the slope is 0 there.
+and it did not need to know which. Either way the slope is 0 there.
 The name `speed_kmh` leaves your toolkit's `speed` alone.
 
 </details>
@@ -321,7 +320,7 @@ slope of $0.0036v^2$ is $0.0072v$. So the slope of the cost is
 
 $$-\frac{4320}{v^2} + 0.0072v$$
 
-Setting it to 0 and multiplying both sides by $v^2$ gives
+Set it to 0, and multiply both sides by $v^2$. This gives
 $0.0072v^3 = 4320$, so $v^3 = 600000$, and $v$ is the cube root of
 600,000.
 
@@ -334,7 +333,7 @@ print(newton(cube_gap, 80))
 print(best_point(trip_cost, 40, 120)[0])
 ```
 
-All three give 84.343. The algebra also says why: at the best speed,
+All three give 84.343. The algebra also says why. At the best speed,
 the slopes of the wages and the fuel cancel.
 
 </details>
@@ -351,7 +350,7 @@ for x in [-1, 0, 1, 2, 3]:
 
 <details class="dl-answer"><summary>answer</summary>
 
-The two columns are the same. The slope of $e^x$ is $e^x$ itself: at every point, the
+The two columns are the same. The slope of $e^x$ is $e^x$ itself. At every point, the
 curve climbs as fast as it is high.
 
 By the chain rule, the slope of $e^{kx}$ is $e^{kx} \times k$. For
@@ -361,7 +360,7 @@ problem needs that.
 </details>
 
 **10. Make.** After a tablet is swallowed, the amount of medicine in
-the blood rises, peaks and falls away. A model for one medicine, in mg
+the blood rises, peaks and falls. A model for one medicine, in mg
 per litre, $t$ hours after the dose, is $30te^{-t/2}$. (The numbers are
 made up.) When is the amount highest, and how high is it? Find it with
 `best_point`. Then check it with the product rule and the chain rule:
@@ -372,7 +371,7 @@ write the slope by hand, and find where it is 0.
 1. The rule is a product: $30t$ times $e^{-t/2}$.
 2. The slope of $30t$ is 30. The slope of $e^{-t/2}$ is
    $-\frac{1}{2}e^{-t/2}$, from problem 9.
-3. The product rule: the first times the slope of the second, plus the
+3. By the product rule, the slope is the first times the slope of the second, plus the
    second times the slope of the first.
 4. $e^{-t/2}$ is never 0, so take it out as a common factor.
 
@@ -415,11 +414,11 @@ positive at both ends. With no sign change, `bisect_root` raises a
 `ValueError`, as its
 [promise](tutorial:solving-by-computing#a-tool-that-halves) says.
 
-The move is fine; it needs a different space. In that window there is no flat
-tangent, and the highest amount is at the edge, at 1 hour:
+In that window there is no flat tangent, so `best_point` has nothing
+to find. The highest amount is at the edge, at 1 hour.
 `in_blood(1)` is about 18.2 mg per litre. The end of
 [The top of the curve](tutorial:the-top-of-the-curve#checking-with-a-fine-comb)
-gave the same warning: when the turning point is outside the domain,
+gave the same warning. When the turning point is outside the domain,
 the best answer is at an edge.
 
 </details>
@@ -429,11 +428,11 @@ millions, $t$ days after it is released, is
 
 $$\frac{2}{1 + e^{-(t - 20)/3}}$$
 
-The total climbs slowly, then fast, then levels off near 2 million.
+The total climbs slowly, then fast, then flattens near 2 million.
 (The model is made up.) On which day are the streams arriving fastest,
 and how many a day is that?
 
-This is the finder's second part: the moment a rule changes fastest.
+This is the finder's second part. It finds the moment a rule changes fastest.
 Write `stream_rate(day)`, the slope of the total with `derivative_at`.
 Then comb every tenth of a day from 0 to 40 for the largest rate. Draw
 the total and its rate on two pictures.
@@ -465,8 +464,8 @@ plot_rule(stream_rate, 0, 40)
 ```
 
 The streams arrive fastest on day 20, at about 167,000 a day. The
-second picture is a hill with its top at day 20: the fastest moment of
-the total is the top of its rate.
+second picture is a hill with its top at day 20. The total grows
+fastest where its rate is highest.
 
 </details>
 
@@ -586,7 +585,7 @@ print("tops:", tops)
 ```
 
 One top: 2004, one year from the peak `largest` found. A ten-year
-chord smooths out the bumps, and only the long rise and fall is left.
+chord smooths the bumps, and only the long rise and fall is left.
 
 This is the step-size question from
 [How fast, right now?](tutorial:how-fast-right-now#why-the-step-cannot-be-0-or-too-small)
@@ -598,7 +597,7 @@ it used.
 </details>
 
 **16. Make.** Put the data half of the finder together. Write
-`data_rates(years, values, reach)`, which gives back two lists: the
+`data_rates(years, values, reach)`, which returns two lists: the
 middle years, and the slope of the centred chord at each. Then use it
 with a reach of 5 to report three things about Ireland's emissions:
 the peak year, found two ways; the year with the fastest rise; and the
@@ -644,19 +643,19 @@ plt.ylabel("change in million tonnes a year")
 ```
 
 The peak is 2005 by `largest`, and 2004 by the rates. The fastest rise
-is centred on 1996: from 1991 to 2001, emissions grew by about 1.39
-million tonnes a year. The fastest fall is centred on 2006: from 2001
+is centred on 1996. From 1991 to 2001, emissions grew by about 1.39
+million tonnes a year. The fastest fall is centred on 2006. From 2001
 to 2011, they fell by about 0.96 million tonnes a year, most of it
 after 2008.
 
-That is the finder. For a rule, it finds a slope of 0; for data, it
+That is the finder. For a rule, it finds a slope of 0. For data, it
 finds a peak two ways.
 
 </details>
 
 **17. Fix.** Schlomo wants a more exact bottom for the letter's bowl,
-so he gives `derivative_at` a much smaller step. It is a reasonable
-thought: a smaller step is closer to the limit. But the finder now
+so he gives `derivative_at` a much smaller step. He thinks a
+smaller step is closer to the limit. But the finder now
 says the bowl is lowest at about $t = 0.514$, and the height there is
 higher than at 0.55. Find the line that does not do what Schlomo meant.
 Which page warned about it?
@@ -693,8 +692,8 @@ Then the root is 0.55 again.
 [How fast, right now?](tutorial:how-fast-right-now#why-the-step-cannot-be-0-or-too-small)
 warned that a step of $10^{-15}$ loses the answer, and
 [Getting closer](tutorial:getting-closer#when-the-floats-run-out)
-showed why. A smaller step is closer to the limit in the maths, and
-further from it in the floats. Before you trust a best point, put it
+showed why. In the floats, a very small step gives a worse answer,
+not a better one. Before you trust a best point, put it
 back in the rule, as the cell's first `print` did.
 
 </details>

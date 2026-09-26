@@ -9,8 +9,8 @@ version: 2026.09.05.1
 
 The answers are hidden in folds under each problem. Several problems ask
 you to predict what the code will do before you run it. Try to answer
-before you check. Being wrong, and finding out why, teaches you more than
-being right by accident.
+before you check. A wrong guess teaches you more than a lucky right one,
+once you see why it was wrong.
 
 ```python exec
 id: setup-1
@@ -53,7 +53,7 @@ def fewest_tokens_greedy(amount, denominations):
     return count if remaining == 0 else None
 ```
 
-## Checking the Guarantee
+## Checking the guarantee
 
 **1.** Before you run it, can you predict
 `fewest_tokens_brute_force(10, TOKENS)`? Which three tokens from
@@ -66,7 +66,7 @@ hint: 4 + 3 + 3 is one path worth trying by hand first.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`3`. One combination that makes `10` is `4 + 3 + 3`. No two tokens from
+It returns `3`. One combination that makes `10` is `4 + 3 + 3`. No two tokens from
 `[1, 3, 4]` make `10` at all, so three is the fewest possible.
 
 </details>
@@ -80,17 +80,17 @@ id: checking-the-guarantee-2
 
 <details class="dl-answer"><summary>answer</summary>
 
-`0`. When nothing is left to make, no tokens are needed.
+It returns `0`. When nothing is left to make, no tokens are needed.
 
-The function works out every other amount by trying a token, then asking
+The function finds every other amount by trying a token, then asking
 the same question about a smaller amount. Every chain of questions ends
 at `0`. This case is the base case: the case the function answers
 without calling itself. Without it, the function would keep asking about
-smaller amounts forever, and never give back a number.
+smaller amounts forever, and never return a number.
 
 </details>
 
-## When the Shortcut Fails
+## When the shortcut fails
 
 **3.** Try a different set of tokens, `TOKENS2 = [1, 4, 5]`. Compare
 `fewest_tokens_greedy(8, TOKENS2)` with `fewest_tokens_cached(8, TOKENS2)`.
@@ -104,7 +104,7 @@ hint: Work out the greedy choice by hand first: which token does it take at each
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes, by two. Greedy takes the `5` first. That leaves `3`, which needs
+Yes, they disagree by two. Greedy takes the `5` first. That leaves `3`, which needs
 three `1`s. So greedy uses `4` tokens in total. The cached answer, which
 is always correct, is `2`: two `4`s. A greedy shortcut's mistake is not
 always as small as the tutorial's example made it look.
@@ -125,10 +125,11 @@ hint: Walk through the two coins by hand: take a 4, what is left, does a 3 fit i
 
 <details class="dl-answer"><summary>answer</summary>
 
-`None`. Taking the `4` first leaves `1`. A `3` does not fit into `1`, so
+It returns `None`. Greedy takes the `4` first, which leaves `1`. A `3`
+does not fit into `1`, so
 the loop ends with `remaining` still at `1`, not `0`. The function's last
-line, `count if remaining == 0 else None`, catches this. Here it happens
-to be right: `5` cannot be made from `[3, 4]` at all, and
+line, `count if remaining == 0 else None`, catches this. Here that answer
+is correct. `5` cannot be made from `[3, 4]` at all, and
 `fewest_tokens_brute_force(5, [3, 4])` gives `None` too.
 
 But be careful what greedy's `None` means. Try
@@ -139,7 +140,7 @@ combination works.
 
 </details>
 
-## Reading the Trade-Off
+## Reading the trade-off
 
 **5.** The tutorial says that caching "keeps brute force's guarantee", and
 that the greedy shortcut does not. In your own words, why?
@@ -147,16 +148,18 @@ that the greedy shortcut does not. In your own words, why?
 <details class="dl-answer"><summary>answer</summary>
 
 Caching still compares every choice of first token, just as brute force
-does. It only skips working out the same smaller amount a second time.
+does. It only avoids solving the same smaller amount a second time.
 That is safe because the fewest tokens for an amount depends only on the
 amount, not on how we reached it. So the answers it compares are the
 same answers, and it still always finds the true fewest.
 
 The greedy shortcut never compares possibilities at all. At each step it
-takes the biggest token, and it never looks back. It never asks whether
+takes the biggest token, and it never goes back to an earlier choice. It
+never asks whether
 a smaller choice earlier would have led to a better answer later. That is
 the choice that goes wrong with `TOKENS = [1, 3, 4]` at `amount=6`.
-Taking the `4` first closes off the two-token answer, `3 + 3`, for good.
+Once it takes the `4` first, it can never reach the two-token answer,
+`3 + 3`.
 
 </details>
 
@@ -164,5 +167,5 @@ Taking the `4` first closes off the two-token answer, `3 + 3`, for good.
 
 SimonDev (2021). *What can "The Simpsons" teach us about Dynamic
 Programming?* <https://www.youtube.com/watch?v=6z4ePR7YYa8>. SimonDev
-steps through a few problems that repeat the same work, and shows how
-remembering answers saves it. About fifteen minutes.
+shows a few problems that repeat the same work, and shows how
+remembering answers saves it. The video is about fifteen minutes long.

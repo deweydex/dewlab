@@ -15,8 +15,8 @@ important or emphasised. There are three kinds of problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and its
+reason, than from reading the answer.
 
 One check helps with every problem here. Read only the headings of the
 page, from top to bottom. Do they look like a list of contents?
