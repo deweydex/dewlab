@@ -63,7 +63,9 @@ The pipeline, in order:
    involved), an `AppPane` (the same three languages tagged `app` instead,
    grouped by `app:` name into one `AppCell` — a full-stack cell whose
    JavaScript can reach the page's own shared `db`, `DECISIONS_LOG.md`
-   7.180), or a `CodeBlock` (anything else). `extract_math()` does the
+   7.180), a `Solution` or `Inputs` block (a ```` ```solution ```` or
+   ```` ```inputs ```` fence, attached to the exec cell above it or the one
+   its `for:` names, #312), or a `CodeBlock` (anything else). `extract_math()` does the
    same for `$…$`/`$$…$$`, since Python's `markdown` library doesn't know
    dewlab's conventions and would otherwise read `$a_i + b_j$`'s subscript
    as emphasis.
@@ -259,6 +261,18 @@ exception's type and first line, whether `check()` passed, whether `expect`
 holds — which `executeCell()` feeds into per-cell counters
 (`noteAttempt()`), tests each fold's terms against (`triggerHolds()`), and
 reveals at most one fold per run (`maybeRevealHint()`).
+
+**The comparison** (#312) is the other place a cell carries more than its
+code. `build.py` renders a ```` ```solution ```` fence as a closed
+`<details class="dl-solution">` fold and an ```` ```inputs ```` fence as a
+`.dl-compare` table, and puts the first solution, the inputs and any
+`tests:` cell in the manifest. A button under the table runs the cell, then
+`tutorial_tools.compare()`, which evaluates each input against copies of the
+page namespace, the solution's copy having run the solution first; the page
+fills the table and marks rows that differ, without a verdict. Before
+writing a page, `check_solutions()` runs its cells and every solution in a
+separate Python, through that same `compare()`, and stops the build if a
+solution raises.
 
 Everything a cell can call beyond ordinary Python is defined once in
 `tutorial_tools.py` and listed in `__all__`; `docs/WRITING_TUTORIALS.md`'s

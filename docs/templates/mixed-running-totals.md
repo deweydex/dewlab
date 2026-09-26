@@ -28,6 +28,10 @@ id: how-many-are-wide-1
 widths = [4879, 12104, 12756, 6792]
 ```
 
+```inputs
+count
+```
+
 ```solution
 count = 0
 for width in widths:
@@ -37,10 +41,6 @@ print(count)
 ---
 A count is a running total that adds 1 instead of the width, and only
 sometimes. Two planets, Venus and the Earth, are that wide.
-```
-
-```inputs
-count
 ```
 
 ## 2. The average planet
@@ -60,6 +60,10 @@ tolerance: 1000
 Roughly, what is the average width?
 ```
 
+```inputs
+total / len(widths)
+```
+
 ```solution
 total = 0
 for width in widths:
@@ -70,10 +74,6 @@ The total is 36,531, and there are four planets, so the average is
 9,132.75 km.
 ```
 
-```inputs
-total / len(widths)
-```
-
 ## 3. Two things at once
 
 Can one loop find the total *and* the widest planet, going through the list
@@ -82,6 +82,11 @@ only once? What should `widest` start at?
 ```python exec
 id: two-things-at-once-1
 widths = [4879, 12104, 12756, 6792]
+```
+
+```inputs
+total
+widest
 ```
 
 ```solution
@@ -96,9 +101,4 @@ print(total, widest)
 Starting `widest` at the first width means it always starts as a real
 planet. Starting it at 0 works here too, but not for a list of numbers
 that are all below 0.
-```
-
-```inputs
-total
-widest
 ```

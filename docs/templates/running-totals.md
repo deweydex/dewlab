@@ -136,16 +136,6 @@ giants = [142984, 120536, 51118, 49528]
 moon = 384400
 ```
 
-```solution
-total = 0
-for width in giants:
-    total = total + width
-print(total, "km of planets, and the Moon is", moon, "km away")
----
-The same loop as the rocky planets, with a new list. The giants come to
-364,166 km, about 95% of the way to the Moon.
-```
-
 ```inputs
 total
 moon - total    # how far short, or how far past
@@ -154,6 +144,16 @@ moon - total    # how far short, or how far past
 ```hint
 Which lines of the first cell could you copy? Which one word would you
 change?
+```
+
+```solution
+total = 0
+for width in giants:
+    total = total + width
+print(total, "km of planets, and the Moon is", moon, "km away")
+---
+The same loop as the rocky planets, with a new list. The giants come to
+364,166 km, about 95% of the way to the Moon.
 ```
 
 </div>
@@ -170,16 +170,6 @@ drops = [540, 610, 580, 600, 590, 620]
 wreck = 3800
 ```
 
-```solution
-depth = 0
-for drop in drops:
-    depth = depth + drop
-print(depth, "m down, and the wreck is at", wreck, "m")
----
-The accumulator here is a depth, so it has a better name than `total`.
-The dive has reached 3,540 m, 260 m short of the wreck.
-```
-
 ```inputs
 depth
 wreck - depth    # how far to go
@@ -188,6 +178,16 @@ wreck - depth    # how far to go
 ```hint
 Which lines of the first cell could you copy? What name would say what
 this total is?
+```
+
+```solution
+depth = 0
+for drop in drops:
+    depth = depth + drop
+print(depth, "m down, and the wreck is at", wreck, "m")
+---
+The accumulator here is a depth, so it has a better name than `total`.
+The dive has reached 3,540 m, 260 m short of the wreck.
 ```
 
 </div>
@@ -209,6 +209,15 @@ sprite = [
 print(sprite[2].count("#"))
 ```
 
+```inputs
+lit
+```
+
+```hint
+The last line counts the lit pixels in one row. How could a loop do that
+for every row, and keep a total?
+```
+
 ```solution
 lit = 0
 for row in sprite:
@@ -217,15 +226,6 @@ print(lit)
 ---
 `row.count("#")` counts the lit pixels in one row, and the loop adds
 the rows together. The picture has 13 lit pixels.
-```
-
-```inputs
-lit
-```
-
-```hint
-The last line counts the lit pixels in one row. How could a loop do that
-for every row, and keep a total?
 ```
 
 </div>

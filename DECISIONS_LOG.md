@@ -4743,3 +4743,19 @@ Until each platform issue lands (#312, #313, #315, #316), its syntax builds as p
 Also: `planning/EXERCISES.md` now points to the templates and keeps only where the first problems came from and what is left. Its counts were stale (41 tutorials), and its frontmatter example still had `slug:`, which `check.py` rejects. The same stale line is gone from `WRITING_TUTORIALS.md`'s mixed-set example. `planning/outlines/README.md` no longer says a tutorial explains before it demonstrates.
 
 *Cost to change: until #312 lands, only these six templates and the docs use the syntax. After it, every page written with blocks does.*
+
+---
+
+**7.232 — Solutions, inputs and the comparison view: the site shows two values and never a verdict.** The block-model issue (#312), part of #306, building the syntax 7.231 agreed.
+
+**What a reader sees.** Under a cell, a table of the author's cases. A **Compare with a solution** button runs the cell as it stands, then fills in what the reader's code gives for each case beside what one solution gives. A row where the two differ gets the cell background and the word "different": nothing red, nothing green, no tick, no score. The solution itself is a closed fold. With `guess: yes`, a column of boxes comes first for the reader's own expectations, saved with the cell. A cell marked `tests: <cell id>` holds the reader's own tests; each statement runs on both sides, before the author's cases, which are then headed "Cases you may not have tried". A cell with inputs and no solution gets **Try these on your code** and one column.
+
+**Copies, not the page.** `tutorial_tools.compare()` deep-copies the page namespace twice, once for each side, through one shared memo. The solution runs in its copy after the reader's cell has run, so it sees the same data (a starter cell that defines `giants` is enough), and whatever it defines replaces the reader's only there. Pressing the button changes nothing the reader has: their `total_of` is still theirs afterwards. Printed output is swallowed and new figures closed.
+
+**When two values are "the same".** Close floats are (`0.1 + 0.2` beside `0.3` would be noise). `True` and `1` are not. Two separately defined classes with equal attributes are, since the reader's class and the solution's are never one class object. An error is an outcome, shown by name, and two of the same kind read as the same.
+
+**The build runs every solution.** `check_solutions()` runs the page's Python cells in order in a separate Python, with the runtime's own `tutorial_tools`, then calls the same `compare()` for every solution. A solution that raises stops the build. An input the solution cannot name (a `NameError` or `SyntaxError` on the solution's side) stops it too, as a typo in the page. Other errors are outcomes. A cell that fails as written is fine, and each cell has 20 seconds under `SIGALRM` where the platform has it, so a deliberate endless loop does not hang the build. A missing package is a note, not a failure, because it says nothing about the solution. Pages without solutions start no process at all.
+
+**Not done here.** `check()`, `expect:` and the `failed checks` signal stay until #314 retires them. The predict block is #313.
+
+*Cost to change: `compare()` and `render_inputs()` are the two places the comparison's meaning lives; the saved record gains `guesses`, which an older page ignores.*

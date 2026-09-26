@@ -23,15 +23,19 @@ drive.
 from __future__ import annotations
 
 import argparse
+import ast
 import base64
 import datetime
 import hashlib
 import html
+import io
 import json
 import os
 import re
 import shutil
+import subprocess
 import sys
+import tokenize
 import urllib.parse
 import zipfile
 from dataclasses import dataclass, field
@@ -148,7 +152,7 @@ VERSION_FILE_RE = re.compile(r"^v\d{4}\.\d{2}\.\d{2}\.\d+$")
 
 FENCE_RE = re.compile(r"^(?P<indent> *)```(?P<info>[^\n]*)\n(?P<body>.*?)^ *```[ \t]*$",
                       re.MULTILINE | re.DOTALL)
-HEADER_RE = re.compile(r"^\s*(id|hint|expect|name|toolkit)\s*:\s*(.*)$")
+HEADER_RE = re.compile(r"^\s*(id|hint|expect|name|toolkit|tests)\s*:\s*(.*)$")
 # `toolkit:` on a Python exec cell: its code is loaded into every later page
 # of the course (toolkit_for()). Either spelling of each answer is accepted.
 TOOLKIT_VALUES = {"yes": True, "true": True, "no": False, "false": False}
@@ -204,6 +208,13 @@ TRIGGER_TERM_RE = re.compile(
 )
 DEFAULT_HINT_AFTER = "errors:5"
 DEFAULT_HINT_TITLE = "Let\u2019s slow down a moment\u2026"
+# The ```solution and ```inputs blocks (#312). Like a hint, each belongs to
+# the exec cell above it, or to the one its `for:` line names.
+SOLUTION_HEADER_RE = re.compile(r"^\s*(for|title)\s*:\s*(.*)$")
+INPUTS_HEADER_RE = re.compile(r"^\s*(for|guess)\s*:\s*(.*)$")
+DEFAULT_SOLUTION_TITLE = "One way to do it"
+# A line holding only `---` ends a solution's code and starts its notes.
+SOLUTION_NOTES_RE = re.compile(r"^---[ \t]*$", re.MULTILINE)
 INCLUDE_RE = re.compile(r"\{\{\s*include\s*:\s*(?P<path>[^}]+?)\s*\}\}")
 TIGHT_LIST_RE = re.compile(
     r"(?m)^(?P<prose>(?![ \t]*(?:[-*+]|\d+[.)])\s)(?![ \t]*#)(?![ \t]*>)[^\n]*\S[^\n]*)\n"
@@ -214,7 +225,7 @@ ID_RE = re.compile(r'\bid="([^"]+)"')
 IMG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
 ALT_RE = re.compile(r"\balt\s*=", re.IGNORECASE)
 DETAILS_RE = re.compile(r"<details\b[^>]*>", re.IGNORECASE)
-FOLD_CLASSES = ("dl-hint", "dl-answer", "dl-why")
+FOLD_CLASSES = ("dl-hint", "dl-answer", "dl-why", "dl-solution")
 NOTE_RE = re.compile(
     r'<aside class="dl-note" id="(?P<id>[^"]+)">\s*(?P<html>.*?)\s*</aside>\n?',
     re.DOTALL,
@@ -258,6 +269,14 @@ class Cell:
     # toolkit-reference fence, when the cell itself is a stub.
     toolkit: bool = False
     reference: str | None = None
+    # The blocks attached to this cell (#312): its solutions, in source
+    # order, and the one inputs block the comparison evaluates.
+    solutions: list["Solution"] = field(default_factory=list)
+    inputs: "Inputs | None" = None
+    # `tests: <cell id>` on a cell of the reader's own tests names the cell
+    # they test; `tested_by` is the other end, set on that cell.
+    tests_for: str | None = None
+    tested_by: str | None = None
 
     @property
     def toolkit_reference(self) -> str:
@@ -276,6 +295,33 @@ class StagedHint:
     body: str
     # Which of its cell's hints this is, in source order — the fold's id.
     index: int = 0
+
+
+@dataclass
+class Solution:
+    """A ```solution fence: one way to do a cell's task, with notes."""
+
+    cell: str
+    title: str
+    code: str
+    notes: str = ""
+
+
+@dataclass
+class Case:
+    """One line of an ```inputs fence: an expression, and what it is for."""
+
+    expr: str
+    label: str | None = None
+
+
+@dataclass
+class Inputs:
+    """An ```inputs fence: the cases a comparison evaluates on both sides."""
+
+    cell: str
+    cases: list[Case]
+    guess: bool = False
 
 
 @dataclass
@@ -728,7 +774,96 @@ def parse_cell(body: str, path: Path, cell_type: str = "python") -> Cell:
         name=header.get("name") or None,
         type=cell_type,
         toolkit=toolkit,
+        tests_for=header.get("tests") or None,
     )
+
+
+def _block_header(lines: list[str], pattern: re.Pattern) -> dict[str, str]:
+    """Read `key: value` lines off the top of a block fence, as hints do:
+    the first line that is not one, or repeats a key, ends the header."""
+    header: dict[str, str] = {}
+    while lines:
+        match = pattern.match(lines[0])
+        if not match or match.group(1) in header:
+            break
+        header[match.group(1)] = match.group(2).strip()
+        lines.pop(0)
+    return header
+
+
+def parse_solution(body: str, path: Path, previous_cell: str | None) -> Solution:
+    """A ```solution fence: `for:` and `title:`, then Python, then
+    optionally a `---` line and markdown notes. The code has to compile,
+    so a typo in a solution fails the build, not a reader's comparison."""
+    lines = body.split("\n")
+    header = _block_header(lines, SOLUTION_HEADER_RE)
+    cell = header.get("for") or previous_cell
+    if not cell:
+        fail(path, "a solution fence has no exec cell above it and no `for:` "
+                   "line naming one")
+    code, notes = _split_solution("\n".join(lines))
+    code = expand_includes(code.strip("\n"), path)
+    if not code.strip():
+        fail(path, f"the solution for cell {cell!r} has no code in it")
+    try:
+        compile(code, f"<the solution for {cell}>", "exec",
+                flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
+    except SyntaxError as exc:
+        fail(path, f"the solution for cell {cell!r} is not valid Python: "
+                   f"{exc.msg} (line {exc.lineno} of the solution)")
+    notes = notes.strip("\n")
+    if notes:
+        no_footnotes_in(notes, path, f"the solution for cell {cell!r}")
+    return Solution(cell=cell, title=header.get("title") or DEFAULT_SOLUTION_TITLE,
+                    code=code, notes=notes)
+
+
+def _split_solution(text: str) -> tuple[str, str]:
+    """The code before a solution's `---` line, and the notes after it."""
+    match = SOLUTION_NOTES_RE.search(text)
+    if not match:
+        return text, ""
+    return text[:match.start()], text[match.end():]
+
+
+def parse_inputs(body: str, path: Path, previous_cell: str | None) -> Inputs:
+    """An ```inputs fence: `for:` and `guess:`, then one expression per
+    line. A `#` comment after an expression is its label, found with the
+    tokenizer so a `#` inside a string is not mistaken for one. Every
+    expression has to compile; one that names something the page never
+    defines is caught when the build runs the solution (check_solutions)."""
+    lines = body.split("\n")
+    header = _block_header(lines, INPUTS_HEADER_RE)
+    cell = header.get("for") or previous_cell
+    if not cell:
+        fail(path, "an inputs fence has no exec cell above it and no `for:` "
+                   "line naming one")
+    guess = header.get("guess", "no").lower()
+    if guess not in TOOLKIT_VALUES:
+        fail(path, f"the inputs for cell {cell!r} say `guess: {header['guess']}` — "
+                   "write `guess: yes` or leave the line out")
+    cases: list[Case] = []
+    for line in lines:
+        if not line.strip() or line.strip().startswith("#"):
+            continue
+        expr, label = line, None
+        try:
+            for token in tokenize.generate_tokens(io.StringIO(line).readline):
+                if token.type == tokenize.COMMENT:
+                    expr = line[:token.start[1]]
+                    label = token.string[1:].strip() or None
+                    break
+        except (tokenize.TokenError, SyntaxError):
+            pass
+        expr = expr.strip()
+        try:
+            compile(expr, "<input>", "eval", flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
+        except SyntaxError:
+            fail(path, f"an input for cell {cell!r} is not a Python expression: {expr}")
+        cases.append(Case(expr=expr, label=label))
+    if not cases:
+        fail(path, f"the inputs for cell {cell!r} list no cases")
+    return Inputs(cell=cell, cases=cases, guess=TOOLKIT_VALUES[guess])
 
 
 def parse_toolkit_reference(body: str, path: Path) -> tuple[str, str]:
@@ -935,6 +1070,93 @@ def place_hints(page_html: str, hints: list[StagedHint], maths: list[Math]) -> s
     return page_html
 
 
+def render_solution(solution: Solution, maths: list[Math]) -> str:
+    """The fold a ```solution fence becomes: closed until the reader opens
+    it, holding the code (read-only, highlighted like any illustrative
+    block) and the notes under it. Its notes' maths joins the page's list,
+    the way a staged hint's does (render_staged_hint())."""
+    safe_cell = html.escape(solution.cell, quote=True)
+    notes_html = ""
+    if solution.notes:
+        stripped, _ = extract_math(solution.notes, maths)
+        notes_html, _ = to_html(loosen_tight_lists(stripped))
+    return (
+        f'<details class="dl-solution" data-cell="{safe_cell}">'
+        f"<summary>{html.escape(solution.title)}</summary>\n"
+        f"{render_code_block(CodeBlock(language='python', code=solution.code))}\n"
+        f"{notes_html}\n"
+        "</details>"
+    )
+
+
+def render_inputs(block: Inputs, has_solution: bool) -> str:
+    """The comparison table an ```inputs fence becomes (#312).
+
+    Each case is a row. The reader's column, and the solution's when the
+    cell has one, are empty until the reader asks for the comparison; the
+    runtime fills them. With `guess: yes`, a column of text boxes comes
+    first, for what the reader expects each case to give. Nothing in the
+    table says right or wrong: a row where the two sides differ is marked
+    "different", in words as well as colour."""
+    safe_cell = html.escape(block.cell, quote=True)
+    heads = ['<th scope="col">Input</th>']
+    if block.guess:
+        heads.append('<th scope="col">Your guess</th>')
+    heads.append('<th scope="col">Your code</th>')
+    if has_solution:
+        heads.append('<th scope="col">A solution</th>')
+    rows = []
+    for index, case in enumerate(block.cases):
+        label = (f' <span class="dl-compare-label">{html.escape(case.label)}</span>'
+                 if case.label else "")
+        cells_html = [f'<td class="dl-compare-input"><code>{html.escape(case.expr)}</code>{label}</td>']
+        if block.guess:
+            cells_html.append(
+                f'<td class="dl-compare-guess"><input type="text" '
+                f'aria-label="Your guess for {html.escape(case.expr, quote=True)}"></td>'
+            )
+        cells_html.append('<td class="dl-compare-yours"></td>')
+        if has_solution:
+            cells_html.append('<td class="dl-compare-theirs"></td>')
+        rows.append(f'<tr data-case="{index}">{"".join(cells_html)}</tr>')
+    label = "Compare with a solution" if has_solution else "Try these on your code"
+    return (
+        f'<div class="dl-compare" data-cell="{safe_cell}">'
+        '<table class="dl-compare-table">'
+        "<caption>Cases to try</caption>"
+        f'<thead><tr>{"".join(heads)}</tr></thead>'
+        f'<tbody>{"".join(rows)}</tbody>'
+        "</table>"
+        '<div class="dl-compare-actions">'
+        f'<button type="button" class="dl-btn dl-btn-compare">{label}</button>'
+        '<span class="dl-compare-status" role="status"></span>'
+        "</div>"
+        "</div>"
+    )
+
+
+def place_cell_blocks(page_html: str, solutions: list[Solution], inputs_blocks: list[Inputs],
+                      cells: list[Cell], maths: list[Math]) -> str:
+    """Swap each solution's and inputs block's placeholder for its markup.
+    Run before place_blocks(), like place_hints(), so the maths a
+    solution's notes add is still there to render."""
+    has_solution = {cell.id for cell in cells if cell.solutions}
+    for index, solution in enumerate(solutions):
+        placeholder = f"<!--dewlab-solution-{index}-->"
+        if placeholder not in page_html:
+            raise BuildError(f"the solution for cell {solution.cell!r} was lost during "
+                             "markdown conversion")
+        page_html = page_html.replace(placeholder, render_solution(solution, maths))
+    for index, block in enumerate(inputs_blocks):
+        placeholder = f"<!--dewlab-inputs-{index}-->"
+        if placeholder not in page_html:
+            raise BuildError(f"the inputs for cell {block.cell!r} were lost during "
+                             "markdown conversion")
+        page_html = page_html.replace(placeholder,
+                                      render_inputs(block, block.cell in has_solution))
+    return page_html
+
+
 def _split_multiple_choice(text: str) -> tuple[str, list[str]]:
     """The prompt, and the options under it: the prose before the first
     list is the question, the list is the options. The first line that
@@ -1107,7 +1329,7 @@ def render_question(question: Question) -> str:
 def extract_blocks(
     body: str, path: Path,
 ) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint], list[SiteEditor], list[Question],
-           list[AppCell]]:
+           list[AppCell], list[Solution], list[Inputs]]:
     """Pull every fence out, leaving a comment placeholder markdown will keep.
 
     An `exec` fence becomes a cell; a `python toolkit-reference` fence
@@ -1118,8 +1340,9 @@ def extract_blocks(
     `site:` name immediately before or after it; a `question` fence
     becomes a `Question`; an `html app`/
     `css app`/`js app` fence becomes one pane of an `AppCell`, grouped
-    the same way by its `app:` name; any other fence becomes an
-    illustrative, read-only block.
+    the same way by its `app:` name; a `solution` or `inputs` fence
+    becomes a block attached to its cell (#312); any other fence becomes
+    an illustrative, read-only block.
     All six leave the source before the markdown converter runs, so
     nothing inside any of them can be reinterpreted as markup.
     """
@@ -1129,6 +1352,8 @@ def extract_blocks(
     site_editors: list[SiteEditor] = []
     questions: list[Question] = []
     app_cells: list[AppCell] = []
+    solutions: list[Solution] = []
+    inputs_blocks: list[Inputs] = []
     hints_per_cell: dict[str, int] = {}
     used_site_names: set[str] = set()
     current_site: SiteEditor | None = None
@@ -1160,6 +1385,14 @@ def extract_blocks(
             hints_per_cell[hint.cell] = hint.index + 1
             hints.append(hint)
             return f"{indent}<!--dewlab-hint-{len(hints) - 1}-->"
+        if info and info[0] == "solution":
+            solutions.append(parse_solution(match.group("body"), path,
+                                            cells[-1].id if cells else None))
+            return f"{indent}<!--dewlab-solution-{len(solutions) - 1}-->"
+        if info and info[0] == "inputs":
+            inputs_blocks.append(parse_inputs(match.group("body"), path,
+                                              cells[-1].id if cells else None))
+            return f"{indent}<!--dewlab-inputs-{len(inputs_blocks) - 1}-->"
         if len(info) >= 2 and info[1] == "site":
             language = info[0]
             if language not in SITE_LANGS:
@@ -1245,6 +1478,35 @@ def extract_blocks(
     for hint in hints:
         if hint.cell not in seen:
             fail(path, f"a hint names a cell this tutorial does not have: {hint.cell!r}")
+    for solution in solutions:
+        cell = by_id.get(solution.cell)
+        if cell is None:
+            fail(path, f"a solution names a cell this tutorial does not have: {solution.cell!r}")
+        if cell.type != "python":
+            fail(path, f"cell {cell.id!r} is a {cell.type} cell; only a Python cell "
+                       "can have a solution")
+        cell.solutions.append(solution)
+    for block in inputs_blocks:
+        cell = by_id.get(block.cell)
+        if cell is None:
+            fail(path, f"an inputs block names a cell this tutorial does not have: {block.cell!r}")
+        if cell.type != "python":
+            fail(path, f"cell {cell.id!r} is a {cell.type} cell; only a Python cell "
+                       "can have inputs")
+        if cell.inputs is not None:
+            fail(path, f"cell {cell.id!r} has two inputs blocks — put every case in one")
+        cell.inputs = block
+    for cell in cells:
+        if not cell.tests_for:
+            continue
+        target = by_id.get(cell.tests_for)
+        if target is None or target is cell:
+            fail(path, f"cell {cell.id!r} says `tests: {cell.tests_for}`, and this "
+                       "tutorial has no other cell with that id")
+        if target.tested_by:
+            fail(path, f"cells {target.tested_by!r} and {cell.id!r} both say they test "
+                       f"{target.id!r} — one cell of tests per cell")
+        target.tested_by = cell.id
     for question in questions:
         # Ids are unique across a page, questions and cells together —
         # both are keys into the one saved-work record (saveNow(),
@@ -1262,7 +1524,8 @@ def extract_blocks(
             if pane.id in seen:
                 fail(path, f"two cells share the id {pane.id!r}")
             seen.add(pane.id)
-    return rewritten, cells, blocks, hints, site_editors, questions, app_cells
+    return (rewritten, cells, blocks, hints, site_editors, questions, app_cells,
+            solutions, inputs_blocks)
 
 
 def extract_math(body: str, found: list[Math] | None = None) -> tuple[str, list[Math]]:
@@ -3763,6 +4026,168 @@ def check_folds(tutorial: Tutorial) -> None:
                  f'class="dl-why" for why a page chose as it did')
 
 
+# The build runs every solution before a reader can see it (#312), in a
+# separate Python so a page's code never runs inside the build itself.
+# Each cell gets SOLUTION_CELL_SECONDS where the platform can enforce it
+# (a deliberate endless loop on a page about the Stop button is a cell
+# that fails, not a build that hangs); the whole page gets the rest.
+# The runtime module the runner imports: always the build's own copy, since
+# it is part of the build rather than of the content being built.
+RUNTIME_TOOLS = Path(__file__).resolve().parent / "assets"
+SOLUTION_CELL_SECONDS = 20
+SOLUTION_PAGE_SECONDS = 180
+SOLUTION_RUNNER = r"""
+import asyncio, json, os, signal, sys
+os.environ["MPLBACKEND"] = "Agg"
+job = json.load(sys.stdin)
+sys.path.insert(0, job["assets"])
+import tutorial_tools as tt
+
+tt._page_globals.update({name: getattr(tt, name) for name in tt.__all__})
+tt._page_globals["__name__"] = "__dewlab__"
+
+
+def local(name):
+    if name.startswith(("http://", "https://")):
+        raise ConnectionError(f"the build does not fetch {name}")
+    return os.path.join(job["data"], name)
+
+
+async def load_csv(name, **kwargs):
+    import pandas
+    return pandas.read_csv(local(name), **kwargs)
+
+
+async def load_text(name):
+    with open(local(name), encoding="utf-8") as handle:
+        return handle.read()
+
+
+tt._page_globals["load_csv"] = load_csv
+tt._page_globals["load_text"] = load_text
+if job["sqlite"]:
+    import sqlite3
+    tt._page_globals["db"] = sqlite3.connect(":memory:")
+
+
+class Slow(Exception):
+    pass
+
+
+def alarm(signum, frame):
+    raise Slow()
+
+
+timed = hasattr(signal, "SIGALRM")
+if timed:
+    signal.signal(signal.SIGALRM, alarm)
+
+
+async def run(code, name):
+    tt._begin(name, tt._RecordingSink(), code)
+    if timed:
+        signal.alarm(job["seconds"])
+    try:
+        await tt._run_code(code, tt._page_globals, name)
+    except BaseException:
+        pass  # a cell that fails as written is the page's own business
+    finally:
+        if timed:
+            signal.alarm(0)
+        tt._end(None)
+
+
+async def main():
+    for code in job["toolkit"]:
+        await run(code, "toolkit")
+    report = []
+    for cell in job["cells"]:
+        await run(cell["code"], cell["id"])
+        if "solution" in cell:
+            if timed:
+                signal.alarm(job["seconds"])
+            try:
+                result = json.loads(await tt.compare(cell["solution"], json.dumps(cell["inputs"])))
+            except Slow:
+                result = {"solutionError": "the solution did not finish", "rows": []}
+            finally:
+                if timed:
+                    signal.alarm(0)
+            report.append({"cell": cell["id"], "result": result})
+    sys.__stdout__.write(json.dumps(report))
+
+
+asyncio.run(main())
+"""
+
+
+def check_solutions(tutorial: Tutorial, toolkit: list[dict]) -> None:
+    """Run every solution on the page, with its inputs, before a reader can
+    open it (#312).
+
+    The page's own Python cells run first, in order, as a reader's would
+    (the toolkit before them, as the page loads it), in a separate Python
+    process with the runtime's own `tutorial_tools`. A cell that fails as
+    written is fine: plenty fail on purpose, or wait for the reader. Then
+    `tutorial_tools.compare()`, the function the comparison button calls,
+    runs each solution. A solution that raises fails the build, and so
+    does an input the solution side cannot even name (a NameError or
+    SyntaxError there is a typo in the page, not an outcome worth showing).
+    Any other error an input raises is an outcome, and the table shows it.
+
+    A Python without a package the page imports (a contributor's machine
+    without pandas, say) is noted and skipped, not failed: that says
+    nothing about the solution."""
+    last = max((i for i, c in enumerate(tutorial.cells) if c.solutions), default=None)
+    if last is None:
+        return
+    cells = []
+    for cell in tutorial.cells[: last + 1]:
+        if cell.type != "python":
+            continue
+        cells.append({"id": cell.id, "code": cell.code})
+        cases = [{"expr": case.expr, "label": case.label}
+                 for case in (cell.inputs.cases if cell.inputs else [])]
+        # Every solution, not only the first one the comparison uses. Each
+        # runs in its own copy of the namespace the cell above left.
+        for solution in cell.solutions:
+            cells.append({"id": cell.id, "code": "", "solution": solution.code,
+                          "inputs": cases})
+    job = {
+        "assets": str(RUNTIME_TOOLS), "data": str(DATA), "sqlite": tutorial.has_sql,
+        "seconds": SOLUTION_CELL_SECONDS,
+        "toolkit": [entry["reference"] for entry in toolkit],
+        "cells": cells,
+    }
+    try:
+        done = subprocess.run(
+            [sys.executable, "-c", SOLUTION_RUNNER], input=json.dumps(job),
+            capture_output=True, text=True, timeout=SOLUTION_PAGE_SECONDS, cwd=ROOT,
+        )
+    except subprocess.TimeoutExpired:
+        fail(tutorial.path, f"the build ran this page's cells to check its solutions, "
+                            f"and they did not finish in {SOLUTION_PAGE_SECONDS} seconds")
+    if done.returncode != 0:
+        fail(tutorial.path, "the build could not run this page's solutions:\n"
+                            + done.stderr.strip()[-2000:])
+    for entry in json.loads(done.stdout or "[]"):
+        result, cell = entry["result"], entry["cell"]
+        problem = result.get("solutionError")
+        if problem and problem.startswith("ModuleNotFoundError"):
+            print(f"note: could not check the solution for cell {cell!r} in "
+                  f"{tutorial.path.relative_to(ROOT)}: {problem}", file=sys.stderr)
+            continue
+        if problem:
+            fail(tutorial.path, f"the solution for cell {cell!r} raised {problem} when the "
+                                "build ran it after the page's earlier cells")
+        for row in result.get("rows", []):
+            error = row.get("solution", {}).get("error", "")
+            if error.startswith(("NameError", "SyntaxError")):
+                fail(tutorial.path, f"the input `{row['input']}` for cell {cell!r} gives "
+                                    f"{error} with the solution — is it spelled as the "
+                                    "page spells it?")
+
+
 DATASET_ATTRIBUTION_FIELDS = ("source", "license", "description")
 DATASET_EXTENSIONS = (".csv", ".txt")
 
@@ -4090,11 +4515,13 @@ def load(path: Path) -> Tutorial:
     build.py builds starts here.
     """
     meta, body = split_frontmatter(path.read_text(), path)
-    stripped, cells, blocks, hints, site_editors, questions, app_cells = extract_blocks(body, path)
+    (stripped, cells, blocks, hints, site_editors, questions, app_cells,
+     solutions, inputs_blocks) = extract_blocks(body, path)
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
     converted = place_hints(converted, hints, maths)
+    converted = place_cell_blocks(converted, solutions, inputs_blocks, cells, maths)
     body_html = place_blocks(converted, cells, blocks, maths, site_editors, questions, app_cells,
                               page=id_of(path), version=str(meta.get("version", "")))
     body_html, notes = extract_notes(body_html, path)
@@ -4559,6 +4986,14 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
             | ({"expect": c.expect} if c.expect else {})
             | ({"name": c.name} if c.name else {})
             | ({"type": c.type} if c.type != "python" else {})
+            # The comparison (#312) runs the first solution against the
+            # inputs, and the reader's own tests from the cell that names
+            # this one with `tests:`.
+            | ({"solution": c.solutions[0].code} if c.solutions else {})
+            | ({"inputs": [{"expr": case.expr, "label": case.label}
+                           for case in c.inputs.cases]} if c.inputs else {})
+            | ({"guess": True} if c.inputs and c.inputs.guess else {})
+            | ({"tests": c.tested_by} if c.tested_by else {})
             for c in tutorial.cells
         ],
     }
@@ -6251,6 +6686,8 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     for tutorial in tutorials:
         check_alt_text(tutorial)
         check_folds(tutorial)
+        toolkit = toolkit_for(tutorial, registry, groups)
+        check_solutions(tutorial, toolkit)
         # An archived tutorial belongs to no reading order, so there is no
         # previous and no next — only the way back.
         members = groups.get((tutorial.course, tutorial.series), [])
@@ -6266,7 +6703,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             context=context.get(tutorial.slug),
             registry=registry,
             glossary=cumulative_glossary(tutorial, registry, groups),
-            toolkit=toolkit_for(tutorial, registry, groups),
+            toolkit=toolkit,
             notes=[{"id": n.id, "html": n.html} for n in tutorial.notes],
             datasets=check_datasets(tutorial),
             groups=groups,

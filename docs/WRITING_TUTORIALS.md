@@ -379,10 +379,10 @@ a prediction, a hint, or a challenge. Write it after its cell. With a
 may follow it in any order, and every block uses the same `key: value`
 header lines a cell does.
 
-**Status.** `hint` is live now. The others are agreed syntax, and each goes
-live with its own pull request: `solution`, `inputs` and the comparison with
-#312, `predict` with #313, and `challenge` with #316. Until then, a block
-builds as a plain code block, so a page can be written against it now.
+**Status.** `hint`, `solution`, `inputs`, the comparison and a cell of the
+reader's own tests are live. `predict` goes live with #313 and `challenge`
+with #316; until then, each of those builds as a plain code block, so a page
+can be written against it now.
 
 ### solution
 
@@ -401,10 +401,20 @@ The same loop as the rocky planets, with a new list.
 ```
 ````
 
-`title:` is optional; the default is *one way to do it*. A cell may have
+`title:` is optional; the default is *One way to do it*. A cell may have
 more than one solution, shown in order, and the comparison uses the first.
-The build runs every solution with its inputs, and fails if one raises an
-error, so no value a reader is shown was never run.
+Only a Python cell can have one.
+
+The build runs every solution before a reader can open it. In a separate
+Python, it runs the page's own cells in order (a cell that fails as
+written is fine), then each solution with the cell's inputs, through the
+same function the button calls. A solution that raises an error stops the
+build, and so does an input the solution side cannot even name: a
+`NameError` or `SyntaxError` there is a typo in the page. Any other error an
+input raises is an outcome, and the table shows it. A machine without a
+package the page imports (pandas, say) gets a note, not a failure. Each cell
+gets 20 seconds, so a deliberate endless loop earlier on the page is a cell
+that fails, not a build that hangs.
 
 ### inputs
 
@@ -426,9 +436,10 @@ running it.
 
 ### The comparison
 
-A cell with a solution has a **Compare with a solution** button beside it.
-Running the cell never compares anything; the reader asks. The comparison
-is a small table:
+The inputs block becomes a table of the cases, with a **Compare with a
+solution** button under it. Running the cell never compares anything; the
+reader asks, and the button runs the cell as it stands first. The
+comparison fills in the table:
 
 | Input | What your code gave | What a solution gives |
 |---|---|---|
@@ -568,8 +579,9 @@ A downloaded or printed copy has the chosen world, or all of them, with a
 heading for each.
 
 A world the reader makes up for themselves (OOP's "your own world") is a
-variant with a neutral prompt and no solution. The comparison is offered
-only where a solution exists.
+variant with a neutral prompt and no solution. An inputs block there gives a
+**Try these on your code** button, and the table has only the reader's
+column.
 
 ---
 

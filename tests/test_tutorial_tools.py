@@ -1171,3 +1171,96 @@ class TestLoadToolkit:
         chosen = self.load({"tutorial": "one", "cell": "c", "reference": self.REFERENCE,
                             "mine": None})
         assert chosen["entries"][0]["from_reference"] == []
+
+
+class TestCompareWithASolution:
+    """tutorial_tools.compare() (#312): the reader's code and a solution,
+    case by case, in copies of the page namespace. Never a verdict."""
+
+    @pytest.fixture(autouse=True)
+    def page(self):
+        tt._page_globals.clear()
+        exec(
+            "def total_of(values):\n"
+            "    total = 0\n"
+            "    for value in values[:-1]:\n"
+            "        total = total + value\n"
+            "    return total\n"
+            "widths = [4879, 12104]\n",
+            tt._page_globals,
+        )
+        yield
+        tt._page_globals.clear()
+
+    def run(self, solution, cases, tests=None):
+        import asyncio
+        import json
+
+        inputs = json.dumps([{"expr": expr, "label": None} for expr in cases])
+        return json.loads(asyncio.run(tt.compare(solution, inputs, tests)))
+
+    SOLUTION = "def total_of(values):\n    return sum(values)\n"
+
+    def test_each_case_has_both_sides_and_says_whether_they_differ(self):
+        rows = self.run(self.SOLUTION, ["total_of([1, 2, 3])", "total_of([])"])["rows"]
+        assert rows[0]["yours"] == {"shown": "3"}
+        assert rows[0]["solution"] == {"shown": "6"}
+        assert rows[0]["differ"] is True
+        assert rows[1]["differ"] is False
+
+    def test_asking_changes_nothing_in_the_page(self):
+        self.run(self.SOLUTION + "widths.append(1)\n", ["widths"])
+        assert tt._page_globals["total_of"]([1, 2, 3]) == 3
+        assert tt._page_globals["widths"] == [4879, 12104]
+
+    def test_the_solution_sees_the_readers_data(self):
+        rows = self.run("total = sum(widths)\n", ["total"])["rows"]
+        assert rows[0]["solution"] == {"shown": "16983"}
+        assert rows[0]["yours"]["error"].startswith("NameError")
+
+    def test_an_error_is_an_outcome_on_either_side(self):
+        rows = self.run(self.SOLUTION, ["total_of(None)", "1 / 0"])["rows"]
+        assert rows[0]["yours"]["error"].startswith("TypeError")
+        assert rows[1]["yours"] == rows[1]["solution"] == {"error": "ZeroDivisionError: division by zero"}
+        assert rows[1]["differ"] is False
+
+    def test_close_floats_read_as_the_same_and_true_is_not_one(self):
+        assert tt._same(0.1 + 0.2, 0.3)
+        assert not tt._same(True, 1)
+        assert tt._same([1.0, (2, 3)], [1, (2, 3)])
+        assert not tt._same([1, 2], (1, 2))
+
+    def test_two_classes_with_the_same_state_read_as_the_same(self):
+        class Account:
+            def __init__(self, balance):
+                self.balance = balance
+        first = Account(5)
+
+        class Account:  # noqa: F811 - a second definition, as a solution makes
+            def __init__(self, balance):
+                self.balance = balance
+        assert tt._same(first, Account(5))
+        assert not tt._same(first, Account(6))
+
+    def test_a_solution_that_raises_is_reported_and_its_column_left_empty(self):
+        result = self.run("raise ValueError('nope')\n", ["total_of([1])"])
+        assert result["solutionError"] == "ValueError: nope"
+        assert "solution" not in result["rows"][0]
+
+    def test_with_no_solution_only_the_readers_side_is_filled(self):
+        row = self.run(None, ["total_of([1, 2])"])["rows"][0]
+        assert row == {"input": "total_of([1, 2])", "label": None, "yours": {"shown": "1"}}
+
+    def test_the_readers_tests_run_on_both_sides_statement_by_statement(self):
+        tests = "assert total_of([2, 2]) == 4\nx = total_of([7])\nx\n"
+        rows = self.run(self.SOLUTION, [], tests)["tests"]
+        assert [r["input"] for r in rows] == ["assert total_of([2, 2]) == 4", "x = total_of([7])", "x"]
+        assert rows[0]["yours"] == {"error": "AssertionError"}
+        assert rows[0]["solution"] == {"shown": "no error"}
+        assert rows[2]["yours"] == {"shown": "0"}
+        assert rows[2]["solution"] == {"shown": "7"}
+
+    def test_printing_goes_nowhere_and_a_long_value_is_cut(self, capsys):
+        rows = self.run("print('from the solution')\n", ["list(range(1000))"])["rows"]
+        assert "from the solution" not in capsys.readouterr().out
+        assert rows[0]["yours"]["shown"].endswith("(cut short)")

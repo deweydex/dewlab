@@ -62,6 +62,12 @@ def line_up(widths):
     ...
 ```
 
+```inputs
+line_up([4879, 12104, 12756, 6792])
+line_up([])          # an empty list
+line_up([-3, 3])     # a negative width makes no sense, but what happens?
+```
+
 ```solution
 title: with what you've met so far
 def line_up(widths):
@@ -77,12 +83,6 @@ def line_up(widths):
     return sum(widths)
 ---
 Python's own `sum()` is an accumulator somebody else wrote.
-```
-
-```inputs
-line_up([4879, 12104, 12756, 6792])
-line_up([])          # an empty list
-line_up([-3, 3])     # a negative width makes no sense, but what happens?
 ```
 
 ## 3. One planet short
@@ -101,6 +101,14 @@ for index in range(len(widths) - 1):
 print(total)
 ```
 
+```inputs
+total
+```
+
+```hint
+Can you print `index` inside the loop? Which indexes does it visit?
+```
+
 ```solution
 widths = [4879, 12104, 12756, 6792]
 total = 0
@@ -111,14 +119,6 @@ print(total)
 `range(len(widths) - 1)` gives 0, 1 and 2, so the last width, Mars, is
 never added. `range(len(widths))` gives all four indexes. A loop straight
 over the list, `for width in widths:`, cannot miss one at all.
-```
-
-```inputs
-total
-```
-
-```hint
-Can you print `index` inside the loop? Which indexes does it visit?
 ```
 
 ## 4. Not an equation

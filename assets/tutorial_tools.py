@@ -862,6 +862,217 @@ def reset_page_state() -> None:
     _widget_values.clear()
 
 
+# ---------------------------------------------------------------- comparing
+#
+# The comparison view (#312): what the reader's code gives for each of an
+# author's inputs, beside what one solution gives. It never says which is
+# right. It shows two values, and marks the rows where they differ.
+
+# Long enough for a short list or a small table's first lines; a value
+# longer than this is cut, and says so.
+_SHOWN_LIMIT = 400
+
+
+def _copy_namespace(namespace: dict) -> dict:
+    """A copy of the page namespace that running code in cannot change the
+    original through: every value deep-copied, with one memo shared across
+    them, so two names for one list are still two names for one list in the
+    copy. A value that cannot be copied (a module, an open database
+    connection) is shared as it is, and so is every dunder name, which is
+    Python's own bookkeeping rather than the reader's."""
+    import copy  # noqa: PLC0415 - only a comparison needs it
+
+    memo: dict = {}
+    out: dict = {}
+    for name, value in namespace.items():
+        if name.startswith("__"):
+            out[name] = value
+            continue
+        try:
+            out[name] = copy.deepcopy(value, memo)
+        except Exception:  # noqa: BLE001 - uncopyable values are shared instead
+            out[name] = value
+    return out
+
+
+async def _run_code(code: str, namespace: dict, filename: str) -> None:
+    """Run `code` in `namespace`, top-level `await` included: a solution may
+    `await load_csv(...)` the way a cell does."""
+    import ast  # noqa: PLC0415
+
+    compiled = compile(code, filename, "exec", flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
+    result = eval(compiled, namespace)  # noqa: S307 - the author's own solution
+    if asyncio.iscoroutine(result):
+        await result
+
+
+async def _evaluate(expression: str, namespace: dict) -> dict:
+    """One input's outcome: what it gave, or the error it raised."""
+    import ast  # noqa: PLC0415
+
+    try:
+        compiled = compile(expression, "<input>", "eval",
+                           flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
+        value = eval(compiled, namespace)  # noqa: S307 - the author's own input
+        if asyncio.iscoroutine(value):
+            value = await value
+    except BaseException as exc:  # noqa: BLE001 - an error is an outcome to show
+        kind, message = _describe_error(exc)
+        return {"error": kind, "message": message}
+    return {"value": value}
+
+
+def _shown(outcome: dict) -> dict:
+    """An outcome as the page shows it: plain strings, safe to send across
+    the Worker's postMessage boundary."""
+    if "error" in outcome:
+        text = outcome["error"] + (f": {outcome['message']}" if outcome["message"] else "")
+        return {"error": text}
+    if outcome.get("statement"):
+        return {"shown": "no error"}
+    try:
+        text = repr(outcome["value"])
+    except Exception:  # noqa: BLE001
+        text = f"<a {type(outcome['value']).__name__} that cannot be shown>"
+    if len(text) > _SHOWN_LIMIT:
+        text = text[:_SHOWN_LIMIT] + " … (cut short)"
+    return {"shown": text}
+
+
+def _same(a, b) -> bool:
+    """Whether two values should read as the same in the table.
+
+    Close floats are the same: 0.1 + 0.2 and 0.3 differ only in a digit
+    nobody asked about, and marking that row would be noise. True and 1 are
+    not: they print differently, and a reader who wrote one meant it.
+    Instances of two separately defined classes compare by their names and
+    their attributes, since the reader's class and the solution's are
+    never the same class object."""
+    import numbers  # noqa: PLC0415
+
+    if isinstance(a, bool) or isinstance(b, bool):
+        return type(a) is type(b) and a == b
+    if isinstance(a, numbers.Number) and isinstance(b, numbers.Number):
+        try:
+            import cmath  # noqa: PLC0415
+
+            return cmath.isclose(a, b, rel_tol=1e-9, abs_tol=1e-12)
+        except TypeError:
+            return a == b
+    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
+        return (type(a) is type(b) and len(a) == len(b)
+                and all(_same(x, y) for x, y in zip(a, b)))
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_same(a[k], b[k]) for k in a)
+    numpy = sys.modules.get("numpy")
+    if numpy is not None and (isinstance(a, numpy.ndarray) or isinstance(b, numpy.ndarray)):
+        try:
+            return bool(numpy.shape(a) == numpy.shape(b)
+                        and numpy.allclose(a, b, equal_nan=True))
+        except Exception:  # noqa: BLE001 - not numbers; fall through
+            pass
+    pandas = sys.modules.get("pandas")
+    if pandas is not None and isinstance(a, (pandas.DataFrame, pandas.Series)):
+        try:
+            return type(a) is type(b) and bool(a.equals(b))
+        except Exception:  # noqa: BLE001
+            return False
+    if (type(a).__name__ == type(b).__name__ and type(a).__eq__ is object.__eq__
+            and hasattr(a, "__dict__") and hasattr(b, "__dict__")):
+        return _same(vars(a), vars(b))
+    try:
+        return bool(a == b)
+    except Exception:  # noqa: BLE001 - an == that raises; compare what is shown
+        return repr(a) == repr(b)
+
+
+def _outcomes_same(yours: dict, theirs: dict) -> bool:
+    if "error" in yours or "error" in theirs:
+        return yours.get("error") == theirs.get("error")
+    return _same(yours["value"], theirs["value"])
+
+
+def _statements(code: str) -> list[str]:
+    """A reader's test cell, one top-level statement at a time, as source."""
+    import ast  # noqa: PLC0415
+
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return [code] if code.strip() else []
+    return [ast.get_source_segment(code, node) or "" for node in tree.body]
+
+
+async def _run_statement(statement: str, namespace: dict) -> dict:
+    """One test statement's outcome. An expression gives its value; any
+    other statement (an `assert`, an assignment) gives None when it runs
+    without raising."""
+    import ast  # noqa: PLC0415
+
+    try:
+        ast.parse(statement, mode="eval")
+    except SyntaxError:
+        try:
+            await _run_code(statement, namespace, "<your test>")
+        except BaseException as exc:  # noqa: BLE001
+            kind, message = _describe_error(exc)
+            return {"error": kind, "message": message}
+        return {"value": None, "statement": True}
+    return await _evaluate(statement, namespace)
+
+
+async def compare(solution: str | None, inputs_json: str = "[]",
+                  tests: str | None = None) -> str:
+    """What the reader's code gives for each input, beside what a solution
+    gives, as JSON for the page to draw.
+
+    Nothing here changes the reader's namespace. Their side runs in one copy
+    of it, taken now, after their own cell; the solution runs in a second
+    copy, so it sees the same data their code saw, and whatever it defines
+    replaces theirs only in that copy. With no solution, only their side is
+    filled in. `tests` is a cell of the reader's own tests: each statement
+    runs against their code and against the solution before the author's
+    inputs do. Printed output from either side is swallowed, and a figure
+    either side draws is closed, so none of it lands in the next cell run.
+    """
+    import contextlib  # noqa: PLC0415
+
+    inputs = json.loads(inputs_json or "[]")
+    pyplot = sys.modules.get("matplotlib.pyplot")
+    figures_before = set(pyplot.get_fignums()) if pyplot else set()
+    swallowed = io.StringIO()
+    result: dict = {"rows": [], "tests": [], "solutionError": None}
+    with contextlib.redirect_stdout(swallowed), contextlib.redirect_stderr(swallowed):
+        yours = _copy_namespace(_page_globals)
+        theirs = None
+        if solution is not None:
+            theirs = _copy_namespace(_page_globals)
+            try:
+                await _run_code(solution, theirs, "<a solution>")
+            except BaseException as exc:  # noqa: BLE001
+                kind, message = _describe_error(exc)
+                result["solutionError"] = f"{kind}: {message}" if message else kind
+                theirs = None
+
+        async def row(source: str, run, label: str | None = None) -> dict:
+            mine = await run(source, yours)
+            entry = {"input": source, "label": label, "yours": _shown(mine)}
+            if theirs is not None:
+                other = await run(source, theirs)
+                entry["solution"] = _shown(other)
+                entry["differ"] = not _outcomes_same(mine, other)
+            return entry
+
+        for statement in _statements(tests or ""):
+            result["tests"].append(await row(statement, _run_statement))
+        for case in inputs:
+            result["rows"].append(await row(case["expr"], _evaluate, case.get("label")))
+    if pyplot:
+        for number in set(pyplot.get_fignums()) - figures_before:
+            pyplot.close(number)
+    return json.dumps(result)
+
+
 def _run_toolkit_code(filename: str, code: str, namespace: dict) -> tuple[str, str] | None:
     """Run one piece of toolkit code into `namespace`, with everything it
     prints or shows collected and thrown away. None when it ran, or the

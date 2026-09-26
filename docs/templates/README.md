@@ -23,8 +23,10 @@ The templates are never published. `tests/build/test_templates.py` builds
 them in a temporary copy of the site on every test run, so a template that
 stops building fails there first.
 
-Some of the syntax they use is agreed but not yet live: the blocks arrive
-with #312 and #313, the worlds with #315 and the challenge with #316. Until
-then a block builds as a plain code block, and a world's `<div>` shows its
-contents without converting them. Each of those pull requests updates these
-templates, and the test, as it lands.
+Some of the syntax they use is agreed but not yet live: the predict block
+arrives with #313, the worlds with #315 and the challenge with #316. Until
+then a predict or challenge block builds as a plain code block, and a
+world's `<div>` shows its contents without converting them. Each of those
+pull requests updates these templates, and the test, as it lands. The
+solution and inputs blocks are live, and the build runs every solution in
+these templates on every test run.
