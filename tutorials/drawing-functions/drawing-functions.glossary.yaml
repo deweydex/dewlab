@@ -25,7 +25,7 @@ entries:
       A closure is a function that builds and returns another function.
       The new function remembers the values it was given. It is useful when
       you want a whole family of similar functions.
-    example: "def line(m, c):\n    def f(x):\n        return m * x + c\n    return f"
+    example: "def quadratic(a, b, c):\n    def f(x):\n        return a * x ** 2 + b * x + c\n    return f"
   - term: slope (m), intercept (c)
     kind: concept
     definition: >
@@ -33,6 +33,13 @@ entries:
       The slope m tilts the line, and the intercept c slides it up or down.
       Changing one does not change what the other does.
     example: "y = m*x + c"
+  - term: translation (of a graph)
+    kind: concept
+    definition: >
+      A translation moves a whole curve without changing its shape.
+      Adding 3 outside, as in x^2 + 3, moves the curve 3 up. Taking 2
+      away inside the bracket, as in (x - 2)^2, moves it 2 to the right,
+      the opposite way to the sign.
   - term: highest power sets the number of turns
     kind: concept
     definition: >
@@ -45,4 +52,5 @@ entries:
       An inverse function undoes what a function did: if f turns 3 into 6,
       its inverse turns 6 back into 3. Its graph is the original reflected
       across y = x. An inverse exists only when the function never sends
-      two different inputs to the same output.
+      two different inputs to the same output. The logarithm log2(x) is
+      the inverse of 2^x.
