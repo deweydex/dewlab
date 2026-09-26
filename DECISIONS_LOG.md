@@ -5129,7 +5129,7 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 **`dev/curriculum_map.py` finds "Where to read more" whatever its capitals.** It matched only "Where to Read More", which 35 pages use, so the titles in the other hundred-odd pages' bibliographies were counted as terms (*the python tutorial* in five pages). The build already matched the heading case-insensitively; the map now does too, with a test.
 
-**Read against `#say-it-directly` (7.256).** These pages were rewritten before that rule reached `main`, so the merge keeps this branch's versions of the sixteen pages #386 swept. All eighteen pages were then read against the rule, and about 490 sentences changed. As elsewhere, the glossary files were not swept.
+**Read against `#say-it-directly` (7.256).** These pages were rewritten before that rule reached `main`, so the merge keeps this branch's versions of the sixteen pages #386 swept. All eighteen pages were then read against the rule, and about 490 sentences changed. As elsewhere, the glossary files were not swept. A second pass after the merge compared every rewritten sentence with the one it replaced, and found 16 whose meaning had changed: a lost "among them" or "can" or "knowing", "almost never" turned into "only", a spike that no longer "stands out" among smaller ones, a line that contradicted the sentence before it. Each was put back to what the old sentence said, in the new style.
 
 *Cost to change: moderate. The order lives in the course file and topic groups; the pages' cross-references assume it, so moving logic back before Venn diagrams would mean moving the names of the two laws back as well. Cell ids are new throughout, which is free until 2 October.*
 
@@ -5162,3 +5162,19 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 - **The Irish Lotto** draws 6 numbers from 45 since 5 September 2026, not from 47 (lottery.ie, "Change is coming"; RTÉ, 16 July 2026). *Orders and choices*, its practice page, *How likely is it?*'s practice page and *Counting carefully*'s practice page now use C(45, 6) = 8,145,060, with every derived number run again.
 
 *Cost to change: a diagram is a function in its generator; an aside is a paragraph.*
+
+---
+
+**7.260 — Graphics ends with a scene the reader builds, and each page gains worlds and a NumPy fold.** The content issue (#327), part of #306.
+
+**Your own scene.** Until now, readers of the Graphics series only changed numbers in other people's shapes. The new closing page, `your-own-scene`, has three steps. The first is a wireframe of the reader's own: a pyramid to start from, or a lighthouse, a small solar system or the F from the matrices series in 3D, one per world. The second places three copies with translation and rotation, through one camera with a chosen field of view. The third is a turntable, a camera that flies, or edges sorted by depth (the painter's algorithm), each with working code in a fold so that every step can be reached. The tools from the four pages are gathered in `setup/graphics/scene.py`: 4×4 matrices, `chain`, `place`, `combine`, and a `draw_wireframe` that leaves out any edge behind the near plane, so the reader never meets the broken orbit by accident. There is a version for one person and a version for a group, and the page ends with reflection questions only.
+
+**Worlds and folds.** Each page now has world tasks: the Moon and the Sun (their sizes over their distances differ by about 3%, which is why eclipses happen), a photo on a wall seen at an angle, a starship and its model, a moon on a moving planet, a lane of beacons flown through, a spire, a sprite on a turning card, a castle's three towers, and a planet placed by "move out, then turn about the star". Each page also has a short "the same in NumPy" fold, following `matrices-in-numpy` (7.258).
+
+**Kept.** The deliberately broken orbit in "Through the camera" stays as it was. "Keep three things in mind" now appears once, on the first page; the second page says the same in one line.
+
+**Practice.** `a-ball-in-orbit-practice` grew from 3 problems to 10: frame rates, the hoop at eye level (a predict), how distance flattens the front-to-back difference, the near plane, two world orbits and two from earlier pages. The other practice pages gain a predict on the shape of a product, a house to build as a wireframe, and a `multiply(cube4, camera)` that silently uses 4 of the 8 corners, because `setup/cube.py`'s `dot` uses `zip`, which is the warning from `multiplying-grids`.
+
+**Found while checking.** `turning-a-cube` still named `rotate90` and "that gallery", both renamed in #326, and two pages said they began "with no code from earlier pages", which the matrices toolkit has made untrue. Drawing the planet task at first showed the quarter-turn planet behind the star; `rotation_y` sends it towards the camera, and the text now says so.
+
+*Cost to change: small. `your-own-scene` is a new id, the world cells' ids are new, and `setup/graphics/scene.py` is used only by the new page. Cell ids become a contract on 2 October.*

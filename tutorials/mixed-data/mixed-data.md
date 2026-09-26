@@ -52,7 +52,7 @@ def simulate(trial, n=100_000):
 
 
 def six():
-    """One trial: roll a die, and say whether it came up 6."""
+    """One trial: roll a die, and return True if it shows a 6."""
     return random.randint(1, 6) == 6
 
 
@@ -267,7 +267,7 @@ either the fan has failed *or* the load is above 90%.
    flips, and so does its boundary.
 
 **Think about:** suppose you write `temperature < 80` where you should
-write `<=`. Then one temperature fits neither condition.
+write `<=`. Then one temperature can fit neither condition.
 Which one? And how long would that bug take to find?
 
 **Try this next:** write a small loop that tests every combination of
@@ -316,7 +316,7 @@ happened.
 For a real service, report the median *and* a high percentile. The 95th
 percentile is the time that 95% of requests are no slower than. With
 only ten values, that is the slowest one: 98 ms. That outlier is
-somebody's slow request. It is not noise, and it is usually the
+somebody's slow request. It is not noise to delete, and it is usually the
 number that matters most.
 
 </details>

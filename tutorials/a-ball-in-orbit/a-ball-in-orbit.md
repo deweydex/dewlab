@@ -1,7 +1,10 @@
 ---
 title: "3D animation: a camera and a ball in orbit"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  starships: Starships, and the structures they are built from.
+  space-scenes: Stars, planets and the paths they take across the sky.
 covers:
   where-the-camera-stands:
     covers: [CMPS-LO4]
@@ -24,16 +27,8 @@ This tutorial changes both of those things. First the camera moves.
 Then a ball goes round in a circle, and we make it move on the screen.
 By the end you will have moved a camera, made a ball go round in a
 circle, and seen what happens when the ball passes behind the camera.
-All of it uses the same one division.
-
-Keep three things in mind as you go:
-
-- Every cell on this page is yours to change. Change a number, run it
-  again, and see what happens.
-- A cell that gives an error has told you something about a line, not
-  about you. There is one cell below that is *meant* to go wrong.
-- If a word is new, it is in bold the first time it appears, and the
-  Reference panel, on the left, has all of them.
+All of it uses the same one division. As on the last page, every cell
+is yours to change, and one cell below is meant to go wrong.
 
 ## Where the camera stands
 
@@ -47,9 +42,8 @@ position minus the camera's position. There are two steps, always in this order:
 1. Subtract the camera's position from the point.
 2. Divide by what is left of $z$.
 
-Each page here begins with no code from earlier pages. So the cell
-below starts with `project`, the divide from the last tutorial, exactly
-as it was. `project_from` is the new part. It does step 1, then step 2.
+The cell below starts with `project`, the divide from the last
+tutorial, exactly as it was. `project_from` is the new part. It does step 1, then step 2.
 
 ```python exec
 id: where-the-camera-stands-1
@@ -343,6 +337,130 @@ doing anything else.
 id: through-the-camera-2
 hint: An if right after ball_position, before project. Compare z with 0.1.
 ```
+
+<details class="dl-answer"><summary>the same in NumPy</summary>
+
+With [NumPy](tutorial:matrices-in-numpy), all 60 positions round the
+hoop are one array each, and the divide is one line for all of them:
+
+```python
+import numpy as np
+
+angles = np.linspace(0, 2 * np.pi, 60, endpoint=False)
+xs = 2 * np.cos(angles)
+ys = np.full(60, -0.8)
+zs = 5 + 2 * np.sin(angles)
+screen_xs, screen_ys = xs / zs, ys / zs
+print(round(screen_ys.min(), 3), round(screen_ys.max(), 3))
+```
+
+`np.linspace` makes 60 evenly spaced angles, and `np.full` makes 60
+copies of the height. The printout is the lowest and highest the ball
+is drawn: $-0.267$ at the front, at depth 3, and $-0.114$ at the back,
+at depth 7.
+
+</details>
+
+## Your world
+
+An orbit, or a camera that moves, in the world you chose.
+
+<div class="dl-world" data-world="space-scenes">
+
+A moon goes round a planet, and the planet goes round the hoop. The
+moon's circle has radius 0.5, and it goes round 12 times for each turn
+of the planet. Its position is the planet's, plus its own small circle
+in $x$ and $z$. Can you draw the moon's path on the screen?
+
+```python exec
+id: orbit-your-world--space-scenes
+```
+
+```hint
+For the angle `a` of one step, the moon is at the planet's `x + 0.5 *
+math.cos(12 * a)`, the same `y`, and `z + 0.5 * math.sin(12 * a)`. Use
+more steps than 60, say 360, so the loops are smooth.
+```
+
+```solution
+import math
+
+import matplotlib.pyplot as plt
+
+
+def ball_position(angle, radius=2, centre_depth=5, height=-0.8):
+    return radius * math.cos(angle), height, centre_depth + radius * math.sin(angle)
+
+
+xs, ys = [], []
+for step in range(360):
+    a = step * 2 * math.pi / 360
+    x, y, z = ball_position(a)
+    moon_x, moon_z = x + 0.5 * math.cos(12 * a), z + 0.5 * math.sin(12 * a)
+    xs.append(moon_x / moon_z)
+    ys.append(y / moon_z)
+plt.figure(figsize=(6, 3))
+plt.plot(xs, ys)
+plt.gca().set_aspect("equal")
+---
+The path is the planet's oval with 12 small loops on it. The loops are
+bigger at the front, where they are nearer, and squashed together at
+the back.
+```
+
+</div>
+
+<div class="dl-world" data-world="starships">
+
+A ship flies down a lane of beacons, with the camera on board. Can you
+draw the beacons from the camera at depths 0, 2 and 4, side by side?
+The beacons are the posts from the last page. Skip any beacon less than
+0.1 in front of the camera, as in "Through the camera".
+
+```python exec
+id: orbit-your-world--starships
+```
+
+```hint
+`project_from` already subtracts the camera. Before projecting a
+beacon, check its depth from the camera, `depth - camera_z`, and
+`continue` if it is below 0.1. `plt.subplots(1, 3)` gives three
+pictures side by side.
+```
+
+```solution
+import matplotlib.pyplot as plt
+
+
+def project_from(point, camera):
+    x, y, z = point
+    camera_x, camera_y, camera_z = camera
+    depth = z - camera_z
+    return (x - camera_x) / depth, (y - camera_y) / depth
+
+
+figure, frames = plt.subplots(1, 3, figsize=(9, 3))
+for frame, camera_z in zip(frames, [0, 2, 4]):
+    plt.sca(frame)
+    for depth in [2, 3, 4, 6, 9, 14]:
+        if depth - camera_z < 0.1:
+            continue
+        for side in [-1.5, 1.5]:
+            foot = project_from((side, -1, depth), (0, 0, camera_z))
+            top = project_from((side, 1, depth), (0, 0, camera_z))
+            plt.plot([foot[0], top[0]], [foot[1], top[1]], color="C0", linewidth=3)
+    plt.xlim(-1, 1)
+    plt.ylim(-1, 1)
+    frame.set_aspect("equal")
+    frame.set_title(f"camera at depth {camera_z}")
+---
+As the camera moves forward, the near beacons grow and slide out to the
+edges, then drop out of the picture once the camera has passed them.
+At depth 4, the beacons at depths 2 and 3 are behind you, and the one
+at depth 4 is level with you, so all three are skipped.
+```
+
+</div>
 
 ## Reflection
 
