@@ -15,12 +15,13 @@ entries:
   - term: completing the square
     kind: concept
     definition: >
-      Completing the square is rewriting x^2 + bx + c as (x - h)^2 + k. It
-      is the same function, written so that its vertex shows. Halve b and
-      change its sign to get h, then k = c - h^2.
+      Completing the square is rewriting ax^2 + bx + c as a(x - h)^2 + k.
+      It is the same function, written so that its vertex shows. The
+      numbers are h = -b / (2a) and k = c - a*h^2.
   - term: "vertex form: a(x - h)^2 + k"
     kind: formula
     definition: >
       This form of a quadratic shows its vertex, at (h, k). The vertex can
-      be read from the expression because a square is never negative.
-    example: "x^2 + 6x + 5 = (x + 3)^2 - 4, vertex at (-3, -4)"
+      be read from the expression because a square is never negative. The
+      first number flips its sign: (x + 3)^2 has h = -3.
+    example: "2x^2 + 12x + 5 = 2(x + 3)^2 - 13, vertex at (-3, -13)"
