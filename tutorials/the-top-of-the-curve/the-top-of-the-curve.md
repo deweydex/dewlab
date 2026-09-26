@@ -1,7 +1,7 @@
 ---
 title: "The top of the curve: maximum and minimum"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   a-letter-that-sits-below-the-line:
     covers: [MIT-3.4]
@@ -396,29 +396,35 @@ title: some steps
 a second formula?
 ```
 
-The tests check vertices we already know: the square, the bowl, and
+How does your `vertex` compare with one way to write it? The table
+below runs the same calls on your function and on a solution, side by
+side. Its rows are vertices we already know: the square, the bowl, and
 the footballer's kick from
 [Solving for x](tutorial:solving-for-x#the-quadratic-formula), whose
-height was $1 + 14t - 4.9t^2$. The last test checks the mirror: one
-step either side of the vertex, the rule gives the same value. Until
-`vertex` is written, the first test stops with an error.
+height was $1 + 14t - 4.9t^2$. The last two rows show the mirror: one
+step either side of the vertex, the rule gives the same value. Where a
+row is different, try that call on its own.
 
-```python exec
-id: the-top-toolkit-tests
-assert vertex(1, -6, 13) == (3, 4)
+```inputs
+for: the-top-toolkit
+vertex(1, -6, 13)                                     # the square
+vertex(400, -440, 112)                                # the bowl
+vertex(-4.9, 14, 1)                                   # the footballer's kick
+evaluate([-5, -3, 2], vertex(2, -3, -5)[0] - 1)       # one step left of the vertex...
+evaluate([-5, -3, 2], vertex(2, -3, -5)[0] + 1)       # ...and one step right: the same value
+```
 
-bottom_t, bottom_height = vertex(400, -440, 112)
-assert close_enough(bottom_t, 0.55)
-assert close_enough(bottom_height, -9)
+```solution
+for: the-top-toolkit
+def vertex(a, b, c):
+    """Return the vertex of the parabola y = ax² + bx + c as a pair (x, y).
 
-top_time, top_height = vertex(-4.9, 14, 1)
-assert close_enough(top_time, 14 / 9.8)
-assert close_enough(top_height, 11)
-
-x, y = vertex(2, -3, -5)
-assert close_enough(evaluate([-5, -3, 2], x - 1), evaluate([-5, -3, 2], x + 1))
-print("vertex keeps its promise.")
-print("The ball is highest after", round(top_time, 2), "s, at", round(top_height, 2), "m.")
+    It is the highest point when a is negative, and the lowest when a
+    is positive. a must not be 0.
+    """
+    x = -b / (2 * a)
+    y = a * x ** 2 + b * x + c
+    return (x, y)
 ```
 
 The ball climbs for about 1.43 seconds and reaches 11 m, halfway

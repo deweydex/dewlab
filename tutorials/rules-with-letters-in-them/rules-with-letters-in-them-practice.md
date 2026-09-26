@@ -2,7 +2,7 @@
 title: "Rules with letters in them: expressions, equations and identities — Practice"
 practice_for: rules-with-letters-in-them
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 ---
 
 # Rules with letters in them: expressions, equations and identities — Practice
@@ -182,7 +182,6 @@ $3(2x + 1) - 2(x - 4) = 6x + 3 - 2x + 8 = 4x + 11$.
 ```python
 for x in range(-10, 11):
     assert 3 * (2 * x + 1) - 2 * (x - 4) == evaluate([11, 4], x)
-print("4x + 11 checks out.")
 ```
 
 Many people write $-2(x - 4) = -2x - 8$. The check shows the difference at once.
@@ -191,8 +190,9 @@ At $x = 0$ the two sides would be 11 and $-5$.
 </details>
 
 **8. Fix.** Schlomi, who is learning Python too, wrote her own version
-of `evaluate`, with two tests. Run it, see which test fails, and change
-one line so that both pass.
+of `evaluate`. $x^3 - 4x$ and $x^2 - 4$ are both 0 at $x = 2$. Her
+function gives 0 for the first one, but 4 for the second. Can you find
+the line that does not do what she meant, and change it?
 
 ```python exec
 id: rules-with-practice-fix-evaluate
@@ -202,36 +202,28 @@ def value_of(coefficients, x):
     for power in range(1, len(coefficients)):
         value = value + coefficients[power] * x ** power
     return value
-
-assert value_of([0, -4, 0, 1], 2) == 0, "x cubed take away 4x, at 2"
-assert value_of([-4, 0, 1], 2) == 0, "x squared take away 4, at 2"
-print("value_of keeps its promise.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+value_of([0, -4, 0, 1], 2)    # x cubed take away 4x, at 2
+value_of([-4, 0, 1], 2)       # x squared take away 4, at 2
+```
 
-The second test fails. `value_of([-4, 0, 1], 2)` gives 4, not 0. The
-loop starts at power 1, so it never adds the constant term, at index 0.
-Starting at 0 fixes it:
-
-```python
+```solution
 def value_of(coefficients, x):
     """Return the value of a polynomial at x. coefficients is lowest power first."""
     value = 0
     for power in range(len(coefficients)):
         value = value + coefficients[power] * x ** power
     return value
+---
+The loop started at power 1, so it never added the constant term, at
+index 0. Starting at 0 adds it.
 
-assert value_of([0, -4, 0, 1], 2) == 0
-assert value_of([-4, 0, 1], 2) == 0
-print("value_of keeps its promise.")
+The first polynomial gave 0 even so, because its constant term is 0.
+The second one showed the gap. A polynomial with no constant could
+never show it.
 ```
-
-The first test passed even so, because its constant term is 0.
-Schlomi's second test found the gap. A test on a polynomial with no
-constant could never find it.
-
-</details>
 
 **9. Make.** A square icon is $x$ pixels on each side. A margin adds
 4 pixels to its width and 6 to its height. Expand $(x + 4)(x + 6)$, the
@@ -250,7 +242,6 @@ $(x + 4)(x + 6) = x^2 + 10x + 24$, which is the list `[24, 10, 1]`.
 ```python
 for side in range(0, 101):
     assert evaluate([24, 10, 1], side) == (side + 4) * (side + 6)
-print("x^2 + 10x + 24 checks out.")
 ```
 
 For an icon 40 pixels wide, the area with the margin is
@@ -356,7 +347,8 @@ for chosen in range(5):
 </details>
 
 **13. Fix.** This version of `expand_brackets` gives a different list
-from the tutorial's for $(x + 3)(x + 5)$. Find the line that causes it.
+from the tutorial's for $(x + 3)(x + 5)$. Can you find the line that
+causes it?
 
 ```python exec
 id: rules-with-practice-fix-expand
@@ -369,25 +361,31 @@ def expand_quickly(first, second):
     return expanded
 
 print(expand_quickly([3, 1], [5, 1]))
-assert expand_quickly([3, 1], [5, 1]) == [15, 8, 1]
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+expand_quickly([3, 1], [5, 1])    # (x + 3)(x + 5)
+```
 
-It prints `[15, 5, 1]`, and the test fails. The line inside the loops
-puts each product into its place, and so it replaces what was there.
-Two pieces land at index 1, $3x$ and $5x$, and only the last one is
-kept. Like terms need adding:
-
-```python
+```solution
+def expand_quickly(first, second):
+    """Return the coefficients of first times second, with the brackets multiplied out."""
+    expanded = [0] * (len(first) + len(second) - 1)
+    for i in range(len(first)):
+        for j in range(len(second)):
             expanded[i + j] = expanded[i + j] + first[i] * second[j]
+    return expanded
+---
+The first version prints `[15, 5, 1]`, not `[15, 8, 1]`. The line
+inside the loops puts each product into its place, and so it replaces
+what was there. Two pieces land at index 1, $3x$ and $5x$, and only the
+last one is kept. Like terms need adding, so the line now adds each
+product to what is already at `expanded[i + j]`.
+
+For a bracket times a single number, no two pieces ever land in the
+same place, so the two versions agree there and the difference stays
+hidden.
 ```
-
-Now it gives `[15, 8, 1]`. For a bracket times a single number, no two
-pieces ever land in the same place, so the two versions agree there and
-the difference stays hidden.
-
-</details>
 
 **14. Another way.** $3x^2 + 5x - 2$ can be written with no powers at
 all: $(3x + 5)x - 2$. Start with the highest coefficient. Multiply by

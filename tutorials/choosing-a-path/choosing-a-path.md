@@ -1,7 +1,7 @@
 ---
 title: "Choosing a path: if, elif and else"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   pictures-on-a-number-line:
     touches: [MIT-1.11]
@@ -511,23 +511,32 @@ def between(value, low, high):
     return low <= value <= high
 ```
 
-Run your cell, then run the tests below. Each `assert` checks one part
-of the promise, and stays quiet when it holds. We write `== True` and
-`== False` so that a function which returns nothing at all fails the
-test. Until you write your `return` line, expect the first test to stop
-with an `AssertionError`, because the promise is not kept yet.
+Run your cell. Then how does your `between` compare with one way to
+write it? The table below runs the same calls on your function and on a
+solution, side by side. Until you write your `return` line, your column
+shows `None`. A function with no `return` line returns `None`, Python's
+value for nothing.
 
-```python exec
-id: choosing-between-2
-assert between(20, 0, 35) == True
-assert between(0, 0, 35) == True    # the low end counts
-assert between(35, 0, 35) == True   # so does the high end
-assert between(-1, 0, 35) == False
-assert between(36, 0, 35) == False
-print("All five tests pass.")
+```inputs
+for: choosing-between-toolkit
+between(20, 0, 35)
+between(0, 0, 35)     # the low end counts
+between(35, 0, 35)    # so does the high end
+between(-1, 0, 35)
+between(36, 0, 35)
 ```
 
-Two tests sit on the ends, and two one step outside. A mistake like `<`
+```solution
+for: choosing-between-toolkit
+def between(value, low, high):
+    """Return True when low <= value <= high, with both ends included.
+
+    between(20, 0, 35) is True. between(36, 0, 35) is False.
+    """
+    return low <= value <= high
+```
+
+Two rows sit on the ends, and two one step outside. A mistake like `<`
 in place of `<=` would hide at the ends.
 
 ### Your turn

@@ -1,7 +1,7 @@
 ---
 title: "True, false and every case: truth tables"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   true-and-false-are-values:
     touches: [MIT-2.4]
@@ -440,22 +440,59 @@ truth_table(unlock, ["paid_up", "dock_working"])
 
 The table comes from the `print` lines. Under it is what `truth_table`
 returned, the column `[False, False, False, True]`. We read what is
-printed. Other code, including tests, uses what is returned.
+printed. Other code, like the comparison below, uses what is returned.
 
-The tests below check the promise. Each one prints its table as it
-runs, and the `assert` checks the column. Until your three-input branch
-is written, expect the last test to stop with an `AssertionError`.
+How does your `truth_table` compare with one way to write it? The
+comparison below runs the same calls on your function and on a
+solution, side by side, and shows the column each call returns. Until
+your three-input branch is written, its last row is different.
 
-```python exec
-id: true-false-tool-3
-assert truth_table(unlock, ["paid_up", "dock_working"]) == [False, False, False, True]
-assert truth_table(unlock_phone, ["fingerprint_ok", "pin_ok"]) == [False, True, True, True]
-assert len(truth_table(log_in, ["password_ok", "at_office", "code_ok"])) == 8
-print("truth_table keeps its promise.")
+```inputs
+for: true-false-toolkit
+truth_table(unlock, ["paid_up", "dock_working"])
+truth_table(unlock_phone, ["fingerprint_ok", "pin_ok"])
+len(truth_table(log_in, ["password_ok", "at_office", "code_ok"]))    # how many rows
 ```
 
-The last test only checks that there are $2^3 = 8$ rows. Can you add an
-`assert` for the whole login column? The section "How many rows?" has the answer.
+```solution
+for: true-false-toolkit
+def truth_table(rule, names):
+    """Print every row of rule, for one, two or three True/False inputs.
+
+    names holds the name of each input, in order. Give back the
+    result column as a list, from the all-False row to the all-True row.
+    """
+    results = []
+    if len(names) == 1:
+        print(names[0], "result", sep="\t")
+        for a in [False, True]:
+            result = rule(a)
+            print(a, result, sep="\t")
+            results.append(result)
+    elif len(names) == 2:
+        print(names[0], names[1], "result", sep="\t")
+        for a in [False, True]:
+            for b in [False, True]:
+                result = rule(a, b)
+                print(a, b, result, sep="\t")
+                results.append(result)
+    elif len(names) == 3:
+        print(names[0], names[1], names[2], "result", sep="\t")
+        for a in [False, True]:
+            for b in [False, True]:
+                for c in [False, True]:
+                    result = rule(a, b, c)
+                    print(a, b, c, result, sep="\t")
+                    results.append(result)
+    else:
+        print("truth_table works for one, two or three names.")
+    return results
+```
+
+The last row of the comparison shows only how many rows the login
+table has, $2^3 = 8$. What do you
+expect the whole login column to be? The section "How many rows?" has
+the answer.
 
 ### Your turn: a digit display
 

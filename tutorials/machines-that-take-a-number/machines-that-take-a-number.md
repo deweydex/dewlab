@@ -1,7 +1,7 @@
 ---
 title: "Machines that take a number: functions in maths and code"
 year: "2026-2027"
-version: 2026.09.25.2
+version: 2026.09.26.1
 covers:
   a-machine-with-one-slot:
     covers: [MIT-3.1]
@@ -556,18 +556,30 @@ title: some steps
 hands back a machine, and which one hands back a number?
 ```
 
-Now the tests. Until you write `compose`, the first test stops with an
-error. That is the test doing its job. What do you notice about the
-third test?
+How does your `compose` compare with one way to write it? The table
+below runs the same calls on yours and on a solution, side by side.
+Where a row is different, try that call on its own. What do you notice
+about the fourth row?
 
-```python exec
-id: machines-toolkit-tests
-reading_celsius = compose(sensor_celsius, reading_volts)
-assert reading_celsius(154) == sensor_celsius(reading_volts(154))
-assert compose(sensor_celsius, volts_for)(25) == 25
-assert compose(volts_for, sensor_celsius)(0.75) == 0.75
-assert compose(math.sqrt, square)(-3) == 3
-print("compose keeps its promise.")
+```inputs
+for: machines-toolkit
+compose(sensor_celsius, reading_volts)(154)    # the joined machine...
+sensor_celsius(reading_volts(154))             # ...and the two, one after the other
+compose(sensor_celsius, volts_for)(25)
+compose(volts_for, sensor_celsius)(0.75)
+compose(math.sqrt, square)(-3)
+```
+
+```solution
+for: machines-toolkit
+def compose(outer, inner):
+    """Return a new function that runs inner on its input, then outer on the result.
+
+    compose(outer, inner)(x) gives the same answer as outer(inner(x)).
+    """
+    def both(x):
+        return outer(inner(x))
+    return both
 ```
 
 <details class="dl-answer"><summary>answer</summary>
@@ -588,9 +600,9 @@ def compose(outer, inner):
 
 </details>
 
-The third test joins `sensor_celsius` to its own inverse, and 0.75
+The fourth row joins `sensor_celsius` to its own inverse, and 0.75
 comes straight back out. That is one way to say what an inverse is:
-$f^{-1}(f(x)) = x$ for every $x$ in the domain. The last test is the
+$f^{-1}(f(x)) = x$ for every $x$ in the domain. The last row is the
 square root failing to undo squaring: −3 went in, and 3 came out.
 
 One thing may seem strange. `both` is made inside `compose`, and still
@@ -601,8 +613,9 @@ explains how.
 
 ### Your turn
 
-1. Use `reading_celsius` from the tests on the readings 102, 205 and
-   300. Before you run it, which one is close to freezing?
+1. `compose(sensor_celsius, reading_volts)` turns a board's reading into
+   °C. Give it the name `reading_celsius`, and use it on the readings
+   102, 205 and 300. Before you run it, which one is close to freezing?
 2. Use `compose` to make `lm35_reading_celsius`, for a board with the
    LM35 chip from the first Your turn. What does a reading of 51 give?
 

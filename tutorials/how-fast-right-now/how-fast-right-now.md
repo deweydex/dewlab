@@ -1,7 +1,7 @@
 ---
 title: "How fast, right now? The derivative"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   distance-at-every-second:
     covers: [MIT-3.6]
@@ -310,8 +310,28 @@ is
 
 $$\frac{f(a + h) - f(a - h)}{2h}$$
 
-and it has the same limit, the derivative. Now it becomes a tool. Here
-is its promise. You write the body.
+and it has the same limit, the derivative. Now it becomes a tool.
+Before you write it, here are three rules whose slopes we already know.
+A straight line has the same slope everywhere, as on
+[Straight lines](tutorial:straight-lines#a-line-as-a-rule-y-mx-c). The
+kicked ball on
+[Drawing a rule](tutorial:drawing-a-rule#curves-that-bend-parabolas-and-cubics)
+is at its top after 2 seconds, where for a moment it is going neither
+up nor down. Run this cell to make the three rules.
+
+```python exec
+id: how-fast-known-slopes
+def straight_line(x):
+    return 1.5 * x + 4
+
+def ball_height(seconds):
+    return 20 * seconds - 5 * seconds ** 2
+
+def squared(x):
+    return x ** 2
+```
+
+Here is the tool's promise. You write the body.
 
 ```python exec
 id: how-fast-toolkit
@@ -336,46 +356,22 @@ def derivative_at(rule, x, step=1e-6):
     return (rule(x + step) - rule(x - step)) / (2 * step)
 ```
 
-The tests use slopes we already know. A straight line has the same
-slope everywhere, as on
-[Straight lines](tutorial:straight-lines#a-line-as-a-rule-y-mx-c). The
-kicked ball on
-[Drawing a rule](tutorial:drawing-a-rule#curves-that-bend-parabolas-and-cubics)
-is at its top after 2 seconds, where for a moment it is going neither
-up nor down. Until `derivative_at` is written, the first test stops
-with a `TypeError`, because `...` returns `None`.
+How does your `derivative_at` compare with one way to write it? The
+table below uses the slopes we know. The line's slope is 1.5, the
+slope of $x^2$ at 3 is 6, and the ball's slope at its top is 0. The
+hailstone's slope at 3 seconds is between the right-hand and left-hand
+chords from earlier on this page. While the body is still `...`, your column shows `None`.
 
-```python exec
-id: how-fast-toolkit-tests
-def straight_line(x):
-    return 1.5 * x + 4
-
-def ball_height(seconds):
-    return 20 * seconds - 5 * seconds ** 2
-
-def squared(x):
-    return x ** 2
-
-assert close_enough(derivative_at(straight_line, 7), 1.5, tolerance=1e-6), "a line's slope"
-assert close_enough(derivative_at(squared, 3), 6, tolerance=1e-6)
-assert close_enough(derivative_at(ball_height, 2), 0, tolerance=1e-6), "the top"
-assert 11.0142 < derivative_at(fall_distance, 3) < 11.0158, "between the chords"
-print("derivative_at keeps its promise:", derivative_at(fall_distance, 3))
+```inputs
+for: how-fast-toolkit
+derivative_at(straight_line, 7)    # a line's slope
+derivative_at(squared, 3)
+derivative_at(ball_height, 2)      # the top
+derivative_at(fall_distance, 3)    # between the chords, 11.0142 and 11.0158
 ```
 
-```hint
-Try `print(derivative_at(squared, 3))` on its own. What came back?
-Which two values of the rule does the centred chord subtract, and what
-does it divide by?
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. Yours may be different and work too. One line does
-it. It divides the rise of the centred chord by its run, which is two
-steps long.
-
-```python
+```solution
+for: how-fast-toolkit
 def derivative_at(rule, x, step=1e-6):
     """Return the slope of rule at x: the slope of a very short chord centred on x.
 
@@ -383,18 +379,27 @@ def derivative_at(rule, x, step=1e-6):
     For the rule x squared, derivative_at at 3 is about 6.
     """
     return (rule(x + step) - rule(x - step)) / (2 * step)
+---
+One line does it. It divides the rise of the centred chord by its run,
+which is two steps long.
 ```
 
-</details>
+```hint
+for: how-fast-toolkit
+after: 3 runs
+Which row is different? Try `print(derivative_at(squared, 3))` on its
+own. What came back? Which two values of the rule does the centred
+chord subtract, and what does it divide by?
+```
 
 The hailstone's speed at 3 seconds is 11.01498 metres a second. The
-tests use a tolerance of $10^{-6}$, not the usual $10^{-9}$. The next
+other rows are close to 1.5, 6 and 0, but not exactly equal. The next
 section says why.
 
 ## Why the step cannot be 0, or too small
 
-If you have not written `derivative_at` yet, open the answer under the
-tests and copy it into the stub.
+If you have not written `derivative_at` yet, open the solution under
+the table and copy it into the stub.
 
 Why not take a step of 0, and get the exact slope? This cell is meant
 to stop with an error.
@@ -492,8 +497,8 @@ is the slope of that nearly-straight piece.
    it speeding up fastest?
 2. Draw the tangent line at 1 second, the way the cell above drew it at
    3.
-3. The ball from the tests: find `derivative_at(ball_height, t)` for
-   $t$ = 0, 1, 2, 3 and 4. What does a negative answer mean for the
+3. The kicked ball: find `derivative_at(ball_height, t)` for $t$ = 0,
+   1, 2, 3 and 4. What does a negative answer mean for the
    ball?
 
 ```python exec

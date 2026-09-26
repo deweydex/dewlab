@@ -354,9 +354,9 @@ def all_pairs(first, second):
 
 </details>
 
-The second and third rows are the counting principle, side by side. The cells
-from here on use `all_pairs`. If you have not written it yet, copy the
-answer above into the stub and run it.
+The second and third rows are the counting principle, side by side.
+The cells from here on use `all_pairs`. If you have not written it yet,
+copy the answer above into the stub and run it.
 
 A pair can itself go into a pair. What do you think this cell prints
 last?

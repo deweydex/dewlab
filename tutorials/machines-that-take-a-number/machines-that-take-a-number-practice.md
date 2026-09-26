@@ -2,7 +2,7 @@
 title: "Machines that take a number: functions in maths and code — Practice"
 practice_for: machines-that-take-a-number
 year: "2026-2027"
-version: 2026.09.25.2
+version: 2026.09.26.1
 ---
 
 # Machines that take a number: functions in maths and code — Practice
@@ -216,8 +216,9 @@ want the bonus before the power-up.
 **7. Fix.** Schlomo, who is learning Python too, has a phone at 20%
 charge. It charges 1.5 percentage points every minute. He writes
 `charge_after`, and then `minutes_for`, meant to be its inverse: how
-many minutes it takes to reach a charge. His test fails. Run it, read
-the error, and fix `minutes_for`.
+many minutes it takes to reach a charge. Forty minutes of charging
+take the phone to 80%, but `minutes_for(charge_after(40))` is not 40.
+Can you find the line that does not do what Schlomo meant?
 
 ```python exec
 id: machines-practice-fix-charge
@@ -229,10 +230,31 @@ def charge_after(minutes):
 def minutes_for(percent):
     """Return how many minutes of charging it takes to reach percent."""
     return percent / 1.5 - 20
+```
+
+```inputs
+minutes_for(charge_after(40))
+```
+
+```solution
+def charge_after(minutes):
+    """Return the phone's charge, in percent, after charging for minutes."""
+    return 20 + 1.5 * minutes
 
 
-assert minutes_for(charge_after(40)) == 40
-print("minutes_for undoes charge_after.")
+def minutes_for(percent):
+    """Return how many minutes of charging it takes to reach percent."""
+    return (percent - 20) / 1.5
+---
+Schlomo had the two steps that undo `charge_after`, but in the same
+order as `charge_after` does them.
+`charge_after` multiplies by 1.5 and then adds 20, so the inverse must
+subtract 20 first, and then divide by 1.5.
+
+Now `minutes_for(80)` is `40.0`. The old version
+gave $80 \div 1.5 - 20$, about 33.3. And `minutes_for(110)` gives 60
+minutes for a charge no phone can reach. 110% is outside the range of
+`charge_after`, so it is outside the domain of its inverse.
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -248,26 +270,6 @@ first?
 
 **Try this next:** what does `minutes_for(110)` give? Why does that
 answer mean nothing?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-Schlomo had the two steps that undo `charge_after`, but in the same
-order as `charge_after` does them.
-`charge_after` multiplies by 1.5 and then adds 20, so the inverse must
-subtract 20 first, and then divide by 1.5:
-
-```python
-def minutes_for(percent):
-    """Return how many minutes of charging it takes to reach percent."""
-    return (percent - 20) / 1.5
-```
-
-Now `minutes_for(80)` is `40.0`, and the test passes. The old version
-gave $80 \div 1.5 - 20$, about 33.3. And `minutes_for(110)` gives 60
-minutes for a charge no phone can reach. 110% is outside the range of
-`charge_after`, so it is outside the domain of its inverse.
 
 </details>
 

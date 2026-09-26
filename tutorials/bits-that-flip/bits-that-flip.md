@@ -1,7 +1,7 @@
 ---
 title: "Bits that flip: XOR and parity"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   xor-on-single-bits:
     covers: [MIT-2.4]
@@ -319,28 +319,45 @@ def parity_bit(bits):
     return parity
 ```
 
-Then run the tests. Until the gap is filled, the function always gives 0,
-so expect the first test to stop with an `AssertionError`. The test is
-telling you that the function does not keep its promise yet.
+How does your `parity_bit` compare with one way to write it? The table
+below runs the same calls on your function and on a solution, side by
+side. Until the gap is filled, your function always gives 0, so some
+rows are different.
 
-```python exec
-id: bits-toolkit-tests
-assert parity_bit("1011") == 1        # three 1s: odd, so add a 1
-assert parity_bit("1001") == 0        # two 1s: already even
-assert parity_bit("00001110") == 1    # the buoy's 14
-assert parity_bit("") == 0            # no 1s at all is an even number
-assert parity_bit([1, 1, 1]) == 1     # a list works too
-assert parity_bit(to_binary(14)) == 1
-print("parity_bit keeps its promise.")
+```inputs
+for: bits-toolkit
+parity_bit("1011")        # three 1s: odd, so add a 1
+parity_bit("1001")        # two 1s: already even
+parity_bit("00001110")    # the buoy's 14
+parity_bit("")            # no 1s at all is an even number
+parity_bit([1, 1, 1])     # a list works too
+parity_bit(to_binary(14))
+```
+
+```solution
+for: bits-toolkit
+def parity_bit(bits):
+    """Return the bit, 0 or 1, that makes the number of 1s even.
+
+    bits is a string of 0s and 1s, like "1011", or a list like [1, 0, 1, 1].
+    parity_bit("1011") is 1, because "1011" has three 1s.
+    """
+    parity = 0
+    for bit in bits:
+        parity = parity ^ int(bit)
+    return parity
 ```
 
 ```hint
-Which test does the error point at? What did you expect `parity_bit` to
-give there, and what does it give now?
+for: bits-toolkit
+after: 3 runs
+Which row is different? What did you expect `parity_bit` to give there,
+and what does it give now?
 ```
 
 ```hint
-after: 12 errors
+for: bits-toolkit
+after: 8 runs
 title: some steps
 1. The loop gives the name `bit` to each character in turn: `"1"`, then
    `"0"`, and so on.
@@ -353,7 +370,8 @@ title: some steps
 ## Catching a flipped bit
 
 Now let's send the reading. The cells in this section use your own
-`parity_bit`, so finish it and pass the tests before you go on.
+`parity_bit`, so finish it before you go on. The comparison above shows
+where it differs from a solution.
 
 The buoy sends the byte for 14 and its parity bit. On the way, the radio noise flips one bit. We can play the noise
 ourselves with a mask: XOR with `0b00000100` flips the bit worth 4.

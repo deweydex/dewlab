@@ -1,7 +1,7 @@
 ---
 title: "How likely is it? Probability and simulation"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   a-scale-from-0-to-1:
     covers: [MIT-5.6]
@@ -303,31 +303,56 @@ def simulate(trial, times):
     return successes / times
 ```
 
-We must be careful when we test something random, because we cannot
-know its exact answer. So the first two tests use trials whose answers are fixed. The
-last test checks that 10,000 fair tosses give heads between 45% and
-55% of the time, with `between` from
-[Choosing a path](tutorial:choosing-a-path). A fair coin lands outside
-that range far less often than once in a billion billion tries. Until
-you write `simulate`, this cell stops with an error.
+How does your `simulate` compare with one way to write it? We must be
+careful when we compare something random, because two runs almost never
+give the exact same fraction. So the first two rows below use trials
+whose answers are fixed. Run this cell to make them.
 
 ```python exec
-id: likely-toolkit-tests
+id: likely-fixed-trials
 def always():
+    """A trial that always gives True."""
     return True
 
 
 def never():
+    """A trial that always gives False."""
     return False
+```
 
+The last row asks whether 10,000 fair tosses give heads between 45% and
+55% of the time, with `between` from
+[Choosing a path](tutorial:choosing-a-path). A fair coin lands outside
+that range far less often than once in a billion billion tries. The
+table runs the same calls on your `simulate` and on a solution, side by
+side. Where a row is different, try that call on its own.
 
-assert simulate(always, 50) == 1
-assert simulate(never, 50) == 0
-assert between(simulate(heads, 10000), 0.45, 0.55)
-print("simulate keeps its promise.")
+```inputs
+for: likely-toolkit
+simulate(always, 50)
+simulate(never, 50)
+between(simulate(heads, 10000), 0.45, 0.55)
+```
+
+```solution
+for: likely-toolkit
+def simulate(trial, times):
+    """Run trial() the given number of times, and return the fraction of
+    runs where it gave True.
+
+    trial is a function with no inputs that returns True or False.
+    times is a whole number, 1 or more. The result is from 0 to 1.
+    """
+    successes = 0
+    for run in range(times):
+        if trial():
+            successes = successes + 1
+    return successes / times
 ```
 
 ```hint
+for: likely-toolkit
+after: 3 runs
 What does `print(simulate(always, 50))` show? If it shows `None`, the
 function has no `return` yet. If it shows 50, check what you divide by.
 ```

@@ -1,7 +1,7 @@
 ---
 title: "A row of numbers: lists"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 datasets: [life-expectancy]
 covers:
   a-week-in-one-name:
@@ -492,6 +492,19 @@ values for which the test gives True. You handed a function to a
 function on [How likely is it?](tutorial:how-likely-is-it#a-tool-that-runs-it-many-times),
 when `simulate` was given a trial.
 
+Here is a test to hand to `count_if`. It gives True for a cold day,
+below 10 degrees. Run it before the toolkit cell, because the table
+under the toolkit uses it.
+
+```python exec
+id: row-is-cold
+def is_cold(celsius):
+    """True when celsius is below 10 degrees."""
+    return celsius < 10
+```
+
+Now the toolkit cell.
+
 ```python exec
 id: row-toolkit
 toolkit: yes
@@ -549,33 +562,64 @@ def count_if(values, test):
     return count
 ```
 
-Run the toolkit cell, then the tests. Until both stubs are written,
-this cell stops with an error. Why do you think one test uses a list
-with only one value in it?
+Run the toolkit cell. How do your `smallest` and `count_if` compare
+with one way to write them? The table below runs the same calls on your
+tools and on a solution, side by side. Where a row is different, try
+that call on its own. Why do you think one row uses a list with only one
+value in it?
 
-```python exec
-id: row-toolkit-tests
-def is_cold(celsius):
-    """True when celsius is below 10 degrees."""
-    return celsius < 10
+```inputs
+for: row-toolkit
+largest([11, 13, 9, 12, 14, 10, 8])
+largest([-3, -1, -4])
+smallest([11, 13, 9, 12, 14, 10, 8])
+smallest([5])
+count_if([11, 13, 9, 12, 14, 10, 8], is_cold)
+count_if([], is_cold)
+```
+
+```solution
+for: row-toolkit
+def largest(values):
+    """Return the biggest number in values, a list of at least one number."""
+    biggest_so_far = values[0]
+    for value in values:
+        if value > biggest_so_far:
+            biggest_so_far = value
+    return biggest_so_far
 
 
-assert largest([11, 13, 9, 12, 14, 10, 8]) == 14
-assert largest([-3, -1, -4]) == -1
-assert smallest([11, 13, 9, 12, 14, 10, 8]) == 8
-assert smallest([5]) == 5
-assert count_if([11, 13, 9, 12, 14, 10, 8], is_cold) == 2
-assert count_if([], is_cold) == 0
-print("largest, smallest and count_if keep their promises.")
+def smallest(values):
+    """Return the smallest number in values, a list of at least one number."""
+    smallest_so_far = values[0]
+    for value in values:
+        if value < smallest_so_far:
+            smallest_so_far = value
+    return smallest_so_far
+
+
+def count_if(values, test):
+    """Return how many values in values make test(value) give True.
+
+    test is a function that takes one value and returns True or False.
+    """
+    count = 0
+    for value in values:
+        if test(value):
+            count = count + 1
+    return count
 ```
 
 ```hint
-Which test does the error point at? Try `print(smallest([4, 2, 7]))` on
-its own. If it shows `None`, the function has no `return` yet.
+for: row-toolkit
+after: 3 runs
+Which row is different? Try `print(smallest([4, 2, 7]))` on its own. If
+it shows `None`, the function has no `return` yet.
 ```
 
 ```hint
-after: 12 errors
+for: row-toolkit
+after: 8 runs
 title: some steps
 1. `smallest` starts from `values[0]`, as `largest` does.
 2. It goes through every value, and keeps the new one when it is
@@ -590,7 +634,7 @@ brackets, when the test was handed over as `is_cold`, without them?
 A list with one value is the edge of the promise, "at least one
 number". Bugs like to hide at the edges. If the stubs are hard to
 write, copy `largest` and change one thing at a time. After a few tries,
-a fold under the tests offers the steps, and you can come back to
+a fold under the table offers the steps, and you can come back to
 `count_if` after the next section.
 
 Python has its own `max()` and `min()`, which do the same jobs. One

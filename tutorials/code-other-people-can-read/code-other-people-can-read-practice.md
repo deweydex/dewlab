@@ -2,7 +2,7 @@
 title: "Code other people can read: reviewing your toolkit — Practice"
 practice_for: code-other-people-can-read
 year: "2026-2027"
-version: 2026.09.25.2
+version: 2026.09.26.1
 ---
 
 # Code other people can read: reviewing your toolkit — Practice
@@ -179,7 +179,6 @@ def rainy_days(readings):
     return count
 
 assert rainy_days([0, 0.2, 1.5, 3, 0]) == 2, "only 1.5 and 3 are more than 1 mm"
-print("rainy_days keeps its promise.")
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -204,8 +203,8 @@ so it gives 3: 0.2, 1.5 and 3. The docstring and the test both say
         if millimetres > 1:
 ```
 
-Now it gives 2, and the test passes. The docstring was written as the
-promise, and the test agrees with it, so the code is the part to
+Now it gives 2, the number the docstring and the test both describe.
+The docstring was written as the promise, and the test agrees with it, so the code is the part to
 change.
 
 </details>
@@ -360,9 +359,9 @@ that.
 
 **9. Fix.** Schlomi refactored a game's `best_score`. A leaderboard
 shows the best score at the top, so she sorted the scores and took the
-first one. The tests were
-written before her change, and one now stops the cell. Find the line,
-and change it.
+first one. Before her change, `best_score([40, 95, 70])` gave 95. Now
+it gives 40. Can you find the line that does not do what Schlomi meant,
+and change it?
 
 ```python exec
 id: code-other-practice-fix-score
@@ -373,28 +372,31 @@ def best_score(scores):
     """
     in_order = sorted(scores)
     return in_order[0]
-
-assert best_score([40, 95, 70]) == 95
-assert best_score([7]) == 7
-assert best_score([-3, -8]) == -3
-print("best_score keeps its promise.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+best_score([40, 95, 70])
+best_score([7])          # one score
+best_score([-3, -8])     # negative scores
+```
 
+```solution
+def best_score(scores):
+    """Return the highest score in scores, a list of at least one number.
+
+    The list is not changed.
+    """
+    in_order = sorted(scores)
+    return in_order[-1]
+---
 A leaderboard puts the biggest score first, but `sorted()` puts the
 smallest first, so `in_order[0]` is the lowest score. The highest is
-the last one:
+the last one, `in_order[-1]`.
 
-```python
-    return in_order[-1]
+Schlomi's version gives 7 for `[7]` too, because the smallest and
+largest of `[7]` are the same. So a set of tests needs more than one
+case.
 ```
-
-Then all three tests pass. The one-value test passed before the change
-too, because the smallest and largest of `[7]` are the same. So a
-test suite needs more than one test case.
-
-</details>
 
 **10. Another way.** Here is a function for a playlist's length. Write
 a second version, `playlist_minutes_again`, using `total` from your
@@ -573,7 +575,6 @@ def image_megabytes(width, height):
 assert close_enough(image_megabytes(1000, 1000), 3.0)
 assert close_enough(image_megabytes(1920, 1080), 6.2208)
 assert close_enough(image_megabytes(0, 1080), 0)
-print("image_megabytes keeps its promise.")
 ```
 
 Both check the same three cases. The `assert` lines compare numbers,

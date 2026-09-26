@@ -462,7 +462,6 @@ def days_above_average(values):
 assert days_above_average([4.2, 0.0, 12.6, 7.1, 0.8, 3.3, 7.0]) == 3
 assert days_above_average([120, 45, 300, 80, 210]) == 2
 assert days_above_average([5, 5, 5]) == 0, "nothing is above itself"
-print("days_above_average keeps its promise.")
 ```
 
 The function does in Python what the tutorial's SQL did with a query

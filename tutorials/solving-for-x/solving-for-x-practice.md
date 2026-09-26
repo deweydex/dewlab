@@ -2,7 +2,7 @@
 title: "Solving for x: linear and quadratic equations — Practice"
 practice_for: solving-for-x
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 ---
 
 # Solving for x: linear and quadratic equations — Practice
@@ -168,8 +168,9 @@ ones.
 
 **6. Fix.** It is 50 °F in New York. Schlomo, who is also learning
 Python, wants that temperature in Celsius, so he solves
-$\frac{9}{5}C + 32 = 50$ with `solve_linear`. His check fails. Find the
-line that makes it fail.
+$\frac{9}{5}C + 32 = 50$ with `solve_linear`. He turns his answer back
+into Fahrenheit, and gets 14 °F, not 50. Can you find the line that
+does not do what he meant?
 
 ```python exec
 id: solving-practice-fix-weather
@@ -178,26 +179,32 @@ a = 9 / 5
 b = 50 - 32
 celsius = solve_linear(a, b)
 print(celsius)
-assert close_enough(celsius_to_fahrenheit(celsius), 50)
 print("It is", celsius, "degrees Celsius.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-It prints `-10.0`, and the check fails: −10 °C is 14 °F. To tidy
-$\frac{9}{5}C + 32 = 50$ into the shape $aC + b = 0$, we subtract 50
-from both sides. That leaves $\frac{9}{5}C + 32 - 50 = 0$, so $b$ is
-$32 - 50 = -18$, not $50 - 32$:
-
-```python
-b = 32 - 50
+```inputs
+celsius
+celsius_to_fahrenheit(celsius)    # back into Fahrenheit
 ```
 
-Now `celsius` is `10.0`, and the check passes. Moving a number across
-the equals sign and keeping its old sign is one of the most common
-slips in algebra, for everyone. Schlomo's check caught it.
+```solution
+# 9/5 * C + 32 = 50, tidied into a*C + b = 0
+a = 9 / 5
+b = 32 - 50
+celsius = solve_linear(a, b)
+print(celsius)
+print("It is", celsius, "degrees Celsius.")
+---
+Schlomo's version prints `-10.0`, and −10 °C is 14 °F. To tidy
+$\frac{9}{5}C + 32 = 50$ into the shape $aC + b = 0$, we subtract 50
+from both sides. That leaves $\frac{9}{5}C + 32 - 50 = 0$, so $b$ is
+$32 - 50 = -18$, not $50 - 32$.
 
-</details>
+Now `celsius` is `10.0`, and it turns back into 50 °F. Moving a number
+across the equals sign and keeping its old sign is one of the most
+common slips in algebra, for everyone. Turning the answer back into
+Fahrenheit showed it.
+```
 
 **7. Make.** Factorise $x^2 - 2x - 15$ by inspection, in your head: which
 two numbers add to −2 and multiply to −15? Then check the roots with
@@ -275,9 +282,10 @@ the pair is 40 and −20: $(h + 40)(h - 20) = 0$.
 
 </details>
 
-**10. Fix.** Here is a quadratic solver, with two tests that
-substitute the roots back. The first test passes and the second fails.
-Find the line that makes it fail.
+**10. Fix.** Here is a quadratic solver. Its roots for
+$x^2 - 5x + 6$ are 2 and 3, and both make the quadratic 0. Its roots for
+$2x^2 - 7x + 3$ do not make that quadratic 0. Can you find the line that
+causes it?
 
 ```python exec
 id: solving-practice-fix-roots
@@ -291,13 +299,13 @@ def roots_of(a, b, c):
         return []
     root = math.sqrt(discriminant)
     return sorted([(-b - root) / 2 * a, (-b + root) / 2 * a])
+```
 
-
-for x in roots_of(1, -5, 6):
-    assert close_enough(evaluate([6, -5, 1], x), 0), x
-for x in roots_of(2, -7, 3):
-    assert close_enough(evaluate([3, -7, 2], x), 0), x
-print("roots_of keeps its promise.")
+```inputs
+roots_of(1, -5, 6)
+[evaluate([6, -5, 1], x) for x in roots_of(1, -5, 6)]     # each root, substituted back
+roots_of(2, -7, 3)
+[evaluate([3, -7, 2], x) for x in roots_of(2, -7, 3)]     # each root, substituted back
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -306,26 +314,33 @@ print("roots_of keeps its promise.")
 2. Calculate `12 / 2 * 2` in your head, the way Python does: left to
    right.
 
-**Think about:** why the first test passed anyway.
+**Think about:** why the roots for $x^2 - 5x + 6$ came out as they
+should anyway.
 
 </details>
 
-<details class="dl-answer"><summary>answer</summary>
+```solution
+import math
 
-`/ 2 * a` divides by 2, then multiplies by $a$. The formula divides by
-$2a$, so the bottom needs brackets:
 
-```python
+def roots_of(a, b, c):
+    """Return the real roots of a*x**2 + b*x + c = 0, smallest first."""
+    discriminant = b ** 2 - 4 * a * c
+    if discriminant < 0:
+        return []
+    root = math.sqrt(discriminant)
     return sorted([(-b - root) / (2 * a), (-b + root) / (2 * a)])
-```
+---
+`/ 2 * a` divides by 2, then multiplies by $a$. The formula divides by
+$2a$, so the bottom needs brackets.
 
-Without the brackets, `roots_of(2, -7, 3)` gives `[2.0, 12.0]`. The first
-test passed because there $a$ is 1, and dividing by 2 then multiplying
-by 1 is the same as dividing by 2. A test with $a = 1$ alone would never
-have found this. It is the order of operations from
+Without the brackets, `roots_of(2, -7, 3)` gives `[2.0, 12.0]`. The
+roots for $x^2 - 5x + 6$ came out as they should, because there $a$ is
+1, and dividing by 2 then multiplying by 1 is the same as dividing by
+2. A check with $a = 1$ alone would never have found this. It is the
+order of operations from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#which-comes-first).
-
-</details>
+```
 
 **11. Explain.** For $x^2 + 4 = 0$, the toolkit's `solve_quadratic`
 returns `[]`, an empty list. It could have stopped with an error

@@ -248,7 +248,6 @@ def point_counts(team_a, team_b):
     return team_a != team_b
 
 assert truth_table(point_counts, ["team_a", "team_b"]) == [False, True, True, False]
-print("point_counts keeps its promise.")
 ```
 
 This is XOR. Neither team buzzing gives no point, and both buzzing at
@@ -351,10 +350,9 @@ def majority(computer_1, computer_2, computer_3):
 
 column = truth_table(majority, ["computer_1", "computer_2", "computer_3"])
 assert column == [False, False, False, True, False, True, True, True]
-print("majority keeps its promise.")
 ```
 
-Four of the eight rows pass. They are the three rows with exactly two
+Four of the eight rows are True. They are the three rows with exactly two
 True votes, and the row with three. Engineers call this *triple modular redundancy*.
 The Space Shuttle went further. Four of its five flight computers ran
 the same program and checked each other, and they could vote to ignore

@@ -1,7 +1,7 @@
 ---
 title: "Solving by computing: bisection and Newton's method"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.26.1
 covers:
   squeezing-a-root-between-two-guesses:
     covers: [MIT-6.6]
@@ -267,29 +267,38 @@ title: some steps
 had one?
 ```
 
-The tests check $\sqrt{2}$ against `math.sqrt`, a root that
+How does your `bisect_root` compare with one way to write it? Here are
+two more rules to try it on. `quadratic_rule` has a root that
 [Solving for x](tutorial:solving-for-x#the-quadratic-formula) could
-find with a formula, and a root that sits exactly on `low`. Until
-`bisect_root` is written, the first test stops with a `TypeError`.
+find with a formula, and `line_rule` has a root that sits exactly on
+`low`. Run this cell to make them.
 
 ```python exec
-id: solving-by-toolkit-bisect-tests
+id: solving-by-bisect-rules
 def quadratic_rule(x):
     return x ** 2 - 5 * x + 6
 
 def line_rule(x):
     return 2 * x - 6
-
-assert close_enough(bisect_root(square_gap, 1, 2), math.sqrt(2))
-assert close_enough(bisect_root(quadratic_rule, 2.5, 10), solve_quadratic(1, -5, 6)[1])
-assert close_enough(bisect_root(line_rule, 3, 8), 3), "a root at low"
-assert close_enough(bisect_root(square_gap, 1, 2, tolerance=0.01), math.sqrt(2), tolerance=0.01)
-print("bisect_root keeps its promise.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+The table below runs the same calls on your function and on a
+solution, side by side. Some rows are not calls to `bisect_root`. They
+give the same root another way, so you can compare. While the body is
+still `...`, your column shows `None`.
 
-```python
+```inputs
+for: solving-by-toolkit-bisect
+bisect_root(square_gap, 1, 2)
+math.sqrt(2)                                     # the same root, from math
+bisect_root(quadratic_rule, 2.5, 10)
+solve_quadratic(1, -5, 6)[1]                     # the same root, from the formula
+bisect_root(line_rule, 3, 8)                     # a root at low, 3
+bisect_root(square_gap, 1, 2, tolerance=0.01)    # within 0.01 of the square root of 2
+```
+
+```solution
+for: solving-by-toolkit-bisect
 def bisect_root(rule, low, high, tolerance=1e-9):
     """Return an x between low and high where rule(x) is 0, to within tolerance.
 
@@ -309,15 +318,13 @@ def bisect_root(rule, low, high, tolerance=1e-9):
     return (low + high) / 2
 ```
 
-</details>
-
 ### Where bisection can be fooled
 
 The promise said "no gap". On
 [Drawing a rule](tutorial:drawing-a-rule#rules-with-gaps-and-rules-that-race),
 $\frac{1}{x}$ had a gap at 0: negative on the left, positive on the
 right, and never 0. If you have not written `bisect_root` yet, open the
-answer under the tests and copy it into the stub. What do you think it
+solution under the table and copy it into the stub. What do you think it
 will say about $\frac{1}{x}$ between $-1$ and 2?
 
 ```python exec
@@ -462,27 +469,33 @@ changing after 5. Does that do any harm?
 ```
 
 A water tank shaped like a cube must hold 10 cubic metres. How long is
-each side? The side $s$ must make $s^3 = 10$, a cube root, and the
-tests find it both ways. Until `newton` is written, the first test
-stops with a `TypeError`.
+each side? The side $s$ must make $s^3 = 10$, a cube root. This cell
+makes the rule for the tank.
 
 ```python exec
-id: solving-by-toolkit-newton-tests
+id: solving-by-tank-rule
 def tank_gap(side):
     """Return how far a cube with this side, in metres, is from holding 10 cubic metres."""
     return side ** 3 - 10
-
-assert close_enough(newton(square_gap, 1), math.sqrt(2))
-assert close_enough(newton(quadratic_rule, 5), 3)
-tank_side = newton(tank_gap, 2)
-assert close_enough(tank_side, bisect_root(tank_gap, 2, 3))
-assert close_enough(tank_side ** 3, 10)
-print("newton keeps its promise. The tank's side is", round(tank_side, 3), "m.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+How does your `newton` compare with one way to write it? The table
+below runs the same calls on your function and on a solution. It finds
+the tank's side both ways, with Newton and with bisection. Then it puts
+Newton's answer back in. A cube with that side should hold 10 cubic
+metres.
 
-```python
+```inputs
+for: solving-by-toolkit-newton
+newton(square_gap, 1)          # the square root of 2
+newton(quadratic_rule, 5)      # the root at 3
+newton(tank_gap, 2)            # the tank's side, by Newton
+bisect_root(tank_gap, 2, 3)    # the tank's side, by bisection
+newton(tank_gap, 2) ** 3       # put back in: 10 cubic metres
+```
+
+```solution
+for: solving-by-toolkit-newton
 def newton(rule, start, steps=20):
     """Return a guess at a root of rule, found by Newton's method.
 
@@ -497,10 +510,7 @@ def newton(rule, start, steps=20):
     return guess
 ```
 
-</details>
-
-The tank's side is about 2.154 m. The tests
-checked Newton against bisection, and then put the answer back in.
+The tank's side is about 2.154 m.
 
 ### A race
 
@@ -514,8 +524,8 @@ extra digit we ask for.
 ## When the tangent is flat
 
 What if the first guess for $\sqrt{2}$ is 0? The cell is meant to stop
-with an error. If you have not written `newton` yet, open the answer
-under its tests and copy it into the stub. Before you run it, look at
+with an error. If you have not written `newton` yet, open the solution
+under its table and copy it into the stub. Before you run it, look at
 the graph of $x^2 - 2$ at 0. What is its tangent there?
 
 ```python exec
