@@ -1,7 +1,11 @@
 ---
 title: "Perspective projection: dividing by depth"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  starships: Starships, and the structures they are built from.
+  space-scenes: Stars, planets and the paths they take across the sky.
+  photos: Photographs, and the filters that change them.
 covers:
   a-road-of-posts:
     covers: [CMPS-LO4]
@@ -175,6 +179,173 @@ A post 2 units tall stands at depth 8. How tall is it on the screen?
 - 4 units
   - This divides the depth by the height, the other way round.
 ```
+
+<details class="dl-answer"><summary>the same in NumPy</summary>
+
+[NumPy](tutorial:matrices-in-numpy) divides a whole column of numbers at
+once. Put every post end in one array, one row each, and one line
+projects them all:
+
+```python
+import numpy as np
+
+ends = np.array([[side, height, depth] for depth in [2, 3, 4, 6, 9, 14]
+                 for side in [-1.5, 1.5] for height in [-1, 1]])
+screen = ends[:, :2] / ends[:, 2:3]
+print(screen[:4])
+```
+
+`ends[:, :2]` is the first two columns, $x$ and $y$, and `ends[:, 2:3]`
+is the depth column. Dividing one by the other divides each row by its
+own depth. The first four rows are the two nearest posts, at
+$(\pm 0.75, \pm 0.5)$.
+
+</details>
+
+## Your world
+
+The same division, in the world you chose.
+
+<div class="dl-world" data-world="starships">
+
+A starship is 100 metres long. You hold a model of it, 1 metre long,
+0.6 metres from your eye. The real ship flies straight away from you.
+How far away is it when it looks exactly as long as the model?
+
+```python exec
+id: point-your-world--starships
+def drawn_length(length, depth):
+    return length / depth
+
+
+print(drawn_length(1, 0.6))
+```
+
+```hint
+The model is drawn `drawn_length(1, 0.6)` long. Try the ship at depths
+of 10, 20, 30 and so on, and look for the same number. Or solve
+$100 / d = 1 / 0.6$ for $d$.
+```
+
+```solution
+def drawn_length(length, depth):
+    return length / depth
+
+
+print(drawn_length(1, 0.6))
+for depth in range(10, 101, 10):
+    print(depth, round(drawn_length(100, depth), 3))
+---
+The model is drawn about 1.667 long, and so is the ship at 60 metres:
+$100 / 60 = 1 / 0.6$. The ship is 100 times longer, so it has to be 100
+times further away, $100 \times 0.6 = 60$ metres. A film uses this with
+models, and the camera cannot tell the difference.
+```
+
+</div>
+
+<div class="dl-world" data-world="space-scenes">
+
+The Moon is 1,737 km in radius and about 384,400 km away. The Sun is
+696,000 km in radius and about 149,600,000 km away. Which one looks
+bigger in the sky?
+
+```python exec
+id: point-your-world--space-scenes
+moon_radius, moon_distance = 1737, 384400
+sun_radius, sun_distance = 696000, 149600000
+```
+
+```predict
+Which looks bigger from the Earth?
+
+- The Sun, by a lot
+  - The Sun is 400 times wider than the Moon.
+- About the same
+  - The Sun is also much further away.
+- The Moon, by a lot
+  - The Moon is much closer.
+```
+
+```hint
+The drawn size is the real size divided by the depth, as for the posts.
+```
+
+```solution
+moon_radius, moon_distance = 1737, 384400
+sun_radius, sun_distance = 696000, 149600000
+print(round(moon_radius / moon_distance, 5))
+print(round(sun_radius / sun_distance, 5))
+---
+They are 0.00452 and 0.00465, only about 3% apart. The Sun is about 400
+times wider than the Moon, and about 400 times further away, so the
+division cancels it out. The Moon's distance changes by about a tenth
+over a month. So in an eclipse the Moon sometimes covers the Sun
+completely, and sometimes leaves a thin ring of it showing.
+```
+
+</div>
+
+<div class="dl-world" data-world="photos">
+
+A photo hangs on a wall to your right, and the wall runs away from
+you. The photo is 1 unit tall, from $y = -0.5$ to $y = 0.5$. Its near
+edge is at depth 2 and its far edge at depth 4, both at $x = 1.5$. What
+shape is it on the screen?
+
+```python exec
+id: point-your-world--photos
+import matplotlib.pyplot as plt
+
+
+def project(x, y, z):
+    return x / z, y / z
+
+
+corners = [(1.5, -0.5, 2), (1.5, 0.5, 2), (1.5, 0.5, 4), (1.5, -0.5, 4)]
+```
+
+```predict
+What shape does the photo make on the screen?
+
+- A rectangle, as on the wall
+  - The photo is a rectangle.
+- A shape with a short far edge
+  - The far edge is twice as far away.
+- A shape with a short near edge
+  - The near edge is closer to the middle of the picture.
+```
+
+```hint
+Project each corner, then draw the four screen points with `plt.fill`,
+as in the first cell of the page.
+```
+
+```solution
+import matplotlib.pyplot as plt
+
+
+def project(x, y, z):
+    return x / z, y / z
+
+
+corners = [(1.5, -0.5, 2), (1.5, 0.5, 2), (1.5, 0.5, 4), (1.5, -0.5, 4)]
+screen = [project(x, y, z) for x, y, z in corners]
+print(screen)
+plt.figure(figsize=(4, 4))
+plt.fill([p[0] for p in screen], [p[1] for p in screen], alpha=0.5)
+plt.xlim(-1, 1)
+plt.ylim(-1, 1)
+plt.gca().set_aspect("equal")
+---
+The near edge runs from $-0.25$ to $0.25$, and the far edge from
+$-0.125$ to $0.125$, half as tall. The photo is drawn as a shape that
+narrows away from you. That is also why a photo of a tall building,
+taken from the ground, seems to lean back. Its top is further away, so
+it is drawn smaller.
+```
+
+</div>
 
 ## Reflection
 

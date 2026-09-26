@@ -2,7 +2,7 @@
 title: "Homogeneous coordinates and the projection matrix — Practice"
 practice_for: the-fourth-number
 year: "2026-2027"
-version: 2026.09.21.1
+version: 2026.09.26.1
 ---
 
 # Homogeneous coordinates and the projection matrix — Practice
@@ -177,5 +177,47 @@ for depth in [1.818, 5.5]:
     x, y, z, w = [row[0] for row in multiply(camera, [[0], [0], [depth], [1]])]
     print(depth, "->", round(z / w, 3))
 ```
+
+</details>
+
+## The shape of a product
+
+**7.** A camera matrix is 4×4, and `cube4` is 4 rows of 8. What is the
+shape of `multiply(camera, cube4)`? And what happens with the two the
+other way round, `multiply(cube4, camera)`?
+
+```python exec
+id: product-shape-1
+cube4 = with_ones(cube)
+camera = translation(0, 0, 5)
+first = multiply(camera, cube4)
+second = multiply(cube4, camera)
+print(len(first), "rows of", len(first[0]))
+print(len(second), "rows of", len(second[0]))
+```
+
+```predict
+What will the second line print?
+
+- An error
+  - 4×8 times 4×4 does not fit.
+- 4 rows of 4
+  - The camera is 4×4.
+- 4 rows of 8
+  - The cube has 8 corners.
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+The first is 4 rows of 8, as it should be, with one column for each
+corner.
+
+The second is 4 rows of 4, and no error. A 4×8 times a 4×4 does not
+fit, since 8 is not 4. But this page's `dot`, from `setup/cube.py`,
+uses `zip`, and `zip` stops at the end of the shorter list, so it
+quietly used only the first 4 corners. That is the silent mistake
+[Matrix multiplication: rows times columns](tutorial:multiplying-grids)
+warned about. The `dot` you wrote there checks the lengths, and raises
+a `ValueError` here instead.
 
 </details>

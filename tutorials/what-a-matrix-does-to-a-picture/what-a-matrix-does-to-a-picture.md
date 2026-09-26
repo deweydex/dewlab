@@ -372,7 +372,7 @@ draw_shapes([ship,
              transform_all(turn_by(90), ship)])
 ---
 At 90°, $\cos$ is 0 and $\sin$ is 1, so `turn_by(90)` is the `turn` from
-the playground, give or take a tiny rounding error: `math.cos` of a
+the playground, apart from a tiny rounding error: `math.cos` of a
 quarter turn comes out as about $6 \times 10^{-17}$, not exactly 0.
 The first column is where "right" goes, $(\cos\theta, \sin\theta)$, a
 point a distance 1 from the centre at angle $\theta$.
