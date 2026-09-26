@@ -91,6 +91,8 @@ the door, and it ends at the top of the step, 0.3 metres up. The distance
 it goes up is the *rise*. The distance it goes along the ground is the
 *run*. Builders call the run the *going*.
 
+<img src="ramp-from-the-side.svg" alt="The hall's ramp seen from the side, drawn to scale. A long, thin triangle rises from the ground to the top of a step at the door. Its run, or going, along the ground is 3 m, and its rise, the height of the step, is 0.3 m.">
+
 A ramp that climbs 0.3 m over 1 m is far steeper than this one, with
 the same rise. So steepness is how much the ramp rises for each metre
 along:

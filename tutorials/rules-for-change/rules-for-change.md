@@ -300,6 +300,8 @@ $h(x) = f(x) \times g(x)$, then
 
 $$h'(x) = f(x)\,g'(x) + g(x)\,f'(x)$$
 
+<img src="product-rule-rectangle.svg" alt="A rectangle f(x) wide and g(x) tall, whose area before the change is f(x) × g(x). Both sides grow a little. Along the right is a new strip, the change in f wide and g(x) tall, with area g(x) × change in f. Along the bottom is a new strip, f(x) wide and the change in g tall, with area f(x) × change in g. In the bottom right corner is a tiny piece, change × change. For a very small change, it is so small that it disappears.">
+
 Many people's first guess is "the slope of a product is the product of
 the slopes". The cell tries both. Which do
 you think will agree with `derivative_at`?
@@ -435,6 +437,8 @@ print(chain_rule_slope(6), 3 * math.pi)
 
 About 9.42 square metres a second, which is $3\pi$. The chain rule
 agrees at every second.
+
+<img src="rates-that-multiply.svg" alt="6 seconds go into ripple_radius, and 3 m comes out. The 3 m goes into circle_area, and 28.27 square metres come out. Under ripple_radius: 0.5 m more for each second. Under circle_area: 2π × 3, about 18.85 square metres more for each metre of radius. Below them: 0.5 × 18.85 is about 9.42 square metres for each second. The metres cancel, and the two rates multiply.">
 
 Multiplying slopes works here. For a product,
 two rules sit side by side, and multiplying their slopes fails. For a

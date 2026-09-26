@@ -253,6 +253,15 @@ just before its right one.
 
 </details>
 
+<aside class="dl-note" id="kinds-practice-note-histogram">
+
+**A new word in 1891.** The statistician Karl Pearson invented the word
+histogram for a lecture he gave in London in 1891. It first appeared in
+print in a paper of his in 1895. The chart itself is older. Pearson
+wrote that it was already a common kind of graph.
+
+</aside>
+
 **8. Fix.** Ten phones in a library report their Wi-Fi signal, and a
 program draws a bar chart of the answers. Every number matches the
 data, and yet the chart is hard to read. Run it, then find the line that

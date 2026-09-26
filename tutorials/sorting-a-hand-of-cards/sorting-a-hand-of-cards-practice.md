@@ -94,6 +94,16 @@ the nearest planet lasts a day and a half of ours.
 
 </details>
 
+<aside class="dl-note" id="sorting-hand-practice-note-trappist">
+
+**Named with a beer in mind.** TRAPPIST-1 is named after TRAPPIST, a
+small telescope in Chile run by the University of Liège, in Belgium.
+The letters stand for TRAnsiting Planets and PlanetesImals Small
+Telescope. The Belgian team chose the name with Belgium's Trappist
+beers in mind.
+
+</aside>
+
 **4. Explain.** What is the difference between `sorted(scores)` and
 `scores.sort()`? Give one reason to use each.
 

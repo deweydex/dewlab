@@ -365,7 +365,7 @@ def std_dev(data):
 
 print(round(std_dev([2, 4, 9]), 2))
 ---
-It prints 2.94, then 2.0 for the second list, and 0.0 when every value
+It prints 2.94. The other two inputs give 2.0, and 0.0 when every value
 is the same, with no spread at all. Calculating the mean inside the loop
 would give the same answer, but it would do the same work once for every
 value.
@@ -573,8 +573,8 @@ $2^{10} = 1{,}024$ equally likely ways ten flips can land, and $C(10, 5)
 = 252$ of them have five heads, so the chance is $\frac{252}{1{,}024}
 \approx 0.246$. Ten heads is $\frac{1}{1{,}024}$.
 
-This is the *binomial distribution*. It counts the successes in $n$
-independent trials, each with the same chance $p$. The chance of exactly
+This is the *binomial distribution*. It gives the chance of each number
+of successes in $n$ independent trials, each with the same chance $p$. The chance of exactly
 $k$ successes is
 
 $$P(k) = C(n, k) \, p^k (1-p)^{n-k}$$
@@ -764,7 +764,7 @@ The mean is about 6, the median 4, and the mode 1. The most common wait
 is one roll, and yet the typical player waits several, and a few wait
 thirty or more. The waits are skewed, with a long tail of unlucky
 players. "Six rolls on average" is true. "Most players start within six
-rolls" is true too, for about two players in three. But a player who is
+rolls" is true too. About two players in three do. But a player who is
 told only the mean will think a four-roll wait is lucky.
 ```
 

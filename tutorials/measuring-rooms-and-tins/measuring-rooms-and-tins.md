@@ -135,6 +135,8 @@ the room, which is the perimeter, and as tall as the room. So the wall
 area is the perimeter times the height. Before you run it, how many
 square metres of wall does a room 2.4 m high have?
 
+<img src="walls-unfolded.svg" alt="The four walls of the bedroom unfolded into one long strip, 2.4 m tall. The walls are 4 m, 3.5 m, 4 m and 3.5 m wide, side by side, so the strip is 4 + 3.5 + 4 + 3.5 = 15 m long, which is the perimeter of the floor.">
+
 ```python exec
 id: measuring-rooms-area-1
 length = 4
@@ -172,6 +174,8 @@ triangle. So in words, a triangle's area is half its base times its
 height. In symbols, with $b$ for the base and $h$ for the height:
 
 $$A = \frac{1}{2} b h$$
+
+<img src="triangle-half-rectangle.svg" alt="A rectangle with a base of 4 m and a height of 1.8 m. A triangle fills it from the whole base up to one point on the top edge, and a dashed line from that point straight down marks the triangle's height. The two pieces left over, marked 1 and 2, sit in the top corners, one on each side. Beside the rectangle, pieces 1 and 2 are each turned half a turn and put side by side, and together they make the same triangle again.">
 
 The height must be measured at a right angle to the base, straight up.
 The sloping side is longer, and it gives too big an answer.
@@ -233,6 +237,8 @@ length is half the edge, $\pi r$. The thinner the slices, the closer it
 comes to a real rectangle. So the area is $\pi r \times r$:
 
 $$A = \pi r^2$$
+
+<img src="circle-into-rectangle.svg" alt="A circle cut into 16 equal slices, with the top half of the slices shaded one colour and the bottom half another. Beside it, the same 16 slices lie in a row, points down and points up in turn, and make a shape close to a rectangle. Its height is the radius, r, and its length is half the way round the circle, πr.">
 
 A music CD keeps its sound along one long track, a spiral that winds
 out from the middle. The track starts 25 mm from the centre and ends

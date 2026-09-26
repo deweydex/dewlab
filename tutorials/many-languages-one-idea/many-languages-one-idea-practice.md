@@ -432,6 +432,16 @@ questions. That is the idea of the tutorial.
 
 </details>
 
+<aside class="dl-note" id="many-lang-practice-note-ruby">
+
+**Why "Ruby".** Yukihiro Matsumoto, who made Ruby, chose its name on
+24 February 1993, before he had written any code. The other name on
+the list was Coral. Ruby came after Perl, an older language, and the
+ruby is the birthstone of July, the month after June, whose stone is
+the pearl. The first public version appeared in December 1995.
+
+</aside>
+
 **15. Make.** Write a Python function `days_above_average(values)` that
 returns how many values are bigger than their own mean. Test it with
 `assert` on the tutorial's rainfall (3) and on the song plays from

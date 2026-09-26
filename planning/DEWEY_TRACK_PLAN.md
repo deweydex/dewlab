@@ -177,7 +177,8 @@ page may offer a choice of products in the same way.
 
 ## 5. The units
 
-Forty-eight tutorials of roughly an hour each, in ten units. Outcome codes are
+Forty-nine tutorials of roughly an hour each, in ten units, with nine mixed
+pages and the letter *How this course is built*. Outcome codes are
 from `planning/curriculum/outcomes.yaml`. Every PDP and MIT outcome appears
 at least once (checked by a script: see §8).
 

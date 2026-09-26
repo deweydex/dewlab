@@ -465,3 +465,12 @@ You might also want a proof for a rule this important, and only a
 check for smaller ones.
 
 </details>
+
+<aside class="dl-note" id="how-far-practice-note-garfield">
+
+**A president's proof.** In 1876, James Garfield, then a member of the
+US Congress, published a proof of Pythagoras' theorem of his own. It
+uses a trapezium made of three right-angled triangles. Five years
+later he became the 20th President of the United States.
+
+</aside>

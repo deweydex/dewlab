@@ -385,10 +385,19 @@ print(main_numbers, lucky_stars, main_numbers * lucky_stars)
 There are 2,118,760 ways to choose the main numbers and 66 ways to
 choose the stars. By the counting principle, every choice of one goes
 with every choice of the other, so there are
-$2{,}118{,}760 \times 66 = 139{,}838{,}160$ tickets, about 13 times as
-many as the Irish Lotto.
+$2{,}118{,}760 \times 66 = 139{,}838{,}160$ tickets, about 17 times as
+many as the Irish Lotto's 8,145,060.
 
 </details>
+
+<aside class="dl-note" id="orders-practice-note-euromillions">
+
+**A lottery for many countries.** The first EuroMillions draw was on
+13 February 2004, in France, Spain and the United Kingdom. Ireland
+joined for the draw on 8 October 2004. The lucky stars have changed
+over the years: there were 9 at first, 11 from 2011, and 12 from 2016.
+
+</aside>
 
 **15. Predict.** How many digits does $100!$ have? Guess first: 10, 50,
 150 or 1,000? Then check with `str()`, from

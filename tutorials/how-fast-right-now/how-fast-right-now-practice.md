@@ -165,6 +165,15 @@ it gets close to the room's 20 °C.
 
 </details>
 
+<aside class="dl-note" id="how-fast-practice-note-cooling">
+
+**Newton, with no name on it.** Isaac Newton published his idea about
+cooling in 1701, in Latin, in the Royal Society's journal Philosophical
+Transactions. He did not sign it. He noted that a hot body cools at a
+rate that grows with how much hotter it is than the air around it.
+
+</aside>
+
 **6. Fix.** Schlomi, who is learning Python too, wrote her own
 `derivative_at`. Run the cell, see which test fails, and change the
 line that does not do what Schlomi meant.

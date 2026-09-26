@@ -344,6 +344,8 @@ of a few values stretching out to the other. The response times are
 skewed to the right: bunched at the quick end, with a tail of slow
 loads.
 
+<img src="three-typical-values.svg" alt="The eleven response times as dots on a line from 0 to 3,500 milliseconds. Nine dots are piled up between 170 and 230 ms. Two sit far to the right, at 1,850 and 3,400 ms, and they are the tail. The mode, 190 ms, and the median, 200 ms, are inside the pile. The mean, 639.09 ms, is well to the right of the pile, pulled towards the tail.">
+
 Each average has its strengths and its limits:
 
 | | Good at | Weak at |
@@ -448,6 +450,8 @@ Connection A's range is 20 ms, and connection B's is 90. The range is
 quick, but it uses only two values. One very slow
 ping would make connection A's range huge, even if every other ping was
 the same. We would like a measure that uses every value.
+
+<img src="two-connections.svg" alt="Two dot plots on a line from 0 to 110 ms, each with a dashed line at the mean, 50. For connection A, the seven pings are 40, 50, 60, 50, 40, 60 and 50, and each is joined to the mean by a short line or none. For connection B, the pings are 10, 100, 20, 50, 90, 10 and 70, and most of the lines to the mean are long. Connection A's range is 20, and connection B's range is 90.">
 
 ## How far from the mean, on average
 

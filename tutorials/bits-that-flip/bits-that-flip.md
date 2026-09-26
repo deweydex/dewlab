@@ -409,6 +409,8 @@ Land receives 8 degrees, and the check says it looks right. Two flips
 change the count of 1s twice. It goes from odd to even, and back to odd. So a parity bit promises to catch any one flipped
 bit, and it promises nothing about two.
 
+<img src="parity-check.svg" alt="Three rows of eight bits, each with the parity bit 1 beside it. Sent: 00001110, with three ones, which is odd, so the parity bit is 1. One bit flips: 00001010, with two ones, which is even. It was odd, so the check sees a change. Two bits flip: 00001000, with one one, which is odd. It was odd when sent too, so the check sees nothing.">
+
 That is still a useful promise. When flips are rare, two in one short
 message are much rarer than one. For this reason, parity bits have been
 used in computer memory, and on the cables that joined early computers to

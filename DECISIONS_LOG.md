@@ -5129,7 +5129,7 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 **`dev/curriculum_map.py` finds "Where to read more" whatever its capitals.** It matched only "Where to Read More", which 35 pages use, so the titles in the other hundred-odd pages' bibliographies were counted as terms (*the python tutorial* in five pages). The build already matched the heading case-insensitively; the map now does too, with a test.
 
-**Read against `#say-it-directly` (7.256).** These pages were rewritten before that rule reached `main`, so the merge keeps this branch's versions of the sixteen pages #386 swept. All eighteen pages were then read against the rule, and about 490 sentences changed. As elsewhere, the glossary files were not swept.
+**Read against `#say-it-directly` (7.256).** These pages were rewritten before that rule reached `main`, so the merge keeps this branch's versions of the sixteen pages #386 swept. All eighteen pages were then read against the rule, and about 490 sentences changed. As elsewhere, the glossary files were not swept. A second pass after the merge compared every rewritten sentence with the one it replaced, and found 16 whose meaning had changed: a lost "among them" or "can" or "knowing", "almost never" turned into "only", a spike that no longer "stands out" among smaller ones, a line that contradicted the sentence before it. Each was put back to what the old sentence said, in the new style.
 
 *Cost to change: moderate. The order lives in the course file and topic groups; the pages' cross-references assume it, so moving logic back before Venn diagrams would mean moving the names of the two laws back as well. Cell ids are new throughout, which is free until 2 October.*
 
@@ -5155,7 +5155,17 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 ---
 
-**7.259 — Problem Solving becomes a set of nine broken programs, each with a report, and the reader keeps a log.** The content issue (#334), part of #306.
+**7.259 — The Dewey Track gets its diagrams, an aside on every practice page, and the Irish Lotto's new numbers.** Issues #354 and #352.
+
+- **Diagrams.** 53 figures across 38 Dewey Track tutorials, drawn by `dev/graphics/dewey_units_1_5.py` and `dev/graphics/dewey_units_6_10.py` in the way `planning/VISUAL_LIST.md` describes: every number computed, often by running the page's own cell; theme colours only; full-sentence alt text. Two text drawings (the seven-segment block and the outfit tree) became pictures. A figure never shows an answer the page asks the reader to predict, and a chart or animation a cell already draws is not repeated as a still. Places considered and turned down are listed in the PR.
+- **Asides.** Each of the 47 practice pages and 9 mixed pages has one `dl-note` beside the problem it belongs to: a bit of history, a word's origin or a real system doing the same thing, each checked against a source (listed in the PR). Things a tutorial already tells were left out.
+- **The Irish Lotto** draws 6 numbers from 45 since 5 September 2026, not from 47 (lottery.ie, "Change is coming"; RTÉ, 16 July 2026). *Orders and choices*, its practice page, *How likely is it?*'s practice page and *Counting carefully*'s practice page now use C(45, 6) = 8,145,060, with every derived number run again.
+
+*Cost to change: a diagram is a function in its generator; an aside is a paragraph.*
+
+---
+
+**7.260 — Problem Solving becomes a set of nine broken programs, each with a report, and the reader keeps a log.** The content issue (#334), part of #306.
 
 **What it replaces.** `finding-where-it-went-wrong` was one story: a temperature pipeline with one planted bug, and the syllabus's five habits named after the fact. The critique asked for practice instead of a story, and the temperature conversion was one of the contexts #306 retires.
 

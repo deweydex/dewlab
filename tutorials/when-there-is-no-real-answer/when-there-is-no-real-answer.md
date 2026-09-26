@@ -230,6 +230,8 @@ equals 0.) On the plane, that is right, then up, then left, then down,
 then back to the start. Each multiply by $i$ turns the
 point a quarter turn about 0, against the clock.
 
+<img src="quarter-turns.svg" alt="The complex plane, with the real part across and the imaginary part up. Four points sit on a circle of radius 1 around 0: 1 on the right, i, or 1j, at the top, −1 on the left, and −i, or −1j, at the bottom. Curved arrows marked × 1j go from 1 to i, from i to −1, from −1 to −i, and from −i back to 1. Each arrow is a quarter turn, against the clock.">
+
 So here is a picture for $i^2 = -1$. Multiplying by −1 is a half turn:
 it sends 3 to −3, to the other side of 0. Two quarter turns make a half
 turn. So the number that squares to −1 does a quarter turn.

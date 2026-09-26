@@ -176,6 +176,16 @@ why the advice is to put cooked rice in the fridge soon.
 
 </details>
 
+<aside class="dl-note" id="doubling-practice-note-rice">
+
+**Why rice?** One kind of bacteria often found on rice, Bacillus
+cereus, makes spores that live through boiling. If cooked rice cools
+slowly, the spores grow again and can make a poison that heat does not
+destroy. So heating rice again after hours at room temperature does
+not make it safe. Cooling it quickly and keeping it in the fridge does.
+
+</aside>
+
 **7. Fix.** Here is another version of `halvings`, with two tests.
 Run it, see which test fails, and change the line that makes it fail.
 

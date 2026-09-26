@@ -528,6 +528,15 @@ over time with a line chart, which may zoom in.
 
 </details>
 
+<aside class="dl-note" id="mixed-many-note-gee-whiz">
+
+**The gee-whiz graph.** In 1954, Darrell Huff wrote a short book called
+How to Lie with Statistics. One chapter, "The Gee-Whiz Graph", is about
+this trick. A chart starts its axis far above 0, so that a small
+rise looks like a big jump.
+
+</aside>
+
 ## Stretch
 
 **15. Make.** The report itself. Write a procedure, `report(name,

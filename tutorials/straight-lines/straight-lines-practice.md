@@ -64,6 +64,16 @@ the road climbs 1 metre.
 
 </details>
 
+<aside class="dl-note" id="straight-practice-note-baldwin">
+
+**The steepest street.** Guinness World Records lists Baldwin Street,
+in Dunedin in New Zealand, as the steepest street in the world. In 2019
+the title went to Ffordd Pen Llech, in Harlech in Wales. In 2020
+Guinness measured both along the middle of the road, and Baldwin Street
+won the title again: 34.8% against 28.6%.
+
+</aside>
+
 **3. Explain.** Ramp A rises 0.5 m over a run of 6 m. Ramp B rises
 0.25 m over a run of 3 m. Which is steeper? Answer before you calculate
 anything, then check.

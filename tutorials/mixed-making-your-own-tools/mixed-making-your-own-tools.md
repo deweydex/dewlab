@@ -422,6 +422,15 @@ multiplied together. Two scalings, composed, make one scaling.
 
 </details>
 
+<aside class="dl-note" id="mixed-making-note-gibi">
+
+**Names for 1,024s.** The names kibibyte, mebibyte and gibibyte were
+agreed by the International Electrotechnical Commission in December
+1998. The "bi" is for binary: gibi is short for "giga binary". Many
+programs still write GB where they mean GiB.
+
+</aside>
+
 **12. Explain.** A metronome is set in beats per minute. A drummer wants
 to know how many seconds each beat lasts. At 120 beats per minute, each
 beat is $60 \div 120 = 0.5$ seconds. So `seconds_per_beat(bpm)` returns

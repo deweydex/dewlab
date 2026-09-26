@@ -151,6 +151,8 @@ nobody at the train station thinks it is wrong. It is the right answer in
 a different space. On a clock face, the numbers go round from 12 back to
 1, so adding can bring you back to a smaller number.
 
+<img src="ten-plus-four.svg" alt="Two pictures of the same move. On the left, a number line from 0 to 16, with four hops from 10 that land on 14: 10 + 4 = 14. On the right, a clock face, with four hops from 10, through 11, 12 and 1, that land on 2: on the clock, 10 + 4 gives 2.">
+
 <aside class="dl-note" id="four-q-note-clock">
 
 **Clock arithmetic.** Mathematicians call this *modular arithmetic*.

@@ -65,6 +65,16 @@ matters.
 
 </details>
 
+<aside class="dl-note" id="where-prog-practice-note-portrait">
+
+**A picture woven from cards.** In 1839, a firm in Lyon wove a portrait
+of Joseph-Marie Jacquard in silk, on a Jacquard loom. The pattern
+needed more than 24,000 punched cards, and the weaving was so fine that
+it looked like an engraving. Babbage got a copy, hung it in his drawing
+room in London, and used it to explain his engine's cards to visitors.
+
+</aside>
+
 **3. Predict.** What is the first item of this sorted list?
 
 ```python

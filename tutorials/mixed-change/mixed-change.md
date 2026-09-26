@@ -140,6 +140,16 @@ a counter added.
 
 </details>
 
+<aside class="dl-note" id="mixed-change-note-litre">
+
+**A litre that was not quite a cubic decimetre.** From 1901 to 1964, a
+litre was the space taken by one kilogram of pure water, at the
+temperature where water is densest. That was about 1.000028 cubic
+decimetres. In 1964 the litre became exactly one cubic decimetre again,
+so this problem's 20 litres are exactly 20 cubic decimetres.
+
+</aside>
+
 **4. Explain.** A weather radar says a hailstone is falling at 11 metres
 a second. Schlomo, who is learning Python too, says: "In a single
 instant the stone moves 0 metres, and 0 metres in 0 seconds is not a

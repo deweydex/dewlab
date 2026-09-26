@@ -50,6 +50,16 @@ use a longer formula for wind chill.)
 
 </details>
 
+<aside class="dl-note" id="what-function-practice-note-siple">
+
+**Water in a cylinder.** Paul Siple and Charles Passel measured the
+chill of the wind in Antarctica, around 1940. They timed how long water
+in a small cylinder took to freeze, in different winds and
+temperatures, and published their results in 1945. Siple gave the idea
+its name, wind chill.
+
+</aside>
+
 **2. Predict.** A phone has a screen brightness from 0 to 10. What do
 the two lines show?
 

@@ -130,6 +130,17 @@ designed that way in the early 1980s.
 
 </details>
 
+<aside class="dl-note" id="everything-is-practice-note-midi">
+
+**Two makers, one cable.** MIDI was first shown to the public in
+January 1983, at a music trade show in the United States called NAMM.
+Two keyboards from two different companies, a Sequential Circuits
+Prophet-600 and a Roland Jupiter-6, played together over one cable. In
+2013, Dave Smith of Sequential and Ikutaro Kakehashi of Roland were
+given a Technical Grammy award for MIDI.
+
+</aside>
+
 **6. Predict.** What does each of these give? Watch the last two.
 
 ```python

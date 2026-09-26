@@ -218,6 +218,17 @@ when you test with the right numbers.
 
 </details>
 
+<aside class="dl-note" id="mixed-decisions-note-eowyn">
+
+**Red for every county.** Met Éireann's warnings go from yellow to
+orange to red. For 24 January 2025, the day of Storm Éowyn, it gave a
+red warning for the whole country. A gust of 184 km/h was measured at
+Mace Head in County Galway, the strongest gust ever recorded in
+Ireland. The old record, 182 km/h at Foynes in 1945, had stood for 80
+years.
+
+</aside>
+
 **8. Another way.** An office air conditioner beeps when the temperature
 is outside 18 to 24 degrees. One way to write that is
 `not between(temperature, 18, 24)`. Write it a second way with no `not`

@@ -708,3 +708,11 @@ A score in two parts works like minutes and seconds on the microwave
 timer. To compare two of them, turn both into the smaller unit first.
 
 </details>
+
+<aside class="dl-note" id="mixed-instructions-note-gaa">
+
+**When a goal beat any number of points.** The first rules of the GAA
+said that one goal beat any number of points. In 1892 a goal became
+worth 5 points, and in 1896 it became worth 3, as it is today.
+
+</aside>

@@ -52,6 +52,16 @@ the base case. It prints "Lift off!" and makes no more calls. The
 
 </details>
 
+<aside class="dl-note" id="calls-itself-practice-note-countdown">
+
+**A countdown from a film.** The countdown to a launch is often said
+to come from a film. In Fritz Lang's silent film Woman in the Moon,
+from 1929, the screen counts the last seconds before a rocket leaves
+for the Moon: 5, 4, 3, 2, 1, now. The rocket scientist Hermann Oberth
+advised on the film.
+
+</aside>
+
 **2. Predict.** You pack a bag for a trip. It has a pouch with your
 passport and tickets, a pouch with a charger, and a book loose in the
 bag. What do these two lines print?

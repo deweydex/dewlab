@@ -367,6 +367,18 @@ behind it is used in real encryption, with much longer keys.
 
 </details>
 
+<aside class="dl-note" id="bits-practice-note-vernam">
+
+**XOR in 1917.** Gilbert Vernam, an engineer at AT&T in the United
+States, invented a lock like this in 1917, for messages sent by
+teleprinter. The message and the key were both holes in paper tape,
+and his machine combined them with XOR. His patent was granted in 1919.
+It was shown later that if the key is random, as long as the message,
+and used only once, nobody can read the message without the key. This
+is called a one-time pad.
+
+</aside>
+
 **15. Explain.** Schlomo, who is learning Python too, wants the hint to
 be safer. His idea is to lock the PIN twice, first with the key 1357 and then
 with a second key, 4000. Does two keys make it safer? Try it, and

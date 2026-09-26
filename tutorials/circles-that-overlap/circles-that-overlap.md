@@ -493,6 +493,8 @@ pairs, and add back the three-way overlap. In symbols:
 
 $$|A \cup B \cup C| = |A| + |B| + |C| - |A \cap B| - |A \cap C| - |B \cap C| + |A \cap B \cap C|$$
 
+<img src="counted-how-many-times.svg" alt="Three copies of three overlapping circles, with a number in each of the seven regions for how many times it has been counted so far. After step 1, adding the three circles, a region in one circle is counted 1 time, a region in two circles 2 times, and the middle 3 times. After step 2, taking away the three pairs, every region is counted once, except the middle, which is counted 0 times. After step 3, adding back the middle, every region is counted exactly once.">
+
 For the laptops, the pairs are 7, 3 and 4, and the middle is 2. What
 does the formula give? Calculate it, then run the cell.
 
