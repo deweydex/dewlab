@@ -31,7 +31,7 @@ more than a hundred years. When people finally did run it, they found a
 bug in it. What did her program do? And what would it look like if we
 wrote it today, in the Python you have been writing all along?
 
-I think this is one of the strangest stories in computing: the first
+I think this is one of the strangest stories in computing. The first
 program came a century before a computer that could run it.
 
 On this page we:
@@ -44,8 +44,7 @@ On this page we:
 > **The space we're in.** This page is history. Every date and name
 > here was checked against at least one careful source, and where
 > historians still argue, we say so. The Python is a modern retelling of
-> what the old programs did. One thing usually goes unsaid: the reasons
-> people had for a tool explain a lot of what seems strange about it.
+> what the old programs did. The reasons people had for a tool explain a lot of what seems strange about it.
 
 ## Warm-up
 
@@ -128,7 +127,7 @@ letter with Augustus De Morgan, the De Morgan of the warm-up.
 each published a book on logic. Two years later, Boole became the first
 professor of mathematics at Queen's College Cork, now University
 College Cork. There, in 1854, he published The Laws of Thought, which
-treats true and false as values you can calculate with. That is why
+treats true and false as values you can calculate with. So
 Python's type for `True` and `False` is called `bool`.
 
 </aside>
@@ -146,7 +145,7 @@ written down, she wrote, the engine "might compose elaborate and
 scientific pieces of music of any degree of complexity or extent".
 
 The last note, *Note G*, is the famous one. It sets out, step by step,
-how the engine could work out a sequence of numbers called the Bernoulli
+how the engine could calculate a sequence of numbers called the Bernoulli
 numbers. Babbage supplied the formulas, and Lovelace turned them into a
 table of every operation the engine would do, in order. Her letters show
 her checking it with great care, and finding a mistake of Babbage's on
@@ -215,7 +214,7 @@ for position in range(len(bernoulli)):
     print("B", position, "=", bernoulli[position])
 ```
 
-No: $B_4$ and $B_8$ are both $-\frac{1}{30}$. And after $B_1$, every
+No. $B_4$ and $B_8$ are both $-\frac{1}{30}$. And after $B_1$, every
 Bernoulli number in an odd place is 0. That explains
 Lovelace's numbering. She skipped the zeros, and she named the ones
 that were left $B_1, B_3, B_5, B_7$. So her $B_7$, the number Note G
@@ -232,7 +231,7 @@ modern computers found one line, operation 4, where the two numbers of
 a division had been swapped. That one swap makes the table give
 $-\frac{25621}{630}$ in place of $-\frac{1}{30}$. It may have been the
 printer's slip and not hers. Either way, it is often called the oldest
-bug on record, and it tells us something I find comforting: the first
+bug on record, and it tells us something I find comforting. The first
 program ever published had a bug too.
 
 Why did anyone want these numbers? Bernoulli wrote that, with his
@@ -273,20 +272,19 @@ The first people to program it were six women: Betty Snyder, Jean
 Jennings, Kay McNulty, Marlyn Wescoff, Frances Bilas and Ruth
 Lichterman. They learned the machine from its wiring diagrams. Kay
 McNulty was born in 1921 in Creeslough, County Donegal. When her family
-moved to Philadelphia in 1924, she spoke only Irish, and she went on to
-take a degree in mathematics. None of the six was invited to ENIAC's
+moved to Philadelphia in 1924, she spoke only Irish, and she later
+took a degree in mathematics. None of the six was invited to ENIAC's
 formal dedication, or to the dinner that followed. In 2017, Dublin City
 University named its computing building after her: the McNulty Building.
 
 ## A program that writes programs
 
 By the 1950s, computers held their programs in memory, but a program was
-still a long list of numbers. Writing it was slow, and one wrong digit
+still a long list of numbers. It was slow to write, and one wrong digit
 could break it.
 
-Grace Hopper, an American mathematician, had an idea that many people
-at the time did not believe in: the computer itself could do the
-translating. She said later that people told her computers could only
+Grace Hopper, an American mathematician, believed that the computer
+itself could do the translation. Many people at the time did not. She said later that people told her computers could only
 do arithmetic. Between 1951 and 1952 she wrote the A-0 system for the
 UNIVAC I. It took short names for pieces of
 code that were kept in a library, and it put the machine's program
@@ -334,7 +332,7 @@ Every line has a number, and the numbers give the order. Do you
 recognise the loop? It is the running total from
 [Doing it again](tutorial:doing-it-again#a-running-total).
 
-Then BASIC went home. Microsoft's first product, in 1975, was a BASIC
+Then BASIC moved into homes. Microsoft's first product, in 1975, was a BASIC
 for the Altair, a computer sold as a kit. The BBC Micro, with BBC BASIC
 written by Sophie Wilson, arrived in December 1981, and the ZX Spectrum
 and the Commodore 64 in 1982. Switch on a Commodore 64 and the screen
@@ -356,8 +354,8 @@ in Netscape Navigator 2.0 in 1996, and today every web browser runs it.
 
 Meanwhile, in December 1989, a Dutch programmer, Guido van Rossum,
 wanted a hobby project for the week around Christmas. He worked at CWI,
-a research centre in Amsterdam, and he began a new language that grew
-out of an earlier one called ABC. He named it after the comedy show
+a research centre in Amsterdam, and he began a new language that came
+from an earlier one called ABC. He named it after the comedy show
 Monty Python's Flying Circus, not the snake. Python 0.9.0 was
 published on 20 February 1991. Your cells on this page run a version of
 the same language, grown up.
@@ -405,7 +403,7 @@ plt.xlabel("year")
 
 `sorted` puts pairs in order by their first item, the year. The
 picture shows something a list hides. For a hundred years after Note G, there is
-nothing: the ideas waited for machines that could run them. After 1946,
+nothing. The ideas waited for machines that could run them. After 1946,
 the events come closer and closer together.
 
 ### Your turn
@@ -427,8 +425,8 @@ and it is what many exams ask for.
 
 We chose people because each step was somebody's answer to a real
 problem: a loom's cards, a list of numbers that broke at one slip,
-students who were not scientists. Knowing the problem makes the tool
-make sense. The cost is that this page left out many languages and many
+students who were not scientists. When you know the problem, the tool
+makes sense. The cost is that this page left out many languages and many
 people, and gives no neat list of generations.
 
 </details>
@@ -447,7 +445,7 @@ people, and gives no neat list of generations.
 | Term or tool | What it means |
 |---|---|
 | Analytical Engine | Babbage's design for a computer made of gears, begun in 1834, with a store, a mill and punched cards |
-| Note G | Ada Lovelace's 1843 step-by-step table for working out Bernoulli numbers, often called the first published program |
+| Note G | Ada Lovelace's 1843 step-by-step table for calculating Bernoulli numbers, often called the first published program |
 | Bernoulli numbers | a sequence of fractions that appear in formulas for sums of powers |
 | `Fraction(a, b)` | Python's exact fraction, from the `fractions` module |
 | high-level language | a language people can read, turned into machine instructions by a compiler or an interpreter |

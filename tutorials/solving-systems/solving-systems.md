@@ -29,8 +29,8 @@ On this page we:
 - check an answer against the original equations
 
 Why do we need a second method? For a 2×2 matrix, we could write down a
-formula for the inverse. With three unknowns or more, writing down an
-inverse formula stops being practical, and we need something else.
+formula for the inverse. With three unknowns or more, a formula for
+the inverse is no longer practical, and we need something else.
 
 ## A system you can already solve
 
@@ -101,7 +101,7 @@ but it gets complicated fast.
 
 *Gaussian elimination* is a method that avoids inverses completely. It
 simplifies the system itself, one step at a time, until we can read the
-answer straight off.
+answer directly.
 
 First we write the system as an *augmented matrix*. An augmented matrix
 holds the coefficients, with the right-hand sides added as one more
@@ -127,7 +127,7 @@ one column at a time.
 The cell below uses the third move twice. It takes 2 × row 1 away from
 row 2, and row 1 away from row 3. Each line uses a list comprehension,
 from [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids),
-to work out all four numbers in the new row at once. What will the first
+to calculate all four numbers in the new row at once. What will the first
 number in each new row be?
 
 ```python exec
@@ -142,11 +142,11 @@ print("row 3 - row 1:    ", row3)
 
 Both new rows start with 0. We have removed $x$ from them.
 
-Each step gets a new name, and `M` itself never changes. That is on
-purpose. If the cell had changed `M`, running it a second time would
+Each step gets a new name, and `M` itself never changes. We did this
+on purpose. If the cell had changed `M`, a second run would
 take 2 × row 1 away again, from a row that had already lost it once.
 
-One more zero to go. Next, we use row 2 to remove the $y$ from row 3.
+We need one more zero. Next, we use row 2 to remove the $y$ from row 3.
 Row 3 has $1$ in front of $y$ and row 2 has $-3$. So we first multiply
 row 3 by 3, and then add row 2.
 
@@ -176,7 +176,7 @@ The last row now says one thing about one unknown: $-7z = -21$.
 
 ### Your turn
 
-How would you work back up the staircase?
+How would you move back up the staircase?
 
 1. Solve the last row for $z$.
 2. Row 2 now has only $y$ and $z$ in it. Put your $z$ into row 2, and
@@ -211,9 +211,8 @@ print(x, y, z)
 
 ## Checking your work
 
-The elimination steps may look right, but that is not the real test.
-The real test is this: do $x$, $y$ and $z$ make the original three
-equations true? We mean the equations as they were before any row
+The elimination steps may look right, but that does not prove the
+answer. Do $x$, $y$ and $z$ make the original three equations true? We mean the equations as they were before any row
 operation changed them.
 
 ### Your turn
@@ -230,7 +229,7 @@ The same method works for four unknowns, or forty. A row operation does
 not care how many columns come before the one we are clearing.
 
 This is the main reason computers solve systems with a form of
-elimination, and do not work out an inverse. For a large matrix, an
+elimination, and do not calculate an inverse. For a large matrix, an
 inverse takes a lot of work to compute, and it can make rounding errors
 worse. Elimination never forms an inverse, so it avoids both problems.
 
@@ -246,26 +245,26 @@ where it applies, and a general method is needed everywhere else.
 Did some of the elimination feel more like bookkeeping than
 mathematics, such as keeping track of which row to subtract from which?
 That feeling is worth noticing. That part is exactly what a computer
-does without getting tired or making an arithmetic mistake. It is why
+does without getting tired or making an arithmetic mistake. So
 elimination, and not the 2×2 formula, is the version that works at any
 size.
 
-## Where to Read More
+## Where to read more
 
 Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 7:
 Inverse Matrices, Column Space and Null Space.*
-<https://www.youtube.com/watch?v=uQhTuRlWMxw>. Not about elimination directly,
-but the clearest picture there is of what a system of equations is asking,
-geometrically, and of what goes wrong when the determinant is zero.
+<https://www.youtube.com/watch?v=uQhTuRlWMxw>. This video is not about
+elimination. It gives the clearest picture of what a system of equations
+asks, in geometry, and of what goes wrong when the determinant is zero.
 
 Kalid Azad (BetterExplained). *Linear Algebra Guide.*
-<https://betterexplained.com/articles/linear-algebra-guide/>. An intuition-first
-companion to the mechanical row operations in this tutorial.
+<https://betterexplained.com/articles/linear-algebra-guide/>. This guide builds
+intuition first. It goes well with the row operations in this tutorial.
 
 Strang, G. (2016). *Introduction to Linear Algebra* (5th ed.).
-Wellesley-Cambridge Press. Chapter 2 covers Gaussian elimination as the
-central algorithm of the whole subject, which by the end of this series is a
-fair description of why it is here.
+Wellesley-Cambridge Press. Chapter 2 treats Gaussian elimination as the
+central algorithm of the whole subject. That is also why it is in this
+series.
 
 Random Noise (2026). *Solving Lights Out Puzzles: Light Chasing vs Linear
 Algebra.* <https://www.youtube.com/watch?v=rQtRK-AJOGg>. In the game

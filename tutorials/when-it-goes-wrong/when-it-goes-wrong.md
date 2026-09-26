@@ -45,7 +45,7 @@ What will it print?
 ```
 
 It prints `{'A': 1}`. `counts = {}` is inside the loop, so every time
-round, the dictionary is thrown away and started again, and only the last
+round, the dictionary is deleted and started again, and only the last
 letter survives. One line is indented one step too far, and nothing
 complains.
 
@@ -54,7 +54,7 @@ kinds of wrong in programs of a few lines. Since then, programs have grown:
 loops, lists, dictionaries, and functions that call functions. Bigger
 programs bring new errors, longer tracebacks, and logical errors that hide
 much better. Most cells on this page are meant to fail, or to give a wrong
-answer. Finding out why is the exercise.
+answer. The exercise is to see why.
 
 ## Errors from lists and dictionaries
 
@@ -107,18 +107,18 @@ print(max(row))
 
 <details class="dl-answer"><summary>answer</summary>
 
-An `IndexError`: three letters have positions 0, 1 and 2, and
+It raises an `IndexError`. Three letters have positions 0, 1 and 2, and
 `len(letters)` is 3. The last position is always one less than the length.
 This slip is common enough to have a name, an *off-by-one error*.
 
-A `KeyError: 'a'`: the dictionary has a capital A. The message shows the
+It raises a `KeyError: 'a'`, because the dictionary has a capital A. The message shows the
 key you asked for, so compare it, letter by letter, with the keys there
 are.
 
-An `AttributeError`: `'list' object has no attribute 'add'`. A list grows
+It raises an `AttributeError`: `'list' object has no attribute 'add'`. A list grows
 with `append`.
 
-A `TypeError: 'int' object is not callable`. The loop works, but
+It raises a `TypeError: 'int' object is not callable`. The loop works, but
 `max = 0` gave the name `max` to a number, so `max` is no longer Python's
 function. Any name can be reused this way, which is a good reason never to
 call a variable `max`, `sum`, `list` or `str`.
@@ -152,20 +152,20 @@ they come in a deliberate order.
 
 **Read it from the bottom.** The last line names the error. Above it, the
 steps run from the outermost call down to the innermost, so the place the
-error happened is nearest the bottom. The top is where your program
-started, and the bottom is where it broke. `in <module>` is the main part
+error happened is nearest the bottom. Your program started at the top,
+and it broke at the bottom. `in <module>` is the main part
 of the program, and `in encode` and `in shift_letter` mean a line inside
 that function.
 
 The error is in `shift_letter`, on the arithmetic. But is `shift_letter`
 wrong? It adds a shift to a number, which is right. The mistake is the
-shift it was handed: `"3"`, a string, and that came from the line at the
-top. In a real program, it would come from `input()`, which always gives a
+shift it was given, `"3"`, which is a string. It came from the line at
+the top. In a real program, it would come from `input()`, which always gives a
 string. The bottom says *what* happened, and the lines above say *how* it
 came to happen.
 
 <div class="dl-drawn dl-traceback">
-<p class="dl-tb-edge">The top is where the program started.</p>
+<p class="dl-tb-edge">The program started here, at the top.</p>
 <div class="dl-tb-body">
 <div class="dl-tb-row"><code>Traceback (most recent call last):</code></div>
 <div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 13, in &lt;module&gt;</code></div>
@@ -179,7 +179,7 @@ came to happen.
 <div class="dl-tb-row dl-tb-failed"><code>                ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~</code></div>
 <div class="dl-tb-row dl-tb-error"><code>TypeError: unsupported operand type(s) for +: 'int' and 'str'</code></div>
 </div>
-<p class="dl-tb-edge">The bottom is where it broke. That last line is the one to read first.</p>
+<p class="dl-tb-edge">The program broke here, at the bottom. Read that last line first.</p>
 </div>
 
 ### Your turn
@@ -211,11 +211,11 @@ print(brightest_row([[10, 20], [], [90, 90]]))
 <details class="dl-answer"><summary>answer</summary>
 
 The line that failed is `return sum(row) / len(row)`, in `row_brightness`,
-with a `ZeroDivisionError`. The line responsible is the last `print`: its
-picture has an empty row. Whether `row_brightness` should refuse an empty
-row with a clear `ValueError`, as
+with a `ZeroDivisionError`. The line responsible is the last `print`,
+because its picture has an empty row. Should `row_brightness` refuse an
+empty row with a clear `ValueError`, as
 [Designing and testing good functions](tutorial:building-reusable-tools)
-did for `mean`, or whether the picture should never have had one, is a
+did for `mean`? Or should the picture never have had one? That is a
 question about the whole program, not one line.
 
 </details>
@@ -223,7 +223,7 @@ question about the whole program, not one line.
 ## The dangerous kind
 
 Logical errors hide better in bigger programs: inside a function, a loop,
-or a condition written weeks ago. Here are three kinds that turn up once
+or a condition written weeks ago. Here are three kinds that appear once
 programs work with lists and functions. What does this one print?
 
 ```python exec
@@ -248,7 +248,7 @@ What will it print?
 ```
 
 It prints `True False False`. `return` ends the function at once, so the
-`else` gives up after the first letter: T is not a vowel, and TREE is
+`else` stops the search after the first letter. T is not a vowel, and TREE is
 never looked at again. The `return False` belongs after the loop, once
 every letter has been checked. It passes a test on `"EGG"` and on
 `"SKY"`, which is why it survives.
@@ -266,13 +266,13 @@ print(median(readings))
 print(readings)
 ```
 
-The median is right, and the caller's list has been sorted as a side
-effect: two names for one list, from
+The median is right, but the caller's list has been sorted as a side
+effect. There are two names for one list, as in
 [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 If the order of `readings` mattered, the time they were taken, say, it is
 now lost, and nothing said so. `sorted(numbers)` would have left it alone.
 
-The third kind changes a list while a loop goes through it. `.remove(value)`
+The third kind changes a list while a loop uses it. `.remove(value)`
 takes the first element equal to `value` out of a list. This is meant to
 take every 0 out of a row.
 
@@ -285,9 +285,9 @@ for value in row:
 print(row)
 ```
 
-It prints `[255, 0]`: one 0 survives. Each removal moves the rest of the
+It prints `[255, 0]`. One 0 survives. Each removal moves the rest of the
 list one place left, under the loop, so the loop skips the element that
-moved into the gap. Building a new list is safer:
+moved into the gap. A new list is safer:
 `[value for value in row if value != 0]`.
 
 **This is why we check answers we already know.** Each of these gives a
@@ -298,7 +298,7 @@ chosen to catch it, shows that it is wrong.
 
 <div class="dl-world" data-world="secret-messages">
 
-This function is meant to turn a key round, so that a code letter looks up
+This function is meant to reverse a key, so that a code letter looks up
 its plain letter. It runs, and it is wrong. Can you find the bug, and fix
 it? Add a test that would have caught it.
 
@@ -387,8 +387,8 @@ pixel is dark: a test needs a row that starts lit.
 
 ## Debugging habits
 
-A mistake in a program is often called a *bug*, and *debugging* is finding
-bugs and fixing them. When a program gives a wrong answer and no error,
+A mistake in a program is often called a *bug*. When we find bugs and fix
+them, we call it *debugging*. When a program gives a wrong answer and no error,
 where do we start? Two habits help more than any others.
 
 **The first habit: print the values in the middle.** This is meant to give
@@ -426,7 +426,7 @@ print(average_word_length("MEET ME AT NOON"))
 ```
 
 `words` is 4, which is right. `letters` is 15, and there are only 12
-letters: the loop counted the three spaces too. A label on each `print`
+letters. The loop counted the three spaces too. A label on each `print`
 matters, because a column of bare numbers is hard to read. When the bug is
 fixed, take the extra `print` out again.
 
@@ -526,7 +526,7 @@ Which of this page's bugs would a test have caught first, and which would
 only a person reading the output notice? What does that say about the
 tests worth writing?
 
-A challenge: this program has three bugs, and it runs. The comment says
+Here is a challenge. This program has three bugs, and it runs. The comment says
 what it is meant to do. Can you find all three, and write a test that
 catches each one?
 
@@ -551,8 +551,8 @@ print(busiest(picture))
 ```
 
 The next page, [How programming languages came to be](tutorial:how-we-got-here),
-steps back from our own programs, to the people who made programming
-possible, and to what the machine underneath is doing.
+leaves our own programs for a while. It looks at the people who made
+programming possible, and at what the machine underneath is doing.
 
 ## Where to read more
 
@@ -560,11 +560,11 @@ Everything here is covered elsewhere too, often in a form that will suit you
 better than this one.
 
 Evans, J. (2022). *The Pocket Guide to Debugging*. Wizard Zines.
-<https://wizardzines.com/zines/debugging-guide/>. Short, illustrated, and
-full of the habits on this page, and many more, from someone who debugs
-for a living.
+<https://wizardzines.com/zines/debugging-guide/>. It is short and
+illustrated. It is full of the habits on this page, and many more, from
+someone who debugs for a living.
 
 Schafer, C. (2015). *Python Tutorial: Using Try/Except Blocks for Error
-Handling*. <https://www.youtube.com/watch?v=NIWwJbo-9_8>. Where the errors
-this page teaches you to read get handled on purpose, rather than fixed by
+Handling*. <https://www.youtube.com/watch?v=NIWwJbo-9_8>. It shows how to
+handle the errors this page teaches you to read on purpose, instead of
 rewriting the line that raised them.

@@ -20,7 +20,7 @@ different 6-digit PINs are there? How many ways can you choose 3
 toppings from a menu of 12?
 
 These are *counting problems*. Each one asks how many different ways
-something can happen. Counting problems come up in many places:
+something can happen. Counting problems appear in many places:
 
 - in probability
 - in security: how hard is a password to guess?
@@ -57,7 +57,7 @@ the fourth, and 1 for the last. That gives
 $5 \times 4 \times 3 \times 2 \times 1 = 120$ different arrangements.
 
 What about $0!$? Mathematicians agree that $0! = 1$. This can look
-strange at first. But it fits: there is exactly one way to arrange zero
+strange at first. But it fits. There is exactly one way to arrange zero
 objects, and that is to do nothing. It also keeps every formula on this
 page working when a number in it is 0.
 
@@ -67,7 +67,7 @@ We met the product version of the accumulator pattern in
 [Repeating steps with loops](tutorial:repeating-yourself). Here we turn
 it into a function.
 
-1. In the first cell, write a function `factorial(n)` that works out
+1. In the first cell, write a function `factorial(n)` that calculates
    $n!$.
 2. Give it a docstring.
 3. Make sure it gives 1 when $n$ is 0.
@@ -101,8 +101,8 @@ id: your-turn-2
 ## Permutations: order matters
 
 A *permutation* is an arrangement of $r$ objects chosen from $n$
-different objects. In a permutation, order matters: choosing A then B is
-different from choosing B then A.
+different objects. In a permutation, order matters. A then B is
+different from B then A.
 
 We write the number of permutations as $P(n, r)$. The formula takes the
 arrangements of all $n$ objects, $n!$, and divides out the arrangements
@@ -122,7 +122,7 @@ gives $8 \times 7 \times 6 = 336$, the same answer.
 
 ### Your turn
 
-1. Write a function `permutations(n, r)` that works out $P(n, r)$. Use
+1. Write a function `permutations(n, r)` that calculates $P(n, r)$. Use
    your `factorial` function inside it.
 2. What should happen if $r > n$? You cannot choose more items than you
    have. Decide what your function should do in that case.
@@ -145,8 +145,8 @@ id: your-turn-4
 ## Combinations: order does not matter
 
 A *combination* is a choice of $r$ objects from $n$ different objects,
-where the order does not matter. Choosing {A, B, C} is the same
-combination as choosing {C, A, B}.
+where the order does not matter. {A, B, C} is the same combination as
+{C, A, B}.
 
 How do we count combinations? Take one combination of $r$ items. We can
 arrange those $r$ items in $r!$ different orders, so the permutation
@@ -162,7 +162,7 @@ from 4 for a team? The formula gives
 $C(4, 2) = \frac{4!}{2! \cdot 2!} = \frac{24}{4} = 6$. If the people are
 A, B, C and D, the six teams are AB, AC, AD, BC, BD and CD.
 
-Now a bigger one. How many different 5-card hands can be dealt from a
+Now we try a bigger one. How many different 5-card hands can be dealt from a
 deck of 52 cards?
 
 $$C(52, 5) = \frac{52!}{5! \cdot 47!} = 2{,}598{,}960$$
@@ -328,9 +328,9 @@ We have built three counting functions: factorial, permutations and
 combinations. We have also built one for the multiplication principle.
 Each one is a tested tool that we can use again. In
 [Probability: simple, compound and conditional](tutorial:what-are-the-chances),
-we use them to work out probabilities.
+we use them to calculate probabilities.
 
-The most important skill is choosing the right tool. Here is a summary:
+The most important skill is to choose the right tool. Here is a summary:
 
 | The question | The tool | The count |
 |---|---|---|
@@ -338,24 +338,24 @@ The most important skill is choosing the right tool. Here is a summary:
 | Does the order not matter, with no repeats? | Combination | $C(n, r) = \frac{n!}{r! \cdot (n-r)!}$ |
 | Can the same thing be chosen again? | Multiplication principle | $k^r$ |
 
-Choosing the tool is the hard part. Once you have the right tool, the
+The choice of tool is the hard part. Once you have the right tool, the
 calculation follows a fixed set of steps.
 
 Which counting question surprised you most?
 
-## Where to Read More
+## Where to read more
 
 Khan Academy. *The Fundamental Principle of Counting.*
-<https://www.youtube.com/watch?v=HDLBCv4yyIs>. The multiplication
-principle this page uses for PINs and letter sequences, built up from
-first principles.
+<https://www.youtube.com/watch?v=HDLBCv4yyIs>. It explains the
+multiplication principle this page uses for PINs and letter sequences,
+starting from first principles.
 
 Mike Pound (Computerphile) (2016). *Password Cracking.*
-<https://www.youtube.com/watch?v=7U-RbOKanYs>. What the numbers this page
-computes mean in practice — how fast a real machine gets through
-them.
+<https://www.youtube.com/watch?v=7U-RbOKanYs>. It shows what the numbers
+this page computes mean in practice, and how fast a real machine can try
+that many passwords.
 
 Stand-up Maths (2015). *Matt Explains: Binomial Coefficients.*
 <https://www.youtube.com/watch?v=Pcgvv6T_bD8>. Matt Parker explains "n
 choose r" on a whiteboard, and shows where the same numbers appear in
-Pascal's triangle. Twelve minutes.
+Pascal's triangle. The video is twelve minutes long.

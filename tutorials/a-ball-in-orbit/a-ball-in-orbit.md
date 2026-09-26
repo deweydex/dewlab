@@ -26,7 +26,7 @@ By the end you will have moved a camera, made a ball go round in a
 circle, and seen what happens when the ball passes behind the camera.
 All of it uses the same one division.
 
-Three things to keep in mind as you go:
+Keep three things in mind as you go:
 
 - Every cell on this page is yours to change. Change a number, run it
   again, and see what happens.
@@ -35,21 +35,21 @@ Three things to keep in mind as you go:
 - If a word is new, it is in bold the first time it appears, and the
   Reference panel, on the left, has all of them.
 
-## Where the Camera Stands
+## Where the camera stands
 
 In [the last tutorial](tutorial:a-point-on-the-screen) your eye was at
 $(0, 0, 0)$, looking along $z$. A camera somewhere else sees a different
 picture. That is because a point's depth is how far it is *ahead of the
 camera*, not how far it is from some fixed spot. If the camera is at
 `camera`, then a point's position as the camera sees it is the point's
-position minus the camera's position. Two steps, always in this order:
+position minus the camera's position. There are two steps, always in this order:
 
 1. Subtract the camera's position from the point.
 2. Divide by what is left of $z$.
 
 Each page here begins with no code from earlier pages. So the cell
 below starts with `project`, the divide from the last tutorial, exactly
-as it was. `project_from` is the new part: it does step 1, then step 2.
+as it was. `project_from` is the new part. It does step 1, then step 2.
 
 ```python exec
 id: where-the-camera-stands-1
@@ -72,10 +72,11 @@ The first line is the camera where it was before, at $(0, 0, 0)$. It
 prints $(0.375, 0.25)$, the same answer `project(1.5, 1, 4)` gives.
 
 Let's check the second line by hand. The point is $(1.5, 1, 4)$ and the
-camera is at $(0, 0, -4)$. Subtracting gives $(1.5, 1, 8)$: the same
-post top, now eight units ahead instead of four. Dividing by 8 gives
+camera is at $(0, 0, -4)$. Subtraction gives $(1.5, 1, 8)$. This is the same
+post top, now eight units ahead instead of four. Division by 8 gives
 $(0.1875, 0.125)$, exactly what the cell printed, and exactly half of
-the first line. Twice as far away, half as far from the centre. Here is
+the first line. The post is twice as far away, so it is drawn half as
+far from the centre. Here is
 the road of posts from the last tutorial again, drawn from wherever you
 put the camera:
 
@@ -100,7 +101,7 @@ draw_posts(camera=(0, 0, -3))
 Where would you stand to look down on the road from above? Try a camera
 at $(0, 1.5, 0)$. Then try one at $(1.5, 0, 0)$, standing in line with
 the posts on one side. Before each run, say what you expect to see,
-then check. Being wrong here costs nothing and teaches a lot.
+then check. A guess that does not match costs nothing here, and it teaches you a lot.
 
 ```python exec
 id: where-the-camera-stands-3
@@ -108,12 +109,12 @@ hint: draw_posts(camera=(0, 1.5, 0)) is the first one. A camera above the posts 
 ```
 
 Our camera can move but it cannot turn. It always looks straight along
-$z$. Turning is a matrix, and it is the job of the next
-tutorial, [The rotation matrix: turning a cube in 3D](tutorial:turning-a-cube).
+$z$. A turn needs a matrix. The next tutorial,
+[The rotation matrix: turning a cube in 3D](tutorial:turning-a-cube), does that.
 
-## A Ball in Orbit
+## A ball in orbit
 
-Now something that moves. Here is a ball travelling in a circle in
+Now let's make something move. Here is a ball travelling in a circle in
 front of the camera. The circle lies flat, like a hoop on a table. It
 sits a little below eye level, so that we look slightly down on it, and
 its centre is five units ahead.
@@ -172,7 +173,7 @@ plt.ylim(-0.35, 0)
 plt.gca().set_aspect("equal")
 ```
 
-A circle, seen from slightly above, comes out as a squashed oval. It is
+A circle, seen from slightly above, looks like a squashed oval. It is
 lower and wider at the front, where the ball is near, and higher and
 narrower at the back. The sixty steps are equally spaced around the
 hoop. On the screen, though, they are spread out at the front and
@@ -184,12 +185,11 @@ $z$ twice.
 
 ### How a picture moves
 
-Pause here for a moment, because this is the idea the rest of the page
-rests on. Nothing on a screen ever really moves. A screen shows one
+Pause here for a moment. The rest of the page depends on this idea. Nothing on a screen ever really moves. A screen shows one
 still picture, then another, then another, very quickly. Each still
 picture is called a ***frame***. If the frames come fast enough, your
-eye stops seeing separate pictures and sees movement instead. Some
-numbers worth knowing:
+eye stops seeing separate pictures and sees movement instead. Here
+are some useful numbers:
 
 - About 20 frames a second is enough for the eye to see movement.
 - A cinema film shows 24 frames every second.
@@ -197,7 +197,7 @@ numbers worth knowing:
 
 The number of frames shown each second is the ***frame rate***. A
 flip-book works the same way. It is a small book with a slightly
-different drawing on every page, and when you flick through the pages
+different drawing on every page, and when you turn the pages quickly,
 the drawing seems to move. Here are ten pages of a flip-book of our
 ball, one for every tenth of a turn:
 
@@ -220,8 +220,8 @@ Read them left to right along the top row, then the bottom. The ball
 starts on the right. It swings round the back, getting smaller and
 higher. It comes out on the left, and then sweeps across the front,
 large and low. Every frame is the same three lines of arithmetic with a
-different angle in them. That is all a moving picture is: the same
-drawing, done again and again, with one number changing each time.
+different angle in them. A moving picture is only this. The same
+drawing is done again and again, with one number changing each time.
 
 ### Your turn
 
@@ -270,27 +270,27 @@ def draw_step(step):
 FuncAnimation(figure, draw_step, frames=48, interval=60)
 ```
 
-The last line is the animation itself. Leaving it as the last thing in
-the cell is what makes the page play it. Nothing else changed:
+The last line is the animation itself. The page plays it because it is
+the last thing in the cell. Nothing else changed.
 `draw_step` is the three lines of arithmetic from the flip-book, run
 forty-eight times. Instead of drawing a new circle on a new page each
 time, it moves the one circle, `ball`, to its new place and gives it
 its new size.
 
-This cell is yours to change, like any other. Some things to try, one
-at a time:
+This cell is yours to change, like any other. Here are some things to
+try, one at a time:
 
 - `interval=200`, to see the separate frames again.
-- `frames=12`, to see the join where the loop starts over.
+- `frames=12`, to see the join where the loop starts again.
 - `radius=3` inside `draw_step`, for a wider hoop.
 - `height=0`, so the hoop is at eye level. What shape is the path now?
 
-## Through the Camera
+## Through the camera
 
 What happens if the hoop is wider than the distance to its centre? With
 a radius of 6 and the centre five units ahead, the nearest point of the
 orbit is one unit *behind* the camera. This cell is meant to produce
-something that looks wrong. Let's run it and look at what kind of
+something that looks wrong. Let's run it and look at what goes
 wrong:
 
 ```python exec
@@ -328,7 +328,7 @@ The arithmetic did exactly what it was told. Nobody gave it a rule for
 points that are not in front of the camera. A real ***renderer***, the
 program that turns points into a picture, has such a rule. It refuses
 to draw anything closer than a small fixed depth, called the ***near
-plane***, and cuts those points away before any dividing happens.
+plane***, and removes those points before any division happens.
 [Field of View](tutorial:the-fourth-number#field-of-view), in the
 fourth tutorial of this series, shows where that number lives.
 
@@ -336,7 +336,7 @@ fourth tutorial of this series, shows where that number lives.
 
 Could you skip any position whose depth is less than $0.1$, so that the
 cell above draws only the part of the orbit that is in front of the
-camera? `continue` inside a loop moves on to the next step without
+camera? `continue` inside a loop skips to the next step without
 doing anything else.
 
 ```python exec
@@ -349,27 +349,27 @@ hint: An if right after ball_position, before project. Compare z with 0.1.
 Look back at the flip-book, and at the animation after it. Nothing in
 either of them knows what a ball is. Each frame knows three numbers,
 one division for each of two of them, and a size scaled by the third.
-Then the same thing again with a new angle. That is most of what a 3D
+Then it does the same thing again with a new angle. That is most of what a 3D
 game engine does, for many thousands of points at a time, sixty times
 a second. The next tutorial, [The rotation matrix: turning a cube in
 3D](tutorial:turning-a-cube), gives it something with edges to draw,
 and a way to turn it.
 
-## Where to Read More
+## Where to read more
 
 O'Flaherty-Chan, G. (2026). *Divide by depth for instant 3D.*
-<https://gabrieloc.com/2026/09/15/perspective.html>. The blog post this
-series grew from: the same divide, a camera you can move, and the same
-ball in orbit, in a few dozen lines of code, ending at the projection
-matrix the fourth tutorial builds.
+<https://gabrieloc.com/2026/09/15/perspective.html>. This series grew
+from this blog post. It has the same divide, a camera you can move, and
+the same ball in orbit, in a few dozen lines of code. It ends at the
+projection matrix the fourth tutorial builds.
 
 Hughes, J. F., van Dam, A., McGuire, M., Sklar, D. F., Foley, J. D.,
 Feiner, S. K. and Akeley, K. (2013). *Computer Graphics: Principles and
 Practice* (3rd ed.). Addison-Wesley. Its chapters on cameras cover
-perspective projection as it is really used, near plane and all.
+perspective projection as it is really used, including the near plane.
 
 Sebastian Lague (2020). *Coding Adventure: Solar System.*
 <https://www.youtube.com/watch?v=7axImc1sxa0>. Our ball goes round because
-we tell it to follow a circle. Here, Sebastian Lague lets gravity do the
-pulling instead, and builds a small solar system that you can explore.
+we tell it to follow a circle. Here, Sebastian Lague uses gravity
+instead, and builds a small solar system that you can explore.
 About twelve minutes.

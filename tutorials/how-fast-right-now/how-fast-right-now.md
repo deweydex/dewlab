@@ -261,8 +261,8 @@ $$f'(a) = \lim_{h \to 0} \frac{f(a + h) - f(a)}{h}$$
 
 At $h = 0$ exactly, the fraction is $\frac{0}{0}$. That is a hole,
 like the one on the last page. The derivative is the limit at that
-hole. It is the slope of the curve at a single point, and it is what
-"its speed right now" means. I think it is a lovely answer to a question that looked
+hole. It is the slope of the curve at a single point. "Its speed right
+now" means this slope. I think it is a lovely answer to a question that looked
 impossible.
 
 Speed at one instant is an *instantaneous rate of change*: the rate of

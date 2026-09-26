@@ -7,8 +7,8 @@ version: 2026.09.26.1
 
 # A class with many methods: giving one class more to do — Practice
 
-Problems on classes with many methods and on class attributes, and three
-from earlier pages. Try each problem before you open anything under it,
+This page has problems on classes with many methods and on class
+attributes, and three from earlier pages. Try each problem before you open anything under it,
 and run the cells to test your guesses.
 
 ## 1. Two questions for one planet
@@ -221,7 +221,7 @@ attribute, if both are in your program?
 
 <details class="dl-answer"><summary>one answer</summary>
 
-An instance attribute: `self.hull_limit = hull_limit`, given to
+Make it an instance attribute: `self.hull_limit = hull_limit`, given to
 `__init__` for each submarine. A class attribute says "every submarine is
 the same here", and these two are not. If every submarine in your program
 shares one limit, a class attribute is simpler.

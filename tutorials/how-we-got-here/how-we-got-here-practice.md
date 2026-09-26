@@ -12,7 +12,7 @@ worlds:
 
 Problems on binary, hexadecimal and ASCII, on the history and the
 paradigms, and three from earlier pages. Try the conversions by hand
-before you use the cell to check them: the aim is that you can read the
+before you use the cell to check them. The aim is that you can read the
 notation yourself, without Python reading it for you.
 
 ## Tools
@@ -46,7 +46,7 @@ Change these binary numbers to base 10 by hand, then check: `1101`,
 
 <details class="dl-answer"><summary>answer</summary>
 
-13, 16, 31, 170. `11111` is 31, not 32: a row of ones is always one less
+They are 13, 16, 31 and 170. `11111` is 31, not 32. A row of ones is always one less
 than the next power of two. That is why a byte holds 0 to 255, and not 0
 to 256.
 
@@ -58,9 +58,9 @@ Change these to binary by hand, then check: 6, 12, 100, 255.
 
 <details class="dl-answer"><summary>answer</summary>
 
-110, 1100, 1100100, 11111111. 12 is 6 moved one place to the left:
-doubling a number in binary adds a 0 on the end, the way multiplying by
-ten does in base 10.
+They are 110, 1100, 1100100 and 11111111. 12 is 6 moved one place to the
+left. When you double a number in binary, you add a 0 on the end, the
+way you do when you multiply by ten in base 10.
 
 </details>
 
@@ -70,21 +70,21 @@ Change these to hexadecimal: 15, 16, 255, 256, 4095.
 
 <details class="dl-answer"><summary>answer</summary>
 
-F, 10, FF, 100, FFF. FF is eight binary digits, one byte, and FFF is
+They are F, 10, FF, 100 and FFF. FF is eight binary digits, one byte, and FFF is
 twelve.
 
 </details>
 
 ## 4. Hex to binary, straight
 
-Change `FF`, `A0` and `7E` from hex to binary, without going through
+Change `FF`, `A0` and `7E` from hex to binary, without using
 base 10.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`11111111`, `10100000`, `01111110`. Each hex digit becomes four binary
+They are `11111111`, `10100000` and `01111110`. Each hex digit becomes four binary
 digits on its own: F is 1111, A is 1010, 0 is 0000, 7 is 0111 and E is
-1110. No base 10 is needed, which is the whole point of hex.
+1110. No base 10 is needed. That is the main reason hex exists.
 
 </details>
 
@@ -94,7 +94,7 @@ Decode `01001000 01001001` as ASCII.
 
 <details class="dl-answer"><summary>answer</summary>
 
-72 and 73, which are H and I: `HI`.
+The codes are 72 and 73, which are H and I. The message is `HI`.
 
 </details>
 
@@ -105,7 +105,7 @@ What are the three in base 10?
 
 <details class="dl-answer"><summary>answer</summary>
 
-255, 127 and 80: a colour called coral.
+They are 255, 127 and 80. This colour is called coral.
 
 </details>
 
@@ -153,10 +153,9 @@ Why do computers use binary, and not base 10?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because the hardware has two states. A transistor is on or off, high
-voltage or low, and base 2 matches that exactly. A circuit that had to
-tell ten voltage levels apart would be harder to build and easier to
-fool. Base 10 is about people's fingers, not about machines.
+The hardware has two states. A transistor is on or off, high voltage or
+low, and base 2 matches that exactly. A circuit that had to separate ten
+voltage levels would be harder to build and easier to fool. Base 10 is about people's fingers, not about machines.
 
 </details>
 
@@ -166,7 +165,7 @@ Why does hexadecimal exist, when computers do not use it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-For people. One hex digit is exactly four binary digits, so a byte is two
+Hex exists for people. One hex digit is exactly four binary digits, so a byte is two
 hex digits, and a long binary pattern becomes short enough to read and
 copy without losing count. It is binary, written shorter.
 
@@ -179,12 +178,12 @@ never built?
 
 <details class="dl-answer"><summary>answer</summary>
 
-She wrote a step-by-step method for the Analytical Engine to work out a
+She wrote a step-by-step method for the Analytical Engine to calculate a
 sequence of numbers, with loops and conditional branching, in notes to a
-translation that ended up longer than the paper. That the machine was
-never built is the point: a program does not need a working machine to
+translation that became longer than the paper. The machine was never
+built, and that matters. A program does not need a working machine to
 exist. It is a list of exact instructions, whether or not anything can
-carry them out yet.
+follow them yet.
 
 </details>
 
@@ -213,11 +212,11 @@ language usually quicker to find and fix mistakes in?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A compiled program was translated before it ran, so no time goes on
-translating while it runs, and the compiler could look at the whole
+A compiled program was translated before it ran, so no time is spent on
+translation while it runs, and the compiler could look at the whole
 program to make it faster. An interpreted program is translated as it
-runs, which takes time, but there is no step between changing a line and
-seeing what it does. When you are hunting a bug, that is worth a great
+runs, which takes time, but there is no extra step before you see what a
+changed line does. When you are hunting a bug, that is worth a great
 deal.
 
 </details>
@@ -229,10 +228,10 @@ language from the table would you expect to find doing that job? Why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-COBOL, and a surprising amount of this work still runs on it. It was built
-in 1959 for business data, banks took it up early, and code that has
-worked, and been checked, for decades is not replaced without a very good
-reason. Software lasts much longer than the reasons it was written.
+You would expect COBOL, and a surprising amount of this work still runs on
+it. It was built in 1959 for business data, and banks adopted it early.
+Code that has worked, and been checked, for decades is not replaced
+without a very good reason.
 
 </details>
 
@@ -266,7 +265,8 @@ for n in numbers:
     doubled.append(n * 2)
 ```
 
-Three lines in place of one, doing the same thing. Which is better depends
+The loop uses three lines in place of one, to do the same thing. Which is
+better depends
 on who is reading it.
 
 </details>
@@ -278,9 +278,9 @@ Is any of the four paradigms the right one?
 <details class="dl-answer"><summary>answer</summary>
 
 No. They are habits of thought. A procedural loop is clearer for a
-beginner; a declarative line is clearer once you are used to it; an
-object helps when there is data to keep track of between steps, and gets
-in the way when there is not. A program that mixes all four without a plan
+beginner. A declarative line is clearer once you are used to it. An
+object helps when there is data to remember between steps, and makes
+things harder when there is not. A program that mixes all four without a plan
 is harder to read than one that keeps to one.
 
 </details>
@@ -292,7 +292,8 @@ and what might they tell you about the file?
 
 <details class="dl-answer"><summary>answer</summary>
 
-80 and 75, which are P and K. `PK` starts every ZIP file: they are the
+They are 80 and 75, which are P and K. `PK` starts every ZIP file. They
+are the
 initials of Phil Katz, who wrote the ZIP format in 1989. Many formats
 start with a few fixed bytes like these, a *magic number*, and software
 often reads them to decide what a file is, without trusting its name.
@@ -303,7 +304,7 @@ often reads them to decide what a file is, without trusting its name.
 
 <div class="dl-world" data-world="secret-messages">
 
-Can you write `to_hex_message(text)`, which gives back each character's
+Can you write `to_hex_message(text)`, which returns each character's
 ASCII code as two hex digits, the way the 1958 memory dump was written?
 `hex(n)[2:]` is the hex without its `0x`, and `.upper()` makes it capitals.
 
@@ -405,9 +406,9 @@ What will it do?
 
 <details class="dl-answer"><summary>why</summary>
 
-A `TypeError`: `.get()` with no default gives `None`, and `None + 1` has
-no meaning. The mistake is the missing default, `.get("B", 0)`, and the
-error turns up a step later, on the `+`.
+It raises a `TypeError`. `.get()` with no default gives `None`, and
+`None + 1` has no meaning. The mistake is the missing default,
+`.get("B", 0)`, and the error appears a step later, on the `+`.
 
 </details>
 
@@ -432,9 +433,9 @@ What will it do?
 
 <details class="dl-answer"><summary>why</summary>
 
-It stops with an `AssertionError`. `.sort()` sorts its list and gives
-back `None`, and `None` is not `[1, 2, 3]`. The test is right to fail, and
-it is the test that is wrong: `sorted([3, 1, 2])` is what it meant.
+It stops with an `AssertionError`. `.sort()` sorts its list and returns
+`None`, and `None` is not `[1, 2, 3]`. The test fails because the mistake
+is in the test itself. It meant `sorted([3, 1, 2])`.
 
 </details>
 
@@ -458,6 +459,6 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-2. The loop counts each letter as it meets it, and there are two Ls.
+The answer is 2. The loop counts each letter as it meets it, and there are two Ls.
 
 </details>

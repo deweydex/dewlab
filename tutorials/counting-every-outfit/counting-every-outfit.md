@@ -42,9 +42,9 @@ On this page we:
 - add `all_pairs` to your toolkit, and list every pixel and colour
 - count PINs and passwords, far too many to list
 
-> **The space we're in.** Choices that do not change each other.
+> **The space we're in.** We look at choices that do not change each other.
 > Whichever top you pick, both pairs of trousers are still there. Every
-> list on this page is finite: it ends, so a loop can reach every item
+> list on this page is finite. It ends, so a loop can reach every item
 > in it. The next page, [Orders and choices](tutorial:orders-and-choices),
 > is about choices that do change each other.
 
@@ -95,16 +95,16 @@ for top in tops:
         print(top, "with", legs)
 ```
 
-Six outfits. This is one loop inside another, the same shape as the
+There are six outfits. This is one loop inside another, the same shape as the
 truth tables on
 [True, false and every case](tutorial:true-false-and-every-case). Here
 is what happens when:
 
 1. The outer loop picks the first top, the white shirt.
-2. The inner loop runs all the way through the trousers: jeans, then
-   black trousers.
-3. The outer loop picks the next top, and the inner loop runs all the
-   way through the trousers again.
+2. The inner loop runs over all the trousers: jeans, then black
+   trousers.
+3. The outer loop picks the next top, and the inner loop runs over all
+   the trousers again.
 4. This happens once for each top.
 
 So each top appears twice, once with each pair of trousers. A drawing
@@ -170,10 +170,10 @@ print(outcomes)
 print(len(outcomes), "outcomes")
 ```
 
-Twelve outcomes, from `('H', 1)` to `('T', 6)`. The list starts empty,
-and each time round the inner loop, one more pair goes on the end.
-Listing every outcome like this is where all counting begins: once the
-list is right, counting it is only `len()`.
+There are twelve outcomes, from `('H', 1)` to `('T', 6)`. The list starts
+empty, and each time round the inner loop, one more pair goes on the end.
+All counting starts with a list of every outcome like this. Once the
+list is right, `len()` counts it.
 
 ### Your turn
 
@@ -199,7 +199,7 @@ second. That makes sense from the tree diagram. Each of the first
 choices is a branch, and every branch has the same number of twigs.
 
 This is the *fundamental principle of counting*, often called the
-counting principle. In words: if one choice can be made in $m$ ways,
+counting principle. In words, if one choice can be made in $m$ ways,
 and then a second choice in $n$ ways, whatever the first choice was,
 then the two together can be made in $m \times n$ ways. In symbols:
 
@@ -230,15 +230,15 @@ print(len(tops) * len(trousers) * len(shoes))
 print(product([len(tops), len(trousers), len(shoes)]))
 ```
 
-All three say 12. The loop is the proof: it met every outfit. The
+All three say 12. The loop is the proof, because it met every outfit. The
 formula is the fast way, and it agrees.
 
 Look back at the warm-up. A truth table with three inputs has 8 rows,
 because each input is a choice of 2: $2 \times 2 \times 2 = 2^3$. The
-$2^n$ rows on that page were the counting principle all along. So were
+$2^n$ rows on that page came from the counting principle. So did
 the 128 patterns of a seven-segment display on
-[Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times):
-seven segments, each a choice of on or off, make $2^7$.
+[Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times).
+Seven segments, each a choice of on or off, make $2^7$.
 
 ```question
 id: counting-every-principle-2
@@ -258,7 +258,7 @@ times now. Let's make it a tool.
 the same order as our loops made them: every pair with the first value
 of `first`, then every pair with the second, and so on.
 
-The cell below is a stub: only the promise is written. Write the body
+The cell below is a stub. Only the promise is written. Write the body
 yourself. The cell `counting-every-outcomes-1` has the shape you need.
 
 ```python exec
@@ -292,8 +292,8 @@ def all_pairs(first, second):
     return pairs
 ```
 
-Run the toolkit cell, then the tests. Until the body is written,
-`all_pairs` gives back nothing at all, `None`, so expect the first test
+Run the toolkit cell, then the tests. Until you write the body,
+`all_pairs` returns nothing at all, `None`, so expect the first test
 to stop with an `AssertionError`.
 
 ```python exec
@@ -353,9 +353,10 @@ print(outfits[0])
 print(len(outfits))
 ```
 
-The first outfit is `(('white shirt', 'jeans'), 'runners')`: a top and
-trousers, paired with shoes. There are 12 of them, $6 \times 2$. Three
-choices are two choices, where the first choice is itself a pair.
+The first outfit is `(('white shirt', 'jeans'), 'runners')`. It is a top
+and trousers, paired with shoes. There are 12 of them, $6 \times 2$. So
+we can treat three choices as two, where the first choice is itself a
+pair.
 
 ## Every pixel, every colour
 
@@ -370,8 +371,8 @@ print(pixels)
 print(len(pixels), "pixels")
 ```
 
-Twelve pixels, from `(0, 0)` to `(3, 2)`. A grid is the counting
-principle drawn as a rectangle. A common laptop screen is
+There are twelve pixels, from `(0, 0)` to `(3, 2)`. A grid shows the
+counting principle as a rectangle. A common laptop screen is
 1920 pixels wide and 1080 tall, so it has $1920 \times 1080 =
 2{,}073{,}600$ pixels.
 
@@ -399,8 +400,8 @@ grid.set_ylabel("red")
 print(len(mixes), "mixes")
 ```
 
-Sixteen squares, $4 \times 4$, from black in one corner to yellow in
-the other: full red and full green light together look yellow. A real
+There are sixteen squares, $4 \times 4$, from black in one corner to
+yellow in the other. Full red and full green light together look yellow. A real
 screen has 256 levels of each colour, not 4, and blue as well:
 $256 \times 256 \times 256 = 16{,}777{,}216$ colours for every pixel.
 
@@ -437,7 +438,7 @@ many different choices is that?
   - This counts the one choice you make, not the choices on offer.
 ```
 
-Seven. Each choice is one robot or one pet, so we list the robots, then
+There are seven. Each choice is one robot or one pet, so we list the robots, then
 the pets, and count them all: $3 + 4$. When the choices are
 made one after the other, "this and then that", the counts multiply.
 When you make only one choice, from one group or the other, the counts
@@ -453,7 +454,7 @@ principle:
 $$10 \times 10 \times 10 \times 10 = 10^4 = 10{,}000 \text{ PINs}$$
 
 Let's prove it by listing. Four nested loops would work, but there is a
-shorter route: every PIN from 0000 to 9999 is a whole number from 0 to
+shorter way. Every PIN from 0000 to 9999 is a whole number from 0 to
 9999, with zeros in front. `format(pin, "04")` writes a number with at
 least four digits, the way `format(n, "08b")` did on
 [Bits that flip](tutorial:bits-that-flip). What do the first and last
@@ -488,10 +489,10 @@ print(62 ** 8)
 print(26 ** 12)
 ```
 
-Twelve small letters win by a long way: 95,428,956,661,682,176
+Twelve small letters give far more: 95,428,956,661,682,176
 passwords, more than 400 times as many as 8 characters with capitals
-and digits. Length beats variety. I find that the nicest surprise on
-the page: the plain, long password wins. Say an attacker's
+and digits. I find that the nicest surprise on the page. The plain,
+long password wins. Say an attacker's
 computer can try a billion passwords a second. It would try every 8-letter password in about three
 and a half minutes, every 8-character mixed one in about two and a half
 days, and every 12-letter one in about three years.
@@ -505,14 +506,14 @@ passwords.
 
 </aside>
 
-Nobody can list $26^{12}$ passwords to check that count: a loop would
+Nobody can list $26^{12}$ passwords to check that count. A loop would
 run for years. We trust the formula here because we have checked it
 against the loop on every list small enough to finish. The loop is the
-proof, and the formula is how we go further than the loop can reach.
+proof, and the formula takes us further than the loop can.
 
 ### Your turn
 
-1. Some phones use a six-digit PIN. How many are there? Work it out
+1. Some phones use a six-digit PIN. How many are there? Find it
    with the counting principle first, then check with Python.
 2. A lock has three wheels, each with the digits 0 to 9. Make a list of
    every code with `all_pairs`, or with loops, and check its length.
@@ -527,18 +528,17 @@ id: counting-every-your-turn
 <details class="dl-why"><summary>Why this way?</summary>
 
 We counted every outfit with a loop before we gave you the formula. Most
-textbooks do it the other way round: the counting principle first,
-$m \times n$, and then examples that use it.
+textbooks do it the other way round. They give the counting principle
+first, $m \times n$, and then examples that use it.
 
-Formula first is quicker. A reader who is comfortable with symbols can
+It is quicker to give the formula first. A reader who is comfortable with symbols can
 start using it at once.
 
-We listed first because a formula is a promise, and a list is how we
-check it. The loop met every outfit, so its count cannot be wrong, and
+We listed first because a formula is a promise, and we check it with
+a list. The loop met every outfit, so its count cannot be wrong, and
 $m \times n$ agreed with it. For $26^{12}$ passwords no loop could
 finish, and there we trust the formula because we checked it everywhere
-we could. A formula you have tested is one you can believe, not only
-remember.
+we could.
 
 </details>
 

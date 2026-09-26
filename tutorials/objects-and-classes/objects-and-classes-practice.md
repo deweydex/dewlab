@@ -7,8 +7,8 @@ version: 2026.09.26.1
 
 # Classes and objects: keeping data and actions together — Practice
 
-Problems on classes, objects and printing them, and three from earlier
-pages. Try each problem before you open anything under it, and run the
+This page has problems on classes, objects and printing them, and three
+from earlier pages. Try each problem before you open anything under it, and run the
 cells to test your guesses.
 
 ## 1. Two characters
@@ -119,9 +119,9 @@ not? What is it for?
 
 <details class="dl-answer"><summary>one answer</summary>
 
-`self`, always first. A method is called through an object, as in
-`grace.take_damage(5)`, and `self` is how Python hands that object to the
-method. It is how the method knows whose fields to read and change. A
+It has `self`, always first. A method is called through an object, as in
+`grace.take_damage(5)`, and Python gives that object to the method as
+`self`. Through `self`, the method knows whose fields to read and change. A
 plain function is not called through an object, so it has no `self`.
 
 </details>
@@ -218,11 +218,11 @@ plain list or dictionary?
 
 <details class="dl-answer"><summary>one answer</summary>
 
-The characters as a class: there is a rule to keep, and a method is one
-place to keep it. The place names as a plain list: a name has no rule
-and no actions, so a class would add code and give nothing back. There
-is room to disagree here. A place might grow a description, or exits to
-other places, and then a class starts to pay for itself.
+Keep the characters as a class. There is a rule to keep, and a method is
+one place to keep it. Keep the place names as a plain list. A name has no
+rule and no actions, so a class would only add code. There is room to
+disagree here. A place might grow a description, or exits to other
+places, and then a class becomes useful.
 
 </details>
 

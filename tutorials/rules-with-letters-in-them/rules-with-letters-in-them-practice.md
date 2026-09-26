@@ -38,7 +38,7 @@ print(2 * x ** 2, (2 * x) ** 2)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`32 64`.
+It prints `32 64`.
 
 In `2 * x ** 2`, the power comes first: $4^2 = 16$, then $2 \times 16 =
 32$. In `(2 * x) ** 2`, the brackets come first: $2 \times 4 = 8$, then
@@ -101,10 +101,10 @@ print(x ** 2)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`-9`, `9` and `9`.
+They print `-9`, `9` and `9`.
 
-In `-3 ** 2`, the power comes before the minus sign, so Python works
-out $-(3^2) = -9$. In the second line, the brackets make $-3$ one
+In `-3 ** 2`, the power comes before the minus sign, so Python
+calculates $-(3^2) = -9$. In the second line, the brackets make $-3$ one
 number first. In the third, `x` already names the number $-3$, so
 squaring it gives 9. That is one reason to substitute by naming the
 value, as `evaluate` does, and not by pasting the digits in.
@@ -148,7 +148,7 @@ print(evaluate([1, 1, 1, 1], 10))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`15` and `1111`.
+They print `15` and `1111`.
 
 The list is $1 + x + x^2 + x^3$. At $x = 2$ it is $1 + 2 + 4 + 8 = 15$.
 At $x = 10$ it is $1 + 10 + 100 + 1000 = 1111$. The second one shows
@@ -185,8 +185,8 @@ for x in range(-10, 11):
 print("4x + 11 checks out.")
 ```
 
-Many people write $-2(x - 4) = -2x - 8$. The check shows the difference at once:
-at $x = 0$ the two sides would be 11 and $-5$.
+Many people write $-2(x - 4) = -2x - 8$. The check shows the difference at once.
+At $x = 0$ the two sides would be 11 and $-5$.
 
 </details>
 
@@ -210,7 +210,7 @@ print("value_of keeps its promise.")
 
 <details class="dl-answer"><summary>answer</summary>
 
-The second test fails: `value_of([-4, 0, 1], 2)` gives 4, not 0. The
+The second test fails. `value_of([-4, 0, 1], 2)` gives 4, not 0. The
 loop starts at power 1, so it never adds the constant term, at index 0.
 Starting at 0 fixes it:
 
@@ -228,8 +228,8 @@ print("value_of keeps its promise.")
 ```
 
 The first test passed even so, because its constant term is 0.
-Schlomi's second test is the one that found the gap: a test on a
-polynomial with no constant could never find it.
+Schlomi's second test found the gap. A test on a polynomial with no
+constant could never find it.
 
 </details>
 
@@ -258,14 +258,14 @@ $1600 + 400 + 24 = 2024$ pixels.
 
 </details>
 
-**10. Another way.** Work out $29 \times 31$ in your head. The tutorial's
+**10. Another way.** Calculate $29 \times 31$ in your head. The tutorial's
 last "Your turn" expanded $(x - 2)(x + 2)$. Use the same idea with
 $(30 - 1)(30 + 1)$, then check with Python.
 
 <details class="dl-answer"><summary>answer</summary>
 
 $(x - 1)(x + 1) = x^2 - 1$, because the two strips, $-x$ and $+x$,
-cancel out. With $x = 30$:
+cancel each other. With $x = 30$:
 
 $$29 \times 31 = (30 - 1)(30 + 1) = 900 - 1 = 899$$
 
@@ -274,7 +274,7 @@ print(29 * 31, evaluate([-1, 0, 1], 30))
 ```
 
 Both give 899. The same trick gives $48 \times 52 = 2500 - 4 = 2496$.
-Mental arithmetic like this is an identity at work.
+This mental arithmetic uses an identity.
 
 </details>
 
@@ -287,22 +287,22 @@ There is no single answer.
 
 <details class="dl-answer"><summary>answer</summary>
 
-An answer might weigh a few things, and can land on either side.
+An answer might weigh a few things, and can choose either way.
 
 - **Trust.** A check you run tells you at once whether two sides
-  agree. A rule you apply tells you only as much as your care with it.
+  agree. A rule you apply works only if you apply it with care.
 - **Certainty.** A proof by rules covers every number. A check covers
   the numbers you tried, unless you know a fact like "two quadratics
   that agree at three values are the same".
 - **Speed.** With practice, rules are faster than typing a check,
   and exams usually ask for the rules.
-- **Slips.** A check shows you where two sides part. It does not
+- **Slips.** A check shows you where two sides differ. It does not
   show you why. Knowing the rules does.
 - **You.** Some people need to see a rule work on numbers before they
   believe it. Others find the numbers slow.
 
-Many people end up wanting both: rules to do the work, and a check to
-catch the slips.
+Many people want both in the end. Rules do the work, and a check
+catches the slips.
 
 </details>
 
@@ -342,7 +342,7 @@ for time in range(4):
 ```
 
 These are $(x + 1)$, $(x + 1)^2$, $(x + 1)^3$ and $(x + 1)^4$. Each row
-is the row before, added to itself shifted one place: that is what
+is the row before, added to itself shifted one place. That is what
 multiplying by $x + 1$ does. The numbers are the combinations from
 [Orders and choices](tutorial:orders-and-choices): the coefficient of
 $x^2$ in $(x + 1)^4$ is `combinations(4, 2)`, which is 6. Each $x^2$
@@ -397,7 +397,7 @@ against `evaluate` for many values of $x$.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The list is lowest power first, so go through it backwards, with
+1. The list is lowest power first, so loop over it backwards, with
    `range(len(coefficients) - 1, -1, -1)`: a range with a step of $-1$.
 2. Start `value` at 0. Each time round, multiply `value` by `x`, then
    add the coefficient at that index.
@@ -427,8 +427,8 @@ print(evaluate_nested([-2, 5, 3], 2))
 ```
 
 It prints 20, and every check passes. This is called Horner's method.
-For degree 10 it makes 10 multiplications, where working out every
-power separately makes many more. Computers often evaluate polynomials
+For degree 10 it makes 10 multiplications, where calculating every
+power separately needs many more. Computers often evaluate polynomials
 this way.
 
 </details>
@@ -467,8 +467,8 @@ print(added)
 ```
 
 The weights are `[1, -3, 3, -1]`, `[0, 3, -6, 3]`, `[0, 0, 3, -3]` and
-`[0, 0, 0, 1]`, and they add up to `[1, 0, 0, 0]`: the number 1, for
-every $t$. The 1, 3, 3, 1 in front of the weights are the row for
+`[0, 0, 0, 1]`, and they add up to `[1, 0, 0, 0]`, which is the number 1,
+for every $t$. The 1, 3, 3, 1 in front of the weights are the row for
 $(x + 1)^3$ from problem 12. In fact the four weights are the four
 terms of $\big((1 - t) + t\big)^3$, and $(1 - t) + t$ is 1, so they
 have to add up to $1^3 = 1$. PostScript fonts, and the letters on many
@@ -478,7 +478,7 @@ screens, are drawn with these four weights.
 
 **16. Explain.** Schlomo, who is also learning Python, checks the claim
 $(x + 1)^3 = x^3 + 1$ at $x = 0$, and it is true. "So it is an
-identity," he says. Checking a value is a sensible first step. What
+identity," he says. What
 would you say back? Find every whole number from $-5$ to 5 where the
 claim is true.
 
@@ -486,7 +486,7 @@ claim is true.
 
 One value that works does not make an identity. An identity must be
 true for every value, and one value where it fails is enough to show it
-is not one. Schlomo's check was worth doing; it needs more values
+is not one. Schlomo's check needs more values
 beside it.
 
 ```python
@@ -562,15 +562,15 @@ middle of the curve the pull point has about half the weight, so moving
 it 92 units lower moves the bottom about 46 units lower, and the
 bottom was only 9 below the line to begin with.
 
-The algebra, for the heights (the across numbers work the same way).
+Here is the algebra for the heights. The across numbers work the same way.
 Call the three heights $s$, $p$ and $e$. The first mix gives
 $(1 - t)s + tp$, and the second gives $(1 - t)p + te$. Mixing those two:
 
 $$(1 - t)\big((1 - t)s + tp\big) + t\big((1 - t)p + te\big)
 = (1 - t)^2 s + 2t(1 - t)p + t^2 e$$
 
-The middle point is met twice, once from each side, which is where the
-2 in $2t(1 - t)$ comes from. Here is one check in code, at eleven
+The middle point is met twice, once from each side, and that gives the
+2 in $2t(1 - t)$. Here is one check in code, at eleven
 values of $t$:
 
 ```python
@@ -581,8 +581,8 @@ for tenths in range(11):
     print(t, round(twice, 6), round(weighted, 6))
 ```
 
-The two columns agree (a `-0.0` is a float a hair below 0, and rounding
-keeps its sign). Mixing twice is how many drawing programs work
-out a curve, because it needs only the one small step, done again.
+The two columns agree (a `-0.0` is a float a tiny bit below 0, and rounding
+keeps its sign). Many drawing programs find a curve by mixing twice,
+because it needs only the one small step, done again.
 
 </details>

@@ -13,7 +13,7 @@ version: 2026.09.25.1
 # Mixed problems: instructions for a machine
 
 These problems draw on every page of Unit 1, and none of them says which
-page it needs. Working that out is part of the problem. When you are not
+page it needs. Finding that is part of the problem. When you are not
 sure where to start, the four questions are always allowed: what is
 named here, what is promised, what happens when, and what does this
 space let us do?
@@ -29,15 +29,15 @@ Each problem says what kind it is: **Predict** (say what a cell will
 print, then run it), **Make** (build something small), **Fix** (find
 why code that looks fine does something else, and change it), **Explain** (answer in words) or **Another way** (reach the
 same answer by a second route, or find the space where a "wrong" answer
-is right). Answers are in the folds, and each is one way through, not
-the only one.
+is right). Answers are in the folds. Each is one answer, not the only
+one.
 
 ## Your toolkit
 
 Your toolkit from this unit is loaded on this page: `digit_at`,
 `to_binary`, `to_hex` and `pixel_row`. Run this cell to check that all
-four are there. If one of them gives a `NameError`, its page is where to
-build it.
+four are there. If one of them gives a `NameError`, build it on its
+page.
 
 ```python exec
 id: mixed-instructions-toolkit-check
@@ -71,8 +71,8 @@ print(7 / 2)
 `###`, then `3`, then `3.5`.
 
 - `*` with a string writes it out that many times, as on
-  [Four questions for any puzzle](tutorial:four-questions): here, three
-  lit pixels.
+  [Four questions for any puzzle](tutorial:four-questions). Here, it
+  draws three lit pixels.
 - `//` divides and keeps only the whole part, an int.
 - `/` always gives a float, even when the answer could be whole.
 
@@ -85,7 +85,7 @@ would meet that answer.
 <details class="dl-answer"><summary>answer</summary>
 
 In the integers ℤ, which include the negative whole numbers,
-$3 - 5 = -2$. The weather gives one place to meet it: it is 3 °C in the
+$3 - 5 = -2$. The weather gives one place to meet it. It is 3 °C in the
 evening, and by morning the temperature has fallen 5 degrees, to −2 °C.
 Python's ints are a space with negative numbers in it, so
 `print(3 - 5)` gives `-2`.
@@ -102,7 +102,7 @@ print(to_binary(2026))
 print(to_hex(2026))
 ```
 
-This prints `11111101010` and `7EA`. The hex form is much shorter: 11
+This prints `11111101010` and `7EA`. The hex form is much shorter. Eleven
 bits become 3 hex digits, since each hex digit stands for four bits.
 
 </details>
@@ -133,9 +133,9 @@ print("Done.")
 ```
 
 This prints `Put the pen down.`, then `Draw 4 sides of 3 cm, turning
-left after each.` and `Done.`. There was no error, because naming a
-function without calling it is allowed. It does nothing, the same way
-reading the title of a recipe card does not make any tea.
+left after each.` and `Done.`. There was no error, because Python allows
+you to name a function without calling it. It does nothing, in the same
+way that a recipe card's title does not make any tea.
 
 </details>
 
@@ -170,16 +170,16 @@ print(pixels)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`750`. On line 3, Python works out `3 * 250` and names the result
-`pixels`. Line 4 points `rows` at a new value, but `pixels` was worked
-out already, and nothing tells Python to work it out again. A value is
-worked out when its line runs, not later.
+`750`. On line 3, Python calculates `3 * 250` and names the result
+`pixels`. Line 4 points `rows` at a new value, but `pixels` was
+calculated already, and nothing tells Python to calculate it again. A
+value is calculated when its line runs, not later.
 
 </details>
 
 The next five problems build Stage 1 of the project: a seven-segment
 display that shows 2026. Each answer fold has code you can copy, so if
-one step will not come, you can still go on to the next.
+you are stuck on one step, you can still move to the next.
 
 **7. Make.** Use `digit_at` to print the four digits of 2026, from left
 to right. Then print `math.log10(2026)`, and use it to say why 2026
@@ -196,7 +196,7 @@ print(math.log10(2026))
 
 This prints `2 0 2 6`, then about `3.3`. So $10^3 = 1000$ is below 2026,
 and $10^4 = 10000$ is above it. Any number from 1000 to 9999 has 4
-digits: its logarithm, base 10, rounded down, plus 1.
+digits. That is its logarithm, base 10, rounded down, plus 1.
 
 </details>
 
@@ -215,8 +215,8 @@ would read.
 Some of them are useful all the same. Many seven-segment displays show
 all sixteen hex digits, with A, b, C, d, E and F for the letters, some
 of them lower case so that they do not look like 8 or 0. So Schlomo's
-count of patterns holds. What a pattern *means* is a question for the people
-who read it.
+count of patterns is correct. The people who read a pattern decide what
+it *means*.
 
 </details>
 
@@ -268,7 +268,7 @@ print(to_binary(pattern))
 print(to_hex(pattern))
 ```
 
-This prints `1111111`, then `7F`: the 8 lights all seven segments. The
+This prints `1111111`, then `7F`. The 8 lights all seven segments. The
 cell also made tools for the next problem. `mark` uses the string
 repeat from the first page of this unit: `"_" * 1` is `"_"`, and
 `"_" * 0` is empty.
@@ -377,8 +377,8 @@ This prints:
 ```
 
 Text comes out line by line, top to bottom, so each line needs a piece
-of every digit. That is why we print row by row, not digit by digit.
-For the "try this next", 12345 shows `2345`: the 1 in place 4 has
+of every digit. So we print row by row, not digit by digit.
+For the "try this next", 12345 shows `2345`. The 1 in place 4 has
 nowhere to go. Unit 3's loops will shorten the three long lines.
 
 </details>
@@ -427,7 +427,7 @@ print(digit_at(number, 0))
 ```
 
 This prints `6`. For the "try this next", `int("2,026")` stops with a
-`ValueError`: a comma is not a digit.
+`ValueError`, because a comma is not a digit.
 
 </details>
 
@@ -451,7 +451,7 @@ ValueError: Unknown format code 'X' for object of type 'float'
 ```
 
 So one broken promise gives an error, and the other gives an answer we
-never agreed on: `-101` is not the string of 0s and 1s that `to_binary`
+never agreed on. `-101` is not the string of 0s and 1s that `to_binary`
 promised. A promise holds only inside its space. Outside it, anything
 may happen, and an error is the better of the two outcomes, because it
 tells us.
@@ -462,7 +462,7 @@ tells us.
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
 a digit was 7 hex digits, one per row. Here are the glyphs, the drawn
 shapes, for the digits of 2026. Write `glyph_row(glyph, row)`, which
-gives one row of a glyph as pixels, with row 0 at the top. Then print
+returns one row of a glyph as pixels, with row 0 at the top. Then print
 2026 in pixels, the four glyphs side by side.
 
 ```python exec
@@ -574,7 +574,7 @@ anything is broken.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Nothing is broken, and Schlomo's surprise is a fair one. The two sums
+Nothing is broken, and many people share Schlomo's surprise. The two sums
 live in different spaces.
 
 `1`, `2` and `3` are ints. Python keeps whole numbers exactly, in
@@ -583,7 +583,7 @@ binary, so `1 + 2` is exactly `3`.
 `0.1`, `0.2` and `0.3` are floats. A float is a binary fraction, built
 from halves, quarters, eighths and so on, and a tenth cannot be made
 exactly from those. So Python keeps a number very close to 0.1, and the
-tiny differences show up in the sum: `0.30000000000000004`.
+tiny differences appear in the sum: `0.30000000000000004`.
 
 In the space of fractions, ℚ, `0.1 + 0.2 == 0.3` is true. In the space
 of floats, the question to ask is "close enough?", for example
@@ -609,7 +609,7 @@ assert from_bits(1, 1, 0, 1) == 13
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. The cell prints 14, one too many. Which bit is 1 here, and worth 1?
-2. Work out each of the four parts of the sum on its own.
+2. Calculate each of the four parts of the sum on its own.
 3. What is $2^1$? What should the last bit be worth?
 
 **Think about:** the names promise worths of 8, 4, 2 and 1. Does the
@@ -638,8 +638,8 @@ assert from_bits(1, 1, 1, 1) == 15
 ```
 
 This prints `13`, and every test passes. Python saw nothing wrong with
-the first version: only the test noticed. Without the test, 14 would have
-looked like a fine answer. That is what a test is for.
+the first version. Only the test noticed. Without the test, 14 would have
+looked like a fine answer.
 
 </details>
 
@@ -671,8 +671,8 @@ Then draw `2-11` on the display from problem 11. The dash is a
 3. The dash has no pattern in `segment_table`. Its three rows are
    `"   "`, `" _ "` and `"   "`.
 
-**Think about:** the team with more goals is behind. How many points
-would the team with three goals need to catch up?
+**Think about:** the team with more goals is behind. How many more points
+would the team with three goals need to equal the other team?
 
 </details>
 
@@ -695,7 +695,7 @@ print(bottom_row(goals) + " " + "   " + " " + bottom_row(tens) + " " + bottom_ro
 ```
 
 The first line prints `18 17`. The team with one goal is ahead by a
-point: fifteen points beat eight, even with two goals' help. The
+point. Fifteen points beat eight, even with two goals' help. The
 display shows:
 
 ```text
@@ -705,6 +705,6 @@ display shows:
 ```
 
 A score in two parts works like minutes and seconds on the microwave
-timer: to compare two of them, turn both into the smaller unit first.
+timer. To compare two of them, turn both into the smaller unit first.
 
 </details>

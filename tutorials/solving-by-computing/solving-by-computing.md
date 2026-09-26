@@ -576,8 +576,8 @@ counted steps for both.
 
 Many courses teach only Newton's method, as a formula to use on an
 exam question, and it is the one worth knowing if you only learn one.
-It is fast, it uses the slope from the last two pages, and it is how
-many calculators and libraries find roots.
+It is fast, it uses the slope from the last two pages, and many
+calculators and libraries use it to find roots.
 
 We started with bisection because it is binary search again, and it
 never loses the root. With both on the page, you can see what speed

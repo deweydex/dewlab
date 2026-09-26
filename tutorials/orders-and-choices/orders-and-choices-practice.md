@@ -11,8 +11,8 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
-folded away until you open them, and each shows one way through: yours
-may be different, and work as well. The last few problems are meant to
+folded away until you open them, and each shows one answer. Yours
+may be different and work too. The last few problems are meant to
 be hard. If one feels like hard work, open its hint if it has one, or
 come back to it after the others.
 
@@ -63,8 +63,8 @@ tutorial makes the formula $\frac{n!}{(n-n)!}$ give the right answer?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Filling all $n$ places is the same as putting all $n$ things in order,
-which is what $n!$ counts. In the formula, the bottom is $(n-n)! = 0!$.
+When you fill all $n$ places, you put all $n$ things in order, which is
+what $n!$ counts. In the formula, the bottom is $(n-n)! = 0!$.
 Because we agreed that $0! = 1$, the formula gives $\frac{n!}{1} = n!$.
 Without that agreement, the formula would break at exactly this point.
 
@@ -80,8 +80,9 @@ Say in words what each one counts before you run them.
 print(combinations(6, 1), combinations(6, 6))
 ```
 
-This prints `6 1`. There are 6 ways to choose one sensor: one for each
-sensor. There is only 1 way to choose all six: take everything.
+This prints `6 1`. There are 6 ways to choose one sensor, one for each
+sensor. There is only 1 way to choose all six, which is to take
+everything.
 
 </details>
 
@@ -125,8 +126,8 @@ print(my_combinations(4, 2))
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Work out the line by hand with $n = 4$ and $r = 2$: what are the three
-   factorials?
+1. Calculate the line by hand with $n = 4$ and $r = 2$. What are the
+   three factorials?
 2. `//` and `*` have the same rank in the order of operations. Which one
    does Python do first?
 3. The formula has $r!\,(n-r)!$ together on the bottom of the fraction.
@@ -138,10 +139,10 @@ $\frac{n!}{r!\,(n-r)!}$ would look like if you wrote them on one line.
 
 <details class="dl-answer"><summary>answer</summary>
 
-It prints `24`. Python does `//` and `*` from left to right, so it works
-out $24 \div 2 = 12$ first, and then multiplies by $2! = 2$ to get 24.
-The whole bottom of the fraction needs brackets, so that it is worked
-out first:
+It prints `24`. Python does `//` and `*` from left to right, so it calculates
+$24 \div 2 = 12$ first, and then multiplies by $2! = 2$ to get 24.
+The whole bottom of the fraction needs brackets, so that it is calculated
+first:
 
 ```python
 def my_combinations(n, r):
@@ -151,7 +152,7 @@ def my_combinations(n, r):
 print(my_combinations(4, 2))
 ```
 
-Now it prints `6`. Schlomi's formula was the one she needed; the line
+Now it prints `6`. Schlomi's formula was the one she needed. The line
 said something else. This is the order of operations from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#which-comes-first),
 in a new place.
@@ -196,20 +197,20 @@ print(product(range(6, 9)))
 
 Both print `336`. The first writes out the three choices, 8, 7 and 6.
 The second lets `range(6, 9)` make them: 6, 7 and 8. The order of the
-numbers does not change a product. This route never works out $8!$ at
+numbers does not change a product. This route never calculates $8!$ at
 all, so it does less work than the factorial formula.
 
 </details>
 
 **9. Explain.** Schlomo, who is learning Python too, has a bike lock
 with 4 wheels, each with the digits 0 to 9. He calls it a "combination
-lock", so he works out `combinations(10, 4)` and gets 210 settings. Is
+lock", so he calculates `combinations(10, 4)` and gets 210 settings. Is
 the number of settings a combination, in the sense of this page? How
 many settings are there?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No, though the name of the lock makes his move a reasonable one. The
+No, though the name of the lock explains his choice. The
 order matters: 1234 and 4321 open different locks. A digit can
 also repeat, as in 0077. So neither $C(n, r)$ nor $P(n, r)$ fits. It is
 the counting principle from
@@ -258,15 +259,14 @@ differ:
 if left != middle and middle != right and left != right:
 ```
 
-Now it counts 6, which is $3!$. This gap is a common one: with
+Now it counts 6, which is $3!$. This gap is common. With
 more loops, the number of pairs to check grows quickly, and anyone can
-miss one. That is one reason to reach for a formula, or
-for `itertools`.
+miss one. That is one reason to use a formula, or `itertools`.
 
 </details>
 
 **11. Make.** Two questions about music and cards. For each, decide
-first whether the order matters, then work it out.
+first whether the order matters, then find the count.
 
 1. A running playlist uses 4 different songs from a list of 12, in
    order.
@@ -296,8 +296,8 @@ for lit in range(0, 8):
 ```
 
 **12. Make.** A seven-segment display has seven bars of light. The cell
-above prints $C(7, r)$ for every $r$ from 0 to 7: the number of
-patterns with exactly $r$ segments lit. Put those eight numbers in a
+above prints $C(7, r)$ for every $r$ from 0 to 7, which is the number
+of patterns with exactly $r$ segments lit. Put those eight numbers in a
 list and add them up with `total`. What do you get, and where have you
 seen that number before?
 
@@ -323,11 +323,11 @@ print(total(counts), 2 ** 7)
 ```
 
 The counts are `[1, 7, 21, 35, 35, 21, 7, 1]`, and they add up to 128,
-which is $2^7$: the 128 patterns from
+which is $2^7$. These are the 128 patterns from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times).
 Each pattern is a choice of which segments are lit. So $C(7, 2) = 21$
 patterns light exactly two, and all the choices together are all the
-patterns. The digit 1 is one of those 21: it lights two segments.
+patterns. The digit 1 is one of those 21, because it lights two segments.
 
 </details>
 
@@ -351,10 +351,10 @@ print(fittings)
 ```
 
 This prints the same six pairs of sensors, and `6`. The line
-`for first, second in` takes each pair apart into its two values.
+`for first, second in` splits each pair into its two values.
 `all_pairs` makes all 16
 pairs of positions. Four of them use a sensor twice, and of the other
-12, each choice appears twice, once in each order. Keeping `first <
+12, each choice appears twice, once in each order. The check `first <
 second` keeps each choice once: $16 - 4 = 12$, and $12 \div 2 = 6$.
 
 </details>
@@ -391,7 +391,7 @@ many as the Irish Lotto.
 </details>
 
 **15. Predict.** How many digits does $100!$ have? Guess first: 10, 50,
-150 or 1,000? Then find out with `str()`, from
+150 or 1,000? Then check with `str()`, from
 [When Python says no](tutorial:when-python-says-no), and `len()`.
 
 <details class="dl-answer"><summary>answer</summary>

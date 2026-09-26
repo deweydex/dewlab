@@ -39,10 +39,10 @@ On this page we:
 - check every formula against a loop that lists every case
 - add `factorial`, `permutations` and `combinations` to the toolkit
 
-> **The space we're in.** Whole numbers, and groups of things that are
-> all different from each other: eight different drones, three different
-> songs. Nothing is picked twice unless we say so. One thing usually goes
-> unsaid, so we will say it: we assume we can tell every item apart. Two
+> **The space we're in.** We use whole numbers, and groups of things that
+> are all different from each other, such as eight different drones or
+> three different songs. Nothing is picked twice unless we say so. We
+> assume we can tell every item apart. Two
 > drones nobody could tell apart would change every count on this page. Your toolkit
 > gives us `total`, `product` and `all_pairs` from the last two pages.
 
@@ -105,10 +105,10 @@ for first in songs:
 print(orders, "orders")
 ```
 
-Six orders. The three loops try $3 \times 3 \times 3 = 27$ rows, the same
+There are six orders. The three loops try $3 \times 3 \times 3 = 27$ rows, the same
 way the truth tables on
 [True, false and every case](tutorial:true-false-and-every-case) did.
-The `if` then throws away the 21 rows that use a song more than once.
+The `if` then removes the 21 rows that use a song more than once.
 
 An *arrangement* is one order of a group of things, from first to last.
 The counting principle from the last page tells us how many there are
@@ -151,8 +151,8 @@ numbers grow fast enough to shout about.
 
 The $\prod$ is the pi notation from
 [Doing it again](tutorial:doing-it-again#pi-multiplying-instead-of-adding), a
-loop written by mathematicians: multiply $k$, for every $k$ from 1 to
-$n$. So your `product` tool can find a factorial already.
+loop written by mathematicians. It multiplies $k$, for every $k$ from 1
+to $n$. So your `product` tool can find a factorial already.
 
 How fast do you think factorials grow? Before you run the cell, guess
 $10!$. Is it nearer 100, 10,000 or 1,000,000?
@@ -239,10 +239,10 @@ def factorial(n):
     return result
 ```
 
-Now test it. Until your `factorial` is written, this cell stops with an
-error, which is the test doing its job. The last test compares yours
-with Python's own `math.factorial`, which is another way to the same
-number.
+Now test it. Until you write `factorial`, this cell stops with an
+error. The test is doing its job. The last test compares yours
+with Python's own `math.factorial`, which reaches the same number
+another way.
 
 ```python exec
 id: orders-factorial-tests
@@ -300,20 +300,20 @@ print(8 * 7 * 6)
 Both lines show 336. Now we want a formula for any $n$ and $r$. Look at
 $8 \times 7 \times 6$. It is the start of $8!$, with the end,
 $5 \times 4 \times 3 \times 2 \times 1$, missing. That end is $5!$, the
-orders of the five jobs that run later. Dividing $8!$ by $5!$ cuts
-it off.
+orders of the five jobs that run later. If we divide $8!$ by $5!$,
+that end is removed.
 
-In words: the orders of all $n$ things, divided by the orders of the
-$n - r$ things we do not care about.
+In words, we take the orders of all $n$ things, and divide by the orders
+of the $n - r$ things we do not care about.
 
 $$P(n, r) = n \times (n-1) \times \dots \times (n - r + 1) = \frac{n!}{(n-r)!}$$
 
 Here it is in Python, with your `factorial`. We use `//`, from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold),
-because this division always comes out whole, and `//` keeps the answer
+because this division always gives a whole number, and `//` keeps the answer
 an int. This cell needs your `factorial` from the last section. If it is
 not written yet, the cell stops with a `TypeError`, because a function
-with no `return` gives back `None`, and Python cannot divide `None`.
+with no `return` returns `None`, and Python cannot divide `None`.
 
 ```python exec
 id: orders-jobs-2
@@ -322,8 +322,8 @@ print(factorial(8) // factorial(3))
 ```
 
 The first line is the three jobs, 336. The second line divides by $3!$
-instead, and gives 6,720. That is $P(8, 5)$: the ways to give five of
-the eight drones the five jobs. It answers the second question at the
+instead, and gives 6,720. That is $P(8, 5)$, the number of ways to give
+five of the eight drones the five jobs. It answers the second question at the
 top of the page.
 
 ### Your turn: permutations in your toolkit
@@ -352,7 +352,7 @@ def permutations(n, r):
     return factorial(n) // factorial(n - r)
 ```
 
-Until your `permutations` is written, these tests stop with an error.
+Until you write `permutations`, these tests stop with an error.
 
 ```python exec
 id: orders-permutations-tests
@@ -364,8 +364,8 @@ assert permutations(5, 0) == 1
 print("permutations keeps its promise.")
 ```
 
-The last test is $P(5, 0)$: the ways to fill no places at all. It is 1,
-and it only comes out as 1 because $0! = 1$.
+The last test is $P(5, 0)$, the number of ways to fill no places at all.
+It is 1 only because $0! = 1$.
 
 ## When order does not matter
 
@@ -393,7 +393,7 @@ for first in range(4):
 print(fittings, "ways to fit two sensors")
 ```
 
-Six ways: $12 \div 2$. The loops count positions in the list, from 0.
+There are six ways, $12 \div 2$. The loops count positions in the list, from 0.
 Because `second` always starts after `first`, each pair of sensors
 appears once, in one order only.
 
@@ -402,7 +402,7 @@ does not matter. The number of combinations of $r$ things chosen from $n$
 is written $C(n, r)$, or $\binom{n}{r}$, and said "n choose r".
 
 Every choice of $r$ things can be put in order in $r!$ ways. So the
-permutations count each combination $r!$ times, and we divide that out:
+permutations count each combination $r!$ times, and we divide by $r!$:
 
 $$C(n, r) = \frac{P(n, r)}{r!} = \frac{n!}{r!\,(n-r)!}$$
 
@@ -439,8 +439,8 @@ with_jobs = list(itertools.permutations(drones, 5))
 print(len(with_jobs), "teams with jobs")
 ```
 
-Every team of five, listed and counted: 56. Every team with jobs:
-6,720. The formula is the fast way, and the list is the
+Python lists and counts every team of five, and finds 56. With jobs,
+it finds 6,720. The formula is the fast way, and the list is the
 proof.
 
 ### Your turn: combinations in your toolkit
@@ -475,7 +475,7 @@ def combinations(n, r):
     return factorial(n) // (factorial(r) * factorial(n - r))
 ```
 
-Until your `combinations` is written, these tests stop with an error.
+Until you write `combinations`, these tests stop with an error.
 
 ```python exec
 id: orders-combinations-tests
@@ -490,7 +490,7 @@ print("combinations keeps its promise.")
 
 ## Which count do I need?
 
-Most counting questions come down to two smaller questions. Does the
+Most counting questions depend on two smaller questions. Does the
 order matter? And can the same thing be picked more than once?
 
 | | Order matters | Order does not matter |
@@ -549,10 +549,10 @@ count gives the number of different groups of phones it could use?
 
 1. A chart needs 3 different colours from a palette of 7. Decide first:
    does the order matter, and can a colour repeat?
-2. Work out the number of colour choices in the cell below.
+2. Find the number of colour choices in the cell below.
 3. A phone's dock holds 4 apps in a row, chosen from your 10 favourites.
    How many different docks can you make? Decide which count it needs,
-   and work it out too.
+   and find it too.
 
 ```python exec
 id: orders-which-your-turn
@@ -562,18 +562,17 @@ id: orders-which-your-turn
 <details class="dl-why"><summary>Why this way?</summary>
 
 This page told you the answers, 56 and 6,720, in its second paragraph,
-before you had worked anything out. Most pages in this course ask you to
+before you had calculated anything. Most pages in this course ask you to
 guess first.
 
-Asking for a guess is usually the better choice. A guess gives you
+Usually it is better to ask for a guess. A guess gives you
 something to compare with, and a guess that misses shows you where your
 thinking went.
 
-Here we gave the answers away on purpose. Counting teams and line-ups is
-a long road, with three formulas on the way. Knowing where it ends lets
-you check each step as you go: when $P(8, 5)$ comes out as 6,720, you
-know that part works. An answer named at the start is a promise, and
-the rest of the page keeps it.
+Here we gave the answers away on purpose. The count of teams and line-ups
+takes a long time, with three formulas on the way. If you know where it
+ends, you can check each step. When $P(8, 5)$ is 6,720, you know that
+part works.
 
 </details>
 

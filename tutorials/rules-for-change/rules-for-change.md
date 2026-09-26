@@ -540,7 +540,7 @@ This page found the power rule in a table, and checked every rule
 against `derivative_at` at many points. It did not prove any of them.
 
 Most calculus courses prove each rule from the definition of the
-derivative, using limits and algebra. Proof is what makes a rule
+derivative, using limits and algebra. A proof makes a rule
 certain, rather than very likely. A proof also shows why the corner of the
 rectangle disappears, which this page said only in words.
 

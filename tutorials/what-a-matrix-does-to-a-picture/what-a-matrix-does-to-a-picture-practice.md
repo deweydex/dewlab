@@ -9,7 +9,7 @@ version: 2026.08.24.1
 
 Before you run anything, predict the picture from the matrix, or the
 matrix from the picture. The prediction is the real practice. The plot
-only tells you whether you were right.
+only shows whether your prediction matched.
 
 ## Reading columns
 
@@ -78,7 +78,7 @@ flipped from left to right, not upside down.
    that?
 3. Those two answers are the two columns of your matrix, in order.
 4. Write the matrix and check it against the square. Does every corner
-   end up on the other side of the origin from where it started?
+   land on the other side of the origin from where it started?
 
 **Think about:** a 180° rotation is the same as scaling by $-1$ in every
 direction at once. Does your matrix agree with that?
@@ -93,8 +93,8 @@ the $x$-axis? Is that the same as reflecting across the $y$-axis?
 $\begin{bmatrix} -1 & 0 \\ 0 & -1 \end{bmatrix}$
 
 $(1,0) \to (-1,0)$ and $(0,1) \to (0,-1)$. Both points land exactly
-opposite where they started. That is what turning something upside down
-and back to front means. On the square, every corner ends up on the
+opposite where they started. The square turns upside down and flips
+from left to right. Every corner lands on the
 other side of the origin, along a line through $(0,0)$.
 
 </details>
@@ -208,7 +208,7 @@ matrix?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. Where $(1,0)$ lands fixes only the first column of the matrix. The
+No. Where $(1,0)$ lands decides only the first column of the matrix. The
 second column, where $(0,1)$ lands, can be anything.
 
 $\begin{bmatrix} 2 & 0 \\ 0 & 1 \end{bmatrix}$ and

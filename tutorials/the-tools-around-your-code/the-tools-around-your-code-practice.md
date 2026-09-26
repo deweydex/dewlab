@@ -7,8 +7,8 @@ version: 2026.09.26.1
 
 # Your development environment: finding a bug inside a class — Practice
 
-Problems on reading tracebacks, printing what you need to see, and the
-tools around your code, and three from earlier pages. Try each problem
+This page has problems on reading tracebacks, printing what you need to
+see, and the tools around your code, and three from earlier pages. Try each problem
 before you open anything under it, and run the cells to test your
 guesses.
 
@@ -46,8 +46,8 @@ Which line most likely holds the mistake?
 <details class="dl-answer"><summary>why</summary>
 
 Line 14. Line 6 failed, because it cannot take a list away from a number.
-But `eat` was written for one ration, and line 14 handed it the whole list.
-Line 6 is where the mistake showed. Line 14 is where it was made.
+But `eat` was written for one ration, and line 14 gave it the whole list.
+The error appeared on line 6, but the mistake was made on line 14.
 
 </details>
 

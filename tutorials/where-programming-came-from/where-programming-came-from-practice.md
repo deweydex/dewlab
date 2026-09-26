@@ -11,8 +11,8 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means
 answer in words. **Another way** means reach the same place by a second
-route. The answers are folded away until you open them, and each is one
-way through: yours may go another way.
+route. The answers are folded away until you open them. Each is one
+answer, and yours may be different and work too.
 
 Your toolkit is loaded on this page, including `total` from
 [Doing it again](tutorial:doing-it-again), `combinations` from
@@ -61,7 +61,7 @@ pattern. One card could tell the engine which operation to do next,
 such as add or divide. In both machines, a long job is broken into
 small steps, and each step is written down in a form the machine can
 read, in order. The cards are the program, and the order of the cards
-is the sequence.
+matters.
 
 </details>
 
@@ -81,7 +81,7 @@ year, and 1964 is the smallest.
 
 **4. Make.** How many years passed between Lovelace's notes (1843) and
 ENIAC being shown to the public (1946)? And between BASIC at Dartmouth
-(1964) and the BBC Micro (1981)? Work them out in the cell.
+(1964) and the BBC Micro (1981)? Calculate them in the cell.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -90,7 +90,7 @@ print(1946 - 1843)
 print(1981 - 1964)
 ```
 
-103 years, and 17 years. Programs had to wait a century for machines
+It was 103 years, and then 17 years. Programs had to wait a century for machines
 that could run them. After that, change came much faster.
 
 </details>
@@ -142,7 +142,7 @@ print(bernoulli_numbers(7)[6])
 ```
 
 She skipped the zeros in the odd places after $B_1$. Her 1, 3, 5, 7 are
-our 2, 4, 6, 8: add 1 to her number to get ours.
+our 2, 4, 6, 8. Add 1 to her number to get ours.
 
 </details>
 
@@ -170,7 +170,7 @@ print(bernoulli_swapped(5))
 
 1. The first number, $B_0 = 1$, matches the tutorial. Which is the
    first number that differs?
-2. The tutorial's $B_1$ is $-\frac{1}{2}$, and here it is $-2$: upside
+2. The tutorial's $B_1$ is $-\frac{1}{2}$, and here it is $-2$. It is upside
    down.
 3. Which line makes each new number? Which two things does it divide?
 
@@ -189,15 +189,15 @@ tutorial's version divides `weighted_sum` by `m + 1`:
 ```
 
 The swapped version gives $B_1 = -2$ in place of $-\frac{1}{2}$.
-Every later number is built from the ones before it, so one number that
-is off spoils all the rest. That is why the swap in Note G's
-table matters: her $B_7$ comes out as $-\frac{25621}{630}$ in place of
+Every later number is built from the ones before it, so one wrong
+number spoils all the rest. So the swap in Note G's
+table matters. Her $B_7$ comes out as $-\frac{25621}{630}$ in place of
 $-\frac{1}{30}$.
 
 </details>
 
 **7. Make.** Write `lovelace_number(n)`, which takes Lovelace's number
-for a Bernoulli number (1, 3, 5 or 7) and gives back its value. Check
+for a Bernoulli number (1, 3, 5 or 7) and returns its value. Check
 that `lovelace_number(7)` is `Fraction(-1, 30)`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -281,8 +281,8 @@ for n in [10, 1000]:
     print(total(squares), n * (n + 1) * (2 * n + 1) // 6)
 ```
 
-Both ways give 385, then 333,833,500. The loop does $n$ steps; the
-formula does a few multiplications, however big $n$ is. That is why
+Both ways give 385, then 333,833,500. The loop does $n$ steps. The
+formula does a few multiplications, however big $n$ is. So
 Bernoulli wanted formulas like it.
 
 </details>
@@ -299,7 +299,7 @@ pitch is a frequency, such as 440 for the A on
 [Waves](tutorial:waves), and a length is a time. A photo is a grid of
 colours, each three numbers, as on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
-Text is numbers too: each letter has a code. In each case the machine
+Text is numbers too. Each letter has a code. In each case the machine
 still only does arithmetic. The meaning comes from the rule that joins
 the numbers to the notes, colours or letters.
 
@@ -330,7 +330,7 @@ id: where-prog-practice-stretch
 
 **13. Fix.** Schlomo, who is learning Python too, wants the gap in
 years between each event in the timeline and the next one. His plan is
-a fair one: go through every position, and subtract this year from the
+to use every position, and subtract this year from the
 next. The cell stops with an error. Read the last line of the error,
 then change the loop.
 
@@ -400,7 +400,7 @@ print(sum_of_powers(10, 2))
 
 It prints Bernoulli's 91409924241424243424241924242500, then `True`,
 then `385`. The formula has 11 terms, while the loop has 1,000. Many
-books write the formula with $n$ in place of $n + 1$; they use
+books write the formula with $n$ in place of $n + 1$. They use
 $B_1 = +\frac{1}{2}$, and the two versions agree.
 
 </details>
@@ -432,16 +432,16 @@ wrote it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way in is to look for evidence before taking a side. The letters
+Start by looking for evidence before you take a side. The letters
 between Lovelace and Babbage show who sent what to whom, and who found
 which mistakes. Drafts in each person's handwriting would help too.
 
 It can matter for two reasons. People who are left out of a story can be
-left out of a subject: the six ENIAC programmers were not invited to its
-dedication in 1946. And a program is more than its formulas. Turning a
-formula into an exact order of operations, with names for every stored
-number, is the programming part, whoever did it. So Schlomi and Schlomo can each
-be describing a real part: the formulas and the program are two different
+left out of a subject. The six ENIAC programmers were not invited to its
+dedication in 1946. And a program is more than its formulas. The programming part is to
+turn a formula into an exact order of operations, with names for every
+stored number, whoever did it. So Schlomi and Schlomo can each be
+describing a real part. The formulas and the program are two different
 things.
 
 </details>

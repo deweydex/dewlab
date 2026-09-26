@@ -14,8 +14,8 @@ version: 2026.08.23.1
 
 # Mixed problems: data, chance and logic
 
-Counting, probability, sets and logic often turn out to be the same
-subject, seen from four sides. These problems move between them on
+Counting, probability, sets and logic are often the same subject, seen
+from four sides. These problems move between them on
 purpose.
 
 Each answer is hidden in a fold under its question. Some problems also
@@ -27,8 +27,8 @@ yourself: which one is answering the wrong question?
 
 This cell loads the modules the problems use, and defines one helper:
 
-- `simulate(trial)` runs the function `trial` 100,000 times, and gives
-  the fraction of runs that came out `True`.
+- `simulate(trial)` runs the function `trial` 100,000 times, and returns
+  the fraction of runs that gave `True`.
 
 The last line tries two things. `math.comb(52, 5)` counts the five-card
 hands in a pack of 52. The simulation estimates the chance of rolling a
@@ -110,8 +110,8 @@ $\dfrac{52}{52} \times \dfrac{39}{51} \times \dfrac{26}{50} \times \dfrac{13}{49
 After each card, one more suit is used up.
 
 Counting hands instead of sequences gives the same answer:
-$\dfrac{13^4}{C(52,4)} = \dfrac{28561}{270725}$. Two ways of counting
-give one answer, and that is the check.
+$\dfrac{13^4}{C(52,4)} = \dfrac{28561}{270725}$. The two ways of counting
+agree, so each one checks the other.
 
 </details>
 
@@ -142,8 +142,7 @@ take both. How many take neither?
 $|M \cup P| = 18 + 15 - 8 = 25$, so 5 are outside both.
 
 Draw the Venn diagram: 10 in maths only, 8 in both, 7 in physics only,
-and 5 outside. The four regions have to add up to 30, and that is the
-check.
+and 5 outside. Check that the four regions add up to 30.
 
 </details>
 
@@ -166,9 +165,9 @@ compared with the whole?"
 
 1. Independence is an arithmetic test. It is not a feeling about whether
    two things are connected.
-2. Work out $P(M)$ and $P(P)$ from the class of 30.
-3. Multiply them. That is what $P(M \cap P)$ would be if the two were
-   independent.
+2. Find $P(M)$ and $P(P)$ from the class of 30.
+3. Multiply them. If the two were independent, $P(M \cap P)$ would be
+   that product.
 4. Compare it with the real overlap: 8 out of 30.
 
 **Think about:** they are close, but not equal. What would it say about
@@ -185,10 +184,10 @@ By the arithmetic test, not quite. $P(M) = 0.6$ and $P(P) = 0.5$, and
 their product is 0.30. That is 9 students out of 30. But the class has
 8, and $P(M \cap P) = \dfrac{8}{30} \approx 0.267$.
 
-Is one student short of 9 worth explaining, though? We can ask chance.
-Suppose the 18 maths places and the 15 physics places were handed out
-at random, with nothing at all connecting them. How often would the
-overlap come out at 8 or fewer? This uses `simulate` from the tools
+Does one student fewer than 9 need an explanation, though? We can test
+it with chance. Suppose the 18 maths places and the 15 physics places
+were given to students at random, with nothing at all connecting them.
+How often would the overlap be 8 or fewer? This uses `simulate` from the tools
 cell:
 
 ```python
@@ -204,9 +203,9 @@ def overlap_is_8_or_fewer():
 print(simulate(overlap_is_8_or_fewer))
 ```
 
-It comes out at about 0.36. With no link at all, a class gives 8 or
+The answer is about 0.36. With no link at all, a class gives 8 or
 fewer about a third of the time. An overlap of exactly 9, the
-"independent" number, turns up less often than that, about 0.29 of the
+"independent" number, happens less often than that, about 0.29 of the
 time.
 
 So this class tells us nothing about a link between the two subjects.
@@ -259,7 +258,7 @@ either the fan has failed *or* the load is above 90%.
    flips, and so does its boundary.
 
 **Think about:** suppose you write `temperature < 80` where you should
-write `<=`. Then one temperature can slip through both conditions.
+write `<=`. Then one temperature can make both conditions false.
 Which one? And how long would that bug take to find?
 
 **Try this next:** write a small loop that tests every combination of
@@ -281,12 +280,11 @@ quiet = temperature <= 80 or (not fan_failed and load <= 90)
 ```
 
 Notice all the flips. `and` became `or`, `or` became `and`, and every
-comparison turned around, including its boundary.
+comparison flipped, including its boundary.
 
 If you wrote `temperature < 80` there, a temperature of exactly 80
 (with a failed fan or a high load) would make neither `warn` nor
-`quiet` true. This is the bug that this kind of rewrite most often
-brings in.
+`quiet` true. This kind of rewrite most often causes this bug.
 
 </details>
 
@@ -308,7 +306,7 @@ happened.
 For a real service, report the median *and* a high percentile. The 95th
 percentile is the time that 95% of requests are no slower than. With
 only ten values, that is the slowest one: 98 ms. That outlier is
-somebody's slow request. It is not noise to throw away, and it is
+somebody's slow request. It is not noise to ignore, and it is
 usually the number that matters most.
 
 </details>
@@ -327,7 +325,7 @@ separate humps, near 40 and 80, with almost nobody in the middle. Those
 two shapes have the same mean and standard deviation, but they tell you
 very different things about the class.
 
-That uncertainty is why you always need to look at the histogram.
+So always look at the histogram.
 
 </details>
 
@@ -367,8 +365,8 @@ $\dfrac{6 - |7 - t|}{36}$ counts the ways to make each total $t$: one
 way to make 2, six ways to make 7, and one way to make 12.
 
 With 10,000 rolls, the two usually agree to about two decimal places.
-With 100 rolls, they do not. Try it with both. Seeing it is more
-convincing than any explanation of sampling error.
+With 100 rolls, they do not. Try it with both. When you see it, it
+convinces you more than any explanation of sampling error.
 
 </details>
 
@@ -387,10 +385,10 @@ the probability that it is spam?
 4. Of all the flagged messages, what fraction was spam?
 
 **Think about:** compare this with the disease example, where a test
-that sounded just as accurate gave about 1%. The test did not change;
-the base rate did.
+that sounded just as accurate gave about 1%. The test did not change.
+The base rate did.
 
-**Try this next:** what if only 2% of mail were spam? Work it out with
+**Try this next:** what if only 2% of mail were spam? Find it with
 counts again, and see how far the answer moves.
 
 </details>
@@ -407,8 +405,7 @@ Compare the disease example on the practice page for
 [Probability: simple, compound and conditional](tutorial:what-are-the-chances).
 There, numbers that sounded similar gave about 1%. The whole difference
 is the *base rate*, how common the thing is to begin with. Spam is
-common, and the disease is rare. The test is not what decides the
-answer.
+common, and the disease is rare.
 
 </details>
 
@@ -460,7 +457,7 @@ So at least two the same: $1 - 0.72 = 0.28$.
 
 This is the birthday problem with ten days in the year. The same
 calculation with 365 days and 23 people gives 50.7%. The method is the
-same: count the ways to *avoid* it, and subtract from 1.
+same. Count the ways to *avoid* it, and subtract from 1.
 
 </details>
 
@@ -500,12 +497,12 @@ describes. Turning each list into a set also removes the duplicates.
 What could go wrong? Suppose an address has different capital letters,
 or extra spaces at the end, on one list but not the other. Without the
 `.strip().lower()`, it would survive the subtraction and get mailed.
-Other cases get through even with it: an address written
+Other cases pass even with it: an address written
 `name+tag@example.com` on one list and `name@example.com` on the other,
 or an address on a domain that has since changed its name.
 
-Cleaning the addresses into one standard form before comparing them is
-the whole job. And the failure is silent. The code runs, the count
+The whole job is to clean the addresses into one standard form before
+you compare them. And the failure is silent. The code runs, the count
 looks right, and somebody who asked to be left alone gets an email.
 
 </details>
@@ -527,13 +524,13 @@ $\dfrac{10}{2} = 5$. So anything from 40 to 60 heads is normal. A coin
 has to be badly biased for 100 flips to show it.
 
 For 10,000 flips, the standard deviation is $\dfrac{100}{2} = 50$. A
-real bias to 51% heads would show up as about 5,100 heads. That is two
+real bias to 51% heads would give about 5,100 heads. That is two
 standard deviations from 5,000, the fair result. It suggests a bias,
 but it does not prove one.
 
-The honest conclusion: finding a small bias takes far more trials than
-most people expect. And a result inside the normal range is not
-evidence that the coin is fair, either. "No difference found" and "no
-difference exists" are not the same sentence.
+So you need far more trials to find a small bias than most people
+expect. And a result inside the normal range is not evidence that the
+coin is fair, either. If you find no difference, that does not mean
+there is none.
 
 </details>

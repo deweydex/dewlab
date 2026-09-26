@@ -228,7 +228,7 @@ about 16 of them, so the angle is not quite exact, and nor is its
 cosine.
 The context page
 [How a computer stores a number](tutorial:how-a-computer-stores-a-number#reading-e-16)
-has the whole story. This is why we compare with `close_enough`, never
+has the whole story. So we compare with `close_enough`, never
 with `==`.
 
 Why choose radians? An angle in radians is a distance walked, with no

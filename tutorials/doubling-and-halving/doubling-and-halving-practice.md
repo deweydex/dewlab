@@ -13,7 +13,7 @@ run. **Make** means write something new. **Fix** means find the one
 line in some code that does not do what its writer meant, and change
 it. **Explain** means answer in words. **Another way** means reach the
 same place by a second route. The answers are folded away until you
-open them, and each one is one way through: yours may go another way.
+open them. Each one is one answer. Yours may be different and work too.
 
 Your toolkit is loaded on this page, including `halvings` from the
 tutorial and `binary_search` from
@@ -38,7 +38,7 @@ print(2 ** 0, 2 ** 5, 2 ** -1)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`1 32 0.5`.
+It prints `1 32 0.5`.
 
 $2^0$ is no doublings at all, which leaves 1. $2^5$ is five doublings:
 2, 4, 8, 16, 32. $2^{-1}$ is one halving of 1, which is $\frac{1}{2}$,
@@ -56,9 +56,9 @@ print(halvings(1))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`6`, `6` and `0`.
+It gives `6`, `6` and `0`.
 
-64 halves to 32, 16, 8, 4, 2, 1: six halvings. 100 halves to 50, 25,
+64 halves to 32, 16, 8, 4, 2, 1, which is six halvings. 100 halves to 50, 25,
 12, 6, 3, 1, also six, because `//` drops the remainder each time.
 $\log_2 100$ is about 6.64, and `halvings` rounds it down. And 1 is
 already 1, so it needs no halvings.
@@ -95,11 +95,11 @@ of Python.
 
 <details class="dl-answer"><summary>answer</summary>
 
-More. Each month's 5% is taken of an amount that has already grown,
+It is more. Each month's 5% is taken of an amount that has already grown,
 so each rise is a little bigger than the last. That is compound growth.
 `1.05 ** 10` is about 1.629, a rise of about 62.9%.
 
-Schlomo's move, adding the percentages, is a reasonable first try. It
+Many people add the percentages first, as Schlomo did. It
 comes close for one or two small rises. But over many years the rises multiply, as they did on
 [Doing it again](tutorial:doing-it-again#pi-multiplying-instead-of-adding),
 and the gap grows.
@@ -130,7 +130,7 @@ print(days, amount)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`10 1024`.
+It prints `10 1024`.
 
 After 9 doublings, `amount` is 512, which is still less than 1000, so
 the loop runs once more. After 10 it is 1024, and the check
@@ -169,7 +169,7 @@ print(minutes, "minutes, which is", minutes // 60, "hours and", minutes % 60, "m
 print(bacteria)
 ```
 
-340 minutes, which is 5 hours and 40 minutes, with 1,310,720 bacteria.
+It takes 340 minutes, which is 5 hours and 40 minutes, with 1,310,720 bacteria.
 That took 17 doublings. As a check, `math.log2(100000)` is about 16.6,
 which rounds up to 17. An afternoon on the counter is enough, which is
 why the advice is to put cooked rice in the fridge soon.
@@ -196,7 +196,7 @@ print("halvings_again keeps its promise.")
 
 <details class="dl-answer"><summary>answer</summary>
 
-The second test fails: `halvings_again(1000)` gives 10. The function
+The second test fails. `halvings_again(1000)` gives 10. The function
 halves with `/`, which keeps the fraction, so 125 becomes 62.5, then
 31.25, and so on, down to 1.953125. That is still more than 1, so the
 loop halves once more, to about 0.98. The promise says "rounding down",
@@ -265,12 +265,12 @@ each for red, green and blue.
 first, and named the logarithm afterwards, as a quick way to get the
 count. Many textbooks start the other way: they define $\log_b x$ as
 the power of $b$ that makes $x$, and then practise its laws as algebra.
-Which way would you have wanted to learn it, and why? People land on
-both sides.
+Which way would you have wanted to learn it, and why? People choose
+both ways.
 
 <details class="dl-answer"><summary>answer</summary>
 
-An answer might weigh a few things, and can land on either side.
+An answer might weigh a few things, and can choose either way.
 
 - **What you can check.** A count from a loop can be checked by
   running it, or on paper. A law learned as algebra is checked by
@@ -283,9 +283,9 @@ An answer might weigh a few things, and can land on either side.
 - **Awkward cases.** A count is harder to picture when the answer is
   9.97. The algebra has no trouble with that.
 - **You.** Some people trust a rule more once they have seen it work
-  on numbers. Others find the numbers a slow way round.
+  on numbers. Others find the numbers a slow way.
 
-It is also fair to want both, in one order or the other.
+You might also want both, in one order or the other.
 
 </details>
 
@@ -293,7 +293,7 @@ It is also fair to want both, in one order or the other.
 Say the count kept doubling every two years, as Moore's law says. In
 which year would a chip reach a trillion transistors, 1,000,000,000,000?
 Answer with a loop, and then with `math.log2`. This is a model, not a
-promise: the tutorial's note says why.
+promise. The tutorial's note says why.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -325,7 +325,7 @@ print(math.log10(1000 * 100))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`16.0`, `16.0` and `5.0`.
+They print `16.0`, `16.0` and `5.0`.
 
 64 is 6 doublings and 1024 is 10, so $64 \times 1024$ is 16 doublings.
 The law of logarithms works in any base: `math.log10` counts
@@ -344,9 +344,9 @@ import math
 # Your working for problems 13 to 17
 ```
 
-**13. Make.** A cup competition has 40 teams. Every match knocks one
-team out. When a round has an odd number of teams, or a number that
-will not halve down evenly, some teams get a *bye*: they go through to
+**13. Make.** A cup competition has 40 teams. Every match removes one
+team. When a round has an odd number of teams, or a number that
+will not halve down evenly, some teams get a *bye*. They go to
 the next round without playing. Write `rounds_needed(teams)`, which
 gives how many rounds it takes to get down to one winner. Test it on
 128, 40, 2 and 3 teams. Is it `halvings(teams)`?
@@ -354,7 +354,7 @@ gives how many rounds it takes to get down to one winner. Test it on
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. 128 teams need 7 rounds. How many rounds would 129 teams need?
-2. A round can at most halve the teams, rounding up: 3 teams leave at
+2. A round can at most halve the teams, rounding up. 3 teams leave at
    least 2.
 3. So the rounds needed is the number of doublings of 1 that reach
    `teams`, or more. The rumour counted that.
@@ -381,7 +381,7 @@ for teams in [128, 40, 2, 3]:
 ```
 
 128 teams need 7 rounds, 40 need 6, 2 need 1 and 3 need 2. So it is
-not `halvings`: `halvings(40)` is 5, one round short. Halvings round the
+not `halvings`. `halvings(40)` is 5, one round short. Halvings round the
 logarithm down, and a competition needs it rounded up, because the
 last team with a bye still has to play. `math.ceil(math.log2(teams))`
 gives the same answers. So does `halvings(teams - 1) + 1`, for 2 teams
@@ -447,7 +447,7 @@ print(known_by(1995), known_by(2026))
 
 1. The tutorial's emissions cell has the shape you need. Keep a
    `target`, which starts at twice `known_by(1995)`.
-2. Go through the years from 1996 to 2026. While `known_by(year)` has
+2. Loop over the years from 1996 to 2026. While `known_by(year)` has
    reached the target, print the year and double the target.
 3. Why `while` and not `if`? One year could pass two targets.
 
@@ -483,14 +483,14 @@ million. Why a million? What does this have to do with binary search?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The most useful question splits the things still possible into two halves:
-"yes" keeps one half and "no" keeps the other. That is a binary
+The most useful question splits the things still possible into two halves.
+"Yes" keeps one half and "no" keeps the other. That is a binary
 search, and each answer is one halving. Twenty halvings can bring
 $2^{20} = 1{,}048{,}576$ things down to one, and $2^{20}$ is about a
 million, since $2^{10} \approx 1000$.
 
 A question that splits the things unevenly, like "Is it a
-hedgehog?", usually throws away far less than half. That is why a practised
+hedgehog?", usually removes far less than half. That is why a practised
 player asks "Is it alive?" first.
 
 </details>
@@ -532,9 +532,9 @@ in percent has to be divided by 100 first:
         growth = growth * (1 + rate_percent / 100)
 ```
 
-Now it gives 18, and the test passes. Schlomi's plan of testing one
-route against another is what caught it: the logarithm is a second way
-to the same number, as on
+Now it gives 18, and the test passes. Schlomi tested one route against
+another, and that caught the bug. The logarithm is a second way to the
+same number, as on
 [Does it work?](tutorial:does-it-work#code-that-runs-and-code-that-works).
 
 </details>

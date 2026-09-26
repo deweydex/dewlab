@@ -7,7 +7,7 @@ version: 2026.08.24.1
 
 # Matrix multiplication: rows times columns — Practice
 
-Work out the shape of the answer before you work out its entries. The
+Find the shape of the answer before you calculate its entries. The
 shape catches more mistakes than the arithmetic does.
 
 ## Dot products
@@ -23,7 +23,7 @@ def dot(a, b):
 print(dot([2, -3, 1], [4, 0, -2]))
 ```
 
-**1.** Work out `dot([1, 2, 3], [1, 2, 3])` by hand. What does the dot
+**1.** Calculate `dot([1, 2, 3], [1, 2, 3])` by hand. What does the dot
 product of a vector with itself tell you?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -32,12 +32,12 @@ $1 + 4 + 9 = 14$.
 
 A vector dotted with itself gives the sum of its entries squared. That
 sum is the square of the vector's length. The length of a vector is also
-called its *magnitude*. This fact matters when a vector stands for a
+called its *magnitude*. This fact matters when a vector represents a
 point or a direction, and not only for a list of numbers.
 
 </details>
 
-**2.** Work out `dot([1, 0, 0], [0, 5, 9])`. Then say in one sentence
+**2.** Calculate `dot([1, 0, 0], [0, 5, 9])`. Then say in one sentence
 why the answer came out that way.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -107,7 +107,7 @@ B = [[1, 4], [0, -2], [3, 1]]
 print(multiply(A, B))
 ```
 
-**4.** Check the result of `multiply(A, B)` above. Work out the entry
+**4.** Check the result of `multiply(A, B)` above. Calculate the entry
 $c_{11}$ by hand: row 1 of `A`, dotted with column 1 of `B`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -117,13 +117,13 @@ printed above.
 
 </details>
 
-**5.** A layer of a neural network works out $\mathbf{y} = W\mathbf{x} + \mathbf{b}$:
+**5.** A layer of a neural network calculates $\mathbf{y} = W\mathbf{x} + \mathbf{b}$:
 
 $$W = \begin{bmatrix} 0.2 & 0.8 \\ -0.5 & 0.3 \\ 0.1 & 0.6 \end{bmatrix}, \quad
 \mathbf{x} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}, \quad
 \mathbf{b} = \begin{bmatrix} 0.1 \\ -0.2 \\ 0.3 \end{bmatrix}$$
 
-First work out $W\mathbf{x}$. Then work out $\mathbf{y} = W\mathbf{x} + \mathbf{b}$.
+First calculate $W\mathbf{x}$. Then calculate $\mathbf{y} = W\mathbf{x} + \mathbf{b}$.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -202,7 +202,7 @@ exactly this.
 The next page,
 [Matrix transformations: what a matrix does to a picture](tutorial:what-a-matrix-does-to-a-picture),
 builds a whole gallery of matrices in this way. For each matrix, it
-reads off where the matrix sends these two simplest vectors.
+reads where the matrix sends these two simplest vectors.
 
 </details>
 
@@ -213,8 +213,8 @@ is *associative*: $(AB)C = A(BC)$ for any matrices whose shapes fit.
 
 True. The order of the matrices can matter, as problem 6 showed. But
 the grouping does not. In $(AB)C$ and $A(BC)$, the matrices stay in the
-same order. Only the pair we multiply first changes. Both groupings work
-out the same sums of products in the end.
+same order. Only the pair we multiply first changes. Both groupings calculate
+the same sums of products in the end.
 
 This is why a chain of network layers, or a chain of transformations,
 can be multiplied together ahead of time into a single matrix. We are
@@ -247,8 +247,8 @@ def multiply(a, b):
 ```
 
 The length check inside `dot` matters. When the shapes do not fit,
-`multiply` raises a clear error, and does not drop entries without a
-word. The tutorial's `E` example shows why, if it is not clear yet.
+`multiply` raises a clear error, and does not drop entries with no
+warning. The tutorial's `E` example shows why, if it is not clear yet.
 
 </details>
 
@@ -271,7 +271,7 @@ identity.
 ## Thinking about it
 
 **11.** Suppose $A$ is $m \times n$ and $B$ is $n \times m$. Then we can
-work out both $AB$ and $BA$. Are they the same shape?
+calculate both $AB$ and $BA$. Are they the same shape?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -298,7 +298,7 @@ are different shapes.
 
 So two matrices that are not square can still be multiplied in both
 orders. But when the two results have different shapes, they cannot be
-equal. We do not need to work out a single entry to know that. Only when
+equal. We do not need to calculate a single entry to know that. Only when
 $A$ and $B$ are both square, and the same size, is it worth comparing
 the entries of `AB` and `BA`.
 
@@ -315,8 +315,8 @@ does not care how many rows or columns either matrix has apart from
 that.
 
 If both matrices had to be the same shape, we would lose the most useful
-cases. A table of data times a vector of weights, or a rotation matrix
-times a point: in none of these do the two shapes match. Yet these are
+cases. Think of a table of data times a vector of weights, or a rotation matrix
+times a point. In neither case do the two shapes match, and these are
 exactly what matrix multiplication is for.
 
 </details>

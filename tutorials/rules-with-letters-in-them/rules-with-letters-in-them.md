@@ -21,8 +21,8 @@ Open a photo gallery on a website. The page has a header 30 pixels
 tall, and under it rows of photos, each row 50 pixels tall. Your
 browser window is 280 pixels tall. How many rows fit?
 
-The sentence about the page is a rule: it works for any number of
-rows. "How many rows fit?" is a question: it has one answer. Algebra writes both with the
+The sentence about the page is a rule. It works for any number of
+rows. "How many rows fit?" is a question. It has one answer. Algebra writes both with the
 same letters and the same equals sign. So how can you tell a rule from
 a question?
 
@@ -36,12 +36,12 @@ On this page we:
 - multiply out brackets with a loop, and find the three weights that
   draw a curve on a screen
 
-> **The space we're in.** The real numbers, and one letter at a time,
-> usually $x$. A letter stands for a number, so any move we may make with
+> **The space we're in.** We work with the real numbers, and one letter
+> at a time, usually $x$. A letter stands for a number, so any move we may make with
 > a number, we may make with the letter. Python has no letters of this
-> kind: a Python name must have a value before we use it. So we check
-> our algebra by giving the letter one value after another. One thing
-> usually goes unsaid: maths writes $3x$ for "3 times $x$", and Python
+> kind. A Python name must have a value before we use it. So we check
+> our algebra by giving the letter one value after another. We usually
+> do not say it, but maths writes $3x$ for "3 times $x$", and Python
 > needs `3 * x`.
 
 ## Warm-up
@@ -75,8 +75,8 @@ $$50n + 30$$
 
 On
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#which-comes-first),
-an expression was a piece of code that Python works out to one value.
-In maths, an expression can have letters in it too: it is a rule made
+an expression was a piece of code that Python turns into one value.
+In maths, an expression can have letters in it too. It is a rule made
 of numbers, letters and operations, such as $50n + 30$ or $x^2 - 4$. It
 has a value once each letter has a value. Here $n$ is a name for any
 number we choose to put in, like the parameter of a function.
@@ -116,15 +116,15 @@ for rows in range(1, 9):
           2 * page_height(rows) == 100 * rows + 60)
 ```
 
-The equation is true in one row only: 5 rows fit exactly. The identity
+The equation is true in one row only. Exactly 5 rows fit. The identity
 is true in every row. Eight values do not prove it for every number,
 but a single `False` would have been enough to show it is not an
 identity.
 
 In Python, `=` gives a name a value, and `==` asks whether two values
 are equal. Maths uses one sign, $=$, for both jobs, and the reader has
-to tell which is meant. I think Python does us a favour by splitting
-them.
+to tell which is meant. I think Python helps us by keeping them
+apart.
 
 <aside class="dl-note" id="rules-with-note-equals">
 
@@ -145,7 +145,7 @@ $3x + 12$ on its own is {an expression|an identity|an equation with one answer}.
 
 ## Putting a number in for the letter
 
-To *evaluate* an expression is to work out its value for one value of
+To *evaluate* an expression is to find its value for one value of
 its letter. Putting the number in place of the letter is called
 *substitution*.
 
@@ -219,7 +219,7 @@ Replace the `...` with a loop:
 1. Start a running total at 0.
 2. For each `power` in `range(len(coefficients))`, add
    `coefficients[power] * x ** power` to it.
-3. After the loop, give back the running total.
+3. After the loop, return the running total.
 
 If the loop feels like hard work, open the hints under the cell, or
 the answer under the tests, and come back to your own version later.
@@ -304,7 +304,7 @@ def evaluate(coefficients, x):
 </details>
 
 The last test uses `close_enough` from
-[Does it work?](tutorial:does-it-work#close-enough): 0.1 is a float,
+[Does it work?](tutorial:does-it-work#close-enough). 0.1 is a float,
 and two routes to a float can differ in the last digit.
 
 ## Collecting like terms
@@ -328,7 +328,7 @@ $$4x + 30 + 3x + 50 = 7x + 80$$
 
 $x^2$ and $x$ are not like terms, so $x^2 + x$ stays as it is.
 
-In a list, like terms are already in the same place: the $x$ terms are
+In a list, like terms are already in the same place. The $x$ terms are
 all at index 1. So collecting like terms is adding two lists place by
 place, as on
 [A row of numbers](tutorial:a-row-of-numbers#adding-and-multiplying-lists).
@@ -431,10 +431,10 @@ for side in range(-20, 21):
 print("The two sides agree for every whole number from -20 to 20.")
 ```
 
-Here the check says more than it seems to. Two different quadratics can
+Two different quadratics can
 agree at two values of $x$ at most. So if two quadratics agree at three
 or more values, they are the same quadratic, and the 41 values we tried
-are a proof. I find that surprising: three checks cover every number
+are a proof. I find that surprising. Three checks cover every number
 there is.
 
 The loop can multiply three brackets too: expand two, then multiply
@@ -484,9 +484,9 @@ all_three = add_polynomials(add_polynomials(start_weight, middle_weight), end_we
 print(all_three)
 ```
 
-`[1, 0, 0]`: the number 1, with no $t$ at all. Three weights that rise
-and fall add up to a flat 1, for every $t$. That identity is why the
-mix works: the weights always share out one whole. On
+It prints `[1, 0, 0]`, the number 1, with no $t$ at all. Three weights that rise
+and fall add up to a flat 1, for every $t$. The mix works because of
+that identity. The weights always share out one whole. On
 [The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line),
 these three weights draw the bottom of a letter o.
 
@@ -512,7 +512,7 @@ for x in range(-3, 4):
 print(expand_brackets([3, 1], [3, 1]))
 ```
 
-It is true for $x = 0$ only: an equation with one answer, not an
+It is true for $x = 0$ only. It is an equation with one answer, not an
 identity. The expansion, `[9, 6, 1]`, shows what went missing:
 $(x + 3)^2 = x^2 + 6x + 9$. For any number $a$, the same grid gives
 $(x + a)^2 = x^2 + 2ax + a^2$. In the photo picture, $x^2 + 9$ keeps the
@@ -545,7 +545,7 @@ like the quadratics above.
 
 We checked with numbers because a check is something you can run and
 trust before you trust the rules, and it shows at once where two sides
-part. The cost is that a passing check shows a rule works only for the
+differ. The cost is that a passing check shows a rule works only for the
 numbers you tried.
 
 </details>
@@ -566,7 +566,7 @@ numbers you tried.
 | expression | a rule of numbers, letters and operations; it has a value once each letter has one |
 | equation, solving | two expressions said to be equal; solving finds the values that make it true |
 | identity | an equation true for every value of its letters |
-| evaluate, substitution | work out an expression's value by putting a number in for its letter |
+| evaluate, substitution | find an expression's value by putting a number in for its letter |
 | term, coefficient, constant term | a number times a power of the letter; the number in front; the term with no letter |
 | polynomial, degree | a sum of terms with whole-number powers; its highest power (1 linear, 2 quadratic, 3 cubic) |
 | a polynomial as a list | coefficients lowest power first: `[-2, 5, 3]` is $3x^2 + 5x - 2$ |

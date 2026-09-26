@@ -402,7 +402,7 @@ $10^{11}$ it is 0.0.
 
 Near $10^{11}$, the gap between neighbouring floats is about $10^{-5}$,
 bigger than the step. So $10^{11} + 10^{-6}$ is kept as $10^{11}$, the
-chord has no length, and the rise is 0. This is why the tutorial said
+chord has no length, and the rise is 0. So the tutorial said
 $10^{-6}$ suits rules whose values are of ordinary size. One fix is a
 step that grows with $x$: `derivative_at(squared, 1e11, step=1e5)`
 gives $2 \times 10^{11}$, to within a float's rounding.

@@ -13,8 +13,8 @@ version: 2026.09.25.1
 
 Each problem here draws on at least one page of Unit 2, and many draw on
 two or more. None of them is harder than what those pages covered. The new
-part is that nobody tells you which page a problem comes from. Choosing
-the tool is part of the problem.
+part is that nobody tells you which page a problem comes from. You
+choose the tool as part of the problem.
 
 Your toolkit is loaded on this page: `between`, `truth_table`,
 `same_rule` and `parity_bit` from this unit, and `to_binary` and `to_hex`
@@ -24,7 +24,7 @@ most useful part.
 
 If a problem feels hard, that is usually the feeling of choosing a tool,
 which is the new skill here. Skip it, try another, and come back. The
-answers show one way through each; yours may be different and work as well.
+answers show one answer to each. Yours may be different and work too.
 
 ## Warm-up
 
@@ -44,22 +44,23 @@ and over". What does `between` give for a reading of 35.5?
 `False`, because 35.5 is more than 35.
 
 The two rules assume whole degrees, and in that space there is nothing
-between 35 and 36. A sensor that reads tenths finds a gap: 35.5 is not
+between 35 and 36. A sensor that reads tenths finds a gap. 35.5 is not
 "0 to 35", and it is not "36 and over" either. On
-[Choosing a path](tutorial:choosing-a-path), that assumption was said out
-loud in "the space we're in". This is why.
+[Choosing a path](tutorial:choosing-a-path), that assumption was stated in
+"the space we're in". This problem shows why.
 
 </details>
 
 **2. Predict.** What does `True and not False or False` give? Say which
-part Python works out first.
+part Python does first.
 
 <details class="dl-answer"><summary>answer</summary>
 
 `True`.
 
-`not` goes first: `not False` is `True`. Then `and`: `True and True` is
-`True`. Then `or`: `True or False` is `True`. With brackets, Python reads
+`not` goes first, so `not False` is `True`. Then `and` gives
+`True and True`, which is `True`. Then `or` gives `True or False`, which
+is `True`. With brackets, Python reads
 it as `(True and (not False)) or False`.
 
 </details>
@@ -78,21 +79,23 @@ def printer_ready(busy, out_of_paper):
 truth_table(printer_ready, ["busy", "out_of_paper"])
 ```
 
-The printer is ready in one row only: not busy and not out of paper.
+The printer is ready in one row only, when it is not busy and not out
+of paper.
 That is De Morgan's second law, from
 [Untangling a condition](tutorial:untangling-a-condition):
 `not (busy or out_of_paper)` is `not busy and not out_of_paper`.
 
 </details>
 
-**4. Predict.** What is `6 ^ 3`? Work it out in binary first.
+**4. Predict.** What is `6 ^ 3`? Find it in binary first.
 
 <details class="dl-answer"><summary>answer</summary>
 
 5.
 
-6 is `110` and 3 is `011`. Column by column: 1 and 0 differ, so 1. 1 and
-1 are the same, so 0. 0 and 1 differ, so 1. That gives `101`, which is 5.
+6 is `110` and 3 is `011`. Look at each column. 1 and 0 differ, so the
+result is 1. 1 and 1 are the same, so it is 0. 0 and 1 differ, so it is
+1. That gives `101`, which is 5.
 
 </details>
 
@@ -167,8 +170,8 @@ assert battery_icon(81) == "full"
 print("All six tests pass.")
 ```
 
-Each test sits at the edge of a band, because that is where mistakes
-hide. You could also write `elif between(level, 11, 40):` and so on. That
+Each test sits at the edge of a band, because mistakes
+hide there. You could also write `elif between(level, 11, 40):` and so on. That
 checks both ends every time, which is a little longer, but reads the same
 as the list of bands.
 
@@ -176,7 +179,7 @@ as the list of bands.
 
 **7. Fix.** A weather app gives a wind warning. It should say "orange" for
 wind over 80 km/h, and "yellow" for wind over 50 km/h. (The limits here
-are made up.) For 90 km/h it says "yellow". Find why, and change it.
+are invented.) For 90 km/h it says "yellow". Find why, and change it.
 
 ```python exec
 id: mixed-decisions-fix-wind
@@ -315,7 +318,7 @@ A banned member can still post. Why? What should the rule be?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Python works out `and` before `or`. So the rule means
+Python does `and` before `or`. So the rule means
 `is_member or (has_code and not_banned)`. Any member can post, banned or
 not.
 
@@ -329,7 +332,7 @@ print(same_rule(can_post, can_post_fixed, 3))    # False: they are different rul
 print(can_post(True, False, False), can_post_fixed(True, False, False))
 ```
 
-The last line prints `True False`: the first rule lets a banned member
+The last line prints `True False`. The first rule lets a banned member
 post, and the fixed one does not.
 
 </details>
@@ -365,7 +368,7 @@ it with `same_rule`.
 3. Python has a comparison that asks exactly that.
 
 **Think about:** on [True, false and every case](tutorial:true-false-and-every-case),
-which comparison did XOR turn out to be?
+which comparison was XOR the same as?
 
 **Try this next:** what is `not (a == b)` the same as?
 
@@ -400,7 +403,7 @@ id: mixed-decisions-scratch-3
 **14. Make.** This unit's product is a quiz that compares an answer with
 `to_binary` and says how the two differ, without marking anyone. Write
 `compare_binary(number, answer)`. It takes a whole number and a reader's
-answer, as a string of bits, and gives back a message:
+answer, as a string of bits, and returns a message:
 
 - "The same bits as to_binary." when the answer is `to_binary(number)`
 - "The same number, with zeros in front; to_binary leaves them out." when
@@ -415,7 +418,7 @@ Try it on 13, with the answers `"1101"`, `"00001101"`, `"1100"` and
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Work out `bits = to_binary(number)` first.
+1. Set `bits = to_binary(number)` first.
 2. Use `if`, `elif` and `else`, from the most exact match to the least.
 3. When two rows of bits of the same length differ in one bit, their
    parity bits differ. When they differ in two bits, their parity bits are
@@ -465,7 +468,7 @@ length.
 **15. Explain.** On [Untangling a condition](tutorial:untangling-a-condition),
 `same_rule` showed that `a and b` is the same rule as `b and a`. So
 Schlomo, who is learning Python too, says the order inside an `and` never
-matters. It is a fair conclusion from what he saw. But these two lines
+matters. But these two lines
 are not the same in a program. The second one raises an error on
 purpose. Run it, read the last line of the error, and explain why the order
 matters here.
@@ -484,14 +487,14 @@ The first line prints `False`. The second stops with
 `ZeroDivisionError: division by zero`, the error from
 [When Python says no](tutorial:when-python-says-no).
 
-Python works out `and` from left to right, and it stops as soon as it
+Python reads `and` from left to right, and it stops as soon as it
 knows the answer. In the first line, `count != 0` is `False`, and
 `False and` anything is `False`, so Python never does the division. In
-the second line, the division comes first, and dividing by zero is not
-allowed.
+the second line, the division comes first, and Python cannot divide by
+zero.
 
-As rules on True and False, the two orders are the same: what `same_rule`
-showed holds, and so does Schlomo's idea, in that space. But a program is more than a
+As rules on True and False, the two orders are the same. What
+`same_rule` showed is true in that space, and so is Schlomo's idea. But a program is more than a
 rule. What happens when is part of
 it, and the left part of an `and` can protect the right part.
 
@@ -520,7 +523,7 @@ print(same_rule(majority, majority_by_counting, 3))    # True
 ```
 
 The counting version works because Python treats `True` as 1 and `False`
-as 0 when it adds them. It is another way to reach the same rule: one
+as 0 when it adds them. It is another way to reach the same rule. One
 reads as logic, the other as arithmetic.
 
 </details>
@@ -548,7 +551,7 @@ A rule with one input has only two rows, and `same_rule` checks both.
 </details>
 
 **18. Predict.** Using your toolkit from both units, what do these two
-lines print? Work each one out by hand first.
+lines print? Find each one by hand first.
 
 ```python
 print(parity_bit(to_binary(255)))

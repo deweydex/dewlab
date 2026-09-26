@@ -28,7 +28,7 @@ covers:
 
 You want to paint a bedroom. The shop sells paint in 2.5 litre tins, and
 the label says one litre covers about 12 square metres. How many tins do
-you need? Too few, and one wall is half-done.
+you need? If you buy too few, one wall is half-done.
 
 The same few formulas reach much further than one room. On this page
 they also measure the track on a music CD, the plastic in a 3D-printed
@@ -43,15 +43,14 @@ On this page we:
 - meet $\pi$, and see where it comes from
 - measure how much a solid holds, and how much it takes to wrap it
 - turn every formula into a toolkit function, and check each one
-- work out the paint for a real room, and measure a CD, a 3D print and
+- find the paint for a real room, and measure a CD, a 3D print and
   the Moon on the way
 
-> **The space we're in.** Flat shapes and solid shapes, measured in
+> **The space we're in.** We measure flat shapes and solid shapes in
 > metres or centimetres. Every length is 0 or more. Three spaces sit side
 > by side on this page: lengths (m), areas (m²) and volumes (m³). A
-> length and an area can be multiplied, but they cannot be added. One
-> thing usually goes unsaid: every wall is flat and every corner is
-> square. Real rooms are never quite that tidy.
+> length and an area can be multiplied, but they cannot be added. We
+> also assume that every wall is flat and every corner is square. Real rooms are never quite that tidy.
 
 ## Warm-up
 
@@ -112,8 +111,8 @@ print(2 * (length + width))
 ```
 
 Both give `15.0` metres. The first line walks round the edge with
-`total` from your toolkit; the second is the formula. The walk round is
-the reason the formula is true.
+`total` from your toolkit. The second is the formula. The walk round
+explains why the formula is true.
 
 ## Covering a surface: area
 
@@ -149,25 +148,25 @@ print(wall_area)
 ```
 
 The floor is 14 m² and the walls are 36 m². The door (2 m by 0.8 m) and
-the window (1.2 m by 1 m) are not painted, so we take their areas away:
+the window (1.2 m by 1 m) are not painted, so we subtract their areas:
 $36 - 1.6 - 1.2 = 33.2$ m².
 
 Here is a question about the space we are in. What is $15 \text{ m} + 14
 \text{ m}^2$? It has no answer. One is a length and the other is an
-area, and adding them is like adding 15 seconds to 14 kilograms. Multiplying
-across spaces is allowed: a length times a length is an area. Checking
+area, and adding them is like adding 15 seconds to 14 kilograms. We can
+multiply across spaces. A length times a length is an area. A check of
 the units is a quick test of any formula. If the answer to an area
-question comes out in metres, the formula needs another look.
+question is in metres, the formula needs another look.
 
 ## Triangles: half a rectangle
 
 An attic bedroom has a sloping roof, so one end wall is a triangle. The
-base of a triangle is the side it stands on: here, 4 m along the floor.
-Its height is measured straight up from the base to the top point: here,
-1.8 m.
+base of a triangle is the side it stands on. Here it is 4 m along the
+floor. Its height is measured straight up from the base to the top point.
+Here it is 1.8 m.
 
 Picture the triangle drawn inside a rectangle with the same base and
-height. The triangle fills exactly half of it: the two pieces left
+height. The triangle fills exactly half of it. The two pieces left
 over, one on each side, fit together to make a second copy of the
 triangle. So in words, a triangle's area is half its base times its
 height. In symbols, with $b$ for the base and $h$ for the height:
@@ -175,7 +174,7 @@ height. In symbols, with $b$ for the base and $h$ for the height:
 $$A = \frac{1}{2} b h$$
 
 The height must be measured at a right angle to the base, straight up.
-The sloping side is longer, and using it gives too big an answer.
+The sloping side is longer, and it gives too big an answer.
 
 ```python exec
 id: measuring-rooms-triangle-1
@@ -237,12 +236,12 @@ $$A = \pi r^2$$
 
 A music CD keeps its sound along one long track, a spiral that winds
 out from the middle. The track starts 25 mm from the centre and ends
-58 mm from it. Its loops are 0.0016 mm apart, which is 1.6 micrometres:
-a micrometre is a thousandth of a millimetre. How long is the track?
+58 mm from it. Its loops are 0.0016 mm apart, which is 1.6 micrometres.
+A micrometre is a thousandth of a millimetre. How long is the track?
 Stop and guess before you read on. Is it a metre? A hundred?
 
-The track covers a ring: the big circle, with the small circle taken
-out of the middle. Now picture the track unrolled into one long, thin
+The track covers a ring. It is the big circle, with the small circle
+removed from the middle. Now picture the track unrolled into one long, thin
 strip, 0.0016 mm wide. Its area is its length times its width, so its
 length is the area divided by the width.
 
@@ -260,7 +259,7 @@ The ring is about 8,605 mm², and the track is about 5.38 kilometres
 long. A disc that fits in your
 hand holds a track about as long as a person walks in an hour. That is
 the answer I meant at the top. A CD player
-reads it at about 1.2 metres a second, which is how a CD plays for
+reads it at about 1.2 metres a second, so a CD plays for
 about 74 minutes.
 
 ## Tools for flat shapes
@@ -337,7 +336,7 @@ def circle_area(radius):
 ```
 
 The tests below check each promise against something we already know.
-Until all three functions are written, they stop with an error.
+Until you write all three functions, they stop with an error.
 
 ```python exec
 id: measuring-rooms-toolkit-flat-tests
@@ -361,7 +360,7 @@ on its own. If it shows `None`, that function still has `...` where its
 
 The *volume* of a solid is how much space it takes up. We measure it in
 cubes. A *cubic centimetre*, cm³, is a cube 1 cm long on each side. A
-litre is 1,000 cm³: a cube 10 cm on each side.
+litre is 1,000 cm³, the space of a cube 10 cm on each side.
 
 A box shape, like a shoebox or a room, is a *cuboid*. Picture it filled
 with layers of centimetre cubes. A 3D printer builds a solid in the
@@ -389,10 +388,10 @@ print(round(tin_volume), "cm³")
 print(round(tin_volume / 1000, 2), "litres")
 ```
 
-About 2,815 cm³, which is 2.81 litres. The 2.5 litres fit, with some
+It holds about 2,815 cm³, which is 2.81 litres. The 2.5 litres fit, with some
 room left at the top for stirring.
 
-Two more solids come up everywhere. A *cone* has a circle for a base
+Two more solids appear everywhere. A *cone* has a circle for a base
 and comes to a point, like a traffic cone. Fill a
 cone with water and pour it into a cylinder with the same base and
 height, and it takes three cones to fill it. So a cone's volume is a
@@ -432,7 +431,7 @@ print(round(ball, 1), "cm³ in the ball,", round(ball / thread_end / 100, 1), "m
 print(round(cone, 1), "cm³ in the cone,", round(cone / thread_end / 100, 1), "m of thread")
 ```
 
-About 14 metres of thread for the ball, and 7 for the cone: exactly
+The ball takes about 14 metres of thread, and the cone takes 7, exactly
 half. That is not luck. A cone, a ball and a cylinder of the same width
 and height hold volumes in the ratio 1 : 2 : 3, which is Archimedes' two
 thirds again. (A real printer fills the inside with a light grid to save
@@ -446,7 +445,7 @@ what you would paint, or wrap in paper.
 A cube has six square faces, so its surface area is $6s^2$.
 
 A tin's outside is two circles, the lid and the base, and a label.
-Peel the label off, and it unrolls into a rectangle. How long is that
+Peel the label from the tin, and it unrolls into a rectangle. How long is that
 rectangle? It went once round the tin, so its length is the
 circumference, $2\pi r$. Its height is the tin's height, $h$. So, in
 words, the surface area is two circles plus the label:
@@ -465,15 +464,14 @@ $$A = \pi r^2 + \pi r l$$
 The slant height, the radius and the height make a triangle with a
 right angle in it. For any triangle like that,
 $l^2 = r^2 + h^2$. This is Pythagoras' theorem, which Unit 8 explains
-properly; for now we use it. So $l = \sqrt{r^2 + h^2}$, and
-`math.sqrt` from the last page works it out.
+properly. For now we use it. So $l = \sqrt{r^2 + h^2}$, and
+`math.sqrt` from the last page calculates it.
 
 ## Tools for solid shapes
 
 Here are the solid shapes as toolkit functions. Most are written, and
-several use the flat-shape tools: a cylinder's volume is
-`circle_area(radius) * height`. Small promises, joined into bigger
-ones. Two are left for you. Replace each `...` with a `return` line.
+several use the flat-shape tools. For example, a cylinder's volume is
+`circle_area(radius) * height`. Two are left for you. Replace each `...` with a `return` line.
 
 ```python exec
 id: measuring-rooms-toolkit-solid
@@ -575,7 +573,7 @@ def sphere_surface_area(radius):
 ```
 
 Floats round very slightly, so some of these tests round both sides
-before comparing them. Until your two functions are written, the tests
+before comparing them. Until you write your two functions, the tests
 stop with an error. Which tests check Archimedes?
 
 ```python exec
@@ -619,15 +617,15 @@ id: measuring-rooms-solid-your-turn
 Back to the bedroom. Here are the steps, in order:
 
 1. Find the wall area: the perimeter times the height.
-2. Take away the door and the window.
+2. Subtract the door and the window.
 3. Multiply by the number of coats. Two coats is usual.
 4. Divide by 12 m² a litre, to get the litres of paint.
 5. Divide by 2.5 litres a tin, to get the number of tins.
 6. Round the number of tins up.
 
 Why up? Tins come whole. We are in the natural numbers, $\mathbb{N}$,
-where 2.2 tins is not something a shop sells. Rounding to the nearest
-whole number gives 2 tins, and one wall goes unfinished. `math.ceil`
+where 2.2 tins is not something a shop sells. If we round to the nearest
+whole number, we get 2 tins, and one wall is left unfinished. `math.ceil`
 rounds any number up to the next whole number. Its name is short for
 "ceiling".
 
@@ -650,10 +648,9 @@ print(tins_for_walls(4, 3.5, 2.4, door + window))
 print(round(33.2 * 2 / 12 / 2.5, 2))
 ```
 
-Three tins. The second line shows the number before rounding up: 2.21
+We need three tins. The second line shows the number before rounding up: 2.21
 tins. Look at how `tins_for_walls` is built. It asks
-`rectangle_perimeter` for one job, and trusts it. That is the whole
-idea of a toolkit.
+`rectangle_perimeter` for one job, and trusts it.
 
 ### Your turn
 
@@ -662,7 +659,7 @@ idea of a toolkit.
 2. The ceiling needs painting too: one coat over the floor's area. Write
    `tins_for_ceiling(length, width)` in the same way, using
    `rectangle_area`.
-3. Is it fair to add the two answers to find the tins for the whole
+3. Can you add the two answers to find the tins for the whole
    job? Try a room where it makes a difference. (Hint: think about what
    rounding up twice does.)
 
@@ -678,13 +675,13 @@ strip, the paper circle cut into slices, the cone poured three times into a
 cylinder. The sphere did not. Its volume and its surface area arrived
 with a story about Archimedes, and no reason.
 
-A page could leave the sphere out until the reason can be given. That
+A page could skip the sphere until the reason can be given. That
 reason slices the ball into very thin pieces and adds them all up, which
 needs more than this unit has.
 
 We kept the sphere because raindrops, planets and 3D-printed balls
-are spheres, and your toolkit needs it now. So, to be honest about it:
-these two formulas are taken on trust, for the moment. The test with
+are spheres, and your toolkit needs it now. So we take
+these two formulas on trust, for the moment. The test with
 Archimedes' two thirds checks that two facts agree. It does not say why
 either one is true.
 

@@ -7,7 +7,7 @@ version: 2026.08.24.1
 
 # Matrices: adding, scaling and transposing a grid of numbers — Practice
 
-The answers are hidden in folds. Work each problem out by hand first,
+The answers are hidden in folds. Solve each problem by hand first,
 even the arithmetic ones. Then use the cells to check your work.
 
 Some cells on this page use list comprehensions, such as
@@ -38,8 +38,8 @@ $a_{12} = 7$ (row 1, column 2). $a_{23} = 6$ (row 2, column 3). $a_{32} = 5$
 (row 3, column 2).
 
 In Python these are `A[0][1]`, `A[1][2]` and `A[2][1]`. Maths notation
-counts rows and columns from 1, and Python counts from 0. Mixing the two
-up is the most common mistake in this section.
+counts rows and columns from 1, and Python counts from 0. People confuse
+the two more than anything else in this section.
 
 </details>
 
@@ -76,7 +76,7 @@ print("X =", X)
 print("Y =", Y)
 ```
 
-**4.** Work out $X + Y$ by hand. Then check it.
+**4.** Calculate $X + Y$ by hand. Then check it.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -84,7 +84,7 @@ $\begin{bmatrix} 1 & 2 & -1 \\ 4 & -2 & 6 \end{bmatrix}$
 
 </details>
 
-**5.** Work out $2X - Y$.
+**5.** Calculate $2X - Y$.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -95,7 +95,7 @@ Then subtract $Y$ from that. The result is the answer above.
 
 </details>
 
-**6.** Work out $X - 2Y$. Is it the same as $2X - Y$?
+**6.** Calculate $X - 2Y$. Is it the same as $2X - Y$?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -117,13 +117,13 @@ $$W_{\text{new}} = W_{\text{old}} - \alpha G$$
 $$W_{\text{old}} = \begin{bmatrix} 0.5 & -0.3 \\ 1.2 & 0.8 \end{bmatrix}, \quad
 G = \begin{bmatrix} 0.4 & -0.2 \\ 0.6 & 1.0 \end{bmatrix}$$
 
-Work out $W_{\text{new}}$.
+Calculate $W_{\text{new}}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
 $\begin{bmatrix} 0.46 & -0.28 \\ 1.14 & 0.70 \end{bmatrix}$
 
-First work out $\alpha G = \begin{bmatrix} 0.04 & -0.02 \\ 0.06 & 0.10 \end{bmatrix}$.
+First calculate $\alpha G = \begin{bmatrix} 0.04 & -0.02 \\ 0.06 & 0.10 \end{bmatrix}$.
 Then subtract that from $W_{\text{old}}$.
 
 Each weight moves a small step in the opposite direction to its entry
@@ -142,7 +142,7 @@ print("P is", len(P), "by", len(P[0]))
 print("Q is", len(Q), "by", len(Q[0]))
 ```
 
-**8.** Can we work out `P + Q`? If not, what shape would `Q` need to be?
+**8.** Can we calculate `P + Q`? If not, what shape would `Q` need to be?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -161,7 +161,7 @@ loops. What does `add(P, Q)` raise, and what does the message say?
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Look back at the shape check you wrote: `len(a) == len(b) and len(a[0]) == len(b[0])`.
-2. Work out `len(P)` and `len(Q)`. Are they equal?
+2. Find `len(P)` and `len(Q)`. Are they equal?
 3. The check fails. Which branch of the `if` runs?
 4. That branch is a `raise`, not a `return`. So the function stops
    there, before any loop starts.
@@ -251,7 +251,7 @@ def add(a, b):
 
 The check goes before the loop, not inside it. A check inside the loop
 would work, but the function might then fail at entry 50 of 100, not
-straight away. That error is harder to track down.
+straight away. That error is harder to find.
 
 </details>
 
@@ -273,8 +273,8 @@ twice. The result has `cols` rows and `rows` columns, the opposite of
 
 ## Thinking about it
 
-**15.** Does the order matter? Is scaling a matrix and then transposing
-it the same as transposing it and then scaling it?
+**15.** Does the order matter? If you scale a matrix and then transpose
+it, do you get the same as if you transpose it and then scale it?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -283,7 +283,7 @@ it the same as transposing it and then scaling it?
 3. Think about what each operation does. Scaling multiplies every entry
    by the same number. Transposing moves each entry to a mirrored
    position, but it never combines two entries.
-4. Can moving an entry and multiplying it ever get in each other's way?
+4. Can a move and a multiplication ever affect each other?
 
 **Think about:** which of the four operations in this tutorial (add,
 scale, the shape check, transpose) combine two different numbers into
@@ -326,7 +326,7 @@ $$C = \begin{bmatrix} 850 & 30 & 20 \\ 15 & 920 & 25 \\ 10 & 20 & 970 \end{bmatr
 2. The diagonal adds up to $850 + 920 + 970 = 2740$. All the entries add
    up to $2860$. So the accuracy is $2740 / 2860 \approx 95.8\%$.
 
-The diagonal holds every example the classifier got right. Every entry
+The diagonal holds every example the classifier labelled correctly. Every entry
 off the diagonal is a mistake, and its position says what kind of
 mistake it was. Here the matrix is used to store data. We do not add or
 multiply it.

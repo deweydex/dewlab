@@ -39,9 +39,9 @@ finds the area of a shape in three steps:
 2. Add up all of those results.
 3. Halve the total.
 
-The total can come out negative. This function keeps the sign, and
+The total can be negative. This function keeps the sign, and
 does not hide it. For our square, whose corners go round anticlockwise,
-it comes out positive.
+it is positive.
 
 ```python exec
 id: measuring-the-square-1
@@ -99,8 +99,8 @@ id: measuring-the-square-3
 For a 2×2 matrix $\begin{bmatrix} a & b \\ c & d \end{bmatrix}$, the
 *determinant* is the number $ad - bc$.
 
-1. Work out $ad - bc$ by hand for `stretch`.
-2. Work out $ad - bc$ by hand for `shear`.
+1. Calculate $ad - bc$ by hand for `stretch`.
+2. Calculate $ad - bc$ by hand for `shear`.
 3. Compare each one with the area you measured.
 
 ```python exec
@@ -111,7 +111,7 @@ hint: For stretch, a=2, b=0, c=0, d=1. For shear, a=1, b=1, c=0, d=1.
 Both matched. But both would also match a simpler guess: multiply the
 two numbers on the diagonal, $a \times d$. In `stretch` and `shear`, $b$
 or $c$ is 0, so the $-bc$ part never had a chance to show. Here are two
-matrices where it does. Before you run the cell, work out $a \times d$
+matrices where it does. Before you run the cell, calculate $a \times d$
 and $ad - bc$ for each.
 
 ```python exec
@@ -122,13 +122,13 @@ print("area after rotate90:", polygon_area(multiply(rotate90, square)))
 print("area after flip:    ", polygon_area(multiply(flip, square)))
 ```
 
-Turning a square does not change its area, so `rotate90` gives 1. The
+A turn does not change a square's area, so `rotate90` gives 1. The
 diagonal guess says $0 \times 0 = 0$. The determinant says
 $0 \times 0 - (-1) \times 1 = 1$.
 
 And `flip` gives $-1$. That is a strange result, isn't it? An area
-cannot be less than nothing. The minus sign is telling us something
-else: `flip` turned the square over, like a mirror, so its corners now
+cannot be less than nothing. The minus sign tells us something
+else. `flip` turned the square over, like a mirror, so its corners now
 go round clockwise. The determinant is $1 \times (-1) - 0 \times 0 = -1$,
 and it says the same thing.
 
@@ -180,13 +180,13 @@ inverse:
 
 $$A^{-1} = \frac{1}{\det(A)} \begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$$
 
-Here $\det(A)$ is the determinant of $A$. Look at where it sits: under
+Here $\det(A)$ is the determinant of $A$. It sits under
 the fraction line. What happens when $\det(A) = 0$? The formula would
 divide by zero.
 
 The algebra says the same thing that the collapsed square showed in a
 picture. A matrix with determinant zero has no inverse. Once a shape has
-been flattened, there is no way to get back the width it lost.
+been flattened, there is no way to recover the width it lost.
 
 ### Your turn
 
@@ -232,7 +232,7 @@ print(multiply(stretch, inverse(stretch)))
 
 Here are five matrices. For each one:
 
-1. Work out the determinant first.
+1. Calculate the determinant first.
 2. Predict whether the matrix has an inverse.
 3. Then check your prediction. You can try `inverse` on the matrix, or
    you can transform `square` with it and look at the picture.
@@ -263,34 +263,34 @@ id: which-ones-can-be-undone-2
 
 ## Reflection
 
-One number, worked out from four entries, answers a question that a
-picture can only illustrate: does this matrix lose information?
+One number, calculated from four entries, answers a question that a
+picture can only illustrate. Does this matrix lose information?
 
-$ad - bc$ is not a formula chosen to make the examples come out neatly.
+$ad - bc$ is not a formula chosen to make the examples work neatly.
 It is the factor by which the matrix scales area. Follow the reasoning
 one step at a time:
 
 1. A factor of zero means that the area disappears.
-2. When the area disappears, two different starting shapes can end up
-   as the same flattened result.
+2. When the area disappears, two different starting shapes can become
+   the same flattened result.
 3. So from the flattened result, there is no way to know which shape
    we started with. There is no way back.
 
 Did any of the five matrices surprise you? Was there one whose numbers
-made you expect an inverse, but it had none? Or the other way round?
+made you expect an inverse, but it had none? Or the opposite?
 
-## Where to Read More
+## Where to read more
 
 Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 6:
-The Determinant.* <https://www.youtube.com/watch?v=Ip3X9LOh2dk>. The area
-argument in this tutorial, animated, and extended to what happens in three
+The Determinant.* <https://www.youtube.com/watch?v=Ip3X9LOh2dk>. This video
+animates the area argument from this tutorial, and extends it to three
 dimensions.
 
 Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 7:
 Inverse Matrices, Column Space and Null Space.*
-<https://www.youtube.com/watch?v=uQhTuRlWMxw>. Why a determinant of zero is
-exactly the condition under which an inverse cannot exist, argued
-geometrically rather than from the formula.
+<https://www.youtube.com/watch?v=uQhTuRlWMxw>. This video uses geometry, not
+the formula, to show why an inverse cannot exist when the determinant is
+zero.
 
 Strang, G. (2016). *Introduction to Linear Algebra* (5th ed.).
 Wellesley-Cambridge Press. Chapter 5 covers determinants properly, including

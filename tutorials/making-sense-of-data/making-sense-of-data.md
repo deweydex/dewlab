@@ -19,7 +19,7 @@ covers:
 
 # Statistics: averages, spread and frequency
 
-In the last three tutorials we counted possibilities and worked out probabilities. Now we turn to data. Data is a collection of numbers or labels that somebody has counted, measured or observed.
+In the last three tutorials we counted possibilities and calculated probabilities. Now we turn to data. Data is a collection of numbers or labels that somebody has counted, measured or observed.
 
 *Statistics* is the part of mathematics that summarises, describes and explains data. Every tool on this page can become a Python function that we write ourselves.
 
@@ -75,7 +75,7 @@ Each one describes "typical" in a different way, and they can give quite differe
    [Designing and testing good functions](tutorial:building-reusable-tools),
    so you can copy it here or write it again.
 2. Write `median(data)`. You need to sort the data first. Python's
-   built-in `sorted()` gives back a new sorted list, and leaves the old
+   built-in `sorted()` returns a new sorted list, and leaves the old
    list as it was. We wrote our own sorts in
    [Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order),
    so now we can use Python's.
@@ -332,7 +332,7 @@ The `hist()` function splits the data into bins and draws the bars for us. `edge
 
 What happens when you draw the histogram with a different number of bins? Try 3, 5, 8 and 12.
 
-Which number of bins shows the shape of the scores best? With too few bins, what do you lose? With too many, what gets in the way? Choosing the number of bins is a judgement, and part of the skill of working with data.
+Which number of bins shows the shape of the scores best? With too few bins, what do you lose? With too many, what makes the shape harder to see? The number of bins is a judgement you make, and part of the skill of working with data.
 
 ```python exec
 id: your-turn-13
@@ -357,7 +357,7 @@ Summaries are useful, but they can also mislead. The mean of 0, 0, 0, 0 and 100 
 
 A histogram can also look very different when the bin width changes. So it helps to look at the data in several ways, and to be clear about what the numbers tell you and what they do not.
 
-Knowing when a tool suits the data, and when it might mislead, is as important as knowing how to work it out.
+You need to know when a tool suits the data, and when it might mislead. That matters as much as how to calculate it.
 
 ## Reflection
 
@@ -371,19 +371,19 @@ we look at more ways to draw data.
 
 What surprised you about working with data?
 
-## Where to Read More
+## Where to read more
 
 Josh Starmer (StatQuest) (2019). *Calculating the Mean, Variance and
 Standard Deviation, Clearly Explained!!!*
-<https://www.youtube.com/watch?v=SzZ6GpcfoQY>. The same three measures
-this page builds as functions, worked through by hand first.
+<https://www.youtube.com/watch?v=SzZ6GpcfoQY>. It covers the same three
+measures this page builds as functions, and calculates them by hand first.
 
 Stand-up Maths (2020). *The Datasaurus Dozen.*
-<https://www.youtube.com/watch?v=iwzzv1biHv8>. Twelve sets of points with
-the same mean and the same spread, which look nothing alike when drawn,
-and one of them is a dinosaur. Eight minutes.
+<https://www.youtube.com/watch?v=iwzzv1biHv8>. It shows twelve sets of
+points with the same mean and the same spread. They look nothing alike
+when drawn, and one of them is a dinosaur. The video is eight minutes long.
 
 CrashCourse (2018). *Measures of Spread: Crash Course Statistics #4.*
-<https://www.youtube.com/watch?v=R4yfNi_8Kqw>. The range, the standard
-deviation and other measures of spread, and what they tell us that the
-mean does not. About eleven minutes.
+<https://www.youtube.com/watch?v=R4yfNi_8Kqw>. It explains the range, the
+standard deviation and other measures of spread, and what they tell us
+that the mean does not. The video is about eleven minutes long.
