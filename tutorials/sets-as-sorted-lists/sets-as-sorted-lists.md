@@ -24,7 +24,7 @@ covers:
 # Sets: building them from sorted lists
 
 Two teams dig in the same valley. Each team writes down every dinosaur
-bone it finds, one line for each bone. (The notebooks are made up; the
+bone it finds, one line for each bone. (The notebooks are made up. The
 dinosaurs are real.)
 
 ```python exec
@@ -43,19 +43,19 @@ The notebooks have 10 lines between them. How many different dinosaurs
 did the two teams find?
 ```
 
-Python's `set()` threw away every repeat in one step. A *set* is a
+Python's `set()` removed every repeat in one step. A *set* is a
 collection of different elements, where the order does not matter and no
 element appears twice. In maths we write a set inside curly brackets, so
 $\{3, 1, 4, 1, 5\}$ is the same set as $\{1, 3, 4, 5\}$.
 
-On this page we build our own sets, so that nothing `set()` does is
-magic. Sets give us a language for three kinds of question:
+On this page we build our own sets, so you can see how `set()` works.
+Sets give us a language for three kinds of question:
 
 - **membership**: is Diplodocus in this set?
 - **relationships**: which dinosaurs did both teams find?
 - **operations**: what do we get when we put two sets together?
 
-The rest of this series builds on that language.
+The rest of this series uses that language.
 [Venn diagrams](tutorial:venn-diagrams) draws sets as circles.
 [Logic](tutorial:logic-and-truth) finds the same rules in true and false.
 And in probability, an *event*, such as "the dice show a double", is a
@@ -81,7 +81,7 @@ The first job is to take a list that might have repeats, and might not be
 in order, and make a sorted list with no repeats.
 
 One way is to sort the list first. In a sorted list, any repeats sit next
-to each other. Then we walk along the list and leave out each item that
+to each other. Then we walk along the list and skip each item that
 is the same as the one before it.
 
 ```text
@@ -113,9 +113,9 @@ make_set(dig_one + dig_two)
 ```
 
 ```hint
-`sorted(items)` gives a new list in order. Go through it, and keep an item
-only when it is different from the last item you kept. What should happen
-with the very first item, when nothing has been kept yet?
+`sorted(items)` gives a new list in order. Look at each item in turn,
+and keep it only when it is different from the last item you kept. What
+should happen with the very first item, when nothing has been kept yet?
 ```
 
 ```solution
@@ -131,9 +131,9 @@ def make_set(items):
 print(make_set(dig_one))
 ---
 Sorting puts repeats next to each other, so one comparison with the last
-item kept is enough. `len(result) == 0` has to come first: on an empty
-list, `result[-1]` would stop with an IndexError, and `or` never looks at
-its right side when the left side is already true.
+item kept is enough. `len(result) == 0` has to come first, because on an
+empty list `result[-1]` would stop with an IndexError. And `or` never looks
+at its right side when the left side is already true.
 ```
 
 A set compares its elements exactly. What happens when one team writes
@@ -159,9 +159,9 @@ How many elements will this set have?
 
 Three: `['Allosaurus', 'Stegosaurus', 'stegosaurus']`. A small `s` and a
 capital `S` are different letters, so the two spellings are different
-elements. The capitals also come first: Python sorts every capital letter
-before every small one. Real data is full of this, and the usual fix is
-to make the text match before it goes into a set, with `.lower()` or
+elements. The capitals also come first, because Python sorts every capital
+letter before every small one. Real data often has this problem. You can
+make the text match before it goes into a set, with `.lower()` or
 `.title()`.
 
 </details>
@@ -170,7 +170,7 @@ to make the text match before it goes into a set, with `.lower()` or
 
 Is a particular element in the set? Our sets are sorted, so a binary
 search can answer quickly. The binary search on
-[Searching a list](tutorial:finding-things) gave back a position, or -1
+[Searching a list](tutorial:finding-things) returned a position, or -1
 when the item was missing. For a set we want a plain `True` or `False`.
 
 Can you write `is_member(s, item)`, with a binary search?
@@ -222,9 +222,9 @@ found = ["Allosaurus", "Camarasaurus", "Diplodocus", "Stegosaurus"]
 print(is_member(found, "Diplodocus"))
 print(is_member(found, "Tyrannosaurus"))
 ---
-The search from Searching a list, returning `True` where it returned a
-position, and `False` where it returned -1. It works on words as well as
-numbers, because Python can put words in order too.
+It is the search from Searching a list, returning `True` where that
+returned a position, and `False` where it returned -1. It works on words
+as well as numbers, because Python can put words in order too.
 ```
 
 ```question
@@ -238,9 +238,9 @@ A set has 1,000 elements. At most, about how many elements does
 - About 10
   - Each look halves what is left: 1,000, 500, 250, and so on, down to 1.
 - About 500
-  - Half the set, on average, is what a search from the front needs.
+  - A search from the front needs half the set, on average.
 - 1,000
-  - Every element, to be sure, is what a search from the front needs.
+  - A search from the front needs every element, to be sure.
 ```
 
 ## Set operations: the merge pattern
@@ -257,17 +257,16 @@ We can build all three with one pattern, the one merge sort uses. Merge
 sort is a faster sort that combines two sorted lists into one, again and
 again, and that combining step is called a *merge*.
 
-Both of our sets are sorted. So we walk through the two of them at the
-same time, with two pointers. A *pointer* here is an index, `i` for set a
+Both of our sets are sorted. So we walk along both lists at the same
+time, with two pointers. A *pointer* here is an index, `i` for set a
 and `j` for set b, that marks our place in each list. At each step we
 compare the two current elements:
 
 - If they are equal, the element goes in the union and in the
-  intersection. Both pointers move on.
+  intersection. Both pointers move forward.
 - If one is smaller, that element goes in the union, but not in the
-  intersection. Its pointer moves on.
-- When one list runs out, whatever is left in the other goes in the
-  union.
+  intersection. Its pointer moves forward.
+- When one list ends, the rest of the other goes in the union.
 
 We call this the *merge walk*. The picture shows it step by step.
 
@@ -338,8 +337,8 @@ to the union, and why?
   lists. Each time round it compares one element from each.
 - The three cases are the three bullets above: equal, a's smaller, b's
   smaller. Each appends one element and moves at least one pointer.
-- When one list runs out, the last two loops copy what is left of the
-  other. Only one of them does anything: the list that ran out has
+- When one list ends, the last two loops copy what is left of the
+  other. Only one of them does anything, because the list that ended has
   nothing left.
 
 </details>
@@ -351,7 +350,7 @@ ask two questions: which elements do we keep when `a[i] == b[j]`, and
 which when one is smaller?
 
 The *symmetric difference* of a and b holds the elements that are in a or
-in b, but not in both. The tasks test on the two digs, as sets:
+in b, but not in both. The tasks use the two digs, as sets:
 
 ```python exec
 id: sets-the-digs-as-sets
@@ -378,8 +377,8 @@ intersection(first_dig, second_dig)
 
 ```hint
 Only the equal case keeps anything. When one element is smaller, it
-cannot be in both, so its pointer moves on and nothing is kept. When one
-list runs out, is anything left that could be in both?
+cannot be in both, so its pointer moves forward and nothing is kept.
+When one list ends, is anything left that could be in both?
 ```
 
 ```solution
@@ -402,9 +401,9 @@ def intersection(a, b):
 
 print(intersection(first_dig, second_dig))
 ---
-The same walk as `union()`. Only the equal case appends, and there is no
-copying at the end: once one list runs out, nothing left in the other can
-be in both.
+It is the same walk as `union()`. Only the equal case appends, and
+nothing is copied at the end. Once one list ends, nothing left in the
+other can be in both.
 ```
 
 ```python exec
@@ -425,9 +424,9 @@ difference(first_dig, second_dig)
 ```
 
 ```hint
-An element of a goes in when it is smaller than the current element of b:
-b has gone past it without finding it. What should happen to the elements
-of a that are left when b runs out?
+An element of a goes in when it is smaller than the current element of b,
+because b has gone past it without finding it. What should happen to the
+rest of a when b ends?
 ```
 
 ```solution
@@ -453,10 +452,10 @@ def difference(a, b):
 
 print(difference(first_dig, second_dig))
 ---
-The copying at the end is back, but only for a. Anything left in b when a
-runs out is not in a, so it cannot be in a's difference. The first two
-inputs give different answers: for difference, the order of the two sets
-matters.
+The loop at the end copies again, but only for a. Anything left in b when
+a ends is not in a, so it cannot be in a's difference. The first two
+inputs give different answers, because for difference the order of the
+two sets matters.
 ```
 
 ```python exec
@@ -502,11 +501,11 @@ def symmetric_difference(a, b):
 
 print(symmetric_difference(first_dig, second_dig))
 ---
-The union's walk, with nothing kept in the equal case. The last line
-copies what is left of both lists at once: only one of `a[i:]` and
-`b[j:]` has anything in it. The other route is one line,
-`union(difference(a, b), difference(b, a))`: easier to check, and it
-walks the lists three times.
+It is the union's walk, and the equal case keeps nothing. The last line
+copies what is left of both lists at once. Only one of `a[i:]` and
+`b[j:]` has anything in it. The other way is one line,
+`union(difference(a, b), difference(b, a))`. It is easier to check, and
+it walks the lists three times.
 ```
 
 The four functions are connected, and the connections make good tests.
@@ -516,13 +515,13 @@ For any sets a and b:
 - `len(union(a, b))` equals `len(a) + len(b) - len(intersection(a, b))`
 
 Look at the second one. To count the elements in the union, add the sizes
-of the two sets, then take away the elements they share, because they
+of the two sets, then subtract the elements they share, because they
 were counted twice. In maths we write the size of a set $A$ as $|A|$:
 
 $$|A \cup B| = |A| + |B| - |A \cap B|$$
 
-This is the *inclusion-exclusion principle*. It comes back in
-probability, where the chance of "A or B" takes away the chance of both,
+This is the *inclusion-exclusion principle*. It appears again in
+probability, where the chance of "A or B" subtracts the chance of both,
 for the same reason.
 
 ```python exec
@@ -588,9 +587,9 @@ print(is_subset(["Allosaurus"], second_dig))
 print(is_subset(first_dig, second_dig))
 ---
 When a is a subset of b, the intersection is all of a. The empty set is a
-subset of every set: its intersection with anything is empty, which is
-itself. A merge walk of its own could stop at the first element of a that
-b does not have; the one-line version says what a subset is.
+subset of every set, because its intersection with anything is empty,
+which is itself. A merge walk of its own could stop at the first element
+of a that b does not have. The one-line version says what a subset is.
 ```
 
 Two sets are *equal* when each is a subset of the other. For our sorted
@@ -638,11 +637,11 @@ both = intersection(jurassic_countries, cretaceous_countries)
 print(len(both), "countries have both")
 print(difference(jurassic_countries, cretaceous_countries))
 ---
-With the copy saved on {{snapshot: dinosaur-finds}}: 23 countries have
-both, and seven have only Jurassic finds: CH, KG, LS, NA, PL, VE and ZW,
+With the copy saved on {{snapshot: dinosaur-finds}}, 23 countries have
+both. Seven have only Jurassic finds: CH, KG, LS, NA, PL, VE and ZW,
 which are Switzerland, Kyrgyzstan, Lesotho, Namibia, Poland, Venezuela
 and Zimbabwe. A find counts for a period only when the whole age of its
-rock is inside it. `keep_default_na=False` is there for Namibia: its code
+rock is inside it. `keep_default_na=False` is there for Namibia. Its code
 is NA, which pandas otherwise reads as a missing value, and Namibia would
 quietly vanish from the set. These are the countries where people have
 dug and published, which is not the same as where dinosaurs lived.
@@ -718,11 +717,11 @@ last = make_set(pride[pride.chapter == 61]["character"].tolist())
 print(is_subset(first, last))
 print(difference(last, first))
 ---
-Yes: all five people named in chapter 1 are named again in chapter 61.
+Yes. All five people named in chapter 1 are named again in chapter 61.
 The last chapter adds Darcy, Lady Catherine, Miss Bingley, Mrs Bennet and
-Wickham. Mrs Bennet is the surprise: she talks through most of chapter 1,
-and is never named in it, only "his wife" and "his lady". The data counts
-names, not people, and a set built from it can only be as good as that.
+Wickham. Mrs Bennet is the surprise. She speaks in most of chapter 1, and
+is never named in it, only "his wife" and "his lady". The data counts
+names, not people, and so does any set built from it.
 ```
 
 </div>
@@ -779,8 +778,8 @@ print(len(union(doubles, eights)))
 Only `(4, 4)` is in both. The union has 10 outcomes, and
 inclusion-exclusion says so without listing them: 6 doubles, plus 5 ways
 to make 8, minus the 1 counted twice. Out of 36 equally likely outcomes,
-that is a chance of 10 in 36, which is where
-[What are the chances?](tutorial:what-are-the-chances) takes it.
+that is a chance of 10 in 36.
+[What are the chances?](tutorial:what-are-the-chances) continues from there.
 ```
 
 </div>

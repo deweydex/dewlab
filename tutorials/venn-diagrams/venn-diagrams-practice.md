@@ -12,13 +12,13 @@ datasets: [dinosaur-finds, book-characters]
 
 # Venn diagrams: drawing sets and their overlaps — Practice
 
-Problems on two and three sets, and three from earlier pages. When a
-question is about three sets, sketch the diagram first, then work out the
-answer: helping you think is what the diagram is for.
+Here are problems on two and three sets, and three from earlier pages.
+When a question is about three sets, sketch the diagram first, then find
+the answer. The diagram is there to help you think.
 
 ## Tools
 
-This cell sets up a class of nine students, `everyone`, and three sets:
+This cell makes a class of nine students, `everyone`, and three sets:
 who knows Python, who knows SQL, and who knows JavaScript. Run it before
 the problems, and use it to check your answers.
 
@@ -51,7 +51,7 @@ type: fill-in-the-blank
 <details class="dl-answer"><summary>who they are</summary>
 
 Aoife, Ben and Fiona know Python but not SQL. Aoife, Ben, Fiona, Gearoid
-and Hannah know exactly one: the symmetric difference, XOR for sets.
+and Hannah know exactly one. This is the symmetric difference, XOR for sets.
 Only Iarla knows neither.
 
 </details>
@@ -73,7 +73,7 @@ take both. How many take neither?
 <details class="dl-answer"><summary>answer</summary>
 
 $18 + 15 - 7 = 26$ take at least one, so $30 - 26 = 4$ take neither.
-Taking away the 7 is the key step: adding 18 and 15 counts those seven
+You need to subtract the 7, because adding 18 and 15 counts those seven
 students twice.
 
 </details>
@@ -120,8 +120,8 @@ sorted(exactly_two({1}, {1}, {1}))
 ```
 
 ```hint
-Three regions, one for each pair: in a and b but not c, in a and c but
-not b, in b and c but not a. Join them with `|`.
+There are three regions, one for each pair: in a and b but not c, in a
+and c but not b, in b and c but not a. Join them with `|`.
 ```
 
 ```solution
@@ -133,8 +133,8 @@ def exactly_two(a, b, c):
 print(sorted(exactly_two(python, sql, javascript)))
 ---
 Cara, Fiona and Hannah. The three pair-overlaps each lose the middle,
-since the middle is in all three, not two. Another route counts:
-an element is in exactly two when `(x in a) + (x in b) + (x in c)` is 2,
+since the middle is in all three, not two. Another way is to count.
+An element is in exactly two when `(x in a) + (x in b) + (x in c)` is 2,
 since `True` counts as 1.
 ```
 
@@ -144,20 +144,21 @@ messaging and the phone. 10 use all three. How many use at least one?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$60 + 45 + 40 - 30 - 20 - 15 + 10 = 90$. Add the single sets, take away
-the pairs, then add the triple back. The ten who use all three were added
-three times, once for each single set, then taken away three times, once
-for each pair, which leaves them counted zero times, so they go back in
-once.
+$60 + 45 + 40 - 30 - 20 - 15 + 10 = 90$. Add the single sets, subtract
+the pairs, then add the triple again. The ten who use all three were
+added three times, once for each single set, then subtracted three times,
+once for each pair. That leaves them counted zero times, so we add them
+once more.
 
 </details>
 
-**7.** Three sets from a world, and a diagram that says something about
-it.
+**7.** Each world has three sets, and a diagram that says something
+about them.
 
 <div class="dl-world" data-world="games-of-chance">
 
-Two dice: the total is even, the total is at least 10, and a double. How
+Roll two dice, with three events: the total is even, the total is at
+least 10, and a double. How
 many outcomes are in exactly two of the three events, and why are none
 of them a double with an odd total?
 
@@ -181,17 +182,17 @@ Six: the four low doubles, which are even and not high, and (4, 6) and
 (6, 4), which are even and high and not doubles. A double always has an
 even total, so the double circle sits wholly inside the even one, and
 the parts of it outside the even circle are empty. `{r for r in rolls
-if ...}` is a *set comprehension*: a list comprehension in curly
-brackets, which builds a set.
+if ...}` is a *set comprehension*. It is a list comprehension in
+curly brackets, and it builds a set.
 ```
 
 </div>
 
 <div class="dl-world" data-world="dinosaurs">
 
-Three countries, and the dinosaur genera found in each: the United
+This cell finds the dinosaur genera in three countries: the United
 States, China and Argentina. Which genera are found in more than one?
-Draw the diagram in your head before you run the answer: is any circle
+Draw the diagram in your head before you run the answer. Is any circle
 on its own?
 
 ```python exec
@@ -229,11 +230,10 @@ print(us & argentina, china & argentina)
 ---
 Eight genera are found in both the United States and China, with the
 copy saved on {{snapshot: dinosaur-finds}}. Argentina shares none with
-either: its circle stands alone. Through much of the age of dinosaurs,
+either, so its circle stands alone. Through much of the age of dinosaurs,
 South America was part of a southern continent, Gondwana, which was
 separating from the northern lands, and that is likely part of the
-reason. A diagram with one circle apart is the start of that story, not
-the end of it.
+reason.
 ```
 
 </div>
@@ -265,7 +265,7 @@ print(sorted(catherine - collins - charlotte))
 Chapters 20, 24 and 25 name Mr Collins and Charlotte without Lady
 Catherine, and 58 and 61 name her alone, both near the end of the book,
 after her visit to Longbourn. Fifteen chapters name all three, which
-says how tied together the three of them are.
+shows how closely linked the three of them are.
 ```
 
 </div>
@@ -278,10 +278,10 @@ union of the complements?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes, both. Being outside both circles is being outside the first and
-outside the second. Being outside the overlap is missing at least one of
-the circles: outside the first or outside the second. Shade each pair on
-a diagram, and they cover the same region.
+Yes, both. An element outside both circles is outside the first and
+outside the second. An element outside the overlap misses at least one
+of the circles, so it is outside the first or outside the second. Shade
+each pair on a diagram, and they cover the same region.
 
 </details>
 
@@ -292,10 +292,8 @@ them?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The set operations: `A & B & C & D` is no harder to compute than
-`A & B`, and inclusion-exclusion works for any number of sets. Every way
-of showing an idea stops working somewhere, and part of knowing a tool
-is knowing where.
+The set operations still work. `A & B & C & D` is no harder to compute
+than `A & B`, and inclusion-exclusion works for any number of sets.
 
 </details>
 
@@ -316,11 +314,11 @@ all three. There are 250 tickets in total.
 
 (b) $250 - 210 = 40$.
 
-(c) Start with the 120 hardware tickets. Take away those also software
-(30) and those also network (25). That takes away the ten in all three
-twice, so add ten back: $120 - 30 - 25 + 10 = 75$. Without a diagram, it
-is very hard to notice the all-three region went twice; with one, it is
-easy to see.
+(c) Start with the 120 hardware tickets. Subtract those also software
+(30) and those also network (25). That subtracts the ten in all three
+twice, so add ten again: $120 - 30 - 25 + 10 = 75$. Without a diagram, it
+is easy to miss that the all-three region was subtracted twice. The
+diagram shows it.
 
 </details>
 
@@ -364,7 +362,7 @@ more than 2 and the numbers less than 8?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The intersection: `and` asks for both, the overlap of the two sets. With
+The intersection. `and` asks for both, the overlap of the two sets. With
 `or`, every number would be in at least one of them, so the union would
 be every number there is.
 

@@ -13,10 +13,10 @@ datasets: [exoplanets, dinosaur-finds, book-characters]
 
 # Statistics: averages, spread and frequency — Practice
 
-Problems on averages, spread and shape, and three from earlier pages. On
-the small datasets, work the statistics out by hand before you check
-them: five numbers do not take long, and doing it once by hand is what
-makes a formula mean something.
+Here are problems on averages, spread and shape, and three from earlier
+pages. On the small datasets, calculate the statistics by hand before you
+check them. Five numbers do not take long, and a formula means more once
+you have done it by hand.
 
 ## Tools
 
@@ -47,7 +47,7 @@ print("stdev   ", round(statistics.stdev(data), 4))
 
 The mean is $\frac{36}{7} \approx 5.14$, the median 5, and the mode 8.
 Sorted, the values are 2, 3, 4, 5, 6, 8, 8, and the fourth of seven is
-the middle. The mode is the largest of the three here: the commonest
+the middle. The mode is the largest of the three here. The commonest
 value need not be anywhere near the centre.
 
 </details>
@@ -56,8 +56,8 @@ value need not be anywhere near the centre.
 
 <details class="dl-answer"><summary>answer</summary>
 
-13, the mean of the two middle values. So the median need not be one of
-the values in the data.
+It is 13, the mean of the two middle values. So the median need not be
+one of the values in the data.
 
 </details>
 
@@ -81,11 +81,11 @@ What will the mean salary be?
 
 <details class="dl-answer"><summary>which describes the office</summary>
 
-€77,000, against a median of €30,000. Nobody in the office earns
-anything near the mean. Quoting it would be true, and would mislead. But
-if the question is what the office costs in salaries, the mean is
-exactly right: it is the total shared out. Which average is better
-depends on the question.
+The mean is €77,000, against a median of €30,000. Nobody in the office
+earns anything near the mean. Quoting it would be true, and would
+mislead. But if the question is what the office costs in salaries, the
+mean is exactly right, because it is the total shared equally. Which
+average is better depends on the question.
 
 </details>
 
@@ -94,41 +94,43 @@ it is the only average that makes sense?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Useless: measured values where every value is different, such as
-heights to the millimetre. Then the mode is whichever value happens to
-repeat, or there is none, which is why the tutorial's mode of the
-planets' radii came from rounding.
+The mode is useless for measured values where every value is
+different, such as heights to the millimetre. Then the mode is whichever
+value happens to repeat, or there is none. That is why the tutorial's
+mode of the planets' radii came from rounding.
 
-The only sensible one: categorical data. `["red", "blue", "red"]` has
-no mean and no median, but its mode is "red".
+The mode is the only sensible average for categorical data.
+`["red", "blue", "red"]` has no mean and no median, but its mode is
+"red".
 
 </details>
 
 ## Spread
 
-**5.** For `[2, 4, 4, 4, 5, 5, 7, 9]`, can you work out the mean and the
+**5.** For `[2, 4, 4, 4, 5, 5, 7, 9]`, can you calculate the mean and the
 standard deviation by hand?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The mean is 5. The distances from it are −3, −1, −1, −1, 0, 0, 2 and 4;
-their squares, 9, 1, 1, 1, 0, 0, 4 and 16, add up to 32, and $\frac{32}{8}
+The mean is 5. The distances from it are −3, −1, −1, −1, 0, 0, 2 and 4.
+Their squares, 9, 1, 1, 1, 0, 0, 4 and 16, add up to 32, and $\frac{32}{8}
 = 4$. That number, the mean of the squared distances, is the *variance*,
-and its square root, 2, is the standard deviation. Real data almost
-never comes out this neatly.
+and its square root, 2, is the standard deviation. Real data is almost
+never this neat.
 
 </details>
 
-**6.** Why square the distances? What goes wrong if we add them up as
+**6.** Why square the distances? What happens if we add them up as
 they are?
 
 <details class="dl-answer"><summary>answer</summary>
 
-They always add up to zero: the mean is exactly the point where the
-distances above and below cancel. Squaring makes every distance positive,
-and gives large distances more weight. Taking each distance without its
-minus sign would work too, and gives the *mean absolute deviation*; it
-is a perfectly good measure, and harder to work with in algebra.
+They always add up to zero, because the mean is exactly the point where
+the distances above and below cancel. Squaring makes every distance
+positive, and gives large distances more weight. Taking each distance
+without its minus sign would work too, and gives the
+*mean absolute deviation*. It is a perfectly good measure, and harder
+to use in algebra.
 
 </details>
 
@@ -151,10 +153,10 @@ for name, values in [("data", data), ("plus 10", plus_ten), ("times 3", times_th
 
 <details class="dl-answer"><summary>what moves</summary>
 
-Adding 10 moves the mean and median up by 10, and leaves the range and
-standard deviation alone: every distance from the mean stays the same.
-Multiplying by 3 multiplies all four by 3. Measures of centre move with
-the data; measures of spread ignore a shift, and grow with a stretch.
+Adding 10 moves the mean and median up by 10, and does not change the range
+or standard deviation, because every distance from the mean stays the
+same. Multiplying by 3 multiplies all four by 3. Measures of centre move
+with the data. Measures of spread ignore a shift, and grow with a stretch.
 
 </details>
 
@@ -165,9 +167,9 @@ the data; measures of spread ignore a shift, and grow with a stretch.
 Dividing by $n$ measures the spread of the numbers you have. Dividing by
 $n - 1$ estimates the spread of the population they are a sample from. A
 sample's values sit a little closer to their own mean than to the
-population's, so the distances come out slightly too small, and dividing
-by a smaller number makes up for it. For $n = 100$ the two differ by
-about half a percent; for $n = 5$, by more than ten.
+population's, so the distances are slightly too small, and dividing by a
+smaller number corrects this. For $n = 100$ the two differ by about half
+a percent. For $n = 5$, they differ by more than ten.
 
 </details>
 
@@ -193,10 +195,10 @@ long as 10 cm?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0 °C is where water freezes, a point somebody chose; it does not mean no
+0 °C is where water freezes, a point somebody chose. It does not mean no
 heat. 0 cm means no length. Ratios only make sense when zero means none.
-And the shirt number is the trap of the question above: a program will
-work out the mean of shirt numbers without a warning, and the answer
+The shirt number is the trap in the question above. A program will
+calculate the mean of shirt numbers without a warning, and the answer
 means nothing.
 
 </details>
@@ -217,8 +219,8 @@ print(Counter([1, 2, 2, 3, 3, 3, 4, 4, 4, 4]))
 
 1 appears once, 2 twice, 3 three times and 4 four times. `Counter`,
 from Python's `collections` module, counts for you. The shape rises to
-the right, and its name is *skewed left*, which confuses many people:
-the name describes the tail, the thin end, and here the tail is on the
+the right, and its name is *skewed left*, which confuses many people.
+The name describes the tail, the thin end, and here the tail is on the
 left.
 
 </details>
@@ -241,15 +243,15 @@ which is not symmetric?
 <details class="dl-answer"><summary>answer</summary>
 
 `[2, 3, 6, 8, 11]` has a mean of 6 and a median of 6. Below 6, the values
-are 3 and 4 away; above it, 2 and 5. Equal mean and median allow a
-symmetric shape without proving one. Every summary loses something, and
-the only sure way to see the shape is to draw it.
+are 3 and 4 away. Above it, they are 2 and 5 away. Equal mean and median
+allow a symmetric shape without proving one. To see the shape for sure,
+draw it.
 
 </details>
 
 ## Your world
 
-**13.** A question from the world you chose.
+**13.** Here is a question from the world you chose.
 
 <div class="dl-world" data-world="exoplanets">
 
@@ -268,7 +270,7 @@ print(len(transit), "transit radii;", len(wobble), "wobble radii")
 ```
 
 ```hint
-`statistics.median` works on each; so does pandas's own `.median()`.
+`statistics.median` works on each. So does pandas's own `.median()`.
 ```
 
 ```solution
@@ -281,13 +283,13 @@ print(len(transit), "transit radii;", len(wobble), "wobble radii")
 print("median radius, transit:", statistics.median(transit))
 print("median radius, wobble: ", statistics.median(wobble))
 ---
-With the copy saved on {{snapshot: exoplanets}}: 2.46 Earth radii for
-transit planets, and 12.6 for wobble planets, which is larger than
-Jupiter. A heavy planet makes its star wobble more, so the wobble method
-finds giants most easily. Each method has its own sampling bias, and the
-two humps in the tutorial's histogram are partly the two methods'
-different catches. (For most wobble planets, the archive estimates the
-radius from the mass, since the wobble measures only the mass.)
+With the copy saved on {{snapshot: exoplanets}}, the median is 2.46
+Earth radii for transit planets, and 12.6 for wobble planets, which is
+larger than Jupiter. A heavy planet makes its star wobble more, so the
+wobble method finds giants most easily. Each method has its own sampling
+bias, and the two humps in the tutorial's histogram partly come from the
+two methods. (For most wobble planets, the archive estimates the radius
+from the mass, since the wobble measures only the mass.)
 ```
 
 </div>
@@ -295,7 +297,7 @@ radius from the mass, since the wobble measures only the mass.)
 <div class="dl-world" data-world="dinosaurs">
 
 How many dinosaur finds does a typical country have? Count the finds in
-each country, then work out the mean, median and mode of those counts.
+each country, then calculate the mean, median and mode of those counts.
 
 ```python exec
 id: data-world--dinosaurs
@@ -322,12 +324,12 @@ counts = per_country.tolist()
 print("mean", round(statistics.mean(counts)), " median", statistics.median(counts),
       " mode", statistics.mode(counts))
 ---
-With the copy saved on {{snapshot: dinosaur-finds}}: 63 countries, a
-mean of about 105 finds, a median of 13 and a mode of 1. The United
-States alone has 2,393. The counts are skewed far to the right, and the
-mean describes no country. They also measure digging as much as
-dinosaurs: where there is exposed rock of the right age, and where
-people have looked and published.
+With the copy saved on {{snapshot: dinosaur-finds}}, there are 63
+countries, with a mean of about 105 finds, a median of 13 and a mode
+of 1. The United States alone has 2,393. The counts are skewed far to
+the right, and the mean describes no country. They also measure
+digging as much as dinosaurs: where there is exposed rock of the right
+age, and where people have looked and published.
 ```
 
 </div>
@@ -335,8 +337,8 @@ people have looked and published.
 <div class="dl-world" data-world="book-characters">
 
 How often is Mr Darcy named in a typical chapter of *Pride and
-Prejudice*? Work out the mean, median and mode of his mentions per
-chapter, and do the same for Elizabeth.
+Prejudice*? Can you calculate the mean, median and mode of his
+mentions per chapter, and do the same for Elizabeth?
 
 ```python exec
 id: data-world--book-characters
@@ -350,7 +352,8 @@ print(len(darcy), "chapters")
 ```
 
 ```hint
-`statistics.mean`, `statistics.median` and `statistics.mode` on each list.
+Use `statistics.mean`, `statistics.median` and `statistics.mode` on each
+list.
 ```
 
 ```solution
@@ -365,13 +368,13 @@ for name, mentions in [("Darcy", darcy), ("Elizabeth", elizabeth)]:
     print(name, " mean", round(statistics.mean(mentions), 1),
           " median", statistics.median(mentions), " mode", statistics.multimode(mentions))
 ---
-Darcy: a mean of 6.8, a median of 5 and a mode of 0, since he is not
+Darcy has a mean of 6.8, a median of 5 and a mode of 0, since he is not
 named at all in 11 of the 61 chapters. Elizabeth is named in every
-chapter: a mean of 12.3, a median of 11, and two modes, 10 and 14.
+chapter, with a mean of 12.3, a median of 11, and two modes, 10 and 14.
 `statistics.mode` would give only the first of a tie, so `multimode`
 shows both. Darcy's commonest count is none at all, and yet, of the
-twelve people in the data, only Elizabeth is named more often: a mode
-can say something true and unhelpful at once.
+twelve people in the data, only Elizabeth is named more often. So a mode
+can be true and unhelpful at once.
 ```
 
 </div>
@@ -429,9 +432,9 @@ for k in range(5):
 ---
 One six is commonest, about 3,230 times in 10,000, then two, then none.
 The shape is lopsided, unlike the coins' symmetric hump, because $p$ is
-not a half: with ten rolls and a chance of $\frac{1}{6}$, the counts
-bunch near $10 \times \frac{1}{6} \approx 1.7$ and trail off to the
-right. Seven or more sixes in ten rolls comes up only two or three times
+not a half. With ten rolls and a chance of $\frac{1}{6}$, the counts
+gather near $10 \times \frac{1}{6} \approx 1.7$ and fall slowly to the
+right. Seven or more sixes in ten rolls happens only two or three times
 in 10,000.
 ```
 
@@ -439,16 +442,16 @@ in 10,000.
 
 ## Putting it together
 
-**14.** Ten exam marks: `[45, 52, 68, 71, 71, 74, 78, 82, 89, 95]`. Can
-you work out the mean, median, mode, range and standard deviation, and
+**14.** Here are ten exam marks: `[45, 52, 68, 71, 71, 74, 78, 82, 89, 95]`.
+Can you calculate the mean, median, mode, range and standard deviation, and
 say what they tell you about the class?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The mean and the median are both 72.5, the mode 71, the range 50, and the
-standard deviation 14.5. The mean and median agree, which suggests the
-marks are spread fairly evenly either side. The range tells us least: it
-depends on two students.
+The mean and the median are both 72.5, the mode 71, the range 50, and
+the standard deviation 14.5. The mean and median agree, which suggests
+the marks are spread fairly evenly either side. The range tells us
+least, because it depends on two students.
 
 </details>
 
@@ -506,7 +509,7 @@ Earth-sized, or have an Earth-like year?
 <details class="dl-answer"><summary>answer</summary>
 
 $507 + 235 - 0 = 742$. The overlap is empty, so the two sets are
-mutually exclusive, and inclusion-exclusion takes nothing away. In the
+mutually exclusive, and inclusion-exclusion subtracts nothing. In the
 population of all planets, the overlap is surely not empty. In this
 sample, it is.
 
@@ -517,9 +520,9 @@ be chosen from the file's 6,372?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$C(6{,}372, 5)$, about $8.7 \times 10^{16}$: `math.comb(6372, 5)`. Each
-sample would give its own mean radius, some far from the whole file's.
-How far a sample's mean can wander from the population's is where the
-next page's "go further" sections lead.
+It is $C(6{,}372, 5)$, about $8.7 \times 10^{16}$, from
+`math.comb(6372, 5)`. Each sample would give its own mean radius, some
+far from the whole file's. The next page's "go further" sections ask how
+far a sample's mean can wander from the population's.
 
 </details>

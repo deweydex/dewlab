@@ -70,21 +70,20 @@ There are 6 doubles, and 5 ways to make 8. How many outcomes are in
 both, where the circles overlap?
 ```
 
-A *Venn diagram* is a picture of sets: each set is a circle, and the
+A *Venn diagram* is a picture of sets. Each set is a circle, and the
 circles overlap where the sets share elements. Every number in this one
 came from a set operation. Nobody placed them by hand, so the picture
-cannot disagree with the sets: change the sets, and the picture changes
+always agrees with the sets. Change the sets, and the picture changes
 with them.
 
-With two sets you can often keep the picture in your head. The diagram
-earns its place at three, and this page ends at the point where it stops
-helping at all.
+With two sets you can often keep the picture in your head. With three, the
+diagram helps a lot. This page ends where it stops helping at all.
 
 ## Python's own sets
 
 On [Sets: building them from sorted lists](tutorial:sets-as-sorted-lists)
-we built every operation ourselves. From here on we use Python's own
-`set`, which does the same jobs with shorter names:
+we built every operation ourselves. Now we use Python's own `set`,
+which does the same jobs with shorter names:
 
 | On the sets page | Python's `set` |
 |---|---|
@@ -96,8 +95,8 @@ we built every operation ourselves. From here on we use Python's own
 | `symmetric_difference(a, b)` | `a ^ b` |
 | `is_subset(a, b)` | `a <= b` |
 
-A Python set keeps no order, so `sorted()` is the way to print one
-neatly. `s.add(x)` puts one element in.
+A Python set keeps no order, so use `sorted()` to print one neatly.
+`s.add(x)` adds one element.
 
 ## Two circles, from real sets
 
@@ -120,10 +119,10 @@ id: venn-inside
 draw_two({(6, 6)}, doubles, "double six", "a double")
 ```
 
-The code did not change; the picture did. When the middle number is 0,
-or one of the outer numbers is, that is not the drawing going wrong. It
-is the diagram saying something true about the sets: a double and an odd
-total never happen together, and every double six is a double.
+The same code drew both pictures. When the middle number is 0, or one
+of the outer numbers is, the diagram is telling you something true about
+the sets. A double and an odd total never happen together, and every
+double six is a double.
 
 ## The regions have names you already know
 
@@ -153,16 +152,16 @@ How many outcomes are a double *or* add up to 8? The last line prints it.
 <details class="dl-answer"><summary>Why not 11?</summary>
 
 6 doubles and 5 eights make 11, and `(4, 4)` is in both, so it was
-counted twice. The union has 10: inclusion-exclusion, from the sets
+counted twice. The union has 10. This is inclusion-exclusion, from the sets
 page, $|A \cup B| = |A| + |B| - |A \cap B| = 6 + 5 - 1$. The diagram
-shows it without the formula: add up the three numbers, and the middle
-is only counted once.
+shows it without the formula. Add the three numbers, and the middle is
+only counted once.
 
 </details>
 
 ### Your turn
 
-The diagram leaves one part out: the outcomes in neither circle. Can you
+The diagram does not show the outcomes in neither circle. Can you
 set `exactly_one` to the outcomes in exactly one of the two events, and
 `neither` to the outcomes in neither?
 
@@ -181,7 +180,7 @@ len(neither)
 
 ```hint
 Exactly one is everything in either circle except the middle. For
-neither, start from every outcome, `outcomes`, and take away everything
+neither, start from every outcome, `outcomes`, and remove everything
 in either circle.
 ```
 
@@ -192,9 +191,9 @@ neither = outcomes - (doubles | eights)
 print(len(exactly_one), "in exactly one;", len(neither), "in neither")
 ---
 9 in exactly one, and 26 in neither. With the 1 in the middle, 9 + 1 + 26
-is 36: every outcome is somewhere, once. `^` is *exclusive or*: in one or
-the other, not both. The next page meets it again, as a fact about true
-and false.
+is 36. Every outcome is somewhere, once. `^` is *exclusive or*. It means
+one or the other, not both. It appears again on the next page, as a fact
+about true and false.
 ```
 
 ## Three sets, which is where it earns its place
@@ -280,10 +279,10 @@ Will it print True or False?
 
 <details class="dl-answer"><summary>Why they match</summary>
 
-`True`. Shade each one on the diagram: both are the parts of the doubles
+`True`. Shade each one on the diagram. Both are the parts of the doubles
 circle that are also inside at least one of the other two. It is the
 distributive law, $A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$, with
-$\cap$ playing multiplication and $\cup$ playing addition, as in
+$\cap$ as multiplication and $\cup$ as addition, as in
 $a(b + c) = ab + ac$.
 
 </details>
@@ -295,11 +294,11 @@ own, and a question the diagram can answer.
 
 <div class="dl-world" data-world="games-of-chance">
 
-Toss three coins. Each outcome is three letters, such as `"HHT"`. The
-events: the first coin is heads, at least two are heads, and all three
-are the same. Two regions will be empty: can you say why before you
-draw it? Then set `answer` to the outcomes with at least two heads that
-are not all the same.
+Toss three coins. Each outcome is three letters, such as `"HHT"`. There
+are three events: the first coin is heads, at least two are heads, and
+all three are the same. Two regions will be empty. Can you say why
+before you draw it? Then set `answer` to the outcomes with at least two
+heads that are not all the same.
 
 ```python exec
 id: venn-your-world--games-of-chance
@@ -351,9 +350,9 @@ print(sorted(answer))
 ---
 `['HHT', 'HTH', 'THH']`. The two empty regions are "first is heads and
 all the same, but not two heads", and "two heads and all the same, but
-the first is tails". Both are impossible: all the same with a head first
+the first is tails". Both are impossible. All the same with a head first
 is HHH, which has three heads, and all the same with two heads is HHH
-again. An empty region is the diagram saying so. TTH and THT are in no
+again. The empty regions show this. TTH and THT are in no
 circle at all.
 ```
 
@@ -405,12 +404,12 @@ cretaceous = countries(145, 66)
 answer = (triassic | jurassic) - cretaceous
 print(sorted(answer))
 ---
-With the copy saved on {{snapshot: dinosaur-finds}}, ten codes, from CH
-(Switzerland) to ZW (Zimbabwe). One of them is not a country: O2 is the
-North Sea, where a *Plateosaurus* bone came up in a rock core drilled far
-beneath the sea floor. Nine countries have finds from all three periods,
-and 29 from the Cretaceous only, partly because more rock of that age is
-at the surface, where people can find it.
+With the copy saved on {{snapshot: dinosaur-finds}}, it prints ten
+codes, from CH (Switzerland) to ZW (Zimbabwe). One of them is not a
+country. O2 is the North Sea, where a *Plateosaurus* bone was found in a
+rock core drilled far beneath the sea floor. Nine countries have finds
+from all three periods, and 29 from the Cretaceous only, partly because
+more rock of that age is at the surface, where people can find it.
 ```
 
 </div>
@@ -460,7 +459,7 @@ wickham = chapters_naming("Wickham")
 answer = (wickham | lydia) - bingley
 print(sorted(answer))
 ---
-Fifteen chapters, from 14 to 52, and most of them late in the book, when
+It prints fifteen chapters, from 14 to 52. Most are late in the book, when
 Lydia runs away with Wickham and Mr Bingley is away from Netherfield. Five
 chapters name none of the three: 19, 22, 28, 30 and 31, which are Mr
 Collins's proposal, Charlotte's engagement, and Elizabeth's visit to
@@ -472,9 +471,9 @@ Hunsford.
 ## Outside a set
 
 Every outcome is either in a set or not. The set of everything *not* in
-a set is its *complement*: here, every outcome of the two dice that is
-not in it. Two laws say how "not" meets "or" and "and". Picture the
-two-circle diagram as you read each pair: which region does each line
+a set is its *complement*. Here, that is every outcome of the two dice
+that is not in the set. Two laws link "not" with "or" and "and". Picture
+the two-circle diagram as you read each pair. Which region does each line
 describe?
 
 ```python exec
@@ -496,8 +495,8 @@ circles, and 35, everything but the middle. On the diagram you can *see*
 that the region outside both circles is the overlap of the two outsides.
 The next page, [Logic](tutorial:logic-and-truth), gives the two laws
 their name, and proves them a different way, by checking every case of
-true and false. They are one fact in two notations, and whichever makes
-sense to you first can explain the other.
+true and false. They are one fact in two notations. Use whichever makes
+sense to you first to understand the other.
 
 ## Where the picture stops helping
 
@@ -513,14 +512,12 @@ for n in (2, 3, 4, 5):
 ```
 
 Four sets need fifteen regions, and four circles cannot make them. This
-is a fact about circles on a flat page, not a weakness of the drawing
-code: no arrangement of four circles makes all fifteen. Diagrams for four
-sets do exist, with ovals or stranger shapes, and they are much harder to
-read, which defeats the purpose.
+is a fact about circles on a flat page, not about the drawing code. No
+arrangement of four circles makes all fifteen. Diagrams for four sets do
+exist, with ovals or stranger shapes, but they are much harder to read.
 
-The set operations keep working for four sets, or forty. Every way of
-showing an idea stops working somewhere, and part of knowing a tool is
-knowing where.
+The set operations still work for four sets, or forty. Only the picture
+stops at three.
 
 ## Looking back
 
@@ -529,8 +526,8 @@ question needed four sets, how would you show somebody the answer
 without a diagram?
 
 A challenge: draw the Venn diagram for three events from a game you
-know. The starter draws one for a deck of cards; change the events, or
-the game.
+know. The starter code draws one for a deck of cards. Change the events,
+or the game.
 
 ```python challenge
 import matplotlib.pyplot as plt

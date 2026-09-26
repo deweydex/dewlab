@@ -20,9 +20,9 @@ covers:
 
 # Probability: simple, compound and conditional
 
-Two dice are rolled, and the two numbers added. The total can be
-anything from 2 to 12. In a game, you choose one total, and win if it
-comes up. Which total would you choose?
+Roll two dice, and add the two numbers. The total can be anything from 2
+to 12. In a game, you choose one total, and win if you roll it. Which
+total would you choose?
 
 Here is one roll. Run it a few times.
 
@@ -36,15 +36,15 @@ print(first, "+", second, "=", first + second)
 ```
 
 `random.randint(1, 6)` picks a whole number from 1 to 6, each as likely
-as the others: one fair die. A few rolls say very little about which
+as the others, like one fair die. A few rolls say very little about which
 total is best. Ten thousand might say more.
 
 ## Rolling ten thousand times
 
-This cell rolls two dice 10,000 times, counts how often each total comes
-up, and draws a bar for each total. The drawing is done by matplotlib, a
-Python module for charts, which the
-[Statistics](tutorial:making-sense-of-data) page introduces properly.
+This cell rolls two dice 10,000 times, counts how often each total
+appears, and draws a bar for each total. matplotlib, a Python module for
+charts, draws the bars. The
+[Statistics](tutorial:making-sense-of-data) page introduces it properly.
 
 ```python exec
 id: chances-ten-thousand-rolls
@@ -75,20 +75,20 @@ type: number
 Which total will have the tallest bar?
 ```
 
-Run it again. The bars change a little every time, but the shape stays:
-a triangle, highest at 7 and lowest at 2 and 12. Seven comes up about
-1,670 times in 10,000, and 12 about 280 times. The dice are fair, and
-yet the totals are not. The simulation shows the shape, but not why it
-has that shape. Counting does.
+Run it again. The bars change a little every time, but the shape stays
+the same. It is a triangle, highest at 7 and lowest at 2 and 12. Seven
+appears about 1,670 times in 10,000, and 12 about 280 times. The dice
+are fair, and yet the totals are not. The simulation shows the shape,
+but not why it has that shape. Counting does.
 
-To *simulate* a random event is to write code that makes it happen many
-times, at random, and to count the results. One run of the event, here
+To *simulate* a random event, we write code that makes it happen many
+times, at random, and count the results. One run of the event, here
 one roll of two dice, is a *trial*.
 
 ## Counting the cases
 
 The first die can show 6 faces and the second 6, so there are
-$6 \times 6 = 36$ ways the two can land: `itertools.product` from
+$6 \times 6 = 36$ ways the two can land. `itertools.product` from
 [Counting](tutorial:counting-carefully) lists them. Each of the 36 is
 equally likely, since each die is fair and neither affects the other.
 
@@ -103,9 +103,9 @@ print(sevens)
 ```
 
 Six of the 36 make 7: a 1 and a 6, a 2 and a 5, and so on. Only one
-makes 12: two sixes. That is the triangle.
+makes 12: two sixes. That explains the triangle.
 
-Some words for what we just did. An *outcome* is one possible result,
+An *outcome* is one possible result,
 such as (3, 4). An event, as on the [Sets](tutorial:sets-as-sorted-lists)
 page, is a set of outcomes we care about, such as "the total is 7". The
 *probability* of an event is
@@ -118,7 +118,7 @@ $$P(A) = \frac{\text{outcomes in } A}{\text{all outcomes}}
 So in 10,000 rolls we expect about $10{,}000 \times \frac{1}{6}
 \approx 1{,}667$ sevens, close to the height of the tallest bar. Can you
 write `chance(total)`, which counts the outcomes that add up to `total`
-and gives its probability?
+and returns its probability?
 
 ```python exec
 id: chances-chance-of-a-total
@@ -167,8 +167,8 @@ print(chance(7))
 print(chance(12))
 ---
 $\frac{6}{36} \approx 0.167$ and $\frac{1}{36} \approx 0.028$. A total
-of 13 has no outcomes, so its probability is 0: impossible is a
-probability too.
+of 13 has no outcomes, so its probability is 0. An impossible event has
+a probability too.
 ```
 
 This cell sets the counts beside the simulation's bars, as shares of the
@@ -183,8 +183,8 @@ for total in range(2, 13):
 
 ### How close is close?
 
-The simulated shares are near the counted ones, and never quite on
-them. This cell rolls 10,000 times again, and after each roll works out
+The simulated shares are near the counted ones, and never exactly the
+same. This cell rolls 10,000 times again, and after each roll calculates
 the share of the rolls so far that were 7. The dashed line is
 $\frac{1}{6}$.
 
@@ -208,12 +208,12 @@ plt.ylabel("share of the rolls that were 7")
 print("After 10,000 rolls:", round(running[-1], 4), "  1/6 is", round(1 / 6, 4))
 ```
 
-The line swings wildly at first, and settles as the rolls add up. The
-more trials we run, the closer the share usually comes to the
-probability: the *law of large numbers*. It settles slowly, though. To
-be ten times closer, we need about a hundred times as many trials. That
-is why a simulation is a good check on a calculation, and a poor
-substitute for one.
+The line swings wildly at first, and settles as the number of rolls
+grows. The more trials we run, the closer the share usually comes to the
+probability. This is the *law of large numbers*. It settles slowly,
+though. To be ten times closer, we need about a hundred times as many
+trials. So a simulation can check a calculation, but it cannot replace
+one.
 
 ## Events are sets
 
@@ -260,7 +260,7 @@ Each event has a probability of 1/6. What will the last line say?
 ```
 
 (5, 5) and (6, 6) are both doubles and high. Adding $\frac{6}{36} +
-\frac{6}{36}$ counts them twice, so we take them away once:
+\frac{6}{36}$ counts them twice, so we subtract them once:
 $\frac{12}{36} - \frac{2}{36} = \frac{10}{36} = \frac{5}{18}$. That is
 inclusion-exclusion from the Venn diagrams page, with probabilities in
 place of counts. Each rule for combining events is a set operation:
@@ -276,7 +276,7 @@ total of 2 and a total of 12. Their intersection is empty, so for them
 "or" is plain adding.
 
 The complement rule is the most useful of the three. "At least one six in
-two rolls" has 11 outcomes to count; "no six" is $\frac{5}{6} \times
+two rolls" has 11 outcomes to count. "No six" is $\frac{5}{6} \times
 \frac{5}{6} = \frac{25}{36}$ in one step, so at least one six is
 $1 - \frac{25}{36} = \frac{11}{36}$.
 
@@ -309,15 +309,15 @@ Does multiplying give the right answer for each pair?
 ```
 
 Seven is special. Whatever the first die shows, exactly one face of the
-second makes 7, so knowing the first die changes nothing: still 1 in 6.
-Eight is different. A 1 on the first die makes 8 impossible, and a 6
-makes it 1 in 6, up from $\frac{5}{36}$. Independence is a fact we can
-check by counting, not a feeling about whether two things seem
-connected.
+second makes 7, so knowing the first die changes nothing. The chance is
+still 1 in 6. Eight is different. A 1 on the first die makes 8
+impossible, and a 6 makes it 1 in 6, up from $\frac{5}{36}$. We can
+check independence by counting. It does not depend on whether two things
+seem connected.
 
 ### One draw changes the next
 
-Draw two cards from a deck of 52 without putting the first back. How
+Draw two cards from a deck of 52 without returning the first. How
 often are both aces? *Without replacement* means the first card stays
 out, so it changes what the second draw can be. `random.sample(deck, 2)`
 draws two different cards, the way a hand does.
@@ -339,8 +339,8 @@ for trial in range(100000):
 print(both_aces, "times in 100,000")
 ```
 
-About 450 times in 100,000. Now the count. The first card is an ace 4
-times in 52. If it was, 3 aces are left among 51 cards:
+It happens about 450 times in 100,000. Now we count. The first card is
+an ace 4 times in 52. If it was, 3 aces are left among 51 cards:
 
 $$P(\text{two aces}) = \frac{4}{52} \times \frac{3}{51} = \frac{1}{221}
 \approx 0.0045$$
@@ -352,22 +352,22 @@ other, 48 over 52. Under ace the next draw is 3 over 51; under other it is
 4 over 51. The ace then ace path is marked.](two-aces-tree.svg)
 
 Both branches of the second draw have 51 on the bottom, since one card
-has gone, whichever it was. The top number is different: 3 aces are left
-if the first card was an ace, and 4 if it was not. That difference is
-what "not independent" means. We still multiply, but the second number
-has to take the first draw into account.
+has gone, whichever it was. The top number is different. 3 aces are left
+if the first card was an ace, and 4 if it was not. So the two draws are
+not independent. We still multiply, but the second number has to depend
+on the first draw.
 
 ## A test for a rare disease
 
 A disease affects 1 person in 10,000. A test for it is right 99% of the
-time: it says "positive" for 99% of people who have the disease, and
+time. It says "positive" for 99% of people who have the disease, and
 "negative" for 99% of people who do not. You take the test, and it says
 positive. How likely is it that you have the disease?
 
 Before anything else, make a guess. Then this cell tests a town of a
 million people. `random.random()` gives a number from 0 up to 1, so it
 is below 0.99 on 99% of calls. Python lets us write `1_000_000` for
-`1000000`: the underscores are only there to help us read it. It takes a
+`1000000`. The underscores are only there to help us read it. It takes a
 few seconds to run.
 
 ```python exec
@@ -396,11 +396,11 @@ type: number
 Out of every 100 people who test positive, how many have the disease?
 ```
 
-About 1 in 100. Nearly everyone guesses much higher, and studies have
-found that many doctors do too. The line that makes the difference is
-the first line of the loop: `sick` is `True` for only 1 person in
-10,000. The test is wrong for 1% of the well people, and there are so
-many well people that their 1% outnumbers the sick people's 99%.
+It is about 1 in 100. Nearly everyone guesses much higher, and studies
+have found that many doctors do too. The first line of the loop makes
+the difference. `sick` is `True` for only 1 person in 10,000. The test
+is wrong for 1% of the well people, and there are so many well people
+that their 1% outnumbers the sick people's 99%.
 
 ### Counting a million people
 
@@ -414,11 +414,11 @@ people, and follow them:
 | Everyone | 10,098 | 989,902 | 1,000,000 |
 
 100 people have the disease, and the test finds 99 of them. 999,900 do
-not, and the test wrongly says positive for 1% of them: 9,999 people. So
-10,098 people test positive, and 99 of them are sick:
+not, and the test wrongly says positive for 1% of them, which is 9,999
+people. So 10,098 people test positive, and 99 of them are sick:
 $\frac{99}{10{,}098} \approx 0.0098$, just under 1%.
 
-Counting people, rather than multiplying percentages, is called using
+When we count people, rather than multiply percentages, we are using
 *natural frequencies*. It asks a question most of us can answer: out of
 these people, how many?
 
@@ -426,8 +426,8 @@ these people, how many?
 
 A *conditional probability* is the chance of one event when we know
 another has happened. We write $P(B \mid A)$, and say "the probability of
-B given A". It counts inside a smaller group: among the outcomes where A
-happened, the share where B happened too.
+B given A". It counts inside a smaller group. Among
+the outcomes where A happened, it is the share where B happened too.
 
 $$P(B \mid A) = \frac{P(A \text{ and } B)}{P(A)}$$
 
@@ -439,12 +439,12 @@ The table has two of them, and they are very different:
   0.0098$: among the positives, the share who are sick.
 
 The test's makers can promise the first. A patient wants to know the
-second. Mixing the two up is the mistake behind the guess of 99%. The
-rule that turns one into the other is called *Bayes' theorem*, and the
-table above is that rule, written as a count.
+second. The guess of 99% is the first. The question asked for
+the second. *Bayes' theorem* is the rule that turns one into the other.
+The table above is that rule, written as a count.
 
 Can you write `share_sick(rate, accuracy)`, which follows a million
-people as the table does, and gives the share of the positives who are
+people as the table does, and returns the share of the positives who are
 sick? Then try a disease that affects 1 person in 100.
 
 ```python exec
@@ -492,19 +492,19 @@ def share_sick(rate, accuracy):
 print(round(share_sick(1 / 10_000, 0.99), 4))
 print(round(share_sick(1 / 100, 0.99), 4))
 ---
-0.0098, and then 0.5. With 1 person in 100 sick, 9,900 sick people and
-9,900 well people test positive, so a positive is right half the time.
-The same test is worth a great deal more when the disease is common. A
-better test helps too: at 99.9% right, 0.0908, still under one in ten.
-How common the disease is, the *base rate*, matters as much as how good
-the test is.
+It prints 0.0098, and then 0.5. With 1 person in 100 sick, 9,900 sick
+people and 9,900 well people test positive, so a positive is right half
+the time. The same test is worth a great deal more when the disease is
+common. A better test helps too. At 99.9% right, the share is 0.0908,
+still under one in ten. How common the disease is, the *base rate*,
+matters as much as how good the test is.
 ```
 
 ## Given which?
 
 The order of a "given" matters, and it is easy to swap without noticing.
-Choose a world at the top of the page: each asks one conditional
-probability both ways round.
+Choose a world at the top of the page. Each asks one conditional
+probability in both directions.
 
 <div class="dl-world" data-world="games-of-chance">
 
@@ -524,7 +524,7 @@ print(len(at_least_one_six), "outcomes have at least one six")
 ```
 
 ```hint
-Given at least one six, count inside `at_least_one_six`: what share of it
+Given at least one six, count inside `at_least_one_six`. What share of it
 is also in `both_sixes`? `Fraction(top, bottom)` keeps the answer exact.
 ```
 
@@ -540,11 +540,12 @@ print(len(at_least_one_six), "outcomes have at least one six")
 print(Fraction(len(both_sixes & at_least_one_six), len(at_least_one_six)))
 print(Fraction(len(at_least_one_six & both_sixes), len(both_sixes)))
 ---
-$\frac{1}{11}$, and 1. Eleven outcomes have at least one six, and one of
-them is the double. The other way round is certain: two sixes always
-include a six. And a third way: told that the *first* die is a six, the
-chance of both is $\frac{1}{6}$, not $\frac{1}{11}$. Three questions
-that sound alike, three answers.
+The answers are $\frac{1}{11}$, and 1. Eleven outcomes have at least
+one six, and one of them is the double. The other direction is certain,
+because two sixes always include a six. There is a third question. If you
+are told that the *first* die is a six, the chance of both is
+$\frac{1}{6}$, not $\frac{1}{11}$. Three questions sound alike, and have
+three different answers.
 ```
 
 </div>
@@ -580,7 +581,7 @@ both = (jurassic & portugal).sum()
 print("P(Jurassic | Portugal) =", round(both / portugal.sum(), 3))
 print("P(Portugal | Jurassic) =", round(both / jurassic.sum(), 3))
 ---
-With the copy saved on {{snapshot: dinosaur-finds}}: 59 of Portugal's 75
+With the copy saved on {{snapshot: dinosaur-finds}}, 59 of Portugal's 75
 finds are Jurassic, about 0.79, but they are only 59 of the 891 Jurassic
 finds, about 0.07. The first says Portugal's dinosaur rock is mostly
 Jurassic, and a find there is very likely from that period. The second
@@ -622,7 +623,7 @@ both = (wobble & near).sum()
 print("P(wobble | near) =", round(both / near.sum(), 3))
 print("P(near | wobble) =", round(both / wobble.sum(), 3))
 ---
-With the copy saved on {{snapshot: exoplanets}}: about 0.77 of the near
+With the copy saved on {{snapshot: exoplanets}}, about 0.77 of the near
 planets were found by the wobble, but only about 0.34 of the wobble
 planets are near. A star's wobble is easiest to measure when the star is
 bright, and near stars look bright, so the wobble finds most of the near
@@ -655,8 +656,8 @@ import random
 ```
 
 The next page is a game show with [three doors](tutorial:three-doors),
-where nearly everyone's first answer is wrong, and where a simulation
-settles it before the counting explains it.
+where the answer surprises nearly everyone, and a simulation settles
+it before the counting explains it.
 
 ## Where to read more
 

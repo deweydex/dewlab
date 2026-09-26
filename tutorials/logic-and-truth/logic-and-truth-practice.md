@@ -12,9 +12,9 @@ datasets: [dinosaur-finds, exoplanets]
 
 # Logic: truth tables, XOR and De Morgan's laws — Practice
 
-Problems on truth tables, exclusive or and De Morgan's laws, and three
-from earlier pages. Several ask you to predict a table before you make
-it: the prediction is the exercise, so try it first.
+Here are problems on truth tables, exclusive or and De Morgan's laws,
+and three from earlier pages. Several ask you to predict a table before
+you make it. The prediction is the exercise, so try it first.
 
 ## Tools
 
@@ -46,9 +46,8 @@ inputs?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Eight, and $2^n$. Each new input doubles the number of cases, which is why
-checking every case stops being practical quite quickly: twenty inputs
-give over a million rows.
+Eight, and $2^n$. Each new input doubles the number of cases. So checking
+every case soon takes too long: twenty inputs give over a million rows.
 
 </details>
 
@@ -79,8 +78,8 @@ table(if_then)
 ```
 
 ```hint
-Write the rule exactly as given: `(not a) or b`. Then read down the table:
-which row has `False`?
+Write the rule exactly as given: `(not a) or b`. Then read down the table.
+Which row has `False`?
 ```
 
 ```solution
@@ -93,9 +92,9 @@ table(if_then)
 ---
 It is `False` in one row only: A true and B false. "If it rains, the
 ground is wet" is only broken by rain on dry ground. When A is false, the
-rule says nothing, so logic counts it as kept: "if it rains" makes no
-promise about a dry day. That is the part most people find strange, and
-it is the heart of the four-card challenge on the tutorial page.
+rule says nothing, so logic counts it as kept. "If it rains" makes no
+promise about a dry day. Most people find this part strange, and the
+four-card challenge on the tutorial page depends on it.
 ```
 
 **3.** How is the logical `or` different from the everyday one?
@@ -114,15 +113,15 @@ meaning is exclusive or, which Python has no keyword for.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`(a or b) and not (a and b)`: "at least one, but not both". Another way
-is `(a and not b) or (b and not a)`, which lists the two rows where XOR
-is true.
+`(a or b) and not (a and b)`, which means "at least one, but not both".
+Another way is `(a and not b) or (b and not a)`, which lists the two
+rows where XOR is true.
 
 </details>
 
 **5.** `^` also works on whole numbers, one binary digit at a time, and
 XOR with the same key twice undoes itself: `x ^ key ^ key` is `x` again.
-Can you use that to hide a message and bring it back?
+Can you use that to scramble a message and unscramble it?
 
 ```python exec
 id: logic-xor-secret
@@ -151,9 +150,9 @@ unscramble(scramble("MEET AT NOON", key), 7)
 ```
 
 ```hint
-`ord(letter)` gives a character's code, and `chr(number)` turns a code
-back into a character. Scrambling is `ord(letter) ^ key` for each letter;
-unscrambling is the same XOR again, then `chr`.
+`ord(letter)` gives a character's code, and `chr(number)` changes a code
+into a character. To scramble, use `ord(letter) ^ key` for each letter.
+To unscramble, use the same XOR again, then `chr`.
 ```
 
 ```solution
@@ -180,10 +179,10 @@ hidden = scramble("MEET AT NOON", key)
 print(hidden)
 print(unscramble(hidden, key))
 ---
-The same operation both ways: XOR with the key hides a letter, and XOR
-with the key again brings it back. With the wrong key, the last input,
-the message comes back as nonsense. Real encryption is far stronger, and
-XOR is still inside much of it.
+The same operation works both ways. XOR with the key hides a letter,
+and XOR with the key again undoes it. With the wrong key, in the last
+input, the message is nonsense. Real encryption is far stronger, but
+much of it still uses XOR.
 ```
 
 ## De Morgan
@@ -204,9 +203,9 @@ it worked" usually is not?
 
 There are exactly four possible inputs, and the loop tried all of them.
 For almost anything else, such as a function that takes whole numbers,
-the inputs never run out, and a test can only fail to find a problem.
-Checking every case is a proof when there are few enough cases to check
-them all.
+the inputs never end, and a test can only fail to find a problem. A
+loop over every case proves a rule only when there are few enough cases
+to check them all.
 
 </details>
 
@@ -217,8 +216,8 @@ Can you rewrite it so a reader sees what causes a log entry?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`status != "ok" or errors != 0`: something is wrong with the status, or
-there are errors.
+`status != "ok" or errors != 0`. The status is not "ok", or there are
+errors.
 
 </details>
 
@@ -227,13 +226,13 @@ there are errors.
 <details class="dl-answer"><summary>answer</summary>
 
 `age < 18 or not has_id`. `not (age >= 18)` is `age < 18`, not
-`age <= 18`: getting a boundary wrong by one is an *off-by-one error*,
+`age <= 18`. A boundary that is wrong by one is an *off-by-one error*,
 one of the most common slips in conditions.
 
 </details>
 
-**9.** De Morgan in real data. A pandas filter uses `&` for and, `|` for
-or, and `~` for not, each on a whole column at once.
+**9.** Here is De Morgan in real data. A pandas filter uses `&` for and,
+`|` for or, and `~` for not, each on a whole column at once.
 
 <div class="dl-world" data-world="exoplanets">
 
@@ -265,9 +264,10 @@ print(len(planets[~(big | far)]), "planets kept by ~(big | far)")
 rewritten = planets[(planets.radius_earths <= 2) & (planets.distance_ly < 100)]
 print(len(rewritten), "planets kept by the rewrite")
 ---
-196 against 164, with the copy saved on {{snapshot: exoplanets}}. De
-Morgan is not wrong: `~big & ~far` keeps 196 too. The slip is in `~big`
-becoming `radius_earths <= 2`. A planet with no radius in the file has
+The counts are 196 and 164, with the copy saved on
+{{snapshot: exoplanets}}. De Morgan's law still holds. `~big & ~far`
+keeps 196 too. The difference comes from changing `~big` into
+`radius_earths <= 2`. A planet with no radius in the file has
 `nan`, and `nan > 2` and `nan <= 2` are both `False`, so `~big` is `True`
 for it and `<= 2` is `False`. The two filters disagree on 32 planets,
 each with a missing radius or distance. With missing values, "not bigger
@@ -307,9 +307,9 @@ print(len(finds[~(from_us | older)]), "finds kept by ~(from_us | older)")
 rewritten = finds[~from_us & ~older]
 print(len(rewritten), "finds kept by the rewrite")
 ---
-3,385 both ways, with the copy saved on {{snapshot: dinosaur-finds}}.
-In pandas, `&` and `|` bind more tightly than `==` or `>`, which is why
-the cell builds `from_us` and `older` first, as columns of `True` and
+Both counts are 3,385, with the copy saved on {{snapshot: dinosaur-finds}}.
+In pandas, `&` and `|` bind more tightly than `==` or `>`. So the cell
+builds `from_us` and `older` first, as columns of `True` and
 `False`. Written in one line, each comparison needs its own brackets.
 ```
 
@@ -317,7 +317,7 @@ the cell builds `from_us` and `older` first, as columns of `True` and
 
 <div class="dl-world" data-world="games-of-chance">
 
-A dice game pays out unless the roll is a double or adds up to more than
+A dice game pays you unless the roll is a double or adds up to more than
 9. Can you count the paying rolls a second way, with De Morgan's law,
 and check the counts agree?
 
@@ -352,16 +352,16 @@ for a, b in rolls:
 
 print(as_written, rewritten)
 ---
-26 both ways. 6 doubles and 6 rolls over 9 would be 12, but (5, 5) and
-(6, 6) are both, so 10 rolls are out, and 36 - 10 = 26 pay. `not (a + b >
-9)` is `a + b <= 9`, never `< 9`: the boundary again.
+Both ways give 26. 6 doubles and 6 rolls over 9 would be 12, but (5, 5)
+and (6, 6) are both, so 10 rolls do not pay, and 36 - 10 = 26 pay.
+`not (a + b > 9)` is `a + b <= 9`, never `< 9`, as in problem 8.
 ```
 
 </div>
 
 ## One longer one
 
-**10.** A door unlocks when all three of these hold: the card is valid;
+**10.** A door unlocks when all three of these are true: the card is valid;
 it is during working hours, or the person is a manager; and the door is
 not in lockdown.
 
@@ -378,24 +378,25 @@ not in lockdown.
 `and` into three `not`s joined by `or`, and `not (not lockdown)` is
 `lockdown`.
 
-(c) `not (hours or manager)` becomes `not hours and not manager`:
-outside working hours, and not a manager. Somebody could now check the
-whole sentence against the real rules for the door, which is the point
-of rewriting it.
+(c) `not (hours or manager)` becomes `not hours and not manager`,
+which means outside working hours, and not a manager. We rewrite it so
+that somebody can check the whole sentence against the real rules for
+the door.
 
 </details>
 
 ## From earlier
 
 **11.** From *Venn diagrams*. With everyone $= \{1, 2, 3, 4, 5, 6, 7, 8\}$,
-$A = \{1, 2, 3, 4\}$ and $B = \{3, 4, 5, 6\}$: what is the complement of
+$A = \{1, 2, 3, 4\}$ and $B = \{3, 4, 5, 6\}$, what is the complement of
 $A \cup B$, and what is the intersection of the two complements?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Both are $\{7, 8\}$. $A \cup B = \{1, 2, 3, 4, 5, 6\}$, and its complement
-is what is left. The complements are $\{5, 6, 7, 8\}$ and
-$\{1, 2, 7, 8\}$, and they share $\{7, 8\}$: De Morgan's law, on sets.
+Both are $\{7, 8\}$. $A \cup B = \{1, 2, 3, 4, 5, 6\}$, and its
+complement is what is left. The complements are $\{5, 6, 7, 8\}$ and
+$\{1, 2, 7, 8\}$, and they share $\{7, 8\}$. This is De Morgan's law, on
+sets.
 
 </details>
 
@@ -404,9 +405,9 @@ write it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The symmetric difference, everything in exactly one of the two sets,
-written `A ^ B`: the same operator as XOR on `True` and `False`, for the
-same reason.
+It is the symmetric difference, everything in exactly one of the two
+sets. Python writes it `A ^ B`, the same operator as XOR on `True` and
+`False`, for the same reason.
 
 </details>
 
@@ -433,7 +434,7 @@ What will it print before "done"?
 
 <details class="dl-answer"><summary>why</summary>
 
-Nothing: no number is both more than 5 and less than 3, so the condition
+Nothing. No number is both more than 5 and less than 3, so the condition
 is never true. Somebody who wrote it probably meant `or`, for the numbers
 outside the gap. A condition with no `True` row in its table is a slip
 worth looking for.

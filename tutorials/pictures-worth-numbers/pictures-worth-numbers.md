@@ -23,7 +23,7 @@ covers:
 
 # Charts: choosing the right chart for your data
 
-[Statistics](tutorial:making-sense-of-data) summed up the planets in a
+[Statistics](tutorial:making-sense-of-data) summarised the planets in a
 few numbers, and drew one histogram, which showed two humps that no
 average could. This page is about charts: which chart suits which
 question, how to write plotting code once and use it again, and how a
@@ -37,10 +37,10 @@ look nothing like each other?
 *Anscombe's quartet* is four small datasets made by the statistician
 Francis Anscombe in 1973. Each is eleven points, an x and a y. The four
 have nearly the same means, the same standard deviations, and the same
-*correlation*: a number from $-1$ to $1$ that measures how closely the
-points follow a straight line. Near 1, they lie close to a line going
-up; near 0, there is no straight-line pattern. This cell prints the
-means, and draws all four.
+*correlation*. Correlation is a number from $-1$ to $1$ that measures
+how closely the points follow a straight line. Near 1, they lie close to
+a line going up. Near 0, there is no straight-line pattern. This cell
+prints the means, and draws all four.
 
 ```python exec
 id: why-visualise-1
@@ -72,8 +72,8 @@ plt.tight_layout()
 ```
 
 The summaries agree, and the pictures do not. One is a loose cloud
-around a line; one is a smooth curve; one is a neat line with a single
-point far off it; and one is a column of points with one point far to
+around a line. One is a smooth curve. One is a neat line with a single
+point far off it. And one is a column of points with one point far to
 the right, which makes the whole "relationship" on its own.
 `plt.subplots(2, 2)` makes a grid of four charts, called *axes*, and the
 loop draws one set of points on each.
@@ -114,14 +114,14 @@ plt.xlabel("planets found")
 plt.title("How known planets were found")
 ```
 
-`value_counts()` counts each method and puts the largest first;
+`value_counts()` counts each method and puts the largest first.
 `invert_yaxis()` keeps the largest at the top. Transit found about three
 planets in four.
 
 ### A line chart
 
 How many planets were announced each year? Years are in order and evenly
-spaced, so a line joining them means something: it is a path through
+spaced, so a line joining them means something. It is a path through
 time.
 
 ```python exec
@@ -137,16 +137,16 @@ plt.title("Planets announced each year")
 plt.grid(alpha=0.3)
 ```
 
-Two spikes stand out: 2014, with 872 planets, and 2016, with 1,504. Both
+There are two spikes: 2014, with 872 planets, and 2016, with 1,504. Both
 are single announcements of planets found by the Kepler telescope,
-checked in batches. The line shows how discoveries come: not steadily,
-but in the lumps in which work is published.
+checked in batches. The line shows that discoveries come in lumps, as
+work is published, not steadily.
 
 ### A scatter plot
 
 Each point in a scatter plot is one planet: how long its year is, and how
-big it is. Both go over huge ranges, so both axes are logarithmic. Before
-you run it: which corner of the chart do you expect to be nearly empty?
+big it is. Both cover huge ranges, so both axes are logarithmic. Before
+you run it, which corner of the chart do you expect to be nearly empty?
 
 ```python exec
 id: making-a-scatter-plot-1
@@ -171,18 +171,18 @@ Which corner will be nearly empty?
   - Planets come in every size at every distance.
 ```
 
-The bottom right. There is a crowd of small planets with years of a few
-days, and a clump of giants at the top left, the *hot Jupiters*, as big
-as Jupiter and closer to their stars than Mercury is to the Sun. The
-empty corner is the sampling bias from the last page, seen at a glance:
-small planets with long years are there, but we can hardly find them.
+It is the bottom right. There is a crowd of small planets with years of
+a few days, and a clump of giants at the top left, the *hot Jupiters*,
+as big as Jupiter and closer to their stars than Mercury is to the Sun.
+The empty corner shows the sampling bias from the last page. Small
+planets with long years exist, but we can hardly find them.
 
-One more thing is worth a second look: the flat line of points near 13
-Earth radii, running out to years of thousands of days. A line that flat
-is rarely nature. Most of those planets were found by the wobble of
-their star, which gives a planet's mass but not its size, and the
-archive estimated their radius from their mass. A chart shows how the
-numbers were made, as well as what they measure.
+Look again at the flat line of points near 13 Earth radii, running out
+to years of thousands of days. Nature rarely makes a line that flat.
+Most of those planets were found by the wobble of their star, which
+gives a planet's mass but not its size, and the archive estimated their
+radius from their mass. A chart shows how the numbers were made, as well
+as what they measure.
 
 ```question
 id: choosing-a-chart
@@ -240,8 +240,8 @@ bar_chart(by_method.index[:6], by_method.values[:6], "How known planets were fou
 ---
 `plt.figure()` starts a new chart each time, so two calls in one cell
 draw two charts rather than piling bars on top of each other. The
-decisions about how a bar chart should look now live in one place:
-change them there, and every chart that uses the function changes too.
+function now holds every choice about how a bar chart should look.
+Change one there, and every chart that uses the function changes too.
 ```
 
 ## How a chart can mislead
@@ -282,12 +282,12 @@ On the right, how many times as tall as 2025's bar will 2024's bar be
 drawn?
 ```
 
-Four times as tall, for a difference of 6%. The length of a bar is what
+It is four times as tall, for a difference of 6%. The length of a bar
 shows its value, so a bar chart must start at zero. A line chart need
-not: how steeply it rises and falls carries the meaning, and forcing it
-to zero can flatten a real change until it disappears. Plotting libraries often choose the
-axis that fills the frame, so the truncated chart is the one you get if
-you do nothing.
+not. Its meaning is in how steeply it rises and falls, and forcing it to
+zero can flatten a real change until it disappears. Plotting libraries
+often choose the axis that fills the frame, so the truncated chart is
+the one you get if you do nothing.
 
 ### A window chosen to tell a story
 
@@ -311,9 +311,9 @@ print("2016:", per_year[2016], " 2019:", per_year[2019])
 
 From 1,504 to 194 is a fall of 87%, and every number is true. But 2016
 was the year of Kepler's great batch, and the whole record shows no
-collapse at all. Starting a window at a peak, or ending it at a dip, is
-the easiest way to make a trend. A last period that is not over yet does
-the same: this year's count, compared with whole years, always looks like
+collapse at all. The easiest way to make a trend is to start a window
+at a peak, or end it at a dip. A last period that is not over yet does
+the same. This year's count, compared with whole years, always looks like
 a fall.
 
 ### Three more
@@ -325,12 +325,12 @@ a fall.
   multiply. A reader who does not notice will misjudge every difference.
 - **Correlation read as cause.** Ice cream sales and drownings rise
   together, because both rise in hot weather. A *confounder* is a third
-  thing that makes two others move together. The chart is not wrong; the
-  sentence written under it often is.
+  thing that makes two others move together. The mistake is often in
+  the sentence written under the chart.
 
 ## Numbers and a chart together
 
-A summary and a chart each catch what the other misses. Can you write
+A summary and a chart each show things the other misses. Can you write
 `summarise(data, title)`, which prints the mean, median and standard
 deviation, and draws a histogram with dashed lines at the mean and the
 median? The cell starts with `mean`, `median` and `std_dev`, the
@@ -353,7 +353,7 @@ summarise(distances, "Distance from us, in light years")
 ```
 
 ```hint
-Print the three numbers first. Then `plt.hist(data, bins=50)`, and
+Print the three numbers first. Then use `plt.hist(data, bins=50)`, and
 `plt.axvline(value, linestyle="--", label="mean")` for each line, with
 `plt.legend()` to name them.
 ```
@@ -382,16 +382,17 @@ planets = await load_csv("exoplanets.csv")
 distances = planets.distance_ly.dropna().tolist()
 summarise(distances, "Distance from us, in light years")
 ---
-A mean of about 2,322 light years, a median of 1,172, and a standard
-deviation of 4,031, larger than the mean itself. The histogram shows
-why: a tall crowd near us and a long tail out past 20,000 light years,
-the microlensing planets. The two lines apart is the skew, in one glance.
+It prints a mean of about 2,322 light years, a median of 1,172, and a
+standard deviation of 4,031, larger than the mean itself. The histogram
+shows why. There is a tall crowd near us, and a long tail out past 20,000
+light years, the microlensing planets. The gap between the two lines
+shows the skew at a glance.
 ```
 
 ## Go further: the central limit theorem
 
-Roll one die many times, and the histogram is flat: every face equally
-often. Add two dice, and it is a triangle, as on the
+Roll one die many times, and the histogram is flat, because every face
+appears equally often. Add two dice, and it is a triangle, as on the
 [Probability](tutorial:what-are-the-chances) page. What happens with
 ten?
 
@@ -414,12 +415,12 @@ plt.tight_layout()
 ```
 
 With ten dice, the totals make a smooth hump, highest in the middle and
-falling away evenly on both sides: a bell. The same happens with
+falling evenly on both sides. It is a bell. The same happens with
 anything added up from many independent random parts, whatever shape
 each part has. That is the *central limit theorem*.
 
 It is most useful for means. The planets' radii have two humps. Take a
-random sample of 50 planets, and work out its mean radius; do that 2,000
+random sample of 50 planets, and calculate its mean radius. Do that 2,000
 times, and draw the means.
 
 ```python exec
@@ -439,18 +440,18 @@ plt.ylabel("samples")
 print("The mean of all the radii:", round(sum(radii) / len(radii), 2))
 ```
 
-A single bell, centred on the mean of all the radii, 5.88, though no
-single planet's radius is anywhere near a bell. Each sample's mean
-misses the true one, some by more than a whole Earth radius, and the
-bell says how likely each size of miss is. That is what lets a survey of
-a thousand people say something about a million.
+The means make a single bell, centred on the mean of all the radii,
+5.88, though the radii themselves are nowhere near a bell. Each sample's
+mean misses the true one, some by more than a whole Earth radius, and
+the bell says how likely each size of miss is. This is why a survey of a
+thousand people can say something about a million.
 
 ## Go further: the 68–95–99.7 rule
 
 A bell shape like that is called a *normal distribution*. For data that
 is close to normal, about 68% of values are within one standard deviation
-of the mean, about 95% within two, and about 99.7% within three: the
-*68–95–99.7 rule*. Does it hold for the sample means? And for the
+of the mean, about 95% within two, and about 99.7% within three. This
+is the *68–95–99.7 rule*. Does it hold for the sample means? And for the
 planets' orbits?
 
 ```python exec
@@ -473,16 +474,15 @@ for k in [1, 2, 3]:
 ```
 
 The sample means follow the rule closely: about 0.68, 0.95 and 0.99.
-The orbits do not: 99.9% of them are within one standard deviation,
-not 68%.
-One enormous orbit made the standard deviation over five million days,
-so almost everything is "close" by that measure. The rule belongs to
-bell-shaped data. On skewed data, a statement like "three standard
+The orbits do not. 99.9% of them are within one standard deviation,
+not 68%. One enormous orbit made the standard deviation over 5,000,000
+days, so almost everything is "close" by that measure. The rule works
+for bell-shaped data. On skewed data, a statement like "three standard
 deviations from the mean" can mean almost nothing.
 
 ## Your world
 
-A chart that answers one question in the world you chose.
+Each world asks one question that a chart can answer.
 
 <div class="dl-world" data-world="exoplanets">
 
@@ -501,7 +501,7 @@ print(median_distance.loc[2014:2019])
 
 ```hint
 `median_distance.index` is the years and `median_distance.values` the
-medians. `plt.yscale("log")` after `plt.plot`.
+medians. Call `plt.yscale("log")` after `plt.plot`.
 ```
 
 ```solution
@@ -516,12 +516,12 @@ plt.yscale("log")
 plt.xlabel("year announced")
 plt.ylabel("median distance, light years")
 ---
-With the copy saved on {{snapshot: exoplanets}}: from about 50 light
-years in the late 1990s to over 2,000 in Kepler's big years, 2014 and
-2016, then back to a few hundred. Kepler stared at one patch of sky, deep
-into it. TESS, launched in 2018, watches bright stars all over the sky,
-and bright stars are mostly near. The planets did not move: the
-telescopes changed, and the sample changed with them.
+With the copy saved on {{snapshot: exoplanets}}, the median rises from
+about 50 light years in the late 1990s to over 2,000 in Kepler's big
+years, 2014 and 2016, then falls to a few hundred. Kepler stared at one
+patch of sky, deep into it. TESS, launched in 2018, watches bright stars
+all over the sky, and bright stars are mostly near. The planets did not
+move. The telescopes changed, and the sample changed with them.
 ```
 
 </div>
@@ -529,7 +529,7 @@ telescopes changed, and the sample changed with them.
 <div class="dl-world" data-world="dinosaurs">
 
 How many dinosaur genera were named in each decade? Draw a bar for each
-decade. Then look hard at the last bar before you say what the chart
+decade. Then look closely at the last bar before you say what the chart
 shows.
 
 ```python exec
@@ -548,8 +548,8 @@ print(sorted(decades.items())[-4:])
 ```
 
 ```hint
-`plt.bar(list(decades.keys()), list(decades.values()), width=8)`: the
-width of 8 years leaves a gap between the ten-year bars.
+Use `plt.bar(list(decades.keys()), list(decades.values()), width=8)`.
+The width of 8 years leaves a gap between the ten-year bars.
 ```
 
 ```solution
@@ -569,20 +569,21 @@ plt.bar(list(decades.keys()), list(decades.values()), width=8)
 plt.xlabel("decade named")
 plt.ylabel("genera")
 ---
-With the copy saved on {{snapshot: dinosaur-genera}}: a bump in the
-1870s, the "Bone Wars" between two American collectors racing to name
-new animals; a dip in the 1940s, during the Second World War; and a
-climb from the 1970s to 457 in the 2010s. The last bar, 254, looks like a
-fall, and mostly it is not: the 2020s are not yet seven years old, and
-at that pace the decade would end near 380, not 254. An unfinished last period is one of the
-easiest ways for a chart to mislead.
+With the copy saved on {{snapshot: dinosaur-genera}}, the chart shows a
+bump in the 1870s, the "Bone Wars" between two American collectors
+racing to name new animals; a dip in the 1940s, during the Second World
+War; and a climb from the 1970s to 457 in the 2010s. The last bar, 254,
+looks like a fall, but mostly it is not. The 2020s are not yet seven
+years old, and at that pace the decade would end near 380, not 254. An
+unfinished last period is one of the easiest ways for a chart to
+mislead.
 ```
 
 </div>
 
 <div class="dl-world" data-world="book-characters">
 
-When are Mr Darcy and Mr Wickham on stage in *Pride and Prejudice*? Draw
+When do Mr Darcy and Mr Wickham appear in *Pride and Prejudice*? Draw
 each one's mentions, chapter by chapter, as two lines on one chart, with
 a legend.
 
@@ -598,8 +599,8 @@ print(len(darcy), "chapters")
 ```
 
 ```hint
-`plt.plot(darcy.chapter, darcy.mentions, label="Darcy")`, the same for
-Wickham, then `plt.legend()`.
+Use `plt.plot(darcy.chapter, darcy.mentions, label="Darcy")`, the same
+for Wickham, then `plt.legend()`.
 ```
 
 ```solution
@@ -617,11 +618,12 @@ plt.xlabel("chapter")
 plt.ylabel("times named")
 plt.legend()
 ---
-Darcy peaks at chapter 18, the Netherfield ball, named 41 times; Wickham
-at chapter 16, where he tells Elizabeth his story about Darcy. Wickham
-comes and goes in bursts, and Darcy is named in most chapters, even the
-ones he is not in, because the others talk about him. Chapters are in
-order, so a line chart fits: the x axis is the book's own time.
+Darcy peaks at chapter 18, the Netherfield ball, where he is named 41
+times. Wickham peaks at chapter 16, where he tells Elizabeth his story
+about Darcy. Wickham appears in bursts, and Darcy is named in most
+chapters, even the ones he is not in, because the others talk about him.
+Chapters are in order, so a line chart fits. The x axis is the book's
+own time.
 ```
 
 </div>
@@ -647,8 +649,8 @@ print(len(totals), "different totals")
 ```
 
 ```hint
-`plt.bar(list(totals.keys()), list(totals.values()))`, then look for the
-tallest bars.
+Use `plt.bar(list(totals.keys()), list(totals.values()))`, then look for
+the tallest bars.
 ```
 
 ```solution
@@ -668,17 +670,17 @@ plt.bar(list(totals.keys()), list(totals.values()))
 plt.xlabel("total of three dice")
 plt.ylabel("outcomes, of 216")
 ---
-10 and 11, with 27 outcomes each; 3 and 18 have one each. Two dice made
-a triangle; three already make a rounded hump, the start of the bell in
-the central limit theorem, and this time counted exactly rather than
-simulated.
+10 and 11 are commonest, with 27 outcomes each. 3 and 18 have one each.
+Two dice made a triangle. Three already make a rounded hump, the start of
+the bell in the central limit theorem, and this time we counted it
+exactly rather than simulated it.
 ```
 
 </div>
 
 ## Good practice
 
-A checklist for any chart that someone else will see:
+Here is a checklist for any chart that someone else will see:
 
 - **A title, and labels with units** on both axes. The chart should make
   sense with no text around it, because it will be copied into places
@@ -694,9 +696,9 @@ A checklist for any chart that someone else will see:
 This page drew the same planets many ways, and made one pair of true
 numbers look like a fourfold difference. If you had to make a chart of
 the planets that misled without a single false number, which of the
-tricks on this page would you use, and what would give it away?
+tricks on this page would you use, and what would show the trick?
 
-A challenge: the central limit theorem for something far from a bell.
+A challenge: try the central limit theorem on something far from a bell.
 The wait for a six, from the Statistics page, is skewed: mostly short,
 sometimes very long. Take the mean wait of a sample of players, many
 times, and draw the means. How big must a sample be before the bell

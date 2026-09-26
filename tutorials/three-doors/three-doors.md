@@ -27,7 +27,7 @@ he opens door 3, and there is the goat.
 Then he offers you a choice. You can keep door 1, or you can switch to
 door 2.
 
-Does it matter which you do? Before you read on, make your own guess,
+Does it matter which you do? Before you continue, make your own guess,
 and write it down.
 
 This puzzle is called the *Monty Hall problem*, after the host of an
@@ -44,15 +44,14 @@ We use the simulation and the counting from
 
 ## Why staying feels fine
 
-Here is the reasoning most people reach first. It deserves to be set
-out properly, step by step.
+Here is the reasoning most people reach first, step by step.
 
 Two doors are still shut. One of them has the car. Nothing you have been
 told makes one door different from the other. So the chance is one in
 two for either door, and switching gains you nothing.
 
-That argument is careful. It is also wrong. This page is about finding
-the one step in it that fails.
+That argument is careful, and one step in it fails. This page finds
+that step.
 
 If you are still not convinced at the end, many clever people agree with
 you. This problem caused a public argument among people who do
@@ -161,7 +160,7 @@ Run the cell again. The two numbers change a little, but they stay close
 to the same two values. The small changes come from the randomness. The
 values they stay close to are not random at all.
 
-How much do the numbers change from run to run? This cell plays with
+How much do the numbers change from run to run? This cell uses
 the `play_once()` above. Run it a few times with 100 games, then change
 `num_games` to 100,000 and run it a few times again.
 
@@ -177,8 +176,8 @@ print("Switching won:", round(switching_wins / num_games, 3))
 ```
 
 With 100 games, switching can win anywhere from about 0.55 to 0.8 of
-them. With 100,000 it hardly leaves 0.66 or 0.67: the law of large
-numbers from the last page.
+them. With 100,000 it almost always stays at 0.66 or 0.67. This is the
+law of large numbers from the last page.
 
 ## Where the two thirds comes from
 
@@ -199,7 +198,7 @@ the key to the whole problem. It means the host never opens the door
 with the car. He is not guessing. He knows where the car is, and he
 opens a door he knows has a goat behind it.
 
-That is the step the first argument misses. It treats the two shut doors
+The first argument misses this step. It treats the two shut doors
 as if nothing had happened to make them different. But something did
 happen. The host chose a door, and the doors he was allowed to choose
 depended on where the car was.
@@ -241,21 +240,21 @@ type: number
 In how many of the 9 pairs does switching win?
 ```
 
-Six of nine, two thirds again. The cell only asks whether the first pick
-was wrong, and that is the whole argument: switching wins exactly when
-your first pick was wrong. Your first pick was a one-in-three guess, so
-it is wrong two times in three. Switching turns every wrong first guess
-into a win.
+It is six of nine, two thirds again. The cell only asks whether the
+first pick missed the car. That is the whole argument. Switching wins
+exactly when your first pick missed the car. Your first pick was a
+one-in-three guess, so it misses two times in three. Switching turns
+every miss into a win.
 
 ## A host who is not paying attention
 
-Is the host's knowledge really what makes switching better? If it is,
-then a host who knows nothing should make the advantage disappear. We
+Does switching win more because the host knows where the car is? If
+so, a host who knows nothing should make the advantage disappear. We
 can test that with a simulation.
 
 So here is a careless host. He opens one of the other two doors at
 random, without knowing what is behind it. Sometimes he opens the door
-with the car himself, and the game is spoiled: there is nothing left to
+with the car himself, and the game is spoiled. There is nothing left to
 decide.
 
 ```python exec
@@ -325,19 +324,19 @@ In the games that finish, what share will switching win?
 About a third of the games are spoiled. In the games that finish,
 staying and switching each win about half the time.
 
-So the first argument, "one in two", is right about this game with a
-careless host. It is wrong about the original game. Against a careless
-host, the two shut doors are equally good. The two thirds never came
-from the number of doors that were still shut. It came from the host
+So the first argument, "one in two", holds for this game with a
+careless host, but not for the original game. Against a careless host,
+the two shut doors are equally good. The two thirds came from the host
 knowing where the car was, and from the fact that in two cases out of
-three he had no choice.
+three he had no choice. It never came from the number of doors that were
+still shut.
 
 ### Your turn
 
 What happens to the original game with a hundred doors instead of
 three? You pick one door. The host, who knows where the car is, opens
 ninety-eight doors with goats behind them. One other door is still shut.
-How often does switching win now? Make a guess, then can you write a
+How often does switching win now? Make a guess. Then can you write a
 simulation of the hundred-door game?
 
 ```python exec
@@ -388,33 +387,33 @@ for i in range(10000):
         wins = wins + 1
 print("Switching won:", round(wins / 10000, 3))
 ---
-About 0.99. Your first pick is right 1 time in 100, and switching wins
-every other time. With a hundred doors, the host's 98 goats are
-obviously telling you something: of all the doors he could have left
-shut, he left that one. Three doors hide the same thing in a smaller
-number.
+It is about 0.99. Your first pick is the car 1 time in 100, and switching
+wins all the other times. With a hundred doors, the host's 98 goats
+clearly tell you something. Of all the doors he could have left shut, he
+left that one. Three doors work the same way, with smaller numbers.
 ```
 
 ## What you have now
 
-A problem where the answer that looks right is wrong, and a way to
-settle that kind of question that does not depend on who argues best.
+You now have a puzzle where the answer that looks right is not, and a
+way to settle such questions that does not depend on who argues best.
 
-The simulation convinced us, and the three cases explained why. Each
-needs the other. A number with no argument behind it is a fact you have
-to trust without knowing why. An argument with nothing to check it
-against is how the fifty-fifty answer lasted so long.
+The simulation convinced us, and the three cases explained why. We
+need both. A number with no argument behind it is a fact you have to
+trust without knowing why. And the fifty-fifty answer lasted so long
+because people argued without checking.
 
 In the careless host's finished games, he also opened a door with a
 goat behind it, just as the knowing host always does. Can you say, in a
 sentence, why the same goat means two thirds in one game and a half in
 the other?
 
-A challenge: every version at once. With `doors` doors, a host who knows
-where the car is opens `opened` of the goat doors, and you switch to one
-of the other shut doors at random. Can you simulate it for any numbers,
-and find a formula that matches? Three doors with one opened should give
-two thirds, and a hundred doors with 98 opened, 99 in 100.
+A challenge: here is every version at once. With `doors` doors, a host
+who knows where the car is opens `opened` of the goat doors, and you
+switch to one of the other shut doors at random. Can you simulate it for
+any numbers, and find a formula that matches? Three doors with one
+opened should give two thirds, and a hundred doors with 98 opened, 99 in
+100.
 
 ```python challenge
 import random

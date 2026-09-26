@@ -13,9 +13,9 @@ datasets: [dinosaur-genera, exoplanets, book-characters]
 
 # Sets: building them from sorted lists — Practice
 
-Problems on sets, some on paper and some in code, and three from earlier
-pages. Try each problem before you open anything under it. The paper
-ones are worth doing first: the code is much easier to write once you
+Here are problems on sets, some on paper, some in code, and three from
+earlier pages. Try each problem before you open anything under it.
+Start with the paper ones. The code is much easier to write once you
 know what it should produce.
 
 ## On paper
@@ -23,9 +23,9 @@ know what it should produce.
 This cell uses Python's own `set` type, which the tutorial built its own
 version of. Python writes a set in curly brackets, and has an operator
 for each operation: `|` for union, `&` for intersection, `-` for
-difference and `^` for symmetric difference. Each result goes through
-`sorted()`, because Python's `set` keeps no order (problem 14 says why).
-Use it to check your paper answers.
+difference and `^` for symmetric difference. The cell sorts each result
+with `sorted()`, because Python's `set` keeps no order (problem 14 says
+why). Use it to check your paper answers.
 
 ```python exec
 id: set-arithmetic-1
@@ -61,7 +61,7 @@ It holds everything in exactly one of the two sets. What is it here?
 <details class="dl-answer"><summary>answer</summary>
 
 $\{1, 2, 3, 6, 7\}$. It is $(A \setminus B) \cup (B \setminus A)$, and it
-is also $(A \cup B) \setminus (A \cap B)$: two routes to the same set.
+is also $(A \cup B) \setminus (A \cap B)$.
 Can you check both on the numbers above?
 
 </details>
@@ -72,7 +72,7 @@ Can you check both on the numbers above?
 
 Seven, not nine. $|A \cup B| = |A| + |B| - |A \cap B|$, which is
 $5 + 4 - 2 = 7$. The two shared elements, 4 and 5, were counted twice,
-so we take them away once: the inclusion-exclusion principle.
+so we subtract them once. This is the inclusion-exclusion principle.
 [Venn diagrams](tutorial:venn-diagrams) turns it into a picture.
 
 </details>
@@ -92,7 +92,7 @@ type: fill-in-the-blank
 <details class="dl-answer"><summary>why</summary>
 
 The first three are true. Every set is a subset of itself, and the
-empty set is a subset of every set: for it to fail, one of its elements
+empty set is a subset of every set. For it to fail, one of its elements
 would have to be missing, and it has none.
 
 The last one is false, and it is the one to think about. $\in$ asks
@@ -128,7 +128,7 @@ $\{2\} \cup \{3\} = \{2,3\}$. One example does not prove the rule, and
 the rule is true for all sets.
 
 It matches the distributive law, $a(b + c) = ab + ac$, with $\cap$ as
-multiplication and $\cup$ as addition. The match is not perfect: for
+multiplication and $\cup$ as addition. The match is not perfect. For
 sets, union also distributes over intersection,
 $A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$, and in arithmetic
 $a + bc$ is not $(a+b)(a+c)$.
@@ -169,7 +169,7 @@ count_shared([1, 2, 3], [1, 2, 3])
 ```
 
 ```hint
-The walk from `intersection()`, with a counter where it appended.
+Use the walk from `intersection()`, with a counter where it appended.
 ```
 
 ```solution
@@ -224,7 +224,7 @@ is_subset_fast([5, 6], [1, 2, 3, 4, 5])
 ```hint
 Walk both lists. If `a[i]` is smaller than `b[j]`, then b has already gone
 past where `a[i]` would be, so `a[i]` is not in b. What does it mean when
-b runs out while a still has elements left?
+b ends while a still has elements left?
 ```
 
 ```solution
@@ -246,10 +246,9 @@ def is_subset_fast(a, b):
 print(is_subset_fast([2, 5], [1, 2, 3, 4, 5]))
 print(is_subset_fast([0, 2, 5], [1, 2, 3, 4, 5]))
 ---
-`[0, 2, 5]` stops at the very first step: 0 is smaller than 1, so b has
-no 0. The last line is the quiet part: when b runs out, a is a subset
-only if every one of its elements was found, that is, if `i` reached the
-end of a.
+`[0, 2, 5]` stops at the very first step. 0 is smaller than 1, so b has
+no 0. Look at the last line. When b ends, a is a subset only if every one
+of its elements was found, that is, if `i` reached the end of a.
 ```
 
 **9.** A world question, with the tutorial's functions.
@@ -281,12 +280,13 @@ marsh_ages = make_set(marsh["first_stage"].dropna().tolist())
 cope_ages = make_set(cope["first_stage"].dropna().tolist())
 print(intersection(marsh_ages, cope_ages))
 ---
-With the copy saved on {{snapshot: dinosaur-genera}}: Albian, Campanian,
-Kimmeridgian and Oxfordian. The Kimmeridgian and Oxfordian are the ages
-of the Morrison Formation in the American West, where both men's teams
-dug, sometimes within sight of each other. `str.match` with `\d{4}$`
-keeps only genera named by one man alone, in one year; a genus named
-"Marsh and Cope 1880" would need a different question.
+With the copy saved on {{snapshot: dinosaur-genera}}, the answer is
+Albian, Campanian, Kimmeridgian and Oxfordian. The Kimmeridgian and
+Oxfordian are the ages of the Morrison Formation in the American West,
+where both men's teams dug, sometimes within sight of each other.
+`str.match` with `\d{4}$` keeps only genera named by one man alone, in
+one year. A genus named "Marsh and Cope 1880" would need a different
+question.
 ```
 
 </div>
@@ -313,11 +313,12 @@ far = make_set(planets[planets.distance_ly > 1000]["method"].tolist())
 print(difference(near, far))
 print(difference(far, near))
 ---
-Only near: Astrometry and Imaging. Both need to see the star, or the
-planet, clearly: a photograph of a planet is only possible for a nearby
-one. Only far: Microlensing among them, which needs a distant star to
-line up behind a nearer one, so it works best a long way off. The two
-differences are different sets: order matters for difference.
+Astrometry and Imaging appear only in `near`. Both need to see the
+star, or the planet, clearly. A photograph of a planet is only possible
+for a nearby one. Microlensing appears only in `far`. It needs a distant
+star to sit exactly behind a nearer one, so it works best a long way off.
+The two differences are different sets, because order matters for
+difference.
 ```
 
 </div>
@@ -346,9 +347,9 @@ print(in_letters)
 print(is_subset(in_letters, later))
 ---
 Only Walton is named in the letters, and he is named again later, so the
-answer is `True`. Victor is in the letters, and is never named there:
-Walton calls him "the stranger", eight times. A set of names cannot see
-him.
+answer is `True`. Victor is in the letters, and is never named there.
+Walton calls him "the stranger", eight times. So he is not in the set of
+names.
 ```
 
 </div>
@@ -401,7 +402,7 @@ print(len(hearts) + len(pictures) - len(intersection(hearts, pictures)))
 ---
 22 both ways: 13 hearts and 12 picture cards, minus the 3 that are both.
 The sorted order of the pairs looks odd, with "10" before "2", because
-the ranks are text, compared letter by letter; the set operations do not
+the ranks are text, compared letter by letter. The set operations do not
 mind, as long as both sets are sorted the same way.
 ```
 
@@ -449,7 +450,7 @@ sorted(common)
 
 ```hint
 Make every address lower case before it goes into a set. `.lower()` does
-that for one string; a loop, or a set comprehension, does it for a list.
+that for one string. A loop, or a set comprehension, does it for a list.
 ```
 
 ```solution
@@ -460,8 +461,9 @@ print(sorted(common))
 ---
 `['ada@example.org', 'alan@example.org']`. The main job is to make the
 addresses match before comparing them. The part after the @ is never
-case-sensitive; the standard lets the part before it be, and almost no
-email provider treats it that way, so lower case is right in practice.
+case-sensitive. The standard lets the part before it be case-sensitive,
+and almost no email provider treats it that way. So lower case works in
+practice.
 ```
 
 **12.** A set has 3 elements. Can you list all its subsets, and check that
@@ -471,7 +473,7 @@ there are 8?
 
 For $\{a, b, c\}$: $\emptyset$, $\{a\}$, $\{b\}$, $\{c\}$, $\{a,b\}$,
 $\{a,c\}$, $\{b,c\}$ and $\{a,b,c\}$. In code, count in binary from 0 to
-7: bit `i` of the number says whether item `i` is in the subset.
+7. Bit `i` of the number says whether item `i` is in the subset.
 
 ```python
 items = ["a", "b", "c"]
@@ -517,9 +519,9 @@ Which position will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-2: the first middle, `(0 + 5) // 2`, is already a 7, so the search stops
+2. The first middle, `(0 + 5) // 2`, is already a 7, so the search stops
 there. With repeats, binary search finds *a* match, not the first one.
-That is one more reason a set keeps no repeats: "is it there?" has one
+That is one more reason a set keeps no repeats. "Is it there?" has one
 answer, and "where is it?" would have three.
 
 </details>
@@ -530,14 +532,14 @@ they were added?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Both are *hash tables*. A hash table works out a number, a hash, from each
-element, and uses it to decide where the element is stored; the hash has
+Both are *hash tables*. A hash table calculates a number, a hash, from each
+element, and uses it to decide where the element is stored. The hash has
 nothing to do with order. A dictionary also keeps a separate record of the
 order keys arrived in, since Python 3.7, and a set does not. Neither
-keeps *sorted* order. The trade: a hash table answers "is it there?" in
-about the same time however large it is, and a sorted list takes about
-$\log n$ steps, but only the sorted list can give you its smallest
-element without looking at all of it.
+keeps *sorted* order. A hash table answers "is it there?" in about the
+same time however large it is, and a sorted list takes about $\log n$
+steps. But only the sorted list can give you its smallest element
+without looking at all of it.
 
 </details>
 
@@ -549,7 +551,7 @@ selection sort, make, against Python's `sorted()`?
 
 Selection sort makes $\frac{n(n-1)}{2}$, which is about 50 million for
 10,000 items. `sorted()` makes roughly $n \log_2 n$, about 130,000. The
-set operations after the sort are cheap; the sort is the part that
-decides how fast `make_set` is.
+set operations after the sort are cheap. The sort decides how fast
+`make_set` is.
 
 </details>

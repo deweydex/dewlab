@@ -22,8 +22,8 @@ covers:
 
 # Logic: truth tables, XOR and De Morgan's laws
 
-A game: roll two dice, and you win on a double, or when they add up to
-7. A friend writes the rule in code, and it works:
+Here is a game. Roll two dice. You win on a double, or when they add up
+to 7. A friend writes the rule in code, and it works:
 
 ```python exec
 id: logic-a-tangled-rule
@@ -35,19 +35,19 @@ print(wins(3, 3), wins(2, 5), wins(1, 4))
 ```
 
 It works, and it is hard to read: two `!=`, an `and`, and a `not` around
-the lot. On this page we find out why it gives the right answers, and
-how to rewrite it as the rule it is.
+all of it. On this page we see why it gives the right answers, and how
+to write it more simply.
 
 You have been writing `and`, `or` and `not` since
 [Making decisions](tutorial:making-decisions). On the last two pages,
 [Sets](tutorial:sets-as-sorted-lists) and
 [Venn diagrams](tutorial:venn-diagrams), union, intersection and
-complement followed rules of their own. Here the same rules turn up
+complement followed rules of their own. Here the same rules appear
 again, with true and false.
 
 ## Every possible case
 
-An `and` takes two values, each either `True` or `False`, and gives back
+An `and` takes two values, each either `True` or `False`, and returns
 one. Each input has only two possibilities, so there are only four
 situations, few enough to list them all. A *truth table* lists every
 combination of inputs, with the result for each:
@@ -60,8 +60,8 @@ for a in [True, False]:
         print(f"{str(a):>6} {str(b):>7} {str(a and b):>10}")
 ```
 
-A loop made the four rows; nobody typed them. A truth table is what you
-get when you try every input, so there is no need to memorise one. Here
+A loop made the four rows. Nobody typed them. You get a truth table when
+you try every input, so there is no need to memorise one. Here
 are the tables for `or` and `not`:
 
 ```python exec
@@ -77,7 +77,7 @@ for a in [True, False]:
     print(f"{str(a):>6} {str(not a):>10}")
 ```
 
-Before you look at the first row of the `or` table, one question:
+Before you look at the first row of the `or` table, here is a question:
 
 ```python exec
 id: logic-true-or-true
@@ -93,9 +93,9 @@ What does `True or True` give?
   - "Tea or coffee?" does not expect the answer "both".
 ```
 
-The logical `or` includes "both". Everyday English usually does not: if
-someone asks "tea or coffee?", they do not expect "both". That gap trips
-up most people at least once.
+The logical `or` includes "both". Everyday English usually does not. If
+someone asks "tea or coffee?", they do not expect "both". This difference
+confuses most people at least once.
 
 ### Your turn
 
@@ -129,10 +129,10 @@ is the left circle without the overlap: A minus B.
 
 ## Exclusive or
 
-The everyday "or", the one that leaves out "both", has a name too.
+The everyday "or", the one without "both", has a name too.
 *Exclusive or*, or *XOR*, is true when exactly one of its two inputs is
-true. You met it on the Venn page as `^` between sets: in one circle or
-the other, not both.
+true. You met it on the Venn page as `^` between sets. It means in one
+circle or the other, not both.
 
 Python has no `xor` keyword, so we build it, three ways. What do you
 expect in the three columns?
@@ -150,12 +150,12 @@ for a in [True, False]:
               f" {str(a != b):>5} {str(a ^ b):>5}")
 ```
 
-The three columns are the same all the way down. Look at the middle one:
-for `True` and `False`, "exclusive or" and "not equal to" are the *same
-operation*. Exactly one of the two being true means the two are
-different. The third column uses `^`, Python's *bitwise XOR*, which works
-on whole numbers one binary digit at a time, and gives the right answer
-for `True` and `False` too.
+The three columns are the same all the way down. Look at the middle one.
+For `True` and `False`, "exclusive or" and "not equal to" are the *same
+operation*. If exactly one of the two is true, the two are different.
+The third column uses `^`, Python's *bitwise XOR*, which works on whole
+numbers one binary digit at a time, and gives the right answer for
+`True` and `False` too.
 
 ### Your turn
 
@@ -200,7 +200,7 @@ inputs is the whole proof.
 
 Here is a question most people find hard, even after a month of writing
 conditions: what is `not (A and B)` the same as? The cell checks two
-candidates against every case, and prints the one that matches.
+possible answers against every case, and prints the one that matches.
 
 ```python exec
 id: logic-which-one-matches
@@ -252,20 +252,20 @@ for a in [True, False]:
         print(f"{str(a):>6} {str(b):>7} {str(left):>12} {str(right):>19}")
 ```
 
-In both, the two columns match in every row. That loop is the proof: not
-an example of it, and not evidence for it. There are exactly four cases,
-and the loop tried all four.
+In both, the two columns match in every row. There are exactly four
+cases, and the loop tried all four. So the loop is a proof, not just an
+example.
 
 That is unusual. "I tested it and it worked" is usually a weak argument,
 since testing a few inputs cannot show that a program works for every
 input. Here the argument is complete, because there are only four inputs,
-and we tried every one. Checking every case is a proof when there are few
-enough cases to check them all, and almost never otherwise.
+and we tried every one. This only works when there are few enough cases
+to check them all.
 
 ## Where you have already used this
 
 De Morgan's laws turn conditions that are hard to read into conditions
-that are easy to read. Back to the game from the top of the page:
+that are easy to read. Here is the game from the top of the page again:
 
 ```python exec
 id: where-you-have-already-used-this-1
@@ -277,10 +277,11 @@ rolls = [(first, second) for first in range(1, 7) for second in range(1, 7)]
 print("agree on every roll:", all(wins(f, s) == wins_readable(f, s) for f, s in rolls))
 ```
 
-`all()` gives `True` when every value it is given is `True`, and here it
-is given one comparison for each of the 36 rolls. The first version has a
+`all()` returns `True` when every value it gets is `True`. Here it gets
+one comparison for each of the 36 rolls. The first version has a
 `not` around an `and`. De Morgan turns it into an `or` of two `not`s, and
-`not (first != second)` is `first == second`: the rule in its own words.
+`not (first != second)` is `first == second`. That is the rule as the
+game states it.
 
 People rarely write the tangled version on purpose. It grows a little at
 a time: someone adds a condition, later wraps the whole thing in a
@@ -357,7 +358,8 @@ def three_simple(a, b, c):
     return (not a) and ((not b) or c)
 ---
 `one` becomes `(not a) or b`, since `not (not b)` is `b`. `two` becomes
-`a or b`: "not neither" is "at least one". `three` takes the laws twice,
+`a or b`, because "not neither" is "at least one". `three` uses the laws
+twice,
 once for the `or` and once for the `and` inside it. The inputs are every
 case, so if yours match the solution's there, they match everywhere.
 ```
@@ -367,7 +369,7 @@ case, so if yours match the solution's there, they match everywhere.
 <div class="dl-world" data-world="games-of-chance">
 
 A card game lets you play a card unless it is neither a heart nor higher
-than 10. The rule, as written: `not (not heart and not high)`. Can you
+than 10. The rule is written as `not (not heart and not high)`. Can you
 write `can_play_simple` with no `not`, and check it on all 52 cards?
 
 ```python exec
@@ -401,11 +403,11 @@ def can_play_simple(heart, high):
 deck = [(rank, suit) for suit in ["clubs", "diamonds", "hearts", "spades"] for rank in range(2, 15)]
 print(all(can_play(s == "hearts", r > 10) == can_play_simple(s == "hearts", r > 10) for r, s in deck))
 ---
-`heart or high`: "not neither" is "at least one". Ranks run from 2 to 14
-here, with 11 to 14 for jack, queen, king and ace, so "higher than 10"
-is a picture card or an ace. Checking all 52 cards is 52 cases, and the
-four cases of the rule are the real proof; the cards only show it on a
-real deck.
+It is `heart or high`, because "not neither" is "at least one". Ranks
+run from 2 to 14 here, with 11 to 14 for jack, queen, king and ace, so
+"higher than 10" is a picture card or an ace. The 52 cards are 52 cases,
+but the four cases of the rule are the proof. The cards only show it on
+a real deck.
 ```
 
 </div>
@@ -413,7 +415,7 @@ real deck.
 <div class="dl-world" data-world="dinosaurs">
 
 A museum puts a fossil on display unless it is incomplete or not yet
-described in a paper. The rule, as written: `not (not complete or not
+described in a paper. The rule is written as `not (not complete or not
 described)`. Can you write `on_display_simple` with no `not`, and check
 it on every case?
 
@@ -450,8 +452,8 @@ print(all(on_display(c, d) == on_display_simple(c, d) for c, d in cases))
 ---
 `complete and described`. The `not` moves inside the bracket, turns the
 `or` into an `and`, and meets the two `not`s already there, which cancel.
-The written rule said "unless", and "unless" is a `not` in disguise:
-most tangled conditions start as a sentence with "unless" in it.
+The written rule said "unless", and "unless" means "if not". Most
+tangled conditions start as a sentence with "unless" in it.
 ```
 
 </div>
@@ -459,8 +461,8 @@ most tangled conditions start as a sentence with "unless" in it.
 <div class="dl-world" data-world="exoplanets">
 
 An astronomer shortlists a planet for a closer look unless it is more
-than 2 Earths across or 100 light-years or more away. The rule, as
-written: `not (not radius <= 2 or not distance < 100)`. Can you write
+than 2 Earths across or 100 light-years or more away. The rule is
+written as `not (not radius <= 2 or not distance < 100)`. Can you write
 `shortlist_simple` with no `not`, and check that it picks the same
 planets from the real file?
 
@@ -501,12 +503,12 @@ def shortlist_simple(radius, distance):
 pairs = list(zip(planets["radius_earths"], planets["distance_ly"]))
 print(all(shortlist(r, d) == shortlist_simple(r, d) for r, d in pairs))
 ---
-`radius <= 2 and distance < 100`, which shortlists 164 planets in the
-copy saved on {{snapshot: exoplanets}}, the nearest of them around
+It is `radius <= 2 and distance < 100`, which shortlists 164 planets in
+the copy saved on {{snapshot: exoplanets}}. The nearest of them is around
 Proxima Centauri, 4.2 light-years away. A planet with no radius in the
 file has `nan` there, and `<=` and `<` with `nan` are always `False`,
-so both versions leave it off the list. Agreeing on 6,372 real planets is
-reassuring; the four-row truth table is what proves it.
+so neither version picks it. The two versions agree on 6,372 real
+planets, but the four-row truth table is the proof.
 ```
 
 </div>
@@ -538,8 +540,8 @@ print("(not A) or (not B):  ", sorted(complement(a) | complement(b)))
 
 A statement is true or false. An element is in a set or out of it. They
 are the same kind of question, asked about different things, and so a law
-proved in one place holds in the other. The Venn page showed it by
-looking; this page proved it by trying every row.
+proved in one place holds in the other. The Venn page showed it with a
+picture. This page proved it by trying every row.
 
 ## Looking back
 
@@ -548,10 +550,10 @@ true on 12 of the 36 rolls. Can you say which 12, from the readable
 version, without running anything?
 
 A challenge: four cards lie on a table, showing `A`, `K`, `4` and `7`.
-Each has a letter on one side and a number on the other. The rule: "if a
+Each has a letter on one side and a number on the other. The rule says: "if a
 card has a vowel on one side, it has an even number on the other." Which
-cards must you turn over to check the rule? Most people choose wrongly.
-Write a program that tries every possible hidden side, and finds out.
+cards must you turn over to check the rule? Most people pick the A and the
+4. Can you write a program that tries every possible hidden side, to check?
 
 ```python challenge
 cards_showing = ["A", "K", "4", "7"]
@@ -567,7 +569,7 @@ def breaks_rule(letter, number):
 ```
 
 The next page, [Counting carefully](tutorial:counting-carefully), counts
-outcomes without listing them all, which is where probability starts.
+outcomes without listing them all. Probability starts there.
 
 ## Where to read more
 

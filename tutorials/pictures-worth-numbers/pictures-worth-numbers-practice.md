@@ -13,13 +13,13 @@ datasets: [exoplanets, dinosaur-finds, book-characters]
 
 # Charts: choosing the right chart for your data — Practice
 
-Problems on choosing, reading and making charts, and three from earlier
-pages. The plotting takes a few lines of code each time; the skill is in
-the choosing, and in noticing what a chart makes you believe.
+Here are problems on choosing, reading and making charts, and three from
+earlier pages. The plotting takes a few lines of code each time. The
+skill is to choose well, and to notice what a chart makes you believe.
 
 ## Tools
 
-`bars()` draws a labelled bar chart, and gives back its axes, so you can
+`bars()` draws a labelled bar chart, and returns its axes, so you can
 change the chart afterwards.
 
 ```python exec
@@ -59,20 +59,20 @@ type: fill-in-the-blank
 <details class="dl-answer"><summary>answer</summary>
 
 A pie chart is the traditional answer, and it works less well. People
-are good at comparing lengths and bad at comparing angles: two slices of
-23% and 27% look alike, where two bars of those heights are plainly
+are good at comparing lengths and bad at comparing angles. Two slices of
+23% and 27% look alike, but two bars of those heights are plainly
 different.
 
 </details>
 
-**2.** When is a line chart the wrong choice?
+**2.** When does a line chart not fit?
 
 <details class="dl-answer"><summary>answer</summary>
 
 When the x axis has no meaningful order. Join the sales of Leinster,
 Munster and Connacht with a line, and it suggests that Munster lies
 between the other two in some quantity. It does not. A line says "these
-points are on a path"; if there is no path, the chart is telling a lie.
+points are on a path". If there is no path, the chart is telling a lie.
 
 </details>
 
@@ -81,7 +81,7 @@ how can you tell them apart at a glance?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A bar chart compares categories; a histogram shows how one measured
+A bar chart compares categories. A histogram shows how one measured
 quantity is spread, in bins. The bars of a bar chart have gaps, because
 the categories are separate. The bars of a histogram touch, because each
 bin starts where the last one ends.
@@ -93,7 +93,7 @@ you plot?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Three lines on one pair of axes, with a legend. Three separate charts
+Plot three lines on one pair of axes, with a legend. Three separate charts
 would each be easy to read and useless for comparing, and comparing is
 the point. If the products sell on very different scales, plot each
 one's percentage change instead.
@@ -108,10 +108,10 @@ look?
 
 <details class="dl-answer"><summary>answer</summary>
 
-About four times: twice as wide and twice as tall is four times the
-area, and area is what the eye takes in. Drawn as spheres, it would
-suggest eight times. Pictures sized by a number exaggerate it; a bar,
-which grows in one direction only, does not.
+About four times, because twice as wide and twice as tall is four times
+the area. The eye judges area. Drawn as spheres, it would suggest eight
+times. Pictures sized by a number exaggerate it. A bar, which grows in
+one direction only, does not.
 
 </details>
 
@@ -137,10 +137,10 @@ What correlation will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-0.0, and yet $y$ is exactly $x^2$: a perfect relationship. Correlation
-measures only a straight-line relationship, and this curve goes down and
-then up by the same amount, so the straight-line parts cancel. A quick
-plot answers what the number cannot.
+It prints 0.0, and yet $y$ is exactly $x^2$, a perfect relationship.
+Correlation measures only a straight-line relationship, and this curve
+goes down and then up by the same amount, so the straight-line parts
+cancel. A quick plot answers what the number cannot.
 
 </details>
 
@@ -157,8 +157,8 @@ xs = list(range(11))
 ```
 
 ```hint
-`plt.plot(xs, [x ** 2 for x in xs], label="x squared")`, the same for
-`2 ** x`, then `plt.legend()`.
+Use `plt.plot(xs, [x ** 2 for x in xs], label="x squared")`, the same
+for `2 ** x`, then `plt.legend()`.
 ```
 
 ```solution
@@ -170,20 +170,20 @@ plt.plot(xs, [2 ** x for x in xs], label="2 to the power x")
 plt.legend()
 plt.grid(alpha=0.3)
 ---
-They cross at $x = 2$ and $x = 4$, and after that $2^x$ leaves $x^2$
-behind: 1,024 against 100 at $x = 10$. A curve where $x$ is the power is
-*exponential*. An algorithm whose running time grows like that is not
-just slow; it soon stops being usable at all.
+They cross at $x = 2$ and $x = 4$, and after that $2^x$ grows much
+faster than $x^2$: 1,024 against 100 at $x = 10$. A curve where $x$ is
+the power is *exponential*. An algorithm whose running time grows like
+that soon stops being usable at all.
 ```
 
 **8.** Now add `plt.yscale("log")` to the same chart. What changes?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$2^x$ becomes a straight line, and $x^2$ bends over and flattens. On a
+$2^x$ becomes a straight line, and $x^2$ bends and flattens. On a
 log scale, exponential growth is a straight line, and its steepness says
-how fast it grows. The $x^2$ line also loses its first point: 0 has no
-place on a log scale, since each step down divides by 10 and never
+how fast it grows. The $x^2$ line also loses its first point. 0 has
+no place on a log scale, since each step down divides by 10 and never
 reaches 0. Label a log axis clearly, or every difference on it will be
 misread.
 
@@ -211,7 +211,7 @@ scatter([1, 2, 3], [5, 3, 1], title="Right", ax=right)
 ```hint
 When `ax` is `None`, make one with `fig, ax = plt.subplots()`. Then use
 `ax.scatter`, `ax.set_title`, `ax.set_xlabel` and `ax.set_ylabel`, and
-give back `ax`.
+return `ax`.
 ```
 
 ```solution
@@ -233,14 +233,14 @@ fig, (left, right) = plt.subplots(1, 2, figsize=(9, 4))
 scatter([1, 2, 3], [2, 4, 5], title="Left", ax=left)
 scatter([1, 2, 3], [5, 3, 1], title="Right", ax=right)
 ---
-`ax=None` is what makes the function reusable rather than only shorter:
-it can draw a chart of its own, or one panel of a larger figure.
+`ax=None` makes the function reusable, not only shorter. It can draw a
+chart of its own, or one panel of a larger figure.
 Returning `ax` lets whoever called it keep changing the chart.
 ```
 
 ## Your world
 
-**10.** A chart that answers a question in the world you chose.
+**10.** Each world asks a question that a chart can answer.
 
 <div class="dl-world" data-world="exoplanets">
 
@@ -259,7 +259,7 @@ print(transit_share.loc[2014:2018].round(2))
 
 ```hint
 `transit_share.index` is the years and `transit_share.values` the
-shares; `plt.plot` joins them.
+shares. `plt.plot` joins them.
 ```
 
 ```solution
@@ -275,10 +275,11 @@ plt.ylim(0, 1)
 plt.xlabel("year announced")
 plt.ylabel("share found by transit")
 ---
-Almost none before 2004, then an uneven climb to more than 0.9 in 2014
-and 2016, Kepler's years, and between about 0.5 and 0.8 since. The y axis
-runs from 0 to 1 because a share can only be in that range; letting the
-library choose would stretch the wiggles after 2016 to fill the frame.
+Almost no planets were found by transit before 2004. Then the share
+climbs unevenly to more than 0.9 in 2014 and 2016, Kepler's years, and
+has been between about 0.5 and 0.8 since. The y axis runs from 0 to 1
+because a share can only be in that range. If the library chose, it
+would stretch the wiggles after 2016 to fill the frame.
 ```
 
 </div>
@@ -313,7 +314,7 @@ plt.hist(finds.lat, bins=36, range=(-90, 90))
 plt.xlabel("latitude, degrees")
 plt.ylabel("finds")
 ---
-With the copy saved on {{snapshot: dinosaur-finds}}: 0.88 of the finds
+With the copy saved on {{snapshot: dinosaur-finds}}, 0.88 of the finds
 are north of the equator, most of them between about 30° and 55° north,
 the latitudes of the United States, Canada, Europe, Mongolia and northern
 China. Dinosaurs lived all over the world. The histogram shows where the
@@ -341,8 +342,8 @@ book = characters[characters.book == "frankenstein"]
 
 ```hint
 `book.groupby("character").mentions.sum().sort_values()` gives the
-totals, smallest first; `plt.barh` draws the first at the bottom, so the
-largest ends up at the top.
+totals, smallest first. `plt.barh` draws the first at the bottom, so the
+largest is at the top.
 ```
 
 ```solution
@@ -359,10 +360,11 @@ plt.xlabel("times named")
 ---
 In *Frankenstein*, Elizabeth is named most, 92 times, then Clerval and
 Justine. Victor Frankenstein, who tells most of the story, is named only
-28 times: a narrator says "I", which the count does not see. The creature
-has no name at all, so he has no row. In *The War of the Worlds* the narrator has no name either.
-A chart of names measures who is named, which is not the same as who
-matters, and the difference is a fact about the data, not the book.
+28 times. A narrator says "I", which the count does not see. The
+creature has no name at all, so he has no row. In
+*The War of the Worlds* the narrator has no name either. A chart of
+names measures who is named, not who matters. That difference is a fact
+about the data, not the book.
 ```
 
 </div>
@@ -392,7 +394,7 @@ for roll in range(1000):
 ```
 
 ```hint
-`plt.bar(totals, counted)` for the bars, then
+Use `plt.bar(totals, counted)` for the bars, then
 `plt.plot(totals, [rolled[t] / 1000 for t in totals], "o", color="black")`
 for the dots, with `"o"` meaning dots and no line.
 ```
@@ -420,10 +422,10 @@ plt.ylabel("share")
 plt.legend()
 ---
 The dots sit close to the bars, and miss most, in shares, near the
-middle, where the bars are tallest; for the rare totals, 2 and 12, a
+middle, where the bars are tallest. For the rare totals, 2 and 12, a
 miss of a few rolls is a large miss as a fraction of the bar. Run it
-again and the misses move. With 100,000 rolls they would nearly vanish:
-the law of large numbers, drawn.
+again and the misses move. With 100,000 rolls they would nearly vanish.
+That is the law of large numbers, in a picture.
 ```
 
 </div>
@@ -438,7 +440,7 @@ right?
 
 The mean. The long tail of large values pulls the mean towards it, and
 the median, which depends only on the middle, hardly moves. The gap
-between the two lines is the skew, seen in one glance.
+between the two lines shows the skew at a glance.
 
 </details>
 
@@ -450,22 +452,22 @@ Why is the chart nearly useless, and what would fix it?
 <details class="dl-answer"><summary>answer</summary>
 
 The well-and-negative bar is so tall that the other three are
-invisible, and they are the whole story. Two fixes: a log scale, which
-shows all four, clearly labelled; or leave out the 989,901 people who
-tested negative and did not need to, and draw only the positives, 99
-against 9,999. Choosing what to leave out of a chart is part of making
-it, as long as you say so.
+invisible, and they are what matters. There are two fixes. One is a
+log scale, which shows all four, clearly labelled. The other is to remove
+the 989,901 people who tested negative and did not need to, and draw only
+the positives, 99 against 9,999. Deciding what a chart does not show is
+part of making it, as long as you say so.
 
 </details>
 
-**13.** From *Counting*. A bar chart of $C(10, k)$ for $k$ from 0 to 10:
-what shape is it, and where have you seen it before?
+**13.** From *Counting*. Draw a bar chart of $C(10, k)$ for $k$ from 0 to
+10. What shape is it, and where have you seen it before?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A symmetric hump, from 1 up to 252 at $k = 5$ and back to 1. It is the
+It is a symmetric hump, from 1 up to 252 at $k = 5$ and back to 1. It is the
 row of Pascal's triangle for 10, and the shape of the binomial
-distribution of heads in ten coin flips, from the Statistics page: each
+distribution of heads in ten coin flips, from the Statistics page. Each
 count divided by $2^{10}$ is the chance of that many heads.
 
 </details>

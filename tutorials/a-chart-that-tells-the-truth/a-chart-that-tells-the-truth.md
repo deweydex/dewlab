@@ -12,7 +12,7 @@ datasets: [exoplanets, dinosaur-genera, dinosaur-finds, book-characters]
 
 # Make it: a chart that tells the truth, and one that lies
 
-This series counted, worked out chances, summed up data and drew it. It
+This series counted, calculated chances, summarised data and drew it. It
 ended with the ways a chart can mislead using only true numbers. Now you
 make two charts from the same data in your world: one that tells the
 truth about it, and one that lies. Then you write the sentence a
@@ -64,8 +64,8 @@ For your world, make:
 Some questions the planets could answer: how the ways of finding planets
 have changed; whether new planets are further away than old ones; what
 sizes planets come in. Some ways to lie about them: a window that starts
-at Kepler's great year, 2016; a size chart that leaves out the planets
-whose radius was estimated; a log axis that nobody mentions.
+at Kepler's great year, 2016; a size chart without the planets whose
+radius was estimated; a log axis that nobody mentions.
 
 ```python exec
 id: make-it-yours-1--exoplanets
@@ -100,7 +100,7 @@ print(finds.columns.tolist())
 
 <div class="dl-world" data-world="book-characters">
 
-Some questions the novels could answer: when a character is on stage;
+Some questions the novels could answer: when a character appears;
 who is named most in each book; how long the chapters are. Some ways to
 lie about them: counting names and calling it importance, when a narrator
 says "I"; one chapter chosen to stand for a whole book; two books
@@ -162,6 +162,6 @@ print("The first player won", wins, "of 10,000 games")
 Show your two charts to somebody, or write a few lines for yourself:
 
 - What question does your true chart answer, and why that kind of chart?
-- Which trick did your lying chart use, and what would give it away?
+- Which trick did your lying chart use, and what would show the trick?
 - Which of your two "reasons it could be wrong" was harder to find, and
   why?

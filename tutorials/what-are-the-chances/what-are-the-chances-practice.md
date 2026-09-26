@@ -12,16 +12,16 @@ datasets: [dinosaur-finds, exoplanets]
 
 # Probability: simple, compound and conditional — Practice
 
-Problems on chance, and three from earlier pages. Where a problem can be
-both played and counted, do both, in whichever order you like. When the
-two answers disagree, one of them is wrong, and finding which is the
-most useful part of the problem.
+Here are problems on chance, and three from earlier pages. Where a
+problem can be both played and counted, do both, in whichever order you
+like. When the two answers disagree, one of them has a mistake. Finding
+it is the most useful part of the problem.
 
 ## Tools
 
 Run this cell once before you start. `simulate(trial)` runs a trial many
-times, 100,000 unless you say otherwise, and gives the share of runs
-that came out `True`. You give it a function of your own that plays one
+times, 100,000 unless you say otherwise, and returns the share of runs
+that returned `True`. You give it a function of your own that plays one
 trial and returns `True` or `False`, such as `six` below.
 
 ```python exec
@@ -61,8 +61,8 @@ print(simulate(six), "is close to", round(1 / 6, 4))
 
 (a) $\frac{1}{6}$. (b) $\frac{1}{2}$. (c) $\frac{1}{3}$. (d) 0.
 
-An impossible event has a probability of exactly 0: not a very small
-number, but 0.
+An impossible event has a probability of exactly 0, not a very small
+number.
 
 </details>
 
@@ -71,8 +71,8 @@ probability of drawing each colour? Do the three add up to 1?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0.5, 0.3 and 0.2, which add up to 1. They must: every counter is one of
-the three colours, and none is two. If a list like this does not add up
+0.5, 0.3 and 0.2, which add up to 1. They must, because every counter is one
+of the three colours, and none is two. If a list like this does not add up
 to 1, a case is missing or a case is counted twice.
 
 </details>
@@ -126,8 +126,8 @@ def two_heads():
 
 print(simulate(two_heads))
 ---
-6 of 16, which is 0.375. The 6 is $C(4, 2)$ from
-[Counting](tutorial:counting-carefully): choose which 2 of the 4 flips
+It is 6 of 16, which is 0.375. The 6 is $C(4, 2)$ from
+[Counting](tutorial:counting-carefully), choosing which 2 of the 4 flips
 are heads. Many people guess a half, since two heads is the middle
 result, but most ways of landing are not the middle one.
 ```
@@ -145,7 +145,7 @@ result, but most ways of landing are not the middle one.
 (a) $\frac{1}{36}$. (b) $\frac{6}{36} = \frac{1}{6}$. (c)
 $\frac{11}{36}$.
 
-(c) is quickest with the complement: no six is $\frac{5}{6} \times
+(c) is quickest with the complement. No six is $\frac{5}{6} \times
 \frac{5}{6} = \frac{25}{36}$, so at least one is $1 - \frac{25}{36} =
 \frac{11}{36}$. Adding $\frac{1}{6} + \frac{1}{6}$ gives
 $\frac{12}{36}$, which counts the double six twice.
@@ -157,7 +157,7 @@ id: chances-which-are-independent
 type: fill-in-the-blank
 
 - Two rolls of a die are {independent|not independent}.
-- Two cards drawn without putting the first back are {not independent|independent}.
+- Two cards drawn without returning the first are {not independent|independent}.
 - Rain today and rain tomorrow are {not independent|independent}.
 - A card being red and a card being a face card (a jack, queen or king) are {independent|not independent}.
 ```
@@ -174,7 +174,7 @@ whether it is a face card.
 
 </details>
 
-**6.** A coin has come up heads five times in a row. What is the chance
+**6.** A coin has landed heads five times in a row. What is the chance
 of heads next? This cell flips six coins, 100,000 times, keeps the runs
 that start with five heads, and looks at the sixth flip.
 
@@ -207,10 +207,10 @@ What share of the runs with five heads will have heads next?
 <details class="dl-answer"><summary>why</summary>
 
 About 0.5. The coin has no memory. The feeling that tails is now "due"
-is called the *gambler's fallacy*, and nearly everybody has it. What is
-unlikely is five heads in a row judged before the first flip: about
-$\frac{1}{32}$, which is why only about 3,000 of the 100,000 runs were
-kept. Once they have happened, they change nothing about the sixth.
+is called the *gambler's fallacy*, and nearly everybody has it. Five
+heads in a row is unlikely before the first flip: about $\frac{1}{32}$.
+That is why only about 3,000 of the 100,000 runs were kept. Once they
+have happened, they change nothing about the sixth.
 
 </details>
 
@@ -238,8 +238,8 @@ print("Rooms with a shared birthday:", round(shared / rooms, 3))
 
 Now count it. The chance that everyone's birthday is different is
 $\frac{365}{365} \times \frac{364}{365} \times \frac{363}{365} \times
-\cdots$, one fraction for each person: each new person must miss every
-birthday so far. Can you write `chance_all_different(people)`?
+\cdots$, one fraction for each person, because each new person must miss
+every birthday so far. Can you write `chance_all_different(people)`?
 
 ```python exec
 id: chances-birthday-counted
@@ -259,7 +259,7 @@ round(chance_all_different(50), 4)
 
 ```hint
 Start a product at 1. The first person can have any of 365 days, the
-second any of the 364 left, and so on: multiply by `(365 - i) / 365` for
+second any of the 364 left, and so on. Multiply by `(365 - i) / 365` for
 each person `i`, counting from 0.
 ```
 
@@ -274,7 +274,7 @@ def chance_all_different(people):
 
 print(round(1 - chance_all_different(23), 4))
 ---
-0.5073: slightly better than even. Most first guesses are far too low,
+It is 0.5073, slightly better than even. Most people guess much lower,
 because the question sounds like "does someone share *my* birthday?",
 which for 23 people is only about 6%. But any two people can share, and
 23 people make $C(23, 2) = 253$ pairs. With 50 people, a shared birthday
@@ -288,8 +288,8 @@ a heart?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$\frac{1}{2}$. Knowing it is red shrinks the group we count in to the 26
-red cards, and 13 of them are hearts: $\frac{13}{26}$.
+$\frac{1}{2}$. When you know it is red, the group we count in shrinks to
+the 26 red cards, and 13 of them are hearts: $\frac{13}{26}$.
 
 </details>
 
@@ -299,17 +299,17 @@ the chance both are?
 <details class="dl-answer"><summary>answer</summary>
 
 $\frac{1}{3}$. Write the older child first: GG, GB, BG and BB are
-equally likely. BB is ruled out, leaving three, one of them GG. Told
-instead that *the older child* is a girl, the answer is $\frac{1}{2}$.
-It is the same trap as the dice on the tutorial page: the answer depends
-on exactly what you were told.
+equally likely. BB is not possible, which leaves three, and one of them
+is GG. If you are told instead that *the older child* is a girl, the
+answer is $\frac{1}{2}$. It is the same trap as the dice on the tutorial
+page. The answer depends on exactly what you were told.
 
 </details>
 
 **10.** In the tutorial's test for a rare disease, a positive test
 meant about a 1% chance of having it. A doctor sends you for a second,
 separate test, just as good, and it is positive too. What is the chance
-now? Can you work it out by following the people who tested positive
+now? Can you calculate it by following the people who tested positive
 once?
 
 ```python exec
@@ -334,7 +334,7 @@ round(after_two, 4)
 
 ```hint
 The people who take the second test are the ones who tested positive
-once. Among them, the share who are sick is `after_one`: that is the new
+once. Among them, the share who are sick is `after_one`. That is the new
 rate.
 ```
 
@@ -353,25 +353,25 @@ after_one = share_sick(1 / 10_000, 0.99)
 after_two = share_sick(after_one, 0.99)
 print(round(after_one, 4), round(after_two, 4))
 ---
-About 0.495, just under a half. Of the 10,098 people with one positive
+It is about 0.495, just under a half. Of the 10,098 people with one positive
 test, 99 are sick. The second test finds about 98 of them, and wrongly
-flags about 100 of the 9,999 well ones. A third positive test would take
+flags about 100 of the 9,999 well ones. A third positive test would raise
 it to 0.99. The answer after each test becomes the base rate for the
 next, which is Bayes' theorem used again and again. It only works if the
-two tests make their mistakes separately: a second test that fails on
+two tests make their mistakes separately. A second test that fails on
 the same people as the first adds nothing.
 ```
 
 ## Your world
 
-**11.** A question from the world you chose.
+**11.** Here is a question from the world you chose.
 
 <div class="dl-world" data-world="games-of-chance">
 
-A game for two: roll two dice. You win if the total is 7 or more, and I
-win if it is less. Seven is the middle total, so it looks fair. Is it?
-Can you count your chance of winning, and then change the rule so the
-game is fair?
+Here is a game for two. Roll two dice. You win if the total is 7 or
+more, and I win if it is less. Seven is the middle total, so it looks
+fair. Is it? Can you count your chance of winning, and then change the
+rule so the game is fair?
 
 ```python exec
 id: chances-world--games-of-chance
@@ -385,7 +385,7 @@ print(Fraction(len(you_win), len(outcomes)))
 
 ```hint
 Count the totals of 7 and above, and those below 7. Which total is in
-the wrong group, and what could happen when it comes up?
+the wrong group, and what could happen when it is rolled?
 ```
 
 ```solution
@@ -402,9 +402,9 @@ print(Fraction(len(above), 36), Fraction(len(below), 36))
 ---
 You win 7 times in 12, which is 21 of the 36 outcomes. The rule gives
 you all of the 7s, the commonest total, and the two sides are otherwise
-mirror images. One fair rule: above 7 wins for you, below 7 for me, each
-$\frac{15}{36}$, and a 7 means roll again. An unfair game that looks
-fair usually hides its advantage in a case like this: one that sounds
+mirror images. Here is one fair rule. Above 7 wins for you, below 7 for
+me, each $\frac{15}{36}$, and a 7 means roll again. An unfair game that
+looks fair usually hides its advantage in a case like this, which sounds
 like a boundary and is the most likely result.
 ```
 
@@ -439,13 +439,13 @@ for code in ["US", "CN", "CA"]:
     in_country = finds.country_code == code
     print(code, round(cretaceous[in_country].mean(), 3))
 ---
-With the copy saved on {{snapshot: dinosaur-finds}}: 0.722 of all finds
-are Cretaceous; 0.641 of the United States' and 0.652 of China's, but
-0.997 of Canada's. Knowing the country changes the chance, so the two
-are not independent, and for Canada they are far from it: nearly all of
-its finds come from Cretaceous rock, such as the badlands of Alberta.
-Close to the overall figure is not the same as independent, either: the
-test is whether knowing one changes the other.
+With the copy saved on {{snapshot: dinosaur-finds}}, 0.722 of all finds
+are Cretaceous. So are 0.641 of the United States' finds and 0.652 of
+China's, but 0.997 of Canada's. The country changes the chance, so the
+two are not independent. For Canada they are far from it. Nearly all of
+its finds come from Cretaceous rock, such as the badlands of Alberta. A
+figure close to the overall one does not make them independent. The
+question is whether knowing one changes the other.
 ```
 
 </div>
@@ -480,11 +480,11 @@ for year in [2000, 2010, 2016, 2023]:
     in_year = planets.discovered == year
     print(year, in_year.sum(), "planets", round(transit[in_year].mean(), 3))
 ---
-With the copy saved on {{snapshot: exoplanets}}: 0.739 of all known
+With the copy saved on {{snapshot: exoplanets}}, 0.739 of all known
 planets were found by transit, but none of the 16 found in 2000, about
 half in 2010, and 0.952 of the 1,504 in 2016. The two are far from
 independent. Transits need a telescope that watches the same stars for a
-long time, and the Kepler telescope, which did that, sent back most of
+long time, and the Kepler telescope, which did that, reported most of
 its planets in the 2010s.
 ```
 
@@ -518,13 +518,13 @@ year group shows it as the region outside both circles.
 
 **14.** From *Logic and truth*. By De Morgan, "not both sixes" is the
 same event as "the first is not a six, or the second is not a six". Can
-you work out its chance both ways, and check that they agree?
+you calculate its chance both ways, and check that they agree?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$\frac{35}{36}$ both ways. The complement: $1 - \frac{1}{36}$. The "or",
-with inclusion-exclusion: $\frac{5}{6} + \frac{5}{6} - \frac{25}{36} =
-\frac{60}{36} - \frac{25}{36} = \frac{35}{36}$. Two routes to one event,
-and one of them is much shorter.
+Both ways give $\frac{35}{36}$. The complement gives $1 - \frac{1}{36}$.
+The "or", with inclusion-exclusion, gives
+$\frac{5}{6} + \frac{5}{6} - \frac{25}{36} = \frac{60}{36} - \frac{25}{36} = \frac{35}{36}$.
+Both routes reach the same answer, and one of them is much shorter.
 
 </details>

@@ -24,7 +24,7 @@ covers:
 # Statistics: averages, spread and frequency
 
 How big is a typical planet around another star? Astronomers have
-confirmed more than six thousand of them, and NASA keeps a list. This
+confirmed more than 6,000 of them, and NASA keeps a list. This
 cell loads the list, as it stood on {{snapshot: exoplanets}}, and shows
 its first five rows.
 
@@ -51,8 +51,8 @@ that, it asks where the list came from.
 
 Every number in the file was measured by somebody, with some instrument,
 and published in a paper. The NASA Exoplanet Archive gathers them. So the
-file is not a list of the planets there are. It is a list of the planets
-that our instruments have been able to find.
+file is a list of the planets that our instruments have been able to
+find, not of all the planets there are.
 
 The Earth is about 1 Earth radius across, and takes 365 days to go round
 the Sun. How many planets in the file are about the Earth's size, with a
@@ -76,20 +76,20 @@ file? The last number printed is that count.
 None. There are 507 planets the size of the Earth, but nearly all of
 them go round their stars in a few days. That is not because planets
 like the Earth are rare. Most of the planets in the file were found by
-*transit*: a telescope watches a star, and sees it dim slightly when a
+*transit*. A telescope watches a star, and sees it dim slightly when a
 planet crosses in front of it. A small planet dims its star very little,
 and a planet with a long year crosses only once a year, so a telescope
 has to watch for years to see it twice. Small planets in long orbits are
 the hardest kind to find.
 
 That is the difference between a population and a sample. The
-*population* is everything we want to know about: here, every planet
-around every star. A *sample* is the part of it we have data on. When
+*population* is everything we want to know about. Here, it is every
+planet around every star. A *sample* is the part of it we have data on. When
 the way a sample is taken makes some members more likely to be in it
 than others, the sample has a *sampling bias*. Every dataset on this page
-has one, and asking what it is comes before any average.
+has one. Ask what it is before you calculate any average.
 
-Three questions to ask of any dataset:
+Here are three questions to ask of any dataset:
 
 - Who collected it, and how?
 - Who or what is missing from it, and why?
@@ -101,12 +101,12 @@ Three questions to ask of any dataset:
 A *measure of central tendency* is a single number that describes the
 centre, or typical value, of a dataset. There are three common ones.
 
-The *mean* is the ordinary average: add up all the values and divide by
+The *mean* is the ordinary average. Add all the values and divide by
 how many there are. With $n$ values $x_1, x_2, \ldots, x_n$:
 
 $$\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i$$
 
-We write the mean as $\bar{x}$ and say "x bar"; the $\sum$ sign means
+We write the mean as $\bar{x}$ and say "x bar". The $\sum$ sign means
 "add up". The mean of 2, 4 and 9 is $\frac{15}{3} = 5$.
 
 The *median* is the middle value when the data is sorted. The median of
@@ -118,7 +118,7 @@ The *mode* is the value that appears most often. The mode of 3, 5, 5
 and 8 is 5.
 
 The mean is one line. Can you write `median(data)`? Python's `sorted()`
-gives back a new sorted list, and leaves the old one as it was.
+returns a new sorted list, and leaves the old one as it was.
 
 ```python exec
 id: data-median
@@ -171,7 +171,7 @@ since positions start at 0. For an even count it is the second of the
 two middle values, so the first is one before it.
 ```
 
-And `mode(data)`? A dictionary from
+Can you write `mode(data)` too? A dictionary from
 [Looking things up by name](tutorial:looking-things-up-by-name) can count
 how often each value appears.
 
@@ -192,8 +192,8 @@ mode([1, 2, 2, 1])
 ```
 
 ```hint
-Count first: for each value, add 1 to `counts[value]`, starting it at 0
-the first time. Then go through the counts, and keep the value with the
+Count first. For each value, add 1 to `counts[value]`, starting it at 0
+the first time. Then look at each count, and keep the value with the
 largest count so far.
 ```
 
@@ -215,13 +215,12 @@ def mode(data):
 print(mode([3, 5, 5, 8]))
 ---
 A dictionary keeps its keys in the order they were first added, so on a
-tie the value seen first wins: `mode([1, 2, 2, 1])` is 1. A tie is worth
-reporting, not hiding; `statistics.multimode` gives every value that
-ties.
+tie the value seen first wins: `mode([1, 2, 2, 1])` is 1. It is worth
+reporting a tie. `statistics.multimode` gives every value that ties.
 ```
 
-Now the three on the planets' radii. Fifty planets have no radius in the
-file; `dropna()` leaves them out, and `tolist()` makes a plain list. The
+Now we use the three on the planets' radii. Fifty planets have no radius
+in the file. `dropna()` drops them, and `tolist()` makes a plain list. The
 missing fifty are part of the answer too.
 
 ```python exec
@@ -244,18 +243,18 @@ Which of the three will be largest?
   - The commonest size is the typical size.
 ```
 
-The mean is 5.88 Earth radii, the median 2.87, and the mode 12.8. Three
-"typical" sizes, and none of them agrees with another. 59 planets share
+The mean is 5.88 Earth radii, the median 2.87, and the mode 12.8. These are
+three "typical" sizes, and no two of them agree. 59 planets share
 the mode, and 48 of those were found by the wobble of their star, which
 measures a planet's mass but not its size. For them, the archive
 estimated the radius from the mass, and the estimates for heavy planets
-come out close together. So the mode here says more about how the
+are close together. So the mode here says more about how the
 numbers were made than about the planets. The histogram, further down,
 shows why the mean and median disagree.
 
 ## When the mean misleads
 
-The planets' years are further apart still. This cell works out the
+The planets' years are further apart still. This cell calculates the
 mean and median of `orbit_days`, and then again without the single
 longest orbit.
 
@@ -269,7 +268,7 @@ print("mean  ", round(mean(without_longest)), " median", median(without_longest)
 ```
 
 ```predict
-When one planet of 6,019 is taken away, which moves more?
+When one planet of 6,019 is removed, which moves more?
 
 - The mean
   - Every value adds its full size to the total.
@@ -285,18 +284,18 @@ from its star that one year there lasts about a million of ours:
 402,000,000 days. That one value was most of the total.
 
 An *outlier* is a value far away from the rest of the data. A measure is
-*robust* when an outlier hardly changes it: the median is robust, and
+*robust* when an outlier hardly changes it. The median is robust, and
 the mean is not. Data is *skewed* when it has a long tail of values on
-one side, as the orbits do: nearly half the planets go round in under 10
+one side, as the orbits do. Nearly half the planets go round in under 10
 days, and a few take centuries or more. For skewed data, the median is
 usually the better answer to "what is typical?". The mean answers a
-different question, what each would get if the total were shared out
-equally, and it is the right one when the total matters.
+different question: what each would get if the total were shared
+equally. It is the right one when the total matters.
 
 ## Measures of spread
 
-Two datasets can have the same centre and look very different: the
-values in one close together, in the other far apart. A *measure of
+Two datasets can have the same centre and look very different. The
+values in one can be close together, and in the other far apart. A *measure of
 spread* is a number that says how spread out the values are.
 
 The *range* is the largest value minus the smallest. It is simple, and it
@@ -308,16 +307,16 @@ in a typical case. It takes four steps:
 1. Find how far each value is from the mean.
 2. Square each distance, which makes them all positive.
 3. Find the mean of the squares.
-4. Take the square root, to get back to the units of the data.
+4. Take the square root, to return to the units of the data.
 
 $$\sigma = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})^2}$$
 
 We write it $\sigma$, the Greek letter sigma. For 2, 4 and 9, whose
 mean is 5, the distances are $-3$, $-1$ and $4$, the squares 9, 1 and 16,
 their mean $\frac{26}{3} \approx 8.67$, and its square root about 2.94.
-Some books divide by $n - 1$ in place of $n$; that is the *sample
-standard deviation*, for when the data is a sample and the spread of
-the whole population is what we want to estimate. This page divides by
+Some books divide by $n - 1$ in place of $n$. That is the *sample
+standard deviation*, for when the data is a sample and we want to
+estimate the spread of the whole population. This page divides by
 $n$.
 
 Can you write `std_dev(data)`?
@@ -344,9 +343,9 @@ std_dev([5, 5, 5])
 ```
 
 ```hint
-Work out the mean once, before the loop. Then add up
-`(value - centre) ** 2` for every value, divide by how many there are,
-and take the square root with `** 0.5`.
+Calculate the mean once, before the loop. Then add
+`(value - centre) ** 2` to a total for every value, divide by how many
+there are, and take the square root with `** 0.5`.
 ```
 
 ```solution
@@ -366,9 +365,10 @@ def std_dev(data):
 
 print(round(std_dev([2, 4, 9]), 2))
 ---
-2.94, then 2.0 for the second list, and 0.0 when every value is the
-same: no spread at all. Working out the mean inside the loop would give
-the same answer, and do the same work once for every value.
+It prints 2.94, then 2.0 for the second list, and 0.0 when every value
+is the same, with no spread at all. Calculating the mean inside the loop
+would give the same answer, but it would do the same work once for every
+value.
 ```
 
 ```python exec
@@ -380,7 +380,7 @@ print("std dev", round(std_dev(radii), 2))
 The radii run from 0.31 to 87.21 Earth radii, a range of 86.9, set by
 two unusual planets. The standard deviation, 5.43, uses every planet.
 Beside a mean of 5.88, it says the sizes vary about as much as the mean
-itself: these planets are nothing like one size.
+itself. These planets are nothing like one size.
 
 ## Data types
 
@@ -413,11 +413,11 @@ type: fill-in-the-blank
 - A planet's name is {categorical|ordinal|discrete} data, even though some names have numbers in them.
 ```
 
-For categorical data, the mode is the only average there is: `mode` on
+For categorical data, the mode is the only average there is. `mode` on
 the `method` column gives Transit. A mean of the methods has no meaning,
 and Python refuses to add up words. But give it numbers that are labels,
-such as the numbers on football shirts, and it will work out their mean
-without complaint: nothing in the data stops a meaningless average.
+such as the numbers on football shirts, and it will calculate their mean
+without complaint. Nothing in the data stops a meaningless average.
 
 ## Frequency distributions
 
@@ -451,22 +451,23 @@ print(len(radii) - len(small_enough), "planets larger than 25 Earth radii are le
 What shape will the histogram have?
 
 - One hump, around the mean
-  - A mean is where the data gathers.
+    - The data gathers around the mean.
 - Two humps, one of small planets and one of large
   - There might be two different kinds of planet.
 - Tallest at the left, falling away to the right
   - Small things are usually commonest.
 ```
 
-Two humps: a crowd of small planets, one to four times the Earth's
-size, and a second crowd near Jupiter's size, about 11 to 14. The mean,
-the red line, falls in the valley between them, where fewer than one
-planet in twenty sits. It is a size hardly any planet has. A histogram
-with one peak is *unimodal*; with two, *bimodal*. Two humps usually mean
-two kinds of thing mixed together. Here they are small planets, rocky or
-gassy, and giants like Jupiter. About half the planets in the second
-hump were found by the wobble, so their sizes are estimates made from
-their mass: one more reason to ask where each number came from.
+There are two humps: a crowd of small planets, one to four times the
+Earth's size, and a second crowd near Jupiter's size, about 11 to 14.
+The mean, the red line, falls in the valley between them, where fewer
+than one planet in twenty sits. It is a size hardly any planet has. A
+histogram with one peak is *unimodal*. With two, it is *bimodal*. Two
+humps usually mean two kinds of thing mixed together. Here they are
+small planets, rocky or gassy, and giants like Jupiter. About half the
+planets in the second hump were found by the wobble, so their sizes are
+estimates made from their mass. That is one more reason to ask where
+each number came from.
 
 A histogram is *symmetric* when its two halves are mirror images, and
 skewed when one side has a long tail. When you look at one, ask: one
@@ -487,20 +488,19 @@ plt.ylabel("planets")
 
 With 5 bins the two humps merge, and the valley vanishes. With 200, the
 bars get so thin that chance bumps look like features. There is no
-right number of bins; choosing one is a judgement, and trying several is
-how to make it.
+right number of bins. You choose one by trying several.
 
 ## Go further: percentiles and box plots
 
-The median splits the data in half. *Percentiles* split it more finely:
-the 25th percentile is the value a quarter of the data is below, and the
-75th, the value three quarters is below. Those two are the *quartiles*,
+The median splits the data in half. *Percentiles* split it more finely.
+The 25th percentile is the value a quarter of the data is below, and the
+75th is the value three quarters is below. Those two are the *quartiles*,
 and the distance between them, the *interquartile range*, is a measure
 of spread that, like the median, ignores the extremes. For the radii, the
 quartiles are 1.85 and 11.99.
 
 A *box plot* draws them. The box runs from the 25th to the 75th
-percentile, with a line at the median; the whiskers reach out to the
+percentile, with a line at the median. The whiskers reach to the
 data that is not far from the box, and anything beyond them is drawn as
 a dot. Box plots are good for comparing groups side by side. Here are
 the planets' distances from us, for each of the four commonest ways of
@@ -528,14 +528,13 @@ and a direct photograph (imaging) work best on stars close by, a few
 hundred light years away. Transits reach further. Microlensing, which sees a
 distant star brighten as another star and its planet pass in front of it
 and bend its light, finds planets at a median of about 20,000 light
-years. The y axis is
-a *logarithmic scale*: each step up multiplies by 10, so all four fit on
-one chart.
+years. The y axis is a *logarithmic scale*. Each step up multiplies by
+10, so all four fit on one chart.
 
 ## Go further: the binomial distribution
 
 Flip ten coins and count the heads. Do it 10,000 times, and draw how
-often each count came up.
+often each count appeared.
 
 ```python exec
 id: data-binomial
@@ -564,16 +563,17 @@ print("The commonest count is", commonest)
 ```predict
 type: number
 
-Which number of heads will come up most often?
+Which number of heads will appear most often?
 ```
 
-Five heads, about a quarter of the time, and the counts fall away on
-both sides. [Counting](tutorial:counting-carefully) says why: there are
+Five heads is commonest, about a quarter of the time, and the counts
+fall on both sides. [Counting](tutorial:counting-carefully) explains why.
+There are
 $2^{10} = 1{,}024$ equally likely ways ten flips can land, and $C(10, 5)
 = 252$ of them have five heads, so the chance is $\frac{252}{1{,}024}
 \approx 0.246$. Ten heads is $\frac{1}{1{,}024}$.
 
-This is the *binomial distribution*: the number of successes in $n$
+This is the *binomial distribution*. It counts the successes in $n$
 independent trials, each with the same chance $p$. The chance of exactly
 $k$ successes is
 
@@ -585,13 +585,13 @@ coins, $p = \frac{1}{2}$, so every way has chance $\frac{1}{2^{10}}$.
 
 ## Your world
 
-A question from the world you chose, with the tools from this page.
+Each world has a question for the tools on this page.
 
 <div class="dl-world" data-world="exoplanets">
 
-The years in which planets were announced: what are the mean, median and
-mode of the `discovered` column? What does the mode year say, and which
-average would you quote for "when was a typical planet found"?
+Look at the years in which planets were announced. What are the mean,
+median and mode of the `discovered` column? What does the mode year say,
+and which average would you quote for "when was a typical planet found"?
 
 ```python exec
 id: data-your-world--exoplanets
@@ -611,13 +611,13 @@ years = planets.discovered.tolist()
 print(min(years), "to", max(years))
 print("mean", round(mean(years), 1), " median", median(years), " mode", mode(years))
 ---
-With the copy saved on {{snapshot: exoplanets}}: the mean is about
+With the copy saved on {{snapshot: exoplanets}}, the mean is about
 2017.3, the median 2016, and the mode 2016, when more than 1,500
 planets were announced, 1,284 of them from the Kepler telescope on one
-day in May. The years are skewed: a long tail back to 1992, the first
+day in May. The years are skewed, with a long tail back to 1992, the first
 year in the file, and a crowd in the last ten years. The median is the
-fairer "typical year", and the mode here is not typical at all: it marks
-one announcement.
+fairer "typical year". The mode here is not typical at all, because it
+marks one announcement.
 ```
 
 </div>
@@ -627,8 +627,9 @@ one announcement.
 The file `dinosaur-genera.csv` has one row for each named dinosaur genus,
 and `named_by` says who named it and when, such as "Osborn 1905". A few
 are in brackets, such as "(Stromer 1931)", which means the animal was
-first described under another name; `strip("()")` takes the brackets off
-the ends. When was a typical genus named? Work out the mean and the median year. What
+first described under another name. `strip("()")` removes the brackets
+from the ends. When was a typical genus named? Can you calculate the mean
+and the median year? What
 do they say about where this data comes from?
 
 ```python exec
@@ -642,7 +643,7 @@ print(len(years), "genera, named from", min(years), "to", max(years))
 
 ```hint
 `name.strip("()")[-4:]` is the last four characters of the text, once
-the brackets are off: the year. `mean`
+the brackets are removed. That is the year. `mean`
 and `median` from above work on the list.
 ```
 
@@ -658,13 +659,13 @@ print("mean", round(mean(years)), " median", median(years))
 recent = [year for year in years if year >= 2000]
 print(len(recent), "named in 2000 or later")
 ---
-With the copy saved on {{snapshot: dinosaur-genera}}: the mean is about
+With the copy saved on {{snapshot: dinosaur-genera}}, the mean is about
 1990 and the median 2007. Half of all the genera in the file were named
 since 2007, and 1,014 of the 1,615 since 2000. The oldest,
 *Megalosaurus*, dates from 1822. The years are skewed, with a long tail
 back to the 1800s, which pulls the mean nearly twenty years earlier than
-the median. This data is not a fixed list of dinosaurs: it is what
-people have found and named so far, and it grows every year.
+the median. This data is what people have found and named so far,
+not a fixed list of dinosaurs. It grows every year.
 ```
 
 </div>
@@ -685,8 +686,8 @@ for book in chapters.book.unique():
 ```
 
 ```hint
-For each book, `std_dev(words)` and `mean(words)`. Dividing the first by
-the second gives the spread as a share of the mean.
+For each book, find `std_dev(words)` and `mean(words)`. Dividing the
+first by the second gives the spread as a share of the mean.
 ```
 
 ```solution
@@ -699,13 +700,13 @@ for book in chapters.book.unique():
     print(book, " mean", round(mean(words)), " sd", round(spread),
           " sd / mean", round(spread / mean(words), 2))
 ---
-*A Princess of Mars* has the most even chapters both ways: a standard
-deviation of 771 words, 0.33 of its mean. *The Lost World* has the
+*A Princess of Mars* has the most even chapters both ways, with a
+standard deviation of 771 words, 0.33 of its mean. *The Lost World* has the
 largest standard deviation, 1,614, but its chapters are also the longest,
-nearly 4,800 words on average; as a share of the mean, 0.34, it is
+nearly 4,800 words on average. As a share of the mean, 0.34, it is
 nearly as even as *A Princess of Mars*. The least even, as a share, is
-*The War of the Worlds*, at 0.53. A spread means more beside the size of
-the values it is spread around.
+*The War of the Worlds*, at 0.53. So compare a spread with the size of
+the values.
 ```
 
 </div>
@@ -762,8 +763,8 @@ print("mean", round(mean(waits), 2), " median", median(waits), " mode", mode(wai
 The mean is about 6, the median 4, and the mode 1. The commonest wait
 is one roll, and yet the typical player waits several, and a few wait
 thirty or more. The waits are skewed, with a long tail of unlucky
-players. "Six rolls on average" is true, and "most players start within
-six rolls" is true too, about two players in three, but a player who is
+players. "Six rolls on average" is true. "Most players start within six
+rolls" is true too, for about two players in three. But a player who is
 told only the mean will think a four-roll wait is lucky.
 ```
 
@@ -777,10 +778,10 @@ Before you quote an average of anything, can you say which of the three
 you would choose for the planets' orbits, and the one sentence you would
 put beside it?
 
-A challenge: write `percentile(data, p)`, which gives the value that `p`
-percent of the data is below, and test it on a list you can check by
-hand. There are several ways to define a percentile, and they can
-differ in the second decimal place; pandas's `quantile` gives 1.85 and
+A challenge: can you write `percentile(data, p)`, which gives the value
+that `p` percent of the data is below, and test it on a list you can
+check by hand? There are several ways to define a percentile, and they
+can differ in the second decimal place. pandas's `quantile` gives 1.85 and
 11.99 for the quartiles of the planets' radii. How does yours choose
 between two values that are both "in the middle"?
 

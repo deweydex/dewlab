@@ -10,13 +10,13 @@ version: 2026.09.26.1
 The tutorial changed the host once, and the answer moved from two thirds
 to a half. These problems change him three more ways, and add a door.
 For each one, guess first, then play it thousands of times, then count
-the cases. The simulation says what happens; the count says why.
+the cases. The simulation shows what happens, and the count explains why.
 
 ## A host with a favourite door
 
 **1.** You always pick door 1. When the host has a choice between door 2
 and door 3, which happens when the car is behind door 1, he always opens
-door 3. He still never opens the car. Suppose he opens door 3: should
+door 3. He still never opens the car. Suppose he opens door 3. Should
 you switch? And if he opens door 2?
 
 Can you finish the game in this cell, and count separately how often
@@ -79,12 +79,13 @@ print("He opened door 2:", opened_2, "times")
 print("Switching won after door 3:", round(switching_won_3 / opened_3, 3))
 print("Switching won after door 2:", round(switching_won_2 / opened_2, 3))
 ---
-After door 3, switching wins about half the time; after door 2, every
-time. He opens door 3 when the car is behind door 1 and when it is behind
-door 2: two equally likely cases, one each way. He opens door 2 only
+After door 3, switching wins about half the time. After door 2, it wins
+every time. He opens door 3 when the car is behind door 1 and when it is
+behind door 2. These are two equally likely cases, and switching wins in
+one of them. He opens door 2 only
 when he has to, when the car is behind door 3. Over all the games,
-switching still wins two thirds of the time: the host's habit changes
-what each door tells you, not how often switching wins.
+switching still wins two thirds of the time. The host's habit changes
+what each door tells you, but not how often switching wins.
 ```
 
 **2.** Can you get the answer "a half, after door 3" from the formula for
@@ -102,10 +103,11 @@ happen only when the car is behind door 2: $P(A \text{ and } B) =
 
 ## A host who does not always offer
 
-**3.** A different host. If your first pick is the car, he always opens
-a goat door and offers you the switch. If your first pick is a goat, he
-offers the switch only half the time; the other half, he opens your door
-and the game ends. He has offered you the switch. Should you take it?
+**3.** Here is a different host. If your first pick is the car, he
+always opens a goat door and offers you the switch. If your first pick
+is a goat, he offers the switch only half the time. The other half, he
+opens your door and the game ends. He has offered you the switch. Should
+you take it?
 
 ```python exec
 id: doors-sometimes-offers
@@ -153,21 +155,21 @@ for game in range(30000):
 print("He offered the switch in", offered, "games")
 print("Switching won:", round(switching_won / offered, 3))
 ---
-About a half. Count a hundred games of each kind of first pick, as the
-medical test counted a million people: of 300 games, 100 start with the
-car, and he offers in all 100; 200 start with a goat, and he offers in
-100. So he offers in 200 games, and switching wins in the 100 of them
-that started with a goat. The offer itself is information. A host who
-offered *only* when you had picked the car would make switching lose
-every time.
+It is about a half. Count 300 games, as the medical test counted a
+million people. 100 start with the car, and he offers in all 100. 200
+start with a goat, and he offers in 100. So he offers in 200 games, and
+switching wins in the 100 of them that started with a goat. The offer
+itself is information. A host who offered *only* when you had picked the
+car would make switching lose every time.
 ```
 
 ## Four doors
 
-**4.** Four doors, one car. You pick a door. The host, who knows where
-the car is, opens one of the other doors with a goat behind it. Two
-doors besides yours are still shut. If you switch, you choose one of the
-two at random. How often does switching win? How often does staying?
+**4.** There are four doors and one car. You pick a door. The host, who
+knows where the car is, opens one of the other doors with a goat behind
+it. Two doors besides yours are still shut. If you switch, you choose
+one of the two at random. How often does switching win? How often does
+staying?
 
 ```python exec
 id: doors-four-doors
@@ -223,11 +225,11 @@ print("Switching won:", round(switching_won / games, 3))
 print("Staying won:  ", round(staying_won / games, 3))
 ---
 Switching wins about 0.375 and staying 0.25. Staying wins when your
-first pick was right, 1 time in 4. Your first pick is wrong 3 times in
-4, and then the car is behind one of the two doors you can switch to,
-so a random switch finds it half the time: $\frac{3}{4} \times
-\frac{1}{2} = \frac{3}{8}$. Switching is still better, though it wins
-less than half the time.
+first pick was the car, 1 time in 4. Your first pick misses the car 3
+times in 4, and then the car is behind one of the two doors you can
+switch to, so a random switch finds it half the time:
+$\frac{3}{4} \times \frac{1}{2} = \frac{3}{8}$. Switching is still
+better, though it wins less than half the time.
 ```
 
 **5.** Same four doors, but now the host opens *two* goat doors. How
@@ -236,9 +238,9 @@ often does switching win?
 <details class="dl-answer"><summary>answer</summary>
 
 $\frac{3}{4}$. Only one door besides yours is left shut, so switching
-wins whenever your first pick was wrong. With $n$ doors and a host who
-opens every goat door but one, switching wins $\frac{n-1}{n}$ of the
-time: the hundred-door game from the tutorial is $\frac{99}{100}$.
+wins whenever your first pick missed the car. With $n$ doors and a host
+who opens every goat door but one, switching wins $\frac{n-1}{n}$ of the
+time. The hundred-door game from the tutorial gives $\frac{99}{100}$.
 
 </details>
 
@@ -250,21 +252,23 @@ from that page is `True` when exactly one of two things is?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Exclusive or, XOR: `stayed_won ^ switched_won` is `True` in every game.
-It fails for the careless host, whose spoiled games have neither winning,
-and for four doors, where staying and switching can both lose.
+It is exclusive or, XOR. `stayed_won ^ switched_won` is `True` in every
+game. It fails for the careless host, whose spoiled games have neither
+winning, and for four doors, where staying and switching can both lose.
 
 </details>
 
 **7.** From *Counting*. With $n$ doors, how many pairs of (where the car
-is, which door you pick) are there, and in how many is your pick wrong?
+is, which door you pick) are there, and in how many does your pick miss
+the car?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$n^2$ pairs, by the multiplication principle, and $n^2 - n = n(n-1)$
-with the pick wrong, since exactly $n$ pairs have the pick right. So a
-wrong first pick has probability $\frac{n(n-1)}{n^2} = \frac{n-1}{n}$:
-$\frac{6}{9}$ for three doors, the tutorial's count.
+There are $n^2$ pairs, by the multiplication principle. In
+$n^2 - n = n(n-1)$ of them the pick misses the car, since exactly $n$
+pairs have the pick on the car. So a first pick misses with probability
+$\frac{n(n-1)}{n^2} = \frac{n-1}{n}$. For three doors that is
+$\frac{6}{9}$, the tutorial's count.
 
 </details>
 
@@ -279,7 +283,7 @@ Yes. He opens door 3 half the time: when the car is behind door 2
 ($\frac{1}{6}$). Both happen $\frac{1}{6}$ of the time, and
 $\frac{1}{3} \times \frac{1}{2} = \frac{1}{6}$. The door he opens tells
 you nothing about your own door. It tells you a great deal about the
-*other* one, which is where the two thirds lives. With the favourite-door
-host of problem 1, they are no longer independent.
+*other* one, and so switching wins two thirds of the time. With the
+favourite-door host of problem 1, they are no longer independent.
 
 </details>
