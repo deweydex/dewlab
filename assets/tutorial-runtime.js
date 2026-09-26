@@ -2304,6 +2304,47 @@ function initWorlds() {
   });
 }
 
+/* A closer's challenge (#316). The build's link carries the starter in its
+ * address and opens the Notebook or the Workspace, which do the rest. A
+ * downloaded page has neither beside it, so there the link gives way to a
+ * button that saves the starter as a file: a .py for the Notebook's, and
+ * one .html page, with its CSS and JavaScript inside it, for the
+ * Workspace's. */
+function challengeStarter(box) {
+  const link = box.querySelector(".dl-challenge-open");
+  const at = link.href.indexOf("#challenge=");
+  return JSON.parse(decodeURIComponent(link.href.slice(at + "#challenge=".length)));
+}
+
+function challengeFile(box) {
+  const starter = challengeStarter(box);
+  if (box.dataset.target === "notebook") {
+    return { name: `${starter.name}.py`, type: "text/x-python", text: `${starter.code}\n` };
+  }
+  const text = "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n"
+    + `<title>${escapeHtml(starter.page || starter.name)}</title>\n`
+    + `<style>\n${starter.css}\n</style>\n</head>\n<body>\n${starter.html}\n`
+    + `<script>\n${starter.js}\n</script>\n</body>\n</html>\n`;
+  return { name: `${starter.name}.html`, type: "text/html", text };
+}
+
+function initChallenges(manifest) {
+  if (!manifest.standalone) return;
+  for (const box of document.querySelectorAll(".dl-challenge")) {
+    box.querySelector(".dl-challenge-open").hidden = true;
+    const save = box.querySelector(".dl-challenge-save");
+    save.hidden = false;
+    save.addEventListener("click", () => {
+      const file = challengeFile(box);
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(new Blob([file.text], { type: file.type }));
+      link.download = file.name;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+  }
+}
+
 function buildQuestions() {
   for (const host of document.querySelectorAll(".dl-question")) {
     const id = host.dataset.questionId;
@@ -6265,6 +6306,7 @@ initWorlds();
 buildCells(currentManifest);
 buildToolkitLine(currentManifest);
 buildQuestions();
+initChallenges(currentManifest);
 buildSiteEditors(currentManifest);
 wireDiagramWidthSliders();
 buildAppCells(currentManifest);

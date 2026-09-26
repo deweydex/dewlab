@@ -3796,6 +3796,14 @@ p code, li code {
   padding-top: 0.8rem;
 }
 
+/* A closer's challenge (#316): its starter, read-only, and the way to take
+   it away: a link to the Notebook or the Workspace, or, on a downloaded
+   page, a button that saves it as a file. */
+.dl-challenge { max-width: var(--dl-line-width); margin: 0.6rem 0 1.2rem; }
+.dl-challenge-actions { margin: 0.5rem 0 0; }
+.dl-challenge-open { text-decoration: none; }
+.dl-challenge-open[hidden], .dl-challenge-save[hidden] { display: none; }
+
 /* World variants (#315). The chooser sits under the page's title, and each
    task shows the chosen world's variant. Without JavaScript the chooser
    stays hidden and every variant shows, each under its world's name. */

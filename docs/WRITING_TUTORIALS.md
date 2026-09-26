@@ -380,9 +380,7 @@ a prediction, a hint, or a challenge. Write it after its cell. With a
 may follow it in any order, and every block uses the same `key: value`
 header lines a cell does.
 
-**Status.** Every block here is live except `challenge`, which goes live with
-#316; until then it builds as a plain code block, so a page can be written
-against it now.
+**Status.** Every block here is live.
 
 ### solution
 
@@ -526,9 +524,9 @@ attempt](#hints-that-wait-for-an-attempt) is a block like the others.
 
 ### challenge
 
-The starter code for a page closer's challenge, which opens in the
-Notebook as a new file named after the page, beside the reader's other
-files and never over one:
+The starter code for a page closer's challenge. It is not a cell: the page
+shows it read-only, with a button that opens it in the Notebook, ready to
+work on:
 
 ````markdown
 ```python challenge
@@ -538,8 +536,22 @@ changes = [5, -3, -4, 6, -10, 2]
 ````
 
 `html challenge`, `css challenge` and `js challenge` open in the Workspace.
-In a downloaded copy, with no Notebook to open, the starter is offered as a
-file to save.
+Fences for two or three of them side by side, with nothing but blank lines
+between, are one site; a part left out opens empty.
+
+- **Where it goes.** A new tab in the Notebook, or a new site in the
+  Workspace, named after the page's id (`running-totals`). It sits beside
+  what the reader already has and never replaces it: a tab of that name
+  already there makes this one `running-totals 2`. Opening the same starter
+  again goes back to the tab it made, as long as that tab still holds it
+  unchanged.
+- **How it gets there.** The button is a link that carries the starter in
+  its own address, so the page does not have to stay open.
+- **Offline.** A downloaded page has no Notebook beside it, so the button
+  saves the starter as a file named after the page instead: a Python file,
+  or one HTML page with its CSS and JavaScript inside it.
+- The build refuses a language other than these four, and two starters for
+  the same language side by side.
 
 ---
 

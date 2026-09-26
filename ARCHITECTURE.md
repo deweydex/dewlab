@@ -291,6 +291,15 @@ cells above, the surprises, the progress count and the notebook export take
 only the cells on show (`visibleCells()`). `check_solutions()` runs a page
 once per world.
 
+**A closer's challenge** (#316) is starter code the reader takes away.
+`render_challenge()` shows it read-only, with a link to
+`compose/notebook.html` (Python) or `compose/workspace.html` (HTML, CSS and
+JS) carrying the starter in its address, `#challenge=` and a JSON object.
+The Notebook's `openChallengeFromAddress()` and the Workspace's
+`takeChallengeFromAddress()` open it as a new tab or site named after the
+page, never over one, and clear the address. A downloaded page has neither,
+so the runtime's `initChallenges()` swaps the link for a Save button.
+
 **Questions** (#314) are a predict block without a run. `render_question()`
 writes a ```` ```question ```` fence's options with the page's own answer
 marked (`data-answer`) and each option's note hidden beside them; nothing

@@ -257,6 +257,16 @@ MARKDOWN_WRAPPER_RE = re.compile(
     r'|<aside class="dl-note" id="[^"]+">'
     r'|<div class="dl-world" data-world="[a-z0-9-]+">'
 )
+# A closer's challenge (#316): the language of each starter fence, and where
+# each kind opens, relative to the site root, with its button's words.
+CHALLENGE_LANGS = ("python", "html", "css", "js")
+CHALLENGE_TARGETS = {
+    "notebook": ("compose/notebook.html", "Open it in the Notebook"),
+    "workspace": ("compose/workspace.html", "Open it in the Workspace"),
+}
+# A link the build writes before it knows how deep the page sits; write()
+# turns it into the page's own way back to the site root.
+ROOT_HREF = 'href="dlroot:'
 # A task's variant for one world (#315): the opening tag on a line of its
 # own, a world key from the page's `worlds:` frontmatter, and a matching
 # `</div>` further down. See world_spans().
@@ -364,6 +374,17 @@ class Inputs:
     cell: str
     cases: list[Case]
     guess: bool = False
+
+
+@dataclass
+class Challenge:
+    """A page closer's challenge (#316): a ```python challenge fence, which
+    opens in the Notebook, or adjacent ```html/css/js challenge fences, one
+    starter the Workspace opens as a site. `parts` maps each language to
+    its starter code."""
+
+    target: str
+    parts: dict[str, str]
 
 
 @dataclass
@@ -1649,7 +1670,7 @@ def world_spans(body: str, path: Path, worlds: dict[str, str]) -> list[WorldSpan
 def extract_blocks(
     body: str, path: Path, spans: list[WorldSpan] | None = None,
 ) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint], list[SiteEditor], list[Question],
-           list[AppCell], list[Solution], list[Inputs]]:
+           list[AppCell], list[Solution], list[Inputs], list[Challenge]]:
     """Pull every fence out, leaving a comment placeholder markdown will keep.
 
     An `exec` fence becomes a cell; a `python toolkit-reference` fence
@@ -1685,6 +1706,8 @@ def extract_blocks(
     current_app: AppCell | None = None
     last_app_pane_end = -1
     references: list[tuple[str, str]] = []
+    challenges: list[Challenge] = []
+    last_challenge_end = -1
     # Each attached block, the cell it names, and the world variant it sits
     # in, checked against its cell's once every cell is known (#315).
     placed: list[tuple[str, str, str | None]] = []
@@ -1694,6 +1717,7 @@ def extract_blocks(
 
     def one(match: re.Match) -> str:
         nonlocal current_site, last_site_pane_end, current_app, last_app_pane_end
+        nonlocal last_challenge_end
         info = match.group("info").strip().split()
         indent = match.group("indent")
         span = world_at(match.start())
@@ -1739,6 +1763,27 @@ def extract_blocks(
                                               cells[-1].id if cells else None))
             placed.append(("inputs block", inputs_blocks[-1].cell, world))
             return f"{indent}<!--dewlab-inputs-{len(inputs_blocks) - 1}-->"
+        if len(info) >= 2 and info[1] == "challenge":
+            language = info[0]
+            if language not in CHALLENGE_LANGS:
+                fail(path, f"a challenge fence starts with {language!r}, not one of "
+                           f"{', '.join(CHALLENGE_LANGS)}")
+            code = match.group("body").strip("\n")
+            target = "notebook" if language == "python" else "workspace"
+            # html, css and js starters side by side are one site.
+            adjacent = (
+                target == "workspace" and challenges
+                and challenges[-1].target == "workspace"
+                and not body[last_challenge_end:match.start()].strip()
+            )
+            last_challenge_end = match.end()
+            if adjacent:
+                if language in challenges[-1].parts:
+                    fail(path, f"a challenge has two {language} starters side by side")
+                challenges[-1].parts[language] = code
+                return ""
+            challenges.append(Challenge(target=target, parts={language: code}))
+            return f"{indent}<!--dewlab-challenge-{len(challenges) - 1}-->"
         if len(info) >= 2 and info[1] == "site":
             language = info[0]
             if language not in SITE_LANGS:
@@ -1890,7 +1935,7 @@ def extract_blocks(
                 fail(path, f"two cells share the id {pane.id!r}")
             seen.add(pane.id)
     return (rewritten, cells, blocks, hints, site_editors, questions, app_cells,
-            solutions, inputs_blocks)
+            solutions, inputs_blocks, challenges)
 
 
 def extract_math(body: str, found: list[Math] | None = None) -> tuple[str, list[Math]]:
@@ -2071,6 +2116,47 @@ def render_code_block(block: CodeBlock) -> str:
     lang = html.escape(block.language, quote=True)
     attr = f' data-lang="{lang}"' if lang else ""
     return f'<pre class="dl-static"{attr}><code>{html.escape(block.code)}</code></pre>'
+
+
+def render_challenge(challenge: Challenge, page: str, title: str) -> str:
+    """A closer's challenge (#316): its starter, read-only, and a link that
+    opens it in the Notebook or the Workspace as a new file named after the
+    page. The starter travels in the link's own address (`#challenge=`, a
+    JSON object), so opening it needs nothing from this page but the click,
+    and the Notebook or Workspace decides where it goes: a new tab, never
+    over one. On a downloaded page, with neither beside it, the runtime
+    swaps the link for the hidden Save button (initChallenges())."""
+    where, label = CHALLENGE_TARGETS[challenge.target]
+    payload: dict[str, str] = {"name": page, "page": title}
+    if challenge.target == "notebook":
+        payload["code"] = challenge.parts["python"]
+    else:
+        payload.update({lang: challenge.parts.get(lang, "") for lang in ("html", "css", "js")})
+    href = f"dlroot:{where}#challenge=" + urllib.parse.quote(
+        json.dumps(payload, ensure_ascii=False), safe="")
+    starters = "".join(
+        render_code_block(CodeBlock(language=lang, code=challenge.parts[lang]))
+        for lang in CHALLENGE_LANGS if lang in challenge.parts
+    )
+    return (
+        f'<div class="dl-challenge" data-target="{challenge.target}">{starters}'
+        '<p class="dl-challenge-actions">'
+        f'<a class="dl-btn dl-challenge-open" href="{html.escape(href, quote=True)}" '
+        f'target="_blank" rel="noopener">{label}</a>'
+        '<button type="button" class="dl-btn dl-challenge-save" hidden>Save it as a file</button>'
+        "</p></div>"
+    )
+
+
+def place_challenges(body_html: str, challenges: list[Challenge], page: str,
+                     title: str) -> str:
+    """Swap each challenge's placeholder for render_challenge()'s block."""
+    for index, challenge in enumerate(challenges):
+        placeholder = f"<!--dewlab-challenge-{index}-->"
+        if placeholder not in body_html:
+            raise BuildError(f"a challenge on {page!r} was lost during markdown conversion")
+        body_html = body_html.replace(placeholder, render_challenge(challenge, page, title))
+    return body_html
 
 
 def render_site_editor(editor: SiteEditor, index: int) -> str:
@@ -4976,7 +5062,7 @@ def load(path: Path) -> Tutorial:
     worlds = page_worlds(meta, path)
     spans = world_spans(body, path, worlds)
     (stripped, cells, blocks, hints, site_editors, questions, app_cells,
-     solutions, inputs_blocks) = extract_blocks(body, path, spans)
+     solutions, inputs_blocks, challenges) = extract_blocks(body, path, spans)
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
@@ -4984,6 +5070,7 @@ def load(path: Path) -> Tutorial:
     converted = place_cell_blocks(converted, solutions, inputs_blocks, cells, maths)
     body_html = place_blocks(converted, cells, blocks, maths, site_editors, questions, app_cells,
                               page=id_of(path), version=str(meta.get("version", "")))
+    body_html = place_challenges(body_html, challenges, id_of(path), str(meta.get("title", "")))
     body_html = place_worlds(body_html, spans, worlds, path)
     body_html, notes = extract_notes(body_html, path)
     if any(cell.predict for cell in cells):
@@ -5428,6 +5515,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     actual HTML file a browser can open.
     """
     up = "../" * tutorial.depth
+    body_html = body_html.replace(ROOT_HREF, f'href="{up}')
     manifest: dict[str, object] = {
         # `id` is the page's key for everything the runtime saves; `slug`
         # is the same string under the name the runtime's older readers
