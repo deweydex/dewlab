@@ -1,7 +1,12 @@
 ---
 title: "Encapsulation: keeping an object's data behind its methods"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  game: A game world, with characters, the things they carry, and rooms.
+  ocean: An ocean expedition, with a submarine, its crew, and what they find.
+  solar-system: A solar system, with planets, moons and the probes sent to them.
+  your-own: A world of your own, with a class you design and grow page by page.
 covers:
   one-place-for-the-rules:
     covers: [FOOP-LO3]
@@ -14,349 +19,495 @@ covers:
 
 # Encapsulation: keeping an object's data behind its methods
 
-In [Classes and objects: keeping data and actions together](tutorial:objects-and-classes)
-we built a `BankAccount` class. Each account keeps its own owner and its
-own balance, and methods such as `deposit()` change them.
-
-This page asks a new question: who should be allowed to change the
-balance? On this page we:
-
-- put the rules about a balance in one place, inside the class
-- see that Python lets code outside the class change a field anyway, and
-  what programmers do about it
-- look at a class from the outside, and ask what someone using it needs
-  to know
-
-## One place for the rules
-
-The loose-variable version and the class version of a bank account store
-the same numbers. What changed is who looks after them.
-
-Suppose every change to the balance goes through a method. Then every
-deposit and every withdrawal passes through one place, and that is the
-place to put a rule. Say the bank does not allow a balance to go below
-zero. The class needs to check that in one method, `withdraw()`. The
-check does not have to be copied into every piece of code that changes a
-balance.
-
-What do you think the two withdrawals do? Run it to check.
+The Nautilus has a hull that is safe to 400 m, and no deeper. Here is its
+class, with that rule inside `dive`. The submarine is told to dive 500 m,
+then 150 m. How deep does it end up?
 
 ```python exec
 id: keeping-details-to-itself-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
+class Submarine:
+    def __init__(self, name):
+        self.name = name
+        self.depth = 0
 
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
+    def dive(self, metres):
+        if self.depth + metres > 400:
+            print("Refused: the hull is safe only to 400 m.")
             return
-        self.balance = self.balance - amount
+        self.depth = self.depth + metres
 
-account = BankAccount("Alice", 100.0)
-account.withdraw(150.0)   # refused
-account.withdraw(40.0)    # goes through
-print(account.balance)
+nautilus = Submarine("Nautilus")
+nautilus.dive(500)
+nautilus.dive(150)
+print(nautilus.depth)
 ```
 
-The first withdrawal is refused, because 150 is more than the balance.
-The second one goes through, and the balance ends at `60.0`. Any code
-that calls `withdraw()` gets the check, whether its writer remembered it
-or not.
+```predict
+What will the last line print?
+
+- 150
+  - The first dive is refused, and the second goes through.
+- 650
+  - Both dives go through.
+- 400
+  - The first dive stops at the limit, and the second is refused.
+```
+
+It prints the refusal, then `150`. The first dive would take the
+Nautilus past 400 m, so `dive` refuses it and changes nothing. The second
+goes through.
+
+## One place for the rules
+
+Every dive passes through one method, so that is the place to put the
+rule. The check is not copied into every line of the program that makes
+the submarine dive. Any code that calls `dive()` gets the check, whether
+its writer remembered the rule or not.
 
 This idea has a name. *Encapsulation* is keeping an object's data behind
-its own methods. Code outside the class asks the object to make a
-change, and the object's methods decide how. The rules about how the
-data may change then live in one place, next to the data itself.
+its own methods. Code outside the class asks the object to make a change,
+and the object's methods decide how. The rules about the data then live
+in one place, next to the data itself.
 
-### Your turn
-
-What would go wrong if `deposit()` allowed a negative amount, as in
-`account.deposit(-50.0)`?
-
-1. Run the cell below as it is, and look at the balance.
-2. Add a check at the start of `deposit()` that refuses a negative
-   amount, in the same way `withdraw()` refuses an amount that is too
-   large.
-3. Run it again. The balance should stay at `100.0`.
+A rule kept in one method is only as good as the other methods, though.
+What does `rise(-500)` do to this submarine? Run it and see. Can you make
+`rise` refuse a negative number of metres, the way `dive` refuses a dive
+that is too deep?
 
 ```python exec
 id: keeping-details-to-itself-2
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
+class Submarine:
+    def __init__(self, name):
+        self.name = name
+        self.depth = 0
 
-    def deposit(self, amount):
-        # Refuse a negative amount here, before changing self.balance
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
+    def dive(self, metres):
+        if self.depth + metres > 400:
+            print("Refused: the hull is safe only to 400 m.")
             return
-        self.balance = self.balance - amount
+        self.depth = self.depth + metres
 
-account = BankAccount("Alice", 100.0)
-account.deposit(-50.0)
-print(account.balance)   # should still be 100.0 if the guard works
+    def rise(self, metres):
+        # Refuse a negative number of metres here.
+        self.depth = max(0, self.depth - metres)
+
+nautilus = Submarine("Nautilus")
+nautilus.rise(-500)
+print(nautilus.depth)
 ```
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+```inputs
+nautilus.depth
+```
 
-1. Copy the shape of the check in `withdraw()`: an `if`, a message, and
-   `return`.
-2. This time, the condition is `amount < 0`.
-3. Put the check before the line that changes `self.balance`. The
-   `return` stops the method before the change happens.
+```hint
+Copy the shape of the check in `dive`: an `if`, a message, and `return`.
+What is the condition this time? And where must the check go, so that the
+`return` stops the method before the depth changes?
+```
 
-</details>
+```solution
+class Submarine:
+    def __init__(self, name):
+        self.name = name
+        self.depth = 0
+
+    def dive(self, metres):
+        if self.depth + metres > 400:
+            print("Refused: the hull is safe only to 400 m.")
+            return
+        self.depth = self.depth + metres
+
+    def rise(self, metres):
+        if metres < 0:
+            print("Refused: rise needs a positive number of metres.")
+            return
+        self.depth = max(0, self.depth - metres)
+
+nautilus = Submarine("Nautilus")
+nautilus.rise(-500)
+print(nautilus.depth)
+---
+The refusal, then `0`. Without the check, rising by −500 m took the
+Nautilus down to 500 m, past its hull's limit, and `dive` never had a
+chance to say no. Is there another call that goes around the limit?
+```
 
 ## Reaching in from outside
 
-The rule in `withdraw()` works when code calls `withdraw()`. But does
-Python force code to call it? What happens if code outside the class
-changes `balance` directly?
-
-Predict the last line, then run it to check.
+The rule in `dive` works when code calls `dive`. But does Python make code
+call it? With the `Submarine` from the top of the page, what does this
+print?
 
 ```python exec
 id: reaching-in-from-outside-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-account = BankAccount("Alice", 100.0)
-account.withdraw(500.0)                     # through the method: refused
-account.balance = account.balance - 500.0   # reaching in: nothing checks it
-print(account.balance)
+nautilus = Submarine("Nautilus")
+nautilus.dive(500)     # through the method: refused
+nautilus.depth = 600   # reaching in: nothing checks it
+print(nautilus.depth)
 ```
 
-It prints `-400.0`. The method refused the withdrawal, but the next line
-went around the method and changed the field directly. Python did not
-stop it.
+```predict
+What will the last line print?
+
+- 600
+  - The last line changes the field directly, and nothing checks it.
+- 0
+  - The rule in `dive` keeps the depth safe.
+```
+
+It prints `600`. The method refused the dive, but the next line went
+around the method and changed the field directly. Python did not stop it.
 
 Some languages, such as Java, can lock a field so that only the class's
 own methods can change it. Python has no lock like that. It relies on a
 *convention*: a habit that programmers agree to follow. A name that
-starts with one underscore, such as `_balance`, means "this is private
-to the class; use the methods instead". A *private* field is one that
-only the class's own methods should read or change.
+starts with one underscore, such as `_depth`, means "this is private to
+the class; use the methods instead". A *private* field is one that only
+the class's own methods should read or change.
 
-The class then gives other code a method to read the value, often
-called a *getter*. A getter is a method that returns the value of a
-private field. Here is the account with a private `_balance` and a
-getter, `get_balance()`. What do you think it prints?
+The class then gives other code a method to read the value, often called
+a *getter*. A getter is a method that returns the value of a private
+field. Here is the submarine with a private `_depth` and a getter,
+`get_depth()`. What will it print?
 
 ```python exec
 id: reaching-in-from-outside-2
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self._balance = balance
+class Submarine:
+    def __init__(self, name):
+        self.name = name
+        self._depth = 0
 
-    def get_balance(self):
-        return self._balance
+    def get_depth(self):
+        return self._depth
 
-    def deposit(self, amount):
-        if amount < 0:
-            print("Refused: cannot deposit a negative amount.")
+    def dive(self, metres):
+        if self._depth + metres > 400:
+            print("Refused: the hull is safe only to 400 m.")
             return
-        self._balance = self._balance + amount
+        self._depth = self._depth + metres
 
-    def withdraw(self, amount):
-        if amount > self._balance:
-            print("Refused: not enough balance.")
-            return
-        self._balance = self._balance - amount
-
-account = BankAccount("Alice", 100.0)
-account.deposit(25.0)
-account.withdraw(500.0)
-print(account.get_balance())
+nautilus = Submarine("Nautilus")
+nautilus.dive(250)
+nautilus.dive(250)
+print(nautilus.get_depth())
 ```
 
-The deposit goes through, the withdrawal is refused, and it prints
-`125.0`. Code outside the class now reads the balance with
-`get_balance()`, and changes it only with `deposit()` and `withdraw()`.
+The first dive goes through, the second is refused, and it prints `250`.
+Code outside the class now reads the depth with `get_depth()`, and changes
+it only with the methods.
 
-The underscore is a sign for people, not a lock. `account._balance = -400.0`
+The underscore is a sign for people, not a lock. `nautilus._depth = 600`
 would still work. But anyone who writes it can see they are breaking the
-class's rules, and someone reading the code can see it quickly.
+class's rules, and someone reading the code can see it at once.
 
 You may also see a name with two underscores at the start, such as
-`__balance`. Python then adds the class name to the front of it, which
+`__depth`. Python then adds the class's name to the front of it, which
 makes it harder to reach from outside. One underscore is the more common
 choice.
 
-### Your turn
+### Your turn: your class, second version
 
-The `Student` class below keeps its grade in a private field, `_grade`.
-A grade must be from 0 to 100.
+This is the second version of the class you started in
+[Classes and objects](tutorial:objects-and-classes): one rule, kept by a
+method, and the field it protects made private, with a getter.
 
-1. Fill in `set_grade()`. If `new_grade` is below 0 or above 100, print
-   a message and change nothing. Otherwise, store it in `self._grade`.
-2. Replace the line `pass` with your code. `pass` is a line that does
-   nothing. It is there only so the empty method can run.
-3. Run the cell. It should print a refusal for `140`, then `85`.
+<div class="dl-world" data-world="game">
+
+A hit of −5 heals Ada. Can you make `take_damage` refuse a negative
+amount, keep her health private as `_health`, and give the class a
+`get_health()` method?
 
 ```python exec
-id: reaching-in-from-outside-3
-class Student:
-    def __init__(self, name, grade):
-        self.name = name
-        self._grade = grade
+id: your-class-2--game
+{{include: setup/oop/game-1.py}}
 
-    def get_grade(self):
-        return self._grade
-
-    def set_grade(self, new_grade):
-        # Refuse a grade below 0 or above 100, otherwise store it
-        pass
-
-student = Student("Ana", 72)
-student.set_grade(85)
-student.set_grade(140)
-print(student.get_grade())
+ada = Character("Ada", 10)
+ada.take_damage(-5)
+print(ada)
 ```
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+```inputs
+str(ada)
+ada.get_health()
+```
 
-1. Check both limits in one condition:
-   `if new_grade < 0 or new_grade > 100:`
-2. Inside that `if`, print a message and `return`. After the `if`,
-   write `self._grade = new_grade`.
+```hint
+There are three changes. First the check, at the top of `take_damage`:
+what is the condition? Then `health` becomes `_health`: on how many lines?
+Then a getter, the same shape as `get_depth()` above.
+```
 
-</details>
+```solution
+{{include: setup/oop/game-2.py}}
+
+ada = Character("Ada", 10)
+ada.take_damage(-5)
+print(ada)
+---
+The refusal, then `Ada (health 10)`. `health` became `_health` on every
+line of the class, `__str__` included. `heal` has no check yet: what
+would `ada.heal(-50)` do?
+```
+
+</div>
+
+<div class="dl-world" data-world="ocean">
+
+The Nautilus dives 300 m, then 150 m more, past its hull's limit. Can you
+give your `Submarine` the rule from this page, keep its depth private as
+`_depth`, and give the class a `get_depth()` method?
+
+```python exec
+id: your-class-2--ocean
+{{include: setup/oop/ocean-1.py}}
+
+nautilus = Submarine("Nautilus")
+nautilus.dive(300)
+nautilus.dive(150)
+print(nautilus)
+```
+
+```inputs
+str(nautilus)
+nautilus.get_depth()
+```
+
+```hint
+There are three changes. First the check, at the top of `dive`. Then
+`depth` becomes `_depth`: on how many lines? Then a getter that returns
+it.
+```
+
+```solution
+{{include: setup/oop/ocean-2.py}}
+
+nautilus = Submarine("Nautilus")
+nautilus.dive(300)
+nautilus.dive(150)
+print(nautilus)
+---
+The refusal, then `Nautilus at 300 m`. `depth` became `_depth` on every
+line of the class, `__str__` included. What would `nautilus.rise(-500)` do
+to this version?
+```
+
+</div>
+
+<div class="dl-world" data-world="solar-system">
+
+Voyager has 70 kg of fuel left and is told to burn 80. It burns what it
+has, and nothing says so. Can you make `burn` refuse a burn bigger than the
+fuel that is left, keep the fuel private as `_fuel`, and give the class a
+`get_fuel()` method?
+
+```python exec
+id: your-class-2--solar-system
+{{include: setup/oop/solar-system-1.py}}
+
+voyager = Probe("Voyager", 100)
+voyager.burn(30)
+voyager.burn(80)
+print(voyager)
+```
+
+```inputs
+str(voyager)
+voyager.get_fuel()
+```
+
+```hint
+There are three changes. First the check, at the top of `burn`: when
+should it refuse? Then `fuel` becomes `_fuel`: on how many lines? Then a
+getter that returns it.
+```
+
+```solution
+{{include: setup/oop/solar-system-2.py}}
+
+voyager = Probe("Voyager", 100)
+voyager.burn(30)
+voyager.burn(80)
+print(voyager)
+---
+The refusal, then `Voyager (fuel 70 kg)`. With the check in place,
+`max(0, ...)` has nothing left to do, so the burn is a plain subtraction.
+What would `voyager.burn(-50)` do to this version?
+```
+
+</div>
+
+<div class="dl-world" data-world="your-own">
+
+Which rule does your world have that your class does not keep yet? A
+shop's stock cannot go below zero; a creature cannot run faster than its
+top speed. Can you keep the rule in a method, make the field it protects
+private, and give it a getter? Your class from
+[Classes and objects](tutorial:objects-and-classes) is saved in that
+page's last cell: copy it here to start.
+
+```python exec
+id: your-class-2--your-own
+# My class, second version: one rule, kept by a method.
+```
+
+</div>
 
 ## What a caller needs to know
 
-A *caller* is any code that uses an object's methods, such as the lines
-`account.deposit(25.0)` and `account.get_balance()`.
+A *caller* is any code that uses an object's methods, such as
+`nautilus.dive(250)` and `nautilus.get_depth()`.
 
-*Abstraction* is the other half of encapsulation, seen from the
-caller's side. Abstraction means a caller uses what a method does,
-without needing to know how it does it. `account.withdraw(150.0)` tells
-you what will happen: the account pays out 150, or refuses. You do not
-need to know that the balance is stored as a float, or that an `if`
-statement guards it. A class's methods are all a caller needs.
+*Abstraction* is the other half of encapsulation, seen from the caller's
+side. Abstraction means a caller uses what a method does, without needing
+to know how it does it. `nautilus.dive(250)` tells you what will happen:
+the submarine goes 250 m deeper, or refuses. You do not need to know how
+the depth is stored, or that an `if` guards it.
 
-This gives the class's writer a lot of freedom. The inside of the class
-can change, and callers never notice.
-
-Here is an example. Decimals such as `0.1` cannot be stored exactly in
-a computer; `0.1 + 0.2` gives `0.30000000000000004`. So banks often
-count money in whole cents. Below, the class now stores `_cents`, a
-whole number. `round()` gives the nearest whole number.
-
-Compare the last four lines with the cell in the section above. Which
-of them had to change?
+That gives the class's writer a lot of freedom: the inside of the class
+can change, and callers never notice. Here is a reason to change it. The
+expedition carries a spare tank of oxygen, 1 litre, and a machine uses
+0.1 litres of it each minute. After 10 minutes, is the tank empty?
 
 ```python exec
 id: what-a-caller-needs-to-know-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self._cents = round(balance * 100)
+class OxygenTank:
+    def __init__(self, litres):
+        self._litres = litres
 
-    def get_balance(self):
-        return self._cents / 100
+    def get_litres(self):
+        return self._litres
 
-    def deposit(self, amount):
-        if amount < 0:
-            print("Refused: cannot deposit a negative amount.")
-            return
-        self._cents = self._cents + round(amount * 100)
+    def use(self, litres):
+        self._litres = self._litres - litres
 
-    def withdraw(self, amount):
-        if round(amount * 100) > self._cents:
-            print("Refused: not enough balance.")
-            return
-        self._cents = self._cents - round(amount * 100)
+    def is_empty(self):
+        return self._litres == 0
 
-account = BankAccount("Alice", 100.0)
-account.deposit(25.0)
-account.withdraw(500.0)
-print(account.get_balance())
+spare = OxygenTank(1.0)
+for minute in range(10):
+    spare.use(0.1)
+print(spare.get_litres())
+print(spare.is_empty())
 ```
 
-None of them changed, and the output is the same: a refusal, then
-`125.0`. The way the balance is stored is completely different. But the
-callers only ever used the methods, so they did not need to change.
+```predict
+What will the last line print?
 
-If callers had written `account.balance` all over the program, every one
-of those lines would now be broken. That is what encapsulation and
-abstraction protect us from.
+- False
+  - Something is left in the tank after 10 uses.
+- True
+  - Ten uses of 0.1 litres take 1 litre.
+```
 
-### Your turn
+It prints `1.3877787807814457e-16`, then `False`. That first number is
+0.00000000000000013877…, very nearly 0, but not 0. A decimal such as
+`0.1` cannot be stored exactly in a computer, and each `use` adds a tiny
+error. Ten of them leave a tank that is never quite empty.
 
-1. Add a method `can_afford(self, amount)` to the class below. It should
-   return `True` if the account has at least `amount`, and `False`
-   otherwise.
-2. Work in cents inside the method, the way `withdraw()` does.
-3. Run the cell. It should print `True`, then `False`.
+A whole number is stored exactly. So the tank below keeps its oxygen in
+whole millilitres, `_millilitres`, and changes litres to millilitres on
+the way in and back to litres on the way out. `round()` gives the nearest
+whole number. Compare the last five lines with the cell above. Which of
+them had to change?
 
 ```python exec
 id: what-a-caller-needs-to-know-2
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self._cents = round(balance * 100)
+class OxygenTank:
+    def __init__(self, litres):
+        self._millilitres = round(litres * 1000)
 
-    def get_balance(self):
-        return self._cents / 100
+    def get_litres(self):
+        return self._millilitres / 1000
 
-    # Add a can_afford method here
+    def use(self, litres):
+        self._millilitres = self._millilitres - round(litres * 1000)
 
-account = BankAccount("Alice", 100.0)
-print(account.can_afford(99.99))
-print(account.can_afford(100.01))
+    def is_empty(self):
+        return self._millilitres == 0
+
+spare = OxygenTank(1.0)
+for minute in range(10):
+    spare.use(0.1)
+print(spare.get_litres())
+print(spare.is_empty())
 ```
 
-## Wrapping up
+None of them changed, and now it prints `0.0` and `True`. The way the
+oxygen is stored is completely different. But the callers only ever used
+the methods, so they did not need to change.
 
-On this page:
+```question
+id: what-a-caller-needs-to-know-q1
+type: multiple-choice
+answer: 2
 
-- *Encapsulation* keeps an object's data behind its own methods. The
-  rules about changing the data then live in one place.
-- Python does not lock a field. A name that starts with an underscore,
-  such as `_balance`, is a *convention* that marks it *private*: only
-  the class's own methods should use it.
-- A *getter* is a method that returns a private field's value, such as
-  `get_balance()`.
-- *Abstraction* is what a *caller* sees from outside: what a method
-  does, not how. Because callers use only the methods, the inside of a
-  class can change without breaking them.
+A program used the first tank in these three lines. Which one stops
+working when the tank changes to millilitres?
 
-### Reflection
+- `spare.get_litres()`
+  - A getter reads the field for you.
+- `print(spare._litres)`
+  - The private field it reached for is gone.
+- `spare.use(0.1)`
+  - `use` works in litres on the outside.
+```
 
-Write a few sentences about this page, whenever you are ready. Did it
-surprise you that Python lets code reach in and change a field? Can you
-think of something in daily life that works the same way, with a rule
-that people follow even though nothing forces them to?
+A caller that reached in for `_litres` breaks, because that field is
+gone. Every caller that went through the methods works as before. That is
+what encapsulation and abstraction protect.
 
-You could write your thoughts in **Your notes**, in the **Notes** panel at
-the top right of the page.
+## Looking back
 
-## Where to Read More
+Python never stops code reaching in to change `_depth`. So what does the
+underscore protect, and who is it for?
 
-Python Software Foundation. *The Python Tutorial*, section 9.6: Private
-Variables. <https://docs.python.org/3/tutorial/classes.html#private-variables>.
+A challenge: a health bar that starts full at `1.0` goes wrong the same
+way the oxygen tank did. Ten hits of `0.1` do not leave Ada down. Can you
+change the inside of the class to keep whole hit points, 100 for a full
+bar, without changing any line below the class?
+
+```python challenge
+class Character:
+    def __init__(self, name):
+        self.name = name
+        self._health = 1.0    # a full health bar
+
+    def get_health(self):
+        return self._health
+
+    def take_damage(self, fraction):
+        self._health = max(0, self._health - fraction)
+
+    def is_down(self):
+        return self._health == 0
+
+ada = Character("Ada")
+for hit in range(10):
+    ada.take_damage(0.1)
+print(ada.get_health(), ada.is_down())
+```
+
+Next, [A class with many methods](tutorial:one-class-many-methods) gives a
+class more to do, and keeps its rules in place while it grows.
+
+## Where to read more
+
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
+
+Python Software Foundation. *The Python Tutorial*, section 9.6, "Private
+Variables". <https://docs.python.org/3/tutorial/classes.html#private-variables>.
 The official note on the one-underscore convention and on names with two
 underscores.
 
+Python Software Foundation. *The Python Tutorial*, section 15,
+"Floating-Point Arithmetic: Issues and Limitations".
+<https://docs.python.org/3/tutorial/floatingpoint.html>. Why `0.1` cannot
+be stored exactly, and what to do about it.
+
 Downey, A. B. (2015). *Think Python: How to Think Like a Computer
-Scientist* (2nd ed.). Green Tea Press. Chapter 17 discusses keeping a
-class's interface separate from how it works inside.
-Free at <https://greenteapress.com/wp/think-python-2e/>.
+Scientist* (2nd ed.). Green Tea Press. Free at
+<https://greenteapress.com/wp/think-python-2e/>. Section 17.11, "Interface
+and implementation", keeps what a class shows its callers apart from how
+it works inside.

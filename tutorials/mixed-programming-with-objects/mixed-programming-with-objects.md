@@ -3,9 +3,9 @@ title: "Mixed problems: programming with objects"
 practice_across:
   - objects-and-classes
   - the-moves-you-already-know
+  - the-tools-around-your-code
   - keeping-details-inside-an-object
   - one-class-many-methods
-  - the-tools-around-your-code
   - one-parent-many-children
   - objects-inside-objects
   - testing-what-a-class-does

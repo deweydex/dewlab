@@ -1,0 +1,30 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Sixth tutorial of the series (Programming with objects), a project page
+# after one-class-many-methods. Checked against every earlier glossary in
+# the series: none of these terms overlap. polynomial and coefficient are
+# also in expressions-come-alive's glossary, but that page belongs to the
+# maths course, not this series, so they are defined here as well. They
+# were in one-class-many-methods' glossary until 2026.09.26, when the
+# Polynomial class moved to this page.
+entries:
+  - term: polynomial
+    kind: concept
+    definition: >
+      A polynomial is a sum of terms, where each term is a number times a
+      power of x. In code we store it as a list of its coefficients.
+    example: "[1.5, 20, -5]  # -5x^2 + 20x + 1.5"
+
+  - term: coefficient
+    kind: concept
+    definition: >
+      A coefficient is the number in front of a power of x in a
+      polynomial. In -5x^2 + 20x + 1.5, the coefficients are -5, 20 and
+      1.5.
+
+  - term: degree
+    kind: concept
+    definition: >
+      A polynomial's degree is the highest power of x that has a
+      coefficient other than zero. -5x^2 + 20x + 1.5 has degree 2.
+    example: "Polynomial([1, 2, 0]).degree()  # 1"

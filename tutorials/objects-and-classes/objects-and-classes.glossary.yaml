@@ -5,49 +5,51 @@
 # glossary to check against yet. Encapsulation and abstraction moved to
 # keeping-details-inside-an-object; inheritance, parent class, child class
 # and super() moved out with the inheritance section, to be taught in
-# one-parent-many-children.
+# one-parent-many-children. Since 2026.09.26, attribute, instance,
+# instance attribute and class attribute moved to one-class-many-methods,
+# with the section that teaches them.
 entries:
   - term: class
     kind: concept
     definition: >
       A class is a description of one kind of thing: the data it holds
       and the actions it can do. It is not an object itself.
-    example: "class BankAccount:"
+    example: "class Character:"
 
   - term: object
     kind: concept
     definition: >
       An object is one specific thing built from a class, with its own
       values for the fields the class describes.
-    example: "alice = BankAccount(\"Alice\", 100.0)"
+    example: "ada = Character(\"Ada\", 10)"
 
   - term: field
     kind: concept
     definition: >
       A field is a piece of data that belongs to one particular object,
       set when the object is built and read or changed through it.
-    example: "self.balance = 100.0"
+    example: "self.health = health"
 
   - term: method
     kind: concept
     definition: >
       A method is a function that belongs to a class. It works on the
       fields of one particular object.
-    example: "account.deposit(50.0)"
+    example: "grace.take_damage(5)"
 
   - term: constructor
     kind: concept
     definition: >
       The constructor is the method Python runs automatically when a new
       object is built. Its job is to set up that object's fields.
-    example: "def __init__(self, owner, balance):"
+    example: "def __init__(self, name, health):"
 
   - term: self
     kind: concept
     definition: >
       self is the name a method uses for the one object it was called on,
       so a line inside the method can reach that object's own fields.
-    example: "self.balance = self.balance + amount"
+    example: "self.health = self.health - amount"
 
   - term: object oriented programming
     kind: concept
@@ -61,7 +63,7 @@ entries:
     definition: >
       Returns the text that print() shows for an object. Python calls it
       for you when you print the object.
-    example: "return f\"{self.owner}: {self.balance}\""
+    example: "return f\"{self.name} (health {self.health})\""
 
   - term: "__repr__"
     kind: function
@@ -69,32 +71,4 @@ entries:
       Returns text about an object meant for the programmer. Python uses
       it for an object inside a list. It usually looks like the code that
       would build the object.
-    example: "BankAccount('Alice', 150.0)"
-
-  - term: attribute
-    kind: concept
-    definition: >
-      An attribute is any name reached with a dot after an object, such
-      as a field or a method.
-    example: "alice.balance"
-
-  - term: instance
-    kind: concept
-    definition: >
-      An instance is another word for an object built from a class. alice
-      is an instance of BankAccount.
-
-  - term: instance attribute
-    kind: concept
-    definition: >
-      An instance attribute is a value that belongs to one object. It is
-      usually set on self in the constructor, and each object has its own.
-    example: "self.balance = balance"
-
-  - term: class attribute
-    kind: concept
-    definition: >
-      A class attribute is a value that belongs to the class itself. Every
-      object of that class shares the one value. Change it through the
-      class, not through an object.
-    example: "bank_name = \"Dew Bank\""
+    example: "Character('Ada', 10)"
