@@ -129,9 +129,9 @@ away looks flat, and one taken up close does not.
 
 ## A Matrix That Turns
 
-In [the gallery of 2×2
-matrices](tutorial:what-a-matrix-does-to-a-picture#a-small-gallery),
-`rotate90 = [[0, -1], [1, 0]]` turned the square a quarter turn. That was one fixed angle. For any angle
+In [the playground of 2×2
+matrices](tutorial:what-a-matrix-does-to-a-picture#a-playground),
+`turn = [[0, -1], [1, 0]]` turned the F a quarter turn. That was one fixed angle. For any angle
 $\theta$, the matrix that turns the plane by that angle is
 
 $$R(\theta) = \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}$$
