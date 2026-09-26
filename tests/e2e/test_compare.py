@@ -117,6 +117,10 @@ class TestComparison:
         assert empty.locator(".dl-compare-theirs").inner_text() == "0"
         assert "dl-compare-differ" not in (empty.get_attribute("class") or "")
         assert "an empty list" in empty.inner_text()
+        # The button can start the run before Python has booted; the cell's
+        # own Run button still reads Run afterwards, not "Loading…".
+        label = tab.locator(".dl-cell[data-cell-id='compare-total'] .dl-btn-run .dl-btn-label")
+        assert label.inner_text() == "Run"
 
     def test_no_word_on_the_table_judges(self, tab):
         box = compare(tab, "compare-total")

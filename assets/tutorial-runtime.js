@@ -4576,9 +4576,14 @@ function clearCellRunning(cell, previousLabel) {
   cell.runBtn.classList.remove("dl-btn-stop");
   const runIcon = cell.runBtn.querySelector(".dl-btn-icon");
   if (runIcon) runIcon.innerHTML = "&#9654;"; // ▶, back from Stop's ■
+  /* A run can now start before Python has booted (the comparison's
+   * button, the predict block's "Run it and see"), when the label it
+   * captured was the boot's "Loading…"; once Python is ready, the label
+   * is "Run" whatever was captured. */
   setBtnLabel(
     cell.runBtn,
-    previousLabel === "Running…" || previousLabel === "Stop" ? "Run" : previousLabel,
+    pyodideReady || previousLabel === "Running…" || previousLabel === "Stop"
+      ? "Run" : previousLabel,
   );
 }
 
