@@ -123,6 +123,17 @@ finding each match, not just substitute fixed text.
   converted on its own, like a pedagogical note, because Python-Markdown
   treats a `<details>` block as raw HTML. `expect:` is read off a cell's
   header by `parse_cell()` and travels in the manifest.
+- **"How does a task come in several worlds?"** (#315) — `page_worlds()`
+  reads the `worlds:` frontmatter, and `world_spans()` finds each
+  `<div class="dl-world">` variant in the source, with fences blanked out so
+  a `</div>` in a code example does not end one. `extract_blocks()` records
+  which variant each cell and block sits in and fails on a cell id without
+  its world or a block in another world from its cell. `md_in_html` converts
+  the markdown inside (the wrapper is in `MARKDOWN_WRAPPER_RE`),
+  `cell_numbers()` lets each variant count from the same number, and
+  `place_worlds()` adds each variant's group and name and puts
+  `render_world_chooser()` under the title. `check_solutions()` runs once
+  per world.
 - **"How does the knowledge map lay itself out?"** — `topic_tiers()`
   (how deep a topic is, based on its prerequisites) feeds `topic_layout()`
   (turning tiers into actual x/y coordinates), and `arrow_between()` draws

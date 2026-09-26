@@ -4805,3 +4805,23 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **Ids.** No question id or cell id changed, so saved answers and saved code still match. The twelve pages whose cells changed have a new `version:`.
 
 *Cost to change: the reveal lives in `revealAnswer()`; the note rule in `options_and_notes()`. Bringing back a verdict would mean restoring `check()` and the two strings, which this entry argues against.*
+
+---
+
+**7.236 — The world switcher: one task, a variant per world, chosen per page.** The world-switcher issue (#315), part of #306, building the syntax 7.231 agreed.
+
+**What a reader sees.** A box under the page's title lists the worlds the page offers, each with its line from the frontmatter. The reader picks one, and each task shows that world's variant. The choice is kept in the browser for that page (`dewlab:world:<id>`) and can change at any time. Each variant's cells have their own ids, so a reader who tries the planets and then the sea floor keeps both.
+
+**One number per task.** Every variant of a task counts from the same cell number, and the cell after it follows the longest variant, so "Cell 4" is the same cell whichever world is on show. The surprises list names a cell by the number on its pill for the same reason.
+
+**What follows the world.** Running the cells above or below a cell, the surprises, the progress count and the notebook export take only the cells on show. A reader in the pixels world who runs everything above should not get an error from a planets cell they cannot see. The saved record carries the choice as `world`, so the JSON export says which world the work was in.
+
+**A task in one world only** shows the page's own world's variant, then the first written. An author can add worlds one task at a time without a gap on the page.
+
+**Without JavaScript** the chooser stays hidden and every variant shows under its world's name, so nothing is lost. A printed page has the chosen world, with its name. A downloaded page keeps every variant and the chooser, which works offline.
+
+**The build holds the contract.** A cell in a variant must end in `--<world>`; a block (solution, inputs, predict, hint) and a cell of tests must be in the same world as their cell, since they show and hide with it. `world_spans()` reads the source with fences blanked, so a `</div>` in an HTML example does not close a variant. `check_solutions()` runs a page once per world, with the cells a reader in that world would run, so a solution that leans on another world's names fails at build time.
+
+**Names from keys.** A world's name is its key with a capital and spaces (`sea-floor` is "Sea floor"). That keeps the agreed frontmatter, one line per world, and a name worth more than that can come later without changing a page.
+
+*Cost to change: the grouping and fallback live in `applyWorld()`; the build's rules in `world_spans()` and `extract_blocks()`. A world's name that differs from its key would need a richer `worlds:` form, read by `page_worlds()`.*

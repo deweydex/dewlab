@@ -281,6 +281,16 @@ verdict, feeds two new staged-hint signals (`unsure`, `guess-differed`),
 and lists the reader's surprises in a `.dl-surprises` section the build
 appends to any page with a prediction.
 
+**Worlds** (#315) let a task come once per world. `build.py` finds each
+`<div class="dl-world">` variant in the source (`world_spans()`), holds its
+cells to ids ending in their world and its blocks to its cells' world,
+converts the markdown inside, and puts a chooser under the title
+(`place_worlds()`). The runtime's `applyWorld()` shows one variant of each
+task and remembers the choice per page (`dewlab:world:<id>`); running the
+cells above, the surprises, the progress count and the notebook export take
+only the cells on show (`visibleCells()`). `check_solutions()` runs a page
+once per world.
+
 **Questions** (#314) are a predict block without a run. `render_question()`
 writes a ```` ```question ```` fence's options with the page's own answer
 marked (`data-answer`) and each option's note hidden beside them; nothing

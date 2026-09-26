@@ -2223,6 +2223,87 @@ function showPageAnswer(question) {
   scheduleSave();
 }
 
+/* World variants (#315). A page whose tasks come in several worlds has a
+ * chooser under its title (build.py's render_world_chooser()) and, for
+ * each task, one `.dl-world` per world, side by side in a group
+ * (`data-world-group`). The reader's choice is kept per page, under
+ * `dewlab:world:<id>`. Each variant's cells have their own ids, so
+ * switching never touches saved work; it only decides what shows, what
+ * Run all runs, and what the surprises and the notebook export list. */
+const WORLD_PREFIX = "dewlab:world:";
+let currentWorld = null;
+
+function worldChoices() {
+  return [...document.querySelectorAll('.dl-world-chooser input[name="dl-world"]')];
+}
+
+function worldName(key) {
+  const input = worldChoices().find((choice) => choice.value === key);
+  return input?.parentElement.querySelector(".dl-world-name")?.textContent || key;
+}
+
+function readWorld() {
+  try {
+    return localStorage.getItem(pageKey(WORLD_PREFIX));
+  } catch {
+    return null;
+  }
+}
+
+function writeWorld(key) {
+  try {
+    localStorage.setItem(pageKey(WORLD_PREFIX), key);
+  } catch {
+    /* Storage refused: the choice lasts until the page closes. */
+  }
+}
+
+function inHiddenWorld(element) {
+  return !!element.closest(".dl-world[hidden]");
+}
+
+function visibleCells() {
+  return cells.filter((cell) => !inHiddenWorld(cell.element));
+}
+
+function applyWorld(key) {
+  const offered = worldChoices().map((input) => input.value);
+  currentWorld = offered.includes(key) ? key : offered[0];
+  for (const input of worldChoices()) input.checked = input.value === currentWorld;
+  const groups = new Map();
+  for (const variant of document.querySelectorAll(".dl-world")) {
+    const group = variant.dataset.worldGroup;
+    if (!groups.has(group)) groups.set(group, []);
+    groups.get(group).push(variant);
+  }
+  for (const variants of groups.values()) {
+    /* The chosen world's variant; for a task without one, the variant in
+     * the world the page teaches in, and failing that the first written. */
+    const shown = variants.find((v) => v.dataset.world === currentWorld)
+      || variants.find((v) => v.dataset.world === offered[0])
+      || variants[0];
+    for (const variant of variants) variant.hidden = variant !== shown;
+  }
+  document.documentElement.dataset.dlWorld = currentWorld;
+}
+
+function initWorlds() {
+  const chooser = document.querySelector(".dl-world-chooser");
+  if (!chooser) return;
+  chooser.hidden = false;
+  document.documentElement.classList.add("dl-worlds-on");
+  applyWorld(readWorld());
+  chooser.addEventListener("change", (event) => {
+    const input = event.target.closest('input[name="dl-world"]');
+    if (!input) return;
+    applyWorld(input.value);
+    writeWorld(currentWorld);
+    updateSurprises();
+    updateProgressSummary();
+    scheduleSave();
+  });
+}
+
 function buildQuestions() {
   for (const host of document.querySelectorAll(".dl-question")) {
     const id = host.dataset.questionId;
@@ -3259,6 +3340,8 @@ function splitLines(text) {
 function downloadAsIpynb() {
   const notebookCells = [];
   for (const host of document.querySelectorAll(".dl-cell")) {
+    // The chosen world's variants only (#315), as the page shows them.
+    if (inHiddenWorld(host)) continue;
     const id = host.dataset.cellId;
     const cell = cells.find((c) => c.id === id) || customCells.find((c) => c.id === id);
     if (!cell) continue;
@@ -3286,7 +3369,10 @@ function downloadAsIpynb() {
     setStatus("No cells to export yet.", "error");
     return;
   }
-  notebookCells.unshift({ cell_type: "markdown", metadata: {}, source: [`# ${document.title}`] });
+  const heading = currentWorld
+    ? [`# ${document.title}\n`, "\n", `World: ${worldName(currentWorld)}`]
+    : [`# ${document.title}`];
+  notebookCells.unshift({ cell_type: "markdown", metadata: {}, source: heading });
 
   const notebook = {
     nbformat: 4,
@@ -4338,15 +4424,17 @@ function updateSurprises() {
   if (!section) return;
   const list = section.querySelector(".dl-surprises-list");
   list.replaceChildren();
-  cells.forEach((cell, index) => {
+  /* Only the chosen world's (#315): a surprise in a variant the reader has
+   * switched away from would link to a cell they cannot see. */
+  for (const cell of visibleCells()) {
     const p = cell.predict;
-    if (!p) return;
+    if (!p) continue;
     const differed = !!(p.outcome && p.outcome.guess !== null && !p.outcome.match);
-    if (!differed && p.sure !== "unsure") return;
+    if (!differed && p.sure !== "unsure") continue;
     const item = document.createElement("li");
     const link = document.createElement("a");
     link.href = `#dl-predict-${cell.id}`;
-    link.textContent = `Cell ${index + 1}`;
+    link.textContent = cell.element.querySelector(".dl-cell-pill-num")?.textContent || cell.id;
     const printed = p.outcome
       ? (p.outcome.errored ? "an error" : (p.outcome.output.split("\n").pop() || "nothing"))
       : "";
@@ -4355,7 +4443,7 @@ function updateSurprises() {
       : ": you were not sure yet.";
     item.append(link, document.createTextNode(said));
     list.appendChild(item);
-  });
+  }
   section.hidden = list.children.length === 0;
 }
 
@@ -4669,7 +4757,7 @@ async function runCellBatch(list, { reset, emptyMessage, describe }) {
 }
 
 async function runAllCells() {
-  await runCellBatch(cells, {
+  await runCellBatch(visibleCells(), {
     reset: true,
     emptyMessage: "No cells to run.",
     describe: (n) => `Running ${n} cell${n === 1 ? "" : "s"}…`,
@@ -4677,9 +4765,10 @@ async function runAllCells() {
 }
 
 async function runAbove(id) {
-  const idx = cells.findIndex((c) => c.id === id);
+  const shown = visibleCells();
+  const idx = shown.findIndex((c) => c.id === id);
   if (idx === -1) return;
-  const slice = cells.slice(0, idx + 1);
+  const slice = shown.slice(0, idx + 1);
   await runCellBatch(slice, {
     reset: true,
     emptyMessage: "No cells above this one to run.",
@@ -4688,9 +4777,10 @@ async function runAbove(id) {
 }
 
 async function runBelow(id) {
-  const idx = cells.findIndex((c) => c.id === id);
+  const shown = visibleCells();
+  const idx = shown.findIndex((c) => c.id === id);
   if (idx === -1) return;
-  const slice = cells.slice(idx);
+  const slice = shown.slice(idx);
   await runCellBatch(slice, {
     reset: false,
     emptyMessage: "No cells here or below to run.",
@@ -5044,6 +5134,7 @@ function saveNow() {
     "tutorial-slug": currentManifest.slug,
     "tutorial-version": currentManifest.version,
     saved_at: new Date().toISOString(),
+    ...(currentWorld ? { world: currentWorld } : {}),
     notes: notesEl ? notesEl.value : "",
     highlights: highlights.map((h) => ({ ...h })),
     cells: cells.map((cell) => ({
@@ -5520,7 +5611,7 @@ function progressCounts(entries) {
 
 function liveProgressCounts() {
   return progressCounts(
-    cells.map((cell) => ({
+    visibleCells().map((cell) => ({
       started: !!cell.outputEl.innerHTML,
       errored: !!cell.outputEl.querySelector(".dl-error"),
     }))
@@ -6169,6 +6260,8 @@ const textureState = initTexture((dark) => {
 });
 initSegKeyboardNav();
 
+// Before the cells are built, so a hidden world's editors start hidden.
+initWorlds();
 buildCells(currentManifest);
 buildToolkitLine(currentManifest);
 buildQuestions();

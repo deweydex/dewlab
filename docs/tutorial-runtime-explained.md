@@ -588,6 +588,17 @@ steps the way the base feature was:
   beside each gap instead. Neither says right or wrong (#314). Once shown,
   a new choice re-runs `revealAnswer()`, and a reload restores the choice
   and the reveal from the saved record.
+- **"How does the world chooser work?"** (#315) — `initWorlds()`, called
+  before `buildCells()` so a hidden world's editors start hidden, unhides
+  the build's `.dl-world-chooser` and calls `applyWorld()` with the choice
+  saved under `dewlab:world:<id>` (`readWorld()`/`writeWorld()`), or the
+  page's first world. `applyWorld()` groups the `.dl-world` variants by
+  `data-world-group` and shows one per group: the chosen world's, else the
+  page's own world's, else the first. `visibleCells()` is what running the
+  cells above or below, `updateSurprises()`, `liveProgressCounts()` and
+  `downloadAsIpynb()` use, and `saveNow()` records the choice as `world`.
+  A surprise names its cell by the pill's own number, since two variants
+  share one.
 - **"How does a hint decide to appear under a cell?"** — the staged-hints
   block after `executeCell()`: `noteAttempt()` updates a cell's counters
   from the run's report, `triggerHolds()` tests a fold's `data-after`

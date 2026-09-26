@@ -255,7 +255,14 @@ MARKDOWN_WRAPPER_RE = re.compile(
     r'<details class="(?:dl-hint|dl-answer|dl-why)">'
     r'|<(?:div|ul) class="(?:dl-hero|dl-audience|dl-attribution|dl-feature-list)">'
     r'|<aside class="dl-note" id="[^"]+">'
+    r'|<div class="dl-world" data-world="[a-z0-9-]+">'
 )
+# A task's variant for one world (#315): the opening tag on a line of its
+# own, a world key from the page's `worlds:` frontmatter, and a matching
+# `</div>` further down. See world_spans().
+WORLD_OPEN_RE = re.compile(r'^[ \t]*<div class="dl-world" data-world="(?P<world>[^"]*)">[ \t]*$')
+WORLD_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+WORLD_DIV_RE = re.compile(r'<div class="dl-world" data-world="(?P<world>[a-z0-9-]+)">')
 # A run of one or more adjacent card placeholders — see place_page_cards().
 # Whitespace only between them: inside an md_in_html wrapper (the home
 # page's dl-hero) adjacent cards come out one newline apart, not two.
@@ -288,6 +295,10 @@ class Cell:
     tests_for: str | None = None
     tested_by: str | None = None
     predict: "Predict | None" = None
+    # The world variant this cell sits in (#315), and which run of adjacent
+    # variants that is: None for a cell every reader sees.
+    world: str | None = None
+    world_group: int | None = None
 
     @property
     def toolkit_reference(self) -> str:
@@ -1553,8 +1564,90 @@ def render_question(question: Question) -> str:
     )
 
 
+@dataclass
+class WorldSpan:
+    """One world's variant of a task (#315): where it starts and ends in the
+    source, its world, and the run of adjacent variants it belongs to."""
+
+    start: int
+    end: int
+    world: str
+    group: int
+
+
+def page_worlds(meta: dict, path: Path) -> dict[str, str]:
+    """The worlds a page offers, from its `worlds:` frontmatter: each key, in
+    order, with its one line. The first is the world the page teaches in."""
+    worlds = meta.get("worlds")
+    if worlds is None:
+        return {}
+    if not isinstance(worlds, dict) or not worlds:
+        fail(path, "`worlds:` lists each world as `key: one line saying what it is`")
+    for key, line in worlds.items():
+        if not isinstance(key, str) or not WORLD_KEY_RE.match(key):
+            fail(path, f"world {key!r} in `worlds:` is not a key like `sea-floor`: "
+                       "lower-case letters and digits, joined by hyphens")
+        if not isinstance(line, str) or not line.strip():
+            fail(path, f"world {key!r} in `worlds:` has no line saying what it is")
+    return {key: line.strip() for key, line in worlds.items()}
+
+
+def world_name(key: str) -> str:
+    """A world's key as a reader sees it: `sea-floor` is "Sea floor"."""
+    words = key.replace("-", " ")
+    return words[:1].upper() + words[1:]
+
+
+def world_spans(body: str, path: Path, worlds: dict[str, str]) -> list[WorldSpan]:
+    """Find each `<div class="dl-world" data-world="…">` variant in a page's
+    source, and the `</div>` that closes it (#315).
+
+    Fences are blanked out first, so a `</div>` inside a code example is
+    not taken for the end of a variant. A `<div>` the variant holds is
+    counted, so its own `</div>` is not either. Variants separated by
+    nothing but blank lines are one group: the same task, once per world."""
+    masked = FENCE_RE.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), body)
+    spans: list[WorldSpan] = []
+    open_span: tuple[int, str] | None = None
+    depth = 0
+    offset = 0
+    for line in masked.splitlines(keepends=True):
+        opening = WORLD_OPEN_RE.match(line.rstrip("\n"))
+        if opening:
+            world = opening.group("world")
+            if open_span is not None:
+                fail(path, f"the {world!r} variant starts inside the "
+                           f"{open_span[1]!r} one — close each with </div> first")
+            if not worlds:
+                fail(path, "this page has world variants and no `worlds:` in its "
+                           "frontmatter to say which worlds it offers")
+            if world not in worlds:
+                fail(path, f"a variant is for world {world!r}, which is not in "
+                           f"this page's `worlds:` ({', '.join(worlds)})")
+            open_span, depth = (offset, world), 1
+        elif open_span is not None:
+            depth += len(re.findall(r"<div\b", line)) - line.count("</div>")
+            if depth <= 0:
+                start, world = open_span
+                end = offset + len(line)
+                previous = spans[-1] if spans else None
+                # The source, not the masked copy: a cell between two variants
+                # is blank in the mask, and it ends the group.
+                joined = previous is not None and not body[previous.end:start].strip()
+                group = previous.group if joined else (previous.group + 1 if previous else 0)
+                if joined and any(s.world == world and s.group == group for s in spans):
+                    fail(path, f"two {world!r} variants of the same task sit side by "
+                               "side — a task has one variant per world")
+                spans.append(WorldSpan(start=start, end=end, world=world, group=group))
+                open_span = None
+        offset += len(line)
+    if open_span is not None:
+        fail(path, f"the {open_span[1]!r} variant has no </div> to close it")
+    return spans
+
+
 def extract_blocks(
-    body: str, path: Path,
+    body: str, path: Path, spans: list[WorldSpan] | None = None,
 ) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint], list[SiteEditor], list[Question],
            list[AppCell], list[Solution], list[Inputs]]:
     """Pull every fence out, leaving a comment placeholder markdown will keep.
@@ -1592,17 +1685,32 @@ def extract_blocks(
     current_app: AppCell | None = None
     last_app_pane_end = -1
     references: list[tuple[str, str]] = []
+    # Each attached block, the cell it names, and the world variant it sits
+    # in, checked against its cell's once every cell is known (#315).
+    placed: list[tuple[str, str, str | None]] = []
+
+    def world_at(position: int) -> WorldSpan | None:
+        return next((span for span in spans or [] if span.start <= position < span.end), None)
 
     def one(match: re.Match) -> str:
         nonlocal current_site, last_site_pane_end, current_app, last_app_pane_end
         info = match.group("info").strip().split()
         indent = match.group("indent")
+        span = world_at(match.start())
+        world = span.world if span else None
         if "exec" in info:
             cell_type = info[0] if info[0] != "exec" else "python"
             if cell_type not in CELL_TYPES:
                 fail(path, f"an exec cell's fence starts with {cell_type!r}, "
                            f"not one of {sorted(CELL_TYPES)}")
-            cells.append(parse_cell(match.group("body"), path, cell_type))
+            cell = parse_cell(match.group("body"), path, cell_type)
+            if span:
+                cell.world, cell.world_group = span.world, span.group
+                if not cell.id.endswith(f"--{span.world}"):
+                    fail(path, f"cell {cell.id!r} sits in the {span.world!r} variant, so "
+                               f"its id ends in `--{span.world}`, the way switching "
+                               "worlds keeps each world's saved work apart")
+            cells.append(cell)
             return f"{indent}<!--dewlab-cell-{len(cells) - 1}-->"
         if "toolkit-reference" in info:
             if info[0] != "python":
@@ -1614,18 +1722,22 @@ def extract_blocks(
             hint.index = hints_per_cell.get(hint.cell, 0)
             hints_per_cell[hint.cell] = hint.index + 1
             hints.append(hint)
+            placed.append(("hint", hint.cell, world))
             return f"{indent}<!--dewlab-hint-{len(hints) - 1}-->"
         if info and info[0] == "solution":
             solutions.append(parse_solution(match.group("body"), path,
                                             cells[-1].id if cells else None))
+            placed.append(("solution", solutions[-1].cell, world))
             return f"{indent}<!--dewlab-solution-{len(solutions) - 1}-->"
         if info and info[0] == "predict":
             predictions.append(parse_predict(match.group("body"), path,
                                              cells[-1].id if cells else None))
+            placed.append(("predict block", predictions[-1].cell, world))
             return ""
         if info and info[0] == "inputs":
             inputs_blocks.append(parse_inputs(match.group("body"), path,
                                               cells[-1].id if cells else None))
+            placed.append(("inputs block", inputs_blocks[-1].cell, world))
             return f"{indent}<!--dewlab-inputs-{len(inputs_blocks) - 1}-->"
         if len(info) >= 2 and info[1] == "site":
             language = info[0]
@@ -1738,6 +1850,14 @@ def extract_blocks(
         if cell.predict is not None:
             fail(path, f"cell {cell.id!r} has two predict blocks — one guess per cell")
         cell.predict = prediction
+    def where(world: str | None) -> str:
+        return f"in the {world!r} variant" if world else "outside every world variant"
+
+    for kind, cell_id, world in placed:
+        cell = by_id.get(cell_id)
+        if cell is not None and cell.world != world:
+            fail(path, f"a {kind} {where(world)} belongs to cell {cell_id!r}, which is "
+                       f"{where(cell.world)} — a block shows and hides with its cell's world")
     for cell in cells:
         if not cell.tests_for:
             continue
@@ -1745,6 +1865,9 @@ def extract_blocks(
         if target is None or target is cell:
             fail(path, f"cell {cell.id!r} says `tests: {cell.tests_for}`, and this "
                        "tutorial has no other cell with that id")
+        if target.world != cell.world:
+            fail(path, f"cell {cell.id!r} tests {target.id!r}, and the two are in "
+                       f"different worlds ({where(cell.world)}, {where(target.world)})")
         if target.tested_by:
             fail(path, f"cells {target.tested_by!r} and {cell.id!r} both say they test "
                        f"{target.id!r} — one cell of tests per cell")
@@ -2382,12 +2505,12 @@ def place_blocks(
     function runs from `load()`, before the file has become a `Tutorial`
     object with a `.slug` of its own (`page` is `id_of(path)`).
     """
-    for index, cell in enumerate(cells):
+    for index, (cell, number) in enumerate(zip(cells, cell_numbers(cells))):
         placeholder = f"<!--dewlab-cell-{index}-->"
         if placeholder not in page_html:
             raise BuildError(f"cell {cell.id!r} was lost during markdown conversion")
         page_html = page_html.replace(
-            placeholder, render_cell(cell, index + 1, page, version)
+            placeholder, render_cell(cell, number, page, version)
         )
     for index, block in enumerate(blocks):
         page_html = page_html.replace(f"<!--dewlab-code-{index}-->", render_code_block(block))
@@ -2409,6 +2532,78 @@ def place_blocks(
     for index, item in enumerate(maths):
         page_html = page_html.replace(f"dlmath{index}z", render_math(item))
     return page_html
+
+
+def cell_numbers(cells: list[Cell]) -> list[int]:
+    """The number on each cell's pill, "Cell 3". A reader sees one world's
+    variant of a task at a time (#315), so each variant in a run of them
+    counts from the same number, and the cell after the run follows the
+    longest variant."""
+    numbers: list[int] = []
+    upcoming = 1
+    group: int | None = None
+    base = 0
+    counts: dict[str, int] = {}
+    for cell in cells:
+        if cell.world_group != group:
+            if group is not None:
+                upcoming = base + max(counts.values())
+            group, base, counts = cell.world_group, upcoming, {}
+        if group is None:
+            numbers.append(upcoming)
+            upcoming += 1
+        else:
+            numbers.append(base + counts.get(cell.world, 0))
+            counts[cell.world] = counts.get(cell.world, 0) + 1
+    return numbers
+
+
+def render_world_chooser(worlds: dict[str, str]) -> str:
+    """The worlds a page offers, as a choice near its top (#315). Hidden
+    until the runtime wires it, so a page without JavaScript shows every
+    variant, each under its world's name, and no control that does
+    nothing."""
+    choices = "".join(
+        '<label class="dl-world-choice">'
+        f'<input type="radio" name="dl-world" value="{html.escape(key, quote=True)}">'
+        f'<span class="dl-world-name">{html.escape(world_name(key))}</span>'
+        f'<span class="dl-world-line">{_inline(line)}</span></label>'
+        for key, line in worlds.items()
+    )
+    return (
+        '<fieldset class="dl-world-chooser" hidden>'
+        "<legend>Choose a world for this page</legend>"
+        f'<div class="dl-world-choices">{choices}</div>'
+        '<p class="dl-world-note">The tasks follow your choice. You can change it '
+        "at any time, and your work in each world is saved separately.</p>"
+        "</fieldset>"
+    )
+
+
+def place_worlds(body_html: str, spans: list[WorldSpan], worlds: dict[str, str],
+                 path: Path) -> str:
+    """Give each variant its group and its world's name, and put the chooser
+    under the page's title (#315). Variants reach here in source order, the
+    order world_spans() found them, since code examples were placeholders
+    when the markdown was converted and cannot hold a real variant."""
+    if not spans:
+        return body_html
+    if body_html.count('<div class="dl-world"') != len(spans):
+        fail(path, "a `<div class=\"dl-world\">` tag shares its line with other text — "
+                   "put each opening tag on a line of its own")
+    found = iter(spans)
+
+    def label(match: re.Match) -> str:
+        span = next(found)
+        return (f'<div class="dl-world" data-world="{span.world}" '
+                f'data-world-group="{span.group}">'
+                f'<p class="dl-world-label">{html.escape(world_name(span.world))}</p>')
+
+    body_html = WORLD_DIV_RE.sub(label, body_html)
+    chooser = render_world_chooser(worlds)
+    if "</h1>" in body_html:
+        return body_html.replace("</h1>", "</h1>\n" + chooser, 1)
+    return chooser + "\n" + body_html
 
 
 def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
@@ -4380,15 +4575,35 @@ def check_solutions(tutorial: Tutorial, toolkit: list[dict]) -> None:
 
     A Python without a package the page imports (a contributor's machine
     without pandas, say) is noted and skipped, not failed: that says
-    nothing about the solution."""
-    last = max((i for i, c in enumerate(tutorial.cells) if c.solutions), default=None)
-    if last is None:
-        return
+    nothing about the solution.
+
+    A page with world variants (#315) runs once per world, with the cells
+    a reader in that world would run: every cell outside a variant, and
+    that world's variants. Each world's solutions are checked in its own
+    run, and the solutions outside every variant in the first."""
+    worlds = list(dict.fromkeys(cell.world for cell in tutorial.cells if cell.world))
+    for position, world in enumerate(worlds or [None]):
+        seen = [cell for cell in tutorial.cells if cell.world in (None, world)]
+
+        def checked(cell: Cell) -> bool:
+            return bool(cell.solutions) and (
+                cell.world == world or (cell.world is None and position == 0))
+
+        last = max((i for i, cell in enumerate(seen) if checked(cell)), default=None)
+        if last is not None:
+            _run_solutions(tutorial, toolkit, seen[: last + 1], checked)
+
+
+def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], checked) -> None:
+    """One separate Python for check_solutions(): the cells in `seen`, in
+    order, each followed by its solutions where `checked(cell)` says so."""
     cells = []
-    for cell in tutorial.cells[: last + 1]:
+    for cell in seen:
         if cell.type != "python":
             continue
         cells.append({"id": cell.id, "code": cell.code})
+        if not checked(cell):
+            continue
         cases = [{"expr": case.expr, "label": case.label}
                  for case in (cell.inputs.cases if cell.inputs else [])]
         # Every solution, not only the first one the comparison uses. Each
@@ -4758,8 +4973,10 @@ def load(path: Path) -> Tutorial:
     build.py builds starts here.
     """
     meta, body = split_frontmatter(path.read_text(), path)
+    worlds = page_worlds(meta, path)
+    spans = world_spans(body, path, worlds)
     (stripped, cells, blocks, hints, site_editors, questions, app_cells,
-     solutions, inputs_blocks) = extract_blocks(body, path)
+     solutions, inputs_blocks) = extract_blocks(body, path, spans)
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
@@ -4767,6 +4984,7 @@ def load(path: Path) -> Tutorial:
     converted = place_cell_blocks(converted, solutions, inputs_blocks, cells, maths)
     body_html = place_blocks(converted, cells, blocks, maths, site_editors, questions, app_cells,
                               page=id_of(path), version=str(meta.get("version", "")))
+    body_html = place_worlds(body_html, spans, worlds, path)
     body_html, notes = extract_notes(body_html, path)
     if any(cell.predict for cell in cells):
         body_html += SURPRISES_HTML

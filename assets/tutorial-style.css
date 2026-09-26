@@ -3796,6 +3796,44 @@ p code, li code {
   padding-top: 0.8rem;
 }
 
+/* World variants (#315). The chooser sits under the page's title, and each
+   task shows the chosen world's variant. Without JavaScript the chooser
+   stays hidden and every variant shows, each under its world's name. */
+.dl-world-chooser {
+  max-width: var(--dl-line-width);
+  margin: 0.4rem 0 1.2rem;
+  padding: 0.4rem 0.8rem 0.6rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-output-bg);
+  font-size: 0.95rem;
+}
+.dl-world-chooser[hidden] { display: none; }
+.dl-world-chooser legend { padding: 0 0.3rem; font-weight: 600; }
+.dl-world-choices { display: flex; flex-direction: column; gap: 0.3rem; }
+.dl-world-choice { display: flex; flex-wrap: wrap; gap: 0 0.5rem; align-items: baseline; cursor: pointer; }
+.dl-world-name { font-weight: 600; }
+.dl-world-line { color: var(--dl-muted); }
+.dl-world-note { margin: 0.5rem 0 0; color: var(--dl-muted); font-size: 0.8rem; }
+@media (max-width: 40rem) {
+  /* On a phone each world's line wraps under its name, not under the button. */
+  .dl-world-choice { display: grid; grid-template-columns: auto 1fr; }
+  .dl-world-line { grid-column: 2; }
+}
+.dl-world[hidden] { display: none; }
+.dl-world-label {
+  margin: 1.2rem 0 0.3rem;
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+}
+.dl-worlds-on .dl-world-label { display: none; }
+@media print {
+  /* A printed page has the chosen world, and says which. */
+  .dl-world-chooser { display: none !important; }
+  .dl-worlds-on .dl-world-label { display: block; }
+}
+
 .dl-hint-staged[hidden] { display: none; }
 .dl-hint-arrived { animation: dl-hint-arrive 0.5s ease-out; }
 @keyframes dl-hint-arrive {
