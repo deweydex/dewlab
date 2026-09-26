@@ -6,408 +6,426 @@ practice_across:
   - the-tools-around-your-code
   - keeping-details-inside-an-object
   - one-class-many-methods
+  - a-polynomial-class
+  - from-a-description-to-classes
   - one-parent-many-children
   - objects-inside-objects
   - testing-what-a-class-does
   - documenting-a-class
   - a-front-end-for-a-class
+  - your-world-playable
 year: "2026-2027"
-version: 2026.09.04.1
+version: 2026.09.26.1
+worlds:
+  game: A game world, with characters, the things they carry, and rooms.
+  ocean: An ocean expedition, with a submarine, its crew, and what they find.
+  solar-system: A solar system, with planets, moons and the probes sent to them.
+  your-own: A world of your own, with a class you design and grow page by page.
 ---
 
 # Mixed problems: programming with objects
 
-Every problem here draws on more than one tutorial from this series. None
-of them says which. Deciding whether a problem wants inheritance,
-composition, a test, or all three is its own skill. It is separate from
+Every problem here draws on more than one page of this series, and none
+of them says which. Deciding whether a problem wants a rule, a child
+class, a container, a test, or all four is a skill of its own, apart from
 being able to write any one of them.
 
-Answers are folded, and most have more than one reasonable design. Where a
-problem has a real decision in it, the answer says what was chosen and why.
-It does not pretend there was only one way to build it.
+Most answers have more than one good design. Where a problem has a real
+decision in it, the answer says what was chosen and why.
 
-## Warm-Up
+## 1. A lifeboat with no name
 
 ```python exec
-id: warm-up-1
-class Book:
-    """Represents one library book: a title, an author, and whether it is
-    currently on the shelf."""
-
-    def __init__(self, title, author):
-        self.title = title
-        self.author = author
-        self.available = True
-
-
-book = Book("Dune", "Frank Herbert")
-print(book.available)
-```
-
-**1.** Write a class of your own, `Playlist`, with a constructor storing a
-`name` and starting with an empty list, `songs`. Give the class its own
-docstring, and add a method `add_song(title)` that appends `title` to
-`songs`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-class Playlist:
-    """Represents a named, ordered list of songs."""
-
+id: a-lifeboat-with-no-name-1
+class Vessel:
     def __init__(self, name):
         self.name = name
-        self.songs = []
 
-    def add_song(self, title):
-        """Appends title to this playlist's songs."""
-        self.songs.append(title)
+    def describe(self):
+        return f"{self.name}, {self.kind()}"
 
+    def kind(self):
+        return "a vessel"
 
-morning = Playlist("Morning")
-morning.add_song("Here Comes the Sun")
-print(morning.songs)
+class Lifeboat(Vessel):
+    def __init__(self, name, seats):
+        self.seats = seats
+
+    def kind(self):
+        return f"a lifeboat for {self.seats}"
+
+boat = Lifeboat("Lifeboat 1", 12)
+print(boat.describe())
 ```
 
-It has the same shape as `Bank` from [Composition: objects inside other
-objects](tutorial:objects-inside-objects): a name, and a list that
-starts empty. The list grows one song at a time, through a method.
-
-</details>
-
-**2.** Write `test_add_song()`, checking that adding one song to a fresh
-`Playlist` leaves `songs` holding exactly that one title.
+Run it. The traceback ends inside `describe`, in the parent. Which line
+would you change, and to what?
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
-def test_add_song():
-    playlist = Playlist("Test")
-    playlist.add_song("Here Comes the Sun")
-    assert playlist.songs == ["Here Comes the Sun"], "add_song should append to songs"
-
-
-test_add_song()
-print("Passed.")
-```
-
-The test makes a fresh `Playlist` every time it runs, as [Testing a
-class with assert](tutorial:testing-what-a-class-does) did for
-`BankAccount`. So nothing is left over from an earlier test to trip
-this one up.
+Neither line the traceback names. `Lifeboat.__init__` never calls
+`super().__init__(name)`, so no name was ever stored, and the error only
+shows up later, in a parent method that reads it. Add that call as the
+first line of `Lifeboat.__init__`, and it prints `Lifeboat 1, a lifeboat
+for 12`. Notice too that `describe` calls `self.kind()`, and for a
+lifeboat that runs `Lifeboat.kind`.
 
 </details>
 
-## Building on Several Ideas
+## 2. The big tank
 
 ```python exec
-id: building-on-several-ideas-1
-class Book:
-    def __init__(self, title, author):
-        self.title = title
-        self.author = author
-        self.available = True
+id: the-big-tank-1
+class Tank:
+    capacity = 100
 
-    def checkout(self):
-        if not self.available:
-            print("Refused: already checked out.")
+    def __init__(self):
+        self.level = 0
+
+    def fill(self):
+        self.level = Tank.capacity
+
+class BigTank(Tank):
+    capacity = 500
+
+tank = BigTank()
+tank.fill()
+print(tank.level)
+```
+
+```predict
+type: number
+
+What will it print?
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`100`. `fill` reads `Tank.capacity` by name, so a big tank's own 500 is
+never asked for. `self.capacity` would find it: Python looks on the
+object, then its class, then the parent.
+
+</details>
+
+## 3. A squad that grows by itself
+
+```python exec
+id: a-squad-that-grows-1
+class Squad:
+    def __init__(self, names):
+        self._names = names
+
+    def size(self):
+        return len(self._names)
+
+names = ["Ada", "Grace"]
+squad = Squad(names)
+names.append("Alan")
+print(squad.size())
+```
+
+```predict
+type: number
+
+What will it print?
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`3`. `names` and `self._names` are one list with two names, so the
+caller changed the squad without touching it. The underscore did not
+help: nobody reached in. `self._names = list(names)` gives the squad a
+copy of its own.
+
+</details>
+
+## 4. A container that asks
+
+This is your world's container from
+[Composition](tutorial:objects-inside-objects). Can you give it one more
+method, which asks each object it holds a question and chooses between
+the answers?
+
+<div class="dl-world" data-world="game">
+
+Can you give `Room` a `weakest()` method, which returns the character with
+the least health?
+
+```python exec
+id: a-container-that-asks-1--game
+{{include: setup/oop/game-6.py}}
+
+cave = Room("Cave")
+cave.enter(Character("Ada", 10))
+cave.enter(Character("Grog", 4))
+cave.enter(Healer("Mira", 7))
+print(cave.weakest())
+```
+
+```inputs
+str(cave.weakest())
+```
+
+```solution
+class Room:
+    def __init__(self, name):
+        self.name = name
+        self._characters = []
+
+    def enter(self, character):
+        if character in self._characters:
+            print(f"Refused: {character.name} is already in {self.name}.")
             return
-        self.available = False
+        self._characters.append(character)
 
+    def weakest(self):
+        best = self._characters[0]
+        for character in self._characters:
+            if character.get_health() < best.get_health():
+                best = character
+        return best
 
-class ReferenceBook(Book):
-    def checkout(self):
-        print("Refused: reference books do not leave the library.")
+cave = Room("Cave")
+cave.enter(Character("Ada", 10))
+cave.enter(Character("Grog", 4))
+cave.enter(Healer("Mira", 7))
+print(cave.weakest())
+---
+`Grog (health 4)`. This answer shows only the parts of `Room` the
+problem needs: in your world, `weakest` goes beside `standing`. It asks
+each character `get_health()`, and never reaches for `_health`.
 ```
 
-**3.** `ReferenceBook(Book)` overrides `checkout()` entirely, rather than
-calling `super().checkout()`. Predict what `ReferenceBook("Atlas",
-"Various").checkout()` does to `available`, and explain why overriding
-completely was the right call here.
+</div>
 
-<details class="dl-answer"><summary>answer</summary>
+<div class="dl-world" data-world="ocean">
 
-`available` never changes. It stays `True`, because `ReferenceBook`'s
-own `checkout()` always refuses. It never reaches a line that would set
-`self.available = False`.
+Can you give `Expedition` a `total_room_below()` method, which adds up how
+many metres every submarine can still dive?
 
-Calling `super().checkout()` would only make sense if some part of the
-parent's own check still applied. Here none of it does. A reference book
-is refused every time, not just when it happens to already be unavailable,
-so there is no shared logic left to reuse.
+```python exec
+id: a-container-that-asks-1--ocean
+{{include: setup/oop/ocean-6.py}}
 
-</details>
-
-**4.** Create one `Book` and one `ReferenceBook`, put both in a list, and
-loop over it calling `checkout()` on each. Which idea from *Many Kinds, One
-Loop* does this loop demonstrate?
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-book = Book("Dune", "Frank Herbert")
-atlas = ReferenceBook("Atlas", "Various")
-
-for item in [book, atlas]:
-    item.checkout()
-    print(item.title, item.available)
+deep_blue = Expedition("Deep Blue")
+nautilus = Submarine("Nautilus")
+nautilus.dive(300)
+deep_blue.add(nautilus)
+deep_blue.add(Bathyscaphe("Trieste"))
+print(deep_blue.total_room_below())
 ```
 
-It prints:
-
-```text
-Dune False
-Refused: reference books do not leave the library.
-Atlas True
+```inputs
+deep_blue.total_room_below()
 ```
 
-The loop demonstrates polymorphism. `item.checkout()` is the same line
-for both objects, and each object runs its own class's version: the
-`Book` goes off the shelf, and the `ReferenceBook` refuses.
-
-</details>
-
-**5.** Write a `Library` class: a constructor storing a `name` and an
-empty `books` list, an `add_book(book)` method appending to it, and an
-`available_titles()` method. It should return every book's `title` where
-`available` is `True`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-class Library:
-    """Holds a collection of books and reports which are on the shelf."""
-
+```solution
+class Expedition:
     def __init__(self, name):
         self.name = name
-        self.books = []
+        self._submarines = []
 
-    def add_book(self, book):
-        """Adds book to this library's collection."""
-        self.books.append(book)
+    def add(self, submarine):
+        self._submarines.append(submarine)
 
-    def available_titles(self):
-        """Returns the titles of every book currently available."""
-        titles = []
-        for book in self.books:
-            if book.available:
-                titles.append(book.title)
-        return titles
+    def total_room_below(self):
+        total = 0
+        for submarine in self._submarines:
+            total = total + submarine.room_below()
+        return total
 
-
-library = Library("Central")
-library.add_book(Book("Dune", "Frank Herbert"))
-library.add_book(ReferenceBook("Atlas", "Various"))
-print(library.available_titles())
+deep_blue = Expedition("Deep Blue")
+nautilus = Submarine("Nautilus")
+nautilus.dive(300)
+deep_blue.add(nautilus)
+deep_blue.add(Bathyscaphe("Trieste"))
+print(deep_blue.total_room_below())
+---
+11100: 100 m for the Nautilus, and 11,000 m for the Trieste, whose own
+`room_below` reads its own hull limit. This answer shows only the parts
+of `Expedition` the problem needs: in your world, the new method goes
+beside `deepest`.
 ```
 
-A `Library` has books. That is
-[composition](tutorial:objects-inside-objects), the same relationship
-`Bank` has with its accounts. A library is not a kind of `Book`.
+</div>
 
-</details>
+<div class="dl-world" data-world="solar-system">
 
-**6.** `available_titles()` never checks whether a `books` entry is a
-`Book` or a `ReferenceBook`. Why does it not need to?
+Can you give `Mission` an `emptiest()` method, which returns the probe
+with the least fuel?
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: a-container-that-asks-1--solar-system
+{{include: setup/oop/solar-system-6.py}}
 
-Both classes have an `available` field and a `title` field. `Book` sets
-them, and `ReferenceBook` inherits them unchanged. `available_titles()`
-only ever reads those two fields, and every object in `self.books` has
-them, whichever of the two classes it is.
+outer = Mission("Outer Planets")
+outer.launch(Probe("Voyager", 70))
+outer.launch(Lander("Philae", 40))
+outer.launch(Probe("Juno", 55))
+print(outer.emptiest())
+```
 
-</details>
+```inputs
+str(outer.emptiest())
+```
 
-## Putting Several Together
-
-**7.** Extend `Library` with a `checkout_by_title(title)` method: find the
-first book in `self.books` with a matching `title`, and call its own
-`checkout()`. If no book matches, print a message saying so and change
-nothing.
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. Loop over `self.books`, comparing `book.title == title`.
-2. Once found, call `book.checkout()`. That method already knows how to
-   refuse correctly for either kind of book, so `checkout_by_title()`
-   itself never needs to ask which kind it found.
-3. If the loop finishes with no match, that is the "not found" case,
-   handled after the loop rather than inside it.
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-class Library:
+```solution
+class Mission:
     def __init__(self, name):
         self.name = name
-        self.books = []
+        self._probes = []
 
-    def add_book(self, book):
-        self.books.append(book)
+    def launch(self, probe):
+        self._probes.append(probe)
 
-    def checkout_by_title(self, title):
-        """Checks out the first book matching title, or reports not found."""
-        for book in self.books:
-            if book.title == title:
-                book.checkout()
-                return
-        print("Not found:", title)
+    def emptiest(self):
+        best = self._probes[0]
+        for probe in self._probes:
+            if probe.get_fuel() < best.get_fuel():
+                best = probe
+        return best
 
-
-library = Library("Central")
-library.add_book(Book("Dune", "Frank Herbert"))
-library.checkout_by_title("Dune")
-library.checkout_by_title("Dune")
-library.checkout_by_title("Nonexistent")
+outer = Mission("Outer Planets")
+outer.launch(Probe("Voyager", 70))
+outer.launch(Lander("Philae", 40))
+outer.launch(Probe("Juno", 55))
+print(outer.emptiest())
+---
+`Philae (fuel 40 kg)`. This answer shows only the parts of `Mission` the
+problem needs: in your world, `emptiest` goes beside `ready_for`.
 ```
 
-The same method gives three different outcomes. The first call checks
-the book out. The second is refused, because the book is already out.
-The third reports that no book has that title. `checkout_by_title()`
-only ever calls `book.checkout()`. The rules for refusing still live on
-`Book` and `ReferenceBook`, and are not copied here.
+</div>
+
+<div class="dl-world" data-world="your-own">
+
+What question would you like to ask everything your container holds?
+Can you write it as a method, with a loop that asks and a choice between
+the answers?
+
+```python exec
+id: a-container-that-asks-1--your-own
+# My container, with one more method
+```
+
+</div>
+
+## 5. The test that finds the slip
+
+A `can_dive(metres)` method is meant to allow a dive to exactly the hull
+limit of 400 m. Somebody wrote `<` where they meant `<=`. Which one test
+would catch it, and which tests would pass either way?
+
+<details class="dl-answer"><summary>answer</summary>
+
+A dive from the surface to exactly 400 m: `<` refuses it, `<=` allows it.
+Dives of 100 m or 500 m give the same answer both ways. The boundary is
+the only place the two comparisons disagree, which is why a test belongs
+there.
 
 </details>
 
-**8.** Write `test_checkout_by_title_refuses_twice()`. Check out the same
-book twice through a fresh `Library`. Then assert that the book's
-`available` is still `False`. (There is no error to test for:
-`checkout()` handles a repeat by printing a message and returning.)
+## 6. An example that is almost right
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: an-example-that-is-almost-right-1
+import doctest
+
+class Probe:
+    def __init__(self, name, fuel):
+        self.name = name
+        self._fuel = fuel
+
+    def half_tank(self):
+        """Return half the probe's fuel.
+
+        >>> Probe("Voyager", 70).half_tank()
+        35
+        """
+        return self._fuel / 2
+
+doctest.run_docstring_examples(Probe.half_tank, globals(), name="half_tank")
+```
+
+```question
+id: an-example-that-is-almost-right-q1
+type: multiple-choice
+answer: 2
+
+Does the example pass?
+
+- Yes: 35 and 35.0 are the same number.
+  - `35 == 35.0` is True in Python.
+- No: Python shows `35.0`, and doctest compares what is shown.
+  - `/` always gives a decimal, and doctest reads text.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+It fails: `Expected: 35`, `Got: 35.0`. `/` always gives a decimal, even
+when it divides exactly. Either the example says `35.0`, or the method
+uses `//` and promises a whole number, which is a design decision the
+docstring should then say out loud.
+
+</details>
+
+## 7. Two jobs in one function
 
 ```python
-def test_checkout_by_title_refuses_twice():
-    library = Library("Test")
-    library.add_book(Book("Dune", "Frank Herbert"))
-    library.checkout_by_title("Dune")
-    library.checkout_by_title("Dune")
-    assert library.books[0].available == False, "a second checkout should not un-refuse the book"
-
-
-test_checkout_by_title_refuses_twice()
-print("Passed.")
+def play_turn(hero, monster):
+    choice = input("What now? ")
+    if choice == "attack":
+        monster.take_damage(3)
+    elif choice == "rest":
+        hero.heal(2)
 ```
 
-The test reads `library.books[0].available` rather than trusting that
-nothing went wrong. That is the same habit [Testing a class with assert](tutorial:testing-what-a-class-does)
-built around `assert`. Here it applies to a class made of other classes,
-rather than to one class on its own.
+Why is `play_turn` hard to test? Can you split it so that it is not?
+
+<details class="dl-answer"><summary>one answer</summary>
+
+It asks and decides in one place, so every test would wait for somebody
+to type. Split it: `run_choice(hero, monster, choice)` decides, and never
+asks, and a loop asks and passes the answer on. Then a list of choices
+tests `run_choice`, and a menu, a prompt or a test can all drive it.
 
 </details>
 
-**9.** `checkout_by_title()`'s docstring says "Checks out the first book
-matching title, or reports not found." A future version instead checks out
-*every* matching book. What would have to happen to the docstring for it
-to stay honest?
+## 8. Class, child, container or flag?
 
-<details class="dl-answer"><summary>answer</summary>
+A zoo keeps animals. Every animal has a name and eats. Penguins also
+swim, and lions also roar. Keepers look after several animals each, and
+an animal can be moved to another keeper. Which classes would you write,
+and which relationships are "is a" and which "has a"?
 
-It would need rewriting to say so, something like "Checks out every book
-matching title." Python would not catch the mismatch on its own: a
-sentence in a docstring is not something it can check.
+<details class="dl-answer"><summary>one answer</summary>
 
-[Documenting a class with docstrings](tutorial:documenting-a-class) met
-the same problem with `withdraw()`. Here it is one level up, on a method
-that calls another class's method to do the work.
-
-</details>
-
-**10.** In your own words: what would it take to add a `MagazineIssue`
-class to this system, alongside `Book` and `ReferenceBook`? It should work
-with `Library.available_titles()` and `checkout_by_title()`, with no
-changes to `Library` itself.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`MagazineIssue` needs its own `title` and `available` fields, and its own
-`checkout()` method, written the way `ReferenceBook`'s own was. Its check
-can be whatever makes sense for a magazine issue.
-
-Nothing about `Library` mentions `Book` or `ReferenceBook` by name anywhere
-in its own methods. It only ever asks each object in `self.books` for
-`title`, `available`, and `checkout()`. Any class supplying those three
-fits in without `Library` needing to know it exists.
+`Animal`, with `Penguin(Animal)` and `Lion(Animal)`: a penguin is an
+animal, and adds swimming. `Keeper` has animals, in a list. Moving an
+animal is two method calls, one keeper's `remove` and another's `add`,
+so the animal itself never changes class. If animals changed kind (they
+do not), a flag would be the safer design. Another good answer has no
+child classes at all, only a `sound` field, if roaring and swimming never
+become more than a line of text.
 
 </details>
 
-## More of the series
+## 9. One more rule, the whole way through
 
-**11.** Anyone can reach into a `Library` from outside and write
-`library.books = "Dune"`. That replaces the whole list with a string,
-and the next call to `available_titles()` fails. How could you show that
-`books` is the library's own business, as
-[Encapsulation: keeping an object's data behind its methods](tutorial:keeping-details-inside-an-object)
-did? What does your change stop, and what does it not stop?
+Choose one rule your world does not keep yet. Can you add it the way the
+series did: the test first, at the boundary, failing; then the rule, in
+one method; then the docstring; then a command in `run_choice`, so a
+player can meet it?
 
-<details class="dl-answer"><summary>answer</summary>
-
-Rename the field `_books`, everywhere inside the class, and let code
-outside use only `add_book()` and `available_titles()`.
-
-It stops nothing. Python still lets anybody write
-`library._books = "Dune"`. The underscore is a sign for people, not a
-lock. What it does is tell the next programmer which names are safe to
-use. Then a change to how `Library` keeps its books, a dictionary in
-place of a list, say, cannot break their code.
-
-</details>
-
-**12.** Write `run_choice(library, choice)` for a small menu: `"1"` prints
-the available titles, `"9"` returns `False` to quit, and anything else
-prints `Not a menu option` and returns `True`. A cell on this site cannot
-wait for typing, so run it on the list `["1", "x", "9"]`, standing in for
-a person.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def run_choice(library, choice):
-    if choice == "1":
-        print(library.available_titles())
-    elif choice == "9":
-        return False
-    else:
-        print("Not a menu option:", choice)
-    return True
-
-
-library = Library("Central")    # the Library from problem 5
-library.add_book(Book("Dune", "Frank Herbert"))
-library.add_book(ReferenceBook("Atlas", "Various"))
-
-for choice in ["1", "x", "9"]:
-    if not run_choice(library, choice):
-        break
-print("Goodbye.")
+```python exec
+id: one-more-rule-1
+# The test, the rule, the docstring, the command
 ```
 
-It prints `['Dune', 'Atlas']`, then `Not a menu option: x`, then
-`Goodbye.`. `run_choice()` never calls `input()`, as in
-[A front end: a text menu for a class](tutorial:a-front-end-for-a-class),
-so a list of answers can test it. Inside it is the selection from
-[Sequence, selection and iteration inside a class](tutorial:the-moves-you-already-know),
-and the loop around it is the iteration.
+<details class="dl-answer"><summary>one way to check</summary>
 
-</details>
-
-**13.** Run `library.available_titels()`, with the typo. Read the last
-line of the error. Which name does it say is missing? What would the
-editor have offered you as you typed, before you ran anything?
-
-<details class="dl-answer"><summary>answer</summary>
-
-The last line is
-`AttributeError: 'Library' object has no attribute 'available_titels'. Did you mean: 'available_titles'?`
-It names the exact name Python could not find, on the exact object, and
-then suggests the name you probably meant.
-
-As [Your development environment: the tools around your code](tutorial:the-tools-around-your-code)
-showed, the editor already knows the methods on `Library`. Type
-`library.avail`, and it offers `available_titles()`, spelled right, so
-the typo never happens.
+Run the test before the rule exists, and see it fail. Run it again after,
+and see it pass. Run your other tests too: a new rule sometimes breaks an
+old promise, and that is the moment to find out.
 
 </details>

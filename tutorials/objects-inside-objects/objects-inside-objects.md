@@ -1,416 +1,601 @@
 ---
 title: "Composition: objects inside other objects"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
+worlds:
+  game: A game world, with characters, the things they carry, and rooms.
+  ocean: An ocean expedition, with a submarine, its crew, and what they find.
+  solar-system: A solar system, with planets, moons and the probes sent to them.
+  your-own: A world of your own, with a class you design and grow page by page.
 covers:
-  a-bank-holds-its-accounts:
+  a-system-holds-its-planets:
     covers: [FOOP-LO7]
   is-a-or-has-a:
     covers: [FOOP-LO6, FOOP-LO7]
-  accounts-of-every-kind:
-    covers: [FOOP-LO6]
+  cases-that-are-not-clear-cut:
+    covers: [FOOP-LO6, FOOP-LO7]
 ---
 
 # Composition: objects inside other objects
 
-A bank is not one account. It keeps track of many accounts. It opens new
-ones, and it answers questions about all of them at once, such as "how
-much money do we hold in total?"
+A solar system is not one planet. It holds many, and it can answer
+questions about all of them at once: how many moons are there in all?
+Which planet is farthest out? Is a star system one more kind of planet,
+or something else?
 
-On the last page, [Inheritance: one class built on
-another](tutorial:one-parent-many-children), we built new kinds of
-account on `BankAccount`. Is a bank one more kind of account? On this
-page we:
+## A system holds its planets
 
-- write a class whose fields are other objects
-- learn a simple test for choosing between "is a" and "has a"
-- put inheritance and composition together in one program
-
-## A bank holds its accounts
-
-A `Bank` class needs to keep track of many accounts. Its fields do not
-have to be plain numbers or text. A field can hold a list of other
-objects.
-
-Before you run the cell, read `total_balance()`. What total do you
-expect?
+A class's fields do not have to be numbers or text. A field can hold a
+list of other objects. Here, a `StarSystem` holds `Planet` objects. What
+will the last line print?
 
 ```python exec
-id: a-bank-holds-its-accounts-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-
-class Bank:
-    def __init__(self, name):
+id: a-system-holds-its-planets-1
+class Planet:
+    def __init__(self, name, distance, moons):
         self.name = name
-        self.accounts = []
+        self.distance = distance    # millions of km from its star
+        self._moons = list(moons)
 
-    def open_account(self, account):
-        self.accounts.append(account)
+    def moon_count(self):
+        return len(self._moons)
 
-    def total_balance(self):
+
+class StarSystem:
+    def __init__(self, star):
+        self.star = star
+        self._planets = []
+
+    def add(self, planet):
+        self._planets.append(planet)
+
+    def total_moons(self):
         total = 0
-        for account in self.accounts:
-            total = total + account.balance
+        for planet in self._planets:
+            total = total + planet.moon_count()
         return total
 
 
-bank = Bank("First Local")
-bank.open_account(BankAccount("Alice", 500.0))
-bank.open_account(BankAccount("Ben", 200.0))
-print(bank.total_balance())
+sol = StarSystem("the Sun")
+sol.add(Planet("Earth", 149.6, ["the Moon"]))
+sol.add(Planet("Mars", 228.0, ["Phobos", "Deimos"]))
+sol.add(Planet("Jupiter", 778.5, ["Io", "Europa", "Ganymede", "Callisto"]))
+print(sol.total_moons())
 ```
 
-The total is `700.0`.
+```predict
+type: number
 
-Look at what `Bank` does and does not do:
+What will the last line print?
+```
 
-- `Bank` never stores an owner or a balance of its own.
-- Its field `self.accounts` starts as an empty list. `open_account()`
-  adds one account object to it at a time.
-- `total_balance()` loops over that list and asks each account for its
-  own `balance`.
+It prints `7`: one, two and four. (Jupiter has over 90 moons that we
+know of. These are its four big ones.)
 
-This is like the `Planet` class in [A class with many methods: giving one class more to do](tutorial:one-class-many-methods#data-that-belongs-together). It stored one list of
-moons, and did not need a separate name for each moon. `Bank` stores one
-list of accounts, however many there are.
+Look at what `StarSystem` does and does not do:
 
-Building a class out of objects of another class like this is called
-*composition*. Composition is a way to build one class from other
-objects, held in its fields. A bank has accounts.
+- It never stores a distance or a moon of its own.
+- Its field `_planets` starts as an empty list, and `add()` puts one
+  planet in at a time.
+- `total_moons()` asks each planet for its own `moon_count()`. It never
+  looks inside a planet's list of moons: that belongs to the planet.
 
-### Your turn
+Building a class out of objects of other classes, held in its fields, is
+called *composition*. A star system has planets.
 
-1. Add a `find_account(owner)` method to `Bank`. It should return the
-   first account in `self.accounts` whose `owner` matches. If no account
-   matches, it should return `None`.
-2. Open a few accounts of your own.
-3. Look one of them up by name, and print its balance.
+Can you give `StarSystem` a `farthest()` method, which returns the planet
+farthest from the star?
 
 ```python exec
-id: a-bank-holds-its-accounts-2
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-
-class Bank:
-    def __init__(self, name):
-        self.name = name
-        self.accounts = []
-
-    def open_account(self, account):
-        self.accounts.append(account)
-
-    def total_balance(self):
-        total = 0
-        for account in self.accounts:
-            total = total + account.balance
-        return total
-
-    # Add a find_account method here
-
-bank = Bank("First Local")
-bank.open_account(BankAccount("Alice", 500.0))
-bank.open_account(BankAccount("Ben", 200.0))
-
-# Call find_account() here, and print the balance of whichever account it finds
+id: a-system-holds-its-planets-2
+sol = StarSystem("the Sun")
+sol.add(Planet("Earth", 149.6, ["the Moon"]))
+sol.add(Planet("Jupiter", 778.5, ["Io", "Europa", "Ganymede", "Callisto"]))
+sol.add(Planet("Mars", 228.0, ["Phobos", "Deimos"]))
+print(sol.farthest().name)
 ```
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+```inputs
+sol.farthest().name
+sol.farthest().moon_count()
+```
 
-1. `find_account(self, owner)` loops over `self.accounts`. It is the same
-   loop that `total_balance()` already uses.
-2. Inside the loop, compare `account.owner == owner`. The parameter and
-   the field share a name, but they are two different things. The
-   parameter `owner` comes from whoever called `find_account()`. The
-   field `account.owner` belongs to each account.
-3. Return the account as soon as you find a match. You do not need to
-   wait for the loop to finish. If the loop ends with no match, write
-   `return None` after it.
+```hint
+The method goes inside `StarSystem`, in the cell above, so run that cell
+again once it is there. Which planet should it start with, as the
+farthest so far? It is the same loop as `heaviest()` on
+[Sequence, selection and iteration inside a class](tutorial:the-moves-you-already-know).
+```
 
-**Think about:** what would `find_account()` do if two accounts in the
-same bank had the same owner name?
+```solution
+class StarSystem:
+    def __init__(self, star):
+        self.star = star
+        self._planets = []
 
-</details>
+    def add(self, planet):
+        self._planets.append(planet)
+
+    def total_moons(self):
+        total = 0
+        for planet in self._planets:
+            total = total + planet.moon_count()
+        return total
+
+    def farthest(self):
+        best = self._planets[0]
+        for planet in self._planets:
+            if planet.distance > best.distance:
+                best = planet
+        return best
+
+sol = StarSystem("the Sun")
+sol.add(Planet("Earth", 149.6, ["the Moon"]))
+sol.add(Planet("Jupiter", 778.5, ["Io", "Europa", "Ganymede", "Callisto"]))
+sol.add(Planet("Mars", 228.0, ["Phobos", "Deimos"]))
+print(sol.farthest().name)
+---
+`Jupiter`. The method returns the planet itself, not its name, so a caller
+can ask it anything: `sol.farthest().moon_count()` is 4.
+```
 
 ## Is a, or has a?
 
-`SavingsAccount` and `Bank` are both built from `BankAccount`, but in two
-different ways:
-
-- A `SavingsAccount` is a `BankAccount`, with one extra field and one
-  extra method. That is inheritance.
-- A `Bank` has `BankAccount` objects. It is not a kind of account
-  itself. That is composition.
-
-What if we had used inheritance for `Bank` anyway? In the cell below,
-`Bank` inherits from `BankAccount`. Python will not complain. What do you
-think the two `print()` lines show? Run it to check.
+The last page built classes on other classes by inheritance. What if a
+star system inherited from `Planet`? Python will not object. What will
+this print?
 
 ```python exec
 id: is-a-or-has-a-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
+class StarSystem(Planet):    # a star system is not a planet
+    def __init__(self, star):
+        super().__init__(star, 0, [])
+        self._planets = []
 
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-
-class Bank(BankAccount):   # the wrong choice: a bank is not an account
-    def __init__(self, name):
-        super().__init__(name, 0.0)
-        self.accounts = []
-
-
-bank = Bank("First Local")
-bank.deposit(100.0)
-print(bank.owner)
-print(bank.balance)
+sol = StarSystem("the Sun")
+print(sol.name, sol.distance, sol.moon_count())
 ```
 
-It prints `First Local` and `100.0`. The bank now has an "owner" and a
-balance of its own. Whose money is that `100.0`? It belongs to no
-customer, and a `total_balance()` like the one in the last section
-would never count it. Python raised no
+It prints `the Sun 0 0`. The system now has a distance from itself, and
+moons of its own, and a caller could ask it for either. Python raised no
 error. The mistake is in the design, not in the code.
 
-Here is a test that helps. Say the two sentences out loud, and ask which
-one is true:
+A test helps. Say the sentences out loud, and ask which one is true:
 
 | Sentence | True? | Choose |
 |---|---|---|
-| "A savings account is a bank account." | Yes | inheritance |
-| "A bank is a bank account." | No | — |
-| "A bank has bank accounts." | Yes | composition |
+| "A troll is a character." | Yes | inheritance |
+| "A star system is a planet." | No | |
+| "A star system has planets." | Yes | composition |
 
-An *is a* relationship means one class is a special kind of another. It
+An *is a* relationship means one class is a special kind of another, and
 calls for inheritance. A *has a* relationship means one object holds
-other objects. It calls for composition.
+others, and calls for composition. When both seem to fit, many
+programmers choose "has a": an object that holds another can swap it for
+a different one later, and an object that inherits keeps everything its
+parent does, even the parts that make no sense for it.
 
-Sometimes both sentences seem to fit. Many programmers then choose "has
-a", because a class that holds an object can swap it for another later.
-A class that inherits from a parent keeps everything the parent does,
-including the parts that make no sense for it, like the bank's `deposit()`
-above.
+```question
+id: is-a-or-has-a-q1
+type: fill-in-the-blank
 
-### Your turn
+- A submarine and its crew: a submarine {has|is} a crew. {Composition|Inheritance}.
+- A lander and a probe: a lander {is|has} a probe. {Inheritance|Composition}.
+- A room and a treasure: a room {has|is} treasure. {Composition|Inheritance}.
+- A planet and its moons: a planet {has|is} moons. {Composition|Inheritance}.
+```
 
-For each pair, which sentence is true: "is a" or "has a"? Would you use
-inheritance or composition?
+## Cases that are not clear-cut
 
-1. `Car` and `Engine`
-2. `Dog` and `Animal`
-3. `Library` and `Book`
-4. `ReferenceBook` and `Book`
-5. `Playlist` and `Song`
-6. `Course` and `Student`
+The sentence test settles most cases. Here are four where good
+programmers disagree, and the reasons each way.
 
-<details class="dl-answer"><summary>answer</summary>
+**A dictionary or a class?** A moon could be
+`{"name": "Io", "width": 3643}`, or a `Moon` object. The dictionary is
+less code, and fine while a moon only knows things. A class earns its
+place when a moon keeps a rule (a width is never negative) or answers a
+question (is it bigger than ours?). Many designs start with a dictionary
+and grow a class the day the first rule arrives.
 
-1. A car has an engine. Composition: `Car` keeps an `Engine` object in
-   a field.
-2. A dog is an animal. Inheritance: `class Dog(Animal):`.
-3. A library has books, usually many. Composition: `Library` keeps a
-   list of `Book` objects, the way `Bank` keeps a list of accounts.
-4. A reference book is a book, perhaps one that cannot be borrowed.
-   Inheritance: `class ReferenceBook(Book):`.
-5. A playlist has songs. Composition, with a list.
-6. A course has students. Composition, with a list. A student is not a
-   kind of course, and a course is not a kind of student.
-
-</details>
-
-## Accounts of every kind
-
-A bank holds savings accounts and current accounts, not only plain ones.
-Can `Bank` hold them all? `total_balance()` only reads `account.balance`,
-and every kind of account has that field.
-
-The cell below uses both relationships at once. `SavingsAccount` and
-`CurrentAccount` inherit from `BankAccount`. `Bank` holds all three
-kinds. Ben withdraws `250.0` from his current account first. What total
-do you expect? Run it to check.
+**A child class or a flag?** A body in space might be a planet or a dwarf
+planet. One design has two child classes, `Planet(Body)` and
+`DwarfPlanet(Body)`. Another has one class, with a field that says which
+kind it is:
 
 ```python exec
-id: accounts-of-every-kind-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
+id: cases-that-are-not-clear-cut-1
+class Body:
+    def __init__(self, name, kind):
+        self.name = name
+        self.kind = kind    # "planet" or "dwarf planet"
 
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
+    def describe(self):
+        if self.kind == "planet":
+            return f"{self.name}, a planet"
+        else:
+            return f"{self.name}, a dwarf planet"
+
+pluto = Body("Pluto", "planet")
+print(pluto.describe())
+pluto.kind = "dwarf planet"    # astronomers decided this in 2006
+print(pluto.describe())
+```
+
+In 2006, astronomers decided that Pluto is a dwarf planet. With a flag,
+that is one line. With child classes, it is harder: an object cannot
+change its class, so the program has to build a new `DwarfPlanet` and put
+it everywhere the old Pluto was. But suppose astronomers name a third
+kind next year. The child classes take one new class, and nothing else
+changes. The flag takes a new `elif` in `describe`, and in every other
+method that asks which kind it is.
+
+```question
+id: cases-that-are-not-clear-cut-q1
+type: multiple-choice
+answer: 3
+
+Which design survives better?
+
+- The flag, always
+  - An object's kind can change with one line.
+- Child classes, always
+  - A new kind is a new class, and nothing old is edited.
+- It depends on which change is more likely
+  - A flag survives a thing changing kind; child classes survive new kinds being added.
+```
+
+**When "is a" breaks.** In mathematics, a square is a rectangle. So
+`Square(Rectangle)` looks right. What will these two lines print?
+
+```python exec
+id: cases-that-are-not-clear-cut-2
+class Rectangle:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def set_width(self, width):
+        self.width = width
+
+    def area(self):
+        return self.width * self.height
 
 
-class SavingsAccount(BankAccount):
-    def __init__(self, owner, balance, interest_rate):
-        super().__init__(owner, balance)
-        self.interest_rate = interest_rate
+class Square(Rectangle):
+    def __init__(self, side):
+        super().__init__(side, side)
+
+    def set_width(self, width):
+        self.width = width
+        self.height = width    # a square keeps its sides equal
 
 
-class CurrentAccount(BankAccount):
-    def __init__(self, owner, balance, overdraft_limit):
-        super().__init__(owner, balance)
-        self.overdraft_limit = overdraft_limit
+def double_width(shape):
+    shape.set_width(shape.width * 2)
+    return shape.area()
 
-    def withdraw(self, amount):
-        if amount > self.balance + self.overdraft_limit:
-            print("Refused: over the overdraft limit.")
-            return
-        self.balance = self.balance - amount
+print(double_width(Rectangle(3, 3)))
+print(double_width(Square(3)))
+```
 
+It prints `18`, then `36`. `double_width` was written for rectangles,
+where doubling the width doubles the area, and every rectangle keeps that
+promise but the square. A square that can change its width is not a
+rectangle that can change its width. "Is a" has to hold for everything
+the parent does, not only for what the thing is.
 
-class Bank:
+**Two things at once.** An astronaut can be a commander and a scientist,
+both at once, and change roles between missions. `Commander(Astronaut)`
+and `Scientist(Astronaut)` leave nowhere for someone who is both.
+Composition does: an astronaut *has* roles.
+
+```python exec
+id: cases-that-are-not-clear-cut-3
+class Astronaut:
+    def __init__(self, name, roles):
+        self.name = name
+        self._roles = list(roles)
+
+    def can(self, role):
+        return role in self._roles
+
+peggy = Astronaut("Peggy Whitson", ["commander", "scientist"])
+print(peggy.can("scientist"), peggy.can("pilot"))
+```
+
+It prints `True False`. Peggy Whitson, a biochemist, was the first woman
+to command the International Space Station. A person is rarely one kind
+of thing for life, and "has a" bends where "is a" breaks.
+
+### Your turn: your class, fifth version
+
+This is the fifth version of your class: a new class that holds objects
+of the classes you already have. Run the first cell in your world, which
+holds your classes as they stood at the end of
+[Inheritance](tutorial:one-parent-many-children), then write the container
+in the second.
+
+<div class="dl-world" data-world="game">
+
+```python exec
+id: your-class-5-so-far--game
+{{include: setup/oop/game-4.py}}
+
+{{include: setup/oop/game-4-kind.py}}
+```
+
+A room holds characters. Can you write a `Room` class, with a name, an
+`enter(character)` method that refuses anyone already inside, and a
+`standing()` method that returns the names of everyone who is not down?
+
+```python exec
+id: your-class-5--game
+# Your Room here
+
+cave = Room("Cave")
+ada = Character("Ada", 10)
+cave.enter(ada)
+cave.enter(Healer("Mira", 10))
+cave.enter(ada)
+ada.take_damage(12)
+print(cave.standing())
+```
+
+```inputs
+cave.standing()
+str(cave)
+```
+
+```hint
+A room's characters are a list it keeps to itself. `in` tells you whether
+something is already in a list. Which of `Character`'s methods answers
+whether someone is down?
+```
+
+```solution
+class Room:
     def __init__(self, name):
         self.name = name
-        self.accounts = []
+        self._characters = []
 
-    def open_account(self, account):
-        self.accounts.append(account)
+    def __str__(self):
+        return f"{self.name}: {len(self.standing())} standing"
 
-    def total_balance(self):
-        total = 0
-        for account in self.accounts:
-            total = total + account.balance
-        return total
+    def enter(self, character):
+        if character in self._characters:
+            print(f"Refused: {character.name} is already in {self.name}.")
+            return
+        self._characters.append(character)
 
+    def standing(self):
+        names = []
+        for character in self._characters:
+            if not character.is_down():
+                names.append(character.name)
+        return names
 
-bank = Bank("First Local")
-bank.open_account(SavingsAccount("Alice", 500.0, 0.05))
-bank.open_account(CurrentAccount("Ben", 200.0, 100.0))
-bank.open_account(BankAccount("Cara", 50.0))
-
-bank.accounts[1].withdraw(250.0)   # Ben's account is the second one opened
-print(bank.total_balance())
+cave = Room("Cave")
+ada = Character("Ada", 10)
+cave.enter(ada)
+cave.enter(Healer("Mira", 10))
+cave.enter(ada)
+ada.take_damage(12)
+print(cave.standing())
+---
+A refusal for Ada's second entry, then `['Mira']`. `standing()` asks each
+character `is_down()`, and a healer answers as a character does. `Room`
+keeps one rule of its own: nobody is inside twice.
 ```
 
-The total is `500.0`. Ben's balance is now `-50.0`, so the sum is
-`500.0 - 50.0 + 50.0`.
+</div>
 
-`total_balance()` never checks which kind each account is. It asks every
-account for its `balance`, and every kind of account has one. This is
-the same reason the loop in [Inheritance: one class built on
-another](tutorial:one-parent-many-children#many-kinds-one-loop) worked for
-every kind of account.
-
-### Your turn
-
-A customer can have more than one account: say, a savings account and a
-current account. Does a customer have accounts, or is a customer an
-account?
-
-1. Write a `Customer` class. Give it a `name` field and an `accounts`
-   field that starts as an empty list.
-2. Add an `add_account(account)` method.
-3. Add a `net_worth()` method that returns the total balance of all the
-   customer's accounts.
-4. Create a customer called Dan with a `SavingsAccount` of `300.0` and a
-   `CurrentAccount` of `-40.0`, and print Dan's `net_worth()`. What
-   should it be?
+<div class="dl-world" data-world="ocean">
 
 ```python exec
-id: accounts-of-every-kind-2
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
+id: your-class-5-so-far--ocean
+{{include: setup/oop/ocean-4.py}}
 
-
-class SavingsAccount(BankAccount):
-    def __init__(self, owner, balance, interest_rate):
-        super().__init__(owner, balance)
-        self.interest_rate = interest_rate
-
-
-class CurrentAccount(BankAccount):
-    def __init__(self, owner, balance, overdraft_limit):
-        super().__init__(owner, balance)
-        self.overdraft_limit = overdraft_limit
-
-
-# Write the Customer class here
-
-# Create Dan, give him two accounts, and print his net worth here
+{{include: setup/oop/ocean-4-kind.py}}
 ```
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+An expedition has submarines. Can you write an `Expedition` class, with a
+name, an `add(submarine)` method, and a `deepest()` method that returns
+the submarine that is deepest right now?
 
-1. A customer has accounts, so `Customer` does not inherit from
-   anything. It starts `class Customer:`.
-2. `Customer` looks a lot like `Bank`. `__init__(self, name)` sets
-   `self.name = name` and `self.accounts = []`.
-3. `add_account()` appends to `self.accounts`, the same as
-   `Bank.open_account()`.
-4. `net_worth()` is the same loop as `Bank.total_balance()`.
-5. The current account needs an owner, a balance and an overdraft
-   limit: `CurrentAccount("Dan", -40.0, 100.0)`.
+```python exec
+id: your-class-5--ocean
+# Your Expedition here
 
-**Think about:** suppose the bank opens Dan's two accounts too, so
-`Bank` and `Customer` hold the very same account objects. If Dan then
-withdraws from his current account, do both totals change?
+deep_blue = Expedition("Deep Blue")
+nautilus = Submarine("Nautilus")
+trieste = Bathyscaphe("Trieste")
+deep_blue.add(nautilus)
+deep_blue.add(trieste)
+nautilus.dive(300)
+trieste.dive(5000)
+print(deep_blue.deepest())
+```
 
-</details>
+```inputs
+str(deep_blue.deepest())
+deep_blue.deepest().name
+```
 
-## Wrapping up
+```hint
+`deepest()` is the same loop as `farthest()` above. Which of
+`Submarine`'s methods tells you how deep one is, without reaching in?
+```
 
-On this page:
+```solution
+class Expedition:
+    def __init__(self, name):
+        self.name = name
+        self._submarines = []
 
-- A field can hold other objects, such as a list of accounts. Building a
-  class this way is called *composition*.
-- A `Bank` has accounts, so it holds them in a field. A `SavingsAccount`
-  is a bank account, so it inherits from `BankAccount`.
-- To choose, say both sentences out loud. "Is a" calls for inheritance.
-  "Has a" calls for composition. If both seem to fit, "has a" is often the
-  safer choice.
-- A class that holds objects can hold every kind of child class, as long
-  as it only uses what they all share.
+    def add(self, submarine):
+        self._submarines.append(submarine)
 
-### Reflection
+    def deepest(self):
+        best = self._submarines[0]
+        for submarine in self._submarines:
+            if submarine.get_depth() > best.get_depth():
+                best = submarine
+        return best
 
-Write a few sentences about this page, whenever you are ready. `Bank` and
-`CurrentAccount` both build on something else. One does it by holding
-objects, and the other by inheriting from a class. What is the difference
-between the two, in your own words?
+deep_blue = Expedition("Deep Blue")
+nautilus = Submarine("Nautilus")
+trieste = Bathyscaphe("Trieste")
+deep_blue.add(nautilus)
+deep_blue.add(trieste)
+nautilus.dive(300)
+trieste.dive(5000)
+print(deep_blue.deepest())
+---
+`Trieste at 5000 m`. The expedition asks each submarine `get_depth()`,
+and never reaches for `_depth`: the rules about depth stay with the
+submarine. An empty expedition has no deepest submarine, and this
+version stops with an `IndexError`. What should it do instead?
+```
 
-You could write your thoughts in **Your notes**, in the **Notes** panel at
-the top right of the page.
+</div>
 
-## Where to Read More
+<div class="dl-world" data-world="solar-system">
+
+```python exec
+id: your-class-5-so-far--solar-system
+{{include: setup/oop/solar-system-4.py}}
+
+{{include: setup/oop/solar-system-4-kind.py}}
+```
+
+A mission has probes. Can you write a `Mission` class, with a name, a
+`launch(probe)` method, a `total_fuel()` method, and a `ready_for(kg)`
+method that returns the names of the probes that can burn that much now?
+
+```python exec
+id: your-class-5--solar-system
+# Your Mission here
+
+outer = Mission("Outer Planets")
+voyager = Probe("Voyager", 70)
+philae = Lander("Philae", 40)
+outer.launch(voyager)
+outer.launch(philae)
+philae.land()
+print(outer.total_fuel(), outer.ready_for(30))
+```
+
+```inputs
+outer.total_fuel()
+outer.ready_for(30)
+outer.ready_for(100)
+```
+
+```hint
+Both methods loop over the mission's probes. Which of `Probe`'s methods
+answer "how much fuel?" and "can you burn this much?", for a lander too?
+```
+
+```solution
+class Mission:
+    def __init__(self, name):
+        self.name = name
+        self._probes = []
+
+    def launch(self, probe):
+        self._probes.append(probe)
+
+    def total_fuel(self):
+        total = 0
+        for probe in self._probes:
+            total = total + probe.get_fuel()
+        return total
+
+    def ready_for(self, kg):
+        names = []
+        for probe in self._probes:
+            if probe.can_burn(kg):
+                names.append(probe.name)
+        return names
+
+outer = Mission("Outer Planets")
+voyager = Probe("Voyager", 70)
+philae = Lander("Philae", 40)
+outer.launch(voyager)
+outer.launch(philae)
+philae.land()
+print(outer.total_fuel(), outer.ready_for(30))
+---
+`110 ['Voyager']`. Philae has 40 kg and still is not ready: it has landed,
+and a lander's own `can_burn` says so. `Mission` never asks which kind of
+probe it has. That is the last page's polymorphism, at work inside a
+container.
+```
+
+</div>
+
+<div class="dl-world" data-world="your-own">
+
+What in your world holds several of your things? A shop holds stock, a
+herd holds animals, a library holds books. Can you write that class, with
+at least one method that asks each thing it holds a question? Your
+classes from [Inheritance](tutorial:one-parent-many-children) are saved
+there: copy them into the first cell.
+
+```python exec
+id: your-class-5-so-far--your-own
+# My classes so far
+```
+
+```python exec
+id: your-class-5--your-own
+# My container class
+```
+
+</div>
+
+## Looking back
+
+Of the four cases that are not clear-cut, which one would you have
+decided differently before this page? And which would you still argue
+about?
+
+A challenge: Alpha Centauri has two stars close together, A and B, and a
+third, Proxima, farther out. Can you change `StarSystem` so that it can
+hold more than one star, without changing how planets are added or
+counted?
+
+```python challenge
+class StarSystem:
+    def __init__(self, star):
+        self.star = star
+        self._planets = []
+
+    def add(self, planet):
+        self._planets.append(planet)
+
+alpha = StarSystem("Alpha Centauri A")
+print(alpha.star)
+```
+
+Next, [Testing a class: hunting for the bug](tutorial:testing-what-a-class-does)
+writes tests that find the mistakes a class hides.
+
+## Where to read more
+
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
 
 Downey, A. B. (2015). *Think Python: How to Think Like a Computer
-Scientist* (2nd ed.). Green Tea Press. Section 18.8, Class diagrams,
-names the two relationships on this page: HAS-A and IS-A.
-Free at <https://greenteapress.com/wp/think-python-2e/>.
+Scientist* (2nd ed.). Green Tea Press. Free at
+<https://greenteapress.com/wp/think-python-2e/>. Section 18.8, "Class
+diagrams", names the two relationships on this page: IS-A and HAS-A.
+
+Martin, R. C. (1996). "The Liskov Substitution Principle". *C++ Report*,
+March 1996. An article that uses the same square and rectangle to explain
+the rule behind them: a child must keep every promise its parent makes.
+It is written for C++, and the idea is the same in Python.
 
 Real Python. *Inheritance and Composition: A Python OOP Guide*.
-<https://realpython.com/inheritance-composition-python/>. A longer look at
-exactly the choice `Bank` and `CurrentAccount` make differently in this
-tutorial.
+<https://realpython.com/inheritance-composition-python/>. A longer look
+at the choice this page makes, with more examples of each.

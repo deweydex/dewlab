@@ -484,8 +484,8 @@ print(Planet("Neptune", 4515.0).year_length())
 Next, [A polynomial class: a project in many methods](tutorial:a-polynomial-class)
 builds one class, a method at a time, from a ball thrown in the air. Or
 go straight on to
-[Inheritance: one class built on another](tutorial:one-parent-many-children),
-which builds new classes out of the ones you have.
+[Designing classes: from a description to classes](tutorial:from-a-description-to-classes),
+which decides what the classes should be before any code is written.
 
 ## Where to read more
 
