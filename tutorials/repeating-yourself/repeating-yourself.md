@@ -212,7 +212,7 @@ What will the last line be?
 
 `range(5)` gives five numbers, 0, 1, 2, 3 and 4, starting from 0. So the
 last line is 4, not 5. Starting from 0 turns out to be very useful, and
-[Lists: keeping many values in order](tutorial:lists-and-sequences) shows
+[Lists and looping over them](tutorial:lists-and-sequences) shows
 why.
 
 `range()` can also take a start and a step:
@@ -339,7 +339,7 @@ The stopping row is the one that trips people up. Sigma stops **at** 5,
 and `range` stops **before** 6. So the two numbers differ by one, but
 they describe the same five values. The number in `range` marks a
 boundary, not an item. We will see the same idea again with slices, in
-[Lists: keeping many values in order](tutorial:lists-and-sequences).
+[Lists and looping over them](tutorial:lists-and-sequences).
 
 The last row is a real difference between the two. Sigma never writes
 down that the total starts at zero: a sum of nothing is zero, and

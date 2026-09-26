@@ -593,7 +593,7 @@ text that appears when a move is not allowed.
 
 ## Where to read more
 
-The dewlab page [Variables, data types and text](tutorial:storing-and-computing)
+The dewlab page [How programming languages came to be](tutorial:how-we-got-here)
 meets binary and hexadecimal from another direction, with a small
 converter to build.
 

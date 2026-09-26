@@ -4853,3 +4853,19 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **Course cards.** Each card says who the course is for, what you do in it, which worlds it offers, and ends as an invitation; no time estimates. Descriptions no longer repeat their cards, and Database Methods and Web Authoring have one. The worlds named are the ones #306 plans; the content issues bring them to the pages.
 
 *Cost to change: the two pages are `pages/studying.md` and `pages/reading-helpers.md`, listed in `SITE_PAGES`; the course text is in `courses/*.yaml`.*
+
+---
+
+**7.239 — Programming Foundations, part 2: the lists page splits, a project page arrives, and the series ends by making something.** The content issue (#319), part of #306, applying the page rules of #318.
+
+**The split keeps the old id for the first half.** "Lists and looping over them" stays `lists-and-sequences`, so the twenty-odd links to it from other pages keep working, and the new second half is `comprehensions-and-grids`. Links that meant comprehensions, grids or the dot product now point at the new page. The slicing picture stays with slicing, drawn from the page's own `letters` list, and aliasing has a section of its own with a predict block. The dot product and sequences-as-functions went to the second page, because they need comprehensions and a function passed as a value.
+
+**Binary and hexadecimal live in one place.** They moved from `storing-and-computing` to `how-we-got-here`, where the history already explained why they exist. MIT-1.4 is now claimed there, and the glossary entries moved with the teaching. `len()`, `.upper()`, `ord()` and `chr()` stay early, in `storing-and-computing`, and `.split()` is introduced where a list of words first appears.
+
+**A project page, with no solutions.** "A program of your own" follows the dictionaries page: three starting points with a low floor and room to grow, a plan, a Release-1 checklist and reflection questions. It asks nothing a solution could answer, so it has none, and no practice page.
+
+**Tests the reader writes start at `building-reusable-tools`.** Every task there and after has a `tests:` cell beside it, as 7.232's stages said. `assert` and `raise` are taught on that page, and printing an error message is shown failing: the caller gets `None` and the error surfaces a line later.
+
+**What the history page keeps of other languages' ideas.** `map`, `lambda` and `reduce` are cut; functional style is shown with a function handed to another function, which the reader has already met in `sorted(key=)`. One small `class` stays, to be read and not written, because recognising object-oriented code is part of PDP-LO3 and the OOP course builds classes properly.
+
+*Cost to change: a page's id is part of the key its saved work lives under (7.12); after 2 October, renaming `comprehensions-and-grids` or `a-program-of-your-own` loses that work.*

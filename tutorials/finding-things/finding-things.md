@@ -1,7 +1,10 @@
 ---
 title: "Searching a list: linear and binary search"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 covers:
   linear-search-the-straightforward-approach:
     covers: [MIT-6.8]
@@ -15,120 +18,131 @@ covers:
 
 # Searching a list: linear and binary search
 
-We can now keep data in lists and dictionaries, and write functions that
-work with them. For a reminder of how functions, `return` and scope work,
-you can look back at [Writing your own functions](tutorial:writing-your-own-functions).
+The computer is thinking of a whole number from 1 to 100. Run the first
+cell once, to choose it. Then put a guess in the second cell and run it,
+and keep going until you find the number.
 
-So here is the next question. We have a list, and we want one item in
-it. How do we find it?
+```python exec
+id: guess-my-number-1
+import random
+secret = random.randint(1, 100)
+tries = 0
+print("I am thinking of a whole number from 1 to 100.")
+```
 
-This is the *search problem*: the task of finding one item in a
-collection. There are very different ways to solve it. Which way works
-best depends on what we know about the data.
+```python exec
+id: guess-my-number-2
+guess = 50
+tries = tries + 1
+if guess == secret:
+    print("Yes!", guess, "it is. That took", tries, "tries.")
+elif guess < secret:
+    print("Higher than", guess)
+else:
+    print("Lower than", guess)
+```
 
-On this page we:
+How many tries did it take? Run the first cell again for a new number,
+and play once more. What was your first guess, and why that one?
 
-- write two ways to search a list, and count how much work each one does
-- see why sorted data can be searched much faster
-- meet divide and conquer, an idea behind many fast algorithms
+Most people who play a few times start at 50, and then go to the middle of
+whatever is left. Each answer rules out half of the numbers still
+possible. That is the idea behind one of the two ways to search that this
+page writes, and the reason it is so much quicker than the other.
 
-## Linear Search: The Straightforward Approach
+## Linear search: the straightforward approach
 
-*Linear search* is a way of searching that checks each element in turn,
-from the start of the list. It stops when it finds the target, or when
-it reaches the end of the list. It is how you would look for a friend's
-name on a guest list that is in no order.
-
-### Your turn
-
-We want a function `linear_search(items, target)`. It returns the index
-where it finds the target. If the target is not in the list, it returns
--1.
-
-Here are the steps in pseudocode:
+The *search problem* is finding one item in a collection. *Linear search*
+checks each element in turn, from the start of the list, and stops when it
+finds the target, or when it reaches the end. It is how you would look for
+a friend's name on a guest list in no order.
 
 ```
 FOR each index i in the list:
     IF items[i] equals the target:
         RETURN i
-RETURN -1 (target not found)
+RETURN -1, because the target is not there
 ```
 
-1. In the first cell, turn this pseudocode into Python.
-2. In the second cell, test it three ways: with a name that is in the
-   list, a name that is not in the list, and an empty list.
+### Your turn
+
+Can you turn the pseudocode into `linear_search(items, target)`, which
+returns the index where it finds the target, or -1 if the target is not in
+the list?
 
 ```python exec
-id: your-turn-3
-# Your linear_search function
+id: your-turn-1
+names = ["OTTER", "HERON", "BADGER", "WREN", "HARE", "STOAT"]
+
+def linear_search(items, target):
+    return -1
 ```
 
-```python exec
-id: your-turn-4
-# Test cases
-names = ["Grace", "Ada", "Alan", "Margaret", "Linus", "Barbara"]
-
-# Search for someone who is in the list
-# Search for someone who is not in the list
-# Search in an empty list
+```inputs
+guess: yes
+linear_search(names, "WREN")
+linear_search(names, "OTTER")     # the first one
+linear_search(names, "FOX")       # not there
+linear_search([], "FOX")          # an empty list
 ```
 
-### How efficient is linear search?
+```hint
+`for index in range(len(items)):` visits every index. Where does the
+`return -1` go, so that it runs only once the whole list has been checked?
+```
 
-If the list has 10 items, we might need up to 10 comparisons. If it has
-1,000,000 items, we might need up to 1,000,000 comparisons. In the worst
-case, the work grows in step with the size of the list.
+```solution
+names = ["OTTER", "HERON", "BADGER", "WREN", "HARE", "STOAT"]
 
-Computer scientists write this as *O(n)*, said "order n". O(n) means
-that the time grows in proportion to the size of the input, n. Twice as
-many items means up to twice as many comparisons.
+def linear_search(items, target):
+    for index in range(len(items)):
+        if items[index] == target:
+            return index
+    return -1
+---
+The `return -1` sits after the loop, not inside it. Inside the loop, as an
+`else`, it would give up after checking only the first element.
+```
 
-For a small list, that is fine. For a large list, it can be very slow.
-Can we do better?
+### How much work is linear search?
 
-## Binary Search: The Power of Sorted Data
+With 10 items, linear search might need 10 comparisons. With a million, it
+might need a million. In the worst case, the work grows in step with the
+size of the list. This is written *O(n)*, said "order n": the time grows in
+proportion to n, the number of items. Twice as many items means up to
+twice as many comparisons.
 
-Think about looking up a word in a paper dictionary. You would not start
-at page one and read every word. You would open it near the middle. Then
-you would check whether your word comes before or after that page. With
-one look, you have ruled out half of the dictionary. Then you do the
-same thing again with the half that is left.
+## Binary search: the power of sorted data
 
-This is *binary search*. Binary search is a way of searching a sorted
-list by checking the middle item and throwing away the half that cannot
-hold the target. It works only when the data is *sorted*, which means
-that it is in order, from smallest to largest. When the data is sorted,
-binary search is very fast.
+Think about looking up a word in a paper dictionary. You would not start at
+page one. You would open it near the middle, see whether your word comes
+before or after that page, and so rule out half of the dictionary with one
+look. Then you would do the same with the half that is left.
 
-Here is how it works, step by step:
+This is *binary search*. It works only on data that is *sorted*: in order,
+from smallest to largest. Step by step:
 
-1. Keep track of the part of the list that is still possible. Two
-   indexes mark its ends: `low` and `high`.
+1. Keep track of the part of the list that is still possible. Two indexes
+   mark its ends: `low` and `high`.
 2. Look at the middle element, at index `mid`.
 3. If the middle element is the target, we are done.
-4. If the target is smaller, search the left half. To do this, set
-   `high = mid - 1`.
-5. If the target is larger, search the right half. To do this, set
-   `low = mid + 1`.
-6. Repeat from step 2, until we find the target or nothing is left to
-   search.
+4. If the target is smaller, search the left half: set `high = mid - 1`.
+5. If the target is larger, search the right half: set `low = mid + 1`.
+6. Repeat from step 2, until the target is found, or nothing is left.
 
 ![Four passes over a fifteen-item sorted list, searching for 3. The live
 range shrinks from fifteen cells to seven, then three, then one, with low,
 mid and high marked under it each time.](range-collapsing.svg)
 
-Count the shaded cells in each row, from top to bottom. How many are
-left each time?
-
-There are fifteen, then seven, then three, then one. This halving is the
-reason binary search is fast. It is also where the mistakes happen. The
-`mid - 1` and `mid + 1` are what make the range smaller each time. If
-either one is wrong, the range can stop shrinking, and the loop never
-ends.
+Count the shaded cells in each row, from top to bottom: fifteen, then
+seven, then three, then one. The halving is why binary search is quick,
+and it is also where the mistakes happen. `mid - 1` and `mid + 1` are what
+make the range smaller each time. If either is wrong, the range can stop
+shrinking, and the loop never ends.
 
 ### Your turn
 
-Here is the pseudocode, with three gaps marked `???`:
+Here is the pseudocode, with three gaps:
 
 ```
 SET low = 0
@@ -144,32 +158,182 @@ WHILE low <= high:
 RETURN -1
 ```
 
-1. What goes in each of the three gaps?
-2. In the first cell, write a `binary_search` function from the
-   pseudocode.
-3. In the second cell, run the four tests listed there. Remember that
-   the list must be sorted.
+Can you fill the gaps, and write `binary_search(items, target)`?
 
 ```python exec
-id: your-turn-5
-# Your binary_search function
-```
-
-```python exec
-id: your-turn-6
-# Test cases -- remember the list must be sorted!
+id: your-turn-2
 sorted_numbers = [3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]
 
-# Search for 31 (should find it)
-# Search for 20 (should not find it)
-# Search for 3 (first element)
-# Search for 89 (last element)
+def binary_search(items, target):
+    return -1
 ```
 
-### How efficient is binary search?
+```inputs
+guess: yes
+binary_search(sorted_numbers, 31)
+binary_search(sorted_numbers, 20)     # not there
+binary_search(sorted_numbers, 3)      # the first element
+binary_search(sorted_numbers, 89)     # the last element
+```
 
-Each step cuts the part left to search in half. Say we start with
-1,000,000 items:
+```hint
+The three gaps are: give back `mid`; move `high` to just before `mid`;
+move `low` to just after `mid`. Why just before and just after, and not
+`mid` itself?
+```
+
+```solution
+sorted_numbers = [3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]
+
+def binary_search(items, target):
+    low = 0
+    high = len(items) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if items[mid] == target:
+            return mid
+        elif target < items[mid]:
+            high = mid - 1
+        else:
+            low = mid + 1
+    return -1
+---
+31 is found at once: it is exactly in the middle. 3 and 89 each take four
+looks, the picture's four rows. `mid` has been checked already, so the new
+range leaves it out. With `high = mid`, the range could stop shrinking.
+```
+
+<div class="dl-world" data-world="secret-messages">
+
+A codebreaker tries every shift on a coded word, and checks each decoding
+against a list of English words, kept in alphabetical order. Strings
+compare alphabetically, so binary search works on the list as it does on
+numbers. Can you set `found` to the shifts whose decoding is in `words`?
+
+```python exec
+id: your-turn-3--secret-messages
+words = ["AND", "ARE", "BIRD", "BRIDGE", "CODE", "DOOR", "EAST", "FROM",
+         "HELLO", "HOUSE", "KEY", "LETTER", "MEET", "NIGHT", "NOON",
+         "OTTER", "SPY", "THE", "TREE", "WEST"]
+
+def decode(word, shift):
+    plain = ""
+    for letter in word:
+        plain = plain + chr((ord(letter) - ord("A") - shift) % 26 + ord("A"))
+    return plain
+
+coded = "KHOOR"
+found = []
+
+print(found)
+```
+
+```inputs
+found
+```
+
+```hint
+Try every shift from 0 to 25. For each one, decode the word, and ask
+`binary_search(words, ...)` whether it is there. It is there when the
+answer is not -1.
+```
+
+```solution
+words = ["AND", "ARE", "BIRD", "BRIDGE", "CODE", "DOOR", "EAST", "FROM",
+         "HELLO", "HOUSE", "KEY", "LETTER", "MEET", "NIGHT", "NOON",
+         "OTTER", "SPY", "THE", "TREE", "WEST"]
+
+def decode(word, shift):
+    plain = ""
+    for letter in word:
+        plain = plain + chr((ord(letter) - ord("A") - shift) % 26 + ord("A"))
+    return plain
+
+def binary_search(items, target):
+    low = 0
+    high = len(items) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if items[mid] == target:
+            return mid
+        elif target < items[mid]:
+            high = mid - 1
+        else:
+            low = mid + 1
+    return -1
+
+coded = "KHOOR"
+found = []
+for shift in range(26):
+    if binary_search(words, decode(coded, shift)) != -1:
+        found.append(shift)
+print(found)
+---
+`[3]`: shift 3 gives HELLO. A real word list has tens of thousands of
+words. Binary search finds out whether a word is there in about 15 looks,
+where linear search could take tens of thousands, and it does that 26
+times, once for each shift.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A picture 100 pixels wide and 100 tall has 10,000 pixels. Number them
+along each row, so the pixel at `row` and `column` is number
+`row * 100 + column`. This picture is a diagonal line, and `lit` is the
+sorted list of its lit pixels. Can you set `answers` to `True` or `False`
+for each point, with binary search?
+
+```python exec
+id: your-turn-3--pixel-art
+lit = [row * 100 + row for row in range(100)]
+points = [[42, 42], [42, 43], [0, 0], [99, 99], [50, 49]]
+answers = []
+
+print(answers)
+```
+
+```inputs
+answers
+```
+
+```hint
+For each point, work out its number, `row * 100 + column`. Is that number
+in `lit`? It is when `binary_search` does not give back -1.
+```
+
+```solution
+def binary_search(items, target):
+    low = 0
+    high = len(items) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if items[mid] == target:
+            return mid
+        elif target < items[mid]:
+            high = mid - 1
+        else:
+            low = mid + 1
+    return -1
+
+lit = [row * 100 + row for row in range(100)]
+points = [[42, 42], [42, 43], [0, 0], [99, 99], [50, 49]]
+answers = []
+for row, column in points:
+    answers.append(binary_search(lit, row * 100 + column) != -1)
+print(answers)
+---
+`[True, False, True, True, False]`. Keeping only the lit pixels, in order,
+saves space when most of a picture is empty. Binary search needs at most 7
+looks among these 100.
+```
+
+</div>
+
+### How much work is binary search?
+
+Each step cuts the part left to search in half. Start with 1,000,000 items:
 
 | After | Items left to search |
 |---|---|
@@ -178,129 +342,122 @@ Each step cuts the part left to search in half. Say we start with
 | 10 steps | about 1,000 |
 | 20 steps | about 1 |
 
-So binary search on a million items needs at most about 20 comparisons.
-Linear search might need a million. That is the difference between
-$O(\log n)$ and $O(n)$. *O(log n)* means that the time grows with the
-number of times we can halve n before we reach 1. That number grows very
-slowly as n gets bigger.
+So binary search on a million items needs at most about 20 comparisons,
+where linear search might need a million. That is the difference between
+*O(log n)* and O(n). O(log n) means the time grows with the number of
+times n can be halved before it reaches 1, and that grows very slowly as n
+gets bigger.
 
-There is a cost. The data must be sorted first, and sorting takes time.
-So binary search pays off when we search the same data many times. That
+There is a cost: the data must be sorted first, and sorting takes time. So
+binary search pays off when the same data is searched many times, which
 happens very often.
 
-## Divide and Conquer
+## Divide and conquer
 
-Binary search is our first example of *divide and conquer*. Divide and
-conquer is a way to solve a problem in three steps:
+Binary search is our first example of *divide and conquer*: split a
+problem into smaller pieces, solve the pieces, and combine the answers. It
+is one of the most useful ideas in the design of algorithms. Looking up a
+contact on a phone, finding a page in a book, and a doctor ruling out half
+the possible causes with each test all work this way.
 
-1. Split the problem into smaller pieces.
-2. Solve the smaller pieces.
-3. Combine the answers.
+In the game at the top of this page, what is the largest number of guesses
+you could need, if you always guess the middle of what is left? How do you
+know?
 
-It is one of the most useful ideas in the design of algorithms, and it
-shows up in many places:
+<details class="dl-answer"><summary>answer</summary>
 
-- Looking up a contact on your phone (the list is sorted by name).
-- Finding a page in a book (the pages are numbered in order).
-- A doctor finding out what illness someone has (each test rules out
-  about half of the possible causes).
+Seven. Each guess halves what is left: 100 numbers, then at most 50, 25,
+12, 6, 3, 1. Another way to see it: six halvings cover 2 × 2 × 2 × 2 × 2 × 2
+= 64 numbers, which is not enough, and seven cover 128, which is.
 
-### Your turn
+</details>
 
-Here is a small puzzle. I am thinking of a whole number between 1 and
-100. You can ask questions of the form "Is it greater than X?", and I
-will always answer truthfully.
+## Putting it together
 
-What is the largest number of questions you could need, to be sure of
-finding my number? How did you work it out?
-
-## Putting It Together
-
-Let's write a small program that compares linear search and binary
-search. It searches for the same target in the same list, both ways, and
-counts the comparisons each one makes.
-
-The list holds the numbers 0, 3, 6, 9, and so on, up to 999. The target
-is 750. Before you run the cell, guess: how many comparisons will linear
-search need? And binary search?
+This cell counts the comparisons both searches make, for the same target
+in the same list. The list holds 0, 3, 6, 9 and so on up to 999, which is
+334 numbers, and the target is 600.
 
 ```python exec
 id: putting-it-together-1
 def linear_search_counted(items, target):
     comparisons = 0
-    for i in range(len(items)):
+    for index in range(len(items)):
         comparisons = comparisons + 1
-        if items[i] == target:
-            return i, comparisons
-    return -1, comparisons
+        if items[index] == target:
+            return comparisons
+    return comparisons
 
-def binary_search_counted(sorted_items, target):
+def binary_search_counted(items, target):
     comparisons = 0
     low = 0
-    high = len(sorted_items) - 1
+    high = len(items) - 1
     while low <= high:
         comparisons = comparisons + 1
         mid = (low + high) // 2
-        if sorted_items[mid] == target:
-            return mid, comparisons
-        elif target < sorted_items[mid]:
+        if items[mid] == target:
+            return comparisons
+        elif target < items[mid]:
             high = mid - 1
         else:
             low = mid + 1
-    return -1, comparisons
+    return comparisons
 
-# Let's test with a larger sorted list
-data = list(range(0, 1000, 3))   # [0, 3, 6, 9, ..., 999]
-target = 750
-
-linear_index, linear_comparisons = linear_search_counted(data, target)
-binary_index, binary_comparisons = binary_search_counted(data, target)
-
-print("List size:", len(data))
-print("Linear search: found at index " + str(linear_index) + ", " + str(linear_comparisons) + " comparisons")
-print("Binary search: found at index " + str(binary_index) + ", " + str(binary_comparisons) + " comparisons")
+data = list(range(0, 1000, 3))
+target = 600
+print("Linear search:", linear_search_counted(data, target), "comparisons")
+print("Binary search:", binary_search_counted(data, target), "comparisons")
 ```
 
-### Your turn
+```predict
+type: number
+tolerance: 1
 
-Change the target and the size of the list, and run the searches again.
-Try these cases:
-
-1. The target is the very first element.
-2. The target is the very last element.
-3. The target is not in the list at all.
-
-Which search does better in each case? Were you surprised by any of
-them?
-
-```python exec
-id: your-turn-7
-# Your experiments here
+How many comparisons will binary search make?
 ```
 
-## Reflection
+Linear search makes 201 comparisons, and binary search 8. For most targets
+in this list, binary search needs 7 to 9, and never more than 9. Try a few
+more targets: the first number in the list, the last, a number in the
+middle, and one that is not there. Which search does better each time? Is
+there a target where linear search wins?
 
-On this page we wrote two important search algorithms, and counted the
-work each one does.
+## Looking back
 
-The main lesson is this: *the way we organise data changes how fast we
-can work with it*. When data is sorted, we can use binary search. For a
-large collection, binary search is much faster than linear search.
+Binary search needs sorted data, and sorting takes time. When is it worth
+sorting a list first, and when is a linear search the better choice?
 
-Next, we look at the other side of this: how do we sort data in the
-first place? That is the subject of
-[Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order).
+A challenge: how many guesses does the game at the top need on average, if
+you always guess the middle? Play it for every secret number from 1 to 100,
+count the guesses for each, and find the average. Is it closer to 7, or
+lower?
 
-What surprised you most about the difference between linear search and
-binary search?
+```python challenge
+# Guess my number, played by the computer, for every secret from 1 to 100.
+def guesses_needed(secret):
+    low = 1
+    high = 100
+    count = 0
+    # Guess the middle of low and high until the guess is the secret.
+    return count
 
-## Where to Read More
+print(guesses_needed(50))
+```
 
-Mike Pound (Computerphile) (2023). *Binary Search Algorithm.*
+The next page,
+[Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order),
+looks at the other side: how data comes to be sorted in the first place.
+
+## Where to read more
+
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
+
+Pound, M. (Computerphile) (2023). *Binary Search Algorithm*.
 <https://www.youtube.com/watch?v=hDn8iOc30Tk>. The same halve-and-repeat
 idea this page builds, explained with a different worked example.
 
-Computerphile (2013). *Getting Sorted & Big O Notation.*
-<https://www.youtube.com/watch?v=kgBjXUE_Nwc>. Where the $O(\log n)$ and
-$O(n)$ this page mentions come from, and how the same notation applies to
-sorting as well as searching.
+Computerphile (2013). *Getting Sorted & Big O Notation*.
+<https://www.youtube.com/watch?v=kgBjXUE_Nwc>. Where O(log n) and O(n)
+come from, and how the same notation applies to sorting as well as
+searching.

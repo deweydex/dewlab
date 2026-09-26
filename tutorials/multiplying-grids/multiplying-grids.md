@@ -50,7 +50,7 @@ with $5$, and $3$ with $6$. Each pair is printed in round brackets.
 The *dot product* of `a` and `b` is the number we get when we multiply
 each pair and then add up the results: $1(4) + 2(5) + 3(6)$. You met
 the dot product in
-[Lists: keeping many values in order](tutorial:lists-and-sequences).
+[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 
 ### Your turn
 

@@ -437,7 +437,7 @@ is_vowel = character in "AEIOU"
 print(is_vowel)
 ---
 `in` asks whether one piece of text appears inside another.
-[Lists and sequences](tutorial:lists-and-sequences) uses it on lists too.
+[Lists and looping over them](tutorial:lists-and-sequences) uses it on lists too.
 ```
 
 </div>

@@ -2,217 +2,206 @@
 title: "Searching a list: linear and binary search — Practice"
 practice_for: finding-things
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 ---
 
 # Searching a list: linear and binary search — Practice
 
-The answers are hidden in folds under each problem. Several problems ask
-you to count comparisons, and not to write code. Those are the ones to
-try on paper first.
+Problems on searching, and three from earlier pages. Several ask you to
+count comparisons without writing code: try those on paper first. Try each
+problem before you open anything under it.
 
-## Linear Search
+## 1. Why −1
 
-**1.** Write `linear_search(items, target)`. It returns the index of the target, or −1 if the target is not there.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def linear_search(items, target):
-    for i in range(len(items)):
-        if items[i] == target:
-            return i
-    return -1
-```
-
-The `return -1` has to be outside the loop. If it were inside the loop,
-the function would return −1 after checking only the first item.
-
-</details>
-
-**2.** Why use −1 for "not found", and not 0?
+Why does `linear_search` give back −1 when the target is not there, and
+not 0?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because 0 is a real index. It means "found at the start". A "not found"
-marker has to be a value that could never be a real answer. No search
-ever reports "found here" at index −1, so −1 is safe.
-
-Many Python programmers would return `None` instead. `None` has an
-advantage: if you use it as an index by mistake, Python stops with an
-error. An index of −1 used by mistake points at the last element, with
-no error at all.
+0 is a real index: the first element. A search that gave 0 for "not there"
+could not be told apart from one that found the target first. −1 is never
+an index that a search finds, so it can only mean "not there". In Python
+it is a real index too, the last element, so a caller who forgets to check
+for −1 gets a wrong answer and no error.
 
 </details>
 
-**3.** Linear search looks through a list of 100 items. How many comparisons does it make when the target is first? When it is last? When it is not there? On average?
+## 2. Counting looks
+
+Linear search goes through a list of 100 items. How many comparisons does
+it make when the target is first? When it is last? When it is not there?
+And on average, when the target is there and equally likely to be
+anywhere?
 
 <details class="dl-answer"><summary>answer</summary>
 
-1, 100, 100, and about 50.
-
-The average assumes that the target is in the list, and that it is
-equally likely to be anywhere. Now suppose half of your searches are for
-things that are not there. Then the average is much closer to 100. This
-is why it is often worth building a quick way to answer "not here".
+1, 100 and 100. On average, about half the list: (1 + 2 + … + 100) / 100
+= 50.5. A missing target is the worst case, because linear search has to
+look at everything before it can say no.
 
 </details>
 
-**4.** Can you find the *last* place a target appears, and not the first?
+## 3. The last one
 
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def last_index(items, target):
-    for i in range(len(items) - 1, -1, -1):
-        if items[i] == target:
-            return i
-    return -1
-```
-
-This searches backwards. It returns at the first match it finds, and
-that is the last one in the list.
-
-Another way is to search forwards and remember the most recent match.
-But that way always looks at every item, even when the match is at the
-end.
-
-</details>
-
-## Binary Search
+Can you write `last_index(items, target)`, which gives the index of the
+*last* place the target appears, or −1?
 
 ```python exec
-id: binary-search-1
+id: the-last-one-1
+def last_index(items, target):
+    return -1
+```
+
+```inputs
+guess: yes
+last_index([4, 2, 4, 4, 1], 4)
+last_index([4, 2, 4, 4, 1], 1)
+last_index([4, 2, 4, 4, 1], 9)
+```
+
+```solution
+title: with what you've met so far
+def last_index(items, target):
+    found = -1
+    for index in range(len(items)):
+        if items[index] == target:
+            found = index
+    return found
+---
+This one keeps going to the end, and remembers the latest match.
+```
+
+```solution
+title: another way
+def last_index(items, target):
+    for index in range(len(items) - 1, -1, -1):
+        if items[index] == target:
+            return index
+    return -1
+---
+Searching from the end can stop at the first match it meets, which is the
+last one in the list.
+```
+
+## 4. A trace
+
+Binary search looks for 72 in
+`[3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]`. Which
+indexes does it look at, in order?
+
+<details class="dl-answer"><summary>answer</summary>
+
+7, then 11, then 13. At 7 it finds 31, and 72 is larger, so `low` becomes
+8. The middle of 8 to 14 is 11, which holds 55, so `low` becomes 12. The
+middle of 12 to 14 is 13, and that is 72: three looks.
+
+</details>
+
+## 5. Not sorted
+
+```python exec
+id: not-sorted-1
 def binary_search(items, target):
-    low, high, steps = 0, len(items) - 1, 0
+    low = 0
+    high = len(items) - 1
     while low <= high:
-        steps += 1
         mid = (low + high) // 2
         if items[mid] == target:
-            return mid, steps
-        if target < items[mid]:
+            return mid
+        elif target < items[mid]:
             high = mid - 1
         else:
             low = mid + 1
-    return -1, steps
+    return -1
 
-
-data = list(range(0, 1000, 3))
-print(binary_search(data, 750))
-print(binary_search(data, 751))
+print(binary_search([5, 1, 9, 3, 7], 3))
 ```
 
-**5.** Trace binary search for 31 in `[3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]`. Write down each `mid` it looks at.
+```predict
+What will it print?
 
-<details class="dl-answer"><summary>answer</summary>
+- 3
+  - 3 is at index 3, and binary search finds it.
+- -1
+  - Binary search throws half away, and 3 might be in that half.
+- An error
+  - Binary search cannot run on a list that is not sorted.
+```
 
-The indexes run from 0 to 14, so the first `mid` is 7. The item at index
-7 is 31. It is found in one comparison.
+<details class="dl-answer"><summary>why</summary>
 
-That is the best case. It happens because 31 sits exactly in the middle.
-Try 89 instead: mid 7 (31), then 11 (55), then 13 (72), then 14 (89).
-That takes four comparisons.
-
-</details>
-
-**6.** What goes wrong if the list is not sorted?
-
-<details class="dl-answer"><summary>answer</summary>
-
-It can report "not found" for items that are in the list, and it gives
-no warning. For example, in `[5, 1, 9, 3, 7]` it finds 9, but it says
-that 1 is not there.
-
-That is the dangerous kind of wrong. Binary search has a *precondition*:
-a precondition is something that must be true before a function runs,
-for its answer to be right. Here, the list must be sorted. The function
-has no way to tell that this was broken, so it gives a confident answer
-anyway.
-
-So the code that calls the function is responsible for sorting the
-list. If that is not clear from the code, say it in the function's name,
-or in the note that describes the function.
+−1, with no error. The middle is 9, and 3 is smaller, so binary search
+throws the right half away, where 3 is. On a list that is not sorted,
+binary search gives wrong answers without complaint. Nothing in the code
+checks the order: that is up to whoever calls it.
 
 </details>
 
-**7.** Why write `mid = (low + high) // 2`, and not `(low + high) / 2`?
+## 6. Why //
+
+Why does binary search work out `mid = (low + high) // 2`, and not
+`(low + high) / 2`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-An index must be a whole number. `/` always gives a float, and
-`items[3.5]` raises a `TypeError`.
-
-There is a famous problem with this line in some other languages. In
-those languages, whole numbers have a fixed size, and `low + high` can
-become too big to store when the list is very large. The fix is
-`low + (high - low) // 2`. That bug sat unnoticed in the standard Java
-library for nine years. Python's whole numbers can grow as large as they
-need to, so this does not happen in Python.
+`/` always gives a float, even when the answer is whole: `(0 + 14) / 2` is
+`7.0`. A list index must be a whole number, so `items[7.0]` stops with a
+`TypeError: list indices must be integers or slices, not float`. `//`
+divides and rounds down, so it always gives a whole number.
 
 </details>
 
-**8.** What is the largest number of comparisons binary search needs on 1,000 items? On 1,000,000?
+## 7. At most
+
+What is the largest number of comparisons binary search needs on 1,000
+items? On 1,000,000?
 
 <details class="dl-answer"><summary>answer</summary>
 
-10 and 20.
-
-Each step halves the range. So the count is the number of times you can
-halve n before you reach 1. This is log₂n, rounded up. 2¹⁰ is 1,024, and
-2²⁰ is 1,048,576.
-
-Multiplying the data by a thousand adds only ten comparisons. That is
-what logarithmic growth means. It is why binary search stays fast, however
-big the data gets.
+10 and 20. Ten halvings cover 2¹⁰ = 1,024 items, and twenty cover
+2²⁰ = 1,048,576. A thousand times more data costs ten more comparisons.
 
 </details>
 
-**9.** I am thinking of a whole number from 1 to 100. You may ask "Is it greater than X?". How many questions do you need to be sure of finding it?
+## 8. Where it would go
 
-<details class="dl-answer"><summary>answer</summary>
+Can you write `where_it_goes(items, target)`, which gives the index where
+`target` would go in the sorted list `items` to keep it sorted? If the
+target is there already, it gives the index of the first one.
 
-Seven.
+```python exec
+id: where-it-would-go-1
+sorted_numbers = [3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]
 
-Each question halves the range: 100 → 50 → 25 → 13 → 7 → 4 → 2 → 1. Six
-questions can only be sure of finding one number out of 64, and 100 is
-more than 64.
+def where_it_goes(items, target):
+    return 0
+```
 
-The general rule is that n yes-or-no questions can tell apart 2ⁿ
-possibilities. This is the same fact as the cost of binary search. It is
-also the reason a 7-bit code has 128 values.
+```inputs
+guess: yes
+where_it_goes(sorted_numbers, 20)
+where_it_goes(sorted_numbers, 31)
+where_it_goes(sorted_numbers, 1)
+where_it_goes(sorted_numbers, 100)
+where_it_goes([], 5)
+```
 
-</details>
+```hint
+Keep `low` and `high` as before, but let `high` start at `len(items)`,
+one past the end, since the target might go there. While `low < high`,
+look at the middle. If it is smaller than the target, the answer is to its
+right. If not, the answer is at the middle or to its left.
+```
 
-**10.** Binary search needs sorted data, and sorting takes longer than one linear search. When is sorting worth it?
+```solution
+sorted_numbers = [3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]
 
-<details class="dl-answer"><summary>answer</summary>
-
-When you search the same data more than a few times.
-
-Sorting costs about n log n, once. Each linear search costs n. Each
-binary search costs log n. So sorting pays for itself after about log n
-searches. For a million items, that is after about twenty searches.
-
-Every lookup table and index makes this trade for you: it does work
-once, up front, so that each search after it is fast. A
-[dictionary](tutorial:looking-things-up-by-name) makes a similar trade.
-It does not sort its keys, but it files each one when it is added, so
-finding it again is quick.
-
-If the data changes all the time and you search it only rarely, linear
-search wins.
-
-</details>
-
-## Putting It Together
-
-**11.** Change binary search so that, when the target is not there, it returns the place where the target *would* go.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def insertion_point(items, target):
-    low, high = 0, len(items)
+def where_it_goes(items, target):
+    low = 0
+    high = len(items)
     while low < high:
         mid = (low + high) // 2
         if items[mid] < target:
@@ -220,87 +209,215 @@ def insertion_point(items, target):
         else:
             high = mid
     return low
+---
+20 would go at index 5, between 19 and 23. When `low` and `high` meet,
+that is the place. Python has this in its standard library, as
+`bisect.bisect_left`.
 ```
 
-When the loop ends, `low` is the index where the target belongs. Python's
-`bisect.bisect_left` does the same thing. This is how we keep a list
-sorted as new items arrive: search for the right position, then insert
-the item there.
+## 9. Every place
 
-Notice that two boundaries changed. `high` starts at `len(items)`, not at
-`len(items) - 1`. The loop test is `<`, not `<=`. Binary search breaks
-easily if either choice is wrong. That is why it is worth writing it out
-carefully, and not changing a version you half remember.
+Can you set `places` to every index where 4 appears?
+
+```python exec
+id: every-place-1
+numbers = [4, 2, 4, 4, 1]
+places = []
+
+print(places)
+```
+
+```inputs
+places
+```
+
+```solution
+title: with what you've met so far
+numbers = [4, 2, 4, 4, 1]
+places = []
+for index in range(len(numbers)):
+    if numbers[index] == 4:
+        places.append(index)
+print(places)
+```
+
+```solution
+title: a shorter way
+numbers = [4, 2, 4, 4, 1]
+places = [index for index, number in enumerate(numbers) if number == 4]
+print(places)
+---
+`[0, 2, 3]`. Finding every place has to look at every element, sorted or
+not, so this one is linear whichever way it is written.
+```
+
+## 10. The first one past a line
+
+<div class="dl-world" data-world="secret-messages">
+
+In a sorted word list, where do the words starting with M begin? The
+place where `"M"` would go is the answer, because `"M"` comes before every
+word that starts with M. Can you set `start` to it, with `where_it_goes`
+from problem 8?
+
+```python exec
+id: the-first-one-past-a-line-1--secret-messages
+words = ["AND", "ARE", "BIRD", "BRIDGE", "CODE", "DOOR", "EAST", "FROM",
+         "HELLO", "HOUSE", "KEY", "LETTER", "MEET", "NIGHT", "NOON",
+         "OTTER", "SPY", "THE", "TREE", "WEST"]
+start = 0
+
+print(start, words[start])
+```
+
+```inputs
+start
+```
+
+```solution
+def where_it_goes(items, target):
+    low = 0
+    high = len(items)
+    while low < high:
+        mid = (low + high) // 2
+        if items[mid] < target:
+            low = mid + 1
+        else:
+            high = mid
+    return low
+
+words = ["AND", "ARE", "BIRD", "BRIDGE", "CODE", "DOOR", "EAST", "FROM",
+         "HELLO", "HOUSE", "KEY", "LETTER", "MEET", "NIGHT", "NOON",
+         "OTTER", "SPY", "THE", "TREE", "WEST"]
+start = where_it_goes(words, "M")
+print(start, words[start])
+---
+12, where MEET is. The words starting with M run from there up to
+`where_it_goes(words, "N")`, which is 13. For a letter no word starts
+with, both are the same place, and the range is empty.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+These are a picture's brightnesses, sorted. Where do the bright pixels,
+128 or more, begin? Can you set `start` to that index, with
+`where_it_goes` from problem 8?
+
+```python exec
+id: the-first-one-past-a-line-1--pixel-art
+brightnesses = [12, 30, 45, 90, 127, 128, 200, 255]
+start = 0
+
+print(start, brightnesses[start])
+```
+
+```inputs
+start
+```
+
+```solution
+def where_it_goes(items, target):
+    low = 0
+    high = len(items)
+    while low < high:
+        mid = (low + high) // 2
+        if items[mid] < target:
+            low = mid + 1
+        else:
+            high = mid
+    return low
+
+brightnesses = [12, 30, 45, 90, 127, 128, 200, 255]
+start = where_it_goes(brightnesses, 128)
+print(start, brightnesses[start])
+---
+5, where 128 is. Everything from there on is bright, so
+`len(brightnesses) - start`, 3, counts the bright pixels without looking
+at them one by one.
+```
+
+</div>
+
+## 11. From earlier: the last three
+
+From *Lists and looping over them*.
+
+```python exec
+id: from-earlier-the-last-three-1
+word = "ALGORITHMS"
+print(word[-3:])
+```
+
+```predict
+What will it print?
+
+- HMS
+  - A negative cut counts from the end, and no second number means to the
+    end.
+- MS
+  - -3 is the third from the end, and the slice stops before it.
+- THM
+  - The slice goes from -3 up to -1.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`HMS`. `-3` is the cut three places from the end, and a slice with no
+second number runs to the end.
 
 </details>
 
-**12.** Use a list of 334 items. Count the comparisons each search makes when the target is at the start, in the middle, at the end, and not there.
+## 12. From earlier: counting with a generator
 
-<details class="dl-answer"><summary>answer</summary>
+From *Comprehensions, grids and aliasing*.
 
-With `data = list(range(0, 1000, 3))`, which has 334 items:
+```python exec
+id: from-earlier-counting-with-a-generator-1
+print(sum(1 for letter in "MISSISSIPPI" if letter == "S"))
+```
 
-| Target | Linear | Binary |
-|---|---:|---:|
-| 0 (first) | 1 | 8 |
-| 498 (exact middle) | 167 | 1 |
-| 999 (last) | 334 | 9 |
-| 751 (not there) | 334 | 8 |
+```predict
+type: number
 
-Binary search is *worse* than linear search when the target is first:
-eight comparisons against one. That matters. If a few items are asked
-for again and again, moving them to the front of the list beats any
-clever method. Real systems use this idea to store popular answers
-where they are quick to reach.
+What will it print?
+```
 
-Notice also that a missing target costs binary search nearly its worst
-case. It has to shrink the range to nothing before it can say no. Linear
-search pays its full worst case for every missing target, every time.
+<details class="dl-answer"><summary>why</summary>
+
+4. The generator gives a 1 for each S, and `sum()` adds them up.
+`"MISSISSIPPI".count("S")` gives the same.
 
 </details>
 
-**13.** Write a function that finds *all* the indexes where a target appears.
+## 13. From earlier: a count that starts itself
 
-<details class="dl-answer"><summary>answer</summary>
+From *Dictionaries: looking things up by name*.
 
-```python
-def all_indices(items, target):
-    return [i for i, item in enumerate(items) if item == target]
+```python exec
+id: from-earlier-a-count-that-starts-itself-1
+counts = {}
+for letter in "BANANA":
+    counts[letter] = counts.get(letter, 0) + 1
+print(counts)
 ```
 
-This has to be a linear search, even on sorted data, because it cannot
-stop early: it does not know how many matches there are.
+```predict
+What will it print?
 
-On sorted data, there is another way. Binary search for the first match
-and for the last match, and take everything between them. That is worth
-doing only when the list is large and there are few matches.
-
-</details>
-
-**14.** Search a list of names for a name that is not there. Can you make the function report the closest match, and not only fail?
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def closest(names, target):
-    best, best_score = None, -1
-    for name in names:
-        score = sum(1 for a, b in zip(name.lower(), target.lower()) if a == b)
-        if score > best_score:
-            best, best_score = name, score
-    return best
+- {'B': 1, 'A': 3, 'N': 2}
+  - Each letter is counted, in the order it first turns up.
+- {'A': 3, 'B': 1, 'N': 2}
+  - A dictionary keeps its keys in alphabetical order.
+- An error
+  - B is not in `counts` when the loop starts.
 ```
 
-This counts the letters that match in the same positions. That is a
-rough measure, but it is enough to catch a typing mistake in the first
-few letters.
+<details class="dl-answer"><summary>why</summary>
 
-Real spell-checkers use *edit distance*. Edit distance is the number of
-single-letter insertions, deletions and replacements it takes to turn one word
-into another. It gives a much better answer, and it needs a much longer
-function.
-
-The lesson here is the decision, more than the measure: "not found" is
-often not the most useful thing a search can say.
+`{'B': 1, 'A': 3, 'N': 2}`. `.get(letter, 0)` gives 0 the first time a
+letter turns up, so there is no `KeyError`. The keys stay in the order
+they were added: B first, because BANANA starts with B.
 
 </details>

@@ -1,0 +1,17 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# A project page: no new Python. The entries are the words it asks a
+# reader to plan with.
+entries:
+  - term: low floor, room to grow
+    kind: concept
+    definition: >
+      A project with a low floor has a first version you could finish in an
+      evening. Room to grow means there is a next step after it, and a step
+      after that, each one small.
+  - term: release
+    kind: concept
+    definition: >
+      A release is a version of a program that somebody else could use on
+      the day it comes out, however little it does. It has a version number
+      and a date, and a copy is kept when the next one comes out.

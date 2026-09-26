@@ -18,9 +18,21 @@ entries:
       comparing each pair of neighbours and swapping any pair in the
       wrong order. One pass moves the largest remaining element to its
       final place. It repeats until the list is sorted.
-  - term: ascending order
-    kind: concept
-    definition: Ascending order is order from smallest to largest.
+  - term: "sorted(), key="
+    python: sorted
+    kind: function
+    definition: >
+      Gives back a new list, sorted from smallest to largest. With key=, it
+      sorts by what that function gives back for each element, and
+      reverse=True puts the largest first.
+    example: "sorted(words, key=len)"
+  - term: ".sort()"
+    python: list.sort
+    kind: function
+    definition: >
+      Sorts a list in place, changing that list, and gives back None.
+      sorted() leaves the old list alone and gives back a new one.
+    example: "numbers.sort()"
   - term: insertion sort
     kind: concept
     definition: >

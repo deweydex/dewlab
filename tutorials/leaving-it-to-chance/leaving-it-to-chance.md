@@ -80,7 +80,7 @@ hint: Call randint twice and add the results. Storing each roll in its own varia
 The next cell does something that looks like a mistake.
 
 It builds a list of five dice rolls with a list comprehension, which we
-met in [Lists: keeping many values in order](tutorial:lists-and-sequences).
+met in [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 The loop variable is called `_`. Python programmers use the name `_` for
 a loop variable the loop never uses. Here the loop only needs to run five
 times.

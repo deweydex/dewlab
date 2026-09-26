@@ -1,514 +1,569 @@
 ---
-title: "Lists: keeping many values in order"
+title: "Lists and looping over them"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 covers:
   lists-ordered-collections:
     covers: [MIT-6.3]
+  changing-a-list:
+    covers: [MIT-6.3]
   building-lists-with-loops:
-    covers: [MIT-6.3, MIT-6.7]
+    covers: [MIT-6.3, MIT-6.5]
   looping-over-lists:
     covers: [MIT-6.5, MIT-6.7]
-  comprehensions-a-loop-that-builds-a-list:
-    covers: [MIT-6.3]
-  mathematical-sequences-as-functions:
-    covers: [MIT-6.2]
-  the-dot-product-lists-meet-arithmetic:
-    covers: [MIT-6.3]
 ---
 
-# Lists: keeping many values in order
+# Lists and looping over them
 
-So far, each variable has held one value: one number, or one string. Many
-real problems need a group of values. Think of a set of test scores, a
-week of temperatures, or the names of everyone in a class.
+Here is a message, kept as a list of words. What will the cell print?
 
-On this page we:
+```python exec
+id: a-list-of-words-1
+words = ["MEET", "ME", "AT", "NOON"]
+print(words[1])
+```
 
-- keep many values together in a list, and pick out the ones we want
-- build lists with a loop, and loop over them
-- write those loops on one line, as comprehensions, and build grids
-  with them
-- write functions that work with lists, and turn mathematical sequences
-  into code
+```predict
+What will it print?
 
-## Lists: Ordered Collections
+- MEET
+  - It is the first word in the list.
+- ME
+  - Python counts the positions from 0, so 1 is the second word.
+- An error
+  - A list has no word 1, only a first word.
+```
 
-A *list* is an ordered sequence of values, written inside square
-brackets. Each value in a list is called an element.
+It prints `ME`. The list keeps four words under one name, in order, and
+Python counts their positions from 0. Most programs work with many values,
+not one: every letter of a message, every pixel in a row. Here we keep them
+in a list, pick out the ones we want, and do something with each of them in
+turn.
+
+## Lists: ordered collections
+
+A *list* is a row of values, written inside square brackets with commas
+between them. Each value in it is an *element*. `len()` counts them, the
+way it counted the characters in a string.
 
 ```python exec
 id: lists-ordered-collections-1
-scores = [42, 38, 35, 47, 29, 41, 44, 33, 39, 48]
-print(scores)
-print("Number of scores:", len(scores))
+letters = ["A", "L", "G", "O", "R", "I", "T", "H", "M", "S"]
+print(letters)
+print(len(letters))
 ```
 
-Each element has a position, called its *index*. Python uses
-*zero-based indexing*: it starts counting at 0, so the first element is
-at index 0.
+Each element has a position, called its *index*. Python uses *zero-based
+indexing*: the first element is at index 0, so the last of ten is at
+index 9. A negative index counts from the end, and -1 is the last element.
 
 ```python exec
 id: lists-ordered-collections-2
-print(scores[0])    # first element
-print(scores[1])    # second element
-print(scores[9])    # tenth (last) element
-print(scores[-1])   # also the last element (negative indexing counts from the end)
+print(letters[0])     # the first element
+print(letters[9])     # the last of ten
+print(letters[-1])    # the last, counted from the end
+print(letters[-2])    # the one before it
 ```
 
-A *slice* is a part of a list. We write it with two indexes and a colon
-between them. Before you run the next cell, look at its first line,
-`scores[2:5]`. How many scores do you think it prints? Run it to check.
+A string can be indexed in the same way. `"NOON"[0]` is `"N"`, and so is
+`"NOON"[-1]`.
+
+### Taking a slice
+
+A *slice* takes a part of a list. It is written with two numbers and a
+colon between them. What will this cell print?
 
 ```python exec
 id: lists-ordered-collections-3
-print(scores[2:5])    # from index 2 up to index 5: how many scores?
-print(scores[:3])     # first three elements
-print(scores[7:])     # from index 7 to the end
+print(letters[2:5])
 ```
 
-That first line surprises nearly everybody. From `2` to `5` looks like
-four elements, but we get three. The rule is that the end index is left
-out. The rule is easier to remember once we see where the two numbers
-point.
+```predict
+What will it print?
 
-In a slice, the two numbers do not point at elements. They point at the
-gaps between elements.
+- ['G', 'O', 'R']
+  - A slice stops before its second number.
+- ['G', 'O', 'R', 'I']
+  - From index 2 to index 5 is four letters: 2, 3, 4 and 5.
+- ['L', 'G', 'O', 'R']
+  - Counting from 1, the second letter is L.
+```
 
-![The ten scores in a row. Above each one is its index, 0 to 9. Below, along the boundaries between them, are the eleven cut positions, 0 to 10, offset from the indices above. Underneath, each of the three slices is drawn as a band running between the two cuts it names: 2 to 5 takes 35, 47 and 29; the start-to-3 slice takes 42, 38 and 35; and the 7-to-end slice takes 33, 39 and 48.](where-the-cuts-are.svg)
-
-Ten elements have eleven places where we could cut. A slice names two of
-those places and takes everything between them. So `scores[2:5]` means
-"cut before 35, cut before 41, and keep the middle". That gives three
-elements.
-
-So the end index is not left out by a special rule. A cut is a gap, and
-there is nothing in a gap to include.
-
-The picture also shows why `scores[:3]` and `scores[3:]` fit back
-together, with nothing missing and nothing repeated. Both slices meet at
-the same cut.
-
-We can change what is inside a list after we create it. A value we can
-change like this is *mutable*, and lists are mutable.
+From 2 to 5 looks like four elements, and there are three. The reason is
+where the two numbers point. They do not point at elements. They point at
+the gaps between them.
 
 ```python exec
 id: lists-ordered-collections-4
-scores[0] = 45       # replace the first element
-print(scores)
-
-scores.append(50)    # add an element at the end
-print(scores)
-print("Now we have", len(scores), "scores")
+print(letters[2:5])
+print(letters[:3])     # no first number: from the start
+print(letters[7:])     # no second number: to the end
 ```
+
+![The ten letters A, L, G, O, R, I, T, H, M and S in a row. Above each one is its index, 0 to 9. Below, along the boundaries between them, are the eleven cut positions, 0 to 10, offset from the indices above. Underneath, each of the three slices is drawn as a band running between the two cuts it names: 2 to 5 takes G, O and R; the start-to-3 slice takes A, L and G; and the 7-to-end slice takes H, M and S.](where-the-cuts-are.svg)
+
+Ten elements have eleven places to cut. A slice names two of those places
+and takes everything between them. So `letters[2:5]` means "cut before G,
+cut before I, and keep the middle", and that is three letters. The end
+index is not left out by a special rule. A cut is a gap, and there is
+nothing in a gap to take.
+
+The picture also shows why `letters[:3]` and `letters[3:]` fit back
+together, with nothing missing and nothing repeated: both meet at the same
+cut. Try changing the numbers in the slices, and see which letters each
+one takes.
+
+## Changing a list
+
+A list can be changed after it is made. A value that can be changed like
+this is *mutable*.
+
+```python exec
+id: changing-a-list-1
+letters = ["A", "L", "G", "O", "R", "I", "T", "H", "M", "S"]
+letters[0] = "a"       # replace the first element
+print(letters)
+letters.append("!")    # add one element at the end
+print(letters)
+print(len(letters))
+```
+
+`append()` adds one element to the end of a list. It changes that list,
+and gives nothing back. A string can be indexed like a list. Can it be
+changed like one?
+
+```python exec
+id: changing-a-list-2
+word = "NOON"
+word[0] = "M"
+print(word)
+```
+
+```predict
+What will it print?
+
+- MOON
+  - A string is indexed like a list, so it changes like one.
+- NOON
+  - Python leaves the string as it was, and carries on.
+- An error
+  - A string cannot be changed once it is made.
+```
+
+It stops with a `TypeError`: `'str' object does not support item
+assignment`. A string is *immutable*: once it is made, it cannot be
+changed. To get MOON, build a new string from pieces of the old one:
+`"M" + word[1:]`.
 
 ### Your turn
 
-1. Create a list called `temperatures`, with at least 7 temperature
-   values in it.
-2. Print the first temperature and the last temperature.
-3. Print the middle three temperatures, using a slice.
-4. Change one of the temperatures, and print the updated list.
+<div class="dl-world" data-world="secret-messages">
+
+A spy's message is kept as a list of words. The meeting place has moved.
+Can you change `"BRIDGE"` to `"STATION"`, and add `"TONIGHT"` at the end?
+Then print the first word, the last word, and a slice that takes `BY`,
+`THE` and `STATION`.
 
 ```python exec
-id: your-turn-1
-# Your list work here
+id: your-turn-1--secret-messages
+message = ["MEET", "ME", "BY", "THE", "BRIDGE"]
+
+print(message)
 ```
 
-## Building Lists with Loops
+```inputs
+message
+```
 
-A useful way to make a list is to start with an empty list, and then add
-values to it one at a time in a loop.
+```hint
+Which index is `"BRIDGE"` at? And which cut comes just before `BY`, and
+which just after `STATION`?
+```
+
+```solution
+message = ["MEET", "ME", "BY", "THE", "BRIDGE"]
+message[4] = "STATION"
+message.append("TONIGHT")
+print(message[0])
+print(message[-1])
+print(message[2:5])
+print(message)
+---
+`message[-1]` finds the last word however long the message grows, so
+nobody has to count it.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A row of a picture is kept as a list of brightnesses, from 0 for black to
+255 for white. Can you print the three pixels in the middle of the row?
+Then make the first pixel white, add a black pixel at the end, and print
+the row.
+
+```python exec
+id: your-turn-1--pixel-art
+row = [0, 40, 80, 120, 160, 200, 240]
+
+print(row)
+```
+
+```inputs
+row
+```
+
+```hint
+Seven pixels have eight cuts, from 0 to 7. Which two cuts are either side
+of the middle three?
+```
+
+```solution
+row = [0, 40, 80, 120, 160, 200, 240]
+print(row[2:5])
+row[0] = 255
+row.append(0)
+print(row)
+---
+The middle three are `[80, 120, 160]`. Printing them first matters: after
+`append()`, the row has eight pixels, and no three are in the middle.
+```
+
+</div>
+
+## Building lists with loops
+
+An empty list, `[]`, can be filled one element at a time. Here a loop
+builds the alphabet, with `chr()` from
+[Variables, data types and text](tutorial:storing-and-computing). How long
+will the list be?
 
 ```python exec
 id: building-lists-with-loops-1
-# Build a list of the first 10 square numbers
-squares = []
-for i in range(1, 11):
-    squares.append(i ** 2)
-print(squares)
+alphabet = []
+for number in range(26):
+    alphabet.append(chr(ord("A") + number))
+print(alphabet)
+print(len(alphabet))
 ```
 
-Does this remind you of the accumulator pattern from
-[Repeating steps with loops](tutorial:repeating-yourself)? It is the same idea.
-There, we added each new value to a running total. Here, we add each new
-value to a list.
+```predict
+type: number
+
+How long will the list be?
+```
+
+It is 26 long, from A to Z. `range(26)` gives 0 to 25: 26 numbers, one for
+each letter. This is the accumulator pattern from
+[Repeating steps with loops](tutorial:repeating-yourself), with a list
+where the total was. It starts empty, and gets one more value each time
+round.
 
 ### Your turn
 
-The Fibonacci sequence starts with 1, 1. After that, each term is the sum
-of the two terms before it. So the sequence begins 1, 1, 2, 3, 5, 8,
-13, ...
+<div class="dl-world" data-world="secret-messages">
 
-Can you build a list that holds the first 15 terms of the Fibonacci
-sequence? Before you write any Python, try writing the steps in
-pseudocode, as comments at the top of the cell.
+Can you build `shifted`, the alphabet moved three places along, so that it
+starts `D`, `E`, `F` and ends `A`, `B`, `C`? Kept beside the plain
+alphabet, it turns a message into code one letter at a time.
 
 ```python exec
-id: your-turn-2
-# Your Fibonacci list builder
+id: your-turn-2--secret-messages
+shift = 3
+shifted = []
+
+print(shifted)
 ```
 
-## Looping Over Lists
+```inputs
+shifted
+```
 
-A `for` loop can go through the elements of a list directly, one at a
-time.
+```hint
+The letter at position `number` moves to position `(number + shift) % 26`.
+Which letter is at that position?
+```
+
+```solution
+shift = 3
+shifted = []
+for number in range(26):
+    shifted.append(chr((number + shift) % 26 + ord("A")))
+print(shifted)
+---
+`% 26` takes the last three positions back round to A, B and C. Try a
+shift of 13: that table undoes itself, because 13 and 13 make 26.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Can you build `fade`, a row of 11 pixels that goes from black towards
+white in equal steps: 0, 25, 50, and so on, up to 250?
+
+```python exec
+id: your-turn-2--pixel-art
+fade = []
+
+print(fade)
+```
+
+```inputs
+fade
+```
+
+```hint
+Eleven pixels means eleven times round the loop. What is pixel number
+`step` worth, if each step adds 25?
+```
+
+```solution
+fade = []
+for step in range(11):
+    fade.append(step * 25)
+print(fade)
+---
+`range(0, 251, 25)` counts in steps of 25 by itself, and gives the same
+eleven numbers.
+```
+
+</div>
+
+## Looping over lists
+
+A `for` loop can go through a list directly, one element at a time, in
+order.
 
 ```python exec
 id: looping-over-lists-1
-names = ["Ada", "Grace", "Alan", "Margaret"]
-
-for name in names:
-    print("Hello, " + name)
+words = ["MEET", "ME", "AT", "NOON"]
+for word in words:
+    print(word, len(word))
 ```
 
-Sometimes we need both the index and the value. We could loop over
-`range(len(names))` and look up each index. Python has a neater way,
-`enumerate()`, which gives us the index and the value together.
+A string's `.split()` makes a list like this one from a sentence, cutting
+it wherever there are spaces: `"MEET ME AT NOON".split()` gives
+`['MEET', 'ME', 'AT', 'NOON']`.
+
+Sometimes we need the index as well as the element. `enumerate()` gives
+both, as a pair, each time round the loop.
 
 ```python exec
 id: looping-over-lists-2
-for index, name in enumerate(names):
-    print(str(index) + ": " + name)
+words = ["MEET", "ME", "AT", "NOON"]
+for index, word in enumerate(words):
+    print(index, word)
 ```
 
-### Your turn: Summing a list
+Try `enumerate(words, 1)` in place of `enumerate(words)`, and see what
+changes.
 
-Can you add up all the elements in the `scores` list, using a `for` loop
-and the accumulator pattern? Python has a built-in `sum()` function, but
-please leave it aside this time, and write the loop yourself.
+<details class="dl-answer"><summary>What each line does</summary>
+
+- `enumerate(words)` gives the pairs `0, "MEET"`, then `1, "ME"`, and so
+  on, one pair each time round.
+- `for index, word in` takes each pair apart: the first value goes into
+  `index`, and the second into `word`.
+- `print(index, word)` shows both. With `enumerate(words, 1)`, the
+  counting starts at 1 instead of 0, and the words stay the same.
+
+</details>
+
+There is a second way to get the same pairs: loop over every index, and
+look each element up.
 
 ```python exec
-id: your-turn-summing-a-list-1
-# Sum the scores using a loop
-scores = [42, 38, 35, 47, 29, 41, 44, 33, 39, 48]
+id: looping-over-lists-3
+words = ["MEET", "ME", "AT", "NOON"]
+for index in range(len(words)):
+    print(index, words[index])
 ```
 
-## Comprehensions: A Loop That Builds a List
-
-In "Building Lists with Loops", above, we built a list of squares in
-three steps. First we made an empty list. Then a loop worked out each
-value. Then `append()` added each value to the list.
-
-This shape comes up so often that Python has a shorter way to write it.
-The cell below builds the same list twice: once with the loop, and once
-on a single line. Do you think the two lists will be the same? Run it to
-check.
-
-```python exec
-id: list-comprehensions-1
-squares = []
-for i in range(1, 11):
-    squares.append(i ** 2)
-print(squares)
-
-squares_again = [i ** 2 for i in range(1, 11)]
-print(squares_again)
-print(squares == squares_again)
-```
-
-Both lists hold the same ten squares, and `==` gives `True`: the two
-lists are equal.
-
-The one-line version is a *list comprehension*. A list comprehension is
-a loop that builds a list, written on one line inside square brackets.
-Here are the two versions again, one above the other:
-
-```python
-squares = []
-for i in range(1, 11):
-    squares.append(i ** 2)
-
-squares = [i ** 2 for i in range(1, 11)]
-```
-
-To turn the loop into a comprehension:
-
-1. Write the value you would append: `i ** 2`.
-2. After it, write the `for` line, without its colon:
-   `for i in range(1, 11)`.
-3. Put square brackets around the whole thing.
-
-We can read it out loud as "a list of `i ** 2`, for each `i` in
-`range(1, 11)`".
-
-A comprehension can go through any list, and the value at the front can
-be any calculation. What do you think each line will show? Run the cell
-to check.
-
-```python exec
-id: list-comprehensions-2
-temperatures = [12, 15, 9, 20, 17]
-print([celsius * 9 / 5 + 32 for celsius in temperatures])
-
-names = ["Ada", "Grace", "Alan", "Margaret"]
-print([len(name) for name in names])
-```
-
-The first list holds the same temperatures in Fahrenheit. It uses the
-formula from
-[Algorithms, pseudocode and your first Python](tutorial:first-steps).
-The second list holds the length of each name.
-
-### Keeping only some values
-
-Sometimes we want only some of the values. In a loop, we put an `if`
-inside the loop, as in
-[Making decisions with if, elif and else](tutorial:making-decisions).
-In a comprehension, the `if` goes at the end.
-
-Which scores will each version keep? Run the cell to check.
-
-```python exec
-id: list-comprehensions-3
-scores = [42, 38, 35, 47, 29, 41, 44, 33, 39, 48]
-
-high_scores = []
-for score in scores:
-    if score >= 40:
-        high_scores.append(score)
-print(high_scores)
-
-print([score for score in scores if score >= 40])
-```
-
-Both versions keep the same five scores. An `if` at the end of a
-comprehension is a *filter*. A filter keeps only the values that pass a
-test. Here the test is `score >= 40`.
-
-### A grid is a list of lists
-
-A list can hold other lists. A list of lists is a good way to store a
-grid of numbers, with one inner list for each row. If your course goes on
-to matrices, as Computational Methods does in
-[Matrices: adding, scaling and transposing a grid of numbers](tutorial:grid-of-numbers),
-every grid there is stored like this.
-
-Two small tools help us build a grid:
-
-- `[0] * 4` repeats a list. It makes `[0, 0, 0, 0]`.
-- When a loop does not use its loop variable, Python programmers often
-  name the variable `_`, an underscore. The name tells the reader "this
-  value is not used".
-
-```python exec
-id: list-comprehensions-4
-print([0] * 4)
-
-size = 3
-grid = [[0] * size for _ in range(size)]
-print(grid)
-
-times_table = [[row * column for column in range(1, 4)] for row in range(1, 4)]
-print(times_table)
-print(times_table[1][2])
-```
-
-How does `grid` get three rows? The comprehension runs `[0] * size` once
-on each pass of the loop, so it makes a new row of zeros three times.
-
-`times_table` has a comprehension inside a comprehension. The inner one,
-`[row * column for column in range(1, 4)]`, builds one row. The outer
-one does that once for each `row` from 1 to 3.
-
-To read one value from a grid, we give two indexes: the row first, then
-the column. Counting from 0, `times_table[1][2]` is row 1, column 2, and
-that value is 6.
-
-Why not write `[[0] * 3] * 3`? It looks like a shorter way to get the
-same grid. The cell below changes one value in each version. What do you
-think each `print` will show? Run it to check.
-
-```python exec
-id: list-comprehensions-5
-shortcut = [[0] * 3] * 3
-shortcut[0][0] = 5
-print(shortcut)
-
-grid = [[0] * 3 for _ in range(3)]
-grid[0][0] = 5
-print(grid)
-```
-
-This one trips up most people who try it. In `shortcut`, changing one
-value changed all three rows. That is because `* 3` did not make three
-rows. It put the *same* row into the outer list three times. There is
-only one row, seen from three places. The practice page shows the same
-thing with two names for one list, in problem 3: `b = a`.
-
-In `grid`, the comprehension ran `[0] * 3` three times, so it made three
-separate rows. Changing one row leaves the other two alone. So when you
-build a grid, use a comprehension.
-
-### Inside sum(), max() and join()
-
-In "Your turn: Summing a list" you wrote a loop that adds up a list.
-From here on, we can use Python's own `sum()`, which adds up
-the values it is given. `max()` gives the largest value it is given.
-
-What do you think each line will show? The first two lines look almost
-the same. What is different about them?
-
-```python exec
-id: list-comprehensions-6
-print(sum([score for score in scores if score >= 40]))
-print(sum(score for score in scores if score >= 40))
-print(sum(1 for score in scores if score >= 40))
-print(max(len(name) for name in names))
-
-digits = [2, 0, 2, 6]
-print("".join(str(digit) for digit in digits))
-print(", ".join(names))
-```
-
-The first two lines give the same answer, 222. The second line has no
-square brackets. When a comprehension is the only thing inside a
-function's brackets, we can leave its square brackets out. It is then a
-*generator expression*. A generator expression makes its values one at
-a time and hands each one to the function, without building a list
-first. The answer is the same.
-
-The third line counts. It adds 1 for each score of 40 or more, so the
-total is the number of scores that pass the test: 5.
-
-The fourth line gives the length of the longest name, 8.
-
-The last two lines build text. `join()` joins a group of strings into
-one string. The string before `.join` goes between the pieces: `""`
-puts nothing between them, and `", "` puts a comma and a space.
-`join()` works only with strings, so the first of these lines uses
-`str()` to turn each digit into a string.
+`range(len(words))` gives every index of the list, from 0 to one less than
+its length. Both loops print the same thing. `enumerate()` says what it
+means more plainly. Looping by index is the way to go when the loop needs
+another element too, such as the one next door, at `index + 1`.
 
 ### Your turn
 
-Can you do each of these with a comprehension? Use the cell below.
+<div class="dl-world" data-world="secret-messages">
 
-1. Make a list of the cubes of the numbers from 1 to 10. A cube is a
-   number to the power of 3.
-2. From `scores`, make a list of the scores below 35.
-3. Use `sum()` and a generator expression to count how many scores are
-   even. A number `n` is even when `n % 2 == 0`.
-4. Make a 4 × 4 grid where each value is its row index plus its column
-   index. Row 0 should be `[0, 1, 2, 3]`.
+Where does the letter E appear in this message? Can you build `places`, a
+list of the index of every E?
 
 ```python exec
-id: your-turn-comprehensions
-hint: For step 4, build one row first: [row + column for column in range(4)]. Then put a second comprehension around it, for each row.
-# Your comprehensions here
-scores = [42, 38, 35, 47, 29, 41, 44, 33, 39, 48]
+id: your-turn-3--secret-messages
+message = "MEET ME BY THE OLD TREE"
+places = []
+
+print(places)
 ```
 
-## Mathematical Sequences as Functions
+```inputs
+places
+```
 
-In mathematics, a *sequence* is a list of numbers made by a rule. The
-rule is a function: it takes a position, $n$, and gives back the value
-at that position.
+```hint
+`enumerate()` works on a string too, one character at a time. When the
+character is an E, what goes into `places`?
+```
 
-For example, the square numbers $1, 4, 9, 16, 25, ...$ come from the
-rule $f(n) = n^2$.
+```solution
+message = "MEET ME BY THE OLD TREE"
+places = []
+for index, letter in enumerate(message):
+    if letter == "E":
+        places.append(index)
+print(places)
+---
+There are six, at `[1, 2, 6, 13, 21, 22]`. The spaces have positions too,
+which is why the second word's E is at 6.
+```
 
-The triangular numbers $1, 3, 6, 10, 15, ...$ come from the rule
-$f(n) = \frac{n(n+1)}{2}$. This is the same as $\sum_{i=1}^{n} i$, the
-sum of the whole numbers from 1 to $n$.
+</div>
 
-We wrote functions like these in
-[Writing your own functions](tutorial:writing-your-own-functions): a
-parameter goes in, and `return` sends the answer back. Let's write a
-Python function for each of these rules.
+<div class="dl-world" data-world="pixel-art">
+
+Which pixel in this row is the brightest? Can you set `brightest` to its
+index, with a loop, and without `max()`?
 
 ```python exec
-id: mathematical-sequences-as-functions-1
-def square_number(n):
-    return n ** 2
+id: your-turn-3--pixel-art
+row = [30, 90, 250, 120, 250, 60]
+brightest = 0
 
-def triangular_number(n):
-    return n * (n + 1) // 2
-
-# Generate the first 8 terms of each
-for i in range(1, 9):
-    print("n=" + str(i) + ":  square=" + str(square_number(i)) + 
-          "  triangular=" + str(triangular_number(i)))
+print(brightest)
 ```
 
-### Your turn
+```inputs
+brightest
+```
 
-Here, a function takes *another function* as its input. Passing a
-function to a function can seem strange at first. It is also a very
-useful idea.
+```hint
+Keep the index of the brightest pixel so far. Each time round, is this
+pixel brighter than the one at that index?
+```
 
-1. Write a function `generate_sequence(func, n)`. Its first argument,
-   `func`, is a function. Its second argument, `n`, is a whole number.
-2. Make it return a list of the first `n` terms of the sequence that
-   `func` makes. A comprehension can do this in one line.
-3. In the second cell, try it with `square_number` and with
-   `triangular_number`.
+```solution
+row = [30, 90, 250, 120, 250, 60]
+brightest = 0
+for index, value in enumerate(row):
+    if value > row[brightest]:
+        brightest = index
+print(brightest)
+---
+It prints 2. Two pixels are 250, and `>` keeps the first one it finds.
+With `>=` it keeps the last, and prints 4. The question did not say which,
+so the code decides, and it is worth saying which way it went.
+```
+
+</div>
+
+### Your turn: adding up a list
+
+<div class="dl-world" data-world="secret-messages">
+
+How many letters does this message have, not counting the spaces between
+the words? Can you set `total` with a loop, without `sum()`?
 
 ```python exec
-id: your-turn-5
-# Your generate_sequence function
+id: your-turn-4--secret-messages
+words = ["MEET", "ME", "BY", "THE", "OLD", "TREE"]
+total = 0
+
+print(total)
 ```
+
+```inputs
+total
+```
+
+```solution
+words = ["MEET", "ME", "BY", "THE", "OLD", "TREE"]
+total = 0
+for word in words:
+    total = total + len(word)
+print(total)
+---
+18. Each time round, the loop adds one word's length to the running total.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+What is the average brightness of this row? Can you set `average` with a
+loop, without `sum()`? Is the row closer to `#` or to `.`, if `#` is 128
+or more?
 
 ```python exec
-id: your-turn-6
-# Test it
-# generate_sequence(square_number, 5) should give [1, 4, 9, 16, 25]
+id: your-turn-4--pixel-art
+row = [30, 90, 250, 120, 250, 60]
+total = 0
+
+print(average)
 ```
 
-## The Dot Product: Lists Meet Arithmetic
-
-When two lists have the same length, we can combine them element by
-element. The *dot product* of two lists is the sum we get when we
-multiply each pair of matching elements and add up the results.
-
-$$\vec{a} \cdot \vec{b} = \sum_{i=0}^{n-1} a_i \times b_i$$
-
-For example, $[1, 2, 3] \cdot [4, 5, 6] = 1 \times 4 + 2 \times 5 + 3 \times 6 = 32$.
-
-The dot product is used everywhere in machine learning, in physics, and
-in many other fields.
-
-### Your turn
-
-1. Write a function `dot_product(a, b)` that returns the dot product of
-   two lists. You can plan it in pseudocode first, as comments at the top
-   of the cell.
-2. Think about lists of different lengths. What should your function do
-   then? Decide, and make it do that on purpose, so that it does not
-   crash with an error you did not plan for.
-3. Test it in the second cell.
-
-```python exec
-id: your-turn-7
-# Your dot_product function
+```inputs
+average
 ```
 
-```python exec
-id: your-turn-8
-# Test cases
-# dot_product([1, 2, 3], [4, 5, 6]) should be 32
-# What should dot_product([1, 2], [3, 4, 5]) return?
+```solution
+row = [30, 90, 250, 120, 250, 60]
+total = 0
+for value in row:
+    total = total + value
+average = total / len(row)
+print(average)
+---
+The total is 800, and the average about 133.3, so the row as a whole is
+`#`. Dividing by `len(row)`, and not by 6, keeps the code right when the
+row changes length.
 ```
 
-## Reflection
+</div>
 
-On this page we met lists. We created them, read elements by index, took
-slices, and changed them. We built lists with loops, and we looped over
-them. We wrote the same loops on one line, as comprehensions, and used
-them to build grids and to feed `sum()` and `join()`. Then we saw how
-mathematical sequences and the dot product turn straight into code, as functions that take lists in and give lists or
-numbers back.
+## Looking back
 
-What links do you see between the ideas from mathematics and the
-patterns in the code?
+A slice stops before its second number, and so does `range()`. So
+`letters[0:len(letters)]` is the whole list, and `range(len(letters))`
+gives every index of it. What would go wrong if one of them stopped *at*
+its second number instead?
 
-## Where to Read More
+A challenge: a rail-fence cipher writes a message's letters in a zig-zag
+across two rails, then reads the top rail and then the bottom. The letters
+at even indexes go on the top rail, and the rest on the bottom. Can you
+code a message this way with a loop? Can you get it back again?
 
-Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 9:
-Dot Products and Duality.* <https://www.youtube.com/watch?v=LyGKycYT2v0>.
-The dot product this page introduces algebraically, seen geometrically
-instead — worth watching before the matrices strand builds on it further.
+```python challenge
+# A rail-fence cipher: even indexes on the top rail, odd on the bottom.
+message = "MEETMEATNOON"
+top = []
+bottom = []
+# Fill the two rails with a loop, then join them into one coded message.
+# Can you get the message back from the coded one?
+```
 
-Python Software Foundation. *The Python Tutorial — Data Structures.*
-<https://docs.python.org/3/tutorial/datastructures.html>. The official
-reference for everything a list can do, including the methods this page
-does not cover.
+The next page,
+[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids),
+writes these loops on one line, keeps a whole picture in a list of lists,
+and shows what happens when two names share one list.
+
+## Where to read more
+
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
+
+Downey, A. B. (2015). *Think Python: How to Think Like a Computer Scientist*
+(2nd ed.). Green Tea Press. Free at <https://greenteapress.com/wp/think-python-2e/>.
+Chapter 10, "Lists", covers indexing, slicing and looping at greater length,
+with exercises.
+
+Python Software Foundation. *The Python Tutorial*, section 3.1.3, "Lists".
+<https://docs.python.org/3/tutorial/introduction.html#lists>. The official
+introduction to lists, including slicing with a step, which this page leaves
+for the practice.

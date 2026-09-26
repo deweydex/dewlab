@@ -742,7 +742,7 @@ print(best_shift, encode(message, -best_shift))
 From now on, when we solve a problem, we often put the solution inside a
 function, so we can use it again. Building large programs out of small,
 tested pieces is called *modular programming*. Next,
-[Lists: keeping many values in order](tutorial:lists-and-sequences) keeps
+[Lists and looping over them](tutorial:lists-and-sequences) keeps
 many values together, and our functions start to work on whole lists.
 
 ## Where to read more

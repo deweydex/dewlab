@@ -71,7 +71,7 @@ The last line builds the text for one row. The part inside the brackets,
 `ramp[value] for value in row`, works like a list comprehension: it
 makes one character for each number in the row. `"".join(...)` glues
 those characters into a single string. Comprehensions are in
-[Lists: keeping many values in order](tutorial:lists-and-sequences).
+[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 
 Every image on a screen works in the same way. It is a grid of numbers,
 with a rule that turns each number into something you can see.

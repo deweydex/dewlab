@@ -1,7 +1,10 @@
 ---
 title: "Sorting a list: bubble, insertion and selection sort"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 covers:
   bubble-sort-let-things-rise:
     covers: [MIT-6.8]
@@ -13,401 +16,504 @@ covers:
     covers: [MIT-6.8]
 # CMPS-LO5 is taught here, but this page is not on Computational Methods,
 # so it is not claimed for that module until #333 brings it into the course.
-  optional-challenges:
-    touches: [MIT-6.8]
 ---
 
 # Sorting a list: bubble, insertion and selection sort
 
-In [Searching a list: linear and binary search](tutorial:finding-things) we saw that binary search is
-very fast, but it needs sorted data. So how do we sort a list?
-
-Sorting is one of the most studied problems in computer science. It is
-not hard to sort a list. What makes sorting interesting is that there are
-many ways to do it, and as the data grows, some ways become far slower
-than others.
-
-On this page we:
-
-- learn how to swap two elements in a list
-- build three classic sorting algorithms: bubble sort, insertion sort
-  and selection sort
-- count the work each one does, and see how that work grows
-
-Each algorithm thinks about the problem in a different way, and each one
-teaches us something about how to design algorithms.
-
-## The Swap: A Small but Essential Tool
-
-Before we sort anything, we need a way to *swap* two elements in a list.
-To swap two elements is to exchange their positions. Python can do this
-in one line:
+Python can sort a list in one line, with `sorted()`. Here it sorts three
+numbers, and then the same three written as strings. What will the last
+line print?
 
 ```python exec
-id: the-swap-a-small-but-essential-tool-1
+id: sorted-in-one-line-1
+print(sorted([10, 9, 100]))
+print(sorted(["10", "9", "100"]))
+```
+
+```predict
+What will the last line print?
+
+- ['9', '10', '100']
+  - They are the same numbers, so they sort the same way.
+- ['10', '100', '9']
+  - Strings are compared character by character, from the first.
+```
+
+The numbers sort as numbers, and the strings as text: `"10"` and `"100"`
+both start with 1, which comes before 9, so both go first. The same thing
+puts `file10` before `file9` in a folder of files. A sort is only as good
+as its idea of which of two things comes first.
+
+In a real program, `sorted()` is the way to sort. This page builds three
+sorts by hand anyway: bubble sort, insertion sort and selection sort. Each
+is short enough to hold in your head all at once, and building them is how
+you see what sorting costs, and why some ways are far slower than others.
+[Searching a list](tutorial:finding-things) showed why it matters: binary
+search needs sorted data.
+
+## The swap
+
+Every sort here moves elements by *swapping* two of them: exchanging their
+places. Python does it in one line.
+
+```python exec
+id: the-swap-1
 numbers = [10, 20, 30, 40, 50]
-print("Before:", numbers)
-
-# Swap elements at index 1 and index 3
 numbers[1], numbers[3] = numbers[3], numbers[1]
-print("After: ", numbers)
+print(numbers)
 ```
 
-A line like `a, b = b, a` works because Python first works out the whole
-right side. Only then does it assign the values to the left side.
+`a, b = b, a` works because Python works out the whole right-hand side
+first, and only then gives the values to the names on the left. Many other
+languages need a spare variable: `spare = a`, then `a = b`, then
+`b = spare`.
 
-Many other languages need a temporary variable to do the same thing:
+## Bubble sort: let things rise
 
-```
-temp = a
-a = b
-b = temp
-```
+*Bubble sort* walks through the list comparing each pair of neighbours,
+and swaps any pair that is in the wrong order. After one full pass, the
+largest element has bubbled up to the end. Then it goes again.
 
-Both ways work. The Python way says the same thing with fewer parts.
-
-## Bubble Sort: Let Things Rise
-
-*Bubble sort* is a sorting algorithm that walks through the list and
-compares each pair of neighbours. If a pair is in the wrong order, it
-swaps them. After one full pass, the largest element has "bubbled up" to
-the end. Then it repeats, until the list is sorted.
-
-Let's watch one pass, step by step. In this list, the largest number,
-90, is already at the end. Look at 64, the next largest, which starts at
-the front. Where do you think 64 will be after one pass? Run the cell to
-check.
+In this list, 90 is already at the end. 64, the next largest, starts at the
+front. Where will it be after one pass?
 
 ```python exec
 id: bubble-sort-let-things-rise-1
-# A single pass of bubble sort, with commentary
 data = [64, 34, 25, 12, 22, 11, 90]
 print("Start:", data)
-
 for i in range(len(data) - 1):
     if data[i] > data[i + 1]:
         data[i], data[i + 1] = data[i + 1], data[i]
-        print("  Swapped index " + str(i) + " and " + str(i + 1) + ":", data)
+        print("  Swapped", i, "and", i + 1, ":", data)
     else:
-        print("  No swap at index " + str(i) + ":", data)
-
+        print("  No swap at", i, ":", data)
 print("After one pass:", data)
 ```
 
-The 64 moves one place to the right at every swap, until it meets 90. A
-pass always carries the largest element it meets along with it. So after
-one pass, the largest element is at the end. Here that was 90, which
-started there.
-
-One pass is not enough to sort the whole list. But after each pass, one
-more element is in its final place. So a list of n elements needs at most
-n − 1 passes.
-
-That claim is worth watching, and not only believing. Here is the same
-sort again, all the way to the end. A bar, `|`, marks the part that has
-settled into place.
+64 moves one place right at every swap, until it meets 90. A pass carries
+the largest element it meets along with it, so after each pass, one more
+element is in its final place, and a list of n elements needs at most
+n − 1 passes. Here is the whole sort. A bar, `|`, marks the part that has
+settled.
 
 ```python exec
 id: bubble-sort-let-things-rise-2
 data = [64, 34, 25, 12, 22, 11, 90]
 comparisons = 0
-
-print("Start:            ", data, "|", [])
+print("Start:", data)
 
 for pass_number in range(len(data) - 1):
-    # Everything past this point settled on an earlier pass, so there is
-    # no reason to look at it again. That is why each pass is shorter.
     still_to_check = len(data) - pass_number
     swaps = 0
-
     for i in range(still_to_check - 1):
         comparisons = comparisons + 1
         if data[i] > data[i + 1]:
             data[i], data[i + 1] = data[i + 1], data[i]
             swaps = swaps + 1
-
-    moving = data[:still_to_check - 1]
-    settled = data[still_to_check - 1:]
-    print("After pass", pass_number + 1, ":", moving, "|", settled,
-          "  compared:", still_to_check - 1, " swapped:", swaps)
+    print("Pass", pass_number + 1, ":", data[:still_to_check - 1], "|",
+          data[still_to_check - 1:], "  swapped:", swaps)
 
 print("Comparisons in total:", comparisons)
 ```
 
-Here are three things to look for:
-
-1. The bar moves one place to the left on every pass. That is the claim
-   above.
-2. The number of comparisons drops by one on every pass, for the same
-   reason.
-3. The last pass swaps nothing. The list was already sorted before that
-   pass ran, but bubble sort had no way to know.
-
-What happens with a list of your own? Change `data` and run the cell
-again. Try a list that is already sorted, and a list in reverse order.
+Three things to look for: the bar moves one place left on every pass; each
+pass makes one comparison fewer than the last; and the last pass swaps
+nothing, because the list was sorted before it ran, and bubble sort had no
+way to know. Try a list of your own: one already sorted, and one in reverse
+order.
 
 ### Your turn
 
-Here is the pseudocode for a function `bubble_sort(items)`. It returns
-the list in *ascending order*, which means from smallest to largest.
-
-```
-FOR each pass from 0 to length-2:
-    FOR each index i from 0 to length-2-pass:
-        IF items[i] > items[i+1]:
-            SWAP them
-RETURN items
-```
-
-Why can the inner loop stop earlier on each pass? At the end of every
-pass, the largest element that is not yet in place reaches its final
-position. So each time, there is one fewer place worth looking.
-
-1. In the first cell, write `bubble_sort(items)` from the pseudocode.
-2. In the second cell, test it. The comment there lists some good test
-   cases.
+Here are the lines of `bubble_sort(items)`, in the wrong order. Each line
+has the right indentation already. Can you put them in order, so that it
+returns the list sorted from smallest to largest?
 
 ```python exec
 id: your-turn-1
-# Your bubble_sort function
+            items[i], items[i + 1] = items[i + 1], items[i]
+    return items
+        for i in range(len(items) - 1 - pass_number):
+def bubble_sort(items):
+            if items[i] > items[i + 1]:
+    for pass_number in range(len(items) - 1):
 ```
+
+```inputs
+guess: yes
+bubble_sort([5, 2, 9, 1])
+bubble_sort([1, 2, 3])        # already sorted
+bubble_sort([7])              # one element
+bubble_sort([])               # an empty list
+```
+
+```hint
+The indentation tells you which line belongs inside which. Which line has
+no indentation at all? Which two lines are a loop inside a loop?
+```
+
+```solution
+def bubble_sort(items):
+    for pass_number in range(len(items) - 1):
+        for i in range(len(items) - 1 - pass_number):
+            if items[i] > items[i + 1]:
+                items[i], items[i + 1] = items[i + 1], items[i]
+    return items
+---
+The inner loop stops `pass_number` places earlier each time, because that
+many elements have settled at the end. With one element or none,
+`range(len(items) - 1)` is empty, and the list comes back as it went in.
+```
+
+## Insertion sort: sort like you sort cards
+
+*Insertion sort* works the way most people sort a hand of cards: pick up
+the cards one at a time, and put each new one into its place among the
+cards already sorted. In a list, it keeps a sorted part at the start. It
+takes the next element, and moves each larger element in the sorted part
+one place right, until the gap is where the new element belongs.
+
+```
+FOR each index i from 1 to the end:
+    SET current = items[i]
+    SET j = i - 1
+    WHILE j >= 0 AND items[j] > current:
+        MOVE items[j] one place to the right
+        DECREASE j by 1
+    PUT current at position j + 1
+RETURN items
+```
+
+### Your turn
+
+Here are the lines of `insertion_sort(items)`, in the wrong order, with
+their indentation. Can you put them in order?
 
 ```python exec
 id: your-turn-2
-# Worth testing on: already sorted, reverse sorted, all the same value,
-# a single element, and an empty list. The last two are where sorts break.
+        items[j + 1] = current
+            j = j - 1
+def insertion_sort(items):
+        current = items[i]
+    return items
+        while j >= 0 and items[j] > current:
+    for i in range(1, len(items)):
+            items[j + 1] = items[j]
+        j = i - 1
 ```
 
-## Insertion Sort: Sort Like You Sort Cards
+```inputs
+guess: yes
+insertion_sort([5, 2, 9, 1])
+insertion_sort([1, 2, 3])
+insertion_sort([3, 3, 1])     # two the same
+insertion_sort([])
+```
 
-*Insertion sort* is a sorting algorithm that works the way most people
-sort a hand of playing cards. You pick up the cards one at a time. You
-put each new card into its correct place among the cards you have
-already sorted.
+```hint
+Follow the pseudocode above, one line at a time. `current` has to be
+taken out before anything moves into its place.
+```
 
-In a list, insertion sort keeps a sorted part at the start of the list.
-It takes the next element that is not yet sorted. Then it walks that
-element backwards through the sorted part, until it finds the right
-place.
+```solution
+def insertion_sort(items):
+    for i in range(1, len(items)):
+        current = items[i]
+        j = i - 1
+        while j >= 0 and items[j] > current:
+            items[j + 1] = items[j]
+            j = j - 1
+        items[j + 1] = current
+    return items
+---
+The `while` stops at the first element that is not larger than `current`,
+so an already sorted list costs one comparison per element, and nothing
+moves. That is where insertion sort beats the other two.
+```
+
+## Selection sort: find the smallest
+
+*Selection sort* finds the smallest element in the part of the list not yet
+sorted, and swaps it to the front of that part. Then it finds the next
+smallest, and so on. With a hand of cards, it is looking through all of
+them for the lowest, putting it first, and then looking through the rest.
 
 ### Your turn
 
-How might `insertion_sort(items)` look? Here is the pseudocode:
-
-```
-FOR each index i from 1 to length-1:
-    SET key = items[i]
-    SET j = i - 1
-    WHILE j >= 0 AND items[j] > key:
-        MOVE items[j] one position to the right
-        DECREASE j by 1
-    PLACE key at position j+1
-RETURN items
-```
-
-The variable `key` holds the element we are inserting right now. We move
-each larger element one place to the right, until we find where `key`
-belongs.
-
-1. In the first cell, write `insertion_sort(items)`.
-2. In the second cell, test it with the same cases you used for bubble
-   sort.
+This selection sort is broken. It sorts some lists and not others, so a
+test that happens to pass says nothing. Can you find a list it gets wrong,
+and then fix it?
 
 ```python exec
 id: your-turn-3
-# Your insertion_sort function
+def selection_sort(items):
+    for i in range(len(items) - 1):
+        smallest = i
+        for j in range(i + 1, len(items)):
+            if items[j] < items[i]:
+                smallest = j
+        items[i], items[smallest] = items[smallest], items[i]
+    return items
 ```
+
+```inputs
+guess: yes
+selection_sort([5, 4, 3, 2, 1])
+selection_sort([3, 1, 2])
+selection_sort([4, 1, 3, 2])
+```
+
+```hint
+Trace `[3, 1, 2]` by hand. When `j` reaches 2, which element is it being
+compared with, and which should it be compared with?
+```
+
+```solution
+def selection_sort(items):
+    for i in range(len(items) - 1):
+        smallest = i
+        for j in range(i + 1, len(items)):
+            if items[j] < items[smallest]:
+                smallest = j
+        items[i], items[smallest] = items[smallest], items[i]
+    return items
+---
+The broken version compared each element with `items[i]`, the first of the
+unsorted part, and not with the smallest found so far. So it found the
+*last* element smaller than the first, which is not always the smallest.
+It sorted `[5, 4, 3, 2, 1]` anyway, and gave `[2, 1, 3]` for `[3, 1, 2]`.
+A reversed list is a good test, and not enough on its own.
+```
+
+## Sorting with a key
+
+`sorted()` can sort by anything: give it a function as `key=`, and it sorts
+by what that function gives back for each element. `reverse=True` puts the
+largest first.
 
 ```python exec
-id: your-turn-4
-# Test it with the same cases as bubble sort
+id: sorting-with-a-key-1
+words = ["OTTER", "OWL", "HEDGEHOG", "BAT", "HARE"]
+print(sorted(words))
+print(sorted(words, key=len))
+
+def last_letter(word):
+    return word[-1]
+
+print(sorted(words, key=last_letter))
 ```
 
-## Selection Sort: Find the Smallest
+`key=len` sorts by length, and `key=last_letter` by the last letter. The
+function is passed without brackets, as `generate_sequence` was given a
+rule in [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids):
+`sorted()` calls it on each element. Words with the same length keep the
+order they came in, so OWL stays before BAT.
 
-*Selection sort* is a sorting algorithm that finds the smallest element
-in the part of the list that is not yet sorted. It swaps that element
-into the next place in the sorted part. Then it finds the next smallest,
-and so on.
+A list also has a `.sort()` method, which sorts that list in place. What
+will this print?
 
-With a hand of cards, this is like looking through all the cards for the
-lowest one, and putting it first. Then you look through the rest for the
-next lowest, and so on.
+```python exec
+id: sorting-with-a-key-2
+numbers = [3, 1, 2]
+result = numbers.sort()
+print(result)
+```
+
+```predict
+What will it print?
+
+- [1, 2, 3]
+  - `.sort()` sorts the list, and gives it back.
+- None
+  - `.sort()` changes the list it belongs to, and gives nothing back.
+- [3, 1, 2]
+  - `result` holds the list from before it was sorted.
+```
+
+It prints `None`. `.sort()` changes `numbers` itself, like `append()`, and
+gives back nothing. `sorted()` leaves the old list alone, and gives back a
+new one. The difference is the one from
+[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids):
+change the list you were given, or return a new one.
 
 ### Your turn
 
-Here is the pseudocode for `selection_sort(items)`, the third of our
-three sorts:
+<div class="dl-world" data-world="secret-messages">
 
-```
-FOR each index i from 0 to length-2:
-    SET min_index = i
-    FOR each index j from i+1 to length-1:
-        IF items[j] < items[min_index]:
-            SET min_index = j
-    SWAP items[i] and items[min_index]
-RETURN items
-```
-
-1. In the first cell, write `selection_sort(items)`.
-2. In the second cell, test it.
+Here are the letter counts of a coded message. Can you set `by_count` to
+its letters, most common first? In English, the most common letters are E,
+then T. What do the first two tell you?
 
 ```python exec
-id: your-turn-5
-# Your selection_sort function
+id: your-turn-4--secret-messages
+counts = {"W": 6, "K": 3, "H": 9, "Q": 2, "P": 2, "B": 1, "L": 3,
+          "V": 1, "J": 2, "D": 2, "E": 1, "U": 2, "G": 1}
+
+def how_often(letter):
+    return counts[letter]
+
+by_count = []
+print(by_count)
 ```
+
+```inputs
+by_count[:3]
+```
+
+```hint
+`sorted(counts)` sorts the keys. Which `key=` sorts them by their count,
+and what puts the largest first?
+```
+
+```solution
+counts = {"W": 6, "K": 3, "H": 9, "Q": 2, "P": 2, "B": 1, "L": 3,
+          "V": 1, "J": 2, "D": 2, "E": 1, "U": 2, "G": 1}
+
+def how_often(letter):
+    return counts[letter]
+
+by_count = sorted(counts, key=how_often, reverse=True)
+print(by_count)
+---
+H, then W. If H is a coded E and W a coded T, both are three letters on,
+so the shift is probably 3. Two letters agreeing is much stronger evidence
+than one.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Can you set `darkest_first` to these colours sorted by how bright they
+look, darkest first? `brightness` weighs red, green and blue the way an
+eye does.
 
 ```python exec
-id: your-turn-6
-# Test it
+id: your-turn-4--pixel-art
+colours = [[255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0], [128, 128, 128]]
+
+def brightness(colour):
+    return 0.299 * colour[0] + 0.587 * colour[1] + 0.114 * colour[2]
+
+darkest_first = []
+print(darkest_first)
 ```
 
-## Comparing Our Sorts
+```inputs
+darkest_first
+```
 
-All three algorithms give the same result, a sorted list. But they get
-there in different ways. So which one does less work?
+```hint
+Which function should `sorted()` call on each colour, to know which comes
+first?
+```
 
-A good measure is the number of comparisons each one makes. The next
-cell adds a counter to bubble sort. It runs the sort on lists of 10, 50,
-100 and 200 items, each in reverse order, which is the worst case. What
-do you think happens to the count when the size doubles?
+```solution
+colours = [[255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0], [128, 128, 128]]
+
+def brightness(colour):
+    return 0.299 * colour[0] + 0.587 * colour[1] + 0.114 * colour[2]
+
+darkest_first = sorted(colours, key=brightness)
+print(darkest_first)
+---
+Blue, red, grey, green, yellow. Pure blue looks darker than pure red, and
+pure green brighter than mid-grey. Without `key=`, `sorted()` would
+compare the lists element by element, red first, which is not how an eye
+sees them.
+```
+
+</div>
+
+## Comparing our sorts
+
+All three sorts give the same sorted list. Which does less work? A good
+measure is the number of comparisons. This cell counts them for bubble
+sort, on lists of 10, 50, 100 and 200 items, each in reverse order. What do
+you think happens to the count when the size doubles?
 
 ```python exec
 id: comparing-our-sorts-1
 def bubble_sort_counted(items):
-    items = items.copy()
+    items = items[:]
     comparisons = 0
-    n = len(items)
-    for pass_num in range(n - 1):
-        for i in range(n - 1 - pass_num):
+    for pass_number in range(len(items) - 1):
+        for i in range(len(items) - 1 - pass_number):
             comparisons = comparisons + 1
             if items[i] > items[i + 1]:
                 items[i], items[i + 1] = items[i + 1], items[i]
-    return items, comparisons
+    return comparisons
 
-# Test with different sized lists
 for size in [10, 50, 100, 200]:
-    test_data = list(range(size, 0, -1))   # worst case: reverse sorted
-    sorted_data, comparison_count = bubble_sort_counted(test_data)
-    print("Size " + str(size) + ": " + str(comparison_count) + " comparisons")
+    backwards = list(range(size, 0, -1))
+    print("Size", size, ":", bubble_sort_counted(backwards), "comparisons")
 ```
 
-Do you see a pattern? When the size doubles, the number of comparisons
-goes up about four times. In the worst case, each of our three
-algorithms makes about $\frac{n(n-1)}{2}$ comparisons. That number grows
-in proportion to $n^2$, and we write this as $O(n^2)$.
+When the size doubles, the comparisons go up about four times: 4,950 for
+100 items, 19,900 for 200. Each of the three sorts makes about
+$\frac{n(n-1)}{2}$ comparisons in its worst case, and that grows in
+proportion to $n^2$, written $O(n^2)$.
 
 | Items | Comparisons, about | Time |
 |---|---|---|
 | 10 | 45 | instant |
-| 1,000 | 500,000 | still fast |
+| 1,000 | 500,000 | still quick |
 | 1,000,000 | 500,000,000,000 | a long wait |
 
-Faster algorithms exist. Merge sort reaches $O(n \log n)$, and quicksort
-usually does too. Even so, the three sorts on this page are the best
-ones to build first. Each one is short enough to hold in your head all
-at once. That lets you see the cost of an algorithm for yourself, and
-not only be told about it.
-
-### Your turn
-
-1. Add comparison counting to your insertion sort and your selection
-   sort, too.
-2. Run all three sorts over the same data. Try three kinds of data:
-   random order, already sorted, and reverse order.
-
-Do the three sorts always make the same number of comparisons? Or does
-it depend on the data they get? Which one do you think does best on data
-that is already in order? Can you say why, before you run it?
+Faster sorts exist: merge sort takes about $n \log n$ steps, and Python's
+own `sorted()` is built on the same idea. Add a counter to your insertion
+sort and your selection sort, and run all three on the same lists: random,
+already sorted, and reversed. Does each one always make the same number of
+comparisons, or does it depend on the list?
 
 ```python exec
-id: your-turn-7
-# Your comparison experiments
+id: comparing-our-sorts-2
+# Your experiments: three sorts, three kinds of list.
 ```
 
-## Optional Challenges
+## Looking back
 
-If you have time, here are two more things to explore.
+Insertion sort is quick on a list that is nearly in order, and bubble sort
+makes the same number of comparisons whatever it is given. What would you
+want to know about your data before you chose one?
 
-**Shell sort** is a clever improvement on insertion sort. Insertion sort
-compares elements that sit next to each other. Shell sort compares
-elements a fixed distance apart. This distance is called the *gap*.
-Shell sort makes the gap smaller, step by step. When the gap reaches 1,
-shell sort has become an ordinary insertion sort. But by then the list
-is nearly in order, and insertion sort is at its fastest on a list that
-is nearly in order. It is a satisfying one to build.
+A challenge: *Shell sort* improves insertion sort. It first compares
+elements a gap apart, say 4, then a smaller gap, and finishes with a gap of
+1, which is an ordinary insertion sort. By then the list is nearly in
+order, where insertion sort is at its quickest. Can you build it, and count
+its comparisons against insertion sort's?
 
-**Recursive binary search.** In [Searching a list: linear and binary search](tutorial:finding-things)
-we wrote binary search with a `while` loop. Can you rewrite it so that
-the function calls itself, each time with a smaller range? A function
-that calls itself is using *recursion*. Recursion is a neat way to write
-divide-and-conquer algorithms. Here is one way to write it:
+```python challenge
+# Shell sort: insertion sort on elements `gap` apart, for smaller and smaller gaps.
+def shell_sort(items):
+    gap = len(items) // 2
+    while gap > 0:
+        # An insertion sort, where "the element before" is `gap` places back.
+        gap = gap // 2
+    return items
 
-```
-def binary_search_recursive(items, target, low, high):
-    if low > high:
-        return -1
-    mid = (low + high) // 2
-    if items[mid] == target:
-        return mid
-    elif target < items[mid]:
-        return binary_search_recursive(items, target, low, mid - 1)
-    else:
-        return binary_search_recursive(items, target, mid + 1, high)
+print(shell_sort([64, 34, 25, 12, 22, 11, 90]))
 ```
 
-```python exec
-id: optional-challenges-1
-# Optional: shell sort implementation
-```
+The next page,
+[Designing and testing good functions](tutorial:building-reusable-tools),
+turns the testing you did here, with lists chosen to catch a sort out, into
+tests a program runs for you.
 
-```python exec
-id: optional-challenges-2
-# Optional: try the recursive binary search and compare it to your iterative version
-```
+## Where to read more
 
-## Reflection
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
 
-We have now built three sorting algorithms from nothing. We also know how
-to compare how fast they are, by counting the steps they take. Together
-with the search algorithms from [Searching a list: linear and binary search](tutorial:finding-things),
-we now have a good set of tools for putting data in order and finding
-things in it.
+Bingmann, T. (2013). *15 Sorting Algorithms in 6 Minutes*.
+<https://www.youtube.com/watch?v=kPRA0W1kECg>. Sorting made audible and
+visible at once. The difference between the $n^2$ sorts and the
+$n \log n$ ones is plain here in a way no table of numbers manages.
 
-We also went through the full cycle of building an algorithm:
+Computerphile (2013). *Getting Sorted & Big O Notation*.
+<https://www.youtube.com/watch?v=kgBjXUE_Nwc>. Why the growth rate matters
+more than the constant factor, which is the whole argument of the
+comparison section.
 
-1. Understand the problem.
-2. Write pseudocode.
-3. Write the code.
-4. Test it.
-5. Measure how much work it does.
-
-This cycle is the same whether the problem is sorting numbers or
-building a machine learning system.
-
-You are now ready to build these tools again, from nothing but the
-ideas. That is the only real way to find out whether the algorithms, and
-the programming behind them, have stuck.
-
-What was the most satisfying moment in these last two tutorials? What
-would you like to understand better?
-
-## Where to Read More
-
-Timo Bingmann (2013). *15 Sorting Algorithms in 6 Minutes.*
-<https://www.youtube.com/watch?v=kPRA0W1kECg>. Sorting made audible and visible
-at once. The difference between the $n^2$ sorts and the $n \log n$ ones is
-obvious here in a way no table of numbers manages.
-
-Computerphile (2013). *Getting Sorted & Big O Notation.*
-<https://www.youtube.com/watch?v=kgBjXUE_Nwc>. Why the growth rate matters more
-than the constant factor, which is the whole argument of the comparison section.
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L. and Stein, C. (2022).
-*Introduction to Algorithms* (4th ed.). MIT Press. Chapter 2 covers insertion
-sort and the analysis properly. Heavier than this course needs, and the standard
-reference if you go further.
-
-Python Software Foundation. *Sorting Techniques.*
-<https://docs.python.org/3/howto/sorting.html>. How `sorted` and `key` actually
-work, including why Python's sort is stable and when that matters.
+Python Software Foundation. *Sorting Techniques*.
+<https://docs.python.org/3/howto/sorting.html>. How `sorted()` and `key=`
+work, including why Python's sort is stable, and when that matters.

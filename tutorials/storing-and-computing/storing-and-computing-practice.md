@@ -10,10 +10,10 @@ worlds:
 
 # Variables, data types and text — Practice
 
-Problems on names, types, text, and binary and hexadecimal. The ones about
-types are worth slowing down on: in your first term, most confusing errors
-turn out to come from a value whose type you did not expect. Try each one
-before you open anything under it.
+Problems on names, types and text. The ones about types are worth slowing
+down on: in your first term, most confusing errors turn out to come from a
+value whose type you did not expect. Try each one before you open anything
+under it.
 
 ## 1. Allowed names
 
@@ -374,101 +374,7 @@ has a factor of 5, and binary has only 2s to work with.
 
 </details>
 
-## Binary and hexadecimal
-
-This cell shows 42 in binary, hexadecimal and base 8, and then reads
-text written in base 2 and base 16.
-
-```python exec
-id: binary-and-hexadecimal-1
-number = 42
-print(number, bin(number), hex(number), oct(number))   # oct() writes base 8
-
-# int() with a second number reads text written in that base
-print(int("101010", 2), int("2A", 16))
-```
-
-**14.** Change these binary numbers to decimal by hand, then check:
-`1101`, `10000`, `11111`, `10101010`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-13, 16, 31, 170.
-
-Notice that `11111` is 31, and not 32. A row of ones is always one less
-than the next power of two. That is why a byte holds 0 to 255, and not 0
-to 256.
-
-</details>
-
-**15.** Change these to binary by hand, then check: 6, 12, 100, 255.
-
-<details class="dl-answer"><summary>answer</summary>
-
-110, 1100, 1100100, 11111111.
-
-Notice that 12 is 6 moved one place to the left. Multiplying by two in
-binary works the same way as multiplying by ten in decimal: you add a
-zero on the end.
-
-</details>
-
-**16.** Change these to hexadecimal: 15, 16, 255, 256, 4095.
-
-<details class="dl-answer"><summary>answer</summary>
-
-F, 10, FF, 100, FFF.
-
-Each hex digit is exactly four binary digits, so FF is eight bits, which
-is one byte. This match is the whole reason people use hexadecimal: it
-is a short way of writing binary that a person can read.
-
-</details>
-
-**17.** A colour on the web is written `#1E90FF`. What are its red, green
-and blue values in decimal?
-
-<details class="dl-answer"><summary>answer</summary>
-
-30, 144, 255.
-
-```python
-print(int("1E", 16), int("90", 16), int("FF", 16))
-```
-
-There are two hex digits for each colour, and each pair is a number from
-0 to 255. This colour is called dodger blue. Web colours use hexadecimal
-because three bytes fit into six digits, with no confusion about where
-one ends and the next begins.
-
-</details>
-
-**18.** Write a program that takes a hex string like `"2A"` and prints
-its value in decimal, without using `int(x, 16)`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-This answer uses a `for` loop, which repeats a step once for each
-character. [Repeating steps with loops](tutorial:repeating-yourself) explains
-loops properly.
-
-```python
-digits = "0123456789ABCDEF"
-text = "2A"
-total = 0
-for character in text.upper():
-    total = total * 16 + digits.index(character)
-print(total)
-```
-
-42. The key step is `total = total * 16 + digit`. It is the general way
-to read a number in any base: move everything you have up one place,
-then add the new digit. Change the 16 and the list of digits, and the
-same program reads binary, or base 7.
-
-</details>
-
-## 19. Hours and minutes
+## 14. Hours and minutes
 
 Can you change a number of minutes into hours and minutes, with clear
 names, and print it with an f-string?
@@ -493,7 +399,7 @@ print(f"{total_minutes} minutes is {hours} hours and {minutes} minutes")
 8 hours and 20 minutes.
 ```
 
-## 20. Counting in cents
+## 15. Counting in cents
 
 A shop's till stores prices in euro as floats. Adding up fifty items at
 €0.10 gives €4.999999999999998. What should the till store instead?
@@ -507,7 +413,7 @@ units. Floats are for measurements. For counting, use integers.
 
 </details>
 
-## 21. Four answers from two values
+## 16. Four answers from two values
 
 ```python exec
 id: four-answers-from-two-values-1
@@ -532,7 +438,7 @@ four different answers, and the types decide every one.
 
 </details>
 
-## 22. An f-string instead
+## 17. An f-string instead
 
 Can you rewrite the last line with an f-string, and without `str()`?
 
@@ -553,7 +459,7 @@ prints the curly brackets and the names as they are, with no error, so
 that slip is easy to miss.
 ```
 
-## 23. Decimal places
+## 18. Decimal places
 
 ```python exec
 id: putting-values-into-text-practice-1
@@ -577,7 +483,7 @@ as well as take them away, which is what you want for prices.
 
 </details>
 
-## 24. A price from cents
+## 19. A price from cents
 
 The till's total is `total_cents = 1234`. Can you print it as
 `Total: €12.34`?
