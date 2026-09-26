@@ -8,12 +8,12 @@ version: 2026.09.25.1
 # Choosing a path: if, elif and else — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-A wrong guess here costs nothing, and it is often the most useful thing
+A guess that misses costs nothing here, and it is often the most useful thing
 on the page: it shows you exactly where your picture and Python's differ.
 Skip a problem if it does not interest you, and come back to it later.
 
@@ -85,12 +85,12 @@ ask.
 **4. Another way.** A phone turns on its battery saver when the battery
 is below 20%. Schlomo, who is learning Python too, writes the test as
 `battery < 20`. His sister Schlomi writes `battery <= 19`. Schlomo says
-they are the same test. Schlomi says they are not. Who is right? Is
-there a space where they both are?
+they are the same test. Schlomi says they are not. Where does each idea
+work? Is there a space where they both do?
 
 <details class="dl-answer"><summary>answer</summary>
 
-They are both right, in different spaces.
+Each idea works, in a different space.
 
 The battery number on a phone's screen is a whole number. If the test
 only ever sees whole numbers, the two are the same: the whole numbers
@@ -106,7 +106,7 @@ print(battery < 20)
 print(battery <= 19)
 ```
 
-This prints `True`, then `False`. Neither test is wrong. Each is right in
+This prints `True`, then `False`. Each test does its job in
 its own space, and the program should say which space it means.
 
 </details>
@@ -235,8 +235,8 @@ includes 50. 49 fails every condition, so `else` catches it.
 
 **8. Fix.** A weather app gives a wind warning from the strongest gust
 it expects, in km/h. (The limits here are made up.) The app never shows
-an orange or a red warning, even in a storm. Run it, then find and fix
-the mistake.
+an orange or a red warning, even in a storm. Run it, then find why, and
+change it.
 
 ```python exec
 id: choosing-practice-fix-wind
@@ -307,8 +307,8 @@ id: choosing-practice-uv
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one good answer. Yours may put the checks another way round and
-still be right.
+Here is one way through. Yours may put the checks another way round and
+work as well.
 
 ```python
 def uv_band(index):
@@ -364,7 +364,7 @@ With `elif`, the three checks belong to one question, and Python stops at
 the first True answer. That is the difference between three separate
 choices and one choice with three paths.
 
-So Schlomi's idea is right in one way: nothing is missed. That is the
+So Schlomi's idea works in one way: nothing is missed. That is the
 trouble. A grade needs exactly one answer, and "nothing is missed" gave
 three.
 
@@ -400,7 +400,7 @@ def comfortable(temperature):
     return 18 <= temperature <= 22
 ```
 
-Now every test passes. The mistake only showed up because two tests sit
+Now every test passes. The problem only showed up because two tests sit
 exactly on the ends.
 
 </details>
@@ -469,6 +469,8 @@ fit, so give back 15 for every place, and the display shows FFFF.
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def score_digit(score, place):
     """The digit a four-digit score display shows in place, in hex from 10000 on."""
@@ -494,6 +496,8 @@ Then check that it agrees with `between` for the values 0, 1, 5, 6 and 7,
 with `low` 1 and `high` 6.
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def between_again(value, low, high):
@@ -543,6 +547,8 @@ billion?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def bytes_needed(count):
     """Return the fewest bytes, from 1 to 4, that give count things a number each."""
@@ -576,8 +582,8 @@ Why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no one right answer, and your own experience counts as
-evidence here. A good answer weighs a few things.
+Here is one way through, and your own experience counts as
+evidence here. It weighs a few things.
 
 - **One page with both.** Each side explains the other: the number line
   makes sense of `<=`, and the code checks the algebra. The cost: two new
@@ -589,7 +595,7 @@ evidence here. A good answer weighs a few things.
   topic with no use.
 
 For the maths lover, the code may be a way to check their work. For the
-computer lover, the maths may be the reason `elif` needs its order. A
-strong answer says which of these fits the person you chose.
+computer lover, the maths may be the reason `elif` needs its order.
+Whichever way you answer, say which of these fits the person you chose.
 
 </details>

@@ -9,8 +9,8 @@ version: 2026.09.25.1
 
 Each answer is hidden until you open it. Where a problem asks you to
 predict, the prediction is the exercise, so make one before you run
-anything. An answer shows one good way. Yours may be different, and as
-good.
+anything. An answer shows one way through. Yours may be different, and
+work as well.
 
 Your toolkit is loaded on this page, so `all_pairs`, `total` and
 `product` are ready to use, and so is everything from earlier pages.
@@ -164,7 +164,7 @@ probability, on
 
 **7. Fix.** Schlomo, who is learning Python too, writes a function to
 list every text style a small editor offers: one font and one size. It
-gives only some of them. Find the one mistake, and fix it.
+gives only some of them. Find why, and change it.
 
 ```python exec
 id: counting-every-practice-fix-styles
@@ -200,7 +200,7 @@ level further, inside the inner loop?
 
 The `return` line is pushed in under the outer loop. So after the first
 font, serif, has met every size, the function returns, and sans is never
-used. It gives 3 styles, not 6. Schlomo's loops were right; one line was
+used. It gives 3 styles, not 6. Schlomo's loops did their job; one line was
 four spaces too far in.
 
 `return` must sit outside both loops, level with `for font`:
@@ -219,8 +219,8 @@ print(len(every_style(fonts, sizes)))    # 6
 </details>
 
 **8. Fix.** A laptop comes with one of 4 screens and one of 3 amounts of
-memory. This code counts the different laptops, and gets the wrong
-answer. Fix it.
+memory. This code counts the different laptops, and prints a different
+number. Find why, and change it.
 
 ```python exec
 id: counting-every-practice-fix-laptops
@@ -241,7 +241,7 @@ laptops = len(screens) * len(memory)
 print(laptops)    # 12
 ```
 
-`+` would be right for "a new screen or more memory, not both": 7
+`+` would fit "a new screen or more memory, not both": 7
 choices. And multiplies, or adds.
 
 </details>
@@ -279,12 +279,12 @@ robots, which is fewer than 100.
 Adding one head gives $9 \times 12 = 108$. Adding one body gives
 $8 \times 13 = 104$. Either would make the claim true. So would
 allowing "a body with no head": that adds 12 more, for 108. That is one
-good answer, and you may have found others.
+way through, and you may have found others.
 
 </details>
 
 **11. Another way.** Schlomi, who is learning Python too, says that two
-dice have 21 outcomes, not 36. In which space is she right?
+dice have 21 outcomes, not 36. In which space does her count work?
 
 ```python exec
 id: counting-every-practice-another-dice
@@ -314,9 +314,9 @@ The cell prints 21. It keeps one pair out of each two that are the same
 numbers in a different order, such as `(3, 4)` and `(4, 3)`, and it
 keeps all six doubles.
 
-Schlomi is right when the two dice look the same and only the two
+Schlomi's count works when the two dice look the same and only the two
 numbers matter, not which die showed which. Then "a 3 and a 4" is one
-outcome. The count of 36 is right when the dice can be told apart, such
+outcome. The count of 36 fits when the dice can be told apart, such
 as a red die and a blue one.
 
 Both are real sample spaces. But the 21 are not equally likely: a 3 and
@@ -446,14 +446,14 @@ inputs. A truth table is the sample space of its inputs.
 **16. Explain.** On the tutorial page, the loop came first and
 the formula $m \times n$ came second. Schlomo says: "Listing all the
 outfits was a waste of time. Tell me to multiply, and I'll multiply." What
-would you say to him? Is there a kind of problem where he is right?
+would you say to him? Is there a kind of problem where his idea works?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no single right answer. A good answer agrees with Schlomo
-where he is right, and also says what the list is for.
+Here is one way through. It agrees with Schlomo where his idea works,
+and also says what the list is for.
 
-- **Where Schlomo is right.** When the choices do not change each
+- **Where Schlomo's idea works.** When the choices do not change each
   other, and there are too many to list, the formula is the only way. No
   loop will list $26^{12}$ passwords. In an exam, multiplying is faster
   too.
@@ -465,7 +465,7 @@ where he is right, and also says what the list is for.
   orders play each song once, as the next page,
   [Orders and choices](tutorial:orders-and-choices), shows.
 
-A strong answer might say: multiply when you are sure the choices do not
+One answer might say: multiply when you are sure the choices do not
 change each other, and list a small case when you are not sure.
 
 </details>

@@ -19,10 +19,11 @@ are always allowed: what is named here, what is promised, what happens
 when, and what does this space let us do?
 
 Each problem says what kind it is: **Predict** (say what a cell will
-print, then run it), **Make** (build something small), **Fix** (repair
-one mistake), **Explain** (answer in words) or **Another way** (reach the
+print, then run it), **Make** (build something small), **Fix** (find
+why code that looks fine does something else, and change it), **Explain** (answer in words) or **Another way** (reach the
 same answer by a second route, or find the space where a "wrong" answer
-is right). Answers are in the folds.
+is right). Answers are in the folds, and each is one way through, not
+the only one.
 
 Along the way, the problems build this unit's product: a
 password-strength checker. I think it is the most useful thing in the
@@ -244,8 +245,8 @@ first kind found would count.
 </details>
 
 **7. Fix.** Schlomi, who is learning Python too, wrote this version. It
-gives 52 for `"Hi"`, which is right, but 130 for `"hello"`. Run it,
-find the mistake, and fix it.
+gives 52 for `"Hi"`, as it should, but 130 for `"hello"`. Run it,
+find why, and change it.
 
 ```python exec
 id: mixed-loops-fix-pool
@@ -271,14 +272,14 @@ print(schlomis_pool_size("hello"))    # should be 26
 
 The adding happens inside the loop, so it happens once for every
 character. `"hello"` has five lowercase letters, so it adds 26 five
-times: 130. `"Hi"` looked right only because its two characters are of
+times: 130. `"Hi"` looked fine only because its two characters are of
 two different kinds.
 
 The pool should grow once for each kind of character, however many
 characters of that kind there are. So the loop should only note which
 kinds appear, and the adding should come after it, as in the answer to
-problem 6. It is a mistake about what happens when: the right lines, in
-the wrong place.
+problem 6. It is about what happens when: the lines it needs, in the
+wrong place.
 
 </details>
 
@@ -380,7 +381,7 @@ better one for long passwords: it never has to build the huge count.
 **11. Fix.** This function should say how many years a thief needs to
 try every password, at a given number of guesses a second. For
 `"Tr0ub4dor&3"` at 10 billion guesses a second it gives a number with
-16 digits. The right answer is about 16,000 years. Find the mistake.
+16 digits. It should be about 16,000 years. Find why.
 
 ```python exec
 id: mixed-loops-fix-years
@@ -416,7 +417,7 @@ name does the same job as brackets, and makes the line easier to read.
 **12. Explain.** A bike lock has one dial, from 0 to 9, and a thief has
 3 tries before an alarm goes off. A careful thief tries 3 different
 numbers. A careless thief picks each try at random, and may try the same
-number twice. Run the cell. Why is `at_least_one(0.1, 3)` right for one
+number twice. Run the cell. Why does `at_least_one(0.1, 3)` fit one
 thief and not the other?
 
 ```python exec
@@ -443,9 +444,9 @@ print("careless:", simulate(careless_thief, 100000), at_least_one(0.1, 3))
 The careful thief wins about 0.3 of the time, and the careless one about
 0.271.
 
-`at_least_one` promises the right answer for independent tries. The
+`at_least_one` keeps its promise for independent tries. The
 careless thief's tries are independent: each one has the same chance,
-0.1, whatever happened before. So $1 - 0.9^3 = 0.271$ is right for him.
+0.1, whatever happened before. So $1 - 0.9^3 = 0.271$ fits him.
 
 The careful thief's tries are not independent. After a wrong guess, that
 number is ruled out, so the next try has a better chance: 1 in 9, then

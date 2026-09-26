@@ -41,8 +41,8 @@ On this page we:
 
 > **The space we're in.** This page assumes nothing: no maths, no
 > computers, no memory of school. Every move is allowed here, including
-> guessing wrong, and guessing wrong is often the fastest way to learn
-> something. One thing usually goes unsaid, so we will say it: the Python
+> a guess that misses, and a guess that misses is often the fastest way
+> to learn something. One thing usually goes unsaid, so we will say it: the Python
 > on this page runs inside your own browser, and nothing you type is sent
 > anywhere.
 

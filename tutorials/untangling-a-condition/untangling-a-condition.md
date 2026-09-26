@@ -175,9 +175,9 @@ This table is different, and the last line says `False`. It is `True` in one row
 stock. So a restaurant that is closed but has stock would show a working
 Order button, and so would one that is open with nothing to sell.
 
-If you guessed "the same", you are in good company. I think this is the
-most natural wrong guess in the whole unit, and the move was not a silly
-one. It works in arithmetic, the space of numbers,
+If you guessed "the same", many people do. I think it is the most
+natural guess in the whole unit, and the move has a reason behind it.
+It works in arithmetic, the space of numbers,
 where a minus sign goes onto each part and the plus stays. In the space of
 True and False, `not` does a second job as well: it changes the joining
 word. When `not` goes onto each part, `and` turns into `or`. That second
@@ -294,7 +294,7 @@ def stay_grounded(is_raining, is_windy):
 
 The drone can fly when `not (is_raining or is_windy)`. How would you write
 that without the brackets? Here are two guesses. Which one do you think is
-right? Run the cell to check.
+the same rule? Run the cell to check.
 
 ```python exec
 id: untangling-second-law

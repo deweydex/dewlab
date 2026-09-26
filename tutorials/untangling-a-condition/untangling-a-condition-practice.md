@@ -148,7 +148,7 @@ works in the dark. For them the rule would be different.
 **6. Fix.** Schlomo, who is learning Python too, wrote his own version of
 `same_rule`, to see whether he could. It passes the first test, but it
 says `grey_out_a` and `grey_out_c` are the same rule, and we know they are
-not. Run it, find the one mistake, and fix it.
+not. Run it, find why, and change it.
 
 ```python exec
 id: untangling-practice-fix-same-rule
@@ -203,9 +203,9 @@ what happens when, and so it changed the whole promise.
 
 **7. Another way.** In arithmetic, $-(a + b) = -a + (-b)$. With `not`, the
 same move gives `not a and not b`, which is not the same as
-`not (a and b)`. But is it ever right? Find the rows where
+`not (a and b)`. But does it ever work? Find the rows where
 `not (a and b)` and `not a and not b` do agree. What kind of space would
-make the arithmetic move always right?
+make the arithmetic move always work?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -220,8 +220,8 @@ Use `truth_table` on both, or write the four rows by hand:
 
 They agree in the rows where `a` and `b` are the same. So in a smaller
 space, where the two inputs always come together (for example, a light
-and its own switch, which are either both on or both off), the move is
-always right. In the full space of True/False pairs, it is right only half
+and its own switch, which are either both on or both off), the move
+always works. In the full space of True/False pairs, it works only half
 the time.
 
 </details>
@@ -301,9 +301,9 @@ number of nots flips the value, and an even number leaves it alone.
 **11. Fix.** A video website shows a film to anyone aged 18 or over, or
 anyone whose parent has said yes. The rule for blocking the film was
 `not (age >= 18 or parent_ok)`. Schlomi, who is learning Python too,
-wanted to remove the brackets, which is a good instinct: fewer brackets,
-fewer places to go wrong. But she made a mistake, and now a 20-year-old
-on their own is blocked. Find it and fix it.
+wanted to remove the brackets, which makes sense: fewer brackets,
+fewer places to go wrong. But one word did not change the way it needed
+to, and now a 20-year-old on their own is blocked. Find it and change it.
 
 ```python exec
 id: untangling-practice-fix-age-gate
@@ -328,7 +328,7 @@ def block(age, parent_ok):
 Now the three lines print `False`, `False` and `True`. You could also
 write `age < 18 and not parent_ok`, which reads well aloud: block the film
 for someone under 18 whose parent has not said yes. Schlomi's instinct
-was right, and the law is what makes it safe.
+works, and the law is what makes it safe.
 
 </details>
 
@@ -346,8 +346,8 @@ id: untangling-practice-first-difference
 
 <details class="dl-answer"><summary>answer</summary>
 
-It has the same shape as `same_rule`. The only change is what it gives
-back:
+Here is one way through; yours may differ and work as well. It has the
+same shape as `same_rule`. The only change is what it gives back:
 
 ```python
 from itertools import product
