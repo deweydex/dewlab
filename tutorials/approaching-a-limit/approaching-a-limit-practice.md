@@ -2,7 +2,11 @@
 title: "Limits: getting closer without arriving — Practice"
 practice_for: approaching-a-limit
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  sea-and-sky: A tank of fresh water, filling with seawater. The numbers are made up.
+  planets-and-moons: The Earth's pull on a spacecraft, further and further away.
+  fantasy-maps: A messenger who walks half of what is left each hour. The numbers are made up.
 ---
 
 # Limits: getting closer without arriving — Practice
@@ -44,18 +48,30 @@ approach(f, 1, from_below=False)
 
 ## Finding a limit
 
-**1.** What is the limit of $\dfrac{x^2 - 4}{x - 2}$ as $x$ approaches 2?
+**1.** The cell tries $\dfrac{x^2 - 25}{x - 5}$ just above 5.
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: finding-a-limit-1
+def g(x):
+    return (x ** 2 - 25) / (x - 5)
 
-4.
 
-The top factorises as $(x - 2)(x + 2)$. So away from $x = 2$, the
-function is the same as $x + 2$. At 2, that would be $2 + 2 = 4$.
+print(g(5.001))
+```
 
-The function itself has no value at 2. The bottom is zero there, so we
-are not allowed to cancel. The limit says what the value *would* be, and
-that is a different statement.
+```predict
+type: number
+tolerance: 0.01
+
+What will it print, roughly?
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+It prints about 10.001. The top factorises as $(x - 5)(x + 5)$, so away
+from 5 the function is the same as $x + 5$, and $5.001 + 5 = 10.001$.
+The limit as $x$ approaches 5 is 10, although the function has no value
+at 5.
 
 </details>
 
@@ -186,34 +202,48 @@ $\dfrac{2n^2}{5n^2} = \dfrac{2}{5}$.
 
 ## Why limits matter
 
-**11.** A ball falls $4.9t^2$ metres in $t$ seconds. What is its speed at
-$t = 3$? Find it by making the time interval smaller and smaller.
+**11.** A toy car's distance is $2t^3$ metres after $t$ seconds. What
+is its speed at $t = 2$? Can you find it with the algebra, as well as
+with numbers?
 
-<details class="dl-answer"><summary>answer</summary>
+<details class="dl-hint"><summary>hint</summary>
 
-The average speed from $t = 3$ to $t = 3 + h$ is
-
-$$\frac{4.9(3 + h)^2 - 4.9 \times 9}{h}.$$
-
-Expand the top: $4.9(9 + 6h + h^2) - 44.1 = 29.4h + 4.9h^2$. Divide by
-$h$ to get $29.4 + 4.9h$.
-
-As $h$ shrinks, that moves towards **29.4 m/s**.
-
-That is $9.8 \times 3$. The speed after $t$ seconds of falling is
-$9.8t$.
+The average speed from $t = 2$ to $t = 2 + h$ is
+$\dfrac{2(2 + h)^3 - 16}{h}$. Expand $(2 + h)^3$ first.
 
 </details>
 
-**12.** What is the ball's speed at $t = 0$? Does the answer make sense?
+<details class="dl-answer"><summary>one way through it</summary>
+
+$(2 + h)^3 = 8 + 12h + 6h^2 + h^3$, so the top is
+$16 + 24h + 12h^2 + 2h^3 - 16 = 24h + 12h^2 + 2h^3$. Divide by $h$ to get
+$24 + 12h + 2h^2$. As $h$ shrinks, that moves towards **24 m/s**.
+
+With numbers, a gap of `1e-7` gives about 24.0000012.
+
+</details>
+
+**12.** What happens if the gap is negative, so the second moment is
+*before* the first? Here is the ball's average speed at $t = 3$, over a
+gap of $-0.001$.
+
+```python exec
+id: why-limits-matter-1
+def fallen(t):
+    return 4.9 * t ** 2
+
+
+gap = -0.001
+print((fallen(3 + gap) - fallen(3)) / gap)
+```
 
 <details class="dl-answer"><summary>answer</summary>
 
-Zero. This makes sense. At the instant the ball is released, it has not
-started moving.
-
-Its *acceleration*, how fast its speed is changing, is not zero. It is
-9.8 m/s² the whole time. That is why the speed does not stay at zero.
+It prints about 29.3951, just below 29.4. A negative gap measures the
+speed over the moment just before $t = 3$, when the ball was a little
+slower. Positive gaps come down towards 29.4 from above, and negative
+gaps come up towards it from below. Both sides agree, so the limit is
+29.4.
 
 </details>
 
@@ -233,22 +263,27 @@ is that method.
 
 ## Where numbers stop helping
 
-**14.** Compute $\dfrac{x^2 - 1}{x - 1}$ in Python at `x = 1 + 1e-16`.
-What happens, and why?
+**14.** The cell adds a tiny number to 1, then subtracts the 1 again.
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: where-numbers-stop-helping-1
+print((1 + 1e-16) - 1)
+print((1 + 1e-15) - 1)
+```
 
-Python stops with a `ZeroDivisionError`. (Some other tools, such as
-NumPy, give `nan`, "not a number", instead. Either way, the answer is
-no help.)
+```predict
+type: number
 
-In double-precision floating point, `1 + 1e-16` is the same number as
-`1`. So the subtraction on the bottom gives exactly zero.
+The first line prints 0.0. What will the second line print?
+```
 
-The mathematics works. The computer's arithmetic does not have enough
-digits. The same limit makes `0.1 + 0.2 == 0.3` give `False`, on the
-practice page for
-[Variables, data types and text](tutorial:storing-and-computing).
+<details class="dl-answer"><summary>why</summary>
+
+It prints `1.1102230246251565e-15`, not `1e-15`. A float keeps about 16
+significant digits. `1 + 1e-15` has room for the tiny part, but only
+roughly, so taking the 1 away leaves a number near $10^{-15}$ that is
+not exactly it. `1 + 1e-16` has no room at all, and the tiny part is
+lost. That lost part is why the tutorial's speed went silently to 0.0.
 
 </details>
 
@@ -304,17 +339,156 @@ again.
 
 </details>
 
-**17.** In your own words: what is the difference between "$f(2) = 4$"
-and "the limit of $f(x)$ as $x$ approaches 2 is 4"?
+**17.** Can you write a Python function whose limit at 3 is 5, but whose
+value at 3 is 7?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first is a statement about the function *at* 2. The second is a
-statement about what it does *near* 2. The second does not need the
-function to have a value at 2 at all.
+Here is one answer. Yours may be different and work too.
 
-The interesting cases are exactly the ones where the first statement is
-false and the second is true. Every derivative you will ever compute is
-one of those cases.
+```python
+def odd_one(x):
+    if x == 3:
+        return 7
+    return x + 2
+```
+
+Near 3, from both sides, the values move towards 5, so the limit is 5.
+At 3 itself the function says 7. The limit does not depend on what
+happens at the point, only near it.
+
+</details>
+
+## Your world
+
+**18.** A problem from the world you chose.
+
+<div class="dl-world" data-world="sea-and-sky">
+
+A tank of fresh water is slowly filled with seawater. After $t$
+minutes, its water holds $\dfrac{35t}{t + 20}$ grams of salt in each
+litre. What does the saltiness settle on as $t$ grows? Can you see it
+with numbers, and then say why from the formula?
+
+```python exec
+id: your-world-1--sea-and-sky
+def salt(t):
+    return 35 * t / (t + 20)
+
+
+for t in [1, 10, 100, 1000, 100000]:
+    print(t, salt(t))
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+It settles on 35 grams a litre, about the saltiness of the sea. When
+$t$ is very large, the $+ 20$ is tiny next to $t$, so the formula is
+close to $\dfrac{35t}{t} = 35$. It never quite reaches 35, since the
+bottom is always a little bigger than $t$.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="planets-and-moons">
+
+The Earth pulls on a spacecraft $h$ km above its surface with a
+strength of $\dfrac{9.8}{(1 + h / 6371)^2}$ metres per second every
+second. 6371 km is the Earth's radius. What does the pull settle on as
+$h$ grows? Is there a height where it is exactly 0?
+
+```python exec
+id: your-world-1--planets-and-moons
+def pull(h):
+    return 9.8 / (1 + h / 6371) ** 2
+
+
+for h in [0, 400, 36000, 384400, 10 ** 9]:
+    print(h, pull(h))
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+The pull moves towards 0 as $h$ grows, and never gets there: the limit
+at infinity is 0. At 400 km, where the space station flies, it is still
+about 8.7, nearly nine tenths of the pull on the ground. The astronauts
+float because they are falling round the Earth, not because the pull
+has gone.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+A messenger sets out for a castle 10 km away. Each hour, the messenger
+walks half of the distance that is left. How far has the messenger gone
+after $n$ hours? Can you write `gone(n)` with a loop, and find the
+limit as $n$ grows?
+
+```python exec
+id: your-world-1--fantasy-maps
+# Your code here.
+```
+
+```hint
+Keep the distance left. Each hour, the messenger walks half of it, so
+what is left is halved.
+```
+
+```inputs
+gone(1)
+gone(3)
+round(gone(50), 6)
+```
+
+```solution
+def gone(n):
+    left = 10
+    for _ in range(n):
+        left = left / 2
+    return 10 - left
+---
+After 1 hour the messenger has gone 5 km, after 3 hours 8.75 km, and
+after 50 hours so close to 10 km that the difference is too small to
+see. The limit is 10 km. The messenger never quite arrives.
+```
+
+</div>
+
+## From earlier
+
+**19.** From [Number types, powers and logarithms](tutorial:numbers-and-their-families).
+What does $\left(1 + \frac{1}{n}\right)^n$ settle on as $n$ grows? Try
+$n$ = 1, 10, 100, 10,000 and 1,000,000.
+
+<details class="dl-answer"><summary>answer</summary>
+
+It settles on about 2.71828. That number is called $e$, and Python has
+it as `math.e`. It is the limit at infinity of this expression. It
+appears wherever something grows in proportion to its own size, such as
+money with interest added more and more often.
+
+</details>
+
+**20.** From [The unit circle: sine, cosine and tangent](tutorial:the-unit-circle).
+What is the limit of $\dfrac{\sin x}{x}$ as $x$ approaches 0, with $x$
+in radians? What if $x$ is in degrees?
+
+```python exec
+id: from-earlier-1
+import math
+
+for x in [0.1, 0.01, 0.001]:
+    print(x, math.sin(x) / x, math.sin(math.radians(x)) / x)
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+In radians the limit is 1: for a tiny angle, the up value and the
+distance walked round the circle are almost the same. In degrees it is
+about 0.01745, which is $\frac{\pi}{180}$. Radians are the unit that
+makes this limit 1, and that is one reason calculus uses them.
 
 </details>
