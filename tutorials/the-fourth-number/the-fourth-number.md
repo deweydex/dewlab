@@ -331,9 +331,9 @@ Reading the printout:
   depth 0, right at the camera, is nearer than the near plane, so it is
   always removed. That is how a renderer avoids ever dividing by a depth of zero.
 - The range is shared unevenly. Depths 1 to 2 use half of it, and 10
-  to 20 use a twentieth. Nearby things get the finest depth steps,
-  because near the camera you would most easily notice two surfaces,
-  one just behind the other, drawn in the wrong order.
+  to 20 use a twentieth. Nearby things get the finest depth steps.
+  This helps, because near the camera you would most easily notice two
+  surfaces, one just behind the other, drawn in the wrong order.
 
 Here is the cube through two lenses, a wide one and a narrow one, with
 the screen's edges now at $-1$ and $1$:

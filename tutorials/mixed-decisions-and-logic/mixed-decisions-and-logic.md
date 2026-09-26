@@ -431,7 +431,7 @@ before the parity message?
 
 </details>
 
-<details class="dl-answer"><summary>one way through</summary>
+<details class="dl-answer"><summary>one answer</summary>
 
 ```python
 def compare_binary(number, answer):

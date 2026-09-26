@@ -676,7 +676,7 @@ would the team with three goals need to equal the other team?
 
 </details>
 
-<details class="dl-answer"><summary>one way through</summary>
+<details class="dl-answer"><summary>one answer</summary>
 
 ```python
 def gaa_total(goals, points):
