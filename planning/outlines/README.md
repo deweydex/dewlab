@@ -1,10 +1,12 @@
 # Curriculum Module Outlines
 
 Pedagogical outlines and structural specifications each tutorial below was
-written from. Every one of them is now a published tutorial, kept here as
-the design record, not as a backlog. The gap left to outline is the CMPS
-strand-4 and strand-5 outcomes — Monte Carlo methods, algorithmic
-complexity and systems modelling — none of which has an outline file yet.
+written from. Every one of them but one is now a published tutorial, kept
+here as the design record, not as a backlog. The exception is the
+Fractions, Powers and Scale series, which is proposed and not yet written.
+The gap left to outline is the CMPS strand-4 and strand-5 outcomes —
+Monte Carlo methods, algorithmic complexity and systems modelling — none
+of which has an outline file yet.
 
 ---
 
@@ -34,3 +36,4 @@ complexity and systems modelling — none of which has an outline file yet.
 | [The Matrices Strand](./matrices.md) | `CMPS-LO4` (written); touches `CMPS-LO1`, `CMPS-LO2` | Multi-unit strand, six tutorials | Written |
 | [The Simulation Strand](./monte-carlo.md) | `CMPS-LO3`, the randomness half of `CMPS-LO2`; partly `CMPS-LO6` | Multi-unit strand, four tutorials | In progress |
 | [The Team Project](./team-project.md) | `PDP-LO12` | Collaborative project specification | Written |
+| [The Fractions, Powers and Scale Series](./fractions-powers-and-scale.md) | none new; the layer under `MIT-1.1` and `MIT-1.7` | Review series, eight tutorials plus a closer look and a making task | Proposed |
