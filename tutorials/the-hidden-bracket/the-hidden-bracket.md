@@ -32,7 +32,7 @@ print(v - u / a)
 ```
 
 Idea A says both lines print 4. Idea B says the second line calculates
-$u / a$ first, which is 2.5, and then takes it from 13.
+$u / a$ first, which is 2.5, and then subtracts it from 13.
 
 ```predict
 type: number
@@ -64,8 +64,8 @@ is another. Nobody writes brackets round $v - u$, because the line already
 holds it together. The fraction line is a bracket you cannot see.
 
 When the formula is typed on one line, the grouping disappears, and only
-"divide" is left. So the brackets that the fraction line hid have to be
-written back in.
+"divide" is left. So you have to type the brackets that the fraction line
+hid.
 
 ## Where else it happens
 
@@ -79,8 +79,8 @@ print(6 / (2 * 3))
 ```
 
 The first line prints 9.0. Python works from left to right: $6 / 2$ is 3,
-and $3 \times 3$ is 9. To divide by the whole of $2 \times 3$, it needs its
-brackets back. A calculator and a spreadsheet do the same: in a
+and $3 \times 3$ is 9. To divide by the whole of $2 \times 3$, it needs brackets
+round $2 \times 3$. A calculator and a spreadsheet do the same: in a
 spreadsheet, the formula `=(A1-B1)/C1` needs its brackets for the same
 reason.
 

@@ -43,7 +43,7 @@ At which x will y be smallest?
 ```
 
 Run it. $y$ is smallest, 1, at $x = 3$, as idea B predicts. At $x = -3$,
-$y$ is 37, nowhere near the bottom. Either side of 3, $y$ goes up
+$y$ is 37, far from the lowest value. Either side of 3, $y$ goes up
 the same way: 2 at both 2 and 4, and 5 at both 1 and 5.
 
 Can you change one number in `y` so that the lowest point moves to
@@ -59,11 +59,11 @@ always have opposite signs.
 
 ## Why idea A feels right
 
-The second number, the $+1$, does mean what it says: it lifts the whole
-curve up by 1. So it is natural to read the first number the same way.
+The second number is what it looks like. The $+1$ moves the whole curve 1
+higher. So it is natural to read the first number the same way.
 $-3$ appears on the page, so $-3$ is where the turning point should be.
 
-The difference is where each number sits. The $+1$ is added to the answer,
+The two numbers sit in different places. The $+1$ is added to the answer,
 after the square. The $-3$ is inside the bracket, with $x$, before the
 square. A number inside the bracket changes which $x$ gives a particular
 answer. Without the $-3$, the bracket is 0 at $x = 0$. With it, the
@@ -88,7 +88,7 @@ plt.legend()
 ```
 
 $(x - 1)^3$ is 1 to the right. It crosses 0 at $x = 1$, where $x^3$
-crosses at 0. It reaches every height 1 later, because $x$ has to be 1
+crosses at 0. It reaches every height 1 further to the right, because $x$ has to be 1
 bigger to put the same number inside the brackets.
 
 ## Where to read more

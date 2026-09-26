@@ -64,8 +64,8 @@ the power key is often marked `^`. In a spreadsheet, `=2^3` gives 8. In an
 email or a message, people type `x^2` when they cannot write a small raised
 2. So `^` means "power" in many places a reader has been before Python.
 
-Python was built on older languages that already used `^` for its logic
-job, and they gave powers the two stars instead.
+Python took `^` from the language C, where it does this logic job. It took
+`**` for powers from Fortran.
 
 ## Where else it happens
 

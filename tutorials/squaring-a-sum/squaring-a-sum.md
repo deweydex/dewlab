@@ -36,12 +36,14 @@ On how many of the four lines will the two answers be the same?
 - All four
   - This is what idea A predicts.
 - Some of them
+  - This is what idea B predicts: they agree only when $2ab$ is 0.
 - None of them
 ```
 
 Run it. They agree on one line only, the line where $a$ is 0. With 3 and
 4, $(3 + 4)^2$ is 49, and $3^2 + 4^2$ is 25. The difference is 24, which is
-$2 \times 3 \times 4$: the $2ab$ that idea B says idea A leaves out.
+$2 \times 3 \times 4$. This is the $2ab$ in idea B. Idea A does not have
+it.
 
 Can you find the rule for when the two agree? Try a few more pairs.
 
@@ -71,6 +73,7 @@ fig, ax = plt.subplots(figsize=(4, 4))
 pieces = [((0, 0), a, a, "a²"), ((a, a), b, b, "b²"),
           ((a, 0), b, a, "ab"), ((0, a), a, b, "ab")]
 for (x, y), width, height, label in pieces:
+    # add_patch draws one rectangle on the picture.
     ax.add_patch(plt.Rectangle((x, y), width, height, fill=False, linewidth=2))
     ax.text(x + width / 2, y + height / 2, label, ha="center", va="center",
             fontsize=16)

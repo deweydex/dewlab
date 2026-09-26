@@ -7,12 +7,12 @@ version: 2026.09.26.1
 # Chance: a closer look at small samples
 
 In [Probability: simple, compound and conditional](tutorial:what-are-the-chances#counting-the-cases),
-6 of the 36 ways two dice can land make a total of 7. So a 7 comes up one
+6 of the 36 ways two dice can land make a total of 7. So a total of 7 happens one
 time in six. Roll the two dice 54 times, and one sixth of 54 is 9. You
 count the sevens, and there are 8. Here are two ideas about what that
 means. Both are reasonable, and they cannot both be true.
 
-**Idea A.** The chance says 9, and we got 8. Something is a little off:
+**Idea A.** The chance says 9, and we got 8. Something is not quite fair:
 the dice, or the way they were thrown.
 
 **Idea B.** One sixth of 54 is the middle of what can happen, not what
@@ -68,14 +68,15 @@ time with fair dice. It says nothing about the dice. Idea B matches what
 happens.
 
 How many rolls would make a small difference mean something? Can you
-change 54 to 5,400, and 9 to 900? What share of batches now land within
-10 of 900? (With 5,400 rolls the cell takes longer. Try 100 batches.)
+change 54 to 5,400, so that one sixth is 900, and count the batches that
+land within 10 of 900? The test `if sevens >= 890 and sevens <= 910:`
+finds them. With 5,400 rolls the cell takes longer, so try 100 batches.
 
 <details class="dl-answer"><summary>what changes</summary>
 
 With 5,400 rolls, only about 3 batches in 10 land within 10 of 900, and
-about 7 in 10 land within 30. So 30 below 900 is still ordinary. But as a share, 30 in 900 is only
-about 3%, where 1 in 9 was 11%. The more rolls, the closer the share of
+about 7 in 10 land within 30. So 30 below 900 is still ordinary. But as
+a share, 30 in 900 is only about 3%, where 1 in 9 was 11%. The more rolls, the closer the share of
 sevens comes to one sixth, even though the count itself can be further
 from 900.
 
@@ -85,16 +86,17 @@ from 900.
 
 A probability sounds like a promise. "One time in six" sounds like "every
 sixth roll", and 54 rolls sounds like enough. In most of life, a number
-someone works out carefully is a number that comes true: a recipe, a bus
+someone calculates carefully is a number that comes true: a recipe, a bus
 timetable, a bill.
 
-Chance keeps its promise only in the long run. Over a few dozen rolls it
-wanders, and it wanders further than most people expect. That is why the
+The share of sevens comes close to one sixth only after many rolls. Over
+a few dozen rolls it can be far from one sixth, further than most people
+expect. That is why the
 probability page rolled 10,000 times before it drew any conclusions.
 
 ## Where else it happens
 
-Roll one fair die 12 times. Each face should come up about twice. How
+Roll one fair die 12 times. Each face should appear about twice. How
 often is at least one face missing altogether?
 
 ```python exec
@@ -121,7 +123,7 @@ In about how many of 1,000 batches is a face missing?
 ```
 
 It is more than half, about 560 in 1,000. A fair die that never shows a
-3 in 12 rolls is not a strange die. It is an ordinary 12 rolls.
+3 in 12 rolls is not a strange die.
 
 ## Where to read more
 

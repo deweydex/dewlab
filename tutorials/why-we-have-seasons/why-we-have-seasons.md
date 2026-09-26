@@ -23,15 +23,12 @@ half.
 
 ## An experiment
 
-Idea A makes a clear prediction: in Dublin, the Earth should be closest to
-the Sun in June or July, and furthest in December or January. Idea B says
-the distance has nothing to do with it, so the closest month could be any
-month.
+Idea A predicts that the Earth is closest to the Sun in June or July, in
+the Irish summer, and furthest in December or January. Idea B says the
+distance is not the reason, so the closest month could be any month.
 
-NASA gives the closest distance as 147.1 million km, in early January,
-and the furthest as 152.1 million km, in early July. The months in between
-follow a wave, like the daylight did. The cell draws both waves, one above
-the other.
+The cell draws two waves, one above the other: the daylight in Dublin, and
+the distance from the Earth to the Sun through the year.
 
 ```python exec
 id: an-experiment-1
@@ -61,15 +58,19 @@ In which month is the Earth closest to the Sun?
 - March or September
 ```
 
-Run it. The Earth is closest in January, in the middle of the Irish
-winter, and furthest in July, in summer. The two waves are almost upside
+Run it. The distance curve comes from NASA's two numbers: the closest
+distance is 147.1 million km, in early January, and the furthest is 152.1
+million km, in early July. The months in between follow a wave, like the
+daylight did.
+
+The Earth is closest in January, in the middle of the Irish winter, and furthest in July, in summer. The two waves are almost upside
 down from each other. Idea A predicted the opposite, so the distance
 cannot be what makes Irish summers warm. Idea B matches what happens.
 
 Here is a second test. Sydney, in Australia, is in the southern half of
 the Earth. It is the same distance from the Sun as Dublin on any day. Idea
 A says its seasons should match Dublin's. What does idea B say? Can you
-find out when summer is in Sydney?
+find when summer is in Sydney?
 
 <details class="dl-answer"><summary>what idea B says, and what happens</summary>
 
@@ -88,8 +89,8 @@ to join the two facts together.
 
 The numbers say how much each one matters. The closest and furthest
 distances are only about 3% apart. The sunlight reaching the Earth
-changes by about 7%, because sunlight gets weaker with the square of the
-distance. The tilt does much more. At midday in June, the sun over Dublin
+changes by about 7%, because sunlight gets weaker as the distance grows:
+twice as far gives a quarter of the light. The tilt does much more. At midday in June, the sun over Dublin
 is about 60° above the horizon. At midday in December it is about 13°.
 When the sun is low, the same sunlight is spread over more ground.
 
@@ -111,9 +112,9 @@ times, and the days are more than twice as long as well.
 
 The Moon has the same kind of path, closer at some times and further at
 others. A "supermoon" is a full moon near its closest point. It looks
-bigger in photos, but most people looking up could not tell it from an
-ordinary full moon. A change of several percent in distance is a small
-change, for the Moon as for the Sun.
+bigger in photos, but most people looking up could not see a difference
+between it and an ordinary full moon. A change of several percent in
+distance is a small change.
 
 ## Where to read more
 

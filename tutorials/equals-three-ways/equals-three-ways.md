@@ -83,8 +83,8 @@ score = 15
 15 = score
 ```
 
-Python stops with a `SyntaxError`. A name can be given a value, but a
-number cannot be given a name. The error message even asks whether you
+Python stops with a `SyntaxError`. Python can give a name a
+value. It cannot give the number 15 a value. The error message even asks whether you
 meant `==`.
 
 Fortran used `=` for this instruction in 1957, and most languages since

@@ -100,5 +100,5 @@ letters?
 
 Python Tutor, by Philip Guo, runs a program one line at a time and draws
 each name and its value as it changes. Paste either loop from this page
-into [pythontutor.com](https://pythontutor.com/) and watch `total` go back
-to 0.
+into [pythontutor.com](https://pythontutor.com/) and watch `total`
+become 0 again.

@@ -7,12 +7,12 @@ version: 2026.09.26.1
 # Two names, one list: a closer look at copying
 
 In [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids#two-names-for-one-list),
-`copy = row` did not copy anything, and a change to `copy` showed up in
+`copy = row` did not copy anything, and a change to `copy` appeared in
 `row`. Here are two ideas about what `=` does when the value on the right
 already has a name. Both are reasonable, and they cannot both be true.
 
 **Idea A.** `other = width` makes a copy. After it, `other` and `width` are
-separate, and a change to one leaves the other alone.
+separate, and a change to one does not change the other.
 
 **Idea B.** `other = width` gives the same value a second name. Nothing is
 copied.
@@ -63,7 +63,8 @@ third line of each half does.
   list itself, in place, and `row` names that same list.
 
 With numbers you never see the second name, because a number cannot be
-changed in place. With a list you can, and then you do.
+changed in place. A list can change in place, so the second name shows
+the change.
 
 Can you change one line of the list half so that `row` stays `[5]`?
 

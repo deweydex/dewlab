@@ -19,7 +19,7 @@ halved, and the answer is $x + 3$.
 
 ## An experiment
 
-We can test both ideas without any algebra. Pick a value of $x$, work out
+We can test both ideas without any algebra. Pick a value of $x$, find
 $(2x + 6) / 2$ directly, and see which answer it matches.
 
 ```python exec
@@ -63,8 +63,8 @@ $\frac{2x + 6}{2}$, the eye sees the same 2 on top and the same 2
 underneath, and makes the same move.
 
 But the line under a fraction divides everything above it. $\frac{2x + 6}{2}$
-means "half of the whole of $2x + 6$". Half of a sum is the sum of the
-halves: $\frac{2x}{2} + \frac{6}{2}$, which is $x + 3$. You can cancel only
+means "half of the whole of $2x + 6$". To halve a sum, halve each part
+and add them: $\frac{2x}{2} + \frac{6}{2}$, which is $x + 3$. You can cancel only
 a number that multiplies everything above the line.
 
 ## Where else it happens
@@ -78,12 +78,12 @@ print((6 + 4) / 2)
 print(6 / 2 + 4)
 ```
 
-The first line is 5: half of 10. The second is 7: half of 6, and then the
+The first line is 5.0: half of 10. The second is 7.0: half of 6, and then the
 whole 4. The second line is idea A written in numbers. With numbers, it is
 easy to see that it halves only part of the 10.
 
 ## Where to read more
 
-[Eedi](https://eedi.com/), started by the teacher Craig Barton, collects
+[Eedi](https://eedi.com/), co-founded by the teacher Craig Barton, collects
 maths questions with four answers, where each wrong answer comes from one
 common slip, like the one on this page.

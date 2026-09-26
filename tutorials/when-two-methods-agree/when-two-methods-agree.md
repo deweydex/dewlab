@@ -23,9 +23,8 @@ the thing is what we wanted.
 
 Somebody wants the average score of one roll of a die. They find it two
 ways. First they count: add up the faces and divide by how many there are.
-Then they check with a simulation of 10,000 rolls. Both methods describe a
-die in the same way, with the faces in `faces` and the rolls from
-`random.randint(0, 5)`.
+Then they check with a simulation of 10,000 rolls. Both methods use the
+same description of a die.
 
 ```python exec
 id: an-experiment-1
@@ -45,7 +44,7 @@ The two methods agree: 2.5, and about 2.5. Idea A says the average roll of
 a die is 2.5. Idea B says the agreement cannot tell us that. Both methods
 could share a mistake.
 
-Look at the faces of a real die. What is the average of those?
+The next cell finds the average of the faces of a real die, 1 to 6.
 
 ```python exec
 id: an-experiment-2
@@ -54,9 +53,14 @@ print(sum(real_faces) / len(real_faces))
 ```
 
 ```predict
-type: number
+type: choice
 
-What will it print?
+Before you run it: will a real die also average 2.5?
+
+- Yes
+  - This is what idea A predicts: two methods agree, so 2.5 is right.
+- No
+  - This is what idea B allows: both methods could share a mistake.
 ```
 
 It prints 3.5. A real die has faces 1 to 6, not 0 to 5. Both methods were
@@ -76,13 +80,13 @@ this time the picture of the die matches a real one.
 ## Why idea A feels right
 
 Checking a calculation with a second method is a good habit. It catches
-many mistakes: a slip in the arithmetic, a loop that stops one step early,
+many mistakes: a mistake in the arithmetic, a loop that stops one step early,
 a wrong sign. Those mistakes belong to one method, so the other method
 does not make them, and the answers disagree.
 
 But some mistakes come before either method starts. They are in how we
 describe the problem: the faces of the die, the rules of the game, the
-question we ask. Every method we build on that description inherits the
+question we ask. Every method we build on that description has the same
 mistake. Two methods that agree have checked each other's working. Nothing
 has checked the description.
 

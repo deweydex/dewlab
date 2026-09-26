@@ -21,7 +21,7 @@ read 90 as 90 radians, and gave the sine of that angle.
 
 The two ideas predict different things. If idea B is right, 90 radians is
 an angle like any other. One full turn is $2\pi$ radians, about 6.28, so
-90 radians is about 14.3 turns. Taking away 14 whole turns leaves the
+90 radians is about 14.3 turns. Subtracting 14 whole turns leaves the
 same direction, and so the same sine. Idea A says there is nothing to
 find there: the 0.894 means nothing, so the two numbers have no reason to
 match.
@@ -30,8 +30,8 @@ match.
 id: an-experiment-1
 import math
 
-print(math.sin(90))
-print(math.sin(90 - 14 * 2 * math.pi))
+print(round(math.sin(90), 10))
+print(round(math.sin(90 - 14 * 2 * math.pi), 10))
 ```
 
 ```predict
@@ -45,16 +45,16 @@ Will the two lines print the same number?
   - This is what idea B predicts.
 ```
 
-Run it. Both lines print 0.89399666360055, apart from the last digit or
-two, as idea B predicts. The 0.894 is the sine of a real angle: 90
+Run it. Both lines print 0.8939966636, to ten decimal places, as idea B
+predicts. The 0.894 is the sine of a real angle: 90
 radians, which points the same way as about 0.3 of a turn.
 
-To ask for the sine of 90 degrees, turn the degrees into radians first.
+To ask for the sine of 90 degrees, change the degrees to radians first.
 Can you make the cell print 1?
 
 <details class="dl-answer"><summary>two ways that do it</summary>
 
-`math.sin(math.radians(90))` turns 90 degrees into radians first.
+`math.sin(math.radians(90))` changes 90 degrees to radians first.
 `math.sin(math.pi / 2)` writes a quarter turn in radians directly. Both
 print 1.0.
 
@@ -68,7 +68,7 @@ So 90 looks like an angle in degrees, and "the sine of 90 is 1" feels like
 a fact about the number 90.
 
 But 90 is only a number. It needs a unit, like 90 metres or 90 minutes.
-Python, NumPy, spreadsheets and JavaScript all take radians for their
+Python and spreadsheets both take radians for their
 sine and cosine. A calculator shows its unit on the screen, as DEG or
 RAD. Python has no screen to show it on, so its unit is written in its
 documentation.

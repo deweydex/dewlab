@@ -46,8 +46,8 @@ tile.stretch(2)
 print("width", tile.width, "height", tile.height, "area", tile.area())
 ```
 
-Idea A says nothing can go wrong: a square is a rectangle, so it can do
-whatever a rectangle does. Idea B says `stretch` changes one side only,
+Idea A says the square stays a square: a square is a rectangle, so it can
+do whatever a rectangle does. Idea B says `stretch` changes one side only,
 so the square will break its own rule.
 
 ```predict
@@ -56,9 +56,9 @@ type: choice
 What will it print?
 
 - width 6 height 6 area 36
-  - A square stays a square.
+  - This is what idea A predicts: a square stays a square.
 - width 6 height 3 area 18
-  - `stretch` changes one side only.
+  - This is what idea B predicts: `stretch` changes one side only.
 - An error
   - A square cannot be stretched.
 ```
@@ -82,7 +82,7 @@ still something a program using rectangles would expect?
 Now a square stays square. But a program that stretched every rectangle
 sideways, to make a row of them twice as wide, now gets squares that are
 also twice as tall. The child keeps its rule by breaking the parent's
-promise. One way out is to give the two classes a parent they can both
+promise. One answer is to give the two classes a parent they can both
 keep the promises of, such as a `Shape` with `area`, and no `stretch`.
 
 </details>
@@ -119,7 +119,7 @@ for bird in [Bird(), Penguin()]:
     print(bird.fly())
 ```
 
-A program that sends every bird away when a cat arrives cannot move the
+A program that tells every bird to fly when a cat comes cannot move the
 penguin. Is `Penguin(Bird)` a good child class here? What would you
 change about `Bird`?
 
