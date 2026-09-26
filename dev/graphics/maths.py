@@ -90,7 +90,7 @@ def the_number_domains() -> str:
 def _sets_from_cell() -> tuple[list[int], list[int]]:
     """The two sets *Sets: building them from sorted lists* walks, from its own cell."""
     page = (TUTORIALS / "sets-as-sorted-lists" / "sets-as-sorted-lists.md").read_text()
-    cell = "set-operations-the-merge-pattern-1"
+    cell = "sets-union"
     if f"id: {cell}" not in page:
         raise SystemExit(f"sets-as-sorted-lists: no cell called {cell!r} any more")
     block = page.split(f"id: {cell}", 1)[1].split("```", 1)[0]
@@ -101,6 +101,8 @@ def _sets_from_cell() -> tuple[list[int], list[int]]:
             if stripped.startswith(f"{name} = make_set("):
                 inner = stripped[stripped.index("(") + 1:stripped.rindex(")")]
                 found[name] = sorted(set(ast.literal_eval(inner)))
+            elif stripped.startswith(f"{name} = ["):
+                found[name] = sorted(set(ast.literal_eval(stripped.split("=", 1)[1].strip())))
     if set(found) != {"a", "b"}:
         raise SystemExit(f"sets-as-sorted-lists/{cell}: no a and b defined")
     return found["a"], found["b"]
