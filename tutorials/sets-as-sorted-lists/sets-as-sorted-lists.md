@@ -160,8 +160,8 @@ How many elements will this set have?
 Three: `['Allosaurus', 'Stegosaurus', 'stegosaurus']`. A small `s` and a
 capital `S` are different letters, so the two spellings are different
 elements. The capitals also come first, because Python sorts every capital
-letter before every small one. Real data often has this problem. You can
-make the text match before it goes into a set, with `.lower()` or
+letter before every small one. Real data often has this problem. The usual fix
+is to make the text match before it goes into a set, with `.lower()` or
 `.title()`.
 
 </details>

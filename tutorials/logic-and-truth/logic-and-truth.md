@@ -253,14 +253,14 @@ for a in [True, False]:
 ```
 
 In both, the two columns match in every row. There are exactly four
-cases, and the loop tried all four. So the loop is a proof, not just an
-example.
+cases, and the loop tried all four. So the loop is a proof, not an example
+or evidence.
 
 That is unusual. "I tested it and it worked" is usually a weak argument,
 since testing a few inputs cannot show that a program works for every
 input. Here the argument is complete, because there are only four inputs,
-and we tried every one. This only works when there are few enough cases
-to check them all.
+and we tried every one. Checking every case proves a rule when there are
+few enough cases to check them all. With more, it is almost never possible.
 
 ## Where you have already used this
 
@@ -553,7 +553,7 @@ A challenge: four cards lie on a table, showing `A`, `K`, `4` and `7`.
 Each has a letter on one side and a number on the other. The rule says: "if a
 card has a vowel on one side, it has an even number on the other." Which
 cards must you turn over to check the rule? The most common choice is the A
-and the 4. Can you write a program that tries every possible hidden side, to check?
+and the 4. Can you write a program that tries every possible hidden side, and finds the cards that must be turned?
 
 ```python challenge
 cards_showing = ["A", "K", "4", "7"]

@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 
 
 def bars(labels, values, title="", ylabel=""):
-    """Draw a labelled bar chart, and give back its axes."""
+    """Draw a labelled bar chart, and return its axes."""
     fig, ax = plt.subplots(figsize=(7, 4))
     ax.bar(labels, values)
     ax.set_title(title)
