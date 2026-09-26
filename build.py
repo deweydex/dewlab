@@ -226,6 +226,11 @@ PREDICT_TYPES = ("choice", "number", "text")
 PREDICT_OPTION_RE = re.compile(r"^[-*+]\s+(.*\S)\s*$")
 NOTE_LINE_RE = re.compile(r"^[ \t]+[-*+]\s+(.*\S)\s*$")
 INCLUDE_RE = re.compile(r"\{\{\s*include\s*:\s*(?P<path>[^}]+?)\s*\}\}")
+# A line holding only {{include: setup/x.md}}, in a page's prose. Markdown
+# includes are expanded before anything else reads the page, so an included
+# heading, cell or block is the page's own; a .py include stays for a cell.
+PROSE_INCLUDE_RE = re.compile(
+    r"^\{\{\s*include\s*:\s*(?P<path>[^}]+?\.md)\s*\}\}[ \t]*$", re.MULTILINE)
 TIGHT_LIST_RE = re.compile(
     r"(?m)^(?P<prose>(?![ \t]*(?:[-*+]|\d+[.)])\s)(?![ \t]*#)(?![ \t]*>)[^\n]*\S[^\n]*)\n"
     r"(?P<item>[ \t]*(?:[-*+]|\d+[.)])\s+\S)"
@@ -787,23 +792,40 @@ def loosen_tight_lists(body: str) -> str:
     return body
 
 
+def _included_text(rel: str, path: Path) -> str:
+    """The contents of an included file, named relative to the repository."""
+    rel = rel.strip()
+    target = (ROOT / rel).resolve()
+    if not str(target).startswith(str(ROOT)):
+        fail(path, f"include escapes the repository: {rel}")
+    if not target.is_file():
+        fail(path, f"include names a file that does not exist: {rel}")
+    return target.read_text().strip("\n")
+
+
 def expand_includes(code: str, path: Path) -> str:
     """Replace {{include: setup/x.py}} with the contents of that file.
 
     De-duplicates the source, not the runtime: the expanded cell still
     executes on every page load.
     """
+    return INCLUDE_RE.sub(lambda match: _included_text(match.group("path"), path), code)
 
-    def one(match: re.Match) -> str:
-        rel = match.group("path").strip()
-        target = (ROOT / rel).resolve()
-        if not str(target).startswith(str(ROOT)):
-            fail(path, f"include escapes the repository: {rel}")
-        if not target.is_file():
-            fail(path, f"include names a file that does not exist: {rel}")
-        return target.read_text().strip("\n")
 
-    return INCLUDE_RE.sub(one, code)
+def expand_prose_includes(body: str, path: Path) -> str:
+    """Replace a line holding only {{include: setup/x.md}} with that file.
+
+    For prose two pages share word for word, such as what to do when a cell
+    fails. The included markdown becomes part of the page before it is
+    parsed, so its headings, cells and blocks are the page's own. It is
+    not expanded again: an include inside an include is left as written.
+    """
+    body = PROSE_INCLUDE_RE.sub(lambda match: _included_text(match.group("path"), path), body)
+    for match in INCLUDE_RE.finditer(body):
+        if match.group("path").strip().endswith(".md"):
+            fail(path, f"{match.group(0)} shares its line with other text; a markdown "
+                       "include has to be a line of its own")
+    return body
 
 
 def parse_cell(body: str, path: Path, cell_type: str = "python") -> Cell:
@@ -5059,6 +5081,7 @@ def load(path: Path) -> Tutorial:
     build.py builds starts here.
     """
     meta, body = split_frontmatter(path.read_text(), path)
+    body = expand_prose_includes(body, path)
     worlds = page_worlds(meta, path)
     spans = world_spans(body, path, worlds)
     (stripped, cells, blocks, hints, site_editors, questions, app_cells,

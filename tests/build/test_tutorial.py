@@ -278,6 +278,27 @@ class TestIncludes:
         with pytest.raises(b.BuildError, match=match):
             b.build()
 
+    def test_a_prose_include_becomes_part_of_the_page(self, repo):
+        (repo / "setup" / "shared.md").write_text(
+            "## A shared section\n\nWords two pages share.\n")
+        write(repo, "Before.\n\n{{include: setup/shared.md}}\n\nAfter.\n")
+        b.build()
+        page = built(repo)
+        assert 'id="a-shared-section"' in page
+        assert "Words two pages share." in page
+        assert "include:" not in page
+
+    def test_a_prose_include_that_is_missing_fails_the_build(self, repo):
+        write(repo, "{{include: setup/absent.md}}\n")
+        with pytest.raises(b.BuildError, match="does not exist"):
+            b.build()
+
+    def test_a_prose_include_inside_a_sentence_fails_the_build(self, repo):
+        (repo / "setup" / "shared.md").write_text("Shared words.\n")
+        write(repo, "Some text {{include: setup/shared.md}} in a sentence.\n")
+        with pytest.raises(b.BuildError, match="a line of its own"):
+            b.build()
+
 
 class TestAltText:
     """An image without alt text fails the build. (An explicitly empty alt,
