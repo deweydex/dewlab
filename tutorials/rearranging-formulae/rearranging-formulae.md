@@ -57,7 +57,8 @@ There are four letters in the formula. So there are four questions you
 might ask, one for each letter. The cell below has one function for each
 question. Read the four functions and compare them. The first line
 finds a final speed. Can you predict what the other three lines
-print, as they work backwards from that answer? Run it to check.
+print, as they work backwards from that answer? Write your guess in a
+comment first. Then run the cell.
 
 ```python exec
 id: the-same-formula-five-ways-1
@@ -90,9 +91,9 @@ print("Time taken:", time_taken(v, 5, 2))
 The final speed is 13 m/s. When we work backwards from 13, we get the
 same starting speed 5, acceleration 2 and time 4 that we put in.
 
-All four functions describe the same fact about the world. When you
-wrote the four functions, you transposed the formula. You have done the
-algebra already, in a language where you can check it.
+All four functions describe the same fact about the world. Together,
+they are the formula transposed four ways, in a language where you can
+check it.
 
 Textbooks often show the first form as the "real" one, and the
 rearrangements as copies made from it. In fact they are all equally
@@ -162,8 +163,8 @@ one at a time. To make $t$ the subject of $v = u + at$:
 
 That takes two steps. Each step undoes the operation that is furthest
 out, the last one done. The cell below does the same steps with numbers,
-and prints both sides after each step. What do you expect to see? Run
-it to check.
+and prints both sides after each step. What do you expect to see?
+Write your guess in a comment first. Then run the cell.
 
 ```python exec
 id: the-moves-1
@@ -220,7 +221,9 @@ The fraction bar on paper does more than divide. It also groups
 everything above it, and everything below it, as if they were in
 brackets. The bar is an invisible bracket. When you type a formula on
 one line, you have to write those brackets yourself:
-$\frac{v - u}{a}$ becomes `(v - u) / a`.
+$\frac{v - u}{a}$ becomes `(v - u) / a`. The
+[closer look at the fraction line](tutorial:the-hidden-bracket) tests
+this with a second formula.
 
 ### Your turn
 
@@ -293,14 +296,16 @@ sides, and the minus sign is gone:
 $$y + 3x = 10$$
 
 Now $3x$ is being added to $y$. Subtract $y$ from both sides, and then
-divide by 3:
+divide by 3. Dividing a side by 3 divides every term on it, and the
+[closer look at dividing](tutorial:dividing-every-term) shows why that
+matters:
 
 $$3x = 10 - y \qquad\text{so}\qquad x = \frac{10 - y}{3}$$
 
 Check it with a number. At $x = 2$, $y = 10 - 6 = 4$. And
 $\frac{10 - 4}{3} = 2$.
 
-The first move is the only new one: add the term with the minus sign to
+The first move is the only new one. Add the term with the minus sign to
 both sides, so that it is positive. After that, the moves are the ones
 you already know.
 
@@ -341,7 +346,7 @@ def time_at_height(h):
 Add $4.9t^2$ and subtract $h$: $4.9t^2 = 100 - h$. Divide by 4.9, and
 take the square root. The probe is 20 m up after about 4.04 s, and hits
 the ground after about 4.52 s. The negative square root is a time
-before the drop, so we leave it out.
+before the drop, so it is not an answer here.
 ```
 
 </div>
@@ -561,7 +566,7 @@ $V_\text{out}(R_1 + R_2) = V_\text{in} R_2$, so
 $V_\text{out} R_1 = R_2(V_\text{in} - V_\text{out})$, and
 $R_2 = \frac{V_\text{out} R_1}{V_\text{in} - V_\text{out}}$. For 3 V,
 $R_2$ is about 333 ohms. For half the voltage, $R_2$ equals $R_1$. For
-all 12 V, the bottom is zero: no resistor can do it, and Python raises
+all 12 V, the bottom is zero. No resistor can do it, and Python raises
 a `ZeroDivisionError`.
 ```
 
@@ -611,10 +616,10 @@ Python raises a `ZeroDivisionError`.
 
 ## When the unknown is underneath
 
-So far, the letter we wanted was always on top, never in the bottom of
-a fraction. The bottom of a fraction is called the *denominator*. When
-the letter we want is in a denominator, it looks harder. But the same
-rule still works.
+The bottom of a fraction is called the *denominator*. In the last
+section, the letter we wanted was on the top and on the bottom. Here it
+is only on the bottom. That looks harder, but the same rule still
+works.
 
 Here is the formula for two resistors, $a$ and $b$, connected side by
 side (in parallel). $R$ is their total resistance:
@@ -632,7 +637,7 @@ $\frac{1}{10} + \frac{1}{10} = \frac{2}{10}$, and flipping it gives
 $R = \frac{10}{2} = 5$.
 
 What do you think `parallel(100, 1)` will give: more than 1, or less
-than 1? Run the cell to check.
+than 1? Write your guess in a comment first. Then run the cell.
 
 ```python exec
 id: when-the-unknown-is-underneath-1
@@ -655,13 +660,11 @@ There are two things to notice in those answers.
 
 Both facts are easy to read from the formula once $R$ is the subject.
 Neither one is easy to see in $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$.
-**Rearranging puts the thing you want to understand where you can see
-it.**
 
 ### The denominator that is not allowed
 
-What do you think happens when one resistance is 0? Run the cell to
-see.
+What do you think happens when one resistance is 0? Write your guess in
+a comment first. Then run the cell.
 
 ```python exec
 id: when-the-unknown-is-underneath-2
@@ -677,8 +680,8 @@ left to measure.
 
 This is a good habit to build. **When you divide by something, ask what
 happens when that something is zero.** A division by zero in a formula
-often points to a real situation where something breaks. The rocket's
-fuel, the divider and the messenger's horse each had one.
+often points to a real situation where something breaks. The task in
+your world in the last section had one.
 
 ### Your turn
 

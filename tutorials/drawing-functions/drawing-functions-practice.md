@@ -296,8 +296,10 @@ is $h = 20t - 4.9t^2$. Plot it, then answer:
 <details class="dl-answer"><summary>answer</summary>
 
 1. It lands when the height is zero again, at about $t = 4.08$
-   seconds. To see this with algebra, set $20t - 4.9t^2 = 0$. That gives
-   $t(20 - 4.9t) = 0$, so $t = 0$ or $t = 20/4.9$.
+   seconds. Check it: $20 \times 4.08 - 4.9 \times 4.08^2$ is about
+   0.03. [Solving equations: linear, quadratic and
+   simultaneous](tutorial:cracking-equations) finds the exact time,
+   $\frac{20}{4.9}$.
 2. The highest point is halfway between the two roots, at
    $t \approx 2.04$. There the height is about 20.4 m.
 
@@ -330,8 +332,10 @@ Each inverse undoes the steps in reverse order.
 does the same with formulas.
 
 A warning for (d) in Python: `x ** (1/3)` works for positive `x`, but
-for a negative `x` it gives a complex number. Try `(-8) ** (1/3)` to
-see.
+for a negative `x` it does not give $-2$. Try `(-8) ** (1/3)` to see a
+strange-looking answer with a `j` in it.
+[Complex numbers: roots that are not real](tutorial:complex-roots)
+explains what that is.
 
 </details>
 
@@ -403,10 +407,6 @@ $P(n) = -0.5n^2 + 30n - 200$.
    falling. That is a feature of the model, not of the shop. A quadratic
    falls forever, but a real business would not keep making items at a
    loss.
-
-**A model works over the range of data it was built from. Outside that
-range, it may not.** Think about this before you use any model past its
-data.
 
 </details>
 

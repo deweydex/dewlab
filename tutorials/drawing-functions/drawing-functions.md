@@ -209,8 +209,9 @@ call returns, and pass them to the second: `ax = draw(f)`, then
 ### Your turn
 
 Here is the function $f(x) = x^3 - 4x$. Before you plot it, how many
-times do you think the curve crosses the horizontal axis? Then remove
-the `#` from the last line, and run the cell to check.
+times do you think the curve crosses the horizontal axis? Write your
+guess in a comment first. Then remove the `#` from the last line, and
+run the cell.
 
 ```python exec
 id: your-turn-1
@@ -338,13 +339,19 @@ ax.grid(alpha=0.3)
 ```
 
 ```solution
+def plot_line(m, c, ax):
+    xs = [-5, 5]
+    ax.plot(xs, [m * x + c for x in xs], label=f"y = {m}x + {c}")
+    ax.legend()
+
+
 fig, ax = plt.subplots()
 ax.grid(alpha=0.3)
 plot_line(-9.8, 10, ax)
 plot_line(-9.8, 20, ax)
 plot_line(-3.7, 20, ax)
 ---
-a and b are parallel, because both have slope $-9.8$: the same gravity
+`plot_line` is your function from earlier on the page. a and b are parallel, because both have slope $-9.8$: the same gravity
 slows both rockets at the same rate. c starts where b does, at 20 m/s,
 but its line is less steep, because Mars slows it more gently.
 `plot_line` draws from $-5$ to 5, and the left half, before the
@@ -374,13 +381,19 @@ ax.grid(alpha=0.3)
 ```
 
 ```solution
+def plot_line(m, c, ax):
+    xs = [-5, 5]
+    ax.plot(xs, [m * x + c for x in xs], label=f"y = {m}x + {c}")
+    ax.legend()
+
+
 fig, ax = plt.subplots()
 ax.grid(alpha=0.3)
 plot_line(2, 0, ax)
 plot_line(4, 0, ax)
 plot_line(0.5, 0, ax)
 ---
-The 4 ohm line is steepest. The slope is the resistance. For every extra
+`plot_line` is your function from earlier on the page. The 4 ohm line is steepest. The slope is the resistance. For every extra
 amp, the voltage goes up by that many volts. The intercept is 0 for all
 three, because no current flows when there is no voltage.
 ```
@@ -407,6 +420,12 @@ ax.set_aspect("equal")
 ```
 
 ```solution
+def plot_line(m, c, ax):
+    xs = [-5, 5]
+    ax.plot(xs, [m * x + c for x in xs], label=f"y = {m}x + {c}")
+    ax.legend()
+
+
 fig, ax = plt.subplots()
 ax.grid(alpha=0.3)
 ax.set_aspect("equal")
@@ -414,8 +433,8 @@ plot_line(0.5, 2, ax)
 plot_line(0.5, -1, ax)
 plot_line(-2, 8, ax)
 ---
-The King's Road and the Mill Road are parallel. Both have slope 0.5,
-and they stay 3 km apart up the vertical axis. The Tower Road crosses
+`plot_line` is your function from earlier on the page. The King's Road and the Mill Road are parallel. Both have slope 0.5,
+and they cross the vertical axis 3 km apart. The Tower Road crosses
 both at a right angle. $0.5 \times (-2) = -1$, and
 [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances)
 shows why that makes two lines perpendicular.
@@ -471,7 +490,8 @@ Where will the curve for $(x - 2)^2$ be, compared with $x^2$?
 
 - 2 to the right
 - 2 to the left
-  - A minus sign usually means moving to the left, or down.
+  - A minus sign usually means moving to the left, or down. There is
+    [a closer look at this](tutorial:the-vertex-sign).
 - 2 lower
   - A minus 2 sounds like the curve should drop.
 ```
@@ -564,8 +584,9 @@ This is a useful rule for sketching a curve before you plot it.
 
 Here is the habit that much of the rest of the course depends on.
 
-**Where a curve crosses the horizontal axis, the function is zero.** So
-two questions are the same question:
+**Where a curve crosses the horizontal axis, the function is zero.** A
+value of $x$ where a function is zero is called a *root* of the
+function. So two questions are the same question:
 
 - What values of $x$ solve $f(x) = 0$?
 - Where does the curve cross the horizontal axis?
@@ -718,13 +739,19 @@ give it?
 ```
 
 ```solution
+def plot_line(m, c, ax):
+    xs = [-5, 5]
+    ax.plot(xs, [m * x + c for x in xs], label=f"y = {m}x + {c}")
+    ax.legend()
+
+
 fig, ax = plt.subplots()
 ax.grid(alpha=0.3)
 ax.set_aspect("equal")
 plot_line(0.5, 2, ax)
 plot_line(-1, 5, ax)
 ---
-The roads cross at $(2, 3)$. Check it in both: $0.5 \times 2 + 2 = 3$
+`plot_line` is your function from earlier on the page. The roads cross at $(2, 3)$. Check it in both: $0.5 \times 2 + 2 = 3$
 and $-2 + 5 = 3$. The tollhouse is 2 km east and 3 km north of the
 middle of the map.
 ```

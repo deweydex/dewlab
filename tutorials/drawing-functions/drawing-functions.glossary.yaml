@@ -41,6 +41,12 @@ entries:
       The slope m tilts the line, and the intercept c slides it up or down.
       Changing one does not change what the other does.
     example: "y = m*x + c"
+  - term: root (of a function)
+    kind: concept
+    definition: >
+      A root of a function is a value of x where the function is zero. On
+      a graph, it is a place where the curve crosses or touches the
+      horizontal axis. The roots of x^2 - 5x + 6 are 2 and 3.
   - term: translation (of a graph)
     kind: concept
     definition: >

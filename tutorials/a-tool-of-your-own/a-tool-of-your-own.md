@@ -47,7 +47,7 @@ piece of your tool. Everything after this is yours to decide.
 <div class="dl-world" data-world="music">
 
 Make a tuning calculator. The note $n$ semitones above the orchestra's
-A is $440 \times 2^{n/12}$ Hz. Turned round, a frequency is
+A is $440 \times 2^{n/12}$ Hz. The other way, a frequency is
 $12 \log_2 \frac{f}{440}$ semitones above the A. A *cent* is a
 hundredth of a semitone.
 

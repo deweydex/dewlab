@@ -14,8 +14,8 @@ The answers are hidden in folds under each problem. Try each expansion
 by hand first. Then use the cell to check your answer. The cell is there
 to settle a doubt, not to do the work for you.
 
-The expansion problems are adapted from the FOIL worksheet in the
-Mathematics repository.
+The expansion problems are adapted from an earlier worksheet on
+expanding brackets.
 
 ## Expanding
 
@@ -190,7 +190,8 @@ of degree 10? Can it be done with fewer?
 It does about 55 for the powers alone. By hand, each `x ** i` takes
 $i$ multiplications, and $0 + 1 + 2 + \ldots + 10 = 55$.
 
-A method called Horner's method does it with 10:
+A method called Horner's method needs only one multiplication for each
+coefficient, 11 in all:
 
 ```python
 def evaluate_poly(coeffs, x):
@@ -305,8 +306,8 @@ can be true for many values, one value, or none.
 
 ## Verification
 
-**13.** How can you check that your `multiply_poly` is right, without
-calculating it by hand?
+**13.** How can you check that your `multiply_poly` gives the product,
+without calculating it by hand?
 
 <details class="dl-answer"><summary>answer</summary>
 

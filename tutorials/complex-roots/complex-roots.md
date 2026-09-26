@@ -109,7 +109,8 @@ taught in school.
 So the next step uses the same idea one more time. It is not a special
 trick.
 
-What do you think $i$ squared will be? Run the cell to check.
+What do you think $i$ squared will be? Write your guess in a comment
+first. Then run the cell.
 
 ```python exec
 id: inventing-a-number-1
@@ -142,7 +143,7 @@ more has an answer in $\mathbb{C}$. That is not true of any of the four
 families before it.
 
 Python works with complex numbers directly. What do you expect for
-`z + w`? Run the cell and compare.
+`z + w`? Write your guess in a comment first. Then run the cell.
 
 ```python exec
 id: inventing-a-number-2
@@ -314,9 +315,9 @@ Every root gives zero. For the last quadratic we see
 this number is about 0.000000000000000444. It is zero plus a tiny
 rounding error from the computer's arithmetic.
 
-This check proves it. A root is a number that makes the expression
-zero. These numbers make the expression zero. So they are roots. We do
-not have to take the definition on trust.
+A root is a number that makes the expression zero. Each of these
+numbers makes the expression zero, apart from rounding. So they are
+roots, and we do not have to take the definition on trust.
 
 ### Your turn, on paper
 
@@ -464,7 +465,7 @@ is the one before, turned a quarter of the way round the origin,
 anticlockwise. Multiplying by $i$ is a quarter turn. Four quarter turns
 bring the point back where it started, which is another way of saying
 $i^4 = 1$. Two quarter turns make a half turn, and a half turn sends a
-point to its opposite: that is $i^2 = -1$, seen as a picture.
+point to its opposite. That is $i^2 = -1$, seen as a picture.
 
 The length of each line, the point's distance from the origin, stays
 the same. Python's `abs(z)` gives that distance for a complex number:
@@ -482,9 +483,9 @@ already the current. In an alternating current circuit, a resistor of
 The coil's part is imaginary because its voltage runs a quarter of a
 cycle ahead of the current. This complex number is called the
 *impedance*, and its distance from the origin, `abs`, is how much the
-pair resists the current. What is it? And a second pair, $20 - 15j$, is
-added in the same line: impedances in a line add. What is the total,
-and how much does it resist?
+pair resists the current. What is it? A second pair, $20 - 15j$, is
+added in the same line, and impedances in a line add. What is the
+total, and how much does it resist?
 
 ```python exec
 id: in-your-world-1--electronics
@@ -510,8 +511,9 @@ print(total, abs(total))
 ---
 `abs(30 + 40j)` is 50.0, because $\sqrt{30^2 + 40^2} = 50$: the 30 and
 the 40 are two sides of a right-angled triangle. The total is
-`(50+25j)`, which resists about 55.9 ohms, less than $50 + 25 = 75$.
-The $-15j$ part undoes some of the $40j$.
+`(50+25j)`, which resists about 55.9 ohms. That is less than the two
+pairs' own 50 and 25 ohms added together, 75, because the $-15j$ part
+undoes some of the $40j$.
 ```
 
 </div>
@@ -586,7 +588,7 @@ print(castle * 1j, mill * 1j)
 ---
 The castle moves to $-2 + 3i$, and the mill to $-4 - i$. Each is the
 same distance from the market cross as before, about 3.61 km for the
-castle. A turn moves every place, but it never changes a distance.
+castle.
 ```
 
 </div>
@@ -621,7 +623,7 @@ ax.set_aspect("equal")
 
 Stephen Welch (Welch Labs) (2015). *Imaginary Numbers Are Real
 [Part 1: Introduction].* <https://www.youtube.com/watch?v=T647CGsuOVU>.
-This ten-part series tells the same story as this page. Each family of
+This thirteen-part series tells the same story as this page. Each family of
 numbers grows from one question with no answer. This is part one.
 
 Veritasium (2021). *How Imaginary Numbers Were Invented.*

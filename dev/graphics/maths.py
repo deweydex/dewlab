@@ -79,9 +79,9 @@ def the_number_domains() -> str:
     what the containment chain says, and it is faster to point at.
     """
     return nested.render(nested.Ring(
-        "ℝ  reals", "√2   π   −1.5",
+        "ℝ  reals", "√2   π",
         inside=nested.Ring(
-            "ℚ  rationals", "2/3   0.25",
+            "ℚ  rationals", "2/3   0.25   −1.5",
             inside=nested.Ring(
                 "ℤ  integers", "−5   −1",
                 inside=nested.Ring("ℕ  naturals", "0   1   2   3")))))

@@ -14,8 +14,8 @@ worlds:
 Each answer is hidden until you open it. Try the question first.
 
 The cell below has the solver and a checking function. The checking
-function puts a root back into the quadratic. If the result is zero, the
-number is a root. That check proves that the number is a root.
+function puts a root back into the quadratic. If the result is zero,
+apart from rounding, the number is a root.
 
 ## Tools
 
@@ -259,8 +259,6 @@ The `if discriminant < 0` special case disappeared. Two roots, one root
 and no real roots became one situation. We see all of it once
 we work in $\mathbb{C}$.
 
-A new idea that removes special cases is usually a good one.
-
 </details>
 
 **17.** Does every polynomial equation have a solution in $\mathbb{C}$?
@@ -292,12 +290,10 @@ $\mathbb{Q}$, $\mathbb{Z}$ or $\mathbb{N}$.
 - **Computer graphics.** Quaternions, a larger relative of complex
   numbers, handle rotation without the problems that angles can cause.
 
-In each of these, the complex numbers do real work.
-
 </details>
 
-**19.** A circuit's behaviour is described by $x^2 + 2x + 5 = 0$. If a
-root has a negative real part, the circuit becomes steady. Does this one
+**19.** A circuit's behaviour is described by $x^2 + 2x + 5 = 0$. If
+both roots have a negative real part, the circuit becomes steady. Does this one
 become steady?
 
 <details class="dl-answer"><summary>answer</summary>

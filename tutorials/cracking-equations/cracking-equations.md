@@ -33,13 +33,15 @@ that make it true. For example, $3x + 7 = 22$ is true when $x = 5$.
 
 A value of $x$ that makes an equation true is called a *solution* of the
 equation. When the equation has the form "polynomial $= 0$", a solution
-is also called a *root* of the polynomial. For example, $x = 1$ is a root
-of $x^2 - 4x + 3$, because $1 - 4 + 3 = 0$.
+is a root of the polynomial, as in
+[Functions and their graphs](tutorial:drawing-functions): a value of $x$
+where it is zero. For example, $x = 1$ is a root of $x^2 - 4x + 3$,
+because $1 - 4 + 3 = 0$.
 
 ## Solving linear equations
 
 A *linear equation* is an equation where $x$ appears only to the power
-1. The rule for solving one is the rule from rearranging: do the same
+1. The rule for solving one is the rule from rearranging. Do the same
 thing to both sides, so that they stay equal. Here is
 $5x - 4 = 2x + 11$, one step at a time.
 
@@ -85,7 +87,7 @@ after: 2 unchanged runs
 For $2(x + 3) = 14$, what was done to $x$ last? The bracket was
 multiplied by 2, so dividing both sides by 2 is a good first step. For
 $7 - 2x = 3x - 8$, which side would you like the $x$ terms on, so that
-there are more of them than none?
+the number in front of $x$ is positive?
 ```
 
 <details class="dl-answer"><summary>answer</summary>
@@ -110,8 +112,10 @@ $$x = -\frac{b}{a} \quad \text{(as long as } a \neq 0 \text{)}$$
 Can you write `solve_linear(a, b)`, which returns the solution of
 $ax + b = 0$? The numbers go in the order they appear in $ax + b$:
 first $a$, then $b$. Every function on this page that takes
-coefficients works the same way, starting with the number in front of
-the highest power.
+coefficients as separate numbers works the same way, starting with the
+number in front of the highest power. The lists that `multiply_poly`
+uses, later on the page, are the other way round, with the constant
+first.
 
 When $a = 0$, there is no $x$ term at all. Then $b = 0$ is either true
 for every $x$ (when $b$ is 0) or for none. How will your function say
@@ -202,8 +206,8 @@ def solve_quadratic(a, b, c):
 ```
 
 ```hint
-Which number decides how many roots there are? Can you work it out
-first, and keep it under a name?
+Which number decides how many roots there are? Can you find it first,
+and keep it under a name?
 ```
 
 ```hint
@@ -402,7 +406,8 @@ print(multiply_poly(factor1, factor2))
 ```
 
 It prints `[3, -4, 1]`, which is $x^2 - 4x + 3$ with the constant
-first. The factorisation is right, because expanding it is an identity.
+first. Expanding the factors gives the original polynomial, so the two
+forms are the same.
 
 ## Solving inequalities
 
@@ -458,7 +463,7 @@ def solve_linear_inequality(a, b, c, sign):
         sign = {">": "<", ">=": "<=", "<": ">", "<=": ">="}[sign]
     return f"x {sign} {boundary:g}"
 ---
-The dictionary in the last `if` turns each sign round. With $a = 0$
+The dictionary in the last `if` reverses each sign. With $a = 0$
 there is no $x$ left, so the inequality compares $b$ with $c$, and it
 is true for every $x$ or for none. $0x + 5 > 3$ is true for every $x$.
 ```

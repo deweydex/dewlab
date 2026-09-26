@@ -146,7 +146,8 @@ Before you run it: where will the marked lowest point of $(x + 3)^2 - 4$
 be?
 
 - At $(3, -4)$
-  - The bracket has $+3$ in it, and the $-4$ is the height.
+  - The bracket has $+3$ in it, and the $-4$ is the height. There is
+    [a closer look at this](tutorial:the-vertex-sign).
 - At $(-3, -4)$
 - At $(3, 4)$
   - The two numbers in the expression are 3 and 4.
@@ -184,7 +185,7 @@ For the numbers on their own to match, $ah^2 + k$ must be $c$, so
 $$k = c - ah^2$$
 
 So the whole method is: halve $b$, divide by $a$ and change the sign
-to get $h$. Then take $ah^2$ away from $c$ to get $k$. The halving is
+to get $h$. Then subtract $ah^2$ from $c$ to get $k$. The halving is
 there because $(x - h)^2$ has $2h$ in the middle.
 
 Let's check it on $x^2 + 6x + 5$, where $a = 1$. Then
@@ -355,12 +356,9 @@ Both methods give the same answers.
 
 Why? **The quadratic formula is completing the square, done once with
 letters.** Put $h = -\frac{b}{2a}$ and $k = c - ah^2$ into
-$h \pm \sqrt{-\frac{k}{a}}$, and tidy it up. What comes out is
+$h \pm \sqrt{-\frac{k}{a}}$, and simplify. What comes out is
 
 $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
-
-If you have seen a formula built, you can build it again when you
-forget it.
 
 ## When there is nothing to find
 
@@ -481,7 +479,7 @@ print("resistance:", resistance, "ohms")
 `complete_the_square` is your function from earlier on the page. The
 most power is 18 W, at 3 A. The resistor then gets 6 V, so it is
 $\frac{6}{3} = 2$ ohms, the same as the resistance inside the supply.
-This is true for any supply: it delivers the most power to a resistor
+This is true for any supply. It delivers the most power to a resistor
 that matches its own inside resistance.
 ```
 

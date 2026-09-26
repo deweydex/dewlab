@@ -96,6 +96,7 @@ What will it print?
 - 6
 - 5
   - $x = x + 1$ can never be true, so Python should leave $x$ alone.
+    There is [a closer look at this](tutorial:equals-three-ways).
 - An error
   - An equation with no solution sounds like something Python should
     refuse.
@@ -518,8 +519,8 @@ def multiply_poly(a, b):
     return result
 ---
 The line `result[i + j] = ...` is where the powers add. The list
-representation was chosen so that index $i$ times index $j$ lands at
-index $i + j$.
+representation was chosen so that the coefficient at index $i$, times
+the coefficient at index $j$, lands at index $i + j$.
 ```
 
 ### Squaring a sum
@@ -541,7 +542,7 @@ Before you run it: when are $(x + 3)^2$ and $x^2 + 9$ equal?
 
 - For every $x$
   - Squaring each part of the sum looks like the way to square the
-    whole sum.
+    whole sum. There is [a closer look at this](tutorial:squaring-a-sum).
 - For one value of $x$ only
 - Never
   - The brackets change the order of the work, so the answers should
@@ -556,14 +557,14 @@ forget.
 
 ## Checking by evaluating
 
-How can we be sure that `multiply_poly` is right? Here is one way. If
+How can we check what `multiply_poly` returns? Here is one way. If
 $(2x + 3)(x + 4) = 2x^2 + 11x + 12$, then both sides must give the same
 value for every $x$. So we can pick a value, such as $x = 5$, and
 evaluate both sides.
 
 This cell uses your `evaluate_poly` and `multiply_poly`, so run it after
-you have written both. Do you expect the last line to say `True`? Run it
-to check.
+you have written both. Do you expect the last line to say `True`? Write
+your guess in a comment first. Then run the cell.
 
 ```python exec
 id: a-verification-trick-1
@@ -589,7 +590,8 @@ $(x + 3)^2 = x^2 + 9$ is not one.
 
 So we can test an expansion by evaluating both sides at several values
 of $x$. If a product of two polynomials of degree 1 agrees with your
-expansion at three values of $x$, the expansion is right. In general,
+expansion at three values of $x$, the two are the same polynomial. In
+general,
 two polynomials of degree at most $n$ that agree at $n + 1$ values of
 $x$ are the same polynomial.
 

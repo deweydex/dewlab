@@ -17,8 +17,8 @@ root you find yourself: put it back into the equation, and see whether
 you get zero. This is called *substituting* the root back in. So you can
 find a wrong answer yourself, and fix it.
 
-The factorising and quadratic problems are adapted from the Mathematics
-repository's factoring worksheet.
+The factorising and quadratic problems are adapted from an earlier
+worksheet on factorising.
 
 ## Linear equations
 

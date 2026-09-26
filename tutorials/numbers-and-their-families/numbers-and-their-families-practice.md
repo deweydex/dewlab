@@ -15,8 +15,8 @@ The answers are hidden in folds under each problem. You remember the
 rules for powers best when you use them, so try the working by hand
 first. Then use the cells to check your answers.
 
-Some of these problems are adapted from the fractions and exponents
-worksheets in the Mathematics repository.
+Some of these problems are adapted from an earlier set of worksheets on
+fractions and exponents.
 
 ## Fractions
 
@@ -80,7 +80,8 @@ It is $\frac{31}{16}$, which is 1.9375. The total gets closer and closer to 2,
 but never reaches it.
 
 Each new term closes half of the gap that is left. After $n$ terms you
-are $\frac{1}{2^n}$ short of 2. That gap shrinks towards zero, but it is
+are $\frac{1}{2^{n-1}}$ short of 2: after the five terms here, the gap is
+$\frac{1}{16}$. That gap shrinks towards zero, but it is
 never zero. The value the total gets close to is called a limit, and
 [Limits: getting closer without arriving](tutorial:approaching-a-limit)
 is all about them. This has the same shape as Zeno's paradox about
@@ -504,8 +505,8 @@ semitone to $2^{1/12}$ shares the small error out equally. It is called
 
 Kepler's rule says years $= \text{distance}^{3/2}$. A mission planner
 knows that Uranus takes about 84 years to go round the Sun, and Neptune
-about 165. How far from the Sun is each, in AU? Rearrange the rule
-first.
+about 165. How far from the Sun is each, in AU? Which power undoes a
+power of $\frac{3}{2}$?
 
 ```python exec
 id: your-world--rockets
@@ -638,8 +639,9 @@ gives `[97]`, so 97 is prime.
 
 The `if n > 1` at the end catches the last prime factor. That factor is
 larger than the square root, so the loop never reaches it. If you leave
-the check out, every number with a large prime factor loses that factor
-without any error. Most quick tests will not catch this bug.
+the check out, every number with a prime factor larger than its square
+root loses that factor without any error. `factorise(12)` would give
+`[2, 2]`, and `factorise(97)` would give `[]`.
 
 </details>
 

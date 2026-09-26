@@ -1,11 +1,11 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
-  - term: solve, solution, root
+  - term: solve, solution
     kind: concept
     definition: >
       To solve an equation is to find the values of x that make it true.
-      Each such value is a solution. A solution of "polynomial = 0" is
-      also called a root of the polynomial: 1 is a root of x^2 - 4x + 3.
+      Each such value is a solution. A solution of "polynomial = 0" is a
+      root of the polynomial: 1 is a root of x^2 - 4x + 3.
   - term: linear equation
     kind: concept
     definition: >

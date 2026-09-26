@@ -117,7 +117,7 @@ To evaluate $u + at$, you multiply first and add last. To undo it, you
 must first remove the last thing that was done. So you subtract first,
 then divide.
 
-Think of a coat over a jumper. You take off the coat before the jumper.
+Think of a coat over a jumper. You remove the coat before the jumper.
 
 </details>
 
@@ -178,8 +178,8 @@ pair has almost none.)
 
 Notice that the original form, $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$,
 fails completely at $b = 0$, because $\frac{1}{0}$ is undefined. The
-rearranged form gives a sensible answer. **The two forms agree
-everywhere they both work, and one of them works in more places.**
+rearranged form gives a sensible answer. The two forms agree wherever
+both work, and the rearranged one also works at $b = 0$.
 
 </details>
 
@@ -246,8 +246,8 @@ def broken(f):
 print(all(abs(broken(to_fahrenheit(c)) - c) < 1e-9 for c in [-40, 0, 20, 37, 100]))
 ```
 
-The first prints True and the second prints False. **If you never see a
-check fail, you cannot know that it works.**
+The first prints True and the second prints False. Breaking the answer
+on purpose shows that the check can catch a mistake.
 
 </details>
 
@@ -275,9 +275,10 @@ No. It is strong evidence, but it is not a proof. Compare
 There, we checked all four rows, and that *was* a proof, because there were only four
 cases.
 
-Here there are infinitely many possible inputs. So a check can only fail
-to find a problem. In practice, it finds every mistake you are likely to
-make. That is very useful, even though it is not certainty.
+Here there are infinitely many possible inputs. So a check can find a
+mistake, but it cannot prove there is none. In practice, it finds almost
+every mistake you are likely to make. That is very useful, even though
+it is not certainty.
 
 </details>
 
@@ -491,7 +492,7 @@ six in $n$ rolls of a die is $p = 1 - \left(\frac{5}{6}\right)^n$. Make
 $n$ the subject. How many rolls give an even chance, $p = 0.5$? The
 rules for logarithms from
 [Number types, powers and logarithms](tutorial:numbers-and-their-families)
-bring $n$ down.
+turn the power $n$ into a multiplication.
 
 <details class="dl-answer"><summary>answer</summary>
 

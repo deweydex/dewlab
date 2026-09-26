@@ -106,8 +106,8 @@ The symbol $\subset$ means "is inside" (you met it as "is a subset of"
 in [Sets: building them from sorted lists](tutorial:sets-as-sorted-lists)).
 
 ![Four rings, one inside the next. Naturals 0, 1, 2, 3 innermost, then
-integers with −5 and −1, then rationals with 2/3 and 0.25, then reals with
-root 2, pi and −1.5 outermost.](number-domains.svg)
+integers with −5 and −1, then rationals with 2/3, 0.25 and −1.5, then reals
+with root 2 and pi outermost.](number-domains.svg)
 
 In the picture, each number sits in the ring of the smallest family it
 belongs to. To find all the families a number is in, find the number and
@@ -206,9 +206,10 @@ So $8^{1/3}$ is the number whose cube is 8, and that is 2. An exponent
 such as $\frac{2}{3}$ does two things: $8^{2/3}$ is the cube root of 8,
 squared, which is $2^2 = 4$.
 
-The cell below tests the rules with $a = 3$. On each line, it prints
-the left side of a rule and then the right side. If a rule is true, what
-should you see on each line? Run it to check.
+The cell below tests the rules with $a = 3$. On the first five lines,
+it prints the left side of a rule and then the right side. If a rule is
+true, what should you see on those lines? Write your guess in a comment
+first. Then run the cell.
 
 ```python exec
 id: powers-and-their-rules-1
@@ -222,7 +223,7 @@ print("a^(-2)    =", a**(-2), "   1/a^2 =", 1/a**2)
 print("8^(1/3)   =", 8**(1/3), "   8^(2/3) =", 8**(2/3))
 ```
 
-The two numbers on each line match. The division line prints `9.0`,
+On the first five lines, the two sides match. The division line prints `9.0`,
 not `9`, because `/` always gives a decimal in Python. The last line
 prints `3.9999999999999996` for $8^{2/3}$. The exponent $\frac{2}{3}$
 is a decimal that never ends, and Python stores a fraction close to it,
@@ -253,7 +254,8 @@ The first line prints 9. What will the second line print?
 
 - 9
   - `^` means "to the power of" on a calculator and in a lot of
-    maths writing.
+    maths writing. There is
+    [a closer look at this](tutorial:powers-in-python).
 - 1
 - 6
   - It could be a way of writing "3 times 2".
@@ -288,7 +290,8 @@ print?
 The second line prints $-9$. Python does the power before the minus
 sign, so `-3 ** 2` means $-(3^2)$. Mathematics agrees. On paper, $-3^2$
 is $-9$ too. To square the number $-3$, put it in brackets, as the
-first line does.
+first line does. The [closer look at powers](tutorial:powers-in-python)
+tests both of these.
 
 ### Your turn
 
@@ -455,8 +458,8 @@ items. It counts how many times we can halve $n$ before we reach 1.
 
 Python's `math` module has logarithm functions. `math.log2(x)` returns
 the base-2 logarithm, and `math.log10(x)` returns the base-10
-logarithm. What do you think the first two lines print? Run the cell to
-check.
+logarithm. What do you think the first two lines print? Write your guess
+in a comment first. Then run the cell.
 
 ```python exec
 id: logarithms-the-inverse-of-powers-1
@@ -554,8 +557,8 @@ The loop stops as soon as one more division would take `x` below 1.
 <div class="dl-world" data-world="music">
 
 A semitone multiplies the frequency by $2^{1/12}$, so $n$ semitones
-multiply it by $2^{n/12}$. Turn that round, and the number of semitones
-between two notes is
+multiply it by $2^{n/12}$. So the number of semitones between two notes
+is
 
 $$n = 12 \log_2\left(\frac{\text{higher}}{\text{lower}}\right)$$
 
@@ -764,8 +767,8 @@ ratio = (math.pi * (bass / 2) ** 2) / (math.pi * (snare / 2) ** 2)
 print(ratio)
 print((bass / snare) ** 2)
 ---
-Both give about 2.42. The bass drum is about 1.56 times as wide, and
-$1.56^2 \approx 2.42$. The $\pi$ and the halving cancel when you divide
+Both give about 2.42. The bass drum is $\frac{56}{36}$ times as wide,
+and $\left(\frac{56}{36}\right)^2 \approx 2.42$. The $\pi$ and the halving cancel when you divide
 one area by the other, so only the ratio of the widths matters.
 ```
 
@@ -867,7 +870,7 @@ explore_number(-3.5)
 
 ## Where to read more
 
-3Blue1Brown (2017). *Logarithm fundamentals* (Essence of Calculus supplement).
+3Blue1Brown (2020). *Logarithm Fundamentals* (Lockdown live math, episode 6).
 <https://www.youtube.com/watch?v=cEvgcoyZvB4>. It shows, and does not only
 state, why a logarithm is an exponent read backwards.
 

@@ -647,7 +647,7 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *probability* | 21 | 25 |
 | *range* | 16 | 18 |
 | *reaches* | 5 | 48 |
-| *root* | 10 | 39 |
+| *root* | 10 | 35 |
 | *scaling* | 12 | 33 |
 | *see* | 1 | 22 |
 | *selection sort* | 8 | 17 |
