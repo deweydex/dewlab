@@ -716,3 +716,10 @@ either one is true.
 | slant height | the distance from a cone's point down its side: $l = \sqrt{r^2 + h^2}$ |
 | `math.ceil()` | rounds a number up to the next whole number |
 | your shape tools | `rectangle_perimeter`, `rectangle_area`, `triangle_area`, `circle_circumference`, `circle_area`, and the volumes and surface areas of the solids |
+
+## Where to read more
+
+Stand-up Maths (2015). *Calculating pi by weighing a circle.*
+<https://www.youtube.com/watch?v=Ngj0a57Rlb0>. Cut a circle and a square
+from the same card, weigh them, and the ratio of the weights gives pi.
+Four minutes.

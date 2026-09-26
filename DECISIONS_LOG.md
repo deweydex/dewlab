@@ -5031,7 +5031,41 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 ---
 
-**7.251 — Data, Chance and Logic is reordered so each page builds on the one before, plays each game before counting it, and draws on the worlds' real data.** The content issue (#325), part of #306.
+**7.251 — A weekly check that every linked video is still there.** Josh, after 7.246 put 99 videos on the pages: "lets do a link check". `dev/check_video_links.py` asks YouTube's oEmbed endpoint about every video linked from a tutorial, a practice page (frozen releases included) or a site page, and `.github/workflows/video-links.yml` runs it every Monday, keeping one `video-link` issue open while anything has gone.
+
+**On a schedule, not in the tests.** A video disappears on YouTube's timetable, not on a commit's, so checking in `tests.yml` would turn an unrelated pull request red the week a video went, and a YouTube outage would turn every pull request red. A weekly issue reaches the same people without blocking anyone. For the same reason the check never counts a timeout or a 5xx as a dead link: those are retried, and if more than a quarter of the checks fail that way the run changes no issue at all.
+
+**Private is listed, not assumed.** oEmbed answers 401 both for a private video and for one whose creator turned embedding off, and the second still plays for a reader. So 401 is reported under its own heading for a person to open, and a video found to play goes in `EMBEDDING_OFF` in the script, with a date, so it does not reopen the issue every week. The first one there is the Random Noise Lights Out video on `solving-systems`.
+
+**The first run found two links that never worked.** Computerphile entries on `first-steps` and `three-ways-to-make-change` pointed at IDs YouTube has no record of, most likely written wrong when the pages were drafted. Both entries are removed rather than replaced: the channel is not on the list behind `planning/video-library/`, and both pages keep other reading.
+
+*Cost to change: low. One script, one workflow, one issue label. Removing the workflow stops the checks and leaves the script runnable by hand.*
+
+---
+
+**7.252 — 39 more videos from the list, on 36 pages that had none.** Josh, having watched every channel on the list: "we can certainly fill in some gaps". The same rules as 7.246, applied to the pages it left empty, searching every title in `planning/video-library/all-videos.csv` rather than only the picks.
+
+Two kinds of fit. Some pages have a twin in another course (`repeating-yourself` and `doing-it-again`, `making-decisions` and `choosing-a-path`, `sorting-a-hand-of-cards` and `putting-things-in-order`), and take the same video, since a reader only meets one of the pair. The rest get a video aimed at one section: Cramer's rule for "One formula for every pair", gradient descent and curve fitting for the two derivative projects, point-to-line distance for "Did the ball hit the player?", Russell's paradox for "Where the picture stops helping". The Tantacrul critique 7.246 left out now goes on `critique-and-reflection`.
+
+Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the list teaches those subjects. Filling them needs channels added to the list first.
+
+*Cost to change: low, as for 7.246.*
+
+---
+
+**7.253 — A fifth Simulation tutorial: a ball stepped forward in time.** Josh, after the video library: "I like the stepping forward in time", with MinuteLabs and Sebastian Lague as the models rather than Primer. `stepping-forward-in-time` drops a ball from Liberty Hall with Euler's method, checks it against the physics formula, shrinks the time step, and then makes the ball bounce. It goes last in the Simulation series, after the queue, which already moves in steps of time.
+
+**Nothing on the page is random.** The four pages before it all use chance. This one shows the other half of simulation, a rule run forward from where the last step finished, and its practice page asks whether a seed would change anything (it would not).
+
+**The error is shown, not hidden.** The page keeps the order of the two lines that most readers write first (move the ball, then change its velocity), because that order makes the error easy to see: the ball does not move in its first second, lands late by about one time step, and a perfectly bouncy ball climbs from 60 metres to 80. The practice page swaps the two lines, finds the ball losing height instead, and says that most games choose that order. The tutorial could have taught the better order from the start; it would then have had no error worth looking at.
+
+**Outcomes.** CMPS-LO3 and LO13 as the main ones; LO7, because the formula and the loop are two ways to get answers from one model; LO11 touched, since checking a simulation against a known answer is validation, but not against the real world, which the air-resistance challenge only points at. The comparison with the darts page (ten times the steps for one more decimal place, against a hundred times the darts) is deliberate: it is the first time the series compares two numerical methods by cost.
+
+*Cost to change: `stepping-forward-in-time` is a new id, and its cell ids become a contract once a class has used it. Moving it within the series is one line in `courses/computational-methods.yaml`.*
+
+---
+
+**7.255 — Data, Chance and Logic is reordered so each page builds on the one before, plays each game before counting it, and draws on the worlds' real data.** The content issue (#325), part of #306.
 
 **The order.** Sets, Venn diagrams, logic, counting, probability, three doors, statistics, charts, and a new making task, `a-chart-that-tells-the-truth`. Events are sets, so probability now comes after the pages that teach union, intersection and complement, and uses them by name: "or" is a union, and the addition rule is inclusion-exclusion with probabilities. With Venn diagrams before logic, a term had to be introduced where it is first used: the complement on Venn diagrams, De Morgan's laws, XOR and the truth table on logic. The Venn page states the two laws on sets without naming them, and the logic page names them. `dev/curriculum_map.py`'s "used before it was introduced" table is how those were found.
 

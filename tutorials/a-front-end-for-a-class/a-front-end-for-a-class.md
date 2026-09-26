@@ -450,3 +450,8 @@ Python Software Foundation. *The Python Tutorial*, section 7.1, "Fancier
 Output Formatting".
 <https://docs.python.org/3/tutorial/inputoutput.html>. How a front end
 can lay out what it shows, once plain `print()` is not enough.
+
+CrashCourse (2017). *Keyboards & Command Line Interfaces: Crash Course
+Computer Science #22.* <https://www.youtube.com/watch?v=4RPtJ9UyHS0>.
+Before windows and a mouse, people used programs the way this page's menu
+does: type something, read the answer. About eleven minutes.

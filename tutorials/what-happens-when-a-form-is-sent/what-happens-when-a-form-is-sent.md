@@ -213,3 +213,10 @@ sends, where it goes, and what has to be waiting at the other end.
 | *server* | A program on a computer connected to the internet, that receives requests and sends back replies | the program that reads a contact form |
 | *validation* | Checking that each answer is the kind of thing it should be. The browser's check helps the visitor. The server must check again. | `required`, `type="email"` |
 | *placeholder* | Grey example text inside a field, which disappears when the visitor types. It is not a label. | `placeholder="ana@example.com"` |
+
+## Where to read more
+
+CrashCourse (2017). *The Internet: Crash Course Computer Science #29.*
+<https://www.youtube.com/watch?v=AEaKrq3SpW8>. Where a form's answers
+travel after you press the button: to the right computer, in small
+packets, across many networks. Twelve minutes.

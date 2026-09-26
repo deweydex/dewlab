@@ -648,3 +648,9 @@ Python Software Foundation. *The Python Tutorial — More Control Flow
 Tools.* <https://docs.python.org/3/tutorial/controlflow.html>. The official
 reference for `for`, `range()`, and the rest of Python's looping tools,
 including a few this page does not have room for.
+
+Veritasium (2021). *The Simplest Math Problem No One Can Solve: Collatz
+Conjecture.* <https://www.youtube.com/watch?v=094y1Z2wpJg>. If a number is
+even, halve it; if it is odd, multiply it by 3 and add 1; repeat. Every
+number anyone has tried reaches 1, but nobody has proved that every number
+will. A `while` loop in four lines. About twenty-two minutes.

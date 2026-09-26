@@ -193,3 +193,10 @@ order of the transforms decides where each square goes.
 | `rotateX()` | Turns an element about a horizontal axis, tipping its top towards us or away from us | `transform: rotateX(90deg);` |
 | *transform order* | A list of transforms is applied from the right-hand end. In `rotateY(90deg) translateZ(50px)`, the push happens first and the turn second. | `rotateY(90deg) translateZ(50px)` |
 | `backface-visibility: hidden` | Stops an element being drawn when its back is towards us | `backface-visibility: hidden;` |
+
+## Where to read more
+
+CrashCourse (2017). *3D Graphics: Crash Course Computer Science #27.*
+<https://www.youtube.com/watch?v=TEAtmCYYKZA>. What the browser does for a
+3D cube, a game does for a whole world: turn every corner, then flatten it
+onto the screen. Twelve minutes.

@@ -553,3 +553,8 @@ Grant Sanderson (3Blue1Brown) (2017). *Essence of Calculus, Chapter 2: The
 Paradox of the Derivative.* <https://www.youtube.com/watch?v=9vKqVkMQHKk>.
 The same chords-closing-in-on-a-tangent picture this page draws, and why
 "instantaneous rate of change" is a stranger idea than it sounds.
+
+3Blue1Brown (2018). *The other way to visualize derivatives: Chapter 12,
+Essence of calculus.* <https://www.youtube.com/watch?v=CfW845LNObM>. A
+derivative drawn as how much a function stretches or squashes the numbers
+near a point, rather than as a slope. About fourteen minutes.

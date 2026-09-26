@@ -111,3 +111,10 @@ Solo that trade control for speed.
 | *deprecated* | Still understood by browsers, but no longer recommended, usually because CSS replaced it | `<center>`, `<font>` |
 | *website management system* | A tool that publishes your files or content as a website | GitHub Pages |
 | *content management system (CMS)* | A website management system that builds pages from a database and a theme | WordPress |
+
+## Where to read more
+
+CrashCourse (2017). *The World Wide Web: Crash Course Computer Science
+#30.* <https://www.youtube.com/watch?v=guvsH5OFizE>. Where the web came
+from: linked pages, the first browser, and search engines. About eleven
+minutes.

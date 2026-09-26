@@ -86,3 +86,9 @@ project is one of the more surprising things you can do.
 Google. *How to Do a Code Review*.
 <https://google.github.io/eng-practices/review/reviewer/>. The professional
 version of Part 2: what a reviewer looks for, and how to say it usefully.
+
+Tantacrul (2018). *Music Software & Bad Interface Design: Avid's
+Sibelius.* <https://www.youtube.com/watch?v=dKx1wnXClcI>. Martin Keary,
+who designs music software, reviews a well-known program in detail. It is
+a model for reading someone else's work closely and saying clearly what
+does not work, and why. About twenty-two minutes.

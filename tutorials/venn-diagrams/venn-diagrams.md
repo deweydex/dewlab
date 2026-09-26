@@ -583,3 +583,9 @@ pictures this page draws from real data, drawn by hand instead.
 Khan Academy. *Properties of Set Operations Using Venn Diagrams.*
 <https://www.youtube.com/watch?v=lWjmbch870g>. De Morgan's laws shaded on
 a diagram, which is where this page ends up.
+
+Up and Atom (2019). *Russell's Paradox: A Ripple in the Foundations of
+Mathematics.* <https://www.youtube.com/watch?v=xauCQpnbNAM>. A set of all
+sets that do not contain themselves: does it contain itself? Jade
+Tan-Holmes tells how this question shook mathematics. About fourteen
+minutes.

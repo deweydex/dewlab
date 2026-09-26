@@ -338,7 +338,8 @@ groups:
     intro: >
       Asking a machine for a number nobody could predict, and what becomes
       possible once you can: answering a question by running something
-      thousands of times and counting, rather than by solving it.
+      thousands of times and counting, rather than by solving it. Then
+      moving a model forward in time, one small step after another.
     tutorials:
       - what-are-the-chances
       - three-doors
@@ -346,6 +347,7 @@ groups:
       - counting-darts
       - a-model-that-corrects-itself
       - when-a-queue-never-clears
+      - stepping-forward-in-time
 
   - key: problem-solving-and-debugging
     name: Solving problems and finding faults

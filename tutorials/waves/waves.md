@@ -567,3 +567,13 @@ hides it a little.
 The dewlab page
 [Sine and cosine waves: amplitude, period and shift](tutorial:sine-and-cosine-waves)
 uses the four-letter form, and fits a wave to a year of daylight.
+
+MinutePhysics (2015). *Why It's Impossible to Tune a Piano.*
+<https://www.youtube.com/watch?v=1Hqm0dYKUx4>. An octave is a doubling,
+but twelve equal steps and the "nice" ratios between notes cannot all
+agree. Four minutes.
+
+Branch Education (2018). *What is Sound? The Fundamental Science Behind
+Sound.* <https://www.youtube.com/watch?v=24yESm63tSY>. What a sound wave
+is, and how its shape becomes what we hear, from a popping balloon to an
+orchestra. About ten minutes.
