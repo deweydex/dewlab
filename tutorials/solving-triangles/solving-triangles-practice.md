@@ -2,7 +2,11 @@
 title: "Solving triangles: the sine rule and the cosine rule — Practice"
 practice_for: solving-triangles
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  sea-and-sky: A boat, a harbour and a lighthouse. The numbers are made up.
+  planets-and-moons: How Aristarchus measured the Sun against the Moon.
+  fantasy-maps: A made-up kingdom's fields, measured by their sides. The numbers are made up.
 ---
 
 # Solving triangles: the sine rule and the cosine rule — Practice
@@ -98,17 +102,16 @@ screens are described by a ratio, and not only by a size.
 
 </details>
 
-**5.** You stand 50 m from the bottom of a mast. Your eyes are 1.6 m
-above the ground. From eye level, the top of the mast is 32° above the
+**5.** You stand 80 m from the bottom of a mast. Your eyes are 1.7 m
+above the ground. From eye level, the top of the mast is 25° above the
 horizontal. How tall is the mast?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$50\tan 32^\circ \approx 31.24$ m above eye level. Add the 1.6 m, and the
-mast is about 32.84 m tall.
+$80\tan 25^\circ \approx 37.30$ m above eye level. Add the 1.7 m, and
+the mast is about 39.0 m tall.
 
-The usual mistake here is to forget to add the eye height. A diagram
-helps you catch it.
+A diagram helps you remember to add the height of your eyes.
 
 </details>
 
@@ -138,14 +141,29 @@ what you were given.
 
 </details>
 
-**8.** A triangular plot of land has sides of 30 m and 45 m, with 62°
-between them. What is its area in hectares? (One hectare is
-10,000 m².)
+**8.** The cell finds the area of two triangles, each with sides 8
+and 10. The angle between the sides is 30° in one, and 150° in the
+other.
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: area-practice-1
+print(area(8, 10, 30))
+print(area(8, 10, 150))
+```
 
-$\frac{1}{2} \times 30 \times 45 \times \sin 62^\circ \approx 596.0$ m²,
-which is about 0.0596 hectares.
+```predict
+type: number
+tolerance: 0.01
+
+The first line prints about 20. What will the second line print?
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+It prints about 20 too. $\sin 150^\circ = \sin 30^\circ$, because
+sine has the same value for an angle and for 180° minus it. So the two
+triangles, one pointed and one wide open, have the same height, and the
+same area.
 
 </details>
 
@@ -199,18 +217,21 @@ a right angle.
 
 </details>
 
-**13.** A drone flies 200 m on a bearing of 040°. Then it flies 150 m on
-a bearing of 110°. How far is it from where it started?
+**13.** A ship sails 8 km on a bearing of 060°. Then it turns and sails
+5 km on a bearing of 150°. How far is it from where it started?
 
-<details class="dl-answer"><summary>answer</summary>
+<details class="dl-hint"><summary>hint</summary>
 
-The turn is $110 - 40 = 70^\circ$, so the angle inside the triangle is
-$180 - 70 = 110^\circ$.
+Draw it. What is the turn, and what is the angle inside the triangle?
 
-Then $\sqrt{200^2 + 150^2 - 2 \times 200 \times 150 \times \cos 110^\circ} \approx 288.1$ m.
+</details>
 
-It is hard to get the inside angle from the bearings. A sketch makes it
-quick.
+<details class="dl-answer"><summary>one way through it</summary>
+
+The turn is $150 - 60 = 90^\circ$, so the angle inside the triangle is
+$180 - 90 = 90^\circ$. A right angle means Pythagoras is enough:
+$\sqrt{8^2 + 5^2} = \sqrt{89} \approx 9.43$ km. The cosine rule gives
+the same, because $\cos 90^\circ = 0$.
 
 </details>
 
@@ -260,20 +281,42 @@ tool.
 
 </details>
 
-**17.** A triangle has a side of 8, a side of 6, and an angle of 40°
-opposite the 6. How many triangles fit that description?
+**17.** A side of 10 is opposite an angle of 40°, and another side is 8.
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: sine-rule-practice-1
+def side_side_angle(a, b, A):
+    """Every triangle with sides a and b, and the angle A opposite a."""
+    sine_of_B = round(b * math.sin(math.radians(A)) / a, 9)
+    if sine_of_B > 1:
+        return []
+    first = math.degrees(math.asin(sine_of_B))
+    return [B for B in sorted({first, 180 - first}) if 180 - A - B > 0]
 
-Two.
 
-$\sin(\text{other angle}) = \frac{8\sin 40^\circ}{6} \approx 0.857$, so
-the other angle is either 59° or 121°. Both have the same sine, and both
-give a real triangle.
+found = side_side_angle(10, 8, 40)
+print(found)
+print(len(found), "triangles")
+```
+
+```predict
+type: number
+
+How many triangles fit?
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+Only one. The sine rule gives the angle opposite the 8 as about 30.9°
+or 149.1°. With 149.1°, the three angles would be more than 180°, so
+that triangle cannot exist. Here the side opposite the known angle, 10,
+is longer than the other side, 8, and then there is only ever one
+triangle.
 
 </details>
 
-**18.** Why can this ambiguity not happen with the cosine rule?
+**18.** The sine rule can give two triangles. Why can that not happen
+with the cosine rule?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -286,43 +329,32 @@ $\theta$ and $180 - \theta$.
 
 </details>
 
-**19.** A triangle has a side of 12, a side of 9, and an angle of 35°
-opposite the 9. Is it ambiguous?
+**19.** A robot arm has an upper arm 3 long and a forearm 2 long. Which
+points can its hand reach? Which points can it reach in only one way?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes. $\sin(\text{other angle}) = \frac{12\sin 35^\circ}{9} \approx 0.765$,
-which gives 49.9° or 130.1°. Both leave a positive third angle, 95.1° or
-14.9°, so both are real triangles.
+The shoulder, the elbow and the hand make a triangle with sides 3 and
+2. The third side, from the shoulder to the hand, must be shorter than
+$3 + 2 = 5$ and longer than $3 - 2 = 1$. So the hand can reach every
+point between 1 and 5 from the shoulder: a ring.
 
-The case is ambiguous when two things are true. First, the side opposite
-the known angle (here 9) is shorter than the other known side (here 12).
-Second, it is still long enough to reach the third side: here it must be
-longer than $12\sin 35^\circ \approx 6.88$. A sketch shows this better
-than a rule.
+At exactly 5 the arm is straight, and at exactly 1 it is folded back on
+itself. Both are one way only. Everywhere between, the elbow can bend
+up or down, which gives two ways.
 
 </details>
 
 ## Putting it together
 
-**20.** A surveyor stands at a point A and measures the angle up to the
-top of a mast: 32°. She walks 50 m straight towards the mast and measures
-again: 47°. How tall is the mast?
+**20.** From the top of a lighthouse 45 m high, a boat is 8° below the
+horizontal. How far is the boat from the foot of the lighthouse?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Look at the triangle made by the two places she stood and the top of the
-mast.
-
-1. The angle at A is 32°.
-2. The angle at the second place, inside the triangle, is
-   $180 - 47 = 133^\circ$.
-3. So the angle at the top is $180 - 32 - 133 = 15^\circ$.
-
-Use the sine rule. The distance from the second place to the top is
-$\frac{50 \times \sin 32^\circ}{\sin 15^\circ} \approx 102.4$ m.
-
-Then the height is $102.4 \times \sin 47^\circ \approx 74.9$ m.
+The angle at the boat, looking up, is also 8°. The height is opposite
+it, and the distance is adjacent to it:
+$\frac{45}{\tan 8^\circ} \approx 320$ m.
 
 </details>
 
@@ -355,5 +387,145 @@ def possible(a, b, c):
 `possible(1, 2, 10)` is `False`. If you give those sides to the cosine
 rule, `acos` stops with a `math domain error`. The error means the same
 thing, but it explains it less clearly.
+
+</details>
+
+## Your world
+
+**23.** A problem from the world you chose.
+
+<div class="dl-world" data-world="sea-and-sky">
+
+A boat leaves the harbour and sails 6 km on a bearing of 070°. A
+lighthouse is 4 km from the harbour, on a bearing of 130°. How far is
+the boat from the lighthouse? Can you write
+`apart(first_km, first_bearing, second_km, second_bearing)`, for any two
+places given from the same starting point?
+
+```python exec
+id: your-world-1--sea-and-sky
+# Your code here.
+```
+
+```hint
+Both places are measured from the harbour. What is the angle between
+the two bearings, at the harbour?
+```
+
+```inputs
+apart(6, 70, 4, 130)
+apart(3, 0, 4, 90)
+```
+
+```solution
+def apart(first_km, first_bearing, second_km, second_bearing):
+    between = abs(second_bearing - first_bearing)
+    return cosine_rule_side(first_km, second_km, between)
+---
+The angle at the harbour is 60°, so the distance is
+$\sqrt{36 + 16 - 48\cos 60^\circ} = \sqrt{28} \approx 5.29$ km. Due
+north and due east, 3 km and 4 km, are 5 km apart.
+```
+
+</div>
+
+<div class="dl-world" data-world="planets-and-moons">
+
+About 2,300 years ago, Aristarchus of Samos saw that when the Moon is
+exactly half lit, the angle at the Moon, between the Earth and the Sun,
+is a right angle. He measured the angle at the Earth, between the Moon
+and the Sun, as 87°. Then the Sun is $\frac{1}{\cos 87^\circ}$ times
+as far away as the Moon. Can you write `how_many_times(angle)`? The
+angle is really about 89.85°. What does that change?
+
+```python exec
+id: your-world-1--planets-and-moons
+# Your code here.
+```
+
+```hint
+Draw the Earth, the Moon and the Sun, with the right angle at the Moon.
+The Earth-Sun line is the hypotenuse. Which side is adjacent to the
+angle at the Earth?
+```
+
+```inputs
+how_many_times(87)
+how_many_times(89.85)
+```
+
+```solution
+def how_many_times(angle):
+    return 1 / math.cos(math.radians(angle))
+---
+With 87°, the Sun is about 19 times as far as the Moon. With 89.85°,
+it is about 382 times. Near 90°, a tiny change in the angle makes a
+huge change in the answer, because the cosine is close to 0. The method
+was right, and the angle was too hard to measure by eye.
+```
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+A triangular field in the kingdom has sides of 250 m, 310 m and 400 m.
+Nobody measured its angles. What is its area? Can you write
+`field_area(a, b, c)` for any three sides?
+
+```python exec
+id: your-world-1--fantasy-maps
+# Your code here.
+```
+
+```hint
+The area formula needs two sides and the angle between them. Which rule
+finds an angle from three sides?
+```
+
+```inputs
+field_area(250, 310, 400)
+field_area(300, 400, 500)
+```
+
+```solution
+def field_area(a, b, c):
+    angle = cosine_rule_angle(a, b, c)
+    return area(a, b, angle)
+---
+The angle opposite the 400 m side is about 90.5°, so the field is
+about 38,700 m², nearly 4 hectares. The 300-400-500 field is a 3-4-5
+triangle made 100 times bigger, with an area of 60,000 m².
+```
+
+</div>
+
+## From earlier
+
+**24.** From
+[Distance and Pythagoras: how far apart two points are](tutorial:distance-and-pythagoras).
+A triangle has corners at $(1, 1)$, $(7, 1)$ and $(4, 5)$. What are its
+three angles?
+
+<details class="dl-answer"><summary>one way through it</summary>
+
+The sides are 6, 5 and 5, from the distance formula. The angle opposite
+the 6 is `cosine_rule_angle(5, 5, 6)`, about 73.74°. The other two are
+equal, because the triangle is isosceles: about 53.13° each. The three
+add up to 180°.
+
+</details>
+
+**25.** From
+[Straight lines: slope, and the line that breaks the formula](tutorial:slope-and-lines).
+The lines $y = x$ and $y = -x$ have slopes 1 and $-1$, which multiply to
+$-1$. Arrows along them go to $(1, 1)$ and $(1, -1)$. What angle does
+the cosine rule give between the arrows?
+
+<details class="dl-answer"><summary>answer</summary>
+
+Both arrows have length $\sqrt{2}$, and the tips are 2 apart.
+`cosine_rule_angle(math.sqrt(2), math.sqrt(2), 2)` prints a number very
+close to 90. The slope rule and the cosine rule agree: the lines are
+perpendicular.
 
 </details>

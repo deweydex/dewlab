@@ -1,0 +1,15 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "the derivative of sin x is cos x"
+    kind: formula
+    definition: >
+      The slope of the sine wave is the cosine wave, and the slope of the
+      cosine wave is minus the sine wave, when x is in radians. On the
+      unit circle, the up value grows at the rate of the across value.
+  - term: fastest rate of a wave
+    kind: formula
+    definition: >
+      A wave with amplitude A and period P changes fastest where it crosses
+      its midline, at a rate of A times 2*pi, divided by P. At the top and
+      the bottom its slope is 0.
+    example: "Dublin's daylight: 4.55 * 2 * pi / 365 hours a day, about 4.7 minutes a day"

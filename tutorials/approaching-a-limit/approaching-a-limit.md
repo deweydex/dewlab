@@ -1,7 +1,7 @@
 ---
 title: "Limits: getting closer without arriving"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   a-hole-in-a-line:
     covers: [MIT-3.5]
@@ -11,6 +11,12 @@ covers:
     covers: [MIT-3.5]
   why-we-need-limits:
     covers: [MIT-3.5]
+  limits-in-your-world:
+    covers: [MIT-3.5]
+worlds:
+  sea-and-sky: A harbour lock, draining. The numbers are made up.
+  planets-and-moons: A ball dropped on the Moon, where things fall more slowly.
+  fantasy-maps: A stone from the castle's catapult. The numbers are made up.
 ---
 
 # Limits: getting closer without arriving
@@ -117,7 +123,7 @@ From below, the answers climb towards 2. From above, they fall towards
 2. Neither side ever *reaches* 2, because neither side ever reaches 1.
 
 (You may notice long tails of digits, such as `1.990000000000001`. Those
-are tiny rounding errors in the computer's arithmetic. We come back to
+are tiny rounding errors in the computer's arithmetic. We return to
 them at the end of the page.)
 
 A *limit* is the value a function gets closer and closer to as its
@@ -218,7 +224,7 @@ ax.set_title("No limit at zero, in either direction")
 ```
 
 You have met this shape twice before. In
-[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances),
+[Straight lines: slope, and the line that breaks the formula](tutorial:slope-and-lines),
 a vertical line had no slope. In
 [The unit circle: sine, cosine and tangent](tutorial:the-unit-circle),
 the tangent function had no value at 90 degrees. All three have the
@@ -345,6 +351,122 @@ id: your-turn-2
 # Your code here.
 ```
 
+## Limits in your world
+
+<div class="dl-world" data-world="sea-and-sky">
+
+A harbour lock is draining. Its depth is $(3 - 0.1t)^2$ metres, $t$
+minutes after the gates open. How fast is the depth changing at
+$t = 10$? Can you write `rate_at(t)`, using a gap that shrinks, as
+`average_speed` did? What does a negative answer mean here?
+
+```python exec
+id: limits-in-your-world-1--sea-and-sky
+def depth(t):
+    return (3 - 0.1 * t) ** 2
+```
+
+```hint
+Divide the change in depth over a small gap by the gap. Try smaller and
+smaller gaps, and watch where the answers are going.
+```
+
+```inputs
+round(rate_at(10), 3)
+round(rate_at(0), 3)
+```
+
+```solution
+def rate_at(t, gap=1e-7):
+    return (depth(t + gap) - depth(t)) / gap
+
+
+for gap in [1, 0.1, 0.01, 0.001]:
+    print(gap, (depth(10 + gap) - depth(10)) / gap)
+---
+The answers move towards $-0.4$. At $t = 10$ the depth is falling by
+0.4 metres a minute. The minus sign says it is falling, not rising. At
+the start, $t = 0$, it falls faster: 0.6 metres a minute.
+```
+
+</div>
+
+<div class="dl-world" data-world="planets-and-moons">
+
+On the Moon, a dropped ball falls about $0.81t^2$ metres in $t$ seconds.
+How fast is it falling after 3 seconds? Can you write `speed_at(t)`,
+using a gap that shrinks, as `average_speed` did? How does it compare
+with the 29.4 m/s on the Earth?
+
+```python exec
+id: limits-in-your-world-1--planets-and-moons
+def moon_fallen(t):
+    return 0.81 * t ** 2
+```
+
+```hint
+Divide the distance fallen over a small gap by the gap. Try smaller and
+smaller gaps, and watch where the answers are going.
+```
+
+```inputs
+round(speed_at(3), 3)
+round(speed_at(1), 3)
+```
+
+```solution
+def speed_at(t, gap=1e-7):
+    return (moon_fallen(t + gap) - moon_fallen(t)) / gap
+
+
+for gap in [1, 0.1, 0.01, 0.001]:
+    print(gap, (moon_fallen(3 + gap) - moon_fallen(3)) / gap)
+---
+The answers move towards 4.86. After 3 seconds the ball is falling at
+4.86 m/s, about a sixth of the 29.4 m/s it would have on the Earth. The
+Moon pulls about a sixth as hard.
+```
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+A stone leaves the castle's catapult going straight up. Its height is
+$20t - 4.9t^2$ metres after $t$ seconds. How fast is it going after 1
+second? After 3? Can you write `speed_at(t)`, using a gap that shrinks,
+as `average_speed` did? What does a negative speed mean here?
+
+```python exec
+id: limits-in-your-world-1--fantasy-maps
+def height(t):
+    return 20 * t - 4.9 * t ** 2
+```
+
+```hint
+Divide the change in height over a small gap by the gap. Try smaller
+and smaller gaps, and watch where the answers are going.
+```
+
+```inputs
+round(speed_at(1), 3)
+round(speed_at(3), 3)
+```
+
+```solution
+def speed_at(t, gap=1e-7):
+    return (height(t + gap) - height(t)) / gap
+
+
+for gap in [1, 0.1, 0.01, 0.001]:
+    print(gap, (height(1 + gap) - height(1)) / gap)
+---
+After 1 second the stone is rising at 10.2 m/s. After 3 seconds the
+answer is $-9.4$: the stone is falling, at 9.4 m/s. Between the two, at
+about 2.04 seconds, the speed is 0. That is the top of its flight.
+```
+
+</div>
+
 ## A warning about trying it with numbers
 
 Everything above worked by computing values and looking at them. That is
@@ -405,6 +527,57 @@ digits again, but this time there was no error. A wrong number that
 looks like an answer is much harder to catch than a calculation that
 stops.
 
+### How small should the gap be?
+
+A big gap gives a chord that is not the tangent. A tiny gap runs out of
+digits. So there must be a best gap somewhere between. The next cell
+measures the error, how far each answer is from 29.4, for every gap
+from 1 down to $10^{-16}$, and draws them. Both axes use a log scale, as
+in [Charts: choosing the right chart for your data](tutorial:pictures-worth-numbers):
+each step of the grid is ten times the one before, so that tiny numbers
+and big ones fit on one picture.
+
+```python exec
+id: how-small-should-the-gap-be-1
+gaps = [10 ** -k for k in range(17)]
+errors = [abs(average_speed(3, gap) - 29.4) for gap in gaps]
+
+fig, ax = plt.subplots(figsize=(7, 4))
+ax.plot(gaps, errors, "o-")
+ax.set_xscale("log")
+ax.set_yscale("log")
+ax.invert_xaxis()
+ax.set_xlabel("gap (getting smaller to the right)")
+ax.set_ylabel("error: distance from 29.4")
+ax.grid(alpha=0.3)
+ax.set_title("The error, for every gap")
+```
+
+```predict
+type: choice
+
+As the gap gets smaller, what will the errors do?
+
+- Keep getting smaller
+  - A smaller gap gives a chord closer to the tangent, so every answer
+    should be better than the last.
+- Get smaller, then bigger again
+- Stay about the same
+```
+
+The errors make a V. On the left, where the gaps are big, the error is
+about 4.9 times the gap, because the chord is not yet the tangent. Each
+gap ten times smaller makes the error ten times smaller. On the right,
+where the gaps are tiny, the arithmetic runs out of digits, and the
+error grows as the gap shrinks. The bottom of the V, at a gap of about
+$10^{-7}$ or $10^{-8}$, is the best this way of measuring can do. There
+the answer is right to about six decimal places. The last point, at
+$10^{-16}$, is the silent 0.0: the error is the whole 29.4.
+
+The next page measures slopes with a gap of `1e-6`, and a better way of
+measuring, with one point on each side. That gap is near the bottom of
+that method's own V.
+
 You met the same problem on the practice page for
 [Variables, data types and text](tutorial:storing-and-computing). There,
 `0.1 + 0.2 == 0.3` gave `False`, because two floats that should have
@@ -415,31 +588,45 @@ So we use the numbers to *see* what the answer is, and we use algebra to
 the function is $x + 1$, so the limit is exactly 2, with no
 approximation anywhere.
 
-## Reflection
+## Looking back
 
-A limit is the value a function is moving towards, whether or not it
-ever gets there.
-
-**A limit is about the numbers near a point, not the point itself.** The
-function does not need a value where we are asking. Often the
-interesting cases are exactly the ones where it has none.
-
-**Both sides have to agree**, or there is no limit.
-
-**Some limits do not exist.** On this page we met two ways that
-happens. The two sides can move towards different numbers, as the jump
-did. Or the values can grow without end, as $\dfrac{1}{x}$ did near 0.
-
-**Limits make the next tutorial possible.** "How fast is it
-changing right now?" is $\dfrac{0}{0}$ if we ask it directly. A limit
-makes it a question we can answer. That is the subject of
-[Derivatives: the rate of change of a curve](tutorial:rates-of-change).
-
-**Numbers show you the answer. Algebra proves it.** And past about
-fifteen decimal places, the numbers stop showing you anything at all.
+A limit is the value a function moves towards, whether or not it ever
+gets there. It is about the numbers near a point, not the point itself,
+and both sides have to agree. Some limits do not exist. A limit turns
+"how fast is it changing right now?", which is $\dfrac{0}{0}$ if we ask
+it directly, into a question we can answer. Numbers show you the
+answer, and algebra proves it. Past about fifteen decimal places, the
+numbers stop showing you anything.
 
 In a few sentences, in your own words: what is the difference between
 "$f(1) = 2$" and "the limit of $f(x)$ as $x$ approaches 1 is 2"?
+
+A challenge: the best gap for the ball at $t = 3$ was about $10^{-8}$.
+Is it the same for the ball at $t = 100$, or for a car whose distance is
+$2t^3$ at $t = 2$? Can you draw the V for each, and find where its
+bottom moves?
+
+```python challenge
+import matplotlib.pyplot as plt
+
+
+def fallen(t):
+    return 4.9 * t ** 2
+
+
+def average_speed(f, t, gap):
+    return (f(t + gap) - f(t)) / gap
+
+
+gaps = [10 ** -k for k in range(17)]
+errors = [abs(average_speed(fallen, 100, gap) - 980) for gap in gaps]
+
+fig, ax = plt.subplots()
+ax.plot(gaps, errors, "o-")
+ax.set_xscale("log")
+ax.set_yscale("log")
+ax.invert_xaxis()
+```
 
 ## Where to read more
 
