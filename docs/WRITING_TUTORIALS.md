@@ -1390,6 +1390,7 @@ Beyond ordinary Python, a cell can use:
 | `show_table(frame, max_rows=20, caption=None)` | Render a DataFrame as a table. Long frames are truncated, and say so. |
 | `text_input(label, value="", id=None)` | A text box. Read what was typed with `.value`. |
 | `dropdown(label, options, value=None, id=None)` | A menu. Also read with `.value`. |
+| `slider(label, low, high, step=None, value=None, id=None)` | A slider. Moving it runs the cell again, so a plot drawn from `.value` follows the thumb. `.value` is a number: an `int` when `low`, `high` and `step` are whole numbers. |
 | `button(label, on_click)` | A button that calls your function, appending output below itself. Only in a downloaded copy of a page: see below. |
 | `image_input(label="Choose an image", id=None)` | A picker limited to image files. `.value` is a Pillow `Image`, or the raw bytes where Pillow is not loaded. Only in a downloaded copy of a page: see below. |
 | `await load_csv(name)` | Load a CSV into a DataFrame: a dataset from `data/` (live where it can be, see [Datasets](#datasets)), or a full URL. |
@@ -1403,13 +1404,36 @@ that is not part of how the page works.
 `button()` and `image_input()` need Python on the page's own thread. On the
 site, a page runs Python in a background Worker (`DECISIONS_LOG.md` 7.77), so
 both raise a `RuntimeError` that says so; only a downloaded copy, which runs
-Python on the page's thread, can use them. `text_input()` and `dropdown()`
-work everywhere: their values reach the Worker as messages. A page that wants
+Python on the page's thread, can use them. `text_input()`, `dropdown()` and
+`slider()` work everywhere: their values reach the Worker as messages. A page that wants
 a reader to act and see the result uses a box or a menu, and the cell's own
 Run button in place of a Go button, as `a-front-end-for-a-class` does.
 
 Widgets keep their values when a cell is re-run, so a student can type an answer,
 press Run, and still see what they typed.
+
+**A slider runs its own cell.** Each move runs the cell again, with at most
+one run in flight: a drag takes whatever value the thumb has when each run
+starts, and one more run follows the last move. So keep a slider's cell
+quick — a plot and a line or two of arithmetic, not a data load. The slider
+sits in a strip just above the cell's output, which a run never clears, so
+the thumb stays under the reader's pointer while the plot is redrawn; that
+also means it appears above anything the cell prints, wherever in the code
+`slider()` is called. Where the reader left it is saved with the page, and
+the first run after a reload reads it. A run started by a slider counts as
+exploring, not as an attempt: it reveals no staged hint and settles no
+prediction.
+
+```python
+amp = slider("Amplitude", 0.0, 3.0, value=1.0)
+x = np.linspace(0, 4 * np.pi, 300)
+plt.plot(x, amp.value * np.sin(x))
+plt.ylim(-3.2, 3.2)
+plt.show()
+```
+
+Fix the axis limits, as `plt.ylim` does here. Left to matplotlib, the axes
+rescale with every move and the curve looks as if it never changes.
 
 **Two of the four widgets need Python on the page's own thread, and the
 hosted site runs it in a Worker** (`DECISIONS_LOG.md` 7.77 — that Worker is

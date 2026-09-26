@@ -62,9 +62,14 @@ sense.
    (`_copy_namespace`, `_same`, `_statements`): what **Compare with a
    solution** runs (#312). It took the place of `check()`, which told a
    reader right or not yet and was retired in #314.
-10. **Widgets** — `text_input`, `dropdown`, `button`, `image_input`, and
-    the shared machinery behind them (`_widget_id`, `_Widget`,
-    `_mount_widget`, `_require_dom_sink`).
+10. **Widgets** — `text_input`, `dropdown`, `slider`, `button`,
+    `image_input`, and the shared machinery behind them (`_widget_id`,
+    `_Widget`, `_mount_widget`, `_require_dom_sink`). `slider` returns a
+    `_Slider`, whose `.value` always reads the remembered value, never the
+    element: the page moves a live slider out of the output into its
+    cell's strip, and sends every slider's value in before each run
+    (`seedSliders()` and `reconcileSliders()` in `tutorial-runtime.js`,
+    #329).
 11. **Shared data** — `load_csv`, `load_text`, and `run_query`; `load_text`
     sits right after `load_csv` and fetches the same way (the shared
     `/data/` folder, or a full URL), returning the file's contents as a

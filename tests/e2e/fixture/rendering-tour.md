@@ -260,3 +260,12 @@ id: tools-widget-roundtrip
 answer = text_input("Answer", value="42", id="answer")
 print("answer is", answer.value)
 ```
+
+A slider runs its own cell again each time it moves, so this prints the new
+amplitude without anyone pressing Run.
+
+```python exec
+id: tools-slider
+amp = slider("Amplitude", 1, 5, value=2, id="amp")
+print("amplitude is", amp.value)
+```

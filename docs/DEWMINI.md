@@ -136,6 +136,7 @@ copied:
 | `show_table(frame, max_rows=20, caption=None)` | Show a DataFrame or Series as a table |
 | `text_input(label="", value="", id=None)` | A text box — read what was typed with `.value`. **See the note below.** |
 | `dropdown(label="", options=(), value=None, id=None)` | A menu — read the choice with `.value`. **See the note below.** |
+| `slider(label="", low=0, high=10, step=None, value=None, id=None)` | A slider — read where it is with `.value`. On a tutorial page moving it runs the cell again; here it does not yet, and `.value` reads the value it was drawn with. |
 | `button(label="Go", on_click=None, id=None)` | A button that calls a function when pressed. **See the note below.** |
 | `image_input(label="Choose an image", id=None)` | A file picker for an image — read the picked file with `.value`. **See the note below.** |
 | `await load_csv(name, **read_csv_kwargs)` | Load a CSV from dewlab's shared data folder, if one is there: live from its source where the dataset has one, with the saved copy as the backup, and a line under the cell saying which |
