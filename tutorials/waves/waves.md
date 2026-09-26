@@ -508,8 +508,8 @@ for start, end in [(-85, 86), (95, 266), (275, 361)]:
         slopes_out.append(math.tan(math.radians(angle)))
     plt.plot(angles, slopes_out, color="tab:blue")
 
-plt.axhline(0, color="grey")
 plt.ylim(-6, 6)
+plt.axhline(0, color="grey")
 ```
 
 The tangent is periodic too, but it repeats every $180^\circ$, not

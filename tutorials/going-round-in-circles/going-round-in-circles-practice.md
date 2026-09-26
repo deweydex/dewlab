@@ -387,8 +387,8 @@ for day in range(361):
     moon_xs.append(planet_x + around_x)
     moon_ys.append(planet_y + around_y)
 
-plt.plot(moon_xs, moon_ys)
 plt.axis("equal")
+plt.plot(moon_xs, moon_ys)
 ```
 
 The path is a large circle with 11 small loops in it, like a flower.

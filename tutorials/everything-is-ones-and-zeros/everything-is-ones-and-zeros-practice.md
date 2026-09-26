@@ -513,8 +513,8 @@ print(darker)
 
 colours = ["#FF8800", darker]
 plt.figure(figsize=(4, 2))
-plt.bar(colours, [1, 1], color=colours)
 plt.yticks([])
+plt.bar(colours, [1, 1], color=colours)
 ```
 
 This prints `#7F4400` and draws the orange beside a brown. The halves
