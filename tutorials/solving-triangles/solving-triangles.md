@@ -1,9 +1,11 @@
 ---
 title: "Solving triangles: the sine rule and the cosine rule"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   when-there-is-a-right-angle:
+    covers: [MIT-4.9]
+  heights-you-cannot-reach:
     covers: [MIT-4.9]
   area-and-the-height-nobody-drew:
     covers: [MIT-4.8]
@@ -13,18 +15,25 @@ covers:
     covers: [MIT-4.10]
   putting-it-together:
     covers: [MIT-4.9, MIT-4.10]
+  triangles-in-your-world:
+    covers: [MIT-4.9, MIT-4.10]
+worlds:
+  sea-and-sky: A lighthouse, seen through a sextant from a boat. The numbers are made up.
+  planets-and-moons: Venus and Mercury, and how far each is from the Sun.
+  fantasy-maps: Surveying a made-up kingdom with triangles. The numbers are made up.
 ---
 
 # Solving triangles: the sine rule and the cosine rule
 
-We know some of a triangle's sides and angles. Can we find the rest?
-This whole page is about that question.
+A lighthouse stands on flat ground. You cannot climb it, and you have no
+tape long enough. You stand 50 m from its foot, and the top is 35
+degrees above the horizontal. How tall is it?
 
-"Solving a triangle" may sound strange the first time you hear it. Until
-now, solving has meant finding an unknown in an equation. *Solving a
-triangle* means finding its missing measurements. A triangle has three
-sides and three angles. You are told three of these six things, and you
-find the other three.
+We know some of a triangle's sides and angles. Can we find the rest?
+This whole page is about that question. Until now, solving has meant
+finding an unknown in an equation. *Solving a triangle* means finding
+its missing measurements. A triangle has three sides and three angles.
+You are told three of these six things, and you find the other three.
 
 There are three cases. They come in the order you would try them:
 
@@ -40,13 +49,9 @@ same information as case 2: two sides and the angle between them.
 ## When there is a right angle
 
 This is the easiest case. It uses only what you already have: Pythagoras
-from [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances),
+from [Distance and Pythagoras: how far apart two points are](tutorial:distance-and-pythagoras),
 and sine, cosine and tangent from
 [The unit circle: sine, cosine and tangent](tutorial:the-unit-circle).
-
-The unit circle had radius 1. A right-angled triangle is the same picture
-made bigger: the hypotenuse is a radius of a bigger circle. That is why
-the ratios do not depend on how big the triangle is.
 
 The cell below draws a right-angled triangle from its two short sides.
 It uses `math.atan2(opposite, adjacent)` to find the angle from those two
@@ -87,7 +92,7 @@ The *opposite* side is the side across the triangle from that angle. The
 the longest side, as before.
 
 Three ratios of these sides have names. Are they the same three as on
-the circle? Run the cell to compare.
+the circle?
 
 ```python exec
 id: when-there-is-a-right-angle-2
@@ -103,9 +108,34 @@ print("opposite / adjacent   =", opposite / adjacent,
       "   and tan of the angle =", math.tan(angle))
 ```
 
-They match because of the circle. Make the unit circle bigger, by
-the length of the hypotenuse. The coordinates grow by the same amount, so
-the *ratios* stay exactly what they were.
+They match because of the circle. The hypotenuse is a radius, 5 long,
+of a circle 5 times the size of the unit circle. Making the circle
+bigger makes both coordinates bigger by the same amount, so the
+*ratios* stay what they were on the unit circle.
+
+What happens to the ratio if the whole triangle is ten times bigger,
+with sides 40, 30 and 50?
+
+```python exec
+id: when-there-is-a-right-angle-3
+print(3 / 5)      # opposite / hypotenuse, sides 4, 3 and 5
+print(30 / 50)    # opposite / hypotenuse, sides 40, 30 and 50
+```
+
+```predict
+type: choice
+
+What will the second line print, beside the first line's 0.6?
+
+- 6.0
+  - Every side is ten times longer, so the ratio could be too.
+- 0.6
+- 0.06
+  - Ten times bigger could mean ten times smaller for a ratio.
+```
+
+Both lines print 0.6. The angle is the same, so the ratios are the
+same, however big the triangle is.
 
 | Ratio | Name | In a formula |
 |---|---|---|
@@ -119,8 +149,8 @@ $\frac{3}{5} = 0.6$.
 
 Many people remember the table with the memory aid SOH-CAH-TOA: Sine is
 Opposite over Hypotenuse, Cosine is Adjacent over Hypotenuse, Tangent is
-Opposite over Adjacent. It helps you remember, but it is not the idea.
-The idea is that a right-angled triangle is a piece of a circle.
+Opposite over Adjacent. It helps you remember the table. The idea behind
+it is that a right-angled triangle is a piece of a circle.
 
 ### Going backwards
 
@@ -132,10 +162,10 @@ angle. In Python it is `math.asin`. The inverse cosine and inverse
 tangent are `math.acos` and `math.atan`. All three give their answer in
 radians, so we use `math.degrees` to turn it into degrees.
 
-What angle do you expect to have a sine of 0.5? Run the cell to check.
+What angle do you expect to have a sine of 0.5?
 
 ```python exec
-id: when-there-is-a-right-angle-3
+id: when-there-is-a-right-angle-4
 print("The angle whose sine is 0.5:", math.degrees(math.asin(0.5)))
 print("The angle whose tangent is 1:", math.degrees(math.atan(1)))
 ```
@@ -143,17 +173,84 @@ print("The angle whose tangent is 1:", math.degrees(math.atan(1)))
 The first answer prints as `30.000000000000004`. That tiny extra is a
 rounding effect of decimals in Python. Read it as 30.
 
-### Your turn
+## Heights you cannot reach
 
-A robot arm segment is 40 cm long. It is raised at 35 degrees from the
-horizontal.
+Now we can answer the lighthouse. You, the foot of the lighthouse and
+its top make a right-angled triangle. The 50 m along the ground is the
+side adjacent to your 35 degrees. The height is the opposite side. Which
+ratio uses the opposite and the adjacent sides? Tangent.
 
-1. How far out from its base does the tip reach?
-2. How high is the tip?
+The angle up from the horizontal to something above you is its *angle
+of elevation*. Your eyes are about 1.6 m above the ground, so the
+triangle starts at eye level, and we add the 1.6 m at the end.
 
 ```python exec
-id: your-turn-1
-# Your code here.
+id: heights-you-cannot-reach-1
+distance_away = 50      # metres, along the ground
+elevation = 35          # degrees, up from the horizontal
+eyes = 1.6              # metres
+
+height = distance_away * math.tan(math.radians(elevation)) + eyes
+print("The lighthouse is about", round(height, 1), "m tall.")
+```
+
+It works the other way down, too. From the top of a cliff 60 m high, a
+boat is 12 degrees below the horizontal. This is the *angle of
+depression*. The boat, the foot of the cliff and the top of the cliff
+make a right-angled triangle, and the 12 degrees is at the top. How far
+out is the boat?
+
+```python exec
+id: heights-you-cannot-reach-2
+cliff = 60          # metres
+depression = 12     # degrees, down from the horizontal
+
+print("The boat is about", round(cliff / math.tan(math.radians(depression))), "m out.")
+```
+
+The angle at the boat, looking up at the cliff top, is also 12 degrees,
+because the horizontal at the top and the sea are parallel. So the cliff
+is the side opposite the boat's angle, and the distance out is the
+adjacent side.
+
+### Your turn
+
+A house is 8 m wide. Its roof has two sloping sides, each at 35 degrees
+to the flat, meeting at the top in the middle. How long is each sloping
+side, from the wall to the top? How high is the top above the walls?
+Can you write `roof(width, pitch)`, which returns both, for any width
+and angle in degrees?
+
+```python exec
+id: heights-you-cannot-reach-3
+def roof(width, pitch):
+    """The length of one sloping side, and the height of the top above the walls."""
+    # Your code here.
+```
+
+```hint
+Draw it. Each half of the roof is a right-angled triangle. Which side of
+that triangle do you know, and which ratio joins it to each side you
+want?
+```
+
+```inputs
+roof(8, 35)
+roof(8, 45)
+roof(10, 20)
+```
+
+```solution
+def roof(width, pitch):
+    """The length of one sloping side, and the height of the top above the walls."""
+    half = width / 2
+    angle = math.radians(pitch)
+    return half / math.cos(angle), half * math.tan(angle)
+---
+Each half is a right-angled triangle with an adjacent side of half the
+width, 4 m. Each sloping side is about 4.88 m long, and the top is about
+2.80 m above the walls. At 45 degrees the height is the same as the half
+width, 4 m, because $\tan 45^\circ = 1$.
 ```
 
 ## Area, and the height nobody drew
@@ -162,19 +259,12 @@ The area of a triangle is half the base times the height. That is easy
 when somebody has drawn the height in for you. Most of the time, nobody
 has.
 
-```python exec
-id: area-and-the-height-nobody-drew-1
-# A triangle where the height is obvious: base along the bottom, apex above it.
-base, height = 6, 4
-print("Half base times height:", 0.5 * base * height)
-```
-
-Now here is a triangle described the way triangles usually are: by **two
+Here is a triangle described the way triangles usually are: by **two
 sides and the angle between them**. The dashed orange line is the height.
 How could we find its length?
 
 ```python exec
-id: area-and-the-height-nobody-drew-2
+id: area-and-the-height-nobody-drew-1
 def draw_from_two_sides(a, b, angle_degrees):
     """Two sides meeting at a known angle, with the height drawn in."""
     angle = math.radians(angle_degrees)
@@ -198,9 +288,9 @@ print("The height is:", height)
 print("b sin C is:   ", 5 * math.sin(math.radians(50)))
 ```
 
-There it is. The height is $b\sin C$: the second side times the sine of
-the angle between the two sides. This is SOH-CAH-TOA again, used on the
-small right-angled triangle that the dashed line makes. In that small
+The height is $b\sin C$: the second side times the sine of the angle
+between the two sides. This is SOH-CAH-TOA again, used on the small
+right-angled triangle that the dashed line makes. In that small
 triangle, $b$ is the hypotenuse and the height is the side opposite $C$.
 
 So the area is half the base times the height:
@@ -211,7 +301,7 @@ For the triangle above, that is
 $\frac{1}{2} \times 7 \times 5 \times \sin 50^\circ \approx 13.41$.
 
 ```python exec
-id: area-and-the-height-nobody-drew-3
+id: area-and-the-height-nobody-drew-2
 def area(a, b, angle_degrees):
     return 0.5 * a * b * math.sin(math.radians(angle_degrees))
 
@@ -226,17 +316,27 @@ print("a right angle:", area(6, 4, 90), "and half base times height:", 0.5 * 6 *
 
 The formula $\frac{1}{2}ab\sin C$ is half the base times the height.
 The height is calculated for you from the information you were given.
-It is not a new fact.
 
 ### Your turn
 
 A plot of land is a triangle. Two of its sides are 30 m and 45 m, with
-an angle of 62 degrees between them. What is its area?
+an angle of 62 degrees between them. What is its area? Which angle
+between those two sides would give the biggest area?
 
 ```python exec
 id: your-turn-2
 # Your code here.
 ```
+
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one answer. Yours may be different and work too.
+
+`area(30, 45, 62)` is about 596 square metres. The biggest area comes
+at 90 degrees, 675 square metres, because $\sin 90^\circ = 1$ is the
+biggest a sine can be.
+
+</details>
 
 ## The cosine rule
 
@@ -351,13 +451,16 @@ print("Distance from home:", round(cosine_rule_side(first_leg, second_leg, inter
 
 ### Your turn
 
-A vector here is an arrow from the origin to a point. Take two vectors:
-one to $(4, 1)$ and one to $(1, 4)$. What is the angle between them? The
-cosine rule can find it.
+A vector here is an arrow from the origin to a point. Three people each
+give two films a score out of 5, and each person's two scores make a
+vector: Aoife gives $(5, 1)$, Ben gives $(4, 2)$, and Chidi gives
+$(1, 5)$. The smaller the angle between two vectors, the more alike
+the two people's tastes. Which two people are most alike?
 
-You already have all three sides of the triangle. Two sides are the
-lengths of the vectors, which `distance` gives you. The third side is the
-distance between the two tips.
+Can you write `angle_between(u, v)` with the cosine rule? You already
+have all three sides of the triangle. Two sides are the lengths of the
+vectors, which `distance` gives you. The third side is the distance
+between the two tips.
 
 ```python exec
 id: your-turn-3
@@ -365,12 +468,39 @@ def distance(p, q):
     return math.sqrt((q[0] - p[0]) ** 2 + (q[1] - p[1]) ** 2)
 
 
-# Your code here.
+aoife, ben, chidi = (5, 1), (4, 2), (1, 5)
+
+
+def angle_between(u, v):
+    """The angle, in degrees, between the arrows from the origin to u and v."""
+    # Your code here.
 ```
 
-Recommendation systems often ask for the angle between two lists of
-numbers. Two people's ratings are two vectors. The angle between them
-shows how similar their taste is.
+```hint
+The triangle has corners at the origin, at `u` and at `v`. Which side is
+opposite the angle you want?
+```
+
+```inputs
+angle_between(aoife, ben)
+angle_between(aoife, chidi)
+angle_between(ben, chidi)
+```
+
+```solution
+def angle_between(u, v):
+    """The angle, in degrees, between the arrows from the origin to u and v."""
+    origin = (0, 0)
+    return cosine_rule_angle(distance(origin, u), distance(origin, v), distance(u, v))
+---
+The angle is opposite the side between the two tips. Aoife and Ben are
+about 15 degrees apart, Aoife and Chidi about 67, and Ben and Chidi
+about 52. Aoife and Ben are most alike.
+```
+
+Recommendation systems often ask this question with long lists of
+numbers: two people's ratings of hundreds of films are two vectors, and
+the angle between them shows how similar their tastes are.
 
 ## The sine rule, and its two answers
 
@@ -396,8 +526,9 @@ sides, angles = build(5, 7, 55)
 print("sides: ", [round(s, 3) for s in sides])
 print("angles:", [round(x, 3) for x in angles], " sum:", round(sum(angles), 6))
 print()
-for side, angle in zip(sides, angles):
-    print(f"side {side:>7.3f}  /  sin(angle) = {side / math.sin(math.radians(angle)):.6f}")
+for i in range(3):
+    ratio = sides[i] / math.sin(math.radians(angles[i]))
+    print(f"side {sides[i]:>7.3f}  /  sin(angle) = {ratio:.6f}")
 ```
 
 We get the same number, all three times.
@@ -427,23 +558,93 @@ print(sine_rule_side(10, 40, 65))
 
 ### Two answers, both right
 
-Here is something new. You have seen two correct answers before, with
-quadratic equations. Now it happens with a triangle: one correct
-calculation gives two correct triangles.
+You have seen two correct answers before, with quadratic equations. Now
+it happens with a triangle: one correct calculation gives two correct
+triangles.
 
 Suppose you know a side of 8, another side of 6, and that the angle
-opposite the 6 is 40 degrees. Where is the third corner?
+opposite the 6 is 40 degrees. Put the corner with the 40 degrees at the
+origin, and the side of 8 going up from it at 40 degrees. The side of 6
+hangs from the top of the 8, and it must reach the flat line along the
+bottom. Watch it swing. Where can it reach the line?
 
 ```python exec
 id: the-sine-rule-and-its-two-answers-3
+from matplotlib.animation import FuncAnimation
+
+top = (8 * math.cos(math.radians(40)), 8 * math.sin(math.radians(40)))
+swings = [math.radians(-170 + 160 * k / 23) for k in range(24)]
+
+figure, stage = plt.subplots(figsize=(5, 2.8))
+stage.plot([-1, 12], [0, 0], color="black", linewidth=1)
+stage.plot([0, top[0]], [0, top[1]], linewidth=2, color="tab:blue")
+rim = [math.radians(-180 + k) for k in range(181)]
+stage.plot([top[0] + 6 * math.cos(t) for t in rim],
+           [top[1] + 6 * math.sin(t) for t in rim], ":", color="grey")
+reach = math.sqrt(6 ** 2 - top[1] ** 2)
+for x in [top[0] - reach, top[0] + reach]:
+    stage.plot([x], [0], "o", color="tab:red")
+stage.set_aspect("equal")
+stage.axis("off")
+side, = stage.plot([], [], linewidth=2, color="tab:orange")
+
+
+def draw_step(k):
+    t = swings[k]
+    side.set_data([top[0], top[0] + 6 * math.cos(t)],
+                  [top[1], top[1] + 6 * math.sin(t)])
+
+
+FuncAnimation(figure, draw_step, frames=24, interval=150)
+```
+
+The orange side is 6 long. As it swings, its end draws the grey dotted
+curve, and that curve crosses the flat line twice, at the two red dots.
+Each red dot is a place for the third corner. So two triangles fit the
+same three facts.
+
+What if the swinging side were a different length? Move the slider.
+How short can it be and still reach the line? For which lengths does
+only one triangle fit?
+
+```python exec
+id: the-sine-rule-and-its-two-answers-6
+length = slider("length of the swinging side", 4.0, 9.0, step=0.1, value=6.0)
+side_length = length.value
+
+fig, ax = plt.subplots(figsize=(6, 3.4))
+ax.plot([-4, 16], [0, 0], color="black", linewidth=1)
+ax.plot([0, top[0]], [0, top[1]], linewidth=2, color="tab:blue")
+rim = [math.radians(k) for k in range(361)]
+ax.plot([top[0] + side_length * math.cos(t) for t in rim],
+        [top[1] + side_length * math.sin(t) for t in rim], ":", color="grey")
+
+corners = []
+if side_length >= top[1]:
+    reach = math.sqrt(side_length ** 2 - top[1] ** 2)
+    corners = sorted({x for x in [top[0] - reach, top[0] + reach] if x > 0})
+for x in corners:
+    ax.plot([0, x, top[0]], [0, 0, top[1]], color="tab:orange")
+    ax.plot([x], [0], "o", color="tab:red")
+ax.set_xlim(-4, 16)
+ax.set_ylim(-4, 15)
+ax.set_aspect("equal")
+ax.axis("off")
+print(len(corners), "triangles")
+```
+
+The sine rule finds both. It gives the angle opposite the 8, from its
+sine. `math.asin` returns one angle, and 180 minus that angle has the
+same sine, so that is a second answer.
+
+```python exec
+id: the-sine-rule-and-its-two-answers-4
 fig, ax = plt.subplots(figsize=(8, 4.5))
 
 known_angle = 40
 known_opposite = 6
 other_side = 8
 
-# The angle opposite the 8 comes from the sine rule. asin gives one angle,
-# and 180 minus that angle has the same sine, so it is a second answer.
 ratio = known_opposite / math.sin(math.radians(known_angle))
 sine_of_other = other_side / ratio
 first = math.degrees(math.asin(sine_of_other))
@@ -458,9 +659,7 @@ print("Both have the same sine:", math.sin(math.radians(first)),
 for angle, style, name in [(first, "-", "acute"), (second, "--", "obtuse")]:
     third = 180 - known_angle - angle
     base = sine_rule_side(known_opposite, known_angle, third)
-    tip = (other_side * math.cos(math.radians(known_angle)),
-           other_side * math.sin(math.radians(known_angle)))
-    ax.plot([0, base, tip[0], 0], [0, 0, tip[1], 0], style, linewidth=2,
+    ax.plot([0, base, top[0], 0], [0, 0, top[1], 0], style, linewidth=2,
             label=f"{name}: third angle {third:.1f} deg")
 
 ax.set_aspect("equal")
@@ -479,33 +678,19 @@ on the way up and over the top, the wave reaches every height between 0
 and 1 twice.
 
 ```python exec
-id: the-sine-rule-and-its-two-answers-4
+id: the-sine-rule-and-its-two-answers-5
 for angle in [30, 150, 50, 130]:
     print(f"sin({angle:>4}) = {math.sin(math.radians(angle)):.6f}")
 ```
 
 This is called the *ambiguous case*. One correct calculation gives two
 correct answers. It is part of the method, not a mistake. You decide
-which triangle you meant. The answer usually comes from
-something you know about the real situation, which the three numbers did
-not include.
+which triangle you meant. The answer usually comes from something you
+know about the real situation, which the three numbers did not include.
 
 The cosine rule does not have this problem. Cosine is negative for obtuse
 angles (between 90° and 180°) and positive for acute ones (less than
 90°). So cosine can tell them apart, and sine cannot.
-
-### Your turn
-
-You know a side of 12, a side of 9, and an angle of 35 degrees opposite
-the 9. Is this case ambiguous?
-
-1. Think it through first, and write your reasoning as a comment.
-2. Then do the calculation, and check both possible angles.
-
-```python exec
-id: your-turn-4
-# Your reasoning as a comment, then the calculation.
-```
 
 ## Putting it together
 
@@ -525,7 +710,7 @@ def side_side_angle(a, b, A):
     # Rounded, because floats are not exact: sin(30) is not quite 0.5.
     sine_of_B = round(b * math.sin(math.radians(A)) / a, 9)
     if sine_of_B > 1:
-        return "No triangle fits: side a is too short to reach."
+        return []    # side a is too short to reach
     first = math.degrees(math.asin(sine_of_B))
     triangles = []
     for B in sorted({first, 180 - first}):   # a set, so 90 is not counted twice
@@ -538,11 +723,27 @@ def side_side_angle(a, b, A):
 print(side_side_angle(6, 8, 40))
 ```
 
+Here is a new case. A side of 9 is opposite an angle of 35 degrees, and
+another side is 12. How many triangles fit?
+
+```python exec
+id: putting-it-together-2
+found = side_side_angle(9, 12, 35)
+print(found)
+print(len(found), "triangles")
+```
+
+```predict
+type: number
+
+How many triangles will `side_side_angle` find?
+```
+
 Now we write one function that picks the right rule for what you were
 given.
 
 ```python exec
-id: putting-it-together-2
+id: putting-it-together-3
 def solve(a=None, b=None, c=None, A=None, B=None, C=None):
     """Fill in what is missing, from whatever three things are known.
 
@@ -578,44 +779,240 @@ should be a 90 in it. Is there? The cosine rule found the right angle
 without being told.
 
 Now look at the last one. It is a list, with two triangles in it: the
-two from the ambiguous case, with a side of 6, a side of 8, and 40
-degrees opposite the 6. The function returns both, and does not choose.
-The three numbers cannot choose either. You have to choose.
+two from the ambiguous case. The function returns both, and does not
+choose. The three numbers cannot choose either. You have to choose.
 
 ### Your turn
 
 A surveyor stands at a point and measures the angle up to the top of a
 mast: 32 degrees. She walks 50 m straight towards the mast and measures
-again: 47 degrees. How tall is the mast?
-
-It helps to draw it first. There is a triangle in the drawing with one
-side of 50 m and two angles you can find.
+again: 47 degrees. How tall is the mast? Can you write
+`mast_height(first, second, walked)` for any two angles and any walk?
 
 ```python exec
-id: your-turn-5
-# Your code here.
+id: putting-it-together-4
+def mast_height(first, second, walked):
+    """The height of a mast, from two angles of elevation and the walk between."""
+    # Your code here.
 ```
 
-## Reflection
+```hint
+Draw it first. There is a triangle with one side of 50 m: the two
+places the surveyor stood, and the top of the mast. What are its angles?
+```
 
-We know some of a triangle and we find the rest. Which tool we use
-depends on which parts we were given.
+```hint
+after: 3 errors
+title: The steps
 
-**A right angle needs nothing new.** We use Pythagoras and the three
-ratios, and the ratios are the unit circle made bigger.
+1. The angle at the first place is 32 degrees.
+2. The angle at the second place, inside that triangle, is
+   $180 - 47 = 133$ degrees.
+3. So the angle at the top of the mast is $180 - 32 - 133 = 15$
+   degrees, which is $47 - 32$.
+4. The sine rule gives the side from the second place to the top.
+5. That side is the hypotenuse of a right-angled triangle, and the
+   height is opposite the 47 degrees.
+```
 
-**$\frac{1}{2}ab\sin C$ is half base times height.** $b\sin C$ is the
-height that nobody drew in.
+```inputs
+mast_height(32, 47, 50)
+mast_height(30, 60, 100)
+```
 
-**The cosine rule is Pythagoras with a correction.** The correction is
-zero at 90 degrees.
+```solution
+def mast_height(first, second, walked):
+    """The height of a mast, from two angles of elevation and the walk between."""
+    at_top = second - first
+    nearer = sine_rule_side(walked, at_top, first)
+    return nearer * math.sin(math.radians(second))
+---
+The angle at the top of the mast is $47 - 32 = 15$ degrees. The side
+opposite it is the 50 m walk, so the sine rule gives the side from the
+second place to the top: about 102.4 m. The height is that times
+$\sin 47^\circ$, about 74.9 m. With 30 and 60 degrees and a walk of
+100 m, the mast is about 86.6 m tall.
+```
 
-**The sine rule can give two answers**, because sine gives the same value
-for an angle and for 180 minus that angle. Both triangles are real.
-Arithmetic cannot choose between them.
+## Triangles in your world
+
+<div class="dl-world" data-world="sea-and-sky">
+
+A sextant measures the angle between two things, very exactly. Sailors
+used it to find how far they were from a lighthouse whose height they
+knew. A lighthouse's light is 40 m above the sea. From a boat, the
+light is 2.5 degrees above the sea. How far is the boat from the
+lighthouse? Can you write `distance_off(height, angle)`?
+
+```python exec
+id: triangles-in-your-world-1--sea-and-sky
+light_height = 40    # metres above the sea
+```
+
+```hint
+The sea, the lighthouse and your line of sight make a right-angled
+triangle. Which side do you know, and which do you want?
+```
+
+```inputs
+distance_off(40, 2.5)
+distance_off(40, 1)
+distance_off(40, 45)
+```
+
+```solution
+def distance_off(height, angle):
+    return height / math.tan(math.radians(angle))
+---
+The boat is about 916 m from the lighthouse. A smaller angle means a
+bigger distance: at 1 degree it is about 2.3 km. At 45 degrees the
+distance is the height, 40 m.
+```
+
+</div>
+
+<div class="dl-world" data-world="planets-and-moons">
+
+Venus is closer to the Sun than the Earth is, so from the Earth it never
+seems far from the Sun in the sky. The biggest angle between them, seen
+from the Earth, is about 46.3 degrees. At that moment, our line of sight
+just touches Venus's orbit, so the angle at Venus, between the Sun and
+the Earth, is a right angle. The Earth is 1 AU from the Sun. How far
+from the Sun is Venus? Can you write `orbit_radius(biggest_angle)`, in
+AU? Mercury's biggest angle is about 22.8 degrees.
+
+```python exec
+id: triangles-in-your-world-1--planets-and-moons
+earth_to_sun = 1    # AU
+```
+
+```hint
+Draw the Sun, the Earth and Venus, with the right angle at Venus. Which
+side is the hypotenuse? Which side is opposite the angle at the Earth?
+```
+
+```inputs
+orbit_radius(46.3)
+orbit_radius(22.8)
+```
+
+```solution
+def orbit_radius(biggest_angle):
+    return earth_to_sun * math.sin(math.radians(biggest_angle))
+---
+Venus is about 0.72 AU from the Sun, and Mercury about 0.39 AU. The
+Earth-Sun line is the hypotenuse, and the Sun-Venus line is opposite
+the angle at the Earth. Copernicus used this triangle in the 1500s,
+long before anybody could measure these distances directly.
+```
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+The kingdom's surveyors map it with triangles. Two towers stand 5 km
+apart, on a *baseline* they measured carefully. From the first tower, a
+far mountain top is 62 degrees from the baseline. From the second, it
+is 71 degrees. How far is the mountain from each tower? Can you write
+`survey(baseline, first_angle, second_angle)`?
+
+```python exec
+id: triangles-in-your-world-1--fantasy-maps
+baseline = 5    # km between the towers
+```
+
+```hint
+What is the third angle, at the mountain? Which side is opposite it?
+```
+
+```inputs
+survey(5, 62, 71)
+survey(5, 60, 60)
+```
+
+```solution
+def survey(baseline, first_angle, second_angle):
+    at_mountain = 180 - first_angle - second_angle
+    from_first = sine_rule_side(baseline, at_mountain, second_angle)
+    from_second = sine_rule_side(baseline, at_mountain, first_angle)
+    return from_first, from_second
+---
+The angle at the mountain is 47 degrees, and the baseline is opposite
+it. The sine rule gives about 6.46 km from the first tower and about
+6.04 km from the second. With 60 and 60 degrees, the triangle is
+equilateral, and both are 5 km. Real maps were made this way, one
+triangle next to another, from a single measured baseline.
+```
+
+</div>
+
+## Going further: a robot arm
+
+A robot arm has two parts: an upper arm 3 long and a forearm 2 long,
+joined at an elbow. Its shoulder is at the origin. How does it reach the
+point $(4, 1)$?
+
+The shoulder, the elbow and the point make a triangle, and we know all
+three sides: 3, 2, and the distance to the point. So the cosine rule
+gives the angle at the shoulder. The elbow can bend either way, so
+there are two ways to reach the point: elbow up and elbow down.
+
+```python exec
+id: going-further-a-robot-arm-1
+upper, forearm = 3, 2
+target = (4, 1)
+reach = math.sqrt(target[0] ** 2 + target[1] ** 2)
+
+pointing = math.degrees(math.atan2(target[1], target[0]))
+at_shoulder = cosine_rule_angle(upper, reach, forearm)
+
+fig, ax = plt.subplots(figsize=(5, 4))
+for shoulder, name in [(pointing + at_shoulder, "elbow up"),
+                       (pointing - at_shoulder, "elbow down")]:
+    elbow = (upper * math.cos(math.radians(shoulder)),
+             upper * math.sin(math.radians(shoulder)))
+    ax.plot([0, elbow[0], target[0]], [0, elbow[1], target[1]], "o-", label=name)
+ax.set_aspect("equal")
+ax.grid(alpha=0.3)
+ax.legend()
+print("upper arm at", round(pointing + at_shoulder, 1), "or",
+      round(pointing - at_shoulder, 1), "degrees")
+```
+
+Try other targets. Which points can the arm not reach at all, and what
+does `cosine_rule_angle` do there? Where are the only points it can reach
+in just one way?
+
+## Looking back
+
+We know some of a triangle, and we find the rest. A right angle needs
+only the three ratios. Two sides and the angle between them, or three
+sides, need the cosine rule. A side and the angle opposite it need the
+sine rule, and it can give two answers.
 
 Look back at the three cases at the top of this page. Which one do you
-think you would meet most often, and where? Write a few sentences.
+think you would meet most often, and where?
+
+A challenge: `solve` handles four combinations. Can you add a fifth: two
+angles and the side between them? A surveyor's baseline and two angles
+is this case.
+
+```python challenge
+import math
+
+
+def sine_rule_side(known_side, known_angle_degrees, wanted_angle_degrees):
+    ratio = known_side / math.sin(math.radians(known_angle_degrees))
+    return ratio * math.sin(math.radians(wanted_angle_degrees))
+
+
+def two_angles_and_side_between(A, B, c):
+    """The triangle with angles A and B, and the side c between them."""
+    # Your code here.
+
+
+print(two_angles_and_side_between(62, 71, 5))
+```
 
 ## Where to read more
 
