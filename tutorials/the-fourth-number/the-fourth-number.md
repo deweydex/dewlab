@@ -1,7 +1,10 @@
 ---
 title: "Homogeneous coordinates and the projection matrix"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
+worlds:
+  starships: Starships, and the structures they are built from.
+  space-scenes: Stars, planets and the paths they take across the sky.
 covers:
   a-move-no-matrix-can-make:
     covers: [CMPS-LO4]
@@ -155,7 +158,7 @@ hint: Take each row of rotate_y(angle) and add a 0 on the end, then add the row 
 
 ```inputs
 rotation_y(0)
-rotation_y(math.radians(90))     # 6e-17 is 0, give or take rounding
+rotation_y(math.radians(90))     # 6e-17 is 0, apart from rounding
 ```
 
 ```solution
@@ -368,6 +371,167 @@ gone?
 id: field-of-view-4
 hint: Copy the loop from the cell above and change near and far. Compare the converted depths of 10 and 20.
 ```
+
+<details class="dl-answer"><summary>the same in NumPy</summary>
+
+In [NumPy](tutorial:matrices-in-numpy) the whole camera is three
+matrices joined with `@`, and the divide by $w$ is one line:
+
+```python
+import numpy as np
+
+cube4_array = np.array(cube4, dtype=float)
+camera_array = np.array(projection(60, near=1, far=20)) @ np.array(place)
+out = camera_array @ cube4_array
+screen = out[:2] / out[3]
+print(out.shape, screen.shape)
+```
+
+`out` has one column for each of the 8 corners and a row for each of
+$x$, $y$, $z$ and $w$, so its shape is `(4, 8)`. `out[:2] / out[3]`
+divides the first two rows by the $w$ row, every corner at once.
+
+</details>
+
+## Your world
+
+Placing copies with one matrix each, in the world you chose.
+
+<div class="dl-world" data-world="starships">
+
+A castle wall has three towers in a row, 3 units apart. Each tower is a
+copy of the cube, placed with its own matrix. Can you make the three
+matrices, from `translation` and `rotation_y`, and draw all three
+towers through one camera? Turn the middle one 45°, so it faces you
+corner first.
+
+```python exec
+id: fourth-your-world--starships
+```
+
+```hint
+Each tower's matrix is `multiply(translation(x, 0, 10), rotation_y(angle))`:
+turn on the spot, then move out. Then draw
+`divide_by_w(multiply(multiply(projection(60, near=1, far=30), matrix), cube4))`
+with `draw_edges(..., limit=1)` for each.
+```
+
+```solution
+{{include: setup/cube.py}}
+
+
+def with_ones(points):
+    return points + [[1] * len(points[0])]
+
+
+def translation(dx, dy, dz):
+    return [[1, 0, 0, dx], [0, 1, 0, dy], [0, 0, 1, dz], [0, 0, 0, 1]]
+
+
+def rotation_y(angle):
+    rows = [row + [0] for row in rotate_y(angle)]
+    return rows + [[0, 0, 0, 1]]
+
+
+def projection(fov_degrees, near, far):
+    f = 1 / math.tan(math.radians(fov_degrees) / 2)
+    return [[f, 0, 0, 0], [0, f, 0, 0],
+            [0, 0, (far + near) / (far - near), -2 * far * near / (far - near)],
+            [0, 0, 1, 0]]
+
+
+def divide_by_w(points):
+    xs, ys, zs, ws = points
+    return [[x / w for x, w in zip(xs, ws)], [y / w for y, w in zip(ys, ws)]]
+
+
+cube4 = with_ones(cube)
+lens = projection(60, near=1, far=30)
+plt.figure(figsize=(5, 5))
+for x, degrees in [(-3, 0), (0, 45), (3, 0)]:
+    tower = multiply(translation(x, 0, 10), rotation_y(math.radians(degrees)))
+    draw_edges(divide_by_w(multiply(multiply(lens, tower), cube4)), limit=1)
+---
+Here is one answer. Yours may be different and work too. Three towers
+need three matrices and one lens. The middle tower was turned on the
+spot before it was moved, so it stays in line with the other two.
+```
+
+</div>
+
+<div class="dl-world" data-world="space-scenes">
+
+A planet goes round a star at a distance of 4. Its matrix is "move out
+4, then turn about the star". Then the whole system is tipped 30°
+towards you, so you look down on the orbit, and moved 14 units in front
+of the camera. Can you draw the planet, a cube, at no turn, a quarter,
+a half and three quarters, all in one picture, with the star as a cube
+at the centre?
+
+```python exec
+id: fourth-your-world--space-scenes
+```
+
+```hint
+The planet's matrix is `multiply(system, multiply(rotation_y(angle),
+translation(4, 0, 0)))`, where `system` tips and moves the whole scene.
+The matrix nearest the points acts first, so the planet moves out, then
+turns about the star, then the whole system is tipped and moved.
+`rotation_x` is `rotate_x` made 4×4, as `rotation_y` was.
+```
+
+```solution
+{{include: setup/cube.py}}
+
+
+def with_ones(points):
+    return points + [[1] * len(points[0])]
+
+
+def translation(dx, dy, dz):
+    return [[1, 0, 0, dx], [0, 1, 0, dy], [0, 0, 1, dz], [0, 0, 0, 1]]
+
+
+def rotation_y(angle):
+    rows = [row + [0] for row in rotate_y(angle)]
+    return rows + [[0, 0, 0, 1]]
+
+
+def projection(fov_degrees, near, far):
+    f = 1 / math.tan(math.radians(fov_degrees) / 2)
+    return [[f, 0, 0, 0], [0, f, 0, 0],
+            [0, 0, (far + near) / (far - near), -2 * far * near / (far - near)],
+            [0, 0, 1, 0]]
+
+
+def rotation_x(angle):
+    rows = [row + [0] for row in rotate_x(angle)]
+    return rows + [[0, 0, 0, 1]]
+
+
+def divide_by_w(points):
+    xs, ys, zs, ws = points
+    return [[x / w for x, w in zip(xs, ws)], [y / w for y, w in zip(ys, ws)]]
+
+
+cube4 = with_ones(cube)
+lens = projection(60, near=1, far=30)
+system = multiply(translation(0, 0, 14), rotation_x(math.radians(-30)))
+plt.figure(figsize=(5, 5))
+draw_edges(divide_by_w(multiply(multiply(lens, system), cube4)), color="C1", limit=1)
+for turn in [0, 0.25, 0.5, 0.75]:
+    planet = multiply(system, multiply(rotation_y(turn * 2 * math.pi), translation(4, 0, 0)))
+    draw_edges(divide_by_w(multiply(multiply(lens, planet), cube4)), limit=1)
+---
+The star is in the middle. With no turn the planet is on the right. At
+a quarter turn it has come round to the front, so it is drawn largest
+and lowest. At a half turn it is on the left, and at three quarters it
+is behind the star, small and high. Swap the turn and the move, and the
+planet would turn on the spot, 4 units out, instead of going round the
+star.
+```
+
+</div>
 
 ## Reflection
 

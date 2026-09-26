@@ -1,0 +1,24 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: painter's algorithm
+    kind: concept
+    definition: >
+      Drawing a scene from the farthest thing to the nearest, so that near
+      things are drawn over far ones, the way a painter paints the hills
+      before the trees in front of them.
+  - term: "chain(a, b, c)"
+    kind: function
+    definition: >
+      One 4×4 matrix that does every matrix given. The last one acts
+      first, because it is nearest the points.
+    example: "chain(projection(60), translation(0, 0, 8), rotation_y(math.radians(30)))"
+  - term: "place(shape, matrix)"
+    kind: function
+    definition: >
+      A copy of a shape, a pair of points and edges, moved by a 4×4 matrix.
+  - term: "combine(shapes)"
+    kind: function
+    definition: >
+      One shape made of several. It adds the number of corners already in
+      the scene to each edge of the next shape, so every edge still joins
+      the right corners.

@@ -67,7 +67,7 @@ Here is each of your functions beside its one line in NumPy:
 
 Your functions take lists, and NumPy takes arrays. `np.allclose(x, y)`
 is `True` when two grids have the same shape and every pair of numbers
-is equal, give or take rounding. It accepts lists and arrays.
+is equal, apart from rounding. It accepts lists and arrays.
 
 ```python exec
 id: one-line-each-2

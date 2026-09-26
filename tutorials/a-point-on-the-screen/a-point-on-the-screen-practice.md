@@ -2,7 +2,7 @@
 title: "Perspective projection: dividing by depth — Practice"
 practice_for: a-point-on-the-screen
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
 ---
 
 # Perspective projection: dividing by depth — Practice
@@ -93,5 +93,50 @@ $y' / 2 = y / z$, so $y' = 2 \times 1.5 / 6 = 0.5$. In the same way
 $x' = 2 \times 3 / 6 = 1$. Both numbers are twice what they were in
 problem 1. When the glass moves twice as far away, everything is drawn twice
 as big, which is what a zoom lens does.
+
+</details>
+
+## Very near
+
+**5.** A post from $y = -1$ to $y = 1$ stands at depth 0.5, closer than
+the glass. Where are its ends on the screen?
+
+```python exec
+id: very-near-1
+print(project(0, -1, 0.5), project(0, 1, 0.5))
+```
+
+```predict
+Where do the post's ends land?
+
+- Between -1 and 1, like the other posts
+  - Every post so far fitted on the screen.
+- Beyond -1 and 1, off the edge of a screen that runs from -1 to 1
+  - Dividing by a number smaller than 1 makes it bigger.
+- At 0
+  - It is very close to the eye.
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+At $-2$ and $2$. Dividing by 0.5 doubles a number, so the post is drawn
+twice its real height, and its ends are off the edge of a screen that
+runs from $-1$ to $1$. The closer a thing comes, the bigger it is drawn,
+without any limit, until the depth reaches 0.
+
+</details>
+
+## From earlier
+
+**6.** From *Reading an error message*. What does `project(1, 1, 0)` do,
+and which line does the traceback point to?
+
+<details class="dl-answer"><summary>answer</summary>
+
+It raises `ZeroDivisionError: division by zero`, and the traceback's
+last lines point to `return x / z, y / z`, the line inside `project`
+that divides. The line that called it, `project(1, 1, 0)`, is above it
+in the traceback. The mistake is in the call, a depth of 0, but Python
+reports it where the division failed.
 
 </details>
