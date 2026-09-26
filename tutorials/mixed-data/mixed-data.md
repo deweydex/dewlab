@@ -1,22 +1,25 @@
 ---
 title: "Mixed problems: data, chance and logic"
 practice_across:
+  - sets-as-sorted-lists
+  - venn-diagrams
+  - logic-and-truth
   - counting-carefully
   - what-are-the-chances
+  - three-doors
   - making-sense-of-data
   - pictures-worth-numbers
-  - sets-as-sorted-lists
-  - logic-and-truth
-  - venn-diagrams
+  - a-chart-that-tells-the-truth
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
 ---
 
 # Mixed problems: data, chance and logic
 
-Counting, probability, sets and logic often turn out to be the same
-subject, seen from four sides. These problems move between them on
-purpose.
+Sets, logic, counting, chance and data often turn out to be the same
+subject, seen from different sides. These problems move between them on
+purpose, and do not say which page each one comes from: choosing the
+tool is part of the problem.
 
 Each answer is hidden in a fold under its question. Some problems also
 have a hint fold, to open first if you get stuck. When you can simulate
@@ -26,26 +29,34 @@ yourself: which one is answering the wrong question?
 ## Tools
 
 This cell loads the modules the problems use, and defines one helper:
-
-- `simulate(trial)` runs the function `trial` 100,000 times, and gives
-  the fraction of runs that came out `True`.
-
-The last line tries two things. `math.comb(52, 5)` counts the five-card
-hands in a pack of 52. The simulation estimates the chance of rolling a
-6 on one die, which should be close to $\frac{1}{6} \approx 0.167$.
+`simulate(trial)` runs a function of yours 100,000 times, and gives the
+share of runs that came out `True`. The last line tries it on `six`,
+which rolls one die, so the answer should be close to
+$\frac{1}{6} \approx 0.167$.
 
 ```python exec
 id: tools-1
-import math, random, statistics
+import math
+import random
+import statistics
 from collections import Counter
 
 
-def simulate(trial, n=100000):
-    """Proportion of n runs of `trial` that come out True."""
-    return sum(1 for _ in range(n) if trial()) / n
+def simulate(trial, n=100_000):
+    """Run trial() n times, and give the share of the runs that returned True."""
+    wins = 0
+    for run in range(n):
+        if trial():
+            wins = wins + 1
+    return wins / n
 
 
-print(math.comb(52, 5), simulate(lambda: random.randrange(6) == 0))
+def six():
+    """One trial: roll a die, and say whether it came up 6."""
+    return random.randint(1, 6) == 6
+
+
+print(simulate(six))
 ```
 
 ## Counting into probability
@@ -79,54 +90,51 @@ times the work.
 
 </details>
 
-**3.** Four cards are dealt from a pack of 52. What is the probability
-that they are all different suits?
+**3.** Five dice are rolled. What is the probability of exactly two
+sixes?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Deal the cards one at a time. At each step, ask what has to be true.
-2. The first card can be anything. What fraction of the cards that are
-   left keeps the second card in a new suit?
-3. Continue for the third and fourth cards. The bottom numbers get
-   smaller, because cards have gone.
-4. Now count a second way. How many four-card *hands* have one card of
-   each suit? And how many four-card hands are there in total?
+1. Pick one particular way it could happen: the first two dice are
+   sixes, and the other three are not. What is the chance of that one
+   way?
+2. How many ways are there to choose which two of the five dice are the
+   sixes?
+3. Each of those ways has the same chance. Put the two together.
 
-**Think about:** the two routes look completely different, and they
-give the same number. When they do not, one of them has mixed up
-ordered sequences with unordered hands.
+**Think about:** why multiply by the number of ways, and not add?
 
-**Try this next:** what is the probability that four cards are all
-*different ranks*? The shape is the same, with different numbers.
+**Try this next:** check your answer with `simulate` and a trial that
+rolls five dice and counts the sixes.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-About 0.1055.
+About 0.161.
 
-Dealing one card at a time:
-$\dfrac{52}{52} \times \dfrac{39}{51} \times \dfrac{26}{50} \times \dfrac{13}{49}$.
-After each card, one more suit is used up.
-
-Counting hands instead of sequences gives the same answer:
-$\dfrac{13^4}{C(52,4)} = \dfrac{28561}{270725}$. Two ways of counting
-give one answer, and that is the check.
+One particular way, sixes on the first two dice only, has chance
+$\left(\frac{1}{6}\right)^2 \left(\frac{5}{6}\right)^3 =
+\frac{125}{7{,}776}$. There are $C(5, 2) = 10$ ways to choose which two
+dice are the sixes, and they cannot happen together, so their chances
+add: $10 \times \frac{125}{7{,}776} = \frac{1{,}250}{7{,}776} \approx
+0.161$. That is the binomial distribution, with $n = 5$ and
+$p = \frac{1}{6}$.
 
 </details>
 
-**4.** How many different five-card hands contain exactly two aces?
+**4.** Ten students choose three of themselves to give a talk. How many
+ways can they choose? And how many if the three have different jobs:
+one speaks, one runs the slides, and one takes questions?
 
 <details class="dl-answer"><summary>answer</summary>
 
-103,776.
+120, and 720.
 
-Choose 2 aces from the 4, and 3 other cards from the 48 that are not
-aces: $C(4,2) \times C(48,3) = 6 \times 17{,}296 = 103{,}776$.
-
-The probability is about 0.0399. When a choice has separate parts,
-multiply the number of ways for each part. That counting move makes
-most card problems manageable.
+With no jobs, only who is chosen matters: $C(10, 3) = 120$. With three
+different jobs, the order matters too: $P(10, 3) = 10 \times 9 \times 8
+= 720$. Each group of three can take the jobs in $3! = 6$ ways, and
+$120 \times 6 = 720$.
 
 </details>
 
@@ -350,25 +358,20 @@ and it is usually far below the real figure.
 
 </details>
 
-**13.** Simulate rolling two dice 10,000 times. Plot the totals, and
-compare them with the exact probabilities.
+**13.** In NASA's list of planets around other stars, the median orbit
+is about 11 days and the mean about 71,000 days. A reporter writes: "The
+typical exoplanet takes 195 years to go round its star." Where did 195
+come from, and what should the sentence say?
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
-totals = Counter(random.randint(1, 6) + random.randint(1, 6) for _ in range(10000))
-for total in range(2, 13):
-    exact = (6 - abs(7 - total)) / 36
-    print(f"{total:>3}  simulated {totals[total] / 10000:.4f}   exact {exact:.4f}")
-```
-
-The shape is a triangle, with its peak at 7. The formula
-$\dfrac{6 - |7 - t|}{36}$ counts the ways to make each total $t$: one
-way to make 2, six ways to make 7, and one way to make 12.
-
-With 10,000 rolls, the two usually agree to about two decimal places.
-With 100 rolls, they do not. Try it with both. Seeing it is more
-convincing than any explanation of sampling error.
+From the mean: $71{,}126 \div 365.25 \approx 195$ years. But the orbits
+are skewed far to the right, and one planet, whose year lasts about a
+million of ours, makes up most of that total. Take it away and the mean
+falls to about 12 years; the median hardly moves. A typical planet in the
+list goes round its star in about 11 days. And "typical exoplanet" is
+itself too strong: the list holds the planets that are easiest to find,
+and short orbits are the easiest of all.
 
 </details>
 
@@ -403,7 +406,7 @@ Out of 1,000 messages, 400 are spam, and 380 of those are flagged. 600
 are real, and 12 of those are flagged. So 380 of the 392 flagged
 messages are spam: $\dfrac{380}{392} \approx 0.969$.
 
-Compare the disease example on the practice page for
+Compare the rare disease in
 [Probability: simple, compound and conditional](tutorial:what-are-the-chances).
 There, numbers that sounded similar gave about 1%. The whole difference
 is the *base rate*, how common the thing is to begin with. Spam is
@@ -531,9 +534,93 @@ real bias to 51% heads would show up as about 5,100 heads. That is two
 standard deviations from 5,000, the fair result. It suggests a bias,
 but it does not prove one.
 
-The honest conclusion: finding a small bias takes far more trials than
+The fair conclusion: finding a small bias takes far more trials than
 most people expect. And a result inside the normal range is not
 evidence that the coin is fair, either. "No difference found" and "no
 difference exists" are not the same sentence.
+
+</details>
+
+**20.** Three prisoners, A, B and C, are told that one of them, chosen
+at random, will be set free. A asks the guard, who knows, to name one of
+the other two who will *not* be freed; if neither B nor C is to be freed,
+the guard chooses between them at random. The guard says "B". A thinks:
+now it is between me and C, so my chance has gone up to a half. Is A
+right?
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Before anything is said, each prisoner's chance is a third.
+2. Could the guard's answer have been anything other than "B" or "C"?
+   Does hearing it tell A anything about A?
+3. Have you met a puzzle where somebody who knows the answer opens one
+   of the other two doors?
+
+**Try this next:** simulate it. Choose who is freed at random, let the
+guard answer by the rules, keep only the runs where he says "B", and
+count how often A is the one freed.
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+No. A's chance is still a third, and C's is now two thirds.
+
+It is the Monty Hall problem with prisoners for doors: the guard is the
+host, who knows, and who never names the one to be freed. Whatever
+happens, the guard can name one of B and C, so his answer says nothing
+about A. It says a great deal about C, who was not named, as the door
+the host leaves shut. A simulation that keeps only the runs where the
+guard says "B" finds A freed in about a third of them.
+
+</details>
+
+**21.** What is the chance of at least one six in $n$ rolls of a die?
+Draw it for $n$ from 1 to 20. Which kind of chart fits, what should its
+y axis be, and at which $n$ does the chance first pass a half?
+
+<details class="dl-answer"><summary>answer</summary>
+
+The chance is $1 - \left(\frac{5}{6}\right)^n$, by the complement.
+It first passes a half at $n = 4$, with about 0.518.
+
+```python
+import matplotlib.pyplot as plt
+
+rolls = list(range(1, 21))
+chances = [1 - (5 / 6) ** n for n in rolls]
+plt.plot(rolls, chances, marker="o")
+plt.ylim(0, 1)
+plt.axhline(0.5, color="grey", linestyle="--")
+plt.xlabel("rolls")
+plt.ylabel("chance of at least one six")
+```
+
+A line chart with dots fits: $n$ is in order, and the dots show that
+only whole numbers of rolls exist. The y axis should run from 0 to 1,
+the whole range a chance can take; letting the library choose would
+make the curve look steeper than it is. The chance climbs quickly at
+first, then more and more slowly, and never reaches 1.
+
+</details>
+
+**22.** A class rolls two dice 20 times on Monday and gets eight 7s. On
+Tuesday, 20 rolls give three 7s. A student draws two bars, Monday and
+Tuesday, with the axis running from 2 to 9, under the headline "Sevens
+collapse by 60%". Give two reasons the headline could be wrong, and say
+which day was the unusual one.
+
+<details class="dl-answer"><summary>answer</summary>
+
+First, the chart: an axis from 2 makes 8 look six times as tall as 3,
+where it is not even three times.
+
+Second, the numbers: 20 rolls is a tiny sample. A 7 comes up 1 time in
+6, so 20 rolls should give about 3.3, give or take about 1.7. Tuesday's
+three is exactly what to expect. Monday's eight is the surprise: eight
+or more happens only about once in 90 sessions. The "collapse" is a
+lucky Monday, followed by an ordinary Tuesday, drawn on a cut axis.
+Starting from the unusual day is the chosen-window trick, with a window
+of two.
 
 </details>

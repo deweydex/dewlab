@@ -640,7 +640,21 @@ which" question, a conditional probability had two directions. Can you
 say, in a sentence of your own, why $P(\text{sick} \mid \text{positive})$
 and $P(\text{positive} \mid \text{sick})$ are so far apart?
 
-The next page, [The Monty Hall problem](tutorial:three-doors), is a game
+A challenge. The Chevalier de Méré's first bet, a six in four rolls of
+one die, won slightly more often than it lost. His second bet was a
+double six in 24 rolls of two dice. Four rolls for a 1-in-6 chance, so
+24 rolls for a 1-in-36 chance, seems the same bet. Is it? Play it many
+times, then count it with the complement rule.
+
+```python challenge
+import random
+
+# One bet: roll two dice 24 times. It wins if a double six comes up at
+# least once. Play many bets, and find the share that win.
+# Then count: the chance of no double six in one roll is 35/36.
+```
+
+The next page is a game show with [three doors](tutorial:three-doors),
 where nearly everyone's first answer is wrong, and where a simulation
 settles it before the counting explains it.
 

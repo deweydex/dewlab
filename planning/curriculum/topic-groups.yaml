@@ -114,6 +114,7 @@ groups:
     tutorials:
       - making-sense-of-data
       - pictures-worth-numbers
+      - a-chart-that-tells-the-truth
       - mixed-data
 
   - key: matrices

@@ -14,7 +14,7 @@ covers:
     covers: [MIT-2.3]
   three-sets-which-is-where-it-earns-its-place:
     covers: [MIT-2.3]
-  the-same-laws-in-a-different-notation:
+  outside-a-set:
     covers: [MIT-2.3]
 ---
 
@@ -469,13 +469,13 @@ Hunsford.
 
 </div>
 
-## The same laws, in a different notation
+## Outside a set
 
 Every outcome is either in a set or not. The set of everything *not* in
 a set is its *complement*: here, every outcome of the two dice that is
-not in it. De Morgan's laws say how "not" meets "or" and "and". Picture
-the two-circle diagram as you read each pair: which region does each
-line describe?
+not in it. Two laws say how "not" meets "or" and "and". Picture the
+two-circle diagram as you read each pair: which region does each line
+describe?
 
 ```python exec
 id: venn-de-morgan
@@ -494,15 +494,15 @@ print(len(complement(doubles) | complement(eights)), "are (not a double) or (not
 The two lines in each pair are the same: 26, the region outside both
 circles, and 35, everything but the middle. On the diagram you can *see*
 that the region outside both circles is the overlap of the two outsides.
-The next page, [Logic](tutorial:logic-and-truth), proves the same laws a
-different way, by checking every row of a truth table. They are one fact
-in two notations, and whichever makes sense to you first can explain the
-other.
+The next page, [Logic](tutorial:logic-and-truth), gives the two laws
+their name, and proves them a different way, by checking every case of
+true and false. They are one fact in two notations, and whichever makes
+sense to you first can explain the other.
 
 ## Where the picture stops helping
 
-Three circles give seven regions: every combination of in and out for
-three sets, apart from "in none of them", which is the space outside. In
+Three circles give seven regions, one for each way of being in or out
+of three sets, apart from "in none of them", which is the space outside. In
 general, $n$ sets need $2^n - 1$ regions inside the circles. How many do
 you expect four sets to need?
 
@@ -568,8 +568,8 @@ red = {card for card in deck if card[1] in ["hearts", "diamonds"]}
 draw_three(hearts, pictures, red, ["hearts", "picture cards", "red"])
 ```
 
-The next page, [Logic: truth tables, XOR and De Morgan's
-laws](tutorial:logic-and-truth), finds the same rules in true and false.
+The next page, [Logic](tutorial:logic-and-truth), finds the same rules
+in true and false.
 
 ## Where to read more
 

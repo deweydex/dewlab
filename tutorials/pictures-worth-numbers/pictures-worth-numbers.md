@@ -284,8 +284,8 @@ drawn?
 
 Four times as tall, for a difference of 6%. The length of a bar is what
 shows its value, so a bar chart must start at zero. A line chart need
-not: its slope carries the meaning, and forcing it to zero can flatten a
-real change until it disappears. Plotting libraries often choose the
+not: how steeply it rises and falls carries the meaning, and forcing it
+to zero can flatten a real change until it disappears. Plotting libraries often choose the
 axis that fills the frame, so the truncated chart is the one you get if
 you do nothing.
 
@@ -695,6 +695,28 @@ This page drew the same planets many ways, and made one pair of true
 numbers look like a fourfold difference. If you had to make a chart of
 the planets that misled without a single false number, which of the
 tricks on this page would you use, and what would give it away?
+
+A challenge: the central limit theorem for something far from a bell.
+The wait for a six, from the Statistics page, is skewed: mostly short,
+sometimes very long. Take the mean wait of a sample of players, many
+times, and draw the means. How big must a sample be before the bell
+appears?
+
+```python challenge
+import random
+import matplotlib.pyplot as plt
+
+
+def rolls_until_six():
+    rolls = 1
+    while random.randint(1, 6) != 6:
+        rolls = rolls + 1
+    return rolls
+
+
+# For samples of 2, 10 and 50 players: work out 2,000 sample means,
+# and draw a histogram of each.
+```
 
 The last page of the series asks you to make exactly that: one chart
 that tells the truth about your world's data, and one that does not.

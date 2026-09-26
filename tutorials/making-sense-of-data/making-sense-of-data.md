@@ -532,7 +532,7 @@ years. The y axis is
 a *logarithmic scale*: each step up multiplies by 10, so all four fit on
 one chart.
 
-## Go further: the binomial
+## Go further: the binomial distribution
 
 Flip ten coins and count the heads. Do it 10,000 times, and draw how
 often each count came up.
@@ -776,6 +776,23 @@ planet has, and the mean orbit was set by one planet in six thousand.
 Before you quote an average of anything, can you say which of the three
 you would choose for the planets' orbits, and the one sentence you would
 put beside it?
+
+A challenge: write `percentile(data, p)`, which gives the value that `p`
+percent of the data is below, and test it on a list you can check by
+hand. There are several ways to define a percentile, and they can
+differ in the second decimal place; pandas's `quantile` gives 1.85 and
+11.99 for the quartiles of the planets' radii. How does yours choose
+between two values that are both "in the middle"?
+
+```python challenge
+def percentile(data, p):
+    """The value that p percent of the data is below."""
+    # Sort first. Which position is p percent of the way along?
+
+
+print(percentile([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 50))
+print(percentile([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 25))
+```
 
 The next page, [Charts](tutorial:pictures-worth-numbers), draws data in
 more ways, and shows how a chart can tell the truth about it, or not.

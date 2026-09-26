@@ -110,8 +110,9 @@ for n in range(1, 6):
 
 Each count is the one before it times the new number of people: 1, 2,
 6, 24, 120. With five people, there are 5 choices for the first place,
-then 4 for the second, then 3, 2 and 1. That product has a name. The
-*factorial* of a whole number $n$ multiplies every whole number from $n$
+then 4 for the second, then 3, 2 and 1. That product is a factorial,
+which [Repeating steps with loops](tutorial:repeating-yourself) met. The
+factorial of a whole number $n$ multiplies every whole number from $n$
 down to 1. We write it $n!$ and say "n factorial":
 
 $$n! = n \times (n-1) \times (n-2) \times \cdots \times 2 \times 1$$
@@ -593,7 +594,7 @@ days = 365
 # Their ratio is the chance that nobody in the room shares a birthday.
 ```
 
-The next page, [What are the chances?](tutorial:what-are-the-chances),
+The next page, [Probability](tutorial:what-are-the-chances),
 turns these counts into probabilities, and plays the games before it
 counts them.
 

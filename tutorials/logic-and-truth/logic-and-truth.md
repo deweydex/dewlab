@@ -515,7 +515,7 @@ reassuring; the four-row truth table is what proves it.
 
 On [Venn diagrams](tutorial:venn-diagrams) the same two laws appeared on
 sets, with union for `or`, intersection for `and`, and complement for
-`not`. The *complement* of a set is everything in the *universal set*,
+`not`. The complement of a set is everything in the *universal set*,
 the set of everything we are talking about, that is not in it.
 
 ```python exec

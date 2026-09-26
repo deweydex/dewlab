@@ -410,6 +410,24 @@ goat behind it, just as the knowing host always does. Can you say, in a
 sentence, why the same goat means two thirds in one game and a half in
 the other?
 
+A challenge: every version at once. With `doors` doors, a host who knows
+where the car is opens `opened` of the goat doors, and you switch to one
+of the other shut doors at random. Can you simulate it for any numbers,
+and find a formula that matches? Three doors with one opened should give
+two thirds, and a hundred doors with 98 opened, 99 in 100.
+
+```python challenge
+import random
+
+
+def switching_wins(doors, opened):
+    """One game: the host opens `opened` goat doors, and you switch at random."""
+    # Your code here
+
+
+# Try (3, 1), (4, 1), (4, 2) and (100, 98), 100,000 games each.
+```
+
 The [practice page](tutorial:three-doors-practice) changes the host in
 three more ways.
 

@@ -561,7 +561,7 @@ INLINE_CODE_RE = re.compile(r"`[^`]*`")
 # tutorials before it explains it.
 HTML_CODE_RE = re.compile(r"<code>.*?</code>", re.DOTALL)
 SUBTITLE_RE = re.compile(r"^\*\*Programming Design Principles.*$", re.MULTILINE)
-BIBLIOGRAPHY_RE = re.compile(r"^## Where to Read More.*", re.DOTALL | re.MULTILINE)
+BIBLIOGRAPHY_RE = re.compile(r"^## Where to read more.*", re.DOTALL | re.MULTILINE | re.IGNORECASE)
 
 # Emphasis is also used for ordinary stress — "*not* the same", "*exactly* one".
 # Those are not terms and listing them buries the ones that are.

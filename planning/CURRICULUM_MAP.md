@@ -133,28 +133,29 @@ graph TD
   T13["13. Designing and testing good functions"]
   T14["14. Finding bugs in bigger programs"]
   T15["15. How programming languages came to be"]
-  T16["16. Counting: factorials, permutations and combinations"]
-  T17["17. Probability: simple, compound and conditional"]
-  T18["18. The Monty Hall problem: three doors and a simulation"]
-  T19["19. Statistics: averages, spread and frequency"]
-  T20["20. Charts: choosing the right chart for your data"]
-  T21["21. Sets: building them from sorted lists"]
-  T22["22. Logic: truth tables, XOR and De Morgan's laws"]
-  T23["23. Venn diagrams: drawing sets and their overlaps"]
-  T24["24. Number types, powers and logarithms"]
-  T25["25. Polynomials: representing and combining them in Python"]
-  T26["26. Rearranging formulae: changing the subject"]
-  T27["27. Solving equations: linear, quadratic and simultaneous"]
-  T28["28. Complex numbers: roots that are not real"]
-  T29["29. Functions and their graphs"]
-  T30["30. Parabolas: completing the square"]
-  T31["31. Straight lines: slope, midpoint and distance"]
-  T32["32. The unit circle: sine, cosine and tangent"]
-  T33["33. Sine and cosine waves: amplitude, period and shift"]
-  T34["34. Solving triangles: the sine rule and the cosine rule"]
-  T35["35. Limits: getting closer without arriving"]
-  T36["36. Derivatives: the rate of change of a curve"]
-  T37["37. Review problems: polynomials, equations and sets"]
+  T16["16. Sets: building them from sorted lists"]
+  T17["17. Venn diagrams: drawing sets and their overlaps"]
+  T18["18. Logic: truth tables, XOR and De Morgan's laws"]
+  T19["19. Counting: factorials, permutations and combinations"]
+  T20["20. Probability: simple, compound and conditional"]
+  T21["21. The Monty Hall problem: three doors and a simulation"]
+  T22["22. Statistics: averages, spread and frequency"]
+  T23["23. Charts: choosing the right chart for your data"]
+  T24["24. Make it: a chart that tells the truth, and one that lies"]
+  T25["25. Number types, powers and logarithms"]
+  T26["26. Polynomials: representing and combining them in Python"]
+  T27["27. Rearranging formulae: changing the subject"]
+  T28["28. Solving equations: linear, quadratic and simultaneous"]
+  T29["29. Complex numbers: roots that are not real"]
+  T30["30. Functions and their graphs"]
+  T31["31. Parabolas: completing the square"]
+  T32["32. Straight lines: slope, midpoint and distance"]
+  T33["33. The unit circle: sine, cosine and tangent"]
+  T34["34. Sine and cosine waves: amplitude, period and shift"]
+  T35["35. Solving triangles: the sine rule and the cosine rule"]
+  T36["36. Limits: getting closer without arriving"]
+  T37["37. Derivatives: the rate of change of a curve"]
+  T38["38. Review problems: polynomials, equations and sets"]
 
   T1 --> T2
   T2 --> T3
@@ -192,6 +193,7 @@ graph TD
   T34 --> T35
   T35 --> T36
   T36 --> T37
+  T37 --> T38
 
   T5 -.->|builds on| T2
   T7 -.->|builds on| T2
@@ -208,52 +210,41 @@ graph TD
   T13 -.->|builds on| T9
   T14 -.->|builds on| T4
   T14 -.->|builds on| T8
-  T16 -.->|builds on| T5
-  T19 -.->|builds on| T2
-  T19 -.->|builds on| T9
-  T19 -.->|builds on| T12
-  T19 -.->|builds on| T13
-  T19 -.->|builds on| T17
-  T20 -.->|builds on| T17
-  T21 -.->|builds on| T11
-  T21 -.->|builds on| T12
-  T21 -.->|builds on| T17
-  T22 -.->|builds on| T3
-  T23 -.->|builds on| T21
-  T24 -.->|builds on| T3
-  T24 -.->|builds on| T11
-  T24 -.->|builds on| T12
-  T24 -.->|builds on| T21
-  T25 -.->|builds on| T5
-  T26 -.->|builds on| T2
-  T27 -.->|builds on| T25
-  T28 -.->|builds on| T24
-  T29 -.->|builds on| T6
-  T29 -.->|builds on| T19
-  T29 -.->|builds on| T20
+  T19 -.->|builds on| T5
+  T25 -.->|builds on| T3
+  T25 -.->|builds on| T11
+  T25 -.->|builds on| T12
+  T25 -.->|builds on| T16
+  T26 -.->|builds on| T5
+  T27 -.->|builds on| T2
+  T28 -.->|builds on| T26
   T29 -.->|builds on| T25
-  T29 -.->|builds on| T27
-  T30 -.->|builds on| T27
+  T30 -.->|builds on| T6
+  T30 -.->|builds on| T22
+  T30 -.->|builds on| T23
+  T30 -.->|builds on| T26
   T30 -.->|builds on| T28
-  T31 -.->|builds on| T19
-  T31 -.->|builds on| T20
+  T31 -.->|builds on| T28
   T31 -.->|builds on| T29
-  T33 -.->|builds on| T29
-  T33 -.->|builds on| T30
-  T33 -.->|builds on| T31
-  T34 -.->|builds on| T29
+  T32 -.->|builds on| T22
+  T32 -.->|builds on| T23
+  T32 -.->|builds on| T30
+  T34 -.->|builds on| T30
   T34 -.->|builds on| T31
   T34 -.->|builds on| T32
-  T35 -.->|builds on| T2
-  T35 -.->|builds on| T31
+  T35 -.->|builds on| T30
   T35 -.->|builds on| T32
-  T36 -.->|builds on| T30
-  T36 -.->|builds on| T31
+  T35 -.->|builds on| T33
+  T36 -.->|builds on| T2
   T36 -.->|builds on| T32
-  T37 -.->|builds on| T1
-  T37 -.->|builds on| T21
-  T37 -.->|builds on| T25
-  T37 -.->|builds on| T27
+  T36 -.->|builds on| T33
+  T37 -.->|builds on| T31
+  T37 -.->|builds on| T32
+  T37 -.->|builds on| T33
+  T38 -.->|builds on| T1
+  T38 -.->|builds on| T16
+  T38 -.->|builds on| T26
+  T38 -.->|builds on| T28
 ```
 
 ## What is missing, and where it would go
@@ -279,28 +270,29 @@ graph TD
   T13["13. Designing and testing good functions"]
   T14["14. Finding bugs in bigger programs"]
   T15["15. How programming languages came to be"]
-  T16["16. Counting: factorials, permutations and combinations"]
-  T17["17. Probability: simple, compound and conditional"]
-  T18["18. The Monty Hall problem: three doors and a simulation"]
-  T19["19. Statistics: averages, spread and frequency"]
-  T20["20. Charts: choosing the right chart for your data"]
-  T21["21. Sets: building them from sorted lists"]
-  T22["22. Logic: truth tables, XOR and De Morgan's laws"]
-  T23["23. Venn diagrams: drawing sets and their overlaps"]
-  T24["24. Number types, powers and logarithms"]
-  T25["25. Polynomials: representing and combining them in Python"]
-  T26["26. Rearranging formulae: changing the subject"]
-  T27["27. Solving equations: linear, quadratic and simultaneous"]
-  T28["28. Complex numbers: roots that are not real"]
-  T29["29. Functions and their graphs"]
-  T30["30. Parabolas: completing the square"]
-  T31["31. Straight lines: slope, midpoint and distance"]
-  T32["32. The unit circle: sine, cosine and tangent"]
-  T33["33. Sine and cosine waves: amplitude, period and shift"]
-  T34["34. Solving triangles: the sine rule and the cosine rule"]
-  T35["35. Limits: getting closer without arriving"]
-  T36["36. Derivatives: the rate of change of a curve"]
-  T37["37. Review problems: polynomials, equations and sets"]
+  T16["16. Sets: building them from sorted lists"]
+  T17["17. Venn diagrams: drawing sets and their overlaps"]
+  T18["18. Logic: truth tables, XOR and De Morgan's laws"]
+  T19["19. Counting: factorials, permutations and combinations"]
+  T20["20. Probability: simple, compound and conditional"]
+  T21["21. The Monty Hall problem: three doors and a simulation"]
+  T22["22. Statistics: averages, spread and frequency"]
+  T23["23. Charts: choosing the right chart for your data"]
+  T24["24. Make it: a chart that tells the truth, and one that lies"]
+  T25["25. Number types, powers and logarithms"]
+  T26["26. Polynomials: representing and combining them in Python"]
+  T27["27. Rearranging formulae: changing the subject"]
+  T28["28. Solving equations: linear, quadratic and simultaneous"]
+  T29["29. Complex numbers: roots that are not real"]
+  T30["30. Functions and their graphs"]
+  T31["31. Parabolas: completing the square"]
+  T32["32. Straight lines: slope, midpoint and distance"]
+  T33["33. The unit circle: sine, cosine and tangent"]
+  T34["34. Sine and cosine waves: amplitude, period and shift"]
+  T35["35. Solving triangles: the sine rule and the cosine rule"]
+  T36["36. Limits: getting closer without arriving"]
+  T37["37. Derivatives: the rate of change of a curve"]
+  T38["38. Review problems: polynomials, equations and sets"]
 
   T1 --> T2
   T2 --> T3
@@ -338,6 +330,7 @@ graph TD
   T34 --> T35
   T35 --> T36
   T36 --> T37
+  T37 --> T38
 
 
   classDef new fill:#fdf6ec,stroke:#b5651d,color:#7a4310,stroke-dasharray:4 3;
@@ -373,8 +366,8 @@ graph TD
 | Outcome | | Where |
 |---|---|---|
 | `MIT-2.1` Set language: N, Z, Q, R, C, the empty set; finite, infinite, cardinality | 🟩 | [Collections without repeats: sets — Two playlists](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#two-playlists)<br/>[Collections without repeats: sets — Is it in the set?](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#is-it-in-the-set)<br/>[Collections without repeats: sets — Sets too big to list](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#sets-too-big-to-list)<br/>[Number types, powers and logarithms — The number domains](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#the-number-domains)<br/>[Sets: building them from sorted lists — Making a set](https://deweydex.github.io/dewlab/tutorials/sets-as-sorted-lists.html#making-a-set)<br/>[Sets: building them from sorted lists — Membership testing](https://deweydex.github.io/dewlab/tutorials/sets-as-sorted-lists.html#membership-testing)<br/>[Sets: building them from sorted lists — Set language and notation](https://deweydex.github.io/dewlab/tutorials/sets-as-sorted-lists.html#set-language-and-notation)<br/>_used in:_ [Collections without repeats: sets — Two books, thousands of words](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#two-books-thousands-of-words)<br/>_used in:_ [Complex numbers: roots that are not real — Inventing a new number](https://deweydex.github.io/dewlab/tutorials/complex-roots.html#inventing-a-new-number) |
-| `MIT-2.2` Set operations: union, intersection, complement, symmetric difference, Cartesian product, power set | 🟩 | [Collections without repeats: sets — On both lists: intersection](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#on-both-lists-intersection)<br/>[Collections without repeats: sets — On either list: union](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#on-either-list-union)<br/>[Collections without repeats: sets — On one list only: difference](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#on-one-list-only-difference)<br/>[Collections without repeats: sets — Everything else: the complement](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#everything-else-the-complement)<br/>[Collections without repeats: sets — Two books, thousands of words](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#two-books-thousands-of-words)<br/>[Collections without repeats: sets — Every pair, and every smaller set](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#every-pair-and-every-smaller-set)<br/>[Sets: building them from sorted lists — Set operations: the merge pattern](https://deweydex.github.io/dewlab/tutorials/sets-as-sorted-lists.html#set-operations-the-merge-pattern)<br/>[Sets: building them from sorted lists — Sets in practice](https://deweydex.github.io/dewlab/tutorials/sets-as-sorted-lists.html#sets-in-practice)<br/>_used in:_ [Review problems: polynomials, equations and sets — Problem 3: Sets of solutions](https://deweydex.github.io/dewlab/tutorials/bringing-it-all-together.html#problem-3-sets-of-solutions)<br/>_used in:_ [Circles that overlap: Venn diagrams — Two circles in a box](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#two-circles-in-a-box)<br/>_used in:_ [Collections without repeats: sets — From sets to databases](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#from-sets-to-databases) |
-| `MIT-2.3` Venn diagrams for two and three sets | 🟩 | [Circles that overlap: Venn diagrams — Two circles in a box](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#two-circles-in-a-box)<br/>[Circles that overlap: Venn diagrams — Counting either: inclusion-exclusion](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#counting-either-inclusion-exclusion)<br/>[Circles that overlap: Venn diagrams — Three circles, eight regions](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#three-circles-eight-regions)<br/>[Circles that overlap: Venn diagrams — Exactly two of the three](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#exactly-two-of-the-three)<br/>[Circles that overlap: Venn diagrams — Inclusion-exclusion for three sets](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#inclusion-exclusion-for-three-sets)<br/>[Circles that overlap: Venn diagrams — Filling a diagram from the totals](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#filling-a-diagram-from-the-totals)<br/>[Venn diagrams: drawing sets and their overlaps — Two circles, from real sets](https://deweydex.github.io/dewlab/tutorials/venn-diagrams.html#two-circles-from-real-sets)<br/>[Venn diagrams: drawing sets and their overlaps — The regions have names you already know](https://deweydex.github.io/dewlab/tutorials/venn-diagrams.html#the-regions-have-names-you-already-know)<br/>[Venn diagrams: drawing sets and their overlaps — Three sets, which is where it earns its place](https://deweydex.github.io/dewlab/tutorials/venn-diagrams.html#three-sets-which-is-where-it-earns-its-place)<br/>[Venn diagrams: drawing sets and their overlaps — The same laws, in a different notation](https://deweydex.github.io/dewlab/tutorials/venn-diagrams.html#the-same-laws-in-a-different-notation) |
+| `MIT-2.2` Set operations: union, intersection, complement, symmetric difference, Cartesian product, power set | 🟩 | [Collections without repeats: sets — On both lists: intersection](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#on-both-lists-intersection)<br/>[Collections without repeats: sets — On either list: union](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#on-either-list-union)<br/>[Collections without repeats: sets — On one list only: difference](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#on-one-list-only-difference)<br/>[Collections without repeats: sets — Everything else: the complement](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#everything-else-the-complement)<br/>[Collections without repeats: sets — Two books, thousands of words](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#two-books-thousands-of-words)<br/>[Collections without repeats: sets — Every pair, and every smaller set](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#every-pair-and-every-smaller-set)<br/>[Sets: building them from sorted lists — Set operations: the merge pattern](https://deweydex.github.io/dewlab/tutorials/sets-as-sorted-lists.html#set-operations-the-merge-pattern)<br/>[Sets: building them from sorted lists — Sets in the worlds](https://deweydex.github.io/dewlab/tutorials/sets-as-sorted-lists.html#sets-in-the-worlds)<br/>_used in:_ [Review problems: polynomials, equations and sets — Problem 3: Sets of solutions](https://deweydex.github.io/dewlab/tutorials/bringing-it-all-together.html#problem-3-sets-of-solutions)<br/>_used in:_ [Circles that overlap: Venn diagrams — Two circles in a box](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#two-circles-in-a-box)<br/>_used in:_ [Collections without repeats: sets — From sets to databases](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#from-sets-to-databases) |
+| `MIT-2.3` Venn diagrams for two and three sets | 🟩 | [Circles that overlap: Venn diagrams — Two circles in a box](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#two-circles-in-a-box)<br/>[Circles that overlap: Venn diagrams — Counting either: inclusion-exclusion](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#counting-either-inclusion-exclusion)<br/>[Circles that overlap: Venn diagrams — Three circles, eight regions](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#three-circles-eight-regions)<br/>[Circles that overlap: Venn diagrams — Exactly two of the three](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#exactly-two-of-the-three)<br/>[Circles that overlap: Venn diagrams — Inclusion-exclusion for three sets](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#inclusion-exclusion-for-three-sets)<br/>[Circles that overlap: Venn diagrams — Filling a diagram from the totals](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#filling-a-diagram-from-the-totals)<br/>[Venn diagrams: drawing sets and their overlaps — Two circles, from real sets](https://deweydex.github.io/dewlab/tutorials/venn-diagrams.html#two-circles-from-real-sets)<br/>[Venn diagrams: drawing sets and their overlaps — The regions have names you already know](https://deweydex.github.io/dewlab/tutorials/venn-diagrams.html#the-regions-have-names-you-already-know)<br/>[Venn diagrams: drawing sets and their overlaps — Three sets, which is where it earns its place](https://deweydex.github.io/dewlab/tutorials/venn-diagrams.html#three-sets-which-is-where-it-earns-its-place)<br/>[Venn diagrams: drawing sets and their overlaps — Outside a set](https://deweydex.github.io/dewlab/tutorials/venn-diagrams.html#outside-a-set) |
 | `MIT-2.4` Truth tables: AND, NOT, OR, XOR | 🟩 | [Bits that flip: XOR and parity — XOR on single bits](https://deweydex.github.io/dewlab/tutorials/bits-that-flip.html#xor-on-single-bits)<br/>[Bits that flip: XOR and parity — A switch that flips](https://deweydex.github.io/dewlab/tutorials/bits-that-flip.html#a-switch-that-flips)<br/>[Bits that flip: XOR and parity — Counting the 1s: parity](https://deweydex.github.io/dewlab/tutorials/bits-that-flip.html#counting-the-1s-parity)<br/>[Logic: truth tables, XOR and De Morgan's laws — Every possible case](https://deweydex.github.io/dewlab/tutorials/logic-and-truth.html#every-possible-case)<br/>[Logic: truth tables, XOR and De Morgan's laws — Exclusive or](https://deweydex.github.io/dewlab/tutorials/logic-and-truth.html#exclusive-or)<br/>[True, false and every case: truth tables — And: both must be true](https://deweydex.github.io/dewlab/tutorials/true-false-and-every-case.html#and-both-must-be-true)<br/>[True, false and every case: truth tables — Or: at least one is true](https://deweydex.github.io/dewlab/tutorials/true-false-and-every-case.html#or-at-least-one-is-true)<br/>[True, false and every case: truth tables — Not: the opposite](https://deweydex.github.io/dewlab/tutorials/true-false-and-every-case.html#not-the-opposite)<br/>[True, false and every case: truth tables — Exclusive or: exactly one](https://deweydex.github.io/dewlab/tutorials/true-false-and-every-case.html#exclusive-or-exactly-one)<br/>[True, false and every case: truth tables — How many rows?](https://deweydex.github.io/dewlab/tutorials/true-false-and-every-case.html#how-many-rows)<br/>_used in:_ [Bits that flip: XOR and parity — XOR on whole numbers](https://deweydex.github.io/dewlab/tutorials/bits-that-flip.html#xor-on-whole-numbers)<br/>_used in:_ [Chances that combine: and, or, and the birthday problem — When both can happen](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#when-both-can-happen)<br/>_used in:_ [Collections without repeats: sets — On one list only: difference](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#on-one-list-only-difference)<br/>_used in:_ [Making decisions with if, elif and else — Boolean operators: combining conditions](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#boolean-operators-combining-conditions)<br/>_used in:_ [True, false and every case: truth tables — True and false are values](https://deweydex.github.io/dewlab/tutorials/true-false-and-every-case.html#true-and-false-are-values)<br/>_used in:_ [True, false and every case: truth tables — A tool for any rule](https://deweydex.github.io/dewlab/tutorials/true-false-and-every-case.html#a-tool-for-any-rule)<br/>_used in:_ [True, false and every case: truth tables — Brackets change the rule](https://deweydex.github.io/dewlab/tutorials/true-false-and-every-case.html#brackets-change-the-rule)<br/>_used in:_ [Untangling a condition: De Morgan's laws — Two ways to grey out a button](https://deweydex.github.io/dewlab/tutorials/untangling-a-condition.html#two-ways-to-grey-out-a-button)<br/>_used in:_ [Untangling a condition: De Morgan's laws — Checking every row with one function](https://deweydex.github.io/dewlab/tutorials/untangling-a-condition.html#checking-every-row-with-one-function) |
 | `MIT-2.5` De Morgan's Laws | 🟩 | [Logic: truth tables, XOR and De Morgan's laws — De Morgan's laws](https://deweydex.github.io/dewlab/tutorials/logic-and-truth.html#de-morgans-laws)<br/>[Logic: truth tables, XOR and De Morgan's laws — Where you have already used this](https://deweydex.github.io/dewlab/tutorials/logic-and-truth.html#where-you-have-already-used-this)<br/>[Logic: truth tables, XOR and De Morgan's laws — The same shapes, on sets](https://deweydex.github.io/dewlab/tutorials/logic-and-truth.html#the-same-shapes-on-sets)<br/>[Untangling a condition: De Morgan's laws — A move from arithmetic](https://deweydex.github.io/dewlab/tutorials/untangling-a-condition.html#a-move-from-arithmetic)<br/>[Untangling a condition: De Morgan's laws — De Morgan's laws](https://deweydex.github.io/dewlab/tutorials/untangling-a-condition.html#de-morgans-laws)<br/>[Untangling a condition: De Morgan's laws — Not between](https://deweydex.github.io/dewlab/tutorials/untangling-a-condition.html#not-between)<br/>[Untangling a condition: De Morgan's laws — Untangling a real condition](https://deweydex.github.io/dewlab/tutorials/untangling-a-condition.html#untangling-a-real-condition) |
 
@@ -409,19 +402,19 @@ graph TD
 
 | Outcome | | Where |
 |---|---|---|
-| `MIT-5.1` List the outcomes of an experiment | 🟩 | [Counting every outfit: lists of outcomes — Every outfit, one by one](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#every-outfit-one-by-one)<br/>[Counting every outfit: lists of outcomes — Outcomes of an experiment](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#outcomes-of-an-experiment)<br/>[Counting every outfit: lists of outcomes — A tool that lists every pair](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#a-tool-that-lists-every-pair)<br/>[Counting every outfit: lists of outcomes — Every pixel, every colour](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#every-pixel-every-colour)<br/>[Probability: simple, compound and conditional — Basic probability](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#basic-probability)<br/>_used in:_ [Chances that combine: and, or, and the birthday problem — Two sixes at once](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#two-sixes-at-once)<br/>_used in:_ [How likely is it? Probability and simulation — Counting equally likely outcomes](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#counting-equally-likely-outcomes) |
+| `MIT-5.1` List the outcomes of an experiment | 🟩 | [Counting every outfit: lists of outcomes — Every outfit, one by one](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#every-outfit-one-by-one)<br/>[Counting every outfit: lists of outcomes — Outcomes of an experiment](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#outcomes-of-an-experiment)<br/>[Counting every outfit: lists of outcomes — A tool that lists every pair](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#a-tool-that-lists-every-pair)<br/>[Counting every outfit: lists of outcomes — Every pixel, every colour](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#every-pixel-every-colour)<br/>[Probability: simple, compound and conditional — Counting the cases](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#counting-the-cases)<br/>_used in:_ [Chances that combine: and, or, and the birthday problem — Two sixes at once](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#two-sixes-at-once)<br/>_used in:_ [How likely is it? Probability and simulation — Counting equally likely outcomes](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#counting-equally-likely-outcomes) |
 | `MIT-5.2` The fundamental principle of counting | 🟩 | [Counting: factorials, permutations and combinations — A practical application: password strength](https://deweydex.github.io/dewlab/tutorials/counting-carefully.html#a-practical-application-password-strength)<br/>[Counting every outfit: lists of outcomes — The counting principle](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#the-counting-principle)<br/>[Counting every outfit: lists of outcomes — A tool that lists every pair](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#a-tool-that-lists-every-pair)<br/>[Counting every outfit: lists of outcomes — Every pixel, every colour](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#every-pixel-every-colour)<br/>[Counting every outfit: lists of outcomes — And multiplies, or adds](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#and-multiplies-or-adds)<br/>[Counting every outfit: lists of outcomes — Too many to list: PINs and passwords](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#too-many-to-list-pins-and-passwords)<br/>_used in:_ [Collections without repeats: sets — Every pair, and every smaller set](https://deweydex.github.io/dewlab/tutorials/collections-without-repeats.html#every-pair-and-every-smaller-set)<br/>_used in:_ [How likely is it? Probability and simulation — Counting equally likely outcomes](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#counting-equally-likely-outcomes)<br/>_used in:_ [Orders and choices: factorials, permutations and combinations — Three songs in a row](https://deweydex.github.io/dewlab/tutorials/orders-and-choices.html#three-songs-in-a-row)<br/>_used in:_ [Orders and choices: factorials, permutations and combinations — Which count do I need?](https://deweydex.github.io/dewlab/tutorials/orders-and-choices.html#which-count-do-i-need) |
 | `MIT-5.3` Arrangements of n objects (n factorial) | 🟩 | [Counting: factorials, permutations and combinations — Factorials: the foundation](https://deweydex.github.io/dewlab/tutorials/counting-carefully.html#factorials-the-foundation)<br/>[Orders and choices: factorials, permutations and combinations — Three songs in a row](https://deweydex.github.io/dewlab/tutorials/orders-and-choices.html#three-songs-in-a-row)<br/>[Orders and choices: factorials, permutations and combinations — Factorial: a product that counts orders](https://deweydex.github.io/dewlab/tutorials/orders-and-choices.html#factorial-a-product-that-counts-orders) |
 | `MIT-5.4` Permutations P(n, r) | 🟩 | [Counting: factorials, permutations and combinations — Permutations: order matters](https://deweydex.github.io/dewlab/tutorials/counting-carefully.html#permutations-order-matters)<br/>[Orders and choices: factorials, permutations and combinations — Only the first few places](https://deweydex.github.io/dewlab/tutorials/orders-and-choices.html#only-the-first-few-places)<br/>[Orders and choices: factorials, permutations and combinations — Which count do I need?](https://deweydex.github.io/dewlab/tutorials/orders-and-choices.html#which-count-do-i-need)<br/>_used in:_ [Chances that combine: and, or, and the birthday problem — When one changes the other](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#when-one-changes-the-other) |
 | `MIT-5.5` Combinations C(n, r) | 🟩 | [Counting: factorials, permutations and combinations — Combinations: order does not matter](https://deweydex.github.io/dewlab/tutorials/counting-carefully.html#combinations-order-does-not-matter)<br/>[Orders and choices: factorials, permutations and combinations — When order does not matter](https://deweydex.github.io/dewlab/tutorials/orders-and-choices.html#when-order-does-not-matter)<br/>[Orders and choices: factorials, permutations and combinations — Which count do I need?](https://deweydex.github.io/dewlab/tutorials/orders-and-choices.html#which-count-do-i-need)<br/>_used in:_ [Chances that combine: and, or, and the birthday problem — The birthday problem](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#the-birthday-problem)<br/>_used in:_ [How likely is it? Probability and simulation — Seven heads in ten](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#seven-heads-in-ten) |
-| `MIT-5.6` Probability as a scale from 0 to 1 | 🟩 | [How likely is it? Probability and simulation — A scale from 0 to 1](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#a-scale-from-0-to-1)<br/>[How likely is it? Probability and simulation — A tool that runs it many times](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#a-tool-that-runs-it-many-times)<br/>[How likely is it? Probability and simulation — Rain on a grid](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#rain-on-a-grid)<br/>[How likely is it? Probability and simulation — Why the two answers differ](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#why-the-two-answers-differ)<br/>[Probability: simple, compound and conditional — Basic probability](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#basic-probability)<br/>_used in:_ [How likely is it? Probability and simulation — Letting Python toss the coin](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#letting-python-toss-the-coin)<br/>_used in:_ [Racing the sorts: counting steps — Lists to race on](https://deweydex.github.io/dewlab/tutorials/racing-the-sorts.html#lists-to-race-on)<br/>_used in:_ [The Monty Hall problem: three doors and a simulation — Why staying feels fine](https://deweydex.github.io/dewlab/tutorials/three-doors.html#why-staying-feels-fine)<br/>_used in:_ [The Monty Hall problem: three doors and a simulation — Playing it ten thousand times](https://deweydex.github.io/dewlab/tutorials/three-doors.html#playing-it-ten-thousand-times) |
-| `MIT-5.7` Probability from equally likely outcomes | 🟩 | [How likely is it? Probability and simulation — Counting equally likely outcomes](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#counting-equally-likely-outcomes)<br/>[How likely is it? Probability and simulation — Seven heads in ten](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#seven-heads-in-ten)<br/>[The Monty Hall problem: three doors and a simulation — Three cases you can count](https://deweydex.github.io/dewlab/tutorials/three-doors.html#three-cases-you-can-count)<br/>[Probability: simple, compound and conditional — Basic probability](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#basic-probability)<br/>_used in:_ [Chances that combine: and, or, and the birthday problem — Two sixes at once](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#two-sixes-at-once)<br/>_used in:_ [The Monty Hall problem: three doors and a simulation — Playing it ten thousand times](https://deweydex.github.io/dewlab/tutorials/three-doors.html#playing-it-ten-thousand-times)<br/>_used in:_ [The Monty Hall problem: three doors and a simulation — A host who is not paying attention](https://deweydex.github.io/dewlab/tutorials/three-doors.html#a-host-who-is-not-paying-attention)<br/>_used in:_ [Probability: simple, compound and conditional — Simulation: testing probability with code](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#simulation-testing-probability-with-code) |
-| `MIT-5.8` Compound probability: independent and mutually exclusive events | 🟩 | [Chances that combine: and, or, and the birthday problem — Two sixes at once](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#two-sixes-at-once)<br/>[Chances that combine: and, or, and the birthday problem — When one changes the other](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#when-one-changes-the-other)<br/>[Chances that combine: and, or, and the birthday problem — One or the other](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#one-or-the-other)<br/>[Chances that combine: and, or, and the birthday problem — When both can happen](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#when-both-can-happen)<br/>[Chances that combine: and, or, and the birthday problem — Not, and at least once](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#not-and-at-least-once)<br/>[Chances that combine: and, or, and the birthday problem — The birthday problem](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#the-birthday-problem)<br/>[Probability: simple, compound and conditional — Compound events](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#compound-events)<br/>[Probability: simple, compound and conditional — Conditional probability](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#conditional-probability)<br/>_used in:_ [Chances that combine: and, or, and the birthday problem — A tool for at least once](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#a-tool-for-at-least-once)<br/>_used in:_ [Circles that overlap: Venn diagrams — Counting either: inclusion-exclusion](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#counting-either-inclusion-exclusion) |
+| `MIT-5.6` Probability as a scale from 0 to 1 | 🟩 | [How likely is it? Probability and simulation — A scale from 0 to 1](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#a-scale-from-0-to-1)<br/>[How likely is it? Probability and simulation — A tool that runs it many times](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#a-tool-that-runs-it-many-times)<br/>[How likely is it? Probability and simulation — Rain on a grid](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#rain-on-a-grid)<br/>[How likely is it? Probability and simulation — Why the two answers differ](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#why-the-two-answers-differ)<br/>[Probability: simple, compound and conditional — Counting the cases](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#counting-the-cases)<br/>_used in:_ [How likely is it? Probability and simulation — Letting Python toss the coin](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#letting-python-toss-the-coin)<br/>_used in:_ [Racing the sorts: counting steps — Lists to race on](https://deweydex.github.io/dewlab/tutorials/racing-the-sorts.html#lists-to-race-on)<br/>_used in:_ [The Monty Hall problem: three doors and a simulation — Why staying feels fine](https://deweydex.github.io/dewlab/tutorials/three-doors.html#why-staying-feels-fine)<br/>_used in:_ [The Monty Hall problem: three doors and a simulation — Playing it ten thousand times](https://deweydex.github.io/dewlab/tutorials/three-doors.html#playing-it-ten-thousand-times) |
+| `MIT-5.7` Probability from equally likely outcomes | 🟩 | [How likely is it? Probability and simulation — Counting equally likely outcomes](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#counting-equally-likely-outcomes)<br/>[How likely is it? Probability and simulation — Seven heads in ten](https://deweydex.github.io/dewlab/tutorials/how-likely-is-it.html#seven-heads-in-ten)<br/>[The Monty Hall problem: three doors and a simulation — Three cases you can count](https://deweydex.github.io/dewlab/tutorials/three-doors.html#three-cases-you-can-count)<br/>[Probability: simple, compound and conditional — Counting the cases](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#counting-the-cases)<br/>_used in:_ [Chances that combine: and, or, and the birthday problem — Two sixes at once](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#two-sixes-at-once)<br/>_used in:_ [The Monty Hall problem: three doors and a simulation — Playing it ten thousand times](https://deweydex.github.io/dewlab/tutorials/three-doors.html#playing-it-ten-thousand-times)<br/>_used in:_ [The Monty Hall problem: three doors and a simulation — A host who is not paying attention](https://deweydex.github.io/dewlab/tutorials/three-doors.html#a-host-who-is-not-paying-attention)<br/>_used in:_ [Probability: simple, compound and conditional — Rolling ten thousand times](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#rolling-ten-thousand-times) |
+| `MIT-5.8` Compound probability: independent and mutually exclusive events | 🟩 | [Chances that combine: and, or, and the birthday problem — Two sixes at once](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#two-sixes-at-once)<br/>[Chances that combine: and, or, and the birthday problem — When one changes the other](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#when-one-changes-the-other)<br/>[Chances that combine: and, or, and the birthday problem — One or the other](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#one-or-the-other)<br/>[Chances that combine: and, or, and the birthday problem — When both can happen](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#when-both-can-happen)<br/>[Chances that combine: and, or, and the birthday problem — Not, and at least once](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#not-and-at-least-once)<br/>[Chances that combine: and, or, and the birthday problem — The birthday problem](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#the-birthday-problem)<br/>[Probability: simple, compound and conditional — Events are sets](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#events-are-sets)<br/>[Probability: simple, compound and conditional — A test for a rare disease](https://deweydex.github.io/dewlab/tutorials/what-are-the-chances.html#a-test-for-a-rare-disease)<br/>_used in:_ [Chances that combine: and, or, and the birthday problem — A tool for at least once](https://deweydex.github.io/dewlab/tutorials/chances-that-combine.html#a-tool-for-at-least-once)<br/>_used in:_ [Circles that overlap: Venn diagrams — Counting either: inclusion-exclusion](https://deweydex.github.io/dewlab/tutorials/circles-that-overlap.html#counting-either-inclusion-exclusion) |
 | `MIT-5.9` Data types: nominal, ordinal, discrete, continuous | 🟩 | [Kinds of data, and honest charts — Four kinds of data](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#four-kinds-of-data)<br/>[Statistics: averages, spread and frequency — Data types](https://deweydex.github.io/dewlab/tutorials/making-sense-of-data.html#data-types) |
-| `MIT-5.10` Effectiveness of displays: pie, histogram, stem-and-leaf | 🟩 | [Kinds of data, and honest charts — Bars and pies, for categories](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#bars-and-pies-for-categories)<br/>[Kinds of data, and honest charts — Histograms, for measured numbers](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#histograms-for-measured-numbers)<br/>[Kinds of data, and honest charts — Stem-and-leaf: every value kept](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#stem-and-leaf-every-value-kept)<br/>[Kinds of data, and honest charts — A chart that tells the truth](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#a-chart-that-tells-the-truth)<br/>[Statistics: averages, spread and frequency — Visualization with matplotlib](https://deweydex.github.io/dewlab/tutorials/making-sense-of-data.html#visualization-with-matplotlib)<br/>[Charts: choosing the right chart for your data — Why visualize?](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#why-visualize)<br/>[Charts: choosing the right chart for your data — Choosing the right chart](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#choosing-the-right-chart)<br/>[Charts: choosing the right chart for your data — Good practices for visualization](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#good-practices-for-visualization)<br/>_used in:_ [Kinds of data, and honest charts — Lines, for change over time](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#lines-for-change-over-time) |
+| `MIT-5.10` Effectiveness of displays: pie, histogram, stem-and-leaf | 🟩 | [Kinds of data, and honest charts — Bars and pies, for categories](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#bars-and-pies-for-categories)<br/>[Kinds of data, and honest charts — Histograms, for measured numbers](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#histograms-for-measured-numbers)<br/>[Kinds of data, and honest charts — Stem-and-leaf: every value kept](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#stem-and-leaf-every-value-kept)<br/>[Kinds of data, and honest charts — A chart that tells the truth](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#a-chart-that-tells-the-truth)<br/>[Statistics: averages, spread and frequency — Frequency distributions](https://deweydex.github.io/dewlab/tutorials/making-sense-of-data.html#frequency-distributions)<br/>[Charts: choosing the right chart for your data — Why draw the data?](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#why-draw-the-data)<br/>[Charts: choosing the right chart for your data — Choosing the right chart](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#choosing-the-right-chart)<br/>[Charts: choosing the right chart for your data — How a chart can mislead](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#how-a-chart-can-mislead)<br/>_used in:_ [Kinds of data, and honest charts — Lines, for change over time](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#lines-for-change-over-time) |
 | `MIT-5.11` Frequency tables and histograms | 🟩 | [Kinds of data, and honest charts — Counting: a frequency table](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#counting-a-frequency-table)<br/>[Kinds of data, and honest charts — A tool for counting](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#a-tool-for-counting)<br/>[Kinds of data, and honest charts — Histograms, for measured numbers](https://deweydex.github.io/dewlab/tutorials/kinds-of-data-and-honest-charts.html#histograms-for-measured-numbers)<br/>[Statistics: averages, spread and frequency — Frequency distributions](https://deweydex.github.io/dewlab/tutorials/making-sense-of-data.html#frequency-distributions) |
-| `MIT-5.12` Mean, median, mode, range, standard deviation | 🟩 | [Statistics: averages, spread and frequency — Measures of central tendency](https://deweydex.github.io/dewlab/tutorials/making-sense-of-data.html#measures-of-central-tendency)<br/>[Statistics: averages, spread and frequency — Measures of spread](https://deweydex.github.io/dewlab/tutorials/making-sense-of-data.html#measures-of-spread)<br/>[Charts: choosing the right chart for your data — Combining statistics and visualization](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#combining-statistics-and-visualization)<br/>[What is typical? Mean, median, mode and spread — Share it out equally: the mean](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#share-it-out-equally-the-mean)<br/>[What is typical? Mean, median, mode and spread — The middle one in the line: the median](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#the-middle-one-in-the-line-the-median)<br/>[What is typical? Mean, median, mode and spread — The most common: the mode](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#the-most-common-the-mode)<br/>[What is typical? Mean, median, mode and spread — How spread out? The range](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#how-spread-out-the-range)<br/>[What is typical? Mean, median, mode and spread — How far from the mean, on average](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#how-far-from-the-mean-on-average)<br/>[What is typical? Mean, median, mode and spread — The standard deviation](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#the-standard-deviation)<br/>_used in:_ [Many languages, one idea — One job in Python](https://deweydex.github.io/dewlab/tutorials/many-languages-one-idea.html#one-job-in-python)<br/>_used in:_ [Many languages, one idea — The same job in SQL](https://deweydex.github.io/dewlab/tutorials/many-languages-one-idea.html#the-same-job-in-sql)<br/>_used in:_ [Putting the derivative to work: choose a project — Project 3: The best line through data](https://deweydex.github.io/dewlab/tutorials/putting-the-derivative-to-work.html#project-3-the-best-line-through-data) |
-| `MIT-5.13` Merits and limitations of the averages with skewed data | 🟩 | [Statistics: averages, spread and frequency — A note on limitations](https://deweydex.github.io/dewlab/tutorials/making-sense-of-data.html#a-note-on-limitations)<br/>[What is typical? Mean, median, mode and spread — When the three disagree](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#when-the-three-disagree)<br/>[What is typical? Mean, median, mode and spread — A lopsided world](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#a-lopsided-world) |
+| `MIT-5.12` Mean, median, mode, range, standard deviation | 🟩 | [Statistics: averages, spread and frequency — Measures of central tendency](https://deweydex.github.io/dewlab/tutorials/making-sense-of-data.html#measures-of-central-tendency)<br/>[Statistics: averages, spread and frequency — Measures of spread](https://deweydex.github.io/dewlab/tutorials/making-sense-of-data.html#measures-of-spread)<br/>[Charts: choosing the right chart for your data — Numbers and a chart together](https://deweydex.github.io/dewlab/tutorials/pictures-worth-numbers.html#numbers-and-a-chart-together)<br/>[What is typical? Mean, median, mode and spread — Share it out equally: the mean](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#share-it-out-equally-the-mean)<br/>[What is typical? Mean, median, mode and spread — The middle one in the line: the median](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#the-middle-one-in-the-line-the-median)<br/>[What is typical? Mean, median, mode and spread — The most common: the mode](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#the-most-common-the-mode)<br/>[What is typical? Mean, median, mode and spread — How spread out? The range](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#how-spread-out-the-range)<br/>[What is typical? Mean, median, mode and spread — How far from the mean, on average](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#how-far-from-the-mean-on-average)<br/>[What is typical? Mean, median, mode and spread — The standard deviation](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#the-standard-deviation)<br/>_used in:_ [Many languages, one idea — One job in Python](https://deweydex.github.io/dewlab/tutorials/many-languages-one-idea.html#one-job-in-python)<br/>_used in:_ [Many languages, one idea — The same job in SQL](https://deweydex.github.io/dewlab/tutorials/many-languages-one-idea.html#the-same-job-in-sql)<br/>_used in:_ [Putting the derivative to work: choose a project — Project 3: The best line through data](https://deweydex.github.io/dewlab/tutorials/putting-the-derivative-to-work.html#project-3-the-best-line-through-data) |
+| `MIT-5.13` Merits and limitations of the averages with skewed data | 🟩 | [Statistics: averages, spread and frequency — When the mean misleads](https://deweydex.github.io/dewlab/tutorials/making-sense-of-data.html#when-the-mean-misleads)<br/>[What is typical? Mean, median, mode and spread — When the three disagree](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#when-the-three-disagree)<br/>[What is typical? Mean, median, mode and spread — A lopsided world](https://deweydex.github.io/dewlab/tutorials/what-is-typical.html#a-lopsided-world) |
 
 #### 6. Algorithms and Computations
 
@@ -524,7 +517,7 @@ graph TD
 
 ## Vocabulary
 
-The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **283 terms** are marked that way, and asking two questions of them is free.
+The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **286 terms** are marked that way, and asking two questions of them is free.
 
 ### Introduced more than once
 
@@ -533,15 +526,14 @@ The same word presented as new in two places. Either it is being introduced twic
 | Term | Introduced in tutorials |
 |---|---|
 | *function* | 1, 6 |
-| *getting sorted & big o notation* | 11, 12 |
-| *how* | 14, 15, 35 |
-| *index* | 5, 7, 24 |
-| *range* | 13, 19, 29 |
-| *see* | 23, 35 |
-| *solve* | 25, 27 |
-| *the python tutorial* | 1, 7, 8, 9, 13 |
+| *how* | 14, 15, 36 |
+| *index* | 5, 7, 25 |
+| *pride and prejudice* | 16, 19, 23 |
+| *range* | 13, 22, 30 |
+| *see* | 17, 36 |
+| *solve* | 26, 28 |
 | *what* | 14, 15 |
-| *zahlen* | 2, 24 |
+| *zahlen* | 2, 25 |
 
 ### Used before it was introduced
 
@@ -551,75 +543,74 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 |---|---:|---:|
 | *after* | 1 | 4 |
 | *aliasing* | 7 | 8 |
-| *all* | 1 | 37 |
-| *amplitude* | 32 | 33 |
-| *any* | 4 | 37 |
+| *all* | 1 | 38 |
+| *amplitude* | 33 | 34 |
+| *any* | 4 | 38 |
 | *at* | 1 | 7 |
-| *average* | 4 | 35 |
-| *base* | 15 | 24 |
+| *average* | 4 | 36 |
+| *base* | 15 | 25 |
 | *before* | 1 | 15 |
-| *between* | 1 | 34 |
-| *binary* | 2 | 15 |
+| *between* | 1 | 35 |
+| *binary* | 5 | 15 |
 | *binary search* | 5 | 11 |
+| *binomial* | 22 | 28 |
 | *bug* | 13 | 14 |
 | *call* | 2 | 6 |
-| *changing the subject* | 25 | 26 |
-| *closed* | 4 | 24 |
-| *complement* | 17 | 22 |
-| *cosine* | 31 | 32 |
-| *cosine rule* | 31 | 34 |
-| *de morgan's laws* | 21 | 22 |
-| *default* | 6 | 9 |
-| *difference* | 3 | 21 |
+| *changing the subject* | 26 | 27 |
+| *closed* | 4 | 25 |
+| *combination* | 18 | 19 |
+| *cosine* | 32 | 33 |
+| *cosine rule* | 32 | 35 |
+| *difference* | 3 | 16 |
 | *element* | 5 | 7 |
-| *expression* | 5 | 25 |
-| *factorise* | 25 | 27 |
-| *graph* | 8 | 29 |
+| *equal* | 2 | 16 |
+| *expression* | 5 | 26 |
+| *factorise* | 26 | 28 |
+| *graph* | 8 | 30 |
 | *how* | 1 | 14 |
-| *indices* | 7 | 24 |
-| *inside* | 1 | 34 |
+| *indices* | 7 | 25 |
+| *inside* | 1 | 35 |
 | *key* | 1 | 9 |
-| *know* | 1 | 35 |
-| *large* | 5 | 35 |
-| *limit* | 29 | 35 |
-| *linear* | 5 | 25 |
+| *know* | 1 | 36 |
+| *large* | 5 | 36 |
+| *limit* | 23 | 36 |
+| *linear* | 5 | 26 |
 | *list* | 1 | 7 |
-| *local* | 6 | 36 |
-| *look* | 3 | 36 |
-| *mean* | 2 | 19 |
-| *median* | 14 | 19 |
-| *merge* | 12 | 21 |
-| *midpoint* | 29 | 31 |
-| *module* | 11 | 17 |
-| *opposite* | 25 | 34 |
-| *parabola* | 27 | 30 |
-| *parallel* | 26 | 31 |
-| *period* | 32 | 33 |
-| *perpendicular* | 29 | 31 |
-| *power* | 1 | 24 |
-| *probability* | 16 | 17 |
+| *local* | 6 | 37 |
+| *look* | 3 | 37 |
+| *mean* | 2 | 22 |
+| *median* | 14 | 22 |
+| *merge* | 12 | 16 |
+| *midpoint* | 30 | 32 |
+| *opposite* | 26 | 35 |
+| *outcome* | 16 | 20 |
+| *parabola* | 28 | 31 |
+| *parallel* | 27 | 32 |
+| *period* | 17 | 34 |
+| *perpendicular* | 30 | 32 |
+| *power* | 1 | 25 |
+| *probability* | 16 | 20 |
 | *range* | 11 | 13 |
-| *reaches* | 3 | 35 |
-| *repetition* | 3 | 16 |
-| *root* | 6 | 27 |
-| *scaling* | 8 | 25 |
-| *see* | 1 | 23 |
+| *reaches* | 3 | 36 |
+| *root* | 6 | 28 |
+| *scaling* | 8 | 26 |
+| *see* | 1 | 17 |
 | *selection sort* | 5 | 12 |
 | *sequence* | 3 | 8 |
-| *set* | 1 | 21 |
-| *sine* | 31 | 32 |
-| *sine rule* | 31 | 34 |
-| *solution* | 6 | 27 |
-| *solve* | 6 | 25 |
-| *statistics* | 13 | 19 |
-| *subject* | 5 | 26 |
-| *tangent* | 31 | 32 |
+| *set* | 1 | 16 |
+| *sine* | 32 | 33 |
+| *sine rule* | 32 | 35 |
+| *solution* | 6 | 28 |
+| *solve* | 6 | 26 |
+| *statistics* | 13 | 22 |
+| *subject* | 5 | 27 |
+| *symmetric* | 16 | 22 |
+| *tangent* | 32 | 33 |
 | *test* | 6 | 13 |
-| *transposing* | 8 | 26 |
-| *unit circle* | 31 | 32 |
+| *transposing* | 8 | 27 |
+| *unit circle* | 32 | 33 |
 | *value* | 2 | 9 |
 | *what* | 1 | 14 |
-| *xor* | 21 | 22 |
 
 ## Scope questions, settled
 
