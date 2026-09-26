@@ -2,7 +2,12 @@
 title: "Rearranging formulae: changing the subject — Practice"
 practice_for: rearranging-formulae
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
+worlds:
+  rockets: Rockets, probes and the orbits they reach.
+  electronics: Batteries, resistors and the voltages between them.
+  music: Notes, strings and the sound waves between them.
+  fantasy-maps: A made-up kingdom, and the maps drawn of it.
 ---
 
 # Rearranging formulae: changing the subject — Practice
@@ -24,8 +29,8 @@ import random
 def do_they_agree(original, rearranged, ranges, tries=200):
     """Feed random values to both and see whether they ever disagree.
 
-    `original` takes the named values and returns the subject; `rearranged`
-    takes the subject plus the others and should give back the missing one.
+    `original` takes the named values and returns the subject. `rearranged`
+    takes the subject and the others, and should return the missing one.
     """
     for _ in range(tries):
         values = {name: random.uniform(low, high) for name, (low, high) in ranges.items()}
@@ -131,36 +136,33 @@ $\frac{1}{a} + \frac{1}{b} = \frac{b + a}{ab}$.
 
 </details>
 
-**8.** What is the combined resistance of two 10 Ω resistors in
-parallel? And of 100 Ω beside 1 Ω?
+**8.** What is the combined resistance of three resistors in parallel,
+of 2, 3 and 6 Ω? The rule for three is
+$\frac{1}{R} = \frac{1}{a} + \frac{1}{b} + \frac{1}{c}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-It is 5 Ω, and about 0.99 Ω.
+It is 1 Ω.
 
-Two equal resistors give exactly half the resistance of one. A large one
-beside a small one gives a little *less* than the small one. The 100
-hardly matters, because the current takes the easy path.
-
-Both facts are easy to read from $R = \frac{ab}{a + b}$, and neither is
-easy to see in $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$. That is why we
-rearrange formulas.
+$\frac{1}{2} + \frac{1}{3} + \frac{1}{6} = \frac{3}{6} + \frac{2}{6} +
+\frac{1}{6} = 1$, so $\frac{1}{R} = 1$ and $R = 1$. Python gives
+`1.0000000000000002` for `1 / (1/2 + 1/3 + 1/6)`, which is 1 with a
+rounding error. The combined resistance is less than the smallest one,
+as it was for two.
 
 </details>
 
-**9.** Make $u$ the subject of the lens formula
-$\frac{1}{f} = \frac{1}{u} + \frac{1}{v}$.
+**9.** Make $x$ the subject of $y = 7 - 2x$. Then make $b$ the subject
+of $a = c - \frac{b}{4}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-$\frac{1}{u} = \frac{1}{f} - \frac{1}{v}$, so
-$u = \frac{1}{\frac{1}{f} - \frac{1}{v}}$, which is the same as
-$u = \frac{fv}{v - f}$.
+$x = \frac{7 - y}{2}$, and $b = 4(c - a)$.
 
-Get the reciprocal of the letter you want on its own, then flip it. The
-second form shows something new. When $v = f$, the bottom is zero and
-there is no answer. In physics, this means the object is infinitely far
-away.
+In each, the letter you want is behind a minus sign. Add that term to
+both sides first: $y + 2x = 7$, then $2x = 7 - y$. And
+$a + \frac{b}{4} = c$, then $\frac{b}{4} = c - a$. Check the first with
+$x = 2$: $y = 3$, and $\frac{7 - 3}{2} = 2$.
 
 </details>
 
@@ -197,9 +199,33 @@ $y = \frac{4}{2} = 2$, and $y = 2$ gives $x = \frac{3}{1} = 3$.
 
 </details>
 
+**12.** Which of these Python lines calculates $\dfrac{a + b}{2}$, the
+average of $a$ and $b$?
+
+```python exec
+id: which-line-is-the-average
+a, b = 6, 10
+print(a + b / 2)
+print((a + b) / 2)
+print(a + (b / 2))
+print(a / 2 + b / 2)
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+The second and the fourth. They print 8.0, the average. The first and
+the third print 11.0, because Python divides only $b$ by 2.
+
+On paper, the fraction bar groups $a + b$ as if it had brackets. On one
+line, you write the brackets yourself. The fourth line divides each
+part by 2, which gives the same answer, because
+$\frac{a + b}{2} = \frac{a}{2} + \frac{b}{2}$.
+
+</details>
+
 ## Checking
 
-**12.** Can you write a check for your answer to question 2? Then break
+**13.** Can you write a check for your answer to question 2? Then break
 your answer on purpose, to make sure the check catches the mistake.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -225,7 +251,7 @@ check fail, you cannot know that it works.**
 
 </details>
 
-**13.** Why is `abs(a - b) < 1e-9` better than `a == b` when you check
+**14.** Why is `abs(a - b) < 1e-9` better than `a == b` when you check
 a rearrangement?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -239,7 +265,7 @@ right one is "are these closer together than I care about?"
 
 </details>
 
-**14.** If a rearrangement agrees with the original on 200 random
+**15.** If a rearrangement agrees with the original on 200 random
 values, does that prove it is correct?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -257,7 +283,7 @@ make. That is very useful, even though it is not certainty.
 
 ## In use
 
-**15.** The formula for compound interest is $A = P(1 + r)^n$. Make $P$
+**16.** The formula for compound interest is $A = P(1 + r)^n$. Make $P$
 the subject. Then make $r$ the subject.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -272,7 +298,7 @@ the same move as taking a square root, for any $n$.
 
 </details>
 
-**16.** You want €10,000 in 8 years, and the interest rate is 3% a year.
+**17.** You want €10,000 in 8 years, and the interest rate is 3% a year.
 How much do you need to invest now?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -281,7 +307,7 @@ $P = \frac{10000}{1.03^8} \approx$ €7,894.09.
 
 </details>
 
-**17.** Download time, file size and rate are related by
+**18.** Download time, file size and rate are related by
 $\text{time} = \frac{\text{size}}{\text{rate}}$. Make rate the subject.
 What rate do you need to move 4 GB in 90 seconds?
 
@@ -298,7 +324,7 @@ and bits differ by a factor of eight, and people often mix them up.
 
 </details>
 
-**18.** The period of a pendulum (the time for one full swing, there and
+**19.** The period of a pendulum (the time for one full swing, there and
 back) is $T = 2\pi\sqrt{\frac{L}{g}}$. Make $L$ the subject. Then find
 the length that gives a period of exactly one second, with $g = 9.81$.
 
@@ -312,5 +338,168 @@ With $T = 1$ and $g = 9.81$: $L \approx 0.2485$ m, about 25 cm.
 
 A pendulum with a period of two seconds (one second each way) is about
 a metre long. That is why grandfather clocks are as tall as they are.
+
+</details>
+
+## Your world
+
+**20.** A problem from the world you chose.
+
+<div class="dl-world" data-world="rockets">
+
+A satellite in a circular orbit moves at $v = \sqrt{\frac{GM}{r}}$ m/s,
+where $r$ is its distance from the Earth's centre in metres and
+$GM = 3.986 \times 10^{14}$ for the Earth. Make $r$ the subject. How far
+above the ground is a satellite moving at 7,700 m/s? The Earth's radius
+is 6,371 km.
+
+```python exec
+id: your-world--rockets
+GM = 3.986e14
+earth_radius = 6_371_000
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+$r = \frac{GM}{v^2}$, and the satellite is about 352 km up.
+
+Square both sides: $v^2 = \frac{GM}{r}$. Multiply by $r$ and divide by
+$v^2$. Then subtract the Earth's radius:
+
+```python
+r = GM / 7700 ** 2
+print(r, (r - earth_radius) / 1000)
+```
+
+$r$ is about 6,723 km from the centre, so about 352 km above the
+ground. The International Space Station orbits at about 400 km, a
+little slower.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="electronics">
+
+The power a resistor turns into heat is $P = \frac{V^2}{R}$. Make $R$
+the subject. What is the resistance of a 60 W heater made for 230 V?
+Then make $V$ the subject.
+
+```python exec
+id: your-world--electronics
+power = 60
+volts = 230
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+$R = \frac{V^2}{P}$, which is about 882 Ω. And $V = \sqrt{PR}$.
+
+```python
+resistance = volts ** 2 / power
+print(resistance, (power * resistance) ** 0.5)
+```
+
+Multiply both sides by $R$, then divide by $P$. For $V$, multiply by
+$R$ and take the square root. The round trip returns 230, apart from
+rounding.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="music">
+
+The wavelength of a sound is $\lambda = \frac{v}{f}$, where $v$ is the
+speed of sound, about 343 m/s in air, and $f$ is the frequency. Make $f$
+the subject. What frequency has a wavelength of exactly 1 m? What is the
+wavelength of the orchestra's A, 440 Hz?
+
+```python exec
+id: your-world--music
+speed = 343
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+$f = \frac{v}{\lambda}$, so a 1 m wavelength is 343 Hz. The A at
+440 Hz has a wavelength of about 0.78 m.
+
+```python
+print(speed / 1, speed / 440)
+```
+
+Multiply both sides by $f$, then divide by $\lambda$. Higher notes have
+shorter waves, which is why a small speaker can play high notes but
+struggles with low ones.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+On a map drawn at 1 : $s$, a real distance in km is
+$\text{ground} = \frac{\text{map} \times s}{100\,000}$, with the map
+distance in cm. A mapmaker measures a road that is 12 km long as 24 cm
+on an old map. Make $s$ the subject. What scale was the old map?
+
+```python exec
+id: your-world--fantasy-maps
+ground_km = 12
+map_cm = 24
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+$s = \frac{100\,000 \times \text{ground}}{\text{map}}$, so the map is
+1 : 50,000.
+
+```python
+print(100_000 * ground_km / map_cm)
+```
+
+Multiply both sides by 100,000, then divide by the map distance. A
+kilometre is 100,000 cm, which is where the 100,000 comes from.
+
+</details>
+
+</div>
+
+## From earlier
+
+**21.** In [Polynomials: representing and combining them in
+Python](tutorial:expressions-come-alive) we expanded brackets. Make $x$
+the subject of $y = (x + 2)^2 - 4$, for $x$ of $-2$ or more. Is it
+easier to expand first, or not?
+
+<details class="dl-answer"><summary>answer</summary>
+
+$x = \sqrt{y + 4} - 2$.
+
+It is easier not to expand. $x$ appears once, inside the bracket, so
+undo from the outside in: add 4, take the square root, then subtract 2.
+Expanded, $y = x^2 + 4x$, and $x$ appears twice, which is much harder.
+We keep the positive root because $x + 2$ is 0 or more. Check with
+$y = 12$: $\sqrt{16} - 2 = 2$, and $(2 + 2)^2 - 4 = 12$.
+
+</details>
+
+**22.** In [Probability: simple, compound and
+conditional](tutorial:what-are-the-chances), the chance of at least one
+six in $n$ rolls of a die is $p = 1 - \left(\frac{5}{6}\right)^n$. Make
+$n$ the subject. How many rolls give an even chance, $p = 0.5$? The
+rules for logarithms from
+[Number types, powers and logarithms](tutorial:numbers-and-their-families)
+bring $n$ down.
+
+<details class="dl-answer"><summary>answer</summary>
+
+$n = \dfrac{\log(1 - p)}{\log(5/6)}$, which is about 3.8 for
+$p = 0.5$. So four rolls give a better than even chance.
+
+$\left(\frac{5}{6}\right)^n = 1 - p$. Take the logarithm of both sides:
+$n \log\frac{5}{6} = \log(1 - p)$, and divide. With three rolls the
+chance is about 0.42, and with four about 0.52.
 
 </details>

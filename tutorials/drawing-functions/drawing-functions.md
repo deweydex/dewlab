@@ -429,6 +429,12 @@ A quadratic has an $x^2$ in it. That one change turns the straight line
 into a curve with a turning point. Let's move the simplest one, $y = x^2$,
 one change at a time.
 
+The cells below hand `draw` a function written with `lambda`. A
+`lambda` is a short way to write a small function on one line, without
+giving it a name. `lambda x: x ** 2 + 3` is a function that takes `x`
+and returns `x ** 2 + 3`. It does the same job as a `def` with one
+`return` line.
+
 ```python exec
 id: curves-that-bend-1
 ax = draw(lambda x: x ** 2, label="x^2")

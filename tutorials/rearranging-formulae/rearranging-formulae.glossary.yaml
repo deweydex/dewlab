@@ -25,14 +25,6 @@ entries:
       The denominator is the bottom of a fraction. When the letter you
       want is in a denominator, find its reciprocal first, then flip it.
     example: "1/R = 1/a + 1/b  becomes  R = 1 / (1/a + 1/b)"
-  - term: lambda
-    python: lambda
-    kind: keyword
-    definition: >
-      Makes a small function on one line, without a name. The part before
-      the colon lists the inputs, and the part after it is the value
-      returned.
-    example: "lambda u, a, t: u + a * t"
   - term: floating-point comparison tolerance
     kind: concept
     definition: >
@@ -40,3 +32,17 @@ entries:
       decimal place. So check whether they are closer together than you
       care about, rather than asking whether they are exactly equal.
     example: "abs(recovered - expected) > 1e-9"
+  - term: the fraction bar as a bracket
+    kind: concept
+    definition: >
+      On paper, a fraction bar groups everything above it and everything
+      below it, as if they were in brackets. Typed on one line, those
+      brackets must be written: (v - u) / a. Without them, v - u / a
+      divides only u by a.
+    example: "(v - u) / a   # not v - u / a"
+  - term: gathering the subject
+    kind: concept
+    definition: >
+      When the subject appears twice, move every term with it to one side,
+      then take it out as a common factor. ax - x = 3 becomes x(a - 1) = 3,
+      so x = 3 / (a - 1).

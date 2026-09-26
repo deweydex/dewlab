@@ -274,20 +274,21 @@ Here is a second place where Python and a quick reading can disagree.
 
 ```python exec
 id: powers-in-python-2
-print(-3 ** 2)
 print((-3) ** 2)
+print(-3 ** 2)
 ```
 
 ```predict
 type: number
 
-What will the first line print?
+The first line squares $-3$ and prints 9. What will the second line
+print?
 ```
 
-The first line prints $-9$. Python does the power before the minus
+The second line prints $-9$. Python does the power before the minus
 sign, so `-3 ** 2` means $-(3^2)$. Mathematics agrees. On paper, $-3^2$
 is $-9$ too. To square the number $-3$, put it in brackets, as the
-second line does. Then the answer is 9.
+first line does.
 
 ### Your turn
 

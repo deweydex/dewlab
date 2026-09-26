@@ -26,6 +26,14 @@ entries:
       The new function remembers the values it was given. It is useful when
       you want a whole family of similar functions.
     example: "def quadratic(a, b, c):\n    def f(x):\n        return a * x ** 2 + b * x + c\n    return f"
+  - term: lambda
+    python: lambda
+    kind: keyword
+    definition: >
+      Makes a small function on one line, without a name. The part before
+      the colon lists the inputs, and the part after it is the value
+      returned.
+    example: "lambda u, a, t: u + a * t"
   - term: slope (m), intercept (c)
     kind: concept
     definition: >

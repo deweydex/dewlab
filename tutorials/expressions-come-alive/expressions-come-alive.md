@@ -86,13 +86,12 @@ id: three-kinds-of-equals-1
 x = 5
 x = x + 1
 print(x)
-print(3 * x + 7 == 25)
 ```
 
 ```predict
 type: choice
 
-What will the first `print` show?
+What will it print?
 
 - 6
 - 5
@@ -104,8 +103,16 @@ What will the first `print` show?
   - In maths, $x = x + 1$ is a false statement.
 ```
 
-It prints 6, and then `True`. The same sign means three different
-things:
+It prints 6. Python's `=` does not claim that two things are equal. And
+`==` asks whether they are:
+
+```python exec
+id: three-kinds-of-equals-2
+print(3 * x + 7 == 25)
+```
+
+That prints `True`, because $3 \times 6 + 7 = 25$. Here are the three
+jobs an equals sign can do:
 
 | Written | Where | Means |
 |---|---|---|
