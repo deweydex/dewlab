@@ -41,6 +41,12 @@ entries:
   - term: symmetric
     kind: concept
     definition: A symmetric matrix is a matrix that is equal to its own transpose. Swapping its rows and columns changes nothing.
+  - term: gradient
+    kind: concept
+    definition: >
+      A gradient is a picture whose values change smoothly from one side
+      to the other, such as dark on the left to light on the right. Mixing
+      a photo with one fades it.
   - term: "ValueError"
     python: ValueError
     kind: keyword
@@ -49,4 +55,4 @@ entries:
       wrong in some other way. On this page we raise one ourselves, with a
       message that says what went wrong. That is clearer than an error
       like IndexError, which says where something failed but not why.
-    example: "raise ValueError(\"matrices must be the same shape\")"
+    example: "raise ValueError(\"a and b are not the same shape\")"

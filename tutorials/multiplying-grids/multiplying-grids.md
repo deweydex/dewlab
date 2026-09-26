@@ -1,13 +1,19 @@
 ---
 title: "Matrix multiplication: rows times columns"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
+worlds:
+  pixel-art: Pictures made of small squares, the way a screen draws them.
+  starships: Starships, and the structures they are built from.
+  space-scenes: Stars, planets and the paths they take across the sky.
 covers:
-  the-dot-product-first:
+  one-move-after-another:
     touches: [CMPS-LO4]
-  multiplying-two-grids:
+  where-the-rule-comes-from:
     touches: [CMPS-LO4]
   order-matters:
+    touches: [CMPS-LO4]
+  every-corner-at-once:
     touches: [CMPS-LO4]
   the-matrix-that-does-nothing:
     touches: [CMPS-LO4]
@@ -15,264 +21,464 @@ covers:
 
 # Matrix multiplication: rows times columns
 
-In [Matrices: adding, scaling and transposing a grid of
-numbers](tutorial:grid-of-numbers), adding two matrices worked the way
-you would guess. We paired the entries and added them.
+On the last page, one matrix moved the F. Here are two moves, one after
+the other. First a shear, and then a quarter turn.
 
-Multiplying two matrices does not work like that. Almost nobody guesses
-the rule for matrix multiplication at the first try. So we will build it
-slowly, from something smaller that you already know how to do.
+```python exec
+id: one-move-after-another-1
+F = [(0, 0), (1, 0), (1, 2), (2, 2), (2, 3), (1, 3), (1, 4), (3, 4), (3, 5), (0, 5)]
+shear = [[1, 1], [0, 1]]
+turn = [[0, -1], [1, 0]]
 
-On this page we:
+leaned = transform_all(shear, F)
+leaned_then_turned = transform_all(turn, leaned)
+draw_shapes([F, leaned, leaned_then_turned])
+```
 
-- calculate the dot product of two lists
-- use the dot product to multiply two matrices
-- see whether the order of multiplication matters
-- meet the matrix that changes nothing
+Is there one matrix that does both moves at once? If there is, a
+program could store a whole sequence of moves as four numbers, however
+long the sequence. That is how a game moves a character through a turn,
+a lean and a shrink in one step.
 
-## The dot product first
+## One move after another
 
-Here are two ordinary Python lists of the same length. What do you think
-`zip` does with them? Run the cell to find out.
+The last page gave a way to find any matrix. Decide where "right",
+$(1, 0)$, and "up", $(0, 1)$, go, and write those in as its columns. So
+follow those two points through both moves.
+
+```python exec
+id: one-move-after-another-2
+right = transform(turn, transform(shear, (1, 0)))
+up = transform(turn, transform(shear, (0, 1)))
+print("right ends at", right)
+print("up ends at", up)
+```
+
+```predict
+Where will "right", $(1, 0)$, end up after the shear and then the turn?
+
+- (0, 1)
+  - The shear leaves the bottom edge alone, and the turn sends right to up.
+- (1, 1)
+  - The shear moves it, then the turn moves it again.
+- (-1, 1)
+  - Both moves act on it.
+```
+
+"Right" ends at $(0, 1)$ and "up" at $(-1, 1)$. Written in as columns,
+that is the one matrix for both moves.
+
+```python exec
+id: one-move-after-another-3
+both = [[0, -1], [1, 1]]
+print(transform_all(both, F) == leaned_then_turned)
+```
+
+It is. The matrix that does "$S$, then $T$" is called the *product* of
+the two, written $TS$: the move that happens first is written on the
+right, next to the point it acts on, the way $f(g(x))$ does $g$ first.
+Finding it by following two points works every time. The next section
+turns it into a rule that needs no points at all.
+
+## Where the rule comes from
+
+Follow "up" again. The shear sends it to its second column, $(1, 1)$.
+Then the turn acts on $(1, 1)$: its new x is the turn's first row paired
+with $(1, 1)$, $0 \times 1 + (-1) \times 1 = -1$, and its new y is the
+second row paired with it, $1 \times 1 + 0 \times 1 = 1$. So every entry
+of $TS$ is one row of $T$ paired with one column of $S$: multiply the
+matching numbers, and add.
+
+That pairing is the *dot product*. For two lists of the same length, it
+multiplies each pair and adds up the results. The dot product of
+$[1, 2, 3]$ and $[4, 5, 6]$ is $1 \times 4 + 2 \times 5 + 3 \times 6 =
+32$. You met it in
+[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
+`zip` pairs two lists position by position:
 
 ```python exec
 id: the-dot-product-first-1
-a = [1, 2, 3]
-b = [4, 5, 6]
-
-paired = list(zip(a, b))
-print(paired)
+print(list(zip([1, 2, 3], [4, 5, 6])))
+print(list(zip([1, 2, 3], [4, 5])))
 ```
 
-`zip` pairs the two lists, position by position: $1$ with $4$, $2$
-with $5$, and $3$ with $6$. Each pair is printed in round brackets.
+```predict
+What will the second line print, when one list is shorter?
 
-The *dot product* of `a` and `b` is the number we get when we multiply
-each pair and then add up the results: $1(4) + 2(5) + 3(6)$. You met
-the dot product in
-[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
+- [(1, 4), (2, 5), (3, None)]
+  - Python adds None for the missing number.
+- [(1, 4), (2, 5)]
+  - zip stops when the shorter list runs out.
+- An error
+  - The lists do not match.
+```
 
-### Your turn
-
-How might you write `dot(a, b)`, so that it returns that one number?
-
-You can use a loop, in about three lines. Or you can use a comprehension
-over `zip(a, b)`, in one line.
+`zip` stops at the end of the shorter list, without a word. A dot
+product built on `zip` would give an answer for lists that do not match,
+and the answer would look exactly like a right one. So `dot` should
+check the lengths first. Can you write it? It comes with you to the
+later pages, with `multiply` below.
 
 ```python exec
-id: the-dot-product-first-2
-hint: sum(x * y for x, y in zip(a, b)) — or the loop version of the same idea.
-# Your dot(a, b)
+id: matrix-dot-multiply
+toolkit: yes
+def dot(a, b):
+    """The dot product: each pair multiplied, then added up.
+
+    Raises ValueError if a and b are not the same length.
+    """
+    ...
+
+
+def multiply(a, b):
+    """The matrix product ab: row i of a with column j of b, in every place."""
+    ...
 ```
 
-Now try `dot(a, b)` with `a = [1, 2, 3]` and `b = [4, 5]`. The second
-list is one shorter than the first. What happens?
+```python toolkit-reference
+for: matrix-dot-multiply
+def dot(a, b):
+    """The dot product: each pair multiplied, then added up.
+
+    Raises ValueError if a and b are not the same length.
+    """
+    if len(a) != len(b):
+        raise ValueError("lengths do not match")
+    return sum(x * y for x, y in zip(a, b))
+
+
+def multiply(a, b):
+    """The matrix product ab: row i of a with column j of b, in every place."""
+    columns = transpose(b)
+    return [[dot(row, column) for column in columns] for row in a]
+```
+
+```inputs
+dot([1, 2, 3], [4, 5, 6])
+multiply([[0, -1], [1, 0]], [[1, 1], [0, 1]])
+multiply([[1, 2], [3, 4]], [[5, 0], [1, -1]])
+multiply([[1, 2, 3]], [[1], [0], [2]])
+```
+
+```hint
+For `dot`: check the lengths, then add up `x * y` for each pair from
+`zip(a, b)`. For `multiply`: the columns of `b` are the rows of
+`transpose(b)`, from the first page. Each entry of the result is `dot(row,
+column)`, one for each row of `a` and each column of `b`.
+```
+
+```solution
+def dot(a, b):
+    """The dot product: each pair multiplied, then added up.
+
+    Raises ValueError if a and b are not the same length.
+    """
+    if len(a) != len(b):
+        raise ValueError("lengths do not match")
+    total = 0
+    for x, y in zip(a, b):
+        total = total + x * y
+    return total
+
+
+def multiply(a, b):
+    """The matrix product ab: row i of a with column j of b, in every place."""
+    result = []
+    for row in a:
+        new_row = []
+        for column in transpose(b):
+            new_row.append(dot(row, column))
+        result.append(new_row)
+    return result
+---
+A list of lists stores rows, so a column of `b` is awkward to reach.
+`transpose` turns the columns into rows. `multiply(turn, shear)` gives
+`[[0, -1], [1, 1]]`, the matrix found by following the two points.
+```
 
 ```python exec
-id: the-dot-product-first-3
+id: where-the-rule-comes-from-1
+print(multiply(turn, shear))
 ```
 
-Python raises no error, and that should make us suspicious. `zip` stops
-at the end of the shorter list. So `dot` used only the
-first two entries of `a` and ignored the third. There is no error and no
-warning. The answer is wrong, but it looks exactly like a right one.
-
-We can make this mistake raise an error. What if `dot` checked the lengths first,
-with `if len(a) != len(b): raise ValueError(...)`? Write that version
-below.
-
-```python exec
-id: the-dot-product-first-4
-hint: One line before the sum — if len(a) != len(b): raise ValueError("lengths do not match").
-# Your dot(a, b), with a length check
-```
-
-## Multiplying two grids
-
-To multiply matrix $A$ by matrix $B$, we take the dot product of every
-row of $A$ with every column of $B$. The entry at row $i$, column $j$ of
-the result is the dot product of row $i$ of $A$ with column $j$ of $B$:
+Here is the rule in symbols. The entry in row $i$, column $j$ of $AB$ is
+row $i$ of $A$ dotted with column $j$ of $B$.
 
 $$c_{ij} = \sum_{k} a_{ik} \, b_{kj}$$
+
+Here it is on bigger numbers.
+
+```python exec
+id: multiplying-two-grids-3
+A = [[1, 2], [3, 4]]
+B = [[5, 0], [1, -1]]
+print(multiply(A, B))
+```
 
 ![Matrix A times matrix B equals AB. The first row of A is shaded, the
 first column of B is shaded, and the entry they produce in the top left of
 AB is shaded. Below, the working: one times five plus two times one equals
 seven.](row-times-column.svg)
 
-One row and one column make one entry. The shaded row and the shaded
-column pair up, term by term. The result goes in the place where that row
-and that column meet. Every other entry of the answer is made in the
-same way, with a different row and a different column.
-
-The picture also shows why the shapes have to agree. A row and a column
-can only pair up term by term if they have the same length.
-
-That is the whole rule. The hard part is to get the columns of $B$,
-because a list of lists stores rows. But you have already written
-something that turns columns into rows: `transpose`, from the last page.
-No page starts with code from an earlier page, so here it is again,
-exactly as before.
-
-```python exec
-id: multiplying-two-grids-1
-def transpose(m):
-    rows, cols = len(m), len(m[0])
-    return [[m[r][c] for r in range(rows)] for c in range(cols)]
-```
-
-### Your turn
-
-How might you write `multiply(a, b)`, with your own `dot` and
-`transpose`?
-
-1. Loop over every row of `a`.
-2. For each row, loop over every column of `b`. The columns of `b` are
-   the rows of `transpose(b)`.
-3. The entry of the result for that row and column is `dot(row, column)`.
-
-```python exec
-id: multiplying-two-grids-2
-hint: [[dot(row, col) for col in transpose(b)] for row in a] — one dot product per position in the result.
-# Your multiply(a, b)
-```
-
-Try it on these two matrices. What shape is the result?
-
-```python exec
-id: multiplying-two-grids-3
-A = [[1, 2], [3, 4]]
-B = [[5, 0], [1, -1]]
-multiply(A, B)
-```
-
-Now try a pair that should not work. `A3` is 2×3 and `E` is 2×2. The
-number of columns in `A3` (3) does not match the number of rows in `E`
-(2).
-
-```python exec
-id: multiplying-two-grids-4
-A3 = [[1, 2, 3], [4, 5, 6]]
-E = [[1, 0], [0, 1]]
-multiply(A3, E)
-```
-
-What happened for you?
-
-- If your `dot` checks the lengths, this raises a `ValueError`.
-  That is why we added the check.
-- If your `dot` has no check, you get a 2×2 result, and the third column
-  of `A3` has been lost with no warning. This is the same silent
-  mistake as in the dot-product section, one level up.
-
-If you skipped the check, add it now. A matrix
-multiplication that stops with an error is much easier to fix than one that
-gives a wrong answer that looks right.
-
-This gives us the shape rule. To multiply an $m \times n$ matrix by an
-$n \times p$ matrix, the inner numbers (the two $n$'s) have to match.
-The result is $m \times p$: the two outer numbers, in the same order.
+One row and one column make one entry, and the entry goes where that
+row and that column meet. The picture shows why the shapes must agree:
+a row and a column can only pair up if they have the same length.
 
 ## Order matters
 
-With ordinary numbers, $3 \times 5$ is the same as $5 \times 3$. Is
-`multiply(A, B)` the same as `multiply(B, A)`? Make a guess, then run
-the cell.
+With numbers, $3 \times 5 = 5 \times 3$. Is a shear then a turn the same
+as a turn then a shear?
 
 ```python exec
 id: order-matters-1
-print("AB =", multiply(A, B))
-print("BA =", multiply(B, A))
+print("turn after shear:", multiply(turn, shear))
+print("shear after turn:", multiply(shear, turn))
+draw_shapes([F, transform_all(multiply(turn, shear), F), transform_all(multiply(shear, turn), F)])
 ```
 
-Both `A` and `B` are 2×2, so `AB` and `BA` both exist. But they are
-different matrices. For matrix multiplication, the order matters. This
-is one of the first places where multiplying matrices stops behaving
-like multiplying numbers.
+```predict
+Will the two products be the same?
 
-### Your turn
+- Yes
+  - The same two moves, so the same result.
+- No
+  - Leaning and then turning leans along a different edge from turning and then leaning.
+```
 
-1. Pick any two 2×2 matrices of your own.
-2. Multiply them in both orders. Does `multiply` ever give you the same
-   answer both ways?
-3. Try a pair where you think it might, before a pair where you are sure
-   it will not.
+The matrices are different, and so are the pictures. Lean the F and then
+turn it, and it leans one way. Turn it first and then lean it, and the
+lean acts on the turned F, along a different edge. For matrices, $AB$
+and $BA$ are usually different, so the order of writing them matters.
+$TS$ means $S$ first.
+
+## Every corner at once
+
+`transform_all` moves one point at a time. Multiplication can move them
+all together. Put the F's corners side by side as the columns of one
+matrix, with the x's along the top row and the y's along the bottom.
 
 ```python exec
-id: order-matters-2
-# Two matrices of your own, and both orders of multiply
+id: every-corner-at-once-1
+corners = [[x for x, y in F], [y for x, y in F]]
+print(corners)
+moved = multiply(turn, corners)
+print(moved)
 ```
+
+`corners` is 2×10, with one column for each corner. `multiply(turn,
+corners)` is 2×10 too, and each of its columns is one corner, moved. The
+graphics pages later in the course use this layout, so that one
+multiplication moves every corner of a shape.
+
+That needs the shapes to fit. An $m \times n$ matrix times an $n \times
+p$ matrix makes an $m \times p$ one. The two inner numbers must match.
+They are the columns of the first matrix and the rows of the second. What happens if
+they do not?
+
+```python exec
+id: every-corner-at-once-2
+flat = [[1, 2, 3], [4, 5, 6]]
+multiply(turn, flat)
+multiply(flat, turn)
+```
+
+The first works: 2×2 times 2×3 makes 2×3. The second, 2×3 times 2×2,
+stops with your `ValueError`: a row of `flat` has three numbers, and a
+column of `turn` has two. Without the length check in `dot`, `zip` would
+have paired the first two numbers of each row, and quietly thrown the
+third away.
 
 ## The matrix that does nothing
 
-When we multiply a number by 1, nothing changes. Is there a matrix that
-does the same? When we multiply any matrix by it, does anything change?
-
-### Your turn
-
-1. Which 3×3 matrix `I3` do you think has this property? Build it in the
-   first cell.
-2. Choose a matrix `C` to test it on.
-3. Does `multiply(C, I3)` equal `C`? Does `multiply(I3, C)`?
+Which matrix leaves every point where it is? It must send "right" to
+$(1, 0)$ and "up" to $(0, 1)$, so those are its columns.
 
 ```python exec
 id: the-matrix-that-does-nothing-1
-hint: Ones down the main diagonal, zeros everywhere else.
-# Your I3, and a C to test it on
+I = [[1, 0], [0, 1]]
+print(multiply(I, turn) == turn, multiply(turn, I) == turn)
+print(transform_all(I, F) == F)
 ```
+
+This is the *identity matrix*: ones down the diagonal from top left to
+bottom right, zeros everywhere else, written $I$. Doing nothing and
+then turning is turning, in either order. Every square size has one:
+$I_3$ has three ones down its diagonal.
+
+## Your world
+
+A sequence of moves from the world you chose, made into one matrix.
+
+<div class="dl-world" data-world="pixel-art">
+
+On the practice page for the first page, transposing and then mirroring
+a grid turned it a quarter. Here are the same two flips as matrices on
+points: `swap` swaps x and y, and `mirror` mirrors left to right. What
+single matrix is "swap, then mirror"? And "mirror, then swap"?
 
 ```python exec
-id: the-matrix-that-does-nothing-2
-print(multiply(C, I3))
-print(multiply(I3, C))
-print(C)
+id: multiply-your-world--pixel-art
+swap = [[0, 1], [1, 0]]
+mirror = [[-1, 0], [0, 1]]
 ```
 
-This matrix is called the *identity matrix*. The identity matrix is a
-square matrix with ones down its main diagonal and zeros everywhere
-else. It is usually written $I$. Every square size has its own identity
-matrix: $I_2$, $I_3$, and so on.
+```hint
+"swap, then mirror" is `multiply(mirror, swap)`. The move that happens
+first is written on the right. Read the columns of the answer to name it.
+```
 
-You will see the identity matrix often. Whenever a formula needs "no
-change", the identity matrix is what "no change" looks like for a
-matrix.
+```solution
+{{include: setup/matrices/transform.py}}
+{{include: setup/matrices/multiply.py}}
 
-## Reflection
+F = [(0, 0), (1, 0), (1, 2), (2, 2), (2, 3), (1, 3), (1, 4), (3, 4), (3, 5), (0, 5)]
+swap = [[0, 1], [1, 0]]
+mirror = [[-1, 0], [0, 1]]
+print(multiply(mirror, swap), multiply(swap, mirror))
+draw_shapes([F, transform_all(multiply(mirror, swap), F)])
+---
+`[[0, -1], [1, 0]]`, the quarter turn anticlockwise, and `[[0, 1], [-1,
+0]]`, the quarter turn clockwise. Two flips make a turn, and the order
+decides its direction. (On the grid, the turn looked clockwise, because
+a grid counts its rows downwards and points count upwards.)
+```
 
-After two pages, you have built five operations from nothing but nested
-Python lists: add, scale, transpose, the dot product, and now matrix
-multiplication.
+</div>
 
-Most people do not find the multiplication rule obvious when they first
-meet it. It starts to make sense when you build it from the dot product,
-one row and one column at a time.
+<div class="dl-world" data-world="starships">
 
-Here are some questions to think about:
+A ship docks in three moves. It turns 90°, shrinks to half size as it
+flies off, and leans for speed with a shear. Can you make the one matrix
+for all three, in that order, and check it on the ship?
 
-- Were you surprised that `AB` is not equal to `BA`? Or did you expect
-  it, once you saw how the rule works?
-- `transpose` gave us a way to get the columns of `B`. Did that
-  connection make sense to you? What made it clear, if it did?
+```python exec
+id: multiply-your-world--starships
+ship = [(0, 4), (1, 1), (2, -1), (1, -0.5), (-1, -0.5), (-2, -1), (-1, 1)]
+turn = [[0, -1], [1, 0]]
+shrink = [[0.5, 0], [0, 0.5]]
+lean = [[1, 0.3], [0, 1]]
+```
+
+```hint
+The first move is written on the right: `multiply(lean, multiply(shrink,
+turn))`. Check it against `transform_all` applied three times.
+```
+
+```solution
+{{include: setup/matrices/transform.py}}
+{{include: setup/matrices/multiply.py}}
+
+ship = [(0, 4), (1, 1), (2, -1), (1, -0.5), (-1, -0.5), (-2, -1), (-1, 1)]
+turn = [[0, -1], [1, 0]]
+shrink = [[0.5, 0], [0, 0.5]]
+lean = [[1, 0.3], [0, 1]]
+
+all_three = multiply(lean, multiply(shrink, turn))
+print(all_three)
+one_by_one = transform_all(lean, transform_all(shrink, transform_all(turn, ship)))
+print(transform_all(all_three, ship) == one_by_one)
+draw_shapes([ship, one_by_one])
+---
+`[[0.15, -0.5], [0.5, 0.0]]`, and the two ways agree. Three moves become four
+numbers. A game with 1,000 ships can find each ship's matrix once, and
+move all its corners with it, however many moves went into it.
+```
+
+</div>
+
+<div class="dl-world" data-world="space-scenes">
+
+The sky turns about 15° an hour. Multiply the one-hour turn by itself
+six times. Is the result the six-hour turn, a quarter turn?
+
+```python exec
+id: multiply-your-world--space-scenes
+import math
+
+
+def turn_by(degrees):
+    """The matrix that turns anticlockwise by this many degrees."""
+    angle = math.radians(degrees)
+    return [[math.cos(angle), -math.sin(angle)],
+            [math.sin(angle), math.cos(angle)]]
+
+
+one_hour = turn_by(15)
+```
+
+```hint
+Start from the identity, `[[1, 0], [0, 1]]`, and multiply by `one_hour`
+six times in a loop. Round the entries to see them clearly.
+```
+
+```solution
+{{include: setup/matrices/multiply.py}}
+
+import math
+
+
+def turn_by(degrees):
+    """The matrix that turns anticlockwise by this many degrees."""
+    angle = math.radians(degrees)
+    return [[math.cos(angle), -math.sin(angle)],
+            [math.sin(angle), math.cos(angle)]]
+
+
+one_hour = turn_by(15)
+six_hours = [[1, 0], [0, 1]]
+for hour in range(6):
+    six_hours = multiply(one_hour, six_hours)
+print([[round(value, 6) for value in row] for row in six_hours])
+---
+`[[0.0, -1.0], [1.0, 0.0]]`, the quarter turn, up to rounding. Turning
+by 15° six times is turning by 90°. For turns, multiplying the matrices
+adds the angles. So two turns can be done in either order, because
+15 + 90 and 90 + 15 are the same turn. For most pairs of moves, the
+order does matter.
+```
+
+</div>
+
+## Looking back
+
+On this page the rule for multiplying came out of doing one move after
+another. Can you say, in your own words, why an entry of $AB$ is a row
+of $A$ with a column of $B$, and not a row with a row?
+
+A challenge: the shear `[[1, 1], [0, 1]]` leans the F. Multiply it by
+itself. What does `multiply(shear, shear)` do? And the shear ten times?
+Predict each before you run it.
+
+```python challenge
+def dot(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+
+def multiply(a, b):
+    columns = [[row[j] for row in b] for j in range(len(b[0]))]
+    return [[dot(row, column) for column in columns] for row in a]
+
+
+shear = [[1, 1], [0, 1]]
+print(multiply(shear, shear))
+```
+
+The next page, [Undoing it](tutorial:undoing-it), asks whether a
+move can always be undone.
 
 ## Where to read more
 
-Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 3:
-Linear Transformations and Matrices.*
-<https://www.youtube.com/watch?v=kYB8IZa5AuE>. This video shows where the
-row-times-column rule comes from, in geometry. Watch it before the next
-tutorial, which is built entirely on this idea.
+Grant Sanderson (3Blue1Brown) (2016). *Matrix multiplication as
+composition: Chapter 4, Essence of linear algebra.*
+<https://www.youtube.com/watch?v=XkY2DOUCWMU>. Multiplying two matrices
+means doing one move after another, shown with the same shear and turn
+as this page. Ten minutes.
 
 Grant Sanderson (3Blue1Brown) (2017). *But What Is a Neural Network? |
-Deep Learning, Chapter 1.*
-<https://www.youtube.com/watch?v=aircAruvnKk>. A forward pass through a
-network is only the matrix multiplication from this tutorial, repeated
-many times.
+Deep Learning, Chapter 1.* <https://www.youtube.com/watch?v=aircAruvnKk>.
+A forward pass through a network is the matrix multiplication from this
+page, applied over and over.
 
 Strang, G. (2016). *Introduction to Linear Algebra* (5th ed.).
-Wellesley-Cambridge Press. This is the standard textbook, for anyone who
-wants the proofs behind the rule.
-
-3Blue1Brown (2016). *Matrix multiplication as composition: Chapter 4,
-Essence of linear algebra.* <https://www.youtube.com/watch?v=XkY2DOUCWMU>.
-When you multiply two matrices, you do one change after another. Grant
-Sanderson shows why, and why the order matters. Ten minutes.
+Wellesley-Cambridge Press. The standard textbook, for the proofs behind
+why the rule works the way it does.

@@ -4,7 +4,8 @@ entries:
     kind: concept
     definition: >
       A system of equations is a set of equations that must all be true at
-      the same time, for the same unknowns.
+      the same time, for the same unknowns. With two unknowns, each
+      equation is a line, and a solution is a point on every line.
   - term: coefficients
     kind: concept
     definition: >
@@ -13,29 +14,50 @@ entries:
   - term: "Ax = b"
     kind: formula
     definition: >
-      A system of linear equations, written as one matrix equation. A holds
-      the coefficients, x the unknowns, and b the right-hand sides.
-  - term: Gaussian elimination
-    kind: concept
-    definition: >
-      Gaussian elimination is a method for solving a system of equations.
-      It simplifies the system one row operation at a time, until the
-      answer can be read straight off. It does not compute an inverse. It
-      works for any number of unknowns, and computers use a form of it.
+      A system of equations written as one matrix equation. A holds the
+      coefficients, x the unknowns, and b the right-hand sides. Solving it
+      means finding the point that A moves to b.
   - term: augmented matrix
     kind: concept
     definition: >
       An augmented matrix holds a system's coefficients, with the
       right-hand sides added as one more column.
-  - term: row operations
+    example: "[[2, 3, 7], [1, -1, 1]] for 2x + 3y = 7 and x - y = 1"
+  - term: row operation
     kind: concept
     definition: >
-      A row operation is a change to a matrix that leaves the system's
-      solution the same. There are three: swap two rows, multiply a row by
-      a number that is not zero, and replace a row with itself plus a
-      multiple of another row.
+      A row operation changes the rows of an augmented matrix but keeps
+      the same solution. There are three: swap two rows, multiply a row by
+      a number that is not 0, and add a multiple of one row to another.
   - term: row echelon form
     kind: concept
     definition: >
       A matrix is in row echelon form when each row starts with more zeros
-      than the row above it. The zeros make a staircase.
+      than the row above it. The zeros make a staircase, and the last row
+      has only one unknown in it.
+  - term: back substitution
+    kind: concept
+    definition: >
+      Back substitution solves a system in row echelon form from the
+      bottom up. The last row gives the last unknown. Each row above then
+      has only one new unknown.
+  - term: Gaussian elimination
+    kind: concept
+    definition: >
+      Gaussian elimination solves a system of equations with row
+      operations, one column at a time, and then back substitution. It
+      needs no inverse, and it works for any number of unknowns. Computers
+      solve large systems with a form of it.
+  - term: "eliminate(M)"
+    kind: function
+    definition: >
+      The function you write on this page. It returns the augmented matrix
+      M in row echelon form, as a new list of rows, and leaves M as it was.
+    example: "eliminate([[2, 3, 7], [1, -1, 1]]) gives [[2, 3, 7], [0.0, -2.5, -2.5]]"
+  - term: "solve(M)"
+    kind: function
+    definition: >
+      Runs eliminate(M) and then back substitution, and returns the
+      unknowns as a list. It raises a ValueError when the system has no
+      solution or infinitely many.
+    example: "solve([[2, 3, 7], [1, -1, 1]]) gives [2.0, 1.0]"

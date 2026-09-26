@@ -3,21 +3,30 @@ entries:
   - term: transformation matrix
     kind: concept
     definition: >
-      A transformation matrix is a matrix that we read as an instruction
-      for moving every point of a picture. Multiplying the matrix by a set
-      of points carries out the instruction.
+      A matrix read as an instruction for moving every point of a picture.
+      The 2x2 matrix [[a, b], [c, d]] sends the point (x, y) to
+      (ax + by, cx + dy): the first row makes the new x, the second the
+      new y.
+    example: "transform([[2, 0], [0, 1]], (1, 2))  # (2, 2)"
   - term: reading a matrix's columns
     kind: concept
     definition: >
-      For any 2×2 matrix, the first column is where (1,0) lands and the
-      second column is where (0,1) lands. Those two columns are enough to
-      work out what happens to every other point.
-  - term: stretch, squash, rotate, shear, reflect
+      For any 2x2 matrix, the first column is where (1, 0), one step right,
+      lands, and the second column is where (0, 1), one step up, lands.
+      Those two decide where every other point goes, so to design a
+      matrix, decide where "right" and "up" should go.
+  - term: stretch, squash, turn, shear, flip
     kind: concept
     definition: >
-      Five effects that a 2×2 matrix can have on a picture. A stretch makes
-      it wider or taller, a squash makes it narrower or shorter, a rotation
-      turns it, a shear slides one edge sideways while the opposite edge
-      stays, and a reflection flips it like a mirror. Try to recognise
-      them from a matrix's numbers before you run it, and from the
-      picture afterwards.
+      Five effects a 2x2 matrix can have. A stretch makes a picture wider
+      or taller, a squash narrower or shorter; a turn (a rotation) turns
+      it about (0, 0); a shear slides each point sideways by an amount
+      that grows with its height, so the picture leans; a flip (a
+      reflection) turns it over, as in a mirror.
+  - term: turn by an angle
+    kind: formula
+    definition: >
+      The matrix that turns every point anticlockwise about (0, 0) by an
+      angle theta is [[cos theta, -sin theta], [sin theta, cos theta]]. Its
+      first column, where "right" goes, is (cos theta, sin theta).
+    example: "turn_by(90)  # [[0, -1], [1, 0]], give or take rounding"
