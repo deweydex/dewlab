@@ -3,6 +3,9 @@ import { createCodeEditor, createReadOnlyCode, setEditorTheme,
          setLineNumbers, setIndentWidth } from "./vendor/codemirror.bundle.js";
 import { mountSitePreview } from "./site-relay.js";
 import { textMatches, tokenize, tokenHits } from "./search-words.js";
+import {
+  widgetValues, reconcileSliders, clearSliders, sliderMarkup, restoreSliders, followSlider,
+} from "./cell-widgets.js";
 
 const PYODIDE_VERSION = "0.28.3";
 const PYODIDE_BASE = new URL(
@@ -3769,8 +3772,8 @@ const openStreams = new Map(); // cellId -> {el, cssClass}
  * exactly the interaction a cell already has: type, press Run, read it. */
 function wireWorkerWidget(cellId, widget) {
   const control = widget.querySelector("input, select");
-  /* A slider is wired by reconcileSliders() instead, once it has moved to
-   * its cell's strip; the copy in the output is about to be removed. */
+  /* A slider is wired by reconcileSliders() (cell-widgets.js) instead,
+   * once it has moved to its cell's strip; this copy is about to go. */
   if (!control || control.type === "range") return;
   /* The DOM id is `dl-w-<cellId>-<widgetId>`, and the cell id is known here,
    * so the widget id is whatever follows that prefix — ids of both kinds are
@@ -4175,11 +4178,11 @@ async function executeCell(cell, { quiet = false } = {}) {
    * code again" signal a staged hint can wait for (noteAttempt()). */
   const previousCode = cell.ranContent;
   cell.ranContent = cell.getCode();
-  await seedSliders(cell);
+  await seedWidgets(cell);
   const report = currentManifest.standalone
     ? await runCellMainThread(cell)
     : await runCellWorker(cell);
-  reconcileSliders(cell);
+  reconcileSliders(cell, cell.outputEl, sliderMoved(cell));
   cell.lastRunMs = performance.now() - startedAt;
   cell.ranOrder = ++runSequenceCounter;
   /* A run a slider started is the reader exploring, not an attempt: it
@@ -4779,119 +4782,21 @@ function announceCellRun(cell) {
   }, 0);
 }
 
-/* Sliders (#329, 7.264). `slider()` renders its markup into the output like
- * any widget, but a slider that re-runs its own cell cannot live there: the
- * run clears the output, and the thumb would vanish from under the reader's
- * pointer halfway through a drag. So after each run, reconcileSliders()
- * moves a new slider up into the cell's strip, a row just above the output
- * that a run never clears, and drops the copy of one already there. Python
- * never reads the element: seedSliders() hands every value in before each
- * run, which is also how a slider restored after a reload is heard. One
- * path for the Worker and the standalone page alike. */
-function sliderStrip(cell) {
-  if (!cell.sliderStrip) {
-    const strip = document.createElement("div");
-    strip.className = "dl-slider-strip";
-    cell.outputEl.before(strip);
-    cell.sliderStrip = strip;
-  }
-  return cell.sliderStrip;
-}
-
-function sliderWidgetId(cell, control) {
-  const prefix = `dl-w-${cell.id}-`;
-  return control.id.startsWith(prefix) ? control.id.slice(prefix.length) : null;
-}
-
-async function seedSliders(cell) {
-  if (!cell.sliderStrip) return;
-  for (const control of cell.sliderStrip.querySelectorAll('input[type="range"]')) {
-    const widgetId = sliderWidgetId(cell, control);
-    if (!widgetId) continue;
-    if (currentManifest.standalone) toolsMT._set_widget_value(cell.id, widgetId, control.value);
-    else await workerRequest("widget-changed", { cellId: cell.id, widgetId, value: control.value });
+/* Widgets and sliders: assets/cell-widgets.js, shared with the Notebook. */
+async function seedWidgets(cell) {
+  for (const { widgetId, value } of widgetValues(cell, cell.id, cell.outputEl)) {
+    if (currentManifest.standalone) toolsMT._set_widget_value(cell.id, widgetId, value);
+    else await workerRequest("widget-changed", { cellId: cell.id, widgetId, value });
   }
 }
 
-function reconcileSliders(cell) {
-  const kept = new Map();
-  if (cell.sliderStrip) {
-    for (const widget of cell.sliderStrip.querySelectorAll(".dl-slider")) {
-      kept.set(widget.querySelector('input[type="range"]').id, widget);
-    }
-  }
-  const seen = new Set();
-  for (const widget of [...cell.outputEl.querySelectorAll(".dl-slider")]) {
-    const fresh = widget.querySelector('input[type="range"]');
-    seen.add(fresh.id);
-    const old = kept.get(fresh.id);
-    if (!old) {
-      sliderStrip(cell).appendChild(widget);
-      wireSlider(cell, widget);
-      continue;
-    }
-    /* Edited code may have changed the ends, the step or the label. The
-     * value stays where the reader left it: it went in before this run. */
-    const control = old.querySelector('input[type="range"]');
-    for (const name of ["min", "max", "step"]) control.setAttribute(name, fresh.getAttribute(name));
-    const label = old.querySelector("label");
-    const freshLabel = widget.querySelector("label");
-    if (label && freshLabel) label.textContent = freshLabel.textContent;
-    showSliderValue(old);
-    widget.remove();
-  }
-  /* A slider this run did not make is one the code no longer has. */
-  for (const [id, widget] of kept) if (!seen.has(id)) widget.remove();
+function sliderMoved(cell) {
+  return () => followSlider(cell, () => !!running, () => runCell(cell, { quiet: true }));
 }
 
-function showSliderValue(widget) {
-  const control = widget.querySelector('input[type="range"]');
-  const shown = widget.querySelector("output");
-  if (shown) shown.textContent = control.value;
-  /* The attribute, not only the property, so the strip's saved HTML
-   * carries where the thumb was. */
-  control.setAttribute("value", control.value);
-}
-
-function wireSlider(cell, widget) {
-  const control = widget.querySelector('input[type="range"]');
-  if (!control) return;
-  control.addEventListener("input", () => {
-    showSliderValue(widget);
-    cell.sliderPending = true;
-    if (!cell.sliderFollowing) cell.sliderFollowing = followSlider(cell);
-  });
-}
-
-/* At most one run in flight. A drag fires `input` far faster than a cell
- * that draws a plot can run, so each run takes wherever the thumb is when
- * it starts, and one more runs after the last move. */
-async function followSlider(cell) {
-  try {
-    while (cell.sliderPending) {
-      if (running) {
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        continue;
-      }
-      cell.sliderPending = false;
-      await runCell(cell, { quiet: true });
-    }
-  } finally {
-    cell.sliderFollowing = null;
-  }
-}
-
-/* Reset, Clear and "start again" empty the strip along with the output. */
 function clearCellOutput(cell) {
   cell.outputEl.replaceChildren();
-  if (cell.sliderStrip) cell.sliderStrip.replaceChildren();
-}
-
-function restoreSliders(cell, markup) {
-  if (typeof markup !== "string" || !markup) return;
-  const strip = sliderStrip(cell);
-  strip.innerHTML = markup;
-  for (const widget of strip.querySelectorAll(".dl-slider")) wireSlider(cell, widget);
+  clearSliders(cell);
 }
 
 async function runCell(cell, { quiet = false } = {}) {
@@ -5356,7 +5261,7 @@ function saveNow() {
       task_id: cell.id,
       student_code: cell.getCode(),
       output_html: cell.outputEl.innerHTML,
-      ...(cell.sliderStrip?.childElementCount ? { sliders_html: cell.sliderStrip.innerHTML } : {}),
+      ...(sliderMarkup(cell) ? { sliders_html: sliderMarkup(cell) } : {}),
       errored: !!cell.outputEl.querySelector(".dl-error"),
       collapsed: !!cell.collapsed,
       attempts: cell.attempts,
@@ -5466,7 +5371,7 @@ function restoreSaved() {
       cell.outputEl.innerHTML = saved.output_html;
       if (saved.output_html.includes("dl-widget")) widgets = true;
     }
-    restoreSliders(cell, saved.sliders_html);
+    restoreSliders(cell, cell.outputEl, saved.sliders_html, sliderMoved(cell));
     if (saved.collapsed) setCellCollapsed(cell, true);
     if (saved.attempts && typeof saved.attempts === "object") {
       cell.attempts = { ...freshAttempts(), ...saved.attempts };

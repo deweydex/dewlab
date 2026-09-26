@@ -1873,6 +1873,10 @@ function createCellElement(cell) {
 
   main.append(head, bodyRow);
   if (footbar) main.appendChild(footbar);
+  // The engine keeps a cell's sliders across a redraw; they sit above the
+  // output, which a run clears (assets/cell-widgets.js).
+  const sliderStrip = engine.sliderStripFor(cell.id);
+  if (sliderStrip) main.appendChild(sliderStrip);
   main.appendChild(outputEl);
   wrap.append(rail, main);
   return wrap;
@@ -1902,6 +1906,9 @@ engine.configure({
   onStatus: updateStatus,
   packages: DM_PACKAGES,
   dataBase: "../data/",
+  // A slider runs its cell again through the same Run a reader presses.
+  rerunCell: (cellId) => runCell(cellId),
+  isBusy: () => running,
 });
 
 async function ensurePyodide() {
@@ -2019,6 +2026,7 @@ function resetCellOutput(id) {
     outputEl.replaceChildren();
     outputEl.classList.add("dm-empty");
   }
+  engine.clearWidgets(cell.id);
   cell.output = "";
   cell.error = false;
   allowOutputToSaveAgain(cell.id);

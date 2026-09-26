@@ -296,11 +296,13 @@
       <code>await micropip.install("requests")</code>). Either way the site
       you're reading from has to allow other pages to read it; if it doesn't,
       the error says so.</p>
-    <p class="dm-help-note">Python runs off the page's own thread here, which is
-      what gives you the Stop button — and what stops <code>text_input</code>,
-      <code>dropdown</code>, <code>button</code> and <code>image_input</code>
-      working, since a widget needs a live element on the page to listen on.
-      Calling one tells you so. They work in a downloaded copy.</p>
+    <p class="dm-help-note">Python runs off the page's own thread here. That
+      is what gives you the Stop button. <code>text_input</code>,
+      <code>dropdown</code> and <code>slider</code> work: when a cell runs,
+      Python reads what they hold, and moving a slider runs its cell again.
+      <code>button</code> and <code>image_input</code> need Python on the
+      page's own thread, so they do not work here. Calling one tells you so.
+      They work in a downloaded copy.</p>
   </section>
 
   <section class="dm-panel-section">
