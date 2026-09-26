@@ -2,44 +2,53 @@
 title: "Probability: simple, compound and conditional — Practice"
 practice_for: what-are-the-chances
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  games-of-chance: Dice, cards and coins, and the games people play with them.
+  dinosaurs: Dinosaurs and their fossils, what has been found, where, and how old it is.
+  exoplanets: Planets around other stars, and the ways they were found.
+datasets: [dinosaur-finds, exoplanets]
 ---
 
 # Probability: simple, compound and conditional — Practice
 
-Each answer is hidden until you open it. For each problem, calculate first, then simulate.
-
-What if the two answers disagree? Then one of them is wrong, and usually it is the calculation.
-
-Several of these are adapted from the statistics and probability worksheet in the Mathematics repository.
+Problems on chance, and three from earlier pages. Where a problem can be
+both played and counted, do both, in whichever order you like. When the
+two answers disagree, one of them is wrong, and finding which is the
+most useful part of the problem.
 
 ## Tools
 
-Run this cell once before you start. It loads the `math` and `random` modules, and gives you two functions:
-
-- `probability(favourable, total)` divides one count by the other.
-- `simulate(trial)` runs a trial many times (100,000 by default) and gives back the proportion of runs that came out `True`. You give it a small function that runs one trial and returns `True` or `False`.
-
-The last line shows one way to call it: `lambda: random.randint(1, 6) == 6` is a one-line function that rolls a die and says whether it came up 6. `random.randint(1, 6)` picks a whole number from 1 to 6.
+Run this cell once before you start. `simulate(trial)` runs a trial many
+times, 100,000 unless you say otherwise, and gives the share of runs
+that came out `True`. You give it a function of your own that plays one
+trial and returns `True` or `False`, such as `six` below.
 
 ```python exec
 id: tools-1
-import math, random
-
-def probability(favourable, total):
-    return favourable / total
-
-
-def simulate(trial, n=100000):
-    """Run a trial function n times and report the proportion of Trues."""
-    return sum(1 for _ in range(n) if trial()) / n
+import itertools
+import random
+from fractions import Fraction
 
 
-print(probability(4, 52))
-print(simulate(lambda: random.randint(1, 6) == 6))
+def simulate(trial, n=100_000):
+    """Run trial() n times, and give the share of the runs that returned True."""
+    wins = 0
+    for run in range(n):
+        if trial():
+            wins = wins + 1
+    return wins / n
+
+
+def six():
+    """One trial: roll a die, and say whether it came up 6."""
+    return random.randint(1, 6) == 6
+
+
+print(simulate(six), "is close to", round(1 / 6, 4))
 ```
 
-## Basic probability
+## Simple chances
 
 **1.** A fair die is rolled. What is the probability of each of these?
 
@@ -50,272 +59,472 @@ print(simulate(lambda: random.randint(1, 6) == 6))
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) 1/6. (b) 1/2. (c) 1/3. (d) 0.
+(a) $\frac{1}{6}$. (b) $\frac{1}{2}$. (c) $\frac{1}{3}$. (d) 0.
 
-Every probability is between 0 and 1. An impossible event, like rolling a 7, has a probability of exactly 0. It is not a very small number; it is 0.
+An impossible event has a probability of exactly 0: not a very small
+number, but 0.
 
 </details>
 
-**2.** A bag holds 5 red, 3 blue and 2 green counters. What is the probability of drawing each colour? Check that the three probabilities add up to 1.
+**2.** A bag holds 5 red, 3 blue and 2 green counters. What is the
+probability of drawing each colour? Do the three add up to 1?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0.5, 0.3 and 0.2, and they add up to 1.
-
-They must add up to 1. Every counter is one of the three colours, so no case is missing. No counter has two colours, so the events are mutually exclusive. Together, the three events cover every outcome exactly once.
-
-If a list of probabilities like this does not add up to 1, either a case is missing or a case is counted twice.
+0.5, 0.3 and 0.2, which add up to 1. They must: every counter is one of
+the three colours, and none is two. If a list like this does not add up
+to 1, a case is missing or a case is counted twice.
 
 </details>
 
-**3.** The chance of rain tomorrow is 0.3. What is the chance of no rain?
+**3.** A coin is flipped four times. What is the chance of exactly two
+heads? Can you count it by listing the 16 ways four flips can land, then
+check it with `simulate`?
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: chances-two-heads
+import itertools
 
-0.7.
+flips = list(itertools.product("HT", repeat=4))
+print(len(flips), "ways")
 
-This uses the complement rule: $P(\text{not } A) = 1 - P(A)$. The rule is short, and it is the most useful trick in this topic. A question that asks for "at least one" is almost always easier to answer as "1 minus the chance of none".
+exactly_two = 0
+```
 
-</details>
+```inputs
+exactly_two
+```
 
-## Compound events
+```hint
+`flip.count("H")` counts the heads in one way of landing. For the
+simulation, write a function that flips four coins with
+`random.choice("HT")` and says whether exactly two were heads.
+```
 
-**4.** Two dice are rolled. What is the probability of each of these?
+```solution
+import itertools
+import random
+
+flips = list(itertools.product("HT", repeat=4))
+print(len(flips), "ways")
+
+exactly_two = 0
+for flip in flips:
+    if flip.count("H") == 2:
+        exactly_two = exactly_two + 1
+print(exactly_two, "of", len(flips), "=", exactly_two / len(flips))
+
+
+def two_heads():
+    """One trial: flip four coins, and say whether exactly two were heads."""
+    heads = 0
+    for i in range(4):
+        if random.choice("HT") == "H":
+            heads = heads + 1
+    return heads == 2
+
+
+print(simulate(two_heads))
+---
+6 of 16, which is 0.375. The 6 is $C(4, 2)$ from
+[Counting](tutorial:counting-carefully): choose which 2 of the 4 flips
+are heads. Many people guess a half, since two heads is the middle
+result, but most ways of landing are not the middle one.
+```
+
+## Combining events
+
+**4.** Two dice are rolled. What is the chance of each of these?
 
 - (a) both sixes
 - (b) a total of 7
-- (c) a total of 12
-- (d) at least one six
+- (c) at least one six
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) 1/36. (b) 6/36 = 1/6. (c) 1/36. (d) 11/36.
+(a) $\frac{1}{36}$. (b) $\frac{6}{36} = \frac{1}{6}$. (c)
+$\frac{11}{36}$.
 
-A total of 7 is the most likely total. There are six ways to make it (1 and 6, 2 and 5, and so on), and only one way to make 12.
-
-(d) uses the complement trick. The chance of *no* six is $\frac{5}{6} \times \frac{5}{6} = \frac{25}{36}$, so the chance of at least one six is $1 - \frac{25}{36} = \frac{11}{36}$. Adding $\frac16 + \frac16$ gives $\frac{12}{36}$, which is wrong: it counts the double six twice.
+(c) is quickest with the complement: no six is $\frac{5}{6} \times
+\frac{5}{6} = \frac{25}{36}$, so at least one is $1 - \frac{25}{36} =
+\frac{11}{36}$. Adding $\frac{1}{6} + \frac{1}{6}$ gives
+$\frac{12}{36}$, which counts the double six twice.
 
 </details>
 
-**5.** One card is drawn from a deck of 52. What is the probability of each of these?
+```question
+id: chances-which-are-independent
+type: fill-in-the-blank
 
-- (a) an ace
-- (b) a heart
-- (c) an ace or a heart
-- (d) a face card
-- (e) red and a face card
-- (f) red or a face card
-
-<details class="dl-answer"><summary>answer</summary>
-
-- (a) 4/52.
-- (b) 13/52.
-- (c) 16/52. That is $\frac{4}{52} + \frac{13}{52} - \frac{1}{52}$: we subtract the ace of hearts, because it was counted twice.
-- (d) 12/52.
-- (e) 6/52.
-- (f) 32/52. That is $\frac{26 + 12 - 6}{52}$.
-
-Each "or" here needs the overlap subtracted, and each "and" is the overlap. This idea comes back with sets in [Sets: building them from sorted lists](tutorial:sets-as-sorted-lists), where it is called the inclusion-exclusion principle.
-
-</details>
-
-**6.** Two cards are drawn without replacement. What is the probability that both are hearts?
-
-<details class="dl-answer"><summary>answer</summary>
-
-$\frac{13}{52} \times \frac{12}{51} = \frac{1}{17} \approx 0.0588$.
-
-The second fraction is where "without replacement" shows: only 12 hearts are left among 51 cards. With replacement, the first card goes back into the deck, so the answer would be $\frac{13}{52} \times \frac{13}{52} = 0.0625$. That is slightly higher, because the first heart is still in the deck.
-
-</details>
-
-**7.** A coin is flipped four times. What is the probability of exactly two heads? What is the probability of at least one head?
-
-<details class="dl-answer"><summary>answer</summary>
-
-$\frac{6}{16} = 0.375$, and $\frac{15}{16} = 0.9375$.
-
-Four flips give $2^4 = 16$ equally likely sequences, such as HHTT. For exactly two heads, we choose which 2 of the 4 flips are heads: $C(4,2) = 6$ ways. This is the Pascal's triangle counting from the practice page of [Counting: factorials, permutations and combinations](tutorial:counting-carefully) again.
-
-For at least one head, every sequence counts except one: all tails. That gives $\frac{15}{16}$.
-
-</details>
-
-**8.** What is the probability of a royal flush in a five-card hand?
-
-<details class="dl-answer"><summary>answer</summary>
-
-$\frac{4}{2{,}598{,}960} \approx 1.5 \times 10^{-6}$, or about 1 in 650,000.
-
-There are four royal flushes, one in each suit, out of $C(52,5)$ hands.
-
-A simulation of this teaches something because it struggles. A million deals usually find one or two royal flushes, and sometimes none. How much the count changes from run to run is the lesson.
-
-</details>
-
-## Independence
-
-**9.** A coin has come up heads five times in a row. What is the probability of heads on the next flip?
-
-<details class="dl-answer"><summary>answer</summary>
-
-One half.
-
-The coin has no memory. The belief that a tails is now "due" is called the gambler's fallacy, and nearly everybody feels it.
-
-What *is* unlikely is five heads in a row, judged *before you start*: $\frac{1}{32}$. Once those five flips have happened, they change nothing about the next flip.
-
-</details>
-
-**10.** Which of these pairs are independent?
-
-- (a) Two rolls of a die
-- (b) Drawing two cards without replacement
-- (c) It raining today and it raining tomorrow
-- (d) A card being red and being a face card
-
-<details class="dl-answer"><summary>answer</summary>
-
-(a) and (d) are independent. (b) and (c) are not.
-
-(d) surprises people. $P(\text{red}) = \frac12$ and $P(\text{face}) = \frac{12}{52}$. $P(\text{both}) = \frac{6}{52}$, which is exactly $\frac12 \times \frac{12}{52}$. Half the face cards are red, so knowing the colour tells you nothing about whether it is a face card.
-
-Independence is a fact about numbers that we can check. It is not a feeling about whether two things seem related.
-
-</details>
-
-**11.** In a class of 23, what is the probability that at least two people share a birthday?
-
-<details class="dl-answer"><summary>answer</summary>
-
-About 50.7%.
-
-We use the complement. The chance that all 23 birthdays are different is $\frac{365}{365} \times \frac{364}{365} \times \cdots \times \frac{343}{365} \approx 0.4927$.
-
-```python
-p = 1.0
-for i in range(23):
-    p = p * (365 - i) / 365
-print(1 - p)
+- Two rolls of a die are {independent|not independent}.
+- Two cards drawn without putting the first back are {not independent|independent}.
+- Rain today and rain tomorrow are {not independent|independent}.
+- A card being red and a card being a face card (a jack, queen or king) are {independent|not independent}.
 ```
 
-Almost everyone's first guess is far too low. The question sounds like "does someone share *my* birthday?", and for 23 people that is only about 6%. But any pair of people can share a birthday. A class of 23 has $C(23,2) = 253$ pairs, and it is the pairs that matter.
-
-(This ignores 29 February, and assumes every birthday is equally likely.)
-
-</details>
-
-## Simulation
-
-**12.** Can you simulate 10,000 die rolls, and compare the proportion of sixes with 1/6?
+**5.** The last one surprises people. Can you show it with numbers?
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
-import random
-rolls = [random.randint(1, 6) for _ in range(10000)]
-print(rolls.count(6) / 10000)
-```
-
-The answer is somewhere near 0.167, and different each time. With 10,000 trials the answer is usually right to about two decimal places. With 100 trials, it is not reliable even to one.
-
-The error shrinks like $\frac{1}{\sqrt{n}}$, where $n$ is the number of trials. So a hundred times more trials gives only ten times the accuracy. That is a poor trade. It is why we use simulation to check a calculation, and not in place of one.
+$P(\text{red}) = \frac{1}{2}$ and $P(\text{face}) = \frac{12}{52}$. Six
+cards are both, so $P(\text{both}) = \frac{6}{52}$, which is exactly
+$\frac{1}{2} \times \frac{12}{52}$. Half the face cards are red, just as
+half of all cards are, so knowing the colour tells you nothing about
+whether it is a face card.
 
 </details>
 
-**13.** Can you simulate the two-hearts problem, and compare your answer with 1/17?
+**6.** A coin has come up heads five times in a row. What is the chance
+of heads next? This cell flips six coins, 100,000 times, keeps the runs
+that start with five heads, and looks at the sixth flip.
 
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```python exec
+id: chances-after-five-heads
 import random
 
-deck = [(rank, suit) for suit in "HDCS" for rank in range(1, 14)]
-hits = 0
-for _ in range(100000):
-    a, b = random.sample(deck, 2)
-    if a[1] == "H" and b[1] == "H":
-        hits += 1
-print(hits / 100000, 1 / 17)
+five_heads = 0
+heads_next = 0
+for run in range(100_000):
+    flips = []
+    for i in range(6):
+        flips.append(random.choice("HT"))
+    if flips[:5] == ["H", "H", "H", "H", "H"]:
+        five_heads = five_heads + 1
+        if flips[5] == "H":
+            heads_next = heads_next + 1
+
+print(five_heads, "runs began with five heads")
+print("The share of them with heads next:", round(heads_next / five_heads, 2))
 ```
 
-About 0.0588. `random.sample(deck, 2)` draws 2 cards without replacement, which is what the problem describes. Calling `random.choice` twice could pick the same card twice. That would simulate a different problem, and Python would give no warning.
+```predict
+type: number
+tolerance: 0.05
+
+What share of the runs with five heads will have heads next?
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+About 0.5. The coin has no memory. The feeling that tails is now "due"
+is called the *gambler's fallacy*, and nearly everybody has it. What is
+unlikely is five heads in a row judged before the first flip: about
+$\frac{1}{32}$, which is why only about 3,000 of the 100,000 runs were
+kept. Once they have happened, they change nothing about the sixth.
 
 </details>
 
-**14.** Can you simulate the Monty Hall problem? There are three doors and one prize. You pick a door. The host, who knows where the prize is, opens a different door with no prize behind it. Then you may switch to the other closed door.
+## The birthday problem
 
-The next tutorial, [The Monty Hall problem: three doors and a simulation](tutorial:three-doors), is all about this puzzle. You may like to try this problem after reading it.
+**7.** A room holds 23 people. What is the chance that two of them share
+a birthday? Make a guess, then run the cell, which fills the room 10,000
+times. It ignores 29 February, and treats every birthday as equally
+likely.
 
-<details class="dl-answer"><summary>answer</summary>
-
-Switching wins two thirds of the time.
-
-```python
+```python exec
+id: chances-birthday-simulated
 import random
 
-wins = 0
-for _ in range(100000):
-    prize, choice = random.randrange(3), random.randrange(3)
-    if prize != choice:          # switching wins exactly when the first pick was wrong
-        wins += 1
-print(wins / 100000)
+rooms = 10_000
+shared = 0
+for room in range(rooms):
+    birthdays = []
+    for person in range(23):
+        birthdays.append(random.randint(1, 365))
+    if len(set(birthdays)) < 23:
+        shared = shared + 1
+print("Rooms with a shared birthday:", round(shared / rooms, 3))
 ```
 
-The simulation is shorter than the argument, which is a good reason to write it. The whole problem comes down to one line. Switching wins exactly when your first guess was wrong, and your first guess is wrong two times in three.
+Now count it. The chance that everyone's birthday is different is
+$\frac{365}{365} \times \frac{364}{365} \times \frac{363}{365} \times
+\cdots$, one fraction for each person: each new person must miss every
+birthday so far. Can you write `chance_all_different(people)`?
 
-How the host behaves matters a great deal. Suppose the host opened a door at random, and it happened to have no prize. Then switching would win only half the time. The puzzle works because the host knows where the prize is, and never opens that door.
+```python exec
+id: chances-birthday-counted
+def chance_all_different(people):
+    """The chance that people birthdays, from 365 days, are all different."""
+    # Your code here
 
-</details>
 
-## Conditional probability
+print(round(1 - chance_all_different(23), 4))
+```
 
-**15.** You draw a card and see that it is red. What is the probability it is a heart?
+```inputs
+round(chance_all_different(23), 4)
+round(chance_all_different(1), 4)
+round(chance_all_different(50), 4)
+```
+
+```hint
+Start a product at 1. The first person can have any of 365 days, the
+second any of the 364 left, and so on: multiply by `(365 - i) / 365` for
+each person `i`, counting from 0.
+```
+
+```solution
+def chance_all_different(people):
+    """The chance that people birthdays, from 365 days, are all different."""
+    chance = 1
+    for i in range(people):
+        chance = chance * (365 - i) / 365
+    return chance
+
+
+print(round(1 - chance_all_different(23), 4))
+---
+0.5073: slightly better than even. Most first guesses are far too low,
+because the question sounds like "does someone share *my* birthday?",
+which for 23 people is only about 6%. But any two people can share, and
+23 people make $C(23, 2) = 253$ pairs. With 50 people, a shared birthday
+is 97% likely.
+```
+
+## Given that
+
+**8.** You draw a card and see that it is red. What is the chance it is
+a heart?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One half.
-
-Half the red cards are hearts. With the formula, $P(\text{heart} \mid \text{red}) = \frac{13/52}{26/52} = \frac{13}{26} = \frac12$.
-
-Knowing the card is red shrinks the group we count in. We now count only among the 26 red cards, so the bottom of the fraction becomes the thing we know.
+$\frac{1}{2}$. Knowing it is red shrinks the group we count in to the 26
+red cards, and 13 of them are hearts: $\frac{13}{26}$.
 
 </details>
 
-**16.** A test for a disease is 99% accurate both ways: it is right for 99% of people who have the disease, and for 99% of people who do not. The disease affects 1 person in 10,000. You test positive. What is the probability that you have the disease?
+**9.** A family has two children, and at least one is a girl. What is
+the chance both are?
 
 <details class="dl-answer"><summary>answer</summary>
 
-About 1%.
-
-Picture a million people. 100 of them have the disease, and 99 of those test positive. The other 999,900 do not have it, but 1% of them, which is 9,999 people, test positive anyway.
-
-So there are $99 + 9{,}999 = 10{,}098$ positive tests, and only 99 of them are true. $\frac{99}{10{,}098}$ is about 0.98%.
-
-The disease is rare, so the false positives far outnumber the true ones. This is Bayes' theorem at work. Counting people, as we did here, makes the answer much easier to see than the formula does. Nearly everybody, doctors included, guesses 99%.
+$\frac{1}{3}$. Write the older child first: GG, GB, BG and BB are
+equally likely. BB is ruled out, leaving three, one of them GG. Told
+instead that *the older child* is a girl, the answer is $\frac{1}{2}$.
+It is the same trap as the dice on the tutorial page: the answer depends
+on exactly what you were told.
 
 </details>
 
-**17.** Two dice are rolled, and you are told that at least one of them is a six. What is the probability that both are sixes?
+**10.** In the tutorial's test for a rare disease, a positive test
+meant about a 1% chance of having it. A doctor sends you for a second,
+separate test, just as good, and it is positive too. What is the chance
+now? Can you work it out by following the people who tested positive
+once?
+
+```python exec
+id: chances-second-test
+def share_sick(rate, accuracy):
+    """Among a million people, the share of positive tests that are right."""
+    people = 1_000_000
+    sick = people * rate
+    well = people - sick
+    sick_and_positive = sick * accuracy
+    well_and_positive = well * (1 - accuracy)
+    return sick_and_positive / (sick_and_positive + well_and_positive)
+
+
+after_one = share_sick(1 / 10_000, 0.99)
+print(round(after_one, 4))
+```
+
+```inputs
+round(after_two, 4)
+```
+
+```hint
+The people who take the second test are the ones who tested positive
+once. Among them, the share who are sick is `after_one`: that is the new
+rate.
+```
+
+```solution
+def share_sick(rate, accuracy):
+    """Among a million people, the share of positive tests that are right."""
+    people = 1_000_000
+    sick = people * rate
+    well = people - sick
+    sick_and_positive = sick * accuracy
+    well_and_positive = well * (1 - accuracy)
+    return sick_and_positive / (sick_and_positive + well_and_positive)
+
+
+after_one = share_sick(1 / 10_000, 0.99)
+after_two = share_sick(after_one, 0.99)
+print(round(after_one, 4), round(after_two, 4))
+---
+About 0.495, just under a half. Of the 10,098 people with one positive
+test, 99 are sick. The second test finds about 98 of them, and wrongly
+flags about 100 of the 9,999 well ones. A third positive test would take
+it to 0.99. The answer after each test becomes the base rate for the
+next, which is Bayes' theorem used again and again. It only works if the
+two tests make their mistakes separately: a second test that fails on
+the same people as the first adds nothing.
+```
+
+## Your world
+
+**11.** A question from the world you chose.
+
+<div class="dl-world" data-world="games-of-chance">
+
+A game for two: roll two dice. You win if the total is 7 or more, and I
+win if it is less. Seven is the middle total, so it looks fair. Is it?
+Can you count your chance of winning, and then change the rule so the
+game is fair?
+
+```python exec
+id: chances-world--games-of-chance
+import itertools
+from fractions import Fraction
+
+outcomes = list(itertools.product(range(1, 7), repeat=2))
+you_win = [roll for roll in outcomes if roll[0] + roll[1] >= 7]
+print(Fraction(len(you_win), len(outcomes)))
+```
+
+```hint
+Count the totals of 7 and above, and those below 7. Which total is in
+the wrong group, and what could happen when it comes up?
+```
+
+```solution
+import itertools
+from fractions import Fraction
+
+outcomes = list(itertools.product(range(1, 7), repeat=2))
+you_win = [roll for roll in outcomes if roll[0] + roll[1] >= 7]
+print(Fraction(len(you_win), len(outcomes)))
+
+above = [roll for roll in outcomes if roll[0] + roll[1] > 7]
+below = [roll for roll in outcomes if roll[0] + roll[1] < 7]
+print(Fraction(len(above), 36), Fraction(len(below), 36))
+---
+You win 7 times in 12, which is 21 of the 36 outcomes. The rule gives
+you all of the 7s, the commonest total, and the two sides are otherwise
+mirror images. One fair rule: above 7 wins for you, below 7 for me, each
+$\frac{15}{36}$, and a 7 means roll again. An unfair game that looks
+fair usually hides its advantage in a case like this: one that sounds
+like a boundary and is the most likely result.
+```
+
+</div>
+
+<div class="dl-world" data-world="dinosaurs">
+
+Is a find's period independent of the country it was found in? Compare
+the chance that a find is Cretaceous with the same chance given the find
+is from the United States (US), China (CN) or Canada (CA).
+
+```python exec
+id: chances-world--dinosaurs
+finds = await load_csv("dinosaur-finds.csv", keep_default_na=False)
+
+cretaceous = (finds.oldest_mya <= 145) & (finds.youngest_mya >= 66)
+print("P(Cretaceous) =", round(cretaceous.mean(), 3))
+```
+
+```hint
+`cretaceous[finds.country_code == "US"]` keeps only the United States'
+rows, and `.mean()` of `True` and `False` values is the share that are
+`True`.
+```
+
+```solution
+finds = await load_csv("dinosaur-finds.csv", keep_default_na=False)
+
+cretaceous = (finds.oldest_mya <= 145) & (finds.youngest_mya >= 66)
+print("P(Cretaceous) =", round(cretaceous.mean(), 3))
+for code in ["US", "CN", "CA"]:
+    in_country = finds.country_code == code
+    print(code, round(cretaceous[in_country].mean(), 3))
+---
+With the copy saved on {{snapshot: dinosaur-finds}}: 0.722 of all finds
+are Cretaceous; 0.641 of the United States' and 0.652 of China's, but
+0.997 of Canada's. Knowing the country changes the chance, so the two
+are not independent, and for Canada they are far from it: nearly all of
+its finds come from Cretaceous rock, such as the badlands of Alberta.
+Close to the overall figure is not the same as independent, either: the
+test is whether knowing one changes the other.
+```
+
+</div>
+
+<div class="dl-world" data-world="exoplanets">
+
+Is the way a planet was found independent of the year it was found?
+Compare the chance that a planet was found by transit, the dip in its
+star's light, with the same chance for the planets found in 2000, 2010,
+2016 and 2023.
+
+```python exec
+id: chances-world--exoplanets
+planets = await load_csv("exoplanets.csv")
+
+transit = planets.method == "Transit"
+print("P(transit) =", round(transit.mean(), 3))
+```
+
+```hint
+`transit[planets.discovered == 2016]` keeps only the planets found in
+2016, and `.mean()` of `True` and `False` values is the share that are
+`True`.
+```
+
+```solution
+planets = await load_csv("exoplanets.csv")
+
+transit = planets.method == "Transit"
+print("P(transit) =", round(transit.mean(), 3))
+for year in [2000, 2010, 2016, 2023]:
+    in_year = planets.discovered == year
+    print(year, in_year.sum(), "planets", round(transit[in_year].mean(), 3))
+---
+With the copy saved on {{snapshot: exoplanets}}: 0.739 of all known
+planets were found by transit, but none of the 16 found in 2000, about
+half in 2010, and 0.952 of the 1,504 in 2016. The two are far from
+independent. Transits need a telescope that watches the same stars for a
+long time, and the Kepler telescope, which did that, sent back most of
+its planets in the 2010s.
+```
+
+</div>
+
+## From earlier
+
+**12.** From *Counting*. Three dice show three different numbers in 120
+of their 216 outcomes. What is the chance? Is it more or less than a
+half?
 
 <details class="dl-answer"><summary>answer</summary>
 
-1/11. The answer is not 1/6.
-
-There are 11 outcomes with at least one six, and only one of them is the double six.
-
-Now compare: if you are told that *the first die* is a six, the answer is 1/6. The two pieces of information sound alike, but they narrow the outcomes differently, so the answers are different. Most wrong probability arguments go wrong at exactly this point.
+$\frac{120}{216} = \frac{5}{9} \approx 0.556$, a little more than a
+half. Can you check it with `simulate`, and a trial that rolls three dice
+and asks whether `len(set(roll)) == 3`?
 
 </details>
 
-**18.** A family has two children, and at least one of them is a girl. What is the probability that both are girls?
+**13.** From *Venn diagrams*. In a year group, 60% of students take
+Maths, 50% take Physics, and 30% take both. What is the chance that a
+student chosen at random takes neither?
 
 <details class="dl-answer"><summary>answer</summary>
 
-1/3.
+0.2. Maths or Physics is $0.6 + 0.5 - 0.3 = 0.8$, by inclusion-exclusion,
+and neither is the complement: $1 - 0.8 = 0.2$. A Venn diagram of the
+year group shows it as the region outside both circles.
 
-Write the older child first. The four equally likely cases are GG, GB, BG and BB. We know BB did not happen, so three cases are left, and one of them is GG.
+</details>
 
-This is the same trap as the dice question. And as with the dice, being told "the older child is a girl" gives 1/2 instead. The answer depends on exactly what you were told, not on what is true.
+**14.** From *Logic and truth*. By De Morgan, "not both sixes" is the
+same event as "the first is not a six, or the second is not a six". Can
+you work out its chance both ways, and check that they agree?
+
+<details class="dl-answer"><summary>answer</summary>
+
+$\frac{35}{36}$ both ways. The complement: $1 - \frac{1}{36}$. The "or",
+with inclusion-exclusion: $\frac{5}{6} + \frac{5}{6} - \frac{25}{36} =
+\frac{60}{36} - \frac{25}{36} = \frac{35}{36}$. Two routes to one event,
+and one of them is much shorter.
 
 </details>

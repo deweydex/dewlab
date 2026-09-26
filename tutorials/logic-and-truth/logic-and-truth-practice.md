@@ -2,291 +2,441 @@
 title: "Logic: truth tables, XOR and De Morgan's laws — Practice"
 practice_for: logic-and-truth
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  games-of-chance: Dice, cards and coins, and the games people play with them.
+  dinosaurs: Dinosaurs and their fossils, what has been found, where, and how old it is.
+  exoplanets: Planets around other stars, and the ways they were found.
+datasets: [dinosaur-finds, exoplanets]
 ---
 
 # Logic: truth tables, XOR and De Morgan's laws — Practice
 
-Each answer is hidden until you open it. Several of these problems ask
-you to predict a truth table before you generate it. The prediction is
-the real exercise, so try it first.
+Problems on truth tables, exclusive or and De Morgan's laws, and three
+from earlier pages. Several ask you to predict a table before you make
+it: the prediction is the exercise, so try it first.
 
 ## Tools
 
 This cell defines `table()`, which prints the truth table for any
-operation on two inputs. The last line shows how to call it. There,
-`lambda a, b: a and b` is a short way to write a small function with no
-name: it takes `a` and `b`, and gives back `a and b`. To see another
-table, change the part after the colon.
+function of two inputs. Give it the name of a function, without
+brackets, and it calls the function for each of the four rows.
 
 ```python exec
 id: tools-1
-def table(expression, names=("A", "B")):
-    """Print a truth table for a function of two booleans."""
-    header = "   ".join(f"{n:>5}" for n in names)
-    print(f"{header}      result")
+def table(rule, names=("A", "B")):
+    """Print a truth table for a function of two True-or-False inputs."""
+    print(f"{names[0]:>5}   {names[1]:>5}      result")
     for a in [True, False]:
         for b in [True, False]:
-            print(f"{str(a):>5}   {str(b):>5}      {str(expression(a, b)):>5}")
+            print(f"{str(a):>5}   {str(b):>5}      {str(rule(a, b)):>5}")
 
 
-table(lambda a, b: a and b)
+def both(a, b):
+    return a and b
+
+
+table(both)
 ```
 
 ## Truth tables
 
-**1.** Write down the truth table for `A and (not B)`. Then generate it, and compare.
+**1.** How many rows does a truth table have for three inputs? For $n$
+inputs?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It is true only when A is true and B is false. That is one row out of
-four.
+Eight, and $2^n$. Each new input doubles the number of cases, which is why
+checking every case stops being practical quite quickly: twenty inputs
+give over a million rows.
 
 </details>
 
-**2.** How many rows does a truth table have for three inputs? For $n$ inputs?
+```question
+id: logic-how-many-rows-true
+type: fill-in-the-blank
 
-<details class="dl-answer"><summary>answer</summary>
+- `A or B` is true in {three|one|two|four} of the four rows.
+- `A and B` is true in {one|three|two|four} of the four rows.
+```
 
-Three inputs give eight rows, and $n$ inputs give $2^n$ rows.
+**2.** Logic has a rule it calls "if A then B", written `(not A) or B`.
+Can you make its table with `table()`, and find the only row where it is
+`False`?
 
-Each new input doubles the number of cases. That is why checking every
-case stops being practical quite quickly. Twenty inputs give over a
-million rows.
+```python exec
+id: logic-if-then
+def if_then(a, b):
+    """True unless a is True and b is False."""
+    # Your code here
 
-</details>
 
-**3.** In how many of the four rows is `A or B` true? What about `A and B`?
+table(if_then)
+```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+[if_then(a, b) for a in [True, False] for b in [True, False]]
+```
 
-`A or B` is true in three rows, and `A and B` in one.
+```hint
+Write the rule exactly as given: `(not a) or b`. Then read down the table:
+which row has `False`?
+```
 
-`or` is the generous one: it is false only when both inputs are false.
-`and` is the strict one: it is true only when both inputs are true.
+```solution
+def if_then(a, b):
+    """True unless a is True and b is False."""
+    return (not a) or b
 
-</details>
 
-**4.** How is the logical `or` different from the everyday one?
+table(if_then)
+---
+It is `False` in one row only: A true and B false. "If it rains, the
+ground is wet" is only broken by rain on dry ground. When A is false, the
+rule says nothing, so logic counts it as kept: "if it rains" makes no
+promise about a dry day. That is the part most people find strange, and
+it is the heart of the four-card challenge on the tutorial page.
+```
+
+**3.** How is the logical `or` different from the everyday one?
 
 <details class="dl-answer"><summary>answer</summary>
 
 The logical `or` is true when both inputs are true. In everyday English,
-"Tea or coffee?" usually means one or the other, and not both.
-
-The everyday meaning is exclusive or. That is a different operation,
-and Python has no keyword for it.
+"tea or coffee?" usually means one or the other, not both. The everyday
+meaning is exclusive or, which Python has no keyword for.
 
 </details>
 
 ## Exclusive or
 
-**5.** Write XOR using only `and`, `or` and `not`.
+**4.** Can you write XOR using only `and`, `or` and `not`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`(a or b) and not (a and b)`. This says "at least one, but not both".
-
-Another way is `(a and not b) or (b and not a)`. This one lists the two
-rows where XOR is true.
-
-</details>
-
-**6.** Why does `a != b` do the same job for `True` and `False` values?
-
-<details class="dl-answer"><summary>answer</summary>
-
-When there are only two possible values, "exactly one is true" and "they
-are different" are the same condition.
-
-It is not a coincidence. It is one idea with two names, because people
-came to it from different directions.
+`(a or b) and not (a and b)`: "at least one, but not both". Another way
+is `(a and not b) or (b and not a)`, which lists the two rows where XOR
+is true.
 
 </details>
 
-**7.** What is `a ^ a`, for either value of `a`? And what is `a ^ False`?
+**5.** `^` also works on whole numbers, one binary digit at a time, and
+XOR with the same key twice undoes itself: `x ^ key ^ key` is `x` again.
+Can you use that to hide a message and bring it back?
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: logic-xor-secret
+key = 42
 
-`a ^ a` is `False`, and `a ^ False` is `a`.
 
-Anything XOR itself is false, and XOR with false leaves a value
-unchanged. Simple encryption uses both of these facts. XOR a message
-with a key, then XOR the result again with the same key, and you get the
-message back.
+def scramble(message, key):
+    """Return a list of numbers: each character's code, XORed with key."""
+    # Your code here
 
-</details>
+
+def unscramble(numbers, key):
+    """Return the message that scramble made these numbers from."""
+    # Your code here
+
+
+hidden = scramble("MEET AT NOON", key)
+print(hidden)
+print(unscramble(hidden, key))
+```
+
+```inputs
+scramble("HI", key)
+unscramble(scramble("MEET AT NOON", key), key)
+unscramble(scramble("MEET AT NOON", key), 7)
+```
+
+```hint
+`ord(letter)` gives a character's code, and `chr(number)` turns a code
+back into a character. Scrambling is `ord(letter) ^ key` for each letter;
+unscrambling is the same XOR again, then `chr`.
+```
+
+```solution
+key = 42
+
+
+def scramble(message, key):
+    """Return a list of numbers: each character's code, XORed with key."""
+    numbers = []
+    for letter in message:
+        numbers.append(ord(letter) ^ key)
+    return numbers
+
+
+def unscramble(numbers, key):
+    """Return the message that scramble made these numbers from."""
+    message = ""
+    for number in numbers:
+        message = message + chr(number ^ key)
+    return message
+
+
+hidden = scramble("MEET AT NOON", key)
+print(hidden)
+print(unscramble(hidden, key))
+---
+The same operation both ways: XOR with the key hides a letter, and XOR
+with the key again brings it back. With the wrong key, the last input,
+the message comes back as nonsense. Real encryption is far stronger, and
+XOR is still inside much of it.
+```
 
 ## De Morgan
 
-**8.** Rewrite `not (A and B)` without the outer `not`.
+```question
+id: logic-de-morgan-rewrites
+type: fill-in-the-blank
 
-<details class="dl-answer"><summary>answer</summary>
+- `not (A and B)` is the same as {(not A) or (not B)|(not A) and (not B)}.
+- `not (A or B)` is the same as {(not A) and (not B)|(not A) or (not B)}.
+- `not (not a or not b)` is the same as {a and b|a or b}.
+```
 
-`(not A) or (not B)`.
-
-Move the `not` inside the bracket, and the `and` becomes an `or`.
-
-</details>
-
-**9.** Rewrite `not (A or B)` without the outer `not`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`(not A) and (not B)`.
-
-</details>
-
-**10.** Simplify `not (not a or not b)`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`a and b`.
-
-Use De Morgan's law on the whole expression. `not(not a or not b)` is
-`not(not a) and not(not b)`. Two `not`s cancel each other, so this is
-`a and b`.
-
-</details>
-
-**11.** Simplify `not (a and not b)`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`(not a) or b`.
-
-</details>
-
-**12.** Simplify `not (a or (b and not c))`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`(not a) and (not b or c)`.
-
-First, move the outer `not` in. That gives `not a and not(b and not c)`.
-Then move the inner `not` in. `not(b and not c)` becomes `not b or c`.
-
-That is two steps, working from the outside in. With three inputs there
-are eight combinations, so check your answer with a loop over all
-eight.
-
-</details>
-
-**13.** Why is a loop over four rows a *proof* here, when "I tested it and it worked" usually is not?
+**6.** Why is a loop over four rows a *proof* here, when "I tested it and
+it worked" usually is not?
 
 <details class="dl-answer"><summary>answer</summary>
 
 There are exactly four possible inputs, and the loop tried all of them.
-Nothing is left untested.
-
 For almost anything else, such as a function that takes whole numbers,
-the possible inputs never run out. A test can then only fail to find a
-problem. Checking every case is a proof when there are few enough cases
-to check them all, and almost never otherwise.
+the inputs never run out, and a test can only fail to find a problem.
+Checking every case is a proof when there are few enough cases to check
+them all.
 
 </details>
 
 ## Readability
 
-**14.** Simplify `not (not attended or not submitted)`.
+**7.** A system logs an error when `not (status == "ok" and errors == 0)`.
+Can you rewrite it so a reader sees what causes a log entry?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`attended and submitted`.
-
-People rarely write the first version on purpose. It grows a little at a
-time: someone adds a condition, later puts a `not` around the whole
-thing, then adds another condition. That is why knowing the rule
-matters.
+`status != "ok" or errors != 0`: something is wrong with the status, or
+there are errors.
 
 </details>
 
-**15.** A system logs an error when `not (status == "ok" and errors == 0)`. Rewrite the condition so that a reader can see what causes a log entry.
+**8.** Can you rewrite `not (age >= 18 and has_id)`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`status != "ok" or errors != 0`.
-
-Now it reads as what it means: either something is wrong with the
-status, or there are errors.
-
-</details>
-
-**16.** Rewrite `not (age >= 18 and has_id)`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`age < 18 or not has_id`.
-
-Look at the first part. `not (age >= 18)` becomes `age < 18`, and not
-`age <= 18`. Getting a boundary wrong by one, like this, is called an
-*off-by-one error*. It is one of the most common mistakes in
-conditions.
+`age < 18 or not has_id`. `not (age >= 18)` is `age < 18`, not
+`age <= 18`: getting a boundary wrong by one is an *off-by-one error*,
+one of the most common slips in conditions.
 
 </details>
 
-## Sets
+**9.** De Morgan in real data. A pandas filter uses `&` for and, `|` for
+or, and `~` for not, each on a whole column at once.
 
-**17.** Take everyone $= \{1, 2, 3, 4, 5, 6, 7, 8\}$, $A = \{1, 2, 3, 4\}$ and $B = \{3, 4, 5, 6\}$. Find the complement of $A \cup B$. Then find the intersection of the two complements, of $A$ and of $B$.
+<div class="dl-world" data-world="exoplanets">
 
-<details class="dl-answer"><summary>answer</summary>
+`~(big | far)` keeps the planets that are not (more than 2 Earths across
+or 100 light-years or more away). Can you set `rewritten` to the same
+filter with `<=` and `<`, and no `~` at all, and compare the counts?
 
-$A \cup B = \{1, 2, 3, 4, 5, 6\}$, so its complement is $\{7, 8\}$.
+```python exec
+id: logic-pandas--exoplanets
+planets = await load_csv("exoplanets.csv")
+big = planets.radius_earths > 2
+far = planets.distance_ly >= 100
+print(len(planets[~(big | far)]), "planets kept by ~(big | far)")
 
-The complement of $A$ is $\{5, 6, 7, 8\}$, and the complement of $B$ is
-$\{1, 2, 7, 8\}$. Their intersection is $\{7, 8\}$.
+rewritten = planets[planets.radius_earths > 0]   # change this line
+print(len(rewritten), "planets kept by the rewrite")
+```
 
-The two answers are the same. This is De Morgan's law, on sets.
+```inputs
+len(rewritten)
+```
 
-</details>
+```solution
+planets = await load_csv("exoplanets.csv")
+big = planets.radius_earths > 2
+far = planets.distance_ly >= 100
+print(len(planets[~(big | far)]), "planets kept by ~(big | far)")
 
-**18.** Which set operation matches `and`? Which matches `or`? Which matches `not`?
+rewritten = planets[(planets.radius_earths <= 2) & (planets.distance_ly < 100)]
+print(len(rewritten), "planets kept by the rewrite")
+---
+196 against 164, with the copy saved on {{snapshot: exoplanets}}. De
+Morgan is not wrong: `~big & ~far` keeps 196 too. The slip is in `~big`
+becoming `radius_earths <= 2`. A planet with no radius in the file has
+`nan`, and `nan > 2` and `nan <= 2` are both `False`, so `~big` is `True`
+for it and `<= 2` is `False`. The two filters disagree on 32 planets,
+each with a missing radius or distance. With missing values, "not bigger
+than 2" and "at most 2" are different questions.
+```
 
-<details class="dl-answer"><summary>answer</summary>
+</div>
 
-Intersection matches `and`, union matches `or`, and complement matches
-`not`.
+<div class="dl-world" data-world="dinosaurs">
 
-"Is this item in the set?" and "Is this statement true?" are the same
-kind of question, asked about different things. That is why the same two
-laws hold for both.
+`~(from_us | older)` keeps the finds that are neither from the United
+States nor from rock older than 150 million years. Can you set
+`rewritten` to the same filter with De Morgan's law, and check that the
+counts match?
 
-</details>
+```python exec
+id: logic-pandas--dinosaurs
+finds = await load_csv("dinosaur-finds.csv", keep_default_na=False)
+from_us = finds.country_code == "US"
+older = finds.oldest_mya > 150
+print(len(finds[~(from_us | older)]), "finds kept by ~(from_us | older)")
 
-**19.** What is the set version of XOR?
+rewritten = finds[from_us]   # change this line
+print(len(rewritten), "finds kept by the rewrite")
+```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+len(rewritten)
+```
 
-The symmetric difference: everything that is in exactly one of the two
-sets. Python writes it `A ^ B`. It uses the same operator as XOR on
-`True` and `False`, for the same reason.
+```solution
+finds = await load_csv("dinosaur-finds.csv", keep_default_na=False)
+from_us = finds.country_code == "US"
+older = finds.oldest_mya > 150
+print(len(finds[~(from_us | older)]), "finds kept by ~(from_us | older)")
 
-</details>
+rewritten = finds[~from_us & ~older]
+print(len(rewritten), "finds kept by the rewrite")
+---
+3,385 both ways, with the copy saved on {{snapshot: dinosaur-finds}}.
+In pandas, `&` and `|` bind more tightly than `==` or `>`, which is why
+the cell builds `from_us` and `older` first, as columns of `True` and
+`False`. Written in one line, each comparison needs its own brackets.
+```
+
+</div>
+
+<div class="dl-world" data-world="games-of-chance">
+
+A dice game pays out unless the roll is a double or adds up to more than
+9. Can you count the paying rolls a second way, with De Morgan's law,
+and check the counts agree?
+
+```python exec
+id: logic-pandas--games-of-chance
+rolls = [(a, b) for a in range(1, 7) for b in range(1, 7)]
+
+as_written = 0
+rewritten = 0
+for a, b in rolls:
+    if not (a == b or a + b > 9):
+        as_written = as_written + 1
+    # Add one to rewritten here, with no "not" outside a bracket
+
+print(as_written, rewritten)
+```
+
+```inputs
+rewritten
+```
+
+```solution
+rolls = [(a, b) for a in range(1, 7) for b in range(1, 7)]
+
+as_written = 0
+rewritten = 0
+for a, b in rolls:
+    if not (a == b or a + b > 9):
+        as_written = as_written + 1
+    if a != b and a + b <= 9:
+        rewritten = rewritten + 1
+
+print(as_written, rewritten)
+---
+26 both ways. 6 doubles and 6 rolls over 9 would be 12, but (5, 5) and
+(6, 6) are both, so 10 rolls are out, and 36 - 10 = 26 pay. `not (a + b >
+9)` is `a + b <= 9`, never `< 9`: the boundary again.
+```
+
+</div>
 
 ## One longer one
 
-**20.** A door unlocks when all three of these hold: the card is valid; it is during working hours, or the person is a manager; and the door is not in lockdown.
+**10.** A door unlocks when all three of these hold: the card is valid;
+it is during working hours, or the person is a manager; and the door is
+not in lockdown.
 
-- (a) Write this as a Python expression.
-- (b) A colleague writes the "does not unlock" case as `not valid or not (hours or manager) or lockdown`. Is that right?
-- (c) Simplify the middle part of their expression.
+- (a) Can you write it as a Python expression?
+- (b) A colleague writes the "does not unlock" case as
+  `not valid or not (hours or manager) or lockdown`. Does it match?
+- (c) Can you simplify the middle part of their expression?
 
 <details class="dl-answer"><summary>answer</summary>
 
 (a) `valid and (hours or manager) and not lockdown`.
 
 (b) Yes. De Morgan's law turns a `not` around three things joined by
-`and` into three `not`s joined by `or`. And `not (not lockdown)` is
+`and` into three `not`s joined by `or`, and `not (not lockdown)` is
 `lockdown`.
 
-(c) `not (hours or manager)` becomes `not hours and not manager`. In
-words: outside working hours, and not a manager.
+(c) `not (hours or manager)` becomes `not hours and not manager`:
+outside working hours, and not a manager. Somebody could now check the
+whole sentence against the real rules for the door, which is the point
+of rewriting it.
 
-So the whole expression reads: the door does not unlock if the card is
-invalid, or it is outside working hours and the person is not a
-manager, or the door is in lockdown. Somebody could check that sentence
-against the real rules for the door, and that is the point of
-rewriting it.
+</details>
+
+## From earlier
+
+**11.** From *Venn diagrams*. With everyone $= \{1, 2, 3, 4, 5, 6, 7, 8\}$,
+$A = \{1, 2, 3, 4\}$ and $B = \{3, 4, 5, 6\}$: what is the complement of
+$A \cup B$, and what is the intersection of the two complements?
+
+<details class="dl-answer"><summary>answer</summary>
+
+Both are $\{7, 8\}$. $A \cup B = \{1, 2, 3, 4, 5, 6\}$, and its complement
+is what is left. The complements are $\{5, 6, 7, 8\}$ and
+$\{1, 2, 7, 8\}$, and they share $\{7, 8\}$: De Morgan's law, on sets.
+
+</details>
+
+**12.** From *Sets*. What is the set version of XOR, and how does Python
+write it?
+
+<details class="dl-answer"><summary>answer</summary>
+
+The symmetric difference, everything in exactly one of the two sets,
+written `A ^ B`: the same operator as XOR on `True` and `False`, for the
+same reason.
+
+</details>
+
+**13.** From *Making decisions*. When is `x > 5 and x < 3` true?
+
+```python exec
+id: logic-never-true
+for x in range(-10, 11):
+    if x > 5 and x < 3:
+        print(x)
+print("done")
+```
+
+```predict
+What will it print before "done"?
+
+- Nothing
+  - No number is both more than 5 and less than 3.
+- The numbers 4 and 5
+  - The numbers between the two limits.
+- Every number except 3, 4 and 5
+  - The numbers outside the two limits.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+Nothing: no number is both more than 5 and less than 3, so the condition
+is never true. Somebody who wrote it probably meant `or`, for the numbers
+outside the gap. A condition with no `True` row in its table is a slip
+worth looking for.
 
 </details>
 

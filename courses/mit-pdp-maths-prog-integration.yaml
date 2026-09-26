@@ -48,14 +48,14 @@ contents:
   - how-we-got-here
 - title: Data, Chance and Logic
   tutorials:
+  - sets-as-sorted-lists
+  - venn-diagrams
+  - logic-and-truth
   - counting-carefully
   - what-are-the-chances
   - three-doors
   - making-sense-of-data
   - pictures-worth-numbers
-  - sets-as-sorted-lists
-  - logic-and-truth
-  - venn-diagrams
 - title: Algebra and Functions
   tutorials:
   - numbers-and-their-families

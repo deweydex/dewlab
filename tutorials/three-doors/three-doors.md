@@ -1,7 +1,7 @@
 ---
 title: "The Monty Hall problem: three doors and a simulation"
 year: "2026-2027"
-version: 2026.09.20.1
+version: 2026.09.26.1
 covers:
   why-staying-feels-fine:
     touches: [MIT-5.6]
@@ -27,17 +27,19 @@ he opens door 3, and there is the goat.
 Then he offers you a choice. You can keep door 1, or you can switch to
 door 2.
 
-Does it matter which you do? Before you read on, make your own guess.
+Does it matter which you do? Before you read on, make your own guess,
+and write it down.
 
-This puzzle is called the Monty Hall problem, after the host of an old
-American game show. On this page we:
+This puzzle is called the *Monty Hall problem*, after the host of an
+old American game show. On this page we:
 
 - look at the answer most people give first
-- play the game thousands of times in Python, and count the wins
+- play one game, and then thousands, and count the wins
+- find the line of code that makes the difference
 - count the three possible cases by hand, to see why the result is true
 - change the host, and see what happens to the answer
 
-We use the probability and simulation from
+We use the simulation and the counting from
 [Probability: simple, compound and conditional](tutorial:what-are-the-chances).
 
 ## Why staying feels fine
@@ -62,7 +64,7 @@ thousand times and count.
 ## Playing one game
 
 First, here is one game, written out step by step so we can watch it
-happen. What do you think each line of output will show?
+happen. Run it a few times.
 
 ```python exec
 id: playing-one-game-1
@@ -70,7 +72,7 @@ import random
 
 doors = ["door 1", "door 2", "door 3"]
 
-car = random.choice(doors)         # where the car actually is
+car = random.choice(doors)         # where the car is
 first_pick = random.choice(doors)  # the door you point at
 
 # The host opens a door that is neither your pick nor the car. When your
@@ -96,17 +98,13 @@ print("Staying wins?      ", first_pick == car)
 print("Switching wins?    ", other_door == car)
 ```
 
-Run that cell a few times. Sometimes staying wins, and sometimes
-switching wins. One game tells us nothing about which is better. That is
-why we need a lot of games.
+Sometimes staying wins, and sometimes switching wins. One game tells us
+nothing about which is better. That is why we need a lot of games.
 
 ## Playing it ten thousand times
 
 Next, we put one game inside a function, `play_once()`. Then we play it
 10,000 times and count how often each choice wins.
-
-Before you run the cell, what do you expect? If staying and switching
-are equally good, each should win about half the time. Run it to check.
 
 ```python exec
 id: playing-it-ten-thousand-times-1
@@ -148,29 +146,39 @@ print("Staying won:  ", staying_wins, "->", round(staying_wins / num_games, 3))
 print("Switching won:", switching_wins, "->", round(switching_wins / num_games, 3))
 ```
 
-Were you surprised? Staying wins about a third of the time. Switching
-wins about two thirds of the time. Neither is one in two.
+```predict
+type: number
+tolerance: 0.03
+
+What share of the games will switching win? The last number printed is
+that share, from 0 to 1.
+```
+
+Staying wins about a third of the time. Switching wins about two thirds
+of the time. Neither is one in two.
 
 Run the cell again. The two numbers change a little, but they stay close
-to the same two values. That is worth noticing. The small changes come
-from the randomness. The values they stay close to are not random at all.
+to the same two values. The small changes come from the randomness. The
+values they stay close to are not random at all.
 
-### Your turn
-
-1. Copy the lines from `num_games = 10000` to the end of the cell above
-   into the cell below. You have already run the cell above, so
-   `play_once()` is defined, and you do not need to copy it.
-2. Change `num_games` to 100, and run the cell a few times.
-3. Then try 1,000,000, and run it a few times again.
-
-How much do the numbers change from run to run at each size? Does the
-change get smaller as the number of games grows, as the law of large
-numbers says it should?
+How much do the numbers change from run to run? This cell plays with
+the `play_once()` above. Run it a few times with 100 games, then change
+`num_games` to 100,000 and run it a few times again.
 
 ```python exec
 id: your-turn-1
-# Try a different number of games
+num_games = 100
+switching_wins = 0
+for i in range(num_games):
+    stayed_won, switched_won = play_once()
+    if switched_won:
+        switching_wins = switching_wins + 1
+print("Switching won:", round(switching_wins / num_games, 3))
 ```
+
+With 100 games, switching can win anywhere from about 0.55 to 0.8 of
+them. With 100,000 it hardly leaves 0.66 or 0.67: the law of large
+numbers from the last page.
 
 ## Where the two thirds comes from
 
@@ -212,9 +220,32 @@ open, the door he opens tells us where the car is.
 Now count the bottom row. Switching wins in two of the three cases. That
 is two out of three, the same as the simulation kept telling us.
 
-Here is another way to say it. Switching wins exactly when your first
-pick was wrong. Your first pick was a one-in-three guess, so it is wrong
-two times in three. Switching turns every wrong first guess into a win.
+The picture fixed your pick at door 1. This cell counts every pair of
+where the car is and which door you pick: 9 pairs, all equally likely.
+
+```python exec
+id: three-cases-counted
+import itertools
+
+doors = ["door 1", "door 2", "door 3"]
+switching_wins = 0
+for car, first_pick in itertools.product(doors, repeat=2):
+    if first_pick != car:
+        switching_wins = switching_wins + 1
+print(switching_wins, "of 9")
+```
+
+```predict
+type: number
+
+In how many of the 9 pairs does switching win?
+```
+
+Six of nine, two thirds again. The cell only asks whether the first pick
+was wrong, and that is the whole argument: switching wins exactly when
+your first pick was wrong. Your first pick was a one-in-three guess, so
+it is wrong two times in three. Switching turns every wrong first guess
+into a win.
 
 ## A host who is not paying attention
 
@@ -226,9 +257,6 @@ So here is a careless host. He opens one of the other two doors at
 random, without knowing what is behind it. Sometimes he opens the door
 with the car himself, and the game is spoiled: there is nothing left to
 decide.
-
-Before you run the cell, what do you think will happen to the two
-thirds?
 
 ```python exec
 id: a-host-who-is-not-paying-attention-1
@@ -273,18 +301,25 @@ for i in range(num_games):
     result = play_with_a_careless_host()
     if result is None:
         spoiled = spoiled + 1
-        continue
-    games_finished = games_finished + 1
-    stayed_won, switched_won = result
-    if stayed_won:
-        staying_wins = staying_wins + 1
-    if switched_won:
-        switching_wins = switching_wins + 1
+    else:
+        games_finished = games_finished + 1
+        stayed_won, switched_won = result
+        if stayed_won:
+            staying_wins = staying_wins + 1
+        if switched_won:
+            switching_wins = switching_wins + 1
 
 print("Spoiled — he opened the car:", spoiled, "of", num_games)
 print("Games that finished:        ", games_finished)
 print("Staying won:  ", round(staying_wins / games_finished, 3))
 print("Switching won:", round(switching_wins / games_finished, 3))
+```
+
+```predict
+type: number
+tolerance: 0.03
+
+In the games that finish, what share will switching win?
 ```
 
 About a third of the games are spoiled. In the games that finish,
@@ -302,36 +337,83 @@ three he had no choice.
 What happens to the original game with a hundred doors instead of
 three? You pick one door. The host, who knows where the car is, opens
 ninety-eight doors with goats behind them. One other door is still shut.
-How often does switching win now?
-
-1. Before you write any code, guess the answer.
-2. Write a simulation of the hundred-door game.
-3. Run it, and see whether your guess was close.
-
-**Hint:** the host's job is easier to write than it sounds. If your pick
-is the car, the other shut door can be any of the other doors. If your
-pick is not the car, the other shut door has to be the car.
+How often does switching win now? Make a guess, then can you write a
+simulation of the hundred-door game?
 
 ```python exec
 id: your-turn-2
-# A hundred doors
+import random
+
+
+def play_hundred_doors():
+    """One game with 100 doors. Returns whether switching won."""
+    car = random.randrange(100)
+    first_pick = random.randrange(100)
+    # Which door is still shut, besides yours?
+
+
+wins = 0
+for i in range(10000):
+    if play_hundred_doors():
+        wins = wins + 1
+print("Switching won:", round(wins / 10000, 3))
+```
+
+```hint
+The host's job is easier to write than it sounds. If your pick is the
+car, the other shut door can be any of the other 99. If your pick is not
+the car, the other shut door has to be the car. `random.randrange(100)`
+picks a door numbered from 0 to 99.
+```
+
+```solution
+import random
+
+
+def play_hundred_doors():
+    """One game with 100 doors. Returns whether switching won."""
+    car = random.randrange(100)
+    first_pick = random.randrange(100)
+    if first_pick == car:
+        others = [door for door in range(100) if door != first_pick]
+        other_door = random.choice(others)
+    else:
+        other_door = car
+    return other_door == car
+
+
+wins = 0
+for i in range(10000):
+    if play_hundred_doors():
+        wins = wins + 1
+print("Switching won:", round(wins / 10000, 3))
+---
+About 0.99. Your first pick is right 1 time in 100, and switching wins
+every other time. With a hundred doors, the host's 98 goats are
+obviously telling you something: of all the doors he could have left
+shut, he left that one. Three doors hide the same thing in a smaller
+number.
 ```
 
 ## What you have now
 
-You now know a problem where the answer that looks right is wrong. You
-also have a way to settle that kind of question, and it does not depend
-on who argues best.
+A problem where the answer that looks right is wrong, and a way to
+settle that kind of question that does not depend on who argues best.
 
-Switching wins two times in three. It wins exactly when your first pick
-was wrong, and a one-in-three guess is wrong two times in three.
-
-The simulation convinced us, and the three cases explained why. Each one
+The simulation convinced us, and the three cases explained why. Each
 needs the other. A number with no argument behind it is a fact you have
 to trust without knowing why. An argument with nothing to check it
 against is how the fifty-fifty answer lasted so long.
 
-## Where to Read More
+In the careless host's finished games, he also opened a door with a
+goat behind it, just as the knowing host always does. Can you say, in a
+sentence, why the same goat means two thirds in one game and a half in
+the other?
+
+The [practice page](tutorial:three-doors-practice) changes the host in
+three more ways.
+
+## Where to read more
 
 vos Savant, M. (1990). *Ask Marilyn*. Parade Magazine. The column that
 set off the argument. Thousands of readers wrote in to say the answer
@@ -343,3 +425,7 @@ Math's Most Contentious Brain Teaser*. Oxford University Press. A whole
 book on this one question, including the variations where the answer
 changes — a host with a preference between the two goat doors, or one
 who only offers the switch sometimes.
+
+Numberphile (2016). *Monty Hall Problem.*
+<https://www.youtube.com/watch?v=4Lb-6rxZxx0>. The classic worked
+argument, and worth watching after simulating it rather than before.

@@ -100,9 +100,9 @@ groups:
       object, and how both turn into a program that actually chooses
       between paths.
     tutorials:
-      - logic-and-truth
-      - venn-diagrams
       - sets-as-sorted-lists
+      - venn-diagrams
+      - logic-and-truth
       - making-decisions
 
   - key: data-and-pictures

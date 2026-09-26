@@ -1,7 +1,10 @@
 ---
 title: "Counting: factorials, permutations and combinations"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  games-of-chance: Dice, cards and coins, and the games people play with them.
+  book-characters: The people in six novels, chapter by chapter.
 covers:
   factorials-the-foundation:
     covers: [MIT-5.3]
@@ -15,164 +18,237 @@ covers:
 
 # Counting: factorials, permutations and combinations
 
-How many different ways can 5 people sit around a dinner table? How many
-different 6-digit PINs are there? How many ways can you choose 3
-toppings from a menu of 12?
+Five friends sit down to dinner at a round table. How many different
+ways can they sit? Python can list every order they could come in:
 
-These are *counting problems*. Each one asks how many different ways
-something can happen. Counting problems come up in many places:
+```python exec
+id: counting-dinner-table
+import itertools
 
-- in probability
-- in security: how hard is a password to guess?
-- in games: how many different hands of cards are there?
-- in computing: how many different inputs can a function get?
+guests = ["Ada", "Ben", "Cara", "Dev", "Eve"]
+orders = list(itertools.permutations(guests))
 
-On this page we:
+print(orders[0])
+print(orders[1])
+print(len(orders), "orders")
+```
 
-- count the ways to put things in order, with factorials
-- count the ways to choose some things and put them in order, with
-  permutations
-- count the ways to choose some things when order does not matter, with
-  combinations
-- count choices where the same thing can be picked again
-- use these tools to see what makes a password strong
+```predict
+type: number
+
+How many different orders are there for five people?
+```
+
+That is how many ways to put five people in a row. A round table is a
+different question: if everyone moves one seat to the left, has anything
+changed? Keep that in mind; this page answers it at the end.
+
+These are *counting problems*: how many different ways can something
+happen? They come up in probability, which is next, and in security (how
+hard is a password to guess?), in games (how many different hands of
+cards are there?), and in computing (how many different inputs can a
+function get?).
+
+This page counts the slow way first, by listing every case, and only
+then finds the formula that saves the listing.
+
+## Listing the cases
+
+`itertools` is a module of tools for going through collections. Three
+of them list the three kinds of choice this page counts. Take four
+people, A, B, C and D:
+
+- `itertools.product("ABCD", repeat=2)`: two-letter codes, where a letter
+  may be used again. AA is allowed.
+- `itertools.permutations("ABCD", 2)`: a captain and a vice-captain, where
+  the order matters but nobody is chosen twice. AB is not BA, and AA is
+  not allowed.
+- `itertools.combinations("ABCD", 2)`: teams of two, where the order does
+  not matter either. AB is the same team as BA.
+
+Each rule takes some choices away, so each count is smaller than the one
+before it.
+
+```python exec
+id: counting-three-kinds
+import itertools
+
+codes = list(itertools.product("ABCD", repeat=2))
+captains = list(itertools.permutations("ABCD", 2))
+teams = list(itertools.combinations("ABCD", 2))
+
+print(len(codes), "codes")
+print(len(captains), "captain pairs")
+print(len(teams), "teams:", ["".join(t) for t in teams])
+```
+
+```predict
+type: number
+
+How many teams of two can be made from four people? The last line
+prints it.
+```
+
+Listing is always right, and it gets slow fast. Twelve people give 495
+teams of four, and a deck of 52 cards gives 2,598,960 five-card hands:
+too many to look at, and far too many to list for a bigger problem. The
+rest of the page finds a formula for each kind of choice, and checks it
+against the listing.
 
 ## Factorials: the foundation
 
-The factorial of a positive whole number $n$ is what we get when we
-multiply together every whole number from $n$ down to 1. We write it
-$n!$, and say "n factorial":
+How many orders are there for 1, 2, 3, 4 and 5 people? Listing them all
+shows a pattern:
+
+```python exec
+id: counting-orders-pattern
+import itertools
+
+for n in range(1, 6):
+    print(n, "people:", len(list(itertools.permutations(range(n)))), "orders")
+```
+
+Each count is the one before it times the new number of people: 1, 2,
+6, 24, 120. With five people, there are 5 choices for the first place,
+then 4 for the second, then 3, 2 and 1. That product has a name. The
+*factorial* of a whole number $n$ multiplies every whole number from $n$
+down to 1. We write it $n!$ and say "n factorial":
 
 $$n! = n \times (n-1) \times (n-2) \times \cdots \times 2 \times 1$$
 
-For example, $5! = 5 \times 4 \times 3 \times 2 \times 1 = 120$.
+A factorial counts the *arrangements* of $n$ different objects. And
+$0! = 1$: there is exactly one way to arrange nothing, which is to do
+nothing. That also keeps every formula on this page working when a
+number in it is 0.
 
-What does a factorial count? It counts the different orders, or
-*arrangements*, of $n$ different objects.
-
-Suppose you have 5 books to put on a shelf. There are 5 choices for the
-first place on the shelf. Once that book is placed, there are 4 books
-left for the second place. Then there are 3 for the third place, 2 for
-the fourth, and 1 for the last. That gives
-$5 \times 4 \times 3 \times 2 \times 1 = 120$ different arrangements.
-
-What about $0!$? Mathematicians agree that $0! = 1$. This can look
-strange at first. But it fits: there is exactly one way to arrange zero
-objects, and that is to do nothing. It also keeps every formula on this
-page working when a number in it is 0.
-
-### Your turn
-
-We met the product version of the accumulator pattern in
-[Repeating steps with loops](tutorial:repeating-yourself). Here we turn
-it into a function.
-
-1. In the first cell, write a function `factorial(n)` that works out
-   $n!$.
-2. Give it a docstring.
-3. Make sure it gives 1 when $n$ is 0.
-4. In the second cell, test it with the four cases listed there.
-
-Here is one way to plan it, in pseudocode:
-
-```
-IF n is 0:
-    RETURN 1
-SET product = 1
-FOR each integer i from 1 to n:
-    MULTIPLY product by i
-RETURN product
-```
+The product accumulator from
+[Repeating steps with loops](tutorial:repeating-yourself) is exactly
+what a factorial needs. Can you write `factorial(n)`?
 
 ```python exec
 id: your-turn-1
-# Your factorial function
+def factorial(n):
+    """Return n!, the number of ways to arrange n different objects."""
+    # Your code here
+
+
+print(factorial(5))
 ```
 
-```python exec
-id: your-turn-2
-# Test cases
-# factorial(0) should be 1
-# factorial(1) should be 1
-# factorial(5) should be 120
-# factorial(10) should be 3628800
+```inputs
+factorial(0)
+factorial(1)
+factorial(5)
+factorial(10)
+```
+
+```hint
+Start a product at 1, and multiply it by every whole number from 1 to n.
+What does the loop do when n is 0, and is the answer then right?
+```
+
+```solution
+def factorial(n):
+    """Return n!, the number of ways to arrange n different objects."""
+    product = 1
+    for i in range(1, n + 1):
+        product = product * i
+    return product
+
+
+print(factorial(5))
+---
+Starting at 1 handles 0 on its own: `range(1, 1)` is empty, so the loop
+never runs and the answer is 1, which is what $0!$ should be. Python's
+`math.factorial` does the same job.
 ```
 
 ## Permutations: order matters
 
 A *permutation* is an arrangement of $r$ objects chosen from $n$
-different objects. In a permutation, order matters: choosing A then B is
-different from choosing B then A.
+different objects, where order matters. Eight runners finish a race. In
+how many ways can they take 1st, 2nd and 3rd? There are 8 choices for
+1st, then 7 left for 2nd, then 6 for 3rd: $8 \times 7 \times 6 = 336$.
 
-We write the number of permutations as $P(n, r)$. The formula takes the
-arrangements of all $n$ objects, $n!$, and divides out the arrangements
-of the $n - r$ objects we did not choose:
+That is the start of $8!$, stopped after three numbers. Dividing $8!$ by
+the part left out, $5!$, says the same thing. We write the count as
+$P(n, r)$:
 
-$$P(n, r) = \frac{n!}{(n-r)!}$$
+$$P(n, r) = \frac{n!}{(n-r)!} \qquad P(8, 3) = \frac{40320}{120} = 336$$
 
-Here is an example. Eight runners are in a race. In how many different
-ways can they finish 1st, 2nd and 3rd? We choose 3 runners from 8, and
-the order matters, so:
-
-$$P(8, 3) = \frac{8!}{5!} = \frac{40320}{120} = 336$$
-
-We can also count this directly. There are 8 choices for 1st place. Then
-there are 7 runners left for 2nd place, and then 6 for 3rd place. That
-gives $8 \times 7 \times 6 = 336$, the same answer.
-
-### Your turn
-
-1. Write a function `permutations(n, r)` that works out $P(n, r)$. Use
-   your `factorial` function inside it.
-2. What should happen if $r > n$? You cannot choose more items than you
-   have. Decide what your function should do in that case.
-3. Test it with the cases in the second cell.
+Can you write `permutations(n, r)` with your `factorial`, and check it
+against a listing?
 
 ```python exec
 id: your-turn-3
-# Your permutations function
+def permutations(n, r):
+    """Return P(n, r), the number of ordered choices of r from n."""
+    # Your code here
+
+
+print(permutations(8, 3))
+print(len(list(itertools.permutations(range(8), 3))))
 ```
 
-```python exec
-id: your-turn-4
-# Test cases
-# permutations(8, 3) should be 336
-# permutations(5, 5) should be 120 (same as 5!)
-# permutations(5, 0) should be 1
-# permutations(5, 1) should be 5
+```inputs
+permutations(8, 3)
+permutations(5, 5)
+permutations(5, 0)
+permutations(5, 1)
+```
+
+```hint
+The formula is $n!$ divided by $(n - r)!$. Use `//` for the division, so
+the answer stays a whole number.
+```
+
+```solution
+def factorial(n):
+    product = 1
+    for i in range(1, n + 1):
+        product = product * i
+    return product
+
+
+def permutations(n, r):
+    """Return P(n, r), the number of ordered choices of r from n."""
+    return factorial(n) // factorial(n - r)
+
+
+print(permutations(8, 3))
+print(len(list(itertools.permutations(range(8), 3))))
+---
+336 both ways. The division always comes out whole, since $(n-r)!$ is
+the tail end of $n!$; `//` keeps the answer an `int` rather than a
+float. With $r > n$ there is no way to choose, and `factorial` of a
+negative number gives 1 here, which would be wrong: a careful version
+returns 0 when `r > n`.
 ```
 
 ## Combinations: order does not matter
 
-A *combination* is a choice of $r$ objects from $n$ different objects,
-where the order does not matter. Choosing {A, B, C} is the same
-combination as choosing {C, A, B}.
+A *combination* is a choice of $r$ objects from $n$, where order does not
+matter: $\{A, B, C\}$ is the same combination as $\{C, A, B\}$.
 
-How do we count combinations? Take one combination of $r$ items. We can
-arrange those $r$ items in $r!$ different orders, so the permutation
-count lists each combination $r!$ times. To count each combination only
-once, we divide the permutation count by $r!$:
+Look back at the listing. Four people gave 12 captain pairs and 6 teams:
+each team, such as AB, appears twice among the captain pairs, as AB and
+BA. In general, the $r$ objects in one combination can be arranged in
+$r!$ orders, so the permutation count lists each combination $r!$ times.
+Dividing by $r!$ counts each one once:
 
 $$C(n, r) = \binom{n}{r} = \frac{n!}{r! \cdot (n-r)!}$$
 
-We read $\binom{n}{r}$ as "n choose r".
-
-Let's try a small example first. How many ways can we choose 2 people
-from 4 for a team? The formula gives
-$C(4, 2) = \frac{4!}{2! \cdot 2!} = \frac{24}{4} = 6$. If the people are
-A, B, C and D, the six teams are AB, AC, AD, BC, BD and CD.
-
-Now a bigger one. How many different 5-card hands can be dealt from a
-deck of 52 cards?
-
-$$C(52, 5) = \frac{52!}{5! \cdot 47!} = 2{,}598{,}960$$
+We read $\binom{n}{r}$ as "n choose r". For the teams, $C(4, 2) = 12 / 2 = 6$.
+For five-card hands from 52 cards, $C(52, 5) = 2{,}598{,}960$.
 
 ```question
 id: permutation-or-combination
 type: multiple-choice
 answer: 2
 
-Quick check: a raffle draws 3 winning numbers from a barrel, one at a time. Every winner gets the same prize, whatever order their number came out in. Which counts this situation correctly?
+A raffle draws 3 winning numbers from a barrel, one at a time. Every
+winner gets the same prize, whatever order their number came out in.
+Which counts this situation?
 
 - A permutation, because the numbers come out one at a time.
   - Drawing one at a time is how it happens, but the prize does not depend on the order.
@@ -182,168 +258,349 @@ Quick check: a raffle draws 3 winning numbers from a barrel, one at a time. Ever
   - Once drawn, a number is out of the barrel, so it cannot come out again.
 ```
 
-### Your turn
-
-How might you write `combinations(n, r)`? Can you build it from your
-`factorial` function, the same way `permutations` was built?
+Can you write `combinations(n, r)` the same way?
 
 ```python exec
 id: your-turn-5
-# Your combinations function
+def combinations(n, r):
+    """Return C(n, r), the number of unordered choices of r from n."""
+    # Your code here
+
+
+print(combinations(4, 2))
+print(len(list(itertools.combinations(range(4), 2))))
 ```
 
-```python exec
-id: your-turn-6
-# Test cases
-# combinations(52, 5) should be 2598960
-# combinations(10, 3) should be 120
-# combinations(5, 0) should be 1
-# combinations(5, 5) should be 1
-# combinations(n, r) should equal combinations(n, n-r) for any valid n, r
+```inputs
+combinations(52, 5)
+combinations(10, 3)
+combinations(5, 0)
+combinations(5, 5)
+combinations(10, 7)
 ```
 
-### Applying the counting tools
+```hint
+Start from the permutation count, $n!$ divided by $(n - r)!$, and divide
+once more by $r!$, the orders each choice was counted in.
+```
 
-Here are five questions to answer with your functions. For each one,
-ask yourself first: does the order matter? If it does, use a
-permutation. If it does not, use a combination.
+```solution
+def factorial(n):
+    product = 1
+    for i in range(1, n + 1):
+        product = product * i
+    return product
 
-1. A committee of 4 people is chosen from 12 people. How many different
-   committees are possible?
-2. How many different 4-letter sequences can we make from the letters A
-   to Z, if a letter may be used more than once?
-3. A PIN is 4 digits long, and each digit is from 0 to 9. How many
-   different PINs are there?
-4. A class has 20 students. In how many ways can we choose a president,
-   a vice-president and a treasurer?
-5. A pizza shop offers 15 toppings. How many different 3-topping pizzas
-   can it make?
+
+def combinations(n, r):
+    """Return C(n, r), the number of unordered choices of r from n."""
+    return factorial(n) // (factorial(r) * factorial(n - r))
+
+
+print(combinations(4, 2))
+print(len(list(itertools.combinations(range(4), 2))))
+---
+6 both ways. `combinations(10, 3)` and `combinations(10, 7)` are both
+120: choosing the 3 to take is the same as choosing the 7 to leave.
+Python has both counts built in, as `math.perm` and `math.comb`.
+```
+
+### Choosing the tool
+
+For each question, ask first: does the order matter? Can the same thing
+be chosen again?
+
+1. A committee of 4 is chosen from 12 people.
+2. A 4-letter sequence uses the letters A to Z, and a letter may be used
+   again.
+3. A PIN is 4 digits, each from 0 to 9.
+4. A class of 20 chooses a president, a vice-president and a treasurer.
+5. A pizza shop offers 15 toppings. How many 3-topping pizzas can it
+   make?
 
 ```python exec
 id: applying-the-counting-tools-1
-# Work through each question
-# For each: state whether it's a permutation or combination, and why
+import math
 
-# 1. Committee from 12 people
-
-# 2. Four-letter sequences (careful: this is different from the others)
-
-# 3. Four-digit PINs
-
-# 4. President, VP, treasurer from 20
-
-# 5. Three toppings from 15
+# One line for each question, with math.comb, math.perm, or **
 ```
 
-Did questions 2 and 3 feel different from the others? In those two, the
-same letter or digit can appear more than once. We call this
-*repetition*. Permutations and combinations, as we have defined them,
-never choose the same object twice, so they do not fit here.
+```solution
+import math
 
-For repetition we use the *multiplication principle*. The multiplication
-principle says: if there are $k$ choices at each of $r$ steps, the total
-number of outcomes is $k^r$. For 4-letter sequences from 26 letters,
-that is $26^4 = 456{,}976$.
-
-### Your turn
-
-1. Write the multiplication principle as a function,
-   `count_with_repetition(choices, positions)`.
-2. Use it to check your answers to questions 2 and 3 above.
-
-```python exec
-id: your-turn-7
-# Your count_with_repetition function
+print(1, math.comb(12, 4))
+print(2, 26 ** 4)
+print(3, 10 ** 4)
+print(4, math.perm(20, 3))
+print(5, math.comb(15, 3))
+---
+495, 456,976, 10,000, 6,840 and 455. The committee and the pizza are
+combinations: nobody's order matters. The officers are a permutation:
+president then vice-president is not the other way round. Questions 2
+and 3 are different from the rest: a letter or a digit can come again,
+which permutations and combinations never allow.
 ```
 
-```python exec
-id: your-turn-8
-# Verify questions 2 and 3
-```
+For those two, the *multiplication principle*: with $k$ choices at each
+of $r$ steps, there are $k^r$ outcomes. That is what
+`itertools.product` listed. Four letters from 26 give $26^4 = 456{,}976$.
 
 ## A practical application: password strength
 
-Our counting tools can tell us something about password security. An
-attacker who tries every possible password has to try a very large
-number of them. The more possible passwords there are, the stronger a
-password is.
-
-Suppose a password is 8 characters long and uses only lowercase letters.
-There are 26 choices for each character, so there are $26^8$ possible
-passwords.
-
-Now suppose we allow more kinds of character:
-
-- with uppercase letters too, there are 52 choices for each character
-- with digits too, there are 62
-- with 10 special characters too, such as `!` and `#`, there are 72
-
-How do you think the number of possible passwords changes? Run the cell
-to see.
+An attacker who tries every possible password has to get through all of
+them, so the more there are, the stronger a password is. With only
+lowercase letters, 8 characters give $26^8$ passwords. With upper case
+too there are 52 choices a character, with digits 62, and with 10
+special characters such as `!` and `#`, 72.
 
 ```python exec
-id: a-practical-application-password-strength-1
-# Password strength analysis
-print("Lowercase only, 8 chars:", 26 ** 8)
-print("Lower + upper, 8 chars: ", 52 ** 8)
-print("All characters, 8 chars:", 72 ** 8)
-print()
-print("All characters, 10 chars:", 72 ** 10)
-print("All characters, 12 chars:", 72 ** 12)
+id: counting-length-or-variety
+print("12 lowercase letters:      ", 26 ** 12)
+print("8 characters of any of 72: ", 72 ** 8)
+print("Twelve lowercase letters win:", 26 ** 12 > 72 ** 8)
 ```
 
-The numbers grow very fast when the set of characters gets bigger. They
-grow even faster when the password gets longer, because the length is
-the power. This is why password advice asks for both: use many kinds of
-character, *and* make the password long.
+```predict
+Which gives more passwords, the last line asks: 12 lowercase letters, or
+8 characters from all 72?
 
-### Your turn
+- Twelve lowercase letters win: True
+  - Length is the power; four more characters multiply the count by 26 four times.
+- Twelve lowercase letters win: False
+  - 72 choices a character is nearly three times 26.
+```
 
-Suppose a computer can test one billion ($10^9$) passwords every second.
-How long would it take to try every possible password in each case
-above?
+Length wins: the length is the power in $k^r$, and adding to the power
+grows a number faster than adding to the base. That is why password
+advice asks for length first.
 
-1. Write a function `crack_time(num_possibilities, guesses_per_second)`.
-2. Make it return the time in a sensible unit: seconds, minutes, hours,
-   days or years.
-3. Use it on each password case above.
-
-Would you like to go further? Try a 16-character password. Or try an
-attacker who can test only a thousand guesses a second, not a billion.
-How much does each change make?
+Suppose a computer tests a billion ($10^9$) passwords a second. Can you
+write `crack_time(possibilities, per_second)`, which says how long trying
+them all takes, in the most sensible unit?
 
 ```python exec
 id: your-turn-9
-# Your crack_time function
+def crack_time(possibilities, per_second):
+    """Return how long trying every possibility takes, as text with a unit."""
+    # Your code here
+
+
+print(crack_time(26 ** 8, 10 ** 9))
+print(crack_time(72 ** 12, 10 ** 9))
 ```
+
+```inputs
+crack_time(26 ** 8, 10 ** 9)
+crack_time(72 ** 8, 10 ** 9)
+crack_time(26 ** 12, 10 ** 9)
+crack_time(72 ** 12, 10 ** 9)
+```
+
+```hint
+Divide to get seconds. Then compare with a minute (60), an hour (3,600),
+a day (86,400) and a year (about 31,557,600 seconds), and divide by the
+largest unit the time is at least one of.
+```
+
+```solution
+def crack_time(possibilities, per_second):
+    """Return how long trying every possibility takes, as text with a unit."""
+    seconds = possibilities / per_second
+    units = [("years", 31557600), ("days", 86400), ("hours", 3600), ("minutes", 60)]
+    for name, size in units:
+        if seconds >= size:
+            return f"{seconds / size:,.1f} {name}"
+    return f"{seconds:,.1f} seconds"
+
+
+print(crack_time(26 ** 8, 10 ** 9))
+print(crack_time(72 ** 12, 10 ** 9))
+---
+Eight lowercase letters fall in 3.5 minutes. Eight characters from 72
+take 8.4 days; twelve lowercase letters, 3.0 years; and twelve from 72,
+over 600,000 years. The biggest jump on the list is length, not
+variety.
+```
+
+## The dinner table, answered
+
+Back to the round table. Five people give 120 orders in a row. At a
+round table, a seating and the same seating moved one place round are
+the same seating: nobody's neighbours have changed. So fix one person's
+seat, say Ada's, and count the orders of everyone else around her:
 
 ```python exec
-id: your-turn-10
-# Apply it to the password cases above
+id: counting-round-table
+import itertools
+
+guests = ["Ada", "Ben", "Cara", "Dev", "Eve"]
+
+
+def turned_to_ada(order):
+    """The same seating, turned so that Ada is first."""
+    place = order.index("Ada")
+    return order[place:] + order[:place]
+
+
+different = set()
+for order in itertools.permutations(guests):
+    different.add(turned_to_ada(order))
+print(len(different), "different seatings at a round table")
 ```
 
-## Reflection
+120 orders fall into groups of 5, one group for each way round, so
+there are $120 / 5 = 24$ seatings, which is $(5-1)!$: with Ada's seat
+fixed, the other four can sit in $4!$ ways. If a seating and its mirror
+image count as the same, since everyone has the same two neighbours,
+there are 12.
 
-We have built three counting functions: factorial, permutations and
-combinations. We have also built one for the multiplication principle.
-Each one is a tested tool that we can use again. In
-[Probability: simple, compound and conditional](tutorial:what-are-the-chances),
-we use them to work out probabilities.
+### Your turn
 
-The most important skill is choosing the right tool. Here is a summary:
+<div class="dl-world" data-world="book-characters">
+
+The Bennet family of *Pride and Prejudice* sits down to dinner at a
+round table: Mr and Mrs Bennet and their five daughters, Jane,
+Elizabeth, Mary, Kitty and Lydia. How many different seatings are there?
+And how many if Mr and Mrs Bennet must sit side by side? Can you count
+both by listing, then check with a formula?
+
+```python exec
+id: counting-your-world--book-characters
+import itertools
+
+family = ["Mr Bennet", "Mrs Bennet", "Jane", "Elizabeth", "Mary", "Kitty", "Lydia"]
+
+
+def turned(order):
+    """The same seating, turned so that Mr Bennet is first."""
+    place = order.index("Mr Bennet")
+    return order[place:] + order[:place]
+
+
+seatings = set()
+side_by_side = 0
+```
+
+```inputs
+len(seatings)
+side_by_side
+```
+
+```hint
+Add `turned(order)` to `seatings` for every order `itertools.permutations`
+gives. With Mr Bennet first, Mrs Bennet is beside him when she is second
+or last.
+```
+
+```solution
+import itertools
+
+family = ["Mr Bennet", "Mrs Bennet", "Jane", "Elizabeth", "Mary", "Kitty", "Lydia"]
+
+
+def turned(order):
+    """The same seating, turned so that Mr Bennet is first."""
+    place = order.index("Mr Bennet")
+    return order[place:] + order[:place]
+
+
+seatings = set()
+for order in itertools.permutations(family):
+    seatings.add(turned(order))
+side_by_side = 0
+for seating in seatings:
+    if seating[1] == "Mrs Bennet" or seating[-1] == "Mrs Bennet":
+        side_by_side = side_by_side + 1
+print(len(seatings), side_by_side)
+---
+720 seatings, which is $(7-1)! = 6!$, and 240 with the parents side by
+side. The formula for the second: treat the couple as one seat-taker, so
+six take their places round the table in $(6-1)! = 120$ ways, and the
+couple can sit two ways round, $120 \times 2 = 240$. A third of all
+seatings: with Mr Bennet fixed, 2 of the 6 other seats are beside him.
+```
+
+</div>
+
+<div class="dl-world" data-world="games-of-chance">
+
+Roll three dice. How many of the outcomes show three different numbers?
+Can you count them by listing, with `itertools.product`, then check with
+`permutations` from above?
+
+```python exec
+id: counting-your-world--games-of-chance
+import itertools
+
+rolls = list(itertools.product(range(1, 7), repeat=3))
+print(len(rolls), "outcomes")
+
+all_different = 0
+```
+
+```inputs
+all_different
+```
+
+```hint
+A roll shows three different numbers when `len(set(roll))` is 3. Which
+kind of choice is it: does order matter, and can a number come again?
+```
+
+```solution
+import itertools
+
+rolls = list(itertools.product(range(1, 7), repeat=3))
+print(len(rolls), "outcomes")
+
+all_different = 0
+for roll in rolls:
+    if len(set(roll)) == 3:
+        all_different = all_different + 1
+print(all_different)
+---
+120 of the 216 outcomes. It is $P(6, 3) = 6 \times 5 \times 4$: six
+numbers for the first die, five left for the second, four for the
+third, and the dice are different dice, so order matters. As a chance,
+120 out of 216 is a little over a half: the next page's question.
+```
+
+</div>
+
+## Looking back
+
+The table on this page has three rows. Can you say, for each of them,
+which `itertools` tool lists its cases?
 
 | The question | The tool | The count |
 |---|---|---|
-| Does the order matter, with no repeats? | Permutation | $P(n, r) = \frac{n!}{(n-r)!}$ |
-| Does the order not matter, with no repeats? | Combination | $C(n, r) = \frac{n!}{r! \cdot (n-r)!}$ |
-| Can the same thing be chosen again? | Multiplication principle | $k^r$ |
+| Order matters, no repeats | Permutation | $P(n, r) = \frac{n!}{(n-r)!}$ |
+| Order does not matter, no repeats | Combination | $C(n, r) = \frac{n!}{r! \cdot (n-r)!}$ |
+| The same thing can be chosen again | Multiplication principle | $k^r$ |
 
-Choosing the tool is the hard part. Once you have the right tool, the
-calculation follows a fixed set of steps.
+A challenge: 23 people are in a room. How many ways can they have 23
+different birthdays, out of 365 days? And how many ways can they have
+birthdays at all? The first divided by the second is the chance that
+nobody shares. Most people expect it to be nearly certain.
 
-Which counting question surprised you most?
+```python challenge
+import math
 
-## Where to Read More
+people = 23
+days = 365
+# Ways to have all different birthdays: an ordered choice, with no repeats.
+# Ways to have birthdays at all: a choice with repeats allowed.
+# Their ratio is the chance that nobody in the room shares a birthday.
+```
+
+The next page, [What are the chances?](tutorial:what-are-the-chances),
+turns these counts into probabilities, and plays the games before it
+counts them.
+
+## Where to read more
+
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
 
 Khan Academy. *The Fundamental Principle of Counting.*
 <https://www.youtube.com/watch?v=HDLBCv4yyIs>. The multiplication
@@ -352,8 +609,7 @@ first principles.
 
 Mike Pound (Computerphile) (2016). *Password Cracking.*
 <https://www.youtube.com/watch?v=7U-RbOKanYs>. What the numbers this page
-computes mean in practice — how fast a real machine gets through
-them.
+computes mean in practice: how fast a real machine gets through them.
 
 Stand-up Maths (2015). *Matt Explains: Binomial Coefficients.*
 <https://www.youtube.com/watch?v=Pcgvv6T_bD8>. Matt Parker explains "n

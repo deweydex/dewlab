@@ -25,3 +25,19 @@ entries:
       each of r steps, the total number of outcomes is k^r. We use it
       when the same thing can be chosen more than once.
     example: "26 ** 4  # four-letter sequences from 26 letters"
+  - term: "itertools.product, itertools.permutations, itertools.combinations"
+    kind: function
+    definition: >
+      Three tools in Python's itertools module that list every case of a
+      choice, one at a time. product(items, repeat=r) allows the same item
+      again; permutations(items, r) gives every order of r different items;
+      combinations(items, r) gives each choice of r items once, whatever
+      its order. Wrap one in len(list(...)) to count the cases.
+    example: 'len(list(itertools.combinations("ABCD", 2)))  # 6 teams of two'
+  - term: "math.perm, math.comb"
+    kind: function
+    definition: >
+      Python's built-in counts: math.perm(n, r) is P(n, r) and
+      math.comb(n, r) is C(n, r). They give the number without listing
+      the cases, so they work for numbers far too big to list.
+    example: "math.comb(52, 5)  # 2598960 five-card hands"
