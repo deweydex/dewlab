@@ -338,7 +338,8 @@ Write a few sentences about this page, whenever you are ready. The bug on
 this page never crashed anything. When is a bug that does not crash worse
 than one that crashes right away?
 
-Double-click this cell to write your thoughts:
+You could write your thoughts in **Your notes**, in the **Notes** panel at
+the top right of the page.
 
 ## Where to Read More
 

@@ -1,9 +1,23 @@
 title: Fundamentals of Object Oriented Programming
 code: 5N0541 · QQI Level 5
 status: beta
-card: We build classes, objects, encapsulation, inheritance and composition, from first principles.
-description: This module is Fundamentals of Object-Oriented Programming (5N0541).
-  We build classes, objects, encapsulation, inheritance and composition, from first principles.
+card: >-
+  For anyone who can write a function and wants to build something bigger.
+  You design classes of your own and carry one world through every page: a
+  game world, an ocean expedition, a solar system, or one you make up.
+description: >-
+  This is Fundamentals of Object Oriented Programming (5N0541). It is for
+  anyone who can already write a function and a loop in Python, and wants to
+  build larger programs out of parts that fit together.
+
+
+  You make classes and objects, keep their details inside them, give them
+  methods, build one class on another, put objects inside objects, test what
+  a class does, document it, and give it a front end a person can use.
+
+
+  You choose one world at the start and build it up, page by page: a game
+  world, an ocean expedition, a solar system, or a world of your own.
 contents:
 - title: Programming with objects
   tutorials:

@@ -142,8 +142,9 @@ to college, logging in to a computer, or anything you like. Can you write
 it as a numbered list of steps? How much detail would the steps need for
 someone who had never done the task before?
 
-You could write the steps on paper, in a notebook, or in **Your notes**
-under Settings. Use whatever is easiest for you.
+You could write the steps on paper, in a notebook, or in **Your notes**,
+in the **Notes** panel at the top right of the page. Use whatever is easiest
+for you.
 
 ## Pseudocode: Planning Before Coding
 
@@ -303,7 +304,7 @@ systems that computers use.
 
 When you are ready, write a few sentences about this page. What made
 sense? What was confusing? What are you curious about? You could write
-in **Your notes** under Settings, or think it over.
+in **Your notes**, in the **Notes** panel, or think it over.
 
 ## Where to Read More
 

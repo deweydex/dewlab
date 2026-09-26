@@ -1,16 +1,33 @@
 title: Programming and Maths, Integrated
 code: 5N2927 + 5N18396 · QQI Level 5
 status: beta
-card: We recommend starting here. One course moves between the two subjects, in
-  the order the class needs them.
-description: 'This is dewlab''s flagship course. It teaches Programming and Design
-  Principles (5N2927) and Mathematics for Information Technology (5N18396) together,
-  moving between the two subjects in the order the class needs them.
+card: >-
+  For anyone new to programming or maths, or coming back to them. You write
+  Python from the first page, use it to explore data, chance, graphs and
+  change, and build a project with a team. Choose the world your tasks are set
+  in, from dinosaurs to rockets. Not sure where to begin? Begin here.
+description: >-
+  This course teaches Programming and Design Principles (5N2927) and
+  Mathematics for Information Technology (5N18396) together, moving between
+  the two in the order a class needs them. It is for anyone new to either
+  subject, or coming back to them after a break. You do not need any Python
+  or maths to start.
 
 
-  Four series carry it: Programming Foundations; Data, Chance and Logic; Algebra
-  and Functions; and Trigonometry and Calculus. After them come a page of review
-  problems on the algebra and the sets, and the team project.'
+  Four series carry it. Programming Foundations goes from a first cell to
+  tools of your own. Data, Chance and Logic works with real data, counting
+  and probability. Algebra and Functions draws graphs and solves equations in
+  code. Trigonometry and Calculus measures angles, waves and change. After
+  them come review problems and a project you build with a team.
+
+
+  The tasks come in worlds you choose, page by page: secret messages and
+  pixel art, dinosaurs and exoplanets, sound, electronics and rockets, the sea
+  and the sky. Pick the one that makes you curious.
+
+
+  The Dewey Track teaches the same two modules in a different way. If you are
+  in a class, your teacher will tell you which one it follows.
 contents:
 - title: Programming Foundations
   tutorials:
