@@ -688,3 +688,8 @@ before trying the conversions.
 Eater, B. *Build an 8-Bit Computer*. <https://eater.net/8bit>. Everything
 this page only describes, machine code, binary and an instruction set,
 built by hand, one logic gate at a time, on video.
+
+CrashCourse (2017). *The First Programming Languages: Crash Course
+Computer Science #11.* <https://www.youtube.com/watch?v=RU1u-js7db8>. From
+machine code to assembly to FORTRAN, and why each step made programs
+easier for people to write. About eleven minutes.

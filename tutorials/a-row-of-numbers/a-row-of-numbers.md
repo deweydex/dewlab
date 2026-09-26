@@ -717,3 +717,10 @@ stand for a whole list, and finds three different answers.
 
 For more on lists, the integrated course has
 [Lists and looping over them](tutorial:lists-and-sequences).
+
+## Where to read more
+
+CrashCourse (2017). *Data Structures: Crash Course Computer Science #14.*
+<https://www.youtube.com/watch?v=DuDz6B4cqVc>. How a computer keeps a list
+in its memory, and why some jobs need a different shape of data, such as a
+queue or a tree. Ten minutes.

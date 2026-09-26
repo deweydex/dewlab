@@ -271,3 +271,8 @@ over and over.
 Strang, G. (2016). *Introduction to Linear Algebra* (5th ed.).
 Wellesley-Cambridge Press. The standard textbook treatment, for anyone who
 wants the proofs behind why the rule works the way it does.
+
+3Blue1Brown (2016). *Matrix multiplication as composition: Chapter 4,
+Essence of linear algebra.* <https://www.youtube.com/watch?v=XkY2DOUCWMU>.
+Multiplying two matrices means doing one change after another. Grant
+Sanderson shows why, and why the order matters. Ten minutes.

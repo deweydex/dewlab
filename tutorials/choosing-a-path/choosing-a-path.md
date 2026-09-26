@@ -586,3 +586,11 @@ and put away.
 
 For more examples of `if`, `elif` and `else`, the integrated course has
 [Making decisions with if, elif and else](tutorial:making-decisions).
+
+## Where to read more
+
+Stand-up Maths (2016). *Leap Years: we can do better.*
+<https://www.youtube.com/watch?v=qkt_wmRKYNQ>. A year is a leap year if it
+divides by 4, unless it divides by 100, unless it divides by 400. Matt
+Parker explains where that rule comes from, and suggests a better one.
+Twelve minutes.

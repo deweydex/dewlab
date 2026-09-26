@@ -289,3 +289,12 @@ against the real rules for the door, and that is the point of
 rewriting it.
 
 </details>
+
+## Where to read more
+
+Up and Atom (2018). *Can You Guess Who's Lying? 3 Logic Riddles to Train
+Your Problem Solving Skills.*
+<https://www.youtube.com/watch?v=xjSjxVAbhJ8>. Three puzzles about people
+who always tell the truth and people who always lie. A truth table can
+solve each one. Try before Jade Tan-Holmes gives her answers. About twelve
+minutes.

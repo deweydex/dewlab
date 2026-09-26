@@ -468,5 +468,15 @@ A careful read of her letters.
 Percy Ludgate (1909). "On a proposed analytical machine". Scientific
 Proceedings of the Royal Dublin Society, volume 12, pages 77 to 91.
 
+CrashCourse (2017). *Early Computing: Crash Course Computer Science #1.*
+<https://www.youtube.com/watch?v=O5nskjZ_GoI>. Machines for calculating,
+from the abacus to Charles Babbage's engines and the punched cards of the
+1890 census. Twelve minutes.
+
+Stand-up Maths (2020). *The 1890 US Census and the history of punchcard
+computing.* <https://www.youtube.com/watch?v=YBnBAzrWeF0>. Matt Parker and
+Grant Sanderson visit a machine that counted the 1890 US census with
+punched cards. About twenty minutes.
+
 The practice page is next. After it, one small task is written in four
 of the languages you met here.

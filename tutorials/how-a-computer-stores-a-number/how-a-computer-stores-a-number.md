@@ -269,3 +269,8 @@ Goldberg, D. (1991). What every computer scientist should know about
 floating-point arithmetic. *ACM Computing Surveys*, 23(1). The classic
 long account. It needs more maths than this course, and it is worth
 coming back to later.
+
+Spanning Tree (2024). *How Floating-Point Numbers Are Represented.*
+<https://www.youtube.com/watch?v=bbkcEiUjehk>. How a float keeps a number
+as a sign, some digits and a power of two, and why that leaves gaps
+between the numbers it can hold. About nine minutes.

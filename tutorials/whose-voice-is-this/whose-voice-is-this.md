@@ -279,3 +279,11 @@ people. It only counts which word followed which, in one book. Yet that
 counting alone is enough to show two different habits of writing. A
 writer's voice is, at least in part, a pattern in which words follow
 which. That pattern shows up often enough to be worth counting.
+
+## Where to read more
+
+CrashCourse (2019). *Make an AI sound like a YouTuber (LAB): Crash Course
+AI #8.* <https://www.youtube.com/watch?v=kZWum5omEv4>. A lab that trains a
+program on one person's writing and asks it to write more in the same
+style. It builds its model differently from our chain, and comes with a
+notebook you can follow. Fifteen minutes.

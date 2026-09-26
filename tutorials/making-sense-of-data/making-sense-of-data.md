@@ -377,3 +377,13 @@ Josh Starmer (StatQuest) (2019). *Calculating the Mean, Variance and
 Standard Deviation, Clearly Explained!!!*
 <https://www.youtube.com/watch?v=SzZ6GpcfoQY>. The same three measures
 this page builds as functions, worked through by hand first.
+
+Stand-up Maths (2020). *The Datasaurus Dozen.*
+<https://www.youtube.com/watch?v=iwzzv1biHv8>. Twelve sets of points with
+the same mean and the same spread, which look nothing alike when drawn,
+and one of them is a dinosaur. Eight minutes.
+
+CrashCourse (2018). *Measures of Spread: Crash Course Statistics #4.*
+<https://www.youtube.com/watch?v=R4yfNi_8Kqw>. The range, the standard
+deviation and other measures of spread, and what they tell us that the
+mean does not. About eleven minutes.

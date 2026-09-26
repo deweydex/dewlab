@@ -4956,7 +4956,19 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 ---
 
-**7.246 — A SQL cell's result table leaves out pandas' row numbers.** `_run_sql_cell()` builds a DataFrame from the cursor and rendered it through `_table_html()`, which called `to_html()` with the index shown, so every `sql exec` result had an unlabelled 0, 1, 2 … column on its left. On `changing-what-is-in-it` that column sat beside `dinosaur_id` values 1, 2, 3, 4, 6, where the prose asks the reader to look at the ids and see the gap a `DELETE` left: two columns of numbers, one with a gap and one without, and nothing to say which is the table's.
+**7.246 — 99 videos from the video library added to "Where to read more" on 89 tutorials and 10 practice pages.** Josh asked for a video or two at the bottom of the pages, and then narrowed it: only videos from the channels on the list behind `planning/video-library/` (7.243).
+
+**One video per page, two where each does a different job.** Most pages got one: the video that sits closest to what the page teaches, at a length a reader might watch the same evening. A second goes in only when it adds something the first does not, such as the 100 prisoners puzzle and its solution, or a short lesson next to a long story. Pages that already had a read-more section keep everything in it; the video goes at the end, before any line that points to the practice page. Pages without one get a `## Where to read more` heading, in the style guide's sentence case.
+
+**Practice pages get a problem, not a repeat.** A practice page gets a video only when it poses something more to try, such as a puzzle, a coupon-collector run to simulate, or a sine pattern to check, and the entry asks the reader to try before watching. The other practice pages are unchanged, as are all the web, SQL and OOP pages the channel list has nothing for.
+
+**Checked before writing, not watched.** Each video's title, date, description and chapter list were read, and captions where they could be fetched. That caught three picks that were wrong for their page (a "perspective" video about physics, a card puzzle that was not the Wason task, and a "gibberish generator" about fake handwriting). One strong fit, a Tantacrul interface critique for `critique-and-reflection`, was left out because its language could not be checked. Each entry is cited in the form the pages already use, and gives the video's length so a reader knows what they are starting.
+
+*Cost to change: low. Each entry is one paragraph at the end of a page, with no cell or id involved, so it can be removed or replaced by hand. A dead link is the likely failure over time, since the build does not check outside links.*
+
+---
+
+**7.247 — A SQL cell's result table leaves out pandas' row numbers.** `_run_sql_cell()` builds a DataFrame from the cursor and rendered it through `_table_html()`, which called `to_html()` with the index shown, so every `sql exec` result had an unlabelled 0, 1, 2 … column on its left. On `changing-what-is-in-it` that column sat beside `dinosaur_id` values 1, 2, 3, 4, 6, where the prose asks the reader to look at the ids and see the gap a `DELETE` left: two columns of numbers, one with a gap and one without, and nothing to say which is the table's.
 
 `_table_html()` gained `index=True`, and `_run_sql_cell()` passes `False`. A SQL result has no index of its own; the numbers were pandas', added on the way to HTML. A Python cell that shows a DataFrame keeps them, since the pandas pages teach the index and a reader there needs to see it. `run_query()`, the public one-statement version called from a Python cell, still shows the index; no tutorial calls it, and whether it should follow the SQL cell is left until one does.
 

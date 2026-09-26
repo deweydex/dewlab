@@ -559,3 +559,9 @@ Khan Academy. *Domain and Range of a Function.*
 <https://www.youtube.com/watch?v=O0uUVH8dRiU>. The same two ideas this
 page introduces through `reciprocal` and `square_root`, from a graph
 instead of an error message.
+
+SimonDev (2022). *An In-Depth look at Lerp, Smoothstep, and Shaping
+Functions.* <https://www.youtube.com/watch?v=YJB1QnEmlTs>. Game developers
+use small functions to shape movement: a straight line from one value to
+another, or a curve that starts slowly and ends slowly. SimonDev draws
+each one as a graph. About eight minutes.

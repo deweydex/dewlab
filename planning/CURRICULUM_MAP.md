@@ -559,7 +559,7 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *base* | 15 | 24 |
 | *before* | 1 | 15 |
 | *between* | 1 | 34 |
-| *binary* | 5 | 15 |
+| *binary* | 2 | 15 |
 | *binary search* | 5 | 11 |
 | *bug* | 13 | 14 |
 | *call* | 2 | 6 |

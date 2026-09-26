@@ -667,3 +667,8 @@ sentences.
 Khan Academy. *Proof: Perpendicular Lines Have Negative Reciprocal Slope.*
 <https://www.youtube.com/watch?v=HyThzLRuqXo>. The same quarter-turn
 picture this page draws, proved a second way.
+
+Stand-up Maths (2015). *NYC: The Linear Equation of Broadway.*
+<https://www.youtube.com/watch?v=Quwvw0vYkRA>. Matt Parker walks along
+Broadway in New York with graph paper, and finds the straight line that
+fits it, slope and all. Eleven minutes.

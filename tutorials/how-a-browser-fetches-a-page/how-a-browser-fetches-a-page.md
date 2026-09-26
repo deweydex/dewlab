@@ -170,3 +170,16 @@ on the screen, and say where it can go wrong.
 | *status code* | The number at the start of a response, which says how the request went | `200`, `404` |
 | *HTTP* | The rules for requests and responses on the web | the `http` in `https://` |
 | *cache* | The browser's store of files it has already fetched | an old copy of `styles.css` |
+
+## Where to read more
+
+CrashCourse (2017). *The Internet: Crash Course Computer Science #29.*
+<https://www.youtube.com/watch?v=AEaKrq3SpW8>. What happens between typing
+a web address and seeing the page: finding the right computer, and sending
+the request across many networks in small packets. Twelve minutes.
+
+Ben Eater (2021). *Why was Facebook down for five hours?*
+<https://www.youtube.com/watch?v=-wMU8vmfaYo>. In October 2021, Facebook
+could not be found on the internet for five hours. Ben Eater explains why,
+using the name lookup this page describes. About thirty minutes, for
+readers who want the detail.

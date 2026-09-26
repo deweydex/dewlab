@@ -522,3 +522,11 @@ its own. Unit 9 comes back to this bowl with that idea.
 
 For another route to the same curve, the integrated course has
 [Parabolas: completing the square](tutorial:parabolas).
+
+## Where to read more
+
+Stand-up Maths (2016). *There is only One True Parabola.*
+<https://www.youtube.com/watch?v=hoh4TmPzu1w>. Every parabola is the same
+curve, made bigger or smaller and moved. Finding its top is finding where
+it was moved to. Matt Parker shows why every parabola has the same shape.
+About nine minutes.

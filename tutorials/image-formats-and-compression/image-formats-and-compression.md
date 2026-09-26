@@ -155,3 +155,15 @@ happens to a photo when we make its file smaller.
 | *WebP* | A newer format that can be lossy or lossless, often smaller than JPEG or PNG | `photo.webp` |
 | *AVIF* | A newer format again, often smaller than WebP | `photo.avif` |
 | *metadata* | Information about a photo, stored inside its file: the date, the camera, sometimes the place | the location a phone recorded |
+
+## Where to read more
+
+CrashCourse (2017). *Compression: Crash Course Computer Science #21.*
+<https://www.youtube.com/watch?v=OtDxDvCpPL4>. The two ways to make a file
+smaller, keeping everything or losing a little on purpose, explained with
+text, sound and pictures. Thirteen minutes.
+
+Branch Education (2021). *How are Images Compressed? JPEG In Depth.*
+<https://www.youtube.com/watch?v=Kv1Hiv3ox8I>. Step by step, how JPEG
+makes a photo about ten times smaller, and what it leaves out. Nineteen
+minutes.

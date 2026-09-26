@@ -595,3 +595,8 @@ The dewlab page
 [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances)
 meets slope as a rate, and the one line $y = mx + c$ cannot write, from
 another direction.
+
+Stand-up Maths (2015). *NYC: The Linear Equation of Broadway.*
+<https://www.youtube.com/watch?v=Quwvw0vYkRA>. Matt Parker walks along
+Broadway in New York with graph paper, and finds the equation of the
+street as a straight line. Eleven minutes.
