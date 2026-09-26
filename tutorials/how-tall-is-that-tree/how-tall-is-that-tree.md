@@ -335,6 +335,7 @@ angle_in = 40        # degrees from the normal: change it, then run again
 
 angle_out = refracted_angle(angle_in, 1.33, 1.00)
 plt.figure(figsize=(4, 3))
+plt.axis("off")
 plt.axhspan(-1.2, 0, color="lightblue")                   # the water
 plt.plot([0, 0], [-1.2, 1.2], "--", color="grey")         # the normal
 plt.text(0.5, -1.0, "water")
@@ -350,7 +351,6 @@ else:
     plt.plot([0, into_air[0]], [0, into_air[1]], color="orange", linewidth=2)
     plt.title("out at " + str(round(angle_out, 1)) + " degrees")
 plt.gca().set_aspect("equal")
-plt.axis("off")
 ```
 
 At 48° the ray leaves almost flat along the surface, at 81.3°. Two

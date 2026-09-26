@@ -660,8 +660,8 @@ def branch(x, y, angle, length, depth):
     return 1 + left + right
 
 
-print(branch(0, 0, 90, 1, 6), "lines")
 plt.axis("equal")
+print(branch(0, 0, 90, 1, 6), "lines")
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>

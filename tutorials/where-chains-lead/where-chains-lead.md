@@ -1,13 +1,17 @@
 ---
 title: "Markov chains: where repeated steps settle"
 year: "2026-2027"
-version: 2026.08.24.1
+version: 2026.09.26.1
+datasets: [dublin-weather]
 covers:
   a-weather-machine:
     covers: [CMPS-LO4]
     touches: [CMPS-LO2]
   watching-it-settle:
     covers: [CMPS-LO4]
+  a-chain-from-real-weather:
+    covers: [CMPS-LO4]
+    touches: [CMPS-LO6]
   words-that-follow-words:
     covers: [CMPS-LO4]
     touches: [CMPS-LO1]
@@ -28,7 +32,8 @@ This one idea can forecast the weather, rank every page on the web, and
 write sentences that nobody has written before. On this page we:
 
 - build a matrix of probabilities for tomorrow's weather
-- watch the forecast settle as the days go on
+- watch the forecast settle as the days pass
+- build a real chain from three years of Dublin's weather
 - build the same kind of matrix from a sentence, and use it to write new
   text
 - rank three small web pages
@@ -38,7 +43,7 @@ write sentences that nobody has written before. On this page we:
 Suppose each day is either sunny or rainy. Suppose also that tomorrow's
 weather depends only on today's weather, and not on last week's.
 
-Let's make up some numbers for Dublin. A sunny day is followed by
+Here are some invented numbers for Dublin. A sunny day is followed by
 another sunny day 70% of the time. A rainy day is followed by more rain
 60% of the time.
 
@@ -79,47 +84,72 @@ state using a transition matrix. What happens next depends only on the
 current state, and not on how the process got there.
 
 We can write today's weather as a *state vector*. A state vector is a
-row that holds the probability of each state. `[1, 0]` means "certainly
-sunny today", and `[0, 1]` means "certainly rainy today".
+row that holds the probability of each state. `[[1, 0]]` means
+"certainly sunny today", and `[[0, 1]]` means "certainly rainy today".
 
-When we multiply a state vector by `P`, we get the probabilities for
-tomorrow. If today is certainly sunny, what do you expect tomorrow's
-state vector to be? Run the cell to check.
+This is a change from the earlier pages. There, a point was a column,
+and the matrix went on its left, as in $A\mathbf{x}$. Here the state is
+a row, and the matrix goes on its right: `multiply(today, P)`. The
+reason is the way `P` is written, with one row for each state today. A
+row times `P` takes each row of `P`, weights it by the chance of that
+state today, and adds them up. Books on Markov chains nearly always
+write the state as a row, so this page does too.
+
+If today is certainly sunny, what do you expect tomorrow's state vector
+to be? Run the cell to check.
 
 ```python exec
 id: a-weather-machine-2
-def dot(a, b):
-    return sum(x * y for x, y in zip(a, b))
-
-def transpose(m):
-    rows, cols = len(m), len(m[0])
-    return [[m[r][c] for r in range(rows)] for c in range(cols)]
-
-def multiply(a, b):
-    bt = transpose(b)
-    return [[dot(row, col) for col in bt] for row in a]
-
 today = [[1, 0]]
 tomorrow = multiply(today, P)
 print(tomorrow)
 ```
 
-### Your turn
+It prints `[[0.7, 0.3]]`, which is row 1 of `P`.
 
-1. Start from a day that is certainly rainy, `[[0, 1]]`. What is
-   tomorrow's weather?
-2. What about the day after that?
+Now start from a day that is certainly rainy, `[[0, 1]]`. What is
+tomorrow's weather, and the day after that?
 
 ```python exec
 id: a-weather-machine-3
-hint: The day after tomorrow is tomorrow's state vector multiplied by P again — the state vector changes, P never does.
+today = [[0, 1]]
+```
+
+```hint
+The day after tomorrow is tomorrow's state vector multiplied by `P`
+again. The state vector changes, and `P` stays the same.
+```
+
+```solution
+{{include: setup/matrices/multiply.py}}
+
+P = [[0.7, 0.3], [0.4, 0.6]]
+today = [[0, 1]]
+tomorrow = multiply(today, P)
+after = multiply(tomorrow, P)
+print(tomorrow)
+print(after)
+---
+Tomorrow is `[[0.4, 0.6]]`, row 2 of `P`. The day after is
+`[[0.52, 0.48]]`. The chance of sun is 0.4 × 0.7 from a sunny
+tomorrow, plus 0.6 × 0.4 from a rainy one.
 ```
 
 ## Watching it settle
 
 What will the forecast be ten days from now, if today is certainly
-sunny? Before you run the cell, guess: will the chance of sun keep
-falling, or will it stop somewhere?
+sunny?
+
+```predict
+Will the chance of sun keep falling, day after day?
+
+- Yes, towards 0
+  - Each day removes some of the sun.
+- No, it stops somewhere between 0 and 1
+  - Rain also turns back into sun, 40% of the time.
+- It goes back up to 1
+  - The weather goes round in a cycle.
+```
 
 ```python exec
 id: watching-it-settle-1
@@ -133,31 +163,150 @@ The numbers stop moving. By about day nine, the forecast is the same
 from one day to the next: about 57% sunny and 43% rainy. It no longer
 matters that today was certainly sunny.
 
-### Your turn
-
-1. Run the same ten steps, but start from a day that is certainly rainy,
-   `[[0, 1]]`.
-2. Does the forecast settle on the same numbers?
+Does it matter where we start? Run the same ten steps from a day that
+is certainly rainy.
 
 ```python exec
 id: watching-it-settle-2
+state = [[0, 1]]
 ```
 
-It does. The numbers it settles on are the *stationary distribution*.
-The stationary distribution is the state vector that stays the same when
-we multiply it by `P` again. In symbols, $\boldsymbol{\pi} P = \boldsymbol{\pi}$,
-where $\boldsymbol{\pi}$ is the stationary distribution. It is a fixed
-point of the whole process.
+```solution
+{{include: setup/matrices/multiply.py}}
+
+P = [[0.7, 0.3], [0.4, 0.6]]
+state = [[0, 1]]
+for day in range(1, 11):
+    state = multiply(state, P)
+    print(day, [round(v, 4) for v in state[0]])
+---
+It settles on the same numbers, 0.5714 and 0.4286, from the other side.
+The chance of sun starts at 0.4 and rises.
+```
+
+The numbers it settles on are the *stationary distribution*. The
+stationary distribution is the state vector that stays the same when
+we multiply it by `P` again. In symbols, $\boldsymbol{\pi} P =
+\boldsymbol{\pi}$, where $\boldsymbol{\pi}$ is the stationary
+distribution. It is a fixed point of the whole process.
 
 For a chain like this weather one, the stationary distribution belongs
 to the transition matrix itself. It does not depend on where we started.
 
+The NumPy page's `matrix_power` shows this in one line. $P^{10}$ is ten
+days at once. Its row 1 is the forecast ten days after a sunny day, and
+its row 2 is the forecast ten days after a rainy day.
+
+```python exec
+id: watching-it-settle-3
+import numpy as np
+
+print(np.round(np.linalg.matrix_power(np.array(P), 10), 4))
+```
+
+Both rows are `[0.5714 0.4286]`. After ten days, the start no longer
+shows.
+
+## A chain from real weather
+
+The numbers in `P` were invented. NASA keeps a record of Dublin's
+weather, one row a day, and it has real ones. It has no column for
+rain, but it does have sunlight. That is how much of the Sun's energy
+reached each square metre of ground that day.
+
+Call a day *bright* when it had more sunlight than the middle day of
+its month, over the three years, and *dull* when it did not. We compare
+each day only with its own month, because a dull day in June has more
+sunlight than a bright day in December.
+
+```python exec
+id: a-chain-from-real-weather-1
+text = await load_text("dublin-weather.csv")
+rows = []
+for line in text.strip().split("\n")[1:]:
+    parts = line.split(",")
+    rows.append((int(parts[1]), float(parts[6])))
+
+by_month = {}
+for month, sun in rows:
+    by_month.setdefault(month, []).append(sun)
+middle = {month: sorted(suns)[len(suns) // 2] for month, suns in by_month.items()}
+
+bright = [sun > middle[month] for month, sun in rows]
+print(len(bright), "days,", sum(bright), "of them bright")
+print(bright[:10])
+```
+
+Each row of the file is year, month, day, three temperatures and the
+sunlight, so `parts[1]` is the month and `parts[6]` is the sunlight.
+`middle` holds the middle sunlight of each month, and `bright` holds
+`True` or `False` for every day, in order.
+
+If each day were bright or dull at random, a bright day would be
+followed by another bright day about half the time. Is it? Can you
+count the four kinds of pair (bright then bright, bright then dull,
+dull then bright, dull then dull) and make the transition matrix
+`P_real`?
+
+```python exec
+id: a-chain-from-real-weather-2
+counts = [[0, 0], [0, 0]]
+```
+
+```hint
+`zip(bright, bright[1:])` pairs each day with the next one, as
+`zip(words, words[1:])` does below. Use row 0 and column 0 for bright,
+and row 1 and column 1 for dull. Then divide each row of `counts` by
+its total.
+```
+
+```solution
+text = await load_text("dublin-weather.csv")
+rows = []
+for line in text.strip().split("\n")[1:]:
+    parts = line.split(",")
+    rows.append((int(parts[1]), float(parts[6])))
+by_month = {}
+for month, sun in rows:
+    by_month.setdefault(month, []).append(sun)
+middle = {month: sorted(suns)[len(suns) // 2] for month, suns in by_month.items()}
+bright = [sun > middle[month] for month, sun in rows]
+
+counts = [[0, 0], [0, 0]]
+for today, tomorrow in zip(bright, bright[1:]):
+    counts[0 if today else 1][0 if tomorrow else 1] += 1
+P_real = [[c / sum(row) for c in row] for row in counts]
+print(counts)
+print([[round(v, 3) for v in row] for row in P_real])
+---
+With the copy saved on {{snapshot: dublin-weather}}, the counts are
+`[[327, 212], [213, 343]]`, and `P_real` is
+`[[0.607, 0.393], [0.383, 0.617]]`. A bright day is followed by another
+bright day 61% of the time, not 50%. A dull day is followed by another
+dull day 62% of the time. Dublin's weather remembers yesterday, a
+little.
+```
+
+Where does this chain settle? Add
+`print(np.round(np.linalg.matrix_power(np.array(P_real), 10), 3))` to
+your cell. Both rows come out close to `[0.493 0.507]`. That is the
+share of bright days in the file, 540 of 1,096. It is close to a half
+because *bright* means "above the middle day of the month".
+
+This chain is only a model, and the data shows where it falls short.
+After two bright days in a row, the next day is bright 65% of the time.
+After a dull day and then a bright one, it is bright 55% of the time.
+So the day before yesterday matters too. A Markov chain keeps only
+today, and a real forecast uses much more.
+
 ## Words that follow words
 
-A transition matrix does not have to be about weather. The cell below
-builds one from a sentence. Every different word is a state. The entry
+A transition matrix does not have to be about weather. The cells below
+build one from a sentence. Every different word is a state. The entry
 for word $i$ and word $j$ is the share of times that word $j$ came
 straight after word $i$ in the text.
+
+First, the words and the states.
 
 ```python exec
 id: words-that-follow-words-1
@@ -169,21 +318,9 @@ text = ("it was the best of times it was the worst of times "
 words = text.split()
 states = sorted(set(words))
 index = {word: i for i, word in enumerate(states)}
-
-counts = [[0] * len(states) for _ in states]
-for word, next_word in zip(words, words[1:]):
-    counts[index[word]][index[next_word]] += 1
-
-P_words = []
-for row in counts:
-    total = sum(row)
-    P_words.append([c / total if total else 0 for c in row])
-
-print(len(states), "distinct words")
-print("after 'it':", dict(zip(states, [round(v, 2) for v in P_words[index["it"]]])))
+print(len(states), "different words")
+print(states)
 ```
-
-There is a lot in this cell, so here it is one step at a time:
 
 1. `text.split()` cuts the text into a list of words.
 2. `set(words)` keeps one copy of each different word, and `sorted`
@@ -194,40 +331,61 @@ There is a lot in this cell, so here it is one step at a time:
    [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids),
    and dictionaries are in
    [Dictionaries: looking things up by name](tutorial:looking-things-up-by-name).
-4. `counts` starts as a grid of zeros, one row and one column for each
-   word.
-5. `zip(words, words[1:])` pairs each word with the word after it. For
-   each pair, we add 1 to the matching entry in `counts`.
-6. Finally, each row of counts is divided by its total, so that the row
-   adds up to 1. The last word, "despair", is never followed by anything.
-   Its row stays all zeros.
 
-Look at the words that follow "it". Only one has a chance above zero.
-It is "was", with a chance of 1. The text repeats "it was the ___ of ___" ten
-times. So the matrix has learned that only one word ever comes after
-"it".
+Next, count which word comes after which.
+
+```python exec
+id: words-that-follow-words-2
+counts = [[0] * len(states) for _ in states]
+for word, next_word in zip(words, words[1:]):
+    counts[index[word]][index[next_word]] += 1
+print(counts[index["it"]])
+```
+
+`counts` starts as a grid of zeros, one row and one column for each
+word. `zip(words, words[1:])` pairs each word with the word after it.
+For each pair, we add 1 to the matching entry in `counts`. The row for
+"it" has one number that is not 0: a 10, in the column for "was".
+
+Last, divide each row by its total, so that the row adds up to 1.
+
+```python exec
+id: words-that-follow-words-3
+P_words = []
+for row in counts:
+    total = sum(row)
+    P_words.append([c / total if total else 0 for c in row])
+print("after 'it':", dict(zip(states, [round(v, 2) for v in P_words[index["it"]]])))
+```
+
+The last word, "despair", is never followed by anything, so its total
+is 0. `if total else 0` leaves its row all zeros, and does not divide
+by 0.
+
+Only one word follows "it". It is "was", with a chance of 1. The text
+repeats "it was the ___ of ___" ten times. So the matrix has learned
+that only one word ever comes after "it".
 
 Which words do you think can follow "the"? The cell below prints only
 the words with a chance above zero.
 
 ```python exec
-id: words-that-follow-words-2
+id: words-that-follow-words-4
 after_the = dict(zip(states, [round(v, 3) for v in P_words[index["the"]]]))
 print({k: v for k, v in after_the.items() if v > 0})
 ```
 
-### Your turn
+Some of these words have twice the chance of others. Can you find the
+reason in the text the matrix was built from?
 
-"the" is followed by several different words, and each one has a small
-chance.
+<details class="dl-answer"><summary>answer</summary>
 
-1. Which words are they?
-2. Some have twice the chance of others. Why? Look back at the text the
-   matrix was built from.
+"age", "epoch" and "season" each come after "the" twice in the text,
+as in "the age of wisdom" and "the age of foolishness". The other four
+come after "the" once. "the" appears 10 times, so twice is 0.2 and once
+is 0.1.
 
-```python exec
-id: words-that-follow-words-3
-```
+</details>
 
 Now we can write new text by walking along the chain:
 
@@ -241,7 +399,7 @@ random, so that a word with a bigger weight is picked more often. It
 returns a list with one word in it, so `[0]` gets that word.
 
 ```python exec
-id: words-that-follow-words-4
+id: words-that-follow-words-5
 import random
 
 def generate(start, steps):
@@ -289,9 +447,19 @@ Markov chain, and the pages are its states. Each row of `P_web` below
 is one page, and it shares the chances equally between that page's
 links.
 
-Which page do you think the random surfer spends the most time on, in
-the long run? A search engine asks the same question about the whole
-web. Make a guess, then run the cell.
+A search engine asks which page the random surfer spends the most time
+on, in the long run.
+
+```predict
+Which page will the random surfer visit most?
+
+- A
+  - Two pages link to A.
+- B
+  - Two pages link to B as well.
+- C
+  - Only one page links to C.
+```
 
 ```python exec
 id: ranking-a-small-web-1
@@ -311,15 +479,6 @@ half. A page ranks high when the pages that link to it send it a big
 share of their visitors, and when those pages are visited often
 themselves.
 
-### Your turn
-
-1. How would you rank the three pages from the numbers above?
-2. Does the order match your guess from before you ran the cell?
-
-```python exec
-id: ranking-a-small-web-2
-```
-
 This is a very small version of *PageRank*, the algorithm that Google
 was founded on. PageRank finds the stationary distribution of a
 random-surfer Markov chain over the links of the whole web. A page's
@@ -327,21 +486,36 @@ rank is the share of the random surfer's time that the page gets, in the
 long run. The real PageRank adds one more detail: now and then, the
 surfer jumps to a page chosen at random, and does not follow a link.
 
-## Reflection
+## Looking back
 
-We met three settings: weather, sentences and web pages. Underneath all
-three is one mechanism. We multiply a state by a matrix of
-probabilities, then do it again, and again.
+We met four settings: invented weather, real weather, sentences and web
+pages. Underneath all four is one mechanism. We multiply a state by a
+matrix of probabilities, then do it again, and again.
 
 For the weather and the web pages, we watched the answer stop depending
-on where we started. The answer did not settle by luck in those two
-examples. It settles because of the matrix. We saw it with our own eyes before
-we gave it a name, "stationary distribution". The sentence maker used
-the same kind of matrix, one random step at a time.
+on where we started. It settles because of the matrix, and we saw it
+before we gave it a name, "stationary distribution". The sentence maker
+used the same kind of matrix, one random step at a time.
 
-Which of the three surprised you most? Weather forecasts, sentence
-making and ranking for a search engine are, in their arithmetic, the
-same few lines.
+Can you say, in a sentence of your own, why every row of a transition
+matrix adds up to 1, but its columns do not have to?
+
+A challenge: add a fourth page, D, to the small web. D links to A, and
+nothing links to D. Where does D rank? Then add a link from C to D, and
+look again.
+
+```python challenge
+def multiply(a, b):
+    columns = [[row[j] for row in b] for j in range(len(b[0]))]
+    return [[sum(x * y for x, y in zip(row, column)) for column in columns] for row in a]
+
+
+P_web = [[0, 0.5, 0.5], [1, 0, 0], [0.5, 0.5, 0]]
+visits = [[1/3, 1/3, 1/3]]
+for step in range(50):
+    visits = multiply(visits, P_web)
+print([round(v, 4) for v in visits[0]])
+```
 
 ## Where to read more
 

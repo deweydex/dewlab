@@ -376,9 +376,9 @@ def first_line(x):
 def second_line(x):
     return new_m * x + new_c
 
+plt.axis("equal")
 plot_rule(first_line, -1, 5)
 plot_rule(second_line, -1, 5)
-plt.axis("equal")
 ```
 
 The new line is $y = -2x + 6$, and it goes through $(2, 2)$, which is

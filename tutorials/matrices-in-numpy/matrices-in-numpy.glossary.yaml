@@ -1,0 +1,67 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: NumPy
+    kind: concept
+    definition: >
+      NumPy is a Python library for arrays of numbers. It does the work of
+      a loop over a whole array in one line, and much faster than a loop
+      written in Python.
+    example: "import numpy as np"
+  - term: array
+    kind: concept
+    definition: >
+      A NumPy array is a grid of numbers, all of one type, stored packed
+      together. np.array makes one from a list of lists, and .tolist()
+      turns it back.
+  - term: "np.array()"
+    kind: function
+    python: numpy.array
+    definition: >
+      Makes a NumPy array from a list, or a list of lists.
+    example: "A = np.array([[2, 3], [1, -1]])"
+  - term: ".shape"
+    kind: operator
+    definition: >
+      The number of rows and columns of an array, as a tuple. A 2×3 array
+      has shape (2, 3).
+    example: "A.shape"
+  - term: "@"
+    kind: operator
+    definition: >
+      Matrix multiplication, row times column. A @ B does what your
+      multiply(A, B) does. A * B is different: it multiplies entry by
+      entry.
+    example: "A @ B"
+  - term: ".T"
+    kind: operator
+    definition: >
+      The transpose of an array: its rows become its columns.
+    example: "A.T"
+  - term: "np.allclose()"
+    kind: function
+    python: numpy.allclose
+    definition: >
+      True when two grids have the same shape and every pair of numbers is
+      equal, apart from tiny rounding errors.
+    example: "np.allclose(A @ B, multiply(A.tolist(), B.tolist()))"
+  - term: "np.linalg.det(), np.linalg.inv()"
+    kind: function
+    python: [numpy.linalg.det, numpy.linalg.inv]
+    definition: >
+      The determinant and the inverse of a square array. inv raises a
+      LinAlgError when the determinant is 0.
+    example: "np.linalg.inv(A)"
+  - term: "np.linalg.solve()"
+    kind: function
+    python: numpy.linalg.solve
+    definition: >
+      Solves Ax = b, with the coefficients A and the right-hand sides b
+      given separately. It uses a form of elimination.
+    example: "np.linalg.solve(A, b)"
+  - term: "np.linalg.matrix_power()"
+    kind: function
+    python: numpy.linalg.matrix_power
+    definition: >
+      Multiplies a square array by itself n times, so it makes n steps of
+      the same move in one line.
+    example: "np.linalg.matrix_power(step, 12)"

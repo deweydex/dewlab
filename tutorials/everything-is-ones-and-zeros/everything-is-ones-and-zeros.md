@@ -478,8 +478,8 @@ import matplotlib.pyplot as plt
 
 colours = ["#FF8800", "#0088FF", "#FFFF00", "#888888"]
 plt.figure(figsize=(6, 2))
-plt.bar(colours, [1, 1, 1, 1], color=colours)
 plt.yticks([])
+plt.bar(colours, [1, 1, 1, 1], color=colours)
 ```
 
 `#888888` has all three lights at the same brightness, so it is a grey.

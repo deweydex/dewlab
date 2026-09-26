@@ -2,241 +2,294 @@
 title: "Inverse matrices: undoing a transformation — Practice"
 practice_for: undoing-it
 year: "2026-2027"
-version: 2026.08.24.1
+version: 2026.09.26.1
+worlds:
+  starships: Starships, and the structures they are built from.
+  space-scenes: Stars, planets and the paths they take across the sky.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 ---
 
 # Inverse matrices: undoing a transformation — Practice
 
-Calculate each determinant by hand before you run anything. It is two
-multiplications and a subtraction. The aim of this page is to make that
-arithmetic automatic.
+Find each determinant by hand before you run anything. It takes two
+multiplications and a subtraction, and soon it will be automatic. Your own
+`det`, `inverse` and the functions from the earlier pages are already
+loaded.
 
 ## Determinants
 
 ```python exec
 id: determinants-1
-def det2(M):
-    return M[0][0] * M[1][1] - M[0][1] * M[1][0]
-
-
-def inverse(M):
-    d = det2(M)
-    a, b = M[0]
-    c, e = M[1]  # e stands in for the formula's own d, already taken by the determinant above
-    return [[e / d, -b / d], [-c / d, a / d]]
-
-
-def dot(a, b):
-    return sum(x * y for x, y in zip(a, b))
-
-
-def transpose(m):
-    rows, cols = len(m), len(m[0])
-    return [[m[r][c] for r in range(rows)] for c in range(cols)]
-
-
-def multiply(a, b):
-    bt = transpose(b)
-    return [[dot(row, col) for col in bt] for row in a]
+print(det([[3, 2], [1, 4]]))
+print(det([[5, -1], [10, -2]]))
 ```
 
-**1.** Calculate $\det\begin{bmatrix} 3 & 2 \\ 1 & 4 \end{bmatrix}$ by hand.
-Then check it.
+**1.** Find $\det\begin{bmatrix} 3 & 2 \\ 1 & 4 \end{bmatrix}$ and
+$\det\begin{bmatrix} 5 & -1 \\ 10 & -2 \end{bmatrix}$ by hand. Is there a
+link between the second matrix's columns that could have told you its
+answer first?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$3(4) - 2(1) = 10$.
+$3(4) - 2(1) = 10$, and $5(-2) - (-1)(10) = 0$. The second column,
+$(-1, -2)$, is the first, $(5, 10)$, times $-\frac{1}{5}$. So "right" and
+"up" land on the same line, everything else does too, and the area is 0.
 
 </details>
 
-**2.** Calculate $\det\begin{bmatrix} 5 & -1 \\ 10 & -2 \end{bmatrix}$. Now look
-at the two rows. Is there a link between them that could have told you
-the answer before you multiplied anything?
+**2.** A matrix has $\det = -4$. Does it have an inverse?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$5(-2) - (-1)(10) = -10 + 10 = 0$.
-
-Row 2 is exactly row 1 doubled: $[10, -2] = 2 \times [5, -1]$. Whenever
-one row of a 2×2 matrix is a multiple of the other, the determinant is
-zero.
-
-This makes sense, because the determinant measures area. When one row is
-a multiple of the other, the matrix sends every point onto the same line
-through the origin. So it flattens the square, and the area is zero.
+Yes. Only a determinant of exactly 0 means there is no inverse. $-4$
+means it scales areas by 4 and flips the picture over. Its inverse
+scales by $\frac{1}{4}$ and flips it back.
 
 </details>
 
 ## Inverses
 
 **3.** Find the inverse of $\begin{bmatrix} 3 & 2 \\ 1 & 4 \end{bmatrix}$
-with the formula. Then check it by multiplying the two matrices
-together.
+with the formula, then multiply the two together.
 
-<details class="dl-answer"><summary>answer</summary>
-
-$\begin{bmatrix} 0.4 & -0.2 \\ -0.1 & 0.3 \end{bmatrix}$
-
-```python
+```python exec
+id: inverses-1
 A = [[3, 2], [1, 4]]
+print(inverse(A))
 print(multiply(A, inverse(A)))
 ```
 
-This does not print a perfectly clean `[[1.0, 0.0], [0.0, 1.0]]`. It
-prints `[[1.0000000000000002, -1.1102230246251565e-16], [0.0, 1.0]]`.
-`-1.11e-16` means $-1.11 \times 10^{-16}$, a tiny number very close to
-`0`.
+```predict
+Will the second line be exactly `[[1.0, 0.0], [0.0, 1.0]]`?
 
-This is not a bug in `inverse`. It is ordinary rounding in
-floating-point numbers, the same kind of small error that makes
-`0.1 + 0.2 == 0.3` give `False`. So an exact `==` would say `False`
-here. To compare numbers like these, round them first, or use
-`math.isclose()`, which allows a tiny difference for exactly this reason.
-
-</details>
-
-**4.** Here is a system of equations, $A\mathbf{x} = \mathbf{b}$:
-
-$$A = \begin{bmatrix} 2 & 1 \\ 5 & 3 \end{bmatrix}, \quad
-\mathbf{b} = \begin{bmatrix} 4 \\ 9 \end{bmatrix}$$
-
-Solve it by calculating $\mathbf{x} = A^{-1}\mathbf{b}$. The next page,
-[Systems of equations: solving them with matrices](tutorial:solving-systems),
-looks at systems like this one in more detail.
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. Find $\det(A)$ first. You need it either way, because `inverse`
-   divides by it.
-2. Calculate $A^{-1}$ with the formula, or with your `inverse` function.
-3. Write `b` as a column: `[[4], [9]]`. That is the shape `multiply`
-   expects. A plain list `[4, 9]` will not work.
-4. `multiply(inverse(A), b)` gives $\mathbf{x}$, as a column too.
-
-**Think about:** how could you check your answer without doing it all
-again? Use $A$ and $\mathbf{x}$, not $A^{-1}$.
-
-**Try this next:** write the same system as two ordinary simultaneous
-equations. Solve them by hand, by removing one unknown. Do you get the
-same $\mathbf{x}$?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-$\mathbf{x} = \begin{bmatrix} 3 \\ -2 \end{bmatrix}$.
-
-$\det(A) = 2(3) - 1(5) = 1$, so
-$A^{-1} = \begin{bmatrix} 3 & -1 \\ -5 & 2 \end{bmatrix}$, and
-$A^{-1}\mathbf{b} = \begin{bmatrix} 3(4) + (-1)(9) \\ -5(4) + 2(9) \end{bmatrix}
-= \begin{bmatrix} 3 \\ -2 \end{bmatrix}$.
-
-To check without doing it all again, put the answer back into the
-original system: $2(3) + 1(-2) = 4$ and $5(3) + 3(-2) = 9$. Both match
-$\mathbf{b}$. So the answer fits the system, even if you made a mistake in the
-inverse along the way.
-
-</details>
-
-## Which can be undone
-
-**5.** Two 2×2 matrices have $\det(A) = 5$ and $\det(B) = 3$. What is
-$\det(AB)$?
-
-<details class="dl-answer"><summary>answer</summary>
-
-$15$. Determinants multiply: $\det(AB) = \det(A)\det(B)$. This is always
-true for square matrices of the same size.
-
-Think about what this says. Two transformations, one after the
-other, scale area by the product of their two factors. That is exactly
-what you would want "scale by 5, then scale by 3" to mean. It stays true
-even when the two transformations are not simple scalings at all.
-
-</details>
-
-**6.** If $\det(AB) = 0$, does that mean $\det(A) = 0$ and $\det(B) = 0$?
-
-<details class="dl-answer"><summary>answer</summary>
-
-No. It means only that at least one of them is zero. We know that
-$\det(AB) = \det(A)\det(B)$. A product of two ordinary numbers is zero
-when at least one of the two numbers is zero. Both do not have to be.
-
-In pictures, if either transformation flattens the square on its own,
-the other one cannot unflatten it, whether it comes before or after. One
-collapse is enough, and then the whole chain has no inverse.
-
-</details>
-
-**7.** A matrix has $\det(A) = -4$. Does it have an inverse?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Yes. Only a determinant of exactly zero means there is no inverse. A
-negative determinant still has one. It means that the transformation flips the
-shape over, like a mirror, as well as scaling its area by a factor of
-4. After the flip, a left hand would look like a right hand.
-
-</details>
-
-## Writing it
-
-**8.** Write `inverse(M)` for a 2×2 matrix, from the beginning.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def inverse(M):
-    d = M[0][0] * M[1][1] - M[0][1] * M[1][0]
-    if d == 0:
-        raise ValueError("this matrix has no inverse")
-    a, b = M[0]
-    c, e = M[1]  # e stands in for the formula's own d, already taken by the determinant above
-    return [[e / d, -b / d], [-c / d, a / d]]
+- Yes
+  - A matrix times its inverse is the identity.
+- No, but very close
+  - Dividing by 10 leaves tiny rounding errors.
 ```
 
-Without the `if d == 0` check, the function would divide by zero
-somewhere in the `return` line. With the check, the error names the real
-problem. This is the same idea as the shape check in
-[Matrices: adding, scaling and transposing a grid of numbers](tutorial:grid-of-numbers),
-used for a different kind of bad input.
+<details class="dl-answer"><summary>why</summary>
+
+The inverse is `[[0.4, -0.2], [-0.1, 0.3]]`, and the product is
+`[[1.0000000000000002, -1.1102230246251565e-16], [0.0, 1.0]]`. That is
+the identity, except for rounding in the sixteenth decimal place. The
+same kind of rounding makes `0.1 + 0.2 == 0.3` false. Compare such numbers after
+rounding them, or with `math.isclose`.
 
 </details>
 
-## Thinking about it
+**4.** Solve $A\mathbf{x} = \mathbf{b}$ with $A = \begin{bmatrix} 2 & 1 \\
+5 & 3 \end{bmatrix}$ and $\mathbf{b} = (4, 9)$, by undoing $A$. Can you
+write `solve2(a, b)`, which returns the point that $A$ sends to $\mathbf{b}$?
 
-**9.** Here are two matrices. Both have determinant $0.0001$, so both
-have an inverse.
+```python exec
+id: undoing-solve2
+def solve2(a, b):
+    """The point p with transform(a, p) == b, for a 2x2 matrix a."""
+    ...
 
-$$A = \begin{bmatrix} 0.01 & 0 \\ 0 & 0.01 \end{bmatrix} \qquad
-B = \begin{bmatrix} 1 & 1 \\ 1 & 1.0001 \end{bmatrix}$$
 
-Undo each one on a point, then nudge the point by $0.0001$ and undo it
-again. Which answer moves more? Can you say why?
+print(solve2([[2, 1], [5, 3]], (4, 9)))
+```
+
+```inputs
+solve2([[2, 1], [5, 3]], (4, 9))
+solve2([[1, 0], [0, 2]], (3, 4))
+```
+
+```hint
+Where did the point start, before $A$ moved it to $\mathbf{b}$? Undo
+$A$: `transform(inverse(a), b)`.
+```
+
+```solution
+def solve2(a, b):
+    """The point p with transform(a, p) == b, for a 2x2 matrix a."""
+    return transform(inverse(a), b)
+
+
+print(solve2([[2, 1], [5, 3]], (4, 9)))
+---
+It prints $(3.0, -2.0)$. Check it by moving it forwards: $2(3) + 1(-2) = 4$ and
+$5(3) + 3(-2) = 9$. The next page does this for any number of unknowns,
+without an inverse at all.
+```
+
+## Products and determinants
+
+**5.** $\det(A) = 5$ and $\det(B) = 3$. What is $\det(AB)$? And if
+$\det(AB) = 0$, must both determinants be 0?
 
 <details class="dl-answer"><summary>answer</summary>
 
-With $B$, the point $(2, 2.0001)$ undoes to $(1, 1)$. Nudge it to
-$(2, 2.0002)$, and it undoes to $(0, 2)$. A change in the fourth decimal
-place moved the answer by a whole unit.
+It is 15. Doing $B$ then $A$ scales areas by 3 and then by 5. And no,
+one zero is enough. If either move flattens the picture, the other
+cannot undo that, whichever comes first.
 
-With $A$, the point $(0.02, 0.02)$ undoes to $(2, 2)$. Nudge it to
-$(0.02, 0.0201)$, and it undoes to $(2, 2.01)$. The answer moved 100
-times as much as the nudge, because $A$ shrinks
-everything by 100 in every direction.
+</details>
 
-So a small determinant is not the problem on its own. $A$ shrinks the
-plane evenly, and undoing it is safe. $B$'s two rows are almost the
-same, so it squashes the plane nearly flat onto a line. To undo it, you
-must pull apart two directions that are almost one direction, and a tiny
-change in the input decides where they land.
+**6.** Two matrices, both with determinant $0.0001$:
+$A = \begin{bmatrix} 0.01 & 0 \\ 0 & 0.01 \end{bmatrix}$ and
+$B = \begin{bmatrix} 1 & 1 \\ 1 & 1.0001 \end{bmatrix}$. Undo each one on
+a point, then nudge the point by $0.0001$ and undo it again. Which
+answer moves more?
 
-A matrix like $B$ is *ill-conditioned*. It has an inverse, but a tiny
-change in what you give it can make a big change in what you get.
-Rounding in a computer is exactly that kind of tiny change. This happens
-often in real work. One example is fitting a model to data where two
-different measurements almost repeat each other, but not quite, just as
-$B$'s two rows do.
+```python exec
+id: undoing-ill-conditioned
+A = [[0.01, 0], [0, 0.01]]
+B = [[1, 1], [1, 1.0001]]
+print(transform(inverse(B), (2, 2.0001)), transform(inverse(B), (2, 2.0002)))
+print(transform(inverse(A), (0.02, 0.02)), transform(inverse(A), (0.02, 0.0201)))
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+With $B$, a change in the fourth decimal place moves the answer from
+about $(1, 1)$ to about $(0, 2)$, a whole unit. With $A$, the answer
+moves only 100 times the nudge, because $A$ shrinks everything evenly.
+$B$'s columns point in nearly the same direction, so it squashes the
+plane almost flat, and undoing it means pulling apart two directions
+that are almost one. A matrix like $B$ is *ill-conditioned*. It has an
+inverse, but tiny changes in its input, such as rounding, make large
+changes in the answer.
+
+</details>
+
+## Your world
+
+**7.** Each world asks whether a move can be undone.
+
+<div class="dl-world" data-world="starships">
+
+Two ships each record their manoeuvre as one matrix. Ship A's is
+`[[2, 1], [1, 1]]` and ship B's is `[[2, 1], [4, 2]]`. Which ship can fly
+back along its path, and what does the other one's matrix do to it?
+
+```python exec
+id: undoing-world--starships
+ship = [(0, 4), (1, 1), (2, -1), (1, -0.5), (-1, -0.5), (-2, -1), (-1, 1)]
+ship_a = [[2, 1], [1, 1]]
+ship_b = [[2, 1], [4, 2]]
+```
+
+```hint
+Find both determinants. Then draw each ship after its manoeuvre.
+```
+
+```solution
+ship = [(0, 4), (1, 1), (2, -1), (1, -0.5), (-1, -0.5), (-2, -1), (-1, 1)]
+ship_a = [[2, 1], [1, 1]]
+ship_b = [[2, 1], [4, 2]]
+print(det(ship_a), det(ship_b))
+draw_shapes([ship, transform_all(ship_a, ship), transform_all(ship_b, ship)])
+---
+Ship A's determinant is 1. The manoeuvre leans and stretches the ship
+but keeps its area, and `inverse` undoes it. Ship B's is 0. Every point
+lands on the line $y = 2x$, and the ship becomes a streak with no width.
+Its second row is twice its first, and that always makes the
+determinant 0.
+```
+
+</div>
+
+<div class="dl-world" data-world="space-scenes">
+
+A telescope's camera stretches the sky. Every picture is 1.5 times as
+wide as it should be, and 0.8 times as tall. Which matrix undoes it, and what is its
+determinant?
+
+```python exec
+id: undoing-world--space-scenes
+camera = [[1.5, 0], [0, 0.8]]
+```
+
+```hint
+`inverse(camera)`, and `det` of both.
+```
+
+```solution
+camera = [[1.5, 0], [0, 0.8]]
+print(inverse(camera))
+print(det(camera), det(inverse(camera)))
+---
+Rounded, the inverse is `[[0.667, 0], [0, 1.25]]`. It divides the width
+by 1.5 and stretches the height by 1.25. The determinants are 1.2 and
+about 0.833, which multiply to 1. The camera grows areas by 1.2, and
+the fix shrinks them back.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A mirror undoes itself. Flip a sprite twice, and it is back where it
+started. Which of these are their own inverse: the mirror left to
+right, the quarter turn, the half turn, and the swap of x and y?
+
+```python exec
+id: undoing-world--pixel-art
+moves = {
+    "mirror": [[-1, 0], [0, 1]],
+    "quarter turn": [[0, -1], [1, 0]],
+    "half turn": [[-1, 0], [0, -1]],
+    "swap": [[0, 1], [1, 0]],
+}
+```
+
+```hint
+A matrix is its own inverse when multiplying it by itself gives the
+identity.
+```
+
+```solution
+moves = {
+    "mirror": [[-1, 0], [0, 1]],
+    "quarter turn": [[0, -1], [1, 0]],
+    "half turn": [[-1, 0], [0, -1]],
+    "swap": [[0, 1], [1, 0]],
+}
+for name in moves:
+    print(name, multiply(moves[name], moves[name]) == [[1, 0], [0, 1]])
+---
+The mirror, the half turn and the swap are their own inverses. The
+quarter turn is not, since two quarter turns make a half turn. Every
+flip undoes itself, and so does the half turn, because two half turns
+make a whole turn.
+```
+
+</div>
+
+## From earlier
+
+**8.** From *Matrix multiplication*. $(AB)^{-1}$ undoes "$B$, then $A$".
+Is it $A^{-1}B^{-1}$ or $B^{-1}A^{-1}$?
+
+<details class="dl-answer"><summary>answer</summary>
+
+It is $B^{-1}A^{-1}$. To undo putting on socks and then shoes, you
+take off the shoes first. The last move is the first to be undone. Try it in a cell
+with two of your own matrices.
+
+</details>
+
+**9.** From *what a matrix does to a picture*. The columns of `turn` are
+where "right" and "up" go. What are the columns of `inverse(turn)`?
+
+<details class="dl-answer"><summary>answer</summary>
+
+They are $(0, -1)$ and $(1, 0)$. These are where "right" and "up" go
+when the F is turned back, a quarter turn clockwise. Reading columns works for inverses too.
+
+</details>
+
+**10.** From *Reading an error message*. `inverse([[2, 4], [1, 2]])`
+raises your own `ValueError`. Without the `if d == 0` check, what error
+would Python raise, and where?
+
+<details class="dl-answer"><summary>answer</summary>
+
+A `ZeroDivisionError`, on the line that divides by `d`. That error is true
+but less helpful. It says only that a division failed. Your `ValueError`
+says the matrix flattens the plane, which is the cause.
 
 </details>

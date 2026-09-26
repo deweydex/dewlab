@@ -55,9 +55,9 @@ There are two lists. Here is what each holds:
   joins corner 0 to corner 1. A cube has twelve edges: four round the
   front, four round the back, and four joining the two.
 
-This is the layout the square had in [Matrix transformations: what a matrix does to a picture](tutorial:what-a-matrix-does-to-a-picture), with a third row
-because each point now has a depth. That layout lets a matrix be
-applied to every corner in a single multiplication.
+This is the layout the F's corners had in [Matrix multiplication: rows times columns](tutorial:multiplying-grids#every-corner-at-once), with a third row
+because each point now has a depth. With that layout, one
+multiplication moves every corner.
 
 The cube is sitting exactly where the camera stands, so before anything
 can be projected it has to be pushed out in front. `move` adds a fixed
@@ -129,9 +129,9 @@ away looks flat, and one taken up close does not.
 
 ## A matrix that turns
 
-In [the gallery of 2×2
-matrices](tutorial:what-a-matrix-does-to-a-picture#a-small-gallery),
-`rotate90 = [[0, -1], [1, 0]]` turned the square a quarter turn. That was one fixed angle. For any angle
+In [the playground of 2×2
+matrices](tutorial:what-a-matrix-does-to-a-picture#a-playground),
+`turn = [[0, -1], [1, 0]]` turned the F a quarter turn. That was one fixed angle. For any angle
 $\theta$, the matrix that turns the plane by that angle is
 
 $$R(\theta) = \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}$$

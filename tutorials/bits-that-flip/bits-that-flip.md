@@ -229,8 +229,8 @@ print(to_hex(flipped))
 
 colours = ["#FF8800", "#0077FF"]
 plt.figure(figsize=(4, 2))
-plt.bar(colours, [1, 1], color=colours)
 plt.yticks([])
+plt.bar(colours, [1, 1], color=colours)
 ```
 
 `to_hex` prints `77FF`, because it does not print zeros at the front, the
