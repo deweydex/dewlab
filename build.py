@@ -6702,9 +6702,28 @@ def write_all_notes_page(shell: str, tutorials: list[Tutorial]) -> Path:
     return target
 
 
+def course_card_order() -> list[Course]:
+    """The courses in the order their front-page tiles appear: those
+    `courses/index.yaml` names under `cards:` first, in that order, then
+    the rest in `order:` order. Only the tiles — `order:` also decides
+    each shared page's default course, so a card can move to the top
+    without every page it shares changing its tree and previous/next."""
+    found = courses()
+    index = COURSES / COURSE_INDEX_FILE
+    first: list[str] = []
+    if index.is_file():
+        first = (yaml.safe_load(index.read_text()) or {}).get("cards") or []
+        if not isinstance(first, list) or not all(isinstance(c, str) for c in first):
+            fail(index, "needs `cards:` as a list of course ids, one per line")
+        for name in first:
+            if name not in found:
+                fail(index, f"lists {name} under `cards:`, and there is no courses/{name}.yaml")
+    return [found[c] for c in first] + [c for name, c in found.items() if name not in first]
+
+
 def render_course_cards() -> str:
-    """One front-page tile per course, in courses/index.yaml order, from
-    the course files: the title, the status badge, the QQI code, and the
+    """One front-page tile per course, in course_card_order(), from the
+    course files: the title, the status badge, the QQI code, and the
     `card:` text. What `pages/home.md` used to hand-write six times over,
     now the `[[course-cards]]` generated block — so adding a course is a
     course file and one line in the index, and the front page follows."""
@@ -6717,7 +6736,7 @@ def render_course_cards() -> str:
             meta=course.code or None,
             wide=False,
         ))
-        for course in courses().values()
+        for course in course_card_order()
     )
 
 

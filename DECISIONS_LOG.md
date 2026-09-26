@@ -5278,7 +5278,11 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 ---
 
-**7.266 — On the Dewey Track, a test the page writes against the reader's code becomes a comparison with a solution.** Josh, 26 September 2026, deciding the open question on #353: "yeah two is the correct option for sure".
+**7.266 — Programming and Design Principles is the first card on the front page, through a `cards:` list rather than `order:`.** Josh, 26 September 2026: "move the Programming Design Principles card to the top of the list." 7.171 put it last. `courses/index.yaml`'s `order:` sets the tiles, but it also sets each shared page's default course (7.172's "first in `courses/index.yaml` that lists it"), and every one of this course's pages is shared with the integrated maths course. Moving it to the top of `order:` would have given those pages this course's tree, previous/next and reference-panel accumulation by default, which drops the maths pages from the integrated course's "earlier in the series". So the index gains an optional `cards:` list: the courses it names come first on the front page, the rest follow `order:`, and nothing else reads it (`course_card_order()`). The contents page keeps `order:`.
+
+*Cost to change: delete the `cards:` lines and the tiles follow `order:` again.*
+
+**7.267 — On the Dewey Track, a test the page writes against the reader's code becomes a comparison with a solution.** Josh, 26 September 2026, deciding the open question on #353: "yeah two is the correct option for sure".
 
 **The question.** Toolkit pages ended with a cell of `assert` lines the page had written, followed by a line such as "The flat-shape tools keep their promises." Schlomo's Fix problems did the same: "the test fails", then a praise line once it passed. #314 retired `check()` because the page decided the answer in advance and reported pass or fail; a page-written assert does the same job. It shows its expected values, and an assert is a real tool, but a reader who meets an `AssertionError` from a test they did not write hears "wrong".
 

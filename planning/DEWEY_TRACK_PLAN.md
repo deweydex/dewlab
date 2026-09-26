@@ -275,7 +275,7 @@ No page uses money. 4.4 starts toolkit.py properly: the reader learns
 `assert` tests, walkthroughs (tracing a function by hand) and the
 debugger's step-through. Outside 4.4, a page never writes tests against
 the reader's functions; each toolkit function comes with a comparison
-against a solution instead (7.266). Unit product (on
+against a solution instead (7.267). Unit product (on
 `mixed-making-your-own-tools`): a converter for reading about space,
 km and miles, kg and pounds, °C and °F, with astronomical units and
 a 1 TB drive in GiB on the way, every conversion checked both ways.
