@@ -4968,7 +4968,15 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 ---
 
-**7.247 — The first three pages of "A table of your own" get pictures, bold key terms, predictions, and a `DROP TABLE IF EXISTS` that makes their boxes safe to run twice.** Josh, 26 September 2026: "see if maybe that first introduction to tables and the next couple pages couldn't use a few more graphics and maybe an edit? I also don't see some of the bold or terminology focus things that we had discussed previously".
+**7.247 — A SQL cell's result table leaves out pandas' row numbers.** `_run_sql_cell()` builds a DataFrame from the cursor and rendered it through `_table_html()`, which called `to_html()` with the index shown, so every `sql exec` result had an unlabelled 0, 1, 2 … column on its left. On `changing-what-is-in-it` that column sat beside `dinosaur_id` values 1, 2, 3, 4, 6, where the prose asks the reader to look at the ids and see the gap a `DELETE` left: two columns of numbers, one with a gap and one without, and nothing to say which is the table's.
+
+`_table_html()` gained `index=True`, and `_run_sql_cell()` passes `False`. A SQL result has no index of its own; the numbers were pandas', added on the way to HTML. A Python cell that shows a DataFrame keeps them, since the pandas pages teach the index and a reader there needs to see it. `run_query()`, the public one-statement version called from a Python cell, still shows the index; no tutorial calls it, and whether it should follow the SQL cell is left until one does.
+
+*Cost to change: trivial. One argument in one call, and one test in `TestRunSqlCell`.*
+
+---
+
+**7.248 — The first three pages of "A table of your own" get pictures, bold key terms, predictions, and a `DROP TABLE IF EXISTS` that makes their boxes safe to run twice.** Josh, 26 September 2026: "see if maybe that first introduction to tables and the next couple pages couldn't use a few more graphics and maybe an edit? I also don't see some of the bold or terminology focus things that we had discussed previously".
 
 **The bold terms had never reached this course.** 7.207 brought bold-italic key terms to six graphics pages and left the rest for later; the glossary file for `a-table-is-a-list-of-rows` already noted that the whole series had no marked terms at all. The three pages now mark theirs as 7.207 did (`***term***`), so the Reference panel links back to where each is introduced. Page one gains the terms it used without defining: *database*, *query* (which every later page in the course leans on), *cell*, *record*, *attribute*, *header*, *comment*, *data type* and *primary key*. Page two gains *condition* and the six comparison operators. *Cell* is the table's own word here, which is why these pages call the code editor a *box* throughout.
 
@@ -4978,6 +4986,6 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 **Cell ids unchanged,** so no saved work moves. `version:` is bumped on all three, because a cell's starter code changed.
 
-**Left alone:** the tail of page two's recap, which the open video pull request appends a "Where to read more" to; and the runtime's pandas index column (0, 1, 2…) that shows beside every SQL result, which sits oddly next to `dinosaur_id` but is a runtime change, not a page change.
+**Left alone:** the tail of page two's recap, where the video pull request (7.246) adds a "Where to read more". The pandas row numbers that sat beside every SQL result, next to `dinosaur_id`, are gone since 7.247, which page three's look at the ids 1, 2, 3, 4 and 6 relies on.
 
 *Cost to change: low. Prose and six generated SVGs; a picture changes by editing its function and re-running the generator. Removing `DROP TABLE IF EXISTS` would need the "run it again" sentences on all three pages changed back.*
