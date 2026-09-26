@@ -1,29 +1,28 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
 # Composition page of the series (Programming with objects), straight
-# after one-parent-many-children (inheritance). Split out of that page on
-# 2026.09.22: "composition" moved here from its glossary with the Bank
-# section. "is a" and "has a" are new entries: on this page they are the
-# topic, not emphasis for contrast as they were before the split. The
-# italic title in "Where to Read More" is a bibliography entry, not a term.
+# after one-parent-many-children (inheritance). "is a" and "has a" are the
+# page's topic, not emphasis for contrast. Since 2026.09.26 the examples
+# follow the solar-system world the page teaches in. The italic titles in
+# "Where to read more" are bibliography entries, not terms.
 entries:
   - term: composition
     kind: concept
     definition: >
       Composition is a way to build one class from other objects, held in
-      its fields. A `Bank` has accounts, so it keeps them in a list.
-    example: "self.accounts = []  # a Bank's field that holds account objects"
+      its fields. A star system has planets, so it keeps them in a list.
+    example: "self._planets = []  # a StarSystem's field that holds planets"
 
   - term: is a
     kind: concept
     definition: >
       An "is a" relationship means one class is a special kind of another
-      class. It calls for inheritance: a savings account is a bank account.
-    example: "class SavingsAccount(BankAccount):"
+      class. It calls for inheritance: a troll is a character.
+    example: "class Troll(Character):"
 
   - term: has a
     kind: concept
     definition: >
       A "has a" relationship means one object holds other objects. It
-      calls for composition: a bank has bank accounts.
-    example: "bank.open_account(BankAccount('Alice', 500.0))"
+      calls for composition: a star system has planets.
+    example: "sol.add(Planet('Mars', 228.0, ['Phobos', 'Deimos']))"

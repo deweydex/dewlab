@@ -310,11 +310,13 @@ groups:
       - keeping-details-inside-an-object
       - one-class-many-methods
       - a-polynomial-class
+      - from-a-description-to-classes
       - one-parent-many-children
       - objects-inside-objects
       - testing-what-a-class-does
       - documenting-a-class
       - a-front-end-for-a-class
+      - your-world-playable
       - mixed-programming-with-objects
 
   - key: big-picture
