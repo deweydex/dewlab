@@ -1,110 +1,164 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
+  - term: dataset
+    kind: concept
+    definition: >
+      A dataset is one collection of data that belongs together, such as
+      NASA's list of known planets around other stars.
   - term: statistics
     kind: concept
     definition: >
       Statistics is the part of mathematics that summarises, describes and
       explains data.
-  - term: dataset
+  - term: transit
     kind: concept
     definition: >
-      A dataset is one collection of data that belongs together, such as
-      the quiz scores of one class.
+      A way of finding planets: a telescope watches a star, and sees it dim
+      slightly when a planet crosses in front of it. It finds large planets
+      close to their stars most easily.
+  - term: population, sample
+    kind: concept
+    definition: >
+      The population is everything we want to know about. A sample is the
+      part of it we have data on, such as the planets our instruments have
+      found, out of all the planets there are.
+  - term: sampling bias
+    kind: concept
+    definition: >
+      A sample has a sampling bias when the way it was taken makes some
+      members of the population more likely to be in it than others. Small
+      planets in long orbits are nearly missing from the planet data,
+      because they are the hardest to find.
   - term: measure of central tendency
     kind: concept
     definition: >
-      A measure of central tendency is a single number that describes the
-      centre, or typical value, of a dataset. The mean, the median and the
-      mode are the three common ones.
+      A single number that describes the centre, or typical value, of a
+      dataset. The mean, the median and the mode are the three common ones.
   - term: mean
     kind: formula
     definition: >
-      The mean is the ordinary average. Add up all the values, then divide
-      by how many values there are.
-    example: "x-bar = (1/n) * sum(x)"
+      The ordinary average: add up all the values, then divide by how many
+      there are. It is the total shared out equally.
+    example: "sum(data) / len(data)"
   - term: median
     kind: concept
     definition: >
-      The median is the middle value once the data is sorted. With an even
-      number of values, it is the average of the two middle values.
+      The middle value once the data is sorted. With an even number of
+      values, it is the mean of the two middle ones.
   - term: mode
     kind: concept
-    definition: The mode is the value that appears most often in the data.
+    definition: >
+      The value that appears most often. For categorical data it is the
+      only average there is.
   - term: outlier, robust
     kind: concept
     definition: >
       An outlier is a value far away from the rest of the data. A measure
-      is robust when an outlier hardly changes it. The median is robust to
-      outliers, and the mean is not.
+      is robust when an outlier hardly changes it: the median is robust,
+      and the mean is not.
   - term: skewed
     kind: concept
     definition: >
-      Data is skewed when it has a long tail of values on one side.
-      Incomes are skewed, with a few very large values.
+      Data is skewed when it has a long tail of values on one side, like
+      the planets' orbits: most are short, and a few are enormous.
   - term: measure of spread
     kind: concept
     definition: >
-      A measure of spread is a number that describes how spread out the
-      values of a dataset are. The range and the standard deviation are
-      two of them.
+      A number that says how spread out the values of a dataset are. The
+      range and the standard deviation are two of them.
   - term: data range
     kind: concept
     definition: >
-      The range of a dataset is the largest value minus the smallest
-      value. It is the simplest measure of spread. It is a different thing
-      from Python's range() function.
+      The largest value minus the smallest. It is the simplest measure of
+      spread, and depends on only two values. It is a different thing from
+      Python's range() function.
   - term: standard deviation
     kind: formula
     definition: >
-      The standard deviation measures how far the values are from the
-      mean, on average. Find each value's distance from the mean, square
-      it, average those squares, then take the square root.
+      How far the values are from their mean, in a typical case. Find each
+      value's distance from the mean, square it, find the mean of the
+      squares, and take the square root.
     example: "sigma = sqrt((1/n) * sum((x - x_bar)**2))"
   - term: sample standard deviation
     kind: formula
     definition: >
-      The sample standard deviation divides by n - 1 in place of n. It
-      gives a slightly larger answer than the standard deviation that
-      divides by n.
+      The standard deviation with n - 1 in place of n. It estimates the
+      spread of a whole population from a sample of it, and gives a
+      slightly larger answer.
   - term: categorical, ordinal, discrete, continuous
     kind: concept
     definition: >
-      These are four kinds of data. Categorical (or nominal) data is labels
-      with no order, like favourite colour. Ordinal data has an order but
-      unequal steps, like star ratings. Discrete data is counted, like bugs
-      in a program. Continuous data is measured and can take any value in a
-      range, like temperature. The kind of data decides which summary
-      measures make sense for it.
+      Four kinds of data. Categorical (or nominal) data is labels with no
+      order, like how a planet was found. Ordinal data has an order but
+      unequal steps, like star ratings. Discrete data is counted, in whole
+      numbers. Continuous data is measured, and can be any value in a
+      range, like a planet's radius. The kind decides which averages make
+      sense.
   - term: frequency, frequency distribution, bins
     kind: concept
     definition: >
-      The frequency of a value is how many times it appears in the data. A
-      frequency distribution lists the values, or groups of values called
-      bins, with how often each one appears. It often tells us more than
-      any single summary number.
+      The frequency of a value is how many times it appears. A frequency
+      distribution lists the values, or equal groups of values called
+      bins, with how often each appears.
   - term: histogram
     kind: concept
     definition: >
-      A histogram is a chart of a frequency distribution. It has one bar
-      for each bin, and the height of each bar is the count.
-  - term: symmetric, unimodal
+      A chart of a frequency distribution: one bar for each bin, as tall as
+      its count, with no gaps between the bars.
+  - term: symmetric, unimodal, bimodal
     kind: concept
     definition: >
-      A histogram is symmetric when its left and right halves are roughly
-      mirror images. It is unimodal when it has a single peak.
-  - term: dictionary
+      A histogram is symmetric when its two halves are mirror images. It is
+      unimodal with one peak, and bimodal with two, which usually means two
+      kinds of thing mixed together.
+  - term: percentile, quartile, interquartile range
     kind: concept
     definition: >
-      A dictionary stores values under keys that you choose. A list stores
-      them under numbered positions. Look a value up by its key, and check
-      whether a key exists with "in".
-    example: 'counts = {}\ncounts["apples"] = 5\n"oranges" in counts'
+      The 25th percentile is the value a quarter of the data is below; the
+      75th, the value three quarters is below. Those two are the quartiles,
+      and the distance between them is the interquartile range, a measure
+      of spread that ignores the extremes.
+  - term: box plot
+    kind: concept
+    definition: >
+      A chart of the quartiles: a box from the 25th to the 75th percentile,
+      a line at the median, whiskers out to the data near the box, and dots
+      for anything beyond. Good for comparing groups side by side.
+  - term: logarithmic scale
+    kind: concept
+    definition: >
+      An axis where each equal step multiplies the value by the same
+      amount, such as 10, 100, 1000. It fits values of very different
+      sizes on one chart.
+  - term: binomial distribution
+    kind: formula
+    definition: >
+      The number of successes in n independent trials, each with the same
+      chance p. The chance of exactly k successes is C(n, k) p^k (1-p)^(n-k).
+    example: "P(5 heads in 10 flips) = C(10, 5) / 2**10 = 252 / 1024"
   - term: "sorted()"
     python: sorted
     kind: function
     definition: Returns a new list with the elements in order, leaving the original list unchanged.
+  - term: "matplotlib, plt"
+    kind: concept
+    definition: >
+      matplotlib is a Python module for drawing charts. The line import
+      matplotlib.pyplot as plt loads it under the short name plt.
+    example: "import matplotlib.pyplot as plt"
   - term: "plt.hist()"
     python: matplotlib.pyplot.hist
     kind: function
-    definition: Splits a list of values into bins and draws them as a histogram.
-    example: "plt.hist(scores, bins=5)"
+    definition: Sorts a list of values into bins and draws them as a histogram.
+    example: "plt.hist(radii, bins=50)"
+  - term: "plt.boxplot()"
+    python: matplotlib.pyplot.boxplot
+    kind: function
+    definition: Draws a box plot for each list of values it is given, side by side.
+    example: "plt.boxplot([first_group, second_group])"
+  - term: ".dropna()"
+    kind: function
+    definition: >
+      A pandas method that leaves out the missing values. Every value it
+      drops is someone or something the answer no longer includes.
+    example: "planets.radius_earths.dropna()"

@@ -42,7 +42,9 @@ total is best. Ten thousand might say more.
 ## Rolling ten thousand times
 
 This cell rolls two dice 10,000 times, counts how often each total comes
-up, and draws a bar for each total.
+up, and draws a bar for each total. The drawing is done by matplotlib, a
+Python module for charts, which the
+[Statistics](tutorial:making-sense-of-data) page introduces properly.
 
 ```python exec
 id: chances-ten-thousand-rolls
