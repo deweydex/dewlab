@@ -50,7 +50,8 @@ From now on, your copy behaves like any other repository:
 - Later changes to `portfolio_wad` never appear in your copy, unless
   you ask for them.
 
-That is what this course needs: a site that is entirely yours to change.
+That suits this course, which needs a site that is entirely yours to
+change.
 
 ## Three ways to open it
 
