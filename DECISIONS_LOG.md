@@ -4759,3 +4759,23 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **Not done here.** `check()`, `expect:` and the `failed checks` signal stay until #314 retires them. The predict block is #313.
 
 *Cost to change: `compare()` and `render_inputs()` are the two places the comparison's meaning lives; the saved record gains `guesses`, which an older page ignores.*
+
+---
+
+**7.233 — The predict block: a guess written before the run, set beside the output, never marked.** The predict issue (#313), part of #306, building on 7.232.
+
+**Why.** The pages ask for a prediction about 230 times, almost always as "What do you think…? Run the cell to check" in one breath, so the guess stays in the reader's head. The `question` fence met a wrong choice with "Not quite yet." A written guess turns the output into an answer to the reader's own question.
+
+**What a reader sees.** Above the cell, the question, a way to answer (options, a number, or a few words) and how sure they are: *sure*, *a hunch* or *I'm not sure yet*. "Guess first, or just run it": skipping is always allowed. After the run, their guess and what the cell printed sit side by side. If they say the same thing, the page says so. If not, it says nothing about it, shows the note for the option they chose (the thinking that leads there, with a link to a closer look where one exists), and asks "Which line explains what you saw?" No option is ever labelled right or wrong.
+
+**"I'm not sure yet"** opens the cell's first hint at once, whatever the Settings toggle says (the reader asked, and the first hint is the one that asks a question), and offers two ways on: make a guess now, or run it and see.
+
+**Matching.** A number is compared with the last number the cell printed, within the block's `tolerance:` (0 by default), commas ignored. Anything else is compared with the whole output or its last line, spacing ignored and case kept, because `SEA` and `sea` are different answers. Anything else (9.70 beside 9.7 in a text guess) is the reader's to judge.
+
+**Surprises.** A page with a prediction ends with a section listing the cells where a guess and the output differed, and the ones marked not sure, each linked back. Predictions save with the cell (the record's `prediction`), so the JSON export carries them, and the notebook export writes a guess as a markdown cell above its code.
+
+**Signals.** Two new staged-hint signals, `unsure` and `guess differed`, written bare (`after: unsure`) or with a count, so an author can hang a hint on either moment in the syntax they already know.
+
+**A block that follows its cell, drawn above it.** Every block follows its cell in the source (7.231); `render_cell()` draws the prediction above, since the guess comes first.
+
+*Cost to change: the matching rules live in `guessMatches()`; the record gains `prediction`, which an older page ignores. #314 converts the `question` fences and retires `check()`.*

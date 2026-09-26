@@ -564,6 +564,20 @@ steps the way the base feature was:
   and marks a row that differs with `.dl-compare-differ` and the word
   "different". A guess column's boxes save with the cell
   (`cellGuesses()`/`restoreGuesses()`, the record's `guesses`).
+- **"What does the predict block above a cell do?"** — `initPredict()`,
+  called from `buildCells()` for a cell whose `.dl-predict` the build drew
+  above it (build.py's `render_predict()`). `setSure()` records how sure
+  the reader is; "I'm not sure yet" reveals and opens the cell's first
+  staged hint whatever the Settings toggle says, and counts an `unsure`
+  signal. After every run, `executeCell()` calls `notePrediction()`, which
+  compares the guess with the cell's printed output (`guessMatches()`:
+  the last number within the tolerance, or the whole output or last line
+  with spacing ignored and case kept), counts `guess differed`, and
+  `renderPrediction()` shows the two side by side with the chosen option's
+  note. `updateSurprises()` fills the page's `.dl-surprises` list. The
+  record's `prediction` holds guess, sureness and outcome
+  (`predictionRecord()`/`restorePrediction()`), and `downloadAsIpynb()`
+  writes a guess as a markdown cell above its code.
 - **"How does a hint decide to appear under a cell?"** — the staged-hints
   block after `executeCell()`: `noteAttempt()` updates a cell's counters
   from the run's report, `triggerHolds()` tests a fold's `data-after`

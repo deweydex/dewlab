@@ -2076,6 +2076,7 @@ function buildCells(manifest) {
     cells.push(cell);
     renderCellRunLine(cell);
     initCompare(cell, spec);
+    initPredict(cell);
 
     runBtn.addEventListener("click", () => runCell(cell));
     if (resetBtn) {
@@ -3269,6 +3270,18 @@ function downloadAsIpynb() {
     const cell = cells.find((c) => c.id === id) || customCells.find((c) => c.id === id);
     if (!cell) continue;
     const isText = cell.type === "text";
+    const guess = cell.predict ? readGuess(cell) : null;
+    if (guess || cell.predict?.sure === "unsure") {
+      /* A guess written before the cell ran travels with it, the way it
+       * sat above it on the page (#313). */
+      const sure = { sure: "sure", hunch: "a hunch", unsure: "not sure yet" }[cell.predict.sure];
+      notebookCells.push({
+        cell_type: "markdown",
+        metadata: {},
+        source: [`**My guess, before running:** ${guess ? guess.text : "none"}`
+          + (sure ? ` (${sure})` : "")],
+      });
+    }
     notebookCells.push({
       cell_type: isText ? "markdown" : "code",
       metadata: {},
@@ -4008,6 +4021,7 @@ async function executeCell(cell) {
   cell.lastRunMs = performance.now() - startedAt;
   cell.ranOrder = ++runSequenceCounter;
   noteAttempt(cell, report, previousCode);
+  notePrediction(cell, report);
   maybeRevealHint(cell, report);
   renderCellRunLine(cell);
   saveNow();
@@ -4170,6 +4184,188 @@ function renderComparison(cell, result) {
   });
 }
 
+/* The predict block (#313). Above a cell, the reader writes a guess and
+ * says how sure they are. After a run, the guess and what the cell printed
+ * sit side by side. A match may be confirmed; a mismatch is never called
+ * wrong, and neither is any option. "I'm not sure yet" opens the cell's
+ * first hint and offers two ways on. The cells where a guess and the
+ * output differed, and the ones marked not sure, are listed at the end of
+ * the page (updateSurprises()). */
+function initPredict(cell) {
+  const el = document.querySelector(`.dl-predict[data-cell="${CSS.escape(cell.id)}"]`);
+  if (!el) return;
+  cell.predict = {
+    el,
+    type: el.dataset.type,
+    tolerance: el.dataset.tolerance !== undefined ? Number(el.dataset.tolerance) : 0,
+    sure: null,
+    outcome: null,
+  };
+  for (const input of el.querySelectorAll(".dl-predict-options input, .dl-predict-value")) {
+    input.addEventListener(input.type === "radio" ? "change" : "input", scheduleSave);
+  }
+  for (const btn of el.querySelectorAll(".dl-predict-sure-btn")) {
+    btn.addEventListener("click", () => setSure(cell, btn.dataset.sure, { chosen: true }));
+  }
+  el.querySelector(".dl-predict-guess-now").addEventListener("click", () => {
+    el.querySelector(".dl-predict-options input, .dl-predict-value")?.focus();
+  });
+  el.querySelector(".dl-predict-run").addEventListener("click", () => runCell(cell));
+}
+
+function readGuess(cell) {
+  const { el, type } = cell.predict;
+  if (type === "choice") {
+    const chosen = el.querySelector(".dl-predict-options input:checked");
+    if (!chosen) return null;
+    const text = chosen.closest("label").querySelector(".dl-predict-option-text").textContent;
+    return { option: Number(chosen.value), text: text.trim() };
+  }
+  const value = el.querySelector(".dl-predict-value").value.trim();
+  return value ? { option: null, text: value } : null;
+}
+
+function writeGuess(cell, guess) {
+  if (!guess) return;
+  const { el, type } = cell.predict;
+  if (type === "choice") {
+    const radio = el.querySelector(`.dl-predict-options input[value="${Number(guess.option)}"]`);
+    if (radio) radio.checked = true;
+  } else if (typeof guess.text === "string") {
+    el.querySelector(".dl-predict-value").value = guess.text;
+  }
+}
+
+function setSure(cell, sure, { chosen = false } = {}) {
+  const p = cell.predict;
+  p.sure = sure;
+  for (const btn of p.el.querySelectorAll(".dl-predict-sure-btn")) {
+    btn.setAttribute("aria-pressed", String(btn.dataset.sure === sure));
+  }
+  const route = p.el.querySelector(".dl-predict-unsure");
+  route.hidden = sure !== "unsure";
+  if (sure === "unsure" && chosen) {
+    /* The reader asked, so the first hint opens whatever the Settings
+     * toggle says: it is the one that asks a question, not the answer. */
+    const first = cell.hints[0];
+    if (first) {
+      first.revealed = true;
+      showStagedHint(cell, first, { arriving: true });
+      first.el.open = true;
+    }
+    route.querySelector(".dl-predict-hint-open").hidden = !first;
+    cell.attempts.unsure += 1;
+    maybeRevealHint(cell, {});
+  }
+  if (chosen) {
+    scheduleSave();
+    updateSurprises();
+  }
+}
+
+function normaliseText(text) {
+  return text.replace(/\s+/g, " ").trim();
+}
+
+/* Whether a guess and the output say the same thing. A number is compared
+ * with the last number the cell printed, within the block's tolerance;
+ * anything else with the whole output or its last line, ignoring only
+ * spacing: case counts, since `SEA` and `sea` are different answers.
+ * Anything this cannot see as the same (9.70 beside 9.7 in a text guess)
+ * is simply shown side by side for the reader to judge. */
+function guessMatches(p, guess, output) {
+  if (!output) return false;
+  if (p.type === "number") {
+    const value = Number(guess.text.replace(/,/g, ""));
+    const numbers = output.replace(/,/g, "").match(/-?\d+(?:\.\d+)?(?:e[-+]?\d+)?/gi);
+    if (Number.isNaN(value) || !numbers) return false;
+    const printed = Number(numbers[numbers.length - 1]);
+    return Math.abs(value - printed) <= p.tolerance + 1e-9 * Math.max(1, Math.abs(printed));
+  }
+  const lines = output.split("\n").map((line) => line.trim()).filter(Boolean);
+  const said = normaliseText(guess.text);
+  return said === normaliseText(output) || said === normaliseText(lines[lines.length - 1] || "");
+}
+
+function notePrediction(cell, report) {
+  const p = cell.predict;
+  if (!p) return;
+  const guess = readGuess(cell);
+  if (!guess && p.sure !== "unsure") {
+    p.outcome = null;
+  } else {
+    const output = cell.outputEl.innerText.trim();
+    const match = guess ? guessMatches(p, guess, output) : false;
+    p.outcome = {
+      guess: guess ? guess.text : null,
+      option: guess ? guess.option : null,
+      output: output.slice(0, 300),
+      errored: !report.ok,
+      match,
+    };
+    if (guess && !match) cell.attempts.guessDiffered += 1;
+  }
+  renderPrediction(cell);
+  updateSurprises();
+}
+
+function renderPrediction(cell) {
+  const p = cell.predict;
+  const after = p.el.querySelector(".dl-predict-after");
+  const o = p.outcome;
+  after.hidden = !o;
+  if (!o) return;
+  after.querySelector(".dl-predict-your").textContent = o.guess ?? "no guess";
+  after.querySelector(".dl-predict-output").textContent = o.errored
+    ? "an error: see under the cell"
+    : (o.output || "nothing");
+  after.querySelector(".dl-predict-match").hidden = !o.match;
+  for (const note of after.querySelectorAll(".dl-predict-note")) {
+    note.hidden = Number(note.dataset.option) !== o.option;
+  }
+  after.querySelector(".dl-predict-which").hidden = o.match && p.sure !== "unsure";
+}
+
+function predictionRecord(cell) {
+  const p = cell.predict;
+  if (!p) return undefined;
+  return { guess: readGuess(cell), sure: p.sure, outcome: p.outcome };
+}
+
+function restorePrediction(cell, saved) {
+  if (!cell.predict || !saved) return;
+  writeGuess(cell, saved.guess);
+  if (saved.sure) setSure(cell, saved.sure);
+  cell.predict.outcome = saved.outcome || null;
+  renderPrediction(cell);
+}
+
+function updateSurprises() {
+  const section = document.querySelector(".dl-surprises");
+  if (!section) return;
+  const list = section.querySelector(".dl-surprises-list");
+  list.replaceChildren();
+  cells.forEach((cell, index) => {
+    const p = cell.predict;
+    if (!p) return;
+    const differed = !!(p.outcome && p.outcome.guess !== null && !p.outcome.match);
+    if (!differed && p.sure !== "unsure") return;
+    const item = document.createElement("li");
+    const link = document.createElement("a");
+    link.href = `#dl-predict-${cell.id}`;
+    link.textContent = `Cell ${index + 1}`;
+    const printed = p.outcome
+      ? (p.outcome.errored ? "an error" : (p.outcome.output.split("\n").pop() || "nothing"))
+      : "";
+    const said = differed
+      ? `: you guessed ${p.outcome.guess}, and it printed ${printed}.`
+      : ": you were not sure yet.";
+    item.append(link, document.createTextNode(said));
+    list.appendChild(item);
+  });
+  section.hidden = list.children.length === 0;
+}
+
 function freshAttempts() {
   return {
     runs: 0,          // runs since the counters were last cleared
@@ -4180,6 +4376,8 @@ function freshAttempts() {
     emptyResults: 0,  // consecutive runs where a SQL query came back with no rows
     firstRunAt: null, // when the first counted run happened, for `minutes`
     lastErrorKey: null,
+    unsure: 0,        // times the reader said "I'm not sure yet" (#313)
+    guessDiffered: 0, // runs after which a written guess and the output differed
   };
 }
 
@@ -4229,6 +4427,8 @@ function triggerHolds(terms, a) {
     "check-fails": a.checkFails,
     "empty-results": a.emptyResults,
     "minutes": a.firstRunAt == null ? 0 : (Date.now() - a.firstRunAt) / 60000,
+    "unsure": a.unsure ?? 0,
+    "guess-differed": a.guessDiffered ?? 0,
   };
   return Object.entries(terms).every(([key, count]) => (value[key] ?? 0) >= count);
 }
@@ -4860,6 +5060,7 @@ function saveNow() {
       attempts: cell.attempts,
       hints_shown: cell.hints.filter((hint) => hint.revealed).map((hint) => hint.index),
       guesses: cellGuesses(cell),
+      prediction: predictionRecord(cell),
     })),
     // A site editor's own preview and console are cheap to rebuild — no
     // Pyodide, no network — so unlike a cell's output_html, nothing here
@@ -4976,8 +5177,10 @@ function restoreSaved() {
       }
     }
     if (Array.isArray(saved.guesses)) restoreGuesses(cell, saved.guesses);
+    if (saved.prediction) restorePrediction(cell, saved.prediction);
     restored.push(cell.id);
   }
+  updateSurprises();
 
   const droppedHighlights = [];
   if (Array.isArray(record.highlights)) {

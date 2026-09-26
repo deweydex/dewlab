@@ -202,7 +202,15 @@ TRIGGER_KEYS = {
     "empty results": "empty-results", "empty result": "empty-results",
     "empty-results": "empty-results", "empty-result": "empty-results",
     "minutes": "minutes", "minute": "minutes",
+    # The predict block's two moments (#313): the reader says they are not
+    # sure yet, and a guess and the output differ. Either may be written
+    # bare, meaning once.
+    "unsure": "unsure", "not sure": "unsure",
+    "guess differed": "guess-differed", "guesses differed": "guess-differed",
+    "guess-differed": "guess-differed",
 }
+# Signals that read naturally with no number: `after: unsure`.
+BARE_TRIGGERS = {"unsure", "not sure", "guess differed", "guess-differed"}
 TRIGGER_TERM_RE = re.compile(
     r"^(?:(?P<n1>\d+)\s+(?P<k1>[a-z][a-z -]*[a-z])|(?P<k2>[a-z][a-z-]*)\s*:\s*(?P<n2>\d+))$"
 )
@@ -215,6 +223,11 @@ INPUTS_HEADER_RE = re.compile(r"^\s*(for|guess)\s*:\s*(.*)$")
 DEFAULT_SOLUTION_TITLE = "One way to do it"
 # A line holding only `---` ends a solution's code and starts its notes.
 SOLUTION_NOTES_RE = re.compile(r"^---[ \t]*$", re.MULTILINE)
+# The ```predict block (#313): a guess written before the cell runs.
+PREDICT_HEADER_RE = re.compile(r"^\s*(for|type|tolerance)\s*:\s*(.*)$")
+PREDICT_TYPES = ("choice", "number", "text")
+# An option starts at the left margin; an indented line under it is its note.
+PREDICT_OPTION_RE = re.compile(r"^[-*+]\s+(.*\S)\s*$")
 INCLUDE_RE = re.compile(r"\{\{\s*include\s*:\s*(?P<path>[^}]+?)\s*\}\}")
 TIGHT_LIST_RE = re.compile(
     r"(?m)^(?P<prose>(?![ \t]*(?:[-*+]|\d+[.)])\s)(?![ \t]*#)(?![ \t]*>)[^\n]*\S[^\n]*)\n"
@@ -277,6 +290,7 @@ class Cell:
     # they test; `tested_by` is the other end, set on that cell.
     tests_for: str | None = None
     tested_by: str | None = None
+    predict: "Predict | None" = None
 
     @property
     def toolkit_reference(self) -> str:
@@ -305,6 +319,26 @@ class Solution:
     title: str
     code: str
     notes: str = ""
+
+
+@dataclass
+class PredictOption:
+    """One option of a choice prediction, and the note naming the thinking
+    that leads to it. Neither is ever marked right or wrong."""
+
+    text: str
+    note: str = ""
+
+
+@dataclass
+class Predict:
+    """A ```predict fence: the reader's guess, written before the cell runs."""
+
+    cell: str
+    type: str
+    prompt: str
+    options: list[PredictOption] = field(default_factory=list)
+    tolerance: float | None = None
 
 
 @dataclass
@@ -826,6 +860,64 @@ def _split_solution(text: str) -> tuple[str, str]:
     return text[:match.start()], text[match.end():]
 
 
+def parse_predict(body: str, path: Path, previous_cell: str | None) -> Predict:
+    """A ```predict fence: `for:`, `type:` and `tolerance:`, then the
+    question, then for a choice the options as a list at the left margin.
+    An indented line under an option is its note. `type:` defaults to
+    `choice` when there is a list and `text` when there is not."""
+    lines = body.split("\n")
+    header = _block_header(lines, PREDICT_HEADER_RE)
+    cell = header.get("for") or previous_cell
+    if not cell:
+        fail(path, "a predict fence has no exec cell above it and no `for:` "
+                   "line naming one")
+    first_option = next((i for i, line in enumerate(lines) if PREDICT_OPTION_RE.match(line)),
+                        None)
+    kind = (header.get("type") or ("choice" if first_option is not None else "text")).lower()
+    if kind not in PREDICT_TYPES:
+        fail(path, f"the prediction for cell {cell!r} says `type: {kind}` — one of "
+                   f"{', '.join(PREDICT_TYPES)}")
+    options: list[PredictOption] = []
+    prompt_lines = lines
+    if kind == "choice":
+        if first_option is None:
+            fail(path, f"the prediction for cell {cell!r} is a choice with no options — "
+                       "list them with `- ` at the left margin")
+        prompt_lines = lines[:first_option]
+        for line in lines[first_option:]:
+            option = PREDICT_OPTION_RE.match(line)
+            if option:
+                options.append(PredictOption(text=option.group(1)))
+            elif line.strip() and line[:1].isspace() and options:
+                note = options[-1].note
+                options[-1].note = f"{note} {line.strip()}".strip()
+            elif line.strip():
+                fail(path, f"the prediction for cell {cell!r} has a line after its "
+                           f"options that is neither an option nor an indented note: "
+                           f"{line.strip()!r}")
+        if len(options) < 2:
+            fail(path, f"the prediction for cell {cell!r} offers one option — a "
+                       "choice needs at least two")
+    tolerance = None
+    if "tolerance" in header:
+        if kind != "number":
+            fail(path, f"the prediction for cell {cell!r} has a tolerance, which only "
+                       "a `type: number` prediction uses")
+        try:
+            tolerance = float(header["tolerance"])
+        except ValueError:
+            fail(path, f"the prediction for cell {cell!r} says `tolerance: "
+                       f"{header['tolerance']}` — write a number")
+        if tolerance < 0:
+            fail(path, f"the prediction for cell {cell!r} has a negative tolerance")
+    prompt = "\n".join(prompt_lines).strip("\n")
+    if not prompt.strip():
+        fail(path, f"the prediction for cell {cell!r} asks no question")
+    for text in [prompt] + [o.text for o in options] + [o.note for o in options]:
+        no_footnotes_in(text, path, f"the prediction for cell {cell!r}")
+    return Predict(cell=cell, type=kind, prompt=prompt, options=options, tolerance=tolerance)
+
+
 def parse_inputs(body: str, path: Path, previous_cell: str | None) -> Inputs:
     """An ```inputs fence: `for:` and `guess:`, then one expression per
     line. A `#` comment after an expression is its label, found with the
@@ -939,6 +1031,9 @@ def parse_trigger(text: str, path: Path) -> str:
     for raw in re.split(r"\s*(?:,|\band\b|&)\s*", text.strip().lower()):
         if not raw:
             continue
+        if raw in BARE_TRIGGERS:
+            terms.append(f"{TRIGGER_KEYS[raw]}:1")
+            continue
         match = TRIGGER_TERM_RE.match(raw)
         if not match:
             fail(path, f"a hint's after: line has a term I cannot read: {raw!r} "
@@ -949,7 +1044,8 @@ def parse_trigger(text: str, path: Path) -> str:
         if canonical is None:
             fail(path, f"a hint's after: line names a signal the runtime does not "
                        f"track: {key!r} — one of errors, identical errors, "
-                       f"unchanged runs, runs, failed checks, empty results, minutes")
+                       f"unchanged runs, runs, failed checks, empty results, minutes, "
+                       f"unsure, guess differed")
         if count < 1:
             fail(path, f"a hint's after: count must be at least 1, not {count}")
         terms.append(f"{canonical}:{count}")
@@ -1087,6 +1183,95 @@ def render_solution(solution: Solution, maths: list[Math]) -> str:
         f"{notes_html}\n"
         "</details>"
     )
+
+
+def _inline(text: str) -> str:
+    """Markdown for one line of a block, as inline HTML: a single
+    paragraph's own <p> unwrapped, as a question's option is."""
+    converted = convert_prose_with_math(text)
+    if converted.startswith("<p>") and converted.endswith("</p>") and converted.count("<p>") == 1:
+        return converted[len("<p>"):-len("</p>")]
+    return converted
+
+
+def render_predict(prediction: Predict) -> str:
+    """The guess a ```predict fence becomes, drawn above its cell (#313).
+
+    The question, then a way to answer it (radio buttons for a choice, a
+    box for a number or a sentence), then how sure the reader is: sure, a
+    hunch, or not sure yet. Nothing here, and nothing the runtime adds
+    after a run, calls an answer right or wrong. Each option's note waits
+    in a hidden list until the cell has run, when the page shows the note
+    for the option the reader chose."""
+    safe_cell = html.escape(prediction.cell, quote=True)
+    tolerance = (f' data-tolerance="{prediction.tolerance:g}"'
+                 if prediction.tolerance is not None else "")
+    if prediction.type == "choice":
+        choices = "".join(
+            f'<label class="dl-predict-option"><input type="radio" '
+            f'name="dl-predict-{safe_cell}" value="{index}"> '
+            f'<span class="dl-predict-option-text">{_inline(option.text)}</span></label>'
+            for index, option in enumerate(prediction.options)
+        )
+        answer = (f'<div class="dl-predict-options" role="radiogroup" '
+                  f'aria-label="Your guess">{choices}</div>')
+    else:
+        mode = ' inputmode="decimal"' if prediction.type == "number" else ""
+        answer = (f'<input type="text" class="dl-predict-value"{mode} '
+                  'aria-label="Your guess" placeholder="Your guess">')
+    notes = "".join(
+        f'<div class="dl-predict-note" data-option="{index}" hidden>{_inline(option.note)}</div>'
+        for index, option in enumerate(prediction.options) if option.note
+    )
+    sure = "".join(
+        f'<button type="button" class="dl-predict-sure-btn" data-sure="{key}" '
+        f'aria-pressed="false">{label}</button>'
+        for key, label in (("sure", "Sure"), ("hunch", "A hunch"),
+                           ("unsure", "I\u2019m not sure yet"))
+    )
+    return (
+        f'<div class="dl-predict" id="dl-predict-{safe_cell}" data-cell="{safe_cell}" '
+        f'data-type="{prediction.type}"{tolerance}>'
+        f'<div class="dl-predict-prompt">{convert_prose_with_math(prediction.prompt)}</div>'
+        f"{answer}"
+        '<div class="dl-predict-sure" role="group" aria-label="How sure are you?">'
+        '<span class="dl-predict-sure-label">How sure are you?</span>'
+        f"{sure}</div>"
+        '<div class="dl-predict-unsure" hidden>'
+        "<p>That is a good place to start. "
+        '<span class="dl-predict-hint-open" hidden>The first hint under the cell '
+        "is open now. </span>Two ways on:</p>"
+        '<button type="button" class="dl-btn dl-predict-guess-now">Make a guess now</button> '
+        '<button type="button" class="dl-btn dl-predict-run">Run it and see</button>'
+        "</div>"
+        '<p class="dl-predict-footer">Guess first, or just run it.</p>'
+        '<div class="dl-predict-after" hidden aria-live="polite">'
+        '<div class="dl-predict-sides">'
+        '<div><span class="dl-predict-side-label">Your guess</span>'
+        '<span class="dl-predict-your"></span></div>'
+        '<div><span class="dl-predict-side-label">What the cell printed</span>'
+        '<span class="dl-predict-output"></span></div>'
+        "</div>"
+        '<p class="dl-predict-match" hidden>Your guess and the output match.</p>'
+        f"{notes}"
+        '<p class="dl-predict-which" hidden>Which line explains what you saw?</p>'
+        "</div>"
+        "</div>"
+    )
+
+
+# The end of a page with predict blocks (#313): the cells where the
+# reader's guess and the output differed, and the ones they were not sure
+# about. The runtime fills the list, and shows the section once it has
+# something in it.
+SURPRISES_HTML = (
+    '<section class="dl-surprises" hidden aria-labelledby="dl-surprises-heading">'
+    '<h2 id="dl-surprises-heading">Your surprises</h2>'
+    "<p>The cells where your guess and the output differed, and the ones you "
+    "were not sure about yet. They are worth a second look.</p>"
+    '<ul class="dl-surprises-list"></ul>'
+    "</section>"
+)
 
 
 def render_inputs(block: Inputs, has_solution: bool) -> str:
@@ -1341,8 +1526,10 @@ def extract_blocks(
     becomes a `Question`; an `html app`/
     `css app`/`js app` fence becomes one pane of an `AppCell`, grouped
     the same way by its `app:` name; a `solution` or `inputs` fence
-    becomes a block attached to its cell (#312); any other fence becomes
-    an illustrative, read-only block.
+    becomes a block attached to its cell (#312), and a `predict` fence
+    one that leaves no placeholder, since render_cell() draws it above
+    its cell (#313); any other fence becomes an illustrative, read-only
+    block.
     All six leave the source before the markdown converter runs, so
     nothing inside any of them can be reinterpreted as markup.
     """
@@ -1354,6 +1541,7 @@ def extract_blocks(
     app_cells: list[AppCell] = []
     solutions: list[Solution] = []
     inputs_blocks: list[Inputs] = []
+    predictions: list[Predict] = []
     hints_per_cell: dict[str, int] = {}
     used_site_names: set[str] = set()
     current_site: SiteEditor | None = None
@@ -1389,6 +1577,10 @@ def extract_blocks(
             solutions.append(parse_solution(match.group("body"), path,
                                             cells[-1].id if cells else None))
             return f"{indent}<!--dewlab-solution-{len(solutions) - 1}-->"
+        if info and info[0] == "predict":
+            predictions.append(parse_predict(match.group("body"), path,
+                                             cells[-1].id if cells else None))
+            return ""
         if info and info[0] == "inputs":
             inputs_blocks.append(parse_inputs(match.group("body"), path,
                                               cells[-1].id if cells else None))
@@ -1496,6 +1688,14 @@ def extract_blocks(
         if cell.inputs is not None:
             fail(path, f"cell {cell.id!r} has two inputs blocks — put every case in one")
         cell.inputs = block
+    for prediction in predictions:
+        cell = by_id.get(prediction.cell)
+        if cell is None:
+            fail(path, f"a prediction names a cell this tutorial does not have: "
+                       f"{prediction.cell!r}")
+        if cell.predict is not None:
+            fail(path, f"cell {cell.id!r} has two predict blocks — one guess per cell")
+        cell.predict = prediction
     for cell in cells:
         if not cell.tests_for:
             continue
@@ -1641,7 +1841,8 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
         name_markup = f'<span class="dl-cell-name">{html.escape(cell.name)}</span>'
     type_label = "SQL" if cell.type == "sql" else "Python"
     return (
-        f'<div class="dl-cell" data-cell-id="{safe_id}">'
+        (render_predict(cell.predict) if cell.predict else "")
+        + f'<div class="dl-cell" data-cell-id="{safe_id}">'
         '<div class="dl-cell-head">'
         '<span class="dl-cell-pill">'
         f'<span class="dl-cell-pill-num">Cell {number}</span>'
@@ -4525,6 +4726,8 @@ def load(path: Path) -> Tutorial:
     body_html = place_blocks(converted, cells, blocks, maths, site_editors, questions, app_cells,
                               page=id_of(path), version=str(meta.get("version", "")))
     body_html, notes = extract_notes(body_html, path)
+    if any(cell.predict for cell in cells):
+        body_html += SURPRISES_HTML
     anchors = (
         set(ID_RE.findall(body_html))
         | {c.id for c in cells}
@@ -4994,6 +5197,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
                            for case in c.inputs.cases]} if c.inputs else {})
             | ({"guess": True} if c.inputs and c.inputs.guess else {})
             | ({"tests": c.tested_by} if c.tested_by else {})
+            | ({"predict": c.predict.type} if c.predict else {})
             for c in tutorial.cells
         ],
     }
