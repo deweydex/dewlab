@@ -19,6 +19,8 @@ covers:
 
 # Matrices: adding, scaling and transposing a grid of numbers
 
+## A grid that draws a picture
+
 Here is a grid of numbers. What do you think it will draw?
 
 ```python exec
