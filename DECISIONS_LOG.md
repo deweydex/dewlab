@@ -4911,3 +4911,15 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **`Polynomial` moves to a project page of its own.** In `one-class-many-methods` it was the one class outside banking, and the one most likely to make a reader anxious about the mathematics rather than the code; a `Planet` with the minutes light takes to reach it teaches the same idea. But a polynomial class, built a method at a time, makes a good project for a class, so it has its own page, `a-polynomial-class`, straight after, and the page before says a reader may go on to inheritance instead. It follows a thrown ball, and its stages are `evaluate`, `degree` (where the trailing zero in `[1, 2, 0]` is the trap), an `__init__` that keeps two rules (no zero at the top; a copy of the caller's list, since the caller's list is another name for the same one), a `__str__` that writes `-5x^2 + 20x + 1.5`, `add`, which returns a new polynomial that keeps the same rules, and, for readers who have met the power rule, `derivative`, which finds that the ball is highest at 2 seconds. The stages include the class as it stands from `setup/polynomial/`, so each starter is the stage before's answer. It has no worlds: it is the one page in the course set in mathematics, by design.
 
 *Cost to change: `the-tools-around-your-code` now sits third in `courses/fundamentals-of-oop.yaml`, `topic-groups.yaml` and the mixed page's list; moving it again means all three. The `setup/oop/` files are read by two pages each.*
+
+---
+
+**7.243 — A video library in `planning/video-library/`: 895 hand-picked YouTube and Nebula videos, keyed to the tutorials they would sit beside.** Josh supplied a list of 119 channels and asked for something filterable to reach for when building pages, and to browse for ideas: coding projects, algorithms, simulations.
+
+**Three CSV files, not a page on the site.** Nothing links to a video yet, and the list is for people writing tutorials, which is what 7.192 kept `planning/` for. A spreadsheet filters by tutorial slug or topic with no tooling. `picks.csv` is the judgement; `channels.csv` says which channels were read and why the rest were not; `all-videos.csv` keeps every title from the 58 reviewed channels, so a search for a technique does not depend on what was picked.
+
+**Picked from titles, not from watching.** Every title on the reviewed channels was read, and each pick names the tutorial folders it fits, checked against `tutorials/`. The README says plainly that a video must be watched before it goes on a page, and that its `note` column is written for authors and is never the sentence a student reads.
+
+**Nebula by channel and by title.** Twenty channels appear in Nebula's public channel list; for six of them, videos were matched to YouTube titles one to one, which gave 90 Nebula links among the picks.
+
+*Cost to change: low. Plain data with no reader in `build.py` or the tests; a row can be added or removed by hand. If a page ever embeds or lists videos, it should read `picks.csv` rather than copy from it.*
