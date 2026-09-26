@@ -7,10 +7,10 @@ version: 2026.09.22.1
 
 # Perspective projection: dividing by depth — Practice
 
-Work each one out by hand first, then run it. The arithmetic is one
-division, so the practice is in deciding what to divide by what.
+Solve each one by hand first, then run it. The arithmetic is one
+division, so the practice is to decide what to divide by what.
 
-## Dividing by Depth
+## Dividing by depth
 
 ```python exec
 id: dividing-1
@@ -55,7 +55,7 @@ know it is at depth 10. Where is it in the world?
 3. Multiply both screen numbers by 10.
 
 **Think about:** could you have answered this without being told the
-depth? What did the divide throw away?
+depth? What did the divide lose?
 
 **Try this next:** the same screen point, at depth 3.
 
@@ -66,7 +66,7 @@ depth? What did the divide throw away?
 $(2, 1, 10)$: $0.2 \times 10 = 2$ and $0.1 \times 10 = 1$. Without the
 depth there is no answer at all. Every point along the line of sight
 through $(0.2, 0.1)$ lands on the same pixel, which is exactly what the
-divide throws away. At depth 3 the same screen point is $(0.6, 0.3, 3)$.
+divide loses. At depth 3 the same screen point is $(0.6, 0.3, 3)$.
 
 </details>
 
@@ -91,7 +91,7 @@ glass moves from 1 to 2?
 $(1, 0.5)$. With the glass at distance 2, the similar triangles give
 $y' / 2 = y / z$, so $y' = 2 \times 1.5 / 6 = 0.5$. In the same way
 $x' = 2 \times 3 / 6 = 1$. Both numbers are twice what they were in
-problem 1. Moving the glass further away draws everything twice as big,
-which is what a zoom lens does.
+problem 1. When the glass moves twice as far away, everything is drawn twice
+as big, which is what a zoom lens does.
 
 </details>

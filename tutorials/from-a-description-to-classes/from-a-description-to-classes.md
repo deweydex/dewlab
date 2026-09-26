@@ -21,7 +21,7 @@ covers:
 
 # Designing classes: from a description to classes
 
-So far, every page has handed you a class and asked you to change it. A
+So far, every page has given you a class and asked you to change it. A
 real program starts before that, with a description of what it should do,
 in words, and no code at all. Here is one. Read it through once. Which of
 the things in it would you make into a class?
@@ -97,32 +97,32 @@ is one set of cards for the expedition.
 Two cards say "nothing yet". A class that only knows things, and does
 nothing, is worth asking about: would a dictionary do the same job? On
 this set of cards, a crew member might as well be
-`{"name": "Ada", "role": "pilot"}`. A class earns its place when it has a
-rule to keep or a question to answer, and a crew member has neither, so
-far.
+`{"name": "Ada", "role": "pilot"}`. A class is useful when it has a rule
+to keep or a question to answer. So far, a crew member has neither.
 
 ## More than one good answer
 
 Here are two other designs for the same paragraph.
 
-**Design B: fewer classes.** `Submarine`, `Dive` and `Logbook` only. Crew
-members are dictionaries, and specimens are dictionaries too. Less code,
-and nothing lost today. But when the leader asks a new question about
+**Design B: fewer classes.** It has only `Submarine`, `Dive` and
+`Logbook`. Crew members are dictionaries, and specimens are dictionaries
+too. It has less code, and loses nothing today. But when the leader asks a new question about
 specimens, such as "which were found below 1,000 m?", the answer goes in
 `Dive` or `Logbook`, since a dictionary has no methods.
 
 **Design C: an expedition that holds everything.** An `Expedition` class
 holds the submarines and the dives, and answers the leader's questions
-itself. There is no `Logbook`. One object to ask, and one place to look.
+itself. There is no `Logbook`. There is one object to ask, and one place
+to look.
 But `Expedition` now does two jobs: it looks after the submarines, and it
 keeps the records. As the program grows, a class with two jobs tends to
 grow into a class with five.
 
-Each is a fair answer. They trade the same things in different amounts:
+Each one is a good answer. They trade the same things in different amounts:
 
 - more classes give every rule and every question its own home, but mean
   more code, and more places to look;
-- fewer classes mean less code, but a rule with no home ends up copied
+- fewer classes mean less code, but a rule with no home is copied
   wherever it is needed.
 
 ```question
@@ -146,7 +146,7 @@ design gives that rule the most natural home?
 The last step before real code is a *skeleton*: each class with its
 `__init__`, and every method named, but with nothing inside yet. A method
 needs at least one line, so a skeleton uses `pass`, a line that does
-nothing and stands in for the body you will write later. A skeleton runs.
+nothing and takes the place of the body you will write later. A skeleton runs.
 It shows that the cards fit together: that every call has a method to go
 to, and every method has what it needs.
 
@@ -202,9 +202,9 @@ What will the last line print?
   - The methods have nothing in them.
 ```
 
-It prints `None`: every call found its method, and each method did
-nothing, as a skeleton should. Filling in `deepest` is the challenge at the
-end of this page.
+It prints `None`. Every call found its method, and each method did
+nothing, as a skeleton should. The challenge at the end of this page is
+to fill in `deepest`.
 
 ### Your turn
 
@@ -217,8 +217,8 @@ your cards first, then the skeleton.
 > name and health, and can carry up to three things. Rooms hold heroes and
 > treasure, and a treasure has a name and a value in gold. Monsters wait
 > in some rooms: a monster has a name, health and strength, and attacks
-> the first hero it meets. The game ends when every hero is down, or when
-> the party has found 100 gold.
+> the first hero it meets. The game ends when every hero is down (has 0
+> health), or when the party has found 100 gold.
 
 ```python exec
 id: from-cards-to-skeletons-2--game
@@ -285,7 +285,7 @@ to the skeleton above?
 
 > Each submarine has a crew of up to three. A crew member has a name and
 > a role, and uses oxygen as the submarine dives: 1 litre for every 10 m.
-> A submarine may not dive if its crew would run out of oxygen.
+> A submarine may not dive if its crew would have no oxygen left.
 
 ```python exec
 id: from-cards-to-skeletons-2--ocean
@@ -475,9 +475,9 @@ better than this one.
 
 Beck, K. and Cunningham, W. (1989). "A Laboratory for Teaching
 Object-Oriented Thinking". *OOPSLA '89 Conference Proceedings*, 1–6.
-<https://c2.com/doc/oopsla89/paper.html>. The short paper where CRC cards
-began, written to teach exactly what this page tries to: how to think in
-objects before writing them.
+<https://c2.com/doc/oopsla89/paper.html>. This is the short paper where
+CRC cards began. It was written to teach what this page teaches: how to
+think in objects before writing them.
 
 Downey, A. B. (2015). *Think Python: How to Think Like a Computer
 Scientist* (2nd ed.). Green Tea Press. Free at

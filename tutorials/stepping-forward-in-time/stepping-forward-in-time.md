@@ -25,10 +25,10 @@ Most video games move in steps too, usually sixty of them a second, and
 so do weather forecasts and simulations of a planet's orbit.
 
 On this page nothing is random. We drop a ball, and we move it forward
-in time one step after another. The steps are easy. Deciding how much to
-trust the answer is the interesting part.
+in time one step after another. The steps are easy. The interesting
+question is how much to trust the answer.
 
-## Dropping a Ball From Liberty Hall
+## Dropping a ball from Liberty Hall
 
 Liberty Hall in Dublin is about 60 metres tall. Suppose we drop a ball
 from the roof. (Please do not try this.) We ignore the air, so the only
@@ -79,7 +79,7 @@ the moment the ball hit the ground.
 
 Remember both of those strange things. They have the same cause.
 
-## What One Step Does
+## What one step does
 
 Let's see what changes the answer. What happens when `gravity` is
 `-1.6`, about the pull at the surface of the Moon? What happens when the
@@ -116,7 +116,7 @@ Euler, who described it in 1768. It is the simplest method there is for
 moving a simulation forward in time, and it is still the first one that
 most programmers write.
 
-## Checking It Against a Formula
+## Checking it against a formula
 
 For a falling ball, we are lucky. There is a formula for the height at
 any moment, from physics. After $t$ seconds of falling from 60 metres,
@@ -177,19 +177,19 @@ too slowly, because each step uses the velocity from the start of the
 step, and a falling ball is always faster at the end of a step than at
 the start.
 
-Checking a simulation against a case where we already know the answer is
-one of the most useful things we can do with it. A simulation that fails
-this test will not be trusted anywhere else. Most simulations are built
-for cases with no formula at all, and a check like this one is the reason
-to believe them there.
+We can check a simulation against a case where we already know the
+answer. This is one of the most useful checks we can do. A simulation
+that fails this test will not be trusted anywhere else. Most simulations
+are built for cases with no formula at all, and a check like this one
+gives us a reason to believe them there.
 
-## Smaller Steps
+## Smaller steps
 
 If the trouble is that each step is too long, we can try shorter ones.
-The function below runs the same loop with any time step, and gives back
+The function below runs the same loop with any time step, and returns
 the time when the ball reaches the street. It counts the steps and
-multiplies at the end, so that adding many small numbers never blurs the
-time.
+multiplies at the end. That way, many small numbers added together never
+blur the time.
 
 ```python exec
 id: smaller-steps-1
@@ -214,8 +214,8 @@ With a time step of 0.1 seconds, what landing time do you expect?
 After you have guessed, change the `1` in the last line to `0.1`.
 ```
 
-Now the same question for four time steps, each ten times shorter than
-the one before.
+Now we ask the same question for four time steps, each ten times shorter
+than the one before.
 
 ```python exec
 id: smaller-steps-2
@@ -244,8 +244,8 @@ still.
 
 Notice also what kind of error this is. Every run with the same step
 gives exactly the same answer, and it is always late. In the words of
-the darts page, the error is all in the accuracy. Running it again
-changes nothing. Only a better method, or a shorter step, moves the
+the darts page, the error is all in the accuracy. If you run it again,
+nothing changes. Only a better method, or a shorter step, moves the
 answer closer.
 
 ### Your turn
@@ -268,7 +268,7 @@ the size of a thousandth of a second? Try `landing_time` with it, and
 subtract `landing`.
 ```
 
-## A Ball That Bounces
+## A ball that bounces
 
 A ball that stops at the street is a short simulation. Let's make it
 bounce. When the ball goes below the street, we set its height to 0 and
@@ -301,9 +301,10 @@ plt.ylabel("height (m)")
 That looks like a bouncing ball. Each bounce is lower than the one
 before, since each one keeps only four fifths of the speed.
 
-Now a ball that is perfectly bouncy, with `bounciness` of 1. A real ball
-like that, dropped from 60 metres, would climb to 60 metres again after
-every bounce, and never higher: nothing gives it any extra speed.
+Now we try a ball that is perfectly bouncy, with `bounciness` of 1. A
+real ball like that, dropped from 60 metres, would climb to 60 metres
+again after every bounce, and never higher, because nothing gives it any
+extra speed.
 
 ```python exec
 id: a-ball-that-bounces-2
@@ -365,7 +366,7 @@ shorter, and then ten times shorter again. How many steps is 40 seconds
 at each one?
 ```
 
-## Looking Back
+## Looking back
 
 The formula and the loop gave different answers for the same falling
 ball, and the loop came closer only when its steps got shorter. For a
@@ -373,7 +374,7 @@ ball, we had a formula to check against. How would you decide how far to
 trust a simulation of something with no formula at all, like the weather
 next Tuesday?
 
-A challenge: real balls meet air. Air slows a ball down more when it
+Here is a challenge. Real balls meet air. Air slows a ball down more when it
 moves faster. Can you add air to the falling ball, so that each step
 also removes a little of the velocity? What happens to the landing
 time? Does the ball reach a speed that it never goes faster than? The
@@ -398,7 +399,7 @@ while height > 0:
 print(f"lands after {time:.2f} s, at {velocity:.1f} m/s")
 ```
 
-## Where to Read More
+## Where to read more
 
 Fiedler, G. (2004). *Integration Basics.* Gaffer On Games.
 <https://gafferongames.com/post/integration_basics/>. A game programmer
@@ -410,15 +411,15 @@ MinuteLabs.io (2020). *Let's Build a Physics Simulation (PONG: Part 1).*
 <https://www.youtube.com/watch?v=gNA6HKRWAI0>. Jasper Palfree builds a
 moving ball in JavaScript from nothing, then makes it bounce off the
 walls of the screen. It is the same stepping forward in time as this
-page, drawn sixty times a second. 41 minutes.
+page, drawn sixty times a second. It is 41 minutes long.
 
 Sebastian Lague (2023). *Coding Adventure: Simulating Fluids.*
 <https://www.youtube.com/watch?v=rSKMYc1CQHE>. His simulation starts
 with one particle falling and bouncing inside a box, one time step at a
 time. Then he adds thousands more, and a few rules about how they push
-on each other, until they move like water. 48 minutes.
+on each other, until they move like water. It is 48 minutes long.
 
 Patrick J (2010). *Euler's Method for Differential Equations: The Basic
-Idea.* <https://www.youtube.com/watch?v=RGtCw5E7gBc>. The same method
-done on paper, for a reader who wants the mathematics behind it. 12
-minutes.
+Idea.* <https://www.youtube.com/watch?v=RGtCw5E7gBc>. It shows the same
+method on paper, for a reader who wants the mathematics behind it. It is
+12 minutes long.

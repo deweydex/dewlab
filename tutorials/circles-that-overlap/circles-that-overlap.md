@@ -30,9 +30,9 @@ software, a program that looks for harmful programs? Is its work
 time to fix the laptops that are one step away from all three. How
 many laptops have exactly two of the three?
 
-Three yes-or-no questions, twenty laptops. It sounds like a job for a
-pencil. It turns out to be a job for three circles, and the circles
-turn out to be a truth table in disguise.
+There are three yes-or-no questions and twenty laptops. It sounds like
+a job for a pencil. But three circles do the job better, and the
+circles are a truth table drawn as a picture.
 
 On this page we:
 
@@ -44,13 +44,13 @@ On this page we:
 - fill in a diagram from a report's totals alone, when nobody gives us
   the names
 
-> **The space we're in.** Sets of names, from
-> [Collections without repeats](tutorial:collections-without-repeats):
-> a set holds each value once, in no order, and Python works out unions,
+> **The space we're in.** We use sets of names, from
+> [Collections without repeats](tutorial:collections-without-repeats).
+> A set holds each value once, in no order, and Python finds unions,
 > intersections and differences for us. Every set on this page sits
-> inside one universal set, here the laptops that were checked. That
-> usually goes unsaid in a report, and it matters: "every laptop without
-> backups" means nothing until we say every laptop out of which. Every
+> inside one universal set, here the laptops that were checked. A
+> report usually does not say this, but it matters. "Every laptop without
+> backups" means nothing until we say which laptops we mean. Every
 > check on this page is made up, so that the numbers stay small enough
 > to check by eye.
 
@@ -106,7 +106,7 @@ print(len(laptops), "laptops")
 print(len(updated), "updated,", len(antivirus), "with antivirus,", len(backed_up), "backed up")
 ```
 
-Twenty laptops. 10 are updated, 11 have antivirus and 8 are backed up,
+There are twenty laptops. 10 are updated, 11 have antivirus and 8 are backed up,
 and $10 + 11 + 8 = 29$, which is more than 20. Some laptops must be in
 more than one set. A list of names hides that. A picture shows it.
 
@@ -139,9 +139,9 @@ Before you run the next cell, guess how many laptops are in each of the
 four regions. The four numbers must add to 20.
 
 The cell draws the diagram. It is the longest cell on this page, and you
-do not need to follow every drawing line. What matters is where each
-number comes from: every one is `len()` of a set, worked out from the
-real sets.
+do not need to follow every drawing line. Look at where each number
+comes from. Every one is `len()` of a set, calculated from the real
+sets.
 
 ```python exec
 id: circles-draw-two
@@ -176,7 +176,7 @@ somewhere, and none is in two places.
 
 Each region is a set of its own, and each one is a set operation you
 already know. The circles are $U_p$ for updated and $A$ for antivirus.
-(We cannot call the updated laptops $U$: that letter already names the
+(We cannot call the updated laptops $U$. That letter already names the
 box.)
 
 | Region | In words | In symbols | In Python |
@@ -215,7 +215,7 @@ print((updated | antivirus) - (updated & antivirus))
 ```
 
 Both lines give the same 7 names, perhaps in a different order, since a
-set keeps no order. The picture shows why the two lines agree: the
+set keeps no order. The picture shows why the two lines agree. The
 union is all three parts inside the circles, and taking away the
 overlap leaves the two outer parts. A name is in `updated ^ antivirus`
 when exactly one of "updated" and "has antivirus" is true for it, the
@@ -289,8 +289,8 @@ for trial in range(1000):
 print(broken, "pairs of sets broke the rule")
 ```
 
-None of them. A thousand checks are not a proof. The picture is the
-proof: whichever of the three regions a laptop stands in, the formula
+No pair breaks the rule. A thousand checks are not a proof. The picture
+is the proof. Whichever of the three regions a laptop stands in, the formula
 counts it once. The checks tell us the code says the same as that idea.
 
 You have met this rule before, in a different space. On
@@ -367,8 +367,8 @@ one region. It is the same count as the eight rows of a truth table with
 three inputs, on
 [True, false and every case](tutorial:true-false-and-every-case#how-many-rows).
 A Venn diagram of three sets is a truth table drawn as a picture. I
-think that is the nicest surprise on this page: two tools from two
-different units turn out to be one idea.
+think that is the nicest surprise on this page. Two tools from two
+different units are one idea.
 
 ```question
 id: circles-regions-four
@@ -388,8 +388,9 @@ regions would a diagram of four sets need?
   - This doubles once more than there are sets.
 ```
 
-Sixteen, because $2^4 = 16$. Four round circles cannot make all sixteen
-regions, however you move them: some pairs of regions never appear. A
+There are sixteen, because $2^4 = 16$. Four round circles cannot make
+all sixteen regions, however you move them. Some pairs of regions never
+appear. A
 four-set diagram needs ovals or stranger shapes, and that is one reason
 Venn diagrams usually stop at three.
 
@@ -414,7 +415,7 @@ Now the team's question. The table has three rows marked "exactly two":
 5, 1 and 2 laptops. So 8 laptops are one fix away from all three.
 
 That answer came from the regions. Here is a second route, which never
-draws a circle. Go through the laptops one at a time, count the checks
+draws a circle. Look at the laptops one at a time, count the checks
 each one passed, and keep the ones with exactly two. Before you run it,
 which names do you expect?
 
@@ -434,7 +435,7 @@ print(len(two_yes), two_yes)
 
 `sorted(laptops)` gives the names as a list in alphabetical order, so
 the loop visits them in the same order every time. The inner loop asks
-the three questions of one laptop. The same eight names come out: the
+the three questions of one laptop. The same eight names come out, so the
 two routes agree.
 
 Now the first route, written in Python. Each "exactly two" region is a
@@ -450,9 +451,9 @@ print(len(exactly_two))
 print(exactly_two == set(two_yes))
 ```
 
-8, and `True`: the set of names from the regions is the same set as the
-names from the loop. Two different methods, one answer. That is the
-kind of check this course keeps coming back to.
+It prints 8, and `True`. The set of names from the regions is the same
+set as the names from the loop. Two different methods give one answer.
+This course uses this kind of check again and again.
 
 The loop would work for four checks, or ten, with no change but the
 list of groups. The regions give a picture of where every laptop
@@ -493,7 +494,7 @@ pairs, and add back the three-way overlap. In symbols:
 $$|A \cup B \cup C| = |A| + |B| + |C| - |A \cap B| - |A \cap C| - |B \cap C| + |A \cap B \cap C|$$
 
 For the laptops, the pairs are 7, 3 and 4, and the middle is 2. What
-does the formula give? Work it out, then run the cell.
+does the formula give? Calculate it, then run the cell.
 
 ```python exec
 id: circles-three-formula-1
@@ -504,8 +505,8 @@ by_formula = (len(updated) + len(antivirus) + len(backed_up)
 print(by_formula, len(updated | antivirus | backed_up))
 ```
 
-Both give 17: $29 - 14 + 2 = 17$. And again the space around the circles
-comes for free: $20 - 17 = 3$ laptops failed every check.
+Both give 17: $29 - 14 + 2 = 17$. And again we find the space around the
+circles with no extra work. $20 - 17 = 3$ laptops failed every check.
 
 Here is the same random test as before, now with three sets. What do you
 expect it to print?
@@ -526,7 +527,7 @@ for trial in range(1000):
 print(broken, "sets of three broke the rule")
 ```
 
-Zero again.
+It prints zero again.
 
 ## Filling a diagram from the totals
 
@@ -541,7 +542,7 @@ size a real one might give.
 - 3 have all three.
 
 How many have exactly two? It is tempting to add $12 + 8 + 6 = 26$.
-Before you read on, what is the catch?
+Before you read on, what is the problem?
 
 The 12 with updates and antivirus include the 3 that have all three.
 So does each of the other pairs. The trick is to fill the diagram from
@@ -556,10 +557,9 @@ its own.
    that circle. Updates only is $34 - 9 - 5 - 3 = 17$.
 4. **Outside all three:** 60, minus everything inside the circles.
 
-Each step uses only what the steps before it found. That is sequence,
-our third question: the order is what makes the puzzle work. Here are
-the four steps in Python. Before you run it, work out antivirus only
-and backups only on paper.
+Each step uses only what the steps before it found, so the order of the
+steps matters here. Here are the four steps in Python. Before you run
+it, find antivirus only and backups only on paper.
 
 ```python exec
 id: circles-totals-1
@@ -595,9 +595,9 @@ There are two checks here. The first is the three-set formula:
 $34 + 25 + 18 - 12 - 8 - 6 + 3 = 54$, the same as `inside`. The second
 is the one that catches most miscounts in a filled diagram: every region
 must be 0 or more. If a step gives −2 laptops, one of the totals was
-miscounted, or copied down with a slip. A count of laptops lives in the
-whole numbers from 0 up, and a region outside that space is a message
-about the data.
+miscounted, or copied down with a slip. A count of laptops is a whole
+number from 0 up. A region outside that space tells you something is
+wrong with the data.
 
 ### Your turn
 

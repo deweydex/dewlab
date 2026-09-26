@@ -7,8 +7,8 @@ version: 2026.09.26.1
 
 # Documenting a class with docstrings — Practice
 
-Problems on docstrings and doctest, and three from earlier pages. Try
-each problem before you open anything under it, and run the cells to test
+This page has problems on docstrings and doctest, and three from earlier
+pages. Try each problem before you open anything under it, and run the cells to test
 your guesses.
 
 ## 1. Which docstring helps?
@@ -40,8 +40,8 @@ The third says what a caller can count on, including what happens with −50.
 ## 2. A promise for enter
 
 Can you write a docstring for `Room.enter` that says the four things a
-method promises: what it does, what its parameter should be, what comes
-back, and what it refuses?
+method promises: what it does, what its parameter should be, what it
+returns, and what it refuses?
 
 ```python exec
 id: a-promise-for-enter-1
@@ -127,7 +127,7 @@ Does the example pass?
 <details class="dl-answer"><summary>why</summary>
 
 It fails, with `Expected: ["Ada"]` and `Got: ['Ada']`. doctest does not
-compare values: it compares the text Python shows, and Python shows a list
+compare values. It compares the text Python shows, and Python shows a list
 of strings with single quotes. Write the example the way Python would show
 the answer.
 
@@ -165,8 +165,8 @@ doctest.run_docstring_examples(Submarine.can_dive, globals(), name="can_dive")
 The example expects a dive to exactly 400 m to be allowed, and the code
 says no: it uses `<`. The hull is safe to 400 m, so the code is wrong
 and the docstring is right. Change `<` to `<=`. Sometimes it is the other
-way round, and the docstring is out of date. Either way, the example is
-what found the disagreement.
+way round, and the docstring is out of date. Either way, the example
+found the disagreement.
 
 </details>
 
@@ -205,8 +205,8 @@ same number today. What could make them differ later?
 
 A change inside `Probe`: say the fuel is stored in grams, or a child
 class keeps a reserve that `get_fuel` leaves out. `get_fuel()` would keep
-its promise, and `_fuel` would not. A docstring on `get_fuel` is where
-that promise is written down.
+its promise, and `_fuel` would not. That promise is written down in the
+docstring on `get_fuel`.
 
 </details>
 

@@ -12,7 +12,7 @@ Each answer is hidden in a fold under its question. For each question:
 1. Differentiate by hand first.
 2. Then check your answer with numbers, using the tools below.
 
-The check tells you whether you applied the rule correctly.
+The check shows whether your derivative matches the numbers.
 
 ## Tools
 
@@ -72,7 +72,7 @@ bring the power down, and reduce it by one.
 
 Zero. A constant does not change, so its rate of change is zero.
 
-The power rule agrees. $7$ is $7x^0$. Bringing the 0 down gives
+The power rule agrees. $7$ is $7x^0$. If we bring the 0 down, we get
 $0 \times 7x^{-1}$, which is 0.
 
 </details>
@@ -121,8 +121,8 @@ $(-3, -4)$.
 The derivative is $2x + 6$. It is zero at $x = -3$, and the height there
 is $9 - 18 + 5 = -4$.
 
-Two different methods give one answer. That kind of agreement tells you
-that both are right.
+Two different methods give one answer. When two methods agree, you can
+trust the answer.
 
 </details>
 
@@ -155,12 +155,12 @@ you *candidates* for turning points. You still need to check each one.
 
 ## The product rule
 
-**9.** Differentiate $(x + 1)(x^2 - 3)$ in two ways: by multiplying out
-first, and by the product rule.
+**9.** Differentiate $(x + 1)(x^2 - 3)$ in two ways: by expanding the
+brackets first, and by the product rule.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Multiplied out, it is $x^3 + x^2 - 3x - 3$. Its derivative is
+Expanded, it is $x^3 + x^2 - 3x - 3$. Its derivative is
 $3x^2 + 2x - 3$.
 
 By the product rule:
@@ -168,7 +168,7 @@ By the product rule:
 $$1 \times (x^2 - 3) + (x + 1) \times 2x = x^2 - 3 + 2x^2 + 2x = 3x^2 + 2x - 3$$
 
 The two answers are the same. The rule is useful for the cases that you
-cannot multiply out.
+cannot expand.
 
 </details>
 
@@ -178,7 +178,7 @@ cannot multiply out.
 
 $$2x(x + 5) + x^2(1) = 2x^2 + 10x + x^2 = 3x^2 + 10x$$
 
-To check: multiplied out, it is $x^3 + 5x^2$, and its derivative is
+To check: expanded, it is $x^3 + 5x^2$, and its derivative is
 $3x^2 + 10x$.
 
 </details>
@@ -238,8 +238,8 @@ algebra?
 Suppose $u$ changes three times as fast as $x$, and $y$ changes twice as
 fast as $u$. Then $y$ changes six times as fast as $x$.
 
-Rates multiply along a chain. That is the whole idea, and it is where
-the rule gets its name.
+Rates multiply along a chain. That is the whole idea, and it gives the
+rule its name.
 
 </details>
 
@@ -253,8 +253,7 @@ fast is it emptying at $t = 3$?
 $V'(t) = -4t$. So at $t = 3$, the rate is $-4 \times 3 = -12$ litres per
 minute. The tank is emptying at 12 litres a minute.
 
-The minus sign carries information: it tells you the volume is going
-down.
+The minus sign tells you that the volume is going down.
 
 </details>
 
@@ -286,8 +285,8 @@ $R(101) - R(100)$, which is €29.90. The derivative gives a very close estimate
 Economists call this marginal revenue. It is the derivative under a
 different name.
 
-Notice that it falls as $n$ rises. At $n = 250$, $R'(n) = 0$: one more
-item brings in almost nothing. After that, each extra sale makes the
+Notice that it falls as $n$ rises. At $n = 250$, $R'(n) = 0$. One more
+item adds almost nothing. After that, each extra sale makes the
 total revenue go down.
 
 </details>
@@ -300,7 +299,7 @@ its growth rate at $t = 0$, and at $t = 10$?
 $P'(t) = 40 + 2t$. So the growth rate is 40 per year at the start, and
 $40 + 20 = 60$ per year after ten years.
 
-The growth is speeding up, and the $t^2$ term is the cause.
+The growth is getting faster, because of the $t^2$ term.
 
 </details>
 
@@ -313,7 +312,7 @@ derivative of *that*?
 Metres per second, which is speed. Then metres per second per second,
 which is acceleration.
 
-The units come out of the calculation itself. A derivative divides a
+The calculation itself gives the units. A derivative divides a
 change in the output by a change in the input, so its units are output
 units per input unit. Units are a useful check that you have
 differentiated the thing you meant to.
@@ -338,7 +337,7 @@ square of side $x$ from each corner, then fold up the sides.
 2. Between 0 and 10. At 0 there is no height. At 10 there is no base
    left.
 
-3. Multiply out: $V(x) = 4x^3 - 80x^2 + 400x$. So
+3. Expand the brackets: $V(x) = 4x^3 - 80x^2 + 400x$. So
    $V'(x) = 12x^2 - 160x + 400$. Set that to zero, and divide by 4:
    $3x^2 - 40x + 100 = 0$. The quadratic formula gives
    $$x = \frac{40 \pm \sqrt{1600 - 1200}}{6} = \frac{40 \pm 20}{6},$$
@@ -349,7 +348,7 @@ square of side $x$ from each corner, then fold up the sides.
 4. $V\left(\dfrac{10}{3}\right) = \dfrac{10}{3}\left(20 - \dfrac{20}{3}\right)^2 = \dfrac{16000}{27} \approx 592.6$ cm³.
 
 Two things are worth noticing here. First, the derivative gave two
-candidates, and the situation ruled one of them out. Second, this is the
+candidates, and one of them did not make sense for the box. Second, this is the
 usual shape of an optimisation problem, a problem that asks for the
 best (largest or smallest) value:
 

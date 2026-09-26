@@ -26,9 +26,9 @@ worlds:
 # Mixed problems: programming with objects
 
 Every problem here draws on more than one page of this series, and none
-of them says which. Deciding whether a problem wants a rule, a child
-class, a container, a test, or all four is a skill of its own, apart from
-being able to write any one of them.
+of them says which. You need to decide whether a problem wants a rule, a
+child class, a container, a test, or all four. That is a skill of its
+own, apart from writing any one of them.
 
 Most answers have more than one good design. Where a problem has a real
 decision in it, the answer says what was chosen and why.
@@ -65,7 +65,7 @@ would you change, and to what?
 
 Neither line the traceback names. `Lifeboat.__init__` never calls
 `super().__init__(name)`, so no name was ever stored, and the error only
-shows up later, in a parent method that reads it. Add that call as the
+appears later, in a parent method that reads it. Add that call as the
 first line of `Lifeboat.__init__`, and it prints `Lifeboat 1, a lifeboat
 for 12`. Notice too that `describe` calls `self.kind()`, and for a
 lifeboat that runs `Lifeboat.kind`.
@@ -134,7 +134,7 @@ What will it print?
 
 `3`. `names` and `self._names` are one list with two names, so the
 caller changed the squad without touching it. The underscore did not
-help: nobody reached in. `self._names = list(names)` gives the squad a
+help. Nobody used `_names` from outside. `self._names = list(names)` gives the squad a
 copy of its own.
 
 </details>
@@ -319,9 +319,8 @@ would catch it, and which tests would pass either way?
 <details class="dl-answer"><summary>answer</summary>
 
 A dive from the surface to exactly 400 m: `<` refuses it, `<=` allows it.
-Dives of 100 m or 500 m give the same answer both ways. The boundary is
-the only place the two comparisons disagree, which is why a test belongs
-there.
+Dives of 100 m or 500 m give the same answer both ways. The two
+comparisons disagree only at the boundary, so a test belongs there.
 
 </details>
 
@@ -365,7 +364,7 @@ Does the example pass?
 It fails: `Expected: 35`, `Got: 35.0`. `/` always gives a decimal, even
 when it divides exactly. Either the example says `35.0`, or the method
 uses `//` and promises a whole number, which is a design decision the
-docstring should then say out loud.
+docstring should then say clearly.
 
 </details>
 
@@ -387,7 +386,7 @@ Why is `play_turn` hard to test? Can you split it so that it is not?
 It asks and decides in one place, so every test would wait for somebody
 to type. Split it: `run_choice(hero, monster, choice)` decides, and never
 asks, and a loop asks and passes the answer on. Then a list of choices
-tests `run_choice`, and a menu, a prompt or a test can all drive it.
+tests `run_choice`, and a menu, a prompt or a test can all use it.
 
 </details>
 
@@ -425,7 +424,7 @@ id: one-more-rule-1
 <details class="dl-answer"><summary>one way to check</summary>
 
 Run the test before the rule exists, and see it fail. Run it again after,
-and see it pass. Run your other tests too: a new rule sometimes breaks an
-old promise, and that is the moment to find out.
+and see it pass. Run your other tests too. A new rule sometimes breaks an
+old promise, and this is the best time to find out.
 
 </details>

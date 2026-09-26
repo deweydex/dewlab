@@ -8,8 +8,8 @@ version: 2026.09.26.1
 # Time steps: simulating a falling ball, one step at a time — Practice
 
 The answers are in folds under each problem. Several problems ask what
-you expect before you run anything. Write your guess down first: a guess
-that misses teaches more than one that was never made.
+you expect before you run anything. Write your guess down first. A guess
+that misses teaches you more than no guess at all.
 
 The cell below holds the two functions from the tutorial. `landing_time`
 now takes the strength of gravity too, so that we can drop a ball
@@ -44,7 +44,7 @@ def bounce_heights(step, seconds, bounciness):
     return heights
 ```
 
-## Predicting a Step
+## Predicting a step
 
 **1.** The formula says the ball lands after 3.50 seconds. With a time
 step of 1 second, the loop said 5.00. With a time step of 0.1 seconds,
@@ -58,8 +58,8 @@ print(f"{landing_time(0.5):.2f}")
 
 <details class="dl-answer"><summary>answer</summary>
 
-4.00 seconds, half a second late. That fits the pattern from the
-tutorial: the answer is late by about one time step, and here the time
+It says 4.00 seconds, half a second late. That fits the pattern from the
+tutorial. The answer is late by about one time step, and here the time
 step is half a second.
 
 </details>
@@ -103,7 +103,7 @@ metres, so $t$ is $\sqrt{6}$ times bigger, which is about 2.46.
 
 </details>
 
-## The Other Order
+## The other order
 
 **3.** Here is the loop with its two main lines in the other order: the
 velocity changes first, and then the ball moves with the new velocity.
@@ -178,11 +178,11 @@ this reason.
 
 </details>
 
-## Thrown Upwards
+## Thrown upwards
 
 **5.** Throw a ball straight up from the street at 15 metres per second.
 How high does it go? Can you write a function `highest_point(step)`
-that runs the loop and gives back the greatest height the ball reaches?
+that runs the loop and returns the greatest height the ball reaches?
 Physics has a formula for this one too: the highest point is
 $15^2 / (2 \times 9.8)$ metres.
 
@@ -229,19 +229,19 @@ print("formula:", round(15 ** 2 / (2 * 9.8), 3))
 ```
 
 The loop gives 12.24, then 11.555, then 11.487 metres. The formula gives
-11.48. The same pattern as the falling ball: ten times shorter steps,
-about ten times closer.
+11.48. This is the same pattern as the falling ball. Steps ten times
+shorter bring the answer about ten times closer.
 
 The ball starts at height 0, so `while height > 0` would stop before
 the first step. `while True` with a `return` inside is one way to
-handle that; checking the height at the end of each step is another.
+handle that. Another way is to check the height at the end of each step.
 
 Twice the speed sends the ball four times as high, since the formula
 has the speed squared.
 
 </details>
 
-## From Earlier Pages
+## From earlier pages
 
 **6.** From [Monte Carlo simulation](tutorial:counting-darts). Run
 `landing_time(0.1)` twice. Then think about two runs of a hundred
@@ -258,25 +258,25 @@ print(landing_time(0.1))
 <details class="dl-answer"><summary>answer</summary>
 
 Two runs of `landing_time(0.1)` give the same answer, 3.6, every time,
-because nothing in it is random. So it has perfect precision. What it
-lacks is accuracy: it is always late, in the same direction.
+because nothing in it is random. So it has perfect precision. It lacks
+accuracy. It is always late, in the same direction.
 
-Running it again, or running it many times and taking the average, can
-never help, because every run gives the same number. Only a shorter
-time step or a better method moves it closer. With darts it was the
-other way round: they were accurate but imprecise, and more darts
-helped.
+If you run it again, or run it many times and take the average, that
+cannot help, because every run gives the same number. Only a shorter
+time step or a better method moves it closer. Darts were different.
+They were accurate but imprecise, and more darts helped.
 
 </details>
 
 **7.** From [Simulating a queue](tutorial:when-a-queue-never-clears).
-That queue moved in steps of time too. Two chances of an arrival each
-step, each with `arrival_prob` of 0.45, and a server that clears 1 item
-a step. Stable or unstable? Answer without running anything.
+That queue moved in steps of time too. This one has two chances of an
+arrival each step, each with `arrival_prob` of 0.45, and a server that
+clears 1 item a step. Is it stable or unstable? Answer without running
+anything.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Stable. Average arrivals are $2 \times 0.45 = 0.9$ per step, below
+It is stable. Average arrivals are $2 \times 0.45 = 0.9$ per step, below
 the capacity of 1. The queue keeps coming back to empty, although this
 close to 1 it can grow long on an unlucky run.
 
@@ -295,15 +295,17 @@ arithmetic. A seed would do nothing here.
 
 </details>
 
-## Where to Read More
+## Where to read more
 
 braintruffle (2025). *The Code That Revolutionized Orbital Simulation.*
 <https://www.youtube.com/watch?v=nCg3aXn5F3M>. Problem 4 swapped two
-lines, and a gaining ball became a losing one. This video shows that
-same swap keeping simulated planets and asteroids on their orbits for
-millions of years, and explains why it works. 28 minutes.
+lines, and a ball that gained height became one that lost height. This
+video shows the same swap keeping simulated planets and asteroids on
+their orbits for millions of years, and explains why it works. It is 28
+minutes long.
 
 Sebastian Lague (2020). *Coding Adventure: Solar System.*
-<https://www.youtube.com/watch?v=7axImc1sxa0>. The time steps from this
-page, with gravity pulling between planets instead of down to a street.
-He builds a small solar system you can fly through. 12 minutes.
+<https://www.youtube.com/watch?v=7axImc1sxa0>. It uses the time steps from
+this page, with gravity pulling between planets instead of down to a
+street. He builds a small solar system you can fly through. It is 12
+minutes long.

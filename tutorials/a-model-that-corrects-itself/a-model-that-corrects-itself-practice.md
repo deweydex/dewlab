@@ -9,10 +9,10 @@ version: 2026.09.25.1
 
 The answers are hidden in folds under each problem. Several problems ask
 you to predict what the code will do before you run it. Try to answer
-before you check. Being wrong, and finding out why, teaches you more than
-being right by accident.
+before you check. A wrong guess teaches you more than a lucky right one,
+once you see why it was wrong.
 
-The cell below sets up everything the problems use: the two shapes,
+The cell below creates everything the problems use: the two shapes,
 `predict()`, the tutorial's twenty messy pictures in `train`, and a
 function `fit()` that runs the tutorial's training loop. Its last line
 trains the same model the tutorial did.
@@ -64,7 +64,7 @@ def fit(examples, learning_rate=0.5, epochs=10):
 weights, bias = fit(train)
 ```
 
-## A Model That Starts Out Wrong
+## A model that starts out wrong
 
 **1.** Set every weight to `0.0`, and the bias to `5.0`. Then call
 `predict` on both `PLUS` and `CROSS`. Before you run it, what do you
@@ -77,7 +77,7 @@ hint: With every weight at zero, the total is just the bias, whatever picture go
 
 <details class="dl-answer"><summary>answer</summary>
 
-Both come back `1`, which means "plus", for both pictures. With every
+Both return `1`, which means "plus", for both pictures. With every
 weight at zero, `total` is `0 + 5.0`, whichever pixels are lit. And
 `5.0 > 0` is always true. A model with a bias and no weights has made its
 decision before it looks at the picture.
@@ -96,14 +96,14 @@ def predict_label(weights, bias, pixels):
 ```
 
 The arithmetic stays exactly as it is in `predict()`. Only the last step
-changes: it turns a `1` or a `0` into a word a person would say.
+changes. It turns a `1` or a `0` into a word a person would say.
 
 </details>
 
-## Running It Again and Again
+## Running it again and again
 
-**3.** The tutorial's training loop goes through `train` in the order it
-is written.
+**3.** The tutorial's training loop uses the examples in `train` in the
+order they are written.
 
 1. Reverse that order with `list(reversed(train))`.
 2. Train a new model from the start, with every weight at zero.
@@ -135,7 +135,7 @@ arm of the plus is still positive, and every corner of the cross is
 still negative. Only the sizes changed.
 
 There is no single correct set of weights here. There are only sets that
-get every training example right. Which set the training finds depends on
+get every training example right. The set the training finds depends on
 which mistakes happened first.
 
 </details>
@@ -152,7 +152,7 @@ hint: Think back to what the tutorial found with 0.05. What does the learning ra
 <details class="dl-answer"><summary>answer</summary>
 
 It still takes seven epochs, with the same dip in the sixth. Every
-weight ends up four times as large as with `0.5`: `+10.0` in place of
+weight is four times as large as with `0.5`: `+10.0` in place of
 `+2.5`, and `-8.0` in place of `-2.0`.
 
 This is the same thing the tutorial found with `0.05`. Every weight
@@ -167,7 +167,7 @@ very long time, and one that is too large can jump past good weights.
 
 </details>
 
-## Checking It Against Patterns It Has Never Seen
+## Checking it against patterns it has never seen
 
 **5.** Use the tutorial's final `weights` and `bias`. Call `predict` on
 the *original* `PLUS` and `CROSS`, with no pixels flipped. These two
@@ -190,7 +190,7 @@ it was corrected against.
 </details>
 
 **6.** What does the model predict for a picture that is all zeros, with
-no pixels lit at all? Work out the arithmetic by hand first.
+no pixels lit at all? Do the arithmetic by hand first.
 
 ```python exec
 id: checking-it-against-patterns-it-has-never-seen-2
@@ -199,7 +199,7 @@ hint: Every weight gets multiplied by 0. What is left in the total?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It predicts `1`, "plus". Here is why. Every term is `weight * 0`, so the
+It predicts `1`, "plus". Every term is `weight * 0`, so the
 total is only the bias, which is `+0.5`. The rule is
 `1 if total > 0 else 0`, and `0.5` is greater than `0`. For a blank
 picture, the bias alone decides the answer. No weight plays any part.
@@ -209,11 +209,11 @@ can only ever answer "plus" or "cross".
 
 </details>
 
-## What the Model Learned
+## What the model learned
 
 **7.** Imagine a tenth pixel added to every picture. It is always `0`, in
 every training example, with no exceptions. What weight would you expect
-it to end up with, and why?
+it to have at the end, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -223,8 +223,8 @@ never move.
 
 Compare the centre pixel in the tutorial. It could not tell the shapes
 apart either, but it was lit in most pictures, so it moved 19 times.
-Only the ups and downs cancelling brought it back near zero. "Tells the
-model nothing" and "never moves" are not the same thing.
+The ups and downs cancelled each other, and that brought it back near
+zero. So a pixel can tell the model nothing and still move.
 
 </details>
 
@@ -239,7 +239,7 @@ that rule over and over, across the training examples. The corrections
 from each pass change what the next pass sees.
 
 The difference matters. A new model, with every weight at zero, does
-nothing useful on its own. The simulation is what produces a model that
-works: guessing, checking and correcting, again and again.
+nothing useful on its own. The simulation produces a model that works. It
+guesses, checks and corrects, again and again.
 
 </details>

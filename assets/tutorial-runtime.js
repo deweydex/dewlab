@@ -2396,7 +2396,11 @@ function buildQuestions() {
     } else {
       question.gaps = [...host.querySelectorAll(".dl-question-gap-select, .dl-question-gap-input")];
       for (const gap of question.gaps) {
-        if (gap.tagName === "SELECT") shuffle([...gap.options]).forEach((opt) => gap.appendChild(opt));
+        // The blank "choose" option stays first and selected; only the
+        // real choices are shuffled (DECISIONS_LOG 7.255).
+        if (gap.tagName === "SELECT") {
+          shuffle([...gap.options].filter((opt) => opt.value !== "")).forEach((opt) => gap.appendChild(opt));
+        }
         gap.addEventListener(gap.tagName === "SELECT" ? "change" : "input", () => scheduleSave());
       }
       checkBtn.disabled = false;

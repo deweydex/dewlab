@@ -7,8 +7,8 @@ version: 2026.09.26.1
 
 # Designing classes: from a description to classes — Practice
 
-Problems on turning a description into classes, and three from earlier
-pages. Most have more than one good answer. The answers under them say
+This page has problems on turning a description into classes, and three
+from earlier pages. Most have more than one good answer. The answers under them say
 what was chosen, and why.
 
 ## 1. Class or field?
@@ -28,7 +28,7 @@ type: fill-in-the-blank
 <details class="dl-answer"><summary>why</summary>
 
 A title is one value, so it is a field. A member knows things (a name,
-the books borrowed) and keeps a rule (at most five), so it has earned a
+the books borrowed) and keeps a rule (at most five), so it needs a
 class. A due date is one value today. If the library later charged fines
 by the day, a date with its own questions might become a class.
 
@@ -49,7 +49,7 @@ answer.
 here?"), `Bus` (a route, a driver, and the rule of 50 seats), and `Card`
 (a balance, and the rule that a fare needs enough of it). The driver and
 the stop are names, as fields, until they need to do something. The
-passenger is interesting: in this description, the card does everything
+passenger is interesting. In this description, the card does everything
 a passenger does. Another good answer makes `Passenger` the class that
 has a card.
 
@@ -77,7 +77,7 @@ natural home for that rule?
 
 `Book` is one good home: a `borrow(member)` method on the book can refuse
 when the book is already out, and every loan passes through it. `Library`
-is a fair answer too, if every loan goes through the library. `Member`
+is another good answer, if every loan goes through the library. `Member`
 would need to ask every other member, which is a sign the rule lives
 somewhere else.
 
@@ -91,9 +91,9 @@ and does nothing. Would you keep it as a class?
 <details class="dl-answer"><summary>one answer</summary>
 
 Perhaps not, today: three numbers could be a list or a dictionary. It
-earns a class the day it keeps a rule (each value from 0 to 255) or
-answers a question (how bright is it? what is its opposite?). A design is
-not wrong for having it. It is carrying code that does nothing yet.
+needs a class when it keeps a rule (each value from 0 to 255) or answers
+a question (how bright is it? what is its opposite?). A design can keep
+it. It just carries code that does nothing yet.
 
 </details>
 
@@ -247,9 +247,9 @@ class Card:
 
 <details class="dl-answer"><summary>answer</summary>
 
-`card._balance = -5` reaches in, and nothing checks it. The method call
-is sneakier: `card.pay(-5)` passes the check, since −5 is not more than
-the balance, and adds 5 to the card. A rule in a method is only as good as
-the cases it thinks of.
+`card._balance = -5` changes the field directly, and nothing checks it.
+The method call is sneakier: `card.pay(-5)` passes the check, since −5 is
+not more than the balance, and adds 5 to the card. A rule in a method
+only checks the cases its writer thought of.
 
 </details>

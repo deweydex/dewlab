@@ -27,9 +27,8 @@ round the Earth, about 42,700 km, in 92.9 minutes. How fast is it
 going? And a radio message to a rover on Mars, 225 million km away,
 travels as fast as light. How long does the rover wait for it?
 
-Three questions about space, and one short formula answers all of
-them, if we know how to run it backwards. That is what this page is
-about.
+These are three questions about space. One short formula answers all
+of them, if we know how to run it backwards. This page shows how.
 
 On this page we:
 
@@ -42,8 +41,8 @@ On this page we:
 
 > **The space we're in.** Numbers that measure things: kilometres,
 > seconds, degrees. A formula here is a rule that stays true, and we may
-> do any move to it, as long as we do the same move to both sides. One
-> thing usually goes unsaid: a formula with a division in it has no
+> do any move to it, as long as we do the same move to both sides. We
+> usually do not say it, but a formula with a division in it has no
 > answer when the bottom of the fraction is 0. Your toolkit is loaded,
 > with every function from the earlier pages.
 
@@ -91,7 +90,7 @@ time_seconds = 92.9 * 60
 print(distance_km / time_seconds)
 ```
 
-About 7.66 km every second, which is about 27,600 km/h. At that speed
+It goes about 7.66 km every second, which is about 27,600 km/h. At that speed
 you would get from Dublin to Galway in under half a minute. The formula answers "how fast?"
 straight away, because $s$ is alone on the left. The letter on its own
 on one side of a formula is called the *subject* of the formula. Here
@@ -116,7 +115,7 @@ $\frac{1}{299{,}792{,}458}$ of a second. So the speed of light is exactly
 
 Think of a formula as a balance, with the same weight on each side. If
 we double one side, it tips, unless we double the other side too. So
-here is the one rule for moving things around in a formula: any move is
+there is one rule for moving things around in a formula. Any move is
 allowed, as long as we do the same move to both sides.
 
 Rearranging a formula to make a different letter its subject is called
@@ -143,7 +142,7 @@ $s$, so we undo that by dividing both sides by $s$:
 $$\frac{d}{s} = t$$
 
 In words: the time is the distance divided by the speed. For Mars,
-$\frac{225{,}000{,}000}{299{,}792}$ is about 751 seconds: the rover waits
+$\frac{225{,}000{,}000}{299{,}792}$ is about 751 seconds. The rover waits
 about 12 and a half minutes.
 
 That is one formula written three ways:
@@ -171,7 +170,7 @@ print(225_000_000 / mars_wait == 299792)
 Both checks print `True`. (The `_` in `225_000_000` is only there to
 make the number easier to read. Python ignores it.) Putting an answer back into the formula it
 came from is called *substituting* it back, and it is the best habit on
-this page. It turns "I think the new formula holds" into "I checked".
+this page. When you check, you know the new formula holds.
 
 ### Your turn
 
@@ -180,7 +179,7 @@ hours to get there in 1969.
 
 1. Before you run anything, which of the three formulas gives their
    average speed in km/h?
-2. In the cell below, work it out. (Their real path curved, so this is
+2. In the cell below, calculate it. (Their real path curved, so this is
    the average over a straight line.)
 3. Substitute it back: does the speed times the time give 384,400 km?
 
@@ -258,7 +257,7 @@ not the function above it. A later page,
 [What a function can see](tutorial:what-a-function-can-see), is about
 exactly that.
 
-A signal's trip counts as a trip. Now the tests. The first three check
+A radio signal's journey is a trip too. Now the tests. The first three check
 the three questions from the top of this page. The last two are different: each one runs a formula forwards,
 then backwards, and expects to arrive where it started. Until your two
 functions are written, this cell stops with an error.
@@ -282,7 +281,7 @@ give now?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through. In `travel_time`, the `...` becomes
+Here is one answer. In `travel_time`, the `...` becomes
 `return distance / speed`. In `distance_travelled`, it becomes
 `return speed * time`. If you have not written them yet, put these in
 the stub now, so that later cells on this page can use them.
@@ -318,7 +317,7 @@ Both come out as they should. Now the other way: is −76 °F really
 On [Machines that take a number](tutorial:machines-that-take-a-number#running-it-backwards-the-inverse),
 we undid the sensor's two steps in the opposite order. Think of
 putting on socks, then shoes. To undo that, you take off the shoes
-first, then the socks. The last thing done is the first thing undone.
+first, then the socks. You undo the last step first.
 Here, the last step going forwards was "add 32", so the first step
 going backwards is "subtract 32". Then we undo "multiply by
 $\frac{9}{5}$" by multiplying by $\frac{5}{9}$.
@@ -330,8 +329,8 @@ $$F - 32 = \frac{9}{5}C$$
 
 $$\frac{5}{9}(F - 32) = C$$
 
-So $C = \frac{5}{9}(F - 32)$. The brackets matter: they say "subtract
-first", the way the undoing needs.
+So $C = \frac{5}{9}(F - 32)$. The brackets matter. They tell us to
+subtract first.
 
 A common slip is to do the undoing steps in the forward order: multiply
 by $\frac{5}{9}$ first, then subtract 32. Which of these two lines do you
@@ -344,11 +343,10 @@ print((fahrenheit - 32) * 5 / 9)
 print(fahrenheit * 5 / 9 - 32)
 ```
 
-The first line gives −60.0. The second gives about −74.2. Look at how
-believable that is: it is a cold Mars number too, and nothing about it
-looks out of place. Both lines have the same two steps; only the order
-differs. Undoing is
-sequence, run in reverse.
+The first line gives −60.0. The second gives about −74.2. That number is easy
+to believe. It is a cold Mars number too, and nothing about it looks
+out of place. Both lines have the same two steps. Only the order is
+different, and the order of the steps matters here.
 
 ```question
 id: running-a-reverse-3
@@ -370,8 +368,8 @@ of the original?
 ## The promise run backwards
 
 A function makes a promise: give it a temperature in Celsius, and it
-gives back the same temperature in Fahrenheit. Its inverse, $f^{-1}$,
-keeps the same promise backwards: give it −76, and it gives back −60.
+returns the same temperature in Fahrenheit. Its inverse, $f^{-1}$,
+keeps the same promise backwards. Give it −76, and it returns −60.
 
 The first function below is written for you. The formula we have
 rearranged is its inverse. Can you write it as a function?
@@ -427,14 +425,14 @@ print(fahrenheit_to_celsius(celsius_to_fahrenheit(1)))
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through: in `fahrenheit_to_celsius`, the `...` becomes
+Here is one answer. In `fahrenheit_to_celsius`, the `...` becomes
 `return (fahrenheit - 32) * 5 / 9`. The brackets make the subtraction
 happen first.
 
 </details>
 
 Body temperature, 37 °C, comes back as `37.0`. And −40 comes back as
-−40: it is the one temperature where both scales agree.
+−40. It is the one temperature where both scales agree.
 
 But 1 °C comes back as `0.9999999999999984`. Nothing is broken in
 the two functions. As on
@@ -453,7 +451,7 @@ print(round(there_and_back, 9) == 1)
 
 On [Machines that take a number](tutorial:machines-that-take-a-number#machines-in-a-row-composition)
 we joined two functions into one with `compose`, and saw that a function
-composed with its inverse gives back whatever it is given. Here it is,
+composed with its inverse returns whatever it is given. Here it is,
 tested on a whole row of temperatures, with a loop. What will it print?
 
 ```python exec
@@ -465,9 +463,9 @@ for celsius in [-80, -60, -40, 0, 1, 18.5, 37, 100]:
 print("fahrenheit_to_celsius undoes celsius_to_fahrenheit.")
 ```
 
-The loop checks eight temperatures in one go, from a lab freezer to
+The loop checks eight temperatures at once, from a lab freezer to
 boiling water. A test like this does not need anyone to know the answers in advance.
-It only needs the promise: going there and back changes nothing.
+It only needs the promise that going there and back changes nothing.
 
 ### Your turn
 
@@ -506,8 +504,8 @@ The first line prints `0`. The second stops with a `ZeroDivisionError`.
 The question has no answer, because a parked rover never arrives. The
 formula $d = s \times t$ accepts a speed of 0, and the rearranged
 $t = \frac{d}{s}$ does not. So rearranging can make the domain smaller.
-That is why the docstring of `travel_time` says "speed must not be 0":
-the promise names its own space.
+That is why the docstring of `travel_time` says "speed must not be 0".
+The promise says which numbers it works for.
 
 The second place is a square. On
 [Measuring rooms and tins](tutorial:measuring-rooms-and-tins), the area
@@ -611,8 +609,8 @@ distance would not matter, and the code agrees.
 
 Why is it less than 25? The drone spends longer on the slow part of the
 trip, so the slow speed counts for more of the time. I think this is the
-most surprising result on the page, and it has a name: the harmonic
-mean.
+most surprising result on the page. This kind of average is called the
+harmonic mean.
 
 ### Your turn
 
@@ -621,7 +619,7 @@ An underwater robot dives to the sea floor at 2 m/s, and climbs back at
 
 1. Write the time for the two trips, $\frac{d}{2} + \frac{d}{3}$, as one
    fraction. What is the common denominator?
-2. Work out the average speed with algebra.
+2. Find the average speed with algebra.
 3. Check it with the toolkit in the cell below, for a sea floor 100 m
    down and one 3,000 m down.
 
@@ -642,8 +640,8 @@ for depth in [100, 3000]:
     print(depth, speed(2 * depth, whole_time))
 ```
 
-Both lines give 2.4. This is one way through. Yours may be written
-another way and give the same numbers.
+Both lines give 2.4. Here is one answer. Yours may be different and
+work too.
 
 </details>
 

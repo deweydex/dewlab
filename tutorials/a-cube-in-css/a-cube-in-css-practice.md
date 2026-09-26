@@ -20,8 +20,8 @@ anything.
 
 ## Fix the broken page
 
-**1.** The author built the cube from the tutorial page, but it is not
-a cube. It is one flat square that turns and tumbles.
+**1.** The author built the cube from the tutorial page, but they got
+one flat square that turns and tumbles.
 
 ```html site
 id: cube-practice-flat-html
@@ -265,8 +265,8 @@ Which face is missing, and where did the word "bottom" go? Fix it.
 3. `.right` and `.left` turn a quarter turn each way. What should
    `.top` and `.bottom` do?
 
-**Think about:** a copied line is the easiest place for a mistake to
-hide.
+**Think about:** when we copy a line, which part is easy to forget to
+change?
 
 **Try this next:** which transform would put a seventh face exactly on
 top of the back face?
@@ -355,7 +355,7 @@ site: cube-practice-big
 2. How far is it from the middle of a `160px` cube to one of its faces?
 3. That distance goes in every `translateZ`.
 
-**Think about:** if one number is left behind, what would you see?
+**Think about:** if you forget to change one number, what would you see?
 Problem 2 on this page shows one answer.
 
 **Try this next:** can you make a box that is not a cube, `160px` wide

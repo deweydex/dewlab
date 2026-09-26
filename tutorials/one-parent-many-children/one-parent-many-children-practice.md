@@ -7,8 +7,8 @@ version: 2026.09.26.1
 
 # Inheritance: one class built on another — Practice
 
-Problems on child classes, overriding and `super()`, and three from
-earlier pages. Try each problem before you open anything under it, and
+This page has problems on child classes, overriding and `super()`, and
+three from earlier pages. Try each problem before you open anything under it, and
 run the cells to test your guesses.
 
 ## 1. Which describe?
@@ -215,7 +215,7 @@ a class?
 Name and colour are fields: one value each. The hoard keeps a rule (one
 piece at a time) and holds many things, so it could be a class, or a
 private list on the dragon, with a `take()` method that keeps the rule.
-Both are fair.
+Both are good answers.
 
 </details>
 

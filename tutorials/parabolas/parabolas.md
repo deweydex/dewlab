@@ -145,7 +145,7 @@ The turning point is at $(-3, -4)$, and the expression is
 $(x + 3)^2 - 4$.
 
 **The two numbers in the completed form give the two coordinates of the
-turning point.** Watch the first one: its sign flips. The bracket
+turning point.** Watch the first one. Its sign flips. The bracket
 $(x + 3)^2$ puts the turning point at $x = -3$, because $x = -3$ is the
 value that makes the bracket zero.
 
@@ -172,7 +172,7 @@ downwards.
 
 ## Doing the rearrangement
 
-Let's go through the steps once, slowly.
+Let's do the steps once, slowly.
 
 We start with $x^2 + 6x + 5$. The goal is a squared bracket plus a
 number.
@@ -275,7 +275,7 @@ Here are four quadratics:
    comments in the cell.
 2. Check each answer with `complete_the_square`.
 
-Look at the last one before you work it out. What do you notice about
+Look at the last one before you start. What do you notice about
 it?
 
 ```python exec
@@ -334,21 +334,19 @@ for b, c in [(6, 5), (-4, 1), (2, 7), (-10, 21)]:
 Both methods give the same answers.
 
 Why? **The quadratic formula is completing the square, done once with
-letters so that nobody has to do it again.** Somebody went through the
+letters so that nobody has to do it again.** Somebody did the
 steps above with $a$, $b$ and $c$ in place of numbers. The result was
 the formula we have been using.
 
-This is worth knowing. A formula that seems to come from nowhere is
-something to memorise. A formula you have seen built is something you
-could build again if you forgot it.
+If you have seen a formula built, you can build it again when you
+forget it.
 
 ### The ± matters
 
 Look at the step $(x + 3)^2 = 4$. The next line is $x + 3 = \pm 2$,
 because $2^2 = 4$ and $(-2)^2 = 4$ as well.
 
-That is where the two roots come from, and it is why a quadratic can
-have two of them. The $\pm$ in the quadratic formula is the same $\pm$,
+This step gives the two roots, so a quadratic can have two of them. The $\pm$ in the quadratic formula is the same $\pm$,
 carried through.
 
 ## When there is nothing to find
@@ -371,7 +369,7 @@ upwards. So the curve never comes down to zero, and there are no real
 roots.
 
 We can see this from the completed form, $(x + 1)^2 + 6$, without
-working anything out. The square $(x + 1)^2$ is never negative, so the
+calculating anything. The square $(x + 1)^2$ is never negative, so the
 whole expression is always at least 6.
 
 The formula tells us the same thing with a negative discriminant. The
@@ -409,7 +407,7 @@ has been moved to.
 
 Here are four ideas to take with you.
 
-**Completing the square is rewriting, not solving.** $x^2 + 6x + 5$ and
+**Completing the square rewrites a quadratic. It does not solve it.** $x^2 + 6x + 5$ and
 $(x + 3)^2 - 4$ are the same function. The second one has the turning
 point written on the outside.
 
@@ -420,18 +418,18 @@ out the bracket once, and the step stops being a rule to remember.
 **The quadratic formula is completing the square, done with letters.**
 If you ever forget the formula, you can build it again.
 
-**No real roots is a fact about the picture.** The vertex is above the
+**You can see "no real roots" in the picture.** The vertex is above the
 axis and the curve opens upwards, so the curve never crosses. No amount
-of algebra will give a real answer, and that is not a failure.
+of algebra will give a real answer.
 
 Think about $x^2 - 6x + 5$. Which of the two forms would you prefer to
 be given, and for which question? Write a few sentences.
 
-## Where to Read More
+## Where to read more
 
 Khan Academy. *Example 3: Completing the Square.*
-<https://www.youtube.com/watch?v=TV5kDqiJ1Os>. The same halve-square-
-subtract steps this page walks through, worked on a different quadratic.
+<https://www.youtube.com/watch?v=TV5kDqiJ1Os>. It shows the same
+halve-square-subtract steps as this page, on a different quadratic.
 
 Stand-up Maths (2016). *There is only One True Parabola.*
 <https://www.youtube.com/watch?v=hoh4TmPzu1w>. Every parabola is the same

@@ -21,20 +21,21 @@ rewriting once you do.
 
 ## What goes in which table
 
-Each table holds one kind of thing. A shop's products are one kind of thing;
-its sales are another. Put them in the same table, and every sale repeats the
+Each table holds one kind of thing. A shop's products are one kind of
+thing. Its sales are another. Put them in the same table, and every sale
+repeats the
 product's name and price. A price change then means editing every sale that
 mentions it. Two tables joined by a key keep the price in one place.
 
-A rough test: if a column's value would repeat across many rows, that value
-probably belongs in its own table.
+Here is a rough test. If a column's value would repeat across many rows,
+that value probably belongs in its own table.
 
 ## Naming a column and its type
 
 Every column has a name and a kind of value. `price` is a number.
-`product_name` is text. Deciding this before writing SQL is what
-`CREATE TABLE` actually asks for: a list of columns, and for each one, a name
-and a type.
+`product_name` is text. `CREATE TABLE` asks you to decide this before
+you write it. It needs a list of columns, and for each one, a name and a
+type.
 
 `INTEGER PRIMARY KEY` names the column that gives each row its own identity,
 the way `dinosaur_tbl.dinosaur_id` did earlier. Every table needs one, and
@@ -43,8 +44,9 @@ we name it after its table: `product_id` in `product_tbl`, `sale_id` in
 
 ## One row can point at many
 
-A product can appear in many sales; a sale points at exactly one product.
-That is *one-to-many*. The link lives on the `sale_tbl` side, in a
+A product can appear in many sales. A sale points at exactly one
+product. This is called *one-to-many*. The link lives on the `sale_tbl`
+side, in a
 `product_id` column holding the product it belongs to. [A second table and
 a join](tutorial:a-second-table-and-a-join) already showed the query side
 of this, with `sighting_tbl.dinosaur_id`.
@@ -66,8 +68,8 @@ That picture is an *entity relationship diagram*. Each box is a table, with
 its columns listed under its name. `PK` marks the column that gives a row
 its own identity, and `FK` marks a column holding a row's key from another
 table. The line joins those two columns, `product_id` to `product_id`, and
-its ends say how many: a single bar for one, three prongs — a crow's foot —
-for many. So one product, many sales.
+its ends say how many: a single bar for one, and three prongs, called a
+crow's foot, for many. So one product has many sales.
 
 ## Your turn
 
@@ -88,10 +90,10 @@ series builds, one page at a time.
 
 ## What you have now
 
-- **Each table holds one kind of thing.** Repeating a value across many rows
-  is the sign a table is doing two jobs.
-- **Every column needs a name and a type.** Deciding both, before writing
-  `CREATE TABLE`, is what `CREATE TABLE` actually asks for.
+- **Each table holds one kind of thing.** A value that repeats across
+  many rows is a sign that a table is doing two jobs.
+- **Every column needs a name and a type.** `CREATE TABLE` asks you to
+  decide both before you write it.
 - **One-to-many** is a relationship where a key column, such as `product_id`,
   links one row in one table to many rows in another.
 - **A foreign key keeps the name of the key it points at**, and sits

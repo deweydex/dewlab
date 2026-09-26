@@ -52,7 +52,7 @@ draw(wave(), label="the plain one")
 3 and −3. The amplitude is how far the wave swings *from the middle*, so
 the total height from top to bottom is 6.
 
-This catches many people: an amplitude of 3 does not mean a range of 3.
+Many people miss this. An amplitude of 3 does not mean a range of 3.
 
 </details>
 
@@ -75,7 +75,7 @@ The middle is $\frac{11 + 3}{2} = 7$, so the lift is 7. The swing is
 $\frac{11 - 3}{2} = 4$, so the amplitude is 4.
 
 Half the sum gives the middle, and half the difference gives the swing.
-You can read any wave off its highest and lowest values this way.
+You can read any wave from its highest and lowest values this way.
 
 </details>
 
@@ -89,8 +89,8 @@ You can read any wave off its highest and lowest values this way.
 
 (b). A shorter period means more repeats in the same distance.
 
-This can feel backwards at first: a *smaller* period means a *faster*
-wave. That is why people often use the *frequency* instead. The frequency
+A *smaller* period means a *faster* wave. This can feel backwards at
+first. That is why people often use the *frequency* instead. The frequency
 is the number of repeats in one unit of time, and it is 1 divided by the
 period.
 
@@ -102,8 +102,8 @@ period.
 
 $\frac{1}{50} = 0.02$ seconds.
 
-Fifty cycles per second is the mains electricity in Ireland. So 0.02
-seconds is how long one full cycle of the voltage takes.
+Fifty cycles per second is the mains electricity in Ireland. So one
+full cycle of the voltage takes 0.02 seconds.
 
 </details>
 
@@ -111,8 +111,8 @@ seconds is how long one full cycle of the voltage takes.
 
 Problems 7 and 8 ask for an angle when you know its sine or cosine. For
 that, Python has `math.asin` (the inverse sine) and `math.acos` (the
-inverse cosine). Both give an answer in radians, so wrap them in
-`math.degrees`. For example, `math.degrees(math.asin(0.5))` gives about
+inverse cosine). Both give an answer in radians, so use `math.degrees`
+on the answer. For example, `math.degrees(math.asin(0.5))` gives about
 30.
 
 **6.** What is $\sin(10\pi)$? What is $\cos(4\pi)$? Try to answer without
@@ -165,8 +165,7 @@ has gone. After a full turn the point is back where it started. So its
 height is the same as before, and the curve must do the same thing
 again.
 
-The curve does not repeat by chance. Repeating is what going round in a
-circle looks like when we draw it flat.
+The curve does not repeat by chance.
 
 </details>
 
@@ -208,7 +207,7 @@ tide?
 <details class="dl-answer"><summary>answer</summary>
 
 Half a period is 6.2 hours. Six hours is a little less than that, so it
-is near low tide. Putting the numbers in gives about 1.41 m, very
+is near low tide. The model gives about 1.41 m, very
 slightly above the minimum of 1.4 m.
 
 Half a period after a peak is exactly the lowest point, and six hours is
@@ -269,8 +268,8 @@ zero, and tangent is up divided by across.
 
 In the picture, this is the vertical line that has no slope. It is the
 same fact as in
-[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances),
-met for the third time.
+[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances).
+This is the third time we meet it.
 
 </details>
 
@@ -312,6 +311,6 @@ They cancel completely: the sum is zero everywhere.
 
 A shift of $\pi$ is half a period. So wherever one wave is up, the other
 is exactly as far down. This is called destructive interference.
-Noise-cancelling headphones work this way: they make the opposite wave.
+Noise-cancelling headphones work this way. They make the opposite wave.
 
 </details>

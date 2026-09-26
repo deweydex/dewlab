@@ -62,8 +62,8 @@ see both:
 - The *body* holds everything a visitor sees: headings, paragraphs,
   images, and the rest.
 
-Now we can explain what we saw. `<title>` lives in the head, which is
-why its text goes to the browser tab and not to the page. `<h1>` lives
+Now we can explain what we saw. `<title>` lives in the head, so its text
+goes to the browser tab and not to the page. `<h1>` lives
 in the body, with all the other visible content.
 
 Did you notice that the code in the box above has no `<head>` or

@@ -14,11 +14,11 @@ Real data rarely fits in one table. A dinosaur is one record. Where its
 fossils were found is a different kind of record, and one dinosaur can
 have several fossil sites. Splitting the two into separate tables avoids
 repeating a dinosaur's name, diet and length once per fossil site. A
-`JOIN` is how a query brings the two tables back together.
+query uses a `JOIN` to bring the two tables back together.
 
 Let's build `dinosaur_tbl` again, then a second table, `sighting_tbl`,
 for fossil sites. Each box starts with `DROP TABLE IF EXISTS`, which
-deletes its table if an earlier run left one behind. So you can change
+deletes its table if one exists from an earlier run. So you can change
 either box and run it again as often as you like.
 
 ```sql exec
@@ -62,10 +62,10 @@ INSERT INTO sighting_tbl (dinosaur_id, location, year) VALUES
 ```
 
 `sighting_tbl.dinosaur_id` holds a value that also appears in
-`dinosaur_tbl.dinosaur_id`. That shared value is what connects one
-table's row to the other's.
+`dinosaur_tbl.dinosaur_id`. That shared value connects one table's row
+to the other's.
 
-A column like `sighting_tbl.dinosaur_id` is called a *foreign key*: it
+A column like `sighting_tbl.dinosaur_id` is called a *foreign key*. It
 holds the key of a row in another table. Notice two things about it.
 It has the same name as the key it points at, `dinosaur_id`, so you can
 see at once which table it points into. It also sits directly under
@@ -98,7 +98,7 @@ nothing would flag it. Storing the name once, in `dinosaur_tbl`, and
 referring to it by `dinosaur_id` everywhere else means it can only be
 spelled one way. It also means a query has to put the two tables back together
 itself, on the shared column, rather than finding them already
-combined. `JOIN` is what does that.
+combined. `JOIN` does that.
 
 ## Your turn
 

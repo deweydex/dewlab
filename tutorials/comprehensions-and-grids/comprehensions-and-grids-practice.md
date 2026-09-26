@@ -10,8 +10,8 @@ worlds:
 
 # Comprehensions, grids and aliasing — Practice
 
-Problems on comprehensions, grids and two names for one list, and three
-from earlier pages. Comprehensions and generator expressions are this
+These problems are on comprehensions, grids and two names for one list,
+with three from earlier pages. Comprehensions and generator expressions are this
 page's own tools, so the first solution to a problem may use them. Try each
 problem before you open anything under it.
 
@@ -37,9 +37,9 @@ print([n * 2 for n in range(4)])
 (a) `[0, 2, 4, 6]`. (b) `[0, 3, 6, 9]`. (c) `['O', 'O', 'H', 'B']`.
 (d) `10`. (e) `'01234'`. (f) `[[0, 0], [0, 0], [0, 0]]`.
 
-In (b), 0 passes the test: 0 divided by 3 is 0, with nothing left over.
-(e) looks like a number, and it is a string: `join()` always gives back a
-string. (f) is a grid with 3 rows and 2 columns: the number in `range()`
+In (b), 0 passes the test: 0 divided by 3 is 0, with no remainder.
+(e) looks like a number, but it is a string. `join()` always returns a
+string. (f) is a grid with 3 rows and 2 columns. The number in `range()`
 says how many rows, and the number after `*` how long each row is.
 
 </details>
@@ -80,7 +80,7 @@ The appended value goes at the front, the `for` line next, without its
 colon, and the `if` at the end.
 ```
 
-Then the other way round: can you write
+Then try the other direction. Can you write
 `[len(word) * 10 for word in words]` as a loop?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -91,8 +91,8 @@ for word in words:
     tens.append(len(word) * 10)
 ```
 
-Both give `[50, 30, 80, 30]`. Turning a comprehension back into a loop is
-a good way to check that you have read it the way Python does.
+Both give `[50, 30, 80, 30]`. If you turn a comprehension back into a loop,
+you can check that you have read it the way Python does.
 
 </details>
 
@@ -114,7 +114,7 @@ sum(len(word) for word in words)              # 19
 ```
 
 (a) adds 1 for each word that passes the test: OTTER and HEDGEHOG. (c)
-adds 5 + 3 + 8 + 3. None of these builds a list: each value goes straight
+adds 5 + 3 + 8 + 3. None of these builds a list. Each value goes straight
 to `sum()` or `join()`. With square brackets the answers are the same, and
 a list is built first.
 
@@ -141,7 +141,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`[1, 2, 3, 4]`. `b = a` did not copy the list: both names label the same
+`[1, 2, 3, 4]`. `b = a` did not copy the list. Both names label the same
 one, so a change through either shows through both. For a separate list,
 write `b = a[:]` or `b = list(a)`.
 
@@ -324,7 +324,7 @@ give?
 <div class="dl-world" data-world="pixel-art">
 
 Can you write `mirror(picture)`, which gives a new picture with each row
-turned back to front, and leaves `picture` itself unchanged?
+reversed, and leaves `picture` itself unchanged?
 
 ```python exec
 id: in-the-square-1--pixel-art
@@ -482,7 +482,7 @@ print([triangular[i] + triangular[i + 1] for i in range(len(triangular) - 1)])
 <details class="dl-answer"><summary>answer</summary>
 
 4, 9, 16, 25, 36 and so on: the square numbers. Take two staircases of
-blocks, one a step bigger than the other, turn one round, and they fit
+blocks, one a step bigger than the other, rotate one, and they fit
 together into a square. The algebra agrees:
 $\frac{n(n+1)}{2} + \frac{(n+1)(n+2)}{2} = (n+1)^2$.
 
@@ -545,7 +545,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`GOR`. A string slices the same way as a list: the numbers are the cuts
+`GOR`. A string slices the same way as a list. The numbers are the cuts
 between letters, and a slice keeps what lies between two cuts.
 
 </details>
@@ -581,7 +581,7 @@ What will the last line print?
 
 5. The `total = 10` inside the function made a local variable, which
 disappears when the function returns. The `total` outside was never
-touched. Compare problem 5: there, nothing was assigned. A list was
+touched. Compare problem 5. There, nothing was assigned, and a list was
 changed in place.
 
 </details>

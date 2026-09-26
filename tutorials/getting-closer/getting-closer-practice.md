@@ -50,7 +50,7 @@ for bounce in range(8):
 <details class="dl-answer"><summary>answer</summary>
 
 The heights are 2.0, 1.0, 0.5, 0.25, and so on, down to 0.015625 after
-7 bounces. No row prints 0: halving a number that is not 0 never gives
+7 bounces. No row prints 0. Half of a number that is not 0 is never
 0. But the heights get as close to 0 as we like, so the limit of the
 sequence is 0. (A real ball does stop, after a dozen or so bounces. The
 rule "half the height every time" is a model, and it stops being true
@@ -113,7 +113,7 @@ about $2.2 \times 10^{-16}$, as on
 [How a computer stores a number](tutorial:how-a-computer-stores-a-number#reading-e-16).
 $10^{-16}$ is less than half that gap, so $1 + 10^{-16}$ is kept as 1.
 $10^{-15}$ is bigger than the gap, so $1 + 10^{-15}$ lands on a
-different float. This is why the bank's table broke at $10^{16}$
+different float. So the bank's table broke at $10^{16}$
 payments.
 
 </details>
@@ -134,7 +134,7 @@ limit at 0.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Write `def cos_rule(x):` and give back `(1 - math.cos(x)) / x ** 2`.
+1. Write `def cos_rule(x):` and return `(1 - math.cos(x)) / x ** 2`.
 2. Call `approach(cos_rule, 0)`.
 3. Read the columns: what number do they head for?
 
@@ -156,8 +156,8 @@ approach(cos_rule, 0)
 
 The values go 0.4597, 0.4897, 0.4974, 0.4993, and after ten rows
 0.49999984. The limit is 0.5, or $\frac{1}{2}$. The two columns are the
-same because $\cos(-x) = \cos x$ and $(-x)^2 = x^2$: the rule gives
-the same value on each side.
+same because $\cos(-x) = \cos x$ and $(-x)^2 = x^2$. So the rule
+gives the same value on each side.
 
 </details>
 
@@ -192,15 +192,15 @@ The step is 1 on every row. The fix is to indent it:
         step = step / 2
 ```
 
-The lines came in the order Schlomo meant. Their place did not:
-indentation
+The lines are in the order Schlomo meant, but one is in the wrong
+place. Indentation
 says which lines are inside the loop, and so which lines happen again.
 
 </details>
 
 **7. Make.** A small video service pays €300 a month for its server,
 however many films it streams, and €0.50 for the data of each film it
-streams. (The prices are made up.) So the average cost of a film, when
+streams. (The prices are invented.) So the average cost of a film, when
 it streams $n$ films in a month, is $\frac{300 + 0.5n}{n}$. What
 happens to the average cost as $n$ grows? Try 10, 100, 1,000, 10,000
 and 1,000,000 films, and give the limit at infinity.
@@ -233,10 +233,10 @@ approach(six_hole, 2, rows=6)
 ```
 
 The columns head for 5 from both sides: 4.0, 4.5, 4.75, and 6.0, 5.5,
-5.25. By algebra, $x^2 + x - 6 = (x - 2)(x + 3)$: the two numbers
+5.25. By algebra, $x^2 + x - 6 = (x - 2)(x + 3)$. The two numbers
 multiply to $-6$ and add to 1. Away from 2, the rule is $x + 3$, and
-$2 + 3 = 5$. The two routes agree. The algebra gives the exact answer;
-the table checks that the algebra has no slip in it.
+$2 + 3 = 5$. The two routes agree. The algebra gives the exact answer.
+The table checks that the algebra has no slip in it.
 
 </details>
 
@@ -244,7 +244,7 @@ the table checks that the algebra has no slip in it.
 next morning, the body has removed half of what was there. So each
 morning, the amount is half of yesterday's, plus 100. Start from 0,
 and print the amount after each of the first 10 doses. What limit does
-the sequence head for? (These numbers are made up, and are not advice
+the sequence head for? (These numbers are invented, and are not advice
 about any real medicine.)
 
 <details class="dl-answer"><summary>answer</summary>
@@ -257,8 +257,8 @@ for dose in range(1, 11):
 ```
 
 100, 150, 175, 187.5, and after 10 doses 199.8046875. The limit is
-200 mg. Check it: if the level were exactly 200, then half of it plus
-100 is 200 again, so it would stay there. The gap to 200 halves each
+200 mg. To check it, suppose the level were exactly 200. Half of it
+plus 100 is 200 again, so it would stay there. The gap to 200 halves each
 day, like the walk to the door.
 
 </details>
@@ -302,10 +302,10 @@ print(math.e ** 0.04)
 ```
 
 1.04, then 1.040742, 1.040808, and 1.0408108 at a million. The last
-line is 1.0408108 as well. So paying 4% all the time gives
-$e^{0.04}$, a little over 4.08% in a year. The same limit that made $e$
-from 100% makes $e^{0.04}$ from 4%. That is why $e$ turns up wherever
-growth happens all the time.
+line is 1.0408108 as well. So if the bank pays 4% all the time, a euro
+becomes $e^{0.04}$, a little over 4.08% more in a year. The same limit
+that made $e$ from 100% makes $e^{0.04}$ from 4%. So $e$ appears
+wherever growth happens all the time.
 
 </details>
 
@@ -320,7 +320,7 @@ id: getting-closer-practice-stretch
 
 **12. Explain.** Schlomi, who is learning Python too, made this table
 for $\sin\left(\frac{\pi}{x}\right)$ near 0. Every value is tiny, so
-she says the limit is 0. It is a reasonable reading of the table. Then
+she says the limit is 0. Her reading matches the table. Then
 the second loop tries a few other points near 0. Where does her reading
 work, and where does it stop working? Does the rule have a limit at 0?
 
@@ -347,8 +347,8 @@ between $-1$ and 1 over and over, however close we get. The values
 never settle, so there is no limit. A table is evidence, not proof,
 and a table that only looks at special points can be fooled.
 
-That is one way through. Yours may use other words, or a picture, and
-say the same thing.
+This is one answer. Yours may use other words, or a picture, and say
+the same thing.
 
 </details>
 
@@ -376,7 +376,7 @@ the power makes the rounding error large. At $2^{53}$, the step is
 half the gap between floats near 1, and $1 + \frac{1}{2^{53}}$ is kept
 as 1.
 
-The same thing happens in problem 5 with `rows=40`: from row 28 on,
+The same thing happens in problem 5 with `rows=40`. From row 28 on,
 $\cos x$ is so close to 1 that it is kept as exactly 1, and the rule
 gives 0.0.
 
@@ -394,7 +394,7 @@ at €44,000. Which one has a limit there?
 1. Up to €44,000, the tax is `0.2 * income`.
 2. Above it, the tax is 8,800 for the first €44,000, plus
    `0.4 * (income - 44000)`.
-3. `rate` gives back 0.2 up to €44,000 and 0.4 above.
+3. `rate` returns 0.2 up to €44,000 and 0.4 above.
 
 **Think about:** when someone earns one euro more than €44,000, how
 much more tax do they pay?
@@ -403,7 +403,7 @@ much more tax do they pay?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def tax(income):
@@ -422,11 +422,10 @@ approach(rate, 44000, rows=4)
 
 The tax heads for €8,800 from both sides, 8,799.80 and 8,800.40 on the
 first row, and closer after. So the tax has a limit at €44,000, and it
-is the value there: there is no jump in what people pay. The rate jumps
+equals the value there. There is no jump in what people pay. The rate jumps
 from 0.2 to 0.4, so it has two different one-sided limits and no limit.
-This is why earning a little more never leaves you with less money in
-this system: only the euros above the line are taxed at the higher
-rate.
+So in this system, if you earn a little more, you never end with less
+money. Only the euros above the line are taxed at the higher rate.
 
 </details>
 
@@ -442,7 +441,7 @@ $x \to 0^+$. Does the limit agree with the value Python chose?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def approach_from_right(rule, a, rows=10):
@@ -466,6 +465,6 @@ climb: 0.988 after ten rows, and 0.99999 at $x = 10^{-6}$. So
 $\lim_{x \to 0^+} x^x = 1$, and it agrees with the `1.0` Python chose.
 Here the choice and the limit match, which is one reason for the
 choice. The values first go down and then come back up. A limit only
-cares where they end up, not the path they take.
+depends on where they finish, not the path they take.
 
 </details>

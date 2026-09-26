@@ -7,8 +7,8 @@ version: 2026.09.26.1
 
 # Composition: objects inside other objects — Practice
 
-Problems on classes that hold other objects, and on choosing between "is
-a" and "has a", and three from earlier pages. Several have more than one
+This page has problems on classes that hold other objects, and on
+choosing between "is a" and "has a", and three from earlier pages. Several have more than one
 good answer, and the answers say which way they went, and why.
 
 ## 1. One crew member, two submarines
@@ -57,9 +57,9 @@ What will it print?
 <details class="dl-answer"><summary>why</summary>
 
 `40 40`. Neither submarine holds a copy of Ada: both lists hold the one
-`CrewMember` object, so a change to her is seen by both. That is what the
-real world would say too: one person cannot be in two submarines, so a
-`board` method might refuse someone already on board somewhere.
+`CrewMember` object, so a change to her is seen by both. In the real
+world, one person cannot be in two submarines, so a `board` method might
+refuse someone already on board somewhere.
 
 </details>
 
@@ -168,11 +168,10 @@ your mind?
 
 <details class="dl-answer"><summary>one answer</summary>
 
-A dictionary is enough while specimens only hold facts. A class earns its
-place when a rule arrives (a depth is never negative) or a question does
-(was it found below 1,000 m?). Both answers are fair today. The answer that
-is hard to defend is a dictionary with the same rule copied into every
-place that makes one.
+A dictionary is enough while specimens only hold facts. A class is useful
+when a rule arrives (a depth is never negative) or a question does (was
+it found below 1,000 m?). Both answers work today. Avoid a dictionary
+with the same rule copied into every place that makes one.
 
 </details>
 
@@ -185,11 +184,11 @@ hero. Which design copes better?
 
 <details class="dl-answer"><summary>one answer</summary>
 
-The flag: the spell changes one field. With child classes, the program
+The flag works better here. The spell changes one field. With child classes, the program
 would have to build a new `Hero` and put it everywhere the monster was.
 If heroes and monsters behave very differently (heroes carry things,
 monsters guard rooms), child classes keep each set of methods in one
-place, and the spell is the price. It depends on which change the game
+place, and the spell costs more work. It depends on which change the game
 needs more.
 
 </details>
@@ -276,7 +275,7 @@ that rule live in `Room` or in `Character`?
 
 <details class="dl-answer"><summary>one answer</summary>
 
-`Room`: the room knows how many are inside, and `enter` is the one
+In `Room`. The room knows how many are inside, and `enter` is the one
 method every character passes through to get in. A character would have
 to ask the room anyway.
 
@@ -290,8 +289,9 @@ Both give the same number today. Why ask?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`_depth` is private: the submarine may change how it stores its depth
-(in centimetres, say), and every caller that reached in would break.
+`_depth` is private. The submarine may change how it stores its depth
+(in centimetres, say), and every caller that used `_depth` directly would
+break.
 `get_depth()` is the promise the submarine keeps, however it stores the
 number.
 

@@ -11,7 +11,7 @@ Each answer is hidden until you open it. Try the question first.
 
 The cell below has the solver and a checking function. The checking
 function puts a root back into the quadratic. If the result is zero, the
-number is a root. That check is more than a convenience: it is the proof.
+number is a root. That check proves that the number is a root.
 
 ## Tools
 
@@ -49,7 +49,7 @@ multiplying by 1 changes nothing. So $i^{100}$ is 1 and $i^{101}$ is $i$.
 
 </details>
 
-**2.** Work out $(3 + 2i) + (1 - 5i)$ and $(3 + 2i) - (1 - 5i)$.
+**2.** Calculate $(3 + 2i) + (1 - 5i)$ and $(3 + 2i) - (1 - 5i)$.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -60,27 +60,27 @@ imaginary parts. This is the same as collecting like terms.
 
 </details>
 
-**3.** Work out $(3 + 2i)(1 - 4i)$.
+**3.** Calculate $(3 + 2i)(1 - 4i)$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Multiplying out gives $3 - 12i + 2i - 8i^2$. The last term is
+If we multiply the brackets, we get $3 - 12i + 2i - 8i^2$. The last term is
 $-8 \times (-1) = +8$, so the answer is $11 - 10i$.
 
-The $i^2$ turning into a real number is the only unusual step. That is
-the definition $i^2 = -1$ doing its work.
+Only one step is unusual. $i^2$ becomes a real number, because
+$i^2 = -1$.
 
 </details>
 
-**4.** Work out $(2 + 3i)(2 - 3i)$.
+**4.** Calculate $(2 + 3i)(2 - 3i)$.
 
 <details class="dl-answer"><summary>answer</summary>
 
 $4 - 6i + 6i - 9i^2 = 4 + 9 = 13$.
 
 A complex number multiplied by its conjugate always gives a real answer,
-because the imaginary parts cancel. This is the trick for dividing
-complex numbers: multiply the top and the bottom by the conjugate of the
+because the imaginary parts cancel. We use this to divide complex
+numbers. We multiply the top and the bottom by the conjugate of the
 bottom.
 
 </details>
@@ -138,21 +138,21 @@ Here is $x = 1 + 2i$ in $x^2 - 2x + 5$:
 2. $-2(1 + 2i) = -2 - 4i$
 3. Adding everything: $-3 + 4i - 2 - 4i + 5 = 0$
 
-**This substitution is the argument.** A root is a number that makes the
-expression zero. This number makes it zero. So it is a root, however it
-looks.
+**This substitution proves it.** A root is a number that makes the
+expression zero. This number makes it zero. So it is a root, even if it
+looks strange.
 
 </details>
 
 **10.** The equation $x^2 - 6x + 25 = 0$ has a root at $3 + 4i$. What is
-the other root? How can you know without working it out?
+the other root? How can you know without solving the equation?
 
 <details class="dl-answer"><summary>answer</summary>
 
 $3 - 4i$, the conjugate.
 
-In a quadratic with real coefficients, the only place an $i$ can come
-in is the square root of a negative discriminant. It appears once with a
+In a quadratic with real coefficients, the only place an $i$ can
+appear is the square root of a negative discriminant. It appears once with a
 $+$ and once with a $-$. So complex roots always come in conjugate
 pairs.
 
@@ -188,7 +188,7 @@ The parabola misses the horizontal axis completely. It sits all above
 the axis, or all below it.
 
 The roots still exist, but they are not on the real number line. "No
-real solutions" tells us which numbers we are willing to use.
+real solutions" only means that no *real* number is a solution.
 
 </details>
 
@@ -233,11 +233,10 @@ good sign?
 <details class="dl-answer"><summary>answer</summary>
 
 The `if discriminant < 0` special case disappeared. Two roots, one root
-and no real roots turned out to be one situation. We see all of it once
+and no real roots became one situation. We see all of it once
 we work in $\mathbb{C}$.
 
-A new idea that removes special cases is usually the right one. An idea
-that adds special cases is usually a patch.
+A new idea that removes special cases is usually a good one.
 
 </details>
 
@@ -246,8 +245,8 @@ that adds special cases is usually a patch.
 <details class="dl-answer"><summary>answer</summary>
 
 Yes, as long as it has degree 1 or more. This is the Fundamental Theorem
-of Algebra. It is why $\mathbb{C}$ is the last family we need for
-solving polynomial equations.
+of Algebra. So $\mathbb{C}$ is the last family we need for solving
+polynomial equations.
 
 A polynomial of degree $n$ has exactly $n$ roots in $\mathbb{C}$, if we
 count repeated roots. No statement like this is true in $\mathbb{R}$,
@@ -265,26 +264,25 @@ $\mathbb{Q}$, $\mathbb{Z}$ or $\mathbb{N}$.
   the timing of a signal.
 - **Signal processing.** The Fourier transform is built on complex
   numbers.
-- **Control systems.** Where the roots sit tells engineers whether a
+- **Control systems.** The position of the roots tells engineers whether a
   system is stable.
 - **Computer graphics.** Quaternions, a larger relative of complex
   numbers, handle rotation without the problems that angles can cause.
 
-In each of these, the complex numbers do real work. They are not
-decoration.
+In each of these, the complex numbers do real work.
 
 </details>
 
 **18.** A circuit's behaviour is described by $x^2 + 2x + 5 = 0$. If a
-root has a negative real part, the circuit settles down. Does this one
-settle?
+root has a negative real part, the circuit becomes steady. Does this one
+become steady?
 
 <details class="dl-answer"><summary>answer</summary>
 
 The roots are $-1 \pm 2i$, so the real part is $-1$. That is negative,
-so the circuit settles.
+so the circuit becomes steady.
 
-The real part decides whether the oscillation grows or dies away. The
+The real part decides whether the oscillation grows or fades. The
 imaginary part gives how fast it oscillates. A positive real part would
 mean the oscillation keeps growing. In a physical system, that can mean
 something breaks.

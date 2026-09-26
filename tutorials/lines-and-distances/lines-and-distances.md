@@ -26,8 +26,8 @@ This page is about two questions:
 
 Both questions sound easy. The first one has three different answers,
 and each answer is better than the others at something. The answer to
-the second one is a theorem you may have heard of. Here it comes from a
-direction that makes it make sense.
+the second one is a theorem you may have heard of. Here we find it in a
+way that shows why it is true.
 
 The course plan calls this topic "coordinate geometry". For many
 people, geometry means something they did at school with a compass,
@@ -147,8 +147,8 @@ print("from a to c:", slope(a, c))
 We get the same number all three times, from three different pairs of
 points.
 
-**That agreement is what "straight" means.** A line is straight because
-its slope is the same between any two of its points. If the slope
+**A line is straight when its slope is the same between any two of its
+points.** If the slope
 changed from one pair to another, the line would be bending.
 
 ### A number about the world
@@ -196,8 +196,8 @@ same question, but the answer changes as we move along the curve.
 ## Parallel and perpendicular
 
 Two lines are *parallel* when they go in the same direction and never
-meet. The rule for this is short: two different lines are parallel when
-they have the same slope.
+meet. The rule is short. Two different lines are parallel when they
+have the same slope.
 
 Which two of these three lines are parallel?
 
@@ -222,8 +222,7 @@ The rule needs both lines to have a slope. A vertical line has no slope,
 as we will see in the next section. A vertical line and a flat line are
 also perpendicular.
 
-Why would the slopes multiply to $-1$? Let's not take it on trust.
-Let's draw it.
+Why would the slopes multiply to $-1$? Let's draw it and see.
 
 ```python exec
 id: parallel-and-perpendicular-2
@@ -260,9 +259,9 @@ second = 3 / -2
 print(first, "*", second, "=", first * second)
 ```
 
-The rule is the picture, written down. The two numbers swap, so they
-cancel when we multiply: $\tfrac{2}{3} \times \tfrac{3}{2} = 1$. The
-change of sign is all that is left, and that makes $-1$.
+The two numbers swap, so they cancel when we multiply:
+$\tfrac{2}{3} \times \tfrac{3}{2} = 1$. Only the change of sign is
+left, and that makes $-1$.
 
 Here are the two lines, drawn in full. Do they meet at a right angle?
 
@@ -290,7 +289,7 @@ id: your-turn-2
 ## The line that breaks the formula
 
 Now let's try to draw the vertical line through $x = 3$. This line goes
-straight up. It is not only very steep.
+straight up, not just very steeply.
 
 The cell draws lines that get steeper and steeper. Can any of them be
 vertical?
@@ -332,8 +331,8 @@ a line is
 
 $$ax + by + c = 0$$
 
-For most lines it looks worse than $y = mx + c$, and it is worse. We
-need it for one case.
+For most lines it is harder to read than $y = mx + c$. We need it for
+one case.
 
 ```python exec
 id: the-line-that-breaks-the-formula-3
@@ -356,7 +355,7 @@ ax.set_title("One form, both lines")
 ```
 
 The vertical line is $1x + 0y - 3 = 0$. Here $b$ is zero. That is
-allowed, and it is what makes the vertical line possible.
+allowed, and it makes the vertical line possible.
 
 In $y = mx + c$, $y$ is on its own, so $y$ must depend on $x$. The
 general form does not have $y$ on its own, so $y$ does not have to
@@ -474,7 +473,7 @@ between the points. If you walk 4 east and then 3 north, you walk 7 in
 total. The straight line from start to finish is shorter than 7, and
 longer than 4.
 
-How long is the straight line? Can you think of a way to work it out?
+How long is the straight line? Can you think of a way to find it?
 
 ```python exec
 id: how-far-apart-and-the-theorem-that-answers-it-2
@@ -536,10 +535,9 @@ print(distance((0, 0), (3, 4)))
 print(distance((0, 0), (1, 1)))
 ```
 
-**The distance formula and Pythagoras' theorem are the same thing, seen
-from two directions.** Neither one is a special case of the other. We
+**The distance formula and Pythagoras' theorem say the same thing.** We
 wanted a distance. We drew the triangle that the two gaps make. The
-theorem is the answer to the question we were already asking.
+theorem answered the question we were already asking.
 
 The order matters. If we learn the theorem first and the distance
 second, the theorem is a fact to accept, and the formula is a second
@@ -548,8 +546,8 @@ thing to remember. In this order, they are one idea.
 ### Checking it
 
 How could we test the theorem, and not only use it? We need to measure
-the third side of a triangle without working it out from $a^2 + b^2$
-first. `distance` can do that: it measures the gap between two points.
+the third side of a triangle without calculating it from $a^2 + b^2$
+first. `distance` can do that. It measures the gap between two points.
 
 Here is the experiment. Take two sides, 3 and 4 long, joined at one
 corner. Open the angle between them to 80°, then 90°, then 100°. Each
@@ -570,10 +568,10 @@ for angle in [80, 90, 100]:
     print(f"{angle:>3} degrees:   a^2 + b^2 = {a_side ** 2 + b_side ** 2}    c^2 = {c_side ** 2:.2f}")
 ```
 
-Only the right angle gives 25. Close the angle, and the third side comes
-out shorter than the theorem says. Open it, and the third side comes out
-longer. So the theorem is not a fact about every triangle. It is a fact
-about triangles with a right angle, and the 90° is what makes it true.
+Only the right angle gives 25. Close the angle, and the third side is
+shorter than the theorem says. Open it, and the third side is longer.
+So the theorem is a fact about triangles with a right angle. It is not
+true for every triangle.
 The rule that works for every angle is called the cosine rule, and it
 is on
 [Solving triangles: the sine rule and the cosine rule](tutorial:solving-triangles).
@@ -626,15 +624,14 @@ for t in [0, 7, 15, 33, 48]:
 
 The distance is 1 every time, from the formula we wrote above.
 
-That circle is where
 [The unit circle: sine, cosine and tangent](tutorial:the-unit-circle)
-starts. That whole page rests on one fact: every point on the circle is
-1 away from the centre.
+starts with that circle. That whole page depends on one fact. Every
+point on the circle is 1 away from the centre.
 
 ## Reflection
 
-We started with two questions, and both of them turned out to be about
-the same right-angled triangle.
+We started with two questions, and both of them were about the same
+right-angled triangle.
 
 Here are four ideas to take with you.
 
@@ -647,28 +644,27 @@ Here are four ideas to take with you.
 | $ax + by + c = 0$ | describing every line, including a vertical line |
 
 **Slope is a rate of change.** It is how much $y$ changes when $x$ goes
-up by one. Keep that meaning: derivatives need it.
+up by one. Keep that meaning. Derivatives need it.
 
-**The perpendicular rule is a picture.** Turn the slope triangle a
+**You can see the perpendicular rule in a picture.** Turn the slope triangle a
 quarter turn. The rise and the run swap, one of them changes sign, and
 the product of the two slopes is $-1$.
 
-**Distance is Pythagoras' theorem, and Pythagoras' theorem is
-distance.** We did not learn a theorem and then apply it. We asked how
-far apart two points were, and the theorem is what the answer looks
-like.
+**The distance formula is Pythagoras' theorem.** We did not learn a
+theorem and then apply it. We asked how far apart two points were, and
+the theorem gave the answer.
 
 Think about the three ways to write a line. Which one would you use to
 describe the edge of a building on a map, and why? Write a few
 sentences.
 
-## Where to Read More
+## Where to read more
 
 Khan Academy. *Proof: Perpendicular Lines Have Negative Reciprocal Slope.*
-<https://www.youtube.com/watch?v=HyThzLRuqXo>. The same quarter-turn
-picture this page draws, proved a second way.
+<https://www.youtube.com/watch?v=HyThzLRuqXo>. This video uses the same
+quarter-turn picture as this page, and proves the rule a second way.
 
 Stand-up Maths (2015). *NYC: The Linear Equation of Broadway.*
 <https://www.youtube.com/watch?v=Quwvw0vYkRA>. Matt Parker walks along
 Broadway in New York with graph paper, and finds the straight line that
-fits it, slope and all. Eleven minutes.
+fits it, slope and all. It is eleven minutes long.

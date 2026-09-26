@@ -5065,7 +5065,55 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 ---
 
-**7.255 — Data, Chance and Logic is reordered so each page builds on the one before, plays each game before counting it, and draws on the worlds' real data.** The content issue (#325), part of #306.
+**7.254 — A module of its own for readers who struggle with maths: The Zen of Slashes and Surds, with a calm check on every page.** Josh, 26 September 2026, first asking for a fractions lesson and an exponents lesson, then: "a separate maths preliminaries module that is for folks who struggle with maths ... fill in for primary and secondary school ... emphasize things like 'we aren't trying to memorize' and talk about 'gaining fluency' ... notice when our curiosity and optimism gets replaced by frustration, and work on calm as the goal." On the name: "the whole track is 'the Zen of Slashes and Surds' for both fractions and exponents". On roots and logarithms: "we can do the definitions or notation at the end after there has been shown need for the notation, and we can use some other notation first ... because surds and logs are often scary for people." The plan is `planning/outlines/zen-of-slashes-and-surds.md`.
+
+**A module, not a series inside another course.** The first proposal was a review series in the integrated maths course, with the Drake equation as its spine. A reader who arrives unsure of themselves in the subject, not only of a topic, needs smaller steps, more practice and a different stance than any existing course takes, so the module is `courses/zen-of-slashes-and-surds.yaml`. The Drake equation, *Fractions in the Wild* and the Grade 8 scale sheets become each strand's last page, a "view from the top", not its opening.
+
+**A departure from 7.229, on purpose.** 7.229 names a feeling rarely, and always with a route, across the site. This module names one more often, because noticing when curiosity has turned into frustration is part of what it teaches. What 7.229 protects is kept: every mention carries a route, and none is a verdict on the reader. What changes is how often, and why: a fixed "calm check" twice on every page, in the same words each time so it becomes a habit rather than a surprise. The words live once, in `setup/zen-calm-check.md`, and every page includes that file, so changing them changes every page. The rest of the site keeps 7.229 as it is.
+
+**Squiggles, letters and numbers are worlds.** The same problem can be written with shapes (♡, △, ★), with letters, or with numbers, and the reader chooses. The site's worlds mechanism (`docs/WRITING_TUTORIALS.md#worlds`) already does exactly this for contexts, so these pages use it for notation, with `numbers`, `squiggles` and `letters` as the world keys. Squiggles stay in prose and questions, since Python cannot use them as names.
+
+**Pictures are drawn, not typed.** `dev/graphics/zen.py` draws the pizzas, the fraction walls, the folded paper and the golden beads in the site's theme colours, so they read in light, dark and high contrast, and computes every count it shows. The pizza a reader can change is a matplotlib pie in the page's own cell, eight lines long, not a hidden helper: a cell that draws a picture is the Montessori material made runnable, and there is no way to hide a setup cell.
+
+**Friendly notation first for roots and logarithms.** In strand C, a root is *side(49)*, the side of a square of 49 beads, and a logarithm is *hops(10 → 1000)*, until the reader has used the friendly name often enough to want something shorter. The signs $\sqrt{\;}$ and $\log$ come last on each page, under a heading that says they mean exactly the friendly name.
+
+**Plainer than plain.** Josh, while the pages were being written: "lets make sure we use really simple friendly language (especially for ESL learners)". The pages go further than the style guide's plain-language rules: short sentences with one idea each, common words (*normal*, *scary*, *aloud*), every hard word explained where it appears, frustration included ("annoyed, tired or stuck"), no idioms or phrasal verbs, lists in place of long sentences, and one gap per line in a fill-in-the-blank question. The outline's "Language: plainer than plain" section has the list, for whoever writes the next page.
+
+**A pilot, with both halves.** Written now: `before-we-start`, `one-whole-many-slices`, `same-amount-different-names` and `the-long-way`, each with a practice page longer than the tutorial. Two fraction pages and one powers page, so a class meets both slashes and powers. The course is `status: beta`. What the pilot should answer: are the steps small enough, does the calm check help or annoy, and do readers use the notation switch.
+
+*Cost to change: the four page ids and their question ids become a contract once a class has used them. The calm check's words are one file. Moving the course on the front page is one line in `courses/index.yaml`.*
+
+---
+
+**7.255 — A dropdown gap starts on a blank "choose", not on the page's word.** Found while checking the Zen of Slashes and Surds pages (7.254) in a browser: every dropdown in a fill-in-the-blank question opened showing its own answer. `build.py` writes the page's word as the first `<option>`, so the browser selects it, and `buildQuestions()` then shuffled the options without touching which one was selected. The page's word moved, and stayed selected wherever it landed. Loading one page five times showed the answer selected in all 20 dropdowns.
+
+**The fix is in both places.** `build.py` now writes `<option value="" selected disabled>choose</option>` first, so a page with no JavaScript, or one whose runtime has not started yet, shows the blank too. The runtime shuffles every option except that one. A reader cannot pick "choose" back, so a saved value is always a real choice or nothing. One leftover: a record saved before the fix holds whatever the dropdown showed, which was usually the page's word whether or not the reader chose it, and it restores that way. It clears when the reader picks again.
+
+**Why not `selectedIndex = -1`.** A select with nothing selected is an empty box with no word in it, which reads as broken. "choose" says what to do.
+
+*Cost to change: low. One line in `build.py`, one in the runtime (and the rebuilt `standalone.bundle.js`), and a browser test that the dropdown starts blank. Every page with a dropdown gap changes on the next build; no saved work moves.*
+
+---
+
+**7.256 — Say it directly: a style rule against clever framing, and a sweep of every page.** Josh, 26 September 2026, after a review of the recent pull requests: "those gerunds and weird indirect framing are just not the same as simple friendly prose… lets see if we can get rid of all those!"
+
+**What the review found.** Five readers, each given a different group of recent pages (Programming Foundations, both halves of OOP, the long Dewey Track pages, and the newest merges), found the same drift on their own. Sentences had not grown longer: the recent groups average 12.5 to 14 words, against a site median of 12.4, and dashes were nearly gone. The drift was in how sentences were built. Colons carried the main point where dashes used to (about 130 to 170 mid-sentence colons in each OOP half). Paragraphs ended on a saying ("'has a' bends where 'is a' breaks"). Verbs became nouns ("the deciding… kept apart from the asking"). Sentences put the point last ("What changes is where…") or had no verb at all. Planning words reached students ("This one has no top"). Quiet verdicts slipped past the #376 sweep ("not yet", "a fair answer", "the tests are the judge"). Each reads well to a native speaker and asks a second-language reader to read twice.
+
+**The rule.** `PEDAGOGICAL_STYLE_GUIDE.md#say-it-directly`: somebody or something does something, in that order. It lists the eight shapes with an example of each from a real page, and a line joins the checklist. The quiet verdicts join `#no-verdicts`, and the phrasal verbs that kept coming back (*work out*, *give back*, *go through*, *reach in*, *throw away*, *out of order*) join `#plain-language`. Length was left alone: 7.244 still holds, and the long Dewey Track pages are long mostly because of their guess-run-explain cycles.
+
+**One stock line.** "One way through; yours may differ and work as well." sat in 75 answer folds on 29 pages: an idiom with a semicolon in it. It is now "Here is one answer. Yours may be different and work too." everywhere.
+
+**A fact the review turned up.** Four pages (the shared "When a cell does not do what you expect" section, `first-steps-cm-practice`, `four-questions` and the FAQ) said Reset brings back the starter code. Reset (↺) clears the output; Clear (↻) puts the code back (`build.py`, `dl-btn-reset` and `dl-btn-clear`). 7.249 fixed the same sentence on `working-with-tables` and missed these.
+
+**The sweep.** Every current page in `tutorials/` was read by one of eight readers against the rule, who rewrote only the sentences that break it. Code, frontmatter, headings' wording (their slugs are `covers:` keys), cell ids and frozen releases were not touched; Title Case headings became sentence case. No `version:` bump, since no cell changed. Four more readers then read the whole diff against the old text, looking only for damage: about 120 sentences, one in forty, had come out ungrammatical, lost a reason (why gradient descent stops in the wrong valley), or changed a fact (a binary search that "removed" names it only skipped). Those were fixed. A rewrite that is simpler and less true is the cost this rule has to watch for.
+
+**Left for later.** Four sideline sections on long Dewey Track pages could move to a context page (7.208): the Timsort aside in `racing-the-sorts`, "Three weights for a curve" in `rules-with-letters-in-them`, the Pascal detour in `machines-that-take-a-number`, and the $x^2$ against $2^x$ race in `drawing-a-rule`. The data-copy note is written by hand on 10 pages in 5 wordings, and its runtime strings in `assets/tutorial-runtime.js` and `assets/tutorial_tools.py` need the same plain rewrite and a vendor rebuild. Glossary files were not swept. Nor were the Zen of Slashes and Surds pages (7.254), which reached `main` during the sweep, or the Data, Chance and Logic pages that #385 rewrites; each should be read against `#say-it-directly` on its own.
+
+*Cost to change: none for the rule. The sweep is prose only; a rewritten sentence can be changed back by hand.*
+
+---
+
+**7.257 — Data, Chance and Logic is reordered so each page builds on the one before, plays each game before counting it, and draws on the worlds' real data.** The content issue (#325), part of #306.
 
 **The order.** Sets, Venn diagrams, logic, counting, probability, three doors, statistics, charts, and a new making task, `a-chart-that-tells-the-truth`. Events are sets, so probability now comes after the pages that teach union, intersection and complement, and uses them by name: "or" is a union, and the addition rule is inclusion-exclusion with probabilities. With Venn diagrams before logic, a term had to be introduced where it is first used: the complement on Venn diagrams, De Morgan's laws, XOR and the truth table on logic. The Venn page states the two laws on sets without naming them, and the logic page names them. `dev/curriculum_map.py`'s "used before it was introduced" table is how those were found.
 
@@ -5080,5 +5128,7 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Every number was run.** Each page was run with its solutions in place of its starters, one world at a time, and every figure in the prose checked against the output. That found a password figure a thousand times too large, a decade-pace claim that was wrong, and a narrator who does have a row in the data after all.
 
 **`dev/curriculum_map.py` finds "Where to read more" whatever its capitals.** It matched only "Where to Read More", which 35 pages use, so the titles in the other hundred-odd pages' bibliographies were counted as terms (*the python tutorial* in five pages). The build already matched the heading case-insensitively; the map now does too, with a test.
+
+**Read against `#say-it-directly` (7.256).** These pages were rewritten before that rule reached `main`, so the merge keeps this branch's versions of the sixteen pages #386 swept. All eighteen pages were then read against the rule, and about 490 sentences changed. As elsewhere, the glossary files were not swept.
 
 *Cost to change: moderate. The order lives in the course file and topic groups; the pages' cross-references assume it, so moving logic back before Venn diagrams would mean moving the names of the two laws back as well. Cell ids are new throughout, which is free until 2 October.*

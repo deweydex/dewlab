@@ -769,6 +769,9 @@ An angle of 90 degrees is a {right angle|straight angle|acute angle}.
 ```
 ````
 
+The reader sees the choices shuffled, and the dropdown starts on a blank
+*choose*, so the page's word is not showing before they pick one.
+
 A question with several gaps has one **Show the page's words** button for the
 whole sentence. Each gap then shows the page's word beside it, and what the
 student wrote stays as they wrote it.

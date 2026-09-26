@@ -10,8 +10,8 @@ worlds:
 
 # Variables, data types and text — Practice
 
-Problems on names, types and text. The ones about types are worth slowing
-down on: in your first term, most confusing errors turn out to come from a
+These problems are about names, types and text. Take your time with the
+ones about types. In your first term, most confusing errors come from a
 value whose type you did not expect. Try each one before you open anything
 under it.
 
@@ -39,8 +39,8 @@ Allowed: `total`, `_hidden`, `Total`, `total_2`.
 - `class`: this is a reserved word, which Python keeps for its own use.
 - `my-name`: the hyphen is a minus sign, so Python reads it as `my - name`.
 
-`Total` is allowed, and it is a different variable from `total`. Mixing
-the two up is an easy way to lose an afternoon.
+`Total` is allowed, and it is a different variable from `total`. If you
+confuse the two, you can lose an afternoon.
 
 </details>
 
@@ -64,13 +64,13 @@ What will it print?
 
 `y` is still 5. The line `y = x` gave `y` the value 5 at the moment it ran.
 It did not tie `y` to `x`. In an equation, `y = x` stays true. In Python,
-it was a single instruction, carried out once.
+it was a single instruction, and Python ran it once.
 
 </details>
 
 ## 3. Swap them
 
-Can you swap the values of `a` and `b`, so that `a` ends up with what `b`
+Can you swap the values of `a` and `b`, so that `a` gets what `b`
 had, and `b` with what `a` had?
 
 ```python exec
@@ -133,9 +133,7 @@ pixels = width * height
 print(pixels)
 ```
 
-The arithmetic is the same, and now the code says what it is about. Names
-are the cheapest way to explain your code, and the only explanation that
-cannot go out of date without the code changing with it.
+The arithmetic is the same, and now the code says what it is about.
 
 </details>
 
@@ -153,7 +151,7 @@ print(type(4 / 2))
 
 `int`, `float`, `str`, `bool`, `float`, `int`, `str`.
 
-The one most people miss is `4 / 2`. Division with `/` always gives a
+Most people miss `4 / 2`. Division with `/` always gives a
 float, even when the answer is whole: `2.0`, not `2`.
 
 </details>
@@ -181,9 +179,9 @@ What do `"5" + "3"` and `"5" + 3` do? Try them.
 <details class="dl-answer"><summary>why</summary>
 
 `5 * "3"` repeats the text five times: `33333`. `"5" + "3"` joins two
-pieces of text: `53`. And `"5" + 3` stops with a `TypeError`: `+` with one
+pieces of text: `53`. And `"5" + 3` stops with a `TypeError`. `+` with one
 string and one number has no clear meaning, so Python stops rather than
-guess. A guess that nobody notices is much worse than an error. (There is
+guess. (There is
 more on errors in
 [Reading an error message](tutorial:reading-an-error-message).)
 
@@ -220,7 +218,7 @@ What will it print?
 −3. `int()` cuts off the part after the decimal point, which moves the
 number towards zero. That is called truncating. Rounding would give −4,
 and `round(-3.7)` does. The two agree on positive numbers and differ on
-negative ones, which is a difference that can hide in code for months.
+negative ones. This difference can hide in code for months.
 
 </details>
 
@@ -256,7 +254,7 @@ prints `251` instead of `26`. What happened?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`input()` always gives back a string, so `"25" + "1"` joined two pieces of
+`input()` always returns a string, so `"25" + "1"` joined two pieces of
 text. The fix is `int(input(...))`, which turns the text into a number the
 moment it arrives.
 
@@ -299,9 +297,9 @@ used it online to hide the end of a joke or a spoiler.
 <div class="dl-world" data-world="pixel-art">
 
 A pixel's red is 200, and a brush adds 100 to it. A colour stops at 255,
-so what the brush should do is stop there. Can you work out what `%` would
-do to 300, going round like a clock with 256 steps? And why is that no good
-for a brush?
+so the brush should stop there. Can you find what `%` would
+do to 300, going round like a clock with 256 steps? And why would a brush
+not want that?
 
 ```python exec
 id: thirteen-places-along-1--pixel-art
@@ -349,13 +347,13 @@ What will the last line print?
 0.1 and 0.2 cannot be stored exactly in binary, in the same way that a
 third cannot be written exactly in decimal (0.333…). The computer stores
 each as the nearest number it can, and the two small differences do not
-cancel. The sum is 0.30000000000000004: off in the seventeenth decimal
-place. That rarely matters, except when you ask whether two values are
+cancel. The sum is 0.30000000000000004, which is wrong in the seventeenth
+decimal place. That rarely matters, except when you ask whether two values are
 exactly equal.
 
 To compare two floats, ask whether they are close enough:
-`abs(a - b) < 1e-9`. How close is close enough depends on what the numbers
-are: money in cents needs a different limit from the distance between
+`abs(a - b) < 1e-9`. The limit depends on what the numbers
+are. Money in cents needs a different limit from the distance between
 stars. Python has `math.isclose()` too, with a limit of its own.
 
 </details>
@@ -369,8 +367,8 @@ Which of these can binary floating point store exactly? `0.5`, `0.25`,
 
 `0.5`, `0.25` and `0.75` are exact. `0.1` and `0.3` are not. A number is
 exact in binary when it is made of halves, quarters, eighths and so on. A
-tenth is not, for the same reason that a third is not exact in decimal: 10
-has a factor of 5, and binary has only 2s to work with.
+tenth is not, because 10 has a factor of 5, and binary has only 2s to work
+with. A third is not exact in decimal for the same reason.
 
 </details>
 
@@ -408,7 +406,7 @@ A shop's till stores prices in euro as floats. Adding up fifty items at
 
 Whole cents, as integers. Fifty lots of 10 cents is exactly 500, and the
 till divides by 100 only when it shows the total. Real payment systems work
-this way: when a quantity is made of whole small units, store the whole
+this way. When a quantity is made of whole small units, store the whole
 units. Floats are for measurements. For counting, use integers.
 
 </details>
@@ -477,9 +475,9 @@ Then try `:.2f` and `:.4f`, and `f"{5:.2f}"`.
 
 <details class="dl-answer"><summary>why</summary>
 
-`1`: with no decimal places, 0.666… rounds up to 1. `:.2f` gives `0.67`,
-`:.4f` gives `0.6667`, and `f"{5:.2f}"` gives `5.00`: `:.2f` can add places
-as well as take them away, which is what you want for prices.
+`1`. With no decimal places, 0.666… rounds up to 1. `:.2f` gives `0.67`,
+`:.4f` gives `0.6667`, and `f"{5:.2f}"` gives `5.00`. So `:.2f` can add places
+as well as remove them. That is useful for prices.
 
 </details>
 

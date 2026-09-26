@@ -29,7 +29,7 @@ How would you teach a robot to make tea? The question is a little
 funny. It is also the question every programmer
 answers, every day. A computer is that robot. If you have ever given
 someone directions and watched them go the wrong way, you already know
-the hard part: the gap between what you said and what you meant.
+the hard part. There is a gap between what you said and what you meant.
 
 <aside class="dl-note" id="recipes-note-robot">
 
@@ -50,9 +50,8 @@ On this page we:
 > **The space we're in.** A kitchen, but a strange one. The robot knows
 > only the words we give it. It does exactly what we write, in the order
 > we write it, and it never guesses what we meant. Python works the same
-> way. That makes the robot trustworthy: it will never surprise you by
-> guessing. It is also the thing that usually goes unsaid when people
-> call computers "smart".
+> way. So the robot never surprises you by guessing. People who call
+> computers "smart" rarely say this.
 
 ## Warm-up
 
@@ -135,10 +134,10 @@ Here is a second try.
 6. Take the tea bag out of the cup, and put it in the bin.
 7. Pour milk into the cup for 1 second.
 
-This version is longer, and that is the point. Every step now has one
+This version is longer on purpose. Every step now has one
 meaning. It says how much, and where. The steps come in a fixed order,
-and step 6 depends on step 3 having happened first. And the list ends:
-after step 7, the robot is finished.
+and step 6 depends on step 3 having happened first. And the list ends.
+After step 7, the robot is finished.
 
 On the last page, an algorithm was a list of clear steps that completes
 a task. Now we can say what "clear" asks for. A good algorithm has:
@@ -148,8 +147,7 @@ a task. Now we can say what "clear" asks for. A good algorithm has:
 - **a fixed order**, so that every step happens after the steps it needs;
 - **an end**, so that it finishes, and does not go on for ever.
 
-Notice the thing we changed most from the first try to the second. It
-was the environment. The first try assumed a person's knowledge: that
+From the first try to the second, we changed the environment most. The first try assumed a person's knowledge: that
 kettles need water, that tea bags come out. The second try says those
 things out loud.
 
@@ -165,7 +163,7 @@ centuries, it became our "algorithm".
 
 ## Steps that repeat and steps that choose
 
-Now three friends call round. Two of them take milk, and one does not.
+Now three friends visit. Two of them take milk, and one does not.
 We could write the whole list out three times, once for each cup. But
 nobody writes a recipe like that. Instead we write "for each cup, do
 this", and "if they take milk, add milk".
@@ -181,9 +179,9 @@ So there are three shapes a step can have.
   the sugar is gone". This is called *repetition*. Programmers also call
   it *iteration*.
 
-Every algorithm ever written is built from these three shapes. The order
-in which a program's steps run, with its choosing and repeating, is what
-programmers call *control flow*. That is the only time this page will
+Every algorithm ever written is built from these three shapes. Programmers
+call the order in which a program's steps run, with its choosing and
+repeating, *control flow*. That is the only time this page will
 use that phrase. "What happens when?" asks the same thing in plain
 words.
 
@@ -197,13 +195,13 @@ type: fill-in-the-blank
 Look again at "stir until the sugar is gone". A repeat needs a way to
 stop. Sugar does dissolve, so this one stops. But "stir until the sand
 is gone" would never stop, and a robot would stir for ever. So when you
-write a repeat, it is worth asking: what makes it end?
+write a repeat, ask what makes it end.
 
 ## Writing a plan in pseudocode
 
 Before a programmer writes Python, they often write a plan. *Pseudocode*
 is a plan for a program, written in plain words, but laid out like a
-program. No computer runs it; it is for people. ("Pseudo" means "not
+program. No computer runs it. It is for people. ("Pseudo" means "not
 real", so pseudocode is code that is not quite code.)
 
 Here is our tea for friends, in pseudocode.
@@ -232,8 +230,8 @@ There are no fixed rules for pseudocode, but a few habits help.
   plan says `cups` wherever it means "however many cups we are making".
   If a fourth friend arrives, we change one line.
 
-That last line is about storage: keeping a value under a name, to use
-later. It is the next idea on this page.
+That last line is about storage. It keeps a value under a name, to use
+later. Storage is the next idea on this page.
 
 ### Your turn
 
@@ -265,9 +263,9 @@ REPEAT for each of the seven bars:
 WAIT one minute
 ```
 
-Yours may be quite different and still work. One test: could
+Yours may be quite different and still work. Here is one test. Could
 someone who has never seen a clock follow your plan? This one still
-assumes something: how does the clock know which bars make a 4? The
+assumes something. How does the clock know which bars make a 4? The
 next two pages answer that, with numbers.
 
 </details>
@@ -288,11 +286,11 @@ It shows `750`: three cups of 250 ml each.
 
 The first line, `cups = 3`, makes the name `cups` point at the number 3.
 A name used like this is called a *variable*. A variable is a name that
-points at a value. The `=` sign here is an instruction: it means "make
+points at a value. The `=` sign here is an instruction. It means "make
 this name point at this value". It helps to read it as "becomes", so
 that `cups = 3` says "cups becomes 3".
 
-The second line works out `cups * 250`, and makes the name `water_ml`
+The second line calculates `cups * 250`, and makes the name `water_ml`
 point at the answer.
 
 Now a friend leaves and another two arrive, so we have 5 cups to make.
@@ -308,19 +306,19 @@ print(water_ml)
 It still shows 750. This surprises almost everyone, so let's ask "what
 happens when?".
 
-`water_ml` was worked out when its line ran, and at that moment `cups`
-was 3. The line did its job once, and then it was finished. Changing
-`cups` later does not go back and do it again.
+Python calculated `water_ml` when its line ran, and at that moment `cups`
+was 3. The line did its job once, and then it was finished. If we change
+`cups` later, that line does not run again.
 
 In a maths book, $\text{water} = 250 \times \text{cups}$ would be a rule
 that stays true, whatever cups becomes. In Python, `water_ml = cups * 250`
 is a step, done once, at one moment. Neither is wrong. They are two
-different spaces, and in Python's space the order of the lines is
-everything.
+different spaces, and in Python's space the order of the lines matters
+most.
 
 ### Your turn
 
-1. In the cell below, work out `water_ml` again, now that `cups` is 5,
+1. In the cell below, calculate `water_ml` again, now that `cups` is 5,
    and show it. (Copy the line from the first cell.)
 2. A café uses 30 ml of milk for each cup. Make a variable `milk_ml` that
    holds the milk for `cups` cups, and show it.
@@ -357,7 +355,7 @@ def make_tea():
     print("Wait 3 minutes, then take out the tea bag.")
 ```
 
-Nothing appears, and nothing should. It is worth a moment. The word
+Nothing appears, and nothing should. Let's stop here for a moment. The word
 `def` is short for "define". This cell writes a recipe card called
 `make_tea`, with five steps on it, and puts it away. Writing a recipe
 card does not make any tea.
@@ -373,12 +371,13 @@ print("One cup done. Now the second.")
 make_tea()
 ```
 
-Eleven lines: five steps, then our note, then the same five steps again.
+There are eleven lines. They are five steps, then our note, then the
+same five steps again.
 We wrote the steps once and used them twice.
 
 In Python, a function is a name for a list of steps. That fits the
-meaning from the last page, a promise: `make_tea` promises that, when you
-call it, these five steps happen, in this order. The lines pushed in
+meaning from the last page, where a function was a promise. `make_tea`
+promises that, when you call it, these five steps happen, in this order. The lines pushed in
 under `def` are the steps that belong to the function. Python uses that
 push to the right in the same way our pseudocode did.
 
@@ -397,8 +396,8 @@ make_tea_for(2)
 make_tea_for(6)
 ```
 
-The first call gives `cups` the value 2, and the second gives it 6. The
-same card, two different pots. (When `print` is given several things,
+The first call gives `cups` the value 2, and the second gives it 6. We
+used the same card for two different pots. (When `print` is given several things,
 separated by commas, it shows them all on one line with a space between
 each.)
 
@@ -433,11 +432,11 @@ Once you look for algorithms, you find them everywhere. A few of them:
   spin. It repeats the rinse two or three times. It chooses a
   temperature from the dial you set.
 - **A card payment at a shop** asks for your PIN. If it is right, the
-  payment goes through. If it is wrong, it lets you try again, but only
+  payment is made. If it is wrong, it lets you try again, but only
   three times.
 - **A music app on shuffle** picks a song you have not heard yet, plays
   it, and repeats until the playlist is done.
-- **A satnav** looks at many possible routes, works out how long each
+- **A satnav** looks at many possible routes, calculates how long each
   one takes, and chooses the fastest.
 
 Each of these was once a plan written by a person, then turned into
@@ -470,7 +469,7 @@ This page wrote a function with `def` on only the second page of the
 course. Most courses wait until names, `if` and loops are all in place,
 and teach functions some weeks later.
 
-Waiting has a good reason. By then a function has more to hold, and the
+There is a good reason to wait. By then a function has more to hold, and the
 steps inside it can do real work.
 
 We brought `def` in early because a function is the second of our four
@@ -487,7 +486,7 @@ the start.
 |---|---|
 | What is named here? | `cups` and `water_ml` in Python, `cups` in pseudocode, and a whole recipe called `make_tea` |
 | What is promised? | `make_tea()` promises five steps, in order; `make_tea_for(cups)` promises the right amount for any number of cups |
-| What happens when? | steps run from the top, one at a time; a value is worked out when its line runs, not later |
+| What happens when? | steps run from the top, one at a time; a value is calculated when its line runs, not later |
 | What does this space let us do? | the robot, and Python, do exactly what is written and nothing more; everything a person would assume must be said |
 
 ## What we have now

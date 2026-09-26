@@ -26,7 +26,7 @@ On this page we:
 - use a matrix to move the four corners of a square
 - see five effects a matrix can have on a picture
 - read a matrix's columns to know where it sends each point
-- work out a hidden matrix from the picture it made
+- find a hidden matrix from the picture it made
 
 ## Where do the corners go?
 
@@ -164,7 +164,7 @@ of a picture. Here are the five effects we have seen:
 Now look back at `rotate90`. You met the same matrix in problem 7 of the
 practice page for
 [Matrix multiplication: rows times columns](tutorial:multiplying-grids).
-There you worked out that it sends $(1,0)$ to $(0,1)$, and $(0,1)$ to
+There you found that it sends $(1,0)$ to $(0,1)$, and $(0,1)$ to
 $(-1,0)$.
 
 Can you see those two results in `rotate90`? They are its two
@@ -247,23 +247,23 @@ Which of the five words (stretch, squash, rotate, shear, reflect)
 matched your prediction before you saw the picture? Which one surprised
 you?
 
-This page leaves a question open: can every matrix be undone? The next
+This page leaves one question open. Can every matrix be undone? The next
 page, [Inverse matrices: undoing a transformation](tutorial:undoing-it),
 starts from that question.
 
-## Where to Read More
+## Where to read more
 
 Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 3:
 Linear Transformations and Matrices.*
-<https://www.youtube.com/watch?v=kYB8IZa5AuE>. The geometric picture behind
-everything in this tutorial, animated far better than a static plot can
-manage.
+<https://www.youtube.com/watch?v=kYB8IZa5AuE>. This video shows the geometric
+picture behind everything in this tutorial, with animation that a still
+plot cannot match.
 
 Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 4:
 Matrix Multiplication as Composition.*
-<https://www.youtube.com/watch?v=XkY2DOUCWMU>. What happens when you apply
-two of these transformations one after another — a natural next question
-once the gallery in this tutorial stops feeling new.
+<https://www.youtube.com/watch?v=XkY2DOUCWMU>. This video shows what happens
+when you apply two of these transformations one after another. Watch it
+once the gallery in this tutorial feels familiar.
 
 Hughes, J. F., van Dam, A., McGuire, M., Sklar, D. F., Foley, J. D., Feiner,
 S. K. and Akeley, K. (2013). *Computer Graphics: Principles and Practice*
@@ -271,6 +271,6 @@ S. K. and Akeley, K. (2013). *Computer Graphics: Principles and Practice*
 matrices, as they are actually used to move things on a screen.
 
 Looking Glass Universe (2018). *Matrices, matrix multiplication and linear
-transformations.* <https://www.youtube.com/watch?v=CBIO4xJ1Cok>. A matrix
-as instructions for where each arrow goes, which is how this page moves a
-picture. About fourteen minutes.
+transformations.* <https://www.youtube.com/watch?v=CBIO4xJ1Cok>. This video
+treats a matrix as instructions for where each arrow goes, as this page
+does with a picture. About fourteen minutes.

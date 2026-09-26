@@ -23,8 +23,8 @@ covers:
 # Machines that take a number: functions in maths and code
 
 A weather station, a phone and a 3D printer all know the temperature.
-But the small chip that senses it knows nothing about degrees. It gives
-out a voltage, and a rule turns that voltage into a temperature. The
+But the small chip that senses it knows nothing about degrees. It produces
+a voltage, and a rule turns that voltage into a temperature. The
 rule takes one number in and gives one number out. That is a function.
 
 Here is the question for this page. Give the rule a voltage the chip
@@ -38,18 +38,18 @@ On this page we:
   two are the same idea
 - ask which inputs a function accepts, and which outputs it can give
 - see an algorithm as a function on a set of inputs
-- tell a function that gives back a value from one that only does
+- tell a function that returns a value from one that only does
   something
 - run a function backwards, with its inverse
 - join two functions into one, and add `compose` to the toolkit
 
 > **The space we're in.** Most functions on this page take one number
-> and give one number back. We work in the real numbers, $\mathbb{R}$,
+> and return one number. We work in the real numbers, $\mathbb{R}$,
 > where no number squares to make a negative one. Python gives us `def`
 > and `return`, which we met on
 > [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold).
-> One thing usually goes unsaid: Python never checks that a function
-> keeps its promise. The docstring says the promise, and tests check it.
+> People rarely say that Python never checks that a function keeps its
+> promise. The docstring says the promise, and tests check it.
 
 ## Warm-up
 
@@ -89,10 +89,10 @@ Picture a machine with a slot and a tray. You put a number in the
 slot, the machine follows its rule, and a number drops into the tray.
 The same number in always gives the same number out.
 
-A common temperature chip, the TMP36, gives out 0.5 volts at 0 °C, and
+A common temperature chip, the TMP36, produces 0.5 volts at 0 °C, and
 0.01 volts more for every degree warmer. (A *volt* measures the push
 behind an electric current.) So
-to get the temperature, multiply the voltage by 100, then take away 50.
+to get the temperature, multiply the voltage by 100, then subtract 50.
 
 Maths writes that rule like this:
 
@@ -101,7 +101,7 @@ $$f(x) = 100x - 50$$
 We read $f(x)$ as "f of x". The letter $f$ is the function's name, $x$
 stands for the input, and the right-hand side is the rule. So $f(0.75)$
 means "put 0.75 in the slot": $f(0.75) = 100 \times 0.75 - 50 = 25$.
-Writing a function this way is called *function notation*.
+This way of writing a function is called *function notation*.
 
 Python writes the same rule with `def`. Before you run the cell, what
 will each line show?
@@ -116,7 +116,7 @@ print(sensor_celsius(0.75))
 print(sensor_celsius(0.5))
 ```
 
-The cell shows `25.0` and `0.0`: a warm room, and freezing. Put the two
+The cell shows `25.0` and `0.0`, a warm room and freezing. Put the two
 versions side by side, and every part of one has a partner in the
 other:
 
@@ -140,11 +140,11 @@ into it.
 
 ### Your turn
 
-Another chip, the LM35, gives out 0 volts at 0 °C, and 0.01 volts more
+Another chip, the LM35, produces 0 volts at 0 °C, and 0.01 volts more
 for every degree.
 
 1. Change the rule in the cell below to the LM35's.
-2. Before you run it, work out what 0.25 volts means for this chip.
+2. Before you run it, find what 0.25 volts means for this chip.
 3. Add a line that prints `lm35_celsius(0)`. Why is it different from
    the TMP36 at 0 volts?
 
@@ -160,8 +160,8 @@ print(lm35_celsius(0.25))
 ## What goes in and what comes out
 
 Can we put any number in the slot? Python will run
-`sensor_celsius(-3)` without a word of complaint, and give back
-`-350`. The chip never gives out −3 volts, and nothing can be −350 °C.
+`sensor_celsius(-3)` without a word of complaint, and return
+`-350`. The chip never produces −3 volts, and nothing can be −350 °C.
 Python followed the rule. The rule did not know which numbers it was
 meant for.
 
@@ -210,10 +210,10 @@ was the right kind of thing, a number, but outside what the function
 accepts. That is different from a `TypeError`, which means the wrong
 kind of thing altogether.
 
-So is asking for $\sqrt{-4}$ a foolish move? No. It has no answer in
+So what about $\sqrt{-4}$? It has no answer in
 $\mathbb{R}$, because every real number, multiplied by itself, gives 0
 or more. Unit 7 builds a bigger space where $-4$ does have a square
-root. The move is fine; it needs a different space.
+root. The move needs a different space.
 
 Our own function can say its domain too. The docstring says it in
 words, and an `assert` at the top checks it, with `between` from your
@@ -236,9 +236,9 @@ print(sensor_celsius(-3))
 ```
 
 This time the last line of the error is
-`AssertionError: a TMP36 gives 0.1 to 1.75 volts`. So the answer to the
-question at the top is: the function's job, once its promise names its
-domain. The message helps whoever calls the function next, and that is
+`AssertionError: a TMP36 gives 0.1 to 1.75 volts`. So we can answer the
+question at the top. It is the function's job, once its promise names
+its domain. The message helps whoever calls the function next, and that is
 often you, a few weeks later.
 
 ```question
@@ -294,15 +294,15 @@ print(sum_by_loop(100), sum_by_formula(100))
 ```
 
 Both give 5050. Inside, one makes a hundred additions, and the other
-one multiplication and one division. But from the outside, as machines, the two cannot be told
-apart: the same input always gives the same output.
+one multiplication and one division. But from the outside, as machines, nobody can tell them
+apart. The same input always gives the same output.
 
 This is how mathematicians think of an algorithm. An algorithm, the list
 of clear steps we met on
 [Four questions for any puzzle](tutorial:four-questions), is a function
-on a domain of inputs: for each input it is built for, it gives one
+on a domain of inputs. For each input it is built for, it gives one
 output. The function says what comes out. The algorithm says how we get
-there. Two algorithms can be one function.
+there. Here, two different algorithms give the same function.
 
 Let's check that on a lot of the domain at once. How long do you expect
 it to take?
@@ -324,13 +324,13 @@ print(sum_by_loop(-5), sum_by_formula(-5))
 
 The loop gives `0`, because `range(1, -4)` is empty. The formula gives
 `10`. Outside the domain the two machines disagree, and neither answer
-means anything, because the question has no answer. That is why the domain
-belongs in the promise: both promised the same thing, for whole numbers
+means anything, because the question has no answer. So the domain
+belongs in the promise. Both promised the same thing, for whole numbers
 from 0 up, and both kept it.
 
 ## Functions that give back, and procedures that do
 
-Not every function hands back a value. Some do a job instead: they
+Not every function returns a value. Some do a job instead. They
 print a line, draw a picture or save a file. Here is one. What will the
 last line show?
 
@@ -348,18 +348,18 @@ print("show_reading gave back:", result)
 
 The reading appears, and then `show_reading gave back: None`. *None* is
 Python's value for "nothing here". A function with no `return` line
-gives back `None` when it finishes.
+returns `None` when it finishes.
 
 A *procedure* is a function that does a job, such as printing, instead
-of giving back a value. Python writes both with `def`. Some older
+of returning a value. Python writes both with `def`. Some older
 languages, such as Pascal, use two different words for them. The
 difference matters when we build with them. `sensor_celsius(0.75) + 2`
 is a number we can use. `show_reading(0.75) + 2` asks Python to add
 `None` and 2, and stops with a `TypeError`.
 
-Look at how `show_reading` gets its temperature. It does not work it
-out again: it calls `sensor_celsius`. Splitting a program into small
-functions, each with one job, is called *modularisation*. Swap the
+Look at how `show_reading` gets its temperature. It does not calculate
+it again. It calls `sensor_celsius`. When we split a program into small
+functions, each with one job, that is called *modularisation*. Swap the
 TMP36 for another chip, change `sensor_celsius`, and every reading is
 right at once.
 
@@ -376,24 +376,24 @@ print(digit_at(sum_by_loop(100), place=1, base=2))
 ```
 
 The first line gives 5, the digit in the thousands place. The second
-gives 1: in binary, 5050 is `1001110111010`, and its bit in place 1 is
-1. Look at the order of events. Python works out `sum_by_loop(100)`
+gives 1. In binary, 5050 is `1001110111010`, and its bit in place 1 is
+1. Look at the order of events. Python calculates `sum_by_loop(100)`
 first, and gets 5050. Only then does that number go into `digit_at`.
 The inside of the brackets happens before the outside, as it did with
 `print(1920 * 1080)` on the first page of this course.
 
 ## Running it backwards: the inverse
 
-The display says 25 °C. What voltage did the chip give out?
+The display says 25 °C. What voltage did the chip produce?
 
-The rule did two things, in order: multiply by 100, then take away 50.
+The rule did two things, in order: multiply by 100, then subtract 50.
 To go backwards, undo each step in the opposite order. First add 50,
 then divide by 100:
 
 $$f^{-1}(y) = \frac{y + 50}{100}$$
 
 We read $f^{-1}$ as "f inverse". The *inverse* of a function is a
-function that undoes it: if $f$ takes $x$ to $y$, then $f^{-1}$ takes
+function that undoes it. If $f$ takes $x$ to $y$, then $f^{-1}$ takes
 $y$ back to $x$. The −1 here is a name, not a power.
 
 What will these three lines show? The second and third put one machine's
@@ -410,8 +410,8 @@ print(volts_for(sensor_celsius(1.25)))
 print(sensor_celsius(volts_for(-10)))
 ```
 
-The answers are `0.75`, `1.25` and `-10.0`. Going forward and then back
-lands where we started, whichever way round we go. Notice that the
+The answers are `0.75`, `1.25` and `-10.0`. If we go forward and then
+back, we land where we started, whichever way round we go. Notice that the
 domain of `volts_for` is the range of `sensor_celsius`. −60 °C is not in
 that range, and `volts_for(-60)` gives −0.1 volts, which the chip can
 never give. A later page in this unit,
@@ -440,9 +440,8 @@ root chooses 3, which undoes the square for 3 but not for −3.
 A function has an inverse only when each output comes from exactly one
 input. Such a function is called *one-to-one*. Squaring on all of
 $\mathbb{R}$ is not one-to-one. But on a smaller space, the numbers from
-0 up, it is, and there $\sqrt{x}$ is its inverse. A move that fails in
-one space can work in another. This time the space that works is
-smaller.
+0 up, it is, and there $\sqrt{x}$ is its inverse. This time the smaller
+space works.
 
 ```question
 id: machines-inverse-round
@@ -462,14 +461,15 @@ Does `round` have an inverse?
 ## Machines in a row: composition
 
 A small computer board, such as an Arduino, cannot read a voltage
-directly. It turns the voltage into a whole number from 0 to 1023: 10
-bits, so $2^{10} = 1024$ possible readings. Each step up is
-$\frac{5}{1024}$ of a volt. So a reading goes through two machines:
-first reading to volts, then volts to °C.
+directly. It turns the voltage into a whole number from 0 to 1023. That
+is 10 bits, so $2^{10} = 1024$ possible readings. Each step up is
+$\frac{5}{1024}$ of a volt. So a reading passes through two machines.
+The first turns the reading into volts, and the second turns volts
+into °C.
 
 Earlier on this page, `digit_at(sum_by_loop(100), 3)` sent the output
-of one machine straight into the slot of the next. Joining two
-functions this way is called *composition*. Maths writes "g after f"
+of one machine straight into the slot of the next. When we join two
+functions this way, that is called *composition*. Maths writes "g after f"
 as
 
 $$(g \circ f)(x) = g(f(x))$$
@@ -490,16 +490,15 @@ print(reading_volts(sensor_celsius(0.75)))
 
 The first line gives about 25.2 °C. Now look at the second. Python ran
 the machines the other way round without a word, and gave about 0.12.
-That number means nothing: it treats a temperature as a board's
+That number means nothing. It treats a temperature as a board's
 reading. The same two machines, in a different order, do a different
-job, or no job at all. That is sequence, the third of our four
-questions: what happens when?
+job, or no job at all. The order of the machines matters here.
 
 ### Your turn: a tool that joins machines
 
-Your toolkit already takes functions as inputs: `truth_table` was given
-a rule. `compose` goes one step further. It takes two functions and
-gives back a new function. Here is its promise:
+Your toolkit already takes functions as inputs. For example,
+`truth_table` was given a rule. `compose` goes one step further. It
+takes two functions and returns a new function. Here is its promise:
 `compose(outer, inner)` is a function that, given `x`, returns
 `outer(inner(x))`.
 
@@ -509,8 +508,8 @@ Replace the `...` with three lines:
    in one level.
 2. Inside `both`, pushed in one more level, return `outer(inner(x))`.
 3. Back at the level of `def both`, write `return both`, with no
-   brackets after `both`. The brackets would call it; without them, we
-   hand over the function itself.
+   brackets after `both`. The brackets would call it. Without them, we
+   return the function itself.
 
 ```python exec
 id: machines-toolkit
@@ -555,7 +554,7 @@ title: some steps
 hands back a machine, and which one hands back a number?
 ```
 
-Now the tests. Until `compose` is written, the first test stops with an
+Now the tests. Until you write `compose`, the first test stops with an
 error. That is the test doing its job. What do you notice about the
 third test?
 
@@ -571,7 +570,7 @@ print("compose keeps its promise.")
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through. Yours may use other names inside and do the
+Here is one answer. Yours may use other names inside and do the
 same job.
 
 ```python
@@ -594,7 +593,7 @@ square root failing to undo squaring: −3 went in, and 3 came out.
 
 One thing may seem strange. `both` is made inside `compose`, and still
 knows `outer` and `inner` after `compose` has finished. If that is hard
-to picture, it is fine to take it on trust for now: a later page in this
+to picture, you can trust it for now. A later page in this
 unit, [What a function can see](tutorial:what-a-function-can-see),
 explains how.
 
@@ -613,7 +612,7 @@ id: machines-compose-your-turn
 <details class="dl-why"><summary>Why this way?</summary>
 
 This page showed a function as a machine with a slot and a tray.
-Mathematicians define a function another way: as a set of pairs, each
+Mathematicians define a function another way, as a set of pairs, each
 input paired with exactly one output, with no machine in sight.
 
 The set of pairs is the definition a university course would use. It
@@ -647,8 +646,8 @@ function.
 | `math.sqrt(x)` | the square root of $x$: the number that, times itself, makes $x$ |
 | `ValueError` | the right kind of value, but outside what the function accepts |
 | `assert condition, "message"` | a check that shows a message when it fails |
-| algorithm as a function | for each input in its domain, one output; two algorithms can be one function |
-| procedure, `None` | a function that does a job and gives back nothing; Python's value for nothing |
+| algorithm as a function | for each input in its domain, one output; two algorithms can give the same function |
+| procedure, `None` | a function that does a job and returns nothing; Python's value for nothing |
 | modularisation | splitting a program into small functions, each with one job |
 | keyword argument | naming the slot in a call: `sensor_celsius(volts=0.75)` |
 | inverse, $f^{-1}$ | the function that undoes $f$ |

@@ -7,8 +7,8 @@ version: 2026.09.11.1
 # FAQ
 
 Here are answers to questions about learning with dewlab.
-[Troubleshooting](tutorial:troubleshooting) is the page for when
-something does not work.
+When something does not work, read
+[Troubleshooting](tutorial:troubleshooting).
 
 ## Do I need to know how to code before I start?
 
@@ -30,12 +30,12 @@ computer, VS Code is one option.
 
 The tutorials and exercises are not graded. Only the two projects and
 the exam are, and your teacher covers the dates and the briefs for those
-in class. Breaking something and fixing it while you are still learning
-costs nothing here.
+in class. While you are learning, you can break something and fix it,
+and it costs you nothing.
 
 ## Which path can I start with?
 
-Either. In the website path, we learn HTML for a page's structure and
+You can start with either. In the website path, we learn HTML for a page's structure and
 CSS for its appearance. In the data path, we learn to make tables and
 use SQL to find information in them.
 
@@ -46,7 +46,7 @@ more.
 ## What if I miss a class or need more time?
 
 Each page is short and stands mostly on its own. You can return to a
-page and work through an example again. Some ideas may need another
+page and try an example again. Some ideas may need another
 explanation or more practice.
 
 The search box on the front page can help you find a topic by name.
@@ -55,7 +55,7 @@ to take a break.
 
 ## Can I use this on a phone?
 
-Yes, for reading the tutorials. Editing website files is usually more
+Yes, you can read the tutorials on a phone. Editing website files is usually more
 comfortable on a computer, with room for the editor and browser side
 by side.
 
@@ -85,14 +85,15 @@ few: a single downloadable HTML file, a printable version, or your cells
 as a Jupyter notebook. The contents page also offers a whole series as a
 zip of separate files.
 
-## What does Reset do?
+## What do Reset and Clear do?
 
-**Reset** restores one cell or one site editor to the code the tutorial
-started with, and clears its own result. Only that one thing changes —
-everything else on the page stays as it was. It does not clear a table
+**Reset** (↺) clears one cell's result and leaves its code alone.
+**Clear** (↻) puts back the code the tutorial started with, and clears
+the result too. Only that one cell changes. Everything else on the page
+stays as it was. It does not clear a table
 you built with an earlier SQL cell, or a variable an earlier Python cell
-set: those live in the page's shared connection or its shared Python,
-not in the cell you reset. If you need a completely fresh start, reload
+set. Those live in the page's shared connection or its shared Python,
+not in the cell you clear. If you need a completely fresh start, reload
 the page.
 
 ## What happens when the course ends?

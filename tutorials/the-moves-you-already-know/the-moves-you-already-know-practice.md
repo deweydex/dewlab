@@ -7,7 +7,8 @@ version: 2026.09.26.1
 
 # Sequence, selection and iteration inside a class — Practice
 
-Problems on the four moves inside a class, and three from earlier pages.
+This page has problems on the four moves inside a class, and three from
+earlier pages.
 Try each problem before you open anything under it, and run the cells to
 test your guesses.
 
@@ -36,7 +37,7 @@ type: fill-in-the-blank
 <details class="dl-answer"><summary>why</summary>
 
 A `while` line has a condition in it, like an `if`, so it can look like
-selection. But its job is to repeat: it runs its lines again and again,
+selection. But its job is to repeat. It runs its lines again and again,
 and the condition only decides when to stop. That makes it iteration.
 `self.fuel = self.fuel - 10` stores on the object, so the fuel stays
 burnt after the method ends.
@@ -283,8 +284,8 @@ fifth move, beside storing, sequence, selection and iteration?
 
 <details class="dl-answer"><summary>one answer</summary>
 
-Not a fifth move. What a class adds is a second place to store: on the
-object, through `self`, where a value lasts from one method call to the
+No, it does not add a fifth move. A class adds a second place to store
+values: on the object, through `self`, where a value lasts from one method call to the
 next and every method can reach it. The code inside each method is still
 built from the same four moves.
 
@@ -319,8 +320,8 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`8`. Storing on an object under a new name makes a new field, quietly,
-the way a misspelt key made a new entry in a dictionary. A slip in a
+`8`. If you store on an object under a new name, you make a new field,
+quietly, the way a misspelt key made a new entry in a dictionary. A slip in a
 method's name, such as `grace.take_damge(5)`, stops with an error
 instead.
 
@@ -352,7 +353,7 @@ What will the last line print?
 
 The cell shows `8`, then `None`. The `8` comes from the `print()` inside
 `double`. The function has no `return`, so `result` is `None`. A method is
-the same: `heaviest()` has to `return` its answer for a caller to use it.
+the same. `heaviest()` has to `return` its answer for a caller to use it.
 
 </details>
 

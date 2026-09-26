@@ -40,7 +40,7 @@ Look back at what each page added:
 6. [Composition](tutorial:objects-inside-objects): a class that holds
    your objects.
 7. [Testing a class](tutorial:testing-what-a-class-does): five tests,
-   one at a boundary, and one open door closed.
+   one at a boundary, and one missing rule added.
 8. [Documenting a class](tutorial:documenting-a-class): docstrings, with
    an example doctest can check.
 9. [A front end](tutorial:a-front-end-for-a-class): a `run_choice`,
@@ -163,11 +163,11 @@ id: your-world-front-end--your-own
 
 Your own version of this world may be different from the one above, and
 it should be: different names, a different child class, a different
-rule. What matters is that every piece is there, and that the tests pass.
+rule. Every piece should be there, and the tests should pass.
 
 ## Making it yours
 
-A world that runs is where the interesting part starts. Choose something
+The interesting part starts when your world runs. Choose something
 to add, and add it the way this series did: the rule first, in a method;
 then a test at its boundary, which fails before the rule is written; then
 a docstring; then a command, so a player can reach it. Here are some
@@ -178,7 +178,7 @@ starting points, and your own idea is better than any of them.
 - Treasure: a `Treasure` class with a value in gold, a room that holds
   it, and a hero who can carry at most three things.
 - A second room, and a command to move between them.
-- A monster that fights back harder when it is nearly down: a child class
+- A monster that fights back harder when its health is low: a child class
   of `Character`, through `super()`.
 
 </div>
@@ -186,7 +186,7 @@ starting points, and your own idea is better than any of them.
 <div class="dl-world" data-world="ocean">
 
 - Crew: a `CrewMember` with oxygen, a submarine that holds at most three,
-  and a dive that is refused when the crew would run short.
+  and a dive that is refused when the crew would not have enough oxygen.
 - Specimens found on each dive, and a logbook that answers "how many are
   alive?"
 - A second submarine, and a command to choose which one the player is
@@ -237,8 +237,8 @@ a classmate if you want one. There are no right answers to them.
   differently on the first page?
 
 Your code is saved on this page, on this device. The
-[Notebook](../compose/notebook.html) keeps work in files, and is the
-place to take a world that has outgrown one page.
+[Notebook](../compose/notebook.html) keeps work in files. Take your world
+there when it grows too big for one page.
 
 ## Where to read more
 
@@ -246,10 +246,10 @@ Everything here is covered elsewhere too, often in a form that will suit you
 better than this one.
 
 Sweigart, A. (2016). *Invent Your Own Computer Games with Python* (4th
-ed.). No Starch Press. Free at <https://inventwithpython.com/invent4thed/>. Whole games, one
-chapter each, for when your world wants to become one.
+ed.). No Starch Press. Free at <https://inventwithpython.com/invent4thed/>. Each
+chapter builds a whole game. Use it when your world is ready to become one.
 
 Python Software Foundation. *The Python Tutorial*, section 9, "Classes".
-<https://docs.python.org/3/tutorial/classes.html>. Everything this series
-taught, in the official words, with more that a bigger world will
-eventually need.
+<https://docs.python.org/3/tutorial/classes.html>. This section covers
+everything this series taught, in the official words. It also has more
+that a bigger world will need later.

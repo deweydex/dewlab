@@ -11,7 +11,7 @@ version: 2026.09.24.1
 
 A music app keeps every playlist that anybody makes. When it tells you
 that you and a friend share two songs, it asked its database, not
-Python. How do you ask a database for an intersection? With
+Python. How do you ask a database for an intersection? You use
 the same idea you already have, written in a different language.
 
 On this page we:
@@ -24,10 +24,10 @@ On this page we:
 - make every pair of rows from two tables, and then keep only the pairs
   that match, which is what a `JOIN` does
 
-> **The space we're in.** A small database, which lives inside this page
-> and is reached with SQL. Python is still here, but most cells on this
-> page are SQL. One thing usually goes unsaid: a table is close to a set
-> of rows, but not the same. A table can hold the same values twice, and
+> **The space we're in.** We are working with a small database, which
+> lives inside this page. We reach it with SQL. Python is still here, but
+> most cells on this page are SQL. One thing is rarely said. A table is
+> close to a set of rows, but it is not the same. A table can hold the same values twice, and
 > SQL has words for when that matters.
 
 ## Two playlists, two tables
@@ -74,18 +74,18 @@ whose value is different on every row, so that each row can be named.
 SQLite fills it in by itself, counting 1, 2, 3.
 
 `SELECT my_song_id, title FROM my_song_tbl` asks for those two columns
-of every row in `my_song_tbl`. "Linger" is on my playlist twice. How many rows do you think come
-back: 6 or 7? Run it to check.
+of every row in `my_song_tbl`. "Linger" is on my playlist twice. How many rows do you think it
+returns: 6 or 7? Run it to check.
 
 ```sql exec
 id: sets-db-select
 SELECT my_song_id, title FROM my_song_tbl;
 ```
 
-Seven. A Python set dropped the second "Linger", but the table keeps
-it. The two "Linger" rows are different rows, because their keys, 2 and
-5, are different. So a table is a set of rows, and the key is what
-makes each row different. It is not a set of titles.
+There are seven. A Python set dropped the second "Linger", but the table
+keeps it. The two "Linger" rows are different rows, because their keys,
+2 and 5, are different. So a table is a set of rows, and the key makes
+each row different. It is not a set of titles.
 
 When we want the titles as a set, `SELECT DISTINCT` keeps each
 different value once. It does for a column what `set()` did for a list.
@@ -95,7 +95,7 @@ id: sets-db-distinct
 SELECT DISTINCT title FROM my_song_tbl;
 ```
 
-Six titles, and "Linger" once.
+We get six titles, and "Linger" appears once.
 
 ## Union: UNION
 
@@ -118,7 +118,7 @@ SELECT title FROM your_song_tbl
 ORDER BY title;
 ```
 
-The same 10 songs. `UNION` dropped the second "Linger", the two extra
+We get the same 10 songs. `UNION` dropped the second "Linger", the two extra
 "Zombie" rows and the shared "Dreams", as Python's `|` did.
 
 Sometimes the repeats matter. A radio station might want every song
@@ -132,7 +132,7 @@ UNION ALL
 SELECT title FROM your_song_tbl;
 ```
 
-Fourteen rows: all 7 of mine, then all 7 of yours. `UNION ALL` is
+We get fourteen rows: all 7 of mine, then all 7 of yours. `UNION ALL` is
 closer to adding two lists with `+` than to a set operation.
 
 ### Rows must have the same shape
@@ -150,9 +150,8 @@ SELECT title FROM your_song_tbl;
 The message says that the `SELECT`s on the left and the right of
 `UNION` "do not have the same number of result columns". In maths, you
 may take the union of any two sets. In SQL, every row of a result has
-the same columns, so both sides must give rows of the same shape. It is
-the fourth question: this space allows a union only of rows that line
-up column by column.
+the same columns, so both sides must give rows of the same shape. So
+SQL allows a union only of rows that line up column by column.
 
 ## Intersection and difference: INTERSECT and EXCEPT
 
@@ -166,7 +165,7 @@ INTERSECT
 SELECT title FROM your_song_tbl;
 ```
 
-"Dreams" and "Zombie", as `&` gave on
+We get "Dreams" and "Zombie", as `&` gave on
 [Collections without repeats](tutorial:collections-without-repeats#on-both-lists-intersection).
 Each appears once, although "Zombie" is in your table twice. Like
 `UNION`, `INTERSECT` keeps each different row once.
@@ -181,7 +180,7 @@ EXCEPT
 SELECT title FROM your_song_tbl;
 ```
 
-Four songs: "Chasing Cars", "Galway Girl", "Linger" and "One". Here is
+We get four songs: "Chasing Cars", "Galway Girl", "Linger" and "One". Here is
 the same question in Python, with the lists from the build cell. Each
 line should give the same songs as one of the SQL cells above.
 
@@ -218,7 +217,7 @@ The database cannot guess which space you mean, so you name it.
 ### Your turn
 
 1. Swap the two tables in the `EXCEPT` cell. Before you run it, which
-   four songs will come back?
+   four songs will appear?
 2. Change `INTERSECT` to `UNION ALL` in its cell, and then back again.
    How many rows does each give, and why?
 3. SQL has no word for the symmetric difference either. It is
@@ -272,7 +271,7 @@ SELECT COUNT(*) FROM my_song_tbl CROSS JOIN your_song_tbl;
 
 It is 49, which is $7 \times 7$. The counting principle,
 $|A \times B| = |A| \times |B|$, holds for tables too, as long as we
-count rows and not titles: a `CROSS JOIN` pairs rows, and each "Linger"
+count rows and not titles. A `CROSS JOIN` pairs rows, and each "Linger"
 row gets its own seven partners.
 
 ## A JOIN keeps the pairs that match
@@ -292,7 +291,7 @@ FROM my_song_tbl CROSS JOIN your_song_tbl
 WHERE my_song_tbl.title = your_song_tbl.title;
 ```
 
-Three pairs. "Dreams" makes one pair. "Zombie" makes two, because my
+There are three pairs. "Dreams" makes one pair. "Zombie" makes two, because my
 one "Zombie" row matches each of your two "Zombie" rows, 2 and 6.
 
 Keeping the matching pairs of a `CROSS JOIN` is so common that SQL has
@@ -307,29 +306,29 @@ FROM my_song_tbl
 JOIN your_song_tbl ON my_song_tbl.title = your_song_tbl.title;
 ```
 
-The same three rows. So a `JOIN` is the Cartesian product with a
+We get the same three rows. So a `JOIN` is the Cartesian product with a
 condition: every pair, then only the pairs that match. The database does
 not usually build all 49 pairs first. It finds the matches more directly,
-often with a lookup that works a little like a set's hash. But the
-answer is the one the long way promises, as the loop on
+often with a lookup that works a little like a set's hash. But it gives
+the same answer as the long way, as the loop on
 [Collections without repeats](tutorial:collections-without-repeats#on-both-lists-intersection)
-was the proof of `&`.
+did for `&`.
 
 On
 [Collections without repeats](tutorial:collections-without-repeats#from-sets-to-databases),
 we said that a `JOIN` keeps what two tables have in common, as an
 intersection does. We can now say it more exactly. `INTERSECT` keeps
 the values both sides have. A `JOIN` keeps the pairs of rows that
-match, so a repeat on either side gives an extra pair. That is why
-"Zombie" came back once from `INTERSECT` and twice from the `JOIN`.
+match, so a repeat on either side gives an extra pair. So "Zombie"
+appeared once from `INTERSECT` and twice from the `JOIN`.
 
 In a real database, the condition after `ON` is almost always a key.
 The Database Methods page
 [Joining two tables: foreign keys and JOIN](tutorial:a-second-table-and-a-join)
 joins fossil sites to dinosaurs on `dinosaur_id`, which names exactly
 one dinosaur. And the rows that find no partner, like "Linger" and "One"
-here, are left out of a `JOIN` without a word. Those rows are the ones
-`EXCEPT` found. The page
+here, are dropped from a `JOIN` with no warning. `EXCEPT` found those
+same rows. The page
 [Joining real tables: the rows a JOIN drops](tutorial:joining-two-real-tables)
 shows how to see them, with a `LEFT JOIN`.
 
@@ -340,18 +339,18 @@ British computer scientist working at IBM, published a paper that
 treated a table as a *relation*: a set of rows, all with the same
 columns. Once a table is
 a set, every move on sets becomes a move on tables, and a question can
-say what it wants without saying how to find it. SQL grew out of
-that idea at IBM in the years after. The databases built this way are
+say what it wants without saying how to find it. SQL came from
+that idea, at IBM, in the following years. The databases built this way are
 still called relational databases.
 
 SQL did not follow Codd all the way. His relations held each row once,
-and a SQL table may hold repeats. That is why SQL needs both `UNION`
-and `UNION ALL`, and why `DISTINCT` exists at all.
+and a SQL table may hold repeats. So SQL needs both `UNION` and
+`UNION ALL`, and it needs `DISTINCT`.
 
 ## Where to read more
 
 Codd, E. F. (1970). A relational model of data for large shared data
-banks. *Communications of the ACM*, 13(6). The paper that started
+banks. *Communications of the ACM*, 13(6). This paper started
 relational databases. Its first pages explain the idea in words, before
 the notation begins.
 

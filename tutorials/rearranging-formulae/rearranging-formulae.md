@@ -53,7 +53,7 @@ acceleration $a$ times the time $t$.
 There are four letters in the formula. So there are four questions you
 might ask, one for each letter. The cell below has one function for each
 question. Read the four functions and compare them. The first line
-works out a final speed. Can you predict what the other three lines
+finds a final speed. Can you predict what the other three lines
 print, as they work backwards from that answer? Run it to check.
 
 ```python exec
@@ -84,17 +84,17 @@ print("Acceleration:", acceleration(v, 5, 4))
 print("Time taken:", time_taken(v, 5, 2))
 ```
 
-The final speed is 13 m/s. Working backwards from 13, we get back the
-starting speed 5, the acceleration 2 and the time 4 that we put in.
+The final speed is 13 m/s. When we work backwards from 13, we get the
+same starting speed 5, acceleration 2 and time 4 that we put in.
 
-All four functions describe the same fact about the world. Writing the
-four functions *is* transposing the formula. You have done the algebra
+All four functions describe the same fact about the world. When you
+wrote the four functions, you transposed the formula. You have done the algebra
 already, in a language where you can check it.
 
 Textbooks often show the first form as the "real" one, and the
 rearrangements as copies made from it. In fact they are all equally
-true. $v = u + at$ and $t = \frac{v - u}{a}$ say the same thing, with a
-different letter in the spotlight.
+true. $v = u + at$ and $t = \frac{v - u}{a}$ say the same thing. They
+only have a different letter as the subject.
 
 ### Your turn
 
@@ -160,12 +160,12 @@ print("Divide by a:   (v - u)/a =", step_two, " and  t =", t)
 ```
 
 Each line prints both sides, and the two sides agree at every step: 8
-and 8, then 4.0 and 4. That is what "doing the same thing to both sides"
-looks like.
+and 8, then 4.0 and 4. The printout shows "doing the same thing to both
+sides" with real numbers.
 
 The order of the steps matters. It is the reverse of the order we use
-to evaluate. To work out $u + at$, we multiply first, then add. To undo
-it, we subtract first, then divide. **Undoing goes from the outside in.**
+to evaluate. To calculate $u + at$, we multiply first, then add. To undo
+it, we subtract first, then divide. **We undo from the outside in.**
 
 ### Your turn
 
@@ -214,8 +214,8 @@ side (in parallel). $R$ is their total resistance:
 
 $$\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$$
 
-We want $R$, and $R$ is in a denominator. Here is the trick: $\frac{1}{R}$
-is easy to find, because it equals the right-hand side. So we find
+We want $R$, and $R$ is in a denominator. But $\frac{1}{R}$ is easy to
+find, because it equals the right-hand side. So we find
 $\frac{1}{R}$ first, and then flip it over:
 
 $$R = \frac{1}{\frac{1}{a} + \frac{1}{b}}$$
@@ -248,8 +248,8 @@ There are two things to notice in those answers.
 
 Both facts are easy to read from the formula once $R$ is the subject.
 Neither one is easy to see in $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$.
-**That is what rearranging is for.** It puts the thing you want to
-understand where you can see it. It is more than tidying up.
+**Rearranging puts the thing you want to understand where you can see
+it.** It is more than tidying up.
 
 ### The denominator that is not allowed
 
@@ -263,7 +263,7 @@ print(parallel(10, 0))
 ```
 
 The first line works. The second one fails with an error. The algebra
-warned us before the code did: $\frac{1}{b}$ with $b = 0$ is not a
+warned us before the code did. $\frac{1}{b}$ with $b = 0$ is not a
 number. In real life, a resistance of zero is a plain wire. A wire
 beside a resistor carries all the current, so there is no resistance
 left to measure.
@@ -299,7 +299,7 @@ def object_distance(f, v):
 
 ## Checking yourself
 
-Here is where programming helps with the algebra.
+Programming can help with the algebra here.
 
 A rearrangement is correct if it agrees with the original formula for
 every input. We cannot try every input. But we can try a few hundred
@@ -345,9 +345,9 @@ check finds it on the first try.
 Why is the `1e-9` there? `1e-9` means $10^{-9}$, or 0.000000001. In
 [Variables, data types and text](tutorial:storing-and-computing) we saw
 that floats cannot store every number exactly. So two calculations that
-should agree exactly can differ in the last decimal place. With floats,
-"are these exactly equal?" is nearly always the wrong question. The
-right question is: "are these closer together than I care about?"
+should agree exactly can differ in the last decimal place. So with
+floats, we do not ask "are these exactly equal?" We ask "are these
+closer together than I care about?"
 
 ### Your turn
 
@@ -358,7 +358,7 @@ earlier?
 2. Run it, and make sure it agrees.
 3. Now break your rearrangement on purpose. Does the check catch it?
 
-A test that has never failed has not really been tested.
+If a check never fails, you do not know that it can catch a mistake.
 
 ```python exec
 id: your-turn-4
@@ -376,7 +376,7 @@ Here are three things worth remembering.
 **No arrangement of a formula is more correct than another.** The form
 a formula was written in only tells you what its writer wanted to know.
 
-**Rearranging is for seeing.** $R = \frac{1}{\frac{1}{a} + \frac{1}{b}}$
+**Rearranging can show what a formula hides.** $R = \frac{1}{\frac{1}{a} + \frac{1}{b}}$
 shows things that $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$ hides. We do
 the work to reach the form where the answer is easy to see.
 
@@ -391,8 +391,8 @@ we use the same rule to find the value of an unknown.
 In a few sentences: which of the rearrangements above did you find
 hardest? What exactly made it harder than the others?
 
-## Where to Read More
+## Where to read more
 
 Khan Academy. *Rearrange Formulas to Isolate Specific Variables.*
-<https://www.youtube.com/watch?v=eTSVTTg_QZ4>. The same one rule — do the
-same thing to both sides — applied to a different set of formulae.
+<https://www.youtube.com/watch?v=eTSVTTg_QZ4>. This video uses the same
+rule, do the same thing to both sides, on a different set of formulae.

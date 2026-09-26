@@ -8,7 +8,7 @@ version: 2026.09.26.1
 
 Here is something this course builds. Press **Run**, and it throws 100,000
 darts at a square, one at a time, and uses the ones that land inside a
-circle to work out π. You do not need to read the code yet.
+circle to estimate π. You do not need to read the code yet.
 
 ```python exec
 id: a-trailer-1
@@ -24,26 +24,26 @@ for dart in range(1, 100001):
         print(dart, "darts: pi is about", 4 * inside / dart)
 ```
 
-What happens to the estimate as the darts go up? Run it again: are the
+What happens to the estimate as the darts go up? Run it again. Are the
 numbers the same? You will build this yourself in
 [Monte Carlo simulation: estimating π with random darts](tutorial:counting-darts),
 and find out why more darts help, and how much.
 
-That is Computational Methods: Python on problems too big, or too
-tedious, to do by hand. It turns pictures with matrices, writes text from
+This course is Computational Methods. It uses Python on problems too
+big, or too tedious, to do by hand. It turns pictures with matrices, writes text from
 the words of a book, simulates chance and queues, and races algorithms.
 On most pages the tasks come in worlds, and you choose one on each page:
 photos and filters, sprites, starships and space scenes; living systems,
 queues and the way things spread; mazes, maps, collections and puzzles.
 The page remembers your choice.
 
-Everything runs in the box above: a *cell*. This page is about how cells
+Everything runs in the box above. The box is called a *cell*. This page is about how cells
 work, and what to do when one does not do what you expect.
 
 ## How a cell works
 
 To run a cell, press its **Run** button, or hold Ctrl and press Enter.
-Everything runs in this browser, on the computer in front of you: nothing
+Everything runs in this browser, on the computer in front of you. Nothing
 installs, and nothing you type leaves it. What will appear under this
 cell?
 
@@ -72,8 +72,8 @@ The area under a cell shows two kinds of thing:
 An *expression* is a piece of code that has a value, such as `2 ** 10`,
 which is 2 to the power of 10. Some lines are instructions instead. An
 instruction, such as `total = 5`, does a job, but has no value to show.
-Change the last line to `total = 2 ** 10`, and run it again: the printed
-line appears, and nothing else.
+Change the last line to `total = 2 ** 10`, and run it again. Only the printed
+line appears.
 
 The arithmetic operators, including `//` and `%`, which later pages use a
 great deal, are in
@@ -136,7 +136,7 @@ this course use all eight:
 5. [Writing your own functions](tutorial:writing-your-own-functions):
    `def` and `return`. Nearly every matrix page asks you to write one.
 6. [Lists and looping over them](tutorial:lists-and-sequences): many
-   values under one name, and a loop that goes through them.
+   values under one name, and a loop that visits each one.
 7. [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids):
    a loop on one line, and a grid stored as a list of lists.
 8. [Dictionaries: looking things up by name](tutorial:looking-things-up-by-name):
@@ -149,11 +149,11 @@ better than this one.
 
 Python Software Foundation. *The Python Tutorial*, section 3.1, "Using
 Python as a Calculator". <https://docs.python.org/3/tutorial/introduction.html>.
-The official walk through a first program: printing, arithmetic, and the
-difference between an instruction and an expression, for anyone who wants
-the same ground covered a second way.
+This is the official guide to a first program. It covers printing,
+arithmetic, and the difference between an instruction and an expression,
+for anyone who wants to see the same ideas a second way.
 
 Khan Academy. *Intro to Python Fundamentals*.
-<https://www.khanacademy.org/computing/intro-to-python-fundamentals>. A
-slower course through the same first ideas, with its own practice
-problems, if one cell was not enough.
+<https://www.khanacademy.org/computing/intro-to-python-fundamentals>. This
+is a slower course on the same first ideas, with its own practice
+problems.

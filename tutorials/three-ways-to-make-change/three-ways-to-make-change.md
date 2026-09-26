@@ -21,12 +21,12 @@ Here is a small problem. You have a target amount, and tokens of a few
 different values. What is the fewest number of tokens that add up to the
 amount?
 
-There is more than one honest way to solve this. On this page we try
+There is more than one way to solve this. On this page we try
 three. Each one makes a different trade-off between being fast and being
-certain of the right answer. The same trade-off comes up in problems far
+certain of the right answer. The same trade-off appears in problems far
 bigger than making change.
 
-## Trying Every Combination
+## Trying every combination
 
 We start with tokens worth `1`, `3` and `4`. How few tokens can make `6`?
 Try it in your head before you run the cell.
@@ -50,13 +50,13 @@ def fewest_tokens_brute_force(amount, denominations):
 print(fewest_tokens_brute_force(6, TOKENS))
 ```
 
-Look at the line inside the loop: `fewest_tokens_brute_force` calls
+Look at the line inside the loop. `fewest_tokens_brute_force` calls
 itself, each time with a smaller amount. A function that calls itself is
 using recursion. It stops when the amount reaches `0`, because the
 first `if` returns `0` without calling itself again. If you have not met
 recursion before,
 [Recursion: finding every file in a folder tree](tutorial:finding-everything-inside-a-folder)
-builds it up step by step.
+explains it step by step.
 
 The function returns `None` when there is no way to make the amount. The
 long `if` inside the loop keeps a new answer only when there is one
@@ -70,7 +70,7 @@ The idea is the simplest one there is:
 
 This is called *brute force*. Brute force is a strategy that checks every
 possibility, without trying to reason about which ones are worth
-checking. It is slow. But it is reliable: it can never miss the real
+checking. It is slow. But it is reliable. It can never miss the real
 answer, because it never skips a possibility.
 
 ### Your turn
@@ -83,28 +83,30 @@ answer, because it never skips a possibility.
 id: trying-every-combination-2
 ```
 
-## Remembering What We Already Worked Out
+## Remembering what we already worked out
 
 Brute force repeats itself. Think about how it reaches `6`:
 
-- Taking a `4` leaves `2`. So it asks, "What is the fewest tokens for
-  `2`?"
-- Taking a `1` and then a `3` also leaves `2`. It asks the same question.
-- Taking a `3` and then a `1` leaves `2` too. The same question again.
+- If it takes a `4`, `2` is left. So it asks, "What is the fewest tokens
+  for `2`?"
+- If it takes a `1` and then a `3`, `2` is left too. It asks the same
+  question.
+- If it takes a `3` and then a `1`, `2` is left again. It asks the same
+  question again.
 
-Each time, it works out the answer to that question from the beginning.
+Each time, it finds the answer to that question from the beginning.
 And each time, the answer is the same.
 
 ![The call tree from six. Three of its branches arrive at the amount two,
-each by a different first move, and each one is worked out again from
-scratch.](repeated-question.svg)
+each by a different first move, and each one is solved again from the
+start.](repeated-question.svg)
 
 The picture shows only the first two moves. If we continued, `2` would
-come up a fourth time, by taking four `1`s.
+appear a fourth time, after four `1`s.
 
-A *cache* is a place to store an answer the first time we work it out.
-When the same question comes up again, we look up the answer, instead of
-working it out again.
+A *cache* is a place to store an answer the first time we find it.
+When the same question appears again, we look up the answer, instead of
+finding it again.
 
 The function below keeps its cache in a dictionary, as in
 [Dictionaries: looking things up by name](tutorial:looking-things-up-by-name).
@@ -132,17 +134,17 @@ def fewest_tokens_cached(amount, denominations, cache=None):
 print(fewest_tokens_cached(6, TOKENS))
 ```
 
-Storing each answer the first time we work it out, so that a repeated
-question is looked up, is called *memoization*. Memoization does not
-change which answer comes back. It is exactly as correct as brute force.
-The only thing it changes is how much work it takes to get there.
+We store each answer the first time we find it, so that we can look up
+a repeated question. This is called *memoization*. Memoization does not
+change the answer the function returns. It is exactly as correct as
+brute force. It only changes how much work the function does.
 
-Why is it safe to trust a stored answer? Because the fewest tokens for
-an amount depends only on that amount and the token values. It does not
+Why is it safe to trust a stored answer? It is safe because the fewest
+tokens for an amount depends only on that amount and the token values. It does not
 matter how we got there. "What is the fewest for 2?" has the same answer
 whether we reached 2 from 6 by taking a 4, or from 5 by taking a 3. So
-the first time we work out the answer for 2, we have worked it out for
-every path that ever reaches 2.
+the first time we find the answer for 2, we have found it for every
+path that ever reaches 2.
 
 How much work does it save? The next cell times both functions on larger
 and larger amounts.
@@ -167,8 +169,8 @@ Each time the amount goes up by 2, brute force takes two or three times
 as long. The cached version hardly changes. The two do not do the same
 work. Brute force walks every path of choices, and meets the same
 smaller amounts again and again along different paths. For an amount of
-20 it calls itself 20,736 times. The cached version works out each
-amount from 0 to 20 once, and after that only looks it up: 56 calls.
+20 it calls itself 20,736 times. The cached version finds each amount
+from 0 to 20 once, and after that only looks it up. That makes 56 calls.
 
 ### Your turn
 
@@ -185,7 +187,7 @@ id: remembering-what-we-already-worked-out-3
 hint: You do not need to pass a cache={} argument. The function makes a new, empty cache on each call. Use time.perf_counter() before and after the call, as the cell above does.
 ```
 
-## The Greedy Shortcut
+## The greedy shortcut
 
 There is a third way, and it does not check every possibility at all.
 At every step, take the largest token that still fits. Repeat until
@@ -208,14 +210,14 @@ def fewest_tokens_greedy(amount, denominations):
 print(fewest_tokens_greedy(6, TOKENS))
 ```
 
-This is a *heuristic*. A heuristic is a rule of thumb that gets to an
-answer quickly. It never looks back to check whether an earlier choice
+This is a *heuristic*. A heuristic is a simple rule that finds an
+answer quickly. It never goes back to check whether an earlier choice
 was really the best one.
 
 `fewest_tokens_greedy(6, TOKENS)` returns `3`: a `4` and two `1`s. But
 the cached version already showed that the real fewest is `2`: two `3`s.
-Taking the biggest token first was not exactly wrong. But it closed off
-the one combination that would have won.
+Greedy made a reasonable choice when it took the biggest token first.
+But after that choice, it could never reach the best combination.
 
 A strategy that always takes whatever looks best right now, and never
 goes back, is called a *greedy* algorithm.
@@ -254,13 +256,13 @@ hint: A for loop over range(1, 41) can print the amount, the greedy answer and t
 ```
 
 With these tokens, the two methods never disagree by more than one
-token. They disagree at `6`, `10`, `14`, `18` and so on: every amount
-that leaves `2` after greedy has taken all the `4`s it can. For the last
+token. They disagree at `6`, `10`, `14`, `18` and so on. These are the
+amounts that leave `2` after greedy has taken all the `4`s it can. For the last
 `6` of the amount, greedy uses a `4` and two `1`s, where two `3`s would
 do. Other token values can make greedy much worse, as the practice
 page shows.
 
-## Choosing a Strategy
+## Choosing a strategy
 
 Three strategies solved the same problem. None of them is better than the
 others in every way.
@@ -274,13 +276,13 @@ others in every way.
 Brute force is the strategy to try first. It is slow, but it is never
 wrong, and for a small enough amount, slow does not matter.
 
-Caching keeps brute force's guarantee, and removes its worst cost: doing
-the same work again and again. So it is usually the strategy to build
-once brute force starts to feel too slow.
+Caching keeps brute force's guarantee. It also removes its worst cost,
+because it never does the same work twice. So it is usually the
+strategy to build once brute force starts to feel too slow.
 
-The greedy shortcut gives up the guarantee. It is the fastest of the
-three, but its worst case is not slowness. Its worst case is a wrong
-answer, given with just as much confidence as a right one.
+The greedy shortcut loses the guarantee. It is the fastest of the
+three. Its worst case is a wrong answer, not a slow one, and it gives
+that wrong answer with just as much confidence as a right one.
 
 Which one should a real program use? That depends on what it is being
 asked to do. A till that must never give anyone the wrong change needs
@@ -292,9 +294,9 @@ greedy shortcut's risk, in return for its speed.
 
 A vending machine gives change in euro coins, `[1, 2, 5, 10, 20, 50]`
 cents, after every purchase, many times a minute. Which of the three
-strategies would you build it around? Why?
+strategies would you use? Why?
 
-## Where to Read More
+## Where to read more
 
 Cormen, T. H., Leiserson, C. E., Rivest, R. L. and Stein, C. (2022).
 *Introduction to Algorithms* (4th ed.). MIT Press. Chapter 14 covers
@@ -303,7 +305,7 @@ builds. Chapter 15 covers greedy algorithms, including exactly when a
 greedy choice is provably safe.
 
 Spanning Tree (2020). *How to Count Dice Rolls: An Introduction to Dynamic
-Programming.* <https://www.youtube.com/watch?v=oifN-YVlrq8>. Counting the
-ways dice can add to a total, first by trying everything, then by
-remembering answers in a table: the same two steps this page takes with
-coins. About nine minutes.
+Programming.* <https://www.youtube.com/watch?v=oifN-YVlrq8>. It counts the
+ways dice can add to a total. First it tries everything, then it
+remembers answers in a table. These are the same two steps this page
+takes with coins. The video is about nine minutes long.

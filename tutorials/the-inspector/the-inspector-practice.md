@@ -24,8 +24,8 @@ We have not learned HTML or CSS yet, so no problem here asks you to
 write any. We read what the inspector shows, and we change a few words.
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and its
+reason, than from reading the answer.
 
 ## Look inside a page
 
@@ -65,7 +65,7 @@ body { font-family: sans-serif; }
 <details class="dl-answer"><summary>answer</summary>
 
 1. The selected line is `<span class="price">€12</span>`. The word
-   after the `<` is `span`. That word is the *tag name*: it says what
+   after the `<` is `span`. That word is the *tag name*. It says what
    kind of part this is.
 2. The class is `price`.
 3. Both lines of the list light up together. The `<ul>` line holds the
@@ -121,12 +121,12 @@ so that it comes before `10 to 6`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The `<strong>` in the first line never ends: there is no `</strong>`.
+The `<strong>` in the first line never ends. There is no `</strong>`.
 The browser fixes this as it reads the page. It ends the bold part at
 the end of the first paragraph, and then starts a new `<strong>` around
 the next paragraph too, to keep the rest of the text bold. The tree
 shows that second `<strong>`, around the Saturday paragraph. The editor
-has no such line. This is why the inspector can show HTML that differs
+has no such line. So the inspector can show HTML that differs
 from the file you wrote.
 
 The fix is to end the bold part where it should end:
@@ -192,8 +192,8 @@ p {
 
 Deleting only the line `color: #b03a2e;` works too. Either way, nothing
 is crossed out any more, and the heading is dark blue. Notice that
-`font-family` was never crossed out: the second rule did not set it, so
-nothing overruled it.
+`font-family` was never crossed out, because the second rule did not set
+it. Nothing overruled it.
 
 </details>
 
@@ -233,7 +233,7 @@ In step 1, each change shows up in the preview straight away. In
 step 2, all three disappear. The preview is built again from the code in
 the editor each time that code changes. Your changes in the Elements tab
 were never in that code. This is the same thing that happens when you
-refresh a real page: the browser builds it again from the file, and a
+refresh a real page. The browser builds it again from the file, and a
 change made only in the inspector is gone.
 
 In step 3, the changes go into the code itself:
@@ -244,8 +244,8 @@ In step 3, the changes go into the code itself:
 <p>Only 3 left</p>
 ```
 
-These stay. So the Elements tab is a safe place to try an idea, and the
-file is where we keep it.
+These stay. So the Elements tab is a safe place to try an idea. We keep
+the idea in the file.
 
 </details>
 
@@ -306,8 +306,8 @@ heading match the one you chose in the inspector?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Your tries in step 2 changed the page in your browser only. Steps 3 to
-5 are what make the change real: the new heading is in the file, in a
+Your tries in step 2 changed the page in your browser only. Steps 3 to 5
+make the change real. The new heading is in the file, in a
 commit, and on GitHub. Once GitHub Pages has rebuilt the site, anyone
 who visits sees it.
 

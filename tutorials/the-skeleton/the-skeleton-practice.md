@@ -16,8 +16,8 @@ everything a visitor sees. There are three kinds of problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and its
+reason, than from reading the answer.
 
 The previews on this page have no browser tab of their own. So the text
 of a `<title>` never shows anywhere in a preview. In your own site, it
@@ -133,7 +133,7 @@ Which parts of your page show in the preview? Which parts do not?
 
 Only the heading and the paragraph show in the preview, because only
 they are in the body. The title is in the head. The indents are there
-to help us read the file: each element inside another one moves two
+to help us read the file. Each element inside another one moves two
 spaces to the right. The browser ignores them.
 
 `Home | Plushie Shop` is a common pattern for titles: the name of this

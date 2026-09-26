@@ -101,8 +101,8 @@ Now we can explain what we saw.
 All six faces start in the same place. `position: absolute` with no
 `top` or `left` leaves each one at the top-left corner of `.cube`. Each
 face is 100 pixels square, the same size as `.cube`, so they sit
-exactly on top of each other, like six playing cards in a pile. One
-transform each is what separates them.
+exactly on top of each other, like six playing cards in a pile. Each
+face has one transform, which moves it out of the pile.
 
 In step 2, the top face lost its transform. So it went back to the
 pile, in the middle of the cube, facing the same way as the front face
@@ -174,8 +174,8 @@ The editor above is ours to change. Try each of these on its own.
    a face is the side we see when it has turned away from us. What
    happens to the faces that are turned away?
 2. Give each face its own background colour, like a child's building
-   block. With `backface-visibility` still on, which face is which is
-   easiest to tell.
+   block. With `backface-visibility` still on, it is easier to tell
+   which face is which.
 3. Change the `to` line of `tumble` to
    `to { transform: rotateX(0deg) rotateY(360deg); }`. Now the cube
    spins on a turntable, and does not tumble. Which faces do we never
@@ -197,6 +197,6 @@ order of the transforms decides where each square goes.
 ## Where to read more
 
 CrashCourse (2017). *3D Graphics: Crash Course Computer Science #27.*
-<https://www.youtube.com/watch?v=TEAtmCYYKZA>. What the browser does for a
-3D cube, a game does for a whole world: turn every corner, then flatten it
+<https://www.youtube.com/watch?v=TEAtmCYYKZA>. A game does the same work as
+the browser, for a whole world. It turns every corner, then flattens it
 onto the screen. Twelve minutes.

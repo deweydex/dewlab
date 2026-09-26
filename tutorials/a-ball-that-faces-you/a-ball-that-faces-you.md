@@ -104,8 +104,7 @@ above, with the ball drawn as the flat disc it is:
 ### Turning the ball back
 
 The fix is to turn the ball back the other way, by the same angle, at
-the same speed. Then it always faces us. That is the job of
-`face-front`:
+the same speed. Then it always faces us. `face-front` does this:
 
 ```css
 @keyframes face-front {
@@ -122,7 +121,7 @@ the same speed. Then it always faces us. That is the job of
 
 At every moment, `.orbit` has turned the ball one way, and `face-front`
 has turned it back the other way by exactly as much. The two turns
-cancel out, so the ball faces us all the way round. That is why the
+cancel each other, so the ball faces us all the way round. That is why the
 letter in step 4 stayed readable.
 
 ### Keeping in step
@@ -183,6 +182,6 @@ why the order of two transforms matters.
 ## Where to read more
 
 Josh's Channel (2022). *In Video Games, The Player Never Moves.*
-<https://www.youtube.com/watch?v=wiYTxjJjfxs>. A game does not move its
-camera through the world. It moves the whole world the other way, with the
-same kind of turns and moves this page makes. About nineteen minutes.
+<https://www.youtube.com/watch?v=wiYTxjJjfxs>. A game keeps its camera
+still, and moves the whole world the other way. It uses the same kind of
+turns and moves this page makes. About nineteen minutes.

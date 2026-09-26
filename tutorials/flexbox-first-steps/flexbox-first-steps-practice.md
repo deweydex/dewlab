@@ -217,7 +217,7 @@ because a card here is not a flex container.
 - each tag has `6px 10px` of padding and a `1px solid #ccc` border
 
 Then, before you drag the slider: at what width will the fourth tag
-move to a line of its own? Work it out first, then check.
+move to a line of its own? Calculate it first, then check.
 
 ```html site
 id: flex-practice-tags-html

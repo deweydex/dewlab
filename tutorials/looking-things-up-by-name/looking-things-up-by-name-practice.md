@@ -10,7 +10,7 @@ worlds:
 
 # Dictionaries: looking things up by name — Practice
 
-Problems on dictionaries, and three from earlier pages. Try each problem
+These problems are on dictionaries, and three more are from earlier pages. Try each problem
 before you open anything under it, and run the cells to test your guesses.
 
 ## 1. Five lookups
@@ -32,7 +32,7 @@ print(key["B"])
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) `'W'`. (b) 3, the number of pairs. (c) `False`: `in` checks the keys,
+(a) `'W'`. (b) 3, the number of pairs. (c) `False`, because `in` checks the keys,
 and W is a value. (d) `'?'`, the default. (e) A `KeyError: 'D'`.
 
 </details>
@@ -60,7 +60,7 @@ What will it print?
 
 `{'E': 2, 'T': 4}`. Each key appears only once, and the second `"E"`
 replaces the first one's value, as `counts["E"] = 2` would. Python gives
-no warning, so a repeated key is a quiet way to lose a value.
+no warning, so a repeated key can lose a value without you noticing.
 
 </details>
 
@@ -155,7 +155,7 @@ print(total)
 
 ## 6. The rarest
 
-Which letter turns up least often? Can you set `rarest`?
+Which letter appears least often? Can you set `rarest`?
 
 ```python exec
 id: the-rarest-1
@@ -303,9 +303,9 @@ For each of these, would you use a list or a dictionary? Say why.
 
 <details class="dl-answer"><summary>one way to answer</summary>
 
-1. A list: the order is the game. 2. A dictionary: you look a colour up by
-its character. 3. A dictionary: each word is a key, and its count the
-value. 4. A list, because the order is the point, though each entry might
+1. A list, because the order matters. 2. A dictionary, because you look a
+colour up by its character. 3. A dictionary. Each word is a key, and its
+count the value. 4. A list, because the order matters, though each entry might
 be a small dictionary holding a name and a score.
 
 </details>
@@ -315,8 +315,8 @@ be a small dictionary holding a name and a score.
 <div class="dl-world" data-world="secret-messages">
 
 This key has only the letters it needs. Can you write `decode(message,
-key)`, which decodes each letter in the key, and lets anything else, such
-as a space, through as it is?
+key)`, which decodes each letter in the key, and leaves anything else, such
+as a space, as it is?
 
 ```python exec
 id: letting-things-through-1--secret-messages
@@ -421,7 +421,7 @@ What will it print?
 <details class="dl-answer"><summary>why</summary>
 
 `{'A': 'Q', 'B': 'W'}`. A dictionary is mutable, like a list, so the same
-thing happens: `spare = key` gives one dictionary a second name. For a
+thing happens. `spare = key` gives one dictionary a second name. For a
 separate copy, write `spare = dict(key)`.
 
 </details>
@@ -462,9 +462,9 @@ From *Reading an error message*. Which error does each of these raise?
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) A `ValueError`: `int()` wants a whole number written in digits, and
-12.5 has a point. `float("12.5")` works. (b) An `IndexError`: three
-elements have indexes 0 to 2. (c) A `TypeError`: `+` will not join a
-string to a number.
+(a) A `ValueError`, because `int()` wants a whole number written in
+digits, and 12.5 has a point. `float("12.5")` works. (b) An `IndexError`,
+because three elements have indexes 0 to 2. (c) A `TypeError`, because
+`+` will not join a string to a number.
 
 </details>

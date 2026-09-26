@@ -91,7 +91,7 @@ testing:
 **All internal links checked?** Yes, every link on all five pages.
 ```
 
-Without the address, a stranger has to work out where the site is
+Without the address, a stranger has to find where the site is
 published. Without the testing part, nobody can tell whether it works
 on a phone, or whether every link was checked. The README is also
 missing the fonts, where Flexbox and Grid are used, and the challenges.
@@ -99,8 +99,8 @@ Those matter too, but a reader can see the site without them.
 
 </details>
 
-**2.** Here is a maintenance plan. It is short, which is good. But it
-does not answer the three questions a maintenance plan should answer.
+**2.** Here is a maintenance plan. It is short. But it does not
+answer the three questions a maintenance plan should answer.
 
 ```markdown
 # Maintenance plan
@@ -155,8 +155,7 @@ time.
 ```
 
 Each part answers one question, with something a reader could do. The
-original said the right kind of thing, but a reader could not act on
-any of it.
+original plan named no step that a reader could take.
 
 </details>
 

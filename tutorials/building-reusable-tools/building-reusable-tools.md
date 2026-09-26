@@ -20,7 +20,7 @@ covers:
 
 # Designing and testing good functions
 
-Here is a function that works out the average, the mean, of a list of
+Here is a function that calculates the average, the mean, of a list of
 numbers. It works on the first list. What happens on the second?
 
 ```python exec
@@ -44,10 +44,10 @@ What will the last line do?
 ```
 
 It stops with a `ZeroDivisionError`. The function is right for every list
-its author tried, and wrong for one they did not. This page is about
-writing functions that other people, and you next month, can rely on:
-saying what a function promises, testing that it keeps the promise, and
-deciding on purpose what it does with the inputs nobody thought of.
+its author tried, and wrong for one they did not. This page shows how to
+write functions that other people, and you next month, can rely on. We
+say what a function promises, test that it keeps the promise, and decide
+on purpose what it does with the inputs nobody thought of.
 
 ## What makes a good function?
 
@@ -73,7 +73,7 @@ print(mean([1, 2, 3, 4, 5]))
 
 The string in triple quotes under the `def` line is a *docstring*: a
 description of the function, written at the top of it. It says what the
-function does, what it needs, and what it gives back. Together, those are
+function does, what it needs, and what it returns. Together, those are
 the function's *contract*: its promise. Give it this, and it gives you
 that. Anyone can read the docstring, and use `mean()` without reading its
 code. From here on, every function we write has one. One clear sentence is
@@ -96,7 +96,7 @@ print("All three tests passed.")
 
 Change one of the expected answers to something wrong, and run it again.
 A test that passes is silent, and a test that fails says which line. Now
-the detective work.
+we do some detective work.
 
 ### Which one is right?
 
@@ -149,12 +149,13 @@ that leaves only one version agreeing every time?
 <details class="dl-answer"><summary>one way it goes</summary>
 
 `[10, 20, 30]` catches b, which leaves out the first number, and d, which
-keeps only the last. It does not catch c: its mean is a whole number, so
+keeps only the last. It does not catch c. Its mean is a whole number, so
 `//` gives the same answer as `/`. A list with a mean that is not whole,
 such as `[1, 2]`, catches c. So `[10, 20, 30]` and `[1, 2]` together leave
 only a.
 
-The version that passes everything is not proved right, only not caught.
+The tests have not caught the version that passes everything. That does
+not prove it is right.
 Each test is a question, and a good set asks different questions: a
 middle case, an edge, a case where two ways of being wrong would give
 different answers.
@@ -187,10 +188,11 @@ def std_dev(numbers):
 print(std_dev([10, 20, 30]))
 ```
 
-Twice: once for the numbers, and once for the squared differences. The
-averaging code is written once, in `mean()`. If a bug turns up in `mean()`,
-fixing it there fixes `std_dev()` too, and each function can be tested on
-its own. This is the heart of modular design.
+It calls `mean()` twice, once for the numbers and once for the squared
+differences. The averaging code is written once, in `mean()`. If a bug
+appears in `mean()`, one fix there fixes `std_dev()` too, and each
+function can be tested on its own. This is the main idea of modular
+design.
 
 ### Your turn
 
@@ -266,10 +268,10 @@ What happens?
 ```
 
 It prints the message, and then stops with a `TypeError`, a line later,
-somewhere else. Printing is for the person watching. The program that
-called `mean` never sees the message: it gets `None`, as
+somewhere else. `print` is for the person watching. The program that
+called `mean` never sees the message. It gets `None`, as
 [Writing your own functions](tutorial:writing-your-own-functions) showed a
-function without a `return` always does. So the error turns up far from
+function without a `return` always does. So the error appears far from
 its cause.
 
 The two better ways both tell the caller.
@@ -294,17 +296,17 @@ print(mean([]))
 
 `return None` gives the caller a value that means "no answer", which they
 can check for with `if result is None`. `raise` stops the function with an
-error of its own, naming the problem, at the place it happened. Which to
-choose? If an empty list is normal, and the caller can do something
-sensible with no answer, return `None`. If it is a mistake, raise: a
-mistake that stops the program at once is much easier to find than one
+error of its own, naming the problem, at the place it happened. Which
+should you choose? If an empty list is normal, and the caller can do
+something sensible with no answer, return `None`. If it is a mistake,
+raise an error. A mistake that stops the program at once is much easier to find than one
 that travels.
 
 ### Your turn
 
 <div class="dl-world" data-world="secret-messages">
 
-Can you write `most_common(text)`, which gives back the capital letter
+Can you write `most_common(text)`, which returns the capital letter
 that appears most often in `text`, and raises a `ValueError` when `text`
 has no capital letters at all? Then write your own tests for it.
 
@@ -365,7 +367,7 @@ down anywhere? It could be.
 
 <div class="dl-world" data-world="pixel-art">
 
-Can you write `average_brightness(row)`, which gives back the mean
+Can you write `average_brightness(row)`, which returns the mean
 brightness of a row of pixels, and raises a `ValueError` for a row with no
 pixels? Then write your own tests for it.
 
@@ -437,18 +439,18 @@ print(with_border(6))
 # print(edge)
 ```
 
-It gives a `NameError`: `edge` exists only inside `with_border`. That is a
-help, not a nuisance. Many functions can each have a variable called
-`total` or `edge`, and none gets in another's way. Information goes in
-through parameters, and comes back through `return`. Nothing else crosses
-the line.
+It gives a `NameError`, because `edge` exists only inside `with_border`.
+That is a help, not a nuisance. Many functions can each have a variable
+called `total` or `edge`, and none of them clashes with another.
+Information goes in only through parameters, and leaves only through
+`return`.
 
 ## Looking back
 
 A test that passes tells you less than a test that fails. Why? What would
 make you trust a function you did not write?
 
-A challenge: test your bubble sort from
+Here is a challenge. Test your bubble sort from
 [Sorting a list](tutorial:putting-things-in-order) on a hundred lists
 nobody chose. Make each list at random, sort it, and check the answer
 against Python's own `sorted()`. What is the smallest list that catches a
@@ -471,8 +473,8 @@ print("100 random lists, all sorted the same way as sorted().")
 ```
 
 The next page, [Finding bugs in bigger programs](tutorial:when-it-goes-wrong),
-puts these habits to work when something does go wrong in a program of
-several functions.
+uses these habits when something does go wrong in a program of several
+functions.
 
 ## Where to read more
 
@@ -480,12 +482,11 @@ Everything here is covered elsewhere too, often in a form that will suit you
 better than this one.
 
 Schafer, C. (2017). *Python Tutorial: Unit Testing Your Code with the
-unittest Module*. <https://www.youtube.com/watch?v=6tNS--WetLI>. Testing
-with `assert`, the way this page does it, is the first step; this is the
-second.
+unittest Module*. <https://www.youtube.com/watch?v=6tNS--WetLI>. This page
+tests with `assert`. That is the first step, and this video is the second.
 
 Python Software Foundation. *The Python Tutorial*, section 4.9, "More on
 Defining Functions".
 <https://docs.python.org/3/tutorial/controlflow.html#more-on-defining-functions>.
-The official reference for docstrings, default values, and everything else
+This is the official reference for docstrings, default values, and everything else
 a function definition can do.

@@ -36,7 +36,7 @@ time each one takes to go round its star. On the last page we sorted a
 hand of five cards. Which of our two sorts would you trust with six
 thousand planets? And is there a faster one?
 
-Here is the surprise. Before we run anything, a formula from the last
+Before we run anything, a formula from the last
 page can tell us how long we would wait. And on that list, the planet
 with the shortest year and the one with the longest are about four
 billion times apart.
@@ -52,13 +52,13 @@ On this page we:
 - sort six thousand real planets, and choose the racers we can wait for
 - ask which sort to use where
 
-> **The space we're in.** Lists of numbers, and the two sorts from
+> **The space we're in.** We use lists of numbers, and the two sorts from
 > [Sorting a hand of cards](tutorial:sorting-a-hand-of-cards), which
 > your toolkit now holds. Random numbers come from the `random` module,
-> as on [How likely is it?](tutorial:how-likely-is-it). One thing
-> usually goes unsaid: every comparison of two numbers takes about the
-> same time, whatever the numbers are. That is why counting comparisons
-> tells us how the work grows, without a clock.
+> as on [How likely is it?](tutorial:how-likely-is-it). We usually
+> do not say it, but every comparison of two numbers takes about the
+> same time, whatever the numbers are. So we can count comparisons to
+> see how the work grows, without a clock.
 
 ## Warm-up
 
@@ -109,12 +109,12 @@ def random_list(size):
 print(random_list(10))
 ```
 
-Ten numbers, and a different ten each time you run it.
+It prints ten numbers, and a different ten each time you run it.
 
 Next, the racers. Your toolkit's `selection_sort` and `insertion_sort`
-give back a sorted list, but they do not count. So here they are again,
-line for line, with a counter added, as on the last page. Each gives
-back the number of comparisons it made.
+return a sorted list, but they do not count. So here they are again,
+line for line, with a counter added, as on the last page. Each returns
+the number of comparisons it made.
 
 ```python exec
 id: racing-lists-2
@@ -156,7 +156,7 @@ def insertion_count(values):
 Now the race. The cell makes one random list of each size, and gives
 the same list to both sorts, so that each race is fair. Selection sort
 makes $\frac{n(n-1)}{2}$ comparisons on $n$ values, whatever their
-order. So you can work out its column before you run the cell. What do
+order. So you can calculate its column before you run the cell. What do
 you guess for insertion sort?
 
 ```python exec
@@ -232,7 +232,7 @@ values to be compared with.
 
 Growth like this, where the count grows with the square of the size, is
 called *quadratic* growth. In the notation from Finding things fast,
-programmers write it $O(n^2)$. For 1,000 values it is fine: a computer
+programmers write it $O(n^2)$. For 1,000 values it is fine. A computer
 makes half a million comparisons in well under a second. For a million
 values, it is about half a million million comparisons, and that takes
 hours.
@@ -245,7 +245,7 @@ Here is one from
 life expectancy in Ireland, in years, for every year from 1950 to 2023.
 The cell takes the `life_expectancy` column for Ireland as a list. The
 counts below come from the copy of the file saved on
-{{snapshot: life-expectancy}}; the line under the cell says whether
+{{snapshot: life-expectancy}}. The line under the cell says whether
 yours did too.
 
 It mostly goes up, year after year, with a few small dips. So the list
@@ -264,7 +264,7 @@ print("insertion sort:", insertion_count(ireland))
 ```
 
 There are 74 years. Selection sort makes 2,701 comparisons, which is
-$\frac{74 \times 73}{2}$: it cannot tell that the list is nearly
+$\frac{74 \times 73}{2}$. It cannot tell that the list is nearly
 sorted. Insertion sort makes only 107. Each value only needs to slide
 back a step or two, past a dip, and most values do not move at all.
 
@@ -277,7 +277,7 @@ Insertion sort is slow on a random list because a value moves only one
 place for each comparison. A small value near the end has a long way
 to walk.
 
-In 1959, Donald Shell found a way round this. First, sort values that
+In 1959, Donald Shell found a better way. First, sort values that
 are far apart. Take every 4th value, say, and insertion sort only those.
 A small value can then jump 4 places with one comparison. Then do the
 same for every 2nd value, and at last for every value, with an ordinary
@@ -315,7 +315,7 @@ print(shell_steps([13, 12, 9, 8, 7, 5, 3, 1]))
 ```
 
 If the inner `while` loop is hard to follow, compare it line by line
-with `insertion_steps` on the last page: inside the gap loop, each step
+with `insertion_steps` on the last page. Inside the gap loop, each step
 of 1 has become a step of `gap`. Or run the cell and read the printed lines first, then
 come back to the code.
 
@@ -416,8 +416,8 @@ title: some steps
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way to write it. Yours may differ and still keep the
-promise: the tests are the judge.
+Here is one answer. Yours may be different and work too. Run the
+tests to see what yours does.
 
 ```python
 def shell_sort(values):
@@ -521,9 +521,9 @@ Second, and this may surprise you, insertion sort is not twice as fast
 as selection sort, although it made half as many comparisons. It is
 often a little slower. Each time insertion sort compares, it also moves
 a value one place, and moving takes time too. Selection sort moves a
-value only once per round. A count only counts what we chose to count.
+value only once per round. Our count included the comparisons, but not the moves.
 
-Here is the honest reason `sorted()` wins. It uses a cleverer method,
+`sorted()` wins for two reasons. It uses a cleverer method,
 called Timsort, which needs about 8,600 comparisons for 1,000 random
 numbers. And it is written in the language C, so it runs as the
 computer's own instructions, not as lines of Python read one at a time.
@@ -531,13 +531,13 @@ computer's own instructions, not as lines of Python read one at a time.
 <aside class="dl-note" id="racing-note-timsort">
 
 **Tim's sort.** Timsort is named after Tim Peters, who wrote it for
-Python in 2002. It worked so well on real data that Java adopted it
+Python in 2002. It worked so well on real data that Java now uses it
 too, for sorting lists of objects.
 
 </aside>
 
 That is not a reason to stop writing sorts of your own. Timsort is
-built from the ideas on these pages: inside it, short pieces of the
+built from the ideas on these pages. Inside it, short pieces of the
 list are sorted by insertion sort, because insertion sort is quick on
 short lists and nearly sorted ones.
 
@@ -562,7 +562,7 @@ print(size * (size - 1) // 2, "comparisons for selection sort")
 ```
 
 There are 6,019 planets with a known year, and selection sort would
-make 18,111,171 comparisons; insertion sort, about nine million. Each
+make 18,111,171 comparisons. Insertion sort would make about nine million. Each
 could keep you waiting a long time. The formula told us the cost
 before we paid it, so we race only the two we can wait for. Guess
 Shell sort's count first: nearer nine million, or a hundred thousand?
@@ -583,7 +583,7 @@ Shell sort makes 148,266 comparisons, about sixty times fewer than
 insertion sort would. `sorted()` takes a few milliseconds.
 
 And look at the two ends. The shortest year is 0.090706 days, about 2
-hours and 11 minutes: a planet called PSR J1719-1438 b, which goes
+hours and 11 minutes. It belongs to a planet called PSR J1719-1438 b, which goes
 round a dead star in about the time a long film lasts. The longest is
 402,000,000 days, which is about 1.1 million of our years. That planet,
 COCONUTS-2 b, is so far from its star that in the 300,000 years or so
@@ -641,7 +641,7 @@ real lists, Ireland's and the planets', only after that. Racing on real
 data from the start, the lists a program meets at work, was the other
 choice.
 
-Real data is the honest test of a program in use. It is often nearly
+Real data is the best test of a program in use. It is often nearly
 in order, as Ireland's list was, and a sort that looks slow on random
 lists can win there. Benchmarks used in industry are usually built
 from real data for this reason.
@@ -649,7 +649,7 @@ from real data for this reason.
 We started with random lists because they favour no sort, and because
 a random list of any size is one line away. They showed the shape of
 the growth at 10, 100 and 1,000 values. But the Ireland race showed
-what that choice hides: the track decides the winner. When someone tells you one method
+what that choice hides. The list can change which sort is fastest. When someone tells you one method
 is faster, ask what it was raced on.
 
 </details>
@@ -687,6 +687,7 @@ optional challenge, the integrated course has
 ## Where to read more
 
 CrashCourse (2017). *Intro to Algorithms: Crash Course Computer Science
-#13.* <https://www.youtube.com/watch?v=rL8X2mlNHPM>. Selection sort and
-merge sort, side by side, and how their steps grow as the list grows.
+#13.* <https://www.youtube.com/watch?v=rL8X2mlNHPM>. It shows selection
+sort and merge sort side by side, and how their steps grow as the list
+grows.
 About eleven minutes.

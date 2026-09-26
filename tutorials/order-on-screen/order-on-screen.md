@@ -112,7 +112,7 @@ applies.
 Oftentimes a design wants a different order on a phone. For example, a
 shop might show a product's price above its photo on a narrow screen,
 and beside it on a wide one. An `order` inside a media query can do
-that, and it is a fair use, because both orders make sense to a reader.
+that. Both orders make sense to a reader, so the change does no harm.
 
 ## Now in your own site
 

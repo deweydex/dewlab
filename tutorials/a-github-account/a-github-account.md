@@ -11,7 +11,7 @@ covers:
 
 What does GitHub do for us, and why do we need an account there? On
 the website track of this course, everything starts with a GitHub
-account. The account is free, and it takes a few minutes to set up. On
+account. The account is free, and it takes a few minutes to create. On
 this page we:
 
 - see what GitHub does with our files

@@ -113,7 +113,7 @@ to that?
 The two transforms were in the wrong order. With `rotateY` on the left,
 the push happened first, and then the turn went round the centre of the
 orbit. So `face-front` carried the ball back round the circle, exactly
-as far as `.orbit` carried it forwards. The two cancelled out, and the
+as far as `.orbit` carried it forwards. The two cancelled each other, and the
 ball stayed at the front. With `translateZ` on the left, the turn
 happens first, while the ball is still at the centre, so the ball only
 spins in place.
@@ -198,7 +198,7 @@ Both animations take six seconds. So what is out of step? Fix it.
 `face-front` had `ease-in-out` timing, and `turn` had `linear`. Both
 start and end together, so the ball faces us at the start and halfway.
 In between, `ease-in-out` starts slowly, so the ball is turned back
-less than `.orbit` has turned it. Then it catches up. At the sides the
+less than `.orbit` has turned it. Then it turns faster to match. At the sides the
 two turns do not cancel, and the ball is partly side-on. Two
 animations are in step only with the same duration, the same timing
 and the same start.
@@ -280,9 +280,9 @@ the far left and the far right? Fix it.
 ```
 
 `face-front` turned the ball the same way as `.orbit`, so the two turns
-added up, and the ball turned twice as fast as the orbit. It thinned
+added together, and the ball turned twice as fast as the orbit. It thinned
 to a line halfway between the front and each side. At the far left
-and the far right it had turned right round, so the letter was back to
+and the far right it had turned half a turn, so the letter was back to
 front.
 The turn that keeps it facing us has to go the other way, to
 `-360deg`.
@@ -389,8 +389,8 @@ Add a `@keyframes` rule, and give the tag an animation in step with
 
 The push is now `110px`, inside the animation, with the turn back on
 the right so that it happens first. `turn` takes `8s` here, so
-`face-front` takes `8s` too. The `transform` line in `.tag` can go,
-because the animation sets `transform` all the time.
+`face-front` takes `8s` too. We can delete the `transform` line in
+`.tag`, because the animation sets `transform` all the time.
 
 </details>
 
@@ -472,6 +472,6 @@ Change the end of both `@keyframes` rules:
 `turn` now goes to `-360deg`, so the orbit turns the other way. The
 turn back always goes the opposite way to the orbit, so `face-front`
 now goes to `+360deg`. If we changed only `turn`, the two turns would
-go the same way, and add up, the way they did in problem 3.
+go the same way, and add together, the way they did in problem 3.
 
 </details>

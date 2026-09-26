@@ -11,13 +11,13 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means
 answer in words. **Another way** means reach the same place by a second
-route. The answers are folded away until you open them, and each is one
-way through: yours may go another way.
+route. The answers are folded away until you open them. Each is one
+answer. Yours may be different and work too.
 
 Your toolkit is loaded on this page, including `wave` from the tutorial
 and `point_on_circle` from
 [Going round in circles](tutorial:going-round-in-circles). `math` is
-not: each cell that needs it starts with `import math`.
+not loaded. Each cell that needs it starts with `import math`.
 
 ## Warm-up
 
@@ -90,7 +90,7 @@ periodic signal? Is it a sine wave?
 72 beats a minute is $72 \div 60 = 1.2$ beats a second, so 1.2 Hz. The
 period is $\frac{1}{1.2} \approx 0.83$ seconds.
 
-A steady heartbeat is roughly periodic: the same pattern comes round
+A steady heartbeat is roughly periodic. The same pattern comes round
 again and again. But it is not a sine wave. A heart monitor shows a
 sharp spike and some smaller bumps, not a smooth curve. Periodic means
 "repeats". A sine wave is one repeating shape among many.
@@ -147,7 +147,7 @@ top. It reaches the top at a quarter of the period,
 $12.42 \div 4 \approx 3.1$ hours. The drawing shows two high tides and
 two low tides in a day, with each high tide a little later than the
 last. A real tide is not a perfect sine wave, and the moon and the
-shape of the coast change it, but this is a fair first model.
+shape of the coast change it, but it is a useful first model.
 
 </details>
 
@@ -190,7 +190,7 @@ print(wave(1, 440, 1 / 880))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`1.2246467991473532e-16`, which is 0 give or take a rounding error.
+`1.2246467991473532e-16`, which is 0 apart from a rounding error.
 
 The period of a 440 Hz wave is $\frac{1}{440}$ of a second, and
 $\frac{1}{880}$ is half of that. Halfway through a repeat, a sine wave
@@ -240,7 +240,7 @@ for t in [0, 0.1, 0.37]:
     print(wave(3, 2, t + 1 / 8), 3 * math.cos(2 * math.pi * 2 * t))
 ```
 
-The two columns agree, give or take a rounding error: 3.0, then
+The two columns agree, apart from a rounding error: 3.0, then
 0.927..., then −0.188.... Asking the sine wave for a time an eighth of
 a second later gives the cosine wave now: a phase shift of a quarter
 turn.
@@ -269,14 +269,14 @@ in a program is a sign that the maths has no answer there.
 
 **11. Make.** Write `wave_late(amplitude, frequency, time, delay)`: the
 same wave as `wave`, but starting `delay` seconds late. Then show that a
-200 Hz wave and the same wave half a period late add up to 0 at every
+200 Hz wave and the same wave half a period late add together to make 0 at every
 time you try.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. A wave that starts `delay` seconds late is, at time `time`, where
    the first wave was at `time - delay`.
-2. So `wave_late` can give back `wave(amplitude, frequency, time - delay)`.
+2. So `wave_late` can return `wave(amplitude, frequency, time - delay)`.
 3. Half a period of a 200 Hz wave is $\frac{1}{2} \times \frac{1}{200}$
    seconds.
 
@@ -365,7 +365,7 @@ plt.xlabel("time in seconds")
 The outline swells to 2 at 0, 1 and 2 seconds, and shrinks to almost
 nothing at 0.5 and 1.5 seconds: once a second. Each second, the 441 Hz
 wave makes one more repeat than the 440 Hz wave. When the two are in
-step they add up, and when they are half a turn apart they cancel.
+step they add together, and when they are half a turn apart they cancel.
 These swells are called *beats*, and there is one for each hertz of
 difference. Guitarists tune by turning a peg until the beats slow down
 and stop.
@@ -387,7 +387,7 @@ for step in range(8001):
 
 1. The wave crosses going up between two heights when the first is
    below 0 and the next is 0 or more.
-2. Go through the positions from 1 to the end, and compare each height
+2. Look at each position from 1 to the end, and compare each height
    with the one before it.
 3. Count the crossings.
 

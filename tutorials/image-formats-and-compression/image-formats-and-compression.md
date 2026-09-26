@@ -7,7 +7,7 @@ context_for: [images-and-file-size]
 
 # Image formats and compression
 
-Why is a JPEG right for a photo, and wrong for a logo? How can the same
+Why does a JPEG suit a photo, and not a logo? How can the same
 photo be 5 MB on your phone and 200 KB on a web page, and look the same?
 This page looks inside image files to answer those questions. It is
 background reading for [Images and file size](tutorial:images-and-file-size).
@@ -37,7 +37,7 @@ compresses it. There are two ways to do that.
 ## Two ways to make a file smaller
 
 A *lossless* format makes a file smaller without changing a single
-pixel. Open the file again, and every pixel comes back exactly as it
+pixel. Open the file again, and every pixel returns exactly as it
 was. It works by finding patterns. Suppose a screenshot has a row of
 two hundred white pixels. A lossless format does not need to write
 "white" two hundred times. It can write, in effect, "white, two hundred
@@ -49,27 +49,27 @@ neighbouring pixels are rarely exactly the same colour, so there are
 few patterns to find. A PNG of a photo is often several times the size
 of a JPEG of the same photo.
 
-A *lossy* format makes a file smaller by throwing some detail away, on
+A *lossy* format makes a file smaller by losing some detail, on
 purpose. JPEG is lossy. It is designed around how we see. We notice
 the outline of a shape, and a change from light to dark. We notice much
 less a tiny change of colour between neighbouring pixels. So JPEG keeps
 the first, and stores the second roughly. When we save a JPEG, most
 image editors ask for a *quality*, often from 0 to 100. A lower quality
-throws more away, for a smaller file.
+loses more, for a smaller file.
 
 At a sensible quality, on a photo, we cannot see what was lost. On a
 logo or a screenshot, we often can. Sharp edges, such as the edges of
-lettering, come out with a faint blur or speckle around them. At a very
+lettering, get a faint blur or speckle around them. At a very
 low quality, a photo breaks up into small, visible squares.
 
-Oftentimes, one photo gets saved as a JPEG, edited, and saved as a JPEG
-again, several times. Each save throws a little more detail away. It is
+Often, one photo gets saved as a JPEG, edited, and saved as a JPEG
+again, several times. Each save loses a little more detail. It is
 worth keeping the original photo somewhere safe, and making each web
 copy from it, not from the last copy.
 
 GIF is an older lossless format, from the 1980s. It can hold only 256
 colours in one image, which is too few for a photo. It can hold a short
-animation, and that is the main reason it is still around.
+animation, and that is the main reason it is still used.
 
 ## Shapes, not pixels: SVG
 
@@ -92,7 +92,7 @@ stored both ways, and shown much bigger than it was made:
 
 ![Two large circles side by side, both shown much bigger than they were made. The left one was stored as a small grid of pixels: its edge is a staircase of square blocks. The right one was stored as SVG instructions: its edge is a smooth curve.](pixels-and-shapes.svg)
 
-That is why SVG suits an icon or a logo made of flat shapes. It does
+So SVG suits an icon or a logo made of flat shapes. It does
 not suit a photo, because a photo is not made of a few simple shapes.
 
 ## Screens with more pixels
@@ -104,7 +104,7 @@ pixels wide, the screen has to stretch it, and it can look a little
 soft.
 
 So some people save photos at about twice the width they will be shown
-at. It is a trade. The photo looks sharper on those screens, and every
+at. This has a cost. The photo looks sharper on those screens, and every
 visitor downloads a larger file. For a gallery of your own photos, the
 size the image is shown at, as the tutorial says, is a fine place to
 start.
@@ -150,7 +150,7 @@ happens to a photo when we make its file smaller.
 |---|---|---|
 | *pixel* | One tiny square of a single colour. A picture on a screen is a grid of them. | a photo `4000` pixels wide |
 | *lossless* | A way of compressing that keeps every pixel exactly as it was | PNG |
-| *lossy* | A way of compressing that throws away detail we are unlikely to notice | JPEG |
+| *lossy* | A way of compressing that loses detail we are unlikely to notice | JPEG |
 | *quality* | A setting, often from 0 to 100, for how much detail a lossy format keeps | a JPEG saved at 75 |
 | *WebP* | A newer format that can be lossy or lossless, often smaller than JPEG or PNG | `photo.webp` |
 | *AVIF* | A newer format again, often smaller than WebP | `photo.avif` |
@@ -159,11 +159,11 @@ happens to a photo when we make its file smaller.
 ## Where to read more
 
 CrashCourse (2017). *Compression: Crash Course Computer Science #21.*
-<https://www.youtube.com/watch?v=OtDxDvCpPL4>. The two ways to make a file
-smaller, keeping everything or losing a little on purpose, explained with
-text, sound and pictures. Thirteen minutes.
+<https://www.youtube.com/watch?v=OtDxDvCpPL4>. It explains the two ways to
+make a file smaller, keeping everything or losing a little on purpose,
+with text, sound and pictures. Thirteen minutes.
 
 Branch Education (2021). *How are Images Compressed? JPEG In Depth.*
-<https://www.youtube.com/watch?v=Kv1Hiv3ox8I>. Step by step, how JPEG
-makes a photo about ten times smaller, and what it leaves out. Nineteen
+<https://www.youtube.com/watch?v=Kv1Hiv3ox8I>. It shows, step by step, how
+JPEG makes a photo about ten times smaller, and what it leaves out. Nineteen
 minutes.

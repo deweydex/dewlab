@@ -15,8 +15,8 @@ reading it back in several rules. There are three kinds of problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and its
+reason, than from reading the answer.
 
 ## Fix the broken page
 
@@ -65,8 +65,8 @@ The variable is defined as `--brand-color`, but the rule reads
 `--brand-colour`. The names must match exactly, letter for letter and
 capital for capital. When `var()` finds no variable with that name, the
 browser cannot use the value, so the boxes get no background at all.
-The white text is still there, on a white page. That is why selecting
-it with the mouse shows it.
+The white text is still there, on a white page. So when you select it
+with the mouse, you can see it.
 
 So when a colour vanishes after an edit, check the spelling of the
 name in both places: where it is defined, and where it is read.
@@ -196,8 +196,7 @@ The variable was defined inside the `.header` rule. A variable defined
 there can be read by the header, and by the elements inside the header.
 The button sits beside the header, not inside it, so it found no
 variable. `:root` matches the `<html>` element, which holds every
-element on the page. That is why a variable defined there reaches them
-all.
+element on the page. So a variable defined there reaches them all.
 
 And the *Try this next*? Inside the header, the button can read the
 variable, so it turns dark green.
@@ -322,8 +321,8 @@ site: colour-practice-card
 
 When we swap the two values in `:root`, the whole card turns dark, and
 the price turns light. We changed two lines, and four declarations
-followed them. That is the point of a variable: its name says what job
-the colour does, and the value can change without touching the rules.
+followed them. A variable helps here. Its name says what job the colour
+does, and the value can change without touching the rules.
 
 </details>
 

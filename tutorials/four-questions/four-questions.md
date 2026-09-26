@@ -42,9 +42,8 @@ On this page we:
 > **The space we're in.** This page assumes nothing: no maths, no
 > computers, no memory of school. Every move is allowed here, including
 > a guess that misses, and a guess that misses is often the fastest way
-> to learn something. One thing usually goes unsaid, so we will say it: the Python
-> on this page runs inside your own browser, and nothing you type is sent
-> anywhere.
+> to learn something. The Python on this page runs
+> inside your own browser, and nothing you type is sent anywhere.
 
 ## A game of Snakes and Ladders
 
@@ -125,13 +124,13 @@ mathematicians give them.
 | What does this space let us do? | environment | squares 1 to 100, one die, forward moves |
 
 A *name* is a word or number that points at one thing, so that we can
-talk about it. A *function* is a promise: give it something, and it gives
-you something back. A *sequence* is the order things happen in. The
+talk about it. A *function* is a promise. You give it something, and it
+returns something to you. A *sequence* is the order things happen in. The
 *environment* is the space we are working in: what is there, and which
 moves are allowed.
 
-You do not need to learn these four words by heart. The questions are
-what matter, and they are allowed on every page, at any moment. When
+You do not need to learn these four words by heart. The questions
+matter more, and they are allowed on every page, at any moment. When
 something on a later page confuses you, one of these four questions is
 usually a good place to start.
 
@@ -161,12 +160,11 @@ we meet two pages from now.
 
 </aside>
 
-The same happens with the roll of 6 on square 97. The move is the same;
-the rules of the space decide what it means.
+The same happens with the roll of 6 on square 97. The move is the same.
+The rules of the space decide what it means.
 
 This is the most useful idea on this page. When a move "doesn't work",
-the move is not foolish. It belongs to some space, and the question is
-which one. So the fourth question, "what space are we in?", is always
+it usually belongs to a different space, and we can ask which one. So the fourth question, "what space are we in?", is always
 allowed. You will meet it again and again in this course: in the
 counting numbers 0, 1, 2, 3 and so on, where 3 − 5 has no answer; in Python, where some moves are
 allowed and some are not; and even on the surface of a ball, where a
@@ -213,7 +211,7 @@ promise. Ingredients go in, and pancakes come out.
 
 **What happens when?** The steps are numbered, and the numbers matter.
 You cannot pour batter before you have made it. Step 7 sends you back to
-step 5, again and again, until something is true: the batter is gone.
+step 5, again and again, until the batter is gone.
 
 **What does this space let us do?** The recipe assumes a lot that it
 never says. It assumes you have a hob, a pan and a ladle. It assumes you
@@ -251,7 +249,7 @@ meet one.
 Below is a *cell*. A cell is a small box of Python code inside this page.
 You can run it, and the result appears underneath. You can change it and
 run it again. Nothing you do in a cell can break the page or your
-computer, and every cell has a **reset** button that brings back the code
+computer. Every cell has a **Clear** button (↻) that puts back the code
 it started with.
 
 To run a cell, press its **Run** button, or hold Ctrl and press Enter.
@@ -268,20 +266,20 @@ id: four-q-first-cell
 print(1920 * 1080)
 ```
 
-You should see `2073600` under the cell: more than two million tiny
-lights, on a thing you look at every day. I find that number surprising
+You should see `2073600` under the cell. That is more than two million
+tiny lights, on a thing you look at every day. I find that number surprising
 every time. In Python, `*` means multiply, because a keyboard has no ×
 key.
 
 Let's ask the four questions of that one line.
 
-**What is named here?** `print` is a name. Python already knows it; we
+**What is named here?** `print` is a name. Python already knows it. We
 did not have to explain it.
 
 **What is promised?** `print` is a function, and its promise is: give me
 something in brackets, and I will show it on the screen.
 
-**What happens when?** Python works out `1920 * 1080` first, and gets
+**What happens when?** Python calculates `1920 * 1080` first, and gets
 2073600. Only then does `print` show it. The inside of the brackets
 happens before the outside.
 
@@ -377,8 +375,8 @@ page.
 | What happens when? | turns in order; roll, move, check | numbered steps; repeat until done | the brackets first, then `print` |
 | What does this space let us do? | squares 1 to 100, house rules | a hob, a pan, knowing "whisk" | `print` and `*`, without asking |
 
-Three very different things, and the same four questions opened up each
-one. That is the plan for the whole course. Whenever you meet something
+We looked at three very different things, and the same four questions
+opened each one. That is the plan for the whole course. Whenever you meet something
 new, in maths or in code, you already have four ways in.
 
 ## What we have now
@@ -386,7 +384,7 @@ new, in maths or in code, you already have four ways in.
 | Term | What it means |
 |---|---|
 | name | a word or number that points at one thing |
-| function | a promise: give it something, and it gives something back |
+| function | a promise: give it something, and it returns something |
 | sequence | the order things happen in |
 | environment | the space we are working in, and the moves it allows |
 | algorithm | a list of clear steps that completes a task |

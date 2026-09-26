@@ -17,13 +17,13 @@ covers:
 # Complex numbers: roots that are not real
 
 In [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations)
-we wrote a solver for quadratic equations. It works out the discriminant.
+we wrote a solver for quadratic equations. It calculates the discriminant.
 When the discriminant is negative, the solver says "no real solutions"
 and stops.
 
-On this page we ask what lies past that stop. The answer was there all
-along. Mathematicians found it with the same idea they had used three
-times before, and that idea matters more than the arithmetic.
+On this page we ask what comes after that stop. The answer always
+existed. Mathematicians found it with the same idea they had used three
+times before. That idea matters more than the arithmetic.
 
 On this page we:
 
@@ -80,11 +80,11 @@ ax.set_title("Crossing the axis twice, once, and never")
 The first curve crosses the horizontal axis twice, and the second
 touches it once. The third curve never comes down to the axis at all.
 
-That is what "no real solutions" looks like. It is a true description,
-as long as we only accept numbers that sit on that horizontal line.
+This picture shows "no real solutions". It is a true description, as
+long as we only accept numbers that sit on that horizontal line.
 
-So "no real solutions" says less than it seems to. It says there is no
-answer *on this line*. It does not say there is no answer anywhere.
+So "no real solutions" only says there is no answer *on this line*. It
+does not say there is no answer anywhere.
 
 ## Inventing a new number
 
@@ -108,19 +108,19 @@ several of these inventions when they were new, and negative numbers
 and irrational numbers met strong resistance. Today all of them are
 taught in school.
 
-So the next step is not a special trick. It is the same move, one more
-time.
+So the next step uses the same idea one more time. It is not a special
+trick.
 
 <aside class="dl-note" id="complex-note-bombelli">
 
 **It was a cubic, not a quadratic.** For centuries, people were content
-to say that $x^2 + 1 = 0$ has no answer. What changed their minds was a
-cubic. In 1572 Rafael Bombelli took $x^3 = 15x + 4$, whose answer is
-plainly 4, and put it through the formula for cubics. Halfway through,
-the formula asked for $\sqrt{-121}$. Bombelli carried on anyway. He
+to say that $x^2 + 1 = 0$ has no answer. A cubic changed their minds.
+In 1572 Rafael Bombelli took $x^3 = 15x + 4$, whose answer is plainly
+4, and used the formula for cubics on it. Halfway through, the formula
+asked for $\sqrt{-121}$. Bombelli continued anyway. He
 treated $\sqrt{-1}$ as a number with its own rules, and the square
-roots of negatives cancelled out and left 4. A new number that leads to
-a right answer everybody can check is hard to dismiss.
+roots of negatives cancelled out and left 4. Everybody could check that
+answer, so the new number was hard to dismiss.
 
 </aside>
 
@@ -174,16 +174,16 @@ print("imaginary part of z:", z.imag)
 To add, Python adds the real parts together and the imaginary parts
 together: $(3 + 1) + (2 - 4)i = 4 - 2i$.
 
-Now look at `z * w`. We can multiply it out by hand, the same way we
-multiply out two brackets:
+Now look at `z * w`. We can multiply it by hand, the same way we
+multiply two brackets:
 
 $$(3 + 2i)(1 - 4i) = 3 - 12i + 2i - 8i^2$$
 
-The last term is where the definition does its work. Since $i^2 = -1$,
+The definition matters in the last term. Since $i^2 = -1$,
 the term $-8i^2$ is $-8 \times (-1) = +8$. So the total is
 $3 + 8 - 10i = 11 - 10i$, which matches Python's `(11-10j)`.
 
-The $i^2$ turning back into a real number is the only unusual step.
+Only one step is unusual. $i^2$ becomes a real number again.
 
 ## Roots that are not real
 
@@ -215,14 +215,14 @@ roots of $x^2 + 1 = 0$ are $i$ and $-i$.
 
 This is a fact about mathematics, not only about Python. Making the
 number system bigger removed a special case. It did not add one. Two
-roots, one root and no real roots turn out to be one situation. We can
-see all of it once we stand in $\mathbb{C}$.
+roots, one root and no real roots become one situation. We can see all
+of it once we work in $\mathbb{C}$.
 
 ### Does it work?
 
-An answer is only worth having if it survives a check. Remember that a
-root is a number that makes the expression equal zero. So we can put each root
-back into its quadratic and see what comes out.
+Now we check the answers. Remember that a root is a number that makes
+the expression equal zero. So we can put each root back into its
+quadratic and see what we get.
 
 What do you expect to see in the last line for each quadratic?
 
@@ -246,9 +246,9 @@ Every root gives zero. For the last quadratic we see
 this number is about 0.000000000000000444. It is zero plus a tiny
 rounding error from the computer's arithmetic.
 
-This check is the whole argument. A root is a number that makes the
-expression zero. These numbers make the expression zero. So they are
-roots. We do not have to take the definition on trust.
+This check proves it. A root is a number that makes the expression
+zero. These numbers make the expression zero. So they are roots. We do
+not have to just believe the definition.
 
 ### Your turn
 
@@ -293,7 +293,7 @@ Why? The reason is in the quadratic formula:
 
 $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 
-The only place an $i$ can come in is the square root of a negative
+The only place an $i$ can appear is the square root of a negative
 discriminant. That square root appears once with a $+$ in front of it,
 and once with a $-$. Nothing else in the formula can make an $i$.
 
@@ -309,14 +309,14 @@ change, and neither does the 0 on the right. What is left is
 
 $$(2 - 3i)^2 - 4(2 - 3i) + 13 = 0$$
 
-So $2 - 3i$ is a root as well. The only thing this needed was that the
-numbers in the equation are real. The same argument works for a cubic,
+So $2 - 3i$ is a root as well. This only needed the numbers in the
+equation to be real. The same argument works for a cubic,
 or for any polynomial whose numbers are real.
 
 ### Your turn
 
 The equation $x^2 - 6x + 25 = 0$ has a root at $3 + 4i$. Without
-working anything out, can you say what the other root is? How do you
+calculating anything, can you say what the other root is? How do you
 know?
 
 Write your answer as a comment in the cell, then check it with the
@@ -332,8 +332,8 @@ id: your-turn-2
 
 In [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations)
 our solver stopped at "no real solutions". That was accurate, but it
-was not the end. "No real solutions" tells us which numbers we were
-willing to use. In a larger set, the answer was waiting.
+was not the end. "No real solutions" only meant that no *real* number
+worked. In a larger set of numbers, there was an answer.
 
 Here are three ideas to take with you.
 
@@ -344,8 +344,7 @@ $\mathbb{C}$, every polynomial equation of degree 1 or more has a
 solution.
 
 **Making the numbers bigger removed a special case.** The solver got
-shorter, not longer. That is often a sign that a new idea is the right
-one.
+shorter, not longer. That is often a sign of a good new idea.
 
 **You can check an answer you do not fully believe.** Put the root back
 into the equation. If it gives zero, it is a root, however strange it
@@ -354,14 +353,15 @@ looks.
 Before this page, what did you think "no solution" meant? Has that
 changed? Write a few sentences.
 
-## Where to Read More
+## Where to read more
 
 Stephen Welch (Welch Labs) (2015). *Imaginary Numbers Are Real
 [Part 1: Introduction].* <https://www.youtube.com/watch?v=T647CGsuOVU>.
-The same story this page tells — number systems extended one refusal at a
-time — as a ten-part series, starting here.
+This ten-part series tells the same story as this page. Each family of
+numbers grows from one question with no answer. This is part one.
 
 Veritasium (2021). *How Imaginary Numbers Were Invented.*
 <https://www.youtube.com/watch?v=cUzklzVXJwo>. The first people to need
 square roots of negative numbers were solving cubic equations, not
-quadratics. Veritasium tells that story. About twenty-three minutes.
+quadratics. Veritasium tells that story. It is about twenty-three
+minutes long.

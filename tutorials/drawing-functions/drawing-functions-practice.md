@@ -10,7 +10,7 @@ version: 2026.08.23.1
 Each answer is hidden until you open it.
 
 Several questions ask you to predict before you plot. The prediction is
-the exercise, and the plot tells you whether you were right. The cell
+the exercise. Then the plot shows you what the curve really does. The cell
 below has the `draw` helper you need.
 
 ## Tools
@@ -53,7 +53,7 @@ time.
 
 (d) is not a function if the output must be one person, because many
 people are born on the same date. It becomes a function if the output
-is a *set* of people. That is the usual fix: change what the output is
+is a *set* of people. The usual fix is to change what the output is
 allowed to be.
 
 </details>
@@ -126,7 +126,7 @@ $y = 4$ is a flat line at height 4. It never reaches the origin.
 
 **6.** Plot $y = 2x + 1$ and $y = -x + 7$ on one pair of axes.
 
-1. Read off the point where they cross.
+1. Find the point where they cross on the plot.
 2. Check your answer by solving the equation.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -196,8 +196,8 @@ sentence.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The second curve is the first one turned upside down: a reflection in
-the horizontal axis.
+The second curve is the first one turned upside down. It is a
+reflection in the horizontal axis.
 
 $x^3$ climbs from bottom left to top right. $-x^3$ falls from top left
 to bottom right.
@@ -206,7 +206,7 @@ to bottom right.
 
 ## Reading answers off the picture
 
-**11.** Plot $y = x^2 - 3x - 4$ and read off its roots. Then check them
+**11.** Plot $y = x^2 - 3x - 4$ and read its roots from the plot. Then check them
 with the quadratic formula.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -222,18 +222,17 @@ $\dfrac{3 \pm 5}{2}$, which gives 4 and $-1$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Plot $y = x^3 - 2x$ and the flat line $y = 1$. Read off the crossings:
+Plot $y = x^3 - 2x$ and the flat line $y = 1$. Read the crossings from the plot:
 about $-1.0$, $-0.6$ and 1.6.
 
 More exactly, the answers are $-1$, $-0.618$ and 1.618. The last two are
 $\dfrac{1 \pm \sqrt{5}}{2}$, which are linked to the golden ratio.
-Finding them with algebra needs a trick: you first have to spot that
-$-1$ is a root. The picture needs no trick, and that is the argument
-for using it.
+To find them with algebra, you first have to spot that $-1$ is a root.
+The picture needs no trick, so it is often the easier way.
 
 </details>
 
-**13.** Where do $y = x^2$ and $y = x + 2$ cross? Read it off the
+**13.** Where do $y = x^2$ and $y = x + 2$ cross? Read it from the
 picture, then check.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -283,8 +282,7 @@ between the roots.
 
 (d) The cube root, $\sqrt[3]{x}$, which is $x^{1/3}$.
 
-Each inverse undoes the steps in reverse order. This is the same
-unwrapping as in
+Each inverse undoes the steps in reverse order. We did the same in
 [Rearranging formulae: changing the subject](tutorial:rearranging-formulae).
 
 A warning for (d) in Python: `x ** (1/3)` works for positive `x`, but
@@ -304,8 +302,8 @@ g = lambda x: (x + 2) / 3
 print(all(abs(g(f(x)) - x) < 1e-9 for x in [-10, 0, 1.5, 7, 100]))
 ```
 
-This prints `True`. It is worth checking the other direction too:
-`f(g(x))` should also come back to `x`.
+This prints `True`. Check the other direction too. `f(g(x))` should
+also give `x` again.
 
 </details>
 
@@ -322,7 +320,7 @@ cube of a negative number is negative. No two different numbers have the
 same cube, so the cube root is a function for every number.
 
 The usual fix for squaring is to limit the domain to numbers that are 0
-or more. That is what `math.sqrt` does: it gives only the positive root.
+or more. `math.sqrt` does this. It gives only the positive root.
 
 </details>
 
@@ -334,9 +332,8 @@ What do you notice?
 The inverse is $\dfrac{x - 1}{2}$. The two lines are mirror images in
 the line $y = x$.
 
-This is what an inverse does to a picture. Swapping the inputs and
-outputs swaps the axes, and that reflects everything across the
-diagonal.
+Swapping the inputs and outputs swaps the axes. So the graph of an
+inverse is the graph of the function, reflected across the diagonal.
 
 </details>
 
@@ -346,7 +343,8 @@ diagonal.
 $P(n) = -0.5n^2 + 30n - 200$.
 
 1. Plot it for $n$ from 0 to 60.
-2. How many items must the shop sell to break even?
+2. How many items must the shop sell to break even (no profit and no
+   loss)?
 3. How many items give the most profit, and how much is that profit?
 4. What happens after about 52 items? Does that make sense?
 
@@ -362,8 +360,8 @@ $P(n) = -0.5n^2 + 30n - 200$.
    falls forever, but a real business would not keep making items at a
    loss.
 
-**A model can be trusted over the range it was built for, and not
-beyond it.** This is worth knowing before you extend any model past its
+**A model works over the range of data it was built from. Outside that
+range, it may not.** Think about this before you use any model past its
 data.
 
 </details>

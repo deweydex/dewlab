@@ -7,8 +7,8 @@ version: 2026.08.23.1
 
 # Number types, powers and logarithms — Practice
 
-The answers are hidden in folds under each problem. The rules for powers
-stick best when you use them, so try the working by hand first. Then use
+The answers are hidden in folds under each problem. You remember the
+rules for powers best when you use them, so try the working by hand first. Then use
 the cells to check your answers.
 
 Some of these problems are adapted from the fractions and exponents
@@ -25,7 +25,7 @@ print(Fraction(7, 8) - Fraction(2, 3))
 print(Fraction(4, 5) / Fraction(2, 15))
 ```
 
-**1.** Work out each one exactly, as a fraction.
+**1.** Calculate each one exactly, as a fraction.
 
 - (a) $\frac{3}{4} + \frac{5}{6}$
 - (b) $\frac{7}{8} - \frac{2}{3}$
@@ -37,29 +37,29 @@ print(Fraction(4, 5) / Fraction(2, 15))
 (a) $\frac{19}{12}$. (b) $\frac{5}{24}$. (c) $\frac{1}{6}$. (d) 6.
 
 To divide by a fraction, we multiply by its reciprocal (the fraction
-turned upside down). That is why (d) comes out as a whole number:
+turned upside down). That is why (d) is a whole number:
 $\frac{4}{5} \times \frac{15}{2} = \frac{60}{10} = 6$.
 
 </details>
 
-**2.** Work out $\frac{2}{3} + \frac{1}{4} - \frac{1}{6}$.
+**2.** Calculate $\frac{2}{3} + \frac{1}{4} - \frac{1}{6}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-$\frac{3}{4}$.
+It is $\frac{3}{4}$.
 
 Write every fraction in twelfths:
 $\frac{8}{12} + \frac{3}{12} - \frac{2}{12} = \frac{9}{12} = \frac{3}{4}$.
 
 </details>
 
-**3.** Work out $\frac{5!}{4!}$ and $\frac{7!}{5! \cdot 2!}$.
+**3.** Calculate $\frac{5!}{4!}$ and $\frac{7!}{5! \cdot 2!}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-5 and 21.
+They are 5 and 21.
 
-You do not need to work out the factorials in full. In $\frac{5!}{4!}$,
+You do not need to calculate the factorials in full. In $\frac{5!}{4!}$,
 everything below 5 cancels, and 5 is left. The second one cancels to
 $\frac{7 \times 6}{2} = 21$. It is also the number of ways to choose 2
 things from 7, which you met in
@@ -67,12 +67,12 @@ things from 7, which you met in
 
 </details>
 
-**4.** Work out $1 + \frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \frac{1}{16}$.
+**4.** Calculate $1 + \frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \frac{1}{16}$.
 What does the total get close to if you keep going?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$\frac{31}{16}$, which is 1.9375. The total gets closer and closer to 2,
+It is $\frac{31}{16}$, which is 1.9375. The total gets closer and closer to 2,
 but never reaches it.
 
 Each new term closes half of the gap that is left. After $n$ terms you
@@ -84,12 +84,12 @@ crossing a room.
 
 </details>
 
-**5.** Work out $\frac{1}{1 \cdot 2} + \frac{1}{2 \cdot 3} + \frac{1}{3 \cdot 4} + \frac{1}{4 \cdot 5}$.
+**5.** Calculate $\frac{1}{1 \cdot 2} + \frac{1}{2 \cdot 3} + \frac{1}{3 \cdot 4} + \frac{1}{4 \cdot 5}$.
 Can you see a pattern?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$\frac{4}{5}$.
+It is $\frac{4}{5}$.
 
 Each term splits into two: $\frac{1}{n(n+1)} = \frac{1}{n} - \frac{1}{n+1}$.
 Written that way, the sum is
@@ -132,7 +132,7 @@ the others.
 Suppose that √2 is rational. Then we can write it as $\frac{a}{b}$ in
 lowest terms, where $a$ and $b$ are integers.
 
-1. Squaring both sides gives $2 = \frac{a^2}{b^2}$, so $a^2 = 2b^2$.
+1. When we square both sides, we get $2 = \frac{a^2}{b^2}$, so $a^2 = 2b^2$.
 2. So $a^2$ is even. That means $a$ is even too, because an odd number
    squared is odd.
 3. Write $a = 2k$. Then $4k^2 = 2b^2$, so $b^2 = 2k^2$. So $b^2$ is
@@ -154,14 +154,14 @@ fraction is equal to √2. It does not give us any way to calculate √2.
 Yes, exactly. It is not approximately equal, and it is not "close
 enough".
 
-The quickest argument: $\frac{1}{3} = 0.333\ldots$ Multiply both sides by
-3, and you get $1 = 0.999\ldots$ The careful argument: the difference
-between them is never negative, and it is smaller than every positive
-number. The only number like that is zero.
+The quickest argument starts from $\frac{1}{3} = 0.333\ldots$ Multiply
+both sides by 3, and you get $1 = 0.999\ldots$ The careful argument says
+that the difference between them is never negative, and it is smaller
+than every positive number. The only number like that is zero.
 
 Many people find this uncomfortable, and that feeling is worth naming. It
-comes from thinking of 0.999… as a process that keeps going. It is a
-single number.
+comes from the idea that 0.999… is a process that keeps going. But it is
+a single number.
 
 </details>
 
@@ -199,7 +199,7 @@ print(a**0, a**-2, 1 / a**2)
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because $\frac{a^n}{a^n} = a^{n-n} = a^0$, and any number (except 0)
+It is 1 because $\frac{a^n}{a^n} = a^{n-n} = a^0$, and any number (except 0)
 divided by itself is 1.
 
 So $a^0 = 1$ is not an extra rule added on. It is the only value that
@@ -212,11 +212,11 @@ mathematics answer it differently. Python says 1.
 
 </details>
 
-**11.** Work out $16^{1/2}$, $27^{1/3}$, $8^{2/3}$ and $16^{-1/2}$.
+**11.** Calculate $16^{1/2}$, $27^{1/3}$, $8^{2/3}$ and $16^{-1/2}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-4, 3, 4, $\frac{1}{4}$.
+They are 4, 3, 4 and $\frac{1}{4}$.
 
 A fractional power is a root. The bottom of the fraction says which
 root, and the top says what power to raise it to. So $8^{2/3}$ is the
@@ -276,13 +276,13 @@ def fast_power(base, exponent):
 ```
 
 This is the same halving idea as binary search, used on arithmetic
-instead of on a list. It is what makes public-key cryptography possible.
+instead of on a list. It makes public-key cryptography possible.
 
 </details>
 
 ## Logarithms
 
-**14.** Work out each one without a calculator.
+**14.** Calculate each one without a calculator.
 
 - (a) $\log_2 8$
 - (b) $\log_{10} 1000$
@@ -292,7 +292,7 @@ instead of on a list. It is what makes public-key cryptography possible.
 
 <details class="dl-answer"><summary>answer</summary>
 
-3, 3, 10, 0, −2.
+They are 3, 3, 10, 0 and −2.
 
 A logarithm asks "what power gives me this number?". The log of 1 is
 always 0, because any base to the power 0 is 1. A log is negative
@@ -304,7 +304,7 @@ exactly when the number is below 1: $3^{-2} = \frac{1}{9}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because multiplying powers adds their exponents, and a logarithm *is* an
+It is true because we add exponents when we multiply powers, and a logarithm *is* an
 exponent.
 
 Say $a = 10^x$ and $b = 10^y$. Then $ab = 10^{x+y}$, so the log of the
@@ -334,8 +334,8 @@ def log_base(x, base):
 `log_base(1024, 2)` is 10, `log_base(1000, 10)` is 3, and
 `log_base(100, 3)` is 4, since $3^4 = 81$ and $3^5 = 243$.
 
-Dividing until you fall below the base is the definition of a logarithm
-read backwards. When we count the steps of an algorithm, the whole-number
+When you divide until you fall below the base, you use the definition of
+a logarithm backwards. When we count the steps of an algorithm, the whole-number
 part is all we use.
 
 </details>
@@ -345,11 +345,11 @@ many steps does it take on a billion items?
 
 <details class="dl-answer"><summary>answer</summary>
 
-About thirty.
+It takes about thirty.
 
-$\log_2(10^9) \approx 30$. Multiplying the data by a thousand adds only
-ten steps, because a thousand is about $2^{10}$. This is what a logarithm
-means in practice: it counts doublings.
+$\log_2(10^9) \approx 30$. If you multiply the data by a thousand, you add
+only ten steps, because a thousand is about $2^{10}$. In practice, a
+logarithm counts doublings.
 
 </details>
 
@@ -359,7 +359,7 @@ times the power of a sound of 0 dB. How much more powerful is 60 dB than
 
 <details class="dl-answer"><summary>answer</summary>
 
-A thousand times.
+It is a thousand times more powerful.
 
 Every 10 dB is a factor of ten, and 60 − 30 is three steps of 10 dB. So
 the factor is $10 \times 10 \times 10 = 1000$. Decibels use a
@@ -396,8 +396,8 @@ def cylinder_volume(radius, height):
 ```
 
 It is worth making the last function call the first one on purpose. A
-cylinder is a circle with depth. Writing $\pi r^2 h$ out again would
-hide that.
+cylinder is a circle with depth. If you wrote out $\pi r^2 h$ again, you
+would hide that.
 
 </details>
 
@@ -408,10 +408,10 @@ its area?
 
 The circumference doubles, and the area becomes four times as big.
 
-The circumference is $2\pi r$, so it grows in step with $r$. The area is
+The circumference is $2\pi r$, so it grows at the same rate as $r$. The area is
 $\pi r^2$, so it grows with $r$ squared, and $2^2 = 4$. This is why a
-pizza twice as wide is four times as much pizza. It is also why doubling
-the width and height of an image needs four times the memory.
+pizza twice as wide is four times as much pizza. It is also why an image
+with double the width and height needs four times the memory.
 
 </details>
 
