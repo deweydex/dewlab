@@ -40,7 +40,7 @@ ask which day was warmest, or how much warmer Friday was than Thursday?
 Seven names would work, for a week. A year would need 365 names. A
 phone that counts your steps every minute makes 525,600 numbers a year.
 Nobody can write half a million names. By the end of this page, one
-name will hold them all, and you will be asking questions of 67 years of
+name will hold them all, and you will be asking questions of 74 years of
 real Irish data with a few lines of code.
 
 On this page we:
@@ -53,7 +53,7 @@ On this page we:
 - see what `+` and `*` do to lists, and do the maths meaning ourselves
 - see what happens when two names point at one list
 - add `largest`, `smallest` and `count_if` to the toolkit, and use them
-  on 67 years of real Irish data
+  on 74 years of real Irish data
 
 > **The space we're in.** Lists of numbers, and now and then of words.
 > We met lists on [Doing it again](tutorial:doing-it-again) as "a row of
@@ -595,8 +595,14 @@ hides the tool on that page. Call the number `warmest_day` instead.
 ## A real list: Ireland since 1950
 
 Now a list too long to type. The file `life-expectancy.csv` holds life
-expectancy at birth, in years, for many countries from 1950 to 2016.
+expectancy at birth, in years, for many countries from 1950 to 2023.
 Life expectancy is how long a baby born that year could expect to live.
+
+The numbers on this page come from the copy of the file saved on
+{{snapshot: life-expectancy}}. When the cell loads the file, a line under
+it says whether it got that copy or a newer one from Our World in Data.
+With a newer one, a few of your numbers may be a little different from
+ours.
 
 The first line loads the file. `await` means "wait until the file has
 arrived". The second line keeps Ireland's rows, takes the
@@ -613,10 +619,10 @@ print(ireland[0], ireland[-1])
 print(ireland[-5:])
 ```
 
-67 values, one for each year from 1950 to 2016. A baby born in Ireland
-in 1950 could expect about 65.6 years, and one born in 2016 about 81.1.
+74 values, one for each year from 1950 to 2023. A baby born in Ireland
+in 1950 could expect about 65.6 years, and one born in 2023 about 82.4.
 The last line shows the last five years, with a negative index in a
-slice.
+slice. They are not all rising: keep that in mind for a few minutes.
 
 The index tells us the year: index 0 is 1950, so index `i` is the year
 `1950 + i`. Before you run the next cell, guess: in how many years was
@@ -635,8 +641,8 @@ print(largest(ireland), smallest(ireland))
 print(count_if(ireland, eighty_or_more), "years at 80 or more")
 ```
 
-The lowest was 64.78 years, and 7 years were at 80 or more: 2010 to
-2016. Now a question `count_if` cannot answer on its own, because each
+The lowest was 64.75 years, and 15 years were at 80 or more: 2009 to
+2023. Now a question `count_if` cannot answer on its own, because each
 step needs the year before. In which years did life expectancy go down?
 
 ```python exec
@@ -646,8 +652,9 @@ for i in range(1, len(ireland)):
         print(1950 + i, "fell from", ireland[i - 1], "to", ireland[i])
 ```
 
-Ten years, and the last one was 1985. A single year can dip for many
-reasons, such as a bad flu season. The long rise is the story.
+Fifteen years. The last two, 2020 and 2021, are the years of the
+COVID-19 pandemic. A single year can dip for many reasons, such as a bad
+flu season, and the long rise is still the story.
 
 ### Your turn
 

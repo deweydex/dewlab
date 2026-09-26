@@ -377,23 +377,27 @@ tilts the labels so that they do not run into each other.
 Now numerical data, and real data: the life expectancy file from
 [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950).
 It has a row for each country and year. This time the cell keeps the
-rows for the year 2016, from every country, and takes out the
+rows for the year 2023, from every country, and takes out the
 `life_expectancy` column as a list. As before, that is all we ask of
 the file: the maths is done on the list.
+
+The numbers in this section come from the copy of the file saved on
+{{snapshot: life-expectancy}}. The line under the cell says whether you
+got that copy or a newer one, which may give a few different numbers.
 
 ```python exec
 id: kinds-hist-1
 df = await load_csv("life-expectancy.csv")
-ages = df[df.year == 2016]["life_expectancy"].tolist()
+ages = df[df.year == 2023]["life_expectancy"].tolist()
 
 print(len(ages))
 print(ages[:5])
 print(smallest(ages), largest(ages))
 ```
 
-There are 226 rows for 2016. Most are countries, and a few are regions,
-such as "Western Europe" and "World". The values run from 50.16 to
-83.94 years.
+There are 261 rows for 2023. Most are countries. The rest are regions
+and groups, such as "Europe", "World" and "High-income countries". The
+values run from 54.46 to 86.37 years.
 
 Can we make a frequency table of these? We can, but it would not help.
 Life expectancy is continuous, so almost every value is different, and
@@ -404,7 +408,7 @@ group is a *class interval*, or *bin*. A frequency table of bins is a
 
 For each age, `age // 5 * 5` rounds it down to the start of its bin:
 72.4 // 5 is 14, and 14 × 5 is 70. How many bins will there be, from
-50 to 83.94?
+54.46 to 86.37?
 
 ```python exec
 id: kinds-hist-2
@@ -417,9 +421,9 @@ for start in sorted(grouped):
     print(start, "to", start + 5, ":", grouped[start])
 ```
 
-Seven bins, from 50 up to 85. `sorted(grouped)` gives the keys in
+Eight bins, from 50 up to 90. `sorted(grouped)` gives the keys in
 order, from the smallest bin up. The busiest bin is 75 to 80 years, with
-62 rows.
+73 rows.
 
 A *histogram* is the chart of a grouped frequency table. It looks like a
 bar chart, with two differences. The bottom axis is a number line, not a
@@ -429,20 +433,22 @@ the edges of the bins.
 
 ```python exec
 id: kinds-hist-3
-plt.hist(ages, bins=range(50, 90, 5), edgecolor="white")
+plt.hist(ages, bins=range(50, 95, 5), edgecolor="white")
 plt.xlabel("life expectancy at birth, in years")
 plt.ylabel("number of rows")
-plt.title("Life expectancy in 2016 (Our World in Data)")
+plt.title("Life expectancy in 2023 (Our World in Data)")
 ```
 
 Compare the heights with the table you just printed. They are the same
-seven numbers. The histogram shows the shape of the data: most places
-are in the 70s, and the bars get shorter towards 50. A table of 226
-numbers would never show that at a glance.
+eight numbers. The edges run to 90, not 85: `plt.hist` leaves out any
+value past the last edge, and three places are above 85. The histogram
+shows the shape of the data: most places are in the 70s, and the bars
+get shorter towards 50. A table of 261 numbers would never show that at
+a glance.
 
 ### Your turn
 
-1. Change the bins to `range(50, 90, 10)`, then to `range(50, 90, 2)`.
+1. Change the bins to `range(50, 95, 10)`, then to `range(50, 90, 2)`.
    How does the shape change?
 2. Which width tells the story best, in your opinion? Several answers
    are good ones: too few bins hide the shape, and too many make it
@@ -493,7 +499,7 @@ own, as `*row` did on
 
 A stem-and-leaf plot suits a
 small set of numbers, up to about fifty,
-where you want the shape and the values both. For the 226 life
+where you want the shape and the values both. For the 261 life
 expectancies, it would be a wall of digits.
 
 ```question
@@ -507,7 +513,7 @@ the 10th and the 11th. Counting along the leaves in the plot above, the
 
 ## Lines, for change over time
 
-On A row of numbers we took out Ireland's 67 years as a list, and
+On A row of numbers we took out Ireland's 74 years as a list, and
 looked at the numbers. Now we draw them, with the years along the
 bottom. What shape do you expect? Sketch a guess in the air with your
 finger, then run the cell.
@@ -521,11 +527,12 @@ ireland = ireland_df["life_expectancy"].tolist()
 plt.plot(years, ireland)
 plt.xlabel("year")
 plt.ylabel("life expectancy at birth, in years")
-plt.title("Ireland, 1950 to 2016 (Our World in Data)")
+plt.title("Ireland since 1950 (Our World in Data)")
 print(ireland[0], ireland[-1])
 ```
 
-It rose from 65.61 years in 1950 to 81.14 in 2016, with a few small dips.
+It rose from 65.58 years in 1950 to 82.41 in 2023, with a few small dips,
+the last of them in 2020 and 2021.
 A *line chart* joins points in order, so it suits data where the order
 means something, usually time. The line says "and then": each point
 comes after the one before it. Joining the bars of the travel survey
@@ -539,8 +546,8 @@ in mind for the next section, where the same choice becomes a trick.
 
 ## A chart that tells the truth
 
-Back to the advert. Ireland's life expectancy in 2016 was 81.14 years,
-and the UK's was 80.90. The advert's chart is drawn below on the left,
+Back to the advert. Ireland's life expectancy in 2023 was 82.41 years,
+and the UK's was 81.30. The advert's chart is drawn below on the left,
 and an honest one on the right. The two charts use the same two numbers.
 What do you think is different about them? Pause here and guess before
 you run it.
@@ -549,16 +556,16 @@ you run it.
 id: kinds-honest-1
 uk = df[df.country == "United Kingdom"]["life_expectancy"].tolist()
 places = ["Ireland", "UK"]
-values_2016 = [ireland[-1], uk[-1]]
+values_2023 = [ireland[73], uk[73]]     # index 73 is 1950 + 73, the year 2023
 
 figure, (advert, honest) = plt.subplots(1, 2, figsize=(9, 4))
-advert.bar(places, values_2016, color=["green", "grey"])
-advert.set_ylim(80.8, 81.2)
+advert.bar(places, values_2023, color=["green", "grey"])
+advert.set_ylim(80.8, 82.6)
 advert.set_title("The advert's chart")
-honest.bar(places, values_2016, color=["green", "grey"])
+honest.bar(places, values_2023, color=["green", "grey"])
 honest.set_ylim(0, 90)
 honest.set_title("An honest chart")
-print(values_2016)
+print(values_2023)
 ```
 
 `plt.subplots(1, 2)` makes one figure with two charts side by side, and
@@ -566,9 +573,9 @@ names them `advert` and `honest`. `set_ylim` sets where each vertical
 axis starts and ends.
 
 On the left, the axis starts at 80.8. The Irish bar is
-$81.14 - 80.8 = 0.34$ tall, and the UK bar is $80.90 - 80.8 = 0.10$.
-So the Irish bar is 3.4 times as tall, for a difference of about a
-quarter of a year. On the right, the axis starts at 0, and the bars are
+$82.41 - 80.8 = 1.61$ tall, and the UK bar is $81.30 - 80.8 = 0.50$.
+So the Irish bar is about 3.2 times as tall, for a difference of about
+a year. On the right, the axis starts at 0, and the bars are
 almost the same, because the numbers are almost the same.
 
 Here is the rule underneath. In a bar chart, the reader reads the
@@ -638,8 +645,8 @@ So an honest chart, in short:
 
 1. In the first cell of this section, pick one other country from the
    file, such as `"Spain"` or `"Nigeria"`, and add it to `places` and
-   `values_2016`. Take its list out the same way as `uk`.
-2. Change `advert.set_ylim(80.8, 81.2)` so that the advert's chart makes
+   `values_2023`. Take its list out the same way as `uk`.
+2. Change `advert.set_ylim(80.8, 82.6)` so that the advert's chart makes
    the UK look far ahead of Ireland. Which numbers would you choose?
 3. Now say, in one sentence, what an honest chart of the same three
    countries shows.

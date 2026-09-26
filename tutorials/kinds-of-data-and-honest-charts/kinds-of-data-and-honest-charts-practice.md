@@ -338,7 +338,7 @@ only one count, `count_if` is enough. A third route is the list's own
 </details>
 
 **11. Make.** Draw a line chart of life expectancy in Ireland from 1950
-to 2016, and on the same chart, a line for another country of your
+to 2023, and on the same chart, a line for another country of your
 choice. Label both lines, and say where the data comes from.
 
 ```python exec
@@ -357,7 +357,7 @@ ireland = ireland_df["life_expectancy"].tolist()
 3. `plt.legend()` shows the labels on the chart.
 
 **Think about:** both countries need a row for every year from 1950 to
-2016, or the two lists will be different lengths. Check with `len`.
+2023, or the two lists will be different lengths. Check with `len`.
 
 </details>
 
@@ -374,12 +374,14 @@ plt.plot(years, spain, label="Spain")
 plt.legend()
 plt.xlabel("year")
 plt.ylabel("life expectancy at birth, in years")
-plt.title("Life expectancy, 1950 to 2016 (Our World in Data)")
+plt.title("Life expectancy since 1950 (Our World in Data)")
 ```
 
-Both lists have 67 values. Spain starts lower than Ireland, at about
-61.9 years in 1950, passes Ireland in 1964, and stays ahead from then
-on. In 2016 Spain is at about 83.0 years, and Ireland at 81.1.
+Both lists have 74 values. Spain starts lower than Ireland, at about
+61.8 years in 1950, and passes Ireland in 1964. It stays ahead in
+every year after that except 2020, the first year of COVID-19. In 2023
+Spain is at about 83.7 years, and Ireland at 82.4. (These are the
+numbers in the copy saved on {{snapshot: life-expectancy}}.)
 
 </details>
 

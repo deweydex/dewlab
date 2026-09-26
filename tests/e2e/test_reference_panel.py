@@ -102,7 +102,9 @@ def _dataset_files(data_dir: Path, name: str, source: str = "Some source",
     data_dir.mkdir(parents=True, exist_ok=True)
     (data_dir / f"{name}.csv").write_text("a,b\n1,2\n")
     (data_dir / f"{name}.yaml").write_text(
-        f'source: "{source}"\nlicense: "{license}"\ndescription: "{description}"\n'
+        f'source: "{source}"\nurl: "https://example.org/{name}"\n'
+        f'license: "{license}"\nsnapshot: 2026-09-26\ntrimmed: "Nothing."\n'
+        f'description: "{description}"\n'
     )
 
 

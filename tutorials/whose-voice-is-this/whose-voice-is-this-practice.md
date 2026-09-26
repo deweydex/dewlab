@@ -3,6 +3,7 @@ title: "Writing style: comparing two writers with Markov chains — Practice"
 practice_for: whose-voice-is-this
 year: "2026-2027"
 version: 2026.09.25.1
+datasets: [democracy-and-education, the-montessori-method]
 ---
 
 # Writing style: comparing two writers with Markov chains — Practice

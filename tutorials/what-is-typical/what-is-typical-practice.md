@@ -387,7 +387,7 @@ print(len(ireland))
 ```
 
 **13. Make.** The cell above makes Ireland's list of life expectancy
-from 1950 to 2016. Find its mean, median and standard deviation. Then
+from 1950 to 2023. Find its mean, median and standard deviation. Then
 make the same list for another country, such as `"Spain"` or
 `"Nigeria"`, and compare.
 
@@ -397,15 +397,17 @@ make the same list for another country, such as `"Spain"` or
 for country in ["Ireland", "Spain", "Nigeria"]:
     years = df[df.country == country]["life_expectancy"].tolist()
     print(country, round(mean(years), 2), median(years), round(std_dev(years), 2))
-# Ireland 73.79 73.26 4.18
-# Spain 75.03 76.3 5.39
-# Nigeria 47.01 46.15 9.79
+# Ireland 74.56 74.015 4.73
+# Spain 75.73 76.825 5.66
+# Nigeria 44.86 45.83 5.65
 ```
 
-Over these 67 years, Spain's typical value is a little higher than
-Ireland's, and its standard deviation is bigger: Spain started lower in
-1950 and rose further. Nigeria's typical value is far lower, and its
-spread is the biggest of the three. A standard deviation across years
+These are the numbers from the copy of the file saved on
+{{snapshot: life-expectancy}}. Over these 74 years, Spain's typical value
+is a little higher than Ireland's, and its standard deviation is bigger:
+Spain started lower in 1950 and rose further. Nigeria's typical value is
+far lower, and its spread is almost the same as Spain's, since it rose
+by about 19 years, from 35.5 to 54.5. A standard deviation across years
 measures how much a country changed, not how far apart its people are.
 
 </details>

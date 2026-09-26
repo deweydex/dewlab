@@ -4,12 +4,22 @@
 
 source: >
   Project Gutenberg EBook of Pride and Prejudice, by Jane Austen (EBook #1342).
-  https://www.gutenberg.org/ebooks/1342
+
+url: https://www.gutenberg.org/ebooks/1342
 
 license: >
   Public domain in the United States. Project Gutenberg's own licence terms
   apply to redistribution — see the file itself, which carries them in full.
   https://www.gutenberg.org/policy/license.html
+
+snapshot: 2026-09-20
+
+trimmed: >
+  Nothing. The file is Project Gutenberg's own plain-text edition as it
+  stood when it was saved (posted 26 August 2008, last updated 10 March
+  2018, as its header says), header and licence footer included. It has no
+  live source: the text does not change, and Project Gutenberg does not
+  let pages on other websites read its files.
 
 description: >
   The complete novel, first published in 1813, exactly as Project Gutenberg

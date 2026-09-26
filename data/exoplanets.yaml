@@ -10,12 +10,22 @@ source: >
   by the California Institute of Technology, under contract with the National
   Aeronautics and Space Administration under the Exoplanet Exploration Program.
 
+url: https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=PSCompPars
+
 license: >
   The archive states no licence. It asks that anyone who uses its data
   include the acknowledgment above. The values are measurements of
   planets, collected by the archive from published papers.
 
 snapshot: 2026-09-25
+
+trimmed: >
+  Six of the table's columns, renamed; every other column, and every
+  uncertainty and reference, is left out. Distances are converted from
+  parsecs to light-years, and values are rounded as the description says.
+  It has no live source: the archive does not let pages on other websites
+  read it. Refreshing it means running the archive query again by hand,
+  since the conversion is more than dev/datasets.py's recipes can do.
 
 description: >
   Every confirmed planet outside the solar system known to the archive on

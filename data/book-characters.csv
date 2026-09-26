@@ -1,0 +1,1574 @@
+book,chapter,character,mentions
+pride-and-prejudice,1,Elizabeth,3
+pride-and-prejudice,1,Darcy,0
+pride-and-prejudice,1,Jane,1
+pride-and-prejudice,1,Mr Bingley,4
+pride-and-prejudice,1,Miss Bingley,0
+pride-and-prejudice,1,Wickham,0
+pride-and-prejudice,1,Lydia,1
+pride-and-prejudice,1,Mr Collins,0
+pride-and-prejudice,1,Charlotte,0
+pride-and-prejudice,1,Mrs Bennet,0
+pride-and-prejudice,1,Mr Bennet,6
+pride-and-prejudice,1,Lady Catherine,0
+pride-and-prejudice,2,Elizabeth,3
+pride-and-prejudice,2,Darcy,0
+pride-and-prejudice,2,Jane,0
+pride-and-prejudice,2,Mr Bingley,7
+pride-and-prejudice,2,Miss Bingley,0
+pride-and-prejudice,2,Wickham,0
+pride-and-prejudice,2,Lydia,2
+pride-and-prejudice,2,Mr Collins,0
+pride-and-prejudice,2,Charlotte,0
+pride-and-prejudice,2,Mrs Bennet,2
+pride-and-prejudice,2,Mr Bennet,6
+pride-and-prejudice,2,Lady Catherine,0
+pride-and-prejudice,3,Elizabeth,6
+pride-and-prejudice,3,Darcy,7
+pride-and-prejudice,3,Jane,5
+pride-and-prejudice,3,Mr Bingley,14
+pride-and-prejudice,3,Miss Bingley,2
+pride-and-prejudice,3,Wickham,0
+pride-and-prejudice,3,Lydia,1
+pride-and-prejudice,3,Mr Collins,0
+pride-and-prejudice,3,Charlotte,0
+pride-and-prejudice,3,Mrs Bennet,5
+pride-and-prejudice,3,Mr Bennet,4
+pride-and-prejudice,3,Lady Catherine,0
+pride-and-prejudice,4,Elizabeth,4
+pride-and-prejudice,4,Darcy,7
+pride-and-prejudice,4,Jane,1
+pride-and-prejudice,4,Mr Bingley,9
+pride-and-prejudice,4,Miss Bingley,2
+pride-and-prejudice,4,Wickham,0
+pride-and-prejudice,4,Lydia,0
+pride-and-prejudice,4,Mr Collins,0
+pride-and-prejudice,4,Charlotte,0
+pride-and-prejudice,4,Mrs Bennet,0
+pride-and-prejudice,4,Mr Bennet,0
+pride-and-prejudice,4,Lady Catherine,0
+pride-and-prejudice,5,Elizabeth,7
+pride-and-prejudice,5,Darcy,3
+pride-and-prejudice,5,Jane,3
+pride-and-prejudice,5,Mr Bingley,1
+pride-and-prejudice,5,Miss Bingley,1
+pride-and-prejudice,5,Wickham,0
+pride-and-prejudice,5,Lydia,0
+pride-and-prejudice,5,Mr Collins,0
+pride-and-prejudice,5,Charlotte,2
+pride-and-prejudice,5,Mrs Bennet,2
+pride-and-prejudice,5,Mr Bennet,0
+pride-and-prejudice,5,Lady Catherine,0
+pride-and-prejudice,6,Elizabeth,16
+pride-and-prejudice,6,Darcy,14
+pride-and-prejudice,6,Jane,9
+pride-and-prejudice,6,Mr Bingley,4
+pride-and-prejudice,6,Miss Bingley,4
+pride-and-prejudice,6,Wickham,0
+pride-and-prejudice,6,Lydia,0
+pride-and-prejudice,6,Mr Collins,0
+pride-and-prejudice,6,Charlotte,4
+pride-and-prejudice,6,Mrs Bennet,0
+pride-and-prejudice,6,Mr Bennet,0
+pride-and-prejudice,6,Lady Catherine,0
+pride-and-prejudice,7,Elizabeth,15
+pride-and-prejudice,7,Darcy,1
+pride-and-prejudice,7,Jane,12
+pride-and-prejudice,7,Mr Bingley,3
+pride-and-prejudice,7,Miss Bingley,5
+pride-and-prejudice,7,Wickham,0
+pride-and-prejudice,7,Lydia,6
+pride-and-prejudice,7,Mr Collins,0
+pride-and-prejudice,7,Charlotte,0
+pride-and-prejudice,7,Mrs Bennet,5
+pride-and-prejudice,7,Mr Bennet,4
+pride-and-prejudice,7,Lady Catherine,0
+pride-and-prejudice,8,Elizabeth,15
+pride-and-prejudice,8,Darcy,10
+pride-and-prejudice,8,Jane,5
+pride-and-prejudice,8,Mr Bingley,10
+pride-and-prejudice,8,Miss Bingley,12
+pride-and-prejudice,8,Wickham,0
+pride-and-prejudice,8,Lydia,0
+pride-and-prejudice,8,Mr Collins,0
+pride-and-prejudice,8,Charlotte,0
+pride-and-prejudice,8,Mrs Bennet,0
+pride-and-prejudice,8,Mr Bennet,0
+pride-and-prejudice,8,Lady Catherine,0
+pride-and-prejudice,9,Elizabeth,10
+pride-and-prejudice,9,Darcy,8
+pride-and-prejudice,9,Jane,8
+pride-and-prejudice,9,Mr Bingley,14
+pride-and-prejudice,9,Miss Bingley,2
+pride-and-prejudice,9,Wickham,0
+pride-and-prejudice,9,Lydia,2
+pride-and-prejudice,9,Mr Collins,0
+pride-and-prejudice,9,Charlotte,3
+pride-and-prejudice,9,Mrs Bennet,8
+pride-and-prejudice,9,Mr Bennet,0
+pride-and-prejudice,9,Lady Catherine,0
+pride-and-prejudice,10,Elizabeth,16
+pride-and-prejudice,10,Darcy,21
+pride-and-prejudice,10,Jane,2
+pride-and-prejudice,10,Mr Bingley,10
+pride-and-prejudice,10,Miss Bingley,9
+pride-and-prejudice,10,Wickham,0
+pride-and-prejudice,10,Lydia,0
+pride-and-prejudice,10,Mr Collins,0
+pride-and-prejudice,10,Charlotte,0
+pride-and-prejudice,10,Mrs Bennet,0
+pride-and-prejudice,10,Mr Bennet,0
+pride-and-prejudice,10,Lady Catherine,0
+pride-and-prejudice,11,Elizabeth,14
+pride-and-prejudice,11,Darcy,14
+pride-and-prejudice,11,Jane,1
+pride-and-prejudice,11,Mr Bingley,1
+pride-and-prejudice,11,Miss Bingley,11
+pride-and-prejudice,11,Wickham,0
+pride-and-prejudice,11,Lydia,0
+pride-and-prejudice,11,Mr Collins,0
+pride-and-prejudice,11,Charlotte,0
+pride-and-prejudice,11,Mrs Bennet,0
+pride-and-prejudice,11,Mr Bennet,0
+pride-and-prejudice,11,Lady Catherine,0
+pride-and-prejudice,12,Elizabeth,7
+pride-and-prejudice,12,Darcy,1
+pride-and-prejudice,12,Jane,7
+pride-and-prejudice,12,Mr Bingley,3
+pride-and-prejudice,12,Miss Bingley,2
+pride-and-prejudice,12,Wickham,0
+pride-and-prejudice,12,Lydia,1
+pride-and-prejudice,12,Mr Collins,0
+pride-and-prejudice,12,Charlotte,0
+pride-and-prejudice,12,Mrs Bennet,2
+pride-and-prejudice,12,Mr Bennet,0
+pride-and-prejudice,12,Lady Catherine,0
+pride-and-prejudice,13,Elizabeth,2
+pride-and-prejudice,13,Darcy,0
+pride-and-prejudice,13,Jane,2
+pride-and-prejudice,13,Mr Bingley,3
+pride-and-prejudice,13,Miss Bingley,0
+pride-and-prejudice,13,Wickham,0
+pride-and-prejudice,13,Lydia,2
+pride-and-prejudice,13,Mr Collins,6
+pride-and-prejudice,13,Charlotte,1
+pride-and-prejudice,13,Mrs Bennet,5
+pride-and-prejudice,13,Mr Bennet,4
+pride-and-prejudice,13,Lady Catherine,3
+pride-and-prejudice,14,Elizabeth,1
+pride-and-prejudice,14,Darcy,0
+pride-and-prejudice,14,Jane,0
+pride-and-prejudice,14,Mr Bingley,0
+pride-and-prejudice,14,Miss Bingley,0
+pride-and-prejudice,14,Wickham,0
+pride-and-prejudice,14,Lydia,4
+pride-and-prejudice,14,Mr Collins,4
+pride-and-prejudice,14,Charlotte,0
+pride-and-prejudice,14,Mrs Bennet,3
+pride-and-prejudice,14,Mr Bennet,8
+pride-and-prejudice,14,Lady Catherine,5
+pride-and-prejudice,15,Elizabeth,6
+pride-and-prejudice,15,Darcy,3
+pride-and-prejudice,15,Jane,6
+pride-and-prejudice,15,Mr Bingley,3
+pride-and-prejudice,15,Miss Bingley,0
+pride-and-prejudice,15,Wickham,5
+pride-and-prejudice,15,Lydia,5
+pride-and-prejudice,15,Mr Collins,9
+pride-and-prejudice,15,Charlotte,0
+pride-and-prejudice,15,Mrs Bennet,4
+pride-and-prejudice,15,Mr Bennet,2
+pride-and-prejudice,15,Lady Catherine,1
+pride-and-prejudice,16,Elizabeth,18
+pride-and-prejudice,16,Darcy,21
+pride-and-prejudice,16,Jane,0
+pride-and-prejudice,16,Mr Bingley,4
+pride-and-prejudice,16,Miss Bingley,0
+pride-and-prejudice,16,Wickham,19
+pride-and-prejudice,16,Lydia,4
+pride-and-prejudice,16,Mr Collins,9
+pride-and-prejudice,16,Charlotte,0
+pride-and-prejudice,16,Mrs Bennet,1
+pride-and-prejudice,16,Mr Bennet,0
+pride-and-prejudice,16,Lady Catherine,6
+pride-and-prejudice,17,Elizabeth,10
+pride-and-prejudice,17,Darcy,4
+pride-and-prejudice,17,Jane,6
+pride-and-prejudice,17,Mr Bingley,6
+pride-and-prejudice,17,Miss Bingley,0
+pride-and-prejudice,17,Wickham,8
+pride-and-prejudice,17,Lydia,2
+pride-and-prejudice,17,Mr Collins,4
+pride-and-prejudice,17,Charlotte,0
+pride-and-prejudice,17,Mrs Bennet,3
+pride-and-prejudice,17,Mr Bennet,0
+pride-and-prejudice,17,Lady Catherine,1
+pride-and-prejudice,18,Elizabeth,29
+pride-and-prejudice,18,Darcy,41
+pride-and-prejudice,18,Jane,12
+pride-and-prejudice,18,Mr Bingley,20
+pride-and-prejudice,18,Miss Bingley,3
+pride-and-prejudice,18,Wickham,17
+pride-and-prejudice,18,Lydia,3
+pride-and-prejudice,18,Mr Collins,12
+pride-and-prejudice,18,Charlotte,4
+pride-and-prejudice,18,Mrs Bennet,6
+pride-and-prejudice,18,Mr Bennet,2
+pride-and-prejudice,18,Lady Catherine,4
+pride-and-prejudice,19,Elizabeth,14
+pride-and-prejudice,19,Darcy,0
+pride-and-prejudice,19,Jane,0
+pride-and-prejudice,19,Mr Bingley,0
+pride-and-prejudice,19,Miss Bingley,0
+pride-and-prejudice,19,Wickham,0
+pride-and-prejudice,19,Lydia,0
+pride-and-prejudice,19,Mr Collins,11
+pride-and-prejudice,19,Charlotte,0
+pride-and-prejudice,19,Mrs Bennet,2
+pride-and-prejudice,19,Mr Bennet,0
+pride-and-prejudice,19,Lady Catherine,3
+pride-and-prejudice,20,Elizabeth,19
+pride-and-prejudice,20,Darcy,0
+pride-and-prejudice,20,Jane,4
+pride-and-prejudice,20,Mr Bingley,0
+pride-and-prejudice,20,Miss Bingley,0
+pride-and-prejudice,20,Wickham,0
+pride-and-prejudice,20,Lydia,2
+pride-and-prejudice,20,Mr Collins,16
+pride-and-prejudice,20,Charlotte,4
+pride-and-prejudice,20,Mrs Bennet,10
+pride-and-prejudice,20,Mr Bennet,5
+pride-and-prejudice,20,Lady Catherine,0
+pride-and-prejudice,21,Elizabeth,9
+pride-and-prejudice,21,Darcy,7
+pride-and-prejudice,21,Jane,13
+pride-and-prejudice,21,Mr Bingley,5
+pride-and-prejudice,21,Miss Bingley,11
+pride-and-prejudice,21,Wickham,3
+pride-and-prejudice,21,Lydia,0
+pride-and-prejudice,21,Mr Collins,2
+pride-and-prejudice,21,Charlotte,0
+pride-and-prejudice,21,Mrs Bennet,2
+pride-and-prejudice,21,Mr Bennet,0
+pride-and-prejudice,21,Lady Catherine,0
+pride-and-prejudice,22,Elizabeth,11
+pride-and-prejudice,22,Darcy,0
+pride-and-prejudice,22,Jane,0
+pride-and-prejudice,22,Mr Bingley,0
+pride-and-prejudice,22,Miss Bingley,0
+pride-and-prejudice,22,Wickham,0
+pride-and-prejudice,22,Lydia,0
+pride-and-prejudice,22,Mr Collins,15
+pride-and-prejudice,22,Charlotte,11
+pride-and-prejudice,22,Mrs Bennet,2
+pride-and-prejudice,22,Mr Bennet,2
+pride-and-prejudice,22,Lady Catherine,1
+pride-and-prejudice,23,Elizabeth,12
+pride-and-prejudice,23,Darcy,1
+pride-and-prejudice,23,Jane,8
+pride-and-prejudice,23,Mr Bingley,4
+pride-and-prejudice,23,Miss Bingley,1
+pride-and-prejudice,23,Wickham,0
+pride-and-prejudice,23,Lydia,2
+pride-and-prejudice,23,Mr Collins,9
+pride-and-prejudice,23,Charlotte,7
+pride-and-prejudice,23,Mrs Bennet,8
+pride-and-prejudice,23,Mr Bennet,5
+pride-and-prejudice,23,Lady Catherine,1
+pride-and-prejudice,24,Elizabeth,12
+pride-and-prejudice,24,Darcy,7
+pride-and-prejudice,24,Jane,13
+pride-and-prejudice,24,Mr Bingley,4
+pride-and-prejudice,24,Miss Bingley,3
+pride-and-prejudice,24,Wickham,2
+pride-and-prejudice,24,Lydia,0
+pride-and-prejudice,24,Mr Collins,2
+pride-and-prejudice,24,Charlotte,4
+pride-and-prejudice,24,Mrs Bennet,3
+pride-and-prejudice,24,Mr Bennet,2
+pride-and-prejudice,24,Lady Catherine,0
+pride-and-prejudice,25,Elizabeth,9
+pride-and-prejudice,25,Darcy,6
+pride-and-prejudice,25,Jane,9
+pride-and-prejudice,25,Mr Bingley,5
+pride-and-prejudice,25,Miss Bingley,1
+pride-and-prejudice,25,Wickham,4
+pride-and-prejudice,25,Lydia,0
+pride-and-prejudice,25,Mr Collins,2
+pride-and-prejudice,25,Charlotte,1
+pride-and-prejudice,25,Mrs Bennet,4
+pride-and-prejudice,25,Mr Bennet,0
+pride-and-prejudice,25,Lady Catherine,0
+pride-and-prejudice,26,Elizabeth,21
+pride-and-prejudice,26,Darcy,5
+pride-and-prejudice,26,Jane,7
+pride-and-prejudice,26,Mr Bingley,1
+pride-and-prejudice,26,Miss Bingley,8
+pride-and-prejudice,26,Wickham,4
+pride-and-prejudice,26,Lydia,1
+pride-and-prejudice,26,Mr Collins,2
+pride-and-prejudice,26,Charlotte,5
+pride-and-prejudice,26,Mrs Bennet,1
+pride-and-prejudice,26,Mr Bennet,0
+pride-and-prejudice,26,Lady Catherine,2
+pride-and-prejudice,27,Elizabeth,10
+pride-and-prejudice,27,Darcy,0
+pride-and-prejudice,27,Jane,4
+pride-and-prejudice,27,Mr Bingley,0
+pride-and-prejudice,27,Miss Bingley,1
+pride-and-prejudice,27,Wickham,2
+pride-and-prejudice,27,Lydia,0
+pride-and-prejudice,27,Mr Collins,1
+pride-and-prejudice,27,Charlotte,3
+pride-and-prejudice,27,Mrs Bennet,0
+pride-and-prejudice,27,Mr Bennet,0
+pride-and-prejudice,27,Lady Catherine,1
+pride-and-prejudice,28,Elizabeth,14
+pride-and-prejudice,28,Darcy,0
+pride-and-prejudice,28,Jane,0
+pride-and-prejudice,28,Mr Bingley,0
+pride-and-prejudice,28,Miss Bingley,0
+pride-and-prejudice,28,Wickham,0
+pride-and-prejudice,28,Lydia,0
+pride-and-prejudice,28,Mr Collins,10
+pride-and-prejudice,28,Charlotte,14
+pride-and-prejudice,28,Mrs Bennet,0
+pride-and-prejudice,28,Mr Bennet,0
+pride-and-prejudice,28,Lady Catherine,5
+pride-and-prejudice,29,Elizabeth,14
+pride-and-prejudice,29,Darcy,1
+pride-and-prejudice,29,Jane,0
+pride-and-prejudice,29,Mr Bingley,0
+pride-and-prejudice,29,Miss Bingley,0
+pride-and-prejudice,29,Wickham,1
+pride-and-prejudice,29,Lydia,0
+pride-and-prejudice,29,Mr Collins,16
+pride-and-prejudice,29,Charlotte,4
+pride-and-prejudice,29,Mrs Bennet,0
+pride-and-prejudice,29,Mr Bennet,0
+pride-and-prejudice,29,Lady Catherine,15
+pride-and-prejudice,30,Elizabeth,10
+pride-and-prejudice,30,Darcy,4
+pride-and-prejudice,30,Jane,1
+pride-and-prejudice,30,Mr Bingley,0
+pride-and-prejudice,30,Miss Bingley,1
+pride-and-prejudice,30,Wickham,0
+pride-and-prejudice,30,Lydia,0
+pride-and-prejudice,30,Mr Collins,11
+pride-and-prejudice,30,Charlotte,5
+pride-and-prejudice,30,Mrs Bennet,0
+pride-and-prejudice,30,Mr Bennet,0
+pride-and-prejudice,30,Lady Catherine,4
+pride-and-prejudice,31,Elizabeth,10
+pride-and-prejudice,31,Darcy,14
+pride-and-prejudice,31,Jane,0
+pride-and-prejudice,31,Mr Bingley,0
+pride-and-prejudice,31,Miss Bingley,1
+pride-and-prejudice,31,Wickham,0
+pride-and-prejudice,31,Lydia,0
+pride-and-prejudice,31,Mr Collins,2
+pride-and-prejudice,31,Charlotte,0
+pride-and-prejudice,31,Mrs Bennet,0
+pride-and-prejudice,31,Mr Bennet,0
+pride-and-prejudice,31,Lady Catherine,7
+pride-and-prejudice,32,Elizabeth,12
+pride-and-prejudice,32,Darcy,8
+pride-and-prejudice,32,Jane,2
+pride-and-prejudice,32,Mr Bingley,3
+pride-and-prejudice,32,Miss Bingley,0
+pride-and-prejudice,32,Wickham,1
+pride-and-prejudice,32,Lydia,0
+pride-and-prejudice,32,Mr Collins,8
+pride-and-prejudice,32,Charlotte,3
+pride-and-prejudice,32,Mrs Bennet,0
+pride-and-prejudice,32,Mr Bennet,0
+pride-and-prejudice,32,Lady Catherine,3
+pride-and-prejudice,33,Elizabeth,4
+pride-and-prejudice,33,Darcy,18
+pride-and-prejudice,33,Jane,5
+pride-and-prejudice,33,Mr Bingley,7
+pride-and-prejudice,33,Miss Bingley,2
+pride-and-prejudice,33,Wickham,0
+pride-and-prejudice,33,Lydia,0
+pride-and-prejudice,33,Mr Collins,3
+pride-and-prejudice,33,Charlotte,0
+pride-and-prejudice,33,Mrs Bennet,0
+pride-and-prejudice,33,Mr Bennet,0
+pride-and-prejudice,33,Lady Catherine,1
+pride-and-prejudice,34,Elizabeth,9
+pride-and-prejudice,34,Darcy,11
+pride-and-prejudice,34,Jane,3
+pride-and-prejudice,34,Mr Bingley,0
+pride-and-prejudice,34,Miss Bingley,0
+pride-and-prejudice,34,Wickham,2
+pride-and-prejudice,34,Lydia,0
+pride-and-prejudice,34,Mr Collins,0
+pride-and-prejudice,34,Charlotte,1
+pride-and-prejudice,34,Mrs Bennet,0
+pride-and-prejudice,34,Mr Bennet,0
+pride-and-prejudice,34,Lady Catherine,1
+pride-and-prejudice,35,Elizabeth,2
+pride-and-prejudice,35,Darcy,4
+pride-and-prejudice,35,Jane,0
+pride-and-prejudice,35,Mr Bingley,4
+pride-and-prejudice,35,Miss Bingley,1
+pride-and-prejudice,35,Wickham,12
+pride-and-prejudice,35,Lydia,0
+pride-and-prejudice,35,Mr Collins,0
+pride-and-prejudice,35,Charlotte,0
+pride-and-prejudice,35,Mrs Bennet,0
+pride-and-prejudice,35,Mr Bennet,0
+pride-and-prejudice,35,Lady Catherine,0
+pride-and-prejudice,36,Elizabeth,2
+pride-and-prejudice,36,Darcy,14
+pride-and-prejudice,36,Jane,6
+pride-and-prejudice,36,Mr Bingley,3
+pride-and-prejudice,36,Miss Bingley,0
+pride-and-prejudice,36,Wickham,9
+pride-and-prejudice,36,Lydia,0
+pride-and-prejudice,36,Mr Collins,0
+pride-and-prejudice,36,Charlotte,1
+pride-and-prejudice,36,Mrs Bennet,0
+pride-and-prejudice,36,Mr Bennet,0
+pride-and-prejudice,36,Lady Catherine,0
+pride-and-prejudice,37,Elizabeth,4
+pride-and-prejudice,37,Darcy,5
+pride-and-prejudice,37,Jane,4
+pride-and-prejudice,37,Mr Bingley,1
+pride-and-prejudice,37,Miss Bingley,0
+pride-and-prejudice,37,Wickham,1
+pride-and-prejudice,37,Lydia,3
+pride-and-prejudice,37,Mr Collins,6
+pride-and-prejudice,37,Charlotte,0
+pride-and-prejudice,37,Mrs Bennet,1
+pride-and-prejudice,37,Mr Bennet,0
+pride-and-prejudice,37,Lady Catherine,7
+pride-and-prejudice,38,Elizabeth,10
+pride-and-prejudice,38,Darcy,1
+pride-and-prejudice,38,Jane,3
+pride-and-prejudice,38,Mr Bingley,1
+pride-and-prejudice,38,Miss Bingley,0
+pride-and-prejudice,38,Wickham,0
+pride-and-prejudice,38,Lydia,0
+pride-and-prejudice,38,Mr Collins,5
+pride-and-prejudice,38,Charlotte,3
+pride-and-prejudice,38,Mrs Bennet,0
+pride-and-prejudice,38,Mr Bennet,0
+pride-and-prejudice,38,Lady Catherine,2
+pride-and-prejudice,39,Elizabeth,11
+pride-and-prejudice,39,Darcy,0
+pride-and-prejudice,39,Jane,5
+pride-and-prejudice,39,Mr Bingley,0
+pride-and-prejudice,39,Miss Bingley,0
+pride-and-prejudice,39,Wickham,6
+pride-and-prejudice,39,Lydia,11
+pride-and-prejudice,39,Mr Collins,1
+pride-and-prejudice,39,Charlotte,0
+pride-and-prejudice,39,Mrs Bennet,2
+pride-and-prejudice,39,Mr Bennet,2
+pride-and-prejudice,39,Lady Catherine,0
+pride-and-prejudice,40,Elizabeth,10
+pride-and-prejudice,40,Darcy,10
+pride-and-prejudice,40,Jane,9
+pride-and-prejudice,40,Mr Bingley,2
+pride-and-prejudice,40,Miss Bingley,0
+pride-and-prejudice,40,Wickham,7
+pride-and-prejudice,40,Lydia,0
+pride-and-prejudice,40,Mr Collins,0
+pride-and-prejudice,40,Charlotte,1
+pride-and-prejudice,40,Mrs Bennet,1
+pride-and-prejudice,40,Mr Bennet,0
+pride-and-prejudice,40,Lady Catherine,0
+pride-and-prejudice,41,Elizabeth,12
+pride-and-prejudice,41,Darcy,4
+pride-and-prejudice,41,Jane,2
+pride-and-prejudice,41,Mr Bingley,0
+pride-and-prejudice,41,Miss Bingley,0
+pride-and-prejudice,41,Wickham,4
+pride-and-prejudice,41,Lydia,21
+pride-and-prejudice,41,Mr Collins,0
+pride-and-prejudice,41,Charlotte,0
+pride-and-prejudice,41,Mrs Bennet,2
+pride-and-prejudice,41,Mr Bennet,2
+pride-and-prejudice,41,Lady Catherine,0
+pride-and-prejudice,42,Elizabeth,10
+pride-and-prejudice,42,Darcy,1
+pride-and-prejudice,42,Jane,2
+pride-and-prejudice,42,Mr Bingley,0
+pride-and-prejudice,42,Miss Bingley,0
+pride-and-prejudice,42,Wickham,2
+pride-and-prejudice,42,Lydia,1
+pride-and-prejudice,42,Mr Collins,0
+pride-and-prejudice,42,Charlotte,0
+pride-and-prejudice,42,Mrs Bennet,1
+pride-and-prejudice,42,Mr Bennet,1
+pride-and-prejudice,42,Lady Catherine,0
+pride-and-prejudice,43,Elizabeth,42
+pride-and-prejudice,43,Darcy,17
+pride-and-prejudice,43,Jane,0
+pride-and-prejudice,43,Mr Bingley,2
+pride-and-prejudice,43,Miss Bingley,0
+pride-and-prejudice,43,Wickham,7
+pride-and-prejudice,43,Lydia,0
+pride-and-prejudice,43,Mr Collins,0
+pride-and-prejudice,43,Charlotte,0
+pride-and-prejudice,43,Mrs Bennet,0
+pride-and-prejudice,43,Mr Bennet,0
+pride-and-prejudice,43,Lady Catherine,0
+pride-and-prejudice,44,Elizabeth,14
+pride-and-prejudice,44,Darcy,17
+pride-and-prejudice,44,Jane,2
+pride-and-prejudice,44,Mr Bingley,6
+pride-and-prejudice,44,Miss Bingley,0
+pride-and-prejudice,44,Wickham,1
+pride-and-prejudice,44,Lydia,0
+pride-and-prejudice,44,Mr Collins,0
+pride-and-prejudice,44,Charlotte,0
+pride-and-prejudice,44,Mrs Bennet,0
+pride-and-prejudice,44,Mr Bennet,0
+pride-and-prejudice,44,Lady Catherine,0
+pride-and-prejudice,45,Elizabeth,20
+pride-and-prejudice,45,Darcy,17
+pride-and-prejudice,45,Jane,0
+pride-and-prejudice,45,Mr Bingley,4
+pride-and-prejudice,45,Miss Bingley,10
+pride-and-prejudice,45,Wickham,2
+pride-and-prejudice,45,Lydia,0
+pride-and-prejudice,45,Mr Collins,0
+pride-and-prejudice,45,Charlotte,0
+pride-and-prejudice,45,Mrs Bennet,0
+pride-and-prejudice,45,Mr Bennet,0
+pride-and-prejudice,45,Lady Catherine,0
+pride-and-prejudice,46,Elizabeth,17
+pride-and-prejudice,46,Darcy,9
+pride-and-prejudice,46,Jane,7
+pride-and-prejudice,46,Mr Bingley,0
+pride-and-prejudice,46,Miss Bingley,0
+pride-and-prejudice,46,Wickham,6
+pride-and-prejudice,46,Lydia,16
+pride-and-prejudice,46,Mr Collins,0
+pride-and-prejudice,46,Charlotte,0
+pride-and-prejudice,46,Mrs Bennet,0
+pride-and-prejudice,46,Mr Bennet,0
+pride-and-prejudice,46,Lady Catherine,0
+pride-and-prejudice,47,Elizabeth,20
+pride-and-prejudice,47,Darcy,3
+pride-and-prejudice,47,Jane,16
+pride-and-prejudice,47,Mr Bingley,0
+pride-and-prejudice,47,Miss Bingley,0
+pride-and-prejudice,47,Wickham,11
+pride-and-prejudice,47,Lydia,16
+pride-and-prejudice,47,Mr Collins,0
+pride-and-prejudice,47,Charlotte,0
+pride-and-prejudice,47,Mrs Bennet,2
+pride-and-prejudice,47,Mr Bennet,2
+pride-and-prejudice,47,Lady Catherine,0
+pride-and-prejudice,48,Elizabeth,11
+pride-and-prejudice,48,Darcy,1
+pride-and-prejudice,48,Jane,3
+pride-and-prejudice,48,Mr Bingley,0
+pride-and-prejudice,48,Miss Bingley,0
+pride-and-prejudice,48,Wickham,4
+pride-and-prejudice,48,Lydia,5
+pride-and-prejudice,48,Mr Collins,3
+pride-and-prejudice,48,Charlotte,1
+pride-and-prejudice,48,Mrs Bennet,3
+pride-and-prejudice,48,Mr Bennet,6
+pride-and-prejudice,48,Lady Catherine,2
+pride-and-prejudice,49,Elizabeth,14
+pride-and-prejudice,49,Darcy,0
+pride-and-prejudice,49,Jane,11
+pride-and-prejudice,49,Mr Bingley,0
+pride-and-prejudice,49,Miss Bingley,0
+pride-and-prejudice,49,Wickham,8
+pride-and-prejudice,49,Lydia,8
+pride-and-prejudice,49,Mr Collins,0
+pride-and-prejudice,49,Charlotte,0
+pride-and-prejudice,49,Mrs Bennet,2
+pride-and-prejudice,49,Mr Bennet,2
+pride-and-prejudice,49,Lady Catherine,0
+pride-and-prejudice,50,Elizabeth,3
+pride-and-prejudice,50,Darcy,2
+pride-and-prejudice,50,Jane,2
+pride-and-prejudice,50,Mr Bingley,0
+pride-and-prejudice,50,Miss Bingley,0
+pride-and-prejudice,50,Wickham,8
+pride-and-prejudice,50,Lydia,10
+pride-and-prejudice,50,Mr Collins,0
+pride-and-prejudice,50,Charlotte,0
+pride-and-prejudice,50,Mrs Bennet,6
+pride-and-prejudice,50,Mr Bennet,7
+pride-and-prejudice,50,Lady Catherine,0
+pride-and-prejudice,51,Elizabeth,16
+pride-and-prejudice,51,Darcy,3
+pride-and-prejudice,51,Jane,7
+pride-and-prejudice,51,Mr Bingley,0
+pride-and-prejudice,51,Miss Bingley,0
+pride-and-prejudice,51,Wickham,12
+pride-and-prejudice,51,Lydia,16
+pride-and-prejudice,51,Mr Collins,0
+pride-and-prejudice,51,Charlotte,0
+pride-and-prejudice,51,Mrs Bennet,2
+pride-and-prejudice,51,Mr Bennet,1
+pride-and-prejudice,51,Lady Catherine,0
+pride-and-prejudice,52,Elizabeth,9
+pride-and-prejudice,52,Darcy,10
+pride-and-prejudice,52,Jane,3
+pride-and-prejudice,52,Mr Bingley,0
+pride-and-prejudice,52,Miss Bingley,0
+pride-and-prejudice,52,Wickham,16
+pride-and-prejudice,52,Lydia,8
+pride-and-prejudice,52,Mr Collins,0
+pride-and-prejudice,52,Charlotte,0
+pride-and-prejudice,52,Mrs Bennet,1
+pride-and-prejudice,52,Mr Bennet,1
+pride-and-prejudice,52,Lady Catherine,0
+pride-and-prejudice,53,Elizabeth,16
+pride-and-prejudice,53,Darcy,7
+pride-and-prejudice,53,Jane,12
+pride-and-prejudice,53,Mr Bingley,15
+pride-and-prejudice,53,Miss Bingley,0
+pride-and-prejudice,53,Wickham,3
+pride-and-prejudice,53,Lydia,4
+pride-and-prejudice,53,Mr Collins,0
+pride-and-prejudice,53,Charlotte,0
+pride-and-prejudice,53,Mrs Bennet,8
+pride-and-prejudice,53,Mr Bennet,1
+pride-and-prejudice,53,Lady Catherine,0
+pride-and-prejudice,54,Elizabeth,14
+pride-and-prejudice,54,Darcy,5
+pride-and-prejudice,54,Jane,5
+pride-and-prejudice,54,Mr Bingley,4
+pride-and-prejudice,54,Miss Bingley,0
+pride-and-prejudice,54,Wickham,0
+pride-and-prejudice,54,Lydia,0
+pride-and-prejudice,54,Mr Collins,0
+pride-and-prejudice,54,Charlotte,0
+pride-and-prejudice,54,Mrs Bennet,4
+pride-and-prejudice,54,Mr Bennet,0
+pride-and-prejudice,54,Lady Catherine,0
+pride-and-prejudice,55,Elizabeth,23
+pride-and-prejudice,55,Darcy,1
+pride-and-prejudice,55,Jane,19
+pride-and-prejudice,55,Mr Bingley,13
+pride-and-prejudice,55,Miss Bingley,1
+pride-and-prejudice,55,Wickham,1
+pride-and-prejudice,55,Lydia,2
+pride-and-prejudice,55,Mr Collins,1
+pride-and-prejudice,55,Charlotte,0
+pride-and-prejudice,55,Mrs Bennet,7
+pride-and-prejudice,55,Mr Bennet,4
+pride-and-prejudice,55,Lady Catherine,0
+pride-and-prejudice,56,Elizabeth,21
+pride-and-prejudice,56,Darcy,6
+pride-and-prejudice,56,Jane,1
+pride-and-prejudice,56,Mr Bingley,2
+pride-and-prejudice,56,Miss Bingley,0
+pride-and-prejudice,56,Wickham,0
+pride-and-prejudice,56,Lydia,0
+pride-and-prejudice,56,Mr Collins,1
+pride-and-prejudice,56,Charlotte,1
+pride-and-prejudice,56,Mrs Bennet,4
+pride-and-prejudice,56,Mr Bennet,0
+pride-and-prejudice,56,Lady Catherine,12
+pride-and-prejudice,57,Elizabeth,17
+pride-and-prejudice,57,Darcy,3
+pride-and-prejudice,57,Jane,1
+pride-and-prejudice,57,Mr Bingley,2
+pride-and-prejudice,57,Miss Bingley,0
+pride-and-prejudice,57,Wickham,1
+pride-and-prejudice,57,Lydia,1
+pride-and-prejudice,57,Mr Collins,5
+pride-and-prejudice,57,Charlotte,1
+pride-and-prejudice,57,Mrs Bennet,1
+pride-and-prejudice,57,Mr Bennet,0
+pride-and-prejudice,57,Lady Catherine,6
+pride-and-prejudice,58,Elizabeth,14
+pride-and-prejudice,58,Darcy,8
+pride-and-prejudice,58,Jane,3
+pride-and-prejudice,58,Mr Bingley,7
+pride-and-prejudice,58,Miss Bingley,0
+pride-and-prejudice,58,Wickham,0
+pride-and-prejudice,58,Lydia,1
+pride-and-prejudice,58,Mr Collins,0
+pride-and-prejudice,58,Charlotte,0
+pride-and-prejudice,58,Mrs Bennet,2
+pride-and-prejudice,58,Mr Bennet,0
+pride-and-prejudice,58,Lady Catherine,2
+pride-and-prejudice,59,Elizabeth,30
+pride-and-prejudice,59,Darcy,15
+pride-and-prejudice,59,Jane,11
+pride-and-prejudice,59,Mr Bingley,9
+pride-and-prejudice,59,Miss Bingley,0
+pride-and-prejudice,59,Wickham,1
+pride-and-prejudice,59,Lydia,2
+pride-and-prejudice,59,Mr Collins,1
+pride-and-prejudice,59,Charlotte,0
+pride-and-prejudice,59,Mrs Bennet,6
+pride-and-prejudice,59,Mr Bennet,3
+pride-and-prejudice,59,Lady Catherine,0
+pride-and-prejudice,60,Elizabeth,7
+pride-and-prejudice,60,Darcy,7
+pride-and-prejudice,60,Jane,5
+pride-and-prejudice,60,Mr Bingley,2
+pride-and-prejudice,60,Miss Bingley,1
+pride-and-prejudice,60,Wickham,0
+pride-and-prejudice,60,Lydia,1
+pride-and-prejudice,60,Mr Collins,2
+pride-and-prejudice,60,Charlotte,1
+pride-and-prejudice,60,Mrs Bennet,0
+pride-and-prejudice,60,Mr Bennet,1
+pride-and-prejudice,60,Lady Catherine,5
+pride-and-prejudice,61,Elizabeth,11
+pride-and-prejudice,61,Darcy,9
+pride-and-prejudice,61,Jane,4
+pride-and-prejudice,61,Mr Bingley,3
+pride-and-prejudice,61,Miss Bingley,1
+pride-and-prejudice,61,Wickham,4
+pride-and-prejudice,61,Lydia,6
+pride-and-prejudice,61,Mr Collins,0
+pride-and-prejudice,61,Charlotte,0
+pride-and-prejudice,61,Mrs Bennet,2
+pride-and-prejudice,61,Mr Bennet,1
+pride-and-prejudice,61,Lady Catherine,1
+frankenstein,1,Victor,0
+frankenstein,1,Elizabeth,0
+frankenstein,1,Clerval,0
+frankenstein,1,Justine,0
+frankenstein,1,William,0
+frankenstein,1,Walton,1
+frankenstein,1,Felix,0
+frankenstein,1,Safie,0
+frankenstein,2,Victor,0
+frankenstein,2,Elizabeth,0
+frankenstein,2,Clerval,0
+frankenstein,2,Justine,0
+frankenstein,2,William,0
+frankenstein,2,Walton,1
+frankenstein,2,Felix,0
+frankenstein,2,Safie,0
+frankenstein,3,Victor,0
+frankenstein,3,Elizabeth,0
+frankenstein,3,Clerval,0
+frankenstein,3,Justine,0
+frankenstein,3,William,0
+frankenstein,3,Walton,0
+frankenstein,3,Felix,0
+frankenstein,3,Safie,0
+frankenstein,4,Victor,0
+frankenstein,4,Elizabeth,0
+frankenstein,4,Clerval,0
+frankenstein,4,Justine,0
+frankenstein,4,William,0
+frankenstein,4,Walton,1
+frankenstein,4,Felix,0
+frankenstein,4,Safie,0
+frankenstein,5,Victor,1
+frankenstein,5,Elizabeth,4
+frankenstein,5,Clerval,0
+frankenstein,5,Justine,0
+frankenstein,5,William,0
+frankenstein,5,Walton,0
+frankenstein,5,Felix,0
+frankenstein,5,Safie,0
+frankenstein,6,Victor,1
+frankenstein,6,Elizabeth,2
+frankenstein,6,Clerval,5
+frankenstein,6,Justine,0
+frankenstein,6,William,0
+frankenstein,6,Walton,0
+frankenstein,6,Felix,0
+frankenstein,6,Safie,0
+frankenstein,7,Victor,0
+frankenstein,7,Elizabeth,7
+frankenstein,7,Clerval,4
+frankenstein,7,Justine,0
+frankenstein,7,William,0
+frankenstein,7,Walton,0
+frankenstein,7,Felix,0
+frankenstein,7,Safie,0
+frankenstein,8,Victor,0
+frankenstein,8,Elizabeth,0
+frankenstein,8,Clerval,0
+frankenstein,8,Justine,0
+frankenstein,8,William,0
+frankenstein,8,Walton,0
+frankenstein,8,Felix,0
+frankenstein,8,Safie,0
+frankenstein,9,Victor,1
+frankenstein,9,Elizabeth,4
+frankenstein,9,Clerval,13
+frankenstein,9,Justine,0
+frankenstein,9,William,0
+frankenstein,9,Walton,0
+frankenstein,9,Felix,0
+frankenstein,9,Safie,0
+frankenstein,10,Victor,3
+frankenstein,10,Elizabeth,3
+frankenstein,10,Clerval,17
+frankenstein,10,Justine,12
+frankenstein,10,William,1
+frankenstein,10,Walton,0
+frankenstein,10,Felix,0
+frankenstein,10,Safie,0
+frankenstein,11,Victor,8
+frankenstein,11,Elizabeth,8
+frankenstein,11,Clerval,6
+frankenstein,11,Justine,9
+frankenstein,11,William,13
+frankenstein,11,Walton,0
+frankenstein,11,Felix,0
+frankenstein,11,Safie,0
+frankenstein,12,Victor,1
+frankenstein,12,Elizabeth,17
+frankenstein,12,Clerval,0
+frankenstein,12,Justine,21
+frankenstein,12,William,3
+frankenstein,12,Walton,0
+frankenstein,12,Felix,0
+frankenstein,12,Safie,0
+frankenstein,13,Victor,3
+frankenstein,13,Elizabeth,3
+frankenstein,13,Clerval,0
+frankenstein,13,Justine,5
+frankenstein,13,William,2
+frankenstein,13,Walton,0
+frankenstein,13,Felix,0
+frankenstein,13,Safie,0
+frankenstein,14,Victor,0
+frankenstein,14,Elizabeth,0
+frankenstein,14,Clerval,0
+frankenstein,14,Justine,0
+frankenstein,14,William,0
+frankenstein,14,Walton,0
+frankenstein,14,Felix,0
+frankenstein,14,Safie,0
+frankenstein,15,Victor,0
+frankenstein,15,Elizabeth,0
+frankenstein,15,Clerval,0
+frankenstein,15,Justine,0
+frankenstein,15,William,0
+frankenstein,15,Walton,0
+frankenstein,15,Felix,0
+frankenstein,15,Safie,0
+frankenstein,16,Victor,0
+frankenstein,16,Elizabeth,0
+frankenstein,16,Clerval,0
+frankenstein,16,Justine,0
+frankenstein,16,William,0
+frankenstein,16,Walton,0
+frankenstein,16,Felix,6
+frankenstein,16,Safie,0
+frankenstein,17,Victor,0
+frankenstein,17,Elizabeth,0
+frankenstein,17,Clerval,0
+frankenstein,17,Justine,0
+frankenstein,17,William,0
+frankenstein,17,Walton,0
+frankenstein,17,Felix,13
+frankenstein,17,Safie,5
+frankenstein,18,Victor,0
+frankenstein,18,Elizabeth,0
+frankenstein,18,Clerval,0
+frankenstein,18,Justine,0
+frankenstein,18,William,0
+frankenstein,18,Walton,0
+frankenstein,18,Felix,18
+frankenstein,18,Safie,14
+frankenstein,19,Victor,0
+frankenstein,19,Elizabeth,0
+frankenstein,19,Clerval,0
+frankenstein,19,Justine,0
+frankenstein,19,William,0
+frankenstein,19,Walton,0
+frankenstein,19,Felix,4
+frankenstein,19,Safie,4
+frankenstein,20,Victor,0
+frankenstein,20,Elizabeth,0
+frankenstein,20,Clerval,0
+frankenstein,20,Justine,0
+frankenstein,20,William,0
+frankenstein,20,Walton,0
+frankenstein,20,Felix,6
+frankenstein,20,Safie,1
+frankenstein,21,Victor,0
+frankenstein,21,Elizabeth,0
+frankenstein,21,Clerval,0
+frankenstein,21,Justine,0
+frankenstein,21,William,0
+frankenstein,21,Walton,0
+frankenstein,21,Felix,0
+frankenstein,21,Safie,0
+frankenstein,22,Victor,2
+frankenstein,22,Elizabeth,8
+frankenstein,22,Clerval,8
+frankenstein,22,Justine,0
+frankenstein,22,William,0
+frankenstein,22,Walton,0
+frankenstein,22,Felix,0
+frankenstein,22,Safie,0
+frankenstein,23,Victor,0
+frankenstein,23,Elizabeth,1
+frankenstein,23,Clerval,10
+frankenstein,23,Justine,1
+frankenstein,23,William,1
+frankenstein,23,Walton,0
+frankenstein,23,Felix,0
+frankenstein,23,Safie,0
+frankenstein,24,Victor,0
+frankenstein,24,Elizabeth,2
+frankenstein,24,Clerval,2
+frankenstein,24,Justine,0
+frankenstein,24,William,0
+frankenstein,24,Walton,0
+frankenstein,24,Felix,0
+frankenstein,24,Safie,0
+frankenstein,25,Victor,0
+frankenstein,25,Elizabeth,2
+frankenstein,25,Clerval,11
+frankenstein,25,Justine,2
+frankenstein,25,William,1
+frankenstein,25,Walton,0
+frankenstein,25,Felix,0
+frankenstein,25,Safie,0
+frankenstein,26,Victor,6
+frankenstein,26,Elizabeth,19
+frankenstein,26,Clerval,2
+frankenstein,26,Justine,3
+frankenstein,26,William,1
+frankenstein,26,Walton,0
+frankenstein,26,Felix,0
+frankenstein,26,Safie,0
+frankenstein,27,Victor,1
+frankenstein,27,Elizabeth,6
+frankenstein,27,Clerval,1
+frankenstein,27,Justine,1
+frankenstein,27,William,1
+frankenstein,27,Walton,0
+frankenstein,27,Felix,0
+frankenstein,27,Safie,0
+frankenstein,28,Victor,1
+frankenstein,28,Elizabeth,6
+frankenstein,28,Clerval,6
+frankenstein,28,Justine,1
+frankenstein,28,William,2
+frankenstein,28,Walton,5
+frankenstein,28,Felix,2
+frankenstein,28,Safie,1
+the-time-machine,1,the Time Traveller,11
+the-time-machine,1,Weena,0
+the-time-machine,1,Filby,11
+the-time-machine,1,the Psychologist,6
+the-time-machine,1,the Medical Man,5
+the-time-machine,1,the Eloi,0
+the-time-machine,1,the Morlocks,0
+the-time-machine,2,the Time Traveller,12
+the-time-machine,2,Weena,0
+the-time-machine,2,Filby,4
+the-time-machine,2,the Psychologist,13
+the-time-machine,2,the Medical Man,7
+the-time-machine,2,the Eloi,0
+the-time-machine,2,the Morlocks,0
+the-time-machine,3,the Time Traveller,22
+the-time-machine,3,Weena,0
+the-time-machine,3,Filby,2
+the-time-machine,3,the Psychologist,4
+the-time-machine,3,the Medical Man,6
+the-time-machine,3,the Eloi,0
+the-time-machine,3,the Morlocks,0
+the-time-machine,4,the Time Traveller,0
+the-time-machine,4,Weena,0
+the-time-machine,4,Filby,0
+the-time-machine,4,the Psychologist,0
+the-time-machine,4,the Medical Man,0
+the-time-machine,4,the Eloi,0
+the-time-machine,4,the Morlocks,0
+the-time-machine,5,the Time Traveller,0
+the-time-machine,5,Weena,0
+the-time-machine,5,Filby,0
+the-time-machine,5,the Psychologist,0
+the-time-machine,5,the Medical Man,0
+the-time-machine,5,the Eloi,0
+the-time-machine,5,the Morlocks,0
+the-time-machine,6,the Time Traveller,0
+the-time-machine,6,Weena,0
+the-time-machine,6,Filby,0
+the-time-machine,6,the Psychologist,0
+the-time-machine,6,the Medical Man,0
+the-time-machine,6,the Eloi,0
+the-time-machine,6,the Morlocks,0
+the-time-machine,7,the Time Traveller,0
+the-time-machine,7,Weena,0
+the-time-machine,7,Filby,0
+the-time-machine,7,the Psychologist,0
+the-time-machine,7,the Medical Man,0
+the-time-machine,7,the Eloi,0
+the-time-machine,7,the Morlocks,0
+the-time-machine,8,the Time Traveller,0
+the-time-machine,8,Weena,7
+the-time-machine,8,Filby,0
+the-time-machine,8,the Psychologist,0
+the-time-machine,8,the Medical Man,0
+the-time-machine,8,the Eloi,2
+the-time-machine,8,the Morlocks,3
+the-time-machine,9,the Time Traveller,0
+the-time-machine,9,Weena,7
+the-time-machine,9,Filby,0
+the-time-machine,9,the Psychologist,0
+the-time-machine,9,the Medical Man,0
+the-time-machine,9,the Eloi,2
+the-time-machine,9,the Morlocks,6
+the-time-machine,10,the Time Traveller,1
+the-time-machine,10,Weena,12
+the-time-machine,10,Filby,0
+the-time-machine,10,the Psychologist,0
+the-time-machine,10,the Medical Man,0
+the-time-machine,10,the Eloi,4
+the-time-machine,10,the Morlocks,14
+the-time-machine,11,the Time Traveller,0
+the-time-machine,11,Weena,10
+the-time-machine,11,Filby,0
+the-time-machine,11,the Psychologist,0
+the-time-machine,11,the Medical Man,0
+the-time-machine,11,the Eloi,0
+the-time-machine,11,the Morlocks,6
+the-time-machine,12,the Time Traveller,0
+the-time-machine,12,Weena,16
+the-time-machine,12,Filby,0
+the-time-machine,12,the Psychologist,0
+the-time-machine,12,the Medical Man,0
+the-time-machine,12,the Eloi,0
+the-time-machine,12,the Morlocks,16
+the-time-machine,13,the Time Traveller,0
+the-time-machine,13,Weena,1
+the-time-machine,13,Filby,0
+the-time-machine,13,the Psychologist,0
+the-time-machine,13,the Medical Man,0
+the-time-machine,13,the Eloi,0
+the-time-machine,13,the Morlocks,5
+the-time-machine,14,the Time Traveller,0
+the-time-machine,14,Weena,0
+the-time-machine,14,Filby,0
+the-time-machine,14,the Psychologist,0
+the-time-machine,14,the Medical Man,0
+the-time-machine,14,the Eloi,0
+the-time-machine,14,the Morlocks,0
+the-time-machine,15,the Time Traveller,1
+the-time-machine,15,Weena,0
+the-time-machine,15,Filby,0
+the-time-machine,15,the Psychologist,0
+the-time-machine,15,the Medical Man,0
+the-time-machine,15,the Eloi,0
+the-time-machine,15,the Morlocks,1
+the-time-machine,16,the Time Traveller,12
+the-time-machine,16,Weena,1
+the-time-machine,16,Filby,0
+the-time-machine,16,the Psychologist,2
+the-time-machine,16,the Medical Man,6
+the-time-machine,16,the Eloi,0
+the-time-machine,16,the Morlocks,0
+the-time-machine,17,the Time Traveller,0
+the-time-machine,17,Weena,0
+the-time-machine,17,Filby,0
+the-time-machine,17,the Psychologist,0
+the-time-machine,17,the Medical Man,0
+the-time-machine,17,the Eloi,0
+the-time-machine,17,the Morlocks,0
+the-war-of-the-worlds,1,the Martians,5
+the-war-of-the-worlds,1,Ogilvy,5
+the-war-of-the-worlds,1,the curate,0
+the-war-of-the-worlds,1,the artilleryman,0
+the-war-of-the-worlds,1,my brother,0
+the-war-of-the-worlds,1,my wife,1
+the-war-of-the-worlds,2,the Martians,0
+the-war-of-the-worlds,2,Ogilvy,3
+the-war-of-the-worlds,2,the curate,0
+the-war-of-the-worlds,2,the artilleryman,0
+the-war-of-the-worlds,2,my brother,0
+the-war-of-the-worlds,2,my wife,0
+the-war-of-the-worlds,3,the Martians,0
+the-war-of-the-worlds,3,Ogilvy,6
+the-war-of-the-worlds,3,the curate,0
+the-war-of-the-worlds,3,the artilleryman,0
+the-war-of-the-worlds,3,my brother,0
+the-war-of-the-worlds,3,my wife,0
+the-war-of-the-worlds,4,the Martians,1
+the-war-of-the-worlds,4,Ogilvy,1
+the-war-of-the-worlds,4,the curate,0
+the-war-of-the-worlds,4,the artilleryman,0
+the-war-of-the-worlds,4,my brother,0
+the-war-of-the-worlds,4,my wife,0
+the-war-of-the-worlds,5,the Martians,5
+the-war-of-the-worlds,5,Ogilvy,1
+the-war-of-the-worlds,5,the curate,0
+the-war-of-the-worlds,5,the artilleryman,0
+the-war-of-the-worlds,5,my brother,0
+the-war-of-the-worlds,5,my wife,0
+the-war-of-the-worlds,6,the Martians,3
+the-war-of-the-worlds,6,Ogilvy,1
+the-war-of-the-worlds,6,the curate,0
+the-war-of-the-worlds,6,the artilleryman,0
+the-war-of-the-worlds,6,my brother,0
+the-war-of-the-worlds,6,my wife,0
+the-war-of-the-worlds,7,the Martians,6
+the-war-of-the-worlds,7,Ogilvy,3
+the-war-of-the-worlds,7,the curate,0
+the-war-of-the-worlds,7,the artilleryman,0
+the-war-of-the-worlds,7,my brother,0
+the-war-of-the-worlds,7,my wife,3
+the-war-of-the-worlds,8,the Martians,2
+the-war-of-the-worlds,8,Ogilvy,0
+the-war-of-the-worlds,8,the curate,0
+the-war-of-the-worlds,8,the artilleryman,0
+the-war-of-the-worlds,8,my brother,0
+the-war-of-the-worlds,8,my wife,0
+the-war-of-the-worlds,9,the Martians,9
+the-war-of-the-worlds,9,Ogilvy,2
+the-war-of-the-worlds,9,the curate,0
+the-war-of-the-worlds,9,the artilleryman,0
+the-war-of-the-worlds,9,my brother,0
+the-war-of-the-worlds,9,my wife,7
+the-war-of-the-worlds,10,the Martians,2
+the-war-of-the-worlds,10,Ogilvy,0
+the-war-of-the-worlds,10,the curate,0
+the-war-of-the-worlds,10,the artilleryman,0
+the-war-of-the-worlds,10,my brother,0
+the-war-of-the-worlds,10,my wife,3
+the-war-of-the-worlds,11,the Martians,5
+the-war-of-the-worlds,11,Ogilvy,0
+the-war-of-the-worlds,11,the curate,0
+the-war-of-the-worlds,11,the artilleryman,3
+the-war-of-the-worlds,11,my brother,0
+the-war-of-the-worlds,11,my wife,0
+the-war-of-the-worlds,12,the Martians,19
+the-war-of-the-worlds,12,Ogilvy,0
+the-war-of-the-worlds,12,the curate,0
+the-war-of-the-worlds,12,the artilleryman,10
+the-war-of-the-worlds,12,my brother,0
+the-war-of-the-worlds,12,my wife,1
+the-war-of-the-worlds,13,the Martians,9
+the-war-of-the-worlds,13,Ogilvy,0
+the-war-of-the-worlds,13,the curate,1
+the-war-of-the-worlds,13,the artilleryman,0
+the-war-of-the-worlds,13,my brother,0
+the-war-of-the-worlds,13,my wife,1
+the-war-of-the-worlds,14,the Martians,16
+the-war-of-the-worlds,14,Ogilvy,0
+the-war-of-the-worlds,14,the curate,0
+the-war-of-the-worlds,14,the artilleryman,0
+the-war-of-the-worlds,14,my brother,14
+the-war-of-the-worlds,14,my wife,0
+the-war-of-the-worlds,15,the Martians,23
+the-war-of-the-worlds,15,Ogilvy,0
+the-war-of-the-worlds,15,the curate,4
+the-war-of-the-worlds,15,the artilleryman,0
+the-war-of-the-worlds,15,my brother,1
+the-war-of-the-worlds,15,my wife,0
+the-war-of-the-worlds,16,the Martians,4
+the-war-of-the-worlds,16,Ogilvy,0
+the-war-of-the-worlds,16,the curate,0
+the-war-of-the-worlds,16,the artilleryman,0
+the-war-of-the-worlds,16,my brother,41
+the-war-of-the-worlds,16,my wife,0
+the-war-of-the-worlds,17,the Martians,20
+the-war-of-the-worlds,17,Ogilvy,0
+the-war-of-the-worlds,17,the curate,0
+the-war-of-the-worlds,17,the artilleryman,0
+the-war-of-the-worlds,17,my brother,12
+the-war-of-the-worlds,17,my wife,0
+the-war-of-the-worlds,18,the Martians,11
+the-war-of-the-worlds,18,Ogilvy,0
+the-war-of-the-worlds,18,the curate,15
+the-war-of-the-worlds,18,the artilleryman,1
+the-war-of-the-worlds,18,my brother,1
+the-war-of-the-worlds,18,my wife,1
+the-war-of-the-worlds,19,the Martians,29
+the-war-of-the-worlds,19,Ogilvy,0
+the-war-of-the-worlds,19,the curate,4
+the-war-of-the-worlds,19,the artilleryman,0
+the-war-of-the-worlds,19,my brother,0
+the-war-of-the-worlds,19,my wife,0
+the-war-of-the-worlds,20,the Martians,10
+the-war-of-the-worlds,20,Ogilvy,0
+the-war-of-the-worlds,20,the curate,5
+the-war-of-the-worlds,20,the artilleryman,0
+the-war-of-the-worlds,20,my brother,0
+the-war-of-the-worlds,20,my wife,0
+the-war-of-the-worlds,21,the Martians,7
+the-war-of-the-worlds,21,Ogilvy,0
+the-war-of-the-worlds,21,the curate,6
+the-war-of-the-worlds,21,the artilleryman,0
+the-war-of-the-worlds,21,my brother,0
+the-war-of-the-worlds,21,my wife,0
+the-war-of-the-worlds,22,the Martians,7
+the-war-of-the-worlds,22,Ogilvy,0
+the-war-of-the-worlds,22,the curate,2
+the-war-of-the-worlds,22,the artilleryman,0
+the-war-of-the-worlds,22,my brother,0
+the-war-of-the-worlds,22,my wife,0
+the-war-of-the-worlds,23,the Martians,4
+the-war-of-the-worlds,23,Ogilvy,0
+the-war-of-the-worlds,23,the curate,0
+the-war-of-the-worlds,23,the artilleryman,0
+the-war-of-the-worlds,23,my brother,0
+the-war-of-the-worlds,23,my wife,0
+the-war-of-the-worlds,24,the Martians,19
+the-war-of-the-worlds,24,Ogilvy,0
+the-war-of-the-worlds,24,the curate,2
+the-war-of-the-worlds,24,the artilleryman,10
+the-war-of-the-worlds,24,my brother,0
+the-war-of-the-worlds,24,my wife,5
+the-war-of-the-worlds,25,the Martians,11
+the-war-of-the-worlds,25,Ogilvy,0
+the-war-of-the-worlds,25,the curate,0
+the-war-of-the-worlds,25,the artilleryman,1
+the-war-of-the-worlds,25,my brother,0
+the-war-of-the-worlds,25,my wife,1
+the-war-of-the-worlds,26,the Martians,5
+the-war-of-the-worlds,26,Ogilvy,0
+the-war-of-the-worlds,26,the curate,0
+the-war-of-the-worlds,26,the artilleryman,3
+the-war-of-the-worlds,26,my brother,0
+the-war-of-the-worlds,26,my wife,2
+the-war-of-the-worlds,27,the Martians,13
+the-war-of-the-worlds,27,Ogilvy,0
+the-war-of-the-worlds,27,the curate,0
+the-war-of-the-worlds,27,the artilleryman,1
+the-war-of-the-worlds,27,my brother,0
+the-war-of-the-worlds,27,my wife,1
+a-princess-of-mars,1,John Carter,2
+a-princess-of-mars,1,Dejah Thoris,0
+a-princess-of-mars,1,Tars Tarkas,0
+a-princess-of-mars,1,Sola,0
+a-princess-of-mars,1,Woola,0
+a-princess-of-mars,1,Sarkoja,0
+a-princess-of-mars,1,Kantos Kan,0
+a-princess-of-mars,1,Tal Hajus,0
+a-princess-of-mars,2,John Carter,0
+a-princess-of-mars,2,Dejah Thoris,0
+a-princess-of-mars,2,Tars Tarkas,0
+a-princess-of-mars,2,Sola,0
+a-princess-of-mars,2,Woola,0
+a-princess-of-mars,2,Sarkoja,0
+a-princess-of-mars,2,Kantos Kan,0
+a-princess-of-mars,2,Tal Hajus,0
+a-princess-of-mars,3,John Carter,0
+a-princess-of-mars,3,Dejah Thoris,0
+a-princess-of-mars,3,Tars Tarkas,0
+a-princess-of-mars,3,Sola,0
+a-princess-of-mars,3,Woola,0
+a-princess-of-mars,3,Sarkoja,0
+a-princess-of-mars,3,Kantos Kan,0
+a-princess-of-mars,3,Tal Hajus,0
+a-princess-of-mars,4,John Carter,0
+a-princess-of-mars,4,Dejah Thoris,0
+a-princess-of-mars,4,Tars Tarkas,7
+a-princess-of-mars,4,Sola,2
+a-princess-of-mars,4,Woola,0
+a-princess-of-mars,4,Sarkoja,0
+a-princess-of-mars,4,Kantos Kan,0
+a-princess-of-mars,4,Tal Hajus,0
+a-princess-of-mars,5,John Carter,0
+a-princess-of-mars,5,Dejah Thoris,0
+a-princess-of-mars,5,Tars Tarkas,0
+a-princess-of-mars,5,Sola,5
+a-princess-of-mars,5,Woola,0
+a-princess-of-mars,5,Sarkoja,0
+a-princess-of-mars,5,Kantos Kan,0
+a-princess-of-mars,5,Tal Hajus,0
+a-princess-of-mars,6,John Carter,0
+a-princess-of-mars,6,Dejah Thoris,0
+a-princess-of-mars,6,Tars Tarkas,5
+a-princess-of-mars,6,Sola,4
+a-princess-of-mars,6,Woola,0
+a-princess-of-mars,6,Sarkoja,0
+a-princess-of-mars,6,Kantos Kan,0
+a-princess-of-mars,6,Tal Hajus,0
+a-princess-of-mars,7,John Carter,0
+a-princess-of-mars,7,Dejah Thoris,0
+a-princess-of-mars,7,Tars Tarkas,3
+a-princess-of-mars,7,Sola,9
+a-princess-of-mars,7,Woola,0
+a-princess-of-mars,7,Sarkoja,0
+a-princess-of-mars,7,Kantos Kan,0
+a-princess-of-mars,7,Tal Hajus,0
+a-princess-of-mars,8,John Carter,0
+a-princess-of-mars,8,Dejah Thoris,0
+a-princess-of-mars,8,Tars Tarkas,0
+a-princess-of-mars,8,Sola,3
+a-princess-of-mars,8,Woola,1
+a-princess-of-mars,8,Sarkoja,0
+a-princess-of-mars,8,Kantos Kan,0
+a-princess-of-mars,8,Tal Hajus,0
+a-princess-of-mars,9,John Carter,0
+a-princess-of-mars,9,Dejah Thoris,0
+a-princess-of-mars,9,Tars Tarkas,2
+a-princess-of-mars,9,Sola,15
+a-princess-of-mars,9,Woola,1
+a-princess-of-mars,9,Sarkoja,4
+a-princess-of-mars,9,Kantos Kan,0
+a-princess-of-mars,9,Tal Hajus,1
+a-princess-of-mars,10,John Carter,3
+a-princess-of-mars,10,Dejah Thoris,5
+a-princess-of-mars,10,Tars Tarkas,9
+a-princess-of-mars,10,Sola,6
+a-princess-of-mars,10,Woola,11
+a-princess-of-mars,10,Sarkoja,1
+a-princess-of-mars,10,Kantos Kan,0
+a-princess-of-mars,10,Tal Hajus,3
+a-princess-of-mars,11,John Carter,5
+a-princess-of-mars,11,Dejah Thoris,14
+a-princess-of-mars,11,Tars Tarkas,4
+a-princess-of-mars,11,Sola,11
+a-princess-of-mars,11,Woola,1
+a-princess-of-mars,11,Sarkoja,5
+a-princess-of-mars,11,Kantos Kan,0
+a-princess-of-mars,11,Tal Hajus,0
+a-princess-of-mars,12,John Carter,2
+a-princess-of-mars,12,Dejah Thoris,3
+a-princess-of-mars,12,Tars Tarkas,5
+a-princess-of-mars,12,Sola,2
+a-princess-of-mars,12,Woola,0
+a-princess-of-mars,12,Sarkoja,2
+a-princess-of-mars,12,Kantos Kan,0
+a-princess-of-mars,12,Tal Hajus,6
+a-princess-of-mars,13,John Carter,4
+a-princess-of-mars,13,Dejah Thoris,10
+a-princess-of-mars,13,Tars Tarkas,6
+a-princess-of-mars,13,Sola,6
+a-princess-of-mars,13,Woola,2
+a-princess-of-mars,13,Sarkoja,2
+a-princess-of-mars,13,Kantos Kan,0
+a-princess-of-mars,13,Tal Hajus,0
+a-princess-of-mars,14,John Carter,5
+a-princess-of-mars,14,Dejah Thoris,19
+a-princess-of-mars,14,Tars Tarkas,7
+a-princess-of-mars,14,Sola,10
+a-princess-of-mars,14,Woola,1
+a-princess-of-mars,14,Sarkoja,11
+a-princess-of-mars,14,Kantos Kan,0
+a-princess-of-mars,14,Tal Hajus,0
+a-princess-of-mars,15,John Carter,5
+a-princess-of-mars,15,Dejah Thoris,6
+a-princess-of-mars,15,Tars Tarkas,3
+a-princess-of-mars,15,Sola,10
+a-princess-of-mars,15,Woola,0
+a-princess-of-mars,15,Sarkoja,7
+a-princess-of-mars,15,Kantos Kan,0
+a-princess-of-mars,15,Tal Hajus,11
+a-princess-of-mars,16,John Carter,2
+a-princess-of-mars,16,Dejah Thoris,21
+a-princess-of-mars,16,Tars Tarkas,0
+a-princess-of-mars,16,Sola,14
+a-princess-of-mars,16,Woola,2
+a-princess-of-mars,16,Sarkoja,2
+a-princess-of-mars,16,Kantos Kan,0
+a-princess-of-mars,16,Tal Hajus,8
+a-princess-of-mars,17,John Carter,0
+a-princess-of-mars,17,Dejah Thoris,18
+a-princess-of-mars,17,Tars Tarkas,3
+a-princess-of-mars,17,Sola,17
+a-princess-of-mars,17,Woola,1
+a-princess-of-mars,17,Sarkoja,0
+a-princess-of-mars,17,Kantos Kan,0
+a-princess-of-mars,17,Tal Hajus,8
+a-princess-of-mars,18,John Carter,0
+a-princess-of-mars,18,Dejah Thoris,0
+a-princess-of-mars,18,Tars Tarkas,0
+a-princess-of-mars,18,Sola,0
+a-princess-of-mars,18,Woola,0
+a-princess-of-mars,18,Sarkoja,0
+a-princess-of-mars,18,Kantos Kan,0
+a-princess-of-mars,18,Tal Hajus,0
+a-princess-of-mars,19,John Carter,1
+a-princess-of-mars,19,Dejah Thoris,6
+a-princess-of-mars,19,Tars Tarkas,0
+a-princess-of-mars,19,Sola,2
+a-princess-of-mars,19,Woola,0
+a-princess-of-mars,19,Sarkoja,0
+a-princess-of-mars,19,Kantos Kan,13
+a-princess-of-mars,19,Tal Hajus,0
+a-princess-of-mars,20,John Carter,0
+a-princess-of-mars,20,Dejah Thoris,3
+a-princess-of-mars,20,Tars Tarkas,0
+a-princess-of-mars,20,Sola,0
+a-princess-of-mars,20,Woola,6
+a-princess-of-mars,20,Sarkoja,0
+a-princess-of-mars,20,Kantos Kan,1
+a-princess-of-mars,20,Tal Hajus,0
+a-princess-of-mars,21,John Carter,5
+a-princess-of-mars,21,Dejah Thoris,4
+a-princess-of-mars,21,Tars Tarkas,0
+a-princess-of-mars,21,Sola,0
+a-princess-of-mars,21,Woola,3
+a-princess-of-mars,21,Sarkoja,0
+a-princess-of-mars,21,Kantos Kan,6
+a-princess-of-mars,21,Tal Hajus,0
+a-princess-of-mars,22,John Carter,8
+a-princess-of-mars,22,Dejah Thoris,12
+a-princess-of-mars,22,Tars Tarkas,0
+a-princess-of-mars,22,Sola,2
+a-princess-of-mars,22,Woola,0
+a-princess-of-mars,22,Sarkoja,0
+a-princess-of-mars,22,Kantos Kan,1
+a-princess-of-mars,22,Tal Hajus,1
+a-princess-of-mars,23,John Carter,2
+a-princess-of-mars,23,Dejah Thoris,1
+a-princess-of-mars,23,Tars Tarkas,0
+a-princess-of-mars,23,Sola,0
+a-princess-of-mars,23,Woola,0
+a-princess-of-mars,23,Sarkoja,0
+a-princess-of-mars,23,Kantos Kan,10
+a-princess-of-mars,23,Tal Hajus,0
+a-princess-of-mars,24,John Carter,6
+a-princess-of-mars,24,Dejah Thoris,0
+a-princess-of-mars,24,Tars Tarkas,20
+a-princess-of-mars,24,Sola,1
+a-princess-of-mars,24,Woola,3
+a-princess-of-mars,24,Sarkoja,6
+a-princess-of-mars,24,Kantos Kan,1
+a-princess-of-mars,24,Tal Hajus,18
+a-princess-of-mars,25,John Carter,2
+a-princess-of-mars,25,Dejah Thoris,12
+a-princess-of-mars,25,Tars Tarkas,5
+a-princess-of-mars,25,Sola,0
+a-princess-of-mars,25,Woola,0
+a-princess-of-mars,25,Sarkoja,0
+a-princess-of-mars,25,Kantos Kan,5
+a-princess-of-mars,25,Tal Hajus,0
+a-princess-of-mars,26,John Carter,1
+a-princess-of-mars,26,Dejah Thoris,6
+a-princess-of-mars,26,Tars Tarkas,7
+a-princess-of-mars,26,Sola,0
+a-princess-of-mars,26,Woola,1
+a-princess-of-mars,26,Sarkoja,0
+a-princess-of-mars,26,Kantos Kan,2
+a-princess-of-mars,26,Tal Hajus,0
+a-princess-of-mars,27,John Carter,4
+a-princess-of-mars,27,Dejah Thoris,9
+a-princess-of-mars,27,Tars Tarkas,1
+a-princess-of-mars,27,Sola,2
+a-princess-of-mars,27,Woola,2
+a-princess-of-mars,27,Sarkoja,0
+a-princess-of-mars,27,Kantos Kan,0
+a-princess-of-mars,27,Tal Hajus,0
+a-princess-of-mars,28,John Carter,0
+a-princess-of-mars,28,Dejah Thoris,0
+a-princess-of-mars,28,Tars Tarkas,0
+a-princess-of-mars,28,Sola,0
+a-princess-of-mars,28,Woola,0
+a-princess-of-mars,28,Sarkoja,0
+a-princess-of-mars,28,Kantos Kan,0
+a-princess-of-mars,28,Tal Hajus,0
+the-lost-world,1,Malone,0
+the-lost-world,1,Challenger,0
+the-lost-world,1,Summerlee,0
+the-lost-world,1,Lord John Roxton,0
+the-lost-world,1,Gladys,9
+the-lost-world,1,Zambo,0
+the-lost-world,1,McArdle,0
+the-lost-world,2,Malone,5
+the-lost-world,2,Challenger,13
+the-lost-world,2,Summerlee,0
+the-lost-world,2,Lord John Roxton,0
+the-lost-world,2,Gladys,0
+the-lost-world,2,Zambo,0
+the-lost-world,2,McArdle,3
+the-lost-world,3,Malone,1
+the-lost-world,3,Challenger,1
+the-lost-world,3,Summerlee,0
+the-lost-world,3,Lord John Roxton,0
+the-lost-world,3,Gladys,0
+the-lost-world,3,Zambo,0
+the-lost-world,3,McArdle,0
+the-lost-world,4,Malone,9
+the-lost-world,4,Challenger,2
+the-lost-world,4,Summerlee,0
+the-lost-world,4,Lord John Roxton,0
+the-lost-world,4,Gladys,0
+the-lost-world,4,Zambo,0
+the-lost-world,4,McArdle,1
+the-lost-world,5,Malone,5
+the-lost-world,5,Challenger,22
+the-lost-world,5,Summerlee,10
+the-lost-world,5,Lord John Roxton,4
+the-lost-world,5,Gladys,3
+the-lost-world,5,Zambo,0
+the-lost-world,5,McArdle,3
+the-lost-world,6,Malone,2
+the-lost-world,6,Challenger,4
+the-lost-world,6,Summerlee,3
+the-lost-world,6,Lord John Roxton,10
+the-lost-world,6,Gladys,0
+the-lost-world,6,Zambo,0
+the-lost-world,6,McArdle,3
+the-lost-world,7,Malone,0
+the-lost-world,7,Challenger,12
+the-lost-world,7,Summerlee,10
+the-lost-world,7,Lord John Roxton,19
+the-lost-world,7,Gladys,0
+the-lost-world,7,Zambo,1
+the-lost-world,7,McArdle,2
+the-lost-world,8,Malone,0
+the-lost-world,8,Challenger,25
+the-lost-world,8,Summerlee,15
+the-lost-world,8,Lord John Roxton,8
+the-lost-world,8,Gladys,0
+the-lost-world,8,Zambo,1
+the-lost-world,8,McArdle,0
+the-lost-world,9,Malone,1
+the-lost-world,9,Challenger,26
+the-lost-world,9,Summerlee,19
+the-lost-world,9,Lord John Roxton,27
+the-lost-world,9,Gladys,0
+the-lost-world,9,Zambo,6
+the-lost-world,9,McArdle,1
+the-lost-world,10,Malone,2
+the-lost-world,10,Challenger,15
+the-lost-world,10,Summerlee,16
+the-lost-world,10,Lord John Roxton,18
+the-lost-world,10,Gladys,0
+the-lost-world,10,Zambo,4
+the-lost-world,10,McArdle,0
+the-lost-world,11,Malone,3
+the-lost-world,11,Challenger,24
+the-lost-world,11,Summerlee,23
+the-lost-world,11,Lord John Roxton,22
+the-lost-world,11,Gladys,3
+the-lost-world,11,Zambo,0
+the-lost-world,11,McArdle,1
+the-lost-world,12,Malone,4
+the-lost-world,12,Challenger,7
+the-lost-world,12,Summerlee,5
+the-lost-world,12,Lord John Roxton,4
+the-lost-world,12,Gladys,2
+the-lost-world,12,Zambo,5
+the-lost-world,12,McArdle,2
+the-lost-world,13,Malone,1
+the-lost-world,13,Challenger,21
+the-lost-world,13,Summerlee,18
+the-lost-world,13,Lord John Roxton,20
+the-lost-world,13,Gladys,0
+the-lost-world,13,Zambo,2
+the-lost-world,13,McArdle,0
+the-lost-world,14,Malone,0
+the-lost-world,14,Challenger,15
+the-lost-world,14,Summerlee,14
+the-lost-world,14,Lord John Roxton,17
+the-lost-world,14,Gladys,0
+the-lost-world,14,Zambo,2
+the-lost-world,14,McArdle,0
+the-lost-world,15,Malone,1
+the-lost-world,15,Challenger,22
+the-lost-world,15,Summerlee,10
+the-lost-world,15,Lord John Roxton,11
+the-lost-world,15,Gladys,0
+the-lost-world,15,Zambo,3
+the-lost-world,15,McArdle,1
+the-lost-world,16,Malone,3
+the-lost-world,16,Challenger,18
+the-lost-world,16,Summerlee,14
+the-lost-world,16,Lord John Roxton,17
+the-lost-world,16,Gladys,11
+the-lost-world,16,Zambo,0
+the-lost-world,16,McArdle,0

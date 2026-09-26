@@ -266,7 +266,9 @@ reading, the cells, the editor and the mathematics are all inside it, and it
 behaves like the page you downloaded it from. One thing worth knowing: the
 first time you open it, it needs an internet connection, because Python itself
 is fetched then. Without one, the reading still works and the cells say so
-rather than failing quietly.
+rather than failing quietly. The data a page uses is inside the file too, so
+it loads with no connection. A line under the cell says which copy it used,
+and when that copy was saved.
 
 **Print — or save as PDF** gives you the reading as a document.
 

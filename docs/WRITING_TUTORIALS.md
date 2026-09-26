@@ -984,6 +984,92 @@ that points at nothing.
 
 ---
 
+## Datasets
+
+A file in `data/` is shared by every page. A page that loads one declares
+it in its frontmatter:
+
+```yaml
+datasets: [life-expectancy]
+```
+
+The declaration does three things. It puts the dataset's source, licence
+and saved date in the page's Reference panel. It puts a copy of the
+dataset inside the page's download, so the page works offline. And it
+lets the page name the date of that copy (below). A cell that loads a
+file from `data/` its page does not declare fails the build.
+
+### Live, and the saved copy
+
+A dataset whose yaml says `live: true` is fetched from its source every
+time a cell loads it, shaped by its recipe into the same columns as the
+copy in `data/`. That copy, the *snapshot*, is the backup: it is used
+when the source does not answer within 10 seconds, when the page is
+offline, and when the source has changed shape so that the recipe no
+longer fits. A dataset without `live: true` always comes from its
+snapshot. Either way, a quiet line under the cell says which copy it got
+and when that copy was saved, so a reader whose numbers differ from the
+page's can see why.
+
+### Quoting a number
+
+The page's own numbers come from the snapshot, and a live copy can move.
+So a number in prose names the copy it came from:
+
+```markdown
+The numbers below come from the copy of the file saved on
+{{snapshot: life-expectancy}}.
+```
+
+The build replaces the token with the date in `data/life-expectancy.yaml`,
+so a refreshed snapshot can never leave a page naming the old one. The
+alternative is to quote nothing: the cell prints the number, and the
+prose talks about it. In code, choose a fixed year (`df.year == 2023`,
+`ireland[73]`) over "the latest" (`ireland[-1]`): a live copy gains a
+year at a time, and a chart whose axis was set for 2023 is wrong for
+2024.
+
+### A web address
+
+`load_csv("https://…")` loads any file whose website lets other pages
+read it. If `data/` keeps a copy of that exact file, marked
+`address: true`, the copy stands in when the address cannot be reached,
+with the same line under the cell. The Database Methods pages work this
+way: they teach loading from an address, and they still work offline.
+
+### Adding a dataset
+
+Two files: `data/<name>.csv` (or `.txt`) and `data/<name>.yaml`. The
+yaml needs every one of these, or the build fails:
+
+| Field | What it says |
+|---|---|
+| `source` | who published the data, credited the way they ask |
+| `url` | where a reader can find the source |
+| `license` | the licence, as the source states it; if it states none, say so |
+| `snapshot` | the date the copy in `data/` was saved, as 2026-09-26 |
+| `trimmed` | what was left out or changed, and whether it is live, and if not, why not |
+| `description` | what one row is, and what each column means, with units |
+
+A dataset made from a source by rule also has a `recipe:`, which
+`tutorial_tools.shape_live()` runs: `source` (the name the line under the
+cell uses), `url`, `columns` (the snapshot's own, in order), and any of
+`skip_through`, `rename`, `missing`, `drop_empty`, `at_least`, `at_most`
+and `round`, in that order. `live: true` means pages fetch it; set it
+only when the source lets other websites' pages read it, which
+`dev/datasets.py` checks. `address: true` is for a file pages load by its
+web address, and needs a recipe that keeps the file as it is.
+
+`python3 dev/datasets.py` fetches every recipe's source and says how far
+each snapshot has drifted from it; `--refresh <name>` saves the source as
+the new snapshot and moves its date. A refresh changes the numbers every
+page that declares the dataset quotes, so run those pages before
+committing one. Two datasets are made by scripts of their own, since
+their sources are not files: `dev/daylight.py` (from NASA/JPL Horizons)
+and `dev/book_counts.py` (counted from the novels in `data/`).
+
+---
+
 ## Images, and other files a tutorial uses
 
 Put the file in the tutorial's own folder and refer to it by its plain name:
@@ -1290,7 +1376,7 @@ Beyond ordinary Python, a cell can use:
 | `dropdown(label, options, value=None, id=None)` | A menu. Also read with `.value`. |
 | `button(label, on_click)` | A button that calls your function, appending output below itself. |
 | `image_input(label="Choose an image", id=None)` | A picker limited to image files. `.value` is a Pillow `Image`, or the raw bytes where Pillow is not loaded. |
-| `await load_csv(name)` | Load a CSV from `data/` into a DataFrame. |
+| `await load_csv(name)` | Load a CSV into a DataFrame: a dataset from `data/` (live where it can be, see [Datasets](#datasets)), or a full URL. |
 | `await load_text(name)` | Fetch a plain-text file — from `data/`, or a full URL — and return its contents as a string. |
 | `run_query(conn_or_path, sql, params=None, max_rows=20, caption=None)` | Run a SQL query and render the result as a table. Takes an open `sqlite3` connection or a path to pass to `sqlite3.connect()`. |
 

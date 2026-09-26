@@ -607,8 +607,11 @@ class TestNotesAndDatasets:
         assert manifest(built(repo, "one"))["datasets"] == [{
             "name": "life-expectancy",
             "source": "World Bank",
+            "url": "https://example.org/life-expectancy",
             "license": "CC-BY-4.0",
             "description": "Life expectancy by country and year.",
+            "saved": "26 September 2026",
+            "live": None,
         }]
         # A note is not inherited by a later tutorial.
         assert "notes" not in manifest(built(repo, "two"))
@@ -632,8 +635,11 @@ class TestNotesAndDatasets:
         assert manifest(built(repo, "one"))["datasets"] == [{
             "name": "a-book",
             "source": "Some author",
+            "url": "https://example.org/a-book",
             "license": "Public domain",
             "description": "A plain-text dataset, loaded with load_text().",
+            "saved": "26 September 2026",
+            "live": None,
         }]
 
     def test_maths_works_inside_a_note(self, repo):
@@ -680,11 +686,59 @@ class TestNotesAndDatasets:
         (_duplicate_note_id, "share the id"),
         (_dataset_missing_csv, "data/missing.csv"),
         (_dataset_missing_attribution, "data/missing.yaml"),
-        (_dataset_incomplete_attribution, "license, description"),
+        (_dataset_incomplete_attribution, "url, license, snapshot, trimmed, description"),
     ])
     def test_note_and_dataset_faults_fail_the_build(self, repo, setup, match):
         setup(repo)
         with pytest.raises(b.BuildError, match=match):
+            b.build()
+
+    @pytest.mark.parametrize("extra, match", [
+        ("", None),
+        ("live: true\n", "no recipe: for a page to shape"),
+        ("recipe:\n  source: S\n  url: https://example.org/x.csv\n  columns: [a]\n"
+         "  sort: [a]\n", "sort, which shape_live"),
+        ("recipe:\n  source: S\n  columns: [a]\n", "recipe: is missing url"),
+        ("recipe:\n  source: S\n  url: https://example.org/x.csv\n  columns: [a]\n"
+         "  round: {a: 1}\nlive: true\naddress: true\n", "also has round"),
+        ("live: yes please\n", "is not true or false"),
+    ])
+    def test_a_datasets_recipe_is_checked(self, repo, extra, match):
+        path = write(repo, "Prose.\n", slug="one")
+        add_frontmatter(path, "datasets:\n  - x\n")
+        dataset(repo, "x", extra=extra)
+        if match is None:
+            b.build()
+            return
+        with pytest.raises(b.BuildError, match=match):
+            b.build()
+
+    def test_a_snapshot_that_is_not_a_date_fails(self, repo):
+        dataset(repo, "x")
+        yaml_path = repo / "data" / "x.yaml"
+        yaml_path.write_text(yaml_path.read_text().replace("2026-09-26", "last week"))
+        write(repo, "Prose.\n", slug="one")
+        with pytest.raises(b.BuildError, match="is not a date"):
+            b.build()
+
+    def test_every_data_file_needs_its_yaml_even_undeclared(self, repo):
+        # dewmini and the Notebook load files by name too.
+        (repo / "data" / "stray.csv").write_text("a\n1\n")
+        write(repo, "Prose.\n", slug="one")
+        with pytest.raises(b.BuildError, match="has no data/stray.yaml"):
+            b.build()
+
+    def test_the_snapshot_token_names_the_date_of_a_declared_dataset(self, repo):
+        path = write(repo, "From the copy saved on {{snapshot: x}}.\n", slug="one")
+        add_frontmatter(path, "datasets:\n  - x\n")
+        dataset(repo, "x")
+        b.build()
+        assert "From the copy saved on 26 September 2026." in built(repo, "one")
+
+    def test_the_snapshot_token_needs_the_dataset_declared(self, repo):
+        write(repo, "From the copy saved on {{snapshot: x}}.\n", slug="one")
+        dataset(repo, "x")
+        with pytest.raises(b.BuildError, match="datasets: does not list"):
             b.build()
 
 

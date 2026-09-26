@@ -1,0 +1,45 @@
+# Attribution for data/dublin-weather.csv.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the numbers they are working with back to their source.
+
+source: >
+  The data was obtained from the National Aeronautics and Space
+  Administration (NASA) Langley Research Center's Prediction Of Worldwide
+  Energy Resources (POWER) project, funded through the NASA Earth Science
+  Division: the POWER Daily API, version v2.10.0, on 26 September 2026.
+  Temperatures from NASA's MERRA-2 reanalysis; sunlight from its CERES
+  SYN1deg product.
+
+url: https://power.larc.nasa.gov
+
+license: >
+  Free to use, as a work of NASA, a United States government agency. The
+  POWER project asks to be named, with the version and date, as above,
+  and to be told when its data is published or passed on.
+
+snapshot: 2026-09-26
+
+trimmed: >
+  One place, Dublin (53.35° N, 6.26° W), and three years, 2023 to 2025,
+  with four of the service's measurements and its header lines left out.
+  Fetched live when a page runs, shaped the same way.
+
+description: >
+  Dublin's weather, one row a day from 2023 to 2025: year, month and day;
+  temp_c, the day's average temperature 2 metres above the ground, in °C;
+  max_c and min_c, its highest and lowest; and sunlight_kwh_m2, how much
+  of the Sun's energy reached each square metre of ground that day, in
+  kilowatt-hours. Each value is for a grid square about 55 by 42 km, not
+  one thermometer: it is a model of the weather, built from many
+  measurements. A year of it rises and falls like a wave.
+
+recipe:
+  source: NASA POWER
+  url: https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M,T2M_MAX,T2M_MIN,ALLSKY_SFC_SW_DWN&community=RE&longitude=-6.26&latitude=53.35&start=20230101&end=20251231&format=CSV
+  skip_through: "-END HEADER-"
+  rename: {YEAR: year, MO: month, DY: day, T2M: temp_c, T2M_MAX: max_c,
+           T2M_MIN: min_c, ALLSKY_SFC_SW_DWN: sunlight_kwh_m2}
+  missing: [-999]
+  columns: [year, month, day, temp_c, max_c, min_c, sunlight_kwh_m2]
+
+live: true
