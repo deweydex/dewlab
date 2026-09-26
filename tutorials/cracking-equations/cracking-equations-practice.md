@@ -2,7 +2,12 @@
 title: "Solving equations: linear, quadratic and simultaneous — Practice"
 practice_for: cracking-equations
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.26.1
+worlds:
+  music: A band, its gigs and its tickets. The numbers are made up.
+  electronics: Batteries, resistors and the voltages between them.
+  rockets: Rockets, balloons and when two of them meet. The numbers are made up.
+  fantasy-maps: A made-up kingdom, and the routes across it.
 ---
 
 # Solving equations: linear, quadratic and simultaneous — Practice
@@ -12,8 +17,8 @@ root you find yourself: put it back into the equation, and see whether
 you get zero. This is called *substituting* the root back in. So you can
 find a wrong answer yourself, and fix it.
 
-The factorising and quadratic problems are adapted from the Mathematics
-repository's factoring worksheet.
+The factorising and quadratic problems are adapted from an earlier
+worksheet on factorising.
 
 ## Linear equations
 
@@ -120,8 +125,9 @@ It cannot be factorised using real numbers.
 A difference of two squares factorises, but a *sum* of two squares does
 not. Its discriminant is $0 - 16 = -16$, which is negative, so it has no
 real roots. Using complex numbers it is $(x - 2i)(x + 2i)$. That is the
-subject of the next page,
-[Complex numbers: roots that are not real](tutorial:complex-roots).
+subject of
+[Complex numbers: roots that are not real](tutorial:complex-roots),
+two pages on.
 
 </details>
 
@@ -230,30 +236,39 @@ three cases.
 
 </details>
 
-**12.** Can you write `verify_roots(a, b, c, roots)`? It should
-substitute each root back and show what each one gives.
+**12.** What happens when `solve_quadratic` is given $a = 0$? The
+equation $0x^2 + 2x - 4 = 0$ is only $2x - 4 = 0$, so it has one
+solution, $x = 2$. Can you change the function so that it finds it?
+
+```python exec
+id: quadratic-with-no-square
+print(solve_quadratic(0, 2, -4))
+```
 
 <details class="dl-answer"><summary>answer</summary>
 
+Here is one answer. Yours may be different and work too. It stops with
+`ZeroDivisionError`, because the formula divides by $2a$, which is 0.
+
 ```python
-def verify_roots(a, b, c, roots, tolerance=1e-9):
-    """Check each root by substitution."""
-    for r in roots:
-        value = a * r * r + b * r + c
-        near = "zero, within the tolerance" if abs(value) < tolerance else "not zero"
-        print(f"  x = {r:<20} gives {value:<25} {near}")
+def solve_quadratic(a, b, c):
+    """Real roots of ax^2 + bx + c = 0."""
+    if a == 0:
+        if b == 0:
+            return ()
+        return (-c / b,)
+    d = b * b - 4 * a * c
+    if d > 0:
+        root = math.sqrt(d)
+        return ((-b + root) / (2 * a), (-b - root) / (2 * a))
+    if d == 0:
+        return (-b / (2 * a),)
+    return ()
 ```
 
-You need the tolerance. Many quadratics give exact roots: $x^2 - 4x + 3$
-gives 3.0 and 1.0, and both substitute to exactly zero. But
-$3x^2 - 7x + 2$ gives a root of 0.3333333333333333, which substitutes to
-`2.2e-16`. An exact test for zero would say that 0.3333333333333333 is
-not a root, when it is one, apart from rounding.
-
-The interesting case is $x^2 - 200000x + 1$, from the next problem. Its
-small root substitutes to about `1.1e-6`. That is far too large to be
-normal rounding error. Here the tolerance shows something useful. It
-tells you that the root itself is not accurate.
+With $a = 0$ the equation is linear, $bx + c = 0$, and its one solution
+is $-\frac{c}{b}$, as in `solve_linear`. The new version returns
+`(2.0,)`.
 
 </details>
 
@@ -447,5 +462,166 @@ There are two answers, and both make sense. Often a quadratic from a
 real problem has one root you want and one you must think about. Here
 you want them both. The ball passes 15 m once going up and once coming
 down.
+
+</details>
+
+## Your world
+
+**23.** A problem from the world you chose. Can you draw the two lines
+first, read where they cross, and then solve by elimination?
+
+<div class="dl-world" data-world="music">
+
+Venue A charges €200 plus €5 for every ticket sold. Venue B charges a
+flat €500. For how many tickets do the two venues cost the same? Which
+is cheaper for a small crowd?
+
+```python exec
+id: your-world--music
+import matplotlib.pyplot as plt
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+60 tickets, where both cost €500. For fewer than 60, venue A is
+cheaper.
+
+```python
+tickets = [0, 100]
+fig, ax = plt.subplots()
+ax.plot(tickets, [200 + 5 * n for n in tickets], label="venue A")
+ax.plot(tickets, [500 for n in tickets], label="venue B")
+ax.legend()
+```
+
+With $y$ for the cost: $5n - y = -200$ and $y = 500$. Put $y = 500$
+into the first: $5n = 300$, so $n = 60$.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="electronics">
+
+Two resistors in a line share a 12 V battery. The voltages across them,
+$V_1$ and $V_2$, add up to 12. The first resistor is twice the second,
+so it takes twice the voltage: $V_1 = 2V_2$. What are $V_1$ and $V_2$?
+
+```python exec
+id: your-world--electronics
+import matplotlib.pyplot as plt
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+$V_1 = 8$ V and $V_2 = 4$ V.
+
+```python
+v2 = [0, 12]
+fig, ax = plt.subplots()
+ax.plot(v2, [12 - v for v in v2], label="V1 + V2 = 12")
+ax.plot(v2, [2 * v for v in v2], label="V1 = 2 V2")
+ax.legend()
+```
+
+The equations are $V_1 + V_2 = 12$ and $V_1 - 2V_2 = 0$. Subtract the
+second from the first: $3V_2 = 12$, so $V_2 = 4$ and $V_1 = 8$.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="rockets">
+
+A rocket is launched from the ground and climbs at a steady 60 m/s. At
+the same moment, a balloon 200 m up starts rising at 10 m/s. When does
+the rocket reach the balloon, and how high are they?
+
+```python exec
+id: your-world--rockets
+import matplotlib.pyplot as plt
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+After 4 seconds, 240 m up.
+
+```python
+times = [0, 8]
+fig, ax = plt.subplots()
+ax.plot(times, [60 * t for t in times], label="rocket")
+ax.plot(times, [200 + 10 * t for t in times], label="balloon")
+ax.legend()
+```
+
+With $h$ for the height: $60t - h = 0$ and $10t - h = -200$. Subtract
+the second from the first: $50t = 200$, so $t = 4$ and $h = 240$.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+Two towns are 30 km apart. A rider leaves the first town at 12 km/h,
+and at the same moment a second rider leaves the other town, riding
+towards the first at 8 km/h. When do they meet, and how far from the
+first town?
+
+```python exec
+id: your-world--fantasy-maps
+import matplotlib.pyplot as plt
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+After 1.5 hours, 18 km from the first town.
+
+```python
+hours = [0, 3]
+fig, ax = plt.subplots()
+ax.plot(hours, [12 * t for t in hours], label="first rider")
+ax.plot(hours, [30 - 8 * t for t in hours], label="second rider")
+ax.legend()
+```
+
+Measure each rider's distance $d$ from the first town:
+$12t - d = 0$ and $8t + d = 30$. Adding them removes $d$: $20t = 30$,
+so $t = 1.5$ and $d = 18$.
+
+</details>
+
+</div>
+
+## From earlier
+
+**24.** In [Functions and their graphs](tutorial:drawing-functions) we
+read from a picture that $y = 2x + 1$ and $y = -x + 7$ cross at
+$(2, 5)$. Can you find that point by elimination?
+
+<details class="dl-answer"><summary>answer</summary>
+
+Write both as $ax + by = c$: $2x - y = -1$ and $x + y = 7$. Adding them
+removes $y$: $3x = 6$, so $x = 2$, and then $y = 7 - 2 = 5$. The
+picture and the algebra agree.
+
+</details>
+
+**25.** In [Rearranging formulae: changing the
+subject](tutorial:rearranging-formulae) we gathered two copies of the
+subject on one side. Solve $ax + b = cx + d$ for $x$ in general. What
+goes wrong when $a = c$?
+
+<details class="dl-answer"><summary>answer</summary>
+
+$x = \dfrac{d - b}{a - c}$.
+
+Subtract $cx$ and $b$ from both sides: $ax - cx = d - b$. Take out $x$:
+$x(a - c) = d - b$. Then divide. With $5x - 4 = 2x + 11$, that is
+$\frac{11 + 4}{5 - 2} = 5$.
+
+When $a = c$, the bottom is zero. Then the $x$ terms cancel, and the
+equation is $b = d$: true for every $x$ if $b = d$, and for none if
+not, as in problem 3.
 
 </details>

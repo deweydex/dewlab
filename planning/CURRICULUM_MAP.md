@@ -151,18 +151,23 @@ graph TD
   T31["31. Make it: a chart that tells the truth, and one that lies"]
   T32["32. Number types, powers and logarithms"]
   T33["33. Polynomials: representing and combining them in Python"]
-  T34["34. Rearranging formulae: changing the subject"]
-  T35["35. Solving equations: linear, quadratic and simultaneous"]
-  T36["36. Complex numbers: roots that are not real"]
-  T37["37. Functions and their graphs"]
-  T38["38. Parabolas: completing the square"]
-  T39["39. Straight lines: slope, midpoint and distance"]
-  T40["40. The unit circle: sine, cosine and tangent"]
-  T41["41. Sine and cosine waves: amplitude, period and shift"]
-  T42["42. Solving triangles: the sine rule and the cosine rule"]
-  T43["43. Limits: getting closer without arriving"]
-  T44["44. Derivatives: the rate of change of a curve"]
-  T45["45. Review problems: polynomials, equations and sets"]
+  T34["34. Squaring: a closer look at (a + b)²"]
+  T35["35. Functions and their graphs"]
+  T36["36. Rearranging formulae: changing the subject"]
+  T37["37. Dividing: a closer look at (2x + 6) / 2"]
+  T38["38. The fraction line: a closer look at v - u / a"]
+  T39["39. Solving equations: linear, quadratic and simultaneous"]
+  T40["40. Parabolas: completing the square"]
+  T41["41. Parabolas: a closer look at the sign in (x - h)²"]
+  T42["42. Complex numbers: roots that are not real"]
+  T43["43. Make it: a tool of your own, built from formulas"]
+  T44["44. Straight lines: slope, midpoint and distance"]
+  T45["45. The unit circle: sine, cosine and tangent"]
+  T46["46. Sine and cosine waves: amplitude, period and shift"]
+  T47["47. Solving triangles: the sine rule and the cosine rule"]
+  T48["48. Limits: getting closer without arriving"]
+  T49["49. Derivatives: the rate of change of a curve"]
+  T50["50. Review problems: polynomials, equations and sets"]
 
   T1 --> T2
   T2 --> T3
@@ -208,6 +213,11 @@ graph TD
   T42 --> T43
   T43 --> T44
   T44 --> T45
+  T45 --> T46
+  T46 --> T47
+  T47 --> T48
+  T48 --> T49
+  T49 --> T50
 
   T3 -.->|builds on| T1
   T4 -.->|builds on| T1
@@ -231,38 +241,43 @@ graph TD
   T27 -.->|builds on| T25
   T32 -.->|builds on| T5
   T32 -.->|builds on| T16
-  T32 -.->|builds on| T17
   T32 -.->|builds on| T21
+  T32 -.->|builds on| T23
+  T32 -.->|builds on| T25
   T33 -.->|builds on| T8
-  T34 -.->|builds on| T3
+  T35 -.->|builds on| T10
+  T35 -.->|builds on| T29
+  T35 -.->|builds on| T32
   T35 -.->|builds on| T33
-  T36 -.->|builds on| T32
-  T37 -.->|builds on| T10
-  T37 -.->|builds on| T29
-  T37 -.->|builds on| T30
-  T37 -.->|builds on| T33
-  T37 -.->|builds on| T35
-  T38 -.->|builds on| T35
-  T38 -.->|builds on| T36
-  T39 -.->|builds on| T29
-  T39 -.->|builds on| T30
-  T39 -.->|builds on| T37
-  T41 -.->|builds on| T37
-  T41 -.->|builds on| T38
-  T41 -.->|builds on| T39
-  T42 -.->|builds on| T37
+  T36 -.->|builds on| T3
+  T39 -.->|builds on| T33
+  T39 -.->|builds on| T35
+  T39 -.->|builds on| T36
+  T40 -.->|builds on| T33
+  T40 -.->|builds on| T35
+  T42 -.->|builds on| T32
   T42 -.->|builds on| T39
   T42 -.->|builds on| T40
-  T43 -.->|builds on| T3
-  T43 -.->|builds on| T39
-  T43 -.->|builds on| T40
-  T44 -.->|builds on| T38
-  T44 -.->|builds on| T39
-  T44 -.->|builds on| T40
-  T45 -.->|builds on| T1
-  T45 -.->|builds on| T21
-  T45 -.->|builds on| T33
-  T45 -.->|builds on| T35
+  T43 -.->|builds on| T36
+  T44 -.->|builds on| T29
+  T44 -.->|builds on| T30
+  T44 -.->|builds on| T35
+  T46 -.->|builds on| T35
+  T46 -.->|builds on| T40
+  T46 -.->|builds on| T44
+  T47 -.->|builds on| T35
+  T47 -.->|builds on| T44
+  T47 -.->|builds on| T45
+  T48 -.->|builds on| T3
+  T48 -.->|builds on| T44
+  T48 -.->|builds on| T45
+  T49 -.->|builds on| T40
+  T49 -.->|builds on| T44
+  T49 -.->|builds on| T45
+  T50 -.->|builds on| T1
+  T50 -.->|builds on| T21
+  T50 -.->|builds on| T33
+  T50 -.->|builds on| T39
 ```
 
 ## What is missing, and where it would go
@@ -306,18 +321,23 @@ graph TD
   T31["31. Make it: a chart that tells the truth, and one that lies"]
   T32["32. Number types, powers and logarithms"]
   T33["33. Polynomials: representing and combining them in Python"]
-  T34["34. Rearranging formulae: changing the subject"]
-  T35["35. Solving equations: linear, quadratic and simultaneous"]
-  T36["36. Complex numbers: roots that are not real"]
-  T37["37. Functions and their graphs"]
-  T38["38. Parabolas: completing the square"]
-  T39["39. Straight lines: slope, midpoint and distance"]
-  T40["40. The unit circle: sine, cosine and tangent"]
-  T41["41. Sine and cosine waves: amplitude, period and shift"]
-  T42["42. Solving triangles: the sine rule and the cosine rule"]
-  T43["43. Limits: getting closer without arriving"]
-  T44["44. Derivatives: the rate of change of a curve"]
-  T45["45. Review problems: polynomials, equations and sets"]
+  T34["34. Squaring: a closer look at (a + b)²"]
+  T35["35. Functions and their graphs"]
+  T36["36. Rearranging formulae: changing the subject"]
+  T37["37. Dividing: a closer look at (2x + 6) / 2"]
+  T38["38. The fraction line: a closer look at v - u / a"]
+  T39["39. Solving equations: linear, quadratic and simultaneous"]
+  T40["40. Parabolas: completing the square"]
+  T41["41. Parabolas: a closer look at the sign in (x - h)²"]
+  T42["42. Complex numbers: roots that are not real"]
+  T43["43. Make it: a tool of your own, built from formulas"]
+  T44["44. Straight lines: slope, midpoint and distance"]
+  T45["45. The unit circle: sine, cosine and tangent"]
+  T46["46. Sine and cosine waves: amplitude, period and shift"]
+  T47["47. Solving triangles: the sine rule and the cosine rule"]
+  T48["48. Limits: getting closer without arriving"]
+  T49["49. Derivatives: the rate of change of a curve"]
+  T50["50. Review problems: polynomials, equations and sets"]
 
   T1 --> T2
   T2 --> T3
@@ -363,6 +383,11 @@ graph TD
   T42 --> T43
   T43 --> T44
   T44 --> T45
+  T45 --> T46
+  T46 --> T47
+  T47 --> T48
+  T48 --> T49
+  T49 --> T50
 
 
   classDef new fill:#fdf6ec,stroke:#b5651d,color:#7a4310,stroke-dasharray:4 3;
@@ -381,12 +406,12 @@ graph TD
 | Outcome | | Where |
 |---|---|---|
 | `MIT-1.1` Operations in N, Z, Q, R; powers (the syllabus says indices) and logarithms | 🟩 | [Doubling and halving: powers and logarithms at work — A rumour that doubles](https://deweydex.github.io/dewlab/tutorials/doubling-and-halving.html#a-rumour-that-doubles)<br/>[Doubling and halving: powers and logarithms at work — Grains on a chessboard](https://deweydex.github.io/dewlab/tutorials/doubling-and-halving.html#grains-on-a-chessboard)<br/>[Doubling and halving: powers and logarithms at work — Doublings add up](https://deweydex.github.io/dewlab/tutorials/doubling-and-halving.html#doublings-add-up)<br/>[Doubling and halving: powers and logarithms at work — How long to double?](https://deweydex.github.io/dewlab/tutorials/doubling-and-halving.html#how-long-to-double)<br/>[Doubling and halving: powers and logarithms at work — Halving down to 1](https://deweydex.github.io/dewlab/tutorials/doubling-and-halving.html#halving-down-to-1)<br/>[Doubling and halving: powers and logarithms at work — Why binary search is so quick](https://deweydex.github.io/dewlab/tutorials/doubling-and-halving.html#why-binary-search-is-so-quick)<br/>[Finding things fast: linear and binary search — How many halvings?](https://deweydex.github.io/dewlab/tutorials/finding-things-fast.html#how-many-halvings)<br/>[Making decisions with if, elif and else — Classifying numbers: a mathematical application](https://deweydex.github.io/dewlab/tutorials/making-decisions.html#classifying-numbers-a-mathematical-application)<br/>[Numbers a computer can hold — Families of numbers](https://deweydex.github.io/dewlab/tutorials/numbers-a-computer-can-hold.html#families-of-numbers)<br/>[Numbers a computer can hold — Two kinds of number in Python](https://deweydex.github.io/dewlab/tutorials/numbers-a-computer-can-hold.html#two-kinds-of-number-in-python)<br/>[Numbers a computer can hold — Powers, and how many times](https://deweydex.github.io/dewlab/tutorials/numbers-a-computer-can-hold.html#powers-and-how-many-times)<br/>[Number types, powers and logarithms — Powers and their rules](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#powers-and-their-rules)<br/>[Number types, powers and logarithms — Logarithms: the inverse of powers](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#logarithms-the-inverse-of-powers)<br/>_used in:_ [Counting every outfit: lists of outcomes — Too many to list: PINs and passwords](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#too-many-to-list-pins-and-passwords)<br/>_used in:_ [Drawing a rule: graphs of functions — Rules with gaps, and rules that race](https://deweydex.github.io/dewlab/tutorials/drawing-a-rule.html#rules-with-gaps-and-rules-that-race)<br/>_used in:_ [Everything is ones and zeros — From a number to its bits](https://deweydex.github.io/dewlab/tutorials/everything-is-ones-and-zeros.html#from-a-number-to-its-bits)<br/>_used in:_ [Everything is ones and zeros — How many bits is enough?](https://deweydex.github.io/dewlab/tutorials/everything-is-ones-and-zeros.html#how-many-bits-is-enough)<br/>_used in:_ [Everything is ones and zeros — Why 0.1 + 0.2 is not 0.3](https://deweydex.github.io/dewlab/tutorials/everything-is-ones-and-zeros.html#why-01-02-is-not-03)<br/>_used in:_ [Finding things fast: linear and binary search — Watching the steps grow](https://deweydex.github.io/dewlab/tutorials/finding-things-fast.html#watching-the-steps-grow)<br/>_used in:_ [Four questions for any puzzle — The same move in a different space](https://deweydex.github.io/dewlab/tutorials/four-questions.html#the-same-move-in-a-different-space)<br/>_used in:_ [Getting closer: limits — Halfway to the door](https://deweydex.github.io/dewlab/tutorials/getting-closer.html#halfway-to-the-door)<br/>_used in:_ [Getting closer: limits — A limit at infinity](https://deweydex.github.io/dewlab/tutorials/getting-closer.html#a-limit-at-infinity)<br/>_used in:_ [Numbers a computer can hold — The row and column of a pixel](https://deweydex.github.io/dewlab/tutorials/numbers-a-computer-can-hold.html#the-row-and-column-of-a-pixel)<br/>_used in:_ [Solving by computing: bisection and Newton's method — Bisection: binary search on a number line](https://deweydex.github.io/dewlab/tutorials/solving-by-computing.html#bisection-binary-search-on-a-number-line)<br/>_used in:_ [True, false and every case: truth tables — How many rows?](https://deweydex.github.io/dewlab/tutorials/true-false-and-every-case.html#how-many-rows)<br/>_used in:_ [Waves: sine, cosine and sound — Higher notes: an octave is a doubling](https://deweydex.github.io/dewlab/tutorials/waves.html#higher-notes-an-octave-is-a-doubling) |
-| `MIT-1.2` Area and perimeter: square, rectangle, triangle, circle | 🟩 | [Measuring rooms and tins: area, perimeter and volume — Around the edge: perimeter](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#around-the-edge-perimeter)<br/>[Measuring rooms and tins: area, perimeter and volume — Covering a surface: area](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#covering-a-surface-area)<br/>[Measuring rooms and tins: area, perimeter and volume — Triangles: half a rectangle](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#triangles-half-a-rectangle)<br/>[Measuring rooms and tins: area, perimeter and volume — Circles and pi](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#circles-and-pi)<br/>[Number types, powers and logarithms — Practical geometry: formulas as functions](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#practical-geometry-formulas-as-functions)<br/>_used in:_ [How far apart? Distance, midpoint and Pythagoras — Squares on the sides: Pythagoras](https://deweydex.github.io/dewlab/tutorials/how-far-apart.html#squares-on-the-sides-pythagoras)<br/>_used in:_ [Measuring rooms and tins: area, perimeter and volume — Tools for flat shapes](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#tools-for-flat-shapes)<br/>_used in:_ [Measuring rooms and tins: area, perimeter and volume — How much paint does the room need?](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#how-much-paint-does-the-room-need) |
-| `MIT-1.3` Volume and surface area: cube, cylinder, cone, sphere | 🟩 | [Measuring rooms and tins: area, perimeter and volume — How much a tin holds: volume](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#how-much-a-tin-holds-volume)<br/>[Measuring rooms and tins: area, perimeter and volume — Wrapping it: surface area](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#wrapping-it-surface-area)<br/>[Number types, powers and logarithms — Practical geometry: formulas as functions](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#practical-geometry-formulas-as-functions)<br/>_used in:_ [Measuring rooms and tins: area, perimeter and volume — Tools for solid shapes](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#tools-for-solid-shapes)<br/>_used in:_ [Rules for change: the sum, product, quotient and chain rules — Multiplying rules: the product rule](https://deweydex.github.io/dewlab/tutorials/rules-for-change.html#multiplying-rules-the-product-rule) |
+| `MIT-1.2` Area and perimeter: square, rectangle, triangle, circle | 🟩 | [Measuring rooms and tins: area, perimeter and volume — Around the edge: perimeter](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#around-the-edge-perimeter)<br/>[Measuring rooms and tins: area, perimeter and volume — Covering a surface: area](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#covering-a-surface-area)<br/>[Measuring rooms and tins: area, perimeter and volume — Triangles: half a rectangle](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#triangles-half-a-rectangle)<br/>[Measuring rooms and tins: area, perimeter and volume — Circles and pi](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#circles-and-pi)<br/>[Number types, powers and logarithms — Formulas as functions](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#formulas-as-functions)<br/>_used in:_ [How far apart? Distance, midpoint and Pythagoras — Squares on the sides: Pythagoras](https://deweydex.github.io/dewlab/tutorials/how-far-apart.html#squares-on-the-sides-pythagoras)<br/>_used in:_ [Measuring rooms and tins: area, perimeter and volume — Tools for flat shapes](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#tools-for-flat-shapes)<br/>_used in:_ [Measuring rooms and tins: area, perimeter and volume — How much paint does the room need?](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#how-much-paint-does-the-room-need) |
+| `MIT-1.3` Volume and surface area: cube, cylinder, cone, sphere | 🟩 | [Measuring rooms and tins: area, perimeter and volume — How much a tin holds: volume](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#how-much-a-tin-holds-volume)<br/>[Measuring rooms and tins: area, perimeter and volume — Wrapping it: surface area](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#wrapping-it-surface-area)<br/>[Number types, powers and logarithms — Formulas as functions](https://deweydex.github.io/dewlab/tutorials/numbers-and-their-families.html#formulas-as-functions)<br/>_used in:_ [Measuring rooms and tins: area, perimeter and volume — Tools for solid shapes](https://deweydex.github.io/dewlab/tutorials/measuring-rooms-and-tins.html#tools-for-solid-shapes)<br/>_used in:_ [Rules for change: the sum, product, quotient and chain rules — Multiplying rules: the product rule](https://deweydex.github.io/dewlab/tutorials/rules-for-change.html#multiplying-rules-the-product-rule) |
 | `MIT-1.4` Binary and hexadecimal arithmetic and conversion | 🟩 | [Bits that flip: XOR and parity — XOR on whole numbers](https://deweydex.github.io/dewlab/tutorials/bits-that-flip.html#xor-on-whole-numbers)<br/>[Bits that flip: XOR and parity — Counting the 1s: parity](https://deweydex.github.io/dewlab/tutorials/bits-that-flip.html#counting-the-1s-parity)<br/>[Everything is ones and zeros — Counting with two digits](https://deweydex.github.io/dewlab/tutorials/everything-is-ones-and-zeros.html#counting-with-two-digits)<br/>[Everything is ones and zeros — From a number to its bits](https://deweydex.github.io/dewlab/tutorials/everything-is-ones-and-zeros.html#from-a-number-to-its-bits)<br/>[Everything is ones and zeros — How many bits is enough?](https://deweydex.github.io/dewlab/tutorials/everything-is-ones-and-zeros.html#how-many-bits-is-enough)<br/>[Everything is ones and zeros — Adding in binary](https://deweydex.github.io/dewlab/tutorials/everything-is-ones-and-zeros.html#adding-in-binary)<br/>[Everything is ones and zeros — Hexadecimal: binary, written short](https://deweydex.github.io/dewlab/tutorials/everything-is-ones-and-zeros.html#hexadecimal-binary-written-short)<br/>[Everything is ones and zeros — A digit drawn in pixels](https://deweydex.github.io/dewlab/tutorials/everything-is-ones-and-zeros.html#a-digit-drawn-in-pixels)<br/>[Everything is ones and zeros — How #FF8800 makes orange](https://deweydex.github.io/dewlab/tutorials/everything-is-ones-and-zeros.html#how-ff8800-makes-orange)<br/>[Everything is ones and zeros — Why 0.1 + 0.2 is not 0.3](https://deweydex.github.io/dewlab/tutorials/everything-is-ones-and-zeros.html#why-01-02-is-not-03)<br/>[How programming languages came to be — The only language the machine understands](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#the-only-language-the-machine-understands)<br/>[How programming languages came to be — Assembly, and why hexadecimal exists](https://deweydex.github.io/dewlab/tutorials/how-we-got-here.html#assembly-and-why-hexadecimal-exists)<br/>_used in:_ [Bits that flip: XOR and parity — Catching a flipped bit](https://deweydex.github.io/dewlab/tutorials/bits-that-flip.html#catching-a-flipped-bit)<br/>_used in:_ [Counting every outfit: lists of outcomes — Every pixel, every colour](https://deweydex.github.io/dewlab/tutorials/counting-every-outfit.html#every-pixel-every-colour)<br/>_used in:_ [Does it work? Testing, walkthroughs and naming — Close enough](https://deweydex.github.io/dewlab/tutorials/does-it-work.html#close-enough)<br/>_used in:_ [Doubling and halving: powers and logarithms at work — Grains on a chessboard](https://deweydex.github.io/dewlab/tutorials/doubling-and-halving.html#grains-on-a-chessboard)<br/>_used in:_ [Doubling and halving: powers and logarithms at work — Halving down to 1](https://deweydex.github.io/dewlab/tutorials/doubling-and-halving.html#halving-down-to-1)<br/>_used in:_ [Everything is ones and zeros — Tools for your toolkit](https://deweydex.github.io/dewlab/tutorials/everything-is-ones-and-zeros.html#tools-for-your-toolkit)<br/>_used in:_ [Getting closer: limits — When the floats run out](https://deweydex.github.io/dewlab/tutorials/getting-closer.html#when-the-floats-run-out)<br/>_used in:_ [How fast, right now? The derivative — Why the step cannot be 0, or too small](https://deweydex.github.io/dewlab/tutorials/how-fast-right-now.html#why-the-step-cannot-be-0-or-too-small)<br/>_used in:_ [True, false and every case: truth tables — How many rows?](https://deweydex.github.io/dewlab/tutorials/true-false-and-every-case.html#how-many-rows) |
 | `MIT-1.5` Distinguish an expression from an equation | 🟦 | [Polynomials: representing and combining them in Python — Expressions versus equations](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#expressions-versus-equations)<br/>[Rules with letters in them: expressions, equations and identities — A rule, a question and a promise](https://deweydex.github.io/dewlab/tutorials/rules-with-letters-in-them.html#a-rule-a-question-and-a-promise)<br/>**Narrowed:** not the formal expression-versus-equation distinction as an assessed item |
 | `MIT-1.6` Evaluate, expand and simplify expressions | 🟩 | [Polynomials: representing and combining them in Python — Representing polynomials](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#representing-polynomials)<br/>[Polynomials: representing and combining them in Python — Evaluating polynomials](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#evaluating-polynomials)<br/>[Polynomials: representing and combining them in Python — Displaying polynomials](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#displaying-polynomials)<br/>[Polynomials: representing and combining them in Python — Adding polynomials](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#adding-polynomials)<br/>[Polynomials: representing and combining them in Python — Subtracting and scaling](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#subtracting-and-scaling)<br/>[Rules with letters in them: expressions, equations and identities — Putting a number in for the letter](https://deweydex.github.io/dewlab/tutorials/rules-with-letters-in-them.html#putting-a-number-in-for-the-letter)<br/>[Rules with letters in them: expressions, equations and identities — Collecting like terms](https://deweydex.github.io/dewlab/tutorials/rules-with-letters-in-them.html#collecting-like-terms)<br/>[Rules with letters in them: expressions, equations and identities — Expanding brackets is a loop](https://deweydex.github.io/dewlab/tutorials/rules-with-letters-in-them.html#expanding-brackets-is-a-loop)<br/>_used in:_ [Review problems: polynomials, equations and sets — Problem 1: The polynomial workshop](https://deweydex.github.io/dewlab/tutorials/bringing-it-all-together.html#problem-1-the-polynomial-workshop) |
-| `MIT-1.7` Transpose formulae; operate on rational algebraic expressions | 🟩 | [Rearranging formulae: changing the subject — The same formula, four ways](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#the-same-formula-four-ways)<br/>[Rearranging formulae: changing the subject — The moves](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#the-moves)<br/>[Rearranging formulae: changing the subject — When the unknown is underneath](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#when-the-unknown-is-underneath)<br/>[Rearranging formulae: changing the subject — Checking yourself](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#checking-yourself)<br/>[Running a formula backwards: rearranging and inverses — One formula, three questions](https://deweydex.github.io/dewlab/tutorials/running-a-formula-backwards.html#one-formula-three-questions)<br/>[Running a formula backwards: rearranging and inverses — The same move on both sides](https://deweydex.github.io/dewlab/tutorials/running-a-formula-backwards.html#the-same-move-on-both-sides)<br/>[Running a formula backwards: rearranging and inverses — Undoing, in reverse order](https://deweydex.github.io/dewlab/tutorials/running-a-formula-backwards.html#undoing-in-reverse-order)<br/>[Running a formula backwards: rearranging and inverses — When the way back needs care](https://deweydex.github.io/dewlab/tutorials/running-a-formula-backwards.html#when-the-way-back-needs-care)<br/>[Running a formula backwards: rearranging and inverses — Fractions with letters in them](https://deweydex.github.io/dewlab/tutorials/running-a-formula-backwards.html#fractions-with-letters-in-them)<br/>_used in:_ [Solving equations: linear, quadratic and simultaneous — Solving linear equations](https://deweydex.github.io/dewlab/tutorials/cracking-equations.html#solving-linear-equations)<br/>_used in:_ [How fast, right now? The derivative — Average speed over a chord](https://deweydex.github.io/dewlab/tutorials/how-fast-right-now.html#average-speed-over-a-chord)<br/>_used in:_ [Solving triangles: how tall is that tree? — Going backwards: from sides to an angle](https://deweydex.github.io/dewlab/tutorials/how-tall-is-that-tree.html#going-backwards-from-sides-to-an-angle)<br/>_used in:_ [Running a formula backwards: rearranging and inverses — Tools for any trip](https://deweydex.github.io/dewlab/tutorials/running-a-formula-backwards.html#tools-for-any-trip)<br/>_used in:_ [Solving for x: linear and quadratic equations — When are two servers equally fast?](https://deweydex.github.io/dewlab/tutorials/solving-for-x.html#when-are-two-servers-equally-fast)<br/>_used in:_ [Straight lines: slope and gradient — How steep is a ramp?](https://deweydex.github.io/dewlab/tutorials/straight-lines.html#how-steep-is-a-ramp)<br/>_used in:_ [Straight lines: slope and gradient — The rule for a ramp](https://deweydex.github.io/dewlab/tutorials/straight-lines.html#the-rule-for-a-ramp)<br/>_used in:_ [Straight lines: slope and gradient — Every line at once: ax + by + c = 0](https://deweydex.github.io/dewlab/tutorials/straight-lines.html#every-line-at-once-ax-by-c-0) |
+| `MIT-1.7` Transpose formulae; operate on rational algebraic expressions | 🟩 | [Rearranging formulae: changing the subject — The same formula, four ways](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#the-same-formula-four-ways)<br/>[Rearranging formulae: changing the subject — The moves](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#the-moves)<br/>[Rearranging formulae: changing the subject — When the subject is behind a minus sign](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#when-the-subject-is-behind-a-minus-sign)<br/>[Rearranging formulae: changing the subject — When the subject appears twice](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#when-the-subject-appears-twice)<br/>[Rearranging formulae: changing the subject — When the unknown is underneath](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#when-the-unknown-is-underneath)<br/>[Rearranging formulae: changing the subject — Checking yourself](https://deweydex.github.io/dewlab/tutorials/rearranging-formulae.html#checking-yourself)<br/>[Running a formula backwards: rearranging and inverses — One formula, three questions](https://deweydex.github.io/dewlab/tutorials/running-a-formula-backwards.html#one-formula-three-questions)<br/>[Running a formula backwards: rearranging and inverses — The same move on both sides](https://deweydex.github.io/dewlab/tutorials/running-a-formula-backwards.html#the-same-move-on-both-sides)<br/>[Running a formula backwards: rearranging and inverses — Undoing, in reverse order](https://deweydex.github.io/dewlab/tutorials/running-a-formula-backwards.html#undoing-in-reverse-order)<br/>[Running a formula backwards: rearranging and inverses — When the way back needs care](https://deweydex.github.io/dewlab/tutorials/running-a-formula-backwards.html#when-the-way-back-needs-care)<br/>[Running a formula backwards: rearranging and inverses — Fractions with letters in them](https://deweydex.github.io/dewlab/tutorials/running-a-formula-backwards.html#fractions-with-letters-in-them)<br/>_used in:_ [Solving equations: linear, quadratic and simultaneous — Solving linear equations](https://deweydex.github.io/dewlab/tutorials/cracking-equations.html#solving-linear-equations)<br/>_used in:_ [How fast, right now? The derivative — Average speed over a chord](https://deweydex.github.io/dewlab/tutorials/how-fast-right-now.html#average-speed-over-a-chord)<br/>_used in:_ [Solving triangles: how tall is that tree? — Going backwards: from sides to an angle](https://deweydex.github.io/dewlab/tutorials/how-tall-is-that-tree.html#going-backwards-from-sides-to-an-angle)<br/>_used in:_ [Running a formula backwards: rearranging and inverses — Tools for any trip](https://deweydex.github.io/dewlab/tutorials/running-a-formula-backwards.html#tools-for-any-trip)<br/>_used in:_ [Solving for x: linear and quadratic equations — When are two servers equally fast?](https://deweydex.github.io/dewlab/tutorials/solving-for-x.html#when-are-two-servers-equally-fast)<br/>_used in:_ [Straight lines: slope and gradient — How steep is a ramp?](https://deweydex.github.io/dewlab/tutorials/straight-lines.html#how-steep-is-a-ramp)<br/>_used in:_ [Straight lines: slope and gradient — The rule for a ramp](https://deweydex.github.io/dewlab/tutorials/straight-lines.html#the-rule-for-a-ramp)<br/>_used in:_ [Straight lines: slope and gradient — Every line at once: ax + by + c = 0](https://deweydex.github.io/dewlab/tutorials/straight-lines.html#every-line-at-once-ax-by-c-0) |
 | `MIT-1.8` Multiply linear expressions into quadratics and cubics | 🟩 | [Polynomials: representing and combining them in Python — Multiplying polynomials](https://deweydex.github.io/dewlab/tutorials/expressions-come-alive.html#multiplying-polynomials)<br/>[Rules with letters in them: expressions, equations and identities — Expanding brackets is a loop](https://deweydex.github.io/dewlab/tutorials/rules-with-letters-in-them.html#expanding-brackets-is-a-loop)<br/>_used in:_ [Review problems: polynomials, equations and sets — Problem 1: The polynomial workshop](https://deweydex.github.io/dewlab/tutorials/bringing-it-all-together.html#problem-1-the-polynomial-workshop)<br/>_used in:_ [Drawing a rule: graphs of functions — Curves that bend: parabolas and cubics](https://deweydex.github.io/dewlab/tutorials/drawing-a-rule.html#curves-that-bend-parabolas-and-cubics)<br/>_used in:_ [Rules for change: the sum, product, quotient and chain rules — Adding rules: the sum rule](https://deweydex.github.io/dewlab/tutorials/rules-for-change.html#adding-rules-the-sum-rule)<br/>_used in:_ [The top of the curve: maximum and minimum — A letter that sits below the line](https://deweydex.github.io/dewlab/tutorials/the-top-of-the-curve.html#a-letter-that-sits-below-the-line) |
 | `MIT-1.9` Factor quadratics by inspection and solve them | 🟩 | [Solving equations: linear, quadratic and simultaneous — Factorisation](https://deweydex.github.io/dewlab/tutorials/cracking-equations.html#factorisation)<br/>[Solving for x: linear and quadratic equations — When are two servers equally fast?](https://deweydex.github.io/dewlab/tutorials/solving-for-x.html#when-are-two-servers-equally-fast)<br/>[Solving for x: linear and quadratic equations — A tool for any straight-line equation](https://deweydex.github.io/dewlab/tutorials/solving-for-x.html#a-tool-for-any-straight-line-equation)<br/>[Solving for x: linear and quadratic equations — When the unknown is squared](https://deweydex.github.io/dewlab/tutorials/solving-for-x.html#when-the-unknown-is-squared)<br/>[Solving for x: linear and quadratic equations — Factorising by inspection](https://deweydex.github.io/dewlab/tutorials/solving-for-x.html#factorising-by-inspection)<br/>[Solving for x: linear and quadratic equations — The quadratic formula](https://deweydex.github.io/dewlab/tutorials/solving-for-x.html#the-quadratic-formula)<br/>[Solving for x: linear and quadratic equations — How many answers? The discriminant](https://deweydex.github.io/dewlab/tutorials/solving-for-x.html#how-many-answers-the-discriminant)<br/>_used in:_ [Rules for change: the sum, product, quotient and chain rules — Back to the top of the curve](https://deweydex.github.io/dewlab/tutorials/rules-for-change.html#back-to-the-top-of-the-curve)<br/>_used in:_ [The top of the curve: maximum and minimum — Halfway between the roots](https://deweydex.github.io/dewlab/tutorials/the-top-of-the-curve.html#halfway-between-the-roots) |
 | `MIT-1.10` Solve quadratics, including complex roots | 🟩 | [Complex numbers: roots that are not real — Where the solver stops](https://deweydex.github.io/dewlab/tutorials/complex-roots.html#where-the-solver-stops)<br/>[Complex numbers: roots that are not real — Inventing a new number](https://deweydex.github.io/dewlab/tutorials/complex-roots.html#inventing-a-new-number)<br/>[Complex numbers: roots that are not real — Roots that are not real](https://deweydex.github.io/dewlab/tutorials/complex-roots.html#roots-that-are-not-real)<br/>[Complex numbers: roots that are not real — Complex roots come in pairs](https://deweydex.github.io/dewlab/tutorials/complex-roots.html#complex-roots-come-in-pairs)<br/>[When there is no real answer: complex numbers — A question with no answer here](https://deweydex.github.io/dewlab/tutorials/when-there-is-no-real-answer.html#a-question-with-no-answer-here)<br/>[When there is no real answer: complex numbers — Python's j](https://deweydex.github.io/dewlab/tutorials/when-there-is-no-real-answer.html#pythons-j)<br/>[When there is no real answer: complex numbers — The old moves in the new space](https://deweydex.github.io/dewlab/tutorials/when-there-is-no-real-answer.html#the-old-moves-in-the-new-space)<br/>[When there is no real answer: complex numbers — Numbers on a plane](https://deweydex.github.io/dewlab/tutorials/when-there-is-no-real-answer.html#numbers-on-a-plane)<br/>[When there is no real answer: complex numbers — Every quadratic has roots here](https://deweydex.github.io/dewlab/tutorials/when-there-is-no-real-answer.html#every-quadratic-has-roots-here)<br/>_used in:_ [Solving equations: linear, quadratic and simultaneous — The quadratic formula](https://deweydex.github.io/dewlab/tutorials/cracking-equations.html#the-quadratic-formula)<br/>_used in:_ [Solving for x: linear and quadratic equations — When the square root says no](https://deweydex.github.io/dewlab/tutorials/solving-for-x.html#when-the-square-root-says-no)<br/>_used in:_ [When there is no real answer: complex numbers — What the bigger space costs](https://deweydex.github.io/dewlab/tutorials/when-there-is-no-real-answer.html#what-the-bigger-space-costs) |
@@ -549,7 +574,7 @@ graph TD
 
 ## Vocabulary
 
-The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **287 terms** are marked that way, and asking two questions of them is free.
+The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **300 terms** are marked that way, and asking two questions of them is free.
 
 ### Introduced more than once
 
@@ -557,13 +582,14 @@ The same word presented as new in two places. Either it is being introduced twic
 
 | Term | Introduced in tutorials |
 |---|---|
+| *derivative* | 33, 49 |
 | *function* | 1, 10 |
-| *how* | 19, 20, 43 |
+| *how* | 19, 20, 48 |
 | *index* | 8, 11, 32 |
 | *pride and prejudice* | 21, 24, 30 |
-| *range* | 18, 29, 37 |
-| *see* | 22, 43 |
-| *solve* | 33, 35 |
+| *range* | 18, 29, 35 |
+| *see* | 22, 48 |
+| *solve* | 33, 39 |
 | *what* | 19, 20 |
 | *zahlen* | 3, 32 |
 
@@ -575,75 +601,69 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 |---|---:|---:|
 | *after* | 1 | 7 |
 | *aliasing* | 11 | 12 |
-| *all* | 1 | 45 |
-| *amplitude* | 40 | 41 |
-| *any* | 2 | 45 |
+| *all* | 1 | 50 |
+| *amplitude* | 45 | 46 |
+| *any* | 2 | 50 |
 | *argument* | 9 | 10 |
 | *at* | 1 | 11 |
-| *average* | 7 | 43 |
+| *average* | 7 | 48 |
 | *base* | 20 | 32 |
 | *before* | 1 | 20 |
-| *between* | 1 | 42 |
+| *between* | 1 | 47 |
 | *binary* | 4 | 20 |
 | *binary search* | 8 | 16 |
-| *binomial* | 29 | 35 |
+| *binomial* | 29 | 39 |
 | *bug* | 18 | 19 |
 | *call* | 3 | 10 |
-| *changing the subject* | 33 | 34 |
 | *closed* | 7 | 32 |
 | *combination* | 23 | 24 |
-| *cosine* | 39 | 40 |
-| *cosine rule* | 39 | 42 |
-| *derivative* | 33 | 44 |
+| *cosine* | 42 | 45 |
+| *cosine rule* | 44 | 47 |
 | *difference* | 4 | 21 |
 | *element* | 8 | 11 |
 | *equal* | 3 | 21 |
 | *expression* | 8 | 33 |
-| *factorise* | 33 | 35 |
-| *graph* | 12 | 37 |
+| *graph* | 12 | 35 |
 | *how* | 1 | 19 |
+| *identity* | 8 | 33 |
 | *indices* | 11 | 32 |
-| *inside* | 1 | 42 |
+| *inside* | 1 | 47 |
 | *key* | 1 | 14 |
-| *know* | 1 | 43 |
-| *large* | 8 | 43 |
-| *limit* | 30 | 43 |
+| *know* | 1 | 48 |
+| *large* | 8 | 48 |
+| *limit* | 30 | 48 |
 | *linear* | 8 | 33 |
 | *list* | 1 | 11 |
-| *local* | 10 | 44 |
-| *look* | 2 | 44 |
+| *local* | 10 | 49 |
+| *look* | 2 | 49 |
 | *mean* | 3 | 29 |
 | *median* | 19 | 29 |
 | *merge* | 17 | 21 |
-| *midpoint* | 37 | 39 |
-| *opposite* | 3 | 42 |
+| *opposite* | 3 | 47 |
 | *outcome* | 21 | 25 |
-| *parabola* | 35 | 38 |
-| *parallel* | 34 | 39 |
-| *period* | 22 | 41 |
-| *perpendicular* | 37 | 39 |
+| *parallel* | 35 | 44 |
+| *period* | 22 | 46 |
 | *power* | 1 | 32 |
 | *probability* | 21 | 25 |
 | *range* | 16 | 18 |
-| *reaches* | 5 | 43 |
-| *real* | 3 | 36 |
+| *reaches* | 5 | 48 |
 | *root* | 10 | 35 |
 | *scaling* | 12 | 33 |
 | *see* | 1 | 22 |
 | *selection sort* | 8 | 17 |
 | *sequence* | 5 | 12 |
 | *set* | 1 | 21 |
-| *sine* | 39 | 40 |
-| *sine rule* | 39 | 42 |
-| *solution* | 10 | 35 |
+| *sine* | 42 | 45 |
+| *sine rule* | 44 | 47 |
+| *solution* | 10 | 39 |
 | *solve* | 10 | 33 |
 | *statistics* | 18 | 29 |
-| *subject* | 8 | 34 |
+| *subject* | 8 | 36 |
 | *symmetric* | 21 | 29 |
-| *tangent* | 39 | 40 |
+| *tangent* | 42 | 45 |
 | *test* | 1 | 18 |
-| *transposing* | 12 | 34 |
-| *unit circle* | 39 | 40 |
+| *transposing* | 12 | 36 |
+| *unit circle* | 42 | 45 |
 | *value* | 3 | 14 |
 | *what* | 1 | 19 |
 

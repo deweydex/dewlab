@@ -3,13 +3,13 @@ title: "Mixed problems: algebra and functions"
 practice_across:
   - numbers-and-their-families
   - expressions-come-alive
-  - cracking-equations
-  - rearranging-formulae
-  - complex-roots
   - drawing-functions
+  - rearranging-formulae
+  - cracking-equations
   - parabolas
+  - complex-roots
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
 ---
 
 # Mixed problems: algebra and functions
@@ -399,9 +399,43 @@ between complex arithmetic and ordinary algebra here.
 
 </details>
 
+**16.** The vertex of $x^2 + 4x + c$ is at $(-2, c - 4)$. For which
+values of $c$ are the roots complex? Where are they when $c = 13$, and
+where are they when $c = 20$?
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Complete the square: $x^2 + 4x + c = (x + 2)^2 + (c - 4)$. Check it
+   by multiplying out.
+2. The parabola opens upwards. When does its vertex sit above the axis?
+3. Set the vertex form to zero, and undo it from the outside in, as for
+   real roots. What is $(x + 2)^2$ equal to?
+4. The square root of a negative number $-n$ is $\sqrt{n}\,i$.
+
+**Think about:** as $c$ grows, the vertex rises. What happens to the
+roots at the moment the vertex touches the axis?
+
+**Try this next:** mark the roots on the complex plane for
+$c = 3, 4, 5, 8, 13$. What path do they follow?
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+The roots are complex when $c > 4$. At $c = 13$ they are $-2 \pm 3i$,
+and at $c = 20$ they are $-2 \pm 4i$.
+
+$(x + 2)^2 = 4 - c$, so $x = -2 \pm \sqrt{4 - c}$. When $c > 4$, the
+number under the square root is negative, and
+$x = -2 \pm \sqrt{c - 4}\,i$. The real part stays at $-2$, the
+vertex's $x$, and the imaginary parts grow as the vertex rises. At
+$c = 4$ the two roots meet at $-2$.
+
+</details>
+
 ## Longer ones
 
-**16.** A farmer builds a rectangular pen against a wall, so only three
+**17.** A farmer builds a rectangular pen against a wall, so only three
 sides need a fence. There is 60 m of fence. What size of pen gives the
 largest area?
 
@@ -443,7 +477,7 @@ longer a square, and that is the interesting part.
 
 </details>
 
-**17.** A ball is thrown upwards at 15 m/s from a ledge 2 m high. Its
+**18.** A ball is thrown upwards at 15 m/s from a ledge 2 m high. Its
 height after $t$ seconds is $h = 2 + 15t - 4.9t^2$ metres.
 
 1. When does it land?
@@ -489,7 +523,7 @@ It is the important part.
 
 </details>
 
-**18.** €500 is invested at 4% interest, compounded every year.
+**19.** €500 is invested at 4% interest, compounded every year.
 
 1. Write the balance after $n$ years as a function.
 2. Plot it next to the straight line for the same money at 4% simple
@@ -511,7 +545,7 @@ over €2,000.
 
 </details>
 
-**19.** Which of these can you solve exactly by hand? Which ones need a
+**20.** Which of these can you solve exactly by hand? Which ones need a
 picture or a numerical method?
 
 - (a) $x^2 - 5x + 6 = 0$

@@ -1,11 +1,11 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
-  - term: solve, solution, root
+  - term: solve, solution
     kind: concept
     definition: >
       To solve an equation is to find the values of x that make it true.
-      Each such value is a solution. A solution of "polynomial = 0" is
-      also called a root of the polynomial: 1 is a root of x^2 - 4x + 3.
+      Each such value is a solution. A solution of "polynomial = 0" is a
+      root of the polynomial: 1 is a root of x^2 - 4x + 3.
   - term: linear equation
     kind: concept
     definition: >
@@ -53,12 +53,26 @@ entries:
     kind: formula
     definition: >
       Simultaneous equations are two equations that must both be true at
-      the same time. Elimination solves them by multiplying the equations
-      so that one unknown cancels when we add or subtract them.
+      the same time. Elimination solves them by adding or subtracting the
+      equations, after multiplying if needed, so that one unknown cancels.
     example: "x + y = 10 and 2x - y = 5: adding gives 3x = 15"
   - term: determinant (of a 2x2 system)
     kind: concept
     definition: >
-      The determinant is a1*b2 - a2*b1, the bottom of both fractions in
-      the simultaneous-equations formula. If it is zero, the system has no
-      single solution: the two lines are parallel or the same line.
+      The determinant of a1 x + b1 y = c1 and a2 x + b2 y = c2 is
+      a1*b2 - a2*b1, the number that elimination divides by. If it is
+      zero, the system has no single solution: the two lines are parallel,
+      or they are the same line.
+  - term: balancing
+    kind: concept
+    definition: >
+      Balancing solves an equation by doing the same thing to both sides,
+      one step at a time, until x is on its own. Each step keeps the two
+      sides equal.
+    example: "5x - 4 = 2x + 11  ->  3x - 4 = 11  ->  3x = 15  ->  x = 5"
+  - term: break-even point
+    kind: concept
+    definition: >
+      A break-even point is where two costs, or a cost and an income, are
+      equal. On a graph it is where their two lines cross, and it is the
+      solution of two simultaneous equations.

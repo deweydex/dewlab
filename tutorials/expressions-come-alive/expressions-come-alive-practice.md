@@ -2,7 +2,10 @@
 title: "Polynomials: representing and combining them in Python — Practice"
 practice_for: expressions-come-alive
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  rockets: Rockets, launches and the arcs they fly. The numbers are made up.
+  electronics: Batteries, resistors and the power between them. The numbers are made up.
 ---
 
 # Polynomials: representing and combining them in Python — Practice
@@ -11,8 +14,8 @@ The answers are hidden in folds under each problem. Try each expansion
 by hand first. Then use the cell to check your answer. The cell is there
 to settle a doubt, not to do the work for you.
 
-The expansion problems are adapted from the FOIL worksheet in the
-Mathematics repository.
+The expansion problems are adapted from an earlier worksheet on
+expanding brackets.
 
 ## Expanding
 
@@ -64,19 +67,23 @@ Outer product and once from the Inner product.
 
 </details>
 
-**3.** Is $(a + b)^2$ the same as $a^2 + b^2$?
+**3.** The tutorial found that $(a + b)^2$ is not $a^2 + b^2$. Is
+$(a - b)^2$ the same as $a^2 - b^2$? Is $\sqrt{a + b}$ the same as
+$\sqrt{a} + \sqrt{b}$? Try each with numbers before you decide.
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. This is the most common mistake in algebra, so do not worry if you
-thought yes.
+Neither is the same.
 
-$(a + b)^2 = a^2 + 2ab + b^2$. Try it with numbers: $(3 + 4)^2 = 49$,
-but $3^2 + 4^2 = 25$. The missing 24 is the $2ab$ term:
-$2 \times 3 \times 4 = 24$.
+$(a - b)^2 = a^2 - 2ab + b^2$. With $a = 5$ and $b = 3$, $(5 - 3)^2 = 4$,
+but $5^2 - 3^2 = 16$. The expression $a^2 - b^2$ is $(a - b)(a + b)$,
+which is a different product.
 
-We cannot square each part of a sum separately. The same is true for
-square roots: $\sqrt{9 + 16} = \sqrt{25} = 5$, not $3 + 4 = 7$.
+Square roots do not split over a sum either:
+$\sqrt{9 + 16} = \sqrt{25} = 5$, but $\sqrt{9} + \sqrt{16} = 7$.
+
+A power or a root of a sum is not the sum of the powers or roots. A
+power of a product does split: $(ab)^2 = a^2 b^2$.
 
 </details>
 
@@ -109,23 +116,7 @@ to spot this pattern quickly, in both directions.
 
 </details>
 
-**6.** Expand $(x + 1)^2$, $(x + 1)^3$ and $(x + 1)^4$. What do you notice
-about the coefficients?
-
-<details class="dl-answer"><summary>answer</summary>
-
-They are $x^2 + 2x + 1$, then $x^3 + 3x^2 + 3x + 1$, then $x^4 + 4x^3 + 6x^2 + 4x + 1$.
-
-The coefficients are 1 2 1, then 1 3 3 1, then 1 4 6 4 1. These are the
-rows of Pascal's triangle. Each row is built by adding pairs of
-neighbours from the row above: in 1 3 3 1, $1 + 3 = 4$, $3 + 3 = 6$ and
-$3 + 1 = 4$ give the 4 6 4 of the next row. The same numbers count how
-many ways there are to choose $k$ things from $n$. You met them there in
-[Counting: factorials, permutations and combinations](tutorial:counting-carefully).
-
-</details>
-
-**7.** Expand $(x + 2)(x^2 + 3x + 1)$.
+**6.** Expand $(x + 2)(x^2 + 3x + 1)$.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -141,7 +132,7 @@ does not.
 
 ## Polynomials as lists
 
-**8.** Write each one as a coefficient list, with the constant first.
+**7.** Write each one as a coefficient list, with the constant first.
 
 - (a) $3x^2 + 5x - 2$
 - (b) $2x^3 - 3x^2 + 1$
@@ -154,29 +145,44 @@ does not.
 
 Index $i$ holds the coefficient of $x^i$. So a missing power has a
 coefficient of zero, and in (b) and (d) its place must stay in the list.
-Those zeros carry meaning: they say "no term with this power".
+Those zeros say "no term with this power".
 
 </details>
 
-**9.** Can you write `evaluate_poly(coeffs, x)`?
+**8.** Here is `evaluate_poly` from the tutorial, and a polynomial to
+evaluate at $x = -1$.
 
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```python exec
+id: evaluate-at-minus-one
 def evaluate_poly(coeffs, x):
-    """The value of the polynomial at x."""
+    """The value at x of the polynomial whose coefficients are in coeffs."""
     total = 0
     for i, c in enumerate(coeffs):
         total = total + c * x ** i
     return total
+
+
+print(evaluate_poly([1, 2, 3, 4], -1))
 ```
 
-`evaluate_poly([-2, 5, 3], 4)` is 66. At $x = 0$ it is −2. That gives
-you an easy test: at zero, a polynomial always equals its constant term.
+```predict
+type: number
+
+What will it print?
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+It prints $-2$.
+
+The polynomial is $4x^3 + 3x^2 + 2x + 1$. At $x = -1$, an odd power is
+$-1$ and an even power is $+1$. So the value is $-4 + 3 - 2 + 1 = -2$.
+At $x = -1$, the value of a polynomial is the coefficients added with
+alternating signs.
 
 </details>
 
-**10.** How many multiplications does that function do for a polynomial
+**9.** How many multiplications does that function do for a polynomial
 of degree 10? Can it be done with fewer?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -184,7 +190,8 @@ of degree 10? Can it be done with fewer?
 It does about 55 for the powers alone. By hand, each `x ** i` takes
 $i$ multiplications, and $0 + 1 + 2 + \ldots + 10 = 55$.
 
-A method called Horner's method does it with 10:
+A method called Horner's method needs only one multiplication for each
+coefficient, 11 in all:
 
 ```python
 def evaluate_poly(coeffs, x):
@@ -201,100 +208,106 @@ libraries for numerical work use it.
 
 </details>
 
-**11.** Can you write `add_poly(a, b)` so that it works for lists of
-different lengths?
+**10.** Here is a shorter `add_poly`. It gives the right answer for the
+first call. What goes wrong with the second? What would happen if the
+two lists in the second call were the other way round? Can you fix it?
+
+```python exec
+id: add-with-a-short-loop
+def add_poly(a, b):
+    """The sum of two polynomials, as a new coefficient list."""
+    result = []
+    for i in range(len(a)):
+        result.append(a[i] + b[i])
+    return result
+
+
+print(add_poly([-2, 5, 3], [7, -3, 1]))
+print(add_poly([3, 2], [-2, 5, 3]))
+```
 
 <details class="dl-answer"><summary>answer</summary>
+
+Here is one answer. Yours may be different and work too. The second
+call prints `[1, 7]`. It should be `[1, 7, 3]`, which is
+$3x^2 + 7x + 1$. The loop only goes as far as the end of `a`, so the
+$3x^2$ is lost without any error. The other way round, `b` is the
+shorter list, and `b[2]` raises an `IndexError`.
 
 ```python
 def add_poly(a, b):
-    """Add two polynomials given as coefficient lists."""
+    """The sum of two polynomials, as a new coefficient list."""
     length = max(len(a), len(b))
+    a = a + [0] * (length - len(a))
+    b = b + [0] * (length - len(b))
     result = []
     for i in range(length):
-        left = a[i] if i < len(a) else 0
-        right = b[i] if i < len(b) else 0
-        result.append(left + right)
+        result.append(a[i] + b[i])
     return result
 ```
 
-The different lengths are the hard part. A missing coefficient should
-count as 0, because a polynomial of lower degree does have
-zero coefficients for the higher powers.
+Padding both lists with zeros to the same length makes the loop safe.
+A bug that gives a wrong answer with no error is harder to find than
+one that stops the program.
 
 </details>
 
-**12.** Can you write `multiply_poly(a, b)`? What is the degree of the result?
+**11.** Before you run it: how long will the list be, and what is in it?
 
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```python exec
+id: product-length
 def multiply_poly(a, b):
     result = [0] * (len(a) + len(b) - 1)
-    for i, ca in enumerate(a):
-        for j, cb in enumerate(b):
-            result[i + j] += ca * cb
+    for i in range(len(a)):
+        for j in range(len(b)):
+            result[i + j] = result[i + j] + a[i] * b[j]
     return result
+
+
+print(multiply_poly([1, 0, 0, 1], [1, 1]))
 ```
-
-The degree of the result is the sum of the two degrees. So the list
-length is `len(a) + len(b) - 1`.
-
-The line worth looking at closely is `result[i + j]`. When we multiply
-$x^i$ by $x^j$, we get $x^{i+j}$, so the exponents add, and the indexes add with
-them. We chose the list representation so that this would be true.
-
-</details>
-
-**13.** Can you write `poly_to_string(coeffs)` so that it gives the form a
-person would write?
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
-def poly_to_string(coeffs):
-    """A readable form of a polynomial coefficient list."""
-    parts = []
-    for power in range(len(coeffs) - 1, -1, -1):
-        c = coeffs[power]
-        if c == 0:
-            continue
-        if power == 0:
-            piece = str(abs(c))
-        else:
-            variable = "x" if power == 1 else f"x^{power}"
-            piece = variable if abs(c) == 1 else f"{abs(c)}{variable}"
-        sign = "-" if c < 0 else "+"
-        parts.append((sign, piece))
-    if not parts:
-        return "0"
-    first_sign, first = parts[0]
-    out = ("-" if first_sign == "-" else "") + first
-    for sign, piece in parts[1:]:
-        out += f" {sign} {piece}"
-    return out
+It prints `[1, 1, 0, 1, 1]`, a list of 5.
+
+The polynomials are $x^3 + 1$ and $x + 1$, of degree 3 and 1. The
+product has degree $3 + 1 = 4$, so it has 5 coefficients:
+$(x^3 + 1)(x + 1) = x^4 + x^3 + x + 1$. There is no $x^2$ term, so a 0
+keeps its place.
+
+</details>
+
+**12.** Which of these are identities, true for every $x$? Which are
+equations, true only for some $x$? Can you decide by expanding, and
+then check by evaluating both sides at a few values?
+
+- (a) $(x + 1)^2 = x^2 + 2x + 1$
+- (b) $2x + 3 = 11$
+- (c) $x(x + 2) = x^2 + 2x$
+- (d) $(x - 1)(x + 1) = x^2 + 1$
+
+```python exec
+id: identity-or-equation
+for x in [-2, 0, 1, 4]:
+    print(x, (x - 1) * (x + 1), x ** 2 + 1)
 ```
 
-`[-2, 5, 3]` gives `3x^2 + 5x - 2`.
+<details class="dl-answer"><summary>answer</summary>
 
-This one function handles six special cases:
+(a) and (c) are identities. (b) is an equation, true only for $x = 4$.
 
-1. zero coefficients
-2. the constant term
-3. the $x^1$ term
-4. coefficients of 1 and −1
-5. the sign of the first term
-6. the zero polynomial, which prints as `0`
-
-It is more work to test it than to write it. That is true of most
-formatting code.
+(d) looks like an identity, but it is not one, and it is not true for
+any $x$. The left side expands to $x^2 - 1$, which is always 2 less
+than $x^2 + 1$. The cell shows the gap of 2 at every $x$. An equation
+can be true for many values, one value, or none.
 
 </details>
 
 ## Verification
 
-**14.** How can you check that your `multiply_poly` is right, without
-calculating it by hand?
+**13.** How can you check that your `multiply_poly` gives the product,
+without calculating it by hand?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -313,7 +326,7 @@ If you use enough of them, they are a proof.
 
 </details>
 
-**15.** `[1, 2, 1]` times `[1, 1]` should be `[1, 3, 3, 1]`. Can you
+**14.** `[1, 2, 1]` times `[1, 1]` should be `[1, 3, 3, 1]`. Can you
 check this by evaluating both sides at $x = 10$?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -330,6 +343,76 @@ numbers. At $11^5 = 161051$ the pattern breaks, because the
 coefficients 10 carry into the next digit.
 
 </details>
+
+## Your world
+
+**15.** A problem from the world you chose.
+
+<div class="dl-world" data-world="rockets">
+
+A second rocket is launched from 1 m up at 20 m/s, so its height is
+$1 + 20t - 4.9t^2$. How much higher is it than the first rocket,
+$2 + 15t - 4.9t^2$, after $t$ seconds? Subtract the two polynomials.
+What kind of polynomial is the gap?
+
+```python exec
+id: your-world--rockets
+first = [2, 15, -4.9]
+second = [1, 20, -4.9]
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+The gap is $-1 + 5t$, a straight line.
+
+```python
+gap = []
+for i in range(3):
+    gap.append(second[i] - first[i])
+print(gap)
+```
+
+It prints `[-1, 5, 0.0]`. The $-4.9t^2$ terms cancel, because gravity
+pulls on both rockets in
+the same way. So the gap grows by 5 m every second, the difference
+between their launch speeds. At $t = 0$ the second rocket is 1 m lower.
+At $t = 0.2$ they are level, and after that the second is higher.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="electronics">
+
+The 12 V supply from the tutorial makes $12I$ watts. Its own 2 ohms
+turn $2I^2$ watts into heat. The power left for the circuit is the
+first minus the second. Can you write both as lists and subtract them?
+Is the answer the list `[0, 12, -2]`?
+
+```python exec
+id: your-world--electronics
+made = [0, 12]
+heat = [0, 0, 2]
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+Yes. $12I - 2I^2$ is `[0, 12, -2]`.
+
+```python
+made = made + [0]      # 12I becomes [0, 12, 0], the same length as heat
+left = []
+for i in range(3):
+    left.append(made[i] - heat[i])
+print(left)
+```
+
+At 3 A the supply makes 36 W and turns 18 W into heat, so 18 W reach
+the circuit. At 6 A it makes 72 W and all 72 W become heat.
+
+</details>
+
+</div>
 
 ## Applications
 
@@ -362,7 +445,40 @@ lawn.
 
 </details>
 
-**18.** €1000 grows at 5% a year. Can you write the amount after $n$
+**18.** Expand $(x + y)^2$, $(x - y)^2$ and $(x + y)(x - y)$. What is
+each one useful for?
+
+<details class="dl-answer"><summary>answer</summary>
+
+They are $x^2 + 2xy + y^2$, $x^2 - 2xy + y^2$ and $x^2 - y^2$.
+
+The third is useful for mental arithmetic:
+$37 \times 43 = (40 - 3)(40 + 3) = 1600 - 9 = 1591$.
+
+The first two appear whenever you square a distance, or a difference
+from a mean. The standard deviation does exactly that.
+
+</details>
+
+## From earlier
+
+**19.** Expand $(x + 1)^2$, $(x + 1)^3$ and $(x + 1)^4$. What do you notice
+about the coefficients?
+
+<details class="dl-answer"><summary>answer</summary>
+
+They are $x^2 + 2x + 1$, then $x^3 + 3x^2 + 3x + 1$, then $x^4 + 4x^3 + 6x^2 + 4x + 1$.
+
+The coefficients are 1 2 1, then 1 3 3 1, then 1 4 6 4 1. These are the
+rows of Pascal's triangle. Each row is built by adding pairs of
+neighbours from the row above: in 1 3 3 1, $1 + 3 = 4$, $3 + 3 = 6$ and
+$3 + 1 = 4$ give the 4 6 4 of the next row. The same numbers count how
+many ways there are to choose $k$ things from $n$. You met them there in
+[Counting: factorials, permutations and combinations](tutorial:counting-carefully).
+
+</details>
+
+**20.** €1000 grows at 5% a year. Can you write the amount after $n$
 years as a polynomial in the growth factor? What is the amount after 3
 years?
 
@@ -380,17 +496,3 @@ and a bad one over thirty years.
 
 </details>
 
-**19.** Expand $(x + y)^2$, $(x - y)^2$ and $(x + y)(x - y)$. What is
-each one useful for?
-
-<details class="dl-answer"><summary>answer</summary>
-
-They are $x^2 + 2xy + y^2$, $x^2 - 2xy + y^2$ and $x^2 - y^2$.
-
-The third is useful for mental arithmetic:
-$37 \times 43 = (40 - 3)(40 + 3) = 1600 - 9 = 1591$.
-
-The first two appear whenever you square a distance, or a difference
-from a mean. The standard deviation does exactly that.
-
-</details>

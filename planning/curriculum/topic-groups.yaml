@@ -54,6 +54,7 @@ groups:
       - rearranging-formulae
       - cracking-equations
       - complex-roots
+      - a-tool-of-your-own
       - mixed-algebra
 
   - key: polynomials-and-graphs
