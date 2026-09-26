@@ -1,6 +1,6 @@
 /* The page's half of a cell's widgets, shared by tutorial pages
  * (tutorial-runtime.js) and the Notebook (pyodide-engine.js), so both
- * behave the same (#329; 7.264, 7.265).
+ * behave the same (#329; 7.264, 7.268).
  *
  * Python never reads a widget's element. Before each run the page reads
  * what every text box, menu and slider of the cell holds and hands those

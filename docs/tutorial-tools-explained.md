@@ -69,7 +69,7 @@ sense.
     element: the page moves a live slider out of the output into its
     cell's strip, and hands every widget's value in before each run
     (`widgetValues()` and `reconcileSliders()` in `assets/cell-widgets.js`,
-    which tutorial pages and the Notebook share; #329, 7.265).
+    which tutorial pages and the Notebook share; #329, 7.268).
 11. **Shared data** — `load_csv`, `load_text`, and `run_query`; `load_text`
     sits right after `load_csv` and fetches the same way (the shared
     `/data/` folder, or a full URL), returning the file's contents as a

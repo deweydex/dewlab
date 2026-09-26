@@ -284,6 +284,29 @@ class TestAllTutorialsPage:
         b.build()
         assert self.course_headings(repo) == ["Later Module", "Computational Methods"]
 
+    def test_cards_moves_a_front_page_tile_up_and_leaves_default_courses_alone(self, repo):
+        # `order:` also picks a shared page's default course; `cards:` is
+        # the tiles alone.
+        write(repo, "Prose.\n")
+        course(repo, "zz-later-module", {"S": ["sample"]}, title="Later Module")
+        index = repo / "courses" / "index.yaml"
+        index.write_text("cards:\n  - zz-later-module\n"
+                         "order:\n  - computational-methods\n  - zz-later-module\n")
+        b.build()
+        cards = b.render_course_cards()
+        # One column of its own, not a grid: a course's text is too long for two.
+        assert cards.startswith('<div class="dl-course-list">') and cards.endswith("</div>")
+        tiles = re.findall(r'href="([^"]+)\.html"', cards)
+        assert tiles == ["zz-later-module", "computational-methods"]
+        assert self.course_headings(repo) == ["Computational Methods", "Later Module"]
+        page = built(repo)
+        assert "<summary>Computational Methods</summary>" in page
+        assert "Later Module</summary>" not in page
+
+        index.write_text("cards:\n  - nowhere\norder:\n  - computational-methods\n")
+        with pytest.raises(b.BuildError, match="lists nowhere under `cards:`"):
+            b.build()
+
     def test_an_index_naming_a_course_with_no_file_stops_the_build(self, repo):
         write(repo, "Prose.\n")
         (repo / "courses" / "index.yaml").write_text("order:\n  - computational-methods\n  - nowhere\n")

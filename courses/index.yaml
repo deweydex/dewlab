@@ -1,3 +1,8 @@
+# `order:` is the courses' order on the contents page, and a page on
+# more than one course is drawn in the first of them by default.
+# `cards:` moves front-page tiles to the top without changing that.
+cards:
+- programming-design-principles
 order:
 - mit-pdp-maths-prog-integration
 - dewey-track

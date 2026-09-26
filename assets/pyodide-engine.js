@@ -531,7 +531,7 @@ export function clearWidgets(cellId) {
 
 /* What the cell's text boxes, menus and sliders hold, handed in before
  * the run clears them — the one way Python hears a widget, in a Worker or
- * on this thread (7.265). */
+ * on this thread (7.268). */
 async function seedWidgets(cellId, values) {
   for (const { widgetId, value } of values) {
     if (mode === "main-thread") toolsMT._set_widget_value(cellId, widgetId, value);

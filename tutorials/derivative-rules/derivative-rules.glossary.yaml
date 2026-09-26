@@ -1,0 +1,42 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# derivative, differentiate and f' are not repeated here — already
+# introduced in rates-of-change.glossary.yaml, earlier in this series.
+entries:
+  - term: "power rule: d/dx(x^n) = n*x^(n-1)"
+    kind: formula
+    definition: >
+      The power rule gives the derivative of x^n. Bring the power down to
+      the front, and reduce the power by one.
+    example: "power_rule(3) is the function lambda x: 3 * x ** 2"
+  - term: "sum rule: d/dx(f + g) = f' + g'"
+    kind: formula
+    definition: >
+      The derivative of a sum is the sum of the derivatives. That is why a
+      polynomial can be differentiated one term at a time.
+  - term: "product rule: d/dx(f * g) = f'*g + f*g'"
+    kind: formula
+    definition: >
+      The derivative of a product is not the product of the derivatives.
+      Differentiate each factor in turn, leaving the other alone, and add
+      the two results.
+  - term: "chain rule: d/dx(f(g(x))) = f'(g(x)) * g'(x)"
+    kind: formula
+    definition: >
+      The chain rule is for one function inside another. Differentiate the
+      outside and leave the inside alone, then multiply by the derivative
+      of the inside. Rates multiply: if u changes three times as fast as x,
+      and y twice as fast as u, then y changes six times as fast as x.
+  - term: integration
+    kind: concept
+    definition: >
+      Integration runs differentiation backwards: from a rate of change
+      back to the total. For a polynomial, each power goes up by one and
+      is divided by its new power.
+    example: "integrate_polynomial([6, 2]) is [0, 6.0, 1.0], that is 6x + x^2"
+  - term: constant of integration
+    kind: concept
+    definition: >
+      The number that integration cannot find. A number on its own has a
+      slope of 0, so any constant gives the same derivative, and the
+      round trip loses it.

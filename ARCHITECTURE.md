@@ -120,7 +120,8 @@ The pipeline, in order:
    one `.dl-module-grid` wrapper automatically; and a `[[name]]` marker for
    infrastructure a page can point at but never author directly
    (`GENERATED_BLOCKS`): `[[search-box]]`, the live search, and
-   `[[course-cards]]`, one tile per course from the course files.
+   `[[course-cards]]`, one tile per course from the course files, in a
+   `.dl-course-list` column rather than a grid.
    A `<div class="dl-hero">`/`<div class="dl-audience">`/`<div
    class="dl-attribution">`/`<ul class="dl-feature-list">` section or list
    wrapper gets `markdown="1"` added to it before conversion
@@ -492,7 +493,7 @@ dewmini's downloadable copy avoids by serving itself from
 just without a genuine Stop button. What a cell's widgets hold reaches
 Python through `assets/cell-widgets.js`, which the engine and
 `tutorial-runtime.js` share, so a text box, a menu or a slider behaves the
-same in the Notebook as on a tutorial page (7.265).
+same in the Notebook as on a tutorial page (7.268).
 
 A JavaScript cell runs through neither of those — `compose/js-cell-engine.js`
 is a second, smaller engine: one persistent sandboxed `<iframe

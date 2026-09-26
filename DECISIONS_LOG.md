@@ -5272,7 +5272,43 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 ---
 
-**7.265 — The Notebook's text boxes, menus and sliders work, through the same code as a tutorial page.** Follows 7.264.
+**7.265 — The Dewey Track's letter is signed "dewlab".** Josh, 26 September 2026, closing #351: "dewlab should sign it not me". 7.228 left the letter unsigned until he had read it. The letter's "I" is now the site's voice, not a person's, which also keeps the style guide's rule that a page never invents the writer's history.
+
+*Cost to change: one line at the end of `how-this-course-is-built`.*
+
+---
+
+**7.266 — Programming and Design Principles is the first card on the front page, through a `cards:` list rather than `order:`.** Josh, 26 September 2026: "move the Programming Design Principles card to the top of the list." 7.171 put it last. `courses/index.yaml`'s `order:` sets the tiles, but it also sets each shared page's default course (7.172's "first in `courses/index.yaml` that lists it"), and every one of this course's pages is shared with the integrated maths course. Moving it to the top of `order:` would have given those pages this course's tree, previous/next and reference-panel accumulation by default, which drops the maths pages from the integrated course's "earlier in the series". So the index gains an optional `cards:` list: the courses it names come first on the front page, the rest follow `order:`, and nothing else reads it (`course_card_order()`). The contents page keeps `order:`.
+
+*Cost to change: delete the `cards:` lines and the tiles follow `order:` again.*
+
+---
+
+**7.267 — Trigonometry and Calculus finds its coordinates before it names them, and the calculus reaches the waves.** The content issue (#330), part of #306.
+
+**Pages.** `lines-and-distances` (26 cells) became two pages: `slope-and-lines` (slope as a rate, parallel and perpendicular, the vertical line and the general form) and `distance-and-pythagoras` (the distance formula, checking the theorem at 80, 90 and 100 degrees, the midpoint). Its old address redirects to the first. `rates-of-change` became two as well: the derivative and turning points stay, and `derivative-rules` finds each rule by experiment. The power rule is checked on powers the table lacked. The product rule keeps the moment where multiplying the derivatives gives 48 against 80, and then tests three guesses against the numbers. The chain rule asks whether multiplying works this time. A new page, `the-slope-of-a-wave`, differentiates `math.sin` numerically, finds cos, and measures how fast Dublin's days grow: about 4.7 minutes a day at the equinox by the fitted wave and 4.2 by the data, and 0 at the solstice. Before it, the series called itself Trigonometry and Calculus, and the calculus never touched a wave. `a-model-of-your-own` is the series-end making task: navigate by two lighthouses, build a chord, chart the Moon's rise, or survey a kingdom.
+
+**Coordinates first.** `the-unit-circle` built `unit_point` from `cos` and `sin` and then named the columns cosine and sine, which was circular. Now a clock hand's tip walks round in ten thousand steps, each at right angles to the hand. That is the quarter turn from the lines page and from multiplying by $i$. A predict asks how far up it is after an eighth of a turn (0.71, where many guess 0.5), and only then are the columns named and compared with `math.cos` and `math.sin`. Radians follow as the distance walked. The same walk later explains why the slope of sine is cosine.
+
+**Moving pictures.** Three `FuncAnimation`s from the outlines: the circle unrolling into a wave, the side of 6 swinging to meet the line twice in the ambiguous case, and chords closing on a tangent. Each is kept to about 24 frames of a small figure, a few hundred kilobytes. Five sliders from #329 (7.264): the tip of the hand, the four numbers of a wave against a target, a daylight fit, the swinging side's length, and a day on the daylight curve with its tangent. The wave sliders print a measured gap (`gap_to_data`, the average distance from the points), so the reader sees how close a fit is and gets no verdict.
+
+**Data.** `data/daylight.csv` and `data/dublin-tides.csv` (#324) now carry the waves: Dublin's daylight fitted from the numbers read off the year (a gap of about 10 minutes; the shift lands on the equinox), the tide at Dublin Port, Cape Town half a year out of step, and Reykjavik further from a sine than Dublin.
+
+**The step size.** `approaching-a-limit` draws the error against the gap on log axes. The V it makes explains the silent 0.0 at $10^{-16}$, and why `derivative_at` uses `1e-6`, near the bottom of its own V.
+
+**Worlds.** Each page chooses from four: sea and sky (a submarine, a lighthouse and a sextant, tides, the rule of twelfths), sound (thunder, a guitar's note, beats, a chord), planets and moons (Voyager 1, the Moon's orbit, Venus's elongation, Aristarchus, sunlight on a spacecraft), and fantasy maps (roads, a windmill, a survey by triangles, a catapult).
+
+**Closer looks.** `degrees-and-radians` and `why-we-have-seasons` (7.261) sit after the unit circle and the waves page in the course, and the `math.sin(90)` predict and the seasons paragraph link to them.
+
+**Practice.** Sixteen problems that repeated a tutorial task word for word are gone, or the tutorial's task changed so the problem no longer repeats it. Every practice page gained predicts, a problem in each world and two from earlier. `mixed-calculus` is new, and `mixed-trigonometry` gains problems that join the pages. The outline's own rationale and the line telling adults they "did not enjoy" geometry are gone.
+
+**Not done.** `derivative_at` is repeated as a setup cell on each calculus page and not made a toolkit cell (#395): a toolkit cell would add a line to every later page of the course, including the project pages that never use it.
+
+*Cost to change: moderate. The new ids (`slope-and-lines`, `distance-and-pythagoras`, `derivative-rules`, `the-slope-of-a-wave`, `a-model-of-your-own`, `mixed-calculus`) and every world cell become a contract on 2 October. The order is one list in `courses/mit-pdp-maths-prog-integration.yaml`, and the old address is one line in `courses/redirects.yaml`.*
+
+---
+
+**7.268 — The Notebook's text boxes, menus and sliders work, through the same code as a tutorial page.** Follows 7.264.
 
 **What was wrong.** The Notebook's guide said its widgets raise an error because Python runs in a Worker. Only `button` and `image_input` did. `text_input` and `dropdown` drew a box, but nothing on the page told the Worker what was typed, so every run read the value the box was drawn with. A browser test reproduced it before the fix.
 

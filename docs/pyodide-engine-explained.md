@@ -103,7 +103,7 @@ of the file: two engines, one dispatcher, one shared public interface.
    each cell's strip in `widgetHolders`, because the Notebook redraws a
    cell's elements; `sliderStripFor()` gives it back to the page, and
    `clearWidgets()` empties it. A slider's move calls `rerunCell` from
-   `configure()`, the page's own Run (7.265).
+   `configure()`, the page's own Run (7.268).
 
 ---
 

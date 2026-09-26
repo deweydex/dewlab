@@ -1,4 +1,4 @@
-"""Widgets in the Notebook (7.265): a text box's value reaches Python in
+"""Widgets in the Notebook (7.268): a text box's value reaches Python in
 the Worker, and a slider runs its own cell and survives a redraw. The
 same page-side code as a tutorial page (assets/cell-widgets.js), driven
 here through the Notebook's own engine."""
