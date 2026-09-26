@@ -12,8 +12,9 @@ entries:
   - term: bug
     kind: concept
     definition: >
-      A bug is a mistake in code that makes it break its promise. Code with
-      a bug can run with no error and still give a wrong answer.
+      A bug is a part of the code that makes it break its promise. Code
+      with a bug can run with no error and still give an answer the promise
+      does not.
   - term: "testing, test case"
     kind: concept
     definition: >
@@ -23,7 +24,7 @@ entries:
   - term: where test cases come from
     kind: concept
     definition: >
-      Good test cases come from facts known outside the code, from a second
+      Useful test cases come from facts known outside the code, from a second
       route such as going there and back, and from the edges of the promise.
   - term: tolerance
     kind: concept
@@ -57,7 +58,7 @@ entries:
     definition: >
       A structured walkthrough is a meeting where the person who wrote some
       code talks a small group through it, line by line. The others ask
-      questions and look for mistakes.
+      questions and look for bugs.
   - term: debugger
     kind: concept
     definition: >

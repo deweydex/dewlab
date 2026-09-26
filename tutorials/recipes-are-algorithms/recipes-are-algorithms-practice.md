@@ -9,13 +9,13 @@ version: 2026.09.25.1
 
 Each problem says what kind it is: **Predict**, **Make**, **Fix**,
 **Explain** or **Another way**. For a Predict problem, write your guess
-down before you run the cell. A wrong guess that you then understand
-teaches more than a right one you were not sure of.
+down before you run the cell. A guess that missed, once you see why,
+teaches more than a lucky match you were not sure of.
 
-Plans and pseudocode can be right in many different ways. Where an
-answer fold shows a plan, it shows one good plan, not the only one.
-Yours may be clearer. A good test for any plan: would a robot that
-knows nothing follow it and get it right?
+A plan or pseudocode can be written in many different ways. Where an
+answer fold shows a plan, it shows one way through, not the only one.
+Yours may be clearer. One test for any plan: would a robot that
+knows nothing follow it and finish the task?
 
 ## Warm-up
 
@@ -198,8 +198,8 @@ start_up()
 Python runs a cell from the top. On the first line, the function has not
 been defined yet, so the name `start_up` points at nothing. The fix is
 to define it first, and call it after. Schlomo's order makes sense on
-paper, where the most important line often comes first. In Python, it
-is a mistake about "what happens when?".
+paper, where the most important line often comes first. In Python, the
+order is about "what happens when?".
 
 One thing to watch for. Once your fixed cell has run, move the call
 back to the top and run it again. Now it works. The function was
@@ -349,8 +349,8 @@ REPEAT 20 times:
     PUT the pen down
 ```
 
-Schlomi's 20-line plan and the short plan promise the same line. Hers
-is not wrong. But for 50 dashes, the long version needs 30 more lines,
+Schlomi's 20-line plan and the short plan promise the same line, so
+hers works. But for 50 dashes, the long version needs 30 more lines,
 and she could lose count while writing them. The short version needs
 one number changed. A repeat says "how many" in one place, where it is simple to
 read and simple to change.
@@ -404,7 +404,7 @@ first works out the right-hand side, `goals + 1`, using the value
 `goals` move to point at 3. It is a step in time, like a scoreboard
 going from 2 to 3 when a goal is scored.
 
-Both are right, in their own space. The maths space asks "what is
+Both make sense, each in its own space. The maths space asks "what is
 true?", and Python's space asks "what happens next?".
 
 </details>

@@ -8,8 +8,9 @@ version: 2026.09.25.2
 # Does it work? Testing, walkthroughs and naming — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -71,7 +72,8 @@ print("minutes_to_hours keeps its promise.")
 
 It prints `minutes_to_hours keeps its promise.` The first test comes from
 a fact, the second sits at the edge, and the third goes there and back.
-Yours may use other values and still be good tests.
+This is one way through. Yours may use other values and test the same
+things.
 
 </details>
 
@@ -86,9 +88,10 @@ dividing by zero or using a name that points at nothing. It has no idea
 what the function was meant to do. So a function can run with no error
 and still break its promise. The tutorial's `to_celsius` ran, and said
 water boils at about 194 °C. Only a test case, such as "32 °F should
-give 0 °C", showed that it was wrong. Schlomo's idea is a reasonable
-first check, since an error does mean something is wrong. It is the
-other direction that fails: no error does not mean nothing is wrong.
+give 0 °C", showed that it broke its promise. Schlomo's idea works in
+one direction: an error does mean something needs a look. It stops
+working in the other direction: no error does not mean the promise is
+kept.
 
 </details>
 
@@ -201,8 +204,8 @@ Now all three pass. Testing only `(5, 1)` would have missed this bug.
 
 **7. Fix.** Schlomi, who is learning Python too, writes a function for
 a photo app that makes a picture 10% wider. The test fails. Run it, then
-decide: is the mistake in the code, the comment or the docstring? Fix
-it.
+decide: which one does not say what Schlomi meant, the code, the
+comment or the docstring? Change it.
 
 ```python exec
 id: does-it-practice-fix-wider
@@ -217,7 +220,8 @@ print("wider keeps its promise.")
 <details class="dl-answer"><summary>answer</summary>
 
 The app's rule is 10%, and the docstring and the comment both say 10%.
-The code multiplies by 1.15, which adds 15%. So the code is wrong:
+The code multiplies by 1.15, which adds 15%. So the code is the one to
+change:
 
 ```python
 def wider(width):
@@ -227,7 +231,8 @@ def wider(width):
 
 The comment can go: it says what the code says. Notice the test uses
 `close_enough`. `100 * 1.10` is `110.00000000000001`, so `==` would fail
-even with the right code. Schlomi chose the right tool for the test.
+even with 1.10 in the code. That is why Schlomi's test uses
+`close_enough`.
 
 </details>
 
@@ -238,6 +243,8 @@ with a loop that goes there and back for every whole number of km from 0
 to 1,000.
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def km_to_miles(km):
@@ -278,10 +285,10 @@ assert double(2) == 4
 <details class="dl-answer"><summary>answer</summary>
 
 For 2, doubling and squaring give the same answer: $2 + 2 = 4$ and
-$2 \times 2 = 4$. So the test cannot tell the right function from the
-wrong one. A test case is only useful if a likely mistake would give a
-different answer. `assert double(3) == 6` fails for this function, since
-$3 \times 3 = 9$, and that catches the bug. Good test values avoid 0, 1
+$2 \times 2 = 4$. So the test cannot tell doubling from squaring. A test
+case is only useful if a likely bug would give a different answer.
+`assert double(3) == 6` fails for this function, since
+$3 \times 3 = 9$, and that catches the bug. Useful test values avoid 0, 1
 and 2, where many different rules happen to agree.
 
 </details>
@@ -337,8 +344,8 @@ It prints `The two versions agree.`, then `36.0`. A 12-megapixel photo
 at 24 bits a pixel is 36 MB before it is squeezed. Writing `*values`
 hands the three numbers in a row to the function as its three inputs,
 the same way `*row` did on
-[Untangling a condition](tutorial:untangling-a-condition). Your names
-may be different and as clear.
+[Untangling a condition](tutorial:untangling-a-condition). This is one
+way through: your names may be different and as clear.
 
 </details>
 
@@ -370,7 +377,7 @@ billionth. `math.isclose` asks whether they are within a billionth *of
 their size*. For the Moon, 0.1 m out of 384 million metres is tiny
 compared with the size, so `math.isclose` says True. For two numbers
 that are both about a billionth, one is double the other, so
-`math.isclose` says False. Each tool is right in its own space: a fixed
+`math.isclose` says False. Each tool suits its own space: a fixed
 tolerance suits numbers of an everyday size, like temperatures and
 distances in a room.
 
@@ -432,8 +439,8 @@ def rainy_days(rainfall):
     return count
 ```
 
-Now it gives 3. This is a sequence bug: the right lines, with one of
-them in the wrong place.
+Now it gives 3. This is a sequence bug: every line is needed, and one
+of them ran inside the loop when it belongs before it.
 
 </details>
 
@@ -469,6 +476,8 @@ How could you make a one-input function from each, for a fixed speed?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def works_both_ways(forwards, backwards, values):
     """Return True when backwards undoes forwards, within close_enough, for every value."""
@@ -503,7 +512,8 @@ not bring a temperature back, and the tool catches it.
 lab results are 0.000000001 grams and 0.000000002 grams, and
 `close_enough` says they are equal. A GPS says two points are
 20,200,000.0 and 20,200,000.1 metres from a satellite, and
-`close_enough` says they are not equal. Is `close_enough` wrong? When
+`close_enough` says they are not equal. Is `close_enough` breaking its
+promise? When
 would you change its tolerance?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -544,7 +554,7 @@ def battery_colour(percent):
 1. The promise changes at 20 and at 50. Those are the edges.
 2. Test the value right before each edge, and the edge itself: 19, 20,
    49 and 50.
-3. Which one gives the wrong colour?
+3. Which one gives a colour the promise does not?
 
 **Think about:** "20 to 49" includes 49. Which sign includes it?
 
@@ -588,18 +598,20 @@ would skip the hand trace altogether?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no one right answer. A good answer weighs a few things.
+There is more than one answer worth giving. One way through weighs a
+few things.
 
 - **By hand first.** You have to predict each value before you see it,
-  and a wrong prediction shows you exactly what you misunderstood. The
-  cost: it is slow, and it is possible to copy a value wrongly.
-- **Debugger first.** It is fast, and it never makes a copying mistake.
+  and a prediction that misses shows you exactly where your picture of
+  the code and Python's differ. The cost: it is slow, and a value copied
+  by hand can come out different from the one Python holds.
+- **Debugger first.** It is fast, and it copies every value exactly.
   The cost: the values appear before you have thought about them, so it
   is possible to watch without learning much.
 
 A loop that runs 1,000 times is one place to skip the hand trace: nobody
 can write 1,000 rows. A function you already trust, like `total`, is
-another. A strong answer might say: trace a short, new function by hand,
+another. One answer might say: trace a short, new function by hand,
 and use the debugger for long runs, or to check a hand trace.
 
 </details>

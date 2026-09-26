@@ -11,7 +11,8 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means
 answer in words. **Another way** means reach the same place by a second
-route. The answers are folded away until you open them.
+route. The answers are folded away until you open them, and each is one
+way through: yours may go another way.
 
 Your toolkit is loaded on this page, including `point_on_circle` from
 the tutorial, `distance` from

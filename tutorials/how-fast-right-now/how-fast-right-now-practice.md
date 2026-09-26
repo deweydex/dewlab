@@ -9,8 +9,9 @@ datasets: [co2-emissions]
 # How fast, right now? The derivative — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -88,8 +89,8 @@ the limit of the chord slopes as the step gets close to 0, the number
 they head for. `derivative_at` cannot take a limit, so it takes one
 small step, $10^{-6}$, and gives a number very close to the limit.
 
-That is one good way to say it. Yours may use other words, or a
-picture, and be as good.
+That is one way through. Yours may use other words, or a picture, and
+say the same thing.
 
 </details>
 
@@ -165,8 +166,8 @@ it gets close to the room's 20 °C.
 </details>
 
 **6. Fix.** Schlomi, who is learning Python too, wrote her own
-`derivative_at`. Run the cell, see which test fails, and fix the one
-mistake.
+`derivative_at`. Run the cell, see which test fails, and change the
+line that does not do what Schlomi meant.
 
 ```python exec
 id: how-fast-practice-fix
@@ -181,15 +182,15 @@ print("derivative_again keeps its promise.")
 <details class="dl-answer"><summary>answer</summary>
 
 The test fails, because `derivative_again(straight_line, 0)` gives about 3, twice
-the right answer. The chord runs from `x - step` to `x + step`, so its
+the line's slope of 1.5. The chord runs from `x - step` to `x + step`, so its
 run is two steps, not one. The fix is to divide by `2 * step`:
 
 ```python
     return (rule(x + step) - rule(x - step)) / (2 * step)
 ```
 
-A test on a straight line catches this, because the right answer, the
-line's slope, is known exactly.
+A test on a straight line catches this, because the line's slope is
+known exactly.
 
 </details>
 
@@ -324,7 +325,8 @@ you choose, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no single right answer. A good answer weighs a few things:
+There is more than one answer worth giving. One way through weighs a
+few things:
 
 - **Speed and exams.** Rules first gets to exact answers quickly, and
   exams usually ask for them.
@@ -369,6 +371,8 @@ fine comb did on
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 time_now = 0
 while derivative_at(fall_distance, time_now) < 11.9:
@@ -386,7 +390,7 @@ base $e$. The search rounds it to 5.75.)
 </details>
 
 **14. Predict.** `derivative_at` uses a step of $10^{-6}$. The slope of
-$x^2$ at $x$ is $2x$. What do these print, next to the right answers?
+$x^2$ at $x$ is $2x$. What do these print, next to $2x$?
 
 ```python
 for x in [1e8, 1e10, 1e11]:
@@ -395,8 +399,8 @@ for x in [1e8, 1e10, 1e11]:
 
 <details class="dl-answer"><summary>answer</summary>
 
-At $10^8$ the answer is right, $2 \times 10^8$. At $10^{10}$ it is
-about $3.28 \times 10^{10}$, when it should be $2 \times 10^{10}$. At
+At $10^8$ the two agree, $2 \times 10^8$. At $10^{10}$ `derivative_at`
+gives about $3.28 \times 10^{10}$, beside $2 \times 10^{10}$. At
 $10^{11}$ it is 0.0.
 
 Near $10^{11}$, the gap between neighbouring floats is about $10^{-5}$,
@@ -415,6 +419,8 @@ to 10 with `plot_rule`. Where is the curve steepest, and what does
 that mean?
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def fall_speed(seconds):

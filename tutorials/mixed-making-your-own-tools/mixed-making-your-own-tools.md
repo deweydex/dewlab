@@ -148,6 +148,8 @@ miles.
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 KM_PER_MILE = 1.609344
 
@@ -204,6 +206,8 @@ that `works_both_ways` says `False`.
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def works_both_ways(there, back, values):
     """Give back True when back undoes there for every value in values."""
@@ -232,7 +236,8 @@ tiny distance from home, as `fahrenheit_to_celsius` showed on
 **7. Fix.** NASA's Perseverance rover, on Mars since 2021, has a mass
 of 1,025 kg, and American pages give it in pounds. One pound is exactly
 0.45359237 kg. This cell tests the two weight functions both ways, and
-stops with an `AssertionError`. Find the mistake, and fix it.
+stops with an `AssertionError`. Find the line that does not do what its
+writer meant, and change it.
 
 ```python exec
 id: mixed-tools-fix-weight
@@ -282,15 +287,15 @@ too. It is a sensible shortcut for a rough answer. Will
 
 `works_both_ways` will say `True`. Multiplying by 1.6 and dividing by
 1.6 undo each other perfectly, so every value comes home. The two
-functions are wrong in the same way, and a round trip cannot see a
-mistake that the way back undoes.
+functions miss by the same factor, and a round trip cannot see a
+change that the way back undoes.
 
 A test with a known value catches it: `miles_to_km(1)` should be
 1.609344, and Schlomo's version gives 1.6. His shortcut is fine for a
 rough answer, and a known-value test says how rough. So a converter needs both
 kinds of test from
 [Running a formula backwards](tutorial:running-a-formula-backwards#the-promise-run-backwards):
-known values, to check the factor is right, and round trips, to check
+known values, to check the factor, and round trips, to check
 the two directions agree. Neither kind is enough alone.
 
 </details>
@@ -311,12 +316,12 @@ print(miles_to_km_from_page(10))
 
 <details class="dl-answer"><summary>answer</summary>
 
-It shows about `4.536`, and it should show about `16.09`.
+It shows about `4.536`, not the `16.09` its writer meant.
 
 The function reads `factor` each time it runs, and by then the page's
 `factor` points at the pound factor. That is the hidden input from
 [What a function can see](tutorial:what-a-function-can-see#what-a-function-can-see-from-outside).
-No error appears: the answer is wrong, quietly. A test with a known
+No error appears: the answer is quietly off. A test with a known
 value, like `miles_to_km_from_page(1) == 1.609344`, would catch it, if
 it ran after the name was reused.
 
@@ -347,6 +352,8 @@ if it is 1.52 AU.
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def scaler(factor):
@@ -382,6 +389,8 @@ exactly $\frac{10^{12}}{2^{30}}$ GiB. Check that the two routes agree.
 How big does a new 1 TB drive look to a computer that counts in 1,024s?
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def tb_to_bytes(tb):
@@ -535,7 +544,7 @@ the functions you have already written.
 
 **Think about:** `convert` has three parameters, and `from_unit` and
 `to_unit` are strings. What would happen if someone called it with the
-units in the wrong order?
+units in the other order?
 
 **Try this next:** add `"AU"` to `"km"` and back, with your tools from
 problem 10.
@@ -543,6 +552,8 @@ problem 10.
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def convert(value, from_unit, to_unit):
@@ -610,6 +621,8 @@ to the test. How many lines did the test need to grow by?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def converter_for(from_unit, to_unit):
     """Give back a function of one value that converts it from from_unit to to_unit."""
@@ -641,7 +654,7 @@ a composition, a test, and a function that remembers what it can see.
 
 **17. Fix.** Schlomi, who is learning Python too, wrote a first version
 of `works_both_ways`. It says `True` for two functions that do not undo
-each other: doubling, and dividing by 3. Find the mistake. Why did the value 0 hide it?
+each other: doubling, and dividing by 3. Find the line that does not do what Schlomi meant. Why did the value 0 hide it?
 
 ```python exec
 id: mixed-tools-fix-both-ways

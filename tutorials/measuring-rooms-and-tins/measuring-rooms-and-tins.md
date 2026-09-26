@@ -157,7 +157,7 @@ Here is a question about the space we are in. What is $15 \text{ m} + 14
 area, and adding them is like adding 15 seconds to 14 kilograms. Multiplying
 across spaces is allowed: a length times a length is an area. Checking
 the units is a quick test of any formula. If the answer to an area
-question comes out in metres, something has gone wrong.
+question comes out in metres, the formula needs another look.
 
 ## Triangles: half a rectangle
 

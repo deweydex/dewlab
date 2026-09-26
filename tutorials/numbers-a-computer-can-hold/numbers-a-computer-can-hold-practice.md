@@ -11,7 +11,7 @@ Each problem says what kind it is: **Predict**, **Make**, **Fix**,
 **Explain** or **Another way**. With numbers, it is tempting to run the
 cell first and guess afterwards. Try it the other way round: write your
 guess down, then run. The surprises are where the learning is, and a
-wrong guess is a surprise you earned.
+guess that misses is a surprise you earned.
 
 Your `digit_at` from the tutorial page is loaded here. If you have not
 written it yet, the page uses a reference version, so every problem
@@ -137,7 +137,8 @@ kind of number it was given.
 
 **6. Fix.** Schlomo, who is learning Python too, has a temperature
 sensor that read 12, 15 and 18 °C. He wants the average, which is 15.
-His cell shows 33.0 instead. Find his mistake and fix it.
+His cell shows 33.0 instead. Find the part that does not do what he
+meant, and change it.
 
 ```python exec
 id: numbers-practice-fix-1
@@ -167,8 +168,8 @@ happen first: $45 \div 3 = 15.0$.
 
 On paper, he would have written $\frac{12 + 15 + 18}{3}$, and the long
 line does the job of the brackets. Python has no long line, so we write
-the brackets ourselves. His mistake came from paper, where it was not a
-mistake at all.
+the brackets ourselves. His way of writing it came from paper, where it
+works.
 
 </details>
 
@@ -201,21 +202,21 @@ minutes are base 60 too.
 
 **8. Another way.** Schlomi, who is also learning Python, says: "You
 can't take 5 away from 3." Schlomo says you can, and the answer is −2.
-Find a space where Schlomi is right, and a space where Schlomo is right.
+Find a space where Schlomi's idea works, and a space where Schlomo's
+does.
 Give a real situation for each.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Schlomi is right in $\mathbb{N}$. If a phone has 3 GB (gigabytes) of free space, it
+Schlomi's idea works in $\mathbb{N}$. If a phone has 3 GB (gigabytes) of free space, it
 cannot store a 5 GB video. There is no such thing as −2 GB of free
 space.
 
-Schlomo is right in $\mathbb{Z}$. If it is 3 °C and the temperature
+Schlomo's works in $\mathbb{Z}$. If it is 3 °C and the temperature
 drops by 5 degrees, it is −2 °C.
 
-Neither of them has made a mistake. They are answering in two
-different spaces. Here is one good pair of situations; yours may be
-different and still right.
+They are answering in two different spaces. Here is one pair of
+situations; yours may be different and work as well.
 
 </details>
 
@@ -359,6 +360,8 @@ does `math.log2(1000000)` say?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1. That is 10 halvings, so
 $\log_2 1024 = 10$.
 
@@ -394,7 +397,7 @@ print("tens_digit keeps its promise.")
 3. Which of `%` and `//` should happen first, to get rid of the ones
    digit?
 
-**Think about:** which of the four questions is this mistake about?
+**Think about:** which of the four questions is this about?
 
 </details>
 
@@ -411,10 +414,10 @@ the new last digit.
     return number // 10 % 10
 ```
 
-This is a mistake about *what happens when*. Here is another way that
+This is about *what happens when*. Here is another way that
 works: `number % 100 // 10` keeps the last two digits first, 26, then
-drops the ones, leaving 2. Schlomi had the right two moves. Only the
-order was wrong.
+drops the ones, leaving 2. Schlomi had the two moves she needed. Only
+their order had to change.
 
 </details>
 
@@ -451,8 +454,8 @@ part give the same answer. For negative numbers they do not.
 The remainder follows from that. Python keeps the rule from problem 4:
 $-4 \times 2 + 1 = -7$. So the remainder is 1.
 
-Most people guess −3. It is a very reasonable guess, and it is right in
-some other programming languages, which round towards zero. Python
+Most people guess −3, and that is what some other programming
+languages give, because they round towards zero. Python
 chose "down" instead. Same move, a different space.
 
 </details>
@@ -487,6 +490,8 @@ width of 3 to a width of 2? Is that a column a screen can have?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def scale(position, from_width, to_width):
     """Return where column position moves to, when an image
@@ -517,7 +522,7 @@ would be missing.
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no one right answer. A good answer weighs a few things.
+Here is one way through. It weighs a few things.
 
 - **The question first** gives the idea something to be about. A learner
   knows what a logarithm is for before they learn its rules. What they
@@ -537,8 +542,8 @@ print(math.log2(8 * 4))
 print(math.log2(8) + math.log2(4))
 ```
 
-Both lines show `5.0`. So a strong answer might start with the question,
+Both lines show `5.0`. So one answer might start with the question,
 and let the rules arrive as facts about it. Someone who chose the rules
-first, with good reasons about exams, has a fair answer too.
+first, with reasons about exams, has another.
 
 </details>

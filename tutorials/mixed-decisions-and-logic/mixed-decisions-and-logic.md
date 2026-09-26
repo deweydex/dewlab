@@ -24,7 +24,7 @@ most useful part.
 
 If a problem feels hard, that is usually the feeling of choosing a tool,
 which is the new skill here. Skip it, try another, and come back. The
-answers show one good way each; yours may be different and still right.
+answers show one way through each; yours may be different and work as well.
 
 ## Warm-up
 
@@ -98,19 +98,18 @@ That is De Morgan's second law, from
 
 **5. Explain.** Schlomi, who is learning Python too, says that
 `temperature > 79` and `temperature >= 80` always mean the same thing, so
-it does not matter which one the fan code uses. When is she right, and
-when not?
+it does not matter which one the fan code uses. Where does her idea
+work, and where does it stop working?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Schlomi is right when the sensor gives whole degrees. Then there is
+Schlomi's idea works when the sensor gives whole degrees. Then there is
 nothing between 79 and 80, so "more than 79" and "80 or more" pick out
 the same readings.
 
 With decimals, they differ. A reading of 79.5 is more than 79, but it is
-not 80 or more. So Schlomi's move is right in one space and wrong in the
-other. She did not make a mistake, as long as she says which space she
-is in.
+not 80 or more. So Schlomi's move works in one space and not in the
+other. It holds, as long as she says which space she is in.
 
 </details>
 
@@ -177,7 +176,7 @@ as the list of bands.
 
 **7. Fix.** A weather app gives a wind warning. It should say "orange" for
 wind over 80 km/h, and "yellow" for wind over 50 km/h. (The limits here
-are made up.) For 90 km/h it says "yellow". Find the mistake, and fix it.
+are made up.) For 90 km/h it says "yellow". Find why, and change it.
 
 ```python exec
 id: mixed-decisions-fix-wind
@@ -272,7 +271,7 @@ same in both. `same_rule` checks all eight rows and finds no difference.
 
 **10. Fix.** A game controller sends each button press as a row of bits,
 with a parity bit at the end. The console checks each row. This check
-rejects every good row and accepts the bad ones. Find the mistake.
+rejects every good row and accepts the bad ones. Find why.
 
 ```python exec
 id: mixed-decisions-fix-controller
@@ -398,22 +397,25 @@ id: mixed-decisions-scratch-3
 # Try things here
 ```
 
-**14. Make.** This unit's product is a quiz that marks answers and says
-why. Write `mark_binary(number, answer)`. It takes a whole number and a
-reader's answer, as a string of bits, and gives back a message:
+**14. Make.** This unit's product is a quiz that compares an answer with
+`to_binary` and says how the two differ, without marking anyone. Write
+`compare_binary(number, answer)`. It takes a whole number and a reader's
+answer, as a string of bits, and gives back a message:
 
-- "Right." when the answer is `to_binary(number)`
-- "Right number, but leave out the zeros at the front." when the answer is
-  the right bits with zeros in front to make eight digits
+- "The same bits as to_binary." when the answer is `to_binary(number)`
+- "The same number, with zeros in front; to_binary leaves them out." when
+  the answer is those bits with zeros in front to make eight digits
+- when the answer has a different length, a message saying how many bits
+  `to_binary` gives
 - otherwise, a message that uses `parity_bit` to say whether an odd or an
-  even number of bits are wrong, when the answer has the right length
+  even number of bits differ
 
 Try it on 13, with the answers `"1101"`, `"00001101"`, `"1100"` and
 `"1011"`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Work out `right = to_binary(number)` first.
+1. Work out `bits = to_binary(number)` first.
 2. Use `if`, `elif` and `else`, from the most exact match to the least.
 3. When two rows of bits of the same length differ in one bit, their
    parity bits differ. When they differ in two bits, their parity bits are
@@ -422,37 +424,37 @@ Try it on 13, with the answers `"1101"`, `"00001101"`, `"1100"` and
 **Think about:** why does the check for the right length have to come
 before the parity message?
 
-**Try this next:** add a branch for an answer that has the wrong number
-of bits.
+**Try this next:** say which columns differ, not only how many.
 
 </details>
 
-<details class="dl-answer"><summary>answer</summary>
+<details class="dl-answer"><summary>one way through</summary>
 
 ```python
-def mark_binary(number, answer):
-    """Mark a reader's binary for number, and say why."""
-    right = to_binary(number)
-    if answer == right:
-        return "Right."
+def compare_binary(number, answer):
+    """Say how a reader's binary for number differs from to_binary's."""
+    bits = to_binary(number)
+    if answer == bits:
+        return "The same bits as to_binary."
     elif answer == format(number, "08b"):
-        return "Right number, but leave out the zeros at the front."
-    elif len(answer) != len(right):
-        return "Not yet: " + right + " has " + str(len(right)) + " bits."
-    elif parity_bit(answer) != parity_bit(right):
-        return "Not yet: an odd number of bits are wrong. Check each column."
+        return "The same number, with zeros in front; to_binary leaves them out."
+    elif len(answer) != len(bits):
+        return "A different length: to_binary gives " + str(len(bits)) + " bits, " + bits + "."
+    elif parity_bit(answer) != parity_bit(bits):
+        return "The same length; an odd number of bits differ. Compare each column."
     else:
-        return "Not yet: an even number of bits are wrong. Check each column."
+        return "The same length; an even number of bits differ. Compare each column."
 
-print(mark_binary(13, "1101"))
-print(mark_binary(13, "00001101"))
-print(mark_binary(13, "1100"))
-print(mark_binary(13, "1011"))
+print(compare_binary(13, "1101"))
+print(compare_binary(13, "00001101"))
+print(compare_binary(13, "1100"))
+print(compare_binary(13, "1011"))
 ```
 
-The four lines print "Right.", then the message about zeros, then "an odd
-number" (one bit is wrong in `1100`), then "an even number" (two bits are
-wrong in `1011`).
+The four lines print "The same bits as to_binary.", then the message about
+zeros, then "an odd number" (one bit differs in `1100`), then "an even
+number" (two bits differ in `1011`). Yours may word the messages another
+way and work as well.
 
 The order of the checks matters. The length check comes before the parity
 checks, because the parity trick only makes sense for rows of the same
@@ -488,8 +490,8 @@ knows the answer. In the first line, `count != 0` is `False`, and
 the second line, the division comes first, and dividing by zero is not
 allowed.
 
-As rules on True and False, the two orders are the same: `same_rule` was
-right, and so was Schlomo, in that space. But a program is more than a
+As rules on True and False, the two orders are the same: what `same_rule`
+showed holds, and so does Schlomo's idea, in that space. But a program is more than a
 rule. What happens when is part of
 it, and the left part of an `and` can protect the right part.
 

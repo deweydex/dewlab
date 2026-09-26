@@ -29,7 +29,8 @@ You stand 8 metres from a door. You walk half the way there, and stop.
 Then you walk half of what is left, and stop again, and again. Do you
 ever reach the door? Your legs say yes. The arithmetic says every walk
 leaves half of the gap still to go. If that argument makes your head
-hurt a little, good: people have argued about it for about 2,500 years.
+hurt a little, read on: people have argued about it for about 2,500
+years, and this page gives it an answer.
 This page is about the number your steps are heading for, and it is
 the idea that the rest of this unit is built on.
 
@@ -386,7 +387,7 @@ for times in [10 ** 12, 10 ** 15, 10 ** 16]:
 
 The values get worse, not better: 2.71852, then 3.035, then 1.0. I
 think this is the strangest result on the page: more payments, and
-the euro shrinks back to 1. The maths is not wrong. The floats are. On
+the euro shrinks back to 1. The maths still holds. The floats do not. On
 [How a computer stores a number](tutorial:how-a-computer-stores-a-number#reading-e-16),
 the gap between two neighbouring floats near 1 was about
 $2.2 \times 10^{-16}$. So $1 + 10^{-16}$ has no float of its own:

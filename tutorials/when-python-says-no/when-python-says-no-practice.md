@@ -12,8 +12,8 @@ tutorial page. Each problem says what kind it is: **Predict**, **Make**,
 **Fix**, **Explain** or **Another way**. Before you open an answer, try
 the routine: read the last line, find the line it names, ask which of
 the four questions it is about, change one thing, and run again. If red
-text still worries you a little, that is normal. The worry fades with
-practice, and this page is that practice.
+text still worries you a little, come back to that routine: this page
+is a place to practise it.
 
 ## Warm-up
 
@@ -117,7 +117,7 @@ print("Goals this season:", goals)
 Both lines print `Goals this season: 14`. The first turns the number
 into a string, so `+` joins two strings. The second gives `print` two
 things, separated by a comma, and `print` puts a space between them.
-Neither is more correct: they are two routes out of the same problem.
+They are two routes out of the same problem.
 
 </details>
 
@@ -154,9 +154,9 @@ There is no "Traceback" line at the top, because nothing ran.
 **6. Explain.** A GPS logger records how far you went, in metres, and
 how long it took, in seconds, and reports your speed. Run the cell. The
 first report works and the second does not. Schlomo, who is learning
-Python too, says line 2 must be the mistake, because that is where
-Python stopped. Is he right? Which line failed, and which line is
-responsible? Answer in the comments at the end.
+Python too, says line 2 must be the problem, because that is where
+Python stopped. Where does his idea work, and where does it stop
+working? Which line failed, and which line is responsible? Answer in the comments at the end.
 
 ```python exec
 id: when-python-practice-speed
@@ -193,17 +193,17 @@ Traceback (most recent call last):
 ZeroDivisionError: division by zero
 ```
 
-Schlomo is half right. Line 2, inside `speed`, is the line that
-failed: the division happens there. But the line responsible is line
-10, `report(300, 0)`, which asked for a speed over 0 seconds. Line 2 is
-fine: it worked for `report(300, 60)`. His idea is a sensible first
-guess, and the traceback is the trail that takes us from line 2 back
+Schlomo's idea works for half of the question. Line 2, inside `speed`,
+is the line that failed: the division happens there. But the line
+responsible is line 10, `report(300, 0)`, which asked for a speed over
+0 seconds. Line 2 did its job for `report(300, 60)`. His idea is where
+most people start, and the traceback is the trail that takes us from line 2 back
 to line 10.
 
 </details>
 
 **7. Fix.** This cell should print the average rainfall over three
-days. It has one mistake. Fix it.
+days. It stops with an error instead. Find why, and change it.
 
 ```python exec
 id: when-python-practice-rain
@@ -253,7 +253,7 @@ score = 250
 
 <details class="dl-answer"><summary>answer</summary>
 
-There are many good answers. Here is one set:
+There are many answers. Here is one way through:
 
 ```python
 score = 250
@@ -464,7 +464,7 @@ Python reports the `SyntaxError` on line 4 first, because it reads the
 whole cell before running any of it. Once the bracket is closed, the
 `ZeroDivisionError` on line 3 comes next, because line 3 runs before
 line 4. Once `width` is not zero, the `NameError` for `pixls` on line 4
-comes last. This is one good cell; yours will be different, and the
+comes last. This is one way through; yours will be different, and the
 order of its reports should follow the same rule. A mistake Python finds while reading always comes first.
 After that, running mistakes come in the order of the lines.
 
@@ -479,20 +479,20 @@ reason, and say what your choice costs.
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no one right answer. A good answer weighs a few things.
+Here is one way through. It weighs a few things.
 
 - **In the first week.** Errors arrive on the first day anyway, and a
   reader who expects to fail may read red text as a mark against them.
   Reading it early changes that. The cost: with little code written,
   most of the examples have to be made up.
-- **After a few weeks.** By then a reader has made real mistakes of their
+- **After a few weeks.** By then a reader has met real errors of their
   own, and the page can use them. The cost: those first weeks of red
   text go unexplained.
 - **Nowhere, one error at a time.** Each error is met in a real place,
   when it matters. The cost: the routine that works for every error,
   last line first, may never be said out loud.
 
-A strong answer says who the course is for, because that changes which
-cost matters most.
+Whichever you choose, say who the course is for, because that changes
+which cost matters most.
 
 </details>

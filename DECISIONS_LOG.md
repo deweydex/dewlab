@@ -4923,3 +4923,13 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **Nebula by channel and by title.** Twenty channels appear in Nebula's public channel list; for six of them, videos were matched to YouTube titles one to one, which gave 90 Nebula links among the picks.
 
 *Cost to change: low. Plain data with no reader in `build.py` or the tests; a row can be added or removed by hand. If a page ever embeds or lists videos, it should read `picks.csv` rather than copy from it.*
+
+---
+
+**7.244 — The Dewey Track: exoplanet data kept with its acknowledgment; length is not a limit; the judging-words sweep.** Josh, 26 September 2026: "I believe acknowledgement is enough if it is public data since we are using it for educational purposes... sure lets sweep for judging words and no we don't need to trim, so long as its good, i think the length is less of an issue".
+
+- **`data/exoplanets.csv`** stays. The NASA Exoplanet Archive states no licence and asks for an acknowledgment, which `data/exoplanets.yaml` carries; the site uses the data for teaching.
+- **Length.** The 1,800–2,600-word range the unit rewrites were briefed to is dropped. A page is as long as it needs to be to read well. Several Dewey Track tutorials run to 3,000–3,600 words and stay that way.
+- **The sweep.** Every Dewey Track page is swept for *right*, *wrong*, *correct*, *good*, *bad* and *mistake* about the reader's work, and for feelings named without a route (7.229), to match the style guide's no-verdicts principle. Geometry (*right angle*), quoted UI labels and error text are left alone.
+
+*Cost to change: none for the data and length; the sweep is page prose.*

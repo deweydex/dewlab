@@ -9,15 +9,16 @@ version: 2026.09.25.1
 
 Each problem says what kind it is. **Predict** asks you to guess what a
 cell will show, then run it. **Make** asks you to write something small.
-**Fix** gives you a cell with one mistake in it. **Explain** asks for an
+**Fix** asks you to find why code that looks fine does something else,
+and change it. **Explain** asks for an
 answer in words. **Another way** asks you to reach an answer by a second
 route, or to find the space where a "wrong" answer is right.
 
-Many of these have more than one good answer. The answer folds show one
-of them, with the thinking behind it. If yours is different, it may be
-right too, and it may be more interesting: check it against the four
-questions. Try each one before you open its fold. A guess that turns
-out wrong is not wasted; it shows you exactly where to look.
+Many of these can be answered in more than one way. The answer folds
+show one way through, with the thinking behind it. If yours is
+different, it may be more interesting: check it against the four
+questions. Try each one before you open its fold. A guess that misses
+is not wasted; it shows you exactly where to look.
 
 ## Warm-up
 
@@ -124,7 +125,7 @@ too: multiplying in either order gives the same answer.
 
 **5. Fix.** Schlomo, who is learning Python too, wants the space taken
 by 3 videos of 250 MB each. He writes this cell, and it stops with an
-error. Run it, then find and fix his mistake.
+error. Run it, then find the line that stops it, and change it.
 
 ```python exec
 id: four-q-practice-fix-1
@@ -157,8 +158,8 @@ It shows `750`: 750 MB. In Python, multiply is `*`, not `x`. To Python,
 by side, with nothing to say what to do with them. So Python cannot
 read the line.
 
-Schlomo's mistake is a very common one, and a sensible one: on paper,
-`x` is how most of us write multiply. It is a move from a different
+Schlomo's `x` is very common, and sensible: on paper, `x` is how most
+of us write multiply. It is a move from a different
 space.
 
 </details>
@@ -227,11 +228,11 @@ And E must come first, because a locked phone does nothing else.
 
 **8. Another way.** Two videos last 45 minutes and 30 minutes. Schlomi,
 who is also learning Python, says together they make `1:15`. Schlomo
-says they make `75`. Who is right?
+says they make `75`. How can they give two different answers?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Both of them. They are answering in two different spaces.
+They are answering in two different spaces.
 
 In ordinary numbers, 45 + 30 = 75, so there are 75 minutes. In hours and
 minutes, every 60 minutes becomes one hour, so 75 minutes is 1 hour and
@@ -339,6 +340,8 @@ id: four-q-practice-another-1
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 print(7 + 7 + 7 + 7)
 ```
@@ -364,12 +367,12 @@ The number 30 is the same in both. What it means depends on the space.
 
 </details>
 
-**15. Another way.** Your friend is sure this is a mistake:
+**15. Another way.** Your friend is sure this cannot be true:
 
 $$11 + 3 = 2$$
 
-Find a space where it is right. Then find a second, different space
-where $5 + 3 = 1$ is right.
+Find a space where it is true. Then find a second, different space
+where $5 + 3 = 1$ is true.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -382,7 +385,7 @@ where $5 + 3 = 1$ is right.
 
 **Think about:** what do all these spaces have in common?
 
-**Try this next:** in which space is $10 + 5 = 3$ right?
+**Try this next:** in which space is $10 + 5 = 3$ true?
 
 </details>
 
@@ -396,7 +399,7 @@ to Sunday as day 7. Three days after Friday (day 5) is Monday (day 1).
 
 Both spaces go round in a circle and start again. On a clock the circle
 has 12 steps, and in a week it has 7. For the "try this next": 5 months
-after October (month 10) is March (month 3), so $10 + 5 = 3$ is right
+after October (month 10) is March (month 3), so $10 + 5 = 3$ is true
 when we count months.
 
 </details>
@@ -431,12 +434,12 @@ them.
 and came to Python last. Picture a friend who has never written any code,
 and who asks you to teach them. Would you start with a game, or with a line
 of Python? Give one reason for your choice, and one thing the other way
-would do better. There is no single right answer. The "Why this way?" box
+would do better. There are many answers to this. The "Why this way?" box
 on the tutorial page says what this course chose, and why.
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no one right answer. A good answer weighs a few things.
+Here is one way through. It weighs a few things.
 
 - **Who your friend is.** Someone who came to learn programming may want
   to see the computer do something in the first minute. Someone who is
@@ -449,7 +452,7 @@ There is no one right answer. A good answer weighs a few things.
   first can make the four questions look like computer words, when they
   are questions for any situation.
 
-A strong answer names the person it is for, and says what the other way
-would have done better. Either choice can work.
+Whichever you choose, name the person it is for, and say what the other
+way would have done better. Either choice can work.
 
 </details>

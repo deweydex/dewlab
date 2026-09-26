@@ -84,7 +84,7 @@ stricter house rule asks for two sixes at once, on two dice. How likely
 is that?
 
 Three guesses people often make are $\frac{1}{6}$, $\frac{2}{6}$ and
-$\frac{1}{12}$. Which is right, or is it none of them?
+$\frac{1}{12}$. Which one matches, or does none of them?
 
 We do not have to argue about it. On
 [Counting every outfit](tutorial:counting-every-outfit) we listed every
@@ -105,7 +105,7 @@ print("two sixes:", both_six)
 ```
 
 There are 36 outcomes, all equally likely, and only one is two sixes.
-So the chance is $\frac{1}{36}$. None of the three guesses was right.
+So the chance is $\frac{1}{36}$. None of the three guesses matches.
 
 Draw the 36 outcomes as a grid, with a row for each roll of the first
 die and a column for the second. A six on the first die is one row out
@@ -276,8 +276,8 @@ A board game gives you a bonus when you roll an even number or a number
 more than 4. What is the chance of a bonus?
 
 Three of the six faces are even, and two are more than 4. The addition
-rule would say $\frac{3}{6} + \frac{2}{6} = \frac{5}{6}$. Does that feel
-right? Let's count. How many faces do you expect to give a bonus?
+rule would say $\frac{3}{6} + \frac{2}{6} = \frac{5}{6}$. Does that seem
+likely? Let's count. How many faces do you expect to give a bonus?
 
 ```python exec
 id: chances-both-1
@@ -321,7 +321,7 @@ story is told about the Chevalier de Méré, a French gambler of the
 of a die, and reasoned like this: one roll gives a six with chance
 $\frac{1}{6}$, so four rolls give $4 \times \frac{1}{6} = \frac{2}{3}$.
 
-Is he right? Here is a warning sign: with seven rolls, his reasoning
+Does his reasoning hold? Here is a warning sign: with seven rolls, his reasoning
 gives $\frac{7}{6}$, and no chance can be more than 1. Two rolls can
 both be sixes, so adding is the wrong move.
 
@@ -504,7 +504,7 @@ print("two share a day:   ", 1 - all_different)
 ```
 
 The exact answer is about 0.507, a little more than a half. The
-simulation was right.
+simulation was close.
 
 ### Way three: think about pairs
 
@@ -600,11 +600,11 @@ tells more of this story.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
-Most pages in this course open with a question people tend to get
-right, because a first success matters, most of all to someone who
-expects to fail. This one opened with a question most people get far
+Most pages in this course open with a question where people's guesses
+tend to land, because a first success matters, most of all to someone who
+expects to fail. This one opened with a question most people guess far
 too low. The way chances combine is hard to believe until your own guess
-has been wrong, and a wrong guess shows which way your sense of chance
+has missed, and a missed guess shows which way your sense of chance
 leans. Your guess was never marked.
 
 </details>

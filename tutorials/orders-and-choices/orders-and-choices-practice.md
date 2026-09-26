@@ -8,12 +8,13 @@ version: 2026.09.25.1
 # Orders and choices: factorials, permutations and combinations — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
-folded away until you open them, and each shows one good way: yours may
-be different, and as good. The last few problems are meant to be
-hard. If one feels like hard work, that is the right feeling.
+folded away until you open them, and each shows one way through: yours
+may be different, and work as well. The last few problems are meant to
+be hard. If one feels like hard work, open its hint if it has one, or
+come back to it after the others.
 
 Your toolkit is loaded on this page: `factorial`, `permutations` and
 `combinations` from the tutorial, and `total`, `product` and `all_pairs`
@@ -111,8 +112,7 @@ $C(11, 4) = \frac{11!}{4!\,7!} = 330$.
 
 **6. Fix.** Schlomi, who is learning Python too, writes her own
 combinations function. It should say there are 6 ways to fit 2 sensors
-from 4. Run it and see what it says instead. Then find the one
-mistake.
+from 4. Run it and see what it says instead. Then find why.
 
 ```python exec
 id: orders-practice-fix-brackets
@@ -151,8 +151,8 @@ def my_combinations(n, r):
 print(my_combinations(4, 2))
 ```
 
-Now it prints `6`. Schlomi had the formula right; the line said
-something else. This is the order of operations from
+Now it prints `6`. Schlomi's formula was the one she needed; the line
+said something else. This is the order of operations from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#which-comes-first),
 in a new place.
 
@@ -204,8 +204,8 @@ all, so it does less work than the factorial formula.
 **9. Explain.** Schlomo, who is learning Python too, has a bike lock
 with 4 wheels, each with the digits 0 to 9. He calls it a "combination
 lock", so he works out `combinations(10, 4)` and gets 210 settings. Is
-the number of settings a combination, in the sense of this page? What
-is the right count?
+the number of settings a combination, in the sense of this page? How
+many settings are there?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -223,7 +223,7 @@ everyday name is fine for a shop, but it is not the maths name.
 
 **10. Fix.** A flag has three stripes, each a different colour, from
 green, white and orange. This loop should count the different flags. It
-counts 12. Run it, then find the mistake.
+counts 12. Run it, then find why.
 
 ```python exec
 id: orders-practice-fix-flags
@@ -258,7 +258,7 @@ differ:
 if left != middle and middle != right and left != right:
 ```
 
-Now it counts 6, which is $3!$. The mistake is a realistic one: with
+Now it counts 6, which is $3!$. This gap is a common one: with
 more loops, the number of pairs to check grows quickly, and anyone can
 miss one. That is one reason to reach for a formula, or
 for `itertools`.

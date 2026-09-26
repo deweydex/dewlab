@@ -154,7 +154,7 @@ That is one formula written three ways:
 | How far? | $d$ | $d = s \times t$ |
 | How long? | $t$ | $t = \frac{d}{s}$ |
 
-How do we know we rearranged correctly? We can put the answers back into
+How do we know the rearranged formulas still hold? We can put the answers back into
 the first formula and see if it still holds. Before you run the cell,
 which lines do you expect to print `True`?
 
@@ -171,7 +171,7 @@ print(225_000_000 / mars_wait == 299792)
 Both checks print `True`. (The `_` in `225_000_000` is only there to
 make the number easier to read. Python ignores it.) Putting an answer back into the formula it
 came from is called *substituting* it back, and it is the best habit on
-this page. It turns "I think I rearranged it right" into "I checked".
+this page. It turns "I think the new formula holds" into "I checked".
 
 ### Your turn
 
@@ -282,7 +282,7 @@ give now?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one good way. In `travel_time`, the `...` becomes
+Here is one way through. In `travel_time`, the `...` becomes
 `return distance / speed`. In `distance_travelled`, it becomes
 `return speed * time`. If you have not written them yet, put these in
 the stub now, so that later cells on this page can use them.
@@ -346,7 +346,8 @@ print(fahrenheit * 5 / 9 - 32)
 
 The first line gives −60.0. The second gives about −74.2. Look at how
 believable that is: it is a cold Mars number too, and nothing about it
-looks wrong. The steps were right, and the order was wrong. Undoing is
+looks out of place. Both lines have the same two steps; only the order
+differs. Undoing is
 sequence, run in reverse.
 
 ```question
@@ -426,7 +427,7 @@ print(fahrenheit_to_celsius(celsius_to_fahrenheit(1)))
 
 <details class="dl-answer"><summary>answer</summary>
 
-One good way: in `fahrenheit_to_celsius`, the `...` becomes
+One way through: in `fahrenheit_to_celsius`, the `...` becomes
 `return (fahrenheit - 32) * 5 / 9`. The brackets make the subtraction
 happen first.
 
@@ -435,8 +436,8 @@ happen first.
 Body temperature, 37 °C, comes back as `37.0`. And −40 comes back as
 −40: it is the one temperature where both scales agree.
 
-But 1 °C comes back as `0.9999999999999984`. The two functions are
-right. As on
+But 1 °C comes back as `0.9999999999999984`. Nothing is broken in
+the two functions. As on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
 a float is very close to the true value, and each step of the trip adds
 a tiny error. So for a float, "we arrive where we started" means "we
@@ -465,7 +466,7 @@ print("fahrenheit_to_celsius undoes celsius_to_fahrenheit.")
 ```
 
 The loop checks eight temperatures in one go, from a lab freezer to
-boiling water. A test like this does not need anyone to know the right answers.
+boiling water. A test like this does not need anyone to know the answers in advance.
 It only needs the promise: going there and back changes nothing.
 
 ### Your turn
@@ -641,8 +642,8 @@ for depth in [100, 3000]:
     print(depth, speed(2 * depth, whole_time))
 ```
 
-Both lines give 2.4. Yours may be written another way and be as
-good.
+Both lines give 2.4. This is one way through. Yours may be written
+another way and give the same numbers.
 
 </details>
 
@@ -653,8 +654,8 @@ both sides. Many people learned a shorter rule at school: "change sides,
 change signs". A number moves across the equals sign, and a plus becomes
 a minus, a times becomes a divide.
 
-The short rule is fast, and it gives the right answer when it is used
-with care. Many people who are good at algebra use it every day.
+The short rule is fast, and it works when it is used with care. Many
+people who do a lot of algebra use it every day.
 
 We used the balance because the short rule hides why it works, and a
 rule you cannot explain is hard to repair. "The same

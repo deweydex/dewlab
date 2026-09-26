@@ -8,8 +8,8 @@ version: 2026.09.25.1
 # The top of the curve: maximum and minimum — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -93,7 +93,7 @@ number. How could she know?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One good answer: complete the square. $x^2 - 2x + 5 = (x - 1)^2 + 4$. A real square is
+One way through: complete the square. $x^2 - 2x + 5 = (x - 1)^2 + 4$. A real square is
 never negative, so $(x - 1)^2$ is 0 or more, and the whole rule is 4 or
 more. It can never come down to 0. The discriminant from
 [Solving for x](tutorial:solving-for-x#how-many-answers-the-discriminant)
@@ -155,7 +155,7 @@ game needs whole blocks, and here the best width is whole already.
 
 **6. Fix.** Schlomo, who is also learning Python, wrote his own
 `vertex`. The first test passes and the second fails. Run it, find the
-mistake, and fix it.
+line that does not do what Schlomo meant, and change it.
 
 ```python exec
 id: the-top-practice-fix
@@ -195,8 +195,8 @@ x = -b / (2 * a)
 
 Schlomo's $x$ for the bowl was 88,000, far off the letter. The first
 test passed by luck: its $a$ is 1, and multiplying by 1 and dividing by
-1 give the same answer. A test with $a = 1$ cannot catch this mistake,
-which is a good reason to test with other values too.
+1 give the same answer. A test with $a = 1$ cannot tell the two lines
+apart, which is a reason to test with other values too.
 
 </details>
 
@@ -221,10 +221,10 @@ print(vertex(-4.9, 14, 1))
 The search prints frame `14`, at a height of about 10.996 m, and
 `vertex` prints about `(1.4286, 11.0)`.
 
-They disagree a little, and both are right. The true top is at 1.4286
+They differ a little, and each gives what it measures. The true top is at 1.4286
 seconds, between frame 14 and frame 15, and the game never draws that
 moment. So the highest ball a player sees is 4 mm lower than the real
-top. For a game, that is fine. For a program that must know the true
+top. For a game, that is close enough. For a program that must know the true
 top, such as one that checks whether the ball clears a bar, the
 formula is the one to trust.
 
@@ -304,7 +304,8 @@ and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no one right answer. A good answer weighs things like these:
+This question has more than one answer. Here is one way through, which
+weighs things like these:
 
 - The table and the graph show *why* there is a lowest point, and why
   0.5 and 0.6 tie. A reader who forgets the formula can still find the
@@ -312,7 +313,7 @@ There is no one right answer. A good answer weighs things like these:
 - The table can miss the answer, as it did between 0.5 and 0.6. That
   miss is a reason to want a formula, and it is felt more strongly
   when the reader has seen it happen.
-- Formula first is shorter, and it gets a reader to correct answers
+- Formula first is shorter, and it gets a reader to an answer
   quickly, which some readers find encouraging.
 - Formula first can leave a reader who gets a strange answer, such as a
   vertex outside the domain, with no picture to check it against.
@@ -325,18 +326,18 @@ check? Your answer may weigh things this list leaves out.
 **12. Explain.** Schlomo has an idea for the letter's bowl on the
 tutorial page. "The control point is at $(260, -108)$, and it is the
 lowest of the three points. So the bowl's lowest point is 108 units
-below the baseline, at $x = 260$. No formula needed." Is he right? What
-is good about his idea?
+below the baseline, at $x = 260$. No formula needed." Where does
+Schlomo's idea work, and where does it stop working?
 
 <details class="dl-answer"><summary>answer</summary>
 
-He is not right, but his idea has a good part. The curve never reaches
+The bowl does not go down to $-108$, but part of his idea works. The curve never reaches
 its control point: the control point only pulls it. The bowl's lowest
 point is only 9 units below the baseline, at $t = 0.55$, where $x$ is
 about 288. You can see it in the tutorial's picture: the dotted lines
 go down to $-108$, and the curve stays far above them.
 
-The good part: the curve always stays inside the triangle its three
+The part that works: the curve always stays inside the triangle its three
 points make. So the control point is a limit on how low the bowl can
 go. Schlomo found a floor, $-108$, that the curve cannot go below. He
 did not find the bottom itself. Here is one way to check:
@@ -378,7 +379,7 @@ for t in [0, 0.25, 0.5, 1]:
 print(vertex(240, -220, 40))
 ```
 
-The two columns agree, so the multiplying-out is right. The vertex is
+The two columns agree, so the multiplied-out rule is the same rule. The vertex is
 at $t \approx 0.458$, and the "s" dips about 10.4 units below the
 baseline: a little more than the bowl's 9. The vertex is inside 0 to 1,
 so it is on the letter.
