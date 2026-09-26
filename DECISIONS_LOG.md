@@ -5275,3 +5275,9 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **7.265 — The Dewey Track's letter is signed "dewlab".** Josh, 26 September 2026, closing #351: "dewlab should sign it not me". 7.228 left the letter unsigned until he had read it. The letter's "I" is now the site's voice, not a person's, which also keeps the style guide's rule that a page never invents the writer's history.
 
 *Cost to change: one line at the end of `how-this-course-is-built`.*
+
+---
+
+**7.266 — Programming and Design Principles is the first card on the front page, through a `cards:` list rather than `order:`.** Josh, 26 September 2026: "move the Programming Design Principles card to the top of the list." 7.171 put it last. `courses/index.yaml`'s `order:` sets the tiles, but it also sets each shared page's default course (7.172's "first in `courses/index.yaml` that lists it"), and every one of this course's pages is shared with the integrated maths course. Moving it to the top of `order:` would have given those pages this course's tree, previous/next and reference-panel accumulation by default, which drops the maths pages from the integrated course's "earlier in the series". So the index gains an optional `cards:` list: the courses it names come first on the front page, the rest follow `order:`, and nothing else reads it (`course_card_order()`). The contents page keeps `order:`.
+
+*Cost to change: delete the `cards:` lines and the tiles follow `order:` again.*
