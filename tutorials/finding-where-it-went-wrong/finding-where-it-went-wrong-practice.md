@@ -1,157 +1,352 @@
 ---
-title: "Debugging a wrong answer: from symptom to cause — Practice"
+title: "Debugging: from a report to the line that caused it — Practice"
 practice_for: finding-where-it-went-wrong
 year: "2026-2027"
-version: 2026.09.05.1
+version: 2026.09.26.1
 ---
 
-# Debugging a wrong answer: from symptom to cause — Practice
+# Debugging: from a report to the line that caused it — Practice
 
-The answers are hidden in folds under each problem. Several problems ask
-you to predict what the code will do before you run it. Try to answer
-before you check. A wrong guess teaches you more than a lucky right one,
-once you see why it was wrong.
+This page has four more reports, two questions to think about, and one
+problem you have not met before. Three of the bugs use ideas from earlier pages, and each
+one says which page. Try each problem before you open anything under it.
 
-```python exec
-id: setup-1
-def parse_readings(raw_lines):
-    return [float(line) for line in raw_lines]
+Keep a log for every bug, as on the tutorial page: a guess, a test, and
+what happened.
 
-def fahrenheit_to_celsius_buggy(f):
-    return (f - 32) * 5 / 8
+## 1. One pixel, a whole column
 
-def fahrenheit_to_celsius(f):
-    return (f - 32) * 5 / 9
+From *Comprehensions, grids and aliasing*.
 
-def average(values):
-    return sum(values) / len(values)
-```
-
-## Choosing a test that catches it
-
-**1.** `98.6°F` is normal human body temperature. It should convert to
-`37.0°C`.
-
-1. Using the tutorial's buggy converter, predict
-   `fahrenheit_to_celsius_buggy(98.6)` before you run it.
-2. Does this everyday-looking reading catch the bug?
+> "I made a grid of dark pixels, three by three, and lit the pixel at row
+> 0, column 1. A whole column lit up."
 
 ```python exec
-id: choosing-a-test-that-catches-it-1
+id: one-pixel-a-whole-column-1
+# Guess:
+# Test:
+# What happened:
+
+grid = [[0] * 3] * 3
+grid[0][1] = 1
+
+for row in grid:
+    print(row)
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```hint
+How many different lists are inside `grid`? Can you change `grid[2][2]`
+and print the grid again?
+```
 
-It gives `41.625`, not `37.0`. So yes, it catches the bug. The answer is
-far enough from `37.0` that it does not even look reasonable. The tutorial's daily
-readings happened to look reasonable, even though they were wrong. This
-one does not.
+```inputs
+grid
+```
+
+```solution
+grid = [[0] * 3 for row in range(3)]
+grid[0][1] = 1
+
+for row in grid:
+    print(row)
+---
+`[[0] * 3] * 3` makes one row, and puts the same row in the grid three
+times. There is only one row to change, so every row shows the change. A
+comprehension runs `[0] * 3` once for each row, so it makes three
+different rows.
+```
+
+## 2. Every period counts once
+
+From *Dictionaries: looking things up by name*.
+
+> "I counted the fossils in the museum by the period they come from. There
+> are three Cretaceous fossils, and the program shows only
+> `{'Cretaceous': 1}`. The other periods are missing."
+
+```python exec
+id: every-period-counts-once-1
+# Guess:
+# Test:
+# What happened:
+
+fossils = ["Jurassic", "Cretaceous", "Jurassic", "Triassic",
+           "Cretaceous", "Cretaceous"]
+
+def count_periods(periods):
+    for period in periods:
+        counts = {}
+        counts[period] = counts.get(period, 0) + 1
+    return counts
+
+print(count_periods(fossils))
+```
+
+```hint
+Can you print `counts` inside the loop, after each fossil? What happens to
+it each time round?
+```
+
+```inputs
+count_periods(fossils)
+count_periods(["Triassic"])     # one fossil
+count_periods([])               # no fossils
+```
+
+```solution
+def count_periods(periods):
+    counts = {}
+    for period in periods:
+        counts[period] = counts.get(period, 0) + 1
+    return counts
+
+print(count_periods(fossils))
+---
+`counts = {}` was inside the loop, so a new, empty dictionary was made for
+every fossil. Only the last fossil was left in it. Made once, before the
+loop, the dictionary keeps every count.
+
+The empty list shows one more difference. With `counts = {}` inside the
+loop, the line never runs, and `return counts` stops with an error.
+```
+
+## 3. Heads every time
+
+From *Random numbers: pseudo-random numbers and seeds*.
+
+> "My coin lands heads every single time. I flipped it ten times."
+
+```python exec
+id: heads-every-time-1
+# Guess:
+# Test:
+# What happened:
+
+import random
+
+flips = []
+for flip in range(10):
+    random.seed(42)
+    flips.append(random.choice(["heads", "tails"]))
+
+print(flips)
+```
+
+```predict
+type: choice
+
+Before you run it: what will the ten flips be?
+
+- A mix of heads and tails, different on every run
+  - `random.choice` picks at random each time.
+- A mix of heads and tails, the same on every run
+  - The seed makes the whole list repeat.
+- Ten of the same
+  - Where the seed is set may matter.
+```
+
+```hint
+What does `random.seed(42)` do to the numbers that come after it? How many
+times does it run here?
+```
+
+```inputs
+len(flips)
+flips.count("heads")
+```
+
+```solution
+import random
+
+random.seed(42)
+flips = []
+for flip in range(10):
+    flips.append(random.choice(["heads", "tails"]))
+
+print(flips)
+---
+A seed sets where the random numbers start. Set inside the loop, it returns
+to the same start before every flip, so every flip is the first flip.
+Set once, before the loop, it lets the flips continue from that start.
+With seed 42, the ten flips have eight heads and two tails.
+```
+
+## 4. A cipher that crashes
+
+> "My Caesar cipher works on `hello`. On a longer sentence, it stops with
+> `IndexError: string index out of range`. The error does not say which
+> letter."
+
+The cipher moves each letter a number of places along the alphabet.
+
+```python exec
+id: a-cipher-that-crashes-1
+alphabet = "abcdefghijklmnopqrstuvwxyz"
+
+def shift(text, steps):
+    coded = ""
+    for letter in text:
+        if letter in alphabet:
+            position = alphabet.index(letter)
+            coded = coded + alphabet[position + steps]
+        else:
+            coded = coded + letter
+    return coded
+
+print(shift("hello", 3))
+print(shift("the quick brown fox jumps over the lazy dog", 3))
+```
+
+Can you find the smallest text that still crashes? Then fix `shift`.
+
+```python exec
+id: a-cipher-that-crashes-2
+# Guess:
+# Test:
+# What happened:
+
+print(shift("the quick brown fox", 3))
+```
+
+```hint
+Cut the sentence in half. Which half still crashes? Then cut that half in
+half, until one letter is left.
+```
+
+```inputs
+shift("hello", 3)
+shift("xyz", 3)
+shift("the quick brown fox jumps over the lazy dog", 3)
+shift("abc", 26)     # all the way round
+```
+
+```solution
+def shift(text, steps):
+    coded = ""
+    for letter in text:
+        if letter in alphabet:
+            position = alphabet.index(letter)
+            coded = coded + alphabet[(position + steps) % 26]
+        else:
+            coded = coded + letter
+    return coded
+---
+The smallest text that crashes is one letter: `x`, `y` or `z`. The
+position of `x` is 23, and 23 + 3 is 26, past the last index, 25. `% 26`
+takes the remainder after dividing by 26, so 26 becomes 0, the index of
+`a`. The alphabet goes round in a circle.
+```
+
+## 5. Symptom or cause?
+
+**a.** A web page shows a total that is always 3 too high. Somebody adds
+`- 3` to the line that prints the total. Is that a fix for the symptom, or
+for the cause? What could go wrong next month?
+
+<details class="dl-answer"><summary>one way through it</summary>
+
+It is a fix for the symptom. The total now looks right, and the cause, the
+line that adds 3 too many, is still there. For example, somebody adds a new
+item, and the extra 3 becomes 4. Then the `- 3` makes the total wrong
+again, and it hides where the real mistake is.
 
 </details>
 
-**2.** Freezing point on its own did not catch the bug. When we take away
-32, the value is `0`, and `0` divided by anything is still `0`.
+**b.** In the tutorial, the dungeon game crashed only sometimes. Why did a
+seed help, before we fixed anything?
 
-`-40°F` is exactly `-40°C`. It is the one temperature where Fahrenheit and
-Celsius agree. Before you run it, predict: does this one reading catch the
-bug? Why?
+<details class="dl-answer"><summary>one way through it</summary>
+
+With a seed, the program makes the same "random" numbers on every run. So
+the crash happened every time, at the same turn. So with the seed, when
+the crash stopped, we knew the fix had stopped it, and not luck.
+
+</details>
+
+## 6. A problem nobody has shown you
+
+This one has no bug. It is a problem you have not met, and the steps for
+it are like the steps for a bug.
+
+A dungeon is a square of rooms, four rooms by four. You start in the room
+at the top left. The treasure is in the room at the bottom right. From any
+room, you can go one room to the right, or one room down. You cannot go
+left or up.
+
+How many different paths reach the treasure?
+
+Before you do anything else, write a guess in the cell.
+
+**What is the question asking?** What counts as a different path? Is
+right, right, right, down, down, down the same path as down, down, down,
+right, right, right?
+
+**What about smaller dungeons?** How many paths are there in a dungeon of
+one room? Of two rooms by two? Of three by three? Draw them, or list the
+moves.
+
+**Is there a plan?** Pick any room. From which rooms can you arrive in
+it? How many paths reach it, if you know how many reach those
+rooms?
 
 ```python exec
-id: choosing-a-test-that-catches-it-2
-hint: The bug is in the arithmetic after the -32 step, so anything other than exactly 32 is worth trying.
+id: a-problem-nobody-has-shown-you-1
+# My guess for four by four:
+
+def paths(rows, columns):
+    ...
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-Yes. `fahrenheit_to_celsius_buggy(-40.0)` gives `-45.0`, not `-40.0`.
-With `32°F`, the value going into the division was zero. Here it is not
-zero, so dividing by the wrong number changes the answer. Freezing point
-is the one input that hides this bug. Almost any other reading shows it.
-
-</details>
-
-## Narrowing down a different bug
-
-**3.** In this pipeline, the bug is in the parsing stage, not in the
-conversion.
-
-```python exec
-id: bisecting-a-different-bug-1
-def parse_readings_buggy(raw_lines):
-    return [float(line[1:]) for line in raw_lines]
-
-def summarize_q3(raw_lines):
-    readings = parse_readings_buggy(raw_lines)
-    celsius = [fahrenheit_to_celsius(f) for f in readings]
-    return average(celsius)
-
-print(summarize_q3(["212.0"]))
+```hint
+Every room in the top row has only one path to it: go right all the way.
+Every room in the left column has only one path too: go down all the
+way. What about the room
+at row 1, column 1?
 ```
 
-Can you find exactly where this one goes wrong? Check each stage on its
-own, the way the tutorial checked `fahrenheit_to_celsius`.
+```hint
+after: 8 runs
+title: some steps
+1. Make a grid of counts, one for each room, all 1 to start with:
+   `counts = [[1] * columns for row in range(rows)]`.
+2. For every room not in the top row or the left column, its count is the
+   count of the room above plus the count of the room to the left.
+3. Visit the rooms row by row, from the top, so the rooms above and
+   to the left always have their counts already.
+4. The answer is the count in the bottom-right room.
 
-```python exec
-id: bisecting-a-different-bug-2
-hint: Call parse_readings_buggy(["212.0"]) directly, on its own, before touching the conversion step at all.
+**Think about:** does your answer for three by three match the paths you
+listed by hand?
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+paths(1, 1)
+paths(2, 2)
+paths(3, 3)
+paths(4, 4)
+paths(3, 5)    # a dungeon that is not square
+```
 
-`parse_readings_buggy(["212.0"])` returns `[12.0]`, not `[212.0]`. The
-slice `line[1:]` drops the first character of the text before turning it
-into a number, so `"212.0"` becomes `"12.0"`.
+```solution
+def paths(rows, columns):
+    counts = [[1] * columns for row in range(rows)]
+    for row in range(1, rows):
+        for column in range(1, columns):
+            counts[row][column] = counts[row - 1][column] + counts[row][column - 1]
+    return counts[rows - 1][columns - 1]
+---
+Four by four has 20 paths. The small dungeons give 1, 2 and 6, and the
+next two squares give 70 and 252.
 
-The conversion stage did nothing wrong here.
-`fahrenheit_to_celsius(12.0)` correctly converts the reading it was given.
-That reading was already wrong. The fault is in `parse_readings_buggy`,
-one stage earlier than the fault in the tutorial's example.
+Each path has three moves right and three moves down, in some order.
+```
 
-</details>
+**Now look back.** Does your answer for three by three match what you
+found by hand? Would the same plan work for a dungeon with a wall in one
+room?
 
-## Naming the difference
-
-**4.** A website feels slow. Two developers respond in different ways.
-
-- The first adds a loading spinner, a small moving picture, so that people
-  notice the wait less.
-- The second measures which parts of the code take the most time. They
-  find a request to the database that runs once for every item, when it
-  should run once in total. They fix that request.
-
-Which developer used pragmatic problem-solving, and which used semantic
-analysis?
-
-<details class="dl-answer"><summary>answer</summary>
-
-The spinner is pragmatic problem-solving. The symptom, a wait that bothers
-people, is less noticeable. But the slow request still runs exactly as
-before.
-
-The second developer found and fixed the request. That is semantic
-analysis. It deals with why the site is slow, and not only with how the
-slowness feels. Both developers may have been asked to fix the same
-complaint. Only one of them removed its cause.
-
-</details>
-
-**5.** The tutorial tested with freezing and boiling point, not with three
-ordinary daily readings. It called that choice *lateral thinking*. In
-your own words, why is it lateral thinking, and not good luck?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Nothing in the problem, "average some Fahrenheit readings in Celsius",
-points to freezing or boiling point. They are not the readings a
-thermometer usually shows. The obvious plan is to test with the kind of
-readings the pipeline will handle every day. When the tutorial chose
-freezing and boiling point, it did not follow that plan.
-
-It was not luck, because the choice was made on purpose. Freezing and
-boiling point are two of the very few conversions anyone can give exactly,
-without a calculator. That makes them useful as a check. An
-everyday reading like `70°F` has no exact answer that people remember. So
-a wrong answer that looked reasonable would have nothing to be checked
-against.
-
-</details>
+You used four steps: you made sure you understood the question, you made a
+plan, you followed the plan, and you looked back at the answer. The
+mathematician George Pólya wrote these four steps down in 1945, in a book
+called *How to Solve It*. Trying smaller cases was part of the plan, in the
+same way that the smallest example helps to find a bug.

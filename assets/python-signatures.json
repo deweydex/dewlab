@@ -59,6 +59,7 @@
     "random.sample": "random.sample(population, k, *, counts=None)",
     "random.seed": "random.seed(a=None, version=2)",
     "random.uniform": "random.uniform(a, b)",
+    "repr": "repr(obj, /)",
     "round": "round(number, ndigits=None)",
     "set": "set(iterable=(), /)",
     "set.add": "set.add(object, /)",

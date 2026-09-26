@@ -5213,3 +5213,25 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Every number was run**, including that only `1 ^ 0` and `1 ** 0` agree for whole numbers up to 20, that 8 or fewer sevens in 54 rolls happens 44% of the time, that a face is missing from 12 rolls 56% of the time, and the 1.07 against 3.8 in the seasons.
 
 *Cost to change: new ids, free until 2 October. Moving a page means its line in each course file and its home page's link.*
+
+---
+
+**7.262 — Problem Solving becomes a set of nine broken programs, each with a report, and the reader keeps a log.** The content issue (#334), part of #306.
+
+**What it replaces.** `finding-where-it-went-wrong` was one story: a temperature pipeline with one planted bug, and the syllabus's five habits named after the fact. The critique asked for practice instead of a story, and the temperature conversion was one of the contexts #306 retires.
+
+**Nine programs, each with a report.** Every program arrives with a report from the person who found the bug, in the words a user would use ("Sirius is missing", "I scored 30!"). The bugs are the ones the issue listed: an index that starts at 1, text from `input()` compared as text, two names for one list, a `return` indented into the loop, `==` on a float after 25 steps of 0.1, and an old name left over from an earlier cell. Three more carry the methods. A four-stage pipeline (light from the Sun, which should take about 8 minutes) is found by checking the middle stage first. A ship's log whose most common word is `''` is found by shrinking the text to an a, two spaces and a b. A dungeon game that crashes only sometimes is made repeatable with a seed. The contexts come from the Computational Methods worlds (stars, sprites, fossils, rockets, dungeons), one per program, so the page has no world switcher: moving between worlds is part of the practice.
+
+**Each idea is named after the reader has used it.** The first program is worked together as a guess, a test and what happened, and only then are those three lines called a *log*. From the second program on, every cell opens with the log for the reader to write. *Bisection* is named after two checks have found the stage, *minimal reproduction* after the four-character text, and *symptom* and *cause* in the dungeon game, where a fix that sends the crashing turns to the hall hides the crash and makes the hall twice as likely. That second bug is found by counting 6,000 rooms, which the reader can do because the Simulation pages came first.
+
+**The syllabus words.** "Pragmatic problem-solving" and "semantic analysis" are no longer the names the page teaches with. They appear once, after the plain words, as the course description's names, so a reader can recognise them in an assessment (the same approach as *indices* in `#terms`). The five habits of CMPS-LO12 are named in a short section at the end, each tied to a moment on the page where the reader used it.
+
+**Left out: the mutable default argument.** The issue listed it. No Computational Methods page teaches default arguments, so a bug in one would be a bug in something the reader has never used. The pipeline bug takes its place. It belongs on a page after default arguments are taught, if one is added.
+
+**No `assert`.** Computational Methods never teaches `assert` (it arrives in `building-reusable-tools`, which is not on this course), so the page's tests are prints compared with an answer found by hand. For the same reason `when-it-goes-wrong` is linked from "Where to read more" and not added to the course: its debugging section uses `assert` without teaching it.
+
+**The practice page.** Three reports that use ideas from earlier pages (a grid built as one row three times, `counts = {}` inside the loop, `random.seed()` inside the loop), a Caesar cipher that crashes on `x`, `y` and `z` and is found by halving the sentence, two questions about symptom and cause, and one problem with no bug: how many right-and-down paths cross a four-by-four dungeon (20). The problem walks through understanding the question, trying smaller dungeons, a plan and looking back, and then names Pólya's four steps.
+
+**Every number was run.** Including the ten empty words in the ship's log, against seven of *the*; seed 4 as one that crashes; and eight heads in ten flips with seed 42.
+
+*Cost to change: cell ids are new throughout, which is free until 2 October. The tutorial's id is unchanged.*
