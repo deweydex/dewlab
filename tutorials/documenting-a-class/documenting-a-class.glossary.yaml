@@ -1,22 +1,34 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
 # Tutorial of the series (Programming with objects) after testing a class.
-# Checked every earlier glossary in the series as the cumulative list —
-# none overlap. "docstring"
-# itself is not a new entry here: it is already taught in
-# mit-pdp-maths-prog-integration/building-reusable-tools (PDP-LO7, a
-# FOOP-LO9 prerequisite) for functions, and this tutorial only extends it
-# to classes and methods without redefining the term. dev/curriculum_map.py's
-# terms_of() used to find *represent* emphasised once, for contrast; the
-# 2026.09.22 language pass dropped that emphasis. help() is added from a manual read: never emphasised
-# (referenced in code style, the same convention other function/keyword
-# entries in the curriculum follow), genuinely new to the whole curriculum
-# (checked term_findings() for "help" and "help()" against every tutorial).
+# Checked every earlier glossary in the series as the cumulative list:
+# none overlap. docstring is taught for functions in building-reusable-tools,
+# but that page is in another series, and the-tools-around-your-code in this
+# series explains the word in one sentence and leaves it to this page, so
+# since 2026.09.26 it is defined here. doctest is new here. help() is added
+# from a manual read: never emphasised (it is in code style), and new to
+# this series.
 entries:
+  - term: docstring
+    kind: concept
+    definition: >
+      A docstring is a description in triple quotes, on the first line
+      inside a class or function. A method's docstring says what it does,
+      what its parameters should be, what comes back, and what it refuses.
+    example: "\"\"\"Return True if the probe can burn kg kilograms now.\"\"\""
+
+  - term: doctest
+    kind: concept
+    definition: >
+      doctest is a Python module that runs the examples written in
+      docstrings, each on a line starting >>>, and checks that the answers
+      are still the ones written down.
+    example: "doctest.run_docstring_examples(Probe.can_burn, globals())"
+
   - term: "help()"
     python: help
     kind: function
     definition: >
       Shows a class's own docstring, then each of its methods' docstrings
       in turn. Called on one method by itself, it shows only that method's.
-    example: "help(BankAccount)  # or help(BankAccount.withdraw) for one method"
+    example: "help(Probe)  # or help(Probe.burn) for one method"

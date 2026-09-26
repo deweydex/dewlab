@@ -361,8 +361,9 @@ print(height + Polynomial([-1.5]))
 print(Polynomial([1, 1]).multiply(Polynomial([-1, 1])))
 ```
 
-Next, [Inheritance: one class built on another](tutorial:one-parent-many-children)
-builds new classes out of the ones you have.
+Next, [Designing classes: from a description to classes](tutorial:from-a-description-to-classes)
+starts where a real program starts: with a description in words, and no
+code at all.
 
 ## Where to read more
 
