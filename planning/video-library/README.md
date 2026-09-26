@@ -84,6 +84,10 @@ it. Anything a student will read follows
 
 ## Keeping it current
 
+Videos linked from pages are checked every week by
+`dev/check_video_links.py`, which opens a `video-link` issue when one has
+gone or gone private. The library files themselves are not checked.
+
 Add a video by adding a row to `picks.csv` by hand. To refresh a channel's
 full list for `all-videos.csv`, [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 prints every video on a channel without downloading any:

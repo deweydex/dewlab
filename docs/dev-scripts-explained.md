@@ -152,6 +152,28 @@ module — each script is meant to be readable and runnable on its own.
 exists to catch the day the two copies quietly diverge, which is the
 real risk that duplication carries.
 
+## `dev/check_video_links.py`
+
+Runs weekly (`.github/workflows/video-links.yml`) and asks YouTube about
+every video linked from a page students read: every tutorial and
+practice page, frozen releases included, and the site's own pages.
+`links_by_video()` finds the links, whichever of YouTube's address forms
+they use, `check()` sends each video's ID to YouTube's oEmbed endpoint
+(the small request a site makes before embedding a video, which needs
+no key), and `classify()` reads the answer: 200 is there, 400 or 404 is
+gone, 401 or 403 is private or has embedding turned off. A timeout or a
+5xx is retried, and never counts as gone, because a bad day on YouTube's
+side is not a dead link.
+
+It keeps one `video-link` issue the way `report_patterns.py` keeps its
+`pattern` issues: a hidden `<!-- video-links -->` marker finds it again,
+each run rewrites it with the current list, and it closes itself with a
+comment once every video answers normally. A video that plays on
+YouTube but has embedding turned off answers 401 for ever, so it goes
+in `EMBEDDING_OFF` once someone has opened it and checked. Run by hand
+without `--issue`, it prints the same report and exits 1 if anything
+has gone. `tests/test_video_links.py` covers everything but the network.
+
 ---
 
 ## Not yet covered here

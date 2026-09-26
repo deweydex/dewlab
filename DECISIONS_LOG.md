@@ -4965,3 +4965,15 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **Checked before writing, not watched.** Each video's title, date, description and chapter list were read, and captions where they could be fetched. That caught three picks that were wrong for their page (a "perspective" video about physics, a card puzzle that was not the Wason task, and a "gibberish generator" about fake handwriting). One strong fit, a Tantacrul interface critique for `critique-and-reflection`, was left out because its language could not be checked. Each entry is cited in the form the pages already use, and gives the video's length so a reader knows what they are starting.
 
 *Cost to change: low. Each entry is one paragraph at the end of a page, with no cell or id involved, so it can be removed or replaced by hand. A dead link is the likely failure over time, since the build does not check outside links.*
+
+---
+
+**7.247 — A weekly check that every linked video is still there.** Josh, after 7.246 put 99 videos on the pages: "lets do a link check". `dev/check_video_links.py` asks YouTube's oEmbed endpoint about every video linked from a tutorial, a practice page (frozen releases included) or a site page, and `.github/workflows/video-links.yml` runs it every Monday, keeping one `video-link` issue open while anything has gone.
+
+**On a schedule, not in the tests.** A video disappears on YouTube's timetable, not on a commit's, so checking in `tests.yml` would turn an unrelated pull request red the week a video went, and a YouTube outage would turn every pull request red. A weekly issue reaches the same people without blocking anyone. For the same reason the check never counts a timeout or a 5xx as a dead link: those are retried, and if more than a quarter of the checks fail that way the run changes no issue at all.
+
+**Private is listed, not assumed.** oEmbed answers 401 both for a private video and for one whose creator turned embedding off, and the second still plays for a reader. So 401 is reported under its own heading for a person to open, and a video found to play goes in `EMBEDDING_OFF` in the script, with a date, so it does not reopen the issue every week. The first one there is the Random Noise Lights Out video on `solving-systems`.
+
+**The first run found two links that never worked.** Computerphile entries on `first-steps` and `three-ways-to-make-change` pointed at IDs YouTube has no record of, most likely written wrong when the pages were drafted. Both entries are removed rather than replaced: the channel is not on the list behind `planning/video-library/`, and both pages keep other reading.
+
+*Cost to change: low. One script, one workflow, one issue label. Removing the workflow stops the checks and leaves the script runnable by hand.*
