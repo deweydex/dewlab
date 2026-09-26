@@ -212,8 +212,8 @@ The line swings wildly at first, and settles as the number of rolls
 grows. The more trials we run, the closer the share usually comes to the
 probability. This is the *law of large numbers*. It settles slowly,
 though. To be ten times closer, we need about a hundred times as many
-trials. So a simulation can check a calculation, but it cannot replace
-one.
+trials. So a simulation is good for checking a calculation, but it is a poor
+replacement for one.
 
 ## Events are sets
 

@@ -516,8 +516,8 @@ is a fact about circles on a flat page, not about the drawing code. No
 arrangement of four circles makes all fifteen. Diagrams for four sets do
 exist, with ovals or stranger shapes, but they are much harder to read.
 
-The set operations still work for four sets, or forty. Only the picture
-stops at three.
+The set operations still work for four sets, or forty. Only the circles
+stop at three.
 
 ## Looking back
 
@@ -579,7 +579,7 @@ pictures this page draws from real data, drawn by hand instead.
 
 Khan Academy. *Properties of Set Operations Using Venn Diagrams.*
 <https://www.youtube.com/watch?v=lWjmbch870g>. De Morgan's laws shaded on
-a diagram, which is where this page ends up.
+a diagram, as in the section on this page about the outside of a set.
 
 Up and Atom (2019). *Russell's Paradox: A Ripple in the Foundations of
 Mathematics.* <https://www.youtube.com/watch?v=xauCQpnbNAM>. A set of all

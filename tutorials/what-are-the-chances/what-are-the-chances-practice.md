@@ -41,7 +41,7 @@ def simulate(trial, n=100_000):
 
 
 def six():
-    """One trial: roll a die, and say whether it came up 6."""
+    """One trial: roll a die, and return True if it shows a 6."""
     return random.randint(1, 6) == 6
 
 
@@ -441,7 +441,7 @@ for code in ["US", "CN", "CA"]:
 ---
 With the copy saved on {{snapshot: dinosaur-finds}}, 0.722 of all finds
 are Cretaceous. So are 0.641 of the United States' finds and 0.652 of
-China's, but 0.997 of Canada's. The country changes the chance, so the
+China's, but 0.997 of Canada's. Knowing the country changes the chance, so the
 two are not independent. For Canada they are far from it. Nearly all of
 its finds come from Cretaceous rock, such as the badlands of Alberta. A
 figure close to the overall one does not make them independent. The
