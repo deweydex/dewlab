@@ -222,8 +222,8 @@ the function divides by it before it checks. Schlomo wrote the check
 the function needs, but it comes too late. Here it moves up, straight
 after the determinant.
 
-The same lines, in a different order, keep the promise. The order of
-the steps matters here.
+The same lines, in a different order, return `None` when there is no
+single answer. The order of the steps matters here.
 ```
 
 **8. Predict.** Before you run this, what will the picture show, and
