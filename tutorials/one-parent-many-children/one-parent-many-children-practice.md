@@ -201,6 +201,10 @@ A submarine *has* an engine, which is the next page's subject. A moon
 and a planet share a lot (a name, a size, an orbit), but a moon is not a
 planet. Both could be children of one parent, perhaps `Body`.
 
+Even a real "is a kind of" can go wrong in code.
+[Inheritance: a closer look at "is a"](tutorial:when-is-a-breaks) builds a
+square on a rectangle, and watches it stop being a square.
+
 </details>
 
 ## 7. From earlier: class or field?

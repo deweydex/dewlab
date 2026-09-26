@@ -548,3 +548,25 @@ groups:
       directly, and shows a visitor's own search back as it happens.
     tutorials:
       - a-page-that-reads-from-a-database
+
+  - key: closer-looks
+    name: Closer looks
+    intro: >
+      Short pages, each about one idea that many people hold. Each page
+      tests the idea with an experiment you can run, and then explains why
+      the idea is so easy to believe.
+    tutorials:
+      - powers-in-python
+      - dividing-in-python
+      - equals-three-ways
+      - a-total-that-starts-again
+      - two-names-one-list
+      - small-samples
+      - when-two-methods-agree
+      - dividing-every-term
+      - squaring-a-sum
+      - the-hidden-bracket
+      - the-vertex-sign
+      - degrees-and-radians
+      - why-we-have-seasons
+      - when-is-a-breaks

@@ -29,6 +29,7 @@ contents:
   - a-polynomial-class
   - from-a-description-to-classes
   - one-parent-many-children
+  - when-is-a-breaks
   - objects-inside-objects
   - testing-what-a-class-does
   - documenting-a-class

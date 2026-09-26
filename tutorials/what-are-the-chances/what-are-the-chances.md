@@ -116,7 +116,12 @@ $$P(A) = \frac{\text{outcomes in } A}{\text{all outcomes}}
 \qquad P(\text{total is } 7) = \frac{6}{36} = \frac{1}{6}$$
 
 So in 10,000 rolls we expect about $10{,}000 \times \frac{1}{6}
-\approx 1{,}667$ sevens, close to the height of the tallest bar. Can you
+\approx 1{,}667$ sevens, close to the height of the tallest bar. In fewer
+rolls, the count can land much further from what we expect.
+[Chance: a closer look at small samples](tutorial:small-samples) asks how
+far.
+
+Can you
 write `chance(total)`, which counts the outcomes that add up to `total`
 and returns its probability?
 
