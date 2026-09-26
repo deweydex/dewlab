@@ -368,7 +368,7 @@ tilts the labels so that they do not run into each other.
 
 1. In the last cell, change `plt.bar(scale, heights)` to
    `plt.bar(list(feeling_counts.keys()), list(feeling_counts.values()))`.
-   What goes wrong with the picture, even though every number is right?
+   What happens to the picture, even though every number stays the same?
 2. Put it back. Would a pie chart suit the `feelings` data? What would
    it hide?
 
@@ -445,7 +445,7 @@ numbers would never show that at a glance.
 1. Change the bins to `range(50, 90, 10)`, then to `range(50, 90, 2)`.
    How does the shape change?
 2. Which width tells the story best, in your opinion? Several answers
-   are good ones: too few bins hide the shape, and too many make it
+   are worth giving: too few bins hide the shape, and too many make it
    ragged.
 
 ## Stem-and-leaf: every value kept
@@ -573,7 +573,8 @@ almost the same, because the numbers are almost the same.
 
 Here is the rule underneath. In a bar chart, the reader reads the
 length of each bar as its value. If the axis does not start at 0, the
-lengths are wrong, even when every number on the axis is right. That is
+lengths no longer match the values, even when every number on the axis
+is true. That is
 why a line chart may zoom in and a bar chart may not: a line shows
 change, and a bar shows an amount.
 
@@ -686,7 +687,7 @@ chooses how it is shown, and you can now be that person.
 | histogram | touching bars for bins of numerical data, on a number line |
 | stem-and-leaf plot | each value split into stem and leaf, so the shape shows and every value is kept |
 | line chart | points joined in order, usually over time |
-| honest chart | a bar axis from 0, a flat pie, labelled axes, the right chart for the data |
+| honest chart | a bar axis from 0, a flat pie, labelled axes, a chart that suits the data |
 
 The practice page is next. After it,
 [Collections without repeats](tutorial:collections-without-repeats)

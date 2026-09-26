@@ -8,8 +8,9 @@ version: 2026.09.25.1
 # Rules for change: the sum, product, quotient and chain rules — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -172,8 +173,8 @@ Both give 1.4, and the check agrees at every time from 0 to 30.
 </details>
 
 **6. Fix.** Here is someone's slope rule for $\frac{x}{x^2 + 1}$, made
-with the quotient rule. The check says no. Find the one mistake, and
-fix it.
+with the quotient rule. The check says no. Find the line that does not
+do what its writer meant, and change it.
 
 ```python exec
 id: rules-for-practice-fix
@@ -203,7 +204,7 @@ print(slopes_agree(ratio, ratio_slope, points))
 
 <details class="dl-answer"><summary>answer</summary>
 
-The two parts of the top line are the wrong way round. The quotient
+The two parts of the top line are swapped. The quotient
 rule is the bottom times the slope of the top, minus the top times the
 slope of the bottom:
 
@@ -218,8 +219,8 @@ def ratio_slope(x):
 print(slopes_agree(ratio, ratio_slope, points))
 ```
 
-It prints `True`. The mistake gave the right size of slope with the
-wrong sign, so a graph of it would go downhill wherever the curve goes
+It prints `True`. The swap gave the same size of slope with the
+other sign, so a graph of it would go downhill wherever the curve goes
 uphill. The order matters because of the minus sign, and
 $a - b = -(b - a)$.
 
@@ -319,8 +320,8 @@ Both give about 5.0265, and the check agrees at every second from 0 to
 **10. Explain.** Schlomo, who is learning Python too, says: "The slope
 of $x \times x$ should be the slope of $x$ times the slope of $x$, which
 is $1 \times 1 = 1$." But $x \times x$ is $x^2$, whose slope is $2x$.
-Where does Schlomo's move go wrong? Is there a space where multiplying
-slopes is right?
+Where does Schlomo's move stop working? Is there a space where
+multiplying slopes works?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -330,12 +331,12 @@ Multiplying the slopes ignores the two strips of the growing rectangle:
 when both sides grow, each side's growth is multiplied by the *other*
 side's length.
 
-Multiplying slopes is right for a rule inside a rule. There, the
+Multiplying slopes works for a rule inside a rule. There, the
 chain rule multiplies the outside slope by the inside slope, because
 the inside rule's output is the outside rule's input.
 
-That is one good way to say it. Yours may use other words, or a
-picture, and be as good.
+That is one way through. Yours may use other words, or a picture, and
+say the same thing.
 
 </details>
 
@@ -368,11 +369,13 @@ practise using it. Which way would you have taught it, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no one right answer. A good answer weighs things like these:
+There is more than one answer worth giving. One way through weighs
+things like these:
 
 - A table lets a reader find the pattern for themselves, before being
   told it. A found rule is often easier to remember.
-- A check at 61 points catches almost every mistake, but it is not a
+- A check at 61 points catches almost every rule that does not hold,
+  but it is not a
   proof. A rule could agree at those points and fail somewhere else.
 - A proof from limits shows *why* each rule holds, and a reader who
   follows it can rebuild a rule they have forgotten.
@@ -412,6 +415,8 @@ Check with a fine comb over $x$ from 0 to 15.
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def box_volume(cut):

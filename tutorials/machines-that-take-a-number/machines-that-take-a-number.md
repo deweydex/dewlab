@@ -324,7 +324,7 @@ print(sum_by_loop(-5), sum_by_formula(-5))
 
 The loop gives `0`, because `range(1, -4)` is empty. The formula gives
 `10`. Outside the domain the two machines disagree, and neither answer
-is right, because the question has no answer. That is why the domain
+means anything, because the question has no answer. That is why the domain
 belongs in the promise: both promised the same thing, for whole numbers
 from 0 up, and both kept it.
 
@@ -435,7 +435,7 @@ print(math.sqrt(square(3)), math.sqrt(square(-3)))
 
 Both 3 and −3 square to 9. So if the tray shows 9, which number went in?
 There is no way to know, and an inverse must give one answer. The square
-root chooses 3, which is right for 3 and wrong for −3.
+root chooses 3, which undoes the square for 3 but not for −3.
 
 A function has an inverse only when each output comes from exactly one
 input. Such a function is called *one-to-one*. Squaring on all of
@@ -571,8 +571,8 @@ print("compose keeps its promise.")
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one good way to write it. Yours may use other names inside and
-work as well.
+Here is one way through. Yours may use other names inside and do the
+same job.
 
 ```python
 def compose(outer, inner):

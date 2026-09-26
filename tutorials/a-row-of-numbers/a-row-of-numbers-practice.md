@@ -92,7 +92,7 @@ $a_1$ is `a[0]`, and $a_n$ is `a[n - 1]`.
 
 The maths counts which value it is: first, second, third. Python counts
 how many steps from the start: the first value is 0 steps along. So
-every Python index is one less than the maths number. They are two good
+every Python index is one less than the maths number. They are two
 ways of counting, like the ground floor being 0 in a lift.
 
 </details>
@@ -128,6 +128,8 @@ through by index.
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def over_ten_thousand(count):
     """True when a day's step count is more than 10,000."""
@@ -151,7 +153,7 @@ agrees with `count_if`, which is a good check.
 **6. Fix.** A web server logs the moment each request arrives, in
 milliseconds after it starts. The code should print the gap between each
 request and the next. It prints four gaps, then stops with an error.
-Find the mistake.
+Find the line that does not do what its writer meant.
 
 ```python exec
 id: row-practice-fix-bus
@@ -198,7 +200,7 @@ editor. One pixel's colour is a list of red, green and blue, from 0 to
 255. He wants a brighter copy, with each part doubled, and he wants to
 keep the original so that "undo" works. His idea: give the colour a
 second name, and double through that name. After it runs, the original
-has doubled too. What went wrong?
+has doubled too. What happened?
 
 ```python exec
 id: row-practice-fix-pancakes
@@ -215,7 +217,7 @@ print("brighter:", brighter)    # hoping for [200, 120, 40]
 `brighter = original` does not make a second list. It ties a second
 name to the same list. So doubling through `brighter` doubles the only
 list there is, and `original` sees it too. Schlomo's idea of a second
-name was half of a good plan; the other half is a second list, from
+name was half of a plan that works; the other half is a second list, from
 `.copy()`:
 
 ```python
@@ -227,7 +229,7 @@ print("original:", original)    # [100, 60, 20]
 print("brighter:", brighter)    # [200, 120, 40]
 ```
 
-That is one good fix. Building a new list with `append` works too,
+That is one way through. Building a new list with `append` works too,
 and then there is no question of which list is which. (A real editor would also stop each
 part at 255, the largest value a part can hold.)
 
@@ -265,6 +267,8 @@ trusted. (The readings are made up.)
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 sensor_a = [98, 95, 91, 88, 86]
 sensor_b = [97, 96, 90, 89, 84]
@@ -284,12 +288,13 @@ spot.
 </details>
 
 **10. Another way.** Schlomi, who is learning Python too, says
-`[1, 2] + [3, 4]` should give `[4, 6]`, and Python is wrong to give
-`[1, 2, 3, 4]`. Is there a space where she is right? Show it in a cell.
+`[1, 2] + [3, 4]` should give `[4, 6]`, not the `[1, 2, 3, 4]` that
+Python gives. Where does her idea work, and where does it stop working?
+Show it in a cell.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes. In maths, two rows of numbers of the same length are often added
+It works in maths. There, two rows of numbers of the same length are often added
 pair by pair, and numpy's arrays work that way:
 
 ```python
@@ -300,8 +305,8 @@ print(np.array([1, 2]) + np.array([3, 4]))    # [4 6]
 
 Schlomi is using the maths meaning of `+`, the one that mixes two
 sounds. Python's lists use another meaning, joining, because a list can
-hold words as well as numbers. Her move is a good one; it belongs to the
-array space, not the list space.
+hold words as well as numbers. Her move works in the array space, and
+stops working in the list space.
 
 </details>
 
@@ -324,7 +329,7 @@ a trace table.
 </details>
 
 **12. Fix.** This code should count the cold days in a week. It stops
-with an error. Find the mistake.
+with an error. Find the line that does not do what its writer meant.
 
 ```python exec
 id: row-practice-fix-test
@@ -396,6 +401,8 @@ first pass Ireland?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 years_ahead = []
 for i in range(len(ireland)):
@@ -419,6 +426,8 @@ up.) Build a list of the running total at the end of each month, the
 rain so far this year. Check that its last value equals `total(rain)`.
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 rain = [110, 80, 95, 60, 70, 75]
@@ -476,6 +485,8 @@ half and half: each part of the mix is the two parts added, then halved
 with `//`. What colour list do you get?
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 orange = [255, 136, 0]

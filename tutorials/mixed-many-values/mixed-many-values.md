@@ -228,6 +228,8 @@ almost nothing?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def whole_years(values):
     """Return a new list with every value rounded to a whole number."""
@@ -302,8 +304,8 @@ went up and down they would not be.
 **9. Fix.** Schlomo, who is learning Python too, writes the typical
 values into his report like this. He names the number `mean` because
 that is what it is. The first line runs. The cell is meant to stop with
-an error on the second. Read the last line of the error, then find what
-went wrong.
+an error on the second. Read the last line of the error, then find the
+line that does not do what Schlomo meant.
 
 ```python exec
 id: mixed-many-fix-hidden
@@ -365,6 +367,8 @@ the lowest bin up.
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def five_year_bins(values):
@@ -428,6 +432,8 @@ agrees with the union.
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 ireland_high = set()
@@ -546,6 +552,8 @@ told, in the report's own words, to trust the numbers?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def report(name, values, first_year):
     """Print a one-page report on a list of yearly life expectancies for one country."""
@@ -577,7 +585,7 @@ Life expectancy at birth in Ireland (Our World in Data)
    ...
 ```
 
-Your two sentences will be your own. For Spain, a good pair might be:
+Your two sentences will be your own. For Spain, one pair might be:
 "Life expectancy rose in both countries between 1950 and 2016, by
 about 15.5 years in Ireland and about 21 years in Spain. Spain started
 lower, passed Ireland in the mid-1960s, and has stayed ahead, though
@@ -606,6 +614,8 @@ up all 67 rounded values?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 table = frequency_table(whole_years(ireland))
 weighted = 0
@@ -632,7 +642,7 @@ the report so that nobody reads more into it than it holds.
 
 <details class="dl-answer"><summary>answer</summary>
 
-There are many good answers. Some of the strongest:
+There are many answers worth giving. Here is one way through:
 
 - **What one value is.** Each value is a whole country's life
   expectancy at birth for one year, an estimate. It says nothing about

@@ -370,7 +370,7 @@ does it divide by?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one good way. One line does it: the rise of the centred chord
+Here is one way through. One line does it: the rise of the centred chord
 over its run, which is two steps long.
 
 ```python
@@ -408,7 +408,7 @@ and a computer cannot take a limit. It can only take a small step.
 
 So why not a very small step, like $10^{-15}$? The model comes with a
 speed rule of its own, $12(1 - e^{-t/1.2})$ metres a second. Let's take
-it as the right answer, and measure how far out each step is. Where do
+it as the true slope, and measure how far out each step is. Where do
 you expect the error to be smallest?
 
 ```python exec

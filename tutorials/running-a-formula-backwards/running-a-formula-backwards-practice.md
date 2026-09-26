@@ -8,8 +8,9 @@ version: 2026.09.25.2
 # Running a formula backwards: rearranging and inverses — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -82,7 +83,8 @@ Going forwards, the last step is "add 32". Undoing works from the last
 step back to the first, the way you take off your shoes before your
 socks. So the first step back is "subtract 32", and the step after it
 undoes the multiplying. If we multiplied first, the 32 would still be
-mixed in with the number we multiply, and we would get the wrong answer.
+mixed in with the number we multiply, and we would get a different
+temperature.
 
 </details>
 
@@ -101,7 +103,7 @@ print(celsius_to_fahrenheit(fahrenheit_to_celsius(451)))
 
 The round trip gives back exactly 451 this time. Sometimes a float round
 trip lands exactly, and sometimes it lands very close, like the
-`0.9999999999999984` for 1 °C in the tutorial. That is why a good test
+`0.9999999999999984` for 1 °C in the tutorial. That is why a test
 of a round trip rounds first, or asks "close enough?".
 
 </details>
@@ -139,6 +141,8 @@ better first test than a round trip.
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def megabits_to_megabytes(megabits):
     """Return a size in megabytes, given it in megabits."""
@@ -161,14 +165,15 @@ print(megabits_to_megabytes(100))
 It prints `The converter works both ways.`, then `12.5`: a 100 Mb/s
 connection brings in 12.5 MB a second. A known value checks the factor.
 A round trip checks that the two functions undo each other, and it
-would still pass if both used the wrong factor. The two kinds of test
-catch different mistakes.
+would still pass if both used a factor other than 8. The two kinds of
+test find different problems.
 
 </details>
 
 **6. Fix.** Schlomi, who is learning Python too, writes a health app
 that turns a temperature taken in Fahrenheit into Celsius. A fever of 100.4 °F should be 38 °C, but the app says about
-82.6. Run the tests, find the mistake, and fix it.
+82.6. Run the tests, find the line that does not do what Schlomi meant,
+and change it.
 
 ```python exec
 id: running-a-practice-fix-fever
@@ -363,7 +368,7 @@ def valley_flight_hours(distance):
 ```
 
 Now the test prints `The flight time is right.` For a 12 km valley,
-Schlomo's version gave 0.24 hours, and the right one gives half an hour.
+Schlomo's version gave 0.24 hours, and the long form gives half an hour.
 The test compared the short form against the long form at three
 distances, which is a quick way to check any simplifying.
 
@@ -463,6 +468,8 @@ composing the two inverses. In which order do they go?
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def celsius_to_kelvin(celsius):
@@ -572,11 +579,11 @@ print((fahrenheit - 32) * 5 / 9)
 
 It shows `20.0`.
 
-Which to teach has no single right answer. A good answer weighs a few
-things. The short rule is quick, and many people use it well. But it does
+Which to teach has more than one answer worth giving. One way through
+weighs a few things. The short rule is quick, and many people use it well. But it does
 not say which part moves first. A common slip is to move the
-$\frac{9}{5}$ first, and get $C = \frac{5}{9}F - 32$, which is wrong. The balance is slower, and
-it explains itself: each step is a move you can say out loud. A strong
+$\frac{9}{5}$ first, and get $C = \frac{5}{9}F - 32$, which turns −76 °F into about −74.2 °C, not −60. The balance is slower, and
+it explains itself: each step is a move you can say out loud. One
 answer might teach the balance first, and then show the short rule as the
 balance with the middle steps left out.
 
