@@ -22,11 +22,6 @@ entries:
     kind: function
     definition: Adds one element to the end of a list, changing that list.
     example: "scores.append(50)"
-  - term: "len()"
-    python: len
-    kind: function
-    definition: Gives the number of elements in a list, or the number of characters in a string.
-    example: "len(scores)"
   - term: "enumerate()"
     python: enumerate
     kind: function

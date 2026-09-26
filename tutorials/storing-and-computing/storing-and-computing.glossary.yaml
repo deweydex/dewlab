@@ -67,6 +67,28 @@ entries:
       Asks the person using the program to type something, and gives back
       what they typed. The result is always a str, even when it looks like
       a number.
+  - term: "len()"
+    python: len
+    kind: function
+    definition: >
+      Gives the length of a string: how many characters it has, spaces
+      included. Later it counts the elements of a list the same way.
+    example: 'len("meet at noon")  # 12'
+  - term: ".upper()"
+    python: str.upper
+    kind: function
+    definition: Gives the same text with every small letter changed to a capital.
+    example: '"noon".upper()  # "NOON"'
+  - term: "ord()"
+    python: ord
+    kind: function
+    definition: Gives the number the computer stores for a character.
+    example: 'ord("A")  # 65'
+  - term: "chr()"
+    python: chr
+    kind: function
+    definition: Turns a number into the character it stands for. It undoes ord().
+    example: 'chr(67)  # "C"'
   - term: base 10
     kind: concept
     definition: >

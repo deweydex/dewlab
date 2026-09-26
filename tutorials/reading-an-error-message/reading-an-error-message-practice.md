@@ -2,270 +2,210 @@
 title: "Reading an error message — Practice"
 practice_for: reading-an-error-message
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 ---
 
 # Reading an error message — Practice
 
-The answers are hidden until you open them. On this page, your
-prediction is the exercise, and running the code is the marking. For
-most questions, try to predict the error before you run the code.
+Here your guess is the exercise. Before you run a cell, say which error you
+think it will raise, or whether it will run at all. Then run it, and read
+what comes back from the bottom up.
 
-Everything here uses only variables, types, arithmetic, strings,
-`print`, `input` and `if`. There are no new tools to learn, only new
-messages to read.
+Everything here uses only names, types, arithmetic, text, `print`, `input`
+and `if`. There are no new tools, only new messages to read.
 
-## Tools
+## 1. Which kind
 
-There is nothing to set up here. Each question is its own cell, and most
-of them are meant to fail.
+For each of these, is it a syntax error, a runtime error, a logical error,
+or no error at all?
+
+- (a) `if total > 10` followed by an indented `print(total)`
+- (b) `result = 10 + "5"`
+- (c) `age = int("thirty")`
+- (d) `average = total / count`, where `count` is 0
+
+<details class="dl-answer"><summary>answer</summary>
+
+(a) A syntax error: the colon is missing after `10`, so Python cannot read
+the line, and runs nothing. (b) A runtime error, a `TypeError`: the line is
+valid Python, but Python will not add a number to a string. (c) A runtime
+error, a `ValueError`: `int` wants a string and got one, but `"thirty"` is
+not written in digits. (d) A runtime error, a `ZeroDivisionError`. In real
+programs this is the usual way that error arrives: a count turns out to be
+zero when the code expected it not to be.
+
+</details>
+
+## 2. Five times two
+
+Somebody wanted the answer 10.
 
 ```python exec
-id: three-kinds-reminder-1
-# A reminder of the three kinds, and how each announces itself.
-print("Syntax error:  Python refuses before running anything.")
-print("Runtime error: some of your program runs, then it stops.")
-print("Logical error: it all runs, and the answer is wrong.")
+id: five-times-two-1
+doubled = "5" * 2
+print(doubled)
 ```
 
-## Which Kind?
+```predict
+What will it print?
 
-For each one, is it a syntax error, a runtime error, a logical error, or
-no error at all?
+- 10
+  - 5 times 2 is 10.
+- 55
+  - `*` with a string repeats it.
+- An error
+  - You cannot multiply text.
+```
 
-**1.** `if total > 10` followed by an indented `print(total)`
+<details class="dl-answer"><summary>why</summary>
 
-<details class="dl-answer"><summary>answer</summary>
-
-Syntax error. The colon is missing after `10`, so Python cannot read
-the line, and it never runs anything.
-
-</details>
-
-**2.** `result = 10 + "5"`
-
-<details class="dl-answer"><summary>answer</summary>
-
-Runtime error: a `TypeError`. The line is valid Python, but Python will
-not add a number to a string.
+It prints `55`, with no error: a logical error. `*` with a string repeats
+the string. The line looks as if it should work, because `5 * 2` gives 10,
+until the value turns out to be a string. A value that came from `input()`
+is always a string.
 
 </details>
 
-**3.** `doubled = "5" * 2`, written by somebody who wanted the answer 10
+## 3. A number from text
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: a-number-from-text-1
+price = int("12")
+print(price * 2)
+```
 
-Logical error. It runs and gives back `"55"`, because `*` with a string
-repeats the string.
+```predict
+type: number
 
-Nothing is red, and the answer is wrong. This is the dangerous kind. It
-is even worse than that: `5 * 2` gives 10, so the line looks correct
-until the value turns out to be a string. A value that came from
-`input()` is always a string.
+What will it print?
+```
 
-</details>
+## 4. Name the error
 
-**4.** `price = int("12")` then `print(price * 2)`
-
-<details class="dl-answer"><summary>answer</summary>
-
-No error. It prints 24. `int("12")` turns the string into the number 12.
-
-</details>
-
-**5.** `age = int("thirty")`
-
-<details class="dl-answer"><summary>answer</summary>
-
-Runtime error: a `ValueError`. `int` wants a string, and it got one. But
-`"thirty"` is not written in digits, so `int` cannot turn it into a
-number.
-
-</details>
-
-**6.** `average = total / count` where `count` is 0
-
-<details class="dl-answer"><summary>answer</summary>
-
-Runtime error: a `ZeroDivisionError`.
-
-In real programs, this is the most common cause of that error. A count
-turns out to be zero when the code expected it not to be. That happens
-far more often than somebody typing `/ 0`.
-
-</details>
-
-## Naming the Error
-
-Which error do you think each one raises? Predict, then run it.
-
-**7.**
+Before you run each cell, write the error you expect in its comment.
 
 ```python exec
 id: naming-the-error-early-1
 value = "12"
 print(value + 3)
+# I think it raises:
 ```
-
-<details class="dl-answer"><summary>answer</summary>
-
-`TypeError`. Python cannot add a string and an integer.
-
-Notice that `value * 3` would work, and give `121212`. That is a
-different kind of surprise.
-
-</details>
-
-**8.**
 
 ```python exec
 id: naming-the-error-early-2
 count = int("twelve")
+# I think it raises:
 ```
-
-<details class="dl-answer"><summary>answer</summary>
-
-`ValueError`. The type is right, because `int` wants a string. But the
-content of the string is not a number.
-
-People mix these two up more than any other pair. A `TypeError` means
-the wrong kind of thing. A `ValueError` means the right kind of thing,
-with content Python cannot use.
-
-</details>
-
-**9.**
 
 ```python exec
 id: naming-the-error-early-3
-score = 72
-print("Your score is", scroe)
+message = "OTTER"
+print(mesage)
+# I think it raises:
+```
+
+```python exec
+id: naming-the-error-early-5
+print(17 % 0)
+# I think it raises:
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-`NameError`. `scroe` was never created, because the name is misspelled.
-
-The message ends with `Did you mean: 'score'?` Python noticed a name
-that is close to the one you typed. Read to the end of a message before
-you go looking for the problem yourself.
+A `TypeError`: Python cannot add a string and a number, though `value * 3`
+would work and give `121212`. A `ValueError`: the type is right, because
+`int` wants a string, but the content is not a number. A `NameError`,
+ending `Did you mean: 'message'?`: read to the end of a message before you
+go looking yourself. And a `ZeroDivisionError`, described as
+`integer modulo by zero`: a remainder is a kind of division, and nothing
+divides by zero.
 
 </details>
 
-**10.** In some countries, people write a decimal comma: 12,50 and not
-12.50.
+## 5. A decimal comma
+
+In many countries, people write a decimal comma: 12,50, not 12.50.
 
 ```python exec
 id: naming-the-error-early-4
 typed = "12,50"
 price = float(typed)
 print(price)
+# I think it raises:
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-`ValueError`. Python only understands a decimal point. To Python,
-`"12,50"` is a string, the right type for `float`, but with content it
-cannot read as a number.
-
-If `typed` came from `input()`, the person using the program did nothing
-wrong. The program needs to tell them what to type, or check what they
-typed.
+A `ValueError`. Python only understands a decimal point, so `"12,50"` is
+the right type for `float`, with content it cannot read. If `typed` came
+from `input()`, the person using the program did nothing wrong: the
+program needs to say what to type, or check what it got.
 
 </details>
 
-**11.** The `%` operator gives the remainder after division.
+## 6. Where to look first
 
-```python exec
-id: naming-the-error-early-5
-print(17 % 0)
-```
+In a traceback, where do you find the error that stopped the program? And
+when a syntax error puts its marker under a word that looks fine, where do
+you look?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`ZeroDivisionError`. Finding a remainder is a kind of division, and
-nothing can be divided by zero. The description says
-`integer modulo by zero`. Modulo is the name of the `%` operator, which
-we met in [Algorithms, pseudocode and your first Python](tutorial:first-steps).
+At the last line: it names the error and describes it. The lines above it
+say where, with the line number and a copy of the line.
 
-`17 // 0` raises the same kind of error.
-
-</details>
-
-## Reading a Traceback
-
-**12.** In a traceback, where do you find the error that stopped the
-program?
-
-<details class="dl-answer"><summary>answer</summary>
-
-The last line names it, and then describes it. The lines above it say
-where it happened: the line number, and a copy of the line.
-
-Read from the bottom. The top of a traceback is where Python starts its
-report, and the bottom is what went wrong.
+For the marker, look just before it. Python complains at the moment it
+becomes sure something is wrong, which is often a character or two after
+the real mistake, or on the next line.
 
 </details>
 
-**13.** Run this. Can you find two things: the line that failed, and the
-line that is *responsible*?
+## 7. The line that failed, and the line responsible
 
 ```python exec
 id: reading-a-short-traceback-1
-marks = 45
-bonus = "5"
-total = marks + bonus
+letters = 45
+extra = "5"
+total = letters + extra
 print("Total:", total)
 ```
+
+Which line failed, and which line is *responsible*?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Read the last line first. What kind of error is it?
 2. Which line number does the traceback name? That is the line that
    failed.
-3. What types are `marks` and `bonus`? Which line gave `bonus` its type?
+3. What types are `letters` and `extra`? Which line gave `extra` its type?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-The line that failed is line 3, `total = marks + bonus`. That is where
-the `TypeError` happened.
-
-The line that is responsible is line 2, `bonus = "5"`, because it made
-`bonus` a string. Line 3 is written correctly. It was given a value of
-the wrong type.
+Line 3 failed, `total = letters + extra`, with a `TypeError`. Line 2 is
+responsible: `extra = "5"` made `extra` a string. Line 3 is written the
+way it should be. It was given a value of a type it could not use.
 
 </details>
 
-**14.** A syntax error message puts its marker under a word that looks
-fine. Where should you look?
+## 8. Some output, then an error
+
+Some of your output appeared above a traceback. What does that tell you?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Just before it. Python complains at the moment it becomes sure that
-something is wrong, and that is often a character or two after the real
-mistake, or even on the next line.
+That it is a runtime error. Python read the whole program, started to run
+it, and got that far before it stopped. A syntax error prints nothing of
+yours at all, because nothing runs.
 
 </details>
 
-**15.** Some output appeared above the traceback. What does that tell
-you?
+## 9. Up by how much
 
-<details class="dl-answer"><summary>answer</summary>
-
-It tells you that the error is a runtime error. Python read the whole
-program, started to run it, and got that far before it stopped. A syntax
-error prints nothing of yours at all, because nothing runs.
-
-</details>
-
-## When Nothing Looks Wrong
-
-Each of these runs, and each one is wrong. Can you find the mistake?
-
-**16.** Percentage change is measured against the old value. A price
-that goes from 50 to 60 has gone up by 20%.
+A price goes from 50 to 60: up by 10, which is 20% of the old price.
+Percentage change is measured against the old value. This program runs.
+Does it agree?
 
 ```python exec
 id: when-nothing-looks-wrong-practice-1
@@ -275,109 +215,106 @@ change = (new - old) / new * 100
 print("Change:", change, "%")
 ```
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+```inputs
+change
+```
 
-1. Work it out by hand first: the price went up by 10. What is 10 as a
-   percentage of 50?
-2. Which number does the code divide by? Which number should it divide
-   by?
+```hint
+Which number does the code divide by? Which one should it divide by?
+```
 
-</details>
+```solution
+old = 50
+new = 60
+change = (new - old) / old * 100
+print("Change:", change, "%")
+---
+It divided by the new value, and gave about 16.67% instead of 20%. That is
+close enough to look believable, which is why nobody notices it.
+```
 
-<details class="dl-answer"><summary>answer</summary>
+## 10. Exactly on the line
 
-It divides by the new value, but percentage change is measured against
-the *old* value. The code gives about 16.67%, and the right answer is
-20%.
-
-The wrong answer is close enough to look believable. That is exactly
-why nobody notices it.
-
-</details>
-
-**17.** The pass mark is 50. Run the cell with `score` set to 49, then
-50, then 51.
+A pixel is drawn as `#` when its brightness is 128 or more. Run the cell
+with `brightness` set to 127, then 128, then 129.
 
 ```python exec
 id: when-nothing-looks-wrong-practice-2
-score = 50
-if score > 50:
-    print(score, "is a pass")
+brightness = 128
+if brightness > 128:
+    pixel = "#"
 else:
-    print(score, "is a fail")
+    pixel = "."
+print(pixel)
 ```
 
+```inputs
+pixel
+```
+
+```solution
+brightness = 128
+if brightness >= 128:
+    pixel = "#"
+else:
+    pixel = "."
+print(pixel)
+---
+With `>`, a brightness of exactly 128 was drawn as `.`. Logical errors
+live at boundaries, so try the boundary itself, one below it and one above
+it.
+```
+
+## 11. The habit that catches them
+
+What is the one habit that catches logical errors?
+
 <details class="dl-answer"><summary>answer</summary>
 
-If 50 is the pass mark, this code fails everyone who scored exactly 50.
-It needs `>=`.
-
-Logical errors live at boundaries. Always test the exact boundary, one
-below it, and one above it.
+Trying the program on answers you already know. Before you trust a program
+on numbers you cannot check, give it numbers you can: halfway between 100
+and 300 is 200, and ten percent of 50 is 5. If the program says something
+else, you have found something.
+[Designing and testing good functions](tutorial:building-reusable-tools),
+later in the series, turns that habit into tests.
 
 </details>
 
-**18.** What is the one habit that catches logical errors?
+## 12. Two at once
 
-<details class="dl-answer"><summary>answer</summary>
-
-Checking against an answer you already know.
-
-Before you trust a program on numbers you cannot check, give it numbers
-you can check. The average of 80, 90 and 70 is 80. Ten percent of 50 is
-5. If the program disagrees, you have found something.
-
-That habit is worth more than any tool.
-[Designing and testing good functions](tutorial:building-reusable-tools), later in
-the series, takes it further, into testing code properly.
-
-</details>
-
-## Fixing
-
-**19.** This program has two mistakes. Can you fix it? Run it after each
-fix.
+This program has two mistakes. Can you fix them? Run it after each fix.
 
 ```python exec
 id: fixing-early-1
-temperature = 25
-if temperature > 20
-    print("Warm")
+brightness = 200
+if brightness >= 128
+    print("#")
 else:
-print("Cool")
+print(".")
 ```
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. Run it, and fix only the line the message names.
-2. Run it again. Is there a new message? Which line does it name now?
-3. Look at the example in the tutorial: which lines need a colon, and
-   which lines need to be indented?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-temperature = 25
-if temperature > 20:
-    print("Warm")
-else:
-    print("Cool")
+```hint
+Fix only the line the message names, then run it again. Is there a new
+message? Which line does it name now?
 ```
 
-The `if` line needs a colon, and `print("Cool")` needs to be indented
-under `else:`.
+```solution
+brightness = 200
+if brightness >= 128:
+    print("#")
+else:
+    print(".")
+---
+The `if` line needs a colon, and `print(".")` needs to be indented under
+`else:`. Python told you about the first mistake only: it stops at the
+first thing it cannot read. So a new message after a fix does not mean the
+fix failed. It can mean Python got further.
+```
 
-Did you notice that Python only told you about the first mistake? It
-stops at the first thing it cannot read. So after a fix, run the code
-again. A new message does not mean the fix failed. It can mean Python
-got further.
+## 13. Next year
 
-</details>
-
-**20.** In a real program, `age` would come from
-`input("How old are you? ")`. Can you fix the last line?
+In a real program, `age` would come from `input("How old are you? ")`. Can
+you fix the last line?
 
 ```python exec
 id: fixing-early-2
@@ -385,32 +322,24 @@ age = "30"
 print("Next year you will be " + age + 1)
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-`age` is a string, so `age + 1` is a `TypeError`. Turn it into a number
-first:
-
-```python
+```solution
 age = "30"
 print("Next year you will be", int(age) + 1)
+---
+`age` is a string, so `age + 1` is a `TypeError`. `int(age)` turns it into
+a number first, and the comma lets `print` show text and a number side by
+side, with no `str()` needed.
 ```
 
-The comma lets `print` show a string and a number side by side, so you
-do not need to turn the number back into a string.
+## 14. Better news
 
-</details>
+Why is an error message better news than no error message?
 
-**21.** Why is an error message better news than no error message?
+<details class="dl-answer"><summary>one good answer</summary>
 
-<details class="dl-answer"><summary>answer</summary>
-
-Because an error message tells you where and what. A syntax error stops
-you before anything happens. A runtime error names the line and the
-reason.
-
-A logical error tells you nothing. It may not be found for weeks, and by
-then it has produced a great deal of confident, wrong output.
-
-The red text is the computer helping you as much as it can.
+An error message says where and what. A syntax error stops you before
+anything happens, and a runtime error names the line and the reason. A
+logical error says nothing at all. It may not be found for weeks, and by
+then it has produced a great deal of confident output that nobody meant.
 
 </details>

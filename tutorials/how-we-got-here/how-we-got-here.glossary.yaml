@@ -47,11 +47,6 @@ entries:
       answer, step by step. Functional code says what the answer is.
       Object-oriented code keeps the data and the things you do to it
       together.
-  - term: "chr()"
-    python: chr
-    kind: function
-    definition: Turns a number into the character it stands for.
-    example: 'chr(72)  # "H"'
   - term: ASCII
     kind: concept
     definition: >
