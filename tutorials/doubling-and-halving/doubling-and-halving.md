@@ -251,6 +251,8 @@ again. In sigma notation:
 
 $$\sum_{k=1}^{64} 2^{k-1} = 2^{64} - 1$$
 
+<img src="one-more-than-all-before.svg" alt="Two rows of small squares, one small square for each grain. The top row is squares 1 to 5 of the chessboard laid end to end: 1, 2, 4, 8 and 16 grains, 31 in all. The bottom row is square 6 on its own: 32 grains. The top row is one grain shorter than the bottom row, and a dashed square marks the one grain it is missing.">
+
 That number may look familiar. On
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#how-many-bits-is-enough),
 each extra bit doubled the number of values a byte could hold. A number

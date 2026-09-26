@@ -232,6 +232,8 @@ the Queen, and the hand was sorted.
 Notice that the list is always in two parts: a sorted part on the left
 that grows by one card each round, and the rest on the right.
 
+<img src="selection-rounds.svg" alt="The hand 7, 3, 12, 1, 9, then the hand after each of the four rounds of selection sort, with the sorted part on the left shaded green. The Ace is 1 and the Queen is 12. Round 1: the smallest card, 1, swaps with the 7, giving 1, 3, 12, 7, 9. Round 2: the smallest left is 3, already in place, so nothing moves. Round 3: the 7 swaps with the 12, giving 1, 3, 7, 12, 9. Round 4: the 9 swaps with the 12, giving 1, 3, 7, 9, 12. The green part grows by one card each round.">
+
 ### Your turn
 
 1. Sort a hand of your own, with six or seven cards. Before you run it,
@@ -287,6 +289,8 @@ The 3 slid one place, past the 7. The Queen did not move, because the 7
 to its left is lower. The Ace slid all the way to the front, past three
 cards, so it moved the furthest. The 9 slid past the Queen and stopped at
 the 7.
+
+<img src="insertion-rounds.svg" alt="The hand 7, 3, 12, 1, 9, then the hand after each card is placed by insertion sort, with the sorted part on the left shaded green and the card just placed in amber. The 3 slides left past 1 card, to the front, giving 3, 7, 12, 1, 9. The 12 stays where it is, because the 7 to its left is lower. The 1 slides left past 3 cards, to the front, giving 1, 3, 7, 12, 9. The 9 slides left past 1 card and stops at the 7, giving 1, 3, 7, 9, 12.">
 
 The list is in two parts here too, a sorted part on the left and the
 rest. But the parts grow in a different way. Selection sort chooses

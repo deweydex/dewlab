@@ -324,6 +324,8 @@ and 5, 9 and 3, 8 and 1. Every small card jumped 4 places towards the
 front in one move. With a gap of 2, each card jumps 2 places. The last
 pass, with a gap of 1, only has to swap neighbours.
 
+<img src="shell-sort-gaps.svg" alt="Shell sort on 13, 12, 9, 8, 7, 5, 3, 1, in four rows. In the first row, arcs join the values 4 places apart, in 4 pairs: 13 and 7, 12 and 5, 9 and 3, 8 and 1. After the gap-4 pass the list is 7, 5, 3, 1, 13, 12, 9, 8, and arcs join every other value, in 2 groups of 4. After the gap-2 pass it is 3, 1, 7, 5, 9, 8, 13, 12, and the next pass, with a gap of 1, is an ordinary insertion sort. After it the list is 1, 3, 5, 7, 8, 9, 12, 13, sorted.">
+
 ```question
 id: racing-shell-2
 type: fill-in-the-blank

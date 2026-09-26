@@ -5152,3 +5152,13 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Found while checking.** Every page was run with its solutions, one world at a time. That found a brightness claim the matrix contradicted, a flip described as a turn, two claims about the Plough that were not true, "the one kind of move where order does not matter" (there are others), and an explanation of the $a \times d$ guess that did not say which way it was off.
 
 *Cost to change: moderate. The order lives in the course file and topic groups. Cell ids are new throughout, which is free until 2 October; after that, the toolkit cell ids (`grid-scale`, `matrix-move`, `matrix-dot-multiply`, `matrix-det-inverse`, `systems-eliminate`, `systems-solve` and the rest) are keys for the reader's saved functions on every later page.*
+
+---
+
+**7.259 — The Dewey Track gets its diagrams, an aside on every practice page, and the Irish Lotto's new numbers.** Issues #354 and #352.
+
+- **Diagrams.** 53 figures across 38 Dewey Track tutorials, drawn by `dev/graphics/dewey_units_1_5.py` and `dev/graphics/dewey_units_6_10.py` in the way `planning/VISUAL_LIST.md` describes: every number computed, often by running the page's own cell; theme colours only; full-sentence alt text. Two text drawings (the seven-segment block and the outfit tree) became pictures. A figure never shows an answer the page asks the reader to predict, and a chart or animation a cell already draws is not repeated as a still. Places considered and turned down are listed in the PR.
+- **Asides.** Each of the 47 practice pages and 9 mixed pages has one `dl-note` beside the problem it belongs to: a bit of history, a word's origin or a real system doing the same thing, each checked against a source (listed in the PR). Things a tutorial already tells were left out.
+- **The Irish Lotto** draws 6 numbers from 45 since 5 September 2026, not from 47 (lottery.ie, "Change is coming"; RTÉ, 16 July 2026). *Orders and choices*, its practice page, *How likely is it?*'s practice page and *Counting carefully*'s practice page now use C(45, 6) = 8,145,060, with every derived number run again.
+
+*Cost to change: a diagram is a function in its generator; an aside is a paragraph.*

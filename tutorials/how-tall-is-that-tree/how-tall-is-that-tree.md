@@ -169,6 +169,8 @@ You stand 20 m from the trunk. A phone app that measures angles says the
 top of the tree is 35° above level, and your eyes are about 1.6 m above
 the ground. Guess the tree's height before you run anything.
 
+<img src="measuring-the-tree.svg" alt="You stand 20 m from the trunk of a tree, drawn to scale. A dashed level line runs from your eyes, 1.6 m above the ground, to the trunk, and meets it at a right angle. Your line of sight rises at 35° from the level line to the top of the tree. The part of the tree above your eyes is marked with a question mark, and the part below them is 1.6 m.">
+
 We know the adjacent side, 20 m, and want the opposite side, the tree
 above your eyes. TOA holds both. In words: the height above your eyes is
 the distance times the tangent of the angle.
@@ -552,6 +554,8 @@ towards the tree, to a spot B, and the top is now 40° up. A, B and the
 treetop T make a triangle with no right angle. At A, its angle is 28°.
 At B, the 40° is outside the triangle, so the angle inside is
 $180 - 40 = 140°$. The angle at T is what is left, $180 - 28 - 140 = 12°$.
+
+<img src="across-the-river.svg" alt="A side view, drawn to scale. Spots A and B are 15 m apart on the near side of a river, with B nearer the river, and an oak stands on the far side. Straight lines join A, B and T, the top of the tree, into a long, thin triangle. At A the angle is 28°. At B, the angle between the ground ahead and the line up to T is 40°, outside the triangle, and the angle inside the triangle is 140°. At T the angle is 12°.">
 
 We know one side, AB = 15 m, and the angle across from it, 12° at T.
 When a side and its opposite angle are both known, the *sine rule* helps.

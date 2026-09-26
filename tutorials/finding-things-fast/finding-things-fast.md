@@ -284,6 +284,8 @@ Priya comes after Niamh, so the left half, Aoife to Niamh, was
 skipped, and `low` became 4. The second look was halfway between 4 and 7,
 at index 5, and that was Priya.
 
+<img src="halving-the-contacts.svg" alt="The eight contacts in alphabetical order, Aoife to Tomasz, at indexes 0 to 7, drawn once for each look. Look 1: low is 0, high is 7, and the middle is index 3, Niamh. Niamh comes before Priya, so low becomes 4. Look 2: only indexes 4 to 7, Oisín to Tomasz, are still shaded. The middle is index 5, and that is Priya.">
+
 Three names change at every look, and that is a lot to hold in your
 head. If it feels like too much, take a pencil and write `low`, `high`
 and `middle` as three columns, one row per look. The third step of the
@@ -380,6 +382,8 @@ too, so the search skipped Tomasz and everything after him, and
 Aoife went with them. In a sorted list, every name after Tomasz would
 come later in the alphabet than Tomasz. In this list, that is not
 true.
+
+<img src="searching-unsorted-contacts.svg" alt="The contacts in the order they were added, Siobhán, Tomasz, Aoife, Kwame, Niamh, Oisín, Priya and Liam, drawn once for each look, with Aoife at index 2 in a dashed box. Look 1: the middle is index 3, Kwame. Aoife comes before Kwame, so high becomes 2, and indexes 0 to 2 are still shaded. Look 2: the middle is index 1, Tomasz. Aoife comes before Tomasz, so high becomes 0. Now only Siobhán is shaded, and Aoife is outside the shaded part. Look 3: the middle is index 0, Siobhán, and high becomes −1. Low is past high, so the search gives back −1.">
 
 Binary search still keeps its promise, but only in one space: a
 sorted list. There, "this item comes before the target" means "so does
