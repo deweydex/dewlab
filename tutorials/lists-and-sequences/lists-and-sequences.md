@@ -567,3 +567,8 @@ Python Software Foundation. *The Python Tutorial*, section 3.1.3, "Lists".
 <https://docs.python.org/3/tutorial/introduction.html#lists>. The official
 introduction to lists, including slicing with a step, which this page leaves
 for the practice.
+
+Reducible (2019). *What if you had to invent a dynamic array?*
+<https://www.youtube.com/watch?v=5AllG-i_yto>. What a Python list does
+underneath, so that adding to the end stays quick however long the list
+grows. About fourteen minutes.

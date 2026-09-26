@@ -511,3 +511,11 @@ grow: for three unknowns we had to eliminate by hand first.
 
 For another route through the same ideas, the integrated course has
 [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations#simultaneous-equations).
+
+## Where to read more
+
+3Blue1Brown (2019). *Cramer's rule, explained geometrically: Chapter 12,
+Essence of linear algebra.* <https://www.youtube.com/watch?v=jBsC34PxzoM>.
+The formula this page finds for every pair of equations has a name,
+Cramer's rule. Grant Sanderson shows why it works, with areas. About
+twelve minutes.

@@ -124,3 +124,10 @@ not, or when the visitor cannot see it.
 | `alt` | The attribute that holds an image's description | `alt="A greyhound on a sofa"` |
 | *alt text* | The description of an image, for a screen reader or a failed load | "A rescued greyhound asleep on a red sofa" |
 | `alt=""` | An empty description: the image is decoration, and a screen reader skips it | `<img src="line.png" alt="">` |
+
+## Where to read more
+
+Technology Connections (2018). *Closed Captioning: More Ingenious than You
+Know.* <https://www.youtube.com/watch?v=6SL6zs2bDks>. Alt text gives a
+picture words; captions give sound words. How captions were added to
+television, and who uses them. About twenty minutes.

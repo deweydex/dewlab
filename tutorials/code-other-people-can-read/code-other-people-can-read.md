@@ -512,3 +512,13 @@ Google's guide
 [How to do a code review](https://google.github.io/eng-practices/review/reviewer/)
 is what reviewers at one large company are asked to look for, and how
 to say it kindly.
+
+Answer in Progress (2022). *why smart people write bad.*
+<https://www.youtube.com/watch?v=tdeKDC_TY0o>. Why clever people often
+write in a way that is hard to follow, and what makes writing easier to
+read. The same is true of code. About eleven minutes.
+
+LaurieWired (2024). *A Competition for Unreadable Code?*
+<https://www.youtube.com/watch?v=i55ptVQw1Kk>. Every year, people compete
+to write the hardest C code to read. LaurieWired looks at some winners,
+which break every habit on this page. About thirteen minutes.

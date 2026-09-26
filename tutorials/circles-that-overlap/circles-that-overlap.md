@@ -655,3 +655,10 @@ unit, where everything in Unit 5 meets in one report on real data.
 
 For another route through the same ideas, the integrated course has
 [Venn diagrams: drawing sets and their overlaps](tutorial:venn-diagrams).
+
+## Where to read more
+
+Patrick J (2017). *The Principle of Inclusion Exclusion: Basic Example.*
+<https://www.youtube.com/watch?v=Xd2ZGvMqXsc>. One worked example of
+counting "either" by adding the two circles and taking away the overlap.
+About seven minutes.

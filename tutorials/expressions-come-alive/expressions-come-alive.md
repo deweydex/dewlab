@@ -407,3 +407,8 @@ first.
 Khan Academy. *Multiplying Polynomials Example.*
 <https://www.youtube.com/watch?v=yJzLYa-_Y1k>. The FOIL method this page
 turns into a nested loop over coefficients.
+
+Stand-up Maths (2023). *Beware the Runge Spikes!*
+<https://www.youtube.com/watch?v=F_43oTnTXiw>. Draw a polynomial through a
+few points and it behaves. Add more points and it can swing wildly between
+them. Matt Parker shows why. About seventeen minutes.
