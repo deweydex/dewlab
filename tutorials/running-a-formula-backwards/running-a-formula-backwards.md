@@ -1,7 +1,7 @@
 ---
 title: "Running a formula backwards: rearranging and inverses"
 year: "2026-2027"
-version: 2026.09.25.2
+version: 2026.09.26.1
 covers:
   one-formula-three-questions:
     covers: [MIT-1.7]
@@ -35,7 +35,7 @@ On this page we:
 - see one formula answer three different questions
 - rearrange a formula by doing the same move to both sides
 - undo a temperature formula, step by step, in reverse order
-- write functions that undo each other, and test them both ways
+- write functions that undo each other, and check them both ways
 - find where a rearranged formula needs a smaller space
 - add and simplify fractions that have letters in them
 
@@ -257,36 +257,60 @@ not the function above it. A later page,
 [What a function can see](tutorial:what-a-function-can-see), is about
 exactly that.
 
-A radio signal's journey is a trip too. Now the tests. The first three check
-the three questions from the top of this page. The last two are different: each one runs a formula forwards,
-then backwards, and expects to arrive where it started. Until your two
-functions are written, this cell stops with an error.
+A radio signal's journey is a trip too. How do your three functions
+compare with one way to write them? The table below runs the same calls
+on yours and on a solution, side by side. The first three rows are the
+three questions from the top of this page. The last two are different.
+Each one runs a formula forwards, then backwards, to see if it arrives
+where it started.
 
-```python exec
-id: running-a-toolkit-travel-tests
-assert distance_travelled(299792, 499) == 149596208
-assert round(speed(42700, 92.9 * 60), 2) == 7.66
-assert round(travel_time(225_000_000, 299792)) == 751
+```inputs
+for: running-a-toolkit-travel
+distance_travelled(299792, 499)
+round(speed(42700, 92.9 * 60), 2)
+round(travel_time(225_000_000, 299792))
+travel_time(distance_travelled(80, 3), 80)    # 80 km/h for 3 hours, and back to the hours
+speed(distance_travelled(80, 3), 3)           # 80 km/h for 3 hours, and back to the speed
+```
 
-assert travel_time(distance_travelled(80, 3), 80) == 3
-assert speed(distance_travelled(80, 3), 3) == 80
-print("The travel tools keep their promises.")
+```solution
+for: running-a-toolkit-travel
+def speed(distance, time):
+    """Return the average speed for a distance covered in a time.
+
+    Use matching units: km and seconds give km/s, km and hours km/h.
+    time must not be 0.
+    """
+    return distance / time
+
+
+def travel_time(distance, speed):
+    """Return how long it takes to cover distance at an average speed.
+
+    Use matching units: km and km/s give seconds, km and km/h hours.
+    speed must not be 0.
+    """
+    return distance / speed
+
+
+def distance_travelled(speed, time):
+    """Return the distance covered at an average speed for a time.
+
+    Use matching units: km/s and seconds give km, km/h and hours km.
+    """
+    return speed * time
 ```
 
 ```hint
-What did you expect the failing line to give? Try printing
-`travel_time(60, 20)` on its own. It should be 3. What does your version
-give now?
+for: running-a-toolkit-travel
+after: 3 runs
+Which row is different? Try printing `travel_time(60, 20)` on its own.
+60 km at 20 km/h takes 3 hours. What does your version give now?
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. In `travel_time`, the `...` becomes
-`return distance / speed`. In `distance_travelled`, it becomes
-`return speed * time`. If you have not written them yet, put these in
-the stub now, so that later cells on this page can use them.
-
-</details>
+Later cells on this page use `travel_time` and `distance_travelled`. If
+you have not written them yet, open the solution under the table, copy
+it into the stub, and run it.
 
 ## Undoing, in reverse order
 
@@ -407,31 +431,44 @@ def fahrenheit_to_celsius(fahrenheit):
     return (fahrenheit - 32) * 5 / 9
 ```
 
-How do we test an inverse? There are two kinds of test. The first kind
-uses values we already know: 0 °C is 32 °F, and 100 °C is 212 °F. The
-second kind needs no known values at all. We go there and back, and we
-should arrive where we started. This cell and the next two need your
-`fahrenheit_to_celsius`, so write it first. What do you expect the last
+How do we check an inverse? There are two ways. The first way uses
+values we already know: 0 °C is 32 °F, and 100 °C is 212 °F. The table
+below runs your `fahrenheit_to_celsius` on some of them, beside a
+solution.
+
+```inputs
+for: running-a-toolkit-temperature
+fahrenheit_to_celsius(32)
+fahrenheit_to_celsius(212)
+fahrenheit_to_celsius(-76)     # Mars
+```
+
+```solution
+for: running-a-toolkit-temperature
+def celsius_to_fahrenheit(celsius):
+    """Return a temperature in degrees Fahrenheit, given it in degrees Celsius."""
+    return celsius * 9 / 5 + 32
+
+
+def fahrenheit_to_celsius(fahrenheit):
+    """Return a temperature in degrees Celsius, given it in degrees Fahrenheit.
+
+    This undoes celsius_to_fahrenheit.
+    """
+    return (fahrenheit - 32) * 5 / 9
+```
+
+The second way needs no known values at all. We go there and back, and
+we should arrive where we started. This cell and the next two need your
+`fahrenheit_to_celsius`, so write it first. What do you expect these
 three lines to print?
 
 ```python exec
 id: running-a-backwards-1
-assert fahrenheit_to_celsius(32) == 0
-assert fahrenheit_to_celsius(212) == 100
-assert fahrenheit_to_celsius(-76) == -60
-
 print(fahrenheit_to_celsius(celsius_to_fahrenheit(37)))
 print(fahrenheit_to_celsius(celsius_to_fahrenheit(-40)))
 print(fahrenheit_to_celsius(celsius_to_fahrenheit(1)))
 ```
-
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. In `fahrenheit_to_celsius`, the `...` becomes
-`return (fahrenheit - 32) * 5 / 9`. The brackets make the subtraction
-happen first.
-
-</details>
 
 Body temperature, 37 °C, comes back as `37.0`. And −40 comes back as
 −40. It is the one temperature where both scales agree.
@@ -454,19 +491,18 @@ print(round(there_and_back, 9) == 1)
 On [Machines that take a number](tutorial:machines-that-take-a-number#machines-in-a-row-composition)
 we joined two functions into one with `compose`, and saw that a function
 composed with its inverse returns whatever it is given. Here it is,
-tested on a whole row of temperatures, with a loop. What will it print?
+tried on a whole row of temperatures, with a loop. What will it print?
 
 ```python exec
 id: running-a-backwards-3
 there_and_back = compose(fahrenheit_to_celsius, celsius_to_fahrenheit)
 
 for celsius in [-80, -60, -40, 0, 1, 18.5, 37, 100]:
-    assert round(there_and_back(celsius), 9) == celsius
-print("fahrenheit_to_celsius undoes celsius_to_fahrenheit.")
+    print(celsius, "comes back as", round(there_and_back(celsius), 9))
 ```
 
-The loop checks eight temperatures at once, from a lab freezer to
-boiling water. A test like this does not need anyone to know the answers in advance.
+The loop tries eight temperatures at once, from a lab freezer to
+boiling water. A check like this does not need anyone to know the answers in advance.
 It only needs the promise that going there and back changes nothing.
 
 ### Your turn

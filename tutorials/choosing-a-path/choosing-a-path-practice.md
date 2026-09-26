@@ -2,7 +2,7 @@
 title: "Choosing a path: if, elif and else — Practice"
 practice_for: choosing-a-path
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 ---
 
 # Choosing a path: if, elif and else — Practice
@@ -329,7 +329,6 @@ assert uv_band(7) == "High"
 assert uv_band(8) == "Very high"
 assert uv_band(10) == "Very high"
 assert uv_band(11) == "Extreme"
-print("All tests pass.")
 ```
 
 The smallest limit goes first, and each `elif` only runs when every
@@ -380,39 +379,36 @@ needs exactly one answer, and her three `if` lines gave three.
 </details>
 
 **11. Fix.** A home heating app says a room is comfortable from 18 to 22
-degrees, both included. The tests stop with an error. Run the cell, read
-the last line of the error, and fix the function.
+degrees, both included. For 18 degrees, this function says `False`. Can
+you find the part of the line that does not do what the docstring says,
+and fix it?
 
 ```python exec
 id: choosing-practice-fix-comfort
 def comfortable(temperature):
     """Return True when the temperature is from 18 to 22 degrees, both included."""
     return 18 < temperature < 22
-
-assert comfortable(20) == True
-assert comfortable(18) == True
-assert comfortable(22) == True
-assert comfortable(17.5) == False
-assert comfortable(23) == False
-print("All tests pass.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+comfortable(20)
+comfortable(18)      # the low end
+comfortable(22)      # the high end
+comfortable(17.5)
+comfortable(23)
+```
 
-The error is an `AssertionError` on the line `assert comfortable(18) ==
-True`. The promise says 18 is included, but `18 < 18` is False. Use
-`<=` on both sides:
-
-```python
+```solution
 def comfortable(temperature):
     """Return True when the temperature is from 18 to 22 degrees, both included."""
     return 18 <= temperature <= 22
+---
+The docstring says 18 is included, but `18 < 18` is False. The same is
+true of 22. Use `<=` on both sides.
+
+We only see the problem because two of the inputs are exactly on the
+ends.
 ```
-
-Now every test passes. We only found the problem because two tests are
-exactly on the ends.
-
-</details>
 
 ## Stretch
 

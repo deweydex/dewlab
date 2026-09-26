@@ -1,7 +1,7 @@
 ---
 title: "How far apart? Distance, midpoint and Pythagoras"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
 covers:
   straight-across-and-straight-up:
     covers: [MIT-4.3]
@@ -228,25 +228,44 @@ def distance(p, q):
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 ```
 
-Python has its own version, `math.dist`, which does the same job. The
-tests use it as a second check. Until your `distance` has its
-`return` line, the first test stops with an `AssertionError`. Before
-you run them, what is the distance from the player to the ball?
+How does your `distance` compare with one way to write it? The table
+below runs the same calls on your function and on a solution, side by
+side. Python has its own version, `math.dist`, which does the same
+job, so some rows have a second row under them with `math.dist`. Until
+your `distance` has its `return` line, its column shows `None`. Before
+you compare, what is the distance from the player to the ball?
 
-```python exec
-id: how-far-toolkit-distance-tests
+```inputs
+for: how-far-toolkit-distance
+distance((0, 0), (3, 4))          # the 3, 4, 5 triangle
+distance((3, 4), (0, 0))          # either order
+distance((2, 5), (9, 5))          # on one row
+distance((6, 6), (6, 6))          # a point is 0 from itself
+distance((1, 2), (5, 4))
+math.dist((1, 2), (5, 4))         # ...Python's own version
+distance((-3, 7), (2, -1.5))
+math.dist((-3, 7), (2, -1.5))     # ...Python's own version
+distance(player, ball)            # player to ball
+math.dist(player, ball)           # ...Python's own version
+```
+
+```solution
+for: how-far-toolkit-distance
 import math
 
-assert distance((0, 0), (3, 4)) == 5, "the 3, 4, 5 triangle"
-assert distance((3, 4), (0, 0)) == 5, "either order"
-assert distance((2, 5), (9, 5)) == 7, "on one row"
-assert distance((6, 6), (6, 6)) == 0, "a point is 0 from itself"
-for p, q in [((1, 2), (5, 4)), ((-3, 7), (2, -1.5)), (player, ball)]:
-    assert close_enough(distance(p, q), math.dist(p, q)), (p, q)
-print("distance keeps its promise. Player to ball:", distance(player, ball))
+def distance(p, q):
+    """Return the straight-line distance between the points p and q.
+
+    p and q are (x, y) pairs. distance((0, 0), (3, 4)) is 5.0.
+    """
+    x1, y1 = p
+    x2, y2 = q
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 ```
 
 ```hint
+for: how-far-toolkit-distance
+after: 3 runs
 Try `print(distance((0, 0), (3, 4)))` on its own. What came back? The
 formula has three steps: two differences, their squares added, then a
 square root.
@@ -313,20 +332,31 @@ def midpoint(p, q):
 How do we know the point is really halfway? Two things must be true.
 It must be the same distance from both ends, half the whole way. And it
 must be on the line between them, so the slope from the start to the
-midpoint must be the slope of the whole line. The tests check both,
-with `slope` from the last page. Until `midpoint` is written, the first
-test stops with `AssertionError: None`.
+midpoint must be the slope of the whole line. The table below shows
+both, with `slope` from the last page. It runs the same calls on your
+`midpoint` and on a solution, side by side. Where a row is different,
+try that call on its own.
 
-```python exec
-id: how-far-toolkit-midpoint-tests
-first_player = (2, 1)
-second_player = (10, 7)
-camera = midpoint(first_player, second_player)
-assert camera == (6, 4), camera
-assert close_enough(distance(first_player, camera), distance(camera, second_player)), "same from both ends"
-assert close_enough(distance(first_player, camera), distance(first_player, second_player) / 2), "half the way"
-assert close_enough(slope(first_player, camera), slope(first_player, second_player)), "on the line"
-print("midpoint keeps its promise. The camera points at", camera, distance(first_player, camera), "m from each player.")
+```inputs
+for: how-far-toolkit-midpoint
+midpoint((2, 1), (10, 7))                        # the camera
+distance((2, 1), midpoint((2, 1), (10, 7)))      # from the first player...
+distance(midpoint((2, 1), (10, 7)), (10, 7))     # ...and from the second: the same
+distance((2, 1), (10, 7)) / 2                    # half the whole way
+slope((2, 1), midpoint((2, 1), (10, 7)))         # the slope to the camera...
+slope((2, 1), (10, 7))                           # ...and of the whole line: the same
+```
+
+```solution
+for: how-far-toolkit-midpoint
+def midpoint(p, q):
+    """Return the point halfway between the points p and q, as an (x, y) pair.
+
+    midpoint((2, 1), (10, 7)) is (6.0, 4.0).
+    """
+    x1, y1 = p
+    x2, y2 = q
+    return ((x1 + x2) / 2, (y1 + y2) / 2)
 ```
 
 The camera points at $(6, 4)$, 5 m from each player. The two players

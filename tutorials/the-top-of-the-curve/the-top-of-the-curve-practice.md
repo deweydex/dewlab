@@ -2,7 +2,7 @@
 title: "The top of the curve: maximum and minimum — Practice"
 practice_for: the-top-of-the-curve
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 ---
 
 # The top of the curve: maximum and minimum — Practice
@@ -154,8 +154,10 @@ game needs whole blocks, and here the best width is whole already.
 </details>
 
 **6. Fix.** Schlomo, who is also learning Python, wrote his own
-`vertex`. The first test passes and the second fails. Run it, find the
-line that does not do what Schlomo meant, and change it.
+`vertex`. For the square, $x^2 - 6x + 13$, it gives the vertex (3, 4).
+For the bowl, $400t^2 - 440t + 112$, the vertex should be at
+$t = 0.55$, and his is nowhere near. Can you find the line that does
+not do what Schlomo meant, and change it?
 
 ```python exec
 id: the-top-practice-fix
@@ -164,41 +166,43 @@ def vertex_again(a, b, c):
     x = -b / 2 * a
     y = a * x ** 2 + b * x + c
     return (x, y)
+```
 
-assert vertex_again(1, -6, 13) == (3, 4)
-assert close_enough(vertex_again(400, -440, 112)[0], 0.55), vertex_again(400, -440, 112)
-print("vertex_again keeps its promise.")
+```inputs
+vertex_again(1, -6, 13)       # the square
+vertex_again(400, -440, 112)  # the bowl
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The second test's message shows what the function returned. Is the
-   $x$ anywhere near 0.55?
+1. Look at the row for the bowl. Is Schlomo's $x$ anywhere near 0.55?
 2. Calculate `440 / 2 * 400` by hand, in the order Python does it.
 3. Compare with the formula $-\frac{b}{2a}$. What is on the bottom?
 
-**Think about:** why did the first test pass? What is special about its
-$a$?
+**Think about:** why did the square give the vertex it should? What is
+special about its $a$?
 
 </details>
 
-<details class="dl-answer"><summary>answer</summary>
-
+```solution
+def vertex_again(a, b, c):
+    """Return the vertex of y = ax² + bx + c as a pair (x, y)."""
+    x = -b / (2 * a)
+    y = a * x ** 2 + b * x + c
+    return (x, y)
+---
 The line `x = -b / 2 * a` divides by 2 and then *multiplies* by `a`,
 because Python does `/` and `*` from left to right, as on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#which-comes-first).
-The formula wants the whole of $2a$ on the bottom:
+The formula wants the whole of $2a$ on the bottom.
 
-```python
-x = -b / (2 * a)
+Schlomo's $x$ for the bowl was 88,000, far outside the letter,
+where $t$ is from 0 to 1. The square
+gave the vertex it should by luck. Its $a$ is 1, and multiplying by 1
+and dividing by 1 give the same answer. A check with $a = 1$ cannot
+tell the two lines apart, which is a reason to check with other values
+too.
 ```
-
-Schlomo's $x$ for the bowl was 88,000, far off the letter. The first
-test passed by luck. Its $a$ is 1, and multiplying by 1 and dividing by
-1 give the same answer. A test with $a = 1$ cannot tell the two lines
-apart, which is a reason to test with other values too.
-
-</details>
 
 **7. Predict.** A game draws a thrown ball 10 times a second. The
 ball's height after $t$ seconds is $1 + 14t - 4.9t^2$ metres, so frame

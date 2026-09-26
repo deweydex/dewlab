@@ -7,7 +7,7 @@ practice_across:
   - everything-is-ones-and-zeros
   - when-python-says-no
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 ---
 
 # Mixed problems: instructions for a machine
@@ -593,7 +593,7 @@ of floats, the question to ask is "close enough?", for example
 
 **17. Fix.** A game controller sends the state of four buttons as four
 bits. This function should turn them back into a number, so `1, 1, 0, 1`
-should give 13. The test fails. Find why, and change it.
+should give 13. It gives 14. Can you find why, and change it?
 
 ```python exec
 id: mixed-instructions-bits
@@ -603,7 +603,27 @@ def from_bits(bit_8, bit_4, bit_2, bit_1):
 
 
 print(from_bits(1, 1, 0, 1))
-assert from_bits(1, 1, 0, 1) == 13
+```
+
+```inputs
+from_bits(1, 1, 0, 1)
+```
+
+```solution
+def from_bits(bit_8, bit_4, bit_2, bit_1):
+    """The number made by four bits, worth 8, 4, 2 and 1."""
+    return bit_8 * 2 ** 3 + bit_4 * 2 ** 2 + bit_2 * 2 ** 1 + bit_1 * 2 ** 0
+
+
+print(from_bits(1, 1, 0, 1))
+---
+The last part is `bit_1 * 2 ** 1`, which is worth 2, not 1. The ones
+column is $2^0 = 1$.
+
+This prints `13`. `from_bits(0, 0, 0, 1)` now gives 1, and
+`from_bits(1, 1, 1, 1)` gives 15. Python saw nothing wrong with the
+first version. Only a comparison with the 13 we expected showed the
+problem. Without it, 14 would have looked like a fine answer.
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -615,31 +635,8 @@ assert from_bits(1, 1, 0, 1) == 13
 **Think about:** the names promise worths of 8, 4, 2 and 1. Does the
 code keep that promise?
 
-**Try this next:** add a test that uses only the last bit,
-`from_bits(0, 0, 0, 1)`. Would it have caught the problem alone?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-The last part is `bit_1 * 2 ** 1`, which is worth 2, not 1. The ones
-column is $2^0 = 1$:
-
-```python
-def from_bits(bit_8, bit_4, bit_2, bit_1):
-    """The number made by four bits, worth 8, 4, 2 and 1."""
-    return bit_8 * 2 ** 3 + bit_4 * 2 ** 2 + bit_2 * 2 ** 1 + bit_1 * 2 ** 0
-
-
-print(from_bits(1, 1, 0, 1))
-assert from_bits(1, 1, 0, 1) == 13
-assert from_bits(0, 0, 0, 1) == 1
-assert from_bits(1, 1, 1, 1) == 15
-```
-
-This prints `13`, and every test passes. Python saw nothing wrong with
-the first version. Only the test noticed. Without the test, 14 would have
-looked like a fine answer.
+**Try this next:** call `from_bits(0, 0, 0, 1)`, which uses only the
+last bit. Would that call alone have shown the problem?
 
 </details>
 

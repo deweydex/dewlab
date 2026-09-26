@@ -234,7 +234,6 @@ assert pool_size("hello") == 26
 assert pool_size("Hello1") == 62
 assert pool_size("Hello1!") == 94
 assert pool_size("1234") == 10
-print("pool_size keeps its promise.")
 ```
 
 Inside the loop, `elif` works, because each character is exactly one
@@ -302,7 +301,6 @@ def count_passwords(password):
 
 assert count_passwords("hello") == 11881376
 assert count_passwords("1234") == 10000
-print("count_passwords keeps its promise.")
 ```
 
 `len` works on a string, and gives the number of characters. $26^5 =

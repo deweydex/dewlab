@@ -1,7 +1,7 @@
 ---
 title: "Doubling and halving: powers and logarithms at work"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 datasets: [co2-emissions]
 covers:
   a-rumour-that-doubles:
@@ -497,46 +497,25 @@ def halvings(n):
     return count
 ```
 
-Run the toolkit cell, then the tests. Until `halvings` is written, the
-first test stops with an `AssertionError`, because `...` returns
-`None`. The last test checks the promise against `math.log2` for every
-whole number up to 10,000.
+Run the toolkit cell. How does your `halvings` compare with one way to
+write it? The table below runs the same calls on your function and on a
+solution, side by side. Until `halvings` is written, your column shows
+`None`, because `...` returns `None`. The last two rows put
+`halvings(10000)` beside $\log_2 10000$, rounded down.
 
-```python exec
-id: doubling-toolkit-tests
-assert halvings(128) == 7, "seven rounds of tennis"
-assert halvings(1000) == 9, "500, 250, 125, 62, 31, 15, 7, 3, 1"
-assert halvings(1) == 0, "1 is already 1"
-assert halvings(2) == 1
-assert halvings(population) == 22, "one fewer than the rumour's hours"
-for n in range(1, 10001):
-    assert halvings(n) == math.floor(math.log2(n)), n
-print("halvings keeps its promise.")
+```inputs
+for: doubling-toolkit
+halvings(128)                     # seven rounds of tennis
+halvings(1000)                    # 500, 250, 125, 62, 31, 15, 7, 3, 1
+halvings(1)                       # 1 is already 1
+halvings(2)
+halvings(population)              # one fewer than the rumour's hours
+halvings(10000)
+math.floor(math.log2(10000))      # log2, rounded down
 ```
 
-```hint
-Try `print(halvings(8))` on its own. What did you expect, and what came
-back? Which name in the function should change each time round the loop?
-```
-
-```hint
-after: 10 errors
-title: some steps
-1. Start a counter at 0.
-2. While `n` is bigger than 1, halve `n` with `// 2` and add 1 to the
-   counter.
-3. After the loop, give back the counter.
-
-**Think about:** why the loop's condition is `n > 1` and not `n > 0`.
-What would `halvings(8)` give with `n > 0`?
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. Yours may be different and work too. Run the
-tests to see what yours does.
-
-```python
+```solution
+for: doubling-toolkit
 def halvings(n):
     """Return how many times the whole number n (1 or more) can be halved,
     rounding down each time, before it reaches 1.
@@ -551,13 +530,32 @@ def halvings(n):
     return count
 ```
 
-</details>
+```hint
+for: doubling-toolkit
+after: 3 runs
+Which row is different? Try `print(halvings(8))` on its own. What did
+you expect, and what came back? Which name in the function should
+change each time round the loop?
+```
 
-If you have not written `halvings` yet, open the answer above and copy
-it into the stub. The rest of the page uses it.
+```hint
+for: doubling-toolkit
+after: 8 runs
+title: some steps
+1. Start a counter at 0.
+2. While `n` is bigger than 1, halve `n` with `// 2` and add 1 to the
+   counter.
+3. After the loop, give back the counter.
+
+**Think about:** why the loop's condition is `n > 1` and not `n > 0`.
+What would `halvings(8)` give with `n > 0`?
+```
+
+If you have not written `halvings` yet, open the solution under the
+table and copy it into the stub. The rest of the page uses it.
 
 `math.floor` rounds down, the partner of `math.ceil`. Look again at the
-fifth test. 5,149,139 halves 22 times to reach 1,
+fifth row. 5,149,139 halves 22 times to reach 1,
 while the rumour needed 23 doublings to pass it. Halvings round
 down and doublings round up, because 5,149,139 sits between $2^{22}$ and
 $2^{23}$.

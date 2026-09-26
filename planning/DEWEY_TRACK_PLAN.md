@@ -93,7 +93,8 @@ How the track carries them:
    page drawing on everything so far.
 7. **The toolkit.** Readers build one module of their own, toolkit.py,
    across the whole track: `mean`, `distance`, `solve_quadratic`,
-   `derivative_at` and about thirty more, each with its own tests. Later
+   `derivative_at` and about thirty more, each with a comparison against a
+   solution. Later
    units call the functions earlier units built. The capstone is "use your
    toolkit". See §6 for how this works in the browser.
 8. **Never measure the reader.** A page never says how easy or obvious
@@ -270,12 +271,14 @@ James Webb telescope's mirror and a drone into the wind (4.3); the Mars
 Climate Orbiter, a boiling-point bug, Irish January nights and the size
 of an image (4.4); a download's speed, a packet counter, a ball dropped
 on Earth and on the Moon, a sensor log and a unit-factor closure (4.5).
-No page uses money. 4.4 starts toolkit.py properly: every function in
-it gets `assert` tests, and the reader learns walkthroughs (tracing a
-function by hand) and the debugger's step-through. Unit product (on
+No page uses money. 4.4 starts toolkit.py properly: the reader learns
+`assert` tests, walkthroughs (tracing a function by hand) and the
+debugger's step-through. Outside 4.4, a page never writes tests against
+the reader's functions; each toolkit function comes with a comparison
+against a solution instead (7.269). Unit product (on
 `mixed-making-your-own-tools`): a converter for reading about space,
 km and miles, kg and pounds, °C and °F, with astronomical units and
-a 1 TB drive in GiB on the way, every conversion tested both ways.
+a 1 TB drive in GiB on the way, every conversion checked both ways.
 Toolkit gains `compose`, the shape tools, `speed`, `travel_time`,
 `distance_travelled`, `celsius_to_fahrenheit`, `fahrenheit_to_celsius`
 and `close_enough`.

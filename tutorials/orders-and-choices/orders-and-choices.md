@@ -1,7 +1,7 @@
 ---
 title: "Orders and choices: factorials, permutations and combinations"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   three-songs-in-a-row:
     covers: [MIT-5.3]
@@ -241,24 +241,36 @@ def factorial(n):
     return result
 ```
 
-Now test it. Until you write `factorial`, this cell stops with an
-error. The test is doing its job. The last test compares yours
-with Python's own `math.factorial`, which reaches the same number
-another way.
+How does your `factorial` compare with one way to write it? The table
+below runs the same calls on yours and on a solution. Where a row is
+different, try that call on its own. The last row is a big number.
+Python's own `math.factorial(20)` reaches the same number another way.
 
-```python exec
-id: orders-factorial-tests
-import math
+```inputs
+for: orders-toolkit-factorial
+factorial(3)
+factorial(4)
+factorial(0)
+factorial(10)
+factorial(20)    # the same as Python's math.factorial(20)
+```
 
-assert factorial(3) == 6
-assert factorial(4) == 24
-assert factorial(0) == 1
-assert factorial(10) == 3628800
-assert factorial(20) == math.factorial(20)
-print("factorial keeps its promise.")
+```solution
+for: orders-toolkit-factorial
+def factorial(n):
+    """Return n!, the number of orders of n different things.
+
+    n is a whole number, 0 or more. factorial(0) is 1.
+    """
+    result = 1
+    for number in range(1, n + 1):
+        result = result * number
+    return result
 ```
 
 ```hint
+for: orders-toolkit-factorial
+after: 3 runs
 What does `print(factorial(4))` show on its own? If it shows `None`, the
 function reached its end without a `return`.
 ```
@@ -331,7 +343,7 @@ top of the page.
 ### Your turn: permutations in your toolkit
 
 1. Fill in the body of `permutations` below, using `factorial` and `//`.
-2. Run the cell, then run the tests under it.
+2. Run the cell. Then compare it with a solution, in the table under it.
 
 ```python exec
 id: orders-toolkit-permutations
@@ -354,19 +366,30 @@ def permutations(n, r):
     return factorial(n) // factorial(n - r)
 ```
 
-Until you write `permutations`, these tests stop with an error.
+The table runs the same calls on your `permutations` and on a solution,
+side by side.
 
-```python exec
-id: orders-permutations-tests
-assert permutations(8, 3) == 336
-assert permutations(8, 5) == 6720
-assert permutations(3, 3) == factorial(3)
-assert permutations(10, 1) == 10
-assert permutations(5, 0) == 1
-print("permutations keeps its promise.")
+```inputs
+for: orders-toolkit-permutations
+permutations(8, 3)
+permutations(8, 5)
+permutations(3, 3)    # all three places...
+factorial(3)          # ...is every order of the three
+permutations(10, 1)
+permutations(5, 0)
 ```
 
-The last test is $P(5, 0)$, the number of ways to fill no places at all.
+```solution
+for: orders-toolkit-permutations
+def permutations(n, r):
+    """Return P(n, r): the orders of r things chosen from n different things.
+
+    n and r are whole numbers, with r from 0 up to n.
+    """
+    return factorial(n) // factorial(n - r)
+```
+
+The last row is $P(5, 0)$, the number of ways to fill no places at all.
 It is 1 only because $0! = 1$.
 
 ## When order does not matter
@@ -451,9 +474,9 @@ proof.
 
 1. Fill in the body of `combinations`, using `factorial` or
    `permutations`.
-2. Run it, then run the tests.
-3. Look at the fourth test. Why should choosing 3 drones from 8 give
-   the same count as choosing 5? (Think about which ones stay on the
+2. Run it. Then compare it with a solution, in the table under it.
+3. Look at the fourth and fifth rows. Why should choosing 3 drones from
+   8 give the same count as choosing 5? (Think about which ones stay on the
    chargers.)
 
 ```python exec
@@ -479,17 +502,29 @@ def combinations(n, r):
     return factorial(n) // (factorial(r) * factorial(n - r))
 ```
 
-Until you write `combinations`, these tests stop with an error.
+The table runs the same calls on your `combinations` and on a solution,
+side by side.
 
-```python exec
-id: orders-combinations-tests
-assert combinations(4, 2) == 6
-assert combinations(8, 5) == 56
-assert combinations(8, 5) == len(list(itertools.combinations(drones, 5)))
-assert combinations(8, 3) == combinations(8, 5)
-assert combinations(5, 0) == 1
-assert combinations(5, 5) == 1
-print("combinations keeps its promise.")
+```inputs
+for: orders-toolkit-combinations
+combinations(4, 2)
+combinations(8, 5)                                # the formula...
+len(list(itertools.combinations(drones, 5)))      # ...and the list of every team
+combinations(8, 3)                                # 3 drones fly...
+combinations(8, 5)                                # ...or 5 fly
+combinations(5, 0)
+combinations(5, 5)
+```
+
+```solution
+for: orders-toolkit-combinations
+def combinations(n, r):
+    """Return C(n, r): the ways to choose r things from n different things,
+    when the order does not matter.
+
+    n and r are whole numbers, with r from 0 up to n.
+    """
+    return factorial(n) // (factorial(r) * factorial(n - r))
 ```
 
 ## Which count do I need?
@@ -586,7 +621,7 @@ part works.
 | The question | On this page |
 |---|---|
 | What is named here? | $n!$, $P(n, r)$ and $C(n, r)$; the toolkit functions `factorial`, `permutations` and `combinations`; one name, `combinations`, in two spaces |
-| What is promised? | `factorial(n)` promises the orders of $n$ things; `permutations` and `combinations` promise their counts, and the tests check each promise against a list of every case |
+| What is promised? | `factorial(n)` promises the orders of $n$ things; `permutations` and `combinations` promise their counts, and a list of every case gives the same counts |
 | What happens when? | Places are filled one at a time, with one choice fewer each time. `factorial` must work before `permutations` and `combinations`, which are built from it. |
 | What does this space let us do? | Things we can tell apart, like drones A to H, picked at most once. Here $0! = 1$ is an agreement that keeps the formulas working. |
 

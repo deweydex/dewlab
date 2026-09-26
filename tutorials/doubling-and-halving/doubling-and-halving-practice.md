@@ -2,7 +2,7 @@
 title: "Doubling and halving: powers and logarithms at work — Practice"
 practice_for: doubling-and-halving
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 datasets: [exoplanets]
 ---
 
@@ -186,8 +186,10 @@ not make it safe. Cooling it quickly and keeping it in the fridge does.
 
 </aside>
 
-**7. Fix.** Here is another version of `halvings`, with two tests.
-Run it, see which test fails, and change the line that makes it fail.
+**7. Fix.** Here is another version of `halvings`. For 8 it gives 3,
+as `halvings` does. For 1,000 it gives 10, and `halvings(1000)` is 9.
+Its docstring says it rounds down. Can you find the line that does
+not?
 
 ```python exec
 id: doubling-practice-fix-halve
@@ -199,28 +201,33 @@ def halvings_again(n):
         count = count + 1
     return count
 
-assert halvings_again(8) == 3, "8, 4, 2, 1"
-assert halvings_again(1000) == 9, "500, 250, 125, 62, 31, 15, 7, 3, 1"
-print("halvings_again keeps its promise.")
+print(halvings_again(8))
+print(halvings_again(1000))
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+halvings_again(8)       # 8, 4, 2, 1
+halvings_again(1000)    # 500, 250, 125, 62, 31, 15, 7, 3, 1
+```
 
-The second test fails. `halvings_again(1000)` gives 10. The function
-halves with `/`, which keeps the fraction, so 125 becomes 62.5, then
-31.25, and so on, down to 1.953125. That is still more than 1, so the
-loop halves once more, to about 0.98. The promise says "rounding down",
-which is `//`:
-
-```python
+```solution
+def halvings_again(n):
+    """Return how many times the whole number n can be halved, rounding down, before it reaches 1."""
+    count = 0
+    while n > 1:
         n = n // 2
+        count = count + 1
+    return count
+---
+`halvings_again(1000)` gave 10. The function halves with `/`, which
+keeps the fraction, so 125 becomes 62.5, then 31.25, and so on, down to
+1.953125. That is still more than 1, so the loop halves once more, to
+about 0.98. The docstring says "rounding down", which is `//`.
+
+The first row was the same for both versions because 8 is a power of
+2, and halving it never leaves a remainder. A check on a power of 2
+alone would never have found this.
 ```
-
-The first test passed because 8 is a power of 2, and halving it never
-leaves a remainder. A test on a power of 2 alone would never have found
-this.
-
-</details>
 
 **8. Fix.** This cell is meant to add up the grains on all 64 squares
 of the chessboard. Its answer is not $2^{64} - 1$. Which line leaves
@@ -417,10 +424,9 @@ def halvings_by_calls(n):
 
 for n in range(1, 1001):
     assert halvings_by_calls(n) == halvings(n), n
-print("The two versions agree.")
 ```
 
-It prints `The two versions agree.` The base case is 1, which needs no
+It prints nothing, because every `assert` holds. The base case is 1, which needs no
 halvings. For anything bigger, the number of halvings is one halving,
 plus the halvings of what is left. Each call waits for a number about
 half the size, so even `halvings_by_calls(1000000)` makes only 20
@@ -507,9 +513,10 @@ player asks "Is it alive?" first.
 
 **17. Fix.** Schlomi, who is learning Python too, writes a function
 for the doubling time of anything that grows by the same percent each
-year. She tests it against the logarithm, which the tutorial showed
-gives the exact doubling time. The test fails. Which line does
-something other than she meant?
+year. She compares it with the logarithm, which the tutorial showed
+gives the exact doubling time. For 4% a year, the logarithm says about
+17.7 years, and her function says 1. Which line does something other
+than she meant?
 
 ```python exec
 id: doubling-practice-fix-rate
@@ -527,24 +534,31 @@ def years_until_double(rate_percent):
 
 
 print(years_until_double(4))
-exact = math.log(2, 1.04)
-assert abs(years_until_double(4) - exact) <= 1, "the logarithm says about 17.7"
-print("years_until_double agrees with the logarithm.")
+print(math.log(2, 1.04))
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+years_until_double(4)    # whole years to double at 4%...
+math.log(2, 1.04)        # ...and the logarithm's exact time
+```
 
-It prints `1`, and then the test fails. `1 + rate_percent` is 5, so the
-count is multiplied by 5 in the first year: a 400% rise, not 4%. A rate
-in percent has to be divided by 100 first:
+```solution
+import math
 
-```python
+
+def years_until_double(rate_percent):
+    """Return how many whole years a count takes to double, growing by rate_percent a year."""
+    growth = 1
+    years = 0
+    while growth < 2:
         growth = growth * (1 + rate_percent / 100)
-```
-
-Now it gives 18, and the test passes. Schlomi tested one route against
-another, and that caught the bug. The logarithm is a second way to the
-same number, as on
+        years = years + 1
+    return years
+---
+`1 + rate_percent` is 5, so the count is multiplied by 5 in the first
+year: a 400% rise, not 4%. A rate in percent has to be divided by 100
+first. Now it gives 18, the first whole year after 17.7. Schlomi
+compared one route with another, and that showed the bug. The logarithm
+is a second way to the same number, as on
 [Does it work?](tutorial:does-it-work#code-that-runs-and-code-that-works).
-
-</details>
+```

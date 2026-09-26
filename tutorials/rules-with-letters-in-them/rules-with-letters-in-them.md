@@ -1,7 +1,7 @@
 ---
 title: "Rules with letters in them: expressions, equations and identities"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   a-rule-a-question-and-a-promise:
     covers: [MIT-1.5]
@@ -222,7 +222,7 @@ Replace the `...` with a loop:
 3. After the loop, return the running total.
 
 If the loop feels like hard work, open the hints under the cell, or
-the answer under the tests, and come back to your own version later.
+the solution under the table, and return to your own version later.
 
 ```python exec
 id: rules-with-toolkit
@@ -267,28 +267,28 @@ title: some steps
 the loop need to do if it were written highest power first?
 ```
 
-The tests compare `evaluate` with Python's own arithmetic, for every
-whole number from $-10$ to 10. Until `evaluate` is written, this cell
-stops with an error, and so do the later cells on this page that use
-it.
+How does your `evaluate` compare with one way to write it? The table
+below runs the same calls on your function and on a solution, side by
+side. Two rows list the values for every whole number from $-10$ to 10,
+and under each is the same list from Python's own arithmetic. Where a
+row is different, try that call on its own. The later cells on this
+page use `evaluate` too, so they need it written.
 
-```python exec
-id: rules-with-toolkit-tests
-assert evaluate([30, 50], 5) == 280, "the gallery with 5 rows"
-assert evaluate([-2, 5, 3], -2) == 0
-assert evaluate([7], 100) == 7, "a constant has the same value for every x"
-for x in range(-10, 11):
-    assert evaluate([-2, 5, 3], x) == 3 * x ** 2 + 5 * x - 2
-    assert evaluate([0, -4, 0, 1], x) == x ** 3 - 4 * x
-assert close_enough(evaluate([-2, 5, 3], 0.1), 3 * 0.1 ** 2 + 5 * 0.1 - 2)
-print("evaluate keeps its promise.")
+```inputs
+for: rules-with-toolkit
+evaluate([30, 50], 5)                                # the gallery with 5 rows
+evaluate([-2, 5, 3], -2)
+evaluate([7], 100)                                   # a constant has the same value for every x
+[evaluate([-2, 5, 3], x) for x in range(-10, 11)]
+[3 * x ** 2 + 5 * x - 2 for x in range(-10, 11)]     # ...the same list, by Python's arithmetic
+[evaluate([0, -4, 0, 1], x) for x in range(-10, 11)]
+[x ** 3 - 4 * x for x in range(-10, 11)]             # ...the same list, by Python's arithmetic
+evaluate([-2, 5, 3], 0.1)
+3 * 0.1 ** 2 + 5 * 0.1 - 2                           # ...the same value, by Python's arithmetic
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. Yours may use other names and still do the same job.
-
-```python
+```solution
+for: rules-with-toolkit
 def evaluate(coefficients, x):
     """Return the value of a polynomial when its letter is x.
 
@@ -301,16 +301,15 @@ def evaluate(coefficients, x):
     return value
 ```
 
-</details>
-
-The last test uses `close_enough` from
-[Does it work?](tutorial:does-it-work#close-enough). 0.1 is a float,
-and two routes to a float can differ in the last digit.
+In the last two rows, $x$ is 0.1, a float. Two routes to a float can
+differ in the last digit, so those two rows may not match exactly.
+`close_enough` from [Does it work?](tutorial:does-it-work#close-enough)
+compares two floats like these.
 
 ## Collecting like terms
 
-If you have not written `evaluate` yet, open the answer under the tests
-and copy it into the stub.
+If you have not written `evaluate` yet, open the solution under the
+table and copy it into the stub.
 
 A longer gallery page has two sections. The top one has 4 rows of
 photos, each $x$ pixels tall, and a 30-pixel header. The bottom one has

@@ -2,7 +2,7 @@
 title: "How far apart? Distance, midpoint and Pythagoras — Practice"
 practice_for: how-far-apart
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
 ---
 
 # How far apart? Distance, midpoint and Pythagoras — Practice
@@ -151,7 +151,9 @@ in to check it. The diagonal comes out as `55.0`.
 </details>
 
 **6. Fix.** Schlomo, who is learning Python too, wrote his own
-`distance`. Run it, see which test fails, and change it so both pass.
+`distance`. For one step up, from $(0, 0)$ to $(0, 1)$, it gives 1.
+For the 3, 4, 5 triangle, it gives 25, not 5. Can you find what to
+change?
 
 ```python exec
 id: how-far-practice-fix-distance
@@ -160,27 +162,30 @@ def distance_again(p, q):
     x1, y1 = p
     x2, y2 = q
     return (x2 - x1) ** 2 + (y2 - y1) ** 2
-
-assert distance_again((0, 0), (0, 1)) == 1, "one step up"
-assert distance_again((0, 0), (3, 4)) == 5, "the 3, 4, 5 triangle"
-print("distance_again keeps its promise.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+distance_again((0, 0), (0, 1))    # one step up
+distance_again((0, 0), (3, 4))    # the 3, 4, 5 triangle
+```
 
-The second test fails. `distance_again((0, 0), (3, 4))` gives 25. The
-function stops at $c^2$ and never takes the square root. The fix:
+```solution
+import math
 
-```python
+def distance_again(p, q):
+    """Return the straight-line distance between the points p and q."""
+    x1, y1 = p
+    x2, y2 = q
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+---
+Schlomo's function stops at $c^2$ and never takes the square root.
+This one takes it, with `import math` at the top of the cell.
+
+One step up gave 1 in both versions, because $1^2 = 1$ and $\sqrt{1} = 1$. For
+a distance of 1, it makes no difference whether we take the square
+root. Schlomo tried the smallest distance first. For a distance of 1, the
+square root changes nothing.
 ```
-
-with `import math` at the top of the cell. The first test passed
-because $1^2 = 1$ and $\sqrt{1} = 1$. For a distance of 1, it makes no
-difference whether we take the square root. Schlomo chose the smallest test he could think
-of, and it happened to be that one length.
-
-</details>
 
 **7. Another way.** In the tutorial's first picture of Pythagoras, the
 tilted square has corners at $(3, 0)$, $(7, 3)$, $(4, 7)$ and
@@ -281,9 +286,10 @@ triangle made 60 times bigger, so they are 300 m apart.
 
 </details>
 
-**12. Fix.** This version of `midpoint` passes its first test and fails
-its second. What does it do with the second pair of points, and what
-needs to change?
+**12. Fix.** This version of `midpoint` gives $(2, 2)$ for $(0, 0)$ and
+$(4, 4)$. For the two players, at $(2, 1)$ and $(10, 7)$, it does not
+give $(6, 4)$. What does it do with the second pair of points, and
+what needs to change?
 
 ```python exec
 id: how-far-practice-fix-midpoint
@@ -292,29 +298,29 @@ def midpoint_again(p, q):
     x1, y1 = p
     x2, y2 = q
     return (x1 + x2 / 2, y1 + y2 / 2)
-
-assert midpoint_again((0, 0), (4, 4)) == (2, 2), "from the origin"
-assert midpoint_again((2, 1), (10, 7)) == (6, 4), "the two players"
-print("midpoint_again keeps its promise.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+midpoint_again((0, 0), (4, 4))     # from the origin
+midpoint_again((2, 1), (10, 7))    # the two players
+```
 
-The second test fails. It gives `(7.0, 4.5)`. Division comes before
-addition, as on
-[Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#which-comes-first),
-so `x1 + x2 / 2` halves only `x2`. Brackets make Python add
-first:
-
-```python
+```solution
+def midpoint_again(p, q):
+    """Return the point halfway between the points p and q."""
+    x1, y1 = p
+    x2, y2 = q
     return ((x1 + x2) / 2, (y1 + y2) / 2)
+---
+For the two players, the first version gives `(7.0, 4.5)`. Division
+comes before addition, as on
+[Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#which-comes-first),
+so `x1 + x2 / 2` halves only `x2`. Brackets make Python add first.
+
+The pair that starts at $(0, 0)$ gave the midpoint it should, because
+it makes no difference whether 0 is added before or after the halving.
+Checks that start at the origin miss many slips like this one.
 ```
-
-The first test passed because its first point is $(0, 0)$. It makes no
-difference whether 0 is added before or after the halving. Tests that start at
-the origin miss many slips like this one.
-
-</details>
 
 ## Stretch
 

@@ -1,7 +1,7 @@
 ---
 title: "What a function can see: scope and parameters"
 year: "2026-2027"
-version: 2026.09.25.2
+version: 2026.09.26.1
 covers:
   names-made-inside-a-function:
     covers: [PDP-LO8]
@@ -584,9 +584,9 @@ work on any page.
 1. Rewrite `download_seconds` in the cell below so that it keeps all
    three habits. Give the speed a default value of 100, and round to one
    decimal place.
-2. Run the cell. The tests at the bottom check your promise. Until your
-   rewrite is done, they stop with an `AssertionError`. That is the tests
-   doing their job.
+2. Run the cell. How does your function compare with a solution? The
+   table under the cell runs the same calls on both. Where a row is
+   different, try that call on its own.
 3. Print the time for a 4,000 MB file at 50 megabits a second.
 
 ```python exec
@@ -594,28 +594,40 @@ id: what-function-need-your-turn
 def download_seconds(size_mb):
     seconds = 2 + size_mb * 8 / speed_mbps
     print("The download takes", round(seconds, 1), "seconds")
+```
 
-assert download_seconds(700) == 58.0
-assert download_seconds(700, speed_mbps=25) == 226.0
-print("download_seconds keeps its promise.")
+```inputs
+download_seconds(700)
+download_seconds(700, speed_mbps=25)
+```
+
+```solution
+def download_seconds(size_mb, speed_mbps=100):
+    """Return the seconds a download of size_mb megabytes takes.
+
+    speed_mbps is the connection's speed in megabits a second: 100
+    unless given.
+    """
+    seconds = 2 + size_mb * 8 / speed_mbps
+    return round(seconds, 1)
 ```
 
 ```hint
-What does the version above give back to the `assert`? Try
+after: 3 runs
+What does your function give back? Try
 `print(download_seconds(700))` on its own and look at the last line it
 shows.
 ```
 
 ```hint
-after: 10 errors
+after: 8 runs
 title: some steps
 1. Add `speed_mbps=100` to the `def` line, after `size_mb`.
 2. Swap the `print` line for a `return` line that gives back
    `round(seconds, 1)`.
-3. Nothing on the page needs to change: the tests only use the function.
 
-**Think about:** which line of the old version made the tests fail, and
-why did it not raise an error on its own?
+**Think about:** why does the old version give `None` in the table,
+even though it prints the time?
 ```
 
 <details class="dl-why"><summary>Why this way?</summary>

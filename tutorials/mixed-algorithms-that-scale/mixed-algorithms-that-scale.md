@@ -582,10 +582,9 @@ sorted_1000 = sorted(make_phone_book(1000))
 last = len(sorted_1000) - 1
 for name in sorted_1000 + ["Zhang, Anna 1"]:
     assert binary_looks_by_calls(sorted_1000, name, 0, last) == binary_looks(sorted_1000, name), name
-print("The two versions agree.")
 ```
 
-It prints `The two versions agree.` Each call makes one look, and hands
+It prints nothing, because every `assert` holds. Each call makes one look, and hands
 the rest to a call on half the part. The base case is an empty part,
 where `low` has passed `high`, and it costs no looks. The calls go only
 about 10 deep for 1,000 names, and 17 deep for 100,000, far from

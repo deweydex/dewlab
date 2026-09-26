@@ -1,7 +1,7 @@
 ---
 title: "When there is no real answer: complex numbers"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   a-question-with-no-answer-here:
     covers: [MIT-1.10]
@@ -336,8 +336,6 @@ id: no-real-roots-3
 for a, b, c in [(1, 0, 1), (1, -2, 5), (2, 3, 5), (1, -6, 9)]:
     for x in solve_quadratic_complex(a, b, c):
         print(x, evaluate([c, b, a], x))
-        assert close_enough(evaluate([c, b, a], x), 0)
-print("Every root checks out.")
 ```
 
 Every value comes back as 0, or as something like

@@ -5317,3 +5317,20 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Not kept.** A Notebook's sliders are not saved across a reload: Python starts afresh then, and running the cell brings the slider back. A tutorial page does keep them (7.264), because its saved output stands for the reader's work on that page.
 
 *Cost to change: small. `cell-widgets.js` is seven functions; the engine adds a map of per-cell state and two exports.*
+
+**7.269 — On the Dewey Track, a test the page writes against the reader's code becomes a comparison with a solution.** Josh, 26 September 2026, deciding the open question on #353: "yeah two is the correct option for sure".
+
+**The question.** Toolkit pages ended with a cell of `assert` lines the page had written, followed by a line such as "The flat-shape tools keep their promises." Schlomo's Fix problems did the same: "the test fails", then a praise line once it passed. #314 retired `check()` because the page decided the answer in advance and reported pass or fail; a page-written assert does the same job. It shows its expected values, and an assert is a real tool, but a reader who meets an `AssertionError` from a test they did not write hears "wrong".
+
+**What changed.** 279 asserts are gone from 66 files. In their place are 74 comparisons, each an `inputs` block (the same calls, with no expected values) and a `solution` block. For a toolkit cell, the solution is its reference fence. The reader presses **Compare with a solution** and sees their answer beside a solution's, row by row. A relation between two calls (`2 * triangle_area(6, 5)` and `rectangle_area(6, 5)`) is two rows side by side, and a loop over hundreds of cases is a few sample rows. Fix problems state the symptom as a fact about the code ("For 18 degrees, this function says `False`"), and their answer folds become solution notes. Every "keeps its promise", "All tests pass" and "checks out" line printed about the reader's work is gone.
+
+**What stays.** There are 141 asserts left, and none of them is the page judging the reader:
+- the ones on `does-it-work` and its practice page, where testing is the lesson;
+- asserts the reader writes, and the model answers to those tasks;
+- asserts in teaching cells that show what `assert` does on the page's own code.
+
+**Found on the way.** The build checks a comparison against the page up to its own cell. Four helper cells that the new tables need were therefore moved above the toolkit cells they serve: `likely-fixed-trials`, `solving-by-bisect-rules`, `solving-by-tank-rule` and `row-is-cold`. Duplicate answer folds that repeated the new solution were removed. Some toolkit hints still appear only after errors, as they did before. An unfinished stub raises none, so those hints now wait for the reader's own code to fail.
+
+`planning/DEWEY_TRACK_PLAN.md` says the same. Nothing in the style guide changed, because `#no-verdicts` already covered this case.
+
+*Cost to change: moderate. The comparisons are ordinary blocks, and bringing a test cell back means writing its expected values again. The deleted test cells' ids were free while the track is in beta.*

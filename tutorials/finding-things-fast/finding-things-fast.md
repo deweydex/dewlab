@@ -1,7 +1,7 @@
 ---
 title: "Finding things fast: linear and binary search"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 datasets: [exoplanets]
 covers:
   one-contact-at-a-time:
@@ -609,57 +609,32 @@ def binary_search(sorted_values, target):
     return -1
 ```
 
-The tests check the edges of each promise: the first item, the last
-item, an empty list, and a target that is not there. The last test is
-a long one. It searches for every item in lists of every length from 0
-to 49, and for a number between each pair, which should never be
-found. Until both tools are written, this cell stops with an error.
+How do your two searches compare with one way to write them? The table
+below runs the same calls on your tools and on a solution, side by side.
+The rows try the edges: the first item, the last item,
+an empty list, and a target that is not there. The last three rows use
+a list of 50 even numbers, from 0 to 98. They search for its first and
+last items, and for an odd number, which is never in it. Where a row is
+different, try that call on its own.
 
-```python exec
-id: finding-fast-toolkit-tests
-assert linear_search(contacts, "Siobhán") == 0
-assert linear_search(contacts, "Liam") == 7
-assert linear_search(contacts, "Zara") == -1
-assert linear_search([], "Zara") == -1
-assert linear_search([4, 7, 4], 4) == 0          # the first one
-assert binary_search(in_order, "Aoife") == 0
-assert binary_search(in_order, "Tomasz") == 7
-assert binary_search(in_order, "Zara") == -1
-assert binary_search([], "Zara") == -1
-
-for size in range(50):
-    evens = list(range(0, 2 * size, 2))
-    for i in range(size):
-        assert binary_search(evens, evens[i]) == i
-        assert binary_search(evens, evens[i] + 1) == -1
-print("linear_search and binary_search keep their promises.")
+```inputs
+for: finding-fast-toolkit
+linear_search(contacts, "Siobhán")
+linear_search(contacts, "Liam")
+linear_search(contacts, "Zara")
+linear_search([], "Zara")
+linear_search([4, 7, 4], 4)                  # the first one
+binary_search(in_order, "Aoife")
+binary_search(in_order, "Tomasz")
+binary_search(in_order, "Zara")
+binary_search([], "Zara")
+binary_search(list(range(0, 100, 2)), 0)
+binary_search(list(range(0, 100, 2)), 98)
+binary_search(list(range(0, 100, 2)), 51)    # between 50 and 52
 ```
 
-```hint
-Which test does the error point at? Try
-`print(binary_search(in_order, "Aoife"))` on its own. `None` means the
-function has no `return` yet.
-```
-
-```hint
-after: 12 errors
-title: some steps
-1. Copy the body of `binary_steps`, from `low = 0` down to `return -1`,
-   into `binary_search`.
-2. Take out the line that starts with `print`.
-3. Check that `return -1` sits outside the `while` loop, at the same
-   level as `while`.
-
-**Think about:** why must `return -1` wait until after the loop, and
-not sit in an `else` inside it?
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. Yours may be different and work too. Run the
-tests to see what yours does.
-
-```python
+```solution
+for: finding-fast-toolkit
 def linear_search(values, target):
     """Look through values from the front, and return the index of the
     first item equal to target, or -1 if no item is.
@@ -692,7 +667,27 @@ def binary_search(sorted_values, target):
     return -1
 ```
 
-</details>
+```hint
+for: finding-fast-toolkit
+after: 3 runs
+Which row is different? Try
+`print(binary_search(in_order, "Aoife"))` on its own. `None` means the
+function has no `return` yet.
+```
+
+```hint
+for: finding-fast-toolkit
+after: 8 runs
+title: some steps
+1. Copy the body of `binary_steps`, from `low = 0` down to `return -1`,
+   into `binary_search`.
+2. Take out the line that starts with `print`.
+3. Check that `return -1` sits outside the `while` loop, at the same
+   level as `while`.
+
+**Think about:** why must `return -1` wait until after the loop, and
+not sit in an `else` inside it?
+```
 
 Python has its own linear search. `contacts.index("Niamh")` gives 4,
 and `"Niamh" in contacts` gives True. Both look through the list from

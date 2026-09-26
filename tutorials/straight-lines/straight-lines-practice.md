@@ -2,7 +2,7 @@
 title: "Straight lines: slope and gradient — Practice"
 practice_for: straight-lines
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
 ---
 
 # Straight lines: slope and gradient — Practice
@@ -134,8 +134,9 @@ checks it with `slope`. Both numbers are about 0.0667.
 </details>
 
 **6. Fix.** Schlomo, who is learning Python too, wrote his own
-`slope`. Run it, see which test fails, and change the function so that
-both pass.
+`slope`. For a line at 45 degrees it gives 1. For a gentle ramp, from
+$(0, 0)$ to $(10, 1)$, it gives 10, not 0.1. Can you find what to
+change?
 
 ```python exec
 id: straight-practice-fix-slope
@@ -144,28 +145,28 @@ def slope_again(p, q):
     x1, y1 = p
     x2, y2 = q
     return (x2 - x1) / (y2 - y1)
-
-assert close_enough(slope_again((0, 0), (1, 1)), 1), "a line at 45 degrees"
-assert close_enough(slope_again((0, 0), (10, 1)), 0.1), "a gentle ramp"
-print("slope_again keeps its promise.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+slope_again((0, 0), (1, 1))     # a line at 45 degrees
+slope_again((0, 0), (10, 1))    # a gentle ramp
+```
 
-The second test fails: `slope_again((0, 0), (10, 1))` gives 10, not
-0.1. The function divides the run by the rise. That is the slope formula
-upside down. The fix is
-
-```python
+```solution
+def slope_again(p, q):
+    """Return the slope of the straight line through the points p and q."""
+    x1, y1 = p
+    x2, y2 = q
     return (y2 - y1) / (x2 - x1)
-```
+---
+Schlomo's function divides the run by the rise. That is the slope
+formula upside down.
 
-The first test passed because a line at 45 degrees has the same rise
+The line at 45 degrees gave 1 in both versions, because it has the same rise
 and run, and $\frac{1}{1}$ upside down is still 1. A 45-degree line
-is a natural first test, but it cannot show a swap like this. A test
+is a natural first check, but it cannot show a swap like this. A line
 where the rise and the run differ shows it.
-
-</details>
+```
 
 **7. Another way.** Water freezes at 0 °C, which is 32 °F, and boils at
 100 °C, which is 212 °F. Those are two points, $(0, 32)$ and
@@ -299,8 +300,10 @@ $-\frac{a}{b} = -\frac{3}{-6} = 0.5$.
 </details>
 
 **12. Fix.** Schlomi, who is learning Python too, wrote her own
-`line_through`. It passes its first test and fails its second. What is
-different about the second line, and what needs to change?
+`line_through`. For server A, from $(0, 8)$ to $(10, 28)$, her line
+goes through both points. For the line through $(2, 3)$ and $(6, 11)$,
+it misses them. What is different about the second line, and what
+needs to change?
 
 ```python exec
 id: straight-practice-fix-line
@@ -310,31 +313,31 @@ def line_through_again(p, q):
     x1, y1 = p
     c = y1 + m * x1
     return (m, c)
-
-m, c = line_through_again((0, 8), (10, 28))
-assert close_enough(m * 10 + c, 28), "server A"
-m, c = line_through_again((2, 3), (6, 11))
-assert close_enough(m * 6 + c, 11), "a second line"
-print("line_through_again keeps its promise.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+line_through_again((0, 8), (10, 28))    # server A
+line_through_again((2, 3), (6, 11))     # a second line
+```
 
-The second test fails. In $y_1 = m x_1 + c$, when $m x_1$ moves to the
-other side, it is taken away. So $c = y_1 - m x_1$. The code adds it. The fix
-is
-
-```python
+```solution
+def line_through_again(p, q):
+    """Return (m, c) for the line y = mx + c through the points p and q."""
+    m = slope(p, q)
+    x1, y1 = p
     c = y1 - m * x1
+    return (m, c)
+---
+In $y_1 = m x_1 + c$, when $m x_1$ moves to the other side, it is taken
+away. So $c = y_1 - m x_1$. Schlomi's code adds it.
+
+Server A's line came out as it should, because its first point has
+$x_1 = 0$. So $m x_1$ is 0, and it makes no difference whether we add
+it or take it away. Server A was a natural first check for Schlomi,
+since it is the line she knew best. If she had put both points back
+into the line, as the tutorial did, she would have seen the mistake at
+once.
 ```
-
-The server A test passed because its first point has $x_1 = 0$, so
-$m x_1$ is 0, and it makes no difference whether we add it or take it
-away. Server A was a natural first test for Schlomi, since it is the
-line she knew best. If she had put both points back into the line, as
-the tutorial's tests did, she would have seen the mistake at once.
-
-</details>
 
 ## Stretch
 

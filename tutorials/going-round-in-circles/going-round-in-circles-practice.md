@@ -2,7 +2,7 @@
 title: "Going round in circles: angles, radians and the unit circle — Practice"
 practice_for: going-round-in-circles
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
 ---
 
 # Going round in circles: angles, radians and the unit circle — Practice
@@ -175,8 +175,8 @@ the tutorial, so its third side is 5 too.
 
 **6. Fix.** Schlomo, who is learning Python too, is writing a game that
 seats players round a campfire. His function is meant to measure angles
-the maths way, but the test at $90^\circ$ fails. What does it do
-instead, and what needs to change?
+the maths way, so a quarter turn, $90^\circ$, should be the top of the
+circle. What does it do instead, and what needs to change?
 
 ```python exec
 id: going-round-practice-fix-seat
@@ -186,26 +186,27 @@ def seat_position(radius, angle_degrees):
     """Return the (x, y) of a seat at angle_degrees, anticlockwise from the right."""
     angle = math.radians(angle_degrees)
     return (radius * math.sin(angle), radius * math.cos(angle))
-
-x, y = seat_position(3, 90)
-assert close_enough(x, 0) and close_enough(y, 3), "a quarter turn is the top"
-print("seat_position keeps its promise.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+seat_position(3, 90)    # a quarter turn is the top
+```
 
-The sine and the cosine are swapped. The $x$ of the point is the
-cosine, how far across, and the $y$ is the sine, how far up:
+```solution
+import math
 
-```python
+def seat_position(radius, angle_degrees):
+    """Return the (x, y) of a seat at angle_degrees, anticlockwise from the right."""
+    angle = math.radians(angle_degrees)
     return (radius * math.cos(angle), radius * math.sin(angle))
-```
+---
+The sine and the cosine were swapped. The $x$ of the point is the
+cosine, how far across, and the $y$ is the sine, how far up.
 
 Schlomo's version starts at the top and goes clockwise, as a clock
 measures. It keeps a different promise from the one in its docstring.
 For a clock, it would be the one to use.
-
-</details>
+```
 
 **7. Predict.** Using the exact values from the tutorial, what will
 this print? Say it in surd form first.

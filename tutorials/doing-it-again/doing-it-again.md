@@ -1,7 +1,7 @@
 ---
 title: "Doing it again: loops, sums and products"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   a-ball-that-bounces:
     touches: [PDP-LO6]
@@ -613,29 +613,58 @@ def product(values):
     return running
 ```
 
-Run the toolkit cell, then the tests. Until you write both tools,
-a test stops with an `AssertionError`. It tells you which promise the
-code does not keep.
+Run the toolkit cell. How do your two tools compare with one way to
+write them? The table below runs the same calls on your tools and on a
+solution, side by side. Where a row is different, try that call on its
+own.
 
-```python exec
-id: doing-it-toolkit-tests
-assert total([80, 64, 51]) == 195
-assert total(range(1, 101)) == 5050           # Gauss's sum
-assert total([]) == 0
-assert product([2, 3, 4]) == 24
-assert round(product([0.8, 0.8, 0.8, 0.8, 0.8]), 4) == 0.3277
-assert product([]) == 1                       # nothing multiplied changes nothing
-print("total and product keep their promises.")
+```inputs
+for: doing-it-toolkit
+total([80, 64, 51])
+total(range(1, 101))                  # Gauss's sum
+total([])
+product([2, 3, 4])
+round(product([0.8, 0.8, 0.8, 0.8, 0.8]), 4)
+product([])                           # no values: the product is 1
+```
+
+```solution
+for: doing-it-toolkit
+def total(values):
+    """Add up every number in values, and return the sum.
+
+    values can be a list, or a range. total([80, 64, 51]) is 195.
+    With no values at all, the sum is 0.
+    """
+    running = 0
+    for value in values:
+        running = running + value
+    return running
+
+
+def product(values):
+    """Multiply every number in values together, and return the result.
+
+    values can be a list, or a range. product([2, 3, 4]) is 24.
+    With no values at all, the product is 1.
+    """
+    running = 1
+    for value in values:
+        running = running * value
+    return running
 ```
 
 ```hint
-Which test does the error point at? Print `total([80, 64, 51])` or
-`product([2, 3, 4])` on its own, and compare it with what the test
-expects.
+for: doing-it-toolkit
+after: 3 runs
+Which row is different? Print `total([80, 64, 51])` or
+`product([2, 3, 4])` on its own, and compare it with the solution's
+column.
 ```
 
 ```hint
-after: 12 errors
+for: doing-it-toolkit
+after: 8 runs
 title: some steps
 1. In `total`, the loop points `value` at each number in turn. The line
    inside should add `value`, not `0`.
