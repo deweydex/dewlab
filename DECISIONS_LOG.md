@@ -4989,3 +4989,24 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **Left alone:** the tail of page two's recap, where the video pull request (7.246) adds a "Where to read more". The pandas row numbers that sat beside every SQL result, next to `dinosaur_id`, are gone since 7.247, which page three's look at the ids 1, 2, 3, 4 and 6 relies on.
 
 *Cost to change: low. Prose and six generated SVGs; a picture changes by editing its function and re-running the generator. Removing `DROP TABLE IF EXISTS` would need the "run it again" sentences on all three pages changed back.*
+
+---
+
+**7.249 — The rest of Database Methods gets `DROP TABLE IF EXISTS` wherever a page asks for a create box to run again.** A follow-up to 7.248, which fixed the first three pages of "A table of your own".
+
+**The same bug, in more places than the first three pages.** A page's sqlite database lasts for as long as the page is open, so a `CREATE TABLE` that has already run stops the next run with `table X already exists`. Neither per-cell button changes that. Reset (↺) clears the output, and Clear (↻) puts back the starter code; neither touches the database. A sweep of every page in `courses/database-methods.yaml` found four more pages that ask for a create box to run a second time:
+
+- `a-second-table-and-a-join`: both dinosaur boxes, and the reader's own box, which the page asks them to grow a second table in and run again. Each worked box drops its own table. The prose tells the reader to drop their second table before their first. No foreign key is declared in the worked boxes, so their order does not matter.
+- `joining-two-real-tables`: "Change `'USA'` to `'United States'` in the `INSERT` above, then re-run both cells" could never work.
+- `a-college-timetable`: "Run that box again to rebuild the whole database with your row included" could never work either. Five drops, in the reverse of the `CREATE` order, `session_tbl` first, because the box declares its foreign keys.
+- Both quizzes: the workspace says "Run this box after every change", and the reader's own `CREATE TABLE` from Task 1 failed on every run after the first, so Task 2's table was never built. The workspace starter now carries the drop lines, with the tables that point into others first, so a reader never meets the error. The worked solutions start with the same lines.
+
+**Pre-filled in the quizzes, taught elsewhere.** A quiz assesses the tables, not the drop idiom, and a reader stuck on `already exists` halfway through a quiz is stuck on the wrong thing. So the quizzes put the lines in the starter code. The worked pages explain them where they appear.
+
+**Order was run, not reasoned.** Each worked solution was run twice with `PRAGMA foreign_keys = ON`, the setting under which a parent table cannot be dropped while a child table still points into it.
+
+**`working-with-tables`** said "Reset brings back the code the page started with". That is Clear. The sentence now names both buttons, with their symbols.
+
+**Left alone:** `sql-practice` and `a-form-that-writes-a-row` each have a create box that fails on a second run, but neither page asks for one. `version:` is bumped on every page whose cell code changed. Cell ids are unchanged, so no saved work moves. A reader's saved copy of an old box keeps its old code, without the drop lines.
+
+*Cost to change: low. Each drop line is one line of starter code. Removing one would need the "run it again" sentence on its page changed back.*

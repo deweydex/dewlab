@@ -1,7 +1,7 @@
 ---
 title: "The library loans quiz: books, authors and loans"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
 covers:
   task-1-authors-and-books:
     touches: [DBM-LO2]
@@ -38,8 +38,23 @@ Write your SQL in this box as you go. Your code is saved on this
 device, the same as every cell on this site. After a reload, run this
 box again to rebuild your tables. Use the hints if you need them.
 
+The box starts with five `DROP TABLE IF EXISTS` lines. The page keeps
+its database for as long as it is open, so each run finds the tables
+from the run before. These lines delete those tables first. Without
+them, the second run stops at your first `CREATE TABLE` with the error
+`table author_tbl already exists`. The two tables whose rows point into
+other tables, `loan_tbl` and `book_author_tbl`, are deleted first.
+
 ```sql exec
 id: library-quiz-workspace
+-- These delete the tables from the last run, so this box can build
+-- them again. Keep them at the top.
+DROP TABLE IF EXISTS loan_tbl;
+DROP TABLE IF EXISTS book_author_tbl;
+DROP TABLE IF EXISTS member_tbl;
+DROP TABLE IF EXISTS book_tbl;
+DROP TABLE IF EXISTS author_tbl;
+
 -- Build the database here, one task at a time. Run this box after
 -- every change, then use each task's check cell below.
 ```
@@ -358,6 +373,12 @@ own to see a full example.
 ![Five tables. book_author_tbl sits between book_tbl and author_tbl. A line runs from book_id in book_tbl to book_id in book_author_tbl, and another from author_id in author_tbl to author_id in book_author_tbl. Both of its columns are marked PK, so one row of it is one book paired with one author. loan_tbl points at book_tbl through book_id and at member_tbl through member_id.](library-erd.svg)
 
 ```sql
+DROP TABLE IF EXISTS loan_tbl;
+DROP TABLE IF EXISTS book_author_tbl;
+DROP TABLE IF EXISTS member_tbl;
+DROP TABLE IF EXISTS book_tbl;
+DROP TABLE IF EXISTS author_tbl;
+
 CREATE TABLE author_tbl (
     author_id INTEGER PRIMARY KEY,
     name TEXT NOT NULL
