@@ -12,8 +12,8 @@ worlds:
 # Matrix transformations: what a matrix does to a picture — Practice
 
 Before you run anything, predict the picture from the matrix, or the
-matrix from the picture: the prediction is the practice, and the plot
-only checks it. Your own `transform`, `transform_all` and `draw_shapes`
+matrix from the picture. The prediction is the practice, and the plot
+checks it. Your own `transform`, `transform_all` and `draw_shapes`
 are already loaded, and so are the functions from the page before.
 
 ```python exec
@@ -42,7 +42,7 @@ $(1, 0)$ and $(0, 1)$, and which way does the F face afterwards?
 <details class="dl-answer"><summary>answer</summary>
 
 $(1, 0) \to (-1, 0)$, and $(0, 1)$ stays put. Every x changes sign and
-every y stays, so the F is mirrored left to right: its arms point left.
+every y stays, so the F is mirrored left to right. Its arms point left.
 
 </details>
 
@@ -61,11 +61,11 @@ direction. Does your matrix agree?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$\begin{bmatrix} -1 & 0 \\ 0 & -1 \end{bmatrix}$: $(1, 0) \to (-1, 0)$
-and $(0, 1) \to (0, -1)$. Every corner of the F ends up on the other
-side of the origin, and the F is upside down with its arms pointing
-left: a half turn, not a flip, since you could get there by turning the
-page.
+$\begin{bmatrix} -1 & 0 \\ 0 & -1 \end{bmatrix}$. It sends $(1, 0)$ to
+$(-1, 0)$ and $(0, 1)$ to $(0, -1)$. Every corner of the F moves to the
+other side of the origin. The F is upside down with its arms pointing
+left. This is a half turn, not a flip, because turning the page gets you
+there.
 
 </details>
 
@@ -103,9 +103,9 @@ swap_x_and_y = [[0, 1], [1, 0]]
 
 draw_shapes([F, transform_all(lean_left, F)])
 ---
-Any negative number in the top-right corner leans the F left; a half is
-one choice. The swap is the flip across the line $y = x$: the transpose
-from the page before, done to points.
+Any negative number in the top-right corner leans the F left, and a
+half is one choice. The swap is the flip across the line $y = x$. It is
+the transpose from the page before, done to points.
 ```
 
 ## Matrix and picture
@@ -117,9 +117,9 @@ the F? Predict, then draw it.
 
 $(1, 0) \to (1, 0.5)$ and $(0, 1)$ stays. The left edge stays where it
 is, and each point rises by half its distance to the right, so the F's
-arms tilt upwards. It is a shear along the other direction from the
-tutorial's: there the extra number was in the first row and the x's
-moved; here it is in the second row, and the y's move.
+arms tilt upwards. It is a shear in the other direction from the
+tutorial's. There, the extra number was in the first row, and the x's
+moved. Here it is in the second row, and the y's move.
 
 </details>
 
@@ -127,10 +127,10 @@ moved; here it is in the second row, and the y's move.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes: $\begin{bmatrix} 0 & 0 \\ 0 & 0 \end{bmatrix}$, the *zero matrix*.
+Yes, $\begin{bmatrix} 0 & 0 \\ 0 & 0 \end{bmatrix}$, the *zero matrix*.
 Both columns are $(0, 0)$, so "right" and "up" land on the origin, and
 every other point is built from those two. Some matrices flatten a
-picture onto a line; this one flattens it to a point. The page after
+picture onto a line. This one flattens it to a point. The page after
 next asks which matrices can be undone, and this one cannot.
 
 </details>
@@ -140,7 +140,7 @@ matrix?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No: that fixes only the first column. $\begin{bmatrix} 2 & 0 \\ 0 & 1
+No. That fixes only the first column. $\begin{bmatrix} 2 & 0 \\ 0 & 1
 \end{bmatrix}$ and $\begin{bmatrix} 2 & 5 \\ 0 & 3 \end{bmatrix}$ both do
 it, and differ everywhere else. To know a matrix, you need to know where
 both "right" and "up" go.
@@ -189,8 +189,8 @@ point moves right by a fifth of its height: "up" goes to $(0.2, 1)$.
 italic = [[1, 0.2], [0, 1]]
 draw_shapes([F, transform_all(italic, F)])
 ---
-A shear. Fonts make italics roughly this way, though a good italic is
-drawn separately, since a shear also makes the curved letters look
+A shear. Fonts make italics roughly this way. A well-made italic font is
+drawn letter by letter, because a shear makes the curved letters look
 stretched.
 ```
 
@@ -220,7 +220,7 @@ draw_shapes([ship, transform_all(half, ship), transform_all(quarter, ship)])
 ---
 Every ship shrinks towards $(0, 0)$, so the smaller ones sit inside the
 bigger, around the origin, not off in the distance. Making a thing
-smaller as it goes away is only half of perspective; the graphics pages
+smaller as it goes away is only half of perspective. The graphics pages
 divide by the distance to do the rest.
 ```
 
@@ -272,8 +272,8 @@ multiplies every entry of a matrix by 3. What does
 
 <details class="dl-answer"><summary>answer</summary>
 
-It is `[[3, 0], [0, 3]]`, problem 1's uniform scaling: three times as
-big. Scaling the do-nothing matrix makes the matrix that scales
+It is `[[3, 0], [0, 3]]`, problem 1's uniform scaling, which makes the
+F three times as big. Scaling the do-nothing matrix makes the matrix that scales
 pictures.
 
 </details>
@@ -292,8 +292,8 @@ def transform_all(m, shape):
     return result
 ```
 
-The comprehension says the same thing in one line: a new list, with one
-moved point for each point of the shape.
+The comprehension says the same thing in one line. It makes a new list,
+with one moved point for each point of the shape.
 
 </details>
 
@@ -302,9 +302,9 @@ new point. Why not change the point where it is, as `point[0] = ...`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A point is a tuple, and a tuple cannot be changed: Python would raise a
-`TypeError`. It is also safer: returning a new point leaves the original
-F alone, so the playground can draw the before and the after side by
-side.
+A point is a tuple, and a tuple cannot be changed, so Python would raise
+a `TypeError`. Returning a new point is also safer. It leaves the
+original F alone, so the playground can draw the before and the after
+side by side.
 
 </details>

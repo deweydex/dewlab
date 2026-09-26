@@ -56,12 +56,12 @@ number, like a list comprehension from
 [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids),
 and `"".join(...)` glues them into one string.
 
-Every picture on a screen works this way: a grid of numbers, and a rule
-that turns each number into something you can see. A photograph is a
+Every picture on a screen works this way. It is a grid of numbers, with
+a rule that turns each number into something you can see. A photograph is a
 bigger grid with a longer ramp, from 0 for black to 255 for white.
 
 A *matrix* is a grid of numbers in rows and columns. `pixels` has 5
-*rows* and 5 *columns*, so it is a 5×5 matrix; the number of rows always
+*rows* and 5 *columns*, so it is a 5×5 matrix. The number of rows always
 comes first. In maths, the number in row $i$ and column $j$ is written
 $a_{ij}$, counting from 1. Python counts from 0, and the row comes first:
 `pixels[row][column]`. So $a_{11}$ is `pixels[0][0]`, the top-left
@@ -83,7 +83,7 @@ This page does three things to pictures: makes them darker, lays one
 over another, and flips them corner to corner. Each is a matrix
 operation, and you write each one yourself, so you can watch the
 arithmetic happen. Later pages use them again, and a library called
-NumPy does them all in one line each; that comes at the end of the
+NumPy does each one in a single line. NumPy comes at the end of the
 series.
 
 ## Darker: scaling a grid
@@ -94,7 +94,7 @@ every entry by it:
 
 $$k\begin{bmatrix} a & b \\ c & d \end{bmatrix} = \begin{bmatrix} ka & kb \\ kc & kd \end{bmatrix}$$
 
-Can you write `scale(k, m)`? It gives back a new matrix, and leaves `m`
+Can you write `scale(k, m)`? It returns a new matrix, and leaves `m`
 as it was. The functions you write in this cell and the others marked
 as a toolkit come with you to the later pages of the series.
 
@@ -163,11 +163,12 @@ What will happen?
 ```
 
 An `IndexError`: `string index out of range`. The 9s became 18s, and
-`ramp` has only ten characters, `ramp[0]` to `ramp[9]`. The matrix is
-fine: `scale` did exactly what it should. The picture is what has a
-limit. A matrix does not know what its numbers mean; the rule that draws
-it does. `show` below draws a grid with that limit built in: anything
-past 9 is drawn as 9, anything below 0 as 0, and fractions are rounded.
+`ramp` has only ten characters, `ramp[0]` to `ramp[9]`. `scale` did
+exactly what it should, and the matrix is fine. The picture has a limit.
+A matrix does not know what its numbers mean. The rule that draws it
+does. `show` below draws a grid with that limit built in. It draws
+anything past 9 as 9 and anything below 0 as 0, and it rounds
+fractions.
 
 ```python exec
 id: grid-show
@@ -193,10 +194,10 @@ show(scale(0.5, pixels))
 ```
 
 Doubling the diamond changes nothing you can see, because it was
-already at the limit, and halving it makes it paler. On a screen the
-same thing happens with brightness: push past white, and the detail is
-gone for good. Scaling the numbers back down will not bring it back,
-because `show` has already drawn 18 as 9.
+already at the limit, and halving it makes it paler. The matrix still
+holds 18s, so scaling it down again gives the diamond back. A saved
+photo is different. Its values stop at white, so any detail brighter
+than white is lost.
 
 ## Overlay: adding two grids
 
@@ -223,7 +224,7 @@ Can you write `add(a, b)`? Two pictures of different sizes cannot be
 laid one over the other, so if the shapes do not match, `add` should
 stop with an error that says so. The line `raise ValueError("a
 message")` stops a function at once with a `ValueError` and your
-message; [Reading an error message](tutorial:reading-an-error-message)
+message. [Reading an error message](tutorial:reading-an-error-message)
 has more.
 
 ```python exec
@@ -256,10 +257,9 @@ add(pixels, frame)[0]
 ```
 
 ```hint
-Check the shapes first, before any loop: the same number of rows,
-`len(a) == len(b)`, and the same number of columns, `len(a[0]) ==
-len(b[0])`. Then one new row for each `i`, and in it `a[i][j] + b[i][j]`
-for each `j`.
+Check the shapes first, before any loop. `len(a) == len(b)` checks the
+rows, and `len(a[0]) == len(b[0])` checks the columns. Then build one
+new row for each `i`, with `a[i][j] + b[i][j]` for each `j`.
 ```
 
 ```solution
@@ -278,10 +278,10 @@ def add(a, b):
         result.append(new_row)
     return result
 ---
-The check comes before the loops. Without it, adding a 5×5 grid to a
-3×3 one would fail deep inside a loop with an `IndexError` about a
-position that does not exist, true but no help; or, the other way round,
-it would quietly add only the corner the two share.
+The check comes before the loops. Without it, `add(pixels, small)`
+fails deep inside a loop, with an `IndexError` about a position that
+does not exist. `add(small, pixels)` quietly adds only the corner the
+two share.
 ```
 
 ```python exec
@@ -290,7 +290,7 @@ show(add(pixels, frame))
 ```
 
 Where the diamond meets the frame, 9 and 5 make 14, and `show` draws it
-as 9. Now try it with the wrong shape:
+as 9. Now try two matrices of different shapes.
 
 ```python exec
 id: overlay-adding-two-grids-2
@@ -298,9 +298,9 @@ small = [[1, 1], [1, 1]]
 add(pixels, small)
 ```
 
-This cell is meant to fail, with your own message: the two matrices
-are not the same *shape*, the number of rows and the number of columns.
-Addition works only on matrices of the same shape.
+This cell is meant to fail, with your own message. The *shape* of a
+matrix is its number of rows and its number of columns. Addition works
+only on matrices of the same shape.
 
 Does the order of adding matter? For numbers, $3 + 5 = 5 + 3$.
 
@@ -320,7 +320,7 @@ Will the two overlays be the same?
 
 ## Corner to corner: the transpose
 
-The last operation has no arithmetic in it: the numbers only move. The
+The last operation has no arithmetic in it. The numbers only move. The
 *transpose* of a matrix swaps its rows and columns, so row $i$, column
 $j$ of the new matrix is row $j$, column $i$ of the old one. It is
 written $A^T$. The diamond looks the same either way round, so here is a
@@ -389,10 +389,10 @@ id: corner-to-corner-the-transpose-3
 show(transpose(flag))
 ```
 
-The F lies on its back, flipped corner to corner: the top-left square
-stays where it is, and everything else swaps across the line from the
-top-left corner to the bottom-right. It is not a turn, and not a mirror
-left to right; it is a mirror across that diagonal.
+The F lies on its back, flipped corner to corner. The top-left square
+stays where it is, and every other square swaps places across the line
+from the top-left corner to the bottom-right. It is a mirror across that
+diagonal, not a turn.
 
 The diamond does not change when it is flipped this way. A matrix that
 equals its own transpose is *symmetric*.
@@ -410,9 +410,9 @@ A picture from the world you chose, and the three operations on it.
 <div class="dl-world" data-world="pixel-art">
 
 Here is a sprite, 7 squares wide. Can you make a ghost of it, half as
-dark; lay it over its own transpose; and check whether that overlay is
-symmetric? Before you run it, guess: is a picture added to its own
-transpose always symmetric?
+dark? Then can you lay it over its own transpose, and check whether the
+overlay is symmetric? Before you run it, guess whether a picture added
+to its own transpose is always symmetric.
 
 ```python exec
 id: grid-your-world--pixel-art
@@ -454,8 +454,8 @@ print(transpose(overlay) == overlay)
 Always. Position $(i, j)$ of the overlay is $a_{ij} + a_{ji}$, and
 position $(j, i)$ is $a_{ji} + a_{ij}$: the same two numbers, added the
 other way round. So any matrix plus its transpose is symmetric. The
-sprite has to be square for this to work at all; a 5×7 sprite and its
-7×5 transpose are not the same shape, and `add` says so.
+sprite has to be square. A 5×7 sprite and its 7×5 transpose are not the
+same shape, and `add` says so.
 ```
 
 </div>
@@ -521,7 +521,7 @@ draw(add(scale(0.5, photo), scale(0.5, gradient)))
 In a photograph, 0 is black and 255 is white, the other way round from
 the diamond's ramp, so darker is `scale(0.5, photo)`. The transpose lays
 her on her side, 60 rows by 70, with the top-left corner where it was.
-The fade is an average: half of each picture, added, which is how a
+The fade is an average. It adds half of each picture, which is how a
 photo editor mixes two layers. Adding them whole would push the bright
 parts past 255, and `imshow` would draw all of it as white.
 ```
@@ -535,9 +535,8 @@ one of the three operations on this page, what it does to the numbers,
 and separately what it does to the picture?
 
 A challenge: subtract a picture from a copy of itself moved one square
-to the right. Where the picture does not change from one square to the
-next, the difference is 0; where it does, it is not. What does that
-draw?
+to the right. Where the picture stays the same from one square to the
+next, the difference is 0. What do the other squares draw?
 
 ```python challenge
 pixels = [
@@ -553,8 +552,7 @@ pixels = [
 
 The next page, [what a matrix does to a
 picture](tutorial:what-a-matrix-does-to-a-picture), uses a 2×2 matrix in
-a new way: not as a picture, but as an instruction that moves every
-point of one.
+a new way, as an instruction that moves every point of a picture.
 
 ## Where to read more
 

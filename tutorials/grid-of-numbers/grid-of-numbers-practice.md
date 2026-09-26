@@ -31,7 +31,7 @@ and $a_{32}$?
 
 `A` is 3×3. $a_{12} = 7$, $a_{23} = 6$ and $a_{32} = 5$, which in Python
 are `A[0][1]`, `A[1][2]` and `A[2][1]`. Maths counts from 1 and Python
-from 0; mixing the two is the commonest mistake here.
+from 0. Mixing the two is the commonest mistake here.
 
 </details>
 
@@ -54,7 +54,7 @@ Y = [[-1, 2, 0], [1, -3, 2]]
 print(add(X, Y))
 ```
 
-**3.** Work out $2X - Y$ by hand, then $X - 2Y$. Are they the same?
+**3.** Calculate $2X - Y$ by hand, then $X - 2Y$. Are they the same?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -85,8 +85,8 @@ subtract([[1, 2]], [[3, 5]])
 ```
 
 ```hint
-Taking away `b` is adding minus `b`. Which scalar turns `b` into minus
-`b`?
+Subtracting `b` is the same as adding minus `b`. Which scalar turns `b`
+into minus `b`?
 ```
 
 ```solution
@@ -136,7 +136,7 @@ Will `transpose(Q)` be the same as `P`?
   - The shape is right, but the numbers are in different places.
 ```
 
-**6.** Can `P + Q` be worked out? If not, what shape would `Q` need to be?
+**6.** Can Python add `P` and `Q`? If not, what shape would `Q` need to be?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -187,8 +187,8 @@ def is_symmetric(m):
 
 print(is_symmetric([[2, -3], [-3, 5]]))
 ---
-A 1×3 matrix is never symmetric: its transpose is 3×1, a different
-shape, so `==` is `False` at once. Only a square matrix can be.
+A 1×3 matrix is never symmetric. Its transpose is 3×1, a different
+shape, so `==` is `False` at once. Only a square matrix can be symmetric.
 ```
 
 **9.** Is scaling and then transposing the same as transposing and then
@@ -197,9 +197,9 @@ scaling?
 <details class="dl-answer"><summary>answer</summary>
 
 Yes. Scaling multiplies each entry on its own, and transposing only
-moves entries; neither combines two entries into one, so the order
-cannot matter. Matrix multiplication, which does combine entries, is
-where order starts to matter: two pages on.
+moves entries. Neither one combines two entries, so the order cannot
+matter. Matrix multiplication does combine entries, and there the order
+matters. It comes two pages later.
 
 </details>
 
@@ -260,11 +260,10 @@ What does transposing and then mirroring do to the F?
 
 <details class="dl-answer"><summary>why</summary>
 
-A quarter turn clockwise; and mirroring first, then transposing, turns
-it a quarter anticlockwise. Two flips across lines that meet at 45°
-make a turn of 90°. The order decides which way it turns: the first sign
-that doing one thing then another depends on the order, which the page
-after next makes precise.
+A quarter turn clockwise. Mirroring first and then transposing turns it
+a quarter anticlockwise. Two flips across lines that meet at 45° make a
+turn of 90°, and the order decides which way it turns. The page after
+next looks at this closely.
 
 </details>
 
@@ -320,8 +319,8 @@ plt.axis("off")
 ---
 The white picture has to be the same shape as the one it is added to,
 so the solution builds one to fit. `[[255] * 60 for i in range(70)]`
-makes 70 separate rows; `[[255] * 60] * 70` would make one row shared 70
-times, the aliasing trap, which does no harm here only because `add`
+makes 70 separate rows. `[[255] * 60] * 70` would make one row shared 70
+times, the aliasing trap. It would do no harm here only because `add`
 never changes its inputs.
 ```
 
@@ -362,11 +361,11 @@ true but not the whole story?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The line `ramp[value]`, where 18 is past the last character. It is
-true: there is no `ramp[18]`. But the cause is earlier, in `scale`,
-which made the numbers larger than the picture can draw. A traceback
-points where the program noticed, which is not always where it went
-wrong.
+The line `ramp[value]`, where 18 is past the last character. The error
+is true, because there is no `ramp[18]`. But the cause is earlier, in
+`scale`, which made numbers larger than the picture can draw. A
+traceback points to where Python noticed the problem. The mistake may
+be on an earlier line.
 
 </details>
 
@@ -375,8 +374,8 @@ inner line run when `add` adds two 70×60 pictures?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$70 \times 60 = 4{,}200$ times: once for every position. A photo a
-thousand pixels square is a million additions, which is why the NumPy
-page at the end of the series matters.
+$70 \times 60 = 4{,}200$ times, once for every position. A photo
+1,000 pixels square needs 1,000,000 additions. The NumPy page at the end
+of the series shows a faster way.
 
 </details>

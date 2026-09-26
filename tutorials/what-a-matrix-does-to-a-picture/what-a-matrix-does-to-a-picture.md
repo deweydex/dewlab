@@ -22,7 +22,7 @@ covers:
 
 On the last page, a matrix was a picture. On this one, a small matrix is
 an instruction that moves every point of a picture to a new place. Here
-is the picture: an F, drawn as the corners of its outline.
+is the picture. It is an F, drawn as the corners of its outline.
 
 ```python exec
 id: where-does-a-point-go-1
@@ -30,9 +30,9 @@ F = [(0, 0), (1, 0), (1, 2), (2, 2), (2, 3), (1, 3), (1, 4), (3, 4), (3, 5), (0,
 print(len(F), "corners")
 ```
 
-An F is useful because it is lopsided: turn it, flip it or lean it, and
-you can tell which. A square, which looks the same after a quarter turn
-or a flip, would hide half of what a matrix does.
+An F is useful because it is lopsided. Turn it, flip it or lean it, and
+you can tell which. A square looks the same after a quarter turn or a
+flip, so it would hide half of what a matrix does.
 
 ## Where does a point go?
 
@@ -102,9 +102,9 @@ def transform_all(m, shape):
     """Every corner of shape, moved by m."""
     return [transform(m, point) for point in shape]
 ---
-Each row of the matrix pairs up with the point: first entries times x,
-second entries times y, added. That pairing has a name on the page after
-next.
+Each row of the matrix is paired with the point. The first entry is
+multiplied by x, the second by y, and the two are added. The page after
+next gives this pairing a name.
 ```
 
 `draw_shapes` draws shapes on one pair of axes, each closed up into an
@@ -160,22 +160,22 @@ print(transform_all(turn, F)[:3])
 ```
 
 ```predict
-`turn` moves $(1, 0)$ to $(0, 1)$. Which way does the F end up facing?
+`turn` moves $(1, 0)$ to $(0, 1)$. Which way will the F face?
 
 - Turned a quarter anticlockwise, lying on its back with its arms up
-  - (1, 0) points right, and (0, 1) points up: right turns into up.
+  - (1, 0) points right and (0, 1) points up, so right turns into up.
 - Turned a quarter clockwise
   - Turns in maths go the way a clock does.
 - Upside down
-  - A turn is a turn.
+  - Turning moves the top of the F to the bottom.
 ```
 
 `turn` turns the F a quarter turn anticlockwise, about $(0, 0)$. The
-stretch doubles its width; the squash halves its height; the shear
+stretch doubles its width, and the squash halves its height. The shear
 leaves the bottom edge where it is and slides every point sideways by
-its height, so the F leans; the flip turns it upside down across the x
-axis, like a reflection in a lake, with its arms still pointing right. A matrix read this
-way is a *transformation matrix*.
+its height, so the F leans. The flip turns it upside down across the x
+axis, like a reflection in a lake, and its arms still point right. A
+matrix read this way is a *transformation matrix*.
 
 Every one of them leaves $(0, 0)$ where it is: $a \times 0 + b \times 0$
 is 0 whatever the numbers. A 2×2 matrix can stretch, turn, lean and
@@ -234,7 +234,7 @@ type: fill-in-the-blank
 - Picture D was made by a {shrink to half size|shear upwards|quarter turn clockwise|mirror left to right}.
 ```
 
-Now the other way round: a picture, and a hidden matrix. The bottom
+Now the other way round. Here is a picture, made by a hidden matrix. The bottom
 edge of this F has not moved, and the top has slid to the right. Which
 matrix did it?
 
@@ -268,9 +268,9 @@ mystery = [(0, 0), (1, 0), (2, 2), (3, 2), (3.5, 3), (2.5, 3), (3, 4), (5, 4), (
 your_guess = [[1, 0.5], [0, 1]]
 print(transform_all(your_guess, F) == mystery)
 ---
-$(1, 0)$ stayed put, so the first column is $(1, 0)$. $(0, 5)$ went to
-$(2.5, 5)$, so $(0, 1)$ goes to $(0.5, 1)$: the second column. A shear
-by a half: each point slides right by half its height.
+$(1, 0)$ stayed where it was, so the first column is $(1, 0)$. $(0, 5)$
+went to $(2.5, 5)$, so $(0, 1)$ goes to $(0.5, 1)$, the second column.
+It is a shear by a half. Each point slides right by half its height.
 ```
 
 ## Your world
@@ -431,12 +431,12 @@ draw_shapes([plough,
              transform_all(turn_by(180), plough),
              pole_star], closed=False)
 ---
-Six hours turns it a quarter, and twelve hours half way round: wherever
-the Plough stands, twelve hours later it is on the other side of the
-pole star, upside down. The shape never changes, because a turn changes no
-distances. The two stars at the end of the bowl, Merak and Dubhe, point
-at the pole star whatever the time: the line from Merak through Dubhe,
-five times as long, reaches it. (The sky turns 360° in just under 24
+Six hours turns it a quarter, and twelve hours turn it half way round.
+Twelve hours later, the Plough is on the other side of the pole star,
+upside down. The shape never changes, because a turn changes no
+distances. The two stars at the end of the bowl, Merak and Dubhe, always
+point at the pole star. The line from Merak through Dubhe, made five
+times as long, reaches it. (The sky turns 360° in just under 24
 hours, so 15° an hour is close, not exact.)
 ```
 
@@ -466,8 +466,8 @@ print([transform(flatten, p) for p in F])
 ```
 
 The next page, [Matrix multiplication](tutorial:multiplying-grids),
-asks what happens when one move follows another: a shear, then a turn.
-Is there one matrix that does both?
+asks what happens when one move follows another, such as a shear and
+then a turn. Is there one matrix that does both?
 
 ## Where to read more
 
