@@ -5251,3 +5251,9 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Practice.** Every practice page lost the problems that repeated a tutorial task word for word, and gained predicts, a problem in each world and two from earlier pages. Checks that needed the quadratic formula or factorising, before the page that teaches them, now check by substitution. `mixed-algebra` keeps its hint folds and gains a problem that joins the vertex form to complex roots.
 
 *Cost to change: small. `a-tool-of-your-own` and every world cell are new ids, and cell ids become a contract on 2 October. The course order is one list in `courses/mit-pdp-maths-prog-integration.yaml`.*
+
+---
+
+**7.263 — The Dewey Track's letter is signed "dewlab".** Josh, 26 September 2026, closing #351: "dewlab should sign it not me". 7.228 left the letter unsigned until he had read it. The letter's "I" is now the site's voice, not a person's, which also keeps the style guide's rule that a page never invents the writer's history.
+
+*Cost to change: one line at the end of `how-this-course-is-built`.*
