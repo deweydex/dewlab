@@ -59,7 +59,7 @@ print("heads or tails:   ", random.choice(["heads", "tails"]))
 
 Here are the three functions in that cell:
 
-| Function | What it gives back |
+| Function | What it returns |
 |---|---|
 | `random.randint(1, 6)` | a whole number from 1 to 6, including both 1 and 6 |
 | `random.uniform(0, 100)` | a number with decimals, anywhere from 0 to 100 |
@@ -261,10 +261,10 @@ print("without replacement:", random.sample(deck, k=4))
 
 `random.choices`, with an **s**, puts each card back before it draws the
 next one. This is called drawing *with replacement*, and the same card
-can come up twice. Here the K came up twice.
+can appear twice. Here the K appeared twice.
 
 `random.sample` does not put the card back. This is drawing *without
-replacement*, so no card can come up twice.
+replacement*, so no card can appear twice.
 
 | Function | Puts each item back? | Can repeat? | Example |
 |---|---|---|---|

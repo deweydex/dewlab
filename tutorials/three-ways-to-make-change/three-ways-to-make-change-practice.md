@@ -115,8 +115,8 @@ always as small as the tutorial's example made it look.
 token.
 
 1. Predict what it returns, before you run it.
-2. Explain why, using what the function does with `remaining` at the
-   end.
+2. Why does it return that? Look at what the function does with
+   `remaining` at the end.
 
 ```python exec
 id: when-the-shortcut-fails-2

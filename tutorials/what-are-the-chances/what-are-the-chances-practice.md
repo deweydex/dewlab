@@ -155,7 +155,7 @@ A simulation of this is useful because it finds so few. A million deals usually 
 
 ## Independence
 
-**9.** A coin has come up heads five times in a row. What is the probability of heads on the next flip?
+**9.** A coin has landed heads five times in a row. What is the probability of heads on the next flip?
 
 <details class="dl-answer"><summary>answer</summary>
 
