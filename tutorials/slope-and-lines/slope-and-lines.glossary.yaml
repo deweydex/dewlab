@@ -1,0 +1,18 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# slope (m), intercept (c) are not repeated here — already introduced in
+# drawing-functions.glossary.yaml, earlier in this course.
+entries:
+  - term: parallel, perpendicular
+    kind: concept
+    definition: >
+      Two lines are parallel when they go in the same direction and never
+      meet: two different lines with the same slope are parallel. Two lines
+      are perpendicular when they meet at a right angle. If both have a
+      slope, their slopes multiply to -1.
+  - term: "general form of a line: ax + by + c = 0"
+    kind: formula
+    definition: >
+      The general form is a third way to write a line, alongside y = mx + c
+      and a Python function. It is the only one of the three that can
+      describe a vertical line, because b = 0 is allowed.

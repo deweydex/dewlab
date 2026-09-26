@@ -436,7 +436,7 @@ plot_line(-2, 8, ax)
 `plot_line` is your function from earlier on the page. The King's Road and the Mill Road are parallel. Both have slope 0.5,
 and they cross the vertical axis 3 km apart. The Tower Road crosses
 both at a right angle. $0.5 \times (-2) = -1$, and
-[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances)
+[Straight lines: slope, and the line that breaks the formula](tutorial:slope-and-lines)
 shows why that makes two lines perpendicular.
 ```
 

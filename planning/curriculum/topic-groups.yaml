@@ -70,7 +70,8 @@ groups:
       - drawing-functions
       - parabolas
       - cracking-equations
-      - lines-and-distances
+      - slope-and-lines
+      - distance-and-pythagoras
 
   - key: trigonometry
     name: Trigonometry — triangles, circles, and waves

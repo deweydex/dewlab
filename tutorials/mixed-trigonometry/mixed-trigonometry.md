@@ -1,7 +1,8 @@
 ---
 title: "Mixed problems: trigonometry and geometry"
 practice_across:
-  - lines-and-distances
+  - slope-and-lines
+  - distance-and-pythagoras
   - the-unit-circle
   - sine-and-cosine-waves
   - solving-triangles

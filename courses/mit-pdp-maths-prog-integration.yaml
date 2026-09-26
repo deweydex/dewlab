@@ -80,7 +80,8 @@ contents:
   - a-tool-of-your-own
 - title: Trigonometry and Calculus
   tutorials:
-  - lines-and-distances
+  - slope-and-lines
+  - distance-and-pythagoras
   - the-unit-circle
   - sine-and-cosine-waves
   - solving-triangles

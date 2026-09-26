@@ -1,0 +1,21 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "Pythagorean theorem, distance formula"
+    kind: formula
+    definition: >
+      The Pythagorean theorem says that in a right-angled triangle, the two
+      short sides squared and added give the long side squared. It is true
+      only when the angle is a right angle. The distance formula is the
+      same fact, with the gap across and the gap up as the two short sides.
+    example: "distance = sqrt((x2-x1)**2 + (y2-y1)**2)"
+  - term: isosceles triangle
+    kind: concept
+    definition: >
+      An isosceles triangle is a triangle with two sides of the same
+      length.
+  - term: midpoint
+    kind: formula
+    definition: >
+      The midpoint of two points is the point halfway between them. Average
+      the x values, and average the y values.
+    example: "midpoint((1, 2), (7, 6)) = ((1+7)/2, (2+6)/2) = (4, 4)"
