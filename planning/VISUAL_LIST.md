@@ -393,6 +393,22 @@ that `withdraw` appears in both the parent and `CheckingAccount`, which is
 what overriding is, and that `Bank` relates to accounts a completely different
 way from how the subclasses do.
 
+### The Dewey Track
+
+Two generators, split by unit so two people can work at once:
+`dev/graphics/dewey_units_1_5.py` (27 figures on 20 tutorials) and
+`dev/graphics/dewey_units_6_10.py` (26 figures on 18). Where a page's own
+cell computes a number the picture shows (a search's looks, a sort's rows,
+a bisection's steps, the mean and median of the response times), the
+generator runs that cell or reads its values, and stops with a message if
+the page has changed underneath it. A figure never gives away an answer the
+page asks the reader to predict: the ramp's slope, the paint's area and the
+predicted bearings are left off on purpose. Charts and animations a cell
+already draws are not copied as stills. `tests/test_erd_graphics.py` checks
+that every committed SVG is what its generator draws, that it uses theme
+tokens only, and that the page gives it full alt text. DECISIONS_LOG has
+the entry.
+
 ### Web authoring
 
 **[The box](../tutorials/the-box/the-box.md#why-this-happens) — the box model.**

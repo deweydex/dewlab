@@ -331,6 +331,8 @@ words, the sum of 1 to $n$ is $n$ times $n + 1$, halved.
 
 $$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$
 
+<img src="pairing-the-ends.svg" alt="A rectangle of squares, 6 rows by 7 columns. A staircase of shaded squares fills the left part: 1 square in the top row, then 2, and so on to 6 in the bottom row. A second staircase, the same sum backwards, fills the rest: 6 squares in the top row, then 5, and so on to 1. Each row has 7 squares, so the rectangle has 6 × 7 = 42 squares, and each staircase is half of it: 21.">
+
 A formula like this is a promise, so let's check it. Python's built-in
 `sum()` adds up a row of values. Will the two columns agree?
 

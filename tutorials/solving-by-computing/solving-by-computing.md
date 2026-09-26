@@ -169,6 +169,8 @@ step: 0.5, 0.25, 0.125, and after 8 steps it is 0.00390625. The root is
 always inside. After 8 steps we know that $\sqrt{2}$ is between 1.4140625
 and 1.41796875, so its first two decimal places are 1.41.
 
+<img src="bisection-squeeze.svg" alt="A number line from 1 to 2, and under it seven rows: one for the start and one for each of the first six steps of bisection. Each row shades the part from low to high. The start covers 1 to 2, a gap of 1. Each step halves the gap: 0.5, 0.25, 0.125, 0.0625, 0.03125 and 0.015625. A dashed line through every row marks the square root of 2, about 1.41421, and it is inside the shaded part on every row.">
+
 Bisection is divide and conquer, as the guessing game was. Each step
 turns the problem into the same problem, half the size.
 

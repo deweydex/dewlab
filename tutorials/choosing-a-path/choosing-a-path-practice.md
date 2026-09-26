@@ -338,6 +338,17 @@ a `<` in place of `<=` would give a wrong answer there.
 
 </details>
 
+<aside class="dl-note" id="choosing-practice-note-uv">
+
+**A number from Canada.** Three scientists at Environment Canada, James
+Kerr, Thomas McElroy and David Wardle, made the UV index. On 27 May
+1992, Canada began to give it with the weather forecast. It was the
+first country to forecast the next day's UV level. The World Health
+Organization and the World Meteorological Organization made it a
+standard in 1994.
+
+</aside>
+
 **10. Explain.** Schlomi, who is learning Python too, thinks `elif` is one
 word too many. She writes the grade rules with three separate `if` lines
 instead. Her idea has one good point. Every `if` still gets checked,

@@ -278,15 +278,7 @@ Back to the microwave clock. Each bar of light is a *segment*, and a
 digit made of seven is a *seven-segment display*. The segments have
 standard names, a to g:
 
-```text
- aaaa
-f    b
-f    b
- gggg
-e    c
-e    c
- dddd
-```
+<img src="seven-segments.svg" alt="Three seven-segment digits. The first has its seven bars named: a at the top, b at the top right, c at the bottom right, d at the bottom, e at the bottom left, f at the top left, and g in the middle. The second shows the digit 1, with only b and c lit. The third shows the digit 8, with all seven bars lit.">
 
 The digit 1 lights b and c, and 8 lights all seven. How many different
 patterns can seven segments make, each on or off? Pause here and make

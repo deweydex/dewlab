@@ -550,3 +550,13 @@ index were higher than the core's, there would be no critical angle at
 all, because $\sin\theta_c$ would have to be more than 1.
 
 </details>
+
+<aside class="dl-note" id="how-tall-practice-note-kao">
+
+**A Nobel Prize for pure glass.** In 1966, Charles Kao and George
+Hockham showed that light could travel through a glass fibre for
+kilometres, if the glass were pure enough. The fibres of the 1960s
+could carry light only about 20 metres. The first fibre pure enough
+was made in 1970, and Kao was given the Nobel Prize in Physics in 2009.
+
+</aside>

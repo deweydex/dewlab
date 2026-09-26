@@ -145,6 +145,16 @@ works in the dark. For them the rule would be different.
 
 </details>
 
+<aside class="dl-note" id="untangling-practice-note-sentinel">
+
+**Always mid-morning.** The European Sentinel-2 satellites cross the
+equator at about 10:30 in the morning, local time, on every pass. So
+the sunlight on a place comes at much the same angle each time they
+return. The European Space Agency chose 10:30 to balance two things:
+enough sunlight, and as little cloud as possible.
+
+</aside>
+
 **6. Fix.** Schlomo, who is learning Python too, wrote his own version of
 `same_rule`, to see whether he could. It passes the first test, but it
 says `grey_out_a` and `grey_out_c` are the same rule, and we know they are

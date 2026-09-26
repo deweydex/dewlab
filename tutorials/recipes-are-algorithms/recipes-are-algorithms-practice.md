@@ -305,6 +305,16 @@ most 10 minutes".
 
 </details>
 
+<aside class="dl-note" id="recipes-practice-note-pin">
+
+**Why a PIN has four digits.** John Shepherd-Barron led the team that
+built one of the first cash machines. It opened at a Barclays bank in
+Enfield, in London, in 1967. He planned a code of six digits. His wife,
+Caroline, told him she could remember only four, and four digits became
+the usual length around the world.
+
+</aside>
+
 **11. Make.** A robot pen draws on paper. Write a function
 `draw_letter_l()` that shows at least three steps for drawing a capital
 L. Then call it.

@@ -113,6 +113,8 @@ in order from coldest to warmest, and the order of the hours is gone.
 Which hour was coldest? The log can no longer say. The line `l.sort()`
 sorted the caller's own list, as `hand.sort()` did in the warm-up.
 
+<img src="one-list-two-names.svg" alt="Two names, log_c, the caller's name, and l, the name inside m, both point at one list. Before l.sort(), the list is 14.5, 13.0, 12.5, 16.0, 19.5, in the order the hours arrived. After l.sort(), the same list is 12.5, 13.0, 14.5, 16.0, 19.5. Both names still point at it, so log_c shows the sorted order too.">
+
 A change a function makes outside itself, beyond the value it
 returns, is called a *side effect*. Printing is a side effect too. Some
 side effects are the whole point of a function, like `plot_rule`

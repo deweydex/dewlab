@@ -334,6 +334,17 @@ variety.
 
 </details>
 
+<aside class="dl-note" id="mixed-loops-note-xkcd">
+
+**Where these two passwords come from.** Both come from "Password
+Strength", number 936 of Randall Munroe's web comic xkcd, from 2011.
+The comic says that four common words in a row are easier to remember
+than a word with swapped letters, and harder to guess. It counts the
+guesses a real thief would make, not every string of the same length.
+That is the question in problem 17.
+
+</aside>
+
 **10. Another way.** Numbers like $26^{25}$ are too long to compare by
 eye. Security people count *bits of strength* instead. The bits are how
 many times you would double 1 to reach the count. That is a logarithm,

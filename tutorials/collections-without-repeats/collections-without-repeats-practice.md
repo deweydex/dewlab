@@ -284,6 +284,16 @@ such as `1 <= number <= 1_000_000_000 and number == int(number)` answers
 
 </details>
 
+<aside class="dl-note" id="collections-practice-note-cantor">
+
+**Bigger infinities.** Some infinite sets can still be put in a list,
+one after another. The whole numbers can: 1, 2, 3, and so on. In 1874,
+Georg Cantor proved that the real numbers cannot. Whatever list you
+make, some real number is missing from it. So one infinite set can be
+bigger than another.
+
+</aside>
+
 **11. Fix.** Schlomi, who is learning Python too, wants the different
 words in a line of a song. Maths writes a set with curly brackets, so
 she starts an empty set with `{}`. The cell stops with an error. Run

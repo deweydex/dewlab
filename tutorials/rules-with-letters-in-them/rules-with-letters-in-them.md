@@ -391,6 +391,8 @@ bracket times one term of the second:
 | $x$ | $x^2$ | $5x$ |
 | $3$ | $3x$ | $15$ |
 
+<img src="photo-with-bars.svg" alt="A rectangle x + 3 wide and x + 5 tall, cut into four pieces. At the top left is the photo, a square x by x, marked x². To its right is the strip, 3 wide and x tall, marked 3x. Below the photo is the bar, x wide and 5 tall, marked 5x. At the bottom right is the corner, 3 by 5, marked 15. Beside the rectangle: (x + 3)(x + 5) = x² + 3x + 5x + 15 = x² + 8x + 15.">
+
 Adding the four pieces, and collecting the like terms $5x$ and $3x$,
 gives the area:
 
@@ -519,6 +521,8 @@ $(x + a)^2 = x^2 + 2ax + a^2$. In the photo picture, $x^2 + 9$ keeps the
 photo and the small corner, and forgets the strip and the bar, each
 $3x$. The move works in the one case where they have no length: when
 $x$ is 0.
+
+<img src="the-square-forgotten.svg" alt="A square x + 3 on each side, cut into four pieces: the photo, x², at the top left; the strip, 3x, to its right; the bar, 3x, below the photo; and the corner, 9, at the bottom right. The strip and the bar are shaded and marked left out. Beside the square: (x + 3)² = x² + 3x + 3x + 9 = x² + 6x + 9, and x² + 9 keeps the photo and the corner, and leaves out the two 3x pieces.">
 
 ### Your turn
 

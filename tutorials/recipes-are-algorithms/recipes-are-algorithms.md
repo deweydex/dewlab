@@ -310,6 +310,8 @@ Python calculated `water_ml` when its line ran, and at that moment `cups`
 was 3. The line did its job once, and then it was finished. If we change
 `cups` later, that line does not run again.
 
+<img src="names-point-at-values.svg" alt="Two pictures of names pointing at values. After the first cell, the name cups points at 3, and the name water_ml points at 750. After cups = 5, cups points at 5, and no name points at 3 any more. water_ml still points at 750, because no line pointed it anywhere new.">
+
 In a maths book, $\text{water} = 250 \times \text{cups}$ would be a rule
 that stays true, whatever cups becomes. In Python, `water_ml = cups * 250`
 is a step, done once, at one moment. Neither is wrong. They are two

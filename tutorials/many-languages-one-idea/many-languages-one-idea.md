@@ -314,6 +314,8 @@ then interprets those. Chrome's JavaScript engine, for example, starts
 a program with an interpreter, and compiles the parts that run most
 often into machine instructions while the page is running.
 
+<img src="from-code-to-running.svg" alt="Four rows, one for each way a program gets from its text to running. A compiler, as in the first BASIC at Dartmouth: your code, then the compiler translates it all first, then the machine instructions are run. An interpreter, as in BASIC on a Spectrum or a Commodore 64: your code, then the interpreter reads a line, does it, and reads the next. Python: your cell, then it is compiled to simpler instructions, then an interpreter runs those. JavaScript in Chrome: your code, then an interpreter starts running it, and while it runs, the parts that run most often are compiled to machine instructions.">
+
 Here are the differences we found, side by side:
 
 | | Python | SQL | JavaScript | BASIC, 1980s |
